@@ -43,6 +43,22 @@ const config = {
           customCss: require.resolve('./src/css/custom.css'),
         },
       }),
+    ],[
+      'redocusaurus',
+      {
+        // Plugin Options for loading OpenAPI files
+        specs: [
+          {
+            spec: 'openapi/ngrok_openapi.yml',
+            route: '/docs/api/',
+          },
+        ],
+        // Theme Options for modifying how redoc renders them
+        theme: {
+          // Change with your site colors
+          primaryColor: '#1890ff',
+        },
+      },
     ],
   ],
 
@@ -57,22 +73,12 @@ const config = {
           srcDark: 'img/ngrok-white.svg',
         },
         items: [
+          {to: '/', label: 'Docs', position: 'left'},
+          {to: '/docs/api/', label: 'API', position: 'left'},
           {
             type: 'localeDropdown',
             position: 'right',
           },
-          // {
-          //   type: 'doc',
-          //   docId: 'intro',
-          //   position: 'left',
-          //   label: 'Index',
-          // },
-          // {to: '/blog', label: 'Blog', position: 'left'},
-          // {
-          //   href: 'https://github.com/facebook/docusaurus',
-          //   label: 'GitHub',
-          //   position: 'right',
-          // },
           {
             type: 'search',
             position: 'right',
