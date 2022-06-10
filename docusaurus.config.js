@@ -35,7 +35,7 @@ const config = {
         docs: {
           sidebarPath: require.resolve('./sidebars.js'),
           routeBasePath: '/',
-          editUrl: 'https://github.com/sudobinbash/ngrok-doc/blob/master',
+          editUrl: 'https://github.com/sudobinbash/ngrok-doc/edit/master',
         },
         blog: false,
         theme: {
