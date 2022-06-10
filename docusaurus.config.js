@@ -8,7 +8,7 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 const config = {
   title: 'ngrok documentation',
   tagline: 'online in one line',
-  url: 'https://your-docusaurus-test-site.com',
+  url: 'https://docs-test.sudobinbash.com',
   baseUrl: '/',
   onBrokenLinks: 'warn',
   onBrokenMarkdownLinks: 'warn',
@@ -16,8 +16,8 @@ const config = {
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
-  organizationName: 'facebook', // Usually your GitHub org/user name.
-  projectName: 'docusaurus', // Usually your repo name.
+  organizationName: 'sudobinbash', // Usually your GitHub org/user name.
+  projectName: 'ngrok-doc', // Usually your repo name.
 
   // Even if you don't use internalization, you can use this field to set useful
   // metadata like html lang. For example, if your site is Chinese, you may want
@@ -35,8 +35,7 @@ const config = {
         docs: {
           sidebarPath: require.resolve('./sidebars.js'),
           routeBasePath: '/',
-          // TODO: If docs is a public repo (i.e. ngrok/ngrok-docs), we get this:
-          // editUrl: 'https://github.com/ngrok/ngrok-docs/tree/main/packages/create-docusaurus/templates/shared/',
+          editUrl: 'https://github.com/sudobinbash/ngrok-doc/blob/master',
         },
         blog: false,
         theme: {
@@ -68,11 +67,11 @@ const config = {
           //   label: 'Index',
           // },
           // {to: '/blog', label: 'Blog', position: 'left'},
-          // {
-          //   href: 'https://github.com/facebook/docusaurus',
-          //   label: 'GitHub',
-          //   position: 'right',
-          // },
+          {
+            href: 'https://github.com/sudobinbash/ngrok-doc',
+            label: 'GitHub',
+            position: 'right',
+          },
           {
             type: 'search',
             position: 'right',
@@ -100,17 +99,9 @@ const config = {
             title: 'Community',
             items: [
               {
-                label: 'Stack Overflow',
-                href: 'https://stackoverflow.com/questions/tagged/docusaurus',
-              },
-              {
-                label: 'Discord',
-                href: 'https://discordapp.com/invite/docusaurus',
-              },
-              {
-                label: 'Twitter',
-                href: 'https://twitter.com/docusaurus',
-              },
+                label: 'Slack',
+                href: 'https://ngrok.com/slack',
+              }
             ],
           },
           {
@@ -122,12 +113,12 @@ const config = {
               },
               {
                 label: 'GitHub',
-                href: 'https://github.com/facebook/docusaurus',
+                href: 'https://github.com/sudobinbash/ngrok-doc',
               },
             ],
           },
         ],
-        copyright: `Copyright © ${new Date().getFullYear()} My Project, Inc. Built with Docusaurus.`,
+        copyright: `Copyright © ${new Date().getFullYear()} ngrok. Built with Docusaurus ❤️.`,
       },
       prism: {
         theme: lightCodeTheme,
