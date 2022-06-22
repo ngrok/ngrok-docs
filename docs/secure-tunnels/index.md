@@ -1,10 +1,10 @@
 ---
-sidebar_position: 4
-title: Cloud Edge
+sidebar_position: 5
+title: Secure Tunnels
 ---
-# ngrok Cloud Edge
+# ngrok Secure Tunnels
 
-Bring security, scalability, and observability to your apps with ngrok's network edge. No code changes required.
+Instant access to any system without network pain. No dynamic DNS, port forwarding, and VPNs required.
 
 ```mdx-code-block
 import DocCardList from '@theme/DocCardList';
