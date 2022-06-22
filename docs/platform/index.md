@@ -1,10 +1,10 @@
 ---
-sidebar_position: 4
-title: Cloud Edge
+sidebar_position: 6
+title: Platform
 ---
-# ngrok Cloud Edge
+# ngrok Platform
 
-Bring security, scalability, and observability to your apps with ngrok's network edge. No code changes required.
+ngrok products are built on a platform with security, programmability, resiliency, and extensibility in one place.
 
 ```mdx-code-block
 import DocCardList from '@theme/DocCardList';

@@ -1,7 +1,7 @@
 ---
 sidebar_position: 1
 slug: /
-title: Introduction
+title: Overview
 ---
 
 # ngrok Documentation
