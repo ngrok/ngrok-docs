@@ -1,0 +1,12 @@
+
+|&nbsp;|&nbsp;|&nbsp;|&nbsp;|
+|---|---|---|---|
+| credentials.id | string | | unique tunnel credential resource identifier |
+| credentials.uri | string | | URI of the tunnel credential API resource |
+| credentials.created_at | string | | timestamp when the tunnel credential was created, RFC 3339 format |
+| credentials.description | string | | human-readable description of who or what will use the credential to authenticate. Optional, max 255 bytes. |
+| credentials.metadata | string | | arbitrary user-defined machine-readable data of this credential. Optional, max 4096 bytes. |
+| credentials.token | string | | the credential's authtoken that can be used to authenticate an ngrok agent. **This value is only available one time, on the API response from credential creation, otherwise it is null.** |
+| credentials.acl | List&lt;string&gt; | | optional list of ACL rules. If unspecified, the credential will have no restrictions. The only allowed ACL rule at this time is the `bind` rule. The `bind` rule allows the caller to restrict what domains and addresses the token is allowed to bind. For example, to allow the token to open a tunnel on example.ngrok.io your ACL would include the rule `bind:example.ngrok.io`. Bind rules may specify a leading wildcard to match multiple domains with a common suffix. For example, you may specify a rule of `bind:*.example.com` which will allow `x.example.com`, `y.example.com`, `*.example.com`, etc. A rule of `'*'` is equivalent to no acl at all and will explicitly permit all actions. |
+| uri | string | | URI of the tunnel credential list API resource |
+| next_page_uri | string | | URI of the next page, or null if there is no next page |
