@@ -11,7 +11,7 @@ const config = {
   title: 'ngrok documentation',
   tagline: 'online in one line',
   url: 'https://docs-test.sudobinbash.com',
-  baseUrl: '/',
+  baseUrl: '/docs2/',
   onBrokenLinks: 'warn',
   onBrokenMarkdownLinks: 'warn',
   favicon: 'img/favicon.ico',
