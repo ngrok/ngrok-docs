@@ -433,10 +433,10 @@ Upgrade to an Enterprise plan at: https://dashboard.ngrok.com/billing/subscripti
 		| [ERR_NGROK_702](/error_details/702) | Too many connections! The tunnel session <code>&lt;SESSION&gt;</code> has violated the rate-limit policy of <code>&lt;THRESHOLD&gt;</code> connections per minute by initiating <code>&lt;COUNT&gt;</code> connections in the last <code>&lt;SECONDS&gt;</code> seconds. Please decrease your inbound connection volume or upgrade to a paid plan for additional capacity. |
 		| [ERR_NGROK_703](/error_details/703) | Too many connections! The account hosting this endpoint has violated the rate-limit policy of <code>&lt;THRESHOLD&gt;</code> connections per minute by initiating <code>&lt;COUNT&gt;</code> connections in the last <code>&lt;SECONDS&gt;</code> seconds. Please decrease your inbound connection volume or upgrade your account plan for additional capacity. |
 		| [ERR_NGROK_708](/error_details/708) | This URL has expired. Please sign up for a free ngrok account to create URLs that do not expire. You can also restart the ngrok agent which will create a new URL that will expire after the same amount of time. |
-		| [ERR_NGROK_714](/error_details/714) | Your account is limited to <code>&lt;MAX&gt;</code> connections. |
-		| [ERR_NGROK_715](/error_details/715) | Your account is rate limited for adding <code>&lt;MAX&gt;</code> connections per <code>&lt;INTERVAL&gt;</code>. |
-		| [ERR_NGROK_716](/error_details/716) | Anonymous sessions are limited to <code>&lt;MAX&gt;</code> connections. |
-		| [ERR_NGROK_717](/error_details/717) | Anonymous sessions are rate limited for adding <code>&lt;MAX&gt;</code> connections per <code>&lt;INTERVAL&gt;</code>. |
+		| [ERR_NGROK_714](/error_details/714) | This ngrok account has reached its simultaneous connections limit. Please log into https://dashboard.ngrok.com to view your options. |
+		| [ERR_NGROK_715](/error_details/715) | This ngrok account has reached its connection rate limit. Please log into https://dashboard.ngrok.com to view your options. |
+		| [ERR_NGROK_716](/error_details/716) | This anonymous ngrok session has reached its simultaneous connections limit. |
+		| [ERR_NGROK_717](/error_details/717) | This anonymous ngrok session has reached its connection rate limit. |
 		| [ERR_NGROK_718](/error_details/718) | Your account is rate limited to <code>&lt;MAX&gt;</code> bytes incoming traffic per <code>&lt;INTERVAL&gt;</code>. |
 		| [ERR_NGROK_719](/error_details/719) | Anonymous sessions are rate limited to <code>&lt;MAX&gt;</code> bytes incoming traffic per <code>&lt;INTERVAL&gt;</code>. |
 		| [ERR_NGROK_720](/error_details/720) | Your account is rate limited to <code>&lt;MAX&gt;</code> bytes outgoing traffic per <code>&lt;INTERVAL&gt;</code>. |
