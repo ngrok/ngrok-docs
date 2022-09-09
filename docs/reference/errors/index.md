@@ -265,14 +265,14 @@ Update the endpoint configuration to specify 'agent' as the auth provider or rem
 		| [ERR_NGROK_346](/error_details/346) | Endpoint configuration <code>&lt;ID&gt;</code>s HTTPS module does not terminate TLS which is incompatible with a 'https' tunnel. You may either:
   - Modify the endpoint configuration to enable the 'terminate_tls' option
   - OR start a 'tls' tunnel instead |
-		| [ERR_NGROK_347](/error_details/347) | Domain has invalid punycode: <code>&lt;IDNA_ERROR&gt;</code>. Failed to bind the domain <code>&lt;DOMAIN&gt;</code>. |
+		| [ERR_NGROK_347](/error_details/347) | Domain has invalid punycode: <code>&lt;IDNA\_ERROR&gt;</code>. Failed to bind the domain <code>&lt;DOMAIN&gt;</code>. |
 		| [ERR_NGROK_348](/error_details/348) | Your account is limited to <code>&lt;MAX&gt;</code> sessions. |
 		| [ERR_NGROK_349](/error_details/349) | Your account is rate limited for adding <code>&lt;MAX&gt;</code> sessions per <code>&lt;INTERVAL&gt;</code>. |
 		| [ERR_NGROK_350](/error_details/350) | Your account is limited to <code>&lt;MAX&gt;</code> tunnels in a session. |
 		| [ERR_NGROK_351](/error_details/351) | Your account is rate limited for adding <code>&lt;MAX&gt;</code> tunnels per <code>&lt;INTERVAL&gt;</code>. |
 		| [ERR_NGROK_352](/error_details/352) | Anonymous sessions are limited to <code>&lt;MAX&gt;</code> tunnels. |
 		| [ERR_NGROK_353](/error_details/353) | Anonymous sessions are rate limited for adding <code>&lt;MAX&gt;</code> tunnels per <code>&lt;INTERVAL&gt;</code>. |
-		| [ERR_NGROK_354](/error_details/354) | Failed to bind <code>&lt;DOMAIN&gt;</code>. Nested subdomains of the ngrok base endpoint domain <code>&lt;ENDPOINT_DOMAIN&gt;</code> must be reserved first. Alternatively, try <code>&lt;SUGGESTION&gt;</code> instead. |
+		| [ERR_NGROK_354](/error_details/354) | Failed to bind <code>&lt;DOMAIN&gt;</code>. Nested subdomains of the ngrok base endpoint domain <code>&lt;ENDPOINT\_DOMAIN&gt;</code> must be reserved first. Alternatively, try <code>&lt;SUGGESTION&gt;</code> instead. |
 		| [ERR_NGROK_355](/error_details/355) | Invalid '_' in domain name. Valid domains may not contain underscores. Failed to bind the domain <code>&lt;DOMAIN&gt;</code>. |
 		| [ERR_NGROK_356](/error_details/356) | The credential ACL policy does not permit binding random TCP addresses.
 Credential ID: <code>&lt;ID&gt;</code> |
@@ -363,7 +363,7 @@ The name you've requested is: <code>&lt;DOMAIN&gt;</code> |
 		| [ERR_NGROK_426](/error_details/426) | Domain <code>&lt;DOMAIN&gt;</code> CNAME record not found, A record <code>&lt;IPS&gt;</code> found |
 		| [ERR_NGROK_427](/error_details/427) | Domain <code>&lt;DOMAIN&gt;</code> CNAME record resolved to <code>&lt;HAVE&gt;</code>, should have been <code>&lt;WANT&gt;</code> |
 		| [ERR_NGROK_428](/error_details/428) | You may not assign endpoint configuration <code>&lt;ID&gt;</code> because it is type <code>&lt;TYPE&gt;</code>. You must assign a configuration with type <code>&lt;EXPECTEDTYPE&gt;</code>. |
-		| [ERR_NGROK_429](/error_details/429) | Domain has invalid punycode: <code>&lt;IDNA_ERROR&gt;</code>. Failed to reserve <code>&lt;DOMAIN&gt;</code>. |
+		| [ERR_NGROK_429](/error_details/429) | Domain has invalid punycode: <code>&lt;IDNA\_ERROR&gt;</code>. Failed to reserve <code>&lt;DOMAIN&gt;</code>. |
 		| [ERR_NGROK_430](/error_details/430) | Another account is running an active tunnel on the domain <code>&lt;DOMAIN&gt;</code>. You may not reserve domains that are actively in use. |
 		| [ERR_NGROK_431](/error_details/431) | Your account is limited to <code>&lt;MAX&gt;</code> reserved domains. |
 		| [ERR_NGROK_432](/error_details/432) | Your account is rate limited for adding <code>&lt;MAX&gt;</code> reserved domains per <code>&lt;INTERVAL&gt;</code>. |
@@ -433,10 +433,10 @@ Upgrade to an Enterprise plan at: https://dashboard.ngrok.com/billing/subscripti
 		| [ERR_NGROK_702](/error_details/702) | Too many connections! The tunnel session <code>&lt;SESSION&gt;</code> has violated the rate-limit policy of <code>&lt;THRESHOLD&gt;</code> connections per minute by initiating <code>&lt;COUNT&gt;</code> connections in the last <code>&lt;SECONDS&gt;</code> seconds. Please decrease your inbound connection volume or upgrade to a paid plan for additional capacity. |
 		| [ERR_NGROK_703](/error_details/703) | Too many connections! The account hosting this endpoint has violated the rate-limit policy of <code>&lt;THRESHOLD&gt;</code> connections per minute by initiating <code>&lt;COUNT&gt;</code> connections in the last <code>&lt;SECONDS&gt;</code> seconds. Please decrease your inbound connection volume or upgrade your account plan for additional capacity. |
 		| [ERR_NGROK_708](/error_details/708) | This URL has expired. Please sign up for a free ngrok account to create URLs that do not expire. You can also restart the ngrok agent which will create a new URL that will expire after the same amount of time. |
-		| [ERR_NGROK_714](/error_details/714) | Your account is limited to <code>&lt;MAX&gt;</code> connections. |
-		| [ERR_NGROK_715](/error_details/715) | Your account is rate limited for adding <code>&lt;MAX&gt;</code> connections per <code>&lt;INTERVAL&gt;</code>. |
-		| [ERR_NGROK_716](/error_details/716) | Anonymous sessions are limited to <code>&lt;MAX&gt;</code> connections. |
-		| [ERR_NGROK_717](/error_details/717) | Anonymous sessions are rate limited for adding <code>&lt;MAX&gt;</code> connections per <code>&lt;INTERVAL&gt;</code>. |
+		| [ERR_NGROK_714](/error_details/714) | This ngrok account has reached its simultaneous connections limit. Please log into https://dashboard.ngrok.com to view your options. |
+		| [ERR_NGROK_715](/error_details/715) | This ngrok account has reached its connection rate limit. Please log into https://dashboard.ngrok.com to view your options. |
+		| [ERR_NGROK_716](/error_details/716) | This anonymous ngrok session has reached its simultaneous connections limit. |
+		| [ERR_NGROK_717](/error_details/717) | This anonymous ngrok session has reached its connection rate limit. |
 		| [ERR_NGROK_718](/error_details/718) | Your account is rate limited to <code>&lt;MAX&gt;</code> bytes incoming traffic per <code>&lt;INTERVAL&gt;</code>. |
 		| [ERR_NGROK_719](/error_details/719) | Anonymous sessions are rate limited to <code>&lt;MAX&gt;</code> bytes incoming traffic per <code>&lt;INTERVAL&gt;</code>. |
 		| [ERR_NGROK_720](/error_details/720) | Your account is rate limited to <code>&lt;MAX&gt;</code> bytes outgoing traffic per <code>&lt;INTERVAL&gt;</code>. |

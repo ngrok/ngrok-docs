@@ -10,8 +10,8 @@ const docsRepo = 'https://github.com/ngrok/ngrok-docs'
 const config = {
   title: 'ngrok documentation',
   tagline: 'online in one line',
-  url: 'https://docs-test.sudobinbash.com',
-  baseUrl: '/',
+  url: 'https://docs.dev-ngrok.com',
+  baseUrl: '/docs2/',
   onBrokenLinks: 'warn',
   onBrokenMarkdownLinks: 'warn',
   favicon: 'img/favicon.ico',
