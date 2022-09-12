@@ -232,15 +232,18 @@ const config = {
     }),
 
   plugins: [
-    '@docusaurus/plugin-client-redirects', {
-      redirects: [
-        {
-          to: '/docs/reference/api',
-          from: '/docs/ngrok-agent/api'
-        }
-      ]
-    }
-  ]
+    [
+      '@docusaurus/plugin-client-redirects', 
+      {
+        redirects: [
+          {
+            to: '/reference/api/reference',
+            from: '/ngrok-agent/api'
+          },
+        ],
+      },
+    ],
+  ],
 };
 
 module.exports = config;
