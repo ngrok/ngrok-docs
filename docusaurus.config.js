@@ -230,6 +230,17 @@ const config = {
         darkTheme: darkCodeTheme,
       },
     }),
+
+  plugins: [
+    '@docusaurus/plugin-client-redirects', {
+      redirects: [
+        {
+          to: '/docs/reference/api',
+          from: '/docs/ngrok-agent/api'
+        }
+      ]
+    }
+  ]
 };
 
 module.exports = config;
