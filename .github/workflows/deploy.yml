@@ -1,0 +1,36 @@
+name: Deploy ngrok docs
+
+on:
+  push:
+    branches:
+      - master
+      - caitlin/github-deploy-action
+
+jobs:
+  deploy:
+    name: Deploy ngrok docs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: yarn
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+      - name: Build website
+        run: yarn build
+          
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-west-2
+
+      - name: Deploy
+        run: |
+          aws s3 sync ./build s3://docs.dev-ngrok.com --acl bucket-owner-full-control
+          aws s3 sync ./build s3://docs.stage-ngrok.com --acl bucket-owner-full-control 
+          aws s3 sync ./build s3://docs.ngrok.com --acl bucket-owner-full-control
