@@ -60,6 +60,11 @@
 | oauth.provider.linkedin.scopes | List&lt;string&gt; | |  |
 | oauth.provider.linkedin.email_addresses | List&lt;string&gt; | |  |
 | oauth.provider.linkedin.email_domains | List&lt;string&gt; | |  |
+| oauth.provider.gitlab.client_id | string | |  |
+| oauth.provider.gitlab.client_secret | string | |  |
+| oauth.provider.gitlab.scopes | List&lt;string&gt; | |  |
+| oauth.provider.gitlab.email_addresses | List&lt;string&gt; | |  |
+| oauth.provider.gitlab.email_domains | List&lt;string&gt; | |  |
 | oauth.options_passthrough | boolean | | Do not enforce authentication on HTTP OPTIONS requests. necessary if you are supporting CORS. |
 | oauth.cookie_prefix | string | | the prefix of the session cookie that ngrok sets on the http client to cache authentication. default is 'ngrok.' |
 | oauth.inactivity_timeout | uint32 | | Integer number of seconds of inactivity after which if the user has not accessed the endpoint, their session will time out and they will be forced to reauthenticate. |

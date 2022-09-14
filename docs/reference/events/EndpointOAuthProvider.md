@@ -28,3 +28,8 @@
 | linkedin.scopes | List&lt;string&gt; | |  |
 | linkedin.email_addresses | List&lt;string&gt; | |  |
 | linkedin.email_domains | List&lt;string&gt; | |  |
+| gitlab.client_id | string | |  |
+| gitlab.client_secret | string | |  |
+| gitlab.scopes | List&lt;string&gt; | |  |
+| gitlab.email_addresses | List&lt;string&gt; | |  |
+| gitlab.email_domains | List&lt;string&gt; | |  |

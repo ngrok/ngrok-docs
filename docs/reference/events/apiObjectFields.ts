@@ -76,6 +76,7 @@ export type ApiObjectName =
   | 'EndpointOAuth'
   | 'EndpointOAuthFacebook'
   | 'EndpointOAuthGitHub'
+  | 'EndpointOAuthGitLab'
   | 'EndpointOAuthGoogle'
   | 'EndpointOAuthLinkedIn'
   | 'EndpointOAuthMicrosoft'
@@ -1590,6 +1591,31 @@ export const apiObjectFields: Record<ApiObjectName, ApiObjectField[]> = {
       type: 'List<string>',
     },
     {
+      name: 'module.provider.gitlab.client_id',
+      desc: "",
+      type: 'string',
+    },
+    {
+      name: 'module.provider.gitlab.client_secret',
+      desc: "",
+      type: 'string',
+    },
+    {
+      name: 'module.provider.gitlab.scopes',
+      desc: "",
+      type: 'List<string>',
+    },
+    {
+      name: 'module.provider.gitlab.email_addresses',
+      desc: "",
+      type: 'List<string>',
+    },
+    {
+      name: 'module.provider.gitlab.email_domains',
+      desc: "",
+      type: 'List<string>',
+    },
+    {
       name: 'module.options_passthrough',
       desc: "Do not enforce authentication on HTTP OPTIONS requests. necessary if you are supporting CORS.",
       type: 'boolean',
@@ -2438,6 +2464,31 @@ export const apiObjectFields: Record<ApiObjectName, ApiObjectField[]> = {
       type: 'List<string>',
     },
     {
+      name: 'oauth.provider.gitlab.client_id',
+      desc: "",
+      type: 'string',
+    },
+    {
+      name: 'oauth.provider.gitlab.client_secret',
+      desc: "",
+      type: 'string',
+    },
+    {
+      name: 'oauth.provider.gitlab.scopes',
+      desc: "",
+      type: 'List<string>',
+    },
+    {
+      name: 'oauth.provider.gitlab.email_addresses',
+      desc: "",
+      type: 'List<string>',
+    },
+    {
+      name: 'oauth.provider.gitlab.email_domains',
+      desc: "",
+      type: 'List<string>',
+    },
+    {
       name: 'oauth.options_passthrough',
       desc: "Do not enforce authentication on HTTP OPTIONS requests. necessary if you are supporting CORS.",
       type: 'boolean',
@@ -2851,6 +2902,31 @@ export const apiObjectFields: Record<ApiObjectName, ApiObjectField[]> = {
     },
     {
       name: 'oauth.provider.linkedin.email_domains',
+      desc: "",
+      type: 'List<string>',
+    },
+    {
+      name: 'oauth.provider.gitlab.client_id',
+      desc: "",
+      type: 'string',
+    },
+    {
+      name: 'oauth.provider.gitlab.client_secret',
+      desc: "",
+      type: 'string',
+    },
+    {
+      name: 'oauth.provider.gitlab.scopes',
+      desc: "",
+      type: 'List<string>',
+    },
+    {
+      name: 'oauth.provider.gitlab.email_addresses',
+      desc: "",
+      type: 'List<string>',
+    },
+    {
+      name: 'oauth.provider.gitlab.email_domains',
       desc: "",
       type: 'List<string>',
     },
@@ -3282,6 +3358,31 @@ export const apiObjectFields: Record<ApiObjectName, ApiObjectField[]> = {
       type: 'List<string>',
     },
     {
+      name: 'endpoint_configurations.oauth.provider.gitlab.client_id',
+      desc: "",
+      type: 'string',
+    },
+    {
+      name: 'endpoint_configurations.oauth.provider.gitlab.client_secret',
+      desc: "",
+      type: 'string',
+    },
+    {
+      name: 'endpoint_configurations.oauth.provider.gitlab.scopes',
+      desc: "",
+      type: 'List<string>',
+    },
+    {
+      name: 'endpoint_configurations.oauth.provider.gitlab.email_addresses',
+      desc: "",
+      type: 'List<string>',
+    },
+    {
+      name: 'endpoint_configurations.oauth.provider.gitlab.email_domains',
+      desc: "",
+      type: 'List<string>',
+    },
+    {
       name: 'endpoint_configurations.oauth.options_passthrough',
       desc: "Do not enforce authentication on HTTP OPTIONS requests. necessary if you are supporting CORS.",
       type: 'boolean',
@@ -3705,6 +3806,31 @@ export const apiObjectFields: Record<ApiObjectName, ApiObjectField[]> = {
     },
     {
       name: 'oauth.provider.linkedin.email_domains',
+      desc: "",
+      type: 'List<string>',
+    },
+    {
+      name: 'oauth.provider.gitlab.client_id',
+      desc: "",
+      type: 'string',
+    },
+    {
+      name: 'oauth.provider.gitlab.client_secret',
+      desc: "",
+      type: 'string',
+    },
+    {
+      name: 'oauth.provider.gitlab.scopes',
+      desc: "",
+      type: 'List<string>',
+    },
+    {
+      name: 'oauth.provider.gitlab.email_addresses',
+      desc: "",
+      type: 'List<string>',
+    },
+    {
+      name: 'oauth.provider.gitlab.email_domains',
       desc: "",
       type: 'List<string>',
     },
@@ -4170,6 +4296,31 @@ export const apiObjectFields: Record<ApiObjectName, ApiObjectField[]> = {
       type: 'List<string>',
     },
     {
+      name: 'provider.gitlab.client_id',
+      desc: "",
+      type: 'string',
+    },
+    {
+      name: 'provider.gitlab.client_secret',
+      desc: "",
+      type: 'string',
+    },
+    {
+      name: 'provider.gitlab.scopes',
+      desc: "",
+      type: 'List<string>',
+    },
+    {
+      name: 'provider.gitlab.email_addresses',
+      desc: "",
+      type: 'List<string>',
+    },
+    {
+      name: 'provider.gitlab.email_domains',
+      desc: "",
+      type: 'List<string>',
+    },
+    {
       name: 'options_passthrough',
       desc: "Do not enforce authentication on HTTP OPTIONS requests. necessary if you are supporting CORS.",
       type: 'boolean',
@@ -4256,6 +4407,33 @@ export const apiObjectFields: Record<ApiObjectName, ApiObjectField[]> = {
     {
       name: 'organizations',
       desc: "a list of github org identifiers. users who are members of any of the listed organizations will be allowed access. identifiers should be the organization's 'slug'",
+      type: 'List<string>',
+    },
+    ],
+  EndpointOAuthGitLab: [
+    {
+      name: 'client_id',
+      desc: "",
+      type: 'string',
+    },
+    {
+      name: 'client_secret',
+      desc: "",
+      type: 'string',
+    },
+    {
+      name: 'scopes',
+      desc: "",
+      type: 'List<string>',
+    },
+    {
+      name: 'email_addresses',
+      desc: "",
+      type: 'List<string>',
+    },
+    {
+      name: 'email_domains',
+      desc: "",
       type: 'List<string>',
     },
     ],
@@ -4476,6 +4654,31 @@ export const apiObjectFields: Record<ApiObjectName, ApiObjectField[]> = {
       desc: "",
       type: 'List<string>',
     },
+    {
+      name: 'gitlab.client_id',
+      desc: "",
+      type: 'string',
+    },
+    {
+      name: 'gitlab.client_secret',
+      desc: "",
+      type: 'string',
+    },
+    {
+      name: 'gitlab.scopes',
+      desc: "",
+      type: 'List<string>',
+    },
+    {
+      name: 'gitlab.email_addresses',
+      desc: "",
+      type: 'List<string>',
+    },
+    {
+      name: 'gitlab.email_domains',
+      desc: "",
+      type: 'List<string>',
+    },
     ],
   EndpointOAuthReplace: [
     {
@@ -4620,6 +4823,31 @@ export const apiObjectFields: Record<ApiObjectName, ApiObjectField[]> = {
     },
     {
       name: 'module.provider.linkedin.email_domains',
+      desc: "",
+      type: 'List<string>',
+    },
+    {
+      name: 'module.provider.gitlab.client_id',
+      desc: "",
+      type: 'string',
+    },
+    {
+      name: 'module.provider.gitlab.client_secret',
+      desc: "",
+      type: 'string',
+    },
+    {
+      name: 'module.provider.gitlab.scopes',
+      desc: "",
+      type: 'List<string>',
+    },
+    {
+      name: 'module.provider.gitlab.email_addresses',
+      desc: "",
+      type: 'List<string>',
+    },
+    {
+      name: 'module.provider.gitlab.email_domains',
       desc: "",
       type: 'List<string>',
     },
@@ -6516,6 +6744,31 @@ export const apiObjectFields: Record<ApiObjectName, ApiObjectField[]> = {
       type: 'List<string>',
     },
     {
+      name: 'routes.oauth.provider.gitlab.client_id',
+      desc: "",
+      type: 'string',
+    },
+    {
+      name: 'routes.oauth.provider.gitlab.client_secret',
+      desc: "",
+      type: 'string',
+    },
+    {
+      name: 'routes.oauth.provider.gitlab.scopes',
+      desc: "",
+      type: 'List<string>',
+    },
+    {
+      name: 'routes.oauth.provider.gitlab.email_addresses',
+      desc: "",
+      type: 'List<string>',
+    },
+    {
+      name: 'routes.oauth.provider.gitlab.email_domains',
+      desc: "",
+      type: 'List<string>',
+    },
+    {
       name: 'routes.oauth.options_passthrough',
       desc: "Do not enforce authentication on HTTP OPTIONS requests. necessary if you are supporting CORS.",
       type: 'boolean',
@@ -7055,6 +7308,31 @@ export const apiObjectFields: Record<ApiObjectName, ApiObjectField[]> = {
       type: 'List<string>',
     },
     {
+      name: 'https_edges.routes.oauth.provider.gitlab.client_id',
+      desc: "",
+      type: 'string',
+    },
+    {
+      name: 'https_edges.routes.oauth.provider.gitlab.client_secret',
+      desc: "",
+      type: 'string',
+    },
+    {
+      name: 'https_edges.routes.oauth.provider.gitlab.scopes',
+      desc: "",
+      type: 'List<string>',
+    },
+    {
+      name: 'https_edges.routes.oauth.provider.gitlab.email_addresses',
+      desc: "",
+      type: 'List<string>',
+    },
+    {
+      name: 'https_edges.routes.oauth.provider.gitlab.email_domains',
+      desc: "",
+      type: 'List<string>',
+    },
+    {
       name: 'https_edges.routes.oauth.options_passthrough',
       desc: "Do not enforce authentication on HTTP OPTIONS requests. necessary if you are supporting CORS.",
       type: 'boolean',
@@ -7507,6 +7785,31 @@ export const apiObjectFields: Record<ApiObjectName, ApiObjectField[]> = {
       type: 'List<string>',
     },
     {
+      name: 'oauth.provider.gitlab.client_id',
+      desc: "",
+      type: 'string',
+    },
+    {
+      name: 'oauth.provider.gitlab.client_secret',
+      desc: "",
+      type: 'string',
+    },
+    {
+      name: 'oauth.provider.gitlab.scopes',
+      desc: "",
+      type: 'List<string>',
+    },
+    {
+      name: 'oauth.provider.gitlab.email_addresses',
+      desc: "",
+      type: 'List<string>',
+    },
+    {
+      name: 'oauth.provider.gitlab.email_domains',
+      desc: "",
+      type: 'List<string>',
+    },
+    {
       name: 'oauth.options_passthrough',
       desc: "Do not enforce authentication on HTTP OPTIONS requests. necessary if you are supporting CORS.",
       type: 'boolean',
@@ -7924,6 +8227,31 @@ export const apiObjectFields: Record<ApiObjectName, ApiObjectField[]> = {
       type: 'List<string>',
     },
     {
+      name: 'oauth.provider.gitlab.client_id',
+      desc: "",
+      type: 'string',
+    },
+    {
+      name: 'oauth.provider.gitlab.client_secret',
+      desc: "",
+      type: 'string',
+    },
+    {
+      name: 'oauth.provider.gitlab.scopes',
+      desc: "",
+      type: 'List<string>',
+    },
+    {
+      name: 'oauth.provider.gitlab.email_addresses',
+      desc: "",
+      type: 'List<string>',
+    },
+    {
+      name: 'oauth.provider.gitlab.email_domains',
+      desc: "",
+      type: 'List<string>',
+    },
+    {
       name: 'oauth.options_passthrough',
       desc: "Do not enforce authentication on HTTP OPTIONS requests. necessary if you are supporting CORS.",
       type: 'boolean',
@@ -8317,6 +8645,31 @@ export const apiObjectFields: Record<ApiObjectName, ApiObjectField[]> = {
     },
     {
       name: 'oauth.provider.linkedin.email_domains',
+      desc: "",
+      type: 'List<string>',
+    },
+    {
+      name: 'oauth.provider.gitlab.client_id',
+      desc: "",
+      type: 'string',
+    },
+    {
+      name: 'oauth.provider.gitlab.client_secret',
+      desc: "",
+      type: 'string',
+    },
+    {
+      name: 'oauth.provider.gitlab.scopes',
+      desc: "",
+      type: 'List<string>',
+    },
+    {
+      name: 'oauth.provider.gitlab.email_addresses',
+      desc: "",
+      type: 'List<string>',
+    },
+    {
+      name: 'oauth.provider.gitlab.email_domains',
       desc: "",
       type: 'List<string>',
     },

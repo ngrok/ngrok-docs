@@ -265,14 +265,14 @@ Update the endpoint configuration to specify 'agent' as the auth provider or rem
 		| [ERR_NGROK_346](/error_details/346) | Endpoint configuration <code>&lt;ID&gt;</code>s HTTPS module does not terminate TLS which is incompatible with a 'https' tunnel. You may either:
   - Modify the endpoint configuration to enable the 'terminate_tls' option
   - OR start a 'tls' tunnel instead |
-		| [ERR_NGROK_347](/error_details/347) | Domain has invalid punycode: <code>&lt;IDNA\_ERROR&gt;</code>. Failed to bind the domain <code>&lt;DOMAIN&gt;</code>. |
+		| [ERR_NGROK_347](/error_details/347) | Domain has invalid punycode: <code>&lt;IDNA_ERROR&gt;</code>. Failed to bind the domain <code>&lt;DOMAIN&gt;</code>. |
 		| [ERR_NGROK_348](/error_details/348) | Your account is limited to <code>&lt;MAX&gt;</code> sessions. |
 		| [ERR_NGROK_349](/error_details/349) | Your account is rate limited for adding <code>&lt;MAX&gt;</code> sessions per <code>&lt;INTERVAL&gt;</code>. |
 		| [ERR_NGROK_350](/error_details/350) | Your account is limited to <code>&lt;MAX&gt;</code> tunnels in a session. |
 		| [ERR_NGROK_351](/error_details/351) | Your account is rate limited for adding <code>&lt;MAX&gt;</code> tunnels per <code>&lt;INTERVAL&gt;</code>. |
 		| [ERR_NGROK_352](/error_details/352) | Anonymous sessions are limited to <code>&lt;MAX&gt;</code> tunnels. |
 		| [ERR_NGROK_353](/error_details/353) | Anonymous sessions are rate limited for adding <code>&lt;MAX&gt;</code> tunnels per <code>&lt;INTERVAL&gt;</code>. |
-		| [ERR_NGROK_354](/error_details/354) | Failed to bind <code>&lt;DOMAIN&gt;</code>. Nested subdomains of the ngrok base endpoint domain <code>&lt;ENDPOINT\_DOMAIN&gt;</code> must be reserved first. Alternatively, try <code>&lt;SUGGESTION&gt;</code> instead. |
+		| [ERR_NGROK_354](/error_details/354) | Failed to bind <code>&lt;DOMAIN&gt;</code>. Nested subdomains of the ngrok base endpoint domain <code>&lt;ENDPOINT_DOMAIN&gt;</code> must be reserved first. Alternatively, try <code>&lt;SUGGESTION&gt;</code> instead. |
 		| [ERR_NGROK_355](/error_details/355) | Invalid '_' in domain name. Valid domains may not contain underscores. Failed to bind the domain <code>&lt;DOMAIN&gt;</code>. |
 		| [ERR_NGROK_356](/error_details/356) | The credential ACL policy does not permit binding random TCP addresses.
 Credential ID: <code>&lt;ID&gt;</code> |
@@ -363,7 +363,7 @@ The name you've requested is: <code>&lt;DOMAIN&gt;</code> |
 		| [ERR_NGROK_426](/error_details/426) | Domain <code>&lt;DOMAIN&gt;</code> CNAME record not found, A record <code>&lt;IPS&gt;</code> found |
 		| [ERR_NGROK_427](/error_details/427) | Domain <code>&lt;DOMAIN&gt;</code> CNAME record resolved to <code>&lt;HAVE&gt;</code>, should have been <code>&lt;WANT&gt;</code> |
 		| [ERR_NGROK_428](/error_details/428) | You may not assign endpoint configuration <code>&lt;ID&gt;</code> because it is type <code>&lt;TYPE&gt;</code>. You must assign a configuration with type <code>&lt;EXPECTEDTYPE&gt;</code>. |
-		| [ERR_NGROK_429](/error_details/429) | Domain has invalid punycode: <code>&lt;IDNA\_ERROR&gt;</code>. Failed to reserve <code>&lt;DOMAIN&gt;</code>. |
+		| [ERR_NGROK_429](/error_details/429) | Domain has invalid punycode: <code>&lt;IDNA_ERROR&gt;</code>. Failed to reserve <code>&lt;DOMAIN&gt;</code>. |
 		| [ERR_NGROK_430](/error_details/430) | Another account is running an active tunnel on the domain <code>&lt;DOMAIN&gt;</code>. You may not reserve domains that are actively in use. |
 		| [ERR_NGROK_431](/error_details/431) | Your account is limited to <code>&lt;MAX&gt;</code> reserved domains. |
 		| [ERR_NGROK_432](/error_details/432) | Your account is rate limited for adding <code>&lt;MAX&gt;</code> reserved domains per <code>&lt;INTERVAL&gt;</code>. |

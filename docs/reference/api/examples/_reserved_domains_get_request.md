@@ -3,4 +3,4 @@
 ```curl \
 -H "Authorization: Bearer {API_KEY}" \
 -H "Ngrok-Version: 2" \
-https://api.ngrok.com/reserved_domains/rd_2EPdusqX37rvf1bj2TVJM4f4mpT
+https://api.ngrok.com/reserved_domains/rd_2ElcuQwyObcDKKklRvOJ4ceZuts
