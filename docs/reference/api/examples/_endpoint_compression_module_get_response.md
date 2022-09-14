@@ -1,0 +1,6 @@
+
+###### Example Response
+```
+{
+  "enabled": false
+}
