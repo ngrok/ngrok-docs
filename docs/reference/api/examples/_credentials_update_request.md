@@ -6,4 +6,4 @@
 -H "Content-Type: application/json" \
 -H "Ngrok-Version: 2" \
 -d '{"description":"device alpha-2","metadata":"{\"device_id\": \"d5111ba7-0cc5-4ba3-8398-e6c79e4e89c2\"}"}' \
-https://api.ngrok.com/credentials/cr_2ElyESbDMeT8h6YHYeovMQx2Caa
+https://api.ngrok.com/credentials/cr_2EmMOhH24Dd8a6IUS0kGIXWaKyP

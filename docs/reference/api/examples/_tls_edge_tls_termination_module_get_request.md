@@ -3,4 +3,4 @@
 ```curl \
 -H "Authorization: Bearer {API_KEY}" \
 -H "Ngrok-Version: 2" \
-https://api.ngrok.com/edges/tls/edgtls_2ElyGtJrV61Wu5hH2IndnVoIuM6/tls_termination
+https://api.ngrok.com/edges/tls/edgtls_2EmMQMMTI5UTM0RstnBp67BFt7x/tls_termination

@@ -4,4 +4,4 @@
 -XDELETE \
 -H "Authorization: Bearer {API_KEY}" \
 -H "Ngrok-Version: 2" \
-https://api.ngrok.com/reserved_domains/rd_2ElyEUysB2yZrP5vzvkvxPajuP9/http_endpoint_configuration
+https://api.ngrok.com/reserved_domains/rd_2EmMOgbRTfSjjKKmIJYdJCf5yEa/http_endpoint_configuration

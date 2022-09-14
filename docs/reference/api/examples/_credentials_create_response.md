@@ -2,11 +2,11 @@
 ###### Example Response
 ```
 {
-  "id": "cr_2ElyESbDMeT8h6YHYeovMQx2Caa",
-  "uri": "https://api.ngrok.com/credentials/cr_2ElyESbDMeT8h6YHYeovMQx2Caa",
-  "created_at": "2022-09-14T19:39:13Z",
+  "id": "cr_2EmMOhH24Dd8a6IUS0kGIXWaKyP",
+  "uri": "https://api.ngrok.com/credentials/cr_2EmMOhH24Dd8a6IUS0kGIXWaKyP",
+  "created_at": "2022-09-14T22:57:55Z",
   "description": "development cred for alan@example.com",
   "metadata": "",
-  "token": "2ElyESbDMeT8h6YHYeovMQx2Caa_3R8G6yYU7bSc7Fd6rSa6c",
+  "token": "2EmMOhH24Dd8a6IUS0kGIXWaKyP_4Mekmw7qzNShNhfQPLARm",
   "acl": []
 }

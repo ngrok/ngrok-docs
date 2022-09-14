@@ -2,9 +2,9 @@
 ###### Example Response
 ```
 {
-  "id": "ipp_2ElyEMyR8kRkL23aSUTeEGezwUE",
-  "uri": "https://api.ngrok.com/ip_policies/ipp_2ElyEMyR8kRkL23aSUTeEGezwUE",
-  "created_at": "2022-09-14T19:39:12Z",
+  "id": "ipp_2EmMOVWtlDzWEq1VBCcg96y8JHY",
+  "uri": "https://api.ngrok.com/ip_policies/ipp_2EmMOVWtlDzWEq1VBCcg96y8JHY",
+  "created_at": "2022-09-14T22:57:54Z",
   "description": "API Outbound Gateway",
   "metadata": ""
 }

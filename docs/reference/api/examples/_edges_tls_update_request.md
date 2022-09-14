@@ -6,4 +6,4 @@
 -H "Content-Type: application/json" \
 -H "Ngrok-Version: 2" \
 -d '{"metadata":"{\"environment\": \"production\"}"}' \
-https://api.ngrok.com/edges/tls/edgtls_2ElyGapn92NTDHGhxtTIuBuolCy
+https://api.ngrok.com/edges/tls/edgtls_2EmMQDNFUwrhyqRdTmWwUoJNEMN

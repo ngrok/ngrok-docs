@@ -2,11 +2,11 @@
 ###### Example Response
 ```
 {
-  "id": "edgtls_2ElyGapn92NTDHGhxtTIuBuolCy",
+  "id": "edgtls_2EmMQDNFUwrhyqRdTmWwUoJNEMN",
   "description": "acme tls edge",
   "metadata": "{\"environment\": \"production\"}",
-  "created_at": "2022-09-14T19:39:30Z",
-  "uri": "https://api.ngrok.com/edges/tls/edgtls_2ElyGapn92NTDHGhxtTIuBuolCy",
+  "created_at": "2022-09-14T22:58:07Z",
+  "uri": "https://api.ngrok.com/edges/tls/edgtls_2EmMQDNFUwrhyqRdTmWwUoJNEMN",
   "hostports": [
     "example.com:443"
   ],
