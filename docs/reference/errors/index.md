@@ -1031,7 +1031,7 @@ Install your authoken: https://dashboard.ngrok.com/get-started/your-authtoken |
 		| [ERR_NGROK_5309](/error_details/5309) | URL "state" parameter is invalid. |
 		| [ERR_NGROK_5310](/error_details/5310) | URL "state" parameter is invalid. |
 		| [ERR_NGROK_5311](/error_details/5311) | The SAML IdP sent an invalid SAML assertion with <code>&lt;N&gt;</code> Authn statements. |
-		| [ERR_NGROK_5312](/error_details/5312) | Your are not a member of the configured authorized groups on the ngrok endpoint configuration. |
+		| [ERR_NGROK_5312](/error_details/5312) | You are not a member of the configured authorized groups on the ngrok edge. |
 		| [ERR_NGROK_5313](/error_details/5313) | The authentication flow was not completed in time. Please try authenticating again. |
 		| [ERR_NGROK_5314](/error_details/5314) | The logout flow was not completed in time. Please try authenticating again. |
 		| [ERR_NGROK_5315](/error_details/5315) | The authentication flow was not completed in time. Please try authenticating again. |

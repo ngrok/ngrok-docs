@@ -2,12 +2,12 @@
 ###### Example Response
 ```
 {
-  "id": "ec_2ElcuPQ9RyJbVCdn1ciee2TAIwE",
+  "id": "ec_2EloOYnLpc12oqLbqpeHxpdX4yn",
   "type": "https",
   "description": "app servers",
   "metadata": "",
-  "created_at": "2022-09-14T16:43:53Z",
-  "uri": "https://api.ngrok.com/endpoint_configurations/ec_2ElcuPQ9RyJbVCdn1ciee2TAIwE",
+  "created_at": "2022-09-14T18:18:20Z",
+  "uri": "https://api.ngrok.com/endpoint_configurations/ec_2EloOYnLpc12oqLbqpeHxpdX4yn",
   "basic_auth": null,
   "circuit_breaker": null,
   "compression": null,
@@ -25,8 +25,8 @@
     "enabled": true,
     "ip_policies": [
       {
-        "id": "ipp_2ElcuTUufnkUxeEEn6lchAOZeGr",
-        "uri": "https://api.ngrok.com/ip_policies/ipp_2ElcuTUufnkUxeEEn6lchAOZeGr"
+        "id": "ipp_2EloOZxO57GLXa4lCQTWEQbDTNF",
+        "uri": "https://api.ngrok.com/ip_policies/ipp_2EloOZxO57GLXa4lCQTWEQbDTNF"
       }
     ]
   },

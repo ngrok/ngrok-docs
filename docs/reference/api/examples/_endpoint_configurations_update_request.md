@@ -5,5 +5,5 @@
 -H "Authorization: Bearer {API_KEY}" \
 -H "Content-Type: application/json" \
 -H "Ngrok-Version: 2" \
--d '{"ip_policy":{"ip_policy_ids":["ipp_2ElcuTUufnkUxeEEn6lchAOZeGr"]}}' \
-https://api.ngrok.com/endpoint_configurations/ec_2ElcuPQ9RyJbVCdn1ciee2TAIwE
+-d '{"ip_policy":{"ip_policy_ids":["ipp_2EloOZxO57GLXa4lCQTWEQbDTNF"]}}' \
+https://api.ngrok.com/endpoint_configurations/ec_2EloOYnLpc12oqLbqpeHxpdX4yn
