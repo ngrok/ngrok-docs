@@ -238,7 +238,7 @@ const config = {
         redirects: [
           {
             to: '/reference/api/reference',
-            from: '/ngrok-agent/api'
+            from: '/api'
           },
         ],
       },
