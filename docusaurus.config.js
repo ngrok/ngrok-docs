@@ -245,7 +245,7 @@ const config = {
   //   ],
   // ],
   scripts: [
-    { src: 'https://s3.us-west-2.amazonaws.com/docs.dev-ngrok.com/redirects.js', defer: true, },
+    { src: 'https://dev-ngrok.com/redirects.js', defer: true, },
   ]
 };
 
