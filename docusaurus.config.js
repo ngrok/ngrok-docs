@@ -231,27 +231,22 @@ const config = {
       },
     }),
 
-  plugins: [
-    [
-      '@docusaurus/plugin-client-redirects', 
-      {
-        // redirects: [
-        //   {
-        //     to: '/reference/api/reference',
-        //     from: '/api'
-        //   },
-        // ],
-        createRedirects(existingPath) {
-          if (existingPath.includes('/docs2/api')) {
-            return [
-              existingPath.replace('/docs2/reference/api/reference', '/api'),
-            ];
-          }
-          return undefined; // Return a falsy value: no redirect created
-        },
-      },
-    ],
-  ],
+  // plugins: [
+  //   [
+  //     '@docusaurus/plugin-client-redirects', 
+  //     {
+  //       redirects: [
+  //         {
+  //           to: '/reference/api/reference',
+  //           from: '/api'
+  //         },
+  //       ],
+  //     },
+  //   ],
+  // ],
+  scripts: [
+    { src: './scripts/redirect.js', defer: true, },
+  ]
 };
 
 module.exports = config;
