@@ -235,12 +235,20 @@ const config = {
     [
       '@docusaurus/plugin-client-redirects', 
       {
-        redirects: [
-          {
-            to: '/reference/api/reference',
-            from: '/api'
-          },
-        ],
+        // redirects: [
+        //   {
+        //     to: '/reference/api/reference',
+        //     from: '/api'
+        //   },
+        // ],
+        createRedirects(existingPath) {
+          if (existingPath.includes('/docs2/api')) {
+            return [
+              existingPath.replace('/docs2/reference/api/reference', '/api'),
+            ];
+          }
+          return undefined; // Return a falsy value: no redirect created
+        },
       },
     ],
   ],
