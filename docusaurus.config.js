@@ -245,7 +245,7 @@ const config = {
   //   ],
   // ],
   scripts: [
-    { src: './scripts/redirect.js', defer: true, },
+    { src: 'https://gist.githubusercontent.com/ceschae/5ddac9737674b1bb1310ddb4d3a7ab25/raw/63b3410139ba089e62d9c1f2d19c19c0cc0b497d/redirects.js', defer: true, },
   ]
 };
 
