@@ -1,6 +1,3 @@
----
-sidebar_position: 7
----
 
 # Using ngrok With
 ----------------
