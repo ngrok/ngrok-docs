@@ -11,24 +11,17 @@ title: Troubleshooting / FAQ
 
 ngrok's HTTP tunnels will work with CORS, but you cannot use ngrok's `--basic-auth` option. ngrok's HTTP tunnels allow you to specify basic authentication credentials to protect your tunnels. However, ngrok enforces this policy on **all** requests, including the preflight `OPTIONS` requests that are required by the CORS spec. In this case, your application must implement its own basic authentication.
 
-
-
 ## Certificate Warnings
 
 There are certain configurations of ngrok which will result in certificate warnings. These usually happen when trying to use custom certificates with an ngrok domain. These can usually be solved by using a custom branded domain.
-
-
 
 ## Does ngrok have an official Status page
 
 Yes, here is the [official ngrok status page](https://status.ngrok.com).
 
-
-
 ## Can I change the port on the ngrok domain?
 
 ngrok does not allow users to change the public ports on any reserved Domain or TCP Address. HTTPS and TLS tunnels will use port 443, and TCP tunnels will use the port assigned to you when the tunnel is created.
-
 
 ## Can I get a static IP address?
 
