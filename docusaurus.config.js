@@ -245,7 +245,7 @@ const config = {
   //   ],
   // ],
   scripts: [
-    { src: 'https://dev-ngrok.com/docs2/redirects.js', defer: true, },
+    { src: 'https://ngrok.com/docs2/static/scripts/redirects.js', defer: true, },
   ]
 };
 
