@@ -10,7 +10,7 @@ const docsRepo = 'https://github.com/ngrok/ngrok-docs'
 const config = {
   title: 'ngrok documentation',
   tagline: 'online in one line',
-  url: 'https://docs.dev-ngrok.com',
+  url: 'https://www.ngrok.com',
   baseUrl: '/docs2/',
   onBrokenLinks: 'warn',
   onBrokenMarkdownLinks: 'warn',
@@ -69,6 +69,10 @@ const config = {
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
+      metadata: [
+        {name: 'keywords', content: 'ngrok, documentation, api, errors, reference, getting started, tutorials'}
+      ],
+      image: 'img/ngrok-docs-opengraph.png',
       navbar: {
         title: '| docs',
         logo: {
