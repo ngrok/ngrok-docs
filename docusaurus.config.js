@@ -70,11 +70,12 @@ const config = {
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
       navbar: {
-        title: 'ngrok docs',
+        title: '| docs',
         logo: {
           alt: 'ngrok',
           src: 'img/ngrok-black.svg',
           srcDark: 'img/ngrok-white.svg',
+          /* make full svg including ngrok logo + docs?*/
         },
         items: [
           // {to: '/', label: 'Docs', position: 'left'},
@@ -97,7 +98,7 @@ const config = {
           },
           {
             type: 'search',
-            position: 'right',
+            position: 'left',
           },
         ],
       },
@@ -107,7 +108,7 @@ const config = {
         indexName: 'dev_ngrok',
       },
       footer: {
-        style: 'dark',
+        style: 'light',
         links: [
           {
             title: 'Learn',
