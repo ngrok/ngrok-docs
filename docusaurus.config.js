@@ -236,19 +236,9 @@ const config = {
       },
     }),
 
-  plugins: [
-    [
-      '@docusaurus/plugin-client-redirects', 
-      {
-        redirects: [
-          {
-            to: '/reference/api/reference',
-            from: '/ngrok-agent/api'
-          },
-        ],
-      },
-    ],
-  ],
+  scripts: [
+    { src: 'https://ngrok.com/docs2/scripts/redirects.js', defer: true, },
+  ]
 };
 
 module.exports = config;
