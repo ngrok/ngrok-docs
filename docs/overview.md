@@ -10,7 +10,7 @@ description: Learn to use ngrok with our guides, examples, integration guides, a
 
 Welcome to the ngrok documentation. ngrok is the fastest way to host your service on the internet and these docs are the fastest way to answer any questions you have about using ngrok.
 
-The documentation is organized into categories designed for different purposes. If you're just learning about ngrok, our [Getting Started Guide](/guides/getting-started) is probably the best place to begin.
+The documentation is organized into categories designed for different purposes. If you're just learning about ngrok, our [Getting Started Guide](/getting-started) is probably the best place to begin.
 
 Are you coming from a previous version of ngrok? Check out our [ngrok v2 to v3 upgrade guide](/guides/upgrade-v2-v3).
 
