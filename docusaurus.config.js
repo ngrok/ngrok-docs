@@ -112,7 +112,7 @@ const config = {
             items: [
               {
                 label: 'Get Started',
-                to: '/guides/getting-started',
+                to: '/getting-started',
               },
               {
                 label: 'Sign up',
