@@ -108,7 +108,7 @@ You can test everything is working by running `ngrok -h` which should print the 
       -h, --help      help for ngrok
       -v, --version   version for ngrok
 
-### Connect your agent to your ngrok account
+### Step 3: Connect your agent to your ngrok account
 
 Now that the ngrok agent is installed, let's connect it to your ngrok Account. If you haven't already, [sign up (or log in)](https://dashboard.ngrok.com) to the ngrok Dashboard and get your [Authtoken](https://dashboard.ngrok.com/get-started/your-authtoken). The ngrok agent uses the authtoken (sometimes called tunnel credential) to log into your account when you start a tunnel.
 
