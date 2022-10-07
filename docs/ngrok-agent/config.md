@@ -8,7 +8,7 @@ title: Agent Configuration File
 
 The `ngrok` supports an optional, YAML configuration file which provides you with the power to run multiple tunnels simultaneously as well as to tweak some of ngrok's more advanced settings.
 
-### Default Locations
+## Default Locations
 
 The default location of the ngrok agent's configuration file varies based on your operating system. The easiest way to find the configuration file location is to run:
 
@@ -22,7 +22,7 @@ For the main operating systems we support, their default file locations are:
 * MacOS (Darwin): `"~/Library/Application Support/ngrok/ngrok.yml"`
 * Windows: `"%HOMEPATH%\AppData\Local\ngrok\ngrok.yml"`
 
-### Global Options
+## Global Options
 
 The following is a list of options that can be configured at the root of your configuration file and specify the behavior of the agent.
 
@@ -216,7 +216,7 @@ This is the network address to bind on for serving the local agent web interface
 | `127.0.0.1:4040` | default | default network address |
 | `false` |     | disable the web UI |
 
-### Tunnel definitions
+## Tunnel definitions
 
 The most common use of the configuration file is to define tunnel configurations. Defining tunnel configurations is useful because you may then start pre-configured tunnels by name from your command line without remembering all of the right arguments every time. You may also use this method to start as many tunnels as you like from a single ngrok agent.
 
@@ -327,7 +327,7 @@ Each tunnel you define is a map of configuration option names to values. The nam
           - team=development
         addr: 22
 
-### How Config Files get Merged
+## How Config Files get Merged
 
 The `--config` flag in the `ngrok` command allows you to specify one or more ngrok configuration files to merge when starting the ngrok agent. The rules for merging are as follows:
 
@@ -335,7 +335,7 @@ The `--config` flag in the `ngrok` command allows you to specify one or more ngr
 * Lists are overwritten using the last value.
 * Maps, including the `tunnels` map, are merged by key and in the case of a duplicate key, the latter value is taken.
 
-### Full Example
+## Full Example
 
 Below is an example configuration file with all the options filled in.
 
