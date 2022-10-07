@@ -65,7 +65,7 @@ const sidebars = {
         },
         'reference/event-sources',
         'reference/event-filtering',
-        'reference/http-header-templates',
+        'http-header-templates',
       ],
     },
     'faq',
