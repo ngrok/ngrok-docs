@@ -1,6 +1,7 @@
 ---
 sidebar_position: 3
 title: Agent CLI
+toc_max_heading_level: 2
 ---
 
 # ngrok Agent Command Line Interface (CLI)
