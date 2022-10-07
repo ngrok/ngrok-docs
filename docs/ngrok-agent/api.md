@@ -1,6 +1,7 @@
 ---
 sidebar_position: 4
 title: Agent API
+toc_max_heading_level: 2
 ---
 
 # ngrok Agent API
