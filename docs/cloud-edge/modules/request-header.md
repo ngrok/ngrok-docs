@@ -1,8 +1,3 @@
----
-sidebar_position: 8
-description: The Request Headers module allows you to add and remove headers from HTTP requests before they are sent to your upstream server..
----
-
 # Request Headers
 ----------------
 

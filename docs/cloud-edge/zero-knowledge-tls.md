@@ -1,6 +1,5 @@
 ---
 sidebar_position: 3
-description: Zero-Knowledge TLS or Zero-Knowledge Encryption is end-to-end encryption that ensures no one (not even ngrok) can see the data you are transferring.
 ---
 
 # Zero-Knowledge TLS

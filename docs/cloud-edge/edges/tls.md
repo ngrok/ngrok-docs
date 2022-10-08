@@ -1,6 +1,5 @@
 ---
 sidebar_position: 3
-description: A TLS edge terminate all TLS (SSL) traffic at the ngrok.com servers using ngrok.com certificates. For production-grade services, you'll want your tunneled traffic to be encrypted with your own TLS key and certificate.
 ---
 
 #  TLS Edge
