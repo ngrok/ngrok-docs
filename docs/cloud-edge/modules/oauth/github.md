@@ -17,11 +17,7 @@
     *   If a constraint is specified, the `read:org` scope is required. A more permissive scope, such as `org`, also works.
     *   Organizations must allow [third-party access](#oauth-providers-github-org-and-team) to your app.
 
-[
-
 ## Additional GitHub headers provided by ngrok
-
-](#oauth-providers-github-headers)
 
 In addition to the headers set for every OAuth provider, these additional headers are available when using Github.
 
@@ -37,11 +33,7 @@ The username of the authorized user.
 
 **Only when a team constraint matches:** the [first matching](#oauth-providers-github-header-ordering) GitHub team mention handle (e.g "coreutils/contributors").
 
-[
-
 ## Using Organization and Teams
-
-](#oauth-providers-github-org-and-team)
 
 To authorize users based on organization or team membership, the organization must allow third party access. There are multiple ways to grant access:
 
@@ -52,11 +44,7 @@ To authorize users based on organization or team membership, the organization mu
 
 The ngrok managed application can authorize users based on organization or team. **For organizations concerned about membership privacy, your own application should always be used**. When granting third-party access to the managed application, anyone using the managed application may constrain based on your organization's membership.
 
-[
-
 ## Header presence and constraint ordering
-
-](#oauth-providers-github-header-ordering)
 
 Organization and team headers are present only when an organization or team constraint matches. For example, an endpoint constrained solely on the `ngrok` organization will always have authorized users with the `ngrok` organization header. An endpoint without any organization or team constraints will receive no organization or team header.
 

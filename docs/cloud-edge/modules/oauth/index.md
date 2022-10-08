@@ -1,8 +1,3 @@
----
-sidebar_position: 6
-description: The OAuth module enforces an OAuth authentication flow in front of any route it is enabled on. Any HTTP client accessing an OAuth-protected route will be redirected to a chosen identity provider (currently Google, Microsoft, Github or Facebook) for authentication.
----
-
 # OAuth
 ----------------
 
@@ -15,6 +10,7 @@ ngrok currently supports the following OAuth providers:
 *   [Facebook](#oauth-providers-facebook)
 *   [Github](#oauth-providers-github)
 *   [Google](#oauth-providers-google)
+*   LinkedIn
 *   [Microsoft](#oauth-providers-microsoft)
 
 ## OAuth Headers Provided by ngrok
