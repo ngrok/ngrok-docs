@@ -1,12 +1,13 @@
 ---
 sidebar_position: 2
-description: When you create an edge, you will automatically be assigned a reserved domain or TCP address depending on the type of edge you create. You can customize this endpoint by adding your own reserved or custom branded domain. An edge can have many endpoints, and each will use the same configuration.
 ---
 
 # Endpoints
 ----------------
 
 When you create an edge, you will automatically be assigned a reserved domain or TCP address depending on the type of edge you create. You can customize this endpoint by adding your own reserved or custom branded domain. An edge can have many endpoints, and each will use the same configuration.
+
+## Domains
 
 ### Reserved Domains
 
@@ -24,7 +25,7 @@ ngrok permits you to bind HTTP and TLS tunnels to wildcard domains. All wildcard
 
     ngrok http --region=us --hostname *.example.com 80
 
-### Wildcard Domain Rules
+#### Wildcard Domain Rules
 
 The use of wildcard domains creates ambiguities in some aspects of the ngrok.com service. The following rules are used to resolve these situations and are important to understand if you are using wildcard domains.
 
@@ -34,6 +35,8 @@ For the purposes of example, assume you have reserved the address `*.example.com
 *   You may bind tunnels on any valid subdomain of `example.com` without creating an additional reserved domain entry.
 *   No other account may reserve `foo.example.com` or any other subdomain that would match a wildcard domain reserved by another account.
 *   Connections are routed to the most specific matching tunnel online. If you are running tunnels for both `foo.example.com` and `*.example.com`, requests to `foo.example.com` will always route to `foo.example.com`
+
+## Certificates
 
 ### Automated TLS Certificates
 
@@ -81,7 +84,7 @@ All of the above (PKCS#1, PKCS#8, and SEC 1) are represented with ASN.1 DER (a b
 
 **ngrok will not accept any private keys that are encrypted (e.g. with DES).**.
 
-### TCP Addresses
+## TCP Addresses
 
 Normally, the remote TCP address and port are assigned randomly each time you start a TCP tunnel. For production services (and convenience) you often want a stable, guaranteed remote address. To do this, first, log in to your ngrok Dashboard and click "Reserve Address" in the "Reserved TCP Addresses" section. You cannot customize the address or port that is assigned to you. It is always assigned randomly. Then use the `--remote-addr` option when invoking ngrok to bind a tunnel on your reserved TCP address. Make sure the `--region` you specify matches the region in which you reserved your address.
 

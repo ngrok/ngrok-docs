@@ -1,6 +1,5 @@
 ---
 sidebar_position: 2
-description: A TCP edge can be used to share any non-HTTP protocols with the world. It's a generic edge that you can use to send SSH, VNC, RDP, SQL, or any other networked protocol.
 ---
 
 # TCP Edge
