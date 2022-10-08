@@ -1,6 +1,5 @@
 ---
 sidebar_position: 4
-description: Edges allow you to configure endpoints that connect your services to the world. Define edges to serve HTTPS, TCP, or TLS traffic and use modules to secure and manipulate network traffic.
 ---
 
 # Edges
@@ -12,12 +11,23 @@ Edges allow you to configure endpoints that connect your services to the world. 
 
 There are three types of edges you can create that all serve different purposes.
 
-```mdx-code-block
-import DocCardList from '@theme/DocCardList';
-import {useCurrentSidebarCategory} from '@docusaurus/theme-common';
+### [HTTPS Edge](https-edge)
 
-<DocCardList items={useCurrentSidebarCategory().items}/>
-```
+An HTTPS edge is perfect for sharing a local web server or service to the world. It is a great choice for any service you might access through a browser and provides modules to manipulate HTTPS traffic without requiring changes to your code.
+
+[Learn More >](https-edge)
+
+### [TCP Edge](tcp-edge)
+
+A TCP edge can be used to share any non-HTTP protocols with the world. It's a generic edge that you can use to communicate with Industrial IoT systems, devices, and servers with SSH, VNC, RDP, SQL, or any other networked protocol.
+
+[Learn More >](tcp-edge)
+
+### [TLS Edge](tls-edge)
+
+A TLS edge terminate all TLS (SSL) traffic at the ngrok.com servers using ngrok.com certificates. For production-grade services, you'll want your tunneled traffic to be encrypted with your own TLS key and certificate.
+
+[Learn More >](tls-edge)
 
 ## Creating an Edge
 

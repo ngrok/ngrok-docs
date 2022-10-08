@@ -1,9 +1,3 @@
----
-sidebar_position: 3
-description: Circuit breakers are used to protect upstream servers by rejecting traffic to them when they become overwhelmed, allowing them time to recover back into a steady operational state. When the upstream server starts to fail requests at too high of a rate, the circuit is "opened".
-
----
-
 # Circuit Breaker
 ----------------
 
