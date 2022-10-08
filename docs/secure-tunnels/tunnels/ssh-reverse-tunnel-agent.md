@@ -1,6 +1,6 @@
 ---
 sidebar_position: 4
-title: SSH Reverse Tunnels
+title: SSH Reverse Tunnel
 ---
 
 # SSH Reverse Tunnel Agent
@@ -12,7 +12,7 @@ The SSH gateway functionality should not be confused with exposing an SSH server
 
 The main features you miss out on when using the SSH Reverse Tunnel Agent instead of the ngrok agent is the ability to run multiple tunnels at the same time and the resiliency features for automatically reconnecting in case of network outages. At this point in time, the reverse tunnel agent does not support the latest capabilities found in the ngrok agent, although we plan to support that in the future.
 
-### Uploading a Public Key
+## Uploading a Public Key {#uploading-a-public-key}
 
 Before you can start a tunnel via the SSH gateway, you'll need to upload your SSH public key. To upload your SSH public key, open the file `~/.ssh/id_rsa.pub` and copy its contents. Then go to [the Auth tab on your dashboard](https://dashboard.ngrok.com/tunnels/ssh-keys) and paste the contents into the SSH Key input and optionally enter a human description (like the name of your machine). You should now be able to start SSH tunnels!
 
@@ -23,6 +23,8 @@ Before you can start a tunnel via the SSH gateway, you'll need to upload your SS
 ###### Add your SSH key by pasting it into the ngrok dashboard.
 
 ![](/img/docs/add-ssh-key.png)
+
+## Examples {#examples}
 
 ngrok tries to honor the syntax of `ssh -R` for all of the tunnel commands in its SSH gateway. You may wish to consult `man ssh`, and the section devoted to the `-R` option for additional details. ngrok uses additional command line options to implement features that are not otherwise available via the `-R` syntax.
 

@@ -1,5 +1,5 @@
 ---
-sidebar_position: 06
+sidebar_position: 2
 ---
 
 # TLS Tunnels
@@ -17,7 +17,7 @@ Once your tunnel is running, try accessing it with curl.
 
     curl --insecure https://encrypted.ngrok.io
 
-## TLS Tunnels without certificate warnings
+## TLS Tunnels without certificate warnings {#tls-cert-warnings}
 
 Notice that `--insecure` option in the previous `curl` command example? You need to specify that because your local HTTPS server doesn't have the TLS key and certificate necessary to terminate traffic for any `ngrok.io` subdomains. If you try to load up that page in a web browser, you'll notice that it tells you the page could be insecure because the certificate does not match.
 
@@ -29,7 +29,7 @@ Once you have your key and certificate and have installed them properly, it's no
 
     ngrok tls --region=us --hostname=secure.example.com 443
 
-## Terminating TLS connections
+## Terminating TLS connections {#tls-termination}
 
 It's possible that the service you're trying to expose may not have the capability to terminate TLS connections. The ngrok agent can do this for you so that you can encrypt your traffic end-to-end but not have to worry about whether the local service has TLS support. Specify both the `-crt` and `-key` command line options to specify the filesystem paths to your TLS certificate and key and the ngrok agent will take care of terminating TLS connections for you.
 
@@ -37,11 +37,11 @@ It's possible that the service you're trying to expose may not have the capabili
 
     ngrok tls --region=us --hostname secure.example.com --key /path/to/tls.key --crt /path/to/tls.crt 80
 
-## Running non-HTTP services over TLS tunnels
+## Running non-HTTP services over TLS tunnels {#tls-agnostic}
 
 ngrok TLS tunnels make **no assumptions about the underlying protocol** being transported. All examples in this documentation use HTTPS because it is the most common use case, but you can run run any TLS-wrapped protocol over a TLS tunnel (e.g. IMAPS, SMTPS, SIPS, SRTP, etc) without any changes.
 
-## Compatible Clients
+## Compatible Clients {#tls-compatibility}
 
 TLS tunnels work by inspecting the data present in the Server Name Information (SNI) extension on incoming TLS connections. Not all clients that initiate TLS connections support setting the SNI extension data. These clients will not work properly with ngrok's TLS tunnels. Fortunately, nearly all modern browsers use SNI. Some modern software libraries do not though. The following list of clients do not support SNI and will not work with TLS tunnels:
 
@@ -53,7 +53,7 @@ TLS tunnels work by inspecting the data present in the Server Name Information (
 
 A more complete list can be found on [the Server Name Indication page on Wikipedia](https://en.wikipedia.org/wiki/Server_Name_Indication#No_support)
 
-## TLS Tunnel Examples
+## TLS Tunnel Examples {#examples}
 
     # forward TLS traffic for www.example.com to port 443 (requires CNAME)
     ngrok tls --hostname=www.example.com 443
@@ -64,6 +64,6 @@ A more complete list can be found on [the Server Name Indication page on Wikiped
     # terminate TLS traffic for t.co before forwarding
     ngrok tls --hostname=t.co --crt=/path/to/t.co.crt --key=/path/to/t.co.key 443
 
-## TLS Tunnel Configuration Options
+## TLS Tunnel Configuration Options {#configuration-options}
 
 Check out the [ngrok agent TLS tunnel documentation](/docs/ngrok-agent/ngrok#command-ngrok-tls) for all the configuration options for TLS tunnels.

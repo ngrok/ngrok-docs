@@ -12,6 +12,8 @@ When running as a service, the ngrok agent configures itself from its configurat
 
 Note: Installing ngrok as a service requires admin or sudo permissions in most cases.
 
+## Supported Systems
+
 ### Windows
 
 On Windows, the ngrok agent installs itself as a Windows service. It can be managed via Windows Services and it logs all errors and warnings to the Windows event log.
