@@ -81,7 +81,7 @@ To register a webhook on your Frame.io account follow the instructions below:
 1. On the **Webhooks** page, click **Create a Webhook**.
 
 1. On the **Create a new webhook** page, enter a name in the **NAME** field, and in the **URL** field enter the URL provided by the ngrok agent to expose your application to the internet (i.e. `https://1a2b-3c4d-5e6f-7g8h-9i0j.sa.ngrok.io`).
-    ![URL to Publish](img/ngrok_url_configuration_frameio.png)
+    ![Frameio URL to Publish](img/ngrok_url_configuration_frameio.png)
 
 1. Select your team for the **TEAM** field, click the **created** checkbox for **Projects** under the **EVENTS** section, and then click **Submit**.
 
@@ -159,5 +159,3 @@ This is a quick step to add extra protection to your application.
 1. Access [Frame.io](https://frame.io/) and create a new project.
 
 Verify that your local application receives the request and logs information to the terminal.
-
-
