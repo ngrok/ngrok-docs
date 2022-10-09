@@ -69,31 +69,65 @@ const config = {
           alt: 'ngrok',
           src: 'img/ngrok-black.svg',
           srcDark: 'img/ngrok-white.svg',
-          /* make full svg including ngrok logo + docs?*/
         },
         items: [
-          // {to: '/', label: 'Docs', position: 'left'},
-          // {to: '/docs/api/', label: 'API', position: 'left'},
+          // TODO: fix algolia
           // {
-          //   type: 'localeDropdown',
-          //   position: 'right',
-          // },
-          // {
-          //   type: 'doc',
-          //   docId: 'intro',
+          //   type: 'search',
           //   position: 'left',
-          //   label: 'Index',
           // },
-          // {to: '/blog', label: 'Blog', position: 'left'},
           {
-            href: docsRepo,
-            label: 'GitHub',
+            label: 'go to ngrok.com',
+            to: 'https://ngrok.com',
             position: 'right',
           },
+          // TODO: Alternative for ngrok.com
+          // {
+          //   type: 'dropdown',
+          //   label: 'ngrok.com',
+          //   to: 'https://ngrok.com',
+          //   position: 'right',
+          //   items: [
+          //     {
+          //       label: 'Product',
+          //       to: 'https://ngrok.com/product',
+          //     },
+          //     {
+          //       label: 'Pricing',
+          //       to: 'https://ngrok.com/pricing',
+          //     },
+          //     {
+          //       label: 'Solutions',
+          //       to: 'https://ngrok.com/solutions',
+          //     },
+          //     {
+          //       label: 'Customers',
+          //       to: 'https://ngrok.com/customers',
+          //     },
+          //     {
+          //       label: 'Download',
+          //       to: 'https://ngrok.com/download',
+          //     },
+          //   ],
+          // },
           {
-            type: 'search',
-            position: 'left',
+            label: 'Login',
+            to: 'https://ngrok.com/signup',
+            position: 'right',
+            className: 'dev-portal-signup dev-portal-link',
           },
+          {
+            label: 'Sign Up',
+            to: 'https://ngrok.com/signup',
+            position: 'right',
+            className: 'dev-portal-signup dev-portal-link',
+          },
+          // TODO: Hiding for now
+          // {
+          //   href: docsRepo,
+          //   className: 'pseudo-icon github-icon',
+          //   position: 'right',
+          // },
         ],
       },
       algolia: {
@@ -108,7 +142,7 @@ const config = {
         style: 'light',
         links: [
           {
-            title: 'Learn',
+            title: 'ngrok Service',
             items: [
               {
                 label: 'Get Started',
@@ -126,10 +160,18 @@ const config = {
                 label: 'Download',
                 to: 'https://ngrok.com/download',
               },
+              {
+                label: 'Docs',
+                to: 'https://ngrok.com/docs',
+              },
+              {
+                label: 'Status',
+                to: 'https://status.ngrok.com',
+              },
             ],
           },
           {
-            title: 'Service',
+            title: 'ngrok.com',
             items: [
               {
                 label: 'Product',
@@ -140,33 +182,20 @@ const config = {
                 to: 'https://ngrok.com/pricing',
               },
               {
-                label: 'Docs',
-                to: 'https://ngrok.com/docs',
+                label: 'Customers',
+                to: 'https://ngrok.com/customers',
+              },
+              {
+                label: 'Solutions',
+                to: 'https://ngrok.com/solutions',
+              },
+              {
+                label: 'Partners',
+                to: 'https://ngrok.com/partners',
               },
               {
                 label: 'Trust Portal',
                 to: 'https://trust.ngrok.com',
-              },
-              {
-                label: 'Service Status',
-                to: 'https://status.ngrok.com',
-              },
-            ],
-          },
-          {
-            title: 'Community',
-            items: [
-              {
-                label: 'Slack',
-                href: 'https://ngrok.com/slack',
-              },
-              {
-                label: 'Stack Overflow',
-                href: 'https://stackoverflow.com/questions/tagged/ngrok',
-              },
-              {
-                label: 'File Doc Issues',
-                href: `${docsRepo}/issues`,
               },
             ],
           },
@@ -207,21 +236,25 @@ const config = {
                 to: 'https://blog.ngrok.com',
               },
               {
+                label: 'Community',
+                to: 'https://ngrok.com/slack',
+              },
+              {
                 label: 'Twitter',
-                href: 'https://twitter.com/ngrokHQ',
+                to: 'https://twitter.com/ngrokHQ',
               },
               {
                 label: 'LinkedIn',
-                href: 'https://www.linkedin.com/company/ngrok',
+                to: 'https://www.linkedin.com/company/ngrok',
               },
               {
                 label: 'GitHub',
-                href: 'https://github.com/ngrok',
+                to: 'https://github.com/ngrok',
               },
             ],
           },
         ],
-        copyright: `Copyright © ${new Date().getFullYear()} ngrok. <a href="https://blog.ngrok.com/why-we-use-docusaurus">Built with Docusaurus</a> ❤️.`,
+        copyright: `© ngrok ${new Date().getFullYear()}`,
       },
       prism: {
         theme: lightCodeTheme,
