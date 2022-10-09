@@ -80,35 +80,6 @@ const config = {
             to: 'https://ngrok.com',
             position: 'right',
           },
-          // TODO: Alternative for ngrok.com
-          // {
-          //   type: 'dropdown',
-          //   label: 'ngrok.com',
-          //   to: 'https://ngrok.com',
-          //   position: 'right',
-          //   items: [
-          //     {
-          //       label: 'Product',
-          //       to: 'https://ngrok.com/product',
-          //     },
-          //     {
-          //       label: 'Pricing',
-          //       to: 'https://ngrok.com/pricing',
-          //     },
-          //     {
-          //       label: 'Solutions',
-          //       to: 'https://ngrok.com/solutions',
-          //     },
-          //     {
-          //       label: 'Customers',
-          //       to: 'https://ngrok.com/customers',
-          //     },
-          //     {
-          //       label: 'Download',
-          //       to: 'https://ngrok.com/download',
-          //     },
-          //   ],
-          // },
           {
             label: 'Login',
             to: 'https://ngrok.com/signup',
@@ -121,18 +92,12 @@ const config = {
             position: 'right',
             className: 'dev-portal-signup dev-portal-link',
           },
-          // TODO: Hiding for now
-          // {
-          //   href: docsRepo,
-          //   className: 'pseudo-icon github-icon',
-          //   position: 'right',
-          // },
         ],
       },
       algolia: {
-       appId: 'SPPRT3GDNI',
-       apiKey: 'e02fb8e0c4d8c7968396981d7ecb9fa8',
-       indexName: 'dev_ngrok',
+        appId: 'SPPRT3GDNI',
+        apiKey: 'e02fb8e0c4d8c7968396981d7ecb9fa8',
+        indexName: 'dev_ngrok',
       },
       hubspot: {
         accountId: 21124867,
