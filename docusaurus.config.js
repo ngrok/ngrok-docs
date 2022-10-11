@@ -29,6 +29,10 @@ const config = {
   //   locales: ['en', 'pt-br'],
   // },
 
+  plugins: [
+    'docusaurus-plugin-hubspot',
+  ],
+
   presets: [
     [
       'classic',
@@ -45,25 +49,11 @@ const config = {
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
         },
+        googleAnalytics: {
+          trackingID: 'UA-41575845-1',
+        },
       }),
     ],
-    // [
-    //   'redocusaurus',
-    //   {
-    //     // Plugin Options for loading OpenAPI files
-    //     specs: [
-    //       {
-    //         spec: 'openapi/ngrok_openapi.yml',
-    //         route: '/docs/api/',
-    //       },
-    //     ],
-    //     // Theme Options for modifying how redoc renders them
-    //     theme: {
-    //       // Change with your site colors
-    //       primaryColor: '#1890ff',
-    //     },
-    //   },
-    // ],
   ],
 
   themeConfig:
@@ -110,6 +100,9 @@ const config = {
         appId: 'SPPRT3GDNI',
         apiKey: 'e02fb8e0c4d8c7968396981d7ecb9fa8',
         indexName: 'dev_ngrok',
+      },
+      hubspot: {
+        accountId: 21124867,
       },
       footer: {
         style: 'light',
