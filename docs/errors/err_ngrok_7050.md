@@ -4,7 +4,7 @@ displayed_sidebar: docs
 custom_edit_url: null
 ---
 
-import ErrorDetails from '/docs/errors/details/ErrorDetails';
+import ErrorDetails from '/src/components/ErrorDetails';
 
 # ERR_NGROK_7050
 
