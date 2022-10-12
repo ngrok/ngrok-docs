@@ -8,7 +8,7 @@
     <tbody>
       <tr>
         <td>
-          <a id="ERR_NGROK_100" href="errors/err_ngrok_100">ERR_NGROK_100</a>
+          <a id="ERR_NGROK_100" href="err_ngrok_100">ERR_NGROK_100</a>
         </td>
         <td class="pre-wrapped">
           Invalid metadata length: <code>&lt;VAL&gt;</code> bytes. Max:
@@ -17,7 +17,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_102" href="errors/err_ngrok_102">ERR_NGROK_102</a>
+          <a id="ERR_NGROK_102" href="err_ngrok_102">ERR_NGROK_102</a>
         </td>
         <td class="pre-wrapped">
           The last payment for the <code>&lt;ACCOUNT&gt;</code> account failed.
@@ -27,7 +27,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_103" href="errors/err_ngrok_103">ERR_NGROK_103</a>
+          <a id="ERR_NGROK_103" href="err_ngrok_103">ERR_NGROK_103</a>
         </td>
         <td class="pre-wrapped">
           The account <code>&lt;ACCOUNT&gt;</code> has been suspended. This is
@@ -37,7 +37,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_105" href="errors/err_ngrok_105">ERR_NGROK_105</a>
+          <a id="ERR_NGROK_105" href="err_ngrok_105">ERR_NGROK_105</a>
         </td>
         <td class="pre-wrapped">
           The authtoken you specified does not look like a proper ngrok tunnel
@@ -48,7 +48,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_106" href="errors/err_ngrok_106">ERR_NGROK_106</a>
+          <a id="ERR_NGROK_106" href="err_ngrok_106">ERR_NGROK_106</a>
         </td>
         <td class="pre-wrapped">
           The authtoken you specified is an ngrok v1 authtoken, but you're using
@@ -59,7 +59,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_107" href="errors/err_ngrok_107">ERR_NGROK_107</a>
+          <a id="ERR_NGROK_107" href="err_ngrok_107">ERR_NGROK_107</a>
         </td>
         <td class="pre-wrapped">
           The authtoken you specified is properly formed, but it is invalid. Your
@@ -73,7 +73,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_108" href="errors/err_ngrok_108">ERR_NGROK_108</a>
+          <a id="ERR_NGROK_108" href="err_ngrok_108">ERR_NGROK_108</a>
         </td>
         <td class="pre-wrapped">
           Your account is limited to <code>&lt;MAX&gt;</code> simultaneous ngrok
@@ -82,7 +82,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_109" href="errors/err_ngrok_109">ERR_NGROK_109</a>
+          <a id="ERR_NGROK_109" href="err_ngrok_109">ERR_NGROK_109</a>
         </td>
         <td class="pre-wrapped">
           The authentication payload you specified is not valid. This usually
@@ -92,7 +92,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_110" href="errors/err_ngrok_110">ERR_NGROK_110</a>
+          <a id="ERR_NGROK_110" href="err_ngrok_110">ERR_NGROK_110</a>
         </td>
         <td class="pre-wrapped">
           The session cookie you specified is not valid. This usually indiciates a
@@ -101,7 +101,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_111" href="errors/err_ngrok_111">ERR_NGROK_111</a>
+          <a id="ERR_NGROK_111" href="err_ngrok_111">ERR_NGROK_111</a>
         </td>
         <td class="pre-wrapped">
           The heartbeat interval you specified is not valid. It must be at least
@@ -110,7 +110,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_112" href="errors/err_ngrok_112">ERR_NGROK_112</a>
+          <a id="ERR_NGROK_112" href="err_ngrok_112">ERR_NGROK_112</a>
         </td>
         <td class="pre-wrapped">
           The heartbeat tolerance you specified is not valid. It must be at least
@@ -119,7 +119,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_115" href="errors/err_ngrok_115">ERR_NGROK_115</a>
+          <a id="ERR_NGROK_115" href="err_ngrok_115">ERR_NGROK_115</a>
         </td>
         <td class="pre-wrapped">
           Your IP <code>&lt;IP&gt;</code> does not match the IP Policies specified
@@ -130,7 +130,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_116" href="errors/err_ngrok_116">ERR_NGROK_116</a>
+          <a id="ERR_NGROK_116" href="err_ngrok_116">ERR_NGROK_116</a>
         </td>
         <td class="pre-wrapped">
           Your IP <code>&lt;IP&gt;</code> does not match the IP ACL policy
@@ -140,7 +140,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_118" href="errors/err_ngrok_118">ERR_NGROK_118</a>
+          <a id="ERR_NGROK_118" href="err_ngrok_118">ERR_NGROK_118</a>
         </td>
         <td class="pre-wrapped">
           Only Enterprise accounts can use the enterprise tunnel ingress feature.
@@ -151,7 +151,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_119" href="errors/err_ngrok_119">ERR_NGROK_119</a>
+          <a id="ERR_NGROK_119" href="err_ngrok_119">ERR_NGROK_119</a>
         </td>
         <td class="pre-wrapped">
           The agent specified an invalid semantic version string:
@@ -160,7 +160,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_120" href="errors/err_ngrok_120">ERR_NGROK_120</a>
+          <a id="ERR_NGROK_120" href="err_ngrok_120">ERR_NGROK_120</a>
         </td>
         <td class="pre-wrapped">
           Your ngrok agent version "<code>&lt;VERSION&gt;</code>" is no longer
@@ -172,7 +172,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_121" href="errors/err_ngrok_121">ERR_NGROK_121</a>
+          <a id="ERR_NGROK_121" href="err_ngrok_121">ERR_NGROK_121</a>
         </td>
         <td class="pre-wrapped">
           Your ngrok agent version "<code>&lt;VERSION&gt;</code>" is too old. The
@@ -183,7 +183,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_122" href="errors/err_ngrok_122">ERR_NGROK_122</a>
+          <a id="ERR_NGROK_122" href="err_ngrok_122">ERR_NGROK_122</a>
         </td>
         <td class="pre-wrapped">
           Your account is not permitted to use the agent ingress
@@ -192,7 +192,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_123" href="errors/err_ngrok_123">ERR_NGROK_123</a>
+          <a id="ERR_NGROK_123" href="err_ngrok_123">ERR_NGROK_123</a>
         </td>
         <td class="pre-wrapped">
           The account "<code>&lt;NAME&gt;</code>" may not start an ngrok agent
@@ -202,7 +202,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_200" href="errors/err_ngrok_200">ERR_NGROK_200</a>
+          <a id="ERR_NGROK_200" href="err_ngrok_200">ERR_NGROK_200</a>
         </td>
         <td class="pre-wrapped">
           The ngrok API requires that you set the Authorization header for
@@ -212,7 +212,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_201" href="errors/err_ngrok_201">ERR_NGROK_201</a>
+          <a id="ERR_NGROK_201" href="err_ngrok_201">ERR_NGROK_201</a>
         </td>
         <td class="pre-wrapped">
           The ngrok API requires that you use Basic or Bearer authentication via
@@ -224,7 +224,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_202" href="errors/err_ngrok_202">ERR_NGROK_202</a>
+          <a id="ERR_NGROK_202" href="err_ngrok_202">ERR_NGROK_202</a>
         </td>
         <td class="pre-wrapped">
           The API authentication you specified does not look like a valid
@@ -235,7 +235,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_203" href="errors/err_ngrok_203">ERR_NGROK_203</a>
+          <a id="ERR_NGROK_203" href="err_ngrok_203">ERR_NGROK_203</a>
         </td>
         <td class="pre-wrapped">
           The API authentication you specified is properly formed, but it is
@@ -246,7 +246,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_204" href="errors/err_ngrok_204">ERR_NGROK_204</a>
+          <a id="ERR_NGROK_204" href="err_ngrok_204">ERR_NGROK_204</a>
         </td>
         <td class="pre-wrapped">
           Only the Pro and Enterprise accounts can use the ngrok API. This is a
@@ -257,7 +257,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_205" href="errors/err_ngrok_205">ERR_NGROK_205</a>
+          <a id="ERR_NGROK_205" href="err_ngrok_205">ERR_NGROK_205</a>
         </td>
         <td class="pre-wrapped">
           The account <code>&lt;ACCOUNT&gt;</code> has been suspended. This is
@@ -267,7 +267,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_206" href="errors/err_ngrok_206">ERR_NGROK_206</a>
+          <a id="ERR_NGROK_206" href="err_ngrok_206">ERR_NGROK_206</a>
         </td>
         <td class="pre-wrapped">
           The authentication you specified is actually a tunnel credential. Your
@@ -278,7 +278,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_207" href="errors/err_ngrok_207">ERR_NGROK_207</a>
+          <a id="ERR_NGROK_207" href="err_ngrok_207">ERR_NGROK_207</a>
         </td>
         <td class="pre-wrapped">
           The authentication you specified is actually a tunnel credential, not an
@@ -290,7 +290,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_208" href="errors/err_ngrok_208">ERR_NGROK_208</a>
+          <a id="ERR_NGROK_208" href="err_ngrok_208">ERR_NGROK_208</a>
         </td>
         <td class="pre-wrapped">
           The authentication you specified is actually an API key ID, not an API
@@ -302,7 +302,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_210" href="errors/err_ngrok_210">ERR_NGROK_210</a>
+          <a id="ERR_NGROK_210" href="err_ngrok_210">ERR_NGROK_210</a>
         </td>
         <td class="pre-wrapped">
           The content type you specified <code>&lt;CTYPE&gt;</code> is not
@@ -313,7 +313,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_211" href="errors/err_ngrok_211">ERR_NGROK_211</a>
+          <a id="ERR_NGROK_211" href="err_ngrok_211">ERR_NGROK_211</a>
         </td>
         <td class="pre-wrapped">
           The <code>&lt;METHOD&gt;</code> request you made does not expect a body,
@@ -324,7 +324,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_212" href="errors/err_ngrok_212">ERR_NGROK_212</a>
+          <a id="ERR_NGROK_212" href="err_ngrok_212">ERR_NGROK_212</a>
         </td>
         <td class="pre-wrapped">
           The server was unable to read the complete request body. Please check
@@ -334,7 +334,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_213" href="errors/err_ngrok_213">ERR_NGROK_213</a>
+          <a id="ERR_NGROK_213" href="err_ngrok_213">ERR_NGROK_213</a>
         </td>
         <td class="pre-wrapped">
           The <code>&lt;CTYPE&gt;</code> request body could not be parsed. Please
@@ -344,7 +344,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_214" href="errors/err_ngrok_214">ERR_NGROK_214</a>
+          <a id="ERR_NGROK_214" href="err_ngrok_214">ERR_NGROK_214</a>
         </td>
         <td class="pre-wrapped">
           The request parameter <code>&lt;NAME&gt;</code> is unknown and not
@@ -355,7 +355,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_215" href="errors/err_ngrok_215">ERR_NGROK_215</a>
+          <a id="ERR_NGROK_215" href="err_ngrok_215">ERR_NGROK_215</a>
         </td>
         <td class="pre-wrapped">
           The value provided for the request parameter
@@ -366,7 +366,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_216" href="errors/err_ngrok_216">ERR_NGROK_216</a>
+          <a id="ERR_NGROK_216" href="err_ngrok_216">ERR_NGROK_216</a>
         </td>
         <td class="pre-wrapped">
           You did not provide a Content-Type with your request. Please check your
@@ -376,7 +376,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_217" href="errors/err_ngrok_217">ERR_NGROK_217</a>
+          <a id="ERR_NGROK_217" href="err_ngrok_217">ERR_NGROK_217</a>
         </td>
         <td class="pre-wrapped">
           The provided API version <code>&lt;VERSION&gt;</code> is invalid or
@@ -386,7 +386,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_218" href="errors/err_ngrok_218">ERR_NGROK_218</a>
+          <a id="ERR_NGROK_218" href="err_ngrok_218">ERR_NGROK_218</a>
         </td>
         <td class="pre-wrapped">
           Your request has not specified an API version. Please include the
@@ -396,7 +396,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_219" href="errors/err_ngrok_219">ERR_NGROK_219</a>
+          <a id="ERR_NGROK_219" href="err_ngrok_219">ERR_NGROK_219</a>
         </td>
         <td class="pre-wrapped">
           <code>&lt;TLSVERSION&gt;</code> is not a supported TLS version.
@@ -405,7 +405,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_220" href="errors/err_ngrok_220">ERR_NGROK_220</a>
+          <a id="ERR_NGROK_220" href="err_ngrok_220">ERR_NGROK_220</a>
         </td>
         <td class="pre-wrapped">
           Your IP does not match the IP Policy for this Account. Please
@@ -416,7 +416,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_221" href="errors/err_ngrok_221">ERR_NGROK_221</a>
+          <a id="ERR_NGROK_221" href="err_ngrok_221">ERR_NGROK_221</a>
         </td>
         <td class="pre-wrapped">
           This is a valid API token, but the account
@@ -426,7 +426,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_223" href="errors/err_ngrok_223">ERR_NGROK_223</a>
+          <a id="ERR_NGROK_223" href="err_ngrok_223">ERR_NGROK_223</a>
         </td>
         <td class="pre-wrapped">
           <code>&lt;ID&gt;</code> is not a valid resource reference identifier.
@@ -434,7 +434,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_224" href="errors/err_ngrok_224">ERR_NGROK_224</a>
+          <a id="ERR_NGROK_224" href="err_ngrok_224">ERR_NGROK_224</a>
         </td>
         <td class="pre-wrapped">
           The value <code>&lt;VAL&gt;</code> is not valid for the terminate_at
@@ -444,7 +444,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_225" href="errors/err_ngrok_225">ERR_NGROK_225</a>
+          <a id="ERR_NGROK_225" href="err_ngrok_225">ERR_NGROK_225</a>
         </td>
         <td class="pre-wrapped">
           Your account is limited to <code>&lt;MAX&gt;</code> simultaneous API
@@ -453,7 +453,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_226" href="errors/err_ngrok_226">ERR_NGROK_226</a>
+          <a id="ERR_NGROK_226" href="err_ngrok_226">ERR_NGROK_226</a>
         </td>
         <td class="pre-wrapped">
           Your account is rate limited to <code>&lt;MAX&gt;</code> API requests
@@ -462,7 +462,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_227" href="errors/err_ngrok_227">ERR_NGROK_227</a>
+          <a id="ERR_NGROK_227" href="err_ngrok_227">ERR_NGROK_227</a>
         </td>
         <td class="pre-wrapped">
           The ID <code>&lt;VAL&gt;</code> is invalid. Expected an ID with a prefix
@@ -471,7 +471,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_228" href="errors/err_ngrok_228">ERR_NGROK_228</a>
+          <a id="ERR_NGROK_228" href="err_ngrok_228">ERR_NGROK_228</a>
         </td>
         <td class="pre-wrapped">
           The ID <code>&lt;VAL&gt;</code> is not a valid Certificate Authority ID.
@@ -479,7 +479,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_229" href="errors/err_ngrok_229">ERR_NGROK_229</a>
+          <a id="ERR_NGROK_229" href="err_ngrok_229">ERR_NGROK_229</a>
         </td>
         <td class="pre-wrapped">
           The ID <code>&lt;VAL&gt;</code> is not a valid IP Policy ID.
@@ -487,7 +487,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_230" href="errors/err_ngrok_230">ERR_NGROK_230</a>
+          <a id="ERR_NGROK_230" href="err_ngrok_230">ERR_NGROK_230</a>
         </td>
         <td class="pre-wrapped">
           The query part of the requested URI is invalid:
@@ -498,7 +498,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_231" href="errors/err_ngrok_231">ERR_NGROK_231</a>
+          <a id="ERR_NGROK_231" href="err_ngrok_231">ERR_NGROK_231</a>
         </td>
         <td class="pre-wrapped">
           The query part of the requested URI includes unknown parameters:
@@ -510,7 +510,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_232" href="errors/err_ngrok_232">ERR_NGROK_232</a>
+          <a id="ERR_NGROK_232" href="err_ngrok_232">ERR_NGROK_232</a>
         </td>
         <td class="pre-wrapped">
           The request must specify only a single value for the
@@ -522,7 +522,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_233" href="errors/err_ngrok_233">ERR_NGROK_233</a>
+          <a id="ERR_NGROK_233" href="err_ngrok_233">ERR_NGROK_233</a>
         </td>
         <td class="pre-wrapped">
           The page size limit must be between 1 and <code>&lt;MAX&gt;</code> but
@@ -531,7 +531,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_235" href="errors/err_ngrok_235">ERR_NGROK_235</a>
+          <a id="ERR_NGROK_235" href="err_ngrok_235">ERR_NGROK_235</a>
         </td>
         <td class="pre-wrapped">
           The Format <code>&lt;VAL&gt;</code> is missing or is not a valid Event
@@ -541,7 +541,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_236" href="errors/err_ngrok_236">ERR_NGROK_236</a>
+          <a id="ERR_NGROK_236" href="err_ngrok_236">ERR_NGROK_236</a>
         </td>
         <td class="pre-wrapped">
           The destination target is invalid. Expected fields include one of the
@@ -550,7 +550,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_238" href="errors/err_ngrok_238">ERR_NGROK_238</a>
+          <a id="ERR_NGROK_238" href="err_ngrok_238">ERR_NGROK_238</a>
         </td>
         <td class="pre-wrapped">
           The provided event type: <code>&lt;TYP&gt;</code> is not valid. Valid
@@ -559,7 +559,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_239" href="errors/err_ngrok_239">ERR_NGROK_239</a>
+          <a id="ERR_NGROK_239" href="err_ngrok_239">ERR_NGROK_239</a>
         </td>
         <td class="pre-wrapped">
           The provided field: <code>&lt;TYP&gt;</code> is not valid.
@@ -567,7 +567,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_240" href="errors/err_ngrok_240">ERR_NGROK_240</a>
+          <a id="ERR_NGROK_240" href="err_ngrok_240">ERR_NGROK_240</a>
         </td>
         <td class="pre-wrapped">
           The provided event destination auth is invalid.
@@ -575,7 +575,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_241" href="errors/err_ngrok_241">ERR_NGROK_241</a>
+          <a id="ERR_NGROK_241" href="err_ngrok_241">ERR_NGROK_241</a>
         </td>
         <td class="pre-wrapped">
           The value "<code>&lt;TS&gt;</code>" is not a valid RFC3339 timestamp.
@@ -584,7 +584,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_242" href="errors/err_ngrok_242">ERR_NGROK_242</a>
+          <a id="ERR_NGROK_242" href="err_ngrok_242">ERR_NGROK_242</a>
         </td>
         <td class="pre-wrapped">
           The ID <code>&lt;VAL&gt;</code> is not a valid Backend ID.
@@ -592,7 +592,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_243" href="errors/err_ngrok_243">ERR_NGROK_243</a>
+          <a id="ERR_NGROK_243" href="err_ngrok_243">ERR_NGROK_243</a>
         </td>
         <td class="pre-wrapped">
           The ID <code>&lt;VAL&gt;</code> is invalid. Expected an ID with prefix
@@ -601,7 +601,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_244" href="errors/err_ngrok_244">ERR_NGROK_244</a>
+          <a id="ERR_NGROK_244" href="err_ngrok_244">ERR_NGROK_244</a>
         </td>
         <td class="pre-wrapped">
           The page size limit must be a number between 1 and
@@ -610,7 +610,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_247" href="errors/err_ngrok_247">ERR_NGROK_247</a>
+          <a id="ERR_NGROK_247" href="err_ngrok_247">ERR_NGROK_247</a>
         </td>
         <td class="pre-wrapped">
           The account <code>&lt;ACCOUNT&gt;</code> has been suspended for
@@ -620,7 +620,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_300" href="errors/err_ngrok_300">ERR_NGROK_300</a>
+          <a id="ERR_NGROK_300" href="err_ngrok_300">ERR_NGROK_300</a>
         </td>
         <td class="pre-wrapped">
           The authtoken credential <code>&lt;ID&gt;</code> has been revoked and is
@@ -629,7 +629,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_301" href="errors/err_ngrok_301">ERR_NGROK_301</a>
+          <a id="ERR_NGROK_301" href="err_ngrok_301">ERR_NGROK_301</a>
         </td>
         <td class="pre-wrapped">
           The bind payload you specified is not valid. This usually indiciates a
@@ -639,7 +639,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_302" href="errors/err_ngrok_302">ERR_NGROK_302</a>
+          <a id="ERR_NGROK_302" href="err_ngrok_302">ERR_NGROK_302</a>
         </td>
         <td class="pre-wrapped">
           TCP tunnels are only available after you sign up. Sign up at:
@@ -650,7 +650,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_303" href="errors/err_ngrok_303">ERR_NGROK_303</a>
+          <a id="ERR_NGROK_303" href="err_ngrok_303">ERR_NGROK_303</a>
         </td>
         <td class="pre-wrapped">
           TLS tunnels are only available for Pro and Business paid plans. Sign up
@@ -661,7 +661,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_304" href="errors/err_ngrok_304">ERR_NGROK_304</a>
+          <a id="ERR_NGROK_304" href="err_ngrok_304">ERR_NGROK_304</a>
         </td>
         <td class="pre-wrapped">
           HTTP auth is only available after you sign up. Failed to bind a tunnel
@@ -673,7 +673,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_305" href="errors/err_ngrok_305">ERR_NGROK_305</a>
+          <a id="ERR_NGROK_305" href="err_ngrok_305">ERR_NGROK_305</a>
         </td>
         <td class="pre-wrapped">
           Only paid plans may bind custom subdomains. Failed to bind the custom
@@ -686,7 +686,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_306" href="errors/err_ngrok_306">ERR_NGROK_306</a>
+          <a id="ERR_NGROK_306" href="err_ngrok_306">ERR_NGROK_306</a>
         </td>
         <td class="pre-wrapped">
           Custom hostnames are only available for Pro and Business paid plans.
@@ -699,7 +699,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_307" href="errors/err_ngrok_307">ERR_NGROK_307</a>
+          <a id="ERR_NGROK_307" href="err_ngrok_307">ERR_NGROK_307</a>
         </td>
         <td class="pre-wrapped">
           You must reserve an address for your account before it can be bound.
@@ -711,7 +711,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_308" href="errors/err_ngrok_308">ERR_NGROK_308</a>
+          <a id="ERR_NGROK_308" href="err_ngrok_308">ERR_NGROK_308</a>
         </td>
         <td class="pre-wrapped">
           The credential ACL policy does not permit binding this address.
@@ -721,7 +721,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_309" href="errors/err_ngrok_309">ERR_NGROK_309</a>
+          <a id="ERR_NGROK_309" href="err_ngrok_309">ERR_NGROK_309</a>
         </td>
         <td class="pre-wrapped">
           This address is reserved for another account. Failed to bind the address
@@ -734,7 +734,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_310" href="errors/err_ngrok_310">ERR_NGROK_310</a>
+          <a id="ERR_NGROK_310" href="err_ngrok_310">ERR_NGROK_310</a>
         </td>
         <td class="pre-wrapped">
           Only Pro and Enterprise plans may bind reserved addresses. Failed to
@@ -748,7 +748,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_311" href="errors/err_ngrok_311">ERR_NGROK_311</a>
+          <a id="ERR_NGROK_311" href="err_ngrok_311">ERR_NGROK_311</a>
         </td>
         <td class="pre-wrapped">
           This address is allocated for a different region. Failed to bind the
@@ -760,7 +760,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_312" href="errors/err_ngrok_312">ERR_NGROK_312</a>
+          <a id="ERR_NGROK_312" href="err_ngrok_312">ERR_NGROK_312</a>
         </td>
         <td class="pre-wrapped">
           Failed to bind a TLS tunnel for the account
@@ -772,7 +772,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_313" href="errors/err_ngrok_313">ERR_NGROK_313</a>
+          <a id="ERR_NGROK_313" href="err_ngrok_313">ERR_NGROK_313</a>
         </td>
         <td class="pre-wrapped">
           Only paid plans may bind custom subdomains. Failed to bind the custom
@@ -784,7 +784,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_314" href="errors/err_ngrok_314">ERR_NGROK_314</a>
+          <a id="ERR_NGROK_314" href="err_ngrok_314">ERR_NGROK_314</a>
         </td>
         <td class="pre-wrapped">
           Only Pro and Enterprise plans may bind custom hostnames. Failed to bind
@@ -796,7 +796,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_315" href="errors/err_ngrok_315">ERR_NGROK_315</a>
+          <a id="ERR_NGROK_315" href="err_ngrok_315">ERR_NGROK_315</a>
         </td>
         <td class="pre-wrapped">
           Only Enterprise plans may bind wildcard names. Failed to bind the
@@ -808,7 +808,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_316" href="errors/err_ngrok_316">ERR_NGROK_316</a>
+          <a id="ERR_NGROK_316" href="err_ngrok_316">ERR_NGROK_316</a>
         </td>
         <td class="pre-wrapped">
           The credential ACL policy does not permit binding this name. Credential
@@ -817,7 +817,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_317" href="errors/err_ngrok_317">ERR_NGROK_317</a>
+          <a id="ERR_NGROK_317" href="err_ngrok_317">ERR_NGROK_317</a>
         </td>
         <td class="pre-wrapped">
           You cannot bind the domain <code>&lt;DOMAIN&gt;</code> in region
@@ -828,7 +828,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_318" href="errors/err_ngrok_318">ERR_NGROK_318</a>
+          <a id="ERR_NGROK_318" href="err_ngrok_318">ERR_NGROK_318</a>
         </td>
         <td class="pre-wrapped">
           You must reserve a wildcard domain for your account before it can be
@@ -841,7 +841,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_319" href="errors/err_ngrok_319">ERR_NGROK_319</a>
+          <a id="ERR_NGROK_319" href="err_ngrok_319">ERR_NGROK_319</a>
         </td>
         <td class="pre-wrapped">
           You must reserve a custom hostname for your account before it can be
@@ -854,7 +854,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_320" href="errors/err_ngrok_320">ERR_NGROK_320</a>
+          <a id="ERR_NGROK_320" href="err_ngrok_320">ERR_NGROK_320</a>
         </td>
         <td class="pre-wrapped">
           This domain is reserved for another account. Failed to bind the domain
@@ -867,7 +867,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_321" href="errors/err_ngrok_321">ERR_NGROK_321</a>
+          <a id="ERR_NGROK_321" href="err_ngrok_321">ERR_NGROK_321</a>
         </td>
         <td class="pre-wrapped">
           Wildcard names must be reserved exactly. Failed to bind the wildcard
@@ -880,7 +880,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_322" href="errors/err_ngrok_322">ERR_NGROK_322</a>
+          <a id="ERR_NGROK_322" href="err_ngrok_322">ERR_NGROK_322</a>
         </td>
         <td class="pre-wrapped">
           This name is reserved in a different region. Failed to bind the domain
@@ -892,7 +892,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_323" href="errors/err_ngrok_323">ERR_NGROK_323</a>
+          <a id="ERR_NGROK_323" href="err_ngrok_323">ERR_NGROK_323</a>
         </td>
         <td class="pre-wrapped">
           You may not run more than <code>&lt;MAX&gt;</code> tunnels over a single
@@ -907,7 +907,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_324" href="errors/err_ngrok_324">ERR_NGROK_324</a>
+          <a id="ERR_NGROK_324" href="err_ngrok_324">ERR_NGROK_324</a>
         </td>
         <td class="pre-wrapped">
           Your account may not run more than <code>&lt;MAX&gt;</code> tunnels over
@@ -918,7 +918,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_326" href="errors/err_ngrok_326">ERR_NGROK_326</a>
+          <a id="ERR_NGROK_326" href="err_ngrok_326">ERR_NGROK_326</a>
         </td>
         <td class="pre-wrapped">
           Invalid character <code>&lt;CHAR&gt;</code> in domain name. Valid
@@ -928,7 +928,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_327" href="errors/err_ngrok_327">ERR_NGROK_327</a>
+          <a id="ERR_NGROK_327" href="err_ngrok_327">ERR_NGROK_327</a>
         </td>
         <td class="pre-wrapped">
           Domain has an invalid character sequence. Valid domains may not contain
@@ -938,7 +938,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_328" href="errors/err_ngrok_328">ERR_NGROK_328</a>
+          <a id="ERR_NGROK_328" href="err_ngrok_328">ERR_NGROK_328</a>
         </td>
         <td class="pre-wrapped">
           Domain part <code>&lt;PART&gt;</code> has an invalid first character.
@@ -948,7 +948,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_329" href="errors/err_ngrok_329">ERR_NGROK_329</a>
+          <a id="ERR_NGROK_329" href="err_ngrok_329">ERR_NGROK_329</a>
         </td>
         <td class="pre-wrapped">
           Domain part <code>&lt;PART&gt;</code> has an invalid last character.
@@ -958,7 +958,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_330" href="errors/err_ngrok_330">ERR_NGROK_330</a>
+          <a id="ERR_NGROK_330" href="err_ngrok_330">ERR_NGROK_330</a>
         </td>
         <td class="pre-wrapped">
           Domain has an invalid character sequence. Valid domains may not contain
@@ -968,7 +968,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_331" href="errors/err_ngrok_331">ERR_NGROK_331</a>
+          <a id="ERR_NGROK_331" href="err_ngrok_331">ERR_NGROK_331</a>
         </td>
         <td class="pre-wrapped">
           You may not bind a domain with the TLD <code>&lt;SUFFIX&gt;</code>. This
@@ -978,7 +978,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_332" href="errors/err_ngrok_332">ERR_NGROK_332</a>
+          <a id="ERR_NGROK_332" href="err_ngrok_332">ERR_NGROK_332</a>
         </td>
         <td class="pre-wrapped">
           <code>&lt;PROTO&gt;</code> is not a supported tunnel protocol
@@ -986,7 +986,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_333" href="errors/err_ngrok_333">ERR_NGROK_333</a>
+          <a id="ERR_NGROK_333" href="err_ngrok_333">ERR_NGROK_333</a>
         </td>
         <td class="pre-wrapped">
           No tunnel found with the ID <code>&lt;ID&gt;</code>
@@ -994,7 +994,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_334" href="errors/err_ngrok_334">ERR_NGROK_334</a>
+          <a id="ERR_NGROK_334" href="err_ngrok_334">ERR_NGROK_334</a>
         </td>
         <td class="pre-wrapped">
           The tunnel <code>&lt;URL&gt;</code> is already bound to another tunnel
@@ -1003,7 +1003,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_335" href="errors/err_ngrok_335">ERR_NGROK_335</a>
+          <a id="ERR_NGROK_335" href="err_ngrok_335">ERR_NGROK_335</a>
         </td>
         <td class="pre-wrapped">
           The bind cookie you specified is malformed. This usually indicates a bug
@@ -1012,7 +1012,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_336" href="errors/err_ngrok_336">ERR_NGROK_336</a>
+          <a id="ERR_NGROK_336" href="err_ngrok_336">ERR_NGROK_336</a>
         </td>
         <td class="pre-wrapped">
           Could not find an account while creating this tunnel. This is either an
@@ -1021,7 +1021,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_337" href="errors/err_ngrok_337">ERR_NGROK_337</a>
+          <a id="ERR_NGROK_337" href="err_ngrok_337">ERR_NGROK_337</a>
         </td>
         <td class="pre-wrapped">
           The last payment for the <code>&lt;ACCOUNT&gt;</code> account failed.
@@ -1031,7 +1031,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_338" href="errors/err_ngrok_338">ERR_NGROK_338</a>
+          <a id="ERR_NGROK_338" href="err_ngrok_338">ERR_NGROK_338</a>
         </td>
         <td class="pre-wrapped">
           The account <code>&lt;ACCOUNT&gt;</code> has been suspended. This is
@@ -1041,7 +1041,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_339" href="errors/err_ngrok_339">ERR_NGROK_339</a>
+          <a id="ERR_NGROK_339" href="err_ngrok_339">ERR_NGROK_339</a>
         </td>
         <td class="pre-wrapped">
           Forwarding to a local file:/// URL is only available after you sign up.
@@ -1053,7 +1053,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_340" href="errors/err_ngrok_340">ERR_NGROK_340</a>
+          <a id="ERR_NGROK_340" href="err_ngrok_340">ERR_NGROK_340</a>
         </td>
         <td class="pre-wrapped">
           Forwarding to local port 443 or a local https:// URL is only available
@@ -1065,7 +1065,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_341" href="errors/err_ngrok_341">ERR_NGROK_341</a>
+          <a id="ERR_NGROK_341" href="err_ngrok_341">ERR_NGROK_341</a>
         </td>
         <td class="pre-wrapped">
           IP Policy with ID <code>&lt;ID&gt;</code> not found
@@ -1073,7 +1073,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_342" href="errors/err_ngrok_342">ERR_NGROK_342</a>
+          <a id="ERR_NGROK_342" href="err_ngrok_342">ERR_NGROK_342</a>
         </td>
         <td class="pre-wrapped">
           Only Enterprise plans may use per-tunnel IP policies. Your account is
@@ -1083,7 +1083,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_343" href="errors/err_ngrok_343">ERR_NGROK_343</a>
+          <a id="ERR_NGROK_343" href="err_ngrok_343">ERR_NGROK_343</a>
         </td>
         <td class="pre-wrapped">
           Endpoint configuration <code>&lt;ID&gt;</code> does not allow the agent
@@ -1094,7 +1094,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_344" href="errors/err_ngrok_344">ERR_NGROK_344</a>
+          <a id="ERR_NGROK_344" href="err_ngrok_344">ERR_NGROK_344</a>
         </td>
         <td class="pre-wrapped">
           Endpoint configuration <code>&lt;ID&gt;</code> does not allow clients to
@@ -1103,7 +1103,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_345" href="errors/err_ngrok_345">ERR_NGROK_345</a>
+          <a id="ERR_NGROK_345" href="err_ngrok_345">ERR_NGROK_345</a>
         </td>
         <td class="pre-wrapped">
           Endpoint configuration <code>&lt;ID&gt;</code>s HTTPS module terminates
@@ -1115,7 +1115,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_346" href="errors/err_ngrok_346">ERR_NGROK_346</a>
+          <a id="ERR_NGROK_346" href="err_ngrok_346">ERR_NGROK_346</a>
         </td>
         <td class="pre-wrapped">
           Endpoint configuration <code>&lt;ID&gt;</code>s HTTPS module does not
@@ -1126,7 +1126,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_347" href="errors/err_ngrok_347">ERR_NGROK_347</a>
+          <a id="ERR_NGROK_347" href="err_ngrok_347">ERR_NGROK_347</a>
         </td>
         <td class="pre-wrapped">
           Domain has invalid punycode: <code>&lt;IDNA_ERROR&gt;</code>. Failed to
@@ -1135,7 +1135,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_348" href="errors/err_ngrok_348">ERR_NGROK_348</a>
+          <a id="ERR_NGROK_348" href="err_ngrok_348">ERR_NGROK_348</a>
         </td>
         <td class="pre-wrapped">
           Your account is limited to <code>&lt;MAX&gt;</code> sessions.
@@ -1143,7 +1143,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_349" href="errors/err_ngrok_349">ERR_NGROK_349</a>
+          <a id="ERR_NGROK_349" href="err_ngrok_349">ERR_NGROK_349</a>
         </td>
         <td class="pre-wrapped">
           Your account is rate limited for adding
@@ -1152,7 +1152,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_350" href="errors/err_ngrok_350">ERR_NGROK_350</a>
+          <a id="ERR_NGROK_350" href="err_ngrok_350">ERR_NGROK_350</a>
         </td>
         <td class="pre-wrapped">
           Your account is limited to <code>&lt;MAX&gt;</code> tunnels in a
@@ -1161,7 +1161,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_351" href="errors/err_ngrok_351">ERR_NGROK_351</a>
+          <a id="ERR_NGROK_351" href="err_ngrok_351">ERR_NGROK_351</a>
         </td>
         <td class="pre-wrapped">
           Your account is rate limited for adding <code>&lt;MAX&gt;</code> tunnels
@@ -1170,7 +1170,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_352" href="errors/err_ngrok_352">ERR_NGROK_352</a>
+          <a id="ERR_NGROK_352" href="err_ngrok_352">ERR_NGROK_352</a>
         </td>
         <td class="pre-wrapped">
           Anonymous sessions are limited to <code>&lt;MAX&gt;</code> tunnels.
@@ -1178,7 +1178,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_353" href="errors/err_ngrok_353">ERR_NGROK_353</a>
+          <a id="ERR_NGROK_353" href="err_ngrok_353">ERR_NGROK_353</a>
         </td>
         <td class="pre-wrapped">
           Anonymous sessions are rate limited for adding
@@ -1187,7 +1187,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_354" href="errors/err_ngrok_354">ERR_NGROK_354</a>
+          <a id="ERR_NGROK_354" href="err_ngrok_354">ERR_NGROK_354</a>
         </td>
         <td class="pre-wrapped">
           Failed to bind <code>&lt;DOMAIN&gt;</code>. Nested subdomains of the
@@ -1198,7 +1198,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_355" href="errors/err_ngrok_355">ERR_NGROK_355</a>
+          <a id="ERR_NGROK_355" href="err_ngrok_355">ERR_NGROK_355</a>
         </td>
         <td class="pre-wrapped">
           Invalid '_' in domain name. Valid domains may not contain underscores.
@@ -1207,7 +1207,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_356" href="errors/err_ngrok_356">ERR_NGROK_356</a>
+          <a id="ERR_NGROK_356" href="err_ngrok_356">ERR_NGROK_356</a>
         </td>
         <td class="pre-wrapped">
           The credential ACL policy does not permit binding random TCP addresses.
@@ -1216,7 +1216,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_357" href="errors/err_ngrok_357">ERR_NGROK_357</a>
+          <a id="ERR_NGROK_357" href="err_ngrok_357">ERR_NGROK_357</a>
         </td>
         <td class="pre-wrapped">
           Labeled tunnels are only available after you sign up. Sign up at:
@@ -1227,7 +1227,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_358" href="errors/err_ngrok_358">ERR_NGROK_358</a>
+          <a id="ERR_NGROK_358" href="err_ngrok_358">ERR_NGROK_358</a>
         </td>
         <td class="pre-wrapped">
           Your account doesn't have permission to create labeled tunnels.
@@ -1235,7 +1235,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_359" href="errors/err_ngrok_359">ERR_NGROK_359</a>
+          <a id="ERR_NGROK_359" href="err_ngrok_359">ERR_NGROK_359</a>
         </td>
         <td class="pre-wrapped">
           Invalid basic auth credential. Username must not be zero length.
@@ -1243,7 +1243,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_360" href="errors/err_ngrok_360">ERR_NGROK_360</a>
+          <a id="ERR_NGROK_360" href="err_ngrok_360">ERR_NGROK_360</a>
         </td>
         <td class="pre-wrapped">
           Invalid basic auth credential. Password must be between
@@ -1254,7 +1254,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_361" href="errors/err_ngrok_361">ERR_NGROK_361</a>
+          <a id="ERR_NGROK_361" href="err_ngrok_361">ERR_NGROK_361</a>
         </td>
         <td class="pre-wrapped">
           Invalid circuit breaker configuration, error threshold percentage must
@@ -1263,7 +1263,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_362" href="errors/err_ngrok_362">ERR_NGROK_362</a>
+          <a id="ERR_NGROK_362" href="err_ngrok_362">ERR_NGROK_362</a>
         </td>
         <td class="pre-wrapped">
           Invalid IP restriction configuration, invalid CIDR:
@@ -1272,7 +1272,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_363" href="errors/err_ngrok_363">ERR_NGROK_363</a>
+          <a id="ERR_NGROK_363" href="err_ngrok_363">ERR_NGROK_363</a>
         </td>
         <td class="pre-wrapped">
           You must specify a supported provider name. Supported providers:
@@ -1281,7 +1281,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_364" href="errors/err_ngrok_364">ERR_NGROK_364</a>
+          <a id="ERR_NGROK_364" href="err_ngrok_364">ERR_NGROK_364</a>
         </td>
         <td class="pre-wrapped">
           Webhook provider <code>&lt;PROVIDER&gt;</code> is not supported.
@@ -1290,7 +1290,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_365" href="errors/err_ngrok_365">ERR_NGROK_365</a>
+          <a id="ERR_NGROK_365" href="err_ngrok_365">ERR_NGROK_365</a>
         </td>
         <td class="pre-wrapped">
           OAuth provider <code>&lt;PROVIDER&gt;</code> is not supported. Supported
@@ -1299,7 +1299,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_366" href="errors/err_ngrok_366">ERR_NGROK_366</a>
+          <a id="ERR_NGROK_366" href="err_ngrok_366">ERR_NGROK_366</a>
         </td>
         <td class="pre-wrapped">
           You may not authorize more than <code>&lt;MAX&gt;</code> emails. Got
@@ -1308,7 +1308,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_367" href="errors/err_ngrok_367">ERR_NGROK_367</a>
+          <a id="ERR_NGROK_367" href="err_ngrok_367">ERR_NGROK_367</a>
         </td>
         <td class="pre-wrapped">
           You may not authorize more than <code>&lt;MAX&gt;</code> email domains.
@@ -1317,7 +1317,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_368" href="errors/err_ngrok_368">ERR_NGROK_368</a>
+          <a id="ERR_NGROK_368" href="err_ngrok_368">ERR_NGROK_368</a>
         </td>
         <td class="pre-wrapped">
           You may not request more than <code>&lt;MAX&gt;</code> oauth scopes. Got
@@ -1326,7 +1326,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_370" href="errors/err_ngrok_370">ERR_NGROK_370</a>
+          <a id="ERR_NGROK_370" href="err_ngrok_370">ERR_NGROK_370</a>
         </td>
         <td class="pre-wrapped">
           Added request header should be in key:value format, got
@@ -1335,7 +1335,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_371" href="errors/err_ngrok_371">ERR_NGROK_371</a>
+          <a id="ERR_NGROK_371" href="err_ngrok_371">ERR_NGROK_371</a>
         </td>
         <td class="pre-wrapped">
           Added response header should be in key:value format, got
@@ -1344,7 +1344,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_372" href="errors/err_ngrok_372">ERR_NGROK_372</a>
+          <a id="ERR_NGROK_372" href="err_ngrok_372">ERR_NGROK_372</a>
         </td>
         <td class="pre-wrapped">
           <code>&lt;KEY&gt;</code> is not a valid HTTP header name because it
@@ -1353,7 +1353,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_373" href="errors/err_ngrok_373">ERR_NGROK_373</a>
+          <a id="ERR_NGROK_373" href="err_ngrok_373">ERR_NGROK_373</a>
         </td>
         <td class="pre-wrapped">
           <code>&lt;KEY&gt;</code> is not a valid HTTP header name because it
@@ -1362,7 +1362,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_374" href="errors/err_ngrok_374">ERR_NGROK_374</a>
+          <a id="ERR_NGROK_374" href="err_ngrok_374">ERR_NGROK_374</a>
         </td>
         <td class="pre-wrapped">
           <code>&lt;VAL&gt;</code> is not a valid HTTP header value:
@@ -1371,7 +1371,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_375" href="errors/err_ngrok_375">ERR_NGROK_375</a>
+          <a id="ERR_NGROK_375" href="err_ngrok_375">ERR_NGROK_375</a>
         </td>
         <td class="pre-wrapped">
           Duplicate 'add' header, <code>&lt;HEADER&gt;</code> was provided twice
@@ -1381,7 +1381,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_376" href="errors/err_ngrok_376">ERR_NGROK_376</a>
+          <a id="ERR_NGROK_376" href="err_ngrok_376">ERR_NGROK_376</a>
         </td>
         <td class="pre-wrapped">
           Exceeded the maximum number of added headers. You specified
@@ -1390,7 +1390,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_377" href="errors/err_ngrok_377">ERR_NGROK_377</a>
+          <a id="ERR_NGROK_377" href="err_ngrok_377">ERR_NGROK_377</a>
         </td>
         <td class="pre-wrapped">
           The header beginning with <code>&lt;PREFIX&gt;</code>...' exceeds the
@@ -1399,7 +1399,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_378" href="errors/err_ngrok_378">ERR_NGROK_378</a>
+          <a id="ERR_NGROK_378" href="err_ngrok_378">ERR_NGROK_378</a>
         </td>
         <td class="pre-wrapped">
           The header value for <code>&lt;HEADERKEY&gt;</code> beginning with
@@ -1409,7 +1409,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_379" href="errors/err_ngrok_379">ERR_NGROK_379</a>
+          <a id="ERR_NGROK_379" href="err_ngrok_379">ERR_NGROK_379</a>
         </td>
         <td class="pre-wrapped">
           The sendgrid verification key is not a base64 encoded ecdsa public key.
@@ -1419,7 +1419,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_380" href="errors/err_ngrok_380">ERR_NGROK_380</a>
+          <a id="ERR_NGROK_380" href="err_ngrok_380">ERR_NGROK_380</a>
         </td>
         <td class="pre-wrapped">
           The resource <code>&lt;ID&gt;</code> was referenced, but not found.
@@ -1428,7 +1428,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_381" href="errors/err_ngrok_381">ERR_NGROK_381</a>
+          <a id="ERR_NGROK_381" href="err_ngrok_381">ERR_NGROK_381</a>
         </td>
         <td class="pre-wrapped">
           The host <code>&lt;HOST&gt;</code> and port
@@ -1437,7 +1437,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_382" href="errors/err_ngrok_382">ERR_NGROK_382</a>
+          <a id="ERR_NGROK_382" href="err_ngrok_382">ERR_NGROK_382</a>
         </td>
         <td class="pre-wrapped">
           The account "<code>&lt;NAME&gt;</code>" may not start a tunnel until the
@@ -1447,7 +1447,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_383" href="errors/err_ngrok_383">ERR_NGROK_383</a>
+          <a id="ERR_NGROK_383" href="err_ngrok_383">ERR_NGROK_383</a>
         </td>
         <td class="pre-wrapped">
           You may not specify an OAuth Client ID without also specifying a Client
@@ -1456,7 +1456,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_384" href="errors/err_ngrok_384">ERR_NGROK_384</a>
+          <a id="ERR_NGROK_384" href="err_ngrok_384">ERR_NGROK_384</a>
         </td>
         <td class="pre-wrapped">
           You may not specify an OAuth Client Secret without also specifying a
@@ -1465,25 +1465,25 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_385" href="errors/err_ngrok_385">ERR_NGROK_385</a>
+          <a id="ERR_NGROK_385" href="err_ngrok_385">ERR_NGROK_385</a>
         </td>
         <td class="pre-wrapped">You must specify an OIDC Client ID.</td>
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_386" href="errors/err_ngrok_386">ERR_NGROK_386</a>
+          <a id="ERR_NGROK_386" href="err_ngrok_386">ERR_NGROK_386</a>
         </td>
         <td class="pre-wrapped">You must specify an OIDC Client Secret.</td>
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_387" href="errors/err_ngrok_387">ERR_NGROK_387</a>
+          <a id="ERR_NGROK_387" href="err_ngrok_387">ERR_NGROK_387</a>
         </td>
         <td class="pre-wrapped">You must specify the OIDC Issuer URL.</td>
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_388" href="errors/err_ngrok_388">ERR_NGROK_388</a>
+          <a id="ERR_NGROK_388" href="err_ngrok_388">ERR_NGROK_388</a>
         </td>
         <td class="pre-wrapped">
           You may not request more than <code>&lt;MAX&gt;</code> OIDC scopes. Got
@@ -1492,7 +1492,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_389" href="errors/err_ngrok_389">ERR_NGROK_389</a>
+          <a id="ERR_NGROK_389" href="err_ngrok_389">ERR_NGROK_389</a>
         </td>
         <td class="pre-wrapped">
           You must specify an OAuth client ID and secret for a custom application
@@ -1502,7 +1502,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_390" href="errors/err_ngrok_390">ERR_NGROK_390</a>
+          <a id="ERR_NGROK_390" href="err_ngrok_390">ERR_NGROK_390</a>
         </td>
         <td class="pre-wrapped">
           You must use your own OAuth application, specifying its client ID and
@@ -1511,7 +1511,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_391" href="errors/err_ngrok_391">ERR_NGROK_391</a>
+          <a id="ERR_NGROK_391" href="err_ngrok_391">ERR_NGROK_391</a>
         </td>
         <td class="pre-wrapped">
           You may not request an individual OAuth scope with length greater than
@@ -1521,7 +1521,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_392" href="errors/err_ngrok_392">ERR_NGROK_392</a>
+          <a id="ERR_NGROK_392" href="err_ngrok_392">ERR_NGROK_392</a>
         </td>
         <td class="pre-wrapped">
           You may not request an individual OIDC scope with length greater than
@@ -1531,7 +1531,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_393" href="errors/err_ngrok_393">ERR_NGROK_393</a>
+          <a id="ERR_NGROK_393" href="err_ngrok_393">ERR_NGROK_393</a>
         </td>
         <td class="pre-wrapped">
           When specifying CIDRs to deny, you must specify at least one CIDR to
@@ -1541,7 +1541,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_394" href="errors/err_ngrok_394">ERR_NGROK_394</a>
+          <a id="ERR_NGROK_394" href="err_ngrok_394">ERR_NGROK_394</a>
         </td>
         <td class="pre-wrapped">
           Each tunnel must specify either a protocol or labels, but neither was
@@ -1550,7 +1550,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_395" href="errors/err_ngrok_395">ERR_NGROK_395</a>
+          <a id="ERR_NGROK_395" href="err_ngrok_395">ERR_NGROK_395</a>
         </td>
         <td class="pre-wrapped">
           Bind rules in authtoken ACLs are not supported with labeled tunnels at
@@ -1559,7 +1559,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_396" href="errors/err_ngrok_396">ERR_NGROK_396</a>
+          <a id="ERR_NGROK_396" href="err_ngrok_396">ERR_NGROK_396</a>
         </td>
         <td class="pre-wrapped">
           Domain <code>&lt;DOMAIN&gt;</code> is not a valid DNS name. No domain
@@ -1568,7 +1568,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_397" href="errors/err_ngrok_397">ERR_NGROK_397</a>
+          <a id="ERR_NGROK_397" href="err_ngrok_397">ERR_NGROK_397</a>
         </td>
         <td class="pre-wrapped">
           Domain <code>&lt;DOMAIN&gt;</code> is not a valid DNS name. Domains may
@@ -1577,7 +1577,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_398" href="errors/err_ngrok_398">ERR_NGROK_398</a>
+          <a id="ERR_NGROK_398" href="err_ngrok_398">ERR_NGROK_398</a>
         </td>
         <td class="pre-wrapped">
           The <code>&lt;ID&gt;</code> header cannot be removed without specifying
@@ -1586,7 +1586,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_399" href="errors/err_ngrok_399">ERR_NGROK_399</a>
+          <a id="ERR_NGROK_399" href="err_ngrok_399">ERR_NGROK_399</a>
         </td>
         <td class="pre-wrapped">
           The credential ACL policy does not permit binding this label. Credential
@@ -1595,7 +1595,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_400" href="errors/err_ngrok_400">ERR_NGROK_400</a>
+          <a id="ERR_NGROK_400" href="err_ngrok_400">ERR_NGROK_400</a>
         </td>
         <td class="pre-wrapped">
           The region you specified, <code>&lt;REGION&gt;</code> is invalid. Please
@@ -1604,7 +1604,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_401" href="errors/err_ngrok_401">ERR_NGROK_401</a>
+          <a id="ERR_NGROK_401" href="err_ngrok_401">ERR_NGROK_401</a>
         </td>
         <td class="pre-wrapped">
           Only Pro or Enterprise accounts can reserve domains. Your account can't
@@ -1614,7 +1614,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_402" href="errors/err_ngrok_402">ERR_NGROK_402</a>
+          <a id="ERR_NGROK_402" href="err_ngrok_402">ERR_NGROK_402</a>
         </td>
         <td class="pre-wrapped">
           Only the first part of a reserved domain may be a '*' wildcard. Failed
@@ -1623,7 +1623,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_403" href="errors/err_ngrok_403">ERR_NGROK_403</a>
+          <a id="ERR_NGROK_403" href="err_ngrok_403">ERR_NGROK_403</a>
         </td>
         <td class="pre-wrapped">
           The first subdomain of a wildcard domain must be a single '*' character.
@@ -1632,7 +1632,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_404" href="errors/err_ngrok_404">ERR_NGROK_404</a>
+          <a id="ERR_NGROK_404" href="err_ngrok_404">ERR_NGROK_404</a>
         </td>
         <td class="pre-wrapped">
           You may not reserve names on ngrok.com. Please use an ngrok.io suffix.
@@ -1641,7 +1641,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_405" href="errors/err_ngrok_405">ERR_NGROK_405</a>
+          <a id="ERR_NGROK_405" href="err_ngrok_405">ERR_NGROK_405</a>
         </td>
         <td class="pre-wrapped">
           You may not reserve a domain with the suffix
@@ -1653,7 +1653,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_406" href="errors/err_ngrok_406">ERR_NGROK_406</a>
+          <a id="ERR_NGROK_406" href="err_ngrok_406">ERR_NGROK_406</a>
         </td>
         <td class="pre-wrapped">
           Invalid character <code>&lt;CHAR&gt;</code> in domain name. Valid
@@ -1663,7 +1663,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_407" href="errors/err_ngrok_407">ERR_NGROK_407</a>
+          <a id="ERR_NGROK_407" href="err_ngrok_407">ERR_NGROK_407</a>
         </td>
         <td class="pre-wrapped">
           Domain part <code>&lt;PART&gt;</code> has an invalid first character.
@@ -1673,7 +1673,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_408" href="errors/err_ngrok_408">ERR_NGROK_408</a>
+          <a id="ERR_NGROK_408" href="err_ngrok_408">ERR_NGROK_408</a>
         </td>
         <td class="pre-wrapped">
           Domain part <code>&lt;PART&gt;</code> has an invalid last character.
@@ -1683,7 +1683,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_409" href="errors/err_ngrok_409">ERR_NGROK_409</a>
+          <a id="ERR_NGROK_409" href="err_ngrok_409">ERR_NGROK_409</a>
         </td>
         <td class="pre-wrapped">
           Domain has an invalid character sequence. Valid domains may not contain
@@ -1692,7 +1692,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_410" href="errors/err_ngrok_410">ERR_NGROK_410</a>
+          <a id="ERR_NGROK_410" href="err_ngrok_410">ERR_NGROK_410</a>
         </td>
         <td class="pre-wrapped">
           Domain has an invalid character sequence. Valid domains may not contain
@@ -1702,7 +1702,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_411" href="errors/err_ngrok_411">ERR_NGROK_411</a>
+          <a id="ERR_NGROK_411" href="err_ngrok_411">ERR_NGROK_411</a>
         </td>
         <td class="pre-wrapped">
           You may not reserve a name on the TLD <code>&lt;SUFFIX&gt;</code>. This
@@ -1712,7 +1712,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_412" href="errors/err_ngrok_412">ERR_NGROK_412</a>
+          <a id="ERR_NGROK_412" href="err_ngrok_412">ERR_NGROK_412</a>
         </td>
         <td class="pre-wrapped">
           Only Pro or Enterprise accounts can reserve tunnels on custom domains.
@@ -1723,7 +1723,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_413" href="errors/err_ngrok_413">ERR_NGROK_413</a>
+          <a id="ERR_NGROK_413" href="err_ngrok_413">ERR_NGROK_413</a>
         </td>
         <td class="pre-wrapped">
           This domain is already reserved for your account. Failed to reserve
@@ -1732,7 +1732,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_414" href="errors/err_ngrok_414">ERR_NGROK_414</a>
+          <a id="ERR_NGROK_414" href="err_ngrok_414">ERR_NGROK_414</a>
         </td>
         <td class="pre-wrapped">
           This domain is already reserved for another account. Failed to reserve
@@ -1741,7 +1741,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_415" href="errors/err_ngrok_415">ERR_NGROK_415</a>
+          <a id="ERR_NGROK_415" href="err_ngrok_415">ERR_NGROK_415</a>
         </td>
         <td class="pre-wrapped">
           Your account is limited to <code>&lt;MAX&gt;</code> reserved domains.
@@ -1750,7 +1750,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_416" href="errors/err_ngrok_416">ERR_NGROK_416</a>
+          <a id="ERR_NGROK_416" href="err_ngrok_416">ERR_NGROK_416</a>
         </td>
         <td class="pre-wrapped">
           You may not register a wildcard for all
@@ -1760,7 +1760,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_417" href="errors/err_ngrok_417">ERR_NGROK_417</a>
+          <a id="ERR_NGROK_417" href="err_ngrok_417">ERR_NGROK_417</a>
         </td>
         <td class="pre-wrapped">
           This wildcard domain would conflict with a domain reserved for another
@@ -1769,7 +1769,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_418" href="errors/err_ngrok_418">ERR_NGROK_418</a>
+          <a id="ERR_NGROK_418" href="err_ngrok_418">ERR_NGROK_418</a>
         </td>
         <td class="pre-wrapped">
           Your account is limited to <code>&lt;MAX&gt;</code> wildcard domains.
@@ -1778,7 +1778,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_419" href="errors/err_ngrok_419">ERR_NGROK_419</a>
+          <a id="ERR_NGROK_419" href="err_ngrok_419">ERR_NGROK_419</a>
         </td>
         <td class="pre-wrapped">
           Only Pro or Enterprise accounts can reserve wildcard domains. Your
@@ -1788,7 +1788,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_420" href="errors/err_ngrok_420">ERR_NGROK_420</a>
+          <a id="ERR_NGROK_420" href="err_ngrok_420">ERR_NGROK_420</a>
         </td>
         <td class="pre-wrapped">
           A description is limited to <code>&lt;MAX&gt;</code> characters; you
@@ -1797,7 +1797,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_421" href="errors/err_ngrok_421">ERR_NGROK_421</a>
+          <a id="ERR_NGROK_421" href="err_ngrok_421">ERR_NGROK_421</a>
         </td>
         <td class="pre-wrapped">
           Metadata is limited to <code>&lt;MAX&gt;</code> characters; you have
@@ -1806,7 +1806,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_422" href="errors/err_ngrok_422">ERR_NGROK_422</a>
+          <a id="ERR_NGROK_422" href="err_ngrok_422">ERR_NGROK_422</a>
         </td>
         <td class="pre-wrapped">
           The reserved domain name update failed because no values were provided.
@@ -1815,7 +1815,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_423" href="errors/err_ngrok_423">ERR_NGROK_423</a>
+          <a id="ERR_NGROK_423" href="err_ngrok_423">ERR_NGROK_423</a>
         </td>
         <td class="pre-wrapped">
           The reserved domain name is limited to
@@ -1826,7 +1826,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_424" href="errors/err_ngrok_424">ERR_NGROK_424</a>
+          <a id="ERR_NGROK_424" href="err_ngrok_424">ERR_NGROK_424</a>
         </td>
         <td class="pre-wrapped">
           Domain <code>&lt;DOMAIN&gt;</code> does not require a CNAME record
@@ -1834,7 +1834,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_425" href="errors/err_ngrok_425">ERR_NGROK_425</a>
+          <a id="ERR_NGROK_425" href="err_ngrok_425">ERR_NGROK_425</a>
         </td>
         <td class="pre-wrapped">
           Domain <code>&lt;DOMAIN&gt;</code> CNAME record not found
@@ -1842,7 +1842,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_426" href="errors/err_ngrok_426">ERR_NGROK_426</a>
+          <a id="ERR_NGROK_426" href="err_ngrok_426">ERR_NGROK_426</a>
         </td>
         <td class="pre-wrapped">
           Domain <code>&lt;DOMAIN&gt;</code> CNAME record not found, A record
@@ -1851,7 +1851,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_427" href="errors/err_ngrok_427">ERR_NGROK_427</a>
+          <a id="ERR_NGROK_427" href="err_ngrok_427">ERR_NGROK_427</a>
         </td>
         <td class="pre-wrapped">
           Domain <code>&lt;DOMAIN&gt;</code> CNAME record resolved to
@@ -1860,7 +1860,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_428" href="errors/err_ngrok_428">ERR_NGROK_428</a>
+          <a id="ERR_NGROK_428" href="err_ngrok_428">ERR_NGROK_428</a>
         </td>
         <td class="pre-wrapped">
           You may not assign endpoint configuration
@@ -1871,7 +1871,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_429" href="errors/err_ngrok_429">ERR_NGROK_429</a>
+          <a id="ERR_NGROK_429" href="err_ngrok_429">ERR_NGROK_429</a>
         </td>
         <td class="pre-wrapped">
           Domain has invalid punycode: <code>&lt;IDNA_ERROR&gt;</code>. Failed to
@@ -1880,7 +1880,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_430" href="errors/err_ngrok_430">ERR_NGROK_430</a>
+          <a id="ERR_NGROK_430" href="err_ngrok_430">ERR_NGROK_430</a>
         </td>
         <td class="pre-wrapped">
           Another account is running an active tunnel on the domain
@@ -1890,7 +1890,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_431" href="errors/err_ngrok_431">ERR_NGROK_431</a>
+          <a id="ERR_NGROK_431" href="err_ngrok_431">ERR_NGROK_431</a>
         </td>
         <td class="pre-wrapped">
           Your account is limited to <code>&lt;MAX&gt;</code> reserved domains.
@@ -1898,7 +1898,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_432" href="errors/err_ngrok_432">ERR_NGROK_432</a>
+          <a id="ERR_NGROK_432" href="err_ngrok_432">ERR_NGROK_432</a>
         </td>
         <td class="pre-wrapped">
           Your account is rate limited for adding
@@ -1908,7 +1908,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_433" href="errors/err_ngrok_433">ERR_NGROK_433</a>
+          <a id="ERR_NGROK_433" href="err_ngrok_433">ERR_NGROK_433</a>
         </td>
         <td class="pre-wrapped">
           Your account is limited to <code>&lt;MAX&gt;</code> reserved wildcard
@@ -1917,7 +1917,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_434" href="errors/err_ngrok_434">ERR_NGROK_434</a>
+          <a id="ERR_NGROK_434" href="err_ngrok_434">ERR_NGROK_434</a>
         </td>
         <td class="pre-wrapped">
           Either a certificate or a certificate management policy may be
@@ -1926,7 +1926,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_435" href="errors/err_ngrok_435">ERR_NGROK_435</a>
+          <a id="ERR_NGROK_435" href="err_ngrok_435">ERR_NGROK_435</a>
         </td>
         <td class="pre-wrapped">
           Invalid authority specified in managed certificate policy.
@@ -1934,7 +1934,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_436" href="errors/err_ngrok_436">ERR_NGROK_436</a>
+          <a id="ERR_NGROK_436" href="err_ngrok_436">ERR_NGROK_436</a>
         </td>
         <td class="pre-wrapped">
           The certificate of a reserved domain with a managed certificate policy
@@ -1944,7 +1944,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_438" href="errors/err_ngrok_438">ERR_NGROK_438</a>
+          <a id="ERR_NGROK_438" href="err_ngrok_438">ERR_NGROK_438</a>
         </td>
         <td class="pre-wrapped">
           Invalid '_' in domain name. Valid domains may not contain underscores.
@@ -1953,7 +1953,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_439" href="errors/err_ngrok_439">ERR_NGROK_439</a>
+          <a id="ERR_NGROK_439" href="err_ngrok_439">ERR_NGROK_439</a>
         </td>
         <td class="pre-wrapped">
           The certificate_management_policy field must be null for domains owned
@@ -1962,7 +1962,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_440" href="errors/err_ngrok_440">ERR_NGROK_440</a>
+          <a id="ERR_NGROK_440" href="err_ngrok_440">ERR_NGROK_440</a>
         </td>
         <td class="pre-wrapped">
           Uploaded certificates are not allowed for domains owned by ngrok.
@@ -1970,7 +1970,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_441" href="errors/err_ngrok_441">ERR_NGROK_441</a>
+          <a id="ERR_NGROK_441" href="err_ngrok_441">ERR_NGROK_441</a>
         </td>
         <td class="pre-wrapped">
           Domain <code>&lt;DOMAIN&gt;</code> does not require an ACME Challenge
@@ -1979,7 +1979,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_442" href="errors/err_ngrok_442">ERR_NGROK_442</a>
+          <a id="ERR_NGROK_442" href="err_ngrok_442">ERR_NGROK_442</a>
         </td>
         <td class="pre-wrapped">
           Domain <code>&lt;RECORD&gt;</code> ACME Challenge CNAME record not found
@@ -1987,7 +1987,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_443" href="errors/err_ngrok_443">ERR_NGROK_443</a>
+          <a id="ERR_NGROK_443" href="err_ngrok_443">ERR_NGROK_443</a>
         </td>
         <td class="pre-wrapped">
           ACME Challenge <code>&lt;RECORD&gt;</code> CNAME record not found, A
@@ -1996,7 +1996,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_444" href="errors/err_ngrok_444">ERR_NGROK_444</a>
+          <a id="ERR_NGROK_444" href="err_ngrok_444">ERR_NGROK_444</a>
         </td>
         <td class="pre-wrapped">
           ACME Challenge <code>&lt;RECORD&gt;</code> CNAME record resolved to
@@ -2005,7 +2005,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_445" href="errors/err_ngrok_445">ERR_NGROK_445</a>
+          <a id="ERR_NGROK_445" href="err_ngrok_445">ERR_NGROK_445</a>
         </td>
         <td class="pre-wrapped">
           There was an error looking up the DNS <code>&lt;RTYPE&gt;</code> record
@@ -2015,7 +2015,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_500" href="errors/err_ngrok_500">ERR_NGROK_500</a>
+          <a id="ERR_NGROK_500" href="err_ngrok_500">ERR_NGROK_500</a>
         </td>
         <td class="pre-wrapped">
           The region you specified, <code>&lt;REGION&gt;</code> is invalid. Please
@@ -2024,7 +2024,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_501" href="errors/err_ngrok_501">ERR_NGROK_501</a>
+          <a id="ERR_NGROK_501" href="err_ngrok_501">ERR_NGROK_501</a>
         </td>
         <td class="pre-wrapped">
           Only Pro or Enterprise accounts can reserve addresses. Your account
@@ -2034,7 +2034,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_502" href="errors/err_ngrok_502">ERR_NGROK_502</a>
+          <a id="ERR_NGROK_502" href="err_ngrok_502">ERR_NGROK_502</a>
         </td>
         <td class="pre-wrapped">
           Your account is limited to <code>&lt;MAX&gt;</code> reserved addresses.
@@ -2043,7 +2043,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_503" href="errors/err_ngrok_503">ERR_NGROK_503</a>
+          <a id="ERR_NGROK_503" href="err_ngrok_503">ERR_NGROK_503</a>
         </td>
         <td class="pre-wrapped">
           No available reserved addresses in region <code>&lt;REGION&gt;</code>
@@ -2051,7 +2051,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_504" href="errors/err_ngrok_504">ERR_NGROK_504</a>
+          <a id="ERR_NGROK_504" href="err_ngrok_504">ERR_NGROK_504</a>
         </td>
         <td class="pre-wrapped">
           A description is limited to <code>&lt;MAX&gt;</code> characters; you
@@ -2060,7 +2060,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_505" href="errors/err_ngrok_505">ERR_NGROK_505</a>
+          <a id="ERR_NGROK_505" href="err_ngrok_505">ERR_NGROK_505</a>
         </td>
         <td class="pre-wrapped">
           Metadata is limited to <code>&lt;MAX&gt;</code> characters; you have
@@ -2069,7 +2069,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_506" href="errors/err_ngrok_506">ERR_NGROK_506</a>
+          <a id="ERR_NGROK_506" href="err_ngrok_506">ERR_NGROK_506</a>
         </td>
         <td class="pre-wrapped">
           The reserved address update failed because no values were provided.
@@ -2078,7 +2078,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_507" href="errors/err_ngrok_507">ERR_NGROK_507</a>
+          <a id="ERR_NGROK_507" href="err_ngrok_507">ERR_NGROK_507</a>
         </td>
         <td class="pre-wrapped">
           You may not assign endpoint configuration
@@ -2088,7 +2088,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_508" href="errors/err_ngrok_508">ERR_NGROK_508</a>
+          <a id="ERR_NGROK_508" href="err_ngrok_508">ERR_NGROK_508</a>
         </td>
         <td class="pre-wrapped">
           Your account is limited to <code>&lt;MAX&gt;</code> reserved addresses.
@@ -2096,7 +2096,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_509" href="errors/err_ngrok_509">ERR_NGROK_509</a>
+          <a id="ERR_NGROK_509" href="err_ngrok_509">ERR_NGROK_509</a>
         </td>
         <td class="pre-wrapped">
           Your account is rate limited for adding
@@ -2106,7 +2106,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_511" href="errors/err_ngrok_511">ERR_NGROK_511</a>
+          <a id="ERR_NGROK_511" href="err_ngrok_511">ERR_NGROK_511</a>
         </td>
         <td class="pre-wrapped">
           The domain <code>&lt;DOMAIN&gt;</code> has a dangling CNAME record. The
@@ -2115,7 +2115,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_512" href="errors/err_ngrok_512">ERR_NGROK_512</a>
+          <a id="ERR_NGROK_512" href="err_ngrok_512">ERR_NGROK_512</a>
         </td>
         <td class="pre-wrapped">
           The domain <code>&lt;DOMAIN&gt;</code> has a dangling A, AAAA, ALIAS or
@@ -2125,7 +2125,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_513" href="errors/err_ngrok_513">ERR_NGROK_513</a>
+          <a id="ERR_NGROK_513" href="err_ngrok_513">ERR_NGROK_513</a>
         </td>
         <td class="pre-wrapped">
           The domain <code>&lt;DOMAIN&gt;</code> is not a valid DNS name. No
@@ -2134,7 +2134,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_514" href="errors/err_ngrok_514">ERR_NGROK_514</a>
+          <a id="ERR_NGROK_514" href="err_ngrok_514">ERR_NGROK_514</a>
         </td>
         <td class="pre-wrapped">
           The domain <code>&lt;DOMAIN&gt;</code> is not a valid DNS name. Domains
@@ -2143,7 +2143,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_600" href="errors/err_ngrok_600">ERR_NGROK_600</a>
+          <a id="ERR_NGROK_600" href="err_ngrok_600">ERR_NGROK_600</a>
         </td>
         <td class="pre-wrapped">
           Invalid ACL rule. An ACL rule must be '*' or start with 'bind:'. The
@@ -2153,7 +2153,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_601" href="errors/err_ngrok_601">ERR_NGROK_601</a>
+          <a id="ERR_NGROK_601" href="err_ngrok_601">ERR_NGROK_601</a>
         </td>
         <td class="pre-wrapped">
           Cannot delete user credential <code>&lt;ID&gt;</code>.
@@ -2161,7 +2161,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_602" href="errors/err_ngrok_602">ERR_NGROK_602</a>
+          <a id="ERR_NGROK_602" href="err_ngrok_602">ERR_NGROK_602</a>
         </td>
         <td class="pre-wrapped">
           Your account is limited to <code>&lt;MAX&gt;</code> tunnel credentials.
@@ -2170,7 +2170,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_603" href="errors/err_ngrok_603">ERR_NGROK_603</a>
+          <a id="ERR_NGROK_603" href="err_ngrok_603">ERR_NGROK_603</a>
         </td>
         <td class="pre-wrapped">
           Your account is limited to <code>&lt;MAX&gt;</code> API keys. Email
@@ -2179,7 +2179,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_604" href="errors/err_ngrok_604">ERR_NGROK_604</a>
+          <a id="ERR_NGROK_604" href="err_ngrok_604">ERR_NGROK_604</a>
         </td>
         <td class="pre-wrapped">
           A description is limited to <code>&lt;MAX&gt;</code> characters; you
@@ -2188,7 +2188,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_605" href="errors/err_ngrok_605">ERR_NGROK_605</a>
+          <a id="ERR_NGROK_605" href="err_ngrok_605">ERR_NGROK_605</a>
         </td>
         <td class="pre-wrapped">
           Metadata is limited to <code>&lt;MAX&gt;</code> characters; you have
@@ -2197,7 +2197,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_606" href="errors/err_ngrok_606">ERR_NGROK_606</a>
+          <a id="ERR_NGROK_606" href="err_ngrok_606">ERR_NGROK_606</a>
         </td>
         <td class="pre-wrapped">
           The credentials update failed because no values were provided. Specify
@@ -2206,7 +2206,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_607" href="errors/err_ngrok_607">ERR_NGROK_607</a>
+          <a id="ERR_NGROK_607" href="err_ngrok_607">ERR_NGROK_607</a>
         </td>
         <td class="pre-wrapped">
           Only Pro and Enterprise accounts can use the SSH tunnel feature. SSH
@@ -2216,7 +2216,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_608" href="errors/err_ngrok_608">ERR_NGROK_608</a>
+          <a id="ERR_NGROK_608" href="err_ngrok_608">ERR_NGROK_608</a>
         </td>
         <td class="pre-wrapped">
           Your account is limited to <code>&lt;MAX&gt;</code> SSH keys. Email
@@ -2225,7 +2225,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_609" href="errors/err_ngrok_609">ERR_NGROK_609</a>
+          <a id="ERR_NGROK_609" href="err_ngrok_609">ERR_NGROK_609</a>
         </td>
         <td class="pre-wrapped">
           The public key <code>&lt;PUBKEY&gt;</code> already exists on your
@@ -2234,7 +2234,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_610" href="errors/err_ngrok_610">ERR_NGROK_610</a>
+          <a id="ERR_NGROK_610" href="err_ngrok_610">ERR_NGROK_610</a>
         </td>
         <td class="pre-wrapped">
           The public key <code>&lt;PUBKEY&gt;</code> is already used in a
@@ -2244,13 +2244,13 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_611" href="errors/err_ngrok_611">ERR_NGROK_611</a>
+          <a id="ERR_NGROK_611" href="err_ngrok_611">ERR_NGROK_611</a>
         </td>
         <td class="pre-wrapped">Public key is missing or empty.</td>
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_612" href="errors/err_ngrok_612">ERR_NGROK_612</a>
+          <a id="ERR_NGROK_612" href="err_ngrok_612">ERR_NGROK_612</a>
         </td>
         <td class="pre-wrapped">
           Invalid public key <code>&lt;PUBKEY&gt;</code>: <code>&lt;ERR&gt;</code>
@@ -2258,7 +2258,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_613" href="errors/err_ngrok_613">ERR_NGROK_613</a>
+          <a id="ERR_NGROK_613" href="err_ngrok_613">ERR_NGROK_613</a>
         </td>
         <td class="pre-wrapped">
           Your account is limited to <code>&lt;MAX&gt;</code> API keys.
@@ -2266,7 +2266,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_614" href="errors/err_ngrok_614">ERR_NGROK_614</a>
+          <a id="ERR_NGROK_614" href="err_ngrok_614">ERR_NGROK_614</a>
         </td>
         <td class="pre-wrapped">
           Your account is rate limited for adding <code>&lt;MAX&gt;</code> API
@@ -2275,7 +2275,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_615" href="errors/err_ngrok_615">ERR_NGROK_615</a>
+          <a id="ERR_NGROK_615" href="err_ngrok_615">ERR_NGROK_615</a>
         </td>
         <td class="pre-wrapped">
           Your account is limited to <code>&lt;MAX&gt;</code> tunnel credentials.
@@ -2283,7 +2283,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_617" href="errors/err_ngrok_617">ERR_NGROK_617</a>
+          <a id="ERR_NGROK_617" href="err_ngrok_617">ERR_NGROK_617</a>
         </td>
         <td class="pre-wrapped">
           Your account is limited to <code>&lt;MAX&gt;</code> SSH keys.
@@ -2291,7 +2291,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_619" href="errors/err_ngrok_619">ERR_NGROK_619</a>
+          <a id="ERR_NGROK_619" href="err_ngrok_619">ERR_NGROK_619</a>
         </td>
         <td class="pre-wrapped">
           Your account is not authorized to use this ACL rule type. You specified:
@@ -2300,7 +2300,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_620" href="errors/err_ngrok_620">ERR_NGROK_620</a>
+          <a id="ERR_NGROK_620" href="err_ngrok_620">ERR_NGROK_620</a>
         </td>
         <td class="pre-wrapped">
           Only Enterprise plans can use tunnel ACL rules. Your account is not
@@ -2310,7 +2310,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_621" href="errors/err_ngrok_621">ERR_NGROK_621</a>
+          <a id="ERR_NGROK_621" href="err_ngrok_621">ERR_NGROK_621</a>
         </td>
         <td class="pre-wrapped">
           Only Enterprise plans can use API ACL rules. Your account is not
@@ -2320,7 +2320,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_622" href="errors/err_ngrok_622">ERR_NGROK_622</a>
+          <a id="ERR_NGROK_622" href="err_ngrok_622">ERR_NGROK_622</a>
         </td>
         <td class="pre-wrapped">
           Only Enterprise plans can use SSH ACL rules. Your account is not
@@ -2330,7 +2330,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_627" href="errors/err_ngrok_627">ERR_NGROK_627</a>
+          <a id="ERR_NGROK_627" href="err_ngrok_627">ERR_NGROK_627</a>
         </td>
         <td class="pre-wrapped">
           The auth token is already owned by a user and cannot be re-assigned
@@ -2339,7 +2339,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_628" href="errors/err_ngrok_628">ERR_NGROK_628</a>
+          <a id="ERR_NGROK_628" href="err_ngrok_628">ERR_NGROK_628</a>
         </td>
         <td class="pre-wrapped">
           The API key is already owned by a user and cannot be re-assigned
@@ -2348,7 +2348,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_629" href="errors/err_ngrok_629">ERR_NGROK_629</a>
+          <a id="ERR_NGROK_629" href="err_ngrok_629">ERR_NGROK_629</a>
         </td>
         <td class="pre-wrapped">
           The SSH public key is already owned by a user and cannot be re-assigned
@@ -2357,7 +2357,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_630" href="errors/err_ngrok_630">ERR_NGROK_630</a>
+          <a id="ERR_NGROK_630" href="err_ngrok_630">ERR_NGROK_630</a>
         </td>
         <td class="pre-wrapped">
           You must be an admin to set credential ownership.
@@ -2365,7 +2365,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_702" href="errors/err_ngrok_702">ERR_NGROK_702</a>
+          <a id="ERR_NGROK_702" href="err_ngrok_702">ERR_NGROK_702</a>
         </td>
         <td class="pre-wrapped">
           Too many connections! The tunnel session
@@ -2378,7 +2378,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_703" href="errors/err_ngrok_703">ERR_NGROK_703</a>
+          <a id="ERR_NGROK_703" href="err_ngrok_703">ERR_NGROK_703</a>
         </td>
         <td class="pre-wrapped">
           Too many connections! The account hosting this endpoint has violated the
@@ -2390,7 +2390,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_708" href="errors/err_ngrok_708">ERR_NGROK_708</a>
+          <a id="ERR_NGROK_708" href="err_ngrok_708">ERR_NGROK_708</a>
         </td>
         <td class="pre-wrapped">
           This URL has expired. Please sign up for a free ngrok account to create
@@ -2400,7 +2400,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_714" href="errors/err_ngrok_714">ERR_NGROK_714</a>
+          <a id="ERR_NGROK_714" href="err_ngrok_714">ERR_NGROK_714</a>
         </td>
         <td class="pre-wrapped">
           This ngrok account has reached its simultaneous connections limit.
@@ -2409,7 +2409,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_715" href="errors/err_ngrok_715">ERR_NGROK_715</a>
+          <a id="ERR_NGROK_715" href="err_ngrok_715">ERR_NGROK_715</a>
         </td>
         <td class="pre-wrapped">
           This ngrok account has reached its connection rate limit. Please log
@@ -2418,7 +2418,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_716" href="errors/err_ngrok_716">ERR_NGROK_716</a>
+          <a id="ERR_NGROK_716" href="err_ngrok_716">ERR_NGROK_716</a>
         </td>
         <td class="pre-wrapped">
           This anonymous ngrok session has reached its simultaneous connections
@@ -2427,7 +2427,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_717" href="errors/err_ngrok_717">ERR_NGROK_717</a>
+          <a id="ERR_NGROK_717" href="err_ngrok_717">ERR_NGROK_717</a>
         </td>
         <td class="pre-wrapped">
           This anonymous ngrok session has reached its connection rate limit.
@@ -2435,7 +2435,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_718" href="errors/err_ngrok_718">ERR_NGROK_718</a>
+          <a id="ERR_NGROK_718" href="err_ngrok_718">ERR_NGROK_718</a>
         </td>
         <td class="pre-wrapped">
           Your account is rate limited to <code>&lt;MAX&gt;</code> bytes incoming
@@ -2444,7 +2444,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_719" href="errors/err_ngrok_719">ERR_NGROK_719</a>
+          <a id="ERR_NGROK_719" href="err_ngrok_719">ERR_NGROK_719</a>
         </td>
         <td class="pre-wrapped">
           Anonymous sessions are rate limited to <code>&lt;MAX&gt;</code> bytes
@@ -2453,7 +2453,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_720" href="errors/err_ngrok_720">ERR_NGROK_720</a>
+          <a id="ERR_NGROK_720" href="err_ngrok_720">ERR_NGROK_720</a>
         </td>
         <td class="pre-wrapped">
           Your account is rate limited to <code>&lt;MAX&gt;</code> bytes outgoing
@@ -2462,7 +2462,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_721" href="errors/err_ngrok_721">ERR_NGROK_721</a>
+          <a id="ERR_NGROK_721" href="err_ngrok_721">ERR_NGROK_721</a>
         </td>
         <td class="pre-wrapped">
           Anonymous sessions are rate limited to <code>&lt;MAX&gt;</code> bytes
@@ -2471,13 +2471,13 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_722" href="errors/err_ngrok_722">ERR_NGROK_722</a>
+          <a id="ERR_NGROK_722" href="err_ngrok_722">ERR_NGROK_722</a>
         </td>
         <td class="pre-wrapped">internal server error</td>
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_724" href="errors/err_ngrok_724">ERR_NGROK_724</a>
+          <a id="ERR_NGROK_724" href="err_ngrok_724">ERR_NGROK_724</a>
         </td>
         <td class="pre-wrapped">
           No backend is available to serve requests for endpoint
@@ -2486,7 +2486,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_800" href="errors/err_ngrok_800">ERR_NGROK_800</a>
+          <a id="ERR_NGROK_800" href="err_ngrok_800">ERR_NGROK_800</a>
         </td>
         <td class="pre-wrapped">
           Unknown stream type: <code>&lt;TYPE&gt;</code>. This usually indiciates
@@ -2495,7 +2495,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_801" href="errors/err_ngrok_801">ERR_NGROK_801</a>
+          <a id="ERR_NGROK_801" href="err_ngrok_801">ERR_NGROK_801</a>
         </td>
         <td class="pre-wrapped">
           The request payload you specified is not valid. This usually indiciates
@@ -2505,13 +2505,13 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_802" href="errors/err_ngrok_802">ERR_NGROK_802</a>
+          <a id="ERR_NGROK_802" href="err_ngrok_802">ERR_NGROK_802</a>
         </td>
         <td class="pre-wrapped">internal server error</td>
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_803" href="errors/err_ngrok_803">ERR_NGROK_803</a>
+          <a id="ERR_NGROK_803" href="err_ngrok_803">ERR_NGROK_803</a>
         </td>
         <td class="pre-wrapped">
           The server process is shutting down and refusing new requests.
@@ -2519,7 +2519,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_804" href="errors/err_ngrok_804">ERR_NGROK_804</a>
+          <a id="ERR_NGROK_804" href="err_ngrok_804">ERR_NGROK_804</a>
         </td>
         <td class="pre-wrapped">
           This ngrok agent does not support remote restarting:
@@ -2528,7 +2528,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_805" href="errors/err_ngrok_805">ERR_NGROK_805</a>
+          <a id="ERR_NGROK_805" href="err_ngrok_805">ERR_NGROK_805</a>
         </td>
         <td class="pre-wrapped">
           This ngrok agent does not support remote stopping:
@@ -2537,7 +2537,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_806" href="errors/err_ngrok_806">ERR_NGROK_806</a>
+          <a id="ERR_NGROK_806" href="err_ngrok_806">ERR_NGROK_806</a>
         </td>
         <td class="pre-wrapped">
           This ngrok agent does not support remote updating:
@@ -2546,7 +2546,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_807" href="errors/err_ngrok_807">ERR_NGROK_807</a>
+          <a id="ERR_NGROK_807" href="err_ngrok_807">ERR_NGROK_807</a>
         </td>
         <td class="pre-wrapped">
           The remote ngrok agent failed to stop because of an error:
@@ -2555,7 +2555,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_808" href="errors/err_ngrok_808">ERR_NGROK_808</a>
+          <a id="ERR_NGROK_808" href="err_ngrok_808">ERR_NGROK_808</a>
         </td>
         <td class="pre-wrapped">
           The remote ngrok agent failed to restart because of an error:
@@ -2564,7 +2564,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_809" href="errors/err_ngrok_809">ERR_NGROK_809</a>
+          <a id="ERR_NGROK_809" href="err_ngrok_809">ERR_NGROK_809</a>
         </td>
         <td class="pre-wrapped">
           The remote ngrok agent failed to update because of an error:
@@ -2573,7 +2573,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_810" href="errors/err_ngrok_810">ERR_NGROK_810</a>
+          <a id="ERR_NGROK_810" href="err_ngrok_810">ERR_NGROK_810</a>
         </td>
         <td class="pre-wrapped">
           There was a networking error while trying to send this operation to the
@@ -2585,7 +2585,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_811" href="errors/err_ngrok_811">ERR_NGROK_811</a>
+          <a id="ERR_NGROK_811" href="err_ngrok_811">ERR_NGROK_811</a>
         </td>
         <td class="pre-wrapped">
           Could not negotiate a protocol version. Requested:
@@ -2595,7 +2595,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_812" href="errors/err_ngrok_812">ERR_NGROK_812</a>
+          <a id="ERR_NGROK_812" href="err_ngrok_812">ERR_NGROK_812</a>
         </td>
         <td class="pre-wrapped">
           Your request exceeded the maximum size of <code>&lt;SIZE&gt;</code>.
@@ -2603,7 +2603,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1000" href="errors/err_ngrok_1000">ERR_NGROK_1000</a>
+          <a id="ERR_NGROK_1000" href="err_ngrok_1000">ERR_NGROK_1000</a>
         </td>
         <td class="pre-wrapped">
           Your billing address is too long: <code>&lt;VAL&gt;</code> bytes. Max:
@@ -2612,7 +2612,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1001" href="errors/err_ngrok_1001">ERR_NGROK_1001</a>
+          <a id="ERR_NGROK_1001" href="err_ngrok_1001">ERR_NGROK_1001</a>
         </td>
         <td class="pre-wrapped">
           Your tax ID is too long: <code>&lt;VAL&gt;</code> bytes. Max:
@@ -2621,7 +2621,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1002" href="errors/err_ngrok_1002">ERR_NGROK_1002</a>
+          <a id="ERR_NGROK_1002" href="err_ngrok_1002">ERR_NGROK_1002</a>
         </td>
         <td class="pre-wrapped">
           Your account is limited to <code>&lt;MAX&gt;</code> billing email
@@ -2630,7 +2630,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1003" href="errors/err_ngrok_1003">ERR_NGROK_1003</a>
+          <a id="ERR_NGROK_1003" href="err_ngrok_1003">ERR_NGROK_1003</a>
         </td>
         <td class="pre-wrapped">
           The billing email <code>&lt;ID&gt;</code> (<code>&lt;EMAIL&gt;</code>)
@@ -2639,7 +2639,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1004" href="errors/err_ngrok_1004">ERR_NGROK_1004</a>
+          <a id="ERR_NGROK_1004" href="err_ngrok_1004">ERR_NGROK_1004</a>
         </td>
         <td class="pre-wrapped">
           The billing email is too long: <code>&lt;VAL&gt;</code> bytes. Max:
@@ -2648,7 +2648,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1005" href="errors/err_ngrok_1005">ERR_NGROK_1005</a>
+          <a id="ERR_NGROK_1005" href="err_ngrok_1005">ERR_NGROK_1005</a>
         </td>
         <td class="pre-wrapped">
           The billing email address <code>&lt;EMAIL&gt;</code> is invalid:
@@ -2657,7 +2657,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1006" href="errors/err_ngrok_1006">ERR_NGROK_1006</a>
+          <a id="ERR_NGROK_1006" href="err_ngrok_1006">ERR_NGROK_1006</a>
         </td>
         <td class="pre-wrapped">
           There was a problem with your credit card: <code>&lt;MSG&gt;</code>
@@ -2665,7 +2665,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1007" href="errors/err_ngrok_1007">ERR_NGROK_1007</a>
+          <a id="ERR_NGROK_1007" href="err_ngrok_1007">ERR_NGROK_1007</a>
         </td>
         <td class="pre-wrapped">
           Your subscription was updated, by we failed to charge your card:
@@ -2674,7 +2674,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1008" href="errors/err_ngrok_1008">ERR_NGROK_1008</a>
+          <a id="ERR_NGROK_1008" href="err_ngrok_1008">ERR_NGROK_1008</a>
         </td>
         <td class="pre-wrapped">
           Your account is limited to <code>&lt;MAX&gt;</code> billing email
@@ -2683,7 +2683,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1010" href="errors/err_ngrok_1010">ERR_NGROK_1010</a>
+          <a id="ERR_NGROK_1010" href="err_ngrok_1010">ERR_NGROK_1010</a>
         </td>
         <td class="pre-wrapped">
           The email address "<code>&lt;EMAIL&gt;</code>" is invalid.
@@ -2691,7 +2691,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1011" href="errors/err_ngrok_1011">ERR_NGROK_1011</a>
+          <a id="ERR_NGROK_1011" href="err_ngrok_1011">ERR_NGROK_1011</a>
         </td>
         <td class="pre-wrapped">
           Your account is currently past due. You may only enter a payment method
@@ -2700,7 +2700,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1012" href="errors/err_ngrok_1012">ERR_NGROK_1012</a>
+          <a id="ERR_NGROK_1012" href="err_ngrok_1012">ERR_NGROK_1012</a>
         </td>
         <td class="pre-wrapped">
           You may not purchase fewer licenses than users. Your account currently
@@ -2709,7 +2709,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1013" href="errors/err_ngrok_1013">ERR_NGROK_1013</a>
+          <a id="ERR_NGROK_1013" href="err_ngrok_1013">ERR_NGROK_1013</a>
         </td>
         <td class="pre-wrapped">
           Yearly plans can only be downgraded or canceled in their final month.
@@ -2718,7 +2718,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1014" href="errors/err_ngrok_1014">ERR_NGROK_1014</a>
+          <a id="ERR_NGROK_1014" href="err_ngrok_1014">ERR_NGROK_1014</a>
         </td>
         <td class="pre-wrapped">
           You may only purchase one license product at a time.
@@ -2726,7 +2726,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1015" href="errors/err_ngrok_1015">ERR_NGROK_1015</a>
+          <a id="ERR_NGROK_1015" href="err_ngrok_1015">ERR_NGROK_1015</a>
         </td>
         <td class="pre-wrapped">
           You are on an old custom subscription. Please contact support@ngrok.com
@@ -2735,7 +2735,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1016" href="errors/err_ngrok_1016">ERR_NGROK_1016</a>
+          <a id="ERR_NGROK_1016" href="err_ngrok_1016">ERR_NGROK_1016</a>
         </td>
         <td class="pre-wrapped">
           Cannot charge customer that has no active payment source.
@@ -2743,7 +2743,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1017" href="errors/err_ngrok_1017">ERR_NGROK_1017</a>
+          <a id="ERR_NGROK_1017" href="err_ngrok_1017">ERR_NGROK_1017</a>
         </td>
         <td class="pre-wrapped">
           Accounts in bad standing may only switch to a free plan or update their
@@ -2752,7 +2752,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1100" href="errors/err_ngrok_1100">ERR_NGROK_1100</a>
+          <a id="ERR_NGROK_1100" href="err_ngrok_1100">ERR_NGROK_1100</a>
         </td>
         <td class="pre-wrapped">
           No public keys were sent for this SSH tunnel. Configure SSH with public
@@ -2764,7 +2764,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1101" href="errors/err_ngrok_1101">ERR_NGROK_1101</a>
+          <a id="ERR_NGROK_1101" href="err_ngrok_1101">ERR_NGROK_1101</a>
         </td>
         <td class="pre-wrapped">
           Too many public keys sent for this SSH tunnel (sent
@@ -2774,7 +2774,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1102" href="errors/err_ngrok_1102">ERR_NGROK_1102</a>
+          <a id="ERR_NGROK_1102" href="err_ngrok_1102">ERR_NGROK_1102</a>
         </td>
         <td class="pre-wrapped">
           Could not find your account based on the public keys sent for this SSH
@@ -2785,7 +2785,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1103" href="errors/err_ngrok_1103">ERR_NGROK_1103</a>
+          <a id="ERR_NGROK_1103" href="err_ngrok_1103">ERR_NGROK_1103</a>
         </td>
         <td class="pre-wrapped">
           Only Pro or Enterprise accounts can use the SSH tunneling feature. The
@@ -2796,7 +2796,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1104" href="errors/err_ngrok_1104">ERR_NGROK_1104</a>
+          <a id="ERR_NGROK_1104" href="err_ngrok_1104">ERR_NGROK_1104</a>
         </td>
         <td class="pre-wrapped">
           Multiplexing is not supported with SSH tunneling
@@ -2804,7 +2804,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1105" href="errors/err_ngrok_1105">ERR_NGROK_1105</a>
+          <a id="ERR_NGROK_1105" href="err_ngrok_1105">ERR_NGROK_1105</a>
         </td>
         <td class="pre-wrapped">
           Only one port forward per tunneling session is supported.
@@ -2812,7 +2812,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1106" href="errors/err_ngrok_1106">ERR_NGROK_1106</a>
+          <a id="ERR_NGROK_1106" href="err_ngrok_1106">ERR_NGROK_1106</a>
         </td>
         <td class="pre-wrapped">
           Could not find <code>&lt;USER&gt;</code> API version. Use
@@ -2822,7 +2822,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1107" href="errors/err_ngrok_1107">ERR_NGROK_1107</a>
+          <a id="ERR_NGROK_1107" href="err_ngrok_1107">ERR_NGROK_1107</a>
         </td>
         <td class="pre-wrapped">
           No tunnel type specified. The SSH command specifies the type of tunnel
@@ -2831,7 +2831,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1108" href="errors/err_ngrok_1108">ERR_NGROK_1108</a>
+          <a id="ERR_NGROK_1108" href="err_ngrok_1108">ERR_NGROK_1108</a>
         </td>
         <td class="pre-wrapped">
           <code>&lt;CMD&gt;</code> is not a valid tunnel type. The SSH command
@@ -2840,7 +2840,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1109" href="errors/err_ngrok_1109">ERR_NGROK_1109</a>
+          <a id="ERR_NGROK_1109" href="err_ngrok_1109">ERR_NGROK_1109</a>
         </td>
         <td class="pre-wrapped">
           <code>&lt;FLAG&gt;</code> flag is not supported when using SSH tunneling
@@ -2848,7 +2848,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1110" href="errors/err_ngrok_1110">ERR_NGROK_1110</a>
+          <a id="ERR_NGROK_1110" href="err_ngrok_1110">ERR_NGROK_1110</a>
         </td>
         <td class="pre-wrapped">
           Error while parsing the <code>&lt;CMD&gt;</code> command:
@@ -2857,13 +2857,13 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1111" href="errors/err_ngrok_1111">ERR_NGROK_1111</a>
+          <a id="ERR_NGROK_1111" href="err_ngrok_1111">ERR_NGROK_1111</a>
         </td>
         <td class="pre-wrapped">Timeout while waiting for SSH session</td>
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1112" href="errors/err_ngrok_1112">ERR_NGROK_1112</a>
+          <a id="ERR_NGROK_1112" href="err_ngrok_1112">ERR_NGROK_1112</a>
         </td>
         <td class="pre-wrapped">
           Timeout while waiting for port forward request. Use 'ssh -R ...' option
@@ -2872,7 +2872,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1113" href="errors/err_ngrok_1113">ERR_NGROK_1113</a>
+          <a id="ERR_NGROK_1113" href="err_ngrok_1113">ERR_NGROK_1113</a>
         </td>
         <td class="pre-wrapped">
           Cannot use bind port <code>&lt;PORT&gt;</code> when using
@@ -2882,7 +2882,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1114" href="errors/err_ngrok_1114">ERR_NGROK_1114</a>
+          <a id="ERR_NGROK_1114" href="err_ngrok_1114">ERR_NGROK_1114</a>
         </td>
         <td class="pre-wrapped">
           Cannot use bind address '-R
@@ -2894,7 +2894,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1115" href="errors/err_ngrok_1115">ERR_NGROK_1115</a>
+          <a id="ERR_NGROK_1115" href="err_ngrok_1115">ERR_NGROK_1115</a>
         </td>
         <td class="pre-wrapped">
           Cannot request a custom TCP port '-R <code>&lt;PORT&gt;</code>:' with
@@ -2906,7 +2906,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1116" href="errors/err_ngrok_1116">ERR_NGROK_1116</a>
+          <a id="ERR_NGROK_1116" href="err_ngrok_1116">ERR_NGROK_1116</a>
         </td>
         <td class="pre-wrapped">
           Cannot request a custom bind port '-R <code>&lt;PORT&gt;</code>:'. You
@@ -2918,7 +2918,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1117" href="errors/err_ngrok_1117">ERR_NGROK_1117</a>
+          <a id="ERR_NGROK_1117" href="err_ngrok_1117">ERR_NGROK_1117</a>
         </td>
         <td class="pre-wrapped">
           Cannot request a random port with a custom bind address
@@ -2931,7 +2931,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1118" href="errors/err_ngrok_1118">ERR_NGROK_1118</a>
+          <a id="ERR_NGROK_1118" href="err_ngrok_1118">ERR_NGROK_1118</a>
         </td>
         <td class="pre-wrapped">
           Cannot use binding address '-R <code>&lt;ADDR&gt;</code>:' with
@@ -2942,7 +2942,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1119" href="errors/err_ngrok_1119">ERR_NGROK_1119</a>
+          <a id="ERR_NGROK_1119" href="err_ngrok_1119">ERR_NGROK_1119</a>
         </td>
         <td class="pre-wrapped">
           Cannot use binding address '-R <code>&lt;ADDR&gt;</code>:' with
@@ -2953,7 +2953,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1120" href="errors/err_ngrok_1120">ERR_NGROK_1120</a>
+          <a id="ERR_NGROK_1120" href="err_ngrok_1120">ERR_NGROK_1120</a>
         </td>
         <td class="pre-wrapped">
           Cannot use '-hostname=<code>&lt;HOSTNAME&gt;</code> with
@@ -2964,19 +2964,19 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1121" href="errors/err_ngrok_1121">ERR_NGROK_1121</a>
+          <a id="ERR_NGROK_1121" href="err_ngrok_1121">ERR_NGROK_1121</a>
         </td>
         <td class="pre-wrapped">SSH sessions do not support update.</td>
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1122" href="errors/err_ngrok_1122">ERR_NGROK_1122</a>
+          <a id="ERR_NGROK_1122" href="err_ngrok_1122">ERR_NGROK_1122</a>
         </td>
         <td class="pre-wrapped">SSH sessions do not support restart.</td>
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1123" href="errors/err_ngrok_1123">ERR_NGROK_1123</a>
+          <a id="ERR_NGROK_1123" href="err_ngrok_1123">ERR_NGROK_1123</a>
         </td>
         <td class="pre-wrapped">
           Tunnel '-proxy-proto=<code>&lt;PROXYPROTO&gt;</code> specifies invalid
@@ -2985,7 +2985,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1200" href="errors/err_ngrok_1200">ERR_NGROK_1200</a>
+          <a id="ERR_NGROK_1200" href="err_ngrok_1200">ERR_NGROK_1200</a>
         </td>
         <td class="pre-wrapped">
           Authorized account's primary email <code>&lt;EMAIL&gt;</code> is not
@@ -2994,7 +2994,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1202" href="errors/err_ngrok_1202">ERR_NGROK_1202</a>
+          <a id="ERR_NGROK_1202" href="err_ngrok_1202">ERR_NGROK_1202</a>
         </td>
         <td class="pre-wrapped">
           You can't enable Google OAuth without first connecting a Google Apps
@@ -3003,7 +3003,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1203" href="errors/err_ngrok_1203">ERR_NGROK_1203</a>
+          <a id="ERR_NGROK_1203" href="err_ngrok_1203">ERR_NGROK_1203</a>
         </td>
         <td class="pre-wrapped">
           You can't enable Google OAuth because your connected Google login does
@@ -3012,7 +3012,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1204" href="errors/err_ngrok_1204">ERR_NGROK_1204</a>
+          <a id="ERR_NGROK_1204" href="err_ngrok_1204">ERR_NGROK_1204</a>
         </td>
         <td class="pre-wrapped">
           You can't delete your payment method while you have an active
@@ -3021,7 +3021,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1205" href="errors/err_ngrok_1205">ERR_NGROK_1205</a>
+          <a id="ERR_NGROK_1205" href="err_ngrok_1205">ERR_NGROK_1205</a>
         </td>
         <td class="pre-wrapped">
           You failed to solve the catpcha, please try again.
@@ -3029,7 +3029,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1207" href="errors/err_ngrok_1207">ERR_NGROK_1207</a>
+          <a id="ERR_NGROK_1207" href="err_ngrok_1207">ERR_NGROK_1207</a>
         </td>
         <td class="pre-wrapped">
           Cannot switch to an account you are not a member of.
@@ -3037,7 +3037,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1208" href="errors/err_ngrok_1208">ERR_NGROK_1208</a>
+          <a id="ERR_NGROK_1208" href="err_ngrok_1208">ERR_NGROK_1208</a>
         </td>
         <td class="pre-wrapped">
           You failed to solve the catpcha, please try again.
@@ -3045,7 +3045,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1210" href="errors/err_ngrok_1210">ERR_NGROK_1210</a>
+          <a id="ERR_NGROK_1210" href="err_ngrok_1210">ERR_NGROK_1210</a>
         </td>
         <td class="pre-wrapped">
           Invalid subscription interval <code>&lt;INTERVAL&gt;</code>.
@@ -3053,7 +3053,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1211" href="errors/err_ngrok_1211">ERR_NGROK_1211</a>
+          <a id="ERR_NGROK_1211" href="err_ngrok_1211">ERR_NGROK_1211</a>
         </td>
         <td class="pre-wrapped">
           Warning: Your IP does not match the IP Policy for this Account. When IP
@@ -3064,7 +3064,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1212" href="errors/err_ngrok_1212">ERR_NGROK_1212</a>
+          <a id="ERR_NGROK_1212" href="err_ngrok_1212">ERR_NGROK_1212</a>
         </td>
         <td class="pre-wrapped">
           Your IP does not match the IP Policy for this Account. Please
@@ -3075,7 +3075,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1213" href="errors/err_ngrok_1213">ERR_NGROK_1213</a>
+          <a id="ERR_NGROK_1213" href="err_ngrok_1213">ERR_NGROK_1213</a>
         </td>
         <td class="pre-wrapped">
           A new version of the ngrok dashboard is required to continue. Please
@@ -3084,7 +3084,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1214" href="errors/err_ngrok_1214">ERR_NGROK_1214</a>
+          <a id="ERR_NGROK_1214" href="err_ngrok_1214">ERR_NGROK_1214</a>
         </td>
         <td class="pre-wrapped">
           Your account is rate limited to <code>&lt;MAX&gt;</code> requests per
@@ -3093,7 +3093,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1215" href="errors/err_ngrok_1215">ERR_NGROK_1215</a>
+          <a id="ERR_NGROK_1215" href="err_ngrok_1215">ERR_NGROK_1215</a>
         </td>
         <td class="pre-wrapped">
           The user <code>&lt;EMAIL&gt;</code> does not have permissions to invite
@@ -3102,7 +3102,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1216" href="errors/err_ngrok_1216">ERR_NGROK_1216</a>
+          <a id="ERR_NGROK_1216" href="err_ngrok_1216">ERR_NGROK_1216</a>
         </td>
         <td class="pre-wrapped">
           The user <code>&lt;EMAIL&gt;</code> does not have permissions to manage
@@ -3111,7 +3111,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1217" href="errors/err_ngrok_1217">ERR_NGROK_1217</a>
+          <a id="ERR_NGROK_1217" href="err_ngrok_1217">ERR_NGROK_1217</a>
         </td>
         <td class="pre-wrapped">
           The user <code>&lt;EMAIL&gt;</code> does not have permissions to view
@@ -3120,7 +3120,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1218" href="errors/err_ngrok_1218">ERR_NGROK_1218</a>
+          <a id="ERR_NGROK_1218" href="err_ngrok_1218">ERR_NGROK_1218</a>
         </td>
         <td class="pre-wrapped">
           The user <code>&lt;EMAIL&gt;</code> does not have permissions to change
@@ -3129,7 +3129,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1219" href="errors/err_ngrok_1219">ERR_NGROK_1219</a>
+          <a id="ERR_NGROK_1219" href="err_ngrok_1219">ERR_NGROK_1219</a>
         </td>
         <td class="pre-wrapped">
           The user <code>&lt;EMAIL&gt;</code> does not have permissions to change
@@ -3138,7 +3138,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1220" href="errors/err_ngrok_1220">ERR_NGROK_1220</a>
+          <a id="ERR_NGROK_1220" href="err_ngrok_1220">ERR_NGROK_1220</a>
         </td>
         <td class="pre-wrapped">
           The user <code>&lt;EMAIL&gt;</code> does not have administrative
@@ -3147,7 +3147,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1221" href="errors/err_ngrok_1221">ERR_NGROK_1221</a>
+          <a id="ERR_NGROK_1221" href="err_ngrok_1221">ERR_NGROK_1221</a>
         </td>
         <td class="pre-wrapped">
           Refusing to perform an account delete operation because you are using
@@ -3157,19 +3157,19 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1222" href="errors/err_ngrok_1222">ERR_NGROK_1222</a>
+          <a id="ERR_NGROK_1222" href="err_ngrok_1222">ERR_NGROK_1222</a>
         </td>
         <td class="pre-wrapped">You are not a member of any account.</td>
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1223" href="errors/err_ngrok_1223">ERR_NGROK_1223</a>
+          <a id="ERR_NGROK_1223" href="err_ngrok_1223">ERR_NGROK_1223</a>
         </td>
         <td class="pre-wrapped">You are logged out, please log back in.</td>
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1224" href="errors/err_ngrok_1224">ERR_NGROK_1224</a>
+          <a id="ERR_NGROK_1224" href="err_ngrok_1224">ERR_NGROK_1224</a>
         </td>
         <td class="pre-wrapped">
           You are no longer a member of the current account.
@@ -3177,7 +3177,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1225" href="errors/err_ngrok_1225">ERR_NGROK_1225</a>
+          <a id="ERR_NGROK_1225" href="err_ngrok_1225">ERR_NGROK_1225</a>
         </td>
         <td class="pre-wrapped">
           You must accept the terms of service and privacy policy to sign up for
@@ -3186,7 +3186,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1226" href="errors/err_ngrok_1226">ERR_NGROK_1226</a>
+          <a id="ERR_NGROK_1226" href="err_ngrok_1226">ERR_NGROK_1226</a>
         </td>
         <td class="pre-wrapped">
           You are disallowed from creating an ngrok account due to violation of
@@ -3195,7 +3195,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1227" href="errors/err_ngrok_1227">ERR_NGROK_1227</a>
+          <a id="ERR_NGROK_1227" href="err_ngrok_1227">ERR_NGROK_1227</a>
         </td>
         <td class="pre-wrapped">
           The number of login attempts with this email has been exceeded, please
@@ -3204,7 +3204,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1400" href="errors/err_ngrok_1400">ERR_NGROK_1400</a>
+          <a id="ERR_NGROK_1400" href="err_ngrok_1400">ERR_NGROK_1400</a>
         </td>
         <td class="pre-wrapped">
           The IP Policy update failed because no values were provided. Specify at
@@ -3213,7 +3213,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1401" href="errors/err_ngrok_1401">ERR_NGROK_1401</a>
+          <a id="ERR_NGROK_1401" href="err_ngrok_1401">ERR_NGROK_1401</a>
         </td>
         <td class="pre-wrapped">
           The IP Policy Rule update failed because no values were provided.
@@ -3222,19 +3222,19 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1402" href="errors/err_ngrok_1402">ERR_NGROK_1402</a>
+          <a id="ERR_NGROK_1402" href="err_ngrok_1402">ERR_NGROK_1402</a>
         </td>
         <td class="pre-wrapped">IP Policy not found</td>
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1404" href="errors/err_ngrok_1404">ERR_NGROK_1404</a>
+          <a id="ERR_NGROK_1404" href="err_ngrok_1404">ERR_NGROK_1404</a>
         </td>
         <td class="pre-wrapped">IP Policy Rule not found</td>
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1405" href="errors/err_ngrok_1405">ERR_NGROK_1405</a>
+          <a id="ERR_NGROK_1405" href="err_ngrok_1405">ERR_NGROK_1405</a>
         </td>
         <td class="pre-wrapped">
           Required parameter is missing. Please specify <code>&lt;PARAM&gt;</code>
@@ -3242,13 +3242,13 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1406" href="errors/err_ngrok_1406">ERR_NGROK_1406</a>
+          <a id="ERR_NGROK_1406" href="err_ngrok_1406">ERR_NGROK_1406</a>
         </td>
         <td class="pre-wrapped">Invalid CIDR: <code>&lt;CIDR&gt;</code></td>
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1407" href="errors/err_ngrok_1407">ERR_NGROK_1407</a>
+          <a id="ERR_NGROK_1407" href="err_ngrok_1407">ERR_NGROK_1407</a>
         </td>
         <td class="pre-wrapped">
           IP Policy with name <code>&lt;NAME&gt;</code> already exists
@@ -3256,7 +3256,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1408" href="errors/err_ngrok_1408">ERR_NGROK_1408</a>
+          <a id="ERR_NGROK_1408" href="err_ngrok_1408">ERR_NGROK_1408</a>
         </td>
         <td class="pre-wrapped">
           IP Policy Rule with CIDR <code>&lt;CIDR&gt;</code> already exists
@@ -3264,7 +3264,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1409" href="errors/err_ngrok_1409">ERR_NGROK_1409</a>
+          <a id="ERR_NGROK_1409" href="err_ngrok_1409">ERR_NGROK_1409</a>
         </td>
         <td class="pre-wrapped">
           IP Policy Rule CIDR <code>&lt;CIDR&gt;</code> must be specified using
@@ -3274,7 +3274,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1410" href="errors/err_ngrok_1410">ERR_NGROK_1410</a>
+          <a id="ERR_NGROK_1410" href="err_ngrok_1410">ERR_NGROK_1410</a>
         </td>
         <td class="pre-wrapped">
           Your account is limited to a maximum of <code>&lt;MAX&gt;</code> IP
@@ -3283,7 +3283,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1411" href="errors/err_ngrok_1411">ERR_NGROK_1411</a>
+          <a id="ERR_NGROK_1411" href="err_ngrok_1411">ERR_NGROK_1411</a>
         </td>
         <td class="pre-wrapped">
           Your account is limited to a maximum of <code>&lt;MAX&gt;</code> IP
@@ -3292,7 +3292,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1412" href="errors/err_ngrok_1412">ERR_NGROK_1412</a>
+          <a id="ERR_NGROK_1412" href="err_ngrok_1412">ERR_NGROK_1412</a>
         </td>
         <td class="pre-wrapped">
           Only Pro or Enterprise accounts can use per-tunnel IP policies. Your
@@ -3303,7 +3303,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1413" href="errors/err_ngrok_1413">ERR_NGROK_1413</a>
+          <a id="ERR_NGROK_1413" href="err_ngrok_1413">ERR_NGROK_1413</a>
         </td>
         <td class="pre-wrapped">
           IP Policy Rule is missing a network mask. Consider using
@@ -3313,7 +3313,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1414" href="errors/err_ngrok_1414">ERR_NGROK_1414</a>
+          <a id="ERR_NGROK_1414" href="err_ngrok_1414">ERR_NGROK_1414</a>
         </td>
         <td class="pre-wrapped">
           The provided ip_policy_id is invalid. Please check the value given with
@@ -3322,7 +3322,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1415" href="errors/err_ngrok_1415">ERR_NGROK_1415</a>
+          <a id="ERR_NGROK_1415" href="err_ngrok_1415">ERR_NGROK_1415</a>
         </td>
         <td class="pre-wrapped">
           Your account is limited to <code>&lt;MAX&gt;</code> IP Policies.
@@ -3330,7 +3330,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1417" href="errors/err_ngrok_1417">ERR_NGROK_1417</a>
+          <a id="ERR_NGROK_1417" href="err_ngrok_1417">ERR_NGROK_1417</a>
         </td>
         <td class="pre-wrapped">
           Your account is limited to <code>&lt;MAX&gt;</code> rules per IP Policy.
@@ -3338,7 +3338,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1419" href="errors/err_ngrok_1419">ERR_NGROK_1419</a>
+          <a id="ERR_NGROK_1419" href="err_ngrok_1419">ERR_NGROK_1419</a>
         </td>
         <td class="pre-wrapped">
           Cannot delete only rule (<code>&lt;RULEID&gt;</code>) in use by
@@ -3348,7 +3348,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1420" href="errors/err_ngrok_1420">ERR_NGROK_1420</a>
+          <a id="ERR_NGROK_1420" href="err_ngrok_1420">ERR_NGROK_1420</a>
         </td>
         <td class="pre-wrapped">
           Cannot delete IP Policy (<code>&lt;POLICYID&gt;</code>) because it is
@@ -3359,7 +3359,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1421" href="errors/err_ngrok_1421">ERR_NGROK_1421</a>
+          <a id="ERR_NGROK_1421" href="err_ngrok_1421">ERR_NGROK_1421</a>
         </td>
         <td class="pre-wrapped">
           The IP Policy Rule description exceeds the maximum length of
@@ -3368,7 +3368,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1422" href="errors/err_ngrok_1422">ERR_NGROK_1422</a>
+          <a id="ERR_NGROK_1422" href="err_ngrok_1422">ERR_NGROK_1422</a>
         </td>
         <td class="pre-wrapped">
           An IP Policy Rule must have an 'action' of either 'allow' or 'deny'.
@@ -3376,7 +3376,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1423" href="errors/err_ngrok_1423">ERR_NGROK_1423</a>
+          <a id="ERR_NGROK_1423" href="err_ngrok_1423">ERR_NGROK_1423</a>
         </td>
         <td class="pre-wrapped">
           An action should now be specified on the IP Policy Rule, not IP Policy.
@@ -3385,7 +3385,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1500" href="errors/err_ngrok_1500">ERR_NGROK_1500</a>
+          <a id="ERR_NGROK_1500" href="err_ngrok_1500">ERR_NGROK_1500</a>
         </td>
         <td class="pre-wrapped">
           Maintenance in progress, operations for some resources are read-only
@@ -3393,7 +3393,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1501" href="errors/err_ngrok_1501">ERR_NGROK_1501</a>
+          <a id="ERR_NGROK_1501" href="err_ngrok_1501">ERR_NGROK_1501</a>
         </td>
         <td class="pre-wrapped">
           Maintenance in progress, some operations are unavailable
@@ -3401,25 +3401,25 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1600" href="errors/err_ngrok_1600">ERR_NGROK_1600</a>
+          <a id="ERR_NGROK_1600" href="err_ngrok_1600">ERR_NGROK_1600</a>
         </td>
         <td class="pre-wrapped">Endpoint configuration not found</td>
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1601" href="errors/err_ngrok_1601">ERR_NGROK_1601</a>
+          <a id="ERR_NGROK_1601" href="err_ngrok_1601">ERR_NGROK_1601</a>
         </td>
         <td class="pre-wrapped">Invalid endpoint configuration ID</td>
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1602" href="errors/err_ngrok_1602">ERR_NGROK_1602</a>
+          <a id="ERR_NGROK_1602" href="err_ngrok_1602">ERR_NGROK_1602</a>
         </td>
         <td class="pre-wrapped">Invalid endpoint configuration request</td>
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1607" href="errors/err_ngrok_1607">ERR_NGROK_1607</a>
+          <a id="ERR_NGROK_1607" href="err_ngrok_1607">ERR_NGROK_1607</a>
         </td>
         <td class="pre-wrapped">
           The IP Policy ID <code>&lt;ID&gt;</code> specified for the IP Policy
@@ -3428,7 +3428,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1608" href="errors/err_ngrok_1608">ERR_NGROK_1608</a>
+          <a id="ERR_NGROK_1608" href="err_ngrok_1608">ERR_NGROK_1608</a>
         </td>
         <td class="pre-wrapped">
           Only Pro or Enterprise accounts can use endpoint configuration. Your
@@ -3439,7 +3439,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1609" href="errors/err_ngrok_1609">ERR_NGROK_1609</a>
+          <a id="ERR_NGROK_1609" href="err_ngrok_1609">ERR_NGROK_1609</a>
         </td>
         <td class="pre-wrapped">
           Your account is limited to a maximum of
@@ -3448,7 +3448,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1611" href="errors/err_ngrok_1611">ERR_NGROK_1611</a>
+          <a id="ERR_NGROK_1611" href="err_ngrok_1611">ERR_NGROK_1611</a>
         </td>
         <td class="pre-wrapped">
           Invalid endpoint configuration, circuit breaker error threshold
@@ -3458,7 +3458,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1612" href="errors/err_ngrok_1612">ERR_NGROK_1612</a>
+          <a id="ERR_NGROK_1612" href="err_ngrok_1612">ERR_NGROK_1612</a>
         </td>
         <td class="pre-wrapped">
           The auth provider <code>&lt;VAL&gt;</code> does not exist. Specify an
@@ -3467,7 +3467,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1613" href="errors/err_ngrok_1613">ERR_NGROK_1613</a>
+          <a id="ERR_NGROK_1613" href="err_ngrok_1613">ERR_NGROK_1613</a>
         </td>
         <td class="pre-wrapped">
           The endpoint configuration exceeds the max number of ip policies. You
@@ -3477,7 +3477,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1614" href="errors/err_ngrok_1614">ERR_NGROK_1614</a>
+          <a id="ERR_NGROK_1614" href="err_ngrok_1614">ERR_NGROK_1614</a>
         </td>
         <td class="pre-wrapped">
           The endpoint configuration TLS CA certificate size exceeds the max. You
@@ -3487,7 +3487,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1615" href="errors/err_ngrok_1615">ERR_NGROK_1615</a>
+          <a id="ERR_NGROK_1615" href="err_ngrok_1615">ERR_NGROK_1615</a>
         </td>
         <td class="pre-wrapped">
           The endpoint configuration exceeds the max number of headers. You
@@ -3497,7 +3497,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1616" href="errors/err_ngrok_1616">ERR_NGROK_1616</a>
+          <a id="ERR_NGROK_1616" href="err_ngrok_1616">ERR_NGROK_1616</a>
         </td>
         <td class="pre-wrapped">
           Invalid endpoint configuration, circuit breaker tripped duration must be
@@ -3506,7 +3506,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1617" href="errors/err_ngrok_1617">ERR_NGROK_1617</a>
+          <a id="ERR_NGROK_1617" href="err_ngrok_1617">ERR_NGROK_1617</a>
         </td>
         <td class="pre-wrapped">
           Invalid endpoint configuration, circuit breaker rolling window must be
@@ -3515,7 +3515,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1618" href="errors/err_ngrok_1618">ERR_NGROK_1618</a>
+          <a id="ERR_NGROK_1618" href="err_ngrok_1618">ERR_NGROK_1618</a>
         </td>
         <td class="pre-wrapped">
           Invalid endpoint configuration, circuit breaker num buckets must be
@@ -3525,7 +3525,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1619" href="errors/err_ngrok_1619">ERR_NGROK_1619</a>
+          <a id="ERR_NGROK_1619" href="err_ngrok_1619">ERR_NGROK_1619</a>
         </td>
         <td class="pre-wrapped">
           The endpoint configuration could not be deleted because it is still
@@ -3534,7 +3534,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1620" href="errors/err_ngrok_1620">ERR_NGROK_1620</a>
+          <a id="ERR_NGROK_1620" href="err_ngrok_1620">ERR_NGROK_1620</a>
         </td>
         <td class="pre-wrapped">
           The endpoint configuration must specify a type.
@@ -3542,7 +3542,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1621" href="errors/err_ngrok_1621">ERR_NGROK_1621</a>
+          <a id="ERR_NGROK_1621" href="err_ngrok_1621">ERR_NGROK_1621</a>
         </td>
         <td class="pre-wrapped">
           The module <code>&lt;NAME&gt;</code> is not supported on an endpoint
@@ -3551,7 +3551,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1622" href="errors/err_ngrok_1622">ERR_NGROK_1622</a>
+          <a id="ERR_NGROK_1622" href="err_ngrok_1622">ERR_NGROK_1622</a>
         </td>
         <td class="pre-wrapped">
           <code>&lt;NAME&gt;</code> is not a valid endpoint configuration type.
@@ -3560,7 +3560,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1623" href="errors/err_ngrok_1623">ERR_NGROK_1623</a>
+          <a id="ERR_NGROK_1623" href="err_ngrok_1623">ERR_NGROK_1623</a>
         </td>
         <td class="pre-wrapped">
           <code>&lt;KEY&gt;</code> is not a valid HTTP header name because it
@@ -3569,7 +3569,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1624" href="errors/err_ngrok_1624">ERR_NGROK_1624</a>
+          <a id="ERR_NGROK_1624" href="err_ngrok_1624">ERR_NGROK_1624</a>
         </td>
         <td class="pre-wrapped">
           <code>&lt;VAL&gt;</code> is not a valid HTTP header value:
@@ -3578,7 +3578,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1625" href="errors/err_ngrok_1625">ERR_NGROK_1625</a>
+          <a id="ERR_NGROK_1625" href="err_ngrok_1625">ERR_NGROK_1625</a>
         </td>
         <td class="pre-wrapped">
           You must specify at least one IP policy in the IP Policy module.
@@ -3586,7 +3586,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1626" href="errors/err_ngrok_1626">ERR_NGROK_1626</a>
+          <a id="ERR_NGROK_1626" href="err_ngrok_1626">ERR_NGROK_1626</a>
         </td>
         <td class="pre-wrapped">
           SNS webhook validation does not accept a secret.
@@ -3594,7 +3594,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1627" href="errors/err_ngrok_1627">ERR_NGROK_1627</a>
+          <a id="ERR_NGROK_1627" href="err_ngrok_1627">ERR_NGROK_1627</a>
         </td>
         <td class="pre-wrapped">
           Webhook validation for <code>&lt;T&gt;</code> requires a secret.
@@ -3602,7 +3602,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1628" href="errors/err_ngrok_1628">ERR_NGROK_1628</a>
+          <a id="ERR_NGROK_1628" href="err_ngrok_1628">ERR_NGROK_1628</a>
         </td>
         <td class="pre-wrapped">
           There were validation errors while saving the endpoint
@@ -3611,7 +3611,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1629" href="errors/err_ngrok_1629">ERR_NGROK_1629</a>
+          <a id="ERR_NGROK_1629" href="err_ngrok_1629">ERR_NGROK_1629</a>
         </td>
         <td class="pre-wrapped">
           You must specify a supported provider name. Supported providers:
@@ -3620,7 +3620,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1630" href="errors/err_ngrok_1630">ERR_NGROK_1630</a>
+          <a id="ERR_NGROK_1630" href="err_ngrok_1630">ERR_NGROK_1630</a>
         </td>
         <td class="pre-wrapped">
           Webhook provider <code>&lt;T&gt;</code> is not supported. Supported
@@ -3629,7 +3629,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1631" href="errors/err_ngrok_1631">ERR_NGROK_1631</a>
+          <a id="ERR_NGROK_1631" href="err_ngrok_1631">ERR_NGROK_1631</a>
         </td>
         <td class="pre-wrapped">
           Only Pro or Enterprise accounts can use webhook validation. Your account
@@ -3639,7 +3639,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1632" href="errors/err_ngrok_1632">ERR_NGROK_1632</a>
+          <a id="ERR_NGROK_1632" href="err_ngrok_1632">ERR_NGROK_1632</a>
         </td>
         <td class="pre-wrapped">
           You may not configure the TLS termination parameter
@@ -3649,7 +3649,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1633" href="errors/err_ngrok_1633">ERR_NGROK_1633</a>
+          <a id="ERR_NGROK_1633" href="err_ngrok_1633">ERR_NGROK_1633</a>
         </td>
         <td class="pre-wrapped">
           Invalid endpoint configuration, unmanaged provider configurations must
@@ -3658,7 +3658,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1634" href="errors/err_ngrok_1634">ERR_NGROK_1634</a>
+          <a id="ERR_NGROK_1634" href="err_ngrok_1634">ERR_NGROK_1634</a>
         </td>
         <td class="pre-wrapped">
           Invalid endpoint configuration, custom OAuth scopes on a managed OAuth
@@ -3668,7 +3668,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1635" href="errors/err_ngrok_1635">ERR_NGROK_1635</a>
+          <a id="ERR_NGROK_1635" href="err_ngrok_1635">ERR_NGROK_1635</a>
         </td>
         <td class="pre-wrapped">
           Invalid endpoint configuration, OAuth auth check interval must be at
@@ -3677,7 +3677,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1636" href="errors/err_ngrok_1636">ERR_NGROK_1636</a>
+          <a id="ERR_NGROK_1636" href="err_ngrok_1636">ERR_NGROK_1636</a>
         </td>
         <td class="pre-wrapped">
           Invalid endpoint configuration, OAuth may only have one provider
@@ -3687,7 +3687,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1637" href="errors/err_ngrok_1637">ERR_NGROK_1637</a>
+          <a id="ERR_NGROK_1637" href="err_ngrok_1637">ERR_NGROK_1637</a>
         </td>
         <td class="pre-wrapped">
           Invalid endpoint configuration, OAuth does not define any provider
@@ -3696,7 +3696,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1638" href="errors/err_ngrok_1638">ERR_NGROK_1638</a>
+          <a id="ERR_NGROK_1638" href="err_ngrok_1638">ERR_NGROK_1638</a>
         </td>
         <td class="pre-wrapped">
           Invalid endpoint configuration, OAuth provider
@@ -3707,7 +3707,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1639" href="errors/err_ngrok_1639">ERR_NGROK_1639</a>
+          <a id="ERR_NGROK_1639" href="err_ngrok_1639">ERR_NGROK_1639</a>
         </td>
         <td class="pre-wrapped">
           Invalid endpoint configuration, OAuth provider
@@ -3717,7 +3717,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1640" href="errors/err_ngrok_1640">ERR_NGROK_1640</a>
+          <a id="ERR_NGROK_1640" href="err_ngrok_1640">ERR_NGROK_1640</a>
         </td>
         <td class="pre-wrapped">
           Invalid endpoint configuration, OAuth GitHub Teams must be listed as
@@ -3727,7 +3727,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1641" href="errors/err_ngrok_1641">ERR_NGROK_1641</a>
+          <a id="ERR_NGROK_1641" href="err_ngrok_1641">ERR_NGROK_1641</a>
         </td>
         <td class="pre-wrapped">
           Only Pro or Enterprise accounts can use OAuth. Your account is not
@@ -3737,7 +3737,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1642" href="errors/err_ngrok_1642">ERR_NGROK_1642</a>
+          <a id="ERR_NGROK_1642" href="err_ngrok_1642">ERR_NGROK_1642</a>
         </td>
         <td class="pre-wrapped">
           Invalid endpoint configuration, OAuth cookie prefix
@@ -3747,7 +3747,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1643" href="errors/err_ngrok_1643">ERR_NGROK_1643</a>
+          <a id="ERR_NGROK_1643" href="err_ngrok_1643">ERR_NGROK_1643</a>
         </td>
         <td class="pre-wrapped">
           Invalid endpoint configuration, OAuth provider
@@ -3757,7 +3757,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1644" href="errors/err_ngrok_1644">ERR_NGROK_1644</a>
+          <a id="ERR_NGROK_1644" href="err_ngrok_1644">ERR_NGROK_1644</a>
         </td>
         <td class="pre-wrapped">
           Invalid endpoint configuration, OAuth provider
@@ -3767,7 +3767,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1645" href="errors/err_ngrok_1645">ERR_NGROK_1645</a>
+          <a id="ERR_NGROK_1645" href="err_ngrok_1645">ERR_NGROK_1645</a>
         </td>
         <td class="pre-wrapped">
           Invalid endpoint configuration, OAuth provider
@@ -3777,7 +3777,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1646" href="errors/err_ngrok_1646">ERR_NGROK_1646</a>
+          <a id="ERR_NGROK_1646" href="err_ngrok_1646">ERR_NGROK_1646</a>
         </td>
         <td class="pre-wrapped">
           Invalid endpoint configuration, OAuth provider
@@ -3787,7 +3787,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1647" href="errors/err_ngrok_1647">ERR_NGROK_1647</a>
+          <a id="ERR_NGROK_1647" href="err_ngrok_1647">ERR_NGROK_1647</a>
         </td>
         <td class="pre-wrapped">
           Invalid endpoint configuration, OAuth provider
@@ -3797,7 +3797,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1648" href="errors/err_ngrok_1648">ERR_NGROK_1648</a>
+          <a id="ERR_NGROK_1648" href="err_ngrok_1648">ERR_NGROK_1648</a>
         </td>
         <td class="pre-wrapped">
           Invalid endpoint configuration, OAuth provider
@@ -3807,7 +3807,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1649" href="errors/err_ngrok_1649">ERR_NGROK_1649</a>
+          <a id="ERR_NGROK_1649" href="err_ngrok_1649">ERR_NGROK_1649</a>
         </td>
         <td class="pre-wrapped">
           Invalid endpoint configuration, OAuth provider
@@ -3817,7 +3817,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1650" href="errors/err_ngrok_1650">ERR_NGROK_1650</a>
+          <a id="ERR_NGROK_1650" href="err_ngrok_1650">ERR_NGROK_1650</a>
         </td>
         <td class="pre-wrapped">
           Invalid endpoint configuration, OAuth provider
@@ -3827,7 +3827,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1651" href="errors/err_ngrok_1651">ERR_NGROK_1651</a>
+          <a id="ERR_NGROK_1651" href="err_ngrok_1651">ERR_NGROK_1651</a>
         </td>
         <td class="pre-wrapped">
           Invalid endpoint configuration, OAuth provider
@@ -3837,7 +3837,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1652" href="errors/err_ngrok_1652">ERR_NGROK_1652</a>
+          <a id="ERR_NGROK_1652" href="err_ngrok_1652">ERR_NGROK_1652</a>
         </td>
         <td class="pre-wrapped">
           Invalid endpoint configuration, OAuth provider
@@ -3847,7 +3847,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1653" href="errors/err_ngrok_1653">ERR_NGROK_1653</a>
+          <a id="ERR_NGROK_1653" href="err_ngrok_1653">ERR_NGROK_1653</a>
         </td>
         <td class="pre-wrapped">
           Invalid endpoint configuration, OAuth provider
@@ -3856,7 +3856,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1654" href="errors/err_ngrok_1654">ERR_NGROK_1654</a>
+          <a id="ERR_NGROK_1654" href="err_ngrok_1654">ERR_NGROK_1654</a>
         </td>
         <td class="pre-wrapped">
           Invalid endpoint configuration, OAuth provider
@@ -3866,7 +3866,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1655" href="errors/err_ngrok_1655">ERR_NGROK_1655</a>
+          <a id="ERR_NGROK_1655" href="err_ngrok_1655">ERR_NGROK_1655</a>
         </td>
         <td class="pre-wrapped">
           Invalid endpoint configuration, OAuth provider
@@ -3875,7 +3875,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1656" href="errors/err_ngrok_1656">ERR_NGROK_1656</a>
+          <a id="ERR_NGROK_1656" href="err_ngrok_1656">ERR_NGROK_1656</a>
         </td>
         <td class="pre-wrapped">
           The endpoint configuration exceeds the maximum number of OAuth scopes.
@@ -3885,7 +3885,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1657" href="errors/err_ngrok_1657">ERR_NGROK_1657</a>
+          <a id="ERR_NGROK_1657" href="err_ngrok_1657">ERR_NGROK_1657</a>
         </td>
         <td class="pre-wrapped">
           The endpoint configuration exceeds the maximum number of OAuth Github
@@ -3895,7 +3895,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1658" href="errors/err_ngrok_1658">ERR_NGROK_1658</a>
+          <a id="ERR_NGROK_1658" href="err_ngrok_1658">ERR_NGROK_1658</a>
         </td>
         <td class="pre-wrapped">
           The endpoint configuration exceeds the maximum number of OAuth Github
@@ -3905,7 +3905,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1659" href="errors/err_ngrok_1659">ERR_NGROK_1659</a>
+          <a id="ERR_NGROK_1659" href="err_ngrok_1659">ERR_NGROK_1659</a>
         </td>
         <td class="pre-wrapped">
           The endpoint configuration exceeds the maximum number of OAuth Google
@@ -3915,7 +3915,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1660" href="errors/err_ngrok_1660">ERR_NGROK_1660</a>
+          <a id="ERR_NGROK_1660" href="err_ngrok_1660">ERR_NGROK_1660</a>
         </td>
         <td class="pre-wrapped">
           The endpoint configuration exceeds the maximum number of OAuth emails.
@@ -3925,7 +3925,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1661" href="errors/err_ngrok_1661">ERR_NGROK_1661</a>
+          <a id="ERR_NGROK_1661" href="err_ngrok_1661">ERR_NGROK_1661</a>
         </td>
         <td class="pre-wrapped">
           The endpoint configuration exceeds the maximum number of OAuth domains.
@@ -3935,7 +3935,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1662" href="errors/err_ngrok_1662">ERR_NGROK_1662</a>
+          <a id="ERR_NGROK_1662" href="err_ngrok_1662">ERR_NGROK_1662</a>
         </td>
         <td class="pre-wrapped">
           The endpoint configuration specifies the following modules which may not
@@ -3945,7 +3945,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1667" href="errors/err_ngrok_1667">ERR_NGROK_1667</a>
+          <a id="ERR_NGROK_1667" href="err_ngrok_1667">ERR_NGROK_1667</a>
         </td>
         <td class="pre-wrapped">
           Invalid endpoint configuration, email addresses must be lowercase but
@@ -3954,7 +3954,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1668" href="errors/err_ngrok_1668">ERR_NGROK_1668</a>
+          <a id="ERR_NGROK_1668" href="err_ngrok_1668">ERR_NGROK_1668</a>
         </td>
         <td class="pre-wrapped">
           Invalid endpoint configuration, email domains must be lowercase but
@@ -3963,7 +3963,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1669" href="errors/err_ngrok_1669">ERR_NGROK_1669</a>
+          <a id="ERR_NGROK_1669" href="err_ngrok_1669">ERR_NGROK_1669</a>
         </td>
         <td class="pre-wrapped">
           Duplicate 'add' header, <code>&lt;HEADER&gt;</code> was provided twice
@@ -3973,7 +3973,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1670" href="errors/err_ngrok_1670">ERR_NGROK_1670</a>
+          <a id="ERR_NGROK_1670" href="err_ngrok_1670">ERR_NGROK_1670</a>
         </td>
         <td class="pre-wrapped">
           Your account is limited to <code>&lt;MAX&gt;</code> endpoint
@@ -3982,7 +3982,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1672" href="errors/err_ngrok_1672">ERR_NGROK_1672</a>
+          <a id="ERR_NGROK_1672" href="err_ngrok_1672">ERR_NGROK_1672</a>
         </td>
         <td class="pre-wrapped">
           The CA ID <code>&lt;ID&gt;</code> specified for the Mutual TLS module
@@ -3991,7 +3991,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1673" href="errors/err_ngrok_1673">ERR_NGROK_1673</a>
+          <a id="ERR_NGROK_1673" href="err_ngrok_1673">ERR_NGROK_1673</a>
         </td>
         <td class="pre-wrapped">
           Description is limited to <code>&lt;MAX&gt;</code> characters; you have
@@ -4000,7 +4000,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1674" href="errors/err_ngrok_1674">ERR_NGROK_1674</a>
+          <a id="ERR_NGROK_1674" href="err_ngrok_1674">ERR_NGROK_1674</a>
         </td>
         <td class="pre-wrapped">
           Metadata is limited to <code>&lt;MAX&gt;</code> characters; you have
@@ -4009,7 +4009,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1675" href="errors/err_ngrok_1675">ERR_NGROK_1675</a>
+          <a id="ERR_NGROK_1675" href="err_ngrok_1675">ERR_NGROK_1675</a>
         </td>
         <td class="pre-wrapped">
           The Mutual TLS configurations exceeds the limit of
@@ -4018,7 +4018,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1679" href="errors/err_ngrok_1679">ERR_NGROK_1679</a>
+          <a id="ERR_NGROK_1679" href="err_ngrok_1679">ERR_NGROK_1679</a>
         </td>
         <td class="pre-wrapped">
           The endpoint configuration specifies conflicting authentication modules.
@@ -4027,7 +4027,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1680" href="errors/err_ngrok_1680">ERR_NGROK_1680</a>
+          <a id="ERR_NGROK_1680" href="err_ngrok_1680">ERR_NGROK_1680</a>
         </td>
         <td class="pre-wrapped">
           The SAML metadata exceeds the maximum length of 16834 bytes, got
@@ -4036,7 +4036,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1681" href="errors/err_ngrok_1681">ERR_NGROK_1681</a>
+          <a id="ERR_NGROK_1681" href="err_ngrok_1681">ERR_NGROK_1681</a>
         </td>
         <td class="pre-wrapped">
           You must specify only the SAML IdP metadata or the SAML IdP metadata
@@ -4045,7 +4045,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1682" href="errors/err_ngrok_1682">ERR_NGROK_1682</a>
+          <a id="ERR_NGROK_1682" href="err_ngrok_1682">ERR_NGROK_1682</a>
         </td>
         <td class="pre-wrapped">
           Failed to connect to IdP metadata URL <code>&lt;MDURL&gt;</code>:
@@ -4054,7 +4054,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1683" href="errors/err_ngrok_1683">ERR_NGROK_1683</a>
+          <a id="ERR_NGROK_1683" href="err_ngrok_1683">ERR_NGROK_1683</a>
         </td>
         <td class="pre-wrapped">
           Failed to parse the SAML IdP metadata: <code>&lt;ERR&gt;</code>.
@@ -4062,7 +4062,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1684" href="errors/err_ngrok_1684">ERR_NGROK_1684</a>
+          <a id="ERR_NGROK_1684" href="err_ngrok_1684">ERR_NGROK_1684</a>
         </td>
         <td class="pre-wrapped">
           Received unexpected status code <code>&lt;STATUSCODE&gt;</code> while
@@ -4071,7 +4071,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1685" href="errors/err_ngrok_1685">ERR_NGROK_1685</a>
+          <a id="ERR_NGROK_1685" href="err_ngrok_1685">ERR_NGROK_1685</a>
         </td>
         <td class="pre-wrapped">
           Failed to parse the SAML IdP metadata fetched from URL
@@ -4080,7 +4080,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1686" href="errors/err_ngrok_1686">ERR_NGROK_1686</a>
+          <a id="ERR_NGROK_1686" href="err_ngrok_1686">ERR_NGROK_1686</a>
         </td>
         <td class="pre-wrapped">
           Encountered an error while reading the response body from the IdP
@@ -4089,7 +4089,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1687" href="errors/err_ngrok_1687">ERR_NGROK_1687</a>
+          <a id="ERR_NGROK_1687" href="err_ngrok_1687">ERR_NGROK_1687</a>
         </td>
         <td class="pre-wrapped">
           The specified OIDC issuer has a maximum length of 255 bytes. The
@@ -4098,25 +4098,25 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1688" href="errors/err_ngrok_1688">ERR_NGROK_1688</a>
+          <a id="ERR_NGROK_1688" href="err_ngrok_1688">ERR_NGROK_1688</a>
         </td>
         <td class="pre-wrapped">The OIDC issuer property is required.</td>
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1689" href="errors/err_ngrok_1689">ERR_NGROK_1689</a>
+          <a id="ERR_NGROK_1689" href="err_ngrok_1689">ERR_NGROK_1689</a>
         </td>
         <td class="pre-wrapped">The OIDC Client ID property is required.</td>
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1690" href="errors/err_ngrok_1690">ERR_NGROK_1690</a>
+          <a id="ERR_NGROK_1690" href="err_ngrok_1690">ERR_NGROK_1690</a>
         </td>
         <td class="pre-wrapped">The OIDC Client Secret property is required.</td>
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1691" href="errors/err_ngrok_1691">ERR_NGROK_1691</a>
+          <a id="ERR_NGROK_1691" href="err_ngrok_1691">ERR_NGROK_1691</a>
         </td>
         <td class="pre-wrapped">
           One of the SAML IdP Metadata or IdP Metadata URL properties must be
@@ -4125,7 +4125,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1692" href="errors/err_ngrok_1692">ERR_NGROK_1692</a>
+          <a id="ERR_NGROK_1692" href="err_ngrok_1692">ERR_NGROK_1692</a>
         </td>
         <td class="pre-wrapped">
           Invalid endpoint configuration, session inactivity timeout cannot be
@@ -4134,7 +4134,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1693" href="errors/err_ngrok_1693">ERR_NGROK_1693</a>
+          <a id="ERR_NGROK_1693" href="err_ngrok_1693">ERR_NGROK_1693</a>
         </td>
         <td class="pre-wrapped">
           "<code>&lt;FORMAT&gt;</code>" is not a supported SAML nameid format.
@@ -4142,7 +4142,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1694" href="errors/err_ngrok_1694">ERR_NGROK_1694</a>
+          <a id="ERR_NGROK_1694" href="err_ngrok_1694">ERR_NGROK_1694</a>
         </td>
         <td class="pre-wrapped">
           Mutual TLS at edge requires TLS termination at edge.
@@ -4150,13 +4150,13 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1695" href="errors/err_ngrok_1695">ERR_NGROK_1695</a>
+          <a id="ERR_NGROK_1695" href="err_ngrok_1695">ERR_NGROK_1695</a>
         </td>
         <td class="pre-wrapped">No PEM data found in provided mutual TLS CA.</td>
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1696" href="errors/err_ngrok_1696">ERR_NGROK_1696</a>
+          <a id="ERR_NGROK_1696" href="err_ngrok_1696">ERR_NGROK_1696</a>
         </td>
         <td class="pre-wrapped">
           Certificate provided for mutual TLS is not a valid CA.
@@ -4164,7 +4164,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1697" href="errors/err_ngrok_1697">ERR_NGROK_1697</a>
+          <a id="ERR_NGROK_1697" href="err_ngrok_1697">ERR_NGROK_1697</a>
         </td>
         <td class="pre-wrapped">
           The header beginning with <code>&lt;PREFIX&gt;</code>...' exceeds the
@@ -4173,7 +4173,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1698" href="errors/err_ngrok_1698">ERR_NGROK_1698</a>
+          <a id="ERR_NGROK_1698" href="err_ngrok_1698">ERR_NGROK_1698</a>
         </td>
         <td class="pre-wrapped">
           The header value for <code>&lt;HEADERKEY&gt;</code> beginning with
@@ -4183,7 +4183,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1699" href="errors/err_ngrok_1699">ERR_NGROK_1699</a>
+          <a id="ERR_NGROK_1699" href="err_ngrok_1699">ERR_NGROK_1699</a>
         </td>
         <td class="pre-wrapped">
           The sendgrid verification key is not a base64 encoded ecdsa public key.
@@ -4193,7 +4193,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1700" href="errors/err_ngrok_1700">ERR_NGROK_1700</a>
+          <a id="ERR_NGROK_1700" href="err_ngrok_1700">ERR_NGROK_1700</a>
         </td>
         <td class="pre-wrapped">
           Only Enterprise accounts can use session operations. Your account is not
@@ -4203,7 +4203,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1701" href="errors/err_ngrok_1701">ERR_NGROK_1701</a>
+          <a id="ERR_NGROK_1701" href="err_ngrok_1701">ERR_NGROK_1701</a>
         </td>
         <td class="pre-wrapped">
           Only Enterprise accounts can stop or restart the agent. Your account is
@@ -4213,7 +4213,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1702" href="errors/err_ngrok_1702">ERR_NGROK_1702</a>
+          <a id="ERR_NGROK_1702" href="err_ngrok_1702">ERR_NGROK_1702</a>
         </td>
         <td class="pre-wrapped">
           Only Enterprise accounts can update the agent. Your account is not
@@ -4223,7 +4223,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1800" href="errors/err_ngrok_1800">ERR_NGROK_1800</a>
+          <a id="ERR_NGROK_1800" href="err_ngrok_1800">ERR_NGROK_1800</a>
         </td>
         <td class="pre-wrapped">
           You have reached the maximum of <code>&lt;MAX&gt;</code> IP Policies on
@@ -4232,7 +4232,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1801" href="errors/err_ngrok_1801">ERR_NGROK_1801</a>
+          <a id="ERR_NGROK_1801" href="err_ngrok_1801">ERR_NGROK_1801</a>
         </td>
         <td class="pre-wrapped">
           Invalid IP Restriction. The policy <code>&lt;POLICY_ID&gt;</code> does
@@ -4241,7 +4241,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1802" href="errors/err_ngrok_1802">ERR_NGROK_1802</a>
+          <a id="ERR_NGROK_1802" href="err_ngrok_1802">ERR_NGROK_1802</a>
         </td>
         <td class="pre-wrapped">
           Only one IP Restriction is allowed per type. Consider either deleting
@@ -4251,7 +4251,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1803" href="errors/err_ngrok_1803">ERR_NGROK_1803</a>
+          <a id="ERR_NGROK_1803" href="err_ngrok_1803">ERR_NGROK_1803</a>
         </td>
         <td class="pre-wrapped">
           The provided IP Restriction type "<code>&lt;TYPE&gt;</code>" is invalid.
@@ -4260,7 +4260,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1804" href="errors/err_ngrok_1804">ERR_NGROK_1804</a>
+          <a id="ERR_NGROK_1804" href="err_ngrok_1804">ERR_NGROK_1804</a>
         </td>
         <td class="pre-wrapped">
           An IP Restriction must specify at least one IP Policy.
@@ -4268,7 +4268,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1805" href="errors/err_ngrok_1805">ERR_NGROK_1805</a>
+          <a id="ERR_NGROK_1805" href="err_ngrok_1805">ERR_NGROK_1805</a>
         </td>
         <td class="pre-wrapped">
           Only Pro or Enterprise accounts can use dashboard IP restrictions. Your
@@ -4279,7 +4279,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1806" href="errors/err_ngrok_1806">ERR_NGROK_1806</a>
+          <a id="ERR_NGROK_1806" href="err_ngrok_1806">ERR_NGROK_1806</a>
         </td>
         <td class="pre-wrapped">
           Only Pro or Enterprise accounts can use API IP restrictions. Your
@@ -4289,7 +4289,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1807" href="errors/err_ngrok_1807">ERR_NGROK_1807</a>
+          <a id="ERR_NGROK_1807" href="err_ngrok_1807">ERR_NGROK_1807</a>
         </td>
         <td class="pre-wrapped">
           Only Pro or Enterprise accounts can use agent IP restrictions. Your
@@ -4299,7 +4299,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1808" href="errors/err_ngrok_1808">ERR_NGROK_1808</a>
+          <a id="ERR_NGROK_1808" href="err_ngrok_1808">ERR_NGROK_1808</a>
         </td>
         <td class="pre-wrapped">
           Only Pro or Enterprise accounts can use endpoints IP restrictions. Your
@@ -4310,7 +4310,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1900" href="errors/err_ngrok_1900">ERR_NGROK_1900</a>
+          <a id="ERR_NGROK_1900" href="err_ngrok_1900">ERR_NGROK_1900</a>
         </td>
         <td class="pre-wrapped">
           The provided certificate is in an unknown or unsupported format. The
@@ -4319,7 +4319,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1901" href="errors/err_ngrok_1901">ERR_NGROK_1901</a>
+          <a id="ERR_NGROK_1901" href="err_ngrok_1901">ERR_NGROK_1901</a>
         </td>
         <td class="pre-wrapped">
           No PEM-encoded private key was found in the creation request.
@@ -4327,13 +4327,13 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1902" href="errors/err_ngrok_1902">ERR_NGROK_1902</a>
+          <a id="ERR_NGROK_1902" href="err_ngrok_1902">ERR_NGROK_1902</a>
         </td>
         <td class="pre-wrapped">The provided private key is encrypted.</td>
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1903" href="errors/err_ngrok_1903">ERR_NGROK_1903</a>
+          <a id="ERR_NGROK_1903" href="err_ngrok_1903">ERR_NGROK_1903</a>
         </td>
         <td class="pre-wrapped">
           The provided private key is in an unknown or unsupported format.
@@ -4341,7 +4341,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1904" href="errors/err_ngrok_1904">ERR_NGROK_1904</a>
+          <a id="ERR_NGROK_1904" href="err_ngrok_1904">ERR_NGROK_1904</a>
         </td>
         <td class="pre-wrapped">
           Your account can't upload custom TLS certificates.
@@ -4349,7 +4349,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1905" href="errors/err_ngrok_1905">ERR_NGROK_1905</a>
+          <a id="ERR_NGROK_1905" href="err_ngrok_1905">ERR_NGROK_1905</a>
         </td>
         <td class="pre-wrapped">
           Your account can't use managed TLS certificates.
@@ -4357,7 +4357,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1906" href="errors/err_ngrok_1906">ERR_NGROK_1906</a>
+          <a id="ERR_NGROK_1906" href="err_ngrok_1906">ERR_NGROK_1906</a>
         </td>
         <td class="pre-wrapped">
           The domain <code>&lt;DOMAIN&gt;</code> is not a valid domain name.
@@ -4365,7 +4365,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1907" href="errors/err_ngrok_1907">ERR_NGROK_1907</a>
+          <a id="ERR_NGROK_1907" href="err_ngrok_1907">ERR_NGROK_1907</a>
         </td>
         <td class="pre-wrapped">
           The ip <code>&lt;IP&gt;</code> is not a valid IP address.
@@ -4373,7 +4373,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1908" href="errors/err_ngrok_1908">ERR_NGROK_1908</a>
+          <a id="ERR_NGROK_1908" href="err_ngrok_1908">ERR_NGROK_1908</a>
         </td>
         <td class="pre-wrapped">
           Invalid authority <code>&lt;AUTHORITY&gt;</code>. Valid authorities:
@@ -4382,7 +4382,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1909" href="errors/err_ngrok_1909">ERR_NGROK_1909</a>
+          <a id="ERR_NGROK_1909" href="err_ngrok_1909">ERR_NGROK_1909</a>
         </td>
         <td class="pre-wrapped">
           Invalid private key type <code>&lt;TYPE&gt;</code>. Valid types:
@@ -4391,7 +4391,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1910" href="errors/err_ngrok_1910">ERR_NGROK_1910</a>
+          <a id="ERR_NGROK_1910" href="err_ngrok_1910">ERR_NGROK_1910</a>
         </td>
         <td class="pre-wrapped">
           The provided PEM data contains a non-zero number of headers, which are
@@ -4400,7 +4400,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1911" href="errors/err_ngrok_1911">ERR_NGROK_1911</a>
+          <a id="ERR_NGROK_1911" href="err_ngrok_1911">ERR_NGROK_1911</a>
         </td>
         <td class="pre-wrapped">
           The provided data is a valid PEM, but it has an unexpected type:
@@ -4409,7 +4409,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1912" href="errors/err_ngrok_1912">ERR_NGROK_1912</a>
+          <a id="ERR_NGROK_1912" href="err_ngrok_1912">ERR_NGROK_1912</a>
         </td>
         <td class="pre-wrapped">
           The upload contained <code>&lt;COUNT&gt;</code> certificates:
@@ -4419,7 +4419,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1913" href="errors/err_ngrok_1913">ERR_NGROK_1913</a>
+          <a id="ERR_NGROK_1913" href="err_ngrok_1913">ERR_NGROK_1913</a>
         </td>
         <td class="pre-wrapped">
           The uploaded certificate's x509 Basic Constraints did not mark it as a
@@ -4428,7 +4428,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1914" href="errors/err_ngrok_1914">ERR_NGROK_1914</a>
+          <a id="ERR_NGROK_1914" href="err_ngrok_1914">ERR_NGROK_1914</a>
         </td>
         <td class="pre-wrapped">
           The description is limited to <code>&lt;MAX&gt;</code> characters, but
@@ -4437,7 +4437,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1915" href="errors/err_ngrok_1915">ERR_NGROK_1915</a>
+          <a id="ERR_NGROK_1915" href="err_ngrok_1915">ERR_NGROK_1915</a>
         </td>
         <td class="pre-wrapped">
           Metadata is limited to <code>&lt;MAX&gt;</code> characters, but the
@@ -4446,7 +4446,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1916" href="errors/err_ngrok_1916">ERR_NGROK_1916</a>
+          <a id="ERR_NGROK_1916" href="err_ngrok_1916">ERR_NGROK_1916</a>
         </td>
         <td class="pre-wrapped">
           The description is limited to <code>&lt;MAX&gt;</code> characters, but
@@ -4455,7 +4455,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1917" href="errors/err_ngrok_1917">ERR_NGROK_1917</a>
+          <a id="ERR_NGROK_1917" href="err_ngrok_1917">ERR_NGROK_1917</a>
         </td>
         <td class="pre-wrapped">
           Metadata is limited to <code>&lt;MAX&gt;</code> characters, but the
@@ -4464,7 +4464,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1918" href="errors/err_ngrok_1918">ERR_NGROK_1918</a>
+          <a id="ERR_NGROK_1918" href="err_ngrok_1918">ERR_NGROK_1918</a>
         </td>
         <td class="pre-wrapped">
           Your account is not allowed to upload certificate authorities.
@@ -4472,13 +4472,13 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1919" href="errors/err_ngrok_1919">ERR_NGROK_1919</a>
+          <a id="ERR_NGROK_1919" href="err_ngrok_1919">ERR_NGROK_1919</a>
         </td>
         <td class="pre-wrapped">No certificate PEM data was sent.</td>
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1920" href="errors/err_ngrok_1920">ERR_NGROK_1920</a>
+          <a id="ERR_NGROK_1920" href="err_ngrok_1920">ERR_NGROK_1920</a>
         </td>
         <td class="pre-wrapped">
           The certificate data could not be parsed as PEM. Certificate data:
@@ -4487,7 +4487,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1921" href="errors/err_ngrok_1921">ERR_NGROK_1921</a>
+          <a id="ERR_NGROK_1921" href="err_ngrok_1921">ERR_NGROK_1921</a>
         </td>
         <td class="pre-wrapped">
           The uploaded certificate PEM data exceeds the maximum length limit of
@@ -4496,7 +4496,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1922" href="errors/err_ngrok_1922">ERR_NGROK_1922</a>
+          <a id="ERR_NGROK_1922" href="err_ngrok_1922">ERR_NGROK_1922</a>
         </td>
         <td class="pre-wrapped">
           No PEM-encoded certificate was found in the creation request.
@@ -4504,7 +4504,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1923" href="errors/err_ngrok_1923">ERR_NGROK_1923</a>
+          <a id="ERR_NGROK_1923" href="err_ngrok_1923">ERR_NGROK_1923</a>
         </td>
         <td class="pre-wrapped">
           The provided certificate and private key do not match each other.
@@ -4512,7 +4512,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1924" href="errors/err_ngrok_1924">ERR_NGROK_1924</a>
+          <a id="ERR_NGROK_1924" href="err_ngrok_1924">ERR_NGROK_1924</a>
         </td>
         <td class="pre-wrapped">
           The provided private key is actually a certificate.
@@ -4520,7 +4520,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1925" href="errors/err_ngrok_1925">ERR_NGROK_1925</a>
+          <a id="ERR_NGROK_1925" href="err_ngrok_1925">ERR_NGROK_1925</a>
         </td>
         <td class="pre-wrapped">
           The provided certificate is actually a private key.
@@ -4528,7 +4528,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1926" href="errors/err_ngrok_1926">ERR_NGROK_1926</a>
+          <a id="ERR_NGROK_1926" href="err_ngrok_1926">ERR_NGROK_1926</a>
         </td>
         <td class="pre-wrapped">
           The uploaded certificate bundle contained the following certificates in
@@ -4539,7 +4539,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1927" href="errors/err_ngrok_1927">ERR_NGROK_1927</a>
+          <a id="ERR_NGROK_1927" href="err_ngrok_1927">ERR_NGROK_1927</a>
         </td>
         <td class="pre-wrapped">
           The domain <code>&lt;DOMAIN&gt;</code> is not available for certificate
@@ -4548,7 +4548,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1929" href="errors/err_ngrok_1929">ERR_NGROK_1929</a>
+          <a id="ERR_NGROK_1929" href="err_ngrok_1929">ERR_NGROK_1929</a>
         </td>
         <td class="pre-wrapped">
           Invalid nameserver count. There should be <code>&lt;WANT&gt;</code> but
@@ -4557,7 +4557,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1930" href="errors/err_ngrok_1930">ERR_NGROK_1930</a>
+          <a id="ERR_NGROK_1930" href="err_ngrok_1930">ERR_NGROK_1930</a>
         </td>
         <td class="pre-wrapped">
           Nameservers are not set up correctly for <code>&lt;DOMAIN&gt;</code>,
@@ -4566,7 +4566,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1934" href="errors/err_ngrok_1934">ERR_NGROK_1934</a>
+          <a id="ERR_NGROK_1934" href="err_ngrok_1934">ERR_NGROK_1934</a>
         </td>
         <td class="pre-wrapped">
           Got error <code>&lt;ERROR&gt;</code> where parsing public key
@@ -4575,7 +4575,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1935" href="errors/err_ngrok_1935">ERR_NGROK_1935</a>
+          <a id="ERR_NGROK_1935" href="err_ngrok_1935">ERR_NGROK_1935</a>
         </td>
         <td class="pre-wrapped">
           <code>&lt;CERTTYPE&gt;</code> is not a valid SSH certificate type. Valid
@@ -4584,7 +4584,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1936" href="errors/err_ngrok_1936">ERR_NGROK_1936</a>
+          <a id="ERR_NGROK_1936" href="err_ngrok_1936">ERR_NGROK_1936</a>
         </td>
         <td class="pre-wrapped">
           "<code>&lt;KEYTYPE&gt;</code>" is not a valid SSH key type. Valid key
@@ -4593,7 +4593,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1937" href="errors/err_ngrok_1937">ERR_NGROK_1937</a>
+          <a id="ERR_NGROK_1937" href="err_ngrok_1937">ERR_NGROK_1937</a>
         </td>
         <td class="pre-wrapped">
           The description is limited to <code>&lt;MAX&gt;</code> characters, but
@@ -4602,7 +4602,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1938" href="errors/err_ngrok_1938">ERR_NGROK_1938</a>
+          <a id="ERR_NGROK_1938" href="err_ngrok_1938">ERR_NGROK_1938</a>
         </td>
         <td class="pre-wrapped">
           Metadata is limited to <code>&lt;MAX&gt;</code> characters, but the
@@ -4611,7 +4611,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1939" href="errors/err_ngrok_1939">ERR_NGROK_1939</a>
+          <a id="ERR_NGROK_1939" href="err_ngrok_1939">ERR_NGROK_1939</a>
         </td>
         <td class="pre-wrapped">
           Invalid key size <code>&lt;KEYSIZE&gt;</code>. Valid key sizes:
@@ -4620,7 +4620,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1940" href="errors/err_ngrok_1940">ERR_NGROK_1940</a>
+          <a id="ERR_NGROK_1940" href="err_ngrok_1940">ERR_NGROK_1940</a>
         </td>
         <td class="pre-wrapped">
           Key size is supported only with a key type of "rsa", but the specified
@@ -4629,7 +4629,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1941" href="errors/err_ngrok_1941">ERR_NGROK_1941</a>
+          <a id="ERR_NGROK_1941" href="err_ngrok_1941">ERR_NGROK_1941</a>
         </td>
         <td class="pre-wrapped">
           Invalid elliptic curve "<code>&lt;CURVE&gt;</code>". Valid elliptic
@@ -4638,7 +4638,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1942" href="errors/err_ngrok_1942">ERR_NGROK_1942</a>
+          <a id="ERR_NGROK_1942" href="err_ngrok_1942">ERR_NGROK_1942</a>
         </td>
         <td class="pre-wrapped">
           Elliptic curve is supported only with a key type of "ecdsa", but the
@@ -4647,7 +4647,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1943" href="errors/err_ngrok_1943">ERR_NGROK_1943</a>
+          <a id="ERR_NGROK_1943" href="err_ngrok_1943">ERR_NGROK_1943</a>
         </td>
         <td class="pre-wrapped">
           The SSH CA Certificate duration must be greater than zero; got duration
@@ -4656,7 +4656,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1945" href="errors/err_ngrok_1945">ERR_NGROK_1945</a>
+          <a id="ERR_NGROK_1945" href="err_ngrok_1945">ERR_NGROK_1945</a>
         </td>
         <td class="pre-wrapped">
           The description is limited to <code>&lt;MAX&gt;</code> characters, but
@@ -4665,7 +4665,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1946" href="errors/err_ngrok_1946">ERR_NGROK_1946</a>
+          <a id="ERR_NGROK_1946" href="err_ngrok_1946">ERR_NGROK_1946</a>
         </td>
         <td class="pre-wrapped">
           Metadata is limited to <code>&lt;MAX&gt;</code> characters, but the
@@ -4674,7 +4674,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1947" href="errors/err_ngrok_1947">ERR_NGROK_1947</a>
+          <a id="ERR_NGROK_1947" href="err_ngrok_1947">ERR_NGROK_1947</a>
         </td>
         <td class="pre-wrapped">
           The description is limited to <code>&lt;MAX&gt;</code> characters, but
@@ -4683,7 +4683,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1948" href="errors/err_ngrok_1948">ERR_NGROK_1948</a>
+          <a id="ERR_NGROK_1948" href="err_ngrok_1948">ERR_NGROK_1948</a>
         </td>
         <td class="pre-wrapped">
           Metadata is limited to <code>&lt;MAX&gt;</code> characters, but the
@@ -4692,7 +4692,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1949" href="errors/err_ngrok_1949">ERR_NGROK_1949</a>
+          <a id="ERR_NGROK_1949" href="err_ngrok_1949">ERR_NGROK_1949</a>
         </td>
         <td class="pre-wrapped">
           The SSH CA <code>&lt;CA&gt;</code> does not exist.
@@ -4700,7 +4700,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1950" href="errors/err_ngrok_1950">ERR_NGROK_1950</a>
+          <a id="ERR_NGROK_1950" href="err_ngrok_1950">ERR_NGROK_1950</a>
         </td>
         <td class="pre-wrapped">
           Certificates are not supported for public keys of type
@@ -4709,7 +4709,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1951" href="errors/err_ngrok_1951">ERR_NGROK_1951</a>
+          <a id="ERR_NGROK_1951" href="err_ngrok_1951">ERR_NGROK_1951</a>
         </td>
         <td class="pre-wrapped">
           The SSH CA <code>&lt;CA&gt;</code> does not exist.
@@ -4717,7 +4717,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1952" href="errors/err_ngrok_1952">ERR_NGROK_1952</a>
+          <a id="ERR_NGROK_1952" href="err_ngrok_1952">ERR_NGROK_1952</a>
         </td>
         <td class="pre-wrapped">
           The public key to sign in the certificate is required, but no public key
@@ -4726,7 +4726,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1953" href="errors/err_ngrok_1953">ERR_NGROK_1953</a>
+          <a id="ERR_NGROK_1953" href="err_ngrok_1953">ERR_NGROK_1953</a>
         </td>
         <td class="pre-wrapped">
           Your account is not allowed to use SSH certificates.
@@ -4734,7 +4734,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1954" href="errors/err_ngrok_1954">ERR_NGROK_1954</a>
+          <a id="ERR_NGROK_1954" href="err_ngrok_1954">ERR_NGROK_1954</a>
         </td>
         <td class="pre-wrapped">
           Your account is limited to <code>&lt;MAX&gt;</code> Certificate
@@ -4743,7 +4743,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1956" href="errors/err_ngrok_1956">ERR_NGROK_1956</a>
+          <a id="ERR_NGROK_1956" href="err_ngrok_1956">ERR_NGROK_1956</a>
         </td>
         <td class="pre-wrapped">
           Your account is limited to <code>&lt;MAX&gt;</code> SSH Certificate
@@ -4752,7 +4752,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1958" href="errors/err_ngrok_1958">ERR_NGROK_1958</a>
+          <a id="ERR_NGROK_1958" href="err_ngrok_1958">ERR_NGROK_1958</a>
         </td>
         <td class="pre-wrapped">
           Your account is limited to <code>&lt;MAX&gt;</code> SSH Host
@@ -4761,7 +4761,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1960" href="errors/err_ngrok_1960">ERR_NGROK_1960</a>
+          <a id="ERR_NGROK_1960" href="err_ngrok_1960">ERR_NGROK_1960</a>
         </td>
         <td class="pre-wrapped">
           Your account is limited to <code>&lt;MAX&gt;</code> SSH User
@@ -4770,7 +4770,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1962" href="errors/err_ngrok_1962">ERR_NGROK_1962</a>
+          <a id="ERR_NGROK_1962" href="err_ngrok_1962">ERR_NGROK_1962</a>
         </td>
         <td class="pre-wrapped">
           SSH User Certificate duration must be greater than zero; got duration of
@@ -4779,7 +4779,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1963" href="errors/err_ngrok_1963">ERR_NGROK_1963</a>
+          <a id="ERR_NGROK_1963" href="err_ngrok_1963">ERR_NGROK_1963</a>
         </td>
         <td class="pre-wrapped">
           SSH Host Certificate duration must be greater than zero; got duration of
@@ -4788,7 +4788,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1964" href="errors/err_ngrok_1964">ERR_NGROK_1964</a>
+          <a id="ERR_NGROK_1964" href="err_ngrok_1964">ERR_NGROK_1964</a>
         </td>
         <td class="pre-wrapped">
           Can't delete SSH CA <code>&lt;ID&gt;</code> because an SSH certificate
@@ -4798,7 +4798,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1965" href="errors/err_ngrok_1965">ERR_NGROK_1965</a>
+          <a id="ERR_NGROK_1965" href="err_ngrok_1965">ERR_NGROK_1965</a>
         </td>
         <td class="pre-wrapped">
           The certificate <code>&lt;ID&gt;</code> does not exist.
@@ -4806,7 +4806,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_1966" href="errors/err_ngrok_1966">ERR_NGROK_1966</a>
+          <a id="ERR_NGROK_1966" href="err_ngrok_1966">ERR_NGROK_1966</a>
         </td>
         <td class="pre-wrapped">
           The certificate <code>&lt;ID&gt;</code> could not be deleted because it
@@ -4817,7 +4817,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_2062" href="errors/err_ngrok_2062">ERR_NGROK_2062</a>
+          <a id="ERR_NGROK_2062" href="err_ngrok_2062">ERR_NGROK_2062</a>
         </td>
         <td class="pre-wrapped">
           Paths given in HTTPMux rules must be either empty or absolute. Perhaps
@@ -4826,7 +4826,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_2063" href="errors/err_ngrok_2063">ERR_NGROK_2063</a>
+          <a id="ERR_NGROK_2063" href="err_ngrok_2063">ERR_NGROK_2063</a>
         </td>
         <td class="pre-wrapped">
           The method <code>&lt;METHOD&gt;</code> was specified multiple times for
@@ -4836,13 +4836,13 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_2065" href="errors/err_ngrok_2065">ERR_NGROK_2065</a>
+          <a id="ERR_NGROK_2065" href="err_ngrok_2065">ERR_NGROK_2065</a>
         </td>
         <td class="pre-wrapped">HTTPMux must have at least one rule.</td>
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_2067" href="errors/err_ngrok_2067">ERR_NGROK_2067</a>
+          <a id="ERR_NGROK_2067" href="err_ngrok_2067">ERR_NGROK_2067</a>
         </td>
         <td class="pre-wrapped">
           Too many rules given to HTTPMux. You provided
@@ -4852,7 +4852,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_2069" href="errors/err_ngrok_2069">ERR_NGROK_2069</a>
+          <a id="ERR_NGROK_2069" href="err_ngrok_2069">ERR_NGROK_2069</a>
         </td>
         <td class="pre-wrapped">
           The method (<code>&lt;METHOD&gt;</code>) specified in an HTTPMux rule is
@@ -4861,7 +4861,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_2070" href="errors/err_ngrok_2070">ERR_NGROK_2070</a>
+          <a id="ERR_NGROK_2070" href="err_ngrok_2070">ERR_NGROK_2070</a>
         </td>
         <td class="pre-wrapped">
           The path specified in an HTTPMux rule is too long. The path provided has
@@ -4871,7 +4871,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_2071" href="errors/err_ngrok_2071">ERR_NGROK_2071</a>
+          <a id="ERR_NGROK_2071" href="err_ngrok_2071">ERR_NGROK_2071</a>
         </td>
         <td class="pre-wrapped">
           The path specified in an HTTPMux rule is unsupported or otherwise
@@ -4880,7 +4880,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_2089" href="errors/err_ngrok_2089">ERR_NGROK_2089</a>
+          <a id="ERR_NGROK_2089" href="err_ngrok_2089">ERR_NGROK_2089</a>
         </td>
         <td class="pre-wrapped">
           Found duplicate routing rule. Each rule must be unique.
@@ -4888,7 +4888,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_3002" href="errors/err_ngrok_3002">ERR_NGROK_3002</a>
+          <a id="ERR_NGROK_3002" href="err_ngrok_3002">ERR_NGROK_3002</a>
         </td>
         <td class="pre-wrapped">
           Error performing TLS handshake: <code>&lt;ERR&gt;</code>
@@ -4896,7 +4896,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_3003" href="errors/err_ngrok_3003">ERR_NGROK_3003</a>
+          <a id="ERR_NGROK_3003" href="err_ngrok_3003">ERR_NGROK_3003</a>
         </td>
         <td class="pre-wrapped">
           This client does not support TLS SNI, but the endpoint's TLS
@@ -4906,7 +4906,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_3004" href="errors/err_ngrok_3004">ERR_NGROK_3004</a>
+          <a id="ERR_NGROK_3004" href="err_ngrok_3004">ERR_NGROK_3004</a>
         </td>
         <td class="pre-wrapped">
           ngrok gateway error The server returned an invalid or incomplete HTTP
@@ -4915,7 +4915,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_3005" href="errors/err_ngrok_3005">ERR_NGROK_3005</a>
+          <a id="ERR_NGROK_3005" href="err_ngrok_3005">ERR_NGROK_3005</a>
         </td>
         <td class="pre-wrapped">
           ngrok gateway timeout A connection to the server not be established.
@@ -4923,7 +4923,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_3006" href="errors/err_ngrok_3006">ERR_NGROK_3006</a>
+          <a id="ERR_NGROK_3006" href="err_ngrok_3006">ERR_NGROK_3006</a>
         </td>
         <td class="pre-wrapped">
           ngrok gateway error The server refused our connection
@@ -4931,13 +4931,13 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_3007" href="errors/err_ngrok_3007">ERR_NGROK_3007</a>
+          <a id="ERR_NGROK_3007" href="err_ngrok_3007">ERR_NGROK_3007</a>
         </td>
         <td class="pre-wrapped">ngrok gateway error</td>
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_3008" href="errors/err_ngrok_3008">ERR_NGROK_3008</a>
+          <a id="ERR_NGROK_3008" href="err_ngrok_3008">ERR_NGROK_3008</a>
         </td>
         <td class="pre-wrapped">
           ngrok gateway error None of the configured backends responded in time
@@ -4945,7 +4945,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_3009" href="errors/err_ngrok_3009">ERR_NGROK_3009</a>
+          <a id="ERR_NGROK_3009" href="err_ngrok_3009">ERR_NGROK_3009</a>
         </td>
         <td class="pre-wrapped">
           ngrok gateway error Received an HTTP network error (status code 0) from
@@ -4954,7 +4954,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_3010" href="errors/err_ngrok_3010">ERR_NGROK_3010</a>
+          <a id="ERR_NGROK_3010" href="err_ngrok_3010">ERR_NGROK_3010</a>
         </td>
         <td class="pre-wrapped">
           ngrok gateway error Received an HTTP response with unknown status code
@@ -4963,7 +4963,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_3100" href="errors/err_ngrok_3100">ERR_NGROK_3100</a>
+          <a id="ERR_NGROK_3100" href="err_ngrok_3100">ERR_NGROK_3100</a>
         </td>
         <td class="pre-wrapped">
           Your session has expired due to age. Refresh this page or use the link
@@ -4972,7 +4972,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_3101" href="errors/err_ngrok_3101">ERR_NGROK_3101</a>
+          <a id="ERR_NGROK_3101" href="err_ngrok_3101">ERR_NGROK_3101</a>
         </td>
         <td class="pre-wrapped">
           We lack permission to retrieve your data from
@@ -4982,7 +4982,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_3102" href="errors/err_ngrok_3102">ERR_NGROK_3102</a>
+          <a id="ERR_NGROK_3102" href="err_ngrok_3102">ERR_NGROK_3102</a>
         </td>
         <td class="pre-wrapped">
           <code>&lt;PROVIDER&gt;</code> requires that you correct an issue with
@@ -4993,7 +4993,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_3103" href="errors/err_ngrok_3103">ERR_NGROK_3103</a>
+          <a id="ERR_NGROK_3103" href="err_ngrok_3103">ERR_NGROK_3103</a>
         </td>
         <td class="pre-wrapped">
           <code>&lt;PROVIDER&gt;</code> requires that you correct an issue with
@@ -5005,7 +5005,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_3104" href="errors/err_ngrok_3104">ERR_NGROK_3104</a>
+          <a id="ERR_NGROK_3104" href="err_ngrok_3104">ERR_NGROK_3104</a>
         </td>
         <td class="pre-wrapped">
           The email "<code>&lt;EMAIL&gt;</code>" associated with your
@@ -5015,7 +5015,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_3105" href="errors/err_ngrok_3105">ERR_NGROK_3105</a>
+          <a id="ERR_NGROK_3105" href="err_ngrok_3105">ERR_NGROK_3105</a>
         </td>
         <td class="pre-wrapped">
           You lack the required permission to use this site. Contact the owner to
@@ -5024,7 +5024,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_3106" href="errors/err_ngrok_3106">ERR_NGROK_3106</a>
+          <a id="ERR_NGROK_3106" href="err_ngrok_3106">ERR_NGROK_3106</a>
         </td>
         <td class="pre-wrapped">
           The initial information required to authenticate with
@@ -5033,7 +5033,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_3107" href="errors/err_ngrok_3107">ERR_NGROK_3107</a>
+          <a id="ERR_NGROK_3107" href="err_ngrok_3107">ERR_NGROK_3107</a>
         </td>
         <td class="pre-wrapped">
           The state parameter used to validate your request is missing. Please
@@ -5042,7 +5042,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_3108" href="errors/err_ngrok_3108">ERR_NGROK_3108</a>
+          <a id="ERR_NGROK_3108" href="err_ngrok_3108">ERR_NGROK_3108</a>
         </td>
         <td class="pre-wrapped">
           The state parameter used to validate your request cannot be read. Please
@@ -5051,7 +5051,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_3109" href="errors/err_ngrok_3109">ERR_NGROK_3109</a>
+          <a id="ERR_NGROK_3109" href="err_ngrok_3109">ERR_NGROK_3109</a>
         </td>
         <td class="pre-wrapped">
           <code>&lt;PROVIDER&gt;</code> did not provide an email for your account.
@@ -5061,7 +5061,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_3110" href="errors/err_ngrok_3110">ERR_NGROK_3110</a>
+          <a id="ERR_NGROK_3110" href="err_ngrok_3110">ERR_NGROK_3110</a>
         </td>
         <td class="pre-wrapped">
           The email permission from <code>&lt;PROVIDER&gt;</code> was not granted
@@ -5070,7 +5070,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_3111" href="errors/err_ngrok_3111">ERR_NGROK_3111</a>
+          <a id="ERR_NGROK_3111" href="err_ngrok_3111">ERR_NGROK_3111</a>
         </td>
         <td class="pre-wrapped">
           All requested permissions with <code>&lt;PROVIDER&gt;</code> must be
@@ -5080,7 +5080,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_3112" href="errors/err_ngrok_3112">ERR_NGROK_3112</a>
+          <a id="ERR_NGROK_3112" href="err_ngrok_3112">ERR_NGROK_3112</a>
         </td>
         <td class="pre-wrapped">
           <code>&lt;PROVIDER&gt;</code> has returned an error when attempting to
@@ -5090,7 +5090,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_3113" href="errors/err_ngrok_3113">ERR_NGROK_3113</a>
+          <a id="ERR_NGROK_3113" href="err_ngrok_3113">ERR_NGROK_3113</a>
         </td>
         <td class="pre-wrapped">
           <code>&lt;PROVIDER&gt;</code> denied access to this application when
@@ -5100,7 +5100,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_3114" href="errors/err_ngrok_3114">ERR_NGROK_3114</a>
+          <a id="ERR_NGROK_3114" href="err_ngrok_3114">ERR_NGROK_3114</a>
         </td>
         <td class="pre-wrapped">
           In order to continue, you must authorize this application's access to
@@ -5109,7 +5109,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_3115" href="errors/err_ngrok_3115">ERR_NGROK_3115</a>
+          <a id="ERR_NGROK_3115" href="err_ngrok_3115">ERR_NGROK_3115</a>
         </td>
         <td class="pre-wrapped">
           The redirect_uri configured for this application is not properly
@@ -5119,7 +5119,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_3116" href="errors/err_ngrok_3116">ERR_NGROK_3116</a>
+          <a id="ERR_NGROK_3116" href="err_ngrok_3116">ERR_NGROK_3116</a>
         </td>
         <td class="pre-wrapped">
           <code>&lt;PROVIDER&gt;</code> denied access to your data when attempting
@@ -5129,7 +5129,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_3117" href="errors/err_ngrok_3117">ERR_NGROK_3117</a>
+          <a id="ERR_NGROK_3117" href="err_ngrok_3117">ERR_NGROK_3117</a>
         </td>
         <td class="pre-wrapped">
           The initial link used to authorize with
@@ -5138,7 +5138,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_3118" href="errors/err_ngrok_3118">ERR_NGROK_3118</a>
+          <a id="ERR_NGROK_3118" href="err_ngrok_3118">ERR_NGROK_3118</a>
         </td>
         <td class="pre-wrapped">
           <code>&lt;PROVIDER&gt;</code> denied access to your data. Please contact
@@ -5148,7 +5148,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_3119" href="errors/err_ngrok_3119">ERR_NGROK_3119</a>
+          <a id="ERR_NGROK_3119" href="err_ngrok_3119">ERR_NGROK_3119</a>
         </td>
         <td class="pre-wrapped">
           Logging in with <code>&lt;PROVIDER&gt;</code> took more than 15 minutes
@@ -5157,7 +5157,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_3120" href="errors/err_ngrok_3120">ERR_NGROK_3120</a>
+          <a id="ERR_NGROK_3120" href="err_ngrok_3120">ERR_NGROK_3120</a>
         </td>
         <td class="pre-wrapped">
           The state parameter required to finish authorization with
@@ -5167,7 +5167,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_3121" href="errors/err_ngrok_3121">ERR_NGROK_3121</a>
+          <a id="ERR_NGROK_3121" href="err_ngrok_3121">ERR_NGROK_3121</a>
         </td>
         <td class="pre-wrapped">
           The nonce cookie required to finish authorization with
@@ -5177,7 +5177,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_3122" href="errors/err_ngrok_3122">ERR_NGROK_3122</a>
+          <a id="ERR_NGROK_3122" href="err_ngrok_3122">ERR_NGROK_3122</a>
         </td>
         <td class="pre-wrapped">
           The access code from <code>&lt;PROVIDER&gt;</code> has expired and
@@ -5186,7 +5186,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_3123" href="errors/err_ngrok_3123">ERR_NGROK_3123</a>
+          <a id="ERR_NGROK_3123" href="err_ngrok_3123">ERR_NGROK_3123</a>
         </td>
         <td class="pre-wrapped">
           The access code from <code>&lt;PROVIDER&gt;</code> has already been
@@ -5196,7 +5196,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_3124" href="errors/err_ngrok_3124">ERR_NGROK_3124</a>
+          <a id="ERR_NGROK_3124" href="err_ngrok_3124">ERR_NGROK_3124</a>
         </td>
         <td class="pre-wrapped">
           The state parameter required to finish authorization with
@@ -5206,7 +5206,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_3125" href="errors/err_ngrok_3125">ERR_NGROK_3125</a>
+          <a id="ERR_NGROK_3125" href="err_ngrok_3125">ERR_NGROK_3125</a>
         </td>
         <td class="pre-wrapped">
           <code>&lt;PROVIDER&gt;</code> denied access to your data. The owner of
@@ -5216,7 +5216,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_3126" href="errors/err_ngrok_3126">ERR_NGROK_3126</a>
+          <a id="ERR_NGROK_3126" href="err_ngrok_3126">ERR_NGROK_3126</a>
         </td>
         <td class="pre-wrapped">
           <code>&lt;PROVIDER&gt;</code> rejected authorization due to a invalid or
@@ -5227,7 +5227,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_3127" href="errors/err_ngrok_3127">ERR_NGROK_3127</a>
+          <a id="ERR_NGROK_3127" href="err_ngrok_3127">ERR_NGROK_3127</a>
         </td>
         <td class="pre-wrapped">
           <code>&lt;PROVIDER&gt;</code> rejected authorization due to invalid or
@@ -5237,7 +5237,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_3150" href="errors/err_ngrok_3150">ERR_NGROK_3150</a>
+          <a id="ERR_NGROK_3150" href="err_ngrok_3150">ERR_NGROK_3150</a>
         </td>
         <td class="pre-wrapped">
           An error occurred when retrieving your session. Please refresh the page
@@ -5246,7 +5246,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_3151" href="errors/err_ngrok_3151">ERR_NGROK_3151</a>
+          <a id="ERR_NGROK_3151" href="err_ngrok_3151">ERR_NGROK_3151</a>
         </td>
         <td class="pre-wrapped">
           <code>&lt;PROVIDER&gt;</code> rejected use of your session's OAuth
@@ -5256,7 +5256,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_3152" href="errors/err_ngrok_3152">ERR_NGROK_3152</a>
+          <a id="ERR_NGROK_3152" href="err_ngrok_3152">ERR_NGROK_3152</a>
         </td>
         <td class="pre-wrapped">
           An invalid request was sent to <code>&lt;PROVIDER&gt;</code> but its
@@ -5267,7 +5267,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_3160" href="errors/err_ngrok_3160">ERR_NGROK_3160</a>
+          <a id="ERR_NGROK_3160" href="err_ngrok_3160">ERR_NGROK_3160</a>
         </td>
         <td class="pre-wrapped">
           An unexpected error occurred when communicating with
@@ -5276,7 +5276,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_3161" href="errors/err_ngrok_3161">ERR_NGROK_3161</a>
+          <a id="ERR_NGROK_3161" href="err_ngrok_3161">ERR_NGROK_3161</a>
         </td>
         <td class="pre-wrapped">
           <code>&lt;PROVIDER&gt;</code> has throttled this application and cannot
@@ -5285,7 +5285,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_3162" href="errors/err_ngrok_3162">ERR_NGROK_3162</a>
+          <a id="ERR_NGROK_3162" href="err_ngrok_3162">ERR_NGROK_3162</a>
         </td>
         <td class="pre-wrapped">
           <code>&lt;PROVIDER&gt;</code> has throttled this application and cannot
@@ -5294,7 +5294,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_3163" href="errors/err_ngrok_3163">ERR_NGROK_3163</a>
+          <a id="ERR_NGROK_3163" href="err_ngrok_3163">ERR_NGROK_3163</a>
         </td>
         <td class="pre-wrapped">
           An error occurred when finishing authorization with
@@ -5304,7 +5304,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_3164" href="errors/err_ngrok_3164">ERR_NGROK_3164</a>
+          <a id="ERR_NGROK_3164" href="err_ngrok_3164">ERR_NGROK_3164</a>
         </td>
         <td class="pre-wrapped">
           An error occurred when authorizing with <code>&lt;PROVIDER&gt;</code>:
@@ -5313,7 +5313,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_3165" href="errors/err_ngrok_3165">ERR_NGROK_3165</a>
+          <a id="ERR_NGROK_3165" href="err_ngrok_3165">ERR_NGROK_3165</a>
         </td>
         <td class="pre-wrapped">
           <code>&lt;PROVIDER&gt;</code> is too busy to handle requests and
@@ -5322,7 +5322,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_3166" href="errors/err_ngrok_3166">ERR_NGROK_3166</a>
+          <a id="ERR_NGROK_3166" href="err_ngrok_3166">ERR_NGROK_3166</a>
         </td>
         <td class="pre-wrapped">
           <code>&lt;PROVIDER&gt;</code> enountered an error and authorization
@@ -5331,7 +5331,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_3167" href="errors/err_ngrok_3167">ERR_NGROK_3167</a>
+          <a id="ERR_NGROK_3167" href="err_ngrok_3167">ERR_NGROK_3167</a>
         </td>
         <td class="pre-wrapped">
           <code>&lt;PROVIDER&gt;</code> is too busy to handle requests and
@@ -5341,7 +5341,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_3200" href="errors/err_ngrok_3200">ERR_NGROK_3200</a>
+          <a id="ERR_NGROK_3200" href="err_ngrok_3200">ERR_NGROK_3200</a>
         </td>
         <td class="pre-wrapped">
           Tunnel <code>&lt;HOSTNAME&gt;</code> not found
@@ -5349,31 +5349,31 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_3202" href="errors/err_ngrok_3202">ERR_NGROK_3202</a>
+          <a id="ERR_NGROK_3202" href="err_ngrok_3202">ERR_NGROK_3202</a>
         </td>
         <td class="pre-wrapped">Circuit breaker tripped</td>
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_3203" href="errors/err_ngrok_3203">ERR_NGROK_3203</a>
+          <a id="ERR_NGROK_3203" href="err_ngrok_3203">ERR_NGROK_3203</a>
         </td>
         <td class="pre-wrapped">Request blocked by IP Policy</td>
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_3204" href="errors/err_ngrok_3204">ERR_NGROK_3204</a>
+          <a id="ERR_NGROK_3204" href="err_ngrok_3204">ERR_NGROK_3204</a>
         </td>
         <td class="pre-wrapped">Request failed webhook verification</td>
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_3205" href="errors/err_ngrok_3205">ERR_NGROK_3205</a>
+          <a id="ERR_NGROK_3205" href="err_ngrok_3205">ERR_NGROK_3205</a>
         </td>
         <td class="pre-wrapped">Request blocked by Endpoints IP Restriction</td>
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_3206" href="errors/err_ngrok_3206">ERR_NGROK_3206</a>
+          <a id="ERR_NGROK_3206" href="err_ngrok_3206">ERR_NGROK_3206</a>
         </td>
         <td class="pre-wrapped">
           Expected a websocket request with a "Connection: upgrade" header but did
@@ -5382,7 +5382,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_3208" href="errors/err_ngrok_3208">ERR_NGROK_3208</a>
+          <a id="ERR_NGROK_3208" href="err_ngrok_3208">ERR_NGROK_3208</a>
         </td>
         <td class="pre-wrapped">
           The account associated with this hostname has been banned. We've
@@ -5393,13 +5393,13 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_3209" href="errors/err_ngrok_3209">ERR_NGROK_3209</a>
+          <a id="ERR_NGROK_3209" href="err_ngrok_3209">ERR_NGROK_3209</a>
         </td>
         <td class="pre-wrapped">Tunnel not found</td>
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_3210" href="errors/err_ngrok_3210">ERR_NGROK_3210</a>
+          <a id="ERR_NGROK_3210" href="err_ngrok_3210">ERR_NGROK_3210</a>
         </td>
         <td class="pre-wrapped">
           Error forwarding the connection to the ngrok agent
@@ -5407,61 +5407,61 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_3300" href="errors/err_ngrok_3300">ERR_NGROK_3300</a>
+          <a id="ERR_NGROK_3300" href="err_ngrok_3300">ERR_NGROK_3300</a>
         </td>
         <td class="pre-wrapped">URL "state" parameter is invalid</td>
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_3301" href="errors/err_ngrok_3301">ERR_NGROK_3301</a>
+          <a id="ERR_NGROK_3301" href="err_ngrok_3301">ERR_NGROK_3301</a>
         </td>
         <td class="pre-wrapped">URL "state" parameter is expired.</td>
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_3302" href="errors/err_ngrok_3302">ERR_NGROK_3302</a>
+          <a id="ERR_NGROK_3302" href="err_ngrok_3302">ERR_NGROK_3302</a>
         </td>
         <td class="pre-wrapped">URL "state" parameter is invalid.</td>
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_3303" href="errors/err_ngrok_3303">ERR_NGROK_3303</a>
+          <a id="ERR_NGROK_3303" href="err_ngrok_3303">ERR_NGROK_3303</a>
         </td>
         <td class="pre-wrapped">URL "state" parameter is invalid.</td>
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_3304" href="errors/err_ngrok_3304">ERR_NGROK_3304</a>
+          <a id="ERR_NGROK_3304" href="err_ngrok_3304">ERR_NGROK_3304</a>
         </td>
         <td class="pre-wrapped">URL "state" parameter is invalid.</td>
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_3305" href="errors/err_ngrok_3305">ERR_NGROK_3305</a>
+          <a id="ERR_NGROK_3305" href="err_ngrok_3305">ERR_NGROK_3305</a>
         </td>
         <td class="pre-wrapped">This request has expired. Please try again.</td>
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_3306" href="errors/err_ngrok_3306">ERR_NGROK_3306</a>
+          <a id="ERR_NGROK_3306" href="err_ngrok_3306">ERR_NGROK_3306</a>
         </td>
         <td class="pre-wrapped">URL "state" parameter is invalid.</td>
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_3307" href="errors/err_ngrok_3307">ERR_NGROK_3307</a>
+          <a id="ERR_NGROK_3307" href="err_ngrok_3307">ERR_NGROK_3307</a>
         </td>
         <td class="pre-wrapped">URL "state" parameter is invalid.</td>
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_3308" href="errors/err_ngrok_3308">ERR_NGROK_3308</a>
+          <a id="ERR_NGROK_3308" href="err_ngrok_3308">ERR_NGROK_3308</a>
         </td>
         <td class="pre-wrapped">URL "state" parameter is invalid.</td>
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_3309" href="errors/err_ngrok_3309">ERR_NGROK_3309</a>
+          <a id="ERR_NGROK_3309" href="err_ngrok_3309">ERR_NGROK_3309</a>
         </td>
         <td class="pre-wrapped">
           The route match type `<code>&lt;TYP&gt;</code>` is incompatible with
@@ -5471,25 +5471,25 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_3310" href="errors/err_ngrok_3310">ERR_NGROK_3310</a>
+          <a id="ERR_NGROK_3310" href="err_ngrok_3310">ERR_NGROK_3310</a>
         </td>
         <td class="pre-wrapped">URL "state" parameter is invalid.</td>
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_3311" href="errors/err_ngrok_3311">ERR_NGROK_3311</a>
+          <a id="ERR_NGROK_3311" href="err_ngrok_3311">ERR_NGROK_3311</a>
         </td>
         <td class="pre-wrapped">URL "state" parameter is invalid.</td>
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_3312" href="errors/err_ngrok_3312">ERR_NGROK_3312</a>
+          <a id="ERR_NGROK_3312" href="err_ngrok_3312">ERR_NGROK_3312</a>
         </td>
         <td class="pre-wrapped">URL "state" parameter is invalid.</td>
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_4001" href="errors/err_ngrok_4001">ERR_NGROK_4001</a>
+          <a id="ERR_NGROK_4001" href="err_ngrok_4001">ERR_NGROK_4001</a>
         </td>
         <td class="pre-wrapped">
           Plan <code>&lt;PLAN_ID&gt;</code> does not exist.
@@ -5497,13 +5497,13 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_4003" href="errors/err_ngrok_4003">ERR_NGROK_4003</a>
+          <a id="ERR_NGROK_4003" href="err_ngrok_4003">ERR_NGROK_4003</a>
         </td>
         <td class="pre-wrapped">Account name must not be empty.</td>
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_4004" href="errors/err_ngrok_4004">ERR_NGROK_4004</a>
+          <a id="ERR_NGROK_4004" href="err_ngrok_4004">ERR_NGROK_4004</a>
         </td>
         <td class="pre-wrapped">
           Account name exceeds max length, <code>&lt;LENGTH&gt;</code> bytes, max:
@@ -5512,7 +5512,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_4005" href="errors/err_ngrok_4005">ERR_NGROK_4005</a>
+          <a id="ERR_NGROK_4005" href="err_ngrok_4005">ERR_NGROK_4005</a>
         </td>
         <td class="pre-wrapped">
           Another account is already configured with the GSuite domain
@@ -5521,7 +5521,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_4011" href="errors/err_ngrok_4011">ERR_NGROK_4011</a>
+          <a id="ERR_NGROK_4011" href="err_ngrok_4011">ERR_NGROK_4011</a>
         </td>
         <td class="pre-wrapped">
           Your password must be at least <code>&lt;LENGTH&gt;</code> characters.
@@ -5529,7 +5529,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_4012" href="errors/err_ngrok_4012">ERR_NGROK_4012</a>
+          <a id="ERR_NGROK_4012" href="err_ngrok_4012">ERR_NGROK_4012</a>
         </td>
         <td class="pre-wrapped">
           Your account does not have access to <code>&lt;FEATURE&gt;</code>.
@@ -5538,7 +5538,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_4013" href="errors/err_ngrok_4013">ERR_NGROK_4013</a>
+          <a id="ERR_NGROK_4013" href="err_ngrok_4013">ERR_NGROK_4013</a>
         </td>
         <td class="pre-wrapped">
           You may not create a new account because you are already a member of the
@@ -5548,7 +5548,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_4014" href="errors/err_ngrok_4014">ERR_NGROK_4014</a>
+          <a id="ERR_NGROK_4014" href="err_ngrok_4014">ERR_NGROK_4014</a>
         </td>
         <td class="pre-wrapped">
           The account <code>&lt;NAME&gt;</code> was suspended. It may not be
@@ -5557,7 +5557,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_4015" href="errors/err_ngrok_4015">ERR_NGROK_4015</a>
+          <a id="ERR_NGROK_4015" href="err_ngrok_4015">ERR_NGROK_4015</a>
         </td>
         <td class="pre-wrapped">
           The account <code>&lt;NAME&gt;</code> was banned for violation of the
@@ -5567,7 +5567,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_4016" href="errors/err_ngrok_4016">ERR_NGROK_4016</a>
+          <a id="ERR_NGROK_4016" href="err_ngrok_4016">ERR_NGROK_4016</a>
         </td>
         <td class="pre-wrapped">
           You may not create a new account because another account you were the
@@ -5577,7 +5577,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_4017" href="errors/err_ngrok_4017">ERR_NGROK_4017</a>
+          <a id="ERR_NGROK_4017" href="err_ngrok_4017">ERR_NGROK_4017</a>
         </td>
         <td class="pre-wrapped">
           You may not create a new account because another account you were the
@@ -5587,7 +5587,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_4018" href="errors/err_ngrok_4018">ERR_NGROK_4018</a>
+          <a id="ERR_NGROK_4018" href="err_ngrok_4018">ERR_NGROK_4018</a>
         </td>
         <td class="pre-wrapped">
           You must signup for ngrok and add your authtoken to perform this
@@ -5598,7 +5598,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_4019" href="errors/err_ngrok_4019">ERR_NGROK_4019</a>
+          <a id="ERR_NGROK_4019" href="err_ngrok_4019">ERR_NGROK_4019</a>
         </td>
         <td class="pre-wrapped">
           This account cannot be deleted because it has an active billing
@@ -5608,7 +5608,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_4020" href="errors/err_ngrok_4020">ERR_NGROK_4020</a>
+          <a id="ERR_NGROK_4020" href="err_ngrok_4020">ERR_NGROK_4020</a>
         </td>
         <td class="pre-wrapped">
           Your password must be less then <code>&lt;LENGTH&gt;</code> characters.
@@ -5616,7 +5616,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_4100" href="errors/err_ngrok_4100">ERR_NGROK_4100</a>
+          <a id="ERR_NGROK_4100" href="err_ngrok_4100">ERR_NGROK_4100</a>
         </td>
         <td class="pre-wrapped">
           The email or password you entered is not valid.
@@ -5624,7 +5624,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_4101" href="errors/err_ngrok_4101">ERR_NGROK_4101</a>
+          <a id="ERR_NGROK_4101" href="err_ngrok_4101">ERR_NGROK_4101</a>
         </td>
         <td class="pre-wrapped">
           A user with the email address <code>&lt;EMAIL&gt;</code> already exists.
@@ -5632,7 +5632,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_4103" href="errors/err_ngrok_4103">ERR_NGROK_4103</a>
+          <a id="ERR_NGROK_4103" href="err_ngrok_4103">ERR_NGROK_4103</a>
         </td>
         <td class="pre-wrapped">
           <code>&lt;EMAIL&gt;</code> is not a valid email address.
@@ -5640,13 +5640,13 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_4104" href="errors/err_ngrok_4104">ERR_NGROK_4104</a>
+          <a id="ERR_NGROK_4104" href="err_ngrok_4104">ERR_NGROK_4104</a>
         </td>
         <td class="pre-wrapped">User name must not be empty.</td>
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_4105" href="errors/err_ngrok_4105">ERR_NGROK_4105</a>
+          <a id="ERR_NGROK_4105" href="err_ngrok_4105">ERR_NGROK_4105</a>
         </td>
         <td class="pre-wrapped">
           User name exceeds max length, <code>&lt;LENGTH&gt;</code> bytes, max:
@@ -5655,7 +5655,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_4106" href="errors/err_ngrok_4106">ERR_NGROK_4106</a>
+          <a id="ERR_NGROK_4106" href="err_ngrok_4106">ERR_NGROK_4106</a>
         </td>
         <td class="pre-wrapped">
           Your user <code>&lt;EMAIL&gt;</code> was suspended for violation of the
@@ -5665,7 +5665,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_4107" href="errors/err_ngrok_4107">ERR_NGROK_4107</a>
+          <a id="ERR_NGROK_4107" href="err_ngrok_4107">ERR_NGROK_4107</a>
         </td>
         <td class="pre-wrapped">
           Your user <code>&lt;EMAIL&gt;</code> was banned for violation of the
@@ -5675,7 +5675,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_4108" href="errors/err_ngrok_4108">ERR_NGROK_4108</a>
+          <a id="ERR_NGROK_4108" href="err_ngrok_4108">ERR_NGROK_4108</a>
         </td>
         <td class="pre-wrapped">
           Sign ups are disallowed for the email provider
@@ -5685,13 +5685,13 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_4109" href="errors/err_ngrok_4109">ERR_NGROK_4109</a>
+          <a id="ERR_NGROK_4109" href="err_ngrok_4109">ERR_NGROK_4109</a>
         </td>
         <td class="pre-wrapped">Bot name must not be empty.</td>
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_4110" href="errors/err_ngrok_4110">ERR_NGROK_4110</a>
+          <a id="ERR_NGROK_4110" href="err_ngrok_4110">ERR_NGROK_4110</a>
         </td>
         <td class="pre-wrapped">
           Bot name exceeds max length, <code>&lt;LENGTH&gt;</code> bytes, max:
@@ -5700,7 +5700,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_4111" href="errors/err_ngrok_4111">ERR_NGROK_4111</a>
+          <a id="ERR_NGROK_4111" href="err_ngrok_4111">ERR_NGROK_4111</a>
         </td>
         <td class="pre-wrapped">
           You must be an admin to create, update, or delete Bots.
@@ -5708,7 +5708,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_4200" href="errors/err_ngrok_4200">ERR_NGROK_4200</a>
+          <a id="ERR_NGROK_4200" href="err_ngrok_4200">ERR_NGROK_4200</a>
         </td>
         <td class="pre-wrapped">
           You may not delete all or your logins, you must have at least one.
@@ -5716,7 +5716,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_4201" href="errors/err_ngrok_4201">ERR_NGROK_4201</a>
+          <a id="ERR_NGROK_4201" href="err_ngrok_4201">ERR_NGROK_4201</a>
         </td>
         <td class="pre-wrapped">
           This <code>&lt;LOGIN&gt;</code> login is already connected to another
@@ -5725,7 +5725,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_4300" href="errors/err_ngrok_4300">ERR_NGROK_4300</a>
+          <a id="ERR_NGROK_4300" href="err_ngrok_4300">ERR_NGROK_4300</a>
         </td>
         <td class="pre-wrapped">
           No user with the email address <code>&lt;EMAIL&gt;</code> exists.
@@ -5733,7 +5733,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_4301" href="errors/err_ngrok_4301">ERR_NGROK_4301</a>
+          <a id="ERR_NGROK_4301" href="err_ngrok_4301">ERR_NGROK_4301</a>
         </td>
         <td class="pre-wrapped">
           This account does not support a password reset.
@@ -5741,7 +5741,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_4302" href="errors/err_ngrok_4302">ERR_NGROK_4302</a>
+          <a id="ERR_NGROK_4302" href="err_ngrok_4302">ERR_NGROK_4302</a>
         </td>
         <td class="pre-wrapped">
           Unable to redeem password: <code>&lt;REASON&gt;</code>
@@ -5749,7 +5749,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_4400" href="errors/err_ngrok_4400">ERR_NGROK_4400</a>
+          <a id="ERR_NGROK_4400" href="err_ngrok_4400">ERR_NGROK_4400</a>
         </td>
         <td class="pre-wrapped">
           An email address is required to invite a new user
@@ -5757,7 +5757,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_4401" href="errors/err_ngrok_4401">ERR_NGROK_4401</a>
+          <a id="ERR_NGROK_4401" href="err_ngrok_4401">ERR_NGROK_4401</a>
         </td>
         <td class="pre-wrapped">
           The invited email address is too long:
@@ -5766,7 +5766,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_4402" href="errors/err_ngrok_4402">ERR_NGROK_4402</a>
+          <a id="ERR_NGROK_4402" href="err_ngrok_4402">ERR_NGROK_4402</a>
         </td>
         <td class="pre-wrapped">
           The invited user would exceed your team size limit of
@@ -5777,7 +5777,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_4403" href="errors/err_ngrok_4403">ERR_NGROK_4403</a>
+          <a id="ERR_NGROK_4403" href="err_ngrok_4403">ERR_NGROK_4403</a>
         </td>
         <td class="pre-wrapped">
           You cannot invite any more users. Please email contact@ngrok.com if you
@@ -5786,7 +5786,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_4404" href="errors/err_ngrok_4404">ERR_NGROK_4404</a>
+          <a id="ERR_NGROK_4404" href="err_ngrok_4404">ERR_NGROK_4404</a>
         </td>
         <td class="pre-wrapped">
           Unabled to redeem invitation: <code>&lt;REASON&gt;</code>
@@ -5794,7 +5794,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_4405" href="errors/err_ngrok_4405">ERR_NGROK_4405</a>
+          <a id="ERR_NGROK_4405" href="err_ngrok_4405">ERR_NGROK_4405</a>
         </td>
         <td class="pre-wrapped">
           <code>&lt;EMAIL&gt;</code> is not a valid email address.
@@ -5802,7 +5802,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_4407" href="errors/err_ngrok_4407">ERR_NGROK_4407</a>
+          <a id="ERR_NGROK_4407" href="err_ngrok_4407">ERR_NGROK_4407</a>
         </td>
         <td class="pre-wrapped">
           You are not currently permitted to enroll in the beta.
@@ -5810,7 +5810,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_4408" href="errors/err_ngrok_4408">ERR_NGROK_4408</a>
+          <a id="ERR_NGROK_4408" href="err_ngrok_4408">ERR_NGROK_4408</a>
         </td>
         <td class="pre-wrapped">
           Feature request suggestions must be between 1 and
@@ -5819,7 +5819,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_4409" href="errors/err_ngrok_4409">ERR_NGROK_4409</a>
+          <a id="ERR_NGROK_4409" href="err_ngrok_4409">ERR_NGROK_4409</a>
         </td>
         <td class="pre-wrapped">
           Your account is not allowed to set invitation permissions.
@@ -5827,7 +5827,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_4410" href="errors/err_ngrok_4410">ERR_NGROK_4410</a>
+          <a id="ERR_NGROK_4410" href="err_ngrok_4410">ERR_NGROK_4410</a>
         </td>
         <td class="pre-wrapped">
           You do not have permissions to invite an administrator to the account.
@@ -5836,7 +5836,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_4411" href="errors/err_ngrok_4411">ERR_NGROK_4411</a>
+          <a id="ERR_NGROK_4411" href="err_ngrok_4411">ERR_NGROK_4411</a>
         </td>
         <td class="pre-wrapped">
           You do not have permissions to invite users to the account.
@@ -5844,7 +5844,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_4412" href="errors/err_ngrok_4412">ERR_NGROK_4412</a>
+          <a id="ERR_NGROK_4412" href="err_ngrok_4412">ERR_NGROK_4412</a>
         </td>
         <td class="pre-wrapped">
           You may not invite users to the account with higher permissions than
@@ -5853,7 +5853,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_4413" href="errors/err_ngrok_4413">ERR_NGROK_4413</a>
+          <a id="ERR_NGROK_4413" href="err_ngrok_4413">ERR_NGROK_4413</a>
         </td>
         <td class="pre-wrapped">
           Developer Read Write must set on a user if thier permissions include
@@ -5862,7 +5862,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_4451" href="errors/err_ngrok_4451">ERR_NGROK_4451</a>
+          <a id="ERR_NGROK_4451" href="err_ngrok_4451">ERR_NGROK_4451</a>
         </td>
         <td class="pre-wrapped">
           A user with the email address <code>&lt;EMAIL&gt;</code> already exists.
@@ -5870,7 +5870,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_4452" href="errors/err_ngrok_4452">ERR_NGROK_4452</a>
+          <a id="ERR_NGROK_4452" href="err_ngrok_4452">ERR_NGROK_4452</a>
         </td>
         <td class="pre-wrapped">
           The email address being verified, <code>&lt;EMAIL&gt;</code>, belongs to
@@ -5879,7 +5879,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_4500" href="errors/err_ngrok_4500">ERR_NGROK_4500</a>
+          <a id="ERR_NGROK_4500" href="err_ngrok_4500">ERR_NGROK_4500</a>
         </td>
         <td class="pre-wrapped">
           The URL <code>&lt;URL&gt;</code> is not a valid tcp address or URL.
@@ -5889,7 +5889,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_4501" href="errors/err_ngrok_4501">ERR_NGROK_4501</a>
+          <a id="ERR_NGROK_4501" href="err_ngrok_4501">ERR_NGROK_4501</a>
         </td>
         <td class="pre-wrapped">
           The TCP port <code>&lt;PORT&gt;</code> in <code>&lt;HOST&gt;</code> is
@@ -5898,7 +5898,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_4502" href="errors/err_ngrok_4502">ERR_NGROK_4502</a>
+          <a id="ERR_NGROK_4502" href="err_ngrok_4502">ERR_NGROK_4502</a>
         </td>
         <td class="pre-wrapped">
           The TCP port <code>&lt;PORT&gt;</code> for <code>&lt;HOST&gt;</code> is
@@ -5907,7 +5907,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_4503" href="errors/err_ngrok_4503">ERR_NGROK_4503</a>
+          <a id="ERR_NGROK_4503" href="err_ngrok_4503">ERR_NGROK_4503</a>
         </td>
         <td class="pre-wrapped">
           The IP <code>&lt;IP&gt;</code> is not a known ngrok TCP IP.
@@ -5915,7 +5915,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_4504" href="errors/err_ngrok_4504">ERR_NGROK_4504</a>
+          <a id="ERR_NGROK_4504" href="err_ngrok_4504">ERR_NGROK_4504</a>
         </td>
         <td class="pre-wrapped">
           The host <code>&lt;HOST&gt;</code> is not a known ngrok TCP hostname.
@@ -5923,7 +5923,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5000" href="errors/err_ngrok_5000">ERR_NGROK_5000</a>
+          <a id="ERR_NGROK_5000" href="err_ngrok_5000">ERR_NGROK_5000</a>
         </td>
         <td class="pre-wrapped">
           Your account is limited to <code>&lt;MAX&gt;</code>
@@ -5932,7 +5932,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5001" href="errors/err_ngrok_5001">ERR_NGROK_5001</a>
+          <a id="ERR_NGROK_5001" href="err_ngrok_5001">ERR_NGROK_5001</a>
         </td>
         <td class="pre-wrapped">
           Your account is rate limited to <code>&lt;MAX&gt;</code>
@@ -5941,7 +5941,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5100" href="errors/err_ngrok_5100">ERR_NGROK_5100</a>
+          <a id="ERR_NGROK_5100" href="err_ngrok_5100">ERR_NGROK_5100</a>
         </td>
         <td class="pre-wrapped">
           An event destination must specify a destination target. Valid targets
@@ -5950,7 +5950,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5102" href="errors/err_ngrok_5102">ERR_NGROK_5102</a>
+          <a id="ERR_NGROK_5102" href="err_ngrok_5102">ERR_NGROK_5102</a>
         </td>
         <td class="pre-wrapped">
           You have reached the maximum of <code>&lt;MAX&gt;</code> destinations
@@ -5959,7 +5959,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5103" href="errors/err_ngrok_5103">ERR_NGROK_5103</a>
+          <a id="ERR_NGROK_5103" href="err_ngrok_5103">ERR_NGROK_5103</a>
         </td>
         <td class="pre-wrapped">
           No event destinations with ID: <code>&lt;ID&gt;</code> associated with
@@ -5968,7 +5968,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5104" href="errors/err_ngrok_5104">ERR_NGROK_5104</a>
+          <a id="ERR_NGROK_5104" href="err_ngrok_5104">ERR_NGROK_5104</a>
         </td>
         <td class="pre-wrapped">
           Event Destination role ARN "<code>&lt;ARN&gt;</code>" is not a valid ARN
@@ -5977,7 +5977,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5105" href="errors/err_ngrok_5105">ERR_NGROK_5105</a>
+          <a id="ERR_NGROK_5105" href="err_ngrok_5105">ERR_NGROK_5105</a>
         </td>
         <td class="pre-wrapped">
           Event Destination role is missing an external ID.
@@ -5985,7 +5985,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5106" href="errors/err_ngrok_5106">ERR_NGROK_5106</a>
+          <a id="ERR_NGROK_5106" href="err_ngrok_5106">ERR_NGROK_5106</a>
         </td>
         <td class="pre-wrapped">
           Event Destination target is missing the auth field.
@@ -5993,7 +5993,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5107" href="errors/err_ngrok_5107">ERR_NGROK_5107</a>
+          <a id="ERR_NGROK_5107" href="err_ngrok_5107">ERR_NGROK_5107</a>
         </td>
         <td class="pre-wrapped">
           Event Destination auth is missing a role or credentials to send events
@@ -6002,7 +6002,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5108" href="errors/err_ngrok_5108">ERR_NGROK_5108</a>
+          <a id="ERR_NGROK_5108" href="err_ngrok_5108">ERR_NGROK_5108</a>
         </td>
         <td class="pre-wrapped">
           Update to target type not allowed. Create a new destination if you would
@@ -6011,7 +6011,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5112" href="errors/err_ngrok_5112">ERR_NGROK_5112</a>
+          <a id="ERR_NGROK_5112" href="err_ngrok_5112">ERR_NGROK_5112</a>
         </td>
         <td class="pre-wrapped">
           Event Destination "<code>&lt;ID&gt;</code>" cannot be deleted because it
@@ -6020,7 +6020,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5115" href="errors/err_ngrok_5115">ERR_NGROK_5115</a>
+          <a id="ERR_NGROK_5115" href="err_ngrok_5115">ERR_NGROK_5115</a>
         </td>
         <td class="pre-wrapped">
           An event destination may not specify more than one destination target.
@@ -6028,7 +6028,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5116" href="errors/err_ngrok_5116">ERR_NGROK_5116</a>
+          <a id="ERR_NGROK_5116" href="err_ngrok_5116">ERR_NGROK_5116</a>
         </td>
         <td class="pre-wrapped">
           An event destination may not specify more than one type of
@@ -6037,7 +6037,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5117" href="errors/err_ngrok_5117">ERR_NGROK_5117</a>
+          <a id="ERR_NGROK_5117" href="err_ngrok_5117">ERR_NGROK_5117</a>
         </td>
         <td class="pre-wrapped">
           The property <code>&lt;NAME&gt;</code> is an immutable property and may
@@ -6046,7 +6046,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5118" href="errors/err_ngrok_5118">ERR_NGROK_5118</a>
+          <a id="ERR_NGROK_5118" href="err_ngrok_5118">ERR_NGROK_5118</a>
         </td>
         <td class="pre-wrapped">
           The partition (<code>&lt;VALUE&gt;</code>) of the provided
@@ -6055,7 +6055,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5119" href="errors/err_ngrok_5119">ERR_NGROK_5119</a>
+          <a id="ERR_NGROK_5119" href="err_ngrok_5119">ERR_NGROK_5119</a>
         </td>
         <td class="pre-wrapped">
           The service (<code>&lt;VALUE&gt;</code>) of the provided
@@ -6064,7 +6064,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5120" href="errors/err_ngrok_5120">ERR_NGROK_5120</a>
+          <a id="ERR_NGROK_5120" href="err_ngrok_5120">ERR_NGROK_5120</a>
         </td>
         <td class="pre-wrapped">
           The provided <code>&lt;FIELD&gt;</code> (<code>&lt;ARN&gt;</code>) is
@@ -6074,13 +6074,13 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5122" href="errors/err_ngrok_5122">ERR_NGROK_5122</a>
+          <a id="ERR_NGROK_5122" href="err_ngrok_5122">ERR_NGROK_5122</a>
         </td>
         <td class="pre-wrapped"><code>&lt;ERR&gt;</code></td>
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5123" href="errors/err_ngrok_5123">ERR_NGROK_5123</a>
+          <a id="ERR_NGROK_5123" href="err_ngrok_5123">ERR_NGROK_5123</a>
         </td>
         <td class="pre-wrapped">
           Event Subscription <code>&lt;ID&gt;</code> not found.
@@ -6088,7 +6088,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5124" href="errors/err_ngrok_5124">ERR_NGROK_5124</a>
+          <a id="ERR_NGROK_5124" href="err_ngrok_5124">ERR_NGROK_5124</a>
         </td>
         <td class="pre-wrapped">
           Your account can't use the event subscriptions feature.
@@ -6096,7 +6096,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5125" href="errors/err_ngrok_5125">ERR_NGROK_5125</a>
+          <a id="ERR_NGROK_5125" href="err_ngrok_5125">ERR_NGROK_5125</a>
         </td>
         <td class="pre-wrapped">
           Source <code>&lt;TYP&gt;</code> not found on Event Subscription
@@ -6105,7 +6105,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5126" href="errors/err_ngrok_5126">ERR_NGROK_5126</a>
+          <a id="ERR_NGROK_5126" href="err_ngrok_5126">ERR_NGROK_5126</a>
         </td>
         <td class="pre-wrapped">
           You have reached the maximum of <code>&lt;MAX&gt;</code> destinations on
@@ -6114,7 +6114,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5127" href="errors/err_ngrok_5127">ERR_NGROK_5127</a>
+          <a id="ERR_NGROK_5127" href="err_ngrok_5127">ERR_NGROK_5127</a>
         </td>
         <td class="pre-wrapped">
           The event type for each source must be unique within a subscription.
@@ -6122,13 +6122,13 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5128" href="errors/err_ngrok_5128">ERR_NGROK_5128</a>
+          <a id="ERR_NGROK_5128" href="err_ngrok_5128">ERR_NGROK_5128</a>
         </td>
         <td class="pre-wrapped">Your account can't create event destinations.</td>
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5129" href="errors/err_ngrok_5129">ERR_NGROK_5129</a>
+          <a id="ERR_NGROK_5129" href="err_ngrok_5129">ERR_NGROK_5129</a>
         </td>
         <td class="pre-wrapped">
           The ARN (<code>&lt;ARN&gt;</code>) is not valid for the
@@ -6137,7 +6137,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5130" href="errors/err_ngrok_5130">ERR_NGROK_5130</a>
+          <a id="ERR_NGROK_5130" href="err_ngrok_5130">ERR_NGROK_5130</a>
         </td>
         <td class="pre-wrapped">
           The ARN (<code>&lt;ARN&gt;</code>) is not valid for the
@@ -6146,7 +6146,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5131" href="errors/err_ngrok_5131">ERR_NGROK_5131</a>
+          <a id="ERR_NGROK_5131" href="err_ngrok_5131">ERR_NGROK_5131</a>
         </td>
         <td class="pre-wrapped">
           You have reached the maximum of <code>&lt;MAX&gt;</code> event
@@ -6155,19 +6155,19 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5200" href="errors/err_ngrok_5200">ERR_NGROK_5200</a>
+          <a id="ERR_NGROK_5200" href="err_ngrok_5200">ERR_NGROK_5200</a>
         </td>
         <td class="pre-wrapped">URL "state" parameter is invalid.</td>
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5201" href="errors/err_ngrok_5201">ERR_NGROK_5201</a>
+          <a id="ERR_NGROK_5201" href="err_ngrok_5201">ERR_NGROK_5201</a>
         </td>
         <td class="pre-wrapped">URL "state" parameter is invalid.</td>
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5202" href="errors/err_ngrok_5202">ERR_NGROK_5202</a>
+          <a id="ERR_NGROK_5202" href="err_ngrok_5202">ERR_NGROK_5202</a>
         </td>
         <td class="pre-wrapped">
           Encountered an error while communicating with the OIDC provider:
@@ -6176,7 +6176,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5203" href="errors/err_ngrok_5203">ERR_NGROK_5203</a>
+          <a id="ERR_NGROK_5203" href="err_ngrok_5203">ERR_NGROK_5203</a>
         </td>
         <td class="pre-wrapped">
           The OIDC provider failed to return a OIDC ID Token.
@@ -6184,7 +6184,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5204" href="errors/err_ngrok_5204">ERR_NGROK_5204</a>
+          <a id="ERR_NGROK_5204" href="err_ngrok_5204">ERR_NGROK_5204</a>
         </td>
         <td class="pre-wrapped">
           Failed to verify the OIDC ID Token: "<code>&lt;ERROR&gt;</code>".
@@ -6192,7 +6192,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5205" href="errors/err_ngrok_5205">ERR_NGROK_5205</a>
+          <a id="ERR_NGROK_5205" href="err_ngrok_5205">ERR_NGROK_5205</a>
         </td>
         <td class="pre-wrapped">
           Failed to extract claims from the OIDC ID Token:
@@ -6201,7 +6201,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5206" href="errors/err_ngrok_5206">ERR_NGROK_5206</a>
+          <a id="ERR_NGROK_5206" href="err_ngrok_5206">ERR_NGROK_5206</a>
         </td>
         <td class="pre-wrapped">
           The endpoint configuration "<code>&lt;ECID&gt;</code>" does not exist.
@@ -6209,7 +6209,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5207" href="errors/err_ngrok_5207">ERR_NGROK_5207</a>
+          <a id="ERR_NGROK_5207" href="err_ngrok_5207">ERR_NGROK_5207</a>
         </td>
         <td class="pre-wrapped">
           OIDC is not enabled on the endpoint configuration
@@ -6218,7 +6218,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5208" href="errors/err_ngrok_5208">ERR_NGROK_5208</a>
+          <a id="ERR_NGROK_5208" href="err_ngrok_5208">ERR_NGROK_5208</a>
         </td>
         <td class="pre-wrapped">
           Encountered an error while attempting to fetch OIDC provider metadata:
@@ -6227,7 +6227,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5209" href="errors/err_ngrok_5209">ERR_NGROK_5209</a>
+          <a id="ERR_NGROK_5209" href="err_ngrok_5209">ERR_NGROK_5209</a>
         </td>
         <td class="pre-wrapped">
           The authentication flow was not completed in time. Please try
@@ -6236,7 +6236,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5210" href="errors/err_ngrok_5210">ERR_NGROK_5210</a>
+          <a id="ERR_NGROK_5210" href="err_ngrok_5210">ERR_NGROK_5210</a>
         </td>
         <td class="pre-wrapped">
           The authentication flow was not completed in time. Please try
@@ -6245,7 +6245,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5211" href="errors/err_ngrok_5211">ERR_NGROK_5211</a>
+          <a id="ERR_NGROK_5211" href="err_ngrok_5211">ERR_NGROK_5211</a>
         </td>
         <td class="pre-wrapped">
           The OIDC provider returned the error code "<code>&lt;ERROR&gt;</code>"
@@ -6255,7 +6255,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5212" href="errors/err_ngrok_5212">ERR_NGROK_5212</a>
+          <a id="ERR_NGROK_5212" href="err_ngrok_5212">ERR_NGROK_5212</a>
         </td>
         <td class="pre-wrapped">
           OIDC is not enabled on the domain "<code>&lt;HOSTNAME&gt;</code>".
@@ -6263,13 +6263,13 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5300" href="errors/err_ngrok_5300">ERR_NGROK_5300</a>
+          <a id="ERR_NGROK_5300" href="err_ngrok_5300">ERR_NGROK_5300</a>
         </td>
         <td class="pre-wrapped">SAML RelayState parameter is invalid.</td>
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5301" href="errors/err_ngrok_5301">ERR_NGROK_5301</a>
+          <a id="ERR_NGROK_5301" href="err_ngrok_5301">ERR_NGROK_5301</a>
         </td>
         <td class="pre-wrapped">
           The SAML IdP sent an invalid SAML assertion:
@@ -6278,7 +6278,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5302" href="errors/err_ngrok_5302">ERR_NGROK_5302</a>
+          <a id="ERR_NGROK_5302" href="err_ngrok_5302">ERR_NGROK_5302</a>
         </td>
         <td class="pre-wrapped">
           The SAML module for the endpoint configuration
@@ -6287,7 +6287,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5303" href="errors/err_ngrok_5303">ERR_NGROK_5303</a>
+          <a id="ERR_NGROK_5303" href="err_ngrok_5303">ERR_NGROK_5303</a>
         </td>
         <td class="pre-wrapped">
           The endpoint configuration "<code>&lt;ECID&gt;</code>" is not attached
@@ -6296,7 +6296,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5304" href="errors/err_ngrok_5304">ERR_NGROK_5304</a>
+          <a id="ERR_NGROK_5304" href="err_ngrok_5304">ERR_NGROK_5304</a>
         </td>
         <td class="pre-wrapped">
           Could not find the domain "<code>&lt;DOMAIN&gt;</code>" specified in the
@@ -6305,7 +6305,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5305" href="errors/err_ngrok_5305">ERR_NGROK_5305</a>
+          <a id="ERR_NGROK_5305" href="err_ngrok_5305">ERR_NGROK_5305</a>
         </td>
         <td class="pre-wrapped">
           The SAML IdP sent an invalid SAML assertion:
@@ -6314,13 +6314,13 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5306" href="errors/err_ngrok_5306">ERR_NGROK_5306</a>
+          <a id="ERR_NGROK_5306" href="err_ngrok_5306">ERR_NGROK_5306</a>
         </td>
         <td class="pre-wrapped">SAML RelayState parameter is invalid.</td>
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5307" href="errors/err_ngrok_5307">ERR_NGROK_5307</a>
+          <a id="ERR_NGROK_5307" href="err_ngrok_5307">ERR_NGROK_5307</a>
         </td>
         <td class="pre-wrapped">
           The domain "<code>&lt;DOMAIN&gt;</code>" specified in the IdP-initiated
@@ -6330,7 +6330,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5308" href="errors/err_ngrok_5308">ERR_NGROK_5308</a>
+          <a id="ERR_NGROK_5308" href="err_ngrok_5308">ERR_NGROK_5308</a>
         </td>
         <td class="pre-wrapped">
           The SAML IdP sent an invalid SAML logout response:
@@ -6339,19 +6339,19 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5309" href="errors/err_ngrok_5309">ERR_NGROK_5309</a>
+          <a id="ERR_NGROK_5309" href="err_ngrok_5309">ERR_NGROK_5309</a>
         </td>
         <td class="pre-wrapped">URL "state" parameter is invalid.</td>
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5310" href="errors/err_ngrok_5310">ERR_NGROK_5310</a>
+          <a id="ERR_NGROK_5310" href="err_ngrok_5310">ERR_NGROK_5310</a>
         </td>
         <td class="pre-wrapped">URL "state" parameter is invalid.</td>
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5311" href="errors/err_ngrok_5311">ERR_NGROK_5311</a>
+          <a id="ERR_NGROK_5311" href="err_ngrok_5311">ERR_NGROK_5311</a>
         </td>
         <td class="pre-wrapped">
           The SAML IdP sent an invalid SAML assertion with
@@ -6360,7 +6360,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5312" href="errors/err_ngrok_5312">ERR_NGROK_5312</a>
+          <a id="ERR_NGROK_5312" href="err_ngrok_5312">ERR_NGROK_5312</a>
         </td>
         <td class="pre-wrapped">
           You are not a member of the configured authorized groups on the ngrok
@@ -6369,7 +6369,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5313" href="errors/err_ngrok_5313">ERR_NGROK_5313</a>
+          <a id="ERR_NGROK_5313" href="err_ngrok_5313">ERR_NGROK_5313</a>
         </td>
         <td class="pre-wrapped">
           The authentication flow was not completed in time. Please try
@@ -6378,7 +6378,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5314" href="errors/err_ngrok_5314">ERR_NGROK_5314</a>
+          <a id="ERR_NGROK_5314" href="err_ngrok_5314">ERR_NGROK_5314</a>
         </td>
         <td class="pre-wrapped">
           The logout flow was not completed in time. Please try authenticating
@@ -6387,7 +6387,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5315" href="errors/err_ngrok_5315">ERR_NGROK_5315</a>
+          <a id="ERR_NGROK_5315" href="err_ngrok_5315">ERR_NGROK_5315</a>
         </td>
         <td class="pre-wrapped">
           The authentication flow was not completed in time. Please try
@@ -6396,7 +6396,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5316" href="errors/err_ngrok_5316">ERR_NGROK_5316</a>
+          <a id="ERR_NGROK_5316" href="err_ngrok_5316">ERR_NGROK_5316</a>
         </td>
         <td class="pre-wrapped">
           The logout flow was not completed in time. Please try authenticating
@@ -6405,7 +6405,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5317" href="errors/err_ngrok_5317">ERR_NGROK_5317</a>
+          <a id="ERR_NGROK_5317" href="err_ngrok_5317">ERR_NGROK_5317</a>
         </td>
         <td class="pre-wrapped">
           The SAML module for the edge route "<code>&lt;RTEID&gt;</code>"
@@ -6414,7 +6414,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5318" href="errors/err_ngrok_5318">ERR_NGROK_5318</a>
+          <a id="ERR_NGROK_5318" href="err_ngrok_5318">ERR_NGROK_5318</a>
         </td>
         <td class="pre-wrapped">
           The edge "<code>&lt;EDGID&gt;</code>" is not attached to any domains.
@@ -6422,7 +6422,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5319" href="errors/err_ngrok_5319">ERR_NGROK_5319</a>
+          <a id="ERR_NGROK_5319" href="err_ngrok_5319">ERR_NGROK_5319</a>
         </td>
         <td class="pre-wrapped">
           Failed to complete IdP-initiated SAML login. The RelayState specified an
@@ -6433,7 +6433,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5320" href="errors/err_ngrok_5320">ERR_NGROK_5320</a>
+          <a id="ERR_NGROK_5320" href="err_ngrok_5320">ERR_NGROK_5320</a>
         </td>
         <td class="pre-wrapped">
           The edge route "<code>&lt;RTEID&gt;</code>" does not exist.
@@ -6441,7 +6441,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5321" href="errors/err_ngrok_5321">ERR_NGROK_5321</a>
+          <a id="ERR_NGROK_5321" href="err_ngrok_5321">ERR_NGROK_5321</a>
         </td>
         <td class="pre-wrapped">
           The RelayState must be configured with the redirect URL for
@@ -6450,7 +6450,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5322" href="errors/err_ngrok_5322">ERR_NGROK_5322</a>
+          <a id="ERR_NGROK_5322" href="err_ngrok_5322">ERR_NGROK_5322</a>
         </td>
         <td class="pre-wrapped">
           The domain "<code>&lt;DOMAIN&gt;</code>" specified in the IdP-initiated
@@ -6459,7 +6459,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5323" href="errors/err_ngrok_5323">ERR_NGROK_5323</a>
+          <a id="ERR_NGROK_5323" href="err_ngrok_5323">ERR_NGROK_5323</a>
         </td>
         <td class="pre-wrapped">
           The SAML module is not enabled for the configuration
@@ -6468,7 +6468,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5324" href="errors/err_ngrok_5324">ERR_NGROK_5324</a>
+          <a id="ERR_NGROK_5324" href="err_ngrok_5324">ERR_NGROK_5324</a>
         </td>
         <td class="pre-wrapped">
           The ID "<code>&lt;ID&gt;</code>" that was specified is invalid. This
@@ -6477,7 +6477,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5325" href="errors/err_ngrok_5325">ERR_NGROK_5325</a>
+          <a id="ERR_NGROK_5325" href="err_ngrok_5325">ERR_NGROK_5325</a>
         </td>
         <td class="pre-wrapped">
           Failed to complete IdP-initiated SAML login. Edge does not have any
@@ -6487,7 +6487,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5326" href="errors/err_ngrok_5326">ERR_NGROK_5326</a>
+          <a id="ERR_NGROK_5326" href="err_ngrok_5326">ERR_NGROK_5326</a>
         </td>
         <td class="pre-wrapped">
           Failed to complete IdP-initiated SAML login. The RelayState must be
@@ -6497,7 +6497,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5400" href="errors/err_ngrok_5400">ERR_NGROK_5400</a>
+          <a id="ERR_NGROK_5400" href="err_ngrok_5400">ERR_NGROK_5400</a>
         </td>
         <td class="pre-wrapped">
           Event Sources for the "<code>&lt;TYP&gt;</code>" event type must specify
@@ -6506,7 +6506,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5401" href="errors/err_ngrok_5401">ERR_NGROK_5401</a>
+          <a id="ERR_NGROK_5401" href="err_ngrok_5401">ERR_NGROK_5401</a>
         </td>
         <td class="pre-wrapped">
           Event Sources for the "<code>&lt;TYP&gt;</code>" event may not specify
@@ -6515,7 +6515,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5402" href="errors/err_ngrok_5402">ERR_NGROK_5402</a>
+          <a id="ERR_NGROK_5402" href="err_ngrok_5402">ERR_NGROK_5402</a>
         </td>
         <td class="pre-wrapped">
           Event Sources for the "<code>&lt;TYP&gt;</code>" event may not specify a
@@ -6524,7 +6524,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5403" href="errors/err_ngrok_5403">ERR_NGROK_5403</a>
+          <a id="ERR_NGROK_5403" href="err_ngrok_5403">ERR_NGROK_5403</a>
         </td>
         <td class="pre-wrapped">
           Event Sources must be configured with fields that match its event type.
@@ -6533,7 +6533,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5404" href="errors/err_ngrok_5404">ERR_NGROK_5404</a>
+          <a id="ERR_NGROK_5404" href="err_ngrok_5404">ERR_NGROK_5404</a>
         </td>
         <td class="pre-wrapped">
           Event Source filter is invalid: "<code>&lt;ERR&gt;</code>"
@@ -6541,7 +6541,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5405" href="errors/err_ngrok_5405">ERR_NGROK_5405</a>
+          <a id="ERR_NGROK_5405" href="err_ngrok_5405">ERR_NGROK_5405</a>
         </td>
         <td class="pre-wrapped">
           Invalid Event Field: "<code>&lt;FIELD&gt;</code>"
@@ -6549,7 +6549,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5406" href="errors/err_ngrok_5406">ERR_NGROK_5406</a>
+          <a id="ERR_NGROK_5406" href="err_ngrok_5406">ERR_NGROK_5406</a>
         </td>
         <td class="pre-wrapped">
           Field is not yet supported in event filters:
@@ -6558,13 +6558,13 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5500" href="errors/err_ngrok_5500">ERR_NGROK_5500</a>
+          <a id="ERR_NGROK_5500" href="err_ngrok_5500">ERR_NGROK_5500</a>
         </td>
         <td class="pre-wrapped">URL "state" parameter is invalid.</td>
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5501" href="errors/err_ngrok_5501">ERR_NGROK_5501</a>
+          <a id="ERR_NGROK_5501" href="err_ngrok_5501">ERR_NGROK_5501</a>
         </td>
         <td class="pre-wrapped">
           The authentication flow was not completed in time. Please try
@@ -6573,7 +6573,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5502" href="errors/err_ngrok_5502">ERR_NGROK_5502</a>
+          <a id="ERR_NGROK_5502" href="err_ngrok_5502">ERR_NGROK_5502</a>
         </td>
         <td class="pre-wrapped">
           Authorization with <code>&lt;PROVIDER&gt;</code> succeeded, but these
@@ -6583,13 +6583,13 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5503" href="errors/err_ngrok_5503">ERR_NGROK_5503</a>
+          <a id="ERR_NGROK_5503" href="err_ngrok_5503">ERR_NGROK_5503</a>
         </td>
         <td class="pre-wrapped">URL "state" parameter is invalid.</td>
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5504" href="errors/err_ngrok_5504">ERR_NGROK_5504</a>
+          <a id="ERR_NGROK_5504" href="err_ngrok_5504">ERR_NGROK_5504</a>
         </td>
         <td class="pre-wrapped">
           The authentication flow was not completed in time. Please try
@@ -6598,7 +6598,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5507" href="errors/err_ngrok_5507">ERR_NGROK_5507</a>
+          <a id="ERR_NGROK_5507" href="err_ngrok_5507">ERR_NGROK_5507</a>
         </td>
         <td class="pre-wrapped">
           <code>&lt;ERROR_NAME&gt;</code> <code>&lt;DETAILS&gt;</code>
@@ -6606,7 +6606,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5508" href="errors/err_ngrok_5508">ERR_NGROK_5508</a>
+          <a id="ERR_NGROK_5508" href="err_ngrok_5508">ERR_NGROK_5508</a>
         </td>
         <td class="pre-wrapped">
           Authorization with <code>&lt;PROVIDER&gt;</code> succeeded, but these
@@ -6616,7 +6616,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5510" href="errors/err_ngrok_5510">ERR_NGROK_5510</a>
+          <a id="ERR_NGROK_5510" href="err_ngrok_5510">ERR_NGROK_5510</a>
         </td>
         <td class="pre-wrapped">
           <code>&lt;PROVIDER&gt;</code> did not provide an email for your account.
@@ -6626,7 +6626,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5511" href="errors/err_ngrok_5511">ERR_NGROK_5511</a>
+          <a id="ERR_NGROK_5511" href="err_ngrok_5511">ERR_NGROK_5511</a>
         </td>
         <td class="pre-wrapped">
           Email "<code>&lt;EMAIL&gt;</code>" is not authorized for use by this
@@ -6635,7 +6635,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5512" href="errors/err_ngrok_5512">ERR_NGROK_5512</a>
+          <a id="ERR_NGROK_5512" href="err_ngrok_5512">ERR_NGROK_5512</a>
         </td>
         <td class="pre-wrapped">
           Email is malformed. Email "<code>&lt;EMAIL&gt;</code>" is missing an @
@@ -6644,7 +6644,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5513" href="errors/err_ngrok_5513">ERR_NGROK_5513</a>
+          <a id="ERR_NGROK_5513" href="err_ngrok_5513">ERR_NGROK_5513</a>
         </td>
         <td class="pre-wrapped">
           Email domain failed to normalize to a FQDN
@@ -6653,7 +6653,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5517" href="errors/err_ngrok_5517">ERR_NGROK_5517</a>
+          <a id="ERR_NGROK_5517" href="err_ngrok_5517">ERR_NGROK_5517</a>
         </td>
         <td class="pre-wrapped">
           <code>&lt;PROVIDER&gt;</code> denied access to your data during the
@@ -6664,7 +6664,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5518" href="errors/err_ngrok_5518">ERR_NGROK_5518</a>
+          <a id="ERR_NGROK_5518" href="err_ngrok_5518">ERR_NGROK_5518</a>
         </td>
         <td class="pre-wrapped">
           <code>&lt;PROVIDER&gt;</code> rejected authorization with access denied:
@@ -6674,7 +6674,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5520" href="errors/err_ngrok_5520">ERR_NGROK_5520</a>
+          <a id="ERR_NGROK_5520" href="err_ngrok_5520">ERR_NGROK_5520</a>
         </td>
         <td class="pre-wrapped">
           <code>&lt;PROVIDER&gt;</code> rejected authorization due to a invalid or
@@ -6685,7 +6685,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5521" href="errors/err_ngrok_5521">ERR_NGROK_5521</a>
+          <a id="ERR_NGROK_5521" href="err_ngrok_5521">ERR_NGROK_5521</a>
         </td>
         <td class="pre-wrapped">
           <code>&lt;PROVIDER&gt;</code> rejected authorization due to an internal
@@ -6694,7 +6694,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5522" href="errors/err_ngrok_5522">ERR_NGROK_5522</a>
+          <a id="ERR_NGROK_5522" href="err_ngrok_5522">ERR_NGROK_5522</a>
         </td>
         <td class="pre-wrapped">
           <code>&lt;PROVIDER&gt;</code> is too busy to handle requests and
@@ -6704,7 +6704,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5523" href="errors/err_ngrok_5523">ERR_NGROK_5523</a>
+          <a id="ERR_NGROK_5523" href="err_ngrok_5523">ERR_NGROK_5523</a>
         </td>
         <td class="pre-wrapped">
           <code>&lt;PROVIDER&gt;</code> rejected authorization as the redirect URL
@@ -6715,7 +6715,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5524" href="errors/err_ngrok_5524">ERR_NGROK_5524</a>
+          <a id="ERR_NGROK_5524" href="err_ngrok_5524">ERR_NGROK_5524</a>
         </td>
         <td class="pre-wrapped">
           <code>&lt;PROVIDER&gt;</code> rejected authorization:
@@ -6726,7 +6726,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5525" href="errors/err_ngrok_5525">ERR_NGROK_5525</a>
+          <a id="ERR_NGROK_5525" href="err_ngrok_5525">ERR_NGROK_5525</a>
         </td>
         <td class="pre-wrapped">
           <code>&lt;PROVIDER&gt;</code> has throttled this application and cannot
@@ -6735,7 +6735,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5526" href="errors/err_ngrok_5526">ERR_NGROK_5526</a>
+          <a id="ERR_NGROK_5526" href="err_ngrok_5526">ERR_NGROK_5526</a>
         </td>
         <td class="pre-wrapped">
           <code>&lt;PROVIDER&gt;</code> rejected access to your information. This
@@ -6744,7 +6744,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5527" href="errors/err_ngrok_5527">ERR_NGROK_5527</a>
+          <a id="ERR_NGROK_5527" href="err_ngrok_5527">ERR_NGROK_5527</a>
         </td>
         <td class="pre-wrapped">
           <code>&lt;PROVIDER&gt;</code> rejected the final step of authorization
@@ -6755,7 +6755,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5528" href="errors/err_ngrok_5528">ERR_NGROK_5528</a>
+          <a id="ERR_NGROK_5528" href="err_ngrok_5528">ERR_NGROK_5528</a>
         </td>
         <td class="pre-wrapped">
           The access code from <code>&lt;PROVIDER&gt;</code> has expired and
@@ -6764,7 +6764,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5529" href="errors/err_ngrok_5529">ERR_NGROK_5529</a>
+          <a id="ERR_NGROK_5529" href="err_ngrok_5529">ERR_NGROK_5529</a>
         </td>
         <td class="pre-wrapped">
           <code>&lt;PROVIDER&gt;</code> denied access to your data during the
@@ -6774,7 +6774,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5530" href="errors/err_ngrok_5530">ERR_NGROK_5530</a>
+          <a id="ERR_NGROK_5530" href="err_ngrok_5530">ERR_NGROK_5530</a>
         </td>
         <td class="pre-wrapped">
           OAuth is not enabled on the domain "<code>&lt;HOSTNAME&gt;</code>".
@@ -6782,7 +6782,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5531" href="errors/err_ngrok_5531">ERR_NGROK_5531</a>
+          <a id="ERR_NGROK_5531" href="err_ngrok_5531">ERR_NGROK_5531</a>
         </td>
         <td class="pre-wrapped">
           <code>&lt;PROVIDER&gt;</code> denied access to your account as the
@@ -6793,7 +6793,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5532" href="errors/err_ngrok_5532">ERR_NGROK_5532</a>
+          <a id="ERR_NGROK_5532" href="err_ngrok_5532">ERR_NGROK_5532</a>
         </td>
         <td class="pre-wrapped">
           <code>&lt;PROVIDER&gt;</code> denied access to your account as
@@ -6803,7 +6803,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5533" href="errors/err_ngrok_5533">ERR_NGROK_5533</a>
+          <a id="ERR_NGROK_5533" href="err_ngrok_5533">ERR_NGROK_5533</a>
         </td>
         <td class="pre-wrapped">
           <code>&lt;PROVIDER&gt;</code> had an internal server error when
@@ -6813,7 +6813,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5534" href="errors/err_ngrok_5534">ERR_NGROK_5534</a>
+          <a id="ERR_NGROK_5534" href="err_ngrok_5534">ERR_NGROK_5534</a>
         </td>
         <td class="pre-wrapped">
           Encountered an error while attempting to fetch OIDC provider metadata:
@@ -6822,7 +6822,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5535" href="errors/err_ngrok_5535">ERR_NGROK_5535</a>
+          <a id="ERR_NGROK_5535" href="err_ngrok_5535">ERR_NGROK_5535</a>
         </td>
         <td class="pre-wrapped">
           The OAuth provider "<code>&lt;PROVIDER&gt;</code>" cannot be used
@@ -6831,7 +6831,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_5536" href="errors/err_ngrok_5536">ERR_NGROK_5536</a>
+          <a id="ERR_NGROK_5536" href="err_ngrok_5536">ERR_NGROK_5536</a>
         </td>
         <td class="pre-wrapped">
           Encountered an error while fetching user data:
@@ -6841,7 +6841,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_6000" href="errors/err_ngrok_6000">ERR_NGROK_6000</a>
+          <a id="ERR_NGROK_6000" href="err_ngrok_6000">ERR_NGROK_6000</a>
         </td>
         <td class="pre-wrapped">
           This tunnel was unable to update; this may be temporary, please try
@@ -6850,7 +6850,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_6001" href="errors/err_ngrok_6001">ERR_NGROK_6001</a>
+          <a id="ERR_NGROK_6001" href="err_ngrok_6001">ERR_NGROK_6001</a>
         </td>
         <td class="pre-wrapped">
           This tunnel is no longer available as its account was not found.
@@ -6858,7 +6858,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_6002" href="errors/err_ngrok_6002">ERR_NGROK_6002</a>
+          <a id="ERR_NGROK_6002" href="err_ngrok_6002">ERR_NGROK_6002</a>
         </td>
         <td class="pre-wrapped">
           This tunnel is no longer available as its account does not own resources
@@ -6867,7 +6867,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_6003" href="errors/err_ngrok_6003">ERR_NGROK_6003</a>
+          <a id="ERR_NGROK_6003" href="err_ngrok_6003">ERR_NGROK_6003</a>
         </td>
         <td class="pre-wrapped">
           Endpoint configurations cannot be used with agent-specified basic auth.
@@ -6877,7 +6877,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_6006" href="errors/err_ngrok_6006">ERR_NGROK_6006</a>
+          <a id="ERR_NGROK_6006" href="err_ngrok_6006">ERR_NGROK_6006</a>
         </td>
         <td class="pre-wrapped">
           The Event Destination <code>&lt;EDID&gt;</code> required by
@@ -6887,7 +6887,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_6008" href="errors/err_ngrok_6008">ERR_NGROK_6008</a>
+          <a id="ERR_NGROK_6008" href="err_ngrok_6008">ERR_NGROK_6008</a>
         </td>
         <td class="pre-wrapped">
           This endpoint is unavailable as its account is suspended due to lack of
@@ -6896,7 +6896,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_6009" href="errors/err_ngrok_6009">ERR_NGROK_6009</a>
+          <a id="ERR_NGROK_6009" href="err_ngrok_6009">ERR_NGROK_6009</a>
         </td>
         <td class="pre-wrapped">
           This endpoint is unavailable as its account is suspended.
@@ -6904,7 +6904,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_6010" href="errors/err_ngrok_6010">ERR_NGROK_6010</a>
+          <a id="ERR_NGROK_6010" href="err_ngrok_6010">ERR_NGROK_6010</a>
         </td>
         <td class="pre-wrapped">
           Endpoint configuration is incompatible with tunnel; module
@@ -6915,7 +6915,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_6011" href="errors/err_ngrok_6011">ERR_NGROK_6011</a>
+          <a id="ERR_NGROK_6011" href="err_ngrok_6011">ERR_NGROK_6011</a>
         </td>
         <td class="pre-wrapped">
           You may not specify <code>&lt;MIDDLEWARE&gt;</code> options from the
@@ -6926,7 +6926,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_6013" href="errors/err_ngrok_6013">ERR_NGROK_6013</a>
+          <a id="ERR_NGROK_6013" href="err_ngrok_6013">ERR_NGROK_6013</a>
         </td>
         <td class="pre-wrapped">
           Failed to compile filter for Event Subscription
@@ -6935,7 +6935,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_6014" href="errors/err_ngrok_6014">ERR_NGROK_6014</a>
+          <a id="ERR_NGROK_6014" href="err_ngrok_6014">ERR_NGROK_6014</a>
         </td>
         <td class="pre-wrapped">
           Failed to run filter for Event Subscription <code>&lt;ESID&gt;</code>.
@@ -6943,7 +6943,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_6018" href="errors/err_ngrok_6018">ERR_NGROK_6018</a>
+          <a id="ERR_NGROK_6018" href="err_ngrok_6018">ERR_NGROK_6018</a>
         </td>
         <td class="pre-wrapped">
           The Endpoint <code>&lt;HOSTPORT&gt;</code> has both an Endpoint
@@ -6953,7 +6953,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_6019" href="errors/err_ngrok_6019">ERR_NGROK_6019</a>
+          <a id="ERR_NGROK_6019" href="err_ngrok_6019">ERR_NGROK_6019</a>
         </td>
         <td class="pre-wrapped">
           The Endpoint <code>&lt;HOSTPORT&gt;</code> has both an Edge
@@ -6963,7 +6963,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_6020" href="errors/err_ngrok_6020">ERR_NGROK_6020</a>
+          <a id="ERR_NGROK_6020" href="err_ngrok_6020">ERR_NGROK_6020</a>
         </td>
         <td class="pre-wrapped">
           The Endpoint <code>&lt;HOSTPORT&gt;</code> has both an Edge
@@ -6973,7 +6973,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_6021" href="errors/err_ngrok_6021">ERR_NGROK_6021</a>
+          <a id="ERR_NGROK_6021" href="err_ngrok_6021">ERR_NGROK_6021</a>
         </td>
         <td class="pre-wrapped">
           HTML content may only be served after you upgrade to a paid account.
@@ -6981,7 +6981,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_6022" href="errors/err_ngrok_6022">ERR_NGROK_6022</a>
+          <a id="ERR_NGROK_6022" href="err_ngrok_6022">ERR_NGROK_6022</a>
         </td>
         <td class="pre-wrapped">
           Before you can serve HTML content, you must sign up for an ngrok account
@@ -6990,7 +6990,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_6023" href="errors/err_ngrok_6023">ERR_NGROK_6023</a>
+          <a id="ERR_NGROK_6023" href="err_ngrok_6023">ERR_NGROK_6023</a>
         </td>
         <td class="pre-wrapped">
           HTML content may only be served in this region after you upgrade to a
@@ -6999,7 +6999,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_6024" href="errors/err_ngrok_6024">ERR_NGROK_6024</a>
+          <a id="ERR_NGROK_6024" href="err_ngrok_6024">ERR_NGROK_6024</a>
         </td>
         <td class="pre-wrapped">
           You are about to visit <code>&lt;HOSTPORT&gt;</code>, served by
@@ -7010,7 +7010,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_6500" href="errors/err_ngrok_6500">ERR_NGROK_6500</a>
+          <a id="ERR_NGROK_6500" href="err_ngrok_6500">ERR_NGROK_6500</a>
         </td>
         <td class="pre-wrapped">
           Your account is not authorized to use the backends feature. Upgrade to a
@@ -7020,7 +7020,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_6501" href="errors/err_ngrok_6501">ERR_NGROK_6501</a>
+          <a id="ERR_NGROK_6501" href="err_ngrok_6501">ERR_NGROK_6501</a>
         </td>
         <td class="pre-wrapped">
           Cannot save backend reference <code>&lt;ID&gt;</code> because it does
@@ -7029,7 +7029,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_6502" href="errors/err_ngrok_6502">ERR_NGROK_6502</a>
+          <a id="ERR_NGROK_6502" href="err_ngrok_6502">ERR_NGROK_6502</a>
         </td>
         <td class="pre-wrapped">
           The backend could not be deleted because it is still referenced by at
@@ -7038,7 +7038,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_6503" href="errors/err_ngrok_6503">ERR_NGROK_6503</a>
+          <a id="ERR_NGROK_6503" href="err_ngrok_6503">ERR_NGROK_6503</a>
         </td>
         <td class="pre-wrapped">
           Description is limited to <code>&lt;MAX&gt;</code> characters; you have
@@ -7047,7 +7047,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_6504" href="errors/err_ngrok_6504">ERR_NGROK_6504</a>
+          <a id="ERR_NGROK_6504" href="err_ngrok_6504">ERR_NGROK_6504</a>
         </td>
         <td class="pre-wrapped">
           Metadata is limited to <code>&lt;MAX&gt;</code> characters; you have
@@ -7056,7 +7056,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_6505" href="errors/err_ngrok_6505">ERR_NGROK_6505</a>
+          <a id="ERR_NGROK_6505" href="err_ngrok_6505">ERR_NGROK_6505</a>
         </td>
         <td class="pre-wrapped">
           Static backend requires address in the host:port form.
@@ -7064,7 +7064,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_6506" href="errors/err_ngrok_6506">ERR_NGROK_6506</a>
+          <a id="ERR_NGROK_6506" href="err_ngrok_6506">ERR_NGROK_6506</a>
         </td>
         <td class="pre-wrapped">
           Static backend address <code>&lt;ADDR&gt;</code> is invalid
@@ -7073,7 +7073,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_6507" href="errors/err_ngrok_6507">ERR_NGROK_6507</a>
+          <a id="ERR_NGROK_6507" href="err_ngrok_6507">ERR_NGROK_6507</a>
         </td>
         <td class="pre-wrapped">
           Static backend address <code>&lt;ADDR&gt;</code> is missing host. Use
@@ -7082,7 +7082,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_6508" href="errors/err_ngrok_6508">ERR_NGROK_6508</a>
+          <a id="ERR_NGROK_6508" href="err_ngrok_6508">ERR_NGROK_6508</a>
         </td>
         <td class="pre-wrapped">
           Tunnel group labels count is limited to <code>&lt;MAX&gt;</code>; you
@@ -7091,7 +7091,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_6509" href="errors/err_ngrok_6509">ERR_NGROK_6509</a>
+          <a id="ERR_NGROK_6509" href="err_ngrok_6509">ERR_NGROK_6509</a>
         </td>
         <td class="pre-wrapped">
           Tunnel group label key length is limited to <code>&lt;MAX&gt;</code>;
@@ -7100,7 +7100,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_6510" href="errors/err_ngrok_6510">ERR_NGROK_6510</a>
+          <a id="ERR_NGROK_6510" href="err_ngrok_6510">ERR_NGROK_6510</a>
         </td>
         <td class="pre-wrapped">
           Tunnel group label value length is limited to <code>&lt;MAX&gt;</code>;
@@ -7109,7 +7109,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_6511" href="errors/err_ngrok_6511">ERR_NGROK_6511</a>
+          <a id="ERR_NGROK_6511" href="err_ngrok_6511">ERR_NGROK_6511</a>
         </td>
         <td class="pre-wrapped">
           Weighted backends count is limited to <code>&lt;MAX&gt;</code>; you have
@@ -7118,7 +7118,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_6512" href="errors/err_ngrok_6512">ERR_NGROK_6512</a>
+          <a id="ERR_NGROK_6512" href="err_ngrok_6512">ERR_NGROK_6512</a>
         </td>
         <td class="pre-wrapped">
           Weighted backend <code>&lt;ID&gt;</code> weight
@@ -7128,7 +7128,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_6513" href="errors/err_ngrok_6513">ERR_NGROK_6513</a>
+          <a id="ERR_NGROK_6513" href="err_ngrok_6513">ERR_NGROK_6513</a>
         </td>
         <td class="pre-wrapped">
           Failover backends may only contain up to
@@ -7138,13 +7138,13 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_6514" href="errors/err_ngrok_6514">ERR_NGROK_6514</a>
+          <a id="ERR_NGROK_6514" href="err_ngrok_6514">ERR_NGROK_6514</a>
         </td>
         <td class="pre-wrapped">Backend not found.</td>
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_6515" href="errors/err_ngrok_6515">ERR_NGROK_6515</a>
+          <a id="ERR_NGROK_6515" href="err_ngrok_6515">ERR_NGROK_6515</a>
         </td>
         <td class="pre-wrapped">
           Tunnel Group Backend <code>&lt;ID&gt;</code> did not match any tunnels.
@@ -7153,7 +7153,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_6516" href="errors/err_ngrok_6516">ERR_NGROK_6516</a>
+          <a id="ERR_NGROK_6516" href="err_ngrok_6516">ERR_NGROK_6516</a>
         </td>
         <td class="pre-wrapped">
           HTTP Reseponse Backend <code>&lt;ID&gt;</code> had too large of a body.
@@ -7163,7 +7163,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_6517" href="errors/err_ngrok_6517">ERR_NGROK_6517</a>
+          <a id="ERR_NGROK_6517" href="err_ngrok_6517">ERR_NGROK_6517</a>
         </td>
         <td class="pre-wrapped">
           HTTP Response Backend <code>&lt;ID&gt;</code> had an invalid status
@@ -7173,7 +7173,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_6522" href="errors/err_ngrok_6522">ERR_NGROK_6522</a>
+          <a id="ERR_NGROK_6522" href="err_ngrok_6522">ERR_NGROK_6522</a>
         </td>
         <td class="pre-wrapped">
           The header beginning with <code>&lt;PREFIX&gt;</code>...' exceeds the
@@ -7182,7 +7182,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_6523" href="errors/err_ngrok_6523">ERR_NGROK_6523</a>
+          <a id="ERR_NGROK_6523" href="err_ngrok_6523">ERR_NGROK_6523</a>
         </td>
         <td class="pre-wrapped">
           The header value for <code>&lt;HEADERKEY&gt;</code> beginning with
@@ -7192,7 +7192,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_6524" href="errors/err_ngrok_6524">ERR_NGROK_6524</a>
+          <a id="ERR_NGROK_6524" href="err_ngrok_6524">ERR_NGROK_6524</a>
         </td>
         <td class="pre-wrapped">
           A Weighted Backend may not reference the backend
@@ -7202,7 +7202,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_6525" href="errors/err_ngrok_6525">ERR_NGROK_6525</a>
+          <a id="ERR_NGROK_6525" href="err_ngrok_6525">ERR_NGROK_6525</a>
         </td>
         <td class="pre-wrapped">
           A Failover Backend may not reference the backend
@@ -7212,7 +7212,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_6526" href="errors/err_ngrok_6526">ERR_NGROK_6526</a>
+          <a id="ERR_NGROK_6526" href="err_ngrok_6526">ERR_NGROK_6526</a>
         </td>
         <td class="pre-wrapped">
           The id <code>&lt;ID&gt;</code> is not a valid backend ID.
@@ -7220,7 +7220,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_6527" href="errors/err_ngrok_6527">ERR_NGROK_6527</a>
+          <a id="ERR_NGROK_6527" href="err_ngrok_6527">ERR_NGROK_6527</a>
         </td>
         <td class="pre-wrapped">
           The id <code>&lt;ID&gt;</code> is invalid; expected an id of type
@@ -7229,7 +7229,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_6528" href="errors/err_ngrok_6528">ERR_NGROK_6528</a>
+          <a id="ERR_NGROK_6528" href="err_ngrok_6528">ERR_NGROK_6528</a>
         </td>
         <td class="pre-wrapped">
           Traffic made it to the ngrok edge, but there are no tunnels online
@@ -7238,7 +7238,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_6529" href="errors/err_ngrok_6529">ERR_NGROK_6529</a>
+          <a id="ERR_NGROK_6529" href="err_ngrok_6529">ERR_NGROK_6529</a>
         </td>
         <td class="pre-wrapped">
           Your account is not authorized to use the weighted backends feature.
@@ -7248,7 +7248,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_6530" href="errors/err_ngrok_6530">ERR_NGROK_6530</a>
+          <a id="ERR_NGROK_6530" href="err_ngrok_6530">ERR_NGROK_6530</a>
         </td>
         <td class="pre-wrapped">
           The <code>&lt;ID&gt;</code> header cannot be removed without specifying
@@ -7257,7 +7257,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_6600" href="errors/err_ngrok_6600">ERR_NGROK_6600</a>
+          <a id="ERR_NGROK_6600" href="err_ngrok_6600">ERR_NGROK_6600</a>
         </td>
         <td class="pre-wrapped">
           The account <code>&lt;NAME&gt;</code> has reached its team size limit
@@ -7267,7 +7267,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_6601" href="errors/err_ngrok_6601">ERR_NGROK_6601</a>
+          <a id="ERR_NGROK_6601" href="err_ngrok_6601">ERR_NGROK_6601</a>
         </td>
         <td class="pre-wrapped">
           Failed to add <code>&lt;USER_NAME&gt;</code> as a member of account
@@ -7276,7 +7276,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_6602" href="errors/err_ngrok_6602">ERR_NGROK_6602</a>
+          <a id="ERR_NGROK_6602" href="err_ngrok_6602">ERR_NGROK_6602</a>
         </td>
         <td class="pre-wrapped">
           You may not remove the last administrator of the account. Grant
@@ -7285,7 +7285,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_6603" href="errors/err_ngrok_6603">ERR_NGROK_6603</a>
+          <a id="ERR_NGROK_6603" href="err_ngrok_6603">ERR_NGROK_6603</a>
         </td>
         <td class="pre-wrapped">
           Your account is not allowed to set membership permissions.
@@ -7293,7 +7293,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_6604" href="errors/err_ngrok_6604">ERR_NGROK_6604</a>
+          <a id="ERR_NGROK_6604" href="err_ngrok_6604">ERR_NGROK_6604</a>
         </td>
         <td class="pre-wrapped">
           You may not remove an administrator from the account. Only
@@ -7302,7 +7302,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_6605" href="errors/err_ngrok_6605">ERR_NGROK_6605</a>
+          <a id="ERR_NGROK_6605" href="err_ngrok_6605">ERR_NGROK_6605</a>
         </td>
         <td class="pre-wrapped">
           You may not grant administrator privileges to an account member. Only
@@ -7311,7 +7311,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_6606" href="errors/err_ngrok_6606">ERR_NGROK_6606</a>
+          <a id="ERR_NGROK_6606" href="err_ngrok_6606">ERR_NGROK_6606</a>
         </td>
         <td class="pre-wrapped">
           You may not change an administrator's permissions. Only other
@@ -7320,7 +7320,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_6607" href="errors/err_ngrok_6607">ERR_NGROK_6607</a>
+          <a id="ERR_NGROK_6607" href="err_ngrok_6607">ERR_NGROK_6607</a>
         </td>
         <td class="pre-wrapped">
           You may not change the account administrator. Only the current accont
@@ -7329,7 +7329,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_6608" href="errors/err_ngrok_6608">ERR_NGROK_6608</a>
+          <a id="ERR_NGROK_6608" href="err_ngrok_6608">ERR_NGROK_6608</a>
         </td>
         <td class="pre-wrapped">
           Could not transfer administrative control to membership
@@ -7338,7 +7338,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_6609" href="errors/err_ngrok_6609">ERR_NGROK_6609</a>
+          <a id="ERR_NGROK_6609" href="err_ngrok_6609">ERR_NGROK_6609</a>
         </td>
         <td class="pre-wrapped">
           Swapping administrators is not supported on accounts with RBAC enabled.
@@ -7346,19 +7346,19 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_6612" href="errors/err_ngrok_6612">ERR_NGROK_6612</a>
+          <a id="ERR_NGROK_6612" href="err_ngrok_6612">ERR_NGROK_6612</a>
         </td>
         <td class="pre-wrapped">You are not allowed to remove members.</td>
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_6613" href="errors/err_ngrok_6613">ERR_NGROK_6613</a>
+          <a id="ERR_NGROK_6613" href="err_ngrok_6613">ERR_NGROK_6613</a>
         </td>
         <td class="pre-wrapped">You are not allowed to create members.</td>
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_6614" href="errors/err_ngrok_6614">ERR_NGROK_6614</a>
+          <a id="ERR_NGROK_6614" href="err_ngrok_6614">ERR_NGROK_6614</a>
         </td>
         <td class="pre-wrapped">
           You are not allowed to set the permissions of members.
@@ -7366,7 +7366,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_6615" href="errors/err_ngrok_6615">ERR_NGROK_6615</a>
+          <a id="ERR_NGROK_6615" href="err_ngrok_6615">ERR_NGROK_6615</a>
         </td>
         <td class="pre-wrapped">
           You may not create users with higher permissions than your own.
@@ -7374,7 +7374,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_6616" href="errors/err_ngrok_6616">ERR_NGROK_6616</a>
+          <a id="ERR_NGROK_6616" href="err_ngrok_6616">ERR_NGROK_6616</a>
         </td>
         <td class="pre-wrapped">
           You may not set user permissions higher than your own.
@@ -7382,7 +7382,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_6700" href="errors/err_ngrok_6700">ERR_NGROK_6700</a>
+          <a id="ERR_NGROK_6700" href="err_ngrok_6700">ERR_NGROK_6700</a>
         </td>
         <td class="pre-wrapped">
           The description is limited to <code>&lt;MAX&gt;</code> characters, but
@@ -7391,7 +7391,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_6701" href="errors/err_ngrok_6701">ERR_NGROK_6701</a>
+          <a id="ERR_NGROK_6701" href="err_ngrok_6701">ERR_NGROK_6701</a>
         </td>
         <td class="pre-wrapped">
           Metadata is limited to <code>&lt;MAX&gt;</code> characters, but the
@@ -7400,7 +7400,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_6702" href="errors/err_ngrok_6702">ERR_NGROK_6702</a>
+          <a id="ERR_NGROK_6702" href="err_ngrok_6702">ERR_NGROK_6702</a>
         </td>
         <td class="pre-wrapped">
           No DNS records were returned when querying for an NS record for the
@@ -7409,7 +7409,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_6703" href="errors/err_ngrok_6703">ERR_NGROK_6703</a>
+          <a id="ERR_NGROK_6703" href="err_ngrok_6703">ERR_NGROK_6703</a>
         </td>
         <td class="pre-wrapped">
           The NS records for the domain
@@ -7419,7 +7419,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_6704" href="errors/err_ngrok_6704">ERR_NGROK_6704</a>
+          <a id="ERR_NGROK_6704" href="err_ngrok_6704">ERR_NGROK_6704</a>
         </td>
         <td class="pre-wrapped">
           The specified domain "<code>&lt;DOMAIN&gt;</code>" is not a valid domain
@@ -7428,7 +7428,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_6705" href="errors/err_ngrok_6705">ERR_NGROK_6705</a>
+          <a id="ERR_NGROK_6705" href="err_ngrok_6705">ERR_NGROK_6705</a>
         </td>
         <td class="pre-wrapped">
           The agent ingress domain "<code>&lt;DOMAIN&gt;</code>" must be a third
@@ -7437,7 +7437,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_6706" href="errors/err_ngrok_6706">ERR_NGROK_6706</a>
+          <a id="ERR_NGROK_6706" href="err_ngrok_6706">ERR_NGROK_6706</a>
         </td>
         <td class="pre-wrapped">
           The agent ingress domain "<code>&lt;DOMAIN&gt;</code>" already exists,
@@ -7446,25 +7446,25 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7000" href="errors/err_ngrok_7000">ERR_NGROK_7000</a>
+          <a id="ERR_NGROK_7000" href="err_ngrok_7000">ERR_NGROK_7000</a>
         </td>
         <td class="pre-wrapped">Edge not found</td>
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7001" href="errors/err_ngrok_7001">ERR_NGROK_7001</a>
+          <a id="ERR_NGROK_7001" href="err_ngrok_7001">ERR_NGROK_7001</a>
         </td>
         <td class="pre-wrapped">Invalid edge ID</td>
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7002" href="errors/err_ngrok_7002">ERR_NGROK_7002</a>
+          <a id="ERR_NGROK_7002" href="err_ngrok_7002">ERR_NGROK_7002</a>
         </td>
         <td class="pre-wrapped">Invalid edge request</td>
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7007" href="errors/err_ngrok_7007">ERR_NGROK_7007</a>
+          <a id="ERR_NGROK_7007" href="err_ngrok_7007">ERR_NGROK_7007</a>
         </td>
         <td class="pre-wrapped">
           The IP Policy ID <code>&lt;ID&gt;</code> specified for the IP
@@ -7473,7 +7473,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7008" href="errors/err_ngrok_7008">ERR_NGROK_7008</a>
+          <a id="ERR_NGROK_7008" href="err_ngrok_7008">ERR_NGROK_7008</a>
         </td>
         <td class="pre-wrapped">
           Only Pro and Enterprise plans are allowed to use edges. Your account is
@@ -7483,7 +7483,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7009" href="errors/err_ngrok_7009">ERR_NGROK_7009</a>
+          <a id="ERR_NGROK_7009" href="err_ngrok_7009">ERR_NGROK_7009</a>
         </td>
         <td class="pre-wrapped">
           Your account is limited to a maximum of <code>&lt;MAX&gt;</code> edges.
@@ -7491,7 +7491,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7011" href="errors/err_ngrok_7011">ERR_NGROK_7011</a>
+          <a id="ERR_NGROK_7011" href="err_ngrok_7011">ERR_NGROK_7011</a>
         </td>
         <td class="pre-wrapped">
           Invalid edge, circuit breaker error threshold percentage must be between
@@ -7500,7 +7500,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7012" href="errors/err_ngrok_7012">ERR_NGROK_7012</a>
+          <a id="ERR_NGROK_7012" href="err_ngrok_7012">ERR_NGROK_7012</a>
         </td>
         <td class="pre-wrapped">
           The auth provider <code>&lt;VAL&gt;</code> does not exist. Specify an
@@ -7509,7 +7509,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7013" href="errors/err_ngrok_7013">ERR_NGROK_7013</a>
+          <a id="ERR_NGROK_7013" href="err_ngrok_7013">ERR_NGROK_7013</a>
         </td>
         <td class="pre-wrapped">
           The edge module exceeds the max number of IP Policies. You specified
@@ -7518,7 +7518,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7014" href="errors/err_ngrok_7014">ERR_NGROK_7014</a>
+          <a id="ERR_NGROK_7014" href="err_ngrok_7014">ERR_NGROK_7014</a>
         </td>
         <td class="pre-wrapped">
           The edge module TLS CA certificate size exceeds the max. You specified
@@ -7527,7 +7527,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7015" href="errors/err_ngrok_7015">ERR_NGROK_7015</a>
+          <a id="ERR_NGROK_7015" href="err_ngrok_7015">ERR_NGROK_7015</a>
         </td>
         <td class="pre-wrapped">
           The edge module exceeds the max number of headers. You specified
@@ -7536,7 +7536,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7016" href="errors/err_ngrok_7016">ERR_NGROK_7016</a>
+          <a id="ERR_NGROK_7016" href="err_ngrok_7016">ERR_NGROK_7016</a>
         </td>
         <td class="pre-wrapped">
           Invalid edge module, circuit breaker tripped duration must be greater
@@ -7545,7 +7545,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7017" href="errors/err_ngrok_7017">ERR_NGROK_7017</a>
+          <a id="ERR_NGROK_7017" href="err_ngrok_7017">ERR_NGROK_7017</a>
         </td>
         <td class="pre-wrapped">
           Invalid edge module, circuit breaker rolling window must be greater than
@@ -7554,7 +7554,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7018" href="errors/err_ngrok_7018">ERR_NGROK_7018</a>
+          <a id="ERR_NGROK_7018" href="err_ngrok_7018">ERR_NGROK_7018</a>
         </td>
         <td class="pre-wrapped">
           Invalid edge module, circuit breaker num buckets must be greater than 0
@@ -7563,7 +7563,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7019" href="errors/err_ngrok_7019">ERR_NGROK_7019</a>
+          <a id="ERR_NGROK_7019" href="err_ngrok_7019">ERR_NGROK_7019</a>
         </td>
         <td class="pre-wrapped">
           The edge could not be deleted because it is still referenced by at least
@@ -7572,13 +7572,13 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7020" href="errors/err_ngrok_7020">ERR_NGROK_7020</a>
+          <a id="ERR_NGROK_7020" href="err_ngrok_7020">ERR_NGROK_7020</a>
         </td>
         <td class="pre-wrapped">The edge must specify a type.</td>
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7021" href="errors/err_ngrok_7021">ERR_NGROK_7021</a>
+          <a id="ERR_NGROK_7021" href="err_ngrok_7021">ERR_NGROK_7021</a>
         </td>
         <td class="pre-wrapped">
           The module <code>&lt;NAME&gt;</code> is not supported on an edge of type
@@ -7587,7 +7587,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7022" href="errors/err_ngrok_7022">ERR_NGROK_7022</a>
+          <a id="ERR_NGROK_7022" href="err_ngrok_7022">ERR_NGROK_7022</a>
         </td>
         <td class="pre-wrapped">
           <code>&lt;NAME&gt;</code> is not a valid edge type. Must be one of
@@ -7596,7 +7596,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7023" href="errors/err_ngrok_7023">ERR_NGROK_7023</a>
+          <a id="ERR_NGROK_7023" href="err_ngrok_7023">ERR_NGROK_7023</a>
         </td>
         <td class="pre-wrapped">
           <code>&lt;KEY&gt;</code> is not a valid HTTP header name because it
@@ -7605,7 +7605,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7024" href="errors/err_ngrok_7024">ERR_NGROK_7024</a>
+          <a id="ERR_NGROK_7024" href="err_ngrok_7024">ERR_NGROK_7024</a>
         </td>
         <td class="pre-wrapped">
           <code>&lt;VAL&gt;</code> is not a valid HTTP header value:
@@ -7614,7 +7614,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7025" href="errors/err_ngrok_7025">ERR_NGROK_7025</a>
+          <a id="ERR_NGROK_7025" href="err_ngrok_7025">ERR_NGROK_7025</a>
         </td>
         <td class="pre-wrapped">
           You must specify at least one IP Policy in the IP Restriction module.
@@ -7622,7 +7622,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7026" href="errors/err_ngrok_7026">ERR_NGROK_7026</a>
+          <a id="ERR_NGROK_7026" href="err_ngrok_7026">ERR_NGROK_7026</a>
         </td>
         <td class="pre-wrapped">
           SNS webhook verification does not accept a secret.
@@ -7630,7 +7630,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7027" href="errors/err_ngrok_7027">ERR_NGROK_7027</a>
+          <a id="ERR_NGROK_7027" href="err_ngrok_7027">ERR_NGROK_7027</a>
         </td>
         <td class="pre-wrapped">
           Webhook verification for <code>&lt;T&gt;</code> requires a secret.
@@ -7638,7 +7638,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7028" href="errors/err_ngrok_7028">ERR_NGROK_7028</a>
+          <a id="ERR_NGROK_7028" href="err_ngrok_7028">ERR_NGROK_7028</a>
         </td>
         <td class="pre-wrapped">
           There were validation errors while saving the edge:<code>&lt;ERRS&gt;</code>
@@ -7646,7 +7646,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7029" href="errors/err_ngrok_7029">ERR_NGROK_7029</a>
+          <a id="ERR_NGROK_7029" href="err_ngrok_7029">ERR_NGROK_7029</a>
         </td>
         <td class="pre-wrapped">
           You must specify a supported provider name. Supported providers:
@@ -7655,7 +7655,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7030" href="errors/err_ngrok_7030">ERR_NGROK_7030</a>
+          <a id="ERR_NGROK_7030" href="err_ngrok_7030">ERR_NGROK_7030</a>
         </td>
         <td class="pre-wrapped">
           Webhook provider <code>&lt;T&gt;</code> is not supported. Supported
@@ -7664,7 +7664,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7031" href="errors/err_ngrok_7031">ERR_NGROK_7031</a>
+          <a id="ERR_NGROK_7031" href="err_ngrok_7031">ERR_NGROK_7031</a>
         </td>
         <td class="pre-wrapped">
           Only Pro and Enterprise accounts can use edges webhook verification.
@@ -7675,7 +7675,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7032" href="errors/err_ngrok_7032">ERR_NGROK_7032</a>
+          <a id="ERR_NGROK_7032" href="err_ngrok_7032">ERR_NGROK_7032</a>
         </td>
         <td class="pre-wrapped">
           You may not configure the TLS termination parameter
@@ -7685,7 +7685,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7033" href="errors/err_ngrok_7033">ERR_NGROK_7033</a>
+          <a id="ERR_NGROK_7033" href="err_ngrok_7033">ERR_NGROK_7033</a>
         </td>
         <td class="pre-wrapped">
           Invalid edge module, unmanaged provider configurations must specify a
@@ -7694,7 +7694,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7034" href="errors/err_ngrok_7034">ERR_NGROK_7034</a>
+          <a id="ERR_NGROK_7034" href="err_ngrok_7034">ERR_NGROK_7034</a>
         </td>
         <td class="pre-wrapped">
           Invalid edge module, custom OAuth scopes on a managed OAuth application
@@ -7703,7 +7703,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7035" href="errors/err_ngrok_7035">ERR_NGROK_7035</a>
+          <a id="ERR_NGROK_7035" href="err_ngrok_7035">ERR_NGROK_7035</a>
         </td>
         <td class="pre-wrapped">
           Invalid edge module, OAuth auth check interval must be at least
@@ -7712,7 +7712,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7036" href="errors/err_ngrok_7036">ERR_NGROK_7036</a>
+          <a id="ERR_NGROK_7036" href="err_ngrok_7036">ERR_NGROK_7036</a>
         </td>
         <td class="pre-wrapped">
           Invalid edge module, OAuth may only have one provider configuration but
@@ -7721,7 +7721,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7037" href="errors/err_ngrok_7037">ERR_NGROK_7037</a>
+          <a id="ERR_NGROK_7037" href="err_ngrok_7037">ERR_NGROK_7037</a>
         </td>
         <td class="pre-wrapped">
           Invalid edge module, OAuth does not define any provider configurations
@@ -7730,7 +7730,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7038" href="errors/err_ngrok_7038">ERR_NGROK_7038</a>
+          <a id="ERR_NGROK_7038" href="err_ngrok_7038">ERR_NGROK_7038</a>
         </td>
         <td class="pre-wrapped">
           Invalid edge module, OAuth provider
@@ -7741,7 +7741,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7039" href="errors/err_ngrok_7039">ERR_NGROK_7039</a>
+          <a id="ERR_NGROK_7039" href="err_ngrok_7039">ERR_NGROK_7039</a>
         </td>
         <td class="pre-wrapped">
           Invalid edge module, OAuth provider
@@ -7751,7 +7751,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7040" href="errors/err_ngrok_7040">ERR_NGROK_7040</a>
+          <a id="ERR_NGROK_7040" href="err_ngrok_7040">ERR_NGROK_7040</a>
         </td>
         <td class="pre-wrapped">
           Invalid edge module, OAuth GitHub Teams must be listed as either
@@ -7761,7 +7761,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7041" href="errors/err_ngrok_7041">ERR_NGROK_7041</a>
+          <a id="ERR_NGROK_7041" href="err_ngrok_7041">ERR_NGROK_7041</a>
         </td>
         <td class="pre-wrapped">
           Only Pro and Enterprise accounts can use edges OAuth. Your account is
@@ -7771,7 +7771,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7042" href="errors/err_ngrok_7042">ERR_NGROK_7042</a>
+          <a id="ERR_NGROK_7042" href="err_ngrok_7042">ERR_NGROK_7042</a>
         </td>
         <td class="pre-wrapped">
           Invalid edge module, OAuth cookie prefix
@@ -7781,7 +7781,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7043" href="errors/err_ngrok_7043">ERR_NGROK_7043</a>
+          <a id="ERR_NGROK_7043" href="err_ngrok_7043">ERR_NGROK_7043</a>
         </td>
         <td class="pre-wrapped">
           Invalid edge module, OAuth provider
@@ -7791,7 +7791,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7044" href="errors/err_ngrok_7044">ERR_NGROK_7044</a>
+          <a id="ERR_NGROK_7044" href="err_ngrok_7044">ERR_NGROK_7044</a>
         </td>
         <td class="pre-wrapped">
           Invalid edge module, OAuth provider
@@ -7801,7 +7801,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7045" href="errors/err_ngrok_7045">ERR_NGROK_7045</a>
+          <a id="ERR_NGROK_7045" href="err_ngrok_7045">ERR_NGROK_7045</a>
         </td>
         <td class="pre-wrapped">
           Invalid edge module, OAuth provider
@@ -7811,7 +7811,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7046" href="errors/err_ngrok_7046">ERR_NGROK_7046</a>
+          <a id="ERR_NGROK_7046" href="err_ngrok_7046">ERR_NGROK_7046</a>
         </td>
         <td class="pre-wrapped">
           Invalid edge module, OAuth provider <code>&lt;PROVIDER&gt;</code> email
@@ -7821,7 +7821,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7047" href="errors/err_ngrok_7047">ERR_NGROK_7047</a>
+          <a id="ERR_NGROK_7047" href="err_ngrok_7047">ERR_NGROK_7047</a>
         </td>
         <td class="pre-wrapped">
           Invalid edge module, OAuth provider <code>&lt;PROVIDER&gt;</code> email
@@ -7831,7 +7831,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7048" href="errors/err_ngrok_7048">ERR_NGROK_7048</a>
+          <a id="ERR_NGROK_7048" href="err_ngrok_7048">ERR_NGROK_7048</a>
         </td>
         <td class="pre-wrapped">
           Invalid edge module, OAuth provider <code>&lt;PROVIDER&gt;</code> teams
@@ -7841,7 +7841,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7049" href="errors/err_ngrok_7049">ERR_NGROK_7049</a>
+          <a id="ERR_NGROK_7049" href="err_ngrok_7049">ERR_NGROK_7049</a>
         </td>
         <td class="pre-wrapped">
           Invalid edge module, OAuth provider
@@ -7851,7 +7851,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7050" href="errors/err_ngrok_7050">ERR_NGROK_7050</a>
+          <a id="ERR_NGROK_7050" href="err_ngrok_7050">ERR_NGROK_7050</a>
         </td>
         <td class="pre-wrapped">
           Invalid edge module, OAuth provider <code>&lt;PROVIDER&gt;</code> groups
@@ -7861,7 +7861,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7051" href="errors/err_ngrok_7051">ERR_NGROK_7051</a>
+          <a id="ERR_NGROK_7051" href="err_ngrok_7051">ERR_NGROK_7051</a>
         </td>
         <td class="pre-wrapped">
           Invalid edge module, OAuth provider <code>&lt;PROVIDER&gt;</code> email
@@ -7870,7 +7870,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7052" href="errors/err_ngrok_7052">ERR_NGROK_7052</a>
+          <a id="ERR_NGROK_7052" href="err_ngrok_7052">ERR_NGROK_7052</a>
         </td>
         <td class="pre-wrapped">
           Invalid edge module, OAuth provider <code>&lt;PROVIDER&gt;</code> email
@@ -7879,7 +7879,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7053" href="errors/err_ngrok_7053">ERR_NGROK_7053</a>
+          <a id="ERR_NGROK_7053" href="err_ngrok_7053">ERR_NGROK_7053</a>
         </td>
         <td class="pre-wrapped">
           Invalid edge module, OAuth provider <code>&lt;PROVIDER&gt;</code> teams
@@ -7888,7 +7888,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7054" href="errors/err_ngrok_7054">ERR_NGROK_7054</a>
+          <a id="ERR_NGROK_7054" href="err_ngrok_7054">ERR_NGROK_7054</a>
         </td>
         <td class="pre-wrapped">
           Invalid edge module, OAuth provider
@@ -7898,7 +7898,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7055" href="errors/err_ngrok_7055">ERR_NGROK_7055</a>
+          <a id="ERR_NGROK_7055" href="err_ngrok_7055">ERR_NGROK_7055</a>
         </td>
         <td class="pre-wrapped">
           Invalid edge module, OAuth provider <code>&lt;PROVIDER&gt;</code> groups
@@ -7907,7 +7907,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7056" href="errors/err_ngrok_7056">ERR_NGROK_7056</a>
+          <a id="ERR_NGROK_7056" href="err_ngrok_7056">ERR_NGROK_7056</a>
         </td>
         <td class="pre-wrapped">
           The edge module exceeds the maximum number of OAuth scopes. You
@@ -7917,7 +7917,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7057" href="errors/err_ngrok_7057">ERR_NGROK_7057</a>
+          <a id="ERR_NGROK_7057" href="err_ngrok_7057">ERR_NGROK_7057</a>
         </td>
         <td class="pre-wrapped">
           The edge module exceeds the maximum number of OAuth GitHub teams. You
@@ -7927,7 +7927,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7058" href="errors/err_ngrok_7058">ERR_NGROK_7058</a>
+          <a id="ERR_NGROK_7058" href="err_ngrok_7058">ERR_NGROK_7058</a>
         </td>
         <td class="pre-wrapped">
           The edge module exceeds the maximum number of OAuth GitHub orgs. You
@@ -7937,7 +7937,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7059" href="errors/err_ngrok_7059">ERR_NGROK_7059</a>
+          <a id="ERR_NGROK_7059" href="err_ngrok_7059">ERR_NGROK_7059</a>
         </td>
         <td class="pre-wrapped">
           The edge module exceeds the maximum number of OAuth Google groups. You
@@ -7947,7 +7947,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7060" href="errors/err_ngrok_7060">ERR_NGROK_7060</a>
+          <a id="ERR_NGROK_7060" href="err_ngrok_7060">ERR_NGROK_7060</a>
         </td>
         <td class="pre-wrapped">
           The edge module exceeds the maximum number of OAuth emails. You
@@ -7957,7 +7957,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7061" href="errors/err_ngrok_7061">ERR_NGROK_7061</a>
+          <a id="ERR_NGROK_7061" href="err_ngrok_7061">ERR_NGROK_7061</a>
         </td>
         <td class="pre-wrapped">
           The edge module exceeds the maximum number of OAuth domains. You
@@ -7967,7 +7967,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7062" href="errors/err_ngrok_7062">ERR_NGROK_7062</a>
+          <a id="ERR_NGROK_7062" href="err_ngrok_7062">ERR_NGROK_7062</a>
         </td>
         <td class="pre-wrapped">
           The edge specifies the following modules which may not be enabled when
@@ -7976,7 +7976,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7067" href="errors/err_ngrok_7067">ERR_NGROK_7067</a>
+          <a id="ERR_NGROK_7067" href="err_ngrok_7067">ERR_NGROK_7067</a>
         </td>
         <td class="pre-wrapped">
           Invalid edge module, email addresses must be lowercase but
@@ -7985,7 +7985,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7068" href="errors/err_ngrok_7068">ERR_NGROK_7068</a>
+          <a id="ERR_NGROK_7068" href="err_ngrok_7068">ERR_NGROK_7068</a>
         </td>
         <td class="pre-wrapped">
           Invalid edge module, email domains must be lowercase but
@@ -7994,7 +7994,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7069" href="errors/err_ngrok_7069">ERR_NGROK_7069</a>
+          <a id="ERR_NGROK_7069" href="err_ngrok_7069">ERR_NGROK_7069</a>
         </td>
         <td class="pre-wrapped">
           Duplicate 'add' header, <code>&lt;HEADER&gt;</code> was provided twice
@@ -8004,7 +8004,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7070" href="errors/err_ngrok_7070">ERR_NGROK_7070</a>
+          <a id="ERR_NGROK_7070" href="err_ngrok_7070">ERR_NGROK_7070</a>
         </td>
         <td class="pre-wrapped">
           Your account is limited to <code>&lt;MAX&gt;</code> edges.
@@ -8012,7 +8012,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7071" href="errors/err_ngrok_7071">ERR_NGROK_7071</a>
+          <a id="ERR_NGROK_7071" href="err_ngrok_7071">ERR_NGROK_7071</a>
         </td>
         <td class="pre-wrapped">
           Your account is rate limited for adding <code>&lt;MAX&gt;</code> edges
@@ -8021,7 +8021,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7072" href="errors/err_ngrok_7072">ERR_NGROK_7072</a>
+          <a id="ERR_NGROK_7072" href="err_ngrok_7072">ERR_NGROK_7072</a>
         </td>
         <td class="pre-wrapped">
           The CA ID <code>&lt;ID&gt;</code> specified for the Mutual TLS module
@@ -8030,7 +8030,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7073" href="errors/err_ngrok_7073">ERR_NGROK_7073</a>
+          <a id="ERR_NGROK_7073" href="err_ngrok_7073">ERR_NGROK_7073</a>
         </td>
         <td class="pre-wrapped">
           Description is limited to <code>&lt;MAX&gt;</code> characters; you have
@@ -8039,7 +8039,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7074" href="errors/err_ngrok_7074">ERR_NGROK_7074</a>
+          <a id="ERR_NGROK_7074" href="err_ngrok_7074">ERR_NGROK_7074</a>
         </td>
         <td class="pre-wrapped">
           Metadata is limited to <code>&lt;MAX&gt;</code> characters; you have
@@ -8048,7 +8048,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7075" href="errors/err_ngrok_7075">ERR_NGROK_7075</a>
+          <a id="ERR_NGROK_7075" href="err_ngrok_7075">ERR_NGROK_7075</a>
         </td>
         <td class="pre-wrapped">
           The Mutual TLS configurations exceeds the limit of
@@ -8057,7 +8057,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7079" href="errors/err_ngrok_7079">ERR_NGROK_7079</a>
+          <a id="ERR_NGROK_7079" href="err_ngrok_7079">ERR_NGROK_7079</a>
         </td>
         <td class="pre-wrapped">
           The edge specifies conflicting authentication modules. Only one of SAML,
@@ -8066,7 +8066,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7080" href="errors/err_ngrok_7080">ERR_NGROK_7080</a>
+          <a id="ERR_NGROK_7080" href="err_ngrok_7080">ERR_NGROK_7080</a>
         </td>
         <td class="pre-wrapped">
           The SAML metadata exceeds the maximum length of
@@ -8075,7 +8075,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7081" href="errors/err_ngrok_7081">ERR_NGROK_7081</a>
+          <a id="ERR_NGROK_7081" href="err_ngrok_7081">ERR_NGROK_7081</a>
         </td>
         <td class="pre-wrapped">
           You must specify only the SAML IdP metadata or the SAML IdP metadata
@@ -8084,7 +8084,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7082" href="errors/err_ngrok_7082">ERR_NGROK_7082</a>
+          <a id="ERR_NGROK_7082" href="err_ngrok_7082">ERR_NGROK_7082</a>
         </td>
         <td class="pre-wrapped">
           Failed to connect to IdP metadata URL <code>&lt;MDURL&gt;</code>:
@@ -8093,7 +8093,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7083" href="errors/err_ngrok_7083">ERR_NGROK_7083</a>
+          <a id="ERR_NGROK_7083" href="err_ngrok_7083">ERR_NGROK_7083</a>
         </td>
         <td class="pre-wrapped">
           Failed to parse the SAML IdP metadata: <code>&lt;ERR&gt;</code>.
@@ -8101,7 +8101,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7084" href="errors/err_ngrok_7084">ERR_NGROK_7084</a>
+          <a id="ERR_NGROK_7084" href="err_ngrok_7084">ERR_NGROK_7084</a>
         </td>
         <td class="pre-wrapped">
           Received unexpected status code <code>&lt;STATUSCODE&gt;</code> while
@@ -8110,7 +8110,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7085" href="errors/err_ngrok_7085">ERR_NGROK_7085</a>
+          <a id="ERR_NGROK_7085" href="err_ngrok_7085">ERR_NGROK_7085</a>
         </td>
         <td class="pre-wrapped">
           Failed to parse the SAML IdP metadata fetched from URL
@@ -8119,7 +8119,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7086" href="errors/err_ngrok_7086">ERR_NGROK_7086</a>
+          <a id="ERR_NGROK_7086" href="err_ngrok_7086">ERR_NGROK_7086</a>
         </td>
         <td class="pre-wrapped">
           Encountered an error while reading the response body from the IdP
@@ -8128,7 +8128,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7087" href="errors/err_ngrok_7087">ERR_NGROK_7087</a>
+          <a id="ERR_NGROK_7087" href="err_ngrok_7087">ERR_NGROK_7087</a>
         </td>
         <td class="pre-wrapped">
           The specified OIDC issuer has a maximum length of
@@ -8138,25 +8138,25 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7088" href="errors/err_ngrok_7088">ERR_NGROK_7088</a>
+          <a id="ERR_NGROK_7088" href="err_ngrok_7088">ERR_NGROK_7088</a>
         </td>
         <td class="pre-wrapped">The OIDC issuer property is required.</td>
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7089" href="errors/err_ngrok_7089">ERR_NGROK_7089</a>
+          <a id="ERR_NGROK_7089" href="err_ngrok_7089">ERR_NGROK_7089</a>
         </td>
         <td class="pre-wrapped">The OIDC Client ID property is required.</td>
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7090" href="errors/err_ngrok_7090">ERR_NGROK_7090</a>
+          <a id="ERR_NGROK_7090" href="err_ngrok_7090">ERR_NGROK_7090</a>
         </td>
         <td class="pre-wrapped">The OIDC Client Secret property is required.</td>
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7091" href="errors/err_ngrok_7091">ERR_NGROK_7091</a>
+          <a id="ERR_NGROK_7091" href="err_ngrok_7091">ERR_NGROK_7091</a>
         </td>
         <td class="pre-wrapped">
           One of the SAML IdP Metadata or IdP Metadata URL properties must be
@@ -8165,7 +8165,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7092" href="errors/err_ngrok_7092">ERR_NGROK_7092</a>
+          <a id="ERR_NGROK_7092" href="err_ngrok_7092">ERR_NGROK_7092</a>
         </td>
         <td class="pre-wrapped">
           Invalid edge module, session inactivity timeout cannot be more than one
@@ -8174,7 +8174,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7093" href="errors/err_ngrok_7093">ERR_NGROK_7093</a>
+          <a id="ERR_NGROK_7093" href="err_ngrok_7093">ERR_NGROK_7093</a>
         </td>
         <td class="pre-wrapped">
           Your account is not authorized to use basic auth. Upgrade to a Pro or
@@ -8183,7 +8183,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7094" href="errors/err_ngrok_7094">ERR_NGROK_7094</a>
+          <a id="ERR_NGROK_7094" href="err_ngrok_7094">ERR_NGROK_7094</a>
         </td>
         <td class="pre-wrapped">
           Your account is not authorized to use compression. Upgrade to a Pro or
@@ -8192,7 +8192,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7095" href="errors/err_ngrok_7095">ERR_NGROK_7095</a>
+          <a id="ERR_NGROK_7095" href="err_ngrok_7095">ERR_NGROK_7095</a>
         </td>
         <td class="pre-wrapped">
           Your account is not authorized to use circuit breaker. Upgrade to a Pro
@@ -8201,7 +8201,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7096" href="errors/err_ngrok_7096">ERR_NGROK_7096</a>
+          <a id="ERR_NGROK_7096" href="err_ngrok_7096">ERR_NGROK_7096</a>
         </td>
         <td class="pre-wrapped">
           Your account is not authorized to use request headers. Upgrade to a Pro
@@ -8210,7 +8210,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7097" href="errors/err_ngrok_7097">ERR_NGROK_7097</a>
+          <a id="ERR_NGROK_7097" href="err_ngrok_7097">ERR_NGROK_7097</a>
         </td>
         <td class="pre-wrapped">
           Your account is not authorized to use response headers. Upgrade to a Pro
@@ -8219,7 +8219,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7098" href="errors/err_ngrok_7098">ERR_NGROK_7098</a>
+          <a id="ERR_NGROK_7098" href="err_ngrok_7098">ERR_NGROK_7098</a>
         </td>
         <td class="pre-wrapped">
           Your account is not authorized to use OIDC. Upgrade to an Enterprise
@@ -8228,7 +8228,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7099" href="errors/err_ngrok_7099">ERR_NGROK_7099</a>
+          <a id="ERR_NGROK_7099" href="err_ngrok_7099">ERR_NGROK_7099</a>
         </td>
         <td class="pre-wrapped">
           Your account is not authorized to use SAML. Upgrade to an Enterprise
@@ -8237,7 +8237,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7100" href="errors/err_ngrok_7100">ERR_NGROK_7100</a>
+          <a id="ERR_NGROK_7100" href="err_ngrok_7100">ERR_NGROK_7100</a>
         </td>
         <td class="pre-wrapped">
           Your account is not authorized to use TLS termination. Upgrade to a Pro
@@ -8246,7 +8246,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7101" href="errors/err_ngrok_7101">ERR_NGROK_7101</a>
+          <a id="ERR_NGROK_7101" href="err_ngrok_7101">ERR_NGROK_7101</a>
         </td>
         <td class="pre-wrapped">
           Your account is not authorized to use IP Restrictions. Upgrade to an
@@ -8255,7 +8255,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7102" href="errors/err_ngrok_7102">ERR_NGROK_7102</a>
+          <a id="ERR_NGROK_7102" href="err_ngrok_7102">ERR_NGROK_7102</a>
         </td>
         <td class="pre-wrapped">
           Your account is not authorized to use TCP address backends. Upgrade to a
@@ -8265,7 +8265,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7103" href="errors/err_ngrok_7103">ERR_NGROK_7103</a>
+          <a id="ERR_NGROK_7103" href="err_ngrok_7103">ERR_NGROK_7103</a>
         </td>
         <td class="pre-wrapped">
           Your account is not authorized to use mutual TLS. Upgrade to an
@@ -8274,7 +8274,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7104" href="errors/err_ngrok_7104">ERR_NGROK_7104</a>
+          <a id="ERR_NGROK_7104" href="err_ngrok_7104">ERR_NGROK_7104</a>
         </td>
         <td class="pre-wrapped">
           Edge has invalid hostports, must be specified in the format
@@ -8283,7 +8283,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7105" href="errors/err_ngrok_7105">ERR_NGROK_7105</a>
+          <a id="ERR_NGROK_7105" href="err_ngrok_7105">ERR_NGROK_7105</a>
         </td>
         <td class="pre-wrapped">
           The header beginning with <code>&lt;PREFIX&gt;</code>...' exceeds the
@@ -8292,7 +8292,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7106" href="errors/err_ngrok_7106">ERR_NGROK_7106</a>
+          <a id="ERR_NGROK_7106" href="err_ngrok_7106">ERR_NGROK_7106</a>
         </td>
         <td class="pre-wrapped">
           The header value for <code>&lt;HEADERKEY&gt;</code> beginning with
@@ -8302,7 +8302,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7107" href="errors/err_ngrok_7107">ERR_NGROK_7107</a>
+          <a id="ERR_NGROK_7107" href="err_ngrok_7107">ERR_NGROK_7107</a>
         </td>
         <td class="pre-wrapped">
           The sendgrid verification key is not a base64 encoded ecdsa public key.
@@ -8312,7 +8312,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7108" href="errors/err_ngrok_7108">ERR_NGROK_7108</a>
+          <a id="ERR_NGROK_7108" href="err_ngrok_7108">ERR_NGROK_7108</a>
         </td>
         <td class="pre-wrapped">
           Your account is not authorized to use the websocket to TCP converter.
@@ -8322,7 +8322,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7109" href="errors/err_ngrok_7109">ERR_NGROK_7109</a>
+          <a id="ERR_NGROK_7109" href="err_ngrok_7109">ERR_NGROK_7109</a>
         </td>
         <td class="pre-wrapped">
           You may not configure the TLS termination parameter 'terminate_at' for
@@ -8331,7 +8331,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7110" href="errors/err_ngrok_7110">ERR_NGROK_7110</a>
+          <a id="ERR_NGROK_7110" href="err_ngrok_7110">ERR_NGROK_7110</a>
         </td>
         <td class="pre-wrapped">
           The request edge ID <code>&lt;EID&gt;</code> does not match the route
@@ -8340,7 +8340,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7111" href="errors/err_ngrok_7111">ERR_NGROK_7111</a>
+          <a id="ERR_NGROK_7111" href="err_ngrok_7111">ERR_NGROK_7111</a>
         </td>
         <td class="pre-wrapped">
           The edge hostport <code>&lt;HOST&gt;</code>:<code>&lt;PORT&gt;</code>
@@ -8349,7 +8349,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7112" href="errors/err_ngrok_7112">ERR_NGROK_7112</a>
+          <a id="ERR_NGROK_7112" href="err_ngrok_7112">ERR_NGROK_7112</a>
         </td>
         <td class="pre-wrapped">
           The hostport <code>&lt;HOSTPORT&gt;</code> has port out of range:
@@ -8358,7 +8358,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7113" href="errors/err_ngrok_7113">ERR_NGROK_7113</a>
+          <a id="ERR_NGROK_7113" href="err_ngrok_7113">ERR_NGROK_7113</a>
         </td>
         <td class="pre-wrapped">
           The address <code>&lt;HOSTPORT&gt;</code> is not reserved.
@@ -8366,7 +8366,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7114" href="errors/err_ngrok_7114">ERR_NGROK_7114</a>
+          <a id="ERR_NGROK_7114" href="err_ngrok_7114">ERR_NGROK_7114</a>
         </td>
         <td class="pre-wrapped">
           The address <code>&lt;HOSTPORT&gt;</code> is not reserved by your
@@ -8375,7 +8375,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7115" href="errors/err_ngrok_7115">ERR_NGROK_7115</a>
+          <a id="ERR_NGROK_7115" href="err_ngrok_7115">ERR_NGROK_7115</a>
         </td>
         <td class="pre-wrapped">
           The address <code>&lt;HOSTPORT&gt;</code> has an endpoint configuration
@@ -8384,7 +8384,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7116" href="errors/err_ngrok_7116">ERR_NGROK_7116</a>
+          <a id="ERR_NGROK_7116" href="err_ngrok_7116">ERR_NGROK_7116</a>
         </td>
         <td class="pre-wrapped">
           The domain <code>&lt;HOSTPORT&gt;</code> is unsupported because it does
@@ -8393,7 +8393,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7117" href="errors/err_ngrok_7117">ERR_NGROK_7117</a>
+          <a id="ERR_NGROK_7117" href="err_ngrok_7117">ERR_NGROK_7117</a>
         </td>
         <td class="pre-wrapped">
           The domain <code>&lt;HOSTPORT&gt;</code> is not reserved.
@@ -8401,7 +8401,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7118" href="errors/err_ngrok_7118">ERR_NGROK_7118</a>
+          <a id="ERR_NGROK_7118" href="err_ngrok_7118">ERR_NGROK_7118</a>
         </td>
         <td class="pre-wrapped">
           The domain <code>&lt;HOSTPORT&gt;</code> is not reserved by your
@@ -8410,7 +8410,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7119" href="errors/err_ngrok_7119">ERR_NGROK_7119</a>
+          <a id="ERR_NGROK_7119" href="err_ngrok_7119">ERR_NGROK_7119</a>
         </td>
         <td class="pre-wrapped">
           The domain <code>&lt;HOSTPORT&gt;</code> has an endpoint configuration
@@ -8419,7 +8419,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7120" href="errors/err_ngrok_7120">ERR_NGROK_7120</a>
+          <a id="ERR_NGROK_7120" href="err_ngrok_7120">ERR_NGROK_7120</a>
         </td>
         <td class="pre-wrapped">
           TCP edges can only be associated with TCP addresses:
@@ -8428,7 +8428,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7121" href="errors/err_ngrok_7121">ERR_NGROK_7121</a>
+          <a id="ERR_NGROK_7121" href="err_ngrok_7121">ERR_NGROK_7121</a>
         </td>
         <td class="pre-wrapped">
           HTTPS edges can only be associated with reserved domains:
@@ -8437,7 +8437,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7122" href="errors/err_ngrok_7122">ERR_NGROK_7122</a>
+          <a id="ERR_NGROK_7122" href="err_ngrok_7122">ERR_NGROK_7122</a>
         </td>
         <td class="pre-wrapped">
           Hostport <code>&lt;HOSTPORT&gt;</code> already exists for another edge.
@@ -8445,13 +8445,13 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7123" href="errors/err_ngrok_7123">ERR_NGROK_7123</a>
+          <a id="ERR_NGROK_7123" href="err_ngrok_7123">ERR_NGROK_7123</a>
         </td>
         <td class="pre-wrapped">Edge routes require a match expression.</td>
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7124" href="errors/err_ngrok_7124">ERR_NGROK_7124</a>
+          <a id="ERR_NGROK_7124" href="err_ngrok_7124">ERR_NGROK_7124</a>
         </td>
         <td class="pre-wrapped">
           The edge route <code>&lt;ID&gt;</code> could not be found.
@@ -8459,7 +8459,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7125" href="errors/err_ngrok_7125">ERR_NGROK_7125</a>
+          <a id="ERR_NGROK_7125" href="err_ngrok_7125">ERR_NGROK_7125</a>
         </td>
         <td class="pre-wrapped">
           There is a duplicate route <code>&lt;ID&gt;</code> for HTTPS edge.
@@ -8467,7 +8467,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7126" href="errors/err_ngrok_7126">ERR_NGROK_7126</a>
+          <a id="ERR_NGROK_7126" href="err_ngrok_7126">ERR_NGROK_7126</a>
         </td>
         <td class="pre-wrapped">
           Route match expression <code>&lt;MATCH&gt;</code> must be unique across
@@ -8476,7 +8476,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7127" href="errors/err_ngrok_7127">ERR_NGROK_7127</a>
+          <a id="ERR_NGROK_7127" href="err_ngrok_7127">ERR_NGROK_7127</a>
         </td>
         <td class="pre-wrapped">
           OAuth may not currently be configured for any route except '/', could
@@ -8485,7 +8485,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7128" href="errors/err_ngrok_7128">ERR_NGROK_7128</a>
+          <a id="ERR_NGROK_7128" href="err_ngrok_7128">ERR_NGROK_7128</a>
         </td>
         <td class="pre-wrapped">
           Your account is limited to a maximum of <code>&lt;MAX&gt;</code> routes
@@ -8494,7 +8494,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7129" href="errors/err_ngrok_7129">ERR_NGROK_7129</a>
+          <a id="ERR_NGROK_7129" href="err_ngrok_7129">ERR_NGROK_7129</a>
         </td>
         <td class="pre-wrapped">
           Your account is limited to a maximum of
@@ -8503,7 +8503,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7130" href="errors/err_ngrok_7130">ERR_NGROK_7130</a>
+          <a id="ERR_NGROK_7130" href="err_ngrok_7130">ERR_NGROK_7130</a>
         </td>
         <td class="pre-wrapped">
           Invalid match type, valid values are "exact_path" and "path_prefix".
@@ -8511,7 +8511,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7131" href="errors/err_ngrok_7131">ERR_NGROK_7131</a>
+          <a id="ERR_NGROK_7131" href="err_ngrok_7131">ERR_NGROK_7131</a>
         </td>
         <td class="pre-wrapped">
           The route selector expression `<code>&lt;MATCH&gt;</code>` is invalid.
@@ -8521,7 +8521,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7132" href="errors/err_ngrok_7132">ERR_NGROK_7132</a>
+          <a id="ERR_NGROK_7132" href="err_ngrok_7132">ERR_NGROK_7132</a>
         </td>
         <td class="pre-wrapped">
           The hostport `<code>&lt;HOSTPORT&gt;</code>` is already in use by an
@@ -8530,7 +8530,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7133" href="errors/err_ngrok_7133">ERR_NGROK_7133</a>
+          <a id="ERR_NGROK_7133" href="err_ngrok_7133">ERR_NGROK_7133</a>
         </td>
         <td class="pre-wrapped">
           TLS edges can only be associated with reserved domains:
@@ -8539,7 +8539,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7134" href="errors/err_ngrok_7134">ERR_NGROK_7134</a>
+          <a id="ERR_NGROK_7134" href="err_ngrok_7134">ERR_NGROK_7134</a>
         </td>
         <td class="pre-wrapped">
           OAuth, OIDC and SAML may only be configured for routes with path
@@ -8548,7 +8548,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7135" href="errors/err_ngrok_7135">ERR_NGROK_7135</a>
+          <a id="ERR_NGROK_7135" href="err_ngrok_7135">ERR_NGROK_7135</a>
         </td>
         <td class="pre-wrapped">
           The route selector expression exceeds the maximum length of
@@ -8557,7 +8557,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7136" href="errors/err_ngrok_7136">ERR_NGROK_7136</a>
+          <a id="ERR_NGROK_7136" href="err_ngrok_7136">ERR_NGROK_7136</a>
         </td>
         <td class="pre-wrapped">
           The OAuth Cookie Prefix exceeds the maximum length of
@@ -8566,7 +8566,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7137" href="errors/err_ngrok_7137">ERR_NGROK_7137</a>
+          <a id="ERR_NGROK_7137" href="err_ngrok_7137">ERR_NGROK_7137</a>
         </td>
         <td class="pre-wrapped">
           The OAuth Client ID exceeds the maximum length of
@@ -8575,7 +8575,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7138" href="errors/err_ngrok_7138">ERR_NGROK_7138</a>
+          <a id="ERR_NGROK_7138" href="err_ngrok_7138">ERR_NGROK_7138</a>
         </td>
         <td class="pre-wrapped">
           The OAuth Client Secret exceeds the maximum length of
@@ -8584,7 +8584,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7139" href="errors/err_ngrok_7139">ERR_NGROK_7139</a>
+          <a id="ERR_NGROK_7139" href="err_ngrok_7139">ERR_NGROK_7139</a>
         </td>
         <td class="pre-wrapped">
           The OAuth Email Address exceeds the maximum length of
@@ -8593,7 +8593,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7140" href="errors/err_ngrok_7140">ERR_NGROK_7140</a>
+          <a id="ERR_NGROK_7140" href="err_ngrok_7140">ERR_NGROK_7140</a>
         </td>
         <td class="pre-wrapped">
           The OAuth Email Domain exceeds the maximum length of
@@ -8602,7 +8602,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7141" href="errors/err_ngrok_7141">ERR_NGROK_7141</a>
+          <a id="ERR_NGROK_7141" href="err_ngrok_7141">ERR_NGROK_7141</a>
         </td>
         <td class="pre-wrapped">
           The OAuth Scope exceeds the maximum length of <code>&lt;MAX&gt;</code>,
@@ -8611,7 +8611,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7142" href="errors/err_ngrok_7142">ERR_NGROK_7142</a>
+          <a id="ERR_NGROK_7142" href="err_ngrok_7142">ERR_NGROK_7142</a>
         </td>
         <td class="pre-wrapped">
           The edge module exceeds the maximum number of GitHub teams. You
@@ -8621,7 +8621,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7143" href="errors/err_ngrok_7143">ERR_NGROK_7143</a>
+          <a id="ERR_NGROK_7143" href="err_ngrok_7143">ERR_NGROK_7143</a>
         </td>
         <td class="pre-wrapped">
           The edge module exceeds the maximum number of GitHub orgs. You specified
@@ -8630,7 +8630,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7144" href="errors/err_ngrok_7144">ERR_NGROK_7144</a>
+          <a id="ERR_NGROK_7144" href="err_ngrok_7144">ERR_NGROK_7144</a>
         </td>
         <td class="pre-wrapped">
           The OAuth GitHub team exceeds the maximum length of
@@ -8639,7 +8639,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7145" href="errors/err_ngrok_7145">ERR_NGROK_7145</a>
+          <a id="ERR_NGROK_7145" href="err_ngrok_7145">ERR_NGROK_7145</a>
         </td>
         <td class="pre-wrapped">
           The OAuth GitHub org exceeds the maximum length of
@@ -8648,7 +8648,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7146" href="errors/err_ngrok_7146">ERR_NGROK_7146</a>
+          <a id="ERR_NGROK_7146" href="err_ngrok_7146">ERR_NGROK_7146</a>
         </td>
         <td class="pre-wrapped">
           The edge module exceeds the maximum number of Google groups. You
@@ -8658,7 +8658,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7147" href="errors/err_ngrok_7147">ERR_NGROK_7147</a>
+          <a id="ERR_NGROK_7147" href="err_ngrok_7147">ERR_NGROK_7147</a>
         </td>
         <td class="pre-wrapped">
           The OAuth Google group exceeds the maximum length of
@@ -8667,7 +8667,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7148" href="errors/err_ngrok_7148">ERR_NGROK_7148</a>
+          <a id="ERR_NGROK_7148" href="err_ngrok_7148">ERR_NGROK_7148</a>
         </td>
         <td class="pre-wrapped">
           The OIDC Client ID exceeds the maximum length of
@@ -8676,7 +8676,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7149" href="errors/err_ngrok_7149">ERR_NGROK_7149</a>
+          <a id="ERR_NGROK_7149" href="err_ngrok_7149">ERR_NGROK_7149</a>
         </td>
         <td class="pre-wrapped">
           The OIDC Client Secret exceeds the maximum length of
@@ -8685,7 +8685,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7150" href="errors/err_ngrok_7150">ERR_NGROK_7150</a>
+          <a id="ERR_NGROK_7150" href="err_ngrok_7150">ERR_NGROK_7150</a>
         </td>
         <td class="pre-wrapped">
           The edge module exceeds the maximum number of OIDC scopes. You specified
@@ -8694,7 +8694,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7151" href="errors/err_ngrok_7151">ERR_NGROK_7151</a>
+          <a id="ERR_NGROK_7151" href="err_ngrok_7151">ERR_NGROK_7151</a>
         </td>
         <td class="pre-wrapped">
           The OIDC Scope exceeds the maximum length of <code>&lt;MAX&gt;</code>,
@@ -8703,7 +8703,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7152" href="errors/err_ngrok_7152">ERR_NGROK_7152</a>
+          <a id="ERR_NGROK_7152" href="err_ngrok_7152">ERR_NGROK_7152</a>
         </td>
         <td class="pre-wrapped">
           The OIDC Authn URL exceeds the maximum length of
@@ -8712,7 +8712,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7153" href="errors/err_ngrok_7153">ERR_NGROK_7153</a>
+          <a id="ERR_NGROK_7153" href="err_ngrok_7153">ERR_NGROK_7153</a>
         </td>
         <td class="pre-wrapped">
           The OIDC cookie prefix exceeds the maximum length of
@@ -8721,7 +8721,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7154" href="errors/err_ngrok_7154">ERR_NGROK_7154</a>
+          <a id="ERR_NGROK_7154" href="err_ngrok_7154">ERR_NGROK_7154</a>
         </td>
         <td class="pre-wrapped">
           The Webhook Verification secret exceeds the maximum length of
@@ -8730,7 +8730,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7155" href="errors/err_ngrok_7155">ERR_NGROK_7155</a>
+          <a id="ERR_NGROK_7155" href="err_ngrok_7155">ERR_NGROK_7155</a>
         </td>
         <td class="pre-wrapped">
           Enabling OAuth, OIDC, or SAML on more than one route is not supported.
@@ -8738,7 +8738,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7156" href="errors/err_ngrok_7156">ERR_NGROK_7156</a>
+          <a id="ERR_NGROK_7156" href="err_ngrok_7156">ERR_NGROK_7156</a>
         </td>
         <td class="pre-wrapped">
           Failed to attach hostport. The domain <code>&lt;HOSTPORT&gt;</code> is
@@ -8748,7 +8748,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7157" href="errors/err_ngrok_7157">ERR_NGROK_7157</a>
+          <a id="ERR_NGROK_7157" href="err_ngrok_7157">ERR_NGROK_7157</a>
         </td>
         <td class="pre-wrapped">
           Failed to attach hostport. The address <code>&lt;HOSTPORT&gt;</code> is
@@ -8758,7 +8758,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7158" href="errors/err_ngrok_7158">ERR_NGROK_7158</a>
+          <a id="ERR_NGROK_7158" href="err_ngrok_7158">ERR_NGROK_7158</a>
         </td>
         <td class="pre-wrapped">
           Invalid edge module, OAuth auth check interval must be no greater than
@@ -8767,7 +8767,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7159" href="errors/err_ngrok_7159">ERR_NGROK_7159</a>
+          <a id="ERR_NGROK_7159" href="err_ngrok_7159">ERR_NGROK_7159</a>
         </td>
         <td class="pre-wrapped">
           Invalid edge module, OIDC auth check interval must be at least
@@ -8776,7 +8776,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7160" href="errors/err_ngrok_7160">ERR_NGROK_7160</a>
+          <a id="ERR_NGROK_7160" href="err_ngrok_7160">ERR_NGROK_7160</a>
         </td>
         <td class="pre-wrapped">
           Invalid edge module, OIDC auth check interval must be no greater than
@@ -8785,7 +8785,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7161" href="errors/err_ngrok_7161">ERR_NGROK_7161</a>
+          <a id="ERR_NGROK_7161" href="err_ngrok_7161">ERR_NGROK_7161</a>
         </td>
         <td class="pre-wrapped">
           Invalid edge module, OAuth max session duration must be no greater than
@@ -8794,7 +8794,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7162" href="errors/err_ngrok_7162">ERR_NGROK_7162</a>
+          <a id="ERR_NGROK_7162" href="err_ngrok_7162">ERR_NGROK_7162</a>
         </td>
         <td class="pre-wrapped">
           Invalid edge module, OIDC max session duration must be no greater than
@@ -8803,7 +8803,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7163" href="errors/err_ngrok_7163">ERR_NGROK_7163</a>
+          <a id="ERR_NGROK_7163" href="err_ngrok_7163">ERR_NGROK_7163</a>
         </td>
         <td class="pre-wrapped">
           Your account is not authorized to use the TLS edges. Upgrade to a Pro or
@@ -8812,7 +8812,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7164" href="errors/err_ngrok_7164">ERR_NGROK_7164</a>
+          <a id="ERR_NGROK_7164" href="err_ngrok_7164">ERR_NGROK_7164</a>
         </td>
         <td class="pre-wrapped">
           The <code>&lt;ID&gt;</code> header cannot be removed without specifying
@@ -8821,13 +8821,13 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_7165" href="errors/err_ngrok_7165">ERR_NGROK_7165</a>
+          <a id="ERR_NGROK_7165" href="err_ngrok_7165">ERR_NGROK_7165</a>
         </td>
         <td class="pre-wrapped">An unsupported OAuth Provider was configured.</td>
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_8000" href="errors/err_ngrok_8000">ERR_NGROK_8000</a>
+          <a id="ERR_NGROK_8000" href="err_ngrok_8000">ERR_NGROK_8000</a>
         </td>
         <td class="pre-wrapped">
           Failed to resolve host <code>&lt;HOST&gt;</code>:
@@ -8836,7 +8836,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_8001" href="errors/err_ngrok_8001">ERR_NGROK_8001</a>
+          <a id="ERR_NGROK_8001" href="err_ngrok_8001">ERR_NGROK_8001</a>
         </td>
         <td class="pre-wrapped">
           Failed to establish internet connectivity: <code>&lt;ERR&gt;</code>
@@ -8844,7 +8844,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_8002" href="errors/err_ngrok_8002">ERR_NGROK_8002</a>
+          <a id="ERR_NGROK_8002" href="err_ngrok_8002">ERR_NGROK_8002</a>
         </td>
         <td class="pre-wrapped">
           Failed to establish TCP connection to <code>&lt;HOST&gt;</code> with
@@ -8853,7 +8853,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_8003" href="errors/err_ngrok_8003">ERR_NGROK_8003</a>
+          <a id="ERR_NGROK_8003" href="err_ngrok_8003">ERR_NGROK_8003</a>
         </td>
         <td class="pre-wrapped">
           Failed to establish TLS connection to <code>&lt;HOST&gt;</code> with
@@ -8862,7 +8862,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_8004" href="errors/err_ngrok_8004">ERR_NGROK_8004</a>
+          <a id="ERR_NGROK_8004" href="err_ngrok_8004">ERR_NGROK_8004</a>
         </td>
         <td class="pre-wrapped">
           Failed to establish tunnel protocol connection to
@@ -8871,7 +8871,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_8005" href="errors/err_ngrok_8005">ERR_NGROK_8005</a>
+          <a id="ERR_NGROK_8005" href="err_ngrok_8005">ERR_NGROK_8005</a>
         </td>
         <td class="pre-wrapped">
           Failed to resolve proxy IP with error: <code>&lt;ERR&gt;</code>
@@ -8879,7 +8879,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_8006" href="errors/err_ngrok_8006">ERR_NGROK_8006</a>
+          <a id="ERR_NGROK_8006" href="err_ngrok_8006">ERR_NGROK_8006</a>
         </td>
         <td class="pre-wrapped">
           Failed to connect to proxy <code>&lt;URL&gt;</code> with error:
@@ -8888,13 +8888,13 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_8007" href="errors/err_ngrok_8007">ERR_NGROK_8007</a>
+          <a id="ERR_NGROK_8007" href="err_ngrok_8007">ERR_NGROK_8007</a>
         </td>
         <td class="pre-wrapped">No tunnel servers were reachable via TCP.</td>
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_8008" href="errors/err_ngrok_8008">ERR_NGROK_8008</a>
+          <a id="ERR_NGROK_8008" href="err_ngrok_8008">ERR_NGROK_8008</a>
         </td>
         <td class="pre-wrapped">
           No tunnel servers could establish a TLS connection.
@@ -8902,7 +8902,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_8009" href="errors/err_ngrok_8009">ERR_NGROK_8009</a>
+          <a id="ERR_NGROK_8009" href="err_ngrok_8009">ERR_NGROK_8009</a>
         </td>
         <td class="pre-wrapped">
           No tunnel servers could establish a tunnel connection.
@@ -8910,7 +8910,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_8010" href="errors/err_ngrok_8010">ERR_NGROK_8010</a>
+          <a id="ERR_NGROK_8010" href="err_ngrok_8010">ERR_NGROK_8010</a>
         </td>
         <td class="pre-wrapped">
           <code>&lt;RESOLVER&gt;</code> was the only resolver to return
@@ -8920,13 +8920,13 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_8011" href="errors/err_ngrok_8011">ERR_NGROK_8011</a>
+          <a id="ERR_NGROK_8011" href="err_ngrok_8011">ERR_NGROK_8011</a>
         </td>
         <td class="pre-wrapped">IPV6 errors encountered - it may be disabled.</td>
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_8012" href="errors/err_ngrok_8012">ERR_NGROK_8012</a>
+          <a id="ERR_NGROK_8012" href="err_ngrok_8012">ERR_NGROK_8012</a>
         </td>
         <td class="pre-wrapped">
           Traffic was successfully tunneled to the ngrok agent, but the agent
@@ -8936,7 +8936,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_9000" href="errors/err_ngrok_9000">ERR_NGROK_9000</a>
+          <a id="ERR_NGROK_9000" href="err_ngrok_9000">ERR_NGROK_9000</a>
         </td>
         <td class="pre-wrapped">
           An account is required to use basic authentication. Please register for
@@ -8946,7 +8946,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_9001" href="errors/err_ngrok_9001">ERR_NGROK_9001</a>
+          <a id="ERR_NGROK_9001" href="err_ngrok_9001">ERR_NGROK_9001</a>
         </td>
         <td class="pre-wrapped">
           Your account is not authorized to use compression. Upgrade to a Pro or
@@ -8955,7 +8955,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_9002" href="errors/err_ngrok_9002">ERR_NGROK_9002</a>
+          <a id="ERR_NGROK_9002" href="err_ngrok_9002">ERR_NGROK_9002</a>
         </td>
         <td class="pre-wrapped">
           Your account is not authorized to use circuit breaker. Upgrade to a Pro
@@ -8964,7 +8964,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_9003" href="errors/err_ngrok_9003">ERR_NGROK_9003</a>
+          <a id="ERR_NGROK_9003" href="err_ngrok_9003">ERR_NGROK_9003</a>
         </td>
         <td class="pre-wrapped">
           Your account is not authorized to use request headers. Upgrade to a Pro
@@ -8973,7 +8973,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_9004" href="errors/err_ngrok_9004">ERR_NGROK_9004</a>
+          <a id="ERR_NGROK_9004" href="err_ngrok_9004">ERR_NGROK_9004</a>
         </td>
         <td class="pre-wrapped">
           Your account is not authorized to use response headers. Upgrade to a Pro
@@ -8982,7 +8982,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_9005" href="errors/err_ngrok_9005">ERR_NGROK_9005</a>
+          <a id="ERR_NGROK_9005" href="err_ngrok_9005">ERR_NGROK_9005</a>
         </td>
         <td class="pre-wrapped">
           Your account is not authorized to use OIDC. Upgrade to a Pro or
@@ -8991,7 +8991,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_9006" href="errors/err_ngrok_9006">ERR_NGROK_9006</a>
+          <a id="ERR_NGROK_9006" href="err_ngrok_9006">ERR_NGROK_9006</a>
         </td>
         <td class="pre-wrapped">
           Your account is not authorized to use SAML. Upgrade to a Pro or
@@ -9000,7 +9000,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_9007" href="errors/err_ngrok_9007">ERR_NGROK_9007</a>
+          <a id="ERR_NGROK_9007" href="err_ngrok_9007">ERR_NGROK_9007</a>
         </td>
         <td class="pre-wrapped">
           Your account is not authorized to use TLS Termination. Upgrade to a Pro
@@ -9009,7 +9009,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_9008" href="errors/err_ngrok_9008">ERR_NGROK_9008</a>
+          <a id="ERR_NGROK_9008" href="err_ngrok_9008">ERR_NGROK_9008</a>
         </td>
         <td class="pre-wrapped">
           Your account is not authorized to run the agent as a service. Upgrade to
@@ -9019,7 +9019,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_9009" href="errors/err_ngrok_9009">ERR_NGROK_9009</a>
+          <a id="ERR_NGROK_9009" href="err_ngrok_9009">ERR_NGROK_9009</a>
         </td>
         <td class="pre-wrapped">
           Your account is not authorized to run the agent with http/s proxy.
@@ -9029,7 +9029,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_9010" href="errors/err_ngrok_9010">ERR_NGROK_9010</a>
+          <a id="ERR_NGROK_9010" href="err_ngrok_9010">ERR_NGROK_9010</a>
         </td>
         <td class="pre-wrapped">
           Your account is not authorized to run the agent with socks5 proxy.
@@ -9039,7 +9039,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_9011" href="errors/err_ngrok_9011">ERR_NGROK_9011</a>
+          <a id="ERR_NGROK_9011" href="err_ngrok_9011">ERR_NGROK_9011</a>
         </td>
         <td class="pre-wrapped">
           Your account is not authorized to run the agent on a custom network
@@ -9049,7 +9049,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_9012" href="errors/err_ngrok_9012">ERR_NGROK_9012</a>
+          <a id="ERR_NGROK_9012" href="err_ngrok_9012">ERR_NGROK_9012</a>
         </td>
         <td class="pre-wrapped">
           Your account is not authorized to run the agent with custom CAs. Upgrade
@@ -9059,7 +9059,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_9013" href="errors/err_ngrok_9013">ERR_NGROK_9013</a>
+          <a id="ERR_NGROK_9013" href="err_ngrok_9013">ERR_NGROK_9013</a>
         </td>
         <td class="pre-wrapped">
           Your account is not authorized to run the agent with mutual TLS. Please
@@ -9068,7 +9068,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_9014" href="errors/err_ngrok_9014">ERR_NGROK_9014</a>
+          <a id="ERR_NGROK_9014" href="err_ngrok_9014">ERR_NGROK_9014</a>
         </td>
         <td class="pre-wrapped">
           Your account is not authorized to run the agent with proxy proto.
@@ -9078,7 +9078,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_9015" href="errors/err_ngrok_9015">ERR_NGROK_9015</a>
+          <a id="ERR_NGROK_9015" href="err_ngrok_9015">ERR_NGROK_9015</a>
         </td>
         <td class="pre-wrapped">
           Your account is not authorized to use OAuth. Upgrade to a Pro or
@@ -9087,7 +9087,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_9016" href="errors/err_ngrok_9016">ERR_NGROK_9016</a>
+          <a id="ERR_NGROK_9016" href="err_ngrok_9016">ERR_NGROK_9016</a>
         </td>
         <td class="pre-wrapped">
           Your account is not authorized to use webhook verification. Upgrade to a
@@ -9097,7 +9097,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_9017" href="errors/err_ngrok_9017">ERR_NGROK_9017</a>
+          <a id="ERR_NGROK_9017" href="err_ngrok_9017">ERR_NGROK_9017</a>
         </td>
         <td class="pre-wrapped">
           Your account is not authorized to use ip restrictions. Upgrade to a Pro
@@ -9106,7 +9106,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_9018" href="errors/err_ngrok_9018">ERR_NGROK_9018</a>
+          <a id="ERR_NGROK_9018" href="err_ngrok_9018">ERR_NGROK_9018</a>
         </td>
         <td class="pre-wrapped">
           An account is required to use host header rewrite. Please register for
@@ -9116,7 +9116,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_9019" href="errors/err_ngrok_9019">ERR_NGROK_9019</a>
+          <a id="ERR_NGROK_9019" href="err_ngrok_9019">ERR_NGROK_9019</a>
         </td>
         <td class="pre-wrapped">
           Your account is not authorized to use mutual TLS. Please contact us at:
@@ -9125,7 +9125,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_9020" href="errors/err_ngrok_9020">ERR_NGROK_9020</a>
+          <a id="ERR_NGROK_9020" href="err_ngrok_9020">ERR_NGROK_9020</a>
         </td>
         <td class="pre-wrapped">
           Your account is not authorized to use the websocket to TCP converter.
@@ -9135,7 +9135,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_10000" href="errors/err_ngrok_10000">ERR_NGROK_10000</a>
+          <a id="ERR_NGROK_10000" href="err_ngrok_10000">ERR_NGROK_10000</a>
         </td>
         <td class="pre-wrapped">
           Internal Server Error. Please check our status page
@@ -9144,7 +9144,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_10001" href="errors/err_ngrok_10001">ERR_NGROK_10001</a>
+          <a id="ERR_NGROK_10001" href="err_ngrok_10001">ERR_NGROK_10001</a>
         </td>
         <td class="pre-wrapped">
           Something went wrong with our code. Please refresh the page and try
@@ -9154,7 +9154,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_10002" href="errors/err_ngrok_10002">ERR_NGROK_10002</a>
+          <a id="ERR_NGROK_10002" href="err_ngrok_10002">ERR_NGROK_10002</a>
         </td>
         <td class="pre-wrapped">
           Could not read server rendered application data. Please refresh the page
@@ -9164,7 +9164,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_10003" href="errors/err_ngrok_10003">ERR_NGROK_10003</a>
+          <a id="ERR_NGROK_10003" href="err_ngrok_10003">ERR_NGROK_10003</a>
         </td>
         <td class="pre-wrapped">
           Something went wrong when communicating with Stripe. Please try again
@@ -9174,7 +9174,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_10004" href="errors/err_ngrok_10004">ERR_NGROK_10004</a>
+          <a id="ERR_NGROK_10004" href="err_ngrok_10004">ERR_NGROK_10004</a>
         </td>
         <td class="pre-wrapped">
           Could not find the credit card form. Do you have a script blocker
@@ -9183,7 +9183,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_10005" href="errors/err_ngrok_10005">ERR_NGROK_10005</a>
+          <a id="ERR_NGROK_10005" href="err_ngrok_10005">ERR_NGROK_10005</a>
         </td>
         <td class="pre-wrapped">
           Could not find the Stripe token. Do you have a script blocker installed?
@@ -9191,7 +9191,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_10006" href="errors/err_ngrok_10006">ERR_NGROK_10006</a>
+          <a id="ERR_NGROK_10006" href="err_ngrok_10006">ERR_NGROK_10006</a>
         </td>
         <td class="pre-wrapped">
           Failed to load the required reCAPTCHA script! Are you blocking it? It is
@@ -9200,13 +9200,13 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_10007" href="errors/err_ngrok_10007">ERR_NGROK_10007</a>
+          <a id="ERR_NGROK_10007" href="err_ngrok_10007">ERR_NGROK_10007</a>
         </td>
         <td class="pre-wrapped">All rules must be prefixed with "bind:"</td>
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_10008" href="errors/err_ngrok_10008">ERR_NGROK_10008</a>
+          <a id="ERR_NGROK_10008" href="err_ngrok_10008">ERR_NGROK_10008</a>
         </td>
         <td class="pre-wrapped">
           If the "HTTPS" module is enabled and "Terminate TLS" is unchecked, then
@@ -9216,7 +9216,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_10009" href="errors/err_ngrok_10009">ERR_NGROK_10009</a>
+          <a id="ERR_NGROK_10009" href="err_ngrok_10009">ERR_NGROK_10009</a>
         </td>
         <td class="pre-wrapped">
           The request header name must be at least one character.
@@ -9224,7 +9224,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_10010" href="errors/err_ngrok_10010">ERR_NGROK_10010</a>
+          <a id="ERR_NGROK_10010" href="err_ngrok_10010">ERR_NGROK_10010</a>
         </td>
         <td class="pre-wrapped">
           The request header value must be at least one character.
@@ -9232,7 +9232,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_10011" href="errors/err_ngrok_10011">ERR_NGROK_10011</a>
+          <a id="ERR_NGROK_10011" href="err_ngrok_10011">ERR_NGROK_10011</a>
         </td>
         <td class="pre-wrapped">
           You have already added the request header name
@@ -9241,7 +9241,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_10012" href="errors/err_ngrok_10012">ERR_NGROK_10012</a>
+          <a id="ERR_NGROK_10012" href="err_ngrok_10012">ERR_NGROK_10012</a>
         </td>
         <td class="pre-wrapped">
           The response header name must be at least one character.
@@ -9249,7 +9249,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_10013" href="errors/err_ngrok_10013">ERR_NGROK_10013</a>
+          <a id="ERR_NGROK_10013" href="err_ngrok_10013">ERR_NGROK_10013</a>
         </td>
         <td class="pre-wrapped">
           The response header value must be at least one character.
@@ -9257,7 +9257,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_10014" href="errors/err_ngrok_10014">ERR_NGROK_10014</a>
+          <a id="ERR_NGROK_10014" href="err_ngrok_10014">ERR_NGROK_10014</a>
         </td>
         <td class="pre-wrapped">
           You have already added the response header name
@@ -9266,19 +9266,19 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_10019" href="errors/err_ngrok_10019">ERR_NGROK_10019</a>
+          <a id="ERR_NGROK_10019" href="err_ngrok_10019">ERR_NGROK_10019</a>
         </td>
         <td class="pre-wrapped">You haven't added any Event Destinations</td>
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_10020" href="errors/err_ngrok_10020">ERR_NGROK_10020</a>
+          <a id="ERR_NGROK_10020" href="err_ngrok_10020">ERR_NGROK_10020</a>
         </td>
         <td class="pre-wrapped">You haven't added any Event Sources</td>
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_10021" href="errors/err_ngrok_10021">ERR_NGROK_10021</a>
+          <a id="ERR_NGROK_10021" href="err_ngrok_10021">ERR_NGROK_10021</a>
         </td>
         <td class="pre-wrapped">
           Received partition "<code>&lt;PARTITION&gt;</code>" that does not
@@ -9287,7 +9287,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_10022" href="errors/err_ngrok_10022">ERR_NGROK_10022</a>
+          <a id="ERR_NGROK_10022" href="err_ngrok_10022">ERR_NGROK_10022</a>
         </td>
         <td class="pre-wrapped">
           Received service "<code>&lt;SERVICE&gt;</code>" but expected
@@ -9296,25 +9296,25 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_10023" href="errors/err_ngrok_10023">ERR_NGROK_10023</a>
+          <a id="ERR_NGROK_10023" href="err_ngrok_10023">ERR_NGROK_10023</a>
         </td>
         <td class="pre-wrapped">There were no changes to submit.</td>
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_10024" href="errors/err_ngrok_10024">ERR_NGROK_10024</a>
+          <a id="ERR_NGROK_10024" href="err_ngrok_10024">ERR_NGROK_10024</a>
         </td>
         <td class="pre-wrapped">Cannot update non-existent IP Policy.</td>
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_10025" href="errors/err_ngrok_10025">ERR_NGROK_10025</a>
+          <a id="ERR_NGROK_10025" href="err_ngrok_10025">ERR_NGROK_10025</a>
         </td>
         <td class="pre-wrapped">A TLS Certificate must be selected.</td>
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_10026" href="errors/err_ngrok_10026">ERR_NGROK_10026</a>
+          <a id="ERR_NGROK_10026" href="err_ngrok_10026">ERR_NGROK_10026</a>
         </td>
         <td class="pre-wrapped">
           Failed to upload Certificate Authority. Invalid file format
@@ -9324,7 +9324,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_10027" href="errors/err_ngrok_10027">ERR_NGROK_10027</a>
+          <a id="ERR_NGROK_10027" href="err_ngrok_10027">ERR_NGROK_10027</a>
         </td>
         <td class="pre-wrapped">
           Failed to upload SAML IdP Metadata. Invalid file format
@@ -9334,7 +9334,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_10028" href="errors/err_ngrok_10028">ERR_NGROK_10028</a>
+          <a id="ERR_NGROK_10028" href="err_ngrok_10028">ERR_NGROK_10028</a>
         </td>
         <td class="pre-wrapped">
           Failed to upload TLS Certificate. Invalid file format
@@ -9344,7 +9344,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_10029" href="errors/err_ngrok_10029">ERR_NGROK_10029</a>
+          <a id="ERR_NGROK_10029" href="err_ngrok_10029">ERR_NGROK_10029</a>
         </td>
         <td class="pre-wrapped">
           Failed to upload TLS Certificate Private Key. Invalid file format
@@ -9354,7 +9354,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_10030" href="errors/err_ngrok_10030">ERR_NGROK_10030</a>
+          <a id="ERR_NGROK_10030" href="err_ngrok_10030">ERR_NGROK_10030</a>
         </td>
         <td class="pre-wrapped">
           Failed to upload Certificate Authority. Please limit your file uploads
@@ -9363,7 +9363,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_10031" href="errors/err_ngrok_10031">ERR_NGROK_10031</a>
+          <a id="ERR_NGROK_10031" href="err_ngrok_10031">ERR_NGROK_10031</a>
         </td>
         <td class="pre-wrapped">
           Failed to upload SAML IdP Metadata. Please limit your file uploads to
@@ -9372,7 +9372,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_10032" href="errors/err_ngrok_10032">ERR_NGROK_10032</a>
+          <a id="ERR_NGROK_10032" href="err_ngrok_10032">ERR_NGROK_10032</a>
         </td>
         <td class="pre-wrapped">
           Failed to upload TLS Certificate. Please limit your file uploads to less
@@ -9381,7 +9381,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_10033" href="errors/err_ngrok_10033">ERR_NGROK_10033</a>
+          <a id="ERR_NGROK_10033" href="err_ngrok_10033">ERR_NGROK_10033</a>
         </td>
         <td class="pre-wrapped">
           Failed to upload TLS Certificate Private Key. Please limit your file
@@ -9390,7 +9390,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_10034" href="errors/err_ngrok_10034">ERR_NGROK_10034</a>
+          <a id="ERR_NGROK_10034" href="err_ngrok_10034">ERR_NGROK_10034</a>
         </td>
         <td class="pre-wrapped">
           Could not copy the AuthToken to your clipboard. Please ensure that you
@@ -9399,19 +9399,19 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_10062" href="errors/err_ngrok_10062">ERR_NGROK_10062</a>
+          <a id="ERR_NGROK_10062" href="err_ngrok_10062">ERR_NGROK_10062</a>
         </td>
         <td class="pre-wrapped">ARN must begin with "arn:"</td>
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_10063" href="errors/err_ngrok_10063">ERR_NGROK_10063</a>
+          <a id="ERR_NGROK_10063" href="err_ngrok_10063">ERR_NGROK_10063</a>
         </td>
         <td class="pre-wrapped">ARN is invalid</td>
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_10064" href="errors/err_ngrok_10064">ERR_NGROK_10064</a>
+          <a id="ERR_NGROK_10064" href="err_ngrok_10064">ERR_NGROK_10064</a>
         </td>
         <td class="pre-wrapped">
           Encountered a type "never" value. Please refresh the page and try again.
@@ -9420,7 +9420,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_10065" href="errors/err_ngrok_10065">ERR_NGROK_10065</a>
+          <a id="ERR_NGROK_10065" href="err_ngrok_10065">ERR_NGROK_10065</a>
         </td>
         <td class="pre-wrapped">
           Encountered a type "never" value. Please refresh the page and try again.
@@ -9429,7 +9429,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_10066" href="errors/err_ngrok_10066">ERR_NGROK_10066</a>
+          <a id="ERR_NGROK_10066" href="err_ngrok_10066">ERR_NGROK_10066</a>
         </td>
         <td class="pre-wrapped">
           Encountered a type "never" value. Please refresh the page and try again.
@@ -9438,7 +9438,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_10067" href="errors/err_ngrok_10067">ERR_NGROK_10067</a>
+          <a id="ERR_NGROK_10067" href="err_ngrok_10067">ERR_NGROK_10067</a>
         </td>
         <td class="pre-wrapped">
           Encountered a type "never" value. Please refresh the page and try again.
@@ -9447,7 +9447,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_10068" href="errors/err_ngrok_10068">ERR_NGROK_10068</a>
+          <a id="ERR_NGROK_10068" href="err_ngrok_10068">ERR_NGROK_10068</a>
         </td>
         <td class="pre-wrapped">
           Encountered a type "never" value. Please refresh the page and try again.
@@ -9456,7 +9456,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_10069" href="errors/err_ngrok_10069">ERR_NGROK_10069</a>
+          <a id="ERR_NGROK_10069" href="err_ngrok_10069">ERR_NGROK_10069</a>
         </td>
         <td class="pre-wrapped">
           Encountered a type "never" value. Please refresh the page and try again.
@@ -9465,7 +9465,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_10072" href="errors/err_ngrok_10072">ERR_NGROK_10072</a>
+          <a id="ERR_NGROK_10072" href="err_ngrok_10072">ERR_NGROK_10072</a>
         </td>
         <td class="pre-wrapped">
           Encountered a type "never" value. Please refresh the page and try again.
@@ -9474,7 +9474,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_10073" href="errors/err_ngrok_10073">ERR_NGROK_10073</a>
+          <a id="ERR_NGROK_10073" href="err_ngrok_10073">ERR_NGROK_10073</a>
         </td>
         <td class="pre-wrapped">
           Encountered a type "never" value. Please refresh the page and try again.
@@ -9483,7 +9483,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_10074" href="errors/err_ngrok_10074">ERR_NGROK_10074</a>
+          <a id="ERR_NGROK_10074" href="err_ngrok_10074">ERR_NGROK_10074</a>
         </td>
         <td class="pre-wrapped">
           Encountered a type "never" value. Please refresh the page and try again.
@@ -9492,7 +9492,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_10075" href="errors/err_ngrok_10075">ERR_NGROK_10075</a>
+          <a id="ERR_NGROK_10075" href="err_ngrok_10075">ERR_NGROK_10075</a>
         </td>
         <td class="pre-wrapped">
           Encountered a type "never" value. Please refresh the page and try again.
@@ -9501,7 +9501,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_10076" href="errors/err_ngrok_10076">ERR_NGROK_10076</a>
+          <a id="ERR_NGROK_10076" href="err_ngrok_10076">ERR_NGROK_10076</a>
         </td>
         <td class="pre-wrapped">
           Encountered a type "never" value. Please refresh the page and try again.
@@ -9510,7 +9510,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_10077" href="errors/err_ngrok_10077">ERR_NGROK_10077</a>
+          <a id="ERR_NGROK_10077" href="err_ngrok_10077">ERR_NGROK_10077</a>
         </td>
         <td class="pre-wrapped">
           This account does not support JIT provisioning for SSO users.
@@ -9518,7 +9518,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_10078" href="errors/err_ngrok_10078">ERR_NGROK_10078</a>
+          <a id="ERR_NGROK_10078" href="err_ngrok_10078">ERR_NGROK_10078</a>
         </td>
         <td class="pre-wrapped">
           This account requires users to be authenticated with a valid SSO
@@ -9527,7 +9527,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_11000" href="errors/err_ngrok_11000">ERR_NGROK_11000</a>
+          <a id="ERR_NGROK_11000" href="err_ngrok_11000">ERR_NGROK_11000</a>
         </td>
         <td class="pre-wrapped">
           Internal Server Error. Please refresh the page and try again. If the
@@ -9537,7 +9537,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_11001" href="errors/err_ngrok_11001">ERR_NGROK_11001</a>
+          <a id="ERR_NGROK_11001" href="err_ngrok_11001">ERR_NGROK_11001</a>
         </td>
         <td class="pre-wrapped">
           Something went wrong with our code. Please refresh the page and try
@@ -9546,7 +9546,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_11002" href="errors/err_ngrok_11002">ERR_NGROK_11002</a>
+          <a id="ERR_NGROK_11002" href="err_ngrok_11002">ERR_NGROK_11002</a>
         </td>
         <td class="pre-wrapped">
           Could not read server rendered application data. Please refresh the page
@@ -9556,7 +9556,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_11003" href="errors/err_ngrok_11003">ERR_NGROK_11003</a>
+          <a id="ERR_NGROK_11003" href="err_ngrok_11003">ERR_NGROK_11003</a>
         </td>
         <td class="pre-wrapped">
           Something went wrong with our code. Please refresh the page and try
@@ -9565,19 +9565,19 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_11004" href="errors/err_ngrok_11004">ERR_NGROK_11004</a>
+          <a id="ERR_NGROK_11004" href="err_ngrok_11004">ERR_NGROK_11004</a>
         </td>
         <td class="pre-wrapped">ARN must begin with "arn:"</td>
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_11005" href="errors/err_ngrok_11005">ERR_NGROK_11005</a>
+          <a id="ERR_NGROK_11005" href="err_ngrok_11005">ERR_NGROK_11005</a>
         </td>
         <td class="pre-wrapped">ARN is invalid</td>
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_11006" href="errors/err_ngrok_11006">ERR_NGROK_11006</a>
+          <a id="ERR_NGROK_11006" href="err_ngrok_11006">ERR_NGROK_11006</a>
         </td>
         <td class="pre-wrapped">
           Encountered a type "never" value. Please refresh the page and try again.
@@ -9586,7 +9586,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_12000" href="errors/err_ngrok_12000">ERR_NGROK_12000</a>
+          <a id="ERR_NGROK_12000" href="err_ngrok_12000">ERR_NGROK_12000</a>
         </td>
         <td class="pre-wrapped">
           A new version of ngrok corp is required to continue. Please refresh the
@@ -9595,7 +9595,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_13001" href="errors/err_ngrok_13001">ERR_NGROK_13001</a>
+          <a id="ERR_NGROK_13001" href="err_ngrok_13001">ERR_NGROK_13001</a>
         </td>
         <td class="pre-wrapped">
           Encountered a type "never" value. Please refresh the page and try again.
@@ -9604,7 +9604,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_13002" href="errors/err_ngrok_13002">ERR_NGROK_13002</a>
+          <a id="ERR_NGROK_13002" href="err_ngrok_13002">ERR_NGROK_13002</a>
         </td>
         <td class="pre-wrapped">
           Encountered a type "never" value. Please refresh the page and try again.
@@ -9613,7 +9613,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_13003" href="errors/err_ngrok_13003">ERR_NGROK_13003</a>
+          <a id="ERR_NGROK_13003" href="err_ngrok_13003">ERR_NGROK_13003</a>
         </td>
         <td class="pre-wrapped">
           Encountered a type "never" value. Please refresh the page and try again.
@@ -9622,7 +9622,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_13004" href="errors/err_ngrok_13004">ERR_NGROK_13004</a>
+          <a id="ERR_NGROK_13004" href="err_ngrok_13004">ERR_NGROK_13004</a>
         </td>
         <td class="pre-wrapped">
           Encountered a type "never" value. Please refresh the page and try again.
@@ -9631,7 +9631,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_13005" href="errors/err_ngrok_13005">ERR_NGROK_13005</a>
+          <a id="ERR_NGROK_13005" href="err_ngrok_13005">ERR_NGROK_13005</a>
         </td>
         <td class="pre-wrapped">
           Encountered a type "never" value. Please refresh the page and try again.
@@ -9640,7 +9640,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_13006" href="errors/err_ngrok_13006">ERR_NGROK_13006</a>
+          <a id="ERR_NGROK_13006" href="err_ngrok_13006">ERR_NGROK_13006</a>
         </td>
         <td class="pre-wrapped">
           Encountered a type "never" value. Please refresh the page and try again.
@@ -9649,7 +9649,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_13007" href="errors/err_ngrok_13007">ERR_NGROK_13007</a>
+          <a id="ERR_NGROK_13007" href="err_ngrok_13007">ERR_NGROK_13007</a>
         </td>
         <td class="pre-wrapped">
           Encountered a type "never" value. Please refresh the page and try again.
@@ -9658,7 +9658,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_13008" href="errors/err_ngrok_13008">ERR_NGROK_13008</a>
+          <a id="ERR_NGROK_13008" href="err_ngrok_13008">ERR_NGROK_13008</a>
         </td>
         <td class="pre-wrapped">
           Encountered a type "never" value. Please refresh the page and try again.
@@ -9667,7 +9667,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_13009" href="errors/err_ngrok_13009">ERR_NGROK_13009</a>
+          <a id="ERR_NGROK_13009" href="err_ngrok_13009">ERR_NGROK_13009</a>
         </td>
         <td class="pre-wrapped">
           Encountered a type "never" value. Please refresh the page and try again.
@@ -9676,7 +9676,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_14000" href="errors/err_ngrok_14000">ERR_NGROK_14000</a>
+          <a id="ERR_NGROK_14000" href="err_ngrok_14000">ERR_NGROK_14000</a>
         </td>
         <td class="pre-wrapped">
           The <code>&lt;ID&gt;</code> header cannot be removed without specifying
@@ -9685,7 +9685,7 @@
       </tr>
       <tr>
         <td>
-          <a id="ERR_NGROK_14001" href="errors/err_ngrok_14001">ERR_NGROK_14001</a>
+          <a id="ERR_NGROK_14001" href="err_ngrok_14001">ERR_NGROK_14001</a>
         </td>
         <td class="pre-wrapped">
           Got an invalid TLS key/cert pair for TLS termination:
