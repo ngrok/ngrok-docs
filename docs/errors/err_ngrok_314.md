@@ -1,0 +1,21 @@
+---
+hide_table_of_contents: true
+displayed_sidebar: docs
+custom_edit_url: null
+---
+
+import ErrorDetails from '/docs/errors/details/ErrorDetails';
+
+# ERR_NGROK_314
+
+### Message
+Only Pro and Enterprise plans may bind custom hostnames.
+Failed to bind the custom hostname `<HOSTNAME>` for the account `<ACCOUNT>`.
+This account is on the `<PLAN>` plan.
+
+Upgrade to a paid plan at: https://dashboard.ngrok.com/billing/subscription
+
+### Further help
+If you're having trouble resolving this error, please reach out to [support@ngrok.com](mailto:support@ngrok.com?subject=Help%20with%20ERR_NGROK_314)
+
+<ErrorDetails error='err_ngrok_314' />
