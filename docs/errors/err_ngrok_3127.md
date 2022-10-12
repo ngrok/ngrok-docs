@@ -1,0 +1,19 @@
+---
+hide_table_of_contents: true
+displayed_sidebar: docs
+custom_edit_url: null
+---
+
+import ErrorDetails from '/docs/errors/details/ErrorDetails';
+
+# ERR_NGROK_3127
+
+### Message
+`<PROVIDER>` rejected authorization due to invalid or expired credentials.
+
+If this error persists after reauthorizing, contact the owner of the application to ensure you have permission.
+
+### Further help
+If you're having trouble resolving this error, please reach out to [support@ngrok.com](mailto:support@ngrok.com?subject=Help%20with%20ERR_NGROK_3127)
+
+<ErrorDetails error='err_ngrok_3127' />

@@ -1,0 +1,17 @@
+---
+hide_table_of_contents: true
+displayed_sidebar: docs
+custom_edit_url: null
+---
+
+import ErrorDetails from '/docs/errors/details/ErrorDetails';
+
+# ERR_NGROK_206
+
+### Message
+The authentication you specified is actually a tunnel credential. Your credential: `<TOKEN>`. Please check your records for an API key. API keys and instructions are available on your dashboard: https://dashboard.ngrok.com/api
+
+### Further help
+If you're having trouble resolving this error, please reach out to [support@ngrok.com](mailto:support@ngrok.com?subject=Help%20with%20ERR_NGROK_206)
+
+<ErrorDetails error='err_ngrok_206' />

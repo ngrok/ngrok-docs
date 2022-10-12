@@ -1,0 +1,17 @@
+---
+hide_table_of_contents: true
+displayed_sidebar: docs
+custom_edit_url: null
+---
+
+import ErrorDetails from '/docs/errors/details/ErrorDetails';
+
+# ERR_NGROK_1801
+
+### Message
+Invalid IP Restriction. The policy `<POLICY_ID>` does not exist on your account.
+
+### Further help
+If you're having trouble resolving this error, please reach out to [support@ngrok.com](mailto:support@ngrok.com?subject=Help%20with%20ERR_NGROK_1801)
+
+<ErrorDetails error='err_ngrok_1801' />

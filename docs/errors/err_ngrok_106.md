@@ -1,0 +1,20 @@
+---
+hide_table_of_contents: true
+displayed_sidebar: docs
+custom_edit_url: null
+---
+
+import ErrorDetails from '/docs/errors/details/ErrorDetails';
+
+# ERR_NGROK_106
+
+### Message
+The authtoken you specified is an ngrok v1 authtoken, but you're using ngrok v2.
+Your authtoken: `<TOKEN>`
+Instructions to install your authtoken are on your ngrok dashboard:
+https://dashboard.ngrok.com/get-started/your-authtoken
+
+### Further help
+If you're having trouble resolving this error, please reach out to [support@ngrok.com](mailto:support@ngrok.com?subject=Help%20with%20ERR_NGROK_106)
+
+<ErrorDetails error='err_ngrok_106' />
