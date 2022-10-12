@@ -1,0 +1,18 @@
+---
+hide_table_of_contents: true
+displayed_sidebar: docs
+custom_edit_url: null
+---
+
+import ErrorDetails from '/docs/errors/details/ErrorDetails';
+
+# ERR_NGROK_1101
+
+### Message
+Too many public keys sent for this SSH tunnel (sent `<VAL>`, max `<MAX>`).
+Rerun ssh with '-v' to check what keys get sent
+
+### Further help
+If you're having trouble resolving this error, please reach out to [support@ngrok.com](mailto:support@ngrok.com?subject=Help%20with%20ERR_NGROK_1101)
+
+<ErrorDetails error='err_ngrok_1101' />
