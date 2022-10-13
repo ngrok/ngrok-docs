@@ -1,0 +1,171 @@
+import AgentIngressesCreateRequest from './examples/_agent_ingresses_create_request.md';
+import AgentIngressesCreateResponse from './examples/_agent_ingresses_create_response.md';
+import AgentIngressesDeleteRequest from './examples/_agent_ingresses_delete_request.md';
+import AgentIngressesGetRequest from './examples/_agent_ingresses_get_request.md';
+import AgentIngressesGetResponse from './examples/_agent_ingresses_get_response.md';
+import AgentIngressesListRequest from './examples/_agent_ingresses_list_request.md';
+import AgentIngressesListResponse from './examples/_agent_ingresses_list_response.md';
+import AgentIngressesUpdateRequest from './examples/_agent_ingresses_update_request.md';
+import AgentIngressesUpdateResponse from './examples/_agent_ingresses_update_response.md';
+
+# Agent Ingresses
+------------------
+
+## Create Agent Ingress
+
+Create a new Agent Ingress. The ngrok agent can be configured to connect to ngrok via the new set of addresses on the returned Agent Ingress.
+
+### Request
+
+POST /agent_ingresses
+
+<AgentIngressesCreateRequest />
+
+#### Parameters
+
+|&nbsp;| &nbsp;| &nbsp;|
+|---|---|---|
+| `description` | string | human-readable description of the use of this Agent Ingress. optional, max 255 bytes. |
+| `metadata` | string | arbitrary user-defined machine-readable data of this Agent Ingress. optional, max 4096 bytes |
+| `domain` | string | the domain that you own to be used as the base domain name to generate regional agent ingress domains. |
+
+### Response
+
+Returns a 201 response  on success
+
+<AgentIngressesCreateResponse />
+
+#### Fields
+
+|&nbsp;| &nbsp;| &nbsp;|
+|---|---|---|
+| `id` | string | unique Agent Ingress resource identifier |
+| `uri` | string | URI to the API resource of this Agent ingress |
+| `description` | string | human-readable description of the use of this Agent Ingress. optional, max 255 bytes. |
+| `metadata` | string | arbitrary user-defined machine-readable data of this Agent Ingress. optional, max 4096 bytes |
+| `domain` | string | the domain that you own to be used as the base domain name to generate regional agent ingress domains. |
+| `ns_targets` | List&lt;string&gt; | a list of target values to use as the values of NS records for the domain property these values will delegate control over the domain to ngrok |
+| `region_domains` | List&lt;string&gt; | a list of regional agent ingress domains that are subdomains of the value of domain this value may increase over time as ngrok adds more regions |
+| `created_at` | string | timestamp when the Agent Ingress was created, RFC 3339 format |
+
+
+## Delete Agent Ingress
+
+Delete an Agent Ingress by ID
+
+### Request
+
+DELETE /agent_ingresses/{id}
+
+<AgentIngressesDeleteRequest />
+
+### Response
+
+Returns a 204 response with no body on success
+
+
+## Get Agent Ingress
+
+Get the details of an Agent Ingress by ID.
+
+### Request
+
+GET /agent_ingresses/{id}
+
+<AgentIngressesGetRequest />
+
+### Response
+
+Returns a 200 response  on success
+
+<AgentIngressesGetResponse />
+
+#### Fields
+
+|&nbsp;| &nbsp;| &nbsp;|
+|---|---|---|
+| `id` | string | unique Agent Ingress resource identifier |
+| `uri` | string | URI to the API resource of this Agent ingress |
+| `description` | string | human-readable description of the use of this Agent Ingress. optional, max 255 bytes. |
+| `metadata` | string | arbitrary user-defined machine-readable data of this Agent Ingress. optional, max 4096 bytes |
+| `domain` | string | the domain that you own to be used as the base domain name to generate regional agent ingress domains. |
+| `ns_targets` | List&lt;string&gt; | a list of target values to use as the values of NS records for the domain property these values will delegate control over the domain to ngrok |
+| `region_domains` | List&lt;string&gt; | a list of regional agent ingress domains that are subdomains of the value of domain this value may increase over time as ngrok adds more regions |
+| `created_at` | string | timestamp when the Agent Ingress was created, RFC 3339 format |
+
+
+## List Agent Ingresses
+
+List all Agent Ingresses owned by this account
+
+### Request
+
+GET /agent_ingresses
+
+<AgentIngressesListRequest />
+
+### Response
+
+Returns a 200 response  on success
+
+<AgentIngressesListResponse />
+
+#### Fields
+
+|&nbsp;| &nbsp;| &nbsp;|
+|---|---|---|
+| `ingresses` | [AgentIngress](#api-agent-ingresses-list-fields-agent-ingress) | the list of Agent Ingresses owned by this account |
+| `uri` | string | URI of the Agent Ingress list API resource |
+| `next_page_uri` | string | URI of the next page, or null if there is no next page |
+
+#### AgentIngress fields
+
+|&nbsp;| &nbsp;| &nbsp;|
+|---|---|---|
+| `id` | string | unique Agent Ingress resource identifier |
+| `uri` | string | URI to the API resource of this Agent ingress |
+| `description` | string | human-readable description of the use of this Agent Ingress. optional, max 255 bytes. |
+| `metadata` | string | arbitrary user-defined machine-readable data of this Agent Ingress. optional, max 4096 bytes |
+| `domain` | string | the domain that you own to be used as the base domain name to generate regional agent ingress domains. |
+| `ns_targets` | List&lt;string&gt; | a list of target values to use as the values of NS records for the domain property these values will delegate control over the domain to ngrok |
+| `region_domains` | List&lt;string&gt; | a list of regional agent ingress domains that are subdomains of the value of domain this value may increase over time as ngrok adds more regions |
+| `created_at` | string | timestamp when the Agent Ingress was created, RFC 3339 format |
+
+
+## Update Agent Ingress
+
+Update attributes of an Agent Ingress by ID.
+
+### Request
+
+PATCH /agent_ingresses/{id}
+
+<AgentIngressesUpdateRequest />
+
+#### Parameters
+
+|&nbsp;| &nbsp;| &nbsp;|
+|---|---|---|
+| `id` | string |  |
+| `description` | string | human-readable description of the use of this Agent Ingress. optional, max 255 bytes. |
+| `metadata` | string | arbitrary user-defined machine-readable data of this Agent Ingress. optional, max 4096 bytes |
+
+
+### Response
+
+Returns a 200 response  on success
+
+<AgentIngressesUpdateResponse />
+
+#### Fields
+
+|&nbsp;| &nbsp;| &nbsp;|
+|---|---|---|
+| `id` | string | unique Agent Ingress resource identifier |
+| `uri` | string | URI to the API resource of this Agent ingress |
+| `description` | string | human-readable description of the use of this Agent Ingress. optional, max 255 bytes. |
+| `metadata` | string | arbitrary user-defined machine-readable data of this Agent Ingress. optional, max 4096 bytes |
+| `domain` | string | the domain that you own to be used as the base domain name to generate regional agent ingress domains. |
+| `ns_targets` | List&lt;string&gt; | a list of target values to use as the values of NS records for the domain property these values will delegate control over the domain to ngrok |
+| `region_domains` | List&lt;string&gt; | a list of regional agent ingress domains that are subdomains of the value of domain this value may increase over time as ngrok adds more regions |
+| `created_at` | string | timestamp when the Agent Ingress was created, RFC 3339 format |
