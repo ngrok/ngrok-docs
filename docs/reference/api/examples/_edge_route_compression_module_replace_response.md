@@ -1,6 +1,0 @@
-
-###### Example Response
-```
-{
-  "enabled": true
-}
