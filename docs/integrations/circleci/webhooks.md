@@ -68,7 +68,7 @@ Once your app is running successfully on localhost, let's get it on the internet
     ![ngrok agent running](/img/integrations/launch_ngrok_tunnel.png)
 
 
-## **Step 3**: Integrate  CircleCI {#setup-webhook}
+## **Step 3**: Integrate CircleCI {#setup-webhook}
 
 To register a webhook on your CircleCI account follow the instructions below:
 
@@ -118,6 +118,7 @@ From the results, review the response body, header, and other details:
 ![ngrok Request Inspector](img/ngrok_introspection_circleci_webhooks.png)
 
 
+
 ### Replaying requests
 
 The ngrok Request Inspector provides a replay function that you can use to test your code without the need to trigger new events from CircleCI. To replay a request:
@@ -142,10 +143,11 @@ The ngrok signature webhook verification feature allows ngrok to assert that req
 This is a quick step to add extra protection to your application.
 
 1. Restart your ngrok agent by running the command, replacing `{your secret token}` with the value you have provided to the **Secret token** field during your webhook registration (See [Integrate ngrok and CircleCI](#setup-webhook)):
-    `ngrok http 3000 --verify-webhook frameio --verify-webhook-secret {your secret token}`
+    `ngrok http 3000 --verify-webhook circleci --verify-webhook-secret {your secret token}`
 
 1. Access [CircleCI](https://www.circleci.com/) and Rerun your workflow from start.
 
 Verify that your local application receives the request and logs information to the terminal.
+
 
 

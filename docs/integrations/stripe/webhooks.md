@@ -68,7 +68,7 @@ Once your app runs successfully on localhost, let's securely get it on the inter
     ![ngrok agent running](/img/integrations/launch_ngrok_tunnel.png)
 
 
-## **Step 3**: Integrate  Stripe {#setup-webhook}
+## **Step 3**: Integrate Stripe {#setup-webhook}
 
 
 To register a Stripe webhook:

@@ -67,7 +67,7 @@ Once your app is running successfully on localhost, let's get it on the internet
     ![ngrok agent running](/img/integrations/launch_ngrok_tunnel.png)
 
 
-## **Step 3**: Integrate  SendGrid {#setup-webhook}
+## **Step 3**: Integrate SendGrid {#setup-webhook}
 
 To register an event webhook to your SendGrid account follow the instructions below:
 
@@ -85,7 +85,6 @@ To register an event webhook to your SendGrid account follow the instructions be
 1. Under **DELIVERABILITY DATA**, select the **Select All** option.
 
 1. Under **Event Webhook Status**, click **ENABLED** and then click **Save**.
-
 
 ### Run Webhooks with SendGrid and ngrok
 
@@ -165,5 +164,3 @@ This is a quick step to add extra protection to your application.
 1. Reproduce the steps to send an email through your SendGrid account.
 
 Verify that your local application receives the request and logs information to the terminal.
-
-

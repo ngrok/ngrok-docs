@@ -68,7 +68,7 @@ Once your app is running successfully on localhost, let's get it on the internet
     ![ngrok agent running](/img/integrations/launch_ngrok_tunnel.png)
 
 
-## **Step 3**: Integrate  Frame.io {#setup-webhook}
+## **Step 3**: Integrate Frame.io {#setup-webhook}
 
 To register a webhook on your Frame.io account follow the instructions below:
 
@@ -81,9 +81,9 @@ To register a webhook on your Frame.io account follow the instructions below:
 1. On the **Webhooks** page, click **Create a Webhook**.
 
 1. On the **Create a new webhook** page, enter a name in the **NAME** field, and in the **URL** field enter the URL provided by the ngrok agent to expose your application to the internet (i.e. `https://1a2b-3c4d-5e6f-7g8h-9i0j.sa.ngrok.io`).
-    ![Frameio URL to Publish](img/ngrok_url_configuration_frameio.png)
+    ![URL to Publish](img/ngrok_url_configuration_frameio.png)
 
-1. Select your team for the **TEAM** field, click the **created** checkbox for **Projects** under the **EVENTS** section, and then click **Submit**.
+1. Select your team in the **TEAM** field, click the **created** checkbox for **Projects** under the **EVENTS** section, and then click **Submit**.
 
 
 ### Run Webhooks with Frame.io and ngrok
@@ -105,7 +105,7 @@ Optionally, you can verify the log of the webhook call in Frame.io:
 
 1. On the **Webhooks** page, click **View logs** close to your webhook.
 
-1. On the **Webhook Logs** page, click **View details** and confirm 
+1. On the **Webhook Logs** page, click **View details**. A popup displays the body content of the HTTP request sent to your localhost app.
     ![Webhook Logs](img/ngrok_logs_frameio.png)
 
 
@@ -147,7 +147,7 @@ The ngrok signature webhook verification feature allows ngrok to assert that req
 
 This is a quick step to add extra protection to your application.
 
-1. Access [Frame.io Developer](https://developer.frame.io/).
+1. Access the [Frame.io Developer](https://developer.frame.io/) page.
 
 1. On the top menu of the developer site, click **DEVELOPER TOOLS** and then click **Webhooks**.
 

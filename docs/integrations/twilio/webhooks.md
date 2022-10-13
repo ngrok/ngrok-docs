@@ -57,7 +57,7 @@ Once your app is running successfully on localhost, let's get it on the internet
     ![ngrok agent running](img/launch_ngrok_tunnel.png)
 
 
-## **Step 3**: Integrate  Twilio SMS Webhook {#setup-twilio}
+## **Step 3**: Integrate Twilio SMS Webhook {#setup-twilio}
 Now that you have your local environment on the internet, let's configure Twilio to call your code.
 
 1. Sign in to your Twilio account.

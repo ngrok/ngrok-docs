@@ -66,7 +66,7 @@ Once your app is running locally, let's get it on the internet securely using ng
     ![ngrok agent running](/img/integrations/launch_ngrok_tunnel.png)
 
 
-## **Step 3**: Integrate  Zoom {#setup-webhook}
+## **Step 3**: Integrate Zoom {#setup-webhook}
 
 There are multiple ways you can integrate your application with Zoom. This guide covers the Webhook-only feature, which can be set up using a free Zoom account.
 

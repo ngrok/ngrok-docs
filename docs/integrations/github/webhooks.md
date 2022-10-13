@@ -67,7 +67,7 @@ Once your app is running successfully on localhost, let's get it on the internet
     ![ngrok agent running](/img/integrations/launch_ngrok_tunnel.png)
 
 
-## **Step 3**: Integrate  GitHub {#setup-webhook}
+## **Step 3**: Integrate GitHub {#setup-webhook}
 
 GitHub can trigger webhook calls to external applications whenever events happen in a repository. To register for such events, follow the instructions below:
 

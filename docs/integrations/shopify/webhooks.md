@@ -78,7 +78,7 @@ Once your app is running successfully on localhost, let's get it on the internet
     ![ngrok agent running](/img/integrations/launch_ngrok_tunnel.png)
 
 
-## **Step 3**: Integrate  Shopify {#setup-webhook}
+## **Step 3**: Integrate Shopify {#setup-webhook}
 
 To register a webhook to your Shopify store follow the instructions below:
 

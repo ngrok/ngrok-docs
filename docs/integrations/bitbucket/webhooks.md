@@ -7,7 +7,6 @@ To integrate Bitbucket webhooks with ngrok:
 1. [Launch your local webhook.](#start-your-app) `npm start`
 1. [Launch ngrok.](#start-ngrok) `ngrok http 3000`
 1. [Configure Bitbucket webhooks with your ngrok URL.](#setup-webhook)
-1. **Bonus!** [Use ngrok like a PRO.](#security)
 
 :::
 
@@ -62,13 +61,13 @@ Once your app is running successfully on localhost, let's get it on the internet
     ![ngrok agent running](/img/integrations/launch_ngrok_tunnel.png)
 
 
-## **Step 3**: Integrate  Bitbucket {#setup-webhook}
+## **Step 3**: Integrate Bitbucket {#setup-webhook}
 
 Bitbucket can trigger webhook calls to external applications whenever events happen in a repository. To register for such events, follow the instructions below:
 
-1. Access [Bitbucket](https://bitbucket.com/) and sign in using your Bitbucket account.
+1. Access [Bitbucket](https://bitbucket.org/) and sign in using your Bitbucket account.
 
-1. Click **Repositories** on the top menu and click the name of a repository from the repository list.
+1. Click **Repositories** on the top menu and then click the name of a repository from the repository list.
     **Tip:** If you don't have a repository, create a new empty one.
 
 1. In the repository page, click **Repository settings** from the left menu and then click **Webhooks**.
@@ -79,6 +78,9 @@ Bitbucket can trigger webhook calls to external applications whenever events hap
     ![URL](img/ngrok_url_configuration_bitbucket.png)
 
 1. Mark the **Push** checkbox under the **Triggers** section and then click **Save** at the bottom of the page.
+
+1. Alternatively, on the **Webhooks** page, click **View requests** in your webhook, and then click **Enable History**.
+    This enables Bitbucket to log all requests to your localhost app.
 
 
 ### Run Webhooks with Bitbucket and ngrok
@@ -93,7 +95,7 @@ Follow the instructions below to add some content to your repository:
 1. On the project's page, click **...** and then click **Add file**.
 
 1. In the **Source** page, enter a name for the file in the **Filename** field, and enter the following content to the file in the textbox:
-    `This is my new file content`.
+    `This is my new file content.`
 
 1. Click **Commit**, and then click **Commit** in the Commit changes popup.
 
@@ -115,6 +117,8 @@ To inspect Bitbucket's event requests, launch the ngrok web interface (i.e. `htt
 
 From the results, review the response body, header, and other details:
 
+![ngrok Request Inspector](img/ngrok_introspection_bitbucket_hooks.png)
+
 
 ### Replaying requests
 
@@ -132,18 +136,3 @@ The ngrok Request Inspector provides a replay function that you can use to test 
 
 Verify that your local application receives the request and logs the corresponding information to the terminal.
 
-
-## **Bonus**: Secure webhook requests {#security}
-
-This is a quick step to add extra protection to your application.
-
-1. In the repository page, click **Settings** from the left menu and then click **Webhooks**.
-
-1. In the **Webhooks** page, scroll down until the **Project Hooks** section appears, and then click **Edit** for your webhook.
-
-1. Enter a text for the **Secret token** field and click **Save changes**.
-
-1. In the **Project Hooks** section, click **Test** for your webhook, and then click **Push events**.
-
-Verify that your local application receives a request header named **x-Bitbucket-token** with the text you've provided during the webhook configuration.
-Your application can use this information to assert it comes from your Bitbucket repository.

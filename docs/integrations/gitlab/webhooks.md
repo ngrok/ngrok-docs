@@ -67,7 +67,7 @@ Once your app is running successfully on localhost, let's get it on the internet
     ![ngrok agent running](/img/integrations/launch_ngrok_tunnel.png)
 
 
-## **Step 3**: Integrate  GitLab {#setup-webhook}
+## **Step 3**: Integrate GitLab {#setup-webhook}
 
 GitLab can trigger webhook calls to external applications whenever events happen in a repository. To register for such events, follow the instructions below:
 
@@ -81,11 +81,11 @@ GitLab can trigger webhook calls to external applications whenever events happen
 1. On the **Webhooks** page, in the **URL** field enter the URL provided by the ngrok agent to expose your application to the internet (i.e., `https://1a2b-3c4d-5e6f-7g8h-9i0j.sa.ngrok.io`).
     ![URL](img/ngrok_url_configuration_gitlab.png)
 
-1. Mark the **Push events** checkbox under the **Trigger** section and then click **Add webhook**.
+1. Select the **Push events** checkbox under the **Trigger** section and then click **Add webhook**.
 
 1. On the **Webhooks** page, scroll down until the **Project Hooks** section appears.
 
-1. In the webhook list for the **Project Hooks** section, click **Test** for the webhook you've just created and then click **Push events**.
+1. In the webhook list under the **Project Hooks** section, click **Test** for the webhook you've just created and then click **Push events**.
 
     Confirm your localhost app receives the test event notification and logs both headers and body to the terminal.
 

@@ -68,7 +68,7 @@ Once your app is running successfully on localhost, let's get it on the internet
     ![ngrok agent running](/img/integrations/launch_ngrok_tunnel.png)
 
 
-## **Step 3**: Integrate  Square {#setup-webhook}
+## **Step 3**: Integrate Square {#setup-webhook}
 
 To register a webhook on your Square account follow the instructions below:
 

@@ -68,7 +68,7 @@ Once your app is running successfully on localhost, let's get it on the internet
     ![ngrok agent running](/img/integrations/launch_ngrok_tunnel.png)
 
 
-## **Step 3**: Integrate  HubSpot {#setup-webhook}
+## **Step 3**: Integrate HubSpot {#setup-webhook}
 
 To trigger a webhook on a HubSpot account you can create an app in the [HubSpot Developers](https://developers.hubspot.com/) site and associate this app to your account or make use of automation workflows.
 
@@ -179,5 +179,3 @@ This is a quick step to add extra protection to your application.
 1. Access your [HubSpot](https://hubspot.com) account and create a new contact (don't forget to Select your user as the **Contact owner**).
 
 Verify that your local application receives the request and logs information to the terminal.
-
-

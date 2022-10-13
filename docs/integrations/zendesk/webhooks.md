@@ -68,7 +68,7 @@ Once your app is running successfully on localhost, let's get it on the internet
     ![ngrok agent running](/img/integrations/launch_ngrok_tunnel.png)
 
 
-## **Step 3**: Integrate  Zendesk {#setup-webhook}
+## **Step 3**: Integrate Zendesk {#setup-webhook}
 
 To register a webhook on your Zendesk account follow the instructions below:
 
@@ -177,5 +177,3 @@ This is a quick step to add extra protection to your application.
 1. Execute the procedures in the [Run Webhooks with Zendesk and ngrok](#run-webhook) section to create a new ticket.
 
     Verify that your local application receives the request and logs information to the terminal.
-
-

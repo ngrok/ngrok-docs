@@ -66,7 +66,7 @@ Once your app runs successfully on localhost, let's get it on the internet secur
     ![ngrok agent running](/img/integrations/launch_ngrok_tunnel.png)
 
 
-## **Step 3**: Integrate  Slack {#setup-webhook}
+## **Step 3**: Integrate Slack {#setup-webhook}
 
 To register a webhook with your Slack account, follow the instructions below:
 

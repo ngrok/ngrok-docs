@@ -68,7 +68,7 @@ Once your app is running successfully on localhost, let's get it on the internet
     ![ngrok agent running](/img/integrations/launch_ngrok_tunnel.png)
 
 
-## **Step 3**: Integrate  Intercom {#setup-webhook}
+## **Step 3**: Integrate Intercom {#setup-webhook}
 
 To register a webhook on your Intercom account follow the instructions below:
 
@@ -160,5 +160,3 @@ This is a quick step to add extra protection to your application.
 1. Access the [Intercom Home](https://app.intercom.com/) page and create a new contact.
 
 Verify that your local application receives the request and logs information to the terminal.
-
-
