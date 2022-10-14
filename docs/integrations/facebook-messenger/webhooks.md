@@ -67,7 +67,7 @@ Once your app is running successfully on localhost, let's get it on the internet
 1. In the **Domains** page, click **+ Create Domain** or **+ New Domain**.
 
 1. In the **Domain** pane, select a **Region** for your domain (i.e. `United States`), provide a value for the **Domain** field (i.e. `myexample.ngrok.io`), and then click **Continue**.
-    ![ngrok New Domain](img/ngrok_new_domain.png)
+    ![ngrok New Domain](/img/integrations/ngrok_new_domain.png)
     **Tip**: Make sure your domain is available.
 
 1. Close the **Start a Tunnel** pane and then close the **Domain** pane.
@@ -76,7 +76,7 @@ Once your app is running successfully on localhost, let's get it on the internet
     `ngrok http 3000 --region=us --hostname=myexample.ngrok.io`
 
 1. ngrok will display a URL where your localhost application is exposed to the internet (copy this URL for use with Facebook).
-    ![ngrok agent running](img/launch_ngrok_tunnel_domain.png)
+    ![ngrok agent running](/img/integrations/launch_ngrok_tunnel_domain.png)
 
 
 ## **Step 3**: Integrate Facebook Messenger {#setup-webhook}
