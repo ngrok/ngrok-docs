@@ -259,6 +259,7 @@ const config = {
       prism: {
         theme: lightCodeTheme,
         darkTheme: darkCodeTheme,
+        additionalLanguages: ['hcl'],
       },
       docs: {
         sidebar: {
@@ -267,9 +268,9 @@ const config = {
       },
     }),
 
-  scripts: [
-    { src: 'https://ngrok.com/docs2/scripts/redirects.js', defer: true, },
-  ]
+  // scripts: [
+  //   { src: 'https://ngrok.com/docs2/scripts/redirects.js', defer: true, },
+  // ]
 };
 
 module.exports = config;
