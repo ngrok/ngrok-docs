@@ -10,7 +10,7 @@ To get `foo.example.com` working with an ngrok tunnel you'll need to perform one
 
 ### Add your domain name to your ngrok account
 
-Add your domain name to your ngrok account. We currently call this process "reservation" and you can do it from the domains page of [your ngrok dashboard]({{url_for('dash.auth.cloud.edge.domains')}}).
+Add your domain name to your ngrok account. We currently call this process "reservation" and you can do it from the domains page of [your ngrok dashboard](https://dashboard.ngrok.com/cloud-edge/domains).
 
 Click "New Domain" and then put `foo.example.com` into the form that appears to add that domain to your account. Once validated you can also add a Description, attach an Edge and select your TLS Certificate configuration (we recommend our automated TLS certificates).
 

@@ -16,9 +16,9 @@ As an additional security measure, you may restrict access to the ngrok dashboar
 
 The ngrok API is the way to programmatically perform almost any action in the ngrok platform and access all of ngrok's resources. To access the ngrok API, you will need to generate an [API key from the ngrok Dashboard](https://dashboard.ngrok.com/api).
 
-The full reference documentation is available in our [ngrok API Documentation page](/docs/api).
+The full reference documentation is available in our [ngrok API Documentation page](/api).
 
-An easy way to explore the ngrok API is by using the ngrok agent, which has a [build in command line tool for accessing the API](/docs/ngrok-agent/ngrok#command-ngrok-api).
+An easy way to explore the ngrok API is by using the ngrok agent, which has a [build in command line tool for accessing the API](/ngrok-agent/ngrok#command-ngrok-api).
 
 ## IP Policies and Restrictions {#ip-policies-restrictions}
 
@@ -38,11 +38,11 @@ Each action that happens in ngrok is published as an event, and Event Subscripti
 
 A subscription is made up of event sources, some of which can be filtered, and event destinations. Each subscription can send the events to one or more destinations, such as Amazon CloudWatch Logs, Amazon Kinesis (as a data stream) or Amazon Kinesis Firehose (as a delivery stream).
 
-Event subscriptions can be configured through the [ngrok Dashboard](https://dashboard.ngrok.com/events/subscriptions) or the [ngrok API](/docs/api#api-event-subscriptions-create).
+Event subscriptions can be configured through the [ngrok Dashboard](https://dashboard.ngrok.com/events/subscriptions) or the [ngrok API](/api#api-event-subscriptions-create).
 
 ### Event Sources {#event-sources}
 
-Event Sources represent events from your ngrok account. See the [ngrok Event Sources reference](/docs/events) for a full list of sources and fields.
+Event Sources represent events from your ngrok account. See the [ngrok Event Sources reference](/events) for a full list of sources and fields.
 
 Many objects within ngrok have corresponding events that are generated when an instance of the object is created, updated and deleted. All Event Types have a version, represented in the Event Type string following the period. The initial version for all Event Types is `v0`.
 
@@ -52,7 +52,7 @@ Some event types support filters and selectable fields. Not all selectable field
 
 Some events, such as HTTP Request Complete and TCP Connection Closed, are high cardinality events. As such, these events can quickly hit the limits of the receiving destination. To reduce the number of events returned from these sources, you can add filtering logic to only allow specific events through to your destination.
 
-See our [event filtering reference](/docs/events/filtering) for filtering examples.
+See our [event filtering reference](/events/filtering) for filtering examples.
 
 ### Event Destinations {#event-destinations}
 

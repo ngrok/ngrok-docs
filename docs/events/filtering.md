@@ -5,7 +5,7 @@ Some events, such as HTTP Request Complete and TCP Connection Closed, are high c
 
 The filtering syntax follows [Google's Common Expression Language (CEL) Syntax](https://github.com/google/cel-spec/blob/master/doc/langdef.md#standard). All expressions start with `ev.` which corresponds to the `object` field of the event. From there, you can use standard [JSONPath](https://goessner.net/articles/JsonPath/) syntax to find the particular field you are interested in. See the examples below for ideas.
 
-The only events that can be filtered today are [`http_request_complete.v0`](/docs/events#http-request-complete-v0) and [`tcp_connection_closed.v0`](/docs/events#tcp-connection-closed-v0). Not all selectable fields are usable in filters. A field marked "filterable" indicates that it is usable in the filter for an event source.
+The only events that can be filtered today are [`http_request_complete.v0`](/events#http-request-complete-v0) and [`tcp_connection_closed.v0`](/events#tcp-connection-closed-v0). Not all selectable fields are usable in filters. A field marked "filterable" indicates that it is usable in the filter for an event source.
 
 ### Filter Examples
 
