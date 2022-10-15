@@ -14,7 +14,7 @@ Using ngrok Secure Tunnels means that you can treat every device as being local,
 
 ngrok Secure Tunnels work by using a locally installed ngrok agent to establish a connection to the ngrok service. Once the connection is established, you get a public endpoint that you or others can use to access your local service.
 
-When a user hits the public ngrok endpoint, the ngrok edge figures out where to route the request to and forwards it over an encrypted connection to the locally running ngrok agent. From there, the local ngrok agent takes care of sending traffic to your upstream service. The communication between the ngrok edge and agent is secure and encrypted. Traffic from the user to the ngrok edge, and from the ngrok agent to the upstream service rely on the protocol you are using for encryption. For protocols that support end to end encryption using TLS, we provide a [TLS tunnel](/docs/secure-tunnels#tls-tunnels) option.
+When a user hits the public ngrok endpoint, the ngrok edge figures out where to route the request to and forwards it over an encrypted connection to the locally running ngrok agent. From there, the local ngrok agent takes care of sending traffic to your upstream service. The communication between the ngrok edge and agent is secure and encrypted. Traffic from the user to the ngrok edge, and from the ngrok agent to the upstream service rely on the protocol you are using for encryption. For protocols that support end to end encryption using TLS, we provide a [TLS tunnel](/secure-tunnels#tls-tunnels) option.
 
 ## Integrating with Cloud Edge
 
@@ -24,4 +24,4 @@ ngrok Secure Tunnels are designed to integrate seamlessly into your ngrok Cloud 
 
 Labeled tunnels are just another tunnel type in the ngrok agent, similar to HTTP or TCP tunnels. When you create a new labeled tunnel, you define the set of labels that identify that tunnel and/or the device it's running on. When you create an edge that includes a tunnel group backend, and configure the tunnel group to look for tunnels matching specific labels, it will find and route traffic to your labeled tunnel.
 
-See our [ngrok agent reference for Labeled Tunnels](/docs/ngrok-agent/ngrok#command-ngrok-tunnel) for a complete set of options and examples.
+See our [ngrok agent reference for Labeled Tunnels](/ngrok-agent/ngrok#command-ngrok-tunnel) for a complete set of options and examples.

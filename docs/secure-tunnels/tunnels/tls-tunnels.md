@@ -7,7 +7,7 @@ sidebar_position: 2
 
 HTTPS tunnels terminate all TLS (SSL) traffic at the ngrok.com servers using ngrok.com certificates. For production-grade services, you'll want your tunneled traffic to be encrypted with your own TLS key and certificate. ngrok makes this extraordinarily easy with TLS tunnels.
 
-Check out the [ngrok agent TLS tunnel documentation](/docs/ngrok-agent/ngrok#command-ngrok-tls) for the complete details for starting a TLS Tunnel.
+Check out the [ngrok agent TLS tunnel documentation](/ngrok-agent/ngrok#command-ngrok-tls) for the complete details for starting a TLS Tunnel.
 
 ###### Forward TLS traffic to a local HTTPS server on port 443
 
@@ -66,4 +66,4 @@ A more complete list can be found on [the Server Name Indication page on Wikiped
 
 ## TLS Tunnel Configuration Options {#configuration-options}
 
-Check out the [ngrok agent TLS tunnel documentation](/docs/ngrok-agent/ngrok#command-ngrok-tls) for all the configuration options for TLS tunnels.
+Check out the [ngrok agent TLS tunnel documentation](/ngrok-agent/ngrok#command-ngrok-tls) for all the configuration options for TLS tunnels.

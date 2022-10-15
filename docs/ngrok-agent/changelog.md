@@ -47,7 +47,7 @@ title: Agent Changelog
 
 ### ngrok Agent 3.0.0 - \[2022-03-28\]
 
-For more information about upgrading from previous versions of the agent to v3.0, see our [upgrade guide](/docs/guides/upgrade-v2-v3).
+For more information about upgrading from previous versions of the agent to v3.0, see our [upgrade guide](/guides/upgrade-v2-v3).
 
 * Fixed an issue where an agent would not reconnect after removing a reserved domain from your account.
 * Added `ngrok completion` to enable autocomplete for the cli.

@@ -20,17 +20,17 @@ This will automatically add `version` and `region` options as well as convert th
 
 **Automation using the ngrok agent** - If you have written any scripts or built wrappers around the ngrok agent using command line flags, there are additional changes you will need to make.
 
-*   Installing the Authtoken is now done with the command `ngrok config add-authtoken TOKEN`. Check out the [ngrok config reference documentation](/docs/ngrok-agent/ngrok#command-ngrok-config) for more information.
+*   Installing the Authtoken is now done with the command `ngrok config add-authtoken TOKEN`. Check out the [ngrok config reference documentation](/ngrok-agent/ngrok#command-ngrok-config) for more information.
 *   The ngrok agent only accepts long name flags prefixed with `--` and will error if a single hyphen is used. When updating your scripts, ensure things like `--hostname` and `--host-header` are using double hyphens.
 *   The following command flags have changed:
-    *   `-auth` -> [`--basic-auth`](/docs/ngrok-agent/ngrok#command-ngrok-http-flags)
-    *   `-bind-tls` -> [`--scheme`](/docs/ngrok-agent/ngrok#command-ngrok-http-flags)
+    *   `-auth` -> [`--basic-auth`](/ngrok-agent/ngrok#command-ngrok-http-flags)
+    *   `-bind-tls` -> [`--scheme`](/ngrok-agent/ngrok#command-ngrok-http-flags)
 
-For a full list of changes to the agent for v3, see the [changelog](/docs/ngrok-agent/changelog).
+For a full list of changes to the agent for v3, see the [changelog](/ngrok-agent/changelog).
 
 ### Changes to choosing a region
 
-The ngrok agent v3 changes the default region you connect to when opening a tunnel. Instead of choosing the us region, the ngrok agent will attempt to connect to the best region for you, usually the one geographically closest to you. If you run the `ngrok config upgrade` command, it will automatically add a `region: us` if your config file was missing it, since that was previously the default. Check out the [full list of supported regions](/docs/platform#pops-locs).
+The ngrok agent v3 changes the default region you connect to when opening a tunnel. Instead of choosing the us region, the ngrok agent will attempt to connect to the best region for you, usually the one geographically closest to you. If you run the `ngrok config upgrade` command, it will automatically add a `region: us` if your config file was missing it, since that was previously the default. Check out the [full list of supported regions](/platform#pops-locs).
 
 ### Upgrading the ngrok Agent Configuration File
 
@@ -81,9 +81,9 @@ The latest version of the ngrok agent includes an updated command line argument 
 *   Installing the authtoken is now done with the command `ngrok config add-authtoken TOKEN`
 *   The ngrok agent only accepts long name flags prefixed with `--` and will error if a single hyphen is used. When updating your scripts, ensure things like `--hostname` and `--host-header` are using double hyphens.
 *   The following command flags have changed:
-    *   `-auth` -> [`--basic-auth`](/docs/ngrok-agent/ngrok#command-ngrok-http-flags)
-    *   `-bind-tls` -> [`--scheme`](/docs/ngrok-agent/ngrok#command-ngrok-http-flags)
+    *   `-auth` -> [`--basic-auth`](/ngrok-agent/ngrok#command-ngrok-http-flags)
+    *   `-bind-tls` -> [`--scheme`](/ngrok-agent/ngrok#command-ngrok-http-flags)
 
 ### Next steps
 
-Now that you've upgraded to the latest configuration file, you're ready to start the latest ngrok agent. There's a lot of new stuff in there, but your old commands should work as well (with the changes from above). Run `ngrok -h` for help or check out the [ngrok agent reference documentation](/docs/ngrok-agent).
+Now that you've upgraded to the latest configuration file, you're ready to start the latest ngrok agent. There's a lot of new stuff in there, but your old commands should work as well (with the changes from above). Run `ngrok -h` for help or check out the [ngrok agent reference documentation](/ngrok-agent).

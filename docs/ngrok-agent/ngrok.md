@@ -50,7 +50,7 @@ All api subcommands require an API key. You can configure it either using a flag
 
 You can get get the initial API key in the [API section of the ngrok Dashboard](https://dashboard.ngrok.com/api/keys). Additional keys can be created through `ngrok api api-key create` subcommand.
 
-These commands mirror our standard [ngrok HTTP API](/docs/api). If you have [shell completion enabled](/docs/ngrok-agent/ngrok#command-ngrok-completion), these will tab complete on the terminal.
+These commands mirror our standard [ngrok HTTP API](/api). If you have [shell completion enabled](/ngrok-agent/ngrok#command-ngrok-completion), these will tab complete on the terminal.
 
 ### Usage
 
@@ -60,30 +60,30 @@ These commands mirror our standard [ngrok HTTP API](/docs/api). If you have [she
 
 | Command | Description |
 | --- | --- |
-| [abuse-reports](/docs/api#api-abuse-reports) | Creates a new abuse report which will be reviewed by our system and abuse response team. |
-| [agent-ingresses](/docs/api#api-agent-ingresses) | Manage Agent Ingresses. The ngrok agent can be configured to connect to ngrok via the new set of addresses on the returned Agent Ingress. |
-| [api-keys](/docs/api#api-api-keys) | Manage API keys. These keys can be used to authenticate to the ngrok API. |
-| [backends](/docs/api#api-failover-backends) | Manage the backends that are servicing Cloud Edges. |
-| [certificate-authorities](/docs/api#api-certificate-authorities) | Manage Certificate Authorities. |
-| [credentials](/docs/api#api-credentials) | Manage authtoken credentials. The authtoken credential can be used to authorize a new ngrok agent session. |
-| [edge-modules](/docs/api#api-edge-route-backend-module) | Manage ngrok Cloud Edge Modules. |
-| [edges](/docs/api#api-edges-https) | Manage ngrok Cloud Edges. |
-| [endpoints](/docs/api#api-endpoints) | List all active endpoints on the account. |
-| [event-destinations](/docs/api#api-event-destinations) | Manage Event Destinations. |
-| [event-sources](/docs/api#api-event-sources) | Manage types for which an event subscription will trigger. |
-| [event-subscriptions](/docs/api#api-event-subscriptions) | Manage Event Subscriptions. |
-| [ip-policies](/docs/api#api-ip-policies) | Manage IP policies. |
-| [ip-policy-rules](/docs/api#api-ip-policy-rules) | Manage IP policy rules attached to IP Policies. |
-| [ip-restrictions](/docs/api#api-ip-restrictions) | Manage IP restrictions. |
-| [reserved-addrs](/docs/api#api-reserved-addrs) | Manage reserved TCP addresses. |
-| [reserved-domains](/docs/api#api-reserved-domains) | Manage reserved domains. |
-| [ssh-certificate-authorities](/docs/api#api-ssh-certificate-authorities) | Manage SSH Certificate Authorities. |
-| [ssh-credentials](/docs/api#api-ssh-credentials) | Manage SSH Credentials that can be used to start new tunnels via ngrok's SSH gateway. |
-| [ssh-host-certificates](/docs/api#api-ssh-host-certificates) | Manage SSH Host Certificates. |
-| [ssh-user-certificates](/docs/api#api-ssh-user-certificates) | Manage SSH User Certificates. |
-| [tls-certificates](/docs/api#api-tls-certificates) | Manage TLS certificates |
-| [tunnel-sessions](/docs/api#api-tunnel-sessions) | List all online tunnel sessions running on this account. |
-| [tunnels](/docs/api#api-tunnels) | List all online tunnels currently running on the account. |
+| [abuse-reports](/api#api-abuse-reports) | Creates a new abuse report which will be reviewed by our system and abuse response team. |
+| [agent-ingresses](/api#api-agent-ingresses) | Manage Agent Ingresses. The ngrok agent can be configured to connect to ngrok via the new set of addresses on the returned Agent Ingress. |
+| [api-keys](/api#api-api-keys) | Manage API keys. These keys can be used to authenticate to the ngrok API. |
+| [backends](/api#api-failover-backends) | Manage the backends that are servicing Cloud Edges. |
+| [certificate-authorities](/api#api-certificate-authorities) | Manage Certificate Authorities. |
+| [credentials](/api#api-credentials) | Manage authtoken credentials. The authtoken credential can be used to authorize a new ngrok agent session. |
+| [edge-modules](/api#api-edge-route-backend-module) | Manage ngrok Cloud Edge Modules. |
+| [edges](/api#api-edges-https) | Manage ngrok Cloud Edges. |
+| [endpoints](/api#api-endpoints) | List all active endpoints on the account. |
+| [event-destinations](/api#api-event-destinations) | Manage Event Destinations. |
+| [event-sources](/api#api-event-sources) | Manage types for which an event subscription will trigger. |
+| [event-subscriptions](/api#api-event-subscriptions) | Manage Event Subscriptions. |
+| [ip-policies](/api#api-ip-policies) | Manage IP policies. |
+| [ip-policy-rules](/api#api-ip-policy-rules) | Manage IP policy rules attached to IP Policies. |
+| [ip-restrictions](/api#api-ip-restrictions) | Manage IP restrictions. |
+| [reserved-addrs](/api#api-reserved-addrs) | Manage reserved TCP addresses. |
+| [reserved-domains](/api#api-reserved-domains) | Manage reserved domains. |
+| [ssh-certificate-authorities](/api#api-ssh-certificate-authorities) | Manage SSH Certificate Authorities. |
+| [ssh-credentials](/api#api-ssh-credentials) | Manage SSH Credentials that can be used to start new tunnels via ngrok's SSH gateway. |
+| [ssh-host-certificates](/api#api-ssh-host-certificates) | Manage SSH Host Certificates. |
+| [ssh-user-certificates](/api#api-ssh-user-certificates) | Manage SSH User Certificates. |
+| [tls-certificates](/api#api-tls-certificates) | Manage TLS certificates |
+| [tunnel-sessions](/api#api-tunnel-sessions) | List all online tunnel sessions running on this account. |
+| [tunnels](/api#api-tunnels) | List all online tunnels currently running on the account. |
 
 ### Flags
 
@@ -137,10 +137,10 @@ Use `check` to test a configuration file for validity. If you have an old config
 | Command | Description |
 | --- | --- |
 | [add-api-key](#command-ngrok-config-add-api-key) | save an API key to configuration file. The API key can be generated in the [API section of the ngrok dashboard](https://dashboard.ngrok.com/api). |
-| [add-authtoken](command-ngrok-config-add-authtoken) | save authtoken to configuration file |
-| [check](command-ngrok-config-check) | check configuration file |
-| [edit](command-ngrok-config-edit) | opens the config file in your system's default editor. It looks specifically for the `SHELL` and `EDITOR` environment variables. |
-| [upgrade](command-ngrok-config-upgrade) | auto-upgrade configuration file |
+| [add-authtoken](#command-ngrok-config-add-authtoken) | save authtoken to configuration file |
+| [check](#command-ngrok-config-check) | check configuration file |
+| [edit](#command-ngrok-config-edit) | opens the config file in your system's default editor. It looks specifically for the `SHELL` and `EDITOR` environment variables. |
+| [upgrade](#command-ngrok-config-upgrade) | auto-upgrade configuration file |
 
 ### Flags
 
@@ -355,7 +355,7 @@ The `ngrok http` command is used to start a tunnel listening for HTTP/HTTPS traf
 
 ## ngrok service
 
-The `ngrok service` command allows you to run and control an ngrok service on the operating system. For more information about running ngrok as a service, check out the [ngrok service section in the secure tunnels documentation](/docs/secure-tunnels#installing-as-a-service).
+The `ngrok service` command allows you to run and control an ngrok service on the operating system. For more information about running ngrok as a service, check out the [ngrok service section in the secure tunnels documentation](/secure-tunnels#installing-as-a-service).
 
 This command manages installation and execution of ngrok as an operating system service on Windows, MacOS and Linux systems. The service command takes a single argument which must be `start`, `stop`, `restart`, `install`, or `uninstall`.
 
@@ -488,7 +488,7 @@ Using this command is only recommended with the `--hostname` option. Other uses 
 
 ## ngrok tunnel
 
-The `ngrok tunnel` command is used to start labeled tunnels for use with [Tunnel Group backends](/docs/cloud-edge#tunnel-group-labels) and [ngrok Cloud Edges](/docs/cloud-edge).
+The `ngrok tunnel` command is used to start labeled tunnels for use with [Tunnel Group backends](/cloud-edge#tunnel-group-labels) and [ngrok Cloud Edges](/cloud-edge).
 
 Starts a tunnel with labels so that it can be part of a tunnel group. The tunnel group consists of all the tunnels matching all the labels of a tunnel group backend.
 

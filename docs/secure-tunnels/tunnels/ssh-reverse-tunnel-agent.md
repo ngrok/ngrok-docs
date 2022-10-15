@@ -8,7 +8,7 @@ title: SSH Reverse Tunnel
 
 SSH reverse tunneling is an alternative mechanism to start an ngrok tunnel without needing to download or run the ngrok agent. You can start tunnels via SSH without downloading an ngrok agent by running an SSH reverse tunnel command.
 
-The SSH gateway functionality should not be confused with exposing an SSH server via ngrok. If you want to expose your own SSH server for remote access, please refer to the [using ngrok with ssh](/docs/using-ngrok-with#ssh) section of the documentation.
+The SSH gateway functionality should not be confused with exposing an SSH server via ngrok. If you want to expose your own SSH server for remote access, please refer to the [using ngrok with ssh](/using-ngrok-with#ssh) section of the documentation.
 
 The main features you miss out on when using the SSH Reverse Tunnel Agent instead of the ngrok agent is the ability to run multiple tunnels at the same time and the resiliency features for automatically reconnecting in case of network outages. At this point in time, the reverse tunnel agent does not support the latest capabilities found in the ngrok agent, although we plan to support that in the future.
 
@@ -30,7 +30,7 @@ ngrok tries to honor the syntax of `ssh -R` for all of the tunnel commands in it
 
 The following examples demonstrate how to use the SSH gateway and provide the equivalent ngrok agent command to help you understand how to achieve similar functionality.
 
-Note that following examples use the US region for agent ingress (tunnel.us.ngrok.com). There are agent ingress URLs for each of the [available regions](/docs/ngrok-agent/config#config-region).
+Note that following examples use the US region for agent ingress (tunnel.us.ngrok.com). There are agent ingress URLs for each of the [available regions](/ngrok-agent/config#config-region).
 
 ###### Start an http tunnel forwarding to port 80
 
