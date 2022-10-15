@@ -212,9 +212,10 @@ const sidebars = {
         'errors/index',
         {
           type: 'category', label: 'Events',
+          link: { type: 'doc', id: 'events/event-sources' },
           items: [ 
-            'reference/event-sources',
-            'reference/event-filtering',
+            'events/event-sources',
+            'events/filtering',
           ],
         },
         'http-header-templates',
