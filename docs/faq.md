@@ -29,11 +29,11 @@ ngrok does not require nor provide static IP addresses. When you run the ngrok a
 
 ## What information is stored about my tunnels?
 
-**ngrok does not log or store any data transmitted through your tunneled connections.** ngrok does log some information about the connections which are used for debugging purposes and metrics like the name of the tunnel and the duration of connections. For complete end-to-end security, use a [TLS tunnel](#tls). Please see our [Terms of Service](/tos) and [Data Processing Agreement](/dpa) for more information.
+**ngrok does not log or store any data transmitted through your tunneled connections.** ngrok does log some information about the connections which are used for debugging purposes and metrics like the name of the tunnel and the duration of connections. For complete end-to-end security, use a [TLS tunnel](#tls). Please see our [Terms of Service](https://ngrok.com/tos) and [Data Processing Agreement](https://ngrok.com/dpa) for more information.
 
 ## What's the deal with ngrok v1?
 
-The original open source ngrok agent 1.x is [available on Github](https://github.com/inconshreveable/ngrok) but is no longer developed, supported or maintained. The latest ngrok agent is available on our [ngrok downloads page](/downloads).
+The original open source ngrok agent 1.x is [available on Github](https://github.com/inconshreveable/ngrok) but is no longer developed, supported or maintained. The latest ngrok agent is available on our [ngrok downloads page](https://ngrok.com/downloads).
 
 ## How do I pronounce ngrok?
 

@@ -12,8 +12,8 @@ const config = {
   tagline: 'online in one line',
   url: 'https://www.ngrok.com',
   baseUrl: '/docs2/',
-  onBrokenLinks: 'warn',
-  onBrokenMarkdownLinks: 'warn',
+  onBrokenLinks: 'throw',
+  onBrokenMarkdownLinks: 'throw',
   favicon: 'img/favicon.ico',
 
   // GitHub pages deployment config.

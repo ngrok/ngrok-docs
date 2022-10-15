@@ -12,7 +12,7 @@ Any flags that accept a list can be specified multiple times, one for each list 
 
 ### What's New in v3
 
-The ngrok agent v3 includes a large number of improvements over the v2 agent. Here are some major highlights, but you can find a complete list in the [changelog](/docs/ngrok-agent/changelog).
+The ngrok agent v3 includes a large number of improvements over the v2 agent. Here are some major highlights, but you can find a complete list in the [changelog](/ngrok-agent/changelog).
 
 *   Linux and Mac users can install tab autocompletion capability for the ngrok agent to make discovery of new commands and flags much easier.
 *   We've added an easy way to work with the ngrok API using the `ngrok api` command. You can use this to access any part of the API without having to worry about authenticating or formatting requests properly.
@@ -20,7 +20,7 @@ The ngrok agent v3 includes a large number of improvements over the v2 agent. He
 *   The `ngrok diagnose` command can be used to identify and troubleshoot common connection issues between the agent and the ngrok service.
 *   HTTP tunnels now use HTTPS by default and include support for a large number of middleware modules for securing and manipulating traffic. See `ngrok http -h` for details.
 
-There's a whole lot more to discover in the new ngrok agent v3. This [upgrade guide](/docs/guides/upgrade-v2-v3) will help you move to the new version and make you aware of the breaking changes.
+There's a whole lot more to discover in the new ngrok agent v3. This [upgrade guide](/guides/upgrade-v2-v3) will help you move to the new version and make you aware of the breaking changes.
 
 ### Download and install the ngrok agent
 
@@ -46,14 +46,14 @@ This is an optional step but it will drastically improve the usability of the ng
 
     . <(ngrok completion)
 
-After that, you will be able to see the available options by pressing tab after a command. Check out the [`ngrok completion` reference documentation](/docs/ngrok-agent/ngrok#command-ngrok-completion) for details on adding this to your login scripts.
+After that, you will be able to see the available options by pressing tab after a command. Check out the [`ngrok completion` reference documentation](/ngrok-agent/ngrok#command-ngrok-completion) for details on adding this to your login scripts.
 
 ### Supported ENV Variables
 
 The ngrok agent supports environment variables as well for the authtoken and API key. You may use them instead if that's easier in your environment.
 
-*   `NGROK_AUTHTOKEN` - For more information about authtokens, see the [ngrok secure tunnels documentation](/docs/secure-tunnels#tunnel-authtokens).
-*   `NGROK_API_KEY` - For more information, see the [ngrok API documentation](/docs/api#authentication).
+*   `NGROK_AUTHTOKEN` - For more information about authtokens, see the [ngrok secure tunnels documentation](/secure-tunnels#tunnel-authtokens).
+*   `NGROK_API_KEY` - For more information, see the [ngrok API documentation](/api#authentication).
 
 ### Examples
 
@@ -67,4 +67,4 @@ The ngrok agent supports environment variables as well for the authtoken and API
 
 ### ngrok Agent Changelog
 
-The full changelog for the ngrok agent can be found on the [ngrok agent changelog](/docs/ngrok-agent/changelog) page.
+The full changelog for the ngrok agent can be found on the [ngrok agent changelog](/ngrok-agent/changelog) page.
