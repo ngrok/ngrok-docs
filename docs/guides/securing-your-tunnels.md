@@ -7,15 +7,15 @@ This guide will walk you through recommendations for ensuring you are using ngro
 
 For our HTTP tunnel type, use `scheme https` to configure the ngrok agent to open only a HTTPS endpoint and not a HTTP endpoint. If you are running the latest ngrok agent, this is the default.
 
-If your local service is not running on the same machine as the ngrok agent, we recommend that you set up TLS encryption for the ngrok agent to upstream service leg of the tunnel using our [local HTTPS feature](/docs/secure-tunnels#http-tunnels-local-https).
+If your local service is not running on the same machine as the ngrok agent, we recommend that you set up TLS encryption for the ngrok agent to upstream service leg of the tunnel using our [local HTTPS feature](/secure-tunnels#http-tunnels-local-https).
 
-For custom domains, use ngrok's [Automated TLS certificates](/docs/cloud-edge#automated-certs) to have ngrok automatically provision a TLS certificate for your endpoint from Let's Encrypt.
+For custom domains, use ngrok's [Automated TLS certificates](/cloud-edge#automated-certs) to have ngrok automatically provision a TLS certificate for your endpoint from Let's Encrypt.
 
 ### Authtokens
 
-Assign an [unique Authtoken to each ngrok agent](/docs/secure-tunnels#authtoken-per-agent) deployment to isolate issues if a specific Authtoken is compromised.
+Assign an [unique Authtoken to each ngrok agent](/secure-tunnels#authtoken-per-agent) deployment to isolate issues if a specific Authtoken is compromised.
 
-Set up a [minimum ACL per Authtoken](/docs/secure-tunnels#authtoken-acl-enforcement) to limit the endpoints each agent is able to start.
+Set up a [minimum ACL per Authtoken](/secure-tunnels#authtoken-acl-enforcement) to limit the endpoints each agent is able to start.
 
 ### ngrok Agent Installation
 
@@ -41,7 +41,7 @@ Consider restricting the IPs permitted to access the API. You can do so in the n
 
 ### TLS termination
 
-TLS Encryption is terminated at different locations depending on the ngrok Tunnel / Edge type and configuration. See the documentation on [Terminating TLS Connections](/docs/cloud-edge#terminating-tls-connections) for more details.
+TLS Encryption is terminated at different locations depending on the ngrok Tunnel / Edge type and configuration. See the documentation on [Terminating TLS Connections](/cloud-edge#terminating-tls-connections) for more details.
 
 ### Automated TLS certificates provisioning
 
@@ -53,5 +53,5 @@ It is possible to specify the minimum TLS version that clients are required to u
 
 ### Observability
 
-ngrok provides functionality for consuming logs for events in the system. For more information, check out our [ngrok Event Subscriptions documentation](/docs/cloud-edge#observability).
+ngrok provides functionality for consuming logs for events in the system. For more information, check out our [ngrok Event Subscriptions documentation](/cloud-edge#observability).
 

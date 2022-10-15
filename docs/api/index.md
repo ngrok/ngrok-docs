@@ -10,7 +10,7 @@ The ngrok HTTP API is available at `https://api.ngrok.com`. It provides programm
 
 The API is REST-ish. It follows most of the conventions of a REST API but breaks some when the REST model does not fit well. The API listens only on port 443 to help avoid any accidental unencrypted requests.
 
-If you are looking to programmatically start and stop tunnels, instead consult the documentation of the [ngrok agent API](/docs/ngrok-agent/api).
+If you are looking to programmatically start and stop tunnels, instead consult the documentation of the [ngrok agent API](/ngrok-agent/api).
 
 ## Authentication {#authentication}
 
