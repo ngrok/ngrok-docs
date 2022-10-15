@@ -12,7 +12,7 @@ The API is REST-ish. It follows most of the conventions of a REST API but breaks
 
 If you are looking to programmatically start and stop tunnels, instead consult the documentation of the [ngrok agent API](/docs/ngrok-agent/api).
 
-## Authentication
+## Authentication {#authentication}
 
 |     |     |
 | --- | --- |
@@ -25,11 +25,11 @@ API keys to access the ngrok.com HTTP API can be provisioned on the [API Keys pa
 
  `curl -H "authorization: Bearer {API_KEY}" -H "ngrok-version: 2" https://api.ngrok.com/`
 
-## Content Types
+## Content Types {#content-types}
 
 All request bodies sent to the API must use a content type of `application/json`. Ensure that your client sets the request's `Content-Type` header appropriately. All responses returned by the API will also be returned with an `application/json` content type.
 
-## Versioning and API Stability
+## Versioning and API Stability {#versioning}
 
 The caller must specify a version by sending an `ngrok-version` header with each request. The latest version is `2`. Versions `0` and `1` are deprecated.
 
@@ -40,6 +40,6 @@ The ngrok API guarantees that breaking changes to the API will never be made unl
 * The addition of new fields on existing resource representations
 * Bug fixes which change the API to match documented behavior
 
-## Pagination
+## Pagination {#pagination}
 
 List endpoints can be paginated using the query parameters `limit` and `before_id`. Results are returned ordered from newest to oldest. The maximum value of `limit` is 100. If a limit is not specified, it will default to 100. If `before_id` is not specified, the first page of results will be returned. You can provide an explicit value for `before_id` to retrieve items created before the given ID. Each response to a list request will include a `next_page_uri` field, which will be the full URL you can request to retrieve the next page of results. If there are no more results, `next_page_uri` will be `null`.
