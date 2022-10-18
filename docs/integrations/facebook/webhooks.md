@@ -146,7 +146,7 @@ To inspect Facebook's webhooks call, launch the ngrok web interface (i.e. `http:
 
 From the results, review the response body, header, and other details:
 
-![ngrok Request Inspector](img/ngrok_introspection_facebookmessenger_hooks.png)
+![ngrok Request Inspector](img/ngrok_introspection_facebook_hooks.png)
 
 
 ### Replaying requests
