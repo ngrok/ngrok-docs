@@ -71,11 +71,10 @@ const config = {
           srcDark: 'img/ngrok-white.svg',
         },
         items: [
-          // TODO: fix algolia
-          // {
-          //   type: 'search',
-          //   position: 'left',
-          // },
+          {
+            type: 'search',
+            position: 'left',
+          },
           {
             label: 'go to ngrok.com',
             to: 'https://ngrok.com',
@@ -130,11 +129,11 @@ const config = {
           // },
         ],
       },
-      //algolia: {
-      //  appId: 'SPPRT3GDNI',
-      //  apiKey: 'e02fb8e0c4d8c7968396981d7ecb9fa8',
-      //  indexName: 'dev_ngrok',
-      //},
+      algolia: {
+       appId: 'SPPRT3GDNI',
+       apiKey: 'e02fb8e0c4d8c7968396981d7ecb9fa8',
+       indexName: 'dev_ngrok',
+      },
       hubspot: {
         accountId: 21124867,
       },
