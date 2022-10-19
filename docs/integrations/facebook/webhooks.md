@@ -1,4 +1,5 @@
 # Facebook Webhooks
+[Facebook](https://developers.facebook.com/docs/graph-api/webhooks/)
 ------------
 
 :::tip TL;DR
@@ -91,7 +92,7 @@ To register a webhook on your Facebook account follow the instructions below:
    
 1. On the **Apps** page, click **Create App**.
 
-1. On the **Create an App** page, click **Consumer** for the **Select an app type** section and then click **Next**.
+1. On the **Create an App** page, click **None** for the **Select an app type** section and then click **Next**.
 
 1. On the **Provide basic information** page, provide the **Display name** as `My Locahost App`, make sure your email appears in the **App contact email** field otherwise enter your email, and then click **Create App**.
     **Tip:** Facebook may request your Facebook account password. Provide your password in the **Please Re-enter Your Password** popup.
@@ -105,12 +106,19 @@ To register a webhook on your Facebook account follow the instructions below:
 1. In the **Edit User subscription** popup, for the **Callback URL** field enter the URL provided by the ngrok agent to expose your application to the internet, with `/webhooks` at the end (i.e. `https://myexample.ngrok.io/webhooks`).
     ![Callback URL](img/ngrok_url_configuration_facebook.png)
 
-1. Enter `12345` for the **Verify token** field and then click **Verify and save**.
+1. Enter `12345` for the **Verify token** field, click **No** on **Include values** slider to turn it to **Yes**, and then click **Verify and save**.
 
 1. After you add a webhook to Facebook, Facebook will submit a validation post request to your application through ngrok. Confirm your localhost app receives the validation get request and logs `WEBHOOK_VERIFIED` in the terminal.
 
 1. Back to the **Webhooks** page, click **Subscribe** for the **about** action.
     **Tip**: You can subscribe to multiple actions within the **User** object.
+
+1. Click **Test** for the **about** action, click **Send to My Server**, and confirm your localhost app receives the test post request.
+
+1. On the left menu, click **Settings**, click **Basic**, enter the information below in the following page, and then click **Save changes**:
+    . **Privacy Policy URL**: `https://myexample.ngrok.io/privacy`
+    . **Terms of Service URL**: `https://myexample.ngrok.io/terms`
+    . **User data deletion**: `https://myexample.ngrok.io/deletion`
 
 1. On the top of the **MyLocalhostApp** page, click the **App Mode** slider to turn the app to **Live** mode.
 
