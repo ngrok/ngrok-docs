@@ -102,6 +102,9 @@ const config = {
       hubspot: {
         accountId: 21124867,
       },
+      hubspot: {
+        accountId: 21124867,
+      },
       footer: {
         style: 'light',
         links: [
