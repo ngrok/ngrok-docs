@@ -1,5 +1,4 @@
 # Facebook Webhooks
-[Facebook](https://developers.facebook.com/docs/graph-api/webhooks/)
 ------------
 
 :::tip TL;DR
@@ -84,24 +83,15 @@ Once your app is running successfully on localhost, let's get it on the internet
 
 To register a webhook on your Facebook account follow the instructions below:
 
-**Note**: You'll need a Facebook page associated with your Facebook account. Create one before continuing this procedure. 
+**Note**: You'll need a Facebook page and a Facebook app associated with your Facebook page. Create one before continuing this procedure. 
 
 1. Access the [Meta for Developers](https://developers.facebook.com/) page, and Log in using your Facebook account.
 
-1. On the Developers page, click **My Apps**.
+1. On the Developers page, click **My Apps** and then click your app. 
    
-1. On the **Apps** page, click **Create App**.
+1. On the app dashboard, click **Add Product** on the left menu, and then click **Set up** inside the **Webhooks** tile.
 
-1. On the **Create an App** page, click **None** for the **Select an app type** section and then click **Next**.
-
-1. On the **Provide basic information** page, provide the **Display name** as `My Locahost App`, make sure your email appears in the **App contact email** field otherwise enter your email, and then click **Create App**.
-    **Tip:** Facebook may request your Facebook account password. Provide your password in the **Please Re-enter Your Password** popup.
-
-1. On the app page, click **Add Product** on the left menu.
-
-1. On the **Add a product** page, click **Set up** inside the **Webhooks** tile.
-
-1. On the **Webhooks** page, select **User** from the combo box and then click **Subscribe to this object**.
+1. On the **Webhooks** page, select **Page** from the combo box and then click **Subscribe to this object**.
 
 1. In the **Edit User subscription** popup, for the **Callback URL** field enter the URL provided by the ngrok agent to expose your application to the internet, with `/webhooks` at the end (i.e. `https://myexample.ngrok.io/webhooks`).
     ![Callback URL](img/ngrok_url_configuration_facebook.png)
@@ -110,36 +100,25 @@ To register a webhook on your Facebook account follow the instructions below:
 
 1. After you add a webhook to Facebook, Facebook will submit a validation post request to your application through ngrok. Confirm your localhost app receives the validation get request and logs `WEBHOOK_VERIFIED` in the terminal.
 
-1. Back to the **Webhooks** page, click **Subscribe** for the **about** action.
-    **Tip**: You can subscribe to multiple actions within the **User** object.
+1. Back to the **Webhooks** page, click **Subscribe** for the **feed** action.
+    **Tip**: You can subscribe to multiple actions within the **Page** object, as well as select other objects to subscribe for. For each of them you provide the ngrok URL.
 
-1. Click **Test** for the **about** action, click **Send to My Server**, and confirm your localhost app receives the test post request.
+1. Click **Test** for the **feed** action, click **Send to My Server**, and confirm your localhost app receives the test post request.
 
-1. On the left menu, click **Settings**, click **Basic**, enter the information below in the following page, and then click **Save changes**:
-    . **Privacy Policy URL**: `https://myexample.ngrok.io/privacy`
-    . **Terms of Service URL**: `https://myexample.ngrok.io/terms`
-    . **User data deletion**: `https://myexample.ngrok.io/deletion`
-
-1. On the top of the **MyLocalhostApp** page, click the **App Mode** slider to turn the app to **Live** mode.
+1. On the top of your app's page, make sure **App Mode** is **Live**.
 
 
 ### Run Webhooks with Facebook and ngrok
 
-You can test the integration by following the procedure below:
+Depending on the object and the action you subscribe for, Facebook sends different request body contents. 
 
-1. On the **Meta for Developers** page, click the **Webhooks** under the **Products** section in the left menu. 
+Because you selected **feed** action, you can test the integration by creating a post to your page or liking a post on your page:
 
-1. In the **Webhooks** page, select **Page** in the combo box, find one of the subscription fields you have subscribed to during the webhook registration and then click **Test**.
+1. Access your Facebook account and then under **Your Pages and profiles** click your page.
 
-1. In the **Field Sample** popup, click **Send to My Server**.
+1. On the **Manage Page** for your page, click **Create post**, write something and then click **Post**.
 
-Confirm your localhost app receives the test message and logs both headers and body in the terminal.
-
-    **Tip:** Facebook sends different request body contents depending on the event you select during the webhook registration.
-
-Now that you have successfully registered your webhook and tested it, access the Facebook page you have assigned to your webhook and send a message to another Facebook user. Alternatively, you can sign in to Facebook using another Facebook account, access your page, and then send a message through the Messenger feature.
-
-Verify that your local application receives the request and logs information to the terminal.
+Confirm your localhost app receives the feed message and logs both headers and body in the terminal.
 
 
 ### Inspecting requests
