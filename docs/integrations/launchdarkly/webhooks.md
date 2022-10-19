@@ -81,7 +81,7 @@ To register a webhook on your LaunchDarkly account follow the instructions below
 1. On the **Create a new webhook** popup, enter a name in the **NAME** field, and in the **URL** field enter the URL provided by the ngrok agent to expose your application to the internet (i.e. `https://1a2b-3c4d-5e6f-7g8h-9i0j.sa.ngrok.io`).
     ![URL to Publish](img/ngrok_url_configuration_launchdarkly.png)
 
-1. On the **Create a new webhook** popup, click **Sign this webhook**, copy the value of the **Secret** provided by LaunchDarkly.
+1. On the **Create a new webhook** popup, click **Sign this webhook** and copy the value of the **Secret** provided by LaunchDarkly.
     **Tip**: You will use the **Secret** value later to add more security to your webhook calls. See [Secure webhook requests](#security).
 
 1. Click the **I have read and agree to the Integration Terms and Conditions** checkbox, and then click **Save settings**.
