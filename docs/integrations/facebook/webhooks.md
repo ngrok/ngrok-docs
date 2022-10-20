@@ -112,7 +112,7 @@ To register a webhook on your Facebook account follow the instructions below:
 
 Depending on the object and the action you subscribe for, Facebook sends different request body contents. 
 
-Because you selected **feed** action, you can test the integration by creating a post on your page or liking a post on your page:
+Because you selected **feed** action, you can test the integration by creating a post on your page or by clicking like on a post of your page:
 
 1. Access your Facebook account and then under **Your Pages and profiles** click your page.
 

@@ -83,9 +83,9 @@ Once your app is running successfully on localhost, let's get it on the internet
 
 To register a webhook on your Instagram account follow the instructions below:
 
-**Note**: You'll need a Instagram page and a Instagram app associated with your Instagram page. Create one before continuing this procedure. 
+**Note**: You'll need a Facebook page amd a Facebook app associated with your Facebook page. Create one before continuing this procedure.
 
-1. Access the [Meta for Developers](https://developers.facebook.com/) page, and Log in using your Instagram account.
+1. Access the [Meta for Developers](https://developers.facebook.com/) page, and Log in using your Facebook account.
 
 1. On the Developers page, click **My Apps** and then click your app. 
    
