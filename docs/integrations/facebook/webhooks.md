@@ -13,7 +13,7 @@ To integrate Facebook webhooks with ngrok:
 
 
 This guide covers how to use ngrok to integrate your localhost app with Facebook by using Webhooks.
-Facebook webhooks can be used to notify an external application whenever specific events occur in your Facebook account.
+Facebook webhooks can be used to notify an external application whenever page or account events occur in your Facebook account.
 
 By integrating ngrok with Facebook, you can:
 
