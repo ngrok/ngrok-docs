@@ -52,7 +52,7 @@ You can validate that the app is up and running by visiting http://localhost:300
 
 Once your app is running successfully on localhost, let's get it on the internet securely using ngrok!
 
-**Note:** This integration requires a ngrok Pro or Enterprise license because Facebook validates your ngrok domain and certificate.
+**Note:** This integration requires an ngrok Pro or Enterprise license because Facebook validates your ngrok domain and certificate.
 
 1. If you're not an ngrok user yet, just [sign up for ngrok for free](https://ngrok.com/signup).
 
@@ -62,7 +62,7 @@ Once your app is running successfully on localhost, let's get it on the internet
     **Tip:** The ngrok agent uses the auth token to log into your account when you start a tunnel.
 
 1. On the left menu, expand **Cloud Edge** and then click **Domains**.
-    **Tip:** If you don't have a ngrok Pro or Enterprise license, subscribe for one by clicking **Update Subscription** and following the subscribe procedure.
+    **Tip:** If you don't have an ngrok Pro or Enterprise license, sign up for one by clicking **Update Subscription** and following the subscribe procedure.
 
 1. On the **Domains** page, click **+ Create Domain** or **+ New Domain**.
 
@@ -83,7 +83,7 @@ Once your app is running successfully on localhost, let's get it on the internet
 
 To register a webhook on your Facebook account follow the instructions below:
 
-**Note**: You'll need a Facebook page and a Facebook app associated with your Facebook page. Create one before continuing this procedure. 
+**Note**: You'll need a Facebook page and a Facebook app associated with your Facebook page. Create one before continuing to the next step. 
 
 1. Access the [Meta for Developers](https://developers.facebook.com/) page, and Log in using your Facebook account.
 
@@ -93,7 +93,7 @@ To register a webhook on your Facebook account follow the instructions below:
 
 1. On the **Webhooks** page, select **Page** from the combo box and then click **Subscribe to this object**.
 
-1. In the **Edit User subscription** popup, for the **Callback URL** field enter the URL provided by the ngrok agent to expose your application to the internet, with `/webhooks` at the end (i.e. `https://myexample.ngrok.io/webhooks`).
+1. In the **Edit User subscription** popup, enter the URL provided by the ngrok agent to expose your application to the internet in the **Callback URL** field, with `/webhooks` at the end (i.e. `https://myexample.ngrok.io/webhooks`).
     ![Callback URL](img/ngrok_url_configuration_facebook.png)
 
 1. Enter `12345` for the **Verify token** field, click **No** on the **Include values** slider to turn it to **Yes**, and then click **Verify and save**.
@@ -101,7 +101,7 @@ To register a webhook on your Facebook account follow the instructions below:
 1. After you add a webhook to Facebook, Facebook will submit a validation post request to your application through ngrok. Confirm your localhost app receives the validation get request and logs `WEBHOOK_VERIFIED` in the terminal.
 
 1. Back to the **Webhooks** page, click **Subscribe** for the **feed** action.
-    **Tip**: You can subscribe to multiple actions within the **Page** object, as well as select other objects to subscribe for. For each of them, you provide the ngrok URL.
+    **Tip**: You can subscribe to multiple actions within the **Page** object, as well as select other objects to subscribe to. For each of them, you provide the same URL.
 
 1. Click **Test** for the **feed** action, click **Send to My Server**, and confirm your localhost app receives the test post request.
 
@@ -110,9 +110,9 @@ To register a webhook on your Facebook account follow the instructions below:
 
 ### Run Webhooks with Facebook and ngrok
 
-Depending on the object and the action you subscribe for, Facebook sends different request body contents. 
+Depending on the object and the action you subscribe to, Facebook sends different request body contents. 
 
-Because you selected **feed** action, you can test the integration by creating a post on your page or by clicking like on a post of your page:
+Because you selected the **feed** action, you can test the integration by creating a post on your page or by clicking "like" on a post of your page:
 
 1. Access your Facebook account and then under **Your Pages and profiles** click your page.
 
@@ -129,7 +129,7 @@ The Request Inspector shows all the requests made through your ngrok tunnel to y
 
 Seeing requests is an excellent way of validating the data sent to and retrieved by your app via the ngrok tunnel. That alone can save you some time dissecting and logging HTTP request and response headers, methods, bodies, and response codes within your app just to confirm you are getting what you expect.
 
-To inspect Facebook's webhooks call, launch the ngrok web interface (i.e. `http://127.0.0.1:4040`), and then click one of the requests sent by Facebook.
+To inspect Facebook's webhooks call, launch the ngrok web interface (i.e. `http://127.0.0.1:4040`) and then click one of the requests sent by Facebook.
 
 From the results, review the response body, header, and other details:
 

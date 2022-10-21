@@ -95,7 +95,7 @@ The Request Inspector shows all the requests made through your tunnel. When you 
 
 Seeing requests are an excellent way for validating the data sent to and retrieved by your app via the ngrok tunnel. That alone can save you some time dissecting and logging HTTP request and response headers, methods, bodies, and response codes within your app just to confirm you are getting what you expect.
 
-To inspect the Twilio SMS Webhook request, launch the ngrok inspection interface (`http://localhost:4040`), and then click the request sent by Twilio.
+To inspect the Twilio SMS Webhook request, launch the ngrok inspection interface (`http://localhost:4040`) and then click the request sent by Twilio.
 
 From the results, review the response body, header, and other details:
 

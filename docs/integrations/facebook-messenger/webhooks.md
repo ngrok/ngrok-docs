@@ -52,7 +52,7 @@ You can validate that the app is up and running by visiting http://localhost:300
 
 Once your app is running successfully on localhost, let's get it on the internet securely using ngrok!
 
-**Note:** This integration requires a ngrok Pro or Enterprise license because Facebook validates your ngrok domain.
+**Note:** This integration requires an ngrok Pro or Enterprise license because Facebook validates your ngrok domain.
 
 1. If you're not an ngrok user yet, just [sign up for ngrok for free](https://ngrok.com/signup).
 
@@ -62,7 +62,7 @@ Once your app is running successfully on localhost, let's get it on the internet
     **Tip:** The ngrok agent uses the auth token to log into your account when you start a tunnel.
 
 1. On the left menu, expand **Cloud Edge** and then click **Domains**.
-    **Tip:** If you don't have a ngrok Pro or Enterprise license, subscribe for one by clicking **Update Subscription** and following the subscribe procedure.
+    **Tip:** If you don't have an ngrok Pro or Enterprise license, sign up for one by clicking **Update Subscription** and following the subscribe procedure.
 
 1. In the **Domains** page, click **+ Create Domain** or **+ New Domain**.
 
@@ -151,7 +151,7 @@ The Request Inspector shows all the requests made through your ngrok tunnel to y
 
 Seeing requests is an excellent way of validating the data sent to and retrieved by your app via the ngrok tunnel. That alone can save you some time dissecting and logging HTTP request and response headers, methods, bodies, and response codes within your app just to confirm you are getting what you expect.
 
-To inspect Facebook's webhooks call, launch the ngrok web interface (i.e. `http://127.0.0.1:4040`), and then click one of the requests sent by Facebook Messenger.
+To inspect Facebook's webhooks call, launch the ngrok web interface (i.e. `http://127.0.0.1:4040`) and then click one of the requests sent by Facebook Messenger.
 
 From the results, review the response body, header, and other details:
 
