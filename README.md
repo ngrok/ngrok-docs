@@ -1,41 +1,23 @@
-# Website
+# [ngrok docs](https://ngrok.com/docs)
 
-This website is built using [Docusaurus 2](https://docusaurus.io/), a modern static website generator.
+This is the source for the [ngrok docs](https://ngrok.com/docs); feel free to suggest changes and improvements to our documentation!
 
-### Installation
+### Setup
 
-```
-$ yarn
-```
+ngrok is built using [Docusaurus 2](https://docusaurus.io/).
 
-### Local Development
+To setup our docs in your host, simply
 
-```
-$ yarn start
-```
-
-This command starts a local development server and opens up a browser window. Most changes are reflected live without having to restart the server.
-
-### Build
-
-```
-$ yarn build
+```bash
+$ git clone https://github.com/ngrok/ngrok-docs.git
+$ cd ngrok-docs
+$ yarn && yarn start
 ```
 
-This command generates static content into the `build` directory and can be served using any static contents hosting service.
+While our Docusaurus uses mostly markdowns, you can make yourself familiar with its [documentation](https://docusaurus.io/docs/en/installation) for more significant changes.
 
-### Deployment
+#### Looking for support?
 
-Using SSH:
+For questions and support on contributing please join our [Slack community](https://ngrok.com/slack), channel `#support`.
+To file an issue within our doc, use our [github issues](https://github.com/ngrok/ngrok-docs/issues)
 
-```
-$ USE_SSH=true yarn deploy
-```
-
-Not using SSH:
-
-```
-$ GIT_USER=<Your GitHub username> yarn deploy
-```
-
-If you are using GitHub pages for hosting, this command is a convenient way to build the website and push to the `gh-pages` branch.
