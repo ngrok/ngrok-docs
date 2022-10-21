@@ -64,7 +64,6 @@ const config = {
       ],
       image: 'img/ngrok-docs-opengraph.png',
       navbar: {
-        title: '| docs',
         logo: {
           alt: 'ngrok',
           src: 'img/ngrok-black.svg',
