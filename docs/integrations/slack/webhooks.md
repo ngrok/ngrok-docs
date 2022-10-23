@@ -4,7 +4,7 @@
 :::tip TL;DR
 
 To integrate Slack webhooks with ngrok:
-1. [Launch your local webhook.](#start-your-app) `npm start`
+1. [Launch your local webhook.](#start-your-app) `npm run startSlack`
 1. [Launch ngrok.](#start-ngrok) `ngrok http 3000`
 1. [Configure Slack webhooks with your ngrok URL.](#setup-webhook)
 1. **Bonus!** [Use ngrok like a PRO.](#security)

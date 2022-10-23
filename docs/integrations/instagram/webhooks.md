@@ -4,7 +4,7 @@
 :::tip TL;DR
 
 To integrate Instagram webhooks with ngrok:
-1. [Launch your local webhook.](#start-your-app) `node appFB`
+1. [Launch your local webhook.](#start-your-app) `npm run startFacebook`
 1. [Launch ngrok.](#start-ngrok) `ngrok http 3000 --region=us --hostname=myexample.ngrok.io`
 1. [Configure Instagram webhooks with your ngrok URL.](#setup-webhook)
 1. **Bonus!** [Use ngrok like a PRO.](#security)
@@ -40,7 +40,7 @@ This will get the project installed locally.
 Now you can launch the app by running the following command: 
 
 ```bash
-npm run startInstagram
+npm run startFacebook
 ```
 
 The app runs by default on port 3000. 

@@ -4,7 +4,7 @@
 :::tip TL;DR
 
 To integrate Facebook webhooks with ngrok:
-1. [Launch your local webhook.](#start-your-app) `node appFB`
+1. [Launch your local webhook.](#start-your-app) `npm run startFacebook`
 1. [Launch ngrok.](#start-ngrok) `ngrok http 3000 --region=us --hostname=myexample.ngrok.io`
 1. [Configure Facebook webhooks with your ngrok URL.](#setup-webhook)
 1. **Bonus!** [Use ngrok like a PRO.](#security)
