@@ -83,7 +83,7 @@ Once your app is running successfully on localhost, let's get it on the internet
 
 To register a webhook on your Facebook account follow the instructions below:
 
-**Note**: You'll need a Facebook page and a Facebook app associated with your Facebook page. Create one before continuing to the next step. 
+**Requirements**: You'll need a Facebook page and a Facebook app associated with your Facebook page. Create one before continuing to the next step. 
 
 1. Access the [Meta for Developers](https://developers.facebook.com/) page, and Log in using your Facebook account.
 
@@ -100,17 +100,17 @@ To register a webhook on your Facebook account follow the instructions below:
 
 1. After you add a webhook to Facebook, Facebook will submit a validation post request to your application through ngrok. Confirm your localhost app receives the validation get request and logs `WEBHOOK_VERIFIED` in the terminal.
 
-1. Back to the **Webhooks** page, click **Subscribe** for the **feed** action.
-    **Tip**: You can subscribe to multiple actions within the **Page** object, as well as select other objects to subscribe to. For each of them, you provide the same URL.
+1. Back to the **Webhooks** page, click **Subscribe** for the **feed** field.
+    **Tip**: You can subscribe to multiple fields within the **Page** object, as well as select other objects to subscribe to. For each of them, you provide the same URL.
 
-1. Click **Test** for the **feed** action, click **Send to My Server**, and confirm your localhost app receives the test post request.
+1. Click **Test** for the **feed** field, click **Send to My Server**, and confirm your localhost app receives the test post request.
 
 1. On the top of your app's page, make sure **App Mode** is **Live**.
 
 
 ### Run Webhooks with Facebook and ngrok
 
-Depending on the object and the action you subscribe to, Facebook sends different request body contents. 
+Depending on the object and the field you subscribe to, Facebook sends different request body contents. 
 
 Because you selected the **feed** action, you can test the integration by creating a post on your page or by clicking "like" on a post of your page:
 

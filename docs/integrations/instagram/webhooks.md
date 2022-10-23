@@ -52,7 +52,7 @@ You can validate that the app is up and running by visiting http://localhost:300
 
 Once your app is running successfully on localhost, let's get it on the internet securely using ngrok!
 
-**Note:** This integration requires a ngrok Pro or Enterprise license because Instagram validates your ngrok domain and certificate.
+**Note:** This integration requires an ngrok Pro or Enterprise license because Facebook validates your ngrok domain and certificate.
 
 1. If you're not an ngrok user yet, just [sign up for ngrok for free](https://ngrok.com/signup).
 
@@ -62,7 +62,7 @@ Once your app is running successfully on localhost, let's get it on the internet
     **Tip:** The ngrok agent uses the auth token to log into your account when you start a tunnel.
 
 1. On the left menu, expand **Cloud Edge** and then click **Domains**.
-    **Tip:** If you don't have a ngrok Pro or Enterprise license, subscribe for one by clicking **Update Subscription** and following the subscribe procedure.
+    **Tip:** If you don't have an ngrok Pro or Enterprise license, sign up for one by clicking **Update Subscription** and following the subscribe procedure.
 
 1. On the **Domains** page, click **+ Create Domain** or **+ New Domain**.
 
@@ -75,7 +75,7 @@ Once your app is running successfully on localhost, let's get it on the internet
 1. Start ngrok by running the following command in a terminal on your local desktop:
     `ngrok http 3000 --region=us --hostname=myexample.ngrok.io`
 
-1. ngrok will display a URL where your localhost application is exposed to the internet (copy this URL for use with Instagram).
+1. ngrok will display a URL where your localhost application is exposed to the internet (copy this URL for use with Facebook).
     ![ngrok agent running](/img/integrations/launch_ngrok_tunnel_domain.png)
 
 
@@ -83,7 +83,17 @@ Once your app is running successfully on localhost, let's get it on the internet
 
 To register a webhook on your Instagram account follow the instructions below:
 
-**Note**: You'll need a Facebook page amd a Facebook app associated with your Facebook page. Create one before continuing this procedure.
+**Requirements**: You'll need a Facebook page amd a Facebook app associated with your Facebook page. Create one before continuing this procedure.
+
+Connect your Facebook page with your Instagram account by following the instructions below:
+
+1. Access your Facebook account, click on your avatar icon on the top right corner of the page, click **See all profiles**, click **See all Pages**, and then click the name of your page.
+
+1. On the **Manage Page** of your page, expand **Meta Business Suite** on the left menu and then click **Inbox**.
+
+1. On the **Inbox** page, click **Instagram Comments** and then click **Connect account**. Follow the instructions to connect your Instagram account to your Facebook page.
+
+After you connect your Instagram account to your Facebook page, follow the instructions below to configure your Instagram webhook:
 
 1. Access the [Meta for Developers](https://developers.facebook.com/) page, and Log in using your Facebook account.
 
@@ -91,7 +101,7 @@ To register a webhook on your Instagram account follow the instructions below:
    
 1. On the app dashboard, click **Add Product** on the left menu, and then click **Set up** inside the **Webhooks** tile.
 
-1. On the **Webhooks** page, select **Page** from the combo box and then click **Subscribe to this object**.
+1. On the **Webhooks** page, select **Instagram** from the combo box and then click **Subscribe to this object**.
 
 1. In the **Edit User subscription** popup, for the **Callback URL** field enter the URL provided by the ngrok agent to expose your application to the internet, with `/webhooks` at the end (i.e. `https://myexample.ngrok.io/webhooks`).
     ![Callback URL](img/ngrok_url_configuration_instagram.png)
@@ -100,25 +110,23 @@ To register a webhook on your Instagram account follow the instructions below:
 
 1. After you add a webhook to Instagram, Instagram will submit a validation post request to your application through ngrok. Confirm your localhost app receives the validation get request and logs `WEBHOOK_VERIFIED` in the terminal.
 
-1. Back to the **Webhooks** page, click **Subscribe** for the **feed** action.
-    **Tip**: You can subscribe to multiple actions within the **Page** object, as well as select other objects to subscribe for. For each of them, you provide the ngrok URL.
+1. Back to the **Webhooks** page, make sure **Instagram** object is selected and then click **Subscribe** to the **comments** field.
+    **Tip**: You can subscribe to multiple fields within the **Instagram** object, as well as select other objects to subscribe to. For each of them, you provide the same URL.
 
-1. Click **Test** for the **feed** action, click **Send to My Server**, and confirm your localhost app receives the test post request.
+1. Click **Test** for the **comments** field, click **Send to My Server**, and confirm your localhost app receives the test post request.
 
 1. On the top of your app's page, make sure **App Mode** is **Live**.
 
 
 ### Run Webhooks with Instagram and ngrok
 
-Depending on the object and the action you subscribe for, Instagram sends different request body contents. 
+Depending on the object and the field you subscribe to, Instagram sends different request body contents. 
 
-Because you selected **feed** action, you can test the integration by creating a post on your page or liking a post on your page:
+Because you selected **comments** field, you can test the integration by commenting a post of your Instagram account:
 
-1. Access your Instagram account and then under **Your Pages and profiles** click your page.
+1. Access your Instagram account, open a story, enter a comment and then post the comment.lick **Post**.
 
-1. On the **Manage Page** for your page, click **Create post**, write something and then click **Post**.
-
-Confirm your localhost app receives the feed message and logs both headers and body in the terminal.
+Confirm your localhost app receives a message and logs both headers and body in the terminal.
 
 
 ### Inspecting requests

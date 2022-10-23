@@ -83,7 +83,7 @@ Once your app is running successfully on localhost, let's get it on the internet
 
 To register a webhook on your Facebook account follow the instructions below:
 
-**Note**: You'll need a Facebook page associated with your Facebook account. Create one before continuing this procedure. 
+**Requirements**: You'll need a Facebook page associated with your Facebook account. Create one before continuing this procedure. 
 
 1. Access the [Meta for Developers](https://developers.facebook.com/) page, and Log in using your Facebook account.
 
