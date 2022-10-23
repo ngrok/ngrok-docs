@@ -110,10 +110,10 @@ After you connect your Instagram account to your Facebook page, follow the instr
 
 1. After you add a webhook to Instagram, Instagram will submit a validation post request to your application through ngrok. Confirm your localhost app receives the validation get request and logs `WEBHOOK_VERIFIED` in the terminal.
 
-1. Back to the **Webhooks** page, make sure **Instagram** object is selected and then click **Subscribe** to the **comments** field.
+1. Back to the **Webhooks** page, make sure the **Instagram** object is selected and then click **Subscribe** to the **comments** field.
     **Tip**: You can subscribe to multiple fields within the **Instagram** object, as well as select other objects to subscribe to. For each of them, you provide the same URL.
 
-1. Click **Test** for the **comments** field, click **Send to My Server**, and confirm your localhost app receives the test post request.
+1. Click **Test** for the **comments** field, click **Send to My Server** and confirm your localhost app receives the test post request.
 
 1. On the top of your app's page, make sure **App Mode** is **Live**.
 
@@ -122,9 +122,9 @@ After you connect your Instagram account to your Facebook page, follow the instr
 
 Depending on the object and the field you subscribe to, Instagram sends different request body contents. 
 
-Because you selected **comments** field, you can test the integration by commenting a post of your Instagram account:
+Because you selected the **comments** field, you can test the integration by commenting on a post on your Instagram account:
 
-1. Access your Instagram account, open a story, enter a comment and then post the comment.lick **Post**.
+1. Access your Instagram account, open a story, enter a comment and then post the comment.
 
 Confirm your localhost app receives a message and logs both headers and body in the terminal.
 
