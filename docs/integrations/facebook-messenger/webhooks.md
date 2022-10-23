@@ -102,10 +102,10 @@ To register a webhook on your Facebook account follow the instructions below:
 
 1. On the **Messenger Settings** page, click **Add Callback URL** in the **Webhooks** section.
 
-1. In the **Edit Callback URL** popup, for the **Callback URL** field enter the URL provided by the ngrok agent to expose your application to the internet, with `/webhook` at the end (i.e. `https://myexample.ngrok.io/webhook`).
+1. In the **Edit Callback URL** popup, enter the URL provided by the ngrok agent to expose your application to the internet in the **Callback URL** field, with `/webhooks` at the end (i.e. `https://myexample.ngrok.io/webhooks`).
     ![Callback URL](img/ngrok_url_configuration_facebookmessenger.png)
 
-1. Enter `12345` for the **Verify token** field and then click **Verify and save**.
+1. Enter `12345` in the **Verify token** field and then click **Verify and save**.
 
 1. After you add a webhook to Facebook Messenger, Facebook will submit a validation post request to your application through ngrok. Confirm your localhost app receives the validation get request and logs `WEBHOOK_VERIFIED` in the terminal.
 

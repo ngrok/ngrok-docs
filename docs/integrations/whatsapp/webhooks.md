@@ -1,26 +1,26 @@
-# Facebook Webhooks
+# WhatsApp Webhooks
 ------------
 
 :::tip TL;DR
 
-To integrate Facebook webhooks with ngrok:
+To integrate WhatsApp webhooks with ngrok:
 1. [Launch your local webhook.](#start-your-app) `npm run startFacebook`
 1. [Launch ngrok.](#start-ngrok) `ngrok http 3000 --region=us --hostname=myexample.ngrok.io`
-1. [Configure Facebook webhooks with your ngrok URL.](#setup-webhook)
+1. [Configure WhatsApp webhooks with your ngrok URL.](#setup-webhook)
 1. **Bonus!** [Use ngrok like a PRO.](#security)
 
 :::
 
 
-This guide covers how to use ngrok to integrate your localhost app with Facebook by using Webhooks.
-Facebook webhooks can be used to notify an external application whenever page or account events occur in your Facebook account.
+This guide covers how to use ngrok to integrate your localhost app with WhatsApp by using Webhooks.
+WhatsApp webhooks can be used to notify an external application whenever specific events occur in your WhatsApp account.
 
-By integrating ngrok with Facebook, you can:
+By integrating ngrok with WhatsApp, you can:
 
-- **Develop and test Facebook webhooks locally**, eliminating the time in deploying your development code to a public environment and setting it up in HTTPS.
-- **Inspect and troubleshoot requests from Facebook** in real-time via the inspection UI and API.
-- **Modify and Replay Facebook Webhook requests** with a single click and without spending time reproducing events manually in your Facebook account.
-- **Secure your app with Facebook validation provided by ngrok**. Invalid requests are blocked by ngrok before reaching your app.
+- **Develop and test WhatsApp webhooks locally**, eliminating the time in deploying your development code to a public environment and setting it up in HTTPS.
+- **Inspect and troubleshoot requests from WhatsApp** in real-time via the inspection UI and API.
+- **Modify and Replay WhatsApp Webhook requests** with a single click and without spending time reproducing events manually in your WhatsApp account.
+- **Secure your app with WhatsApp validation provided by ngrok**. Invalid requests are blocked by ngrok before reaching your app.
 
 
 ## **Step 1**: Start your app {#start-your-app}
@@ -79,46 +79,50 @@ Once your app is running successfully on localhost, let's get it on the internet
     ![ngrok agent running](/img/integrations/launch_ngrok_tunnel_domain.png)
 
 
-## **Step 3**: Integrate Facebook {#setup-webhook}
+## **Step 3**: Integrate WhatsApp {#setup-webhook}
 
-To register a webhook on your Facebook account follow the instructions below:
+To register a webhook on your WhatsApp account follow the instructions below:
 
-**Requirements**: You'll need a Facebook page and a Facebook app associated with your Facebook page. Create one before continuing to the next step. 
+**Requirements**: You'll need a Facebook app and a business phone number associated with your Facebook app. Create one before continuing to the next step.
+
+Connect your Facebook page with your WhatsApp account by following the instructions below:
 
 1. Access the [Meta for Developers](https://developers.facebook.com/) page, and Log in using your Facebook account.
 
 1. On the Developers page, click **My Apps** and then click your app. 
    
-1. On the app dashboard, click **Add Product** on the left menu, and then click **Set up** inside the **Webhooks** tile.
+1. On the app dashboard, click **Add Product** on the left menu, and then click **Set up** inside the **WhatsApp** tile.
 
-1. On the **Webhooks** page, select **Page** from the combo box and then click **Subscribe to this object**.
+1. On the left menu, click **Configuration** under **WhatsApp** and then click **Edit**.
 
-1. In the **Edit User subscription** popup, enter the URL provided by the ngrok agent to expose your application to the internet in the **Callback URL** field, with `/webhooks` at the end (i.e. `https://myexample.ngrok.io/webhooks`).
-    ![Callback URL](img/ngrok_url_configuration_facebook.png)
+1. In the **Edit webhook's callback URL** popup, enter the URL provided by the ngrok agent to expose your application to the internet in the **Callback URL** field, with `/webhooks` at the end (i.e. `https://myexample.ngrok.io/webhooks`).
+    ![Callback URL](img/ngrok_url_configuration_whatsapp.png)
 
-1. Enter `12345` in the **Verify token** field, click **No** on the **Include values** slider to turn it to **Yes**, and then click **Verify and save**.
+1. Enter `12345` in the **Verify token** field and then click **Verify and save**.
 
-1. After you add a webhook to Facebook, Facebook will submit a validation post request to your application through ngrok. Confirm your localhost app receives the validation get request and logs `WEBHOOK_VERIFIED` in the terminal.
+1. After you add a webhook to WhatsApp, WhatsApp will submit a validation post request to your application through ngrok. Confirm your localhost app receives the validation get request and logs `WEBHOOK_VERIFIED` in the terminal.
 
-1. Back to the **Webhooks** page, click **Subscribe** for the **feed** field.
-    **Tip**: You can subscribe to multiple fields within the **Page** object, as well as select other objects to subscribe to. For each of them, you provide the same URL.
+1. Back to the **Configuration** page, click **Manage**.
 
-1. Click **Test** for the **feed** field, click **Send to My Server**, and confirm your localhost app receives the test post request.
+1. On the **Webhook fields** popup, click **Subscribe** to the **messages** field.
+    **Tip**: You can subscribe to multiple fields.
 
-1. On the top of your app's page, make sure **App Mode** is **Live**.
+1. Click **Test** for the **messages** field and confirm your localhost app receives a post request.
+
+1. On the **Webhook fields** popup, click **Done**.
+
+1. Back to the **Configuration** page, make sure you have a production number associate to your app. If not, click **Manage phone numbers** and make note of the **Test Number** WhatsApp provides to you.
+
+1. Back to the **Configuration** page, on the top of your app's page, make sure **App Mode** is **Live**.
 
 
-### Run Webhooks with Facebook and ngrok
+### Run Webhooks with WhatsApp and ngrok
 
-Depending on the object and the field you subscribe to, Facebook sends different request body contents. 
+Use the phone number associated to your WhatsApp product or use the test number you copied before.
 
-Because you selected the **feed** action, you can test the integration by creating a post on your page or by clicking "like" on a post of your page:
+1. Add this number to your WhatsApp app contacts and then send a message to this number.
 
-1. Access your Facebook account and then under **Your Pages and profiles** click your page.
-
-1. On the **Manage Page** for your page, click **Create post**, write something and then click **Post**.
-
-Confirm your localhost app receives the feed message and logs both headers and body in the terminal.
+Confirm your localhost app receives a message and logs both headers and body in the terminal.
 
 
 ### Inspecting requests
@@ -129,18 +133,18 @@ The Request Inspector shows all the requests made through your ngrok tunnel to y
 
 Seeing requests is an excellent way of validating the data sent to and retrieved by your app via the ngrok tunnel. That alone can save you some time dissecting and logging HTTP request and response headers, methods, bodies, and response codes within your app just to confirm you are getting what you expect.
 
-To inspect Facebook's webhooks call, launch the ngrok web interface (i.e. `http://127.0.0.1:4040`) and then click one of the requests sent by Facebook.
+To inspect WhatsApp's webhooks call, launch the ngrok web interface (i.e. `http://127.0.0.1:4040`) and then click one of the requests sent by WhatsApp.
 
 From the results, review the response body, header, and other details:
 
-![ngrok Request Inspector](img/ngrok_introspection_facebook_hooks.png)
+![ngrok Request Inspector](img/ngrok_introspection_whatsapp_hooks.png)
 
 
 ### Replaying requests
 
-The ngrok Request Inspector provides a replay function that you can use to test your code without the need to trigger new events from Facebook. To replay a request:
+The ngrok Request Inspector provides a replay function that you can use to test your code without the need to trigger new events from WhatsApp. To replay a request:
 
-1. In the ngrok inspection interface (i.e. `http://localhost:4040`), select a request from Facebook.
+1. In the ngrok inspection interface (i.e. `http://localhost:4040`), select a request from WhatsApp.
 
 1. Click **Replay** to execute the same request to your application or select **Replay with modifications** to modify the content of the original request before sending the request.
 
@@ -153,21 +157,21 @@ Verify that your local application receives the request and logs the correspondi
 
 ## **Bonus**: Secure webhook requests {#security}
 
-The ngrok signature webhook verification feature allows ngrok to assert that requests from your Facebook webhook are the only traffic allowed to make calls to your localhost app.
+The ngrok signature webhook verification feature allows ngrok to assert that requests from your WhatsApp webhook are the only traffic allowed to make calls to your localhost app.
 
 **Note:** This ngrok feature requires a Pro or Enterprise license.
 
 This is a quick step to add extra protection to your application.
 
-1. Access the [Meta for Developers](https://developers.facebook.com/) page, log in using your Facebook account, and then click **My Apps** in the top right corner.
+1. Access the [Meta for Developers](https://developers.facebook.com/) page, log in using your WhatsApp account, and then click **My Apps** in the top right corner.
 
 1. On the Developers page, expand **Settings** on the left menu and then click **Basic**.
 
 1. In the **Basic Settings** page, click **Show** to reveal the **App secret** value and copy this value.
 
 1. Restart your ngrok agent by running the command, replacing `{your app secret}` with the value you have copied before:
-    `ngrok http 3000 --region=us --hostname=myexample.ngrok.io --verify-webhook facebook --verify-webhook-secret {your app secret}`
+    `ngrok http 3000 --region=us --hostname=myexample.ngrok.io --verify-webhook WhatsApp --verify-webhook-secret {your app secret}`
 
-1. Access the Facebook page you have assigned to your webhook and send a message to another Facebook user.
+1. Access the WhatsApp page you have assigned to your webhook and send a message to another WhatsApp user.
 
 Verify that your local application receives the request and logs information to the terminal.
