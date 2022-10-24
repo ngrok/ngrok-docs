@@ -2,7 +2,7 @@
 description: Add Google, GitHub and other authN providers in front of your services with a single command
 ---
 
-# OAuth in One line
+# OAuth
 
 Add Google, GitHub and other authN providers in front of your services with a single command
 
