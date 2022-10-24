@@ -62,7 +62,7 @@ Once your app is running successfully on localhost, let's get it on the internet
     **Tip:** The ngrok agent uses the auth token to log into your account when you start a tunnel.
 
 1. On the left menu, expand **Cloud Edge** and then click **Domains**.
-    **Tip:** If you don't have an ngrok Pro or Enterprise license, sign up for one by clicking **Update Subscription** and following the subscribe procedure.
+    **Tip:** If you don't have an ngrok Pro or Enterprise license, sign up for one by clicking **Update Subscription** and follow the subscribe procedure.
 
 1. On the **Domains** page, click **+ Create Domain** or **+ New Domain**.
 
