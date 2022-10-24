@@ -83,7 +83,7 @@ Once your app is running successfully on localhost, let's get it on the internet
 
 To register a webhook on your Instagram account follow the instructions below:
 
-**Requirements**: You'll need a Facebook page amd a Facebook app associated with your Facebook page. Create one before continuing this procedure.
+**Requirements**: You'll need a Facebook page and a Facebook app associated with your Facebook page. Create one before following the rest of these steps.
 
 Connect your Facebook page with your Instagram account by following the instructions below:
 

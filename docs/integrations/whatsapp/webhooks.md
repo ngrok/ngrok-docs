@@ -83,7 +83,7 @@ Once your app is running successfully on localhost, let's get it on the internet
 
 To register a webhook on your WhatsApp account follow the instructions below:
 
-**Requirements**: You'll need a Facebook app and a business phone number associated with your Facebook app. Create one before continuing to the next step.
+**Requirements**: You'll need a Facebook app and a business phone number associated with your Facebook app. Create one before following the rest of these steps.
 
 Connect your Facebook page with your WhatsApp account by following the instructions below:
 
@@ -111,7 +111,7 @@ Connect your Facebook page with your WhatsApp account by following the instructi
 
 1. On the **Webhook fields** popup, click **Done**.
 
-1. Back to the **Configuration** page, make sure you have a production number associate to your app. If not, click **Manage phone numbers** and make note of the **Test Number** WhatsApp provides to you.
+1. Back to the **Configuration** page, make sure you have a production number associated with your app. If not, click **Manage phone numbers** and make note of the **Test Number** WhatsApp provides to you.
 
 1. Back to the **Configuration** page, on the top of your app's page, make sure **App Mode** is **Live**.
 
