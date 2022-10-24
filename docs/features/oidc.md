@@ -73,6 +73,6 @@ import ReactPlayer from 'react-player/lazy'
 
 Learn more:
 
-- [OpenID Connect module](cloud-edge/modules/oidc)
+- [OpenID Connect module](cloud-edge/modules/openid-connect)
 - [HTTP Header Templates](http-header-templates#oauth)
 
