@@ -6,20 +6,23 @@ description: Add Google, GitHub and other authN providers in front of your servi
 
 Add Google, GitHub and other authN providers in front of your services with a single command
 
-```mdx-code-block
-import LiteYouTubeEmbed from 'react-lite-youtube-embed';
+---
 
-<div className="video-container">
-  <LiteYouTubeEmbed
-    // cSpell:ignore Yhyx Sksg
-    id="JIKm4P41xWQ"
-    params="autoplay=1&autohide=1&showinfo=0&rel=0"
-    title="Docusaurus: Documentation Made Easy"
-    poster="maxresdefault"
-    webp
+
+
+```mdx-code-block
+import ReactPlayer from 'react-player/lazy'
+
+<div className='player-wrapper'>
+  <ReactPlayer
+    className='react-player'
+    url='https://www.youtube.com/watch?v=JIKm4P41xWQ-U'
+    width='100%'
+    height='100%'
   />
 </div>
 ```
+
 
 ## Benefits
 
