@@ -46,7 +46,7 @@ This is an optional step but it will drastically improve the usability of the ng
 
     . <(ngrok completion)
 
-After that, you will be able to see the available options by pressing tab after a command. Check out the [`ngrok completion` reference documentation](/ngrok-agent/ngrok#command-ngrok-completion) for details on adding this to your login scripts.
+After that, you will be able to see the available options by pressing tab after a command. Check out the [`ngrok completion` reference documentation](/ngrok-agent/ngrok#ngrok-completion) for details on adding this to your login scripts.
 
 ### Supported ENV Variables
 

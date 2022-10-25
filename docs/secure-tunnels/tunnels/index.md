@@ -11,7 +11,7 @@ ngrok supports different types of tunnels — with different protocols, the use 
 
 ngrok HTTP tunnels allow you to route HTTP protocols quickly and easily. These include websites, RESTful APIs, web servers, websockets, and much more.
 
-Starting an HTTP tunnel is a easy as `ngrok http 80`, or whatever local port your service is running on. For a full list of options for starting HTTP tunnels, see our [ngrok agent HTTP Tunnel reference](/ngrok-agent/ngrok#command-ngrok-http).
+Starting an HTTP tunnel is a easy as `ngrok http 80`, or whatever local port your service is running on. For a full list of options for starting HTTP tunnels, see our [ngrok agent HTTP Tunnel reference](/ngrok-agent/ngrok#ngrok-http).
 
 [Learn More >](http-tunnels)
 

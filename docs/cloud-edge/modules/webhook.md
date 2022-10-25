@@ -18,7 +18,7 @@ The currently supported webhook providers are:
 | Buildkite | `buildkite` | [Documentation](https://buildkite.com/docs/apis/webhooks#webhook-signature) |
 | Calendly | `calendly` | [Documentation](https://calendly.stoplight.io/docs/api-docs/ZG9jOjM2MzE2MDM4-webhook-signatures#verifying-signatures) |
 | Castle | `castle` | [Documentation](https://docs.castle.io/docs/subscribe-to-webhooks) |
-| Chargify | `chargify` | [Documentation](https://chargify.zendesk.com/hc/en-us/articles/4407905415963-Webhooks-Reference#webhook-signature) |
+| Chargify | `chargify` | [Documentation](https://maxio-chargify.zendesk.com/hc/en-us/articles/5405357509645-Webhooks-Reference#webhook-signature) |
 | CircleCI | `circleci` | [Documentation](https://circleci.com/docs/2.0/webhooks/) |
 | Clearbit | `clearbit` | [Documentation](https://dashboard.clearbit.com/docs#webhooks-securing-webhooks) |
 | Coinbase | `coinbase` | [Documentation](https://docs.cloud.coinbase.com/commerce/docs/webhooks-fields-and-security) |
