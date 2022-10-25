@@ -28,33 +28,33 @@ The following is a list of options that can be configured at the root of your co
 
 | Name | Description |
 | --- | --- |
-| [api_key](#config-api-key) | Specifies the ngrok API key used to connect to the ngrok API. This is only needed when using the `ngrok api` command and should not be confused with the authtoken. |
-| [authtoken](#config-authtoken) | Specifies the authentication token (authtoken) used to connect to the ngrok service. |
-| [connect_timeout](#config-connect-timeout) | How long to wait when establishing an agent session connection to the ngrok service. The default is 10s. |
-| [console_ui](#config-console-ui) | Enable/disable the console UI |
-| [console\_ui\_color](#config-console-ui-color) | Set the background color of the console UI |
-| [dns\_resolver\_ips](#config-dns-resolver-ips) | Consult these DNS servers for tunnel session DNS resolution. |
-| [heartbeat_interval](#config-heartbeat-interval) | How often the ngrok agent should heartbeat to the ngrok servers defined as a duration. Default is 10s. |
-| [heartbeat_tolerance](#config-heartbeat-tolerance) | Reconnect the agent tunnel session if the server does not respond to a heartbeat within this tolerance defined as a duration. Default is 15s. |
-| [inspect\_db\_size](#config-inspect-db-size) | The size in bytes of the upper limit on memory to allocate to save requests over HTTP tunnels for inspection and replay. |
-| [log_level](#config-log-level) | Logging level of detail. In increasing order of verbosity, possible values are: |
-| [log_format](#config-log-format) | Format of written log records. |
-| [log](#config-log) | Write logs to this target destination. |
-| [metadata](#config-metadata) | Opaque, user-supplied string that will be returned as part of the ngrok API response to the [list online sessions](/api#api-tunnel-sessions) resource for all tunnels started by this agent. |
-| [proxy_url](#config-proxy-url) | URL of an HTTP or SOCKS5 proxy to use for establishing the tunnel connection. |
-| [region](#config-region) | Choose the region where the ngrok agent will connect to host its tunnels. |
-| [remote_management](#config-remote-management) | Set this to `true` to allow the ngrok agent to be remotely managed (stop, restart, update). Defaults to `true`. |
-| [root_cas](#config-root-cas) | The root certificate authorities used to validate the TLS connection to the ngrok server. |
-| [server_addr](#config-server-addr) | This is the URL of the ngrok server to connect to. You should only set this if you are using a custom ingress URL. |
-| [tunnels](#config-tunnels) | A map of names to tunnel definitions. See [tunnel definitions](/ngrok-agent/config#config-ngrok-tunnel-definitions) for more details. |
-| [update_channel](#config-update-channel) | The update channel determines the stability of released builds to update to. Use `stable` for all production deployments. |
-| [update_check](#config-update-check) | This tells the ngrok agent if it should check for updates. Defaults to `true`. |
-| [version](#config-version) | Specifies the version of the config file to use. |
-| [web_addr](#config-web-addr) | Network address to bind on for serving the local web interface and api. |
+| [api_key](#api_key) | Specifies the ngrok API key used to connect to the ngrok API. This is only needed when using the `ngrok api` command and should not be confused with the authtoken. |
+| [authtoken](#authtoken) | Specifies the authentication token (authtoken) used to connect to the ngrok service. |
+| [connect_timeout](#connect_timeout) | How long to wait when establishing an agent session connection to the ngrok service. The default is 10s. |
+| [console_ui](#console_ui) | Enable/disable the console UI |
+| [console\_ui\_color](#console_ui_color) | Set the background color of the console UI |
+| [dns\_resolver\_ips](#dns_resolver_ips) | Consult these DNS servers for tunnel session DNS resolution. |
+| [heartbeat_interval](#heartbeat_interval) | How often the ngrok agent should heartbeat to the ngrok servers defined as a duration. Default is 10s. |
+| [heartbeat_tolerance](#heartbeat_tolerance) | Reconnect the agent tunnel session if the server does not respond to a heartbeat within this tolerance defined as a duration. Default is 15s. |
+| [inspect\_db\_size](#inspect_db_size) | The size in bytes of the upper limit on memory to allocate to save requests over HTTP tunnels for inspection and replay. |
+| [log_level](#log_level) | Logging level of detail. In increasing order of verbosity, possible values are: |
+| [log_format](#log_format) | Format of written log records. |
+| [log](#log) | Write logs to this target destination. |
+| [metadata](#metadata) | Opaque, user-supplied string that will be returned as part of the ngrok API response to the [list online sessions](/api#api-tunnel-sessions) resource for all tunnels started by this agent. |
+| [proxy_url](#proxy_url) | URL of an HTTP or SOCKS5 proxy to use for establishing the tunnel connection. |
+| [region](#region) | Choose the region where the ngrok agent will connect to host its tunnels. |
+| [remote_management](#remote_management) | Set this to `true` to allow the ngrok agent to be remotely managed (stop, restart, update). Defaults to `true`. |
+| [root_cas](#root_cas) | The root certificate authorities used to validate the TLS connection to the ngrok server. |
+| [server_addr](#server_addr) | This is the URL of the ngrok server to connect to. You should only set this if you are using a custom ingress URL. |
+| [tunnels](#tunnels) | A map of names to tunnel definitions. See [tunnel definitions](/ngrok-agent/config#ngrok-tunnel-definitions) for more details. |
+| [update_channel](#update_channel) | The update channel determines the stability of released builds to update to. Use `stable` for all production deployments. |
+| [update_check](#update_check) | This tells the ngrok agent if it should check for updates. Defaults to `true`. |
+| [version](#version) | Specifies the version of the config file to use. |
+| [web_addr](#web_addr) | Network address to bind on for serving the local web interface and api. |
 
 ### `api_key`
 
-This option specifies the API key used to access the ngrok API through the [`ngrok api`](#command-ngrok-api) command. This is only needed when using the [ngrok API](/api) and not the local ngrok agent API (available at `localhost:4040/api`). You can generate an API Key in the [ngrok Dashboard](https://dashboard.ngrok.com/api) and install it using the `ngrok config add-api-key` command.
+This option specifies the API key used to access the ngrok API through the [`ngrok api`](ngrok#ngrok-api) command. This is only needed when using the [ngrok API](/api) and not the local ngrok agent API (available at `localhost:4040/api`). You can generate an API Key in the [ngrok Dashboard](https://dashboard.ngrok.com/api) and install it using the `ngrok config add-api-key` command.
 
 ##### ngrok.yml specifying an API key
 
@@ -186,7 +186,7 @@ This is the URL of the ngrok server to connect to. You should set this if you ar
 
 ### `tunnels`
 
-This is a map of names to tunnel definitions. See [tunnel definitions](#config-ngrok-tunnel-definitions) for more details.
+This is a map of names to tunnel definitions. See [tunnel definitions](#ngrok-tunnel-definitions) for more details.
 
 ### `update_channel`
 

@@ -150,7 +150,7 @@ This is a quick step to add extra protection to your application.
 1. Restart your ngrok agent by running the command, replacing `{your webhook payload signing}` with the value you copied before (See [Integrate ngrok and PagerDuty.](#setup-webhook)):
     `ngrok http 3000 --verify-webhook pagerduty --verify-webhook-secret {your webhook payload signing}`
 
-1. Access [PagerDuty](https://PagerDutyup.com/dashboard/) and create a new item.
+1. Access PagerDuty (`https://{tenant}.pagerduty.com/incidents`) and create a new incident.
 
 Verify that your local application receives the request and logs information to the terminal.
 

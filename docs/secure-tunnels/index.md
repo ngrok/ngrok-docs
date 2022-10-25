@@ -24,4 +24,4 @@ ngrok Secure Tunnels are designed to integrate seamlessly into your ngrok Cloud 
 
 Labeled tunnels are just another tunnel type in the ngrok agent, similar to HTTP or TCP tunnels. When you create a new labeled tunnel, you define the set of labels that identify that tunnel and/or the device it's running on. When you create an edge that includes a tunnel group backend, and configure the tunnel group to look for tunnels matching specific labels, it will find and route traffic to your labeled tunnel.
 
-See our [ngrok agent reference for Labeled Tunnels](/ngrok-agent/ngrok#command-ngrok-tunnel) for a complete set of options and examples.
+See our [ngrok agent reference for Labeled Tunnels](/ngrok-agent/ngrok#ngrok-tunnel) for a complete set of options and examples.

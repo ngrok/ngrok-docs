@@ -24,7 +24,7 @@ If you don't have a web service running, you can set one up for this demo using 
 1.  Create a new directory, we'll call it `~/ngrok-rocks`
 2.  Move into that directory and create a file named `index.html` with a single line of text: `Hello, World!`
 3.  From that folder, run `python3 -m http.server`. This will start a web server on port 8000 serving the contents of that directory.
-4.  Open [http://localhost:8000](http://localhost:8000) in your browser
+4.  Open `http://localhost:8000` in your browser
 
 You should see `Hello, World!` in your browser. If you have any trouble getting things working, see [this page for help](https://developer.mozilla.org/en-US/docs/Learn/Common_questions/set_up_a_local_testing_server#running_a_simple_local_http_server).
 
@@ -154,7 +154,7 @@ To start simply, let's add HTTP Basic Authentication to your endpoint.
 
 Now when you access the new ngrok URL in your browser, you should be prompted for a username and password.
 
-By the way, if you have a paid plan and want to keep the same URL each time you restart, use the [`--subdomain`](/ngrok-agent/ngrok#command-ngrok-http-flags) flag when starting the agent.
+By the way, if you have a paid plan and want to keep the same URL each time you restart, use the [`--subdomain`](/ngrok-agent/ngrok#ngrok-http-flags) flag when starting the agent.
 
 ![](https://www.ngrok.com/static/img/docs/ngrok-basic-auth.png)
 
@@ -181,5 +181,5 @@ That's it, but there's a lot more you can do with ngrok!
 *   Configure ngrok to use the same domain each time with [`--subdomain`](/secure-tunnels#http-tunnels-subdomain)
 *   Tunnel other non-HTTP services such as SSH, RDP, or game servers using [TCP Tunnels](/secure-tunnels#tcp-tunnels)
 *   Bring your own [custom domains to ngrok](/secure-tunnels#http-tunnels-custom-domains)
-*   Add your [API key and automate via the `ngrok api` command](/ngrok-agent/ngrok#command-ngrok-api).
+*   Add your [API key and automate via the `ngrok api` command](/ngrok-agent/ngrok#ngrok-api).
 *   Use [ngrok Cloud Edges](/cloud-edge) to dynamically reconfigure traffic to your ngrok agents

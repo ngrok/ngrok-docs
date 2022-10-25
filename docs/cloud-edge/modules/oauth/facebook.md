@@ -23,7 +23,7 @@ For additional assistance, see the [Facebook app registration](https://developer
 6.  Select Settings on the left hand navigation, then choose advanced.
 7.  Fill out additional settings for your application.
     *   ngrok does not support Server IP allowlisting.
-8.  Enable "Require App Secret". See [documentation](https://developers.facebook.com/docs/graph-api/securing-requests/#appsecret_proof) for how to call Facebook Graph API with this feature.
+8.  Enable "Require App Secret". See [documentation](https://developers.facebook.com/docs/facebook-login/security/#appsecret) for how to call Facebook Graph API with this feature.
 9.  Save settings. A minimally complete security section of advanced settings: [![](/img/howto/oauth/4-facebook-security.png)](/img/howto/oauth/4-facebook-security.png)
 10.  Visit basic settings on the left hand navigation.
 11.  At the top, save your App ID and App Secret for later.

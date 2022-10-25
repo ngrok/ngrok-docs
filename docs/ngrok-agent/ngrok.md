@@ -20,20 +20,20 @@ The root command of the ngrok agent.
 
 | Command | Description |
 | --- | --- |
-| [api](#command-ngrok-api) | use ngrok agent as an api client |
-| [completion](#command-ngrok-completion) | generates shell completion code for bash or zsh |
-| [config](#command-ngrok-config) | update or migrate ngrok's configuration file |
-| [credits](#command-ngrok-credits) | prints author and licensing information |
-| [diagnose](#command-ngrok-diagnose) | diagnose connection issues |
-| [help](#command-ngrok-help) | Help about any command |
-| [http](#command-ngrok-http) | start an HTTP tunnel |
-| [service](#command-ngrok-service) | run and control an ngrok service on a target operating system |
-| [start](#command-ngrok-start) | start tunnels by name from the configuration file |
-| [tcp](#command-ngrok-tcp) | start a TCP tunnel |
-| [tls](#command-ngrok-tls) | start a TLS tunnel |
-| [tunnel](#command-ngrok-tunnel) | start a tunnel for use with a tunnel-group backend |
-| [update](#command-ngrok-update) | update ngrok to the latest version |
-| [version](#command-ngrok-version) | print the version string |
+| [api](#ngrok-api) | use ngrok agent as an api client |
+| [completion](#ngrok-completion) | generates shell completion code for bash or zsh |
+| [config](#ngrok-config) | update or migrate ngrok's configuration file |
+| [credits](#ngrok-credits) | prints author and licensing information |
+| [diagnose](#ngrok-diagnose) | diagnose connection issues |
+| [help](#ngrok-help) | Help about any command |
+| [http](#ngrok-http) | start an HTTP tunnel |
+| [service](#ngrok-service) | run and control an ngrok service on a target operating system |
+| [start](#ngrok-start) | start tunnels by name from the configuration file |
+| [tcp](#ngrok-tcp) | start a TCP tunnel |
+| [tls](#ngrok-tls) | start a TLS tunnel |
+| [tunnel](#ngrok-tunnel) | start a tunnel for use with a tunnel-group backend |
+| [update](#ngrok-update) | update ngrok to the latest version |
+| [version](#ngrok-version) | print the version string |
 
 ### Flags
 
@@ -50,7 +50,7 @@ All api subcommands require an API key. You can configure it either using a flag
 
 You can get get the initial API key in the [API section of the ngrok Dashboard](https://dashboard.ngrok.com/api/keys). Additional keys can be created through `ngrok api api-key create` subcommand.
 
-These commands mirror our standard [ngrok HTTP API](/api). If you have [shell completion enabled](/ngrok-agent/ngrok#command-ngrok-completion), these will tab complete on the terminal.
+These commands mirror our standard [ngrok HTTP API](/api). If you have [shell completion enabled](/ngrok-agent/ngrok#ngrok-completion), these will tab complete on the terminal.
 
 ### Usage
 
@@ -136,11 +136,11 @@ Use `check` to test a configuration file for validity. If you have an old config
 ### Commands
 | Command | Description |
 | --- | --- |
-| [add-api-key](#command-ngrok-config-add-api-key) | save an API key to configuration file. The API key can be generated in the [API section of the ngrok dashboard](https://dashboard.ngrok.com/api). |
-| [add-authtoken](#command-ngrok-config-add-authtoken) | save authtoken to configuration file |
-| [check](#command-ngrok-config-check) | check configuration file |
-| [edit](#command-ngrok-config-edit) | opens the config file in your system's default editor. It looks specifically for the `SHELL` and `EDITOR` environment variables. |
-| [upgrade](#command-ngrok-config-upgrade) | auto-upgrade configuration file |
+| [add-api-key](#ngrok-config-add-api-key) | save an API key to configuration file. The API key can be generated in the [API section of the ngrok dashboard](https://dashboard.ngrok.com/api). |
+| [add-authtoken](#ngrok-config-add-authtoken) | save authtoken to configuration file |
+| [check](#ngrok-config-check) | check configuration file |
+| [edit](#ngrok-config-edit) | opens the config file in your system's default editor. It looks specifically for the `SHELL` and `EDITOR` environment variables. |
+| [upgrade](#ngrok-config-upgrade) | auto-upgrade configuration file |
 
 ### Flags
 

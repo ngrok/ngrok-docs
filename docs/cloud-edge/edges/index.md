@@ -46,4 +46,4 @@ Each edge contains one or more backends, which define how to handle the traffic 
 
 Tunnel Group Backends are the backend to use when you are sharing a local service with an ngrok agent. These backends use a set of customizable labels in order to identify the correct agent to forward traffic to. You can configure as many ngrok agents as you like to be part of the same tunnel group, which will then load balance the requests to this backend across the tunnels.
 
-For more examples of configuring your ngrok agent to use Labeled Tunnels, see our [ngrok agent documentation for Labeled Tunnels](//ngrok.com/docs/ngrok-agent/ngrok#command-ngrok-tunnel).
+For more examples of configuring your ngrok agent to use Labeled Tunnels, see our [ngrok agent documentation for Labeled Tunnels](//ngrok.com/docs/ngrok-agent/ngrok#ngrok-tunnel).

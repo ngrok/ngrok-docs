@@ -155,7 +155,7 @@ This is a quick step to add extra protection to your application.
 1. Restart your ngrok agent by running the command, replacing `{your connect key}` with the value you copied before:
     `ngrok http 3000 --verify-webhook DocuSign --verify-webhook-secret {your connect key}`
 
-1. Access [DocuSign](https://DocuSignup.com/dashboard/) and create a new envelope.
+1. Access [DocuSign](https://app.docusign.com/home) and create a new envelope.
 
 Verify that your local application receives the request and logs information to the terminal.
 

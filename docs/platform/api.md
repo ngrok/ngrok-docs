@@ -9,4 +9,4 @@ The ngrok API is the way to programmatically perform almost any action in the ng
 
 The full reference documentation is available in our [ngrok API Documentation page](/api).
 
-An easy way to explore the ngrok API is by using the ngrok agent, which has a [build in command line tool for accessing the API](/ngrok-agent/ngrok#command-ngrok-api).
+An easy way to explore the ngrok API is by using the ngrok agent, which has a [build in command line tool for accessing the API](/ngrok-agent/ngrok#ngrok-api).
