@@ -81,7 +81,7 @@ const config = {
           },
           {
             label: 'Login',
-            to: 'https://ngrok.com/signup',
+            to: 'https://dashboard.ngrok.com/login',
             position: 'right',
             className: 'dev-portal-signup dev-portal-link',
           },
