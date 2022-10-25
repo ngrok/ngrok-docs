@@ -82,7 +82,7 @@ To register a webhook on your Box account follow the instructions below:
 
 1. Click the **Authorization** tab, click **Review and Submit**, enter `Requesting Access` in the **App Description** field, and then click **Submit**.
 
-1. Access [Box Admin Console](https://app.box.com/master), click **Apps** on the left menu, click the **Custom App Manager** tab, click **View** on yout app, click **Authorize**, and then click **Authorize**.
+1. Access [Box Admin Console](https://app.box.com/master), click **Apps** on the left menu, click the **Custom App Manager** tab, click **View** on your app, click **Authorize**, and then click **Authorize**.
 
 1. Back to the [Box Developer Console](https://app.box.com/developers/console), click your app name, click the **Webhook** tab, click **Create Webhook**, and then click **V2**.
 
@@ -96,9 +96,9 @@ To register a webhook on your Box account follow the instructions below:
 
 ### Run Webhooks with Box and ngrok
 
-Because you registered your webhook with the **File Uploaded** trigger, Box sends notification to your application whenever you upload files to a folder.
+Because you registered your webhook with the **File Uploaded** trigger, Box sends a notification to your application whenever you upload files to a folder.
 
-1. Access [Box](https://box.com/), sign in using your Box account and then upload a file from your desktop to the folder you selected during the webhook registration. See [Integrate Box](#setup-webhook).
+1. Access [Box](https://box.com/), sign in using your Box account, and then upload a file from your desktop to the folder you selected during the webhook registration. See [Integrate Box](#setup-webhook).
 
 After the file upload process is completed, Box sends a post request to your application.
 
@@ -147,9 +147,9 @@ This is a quick step to add extra protection to your application.
 
 1. On the **Manage Signature Keys** page, click **Generate Key** in the **Primary Key** section and then click **COPY** to copy the value of the generated primary key.
 
-1. Restart your ngrok agent by running the command, replacing `{your primay key}` with the value you have copied before:
-    `ngrok http 3000 --verify-webhook box --verify-webhook-secret {your primay key}`
+1. Restart your ngrok agent by running the command, replacing `{your primary key}` with the value you have copied before:
+    `ngrok http 3000 --verify-webhook box --verify-webhook-secret {your primary key}`
 
-1. Access [Box](https://box.com/), sign in using your Box account and then upload a file from your desktop to the folder you selected during the webhook registration. See [Integrate Box](#setup-webhook).
+1. Access [Box](https://box.com/), sign in using your Box account, and then upload a file from your desktop to the folder you selected during the webhook registration. See [Integrate Box](#setup-webhook).
 
 Verify that your local application receives the request and logs information to the terminal.

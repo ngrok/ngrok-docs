@@ -51,6 +51,7 @@ const sidebars = {
       // TODO: @sudobinbash: Change to autogen (for scalability)
       items: [ 
         { label: 'Bitbucket', type: 'doc', id: 'integrations/bitbucket/webhooks', },
+        { label: 'Box', type: 'doc', id: 'integrations/box/webhooks', },
         { label: 'Circle CI', type: 'doc', id: 'integrations/circleci/webhooks', },
         { label: 'DocuSign', type: 'doc', id: 'integrations/docusign/webhooks', },
         { label: 'Facebook', type: 'doc', id: 'integrations/facebook/webhooks', },
