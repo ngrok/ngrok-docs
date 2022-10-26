@@ -63,6 +63,7 @@ const sidebars = {
         { label: 'Frame.io', type: 'doc', id: 'integrations/frameio/webhooks', },
         { label: 'GitHub', type: 'doc', id: 'integrations/github/webhooks', },
         { label: 'GitLab', type: 'doc', id: 'integrations/gitlab/webhooks', },
+        { label: 'Heroku', type: 'doc', id: 'integrations/heroku/webhooks', },
         { label: 'HubSpot', type: 'doc', id: 'integrations/hubspot/webhooks', },
         { label: 'Instagram', type: 'doc', id: 'integrations/instagram/webhooks', },
         { label: 'Intercom', type: 'doc', id: 'integrations/intercom/webhooks', },
