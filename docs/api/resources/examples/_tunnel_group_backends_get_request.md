@@ -1,8 +1,7 @@
 
 #### Example Request
-
-```bash 
+```bash
 curl \
 -H "Authorization: Bearer {API_KEY}" \
 -H "Ngrok-Version: 2" \
-https://api.ngrok.com/backends/tunnel_group/bkdtg_2EmMPkPrZDzj5arLpTJnGPHcktX
+https://api.ngrok.com/backends/tunnel_group/bkdtg_2Ggv0fA5DD34CKYjI66jpJDWyST

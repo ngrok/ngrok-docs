@@ -1,11 +1,10 @@
 
 #### Example Request
-
-```bash 
+```bash
 curl \
 -XPATCH \
 -H "Authorization: Bearer {API_KEY}" \
 -H "Content-Type: application/json" \
 -H "Ngrok-Version: 2" \
 -d '{"metadata":"{\"environment\":\"dev\", \"owner_id\": 123}"}' \
-https://api.ngrok.com/api_keys/ak_2EmMOfmZREPKM4waWRim2ax8NK9
+https://api.ngrok.com/api_keys/ak_2GguzXtPqFrCo3WhmBP9coFZSGc

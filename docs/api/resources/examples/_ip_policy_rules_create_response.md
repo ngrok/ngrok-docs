@@ -1,17 +1,16 @@
 
 #### Example Response
-
 ```json
 {
-  "id": "ipr_2EmMPTOnyfMPwKZbQsgwT1g4DVu",
-  "uri": "https://api.ngrok.com/ip_policy_rules/ipr_2EmMPTOnyfMPwKZbQsgwT1g4DVu",
-  "created_at": "2022-09-14T22:58:01Z",
+  "id": "ipr_2Ggv0O7NciaDYwqS2b1ZPcj6NWy",
+  "uri": "https://api.ngrok.com/ip_policy_rules/ipr_2Ggv0O7NciaDYwqS2b1ZPcj6NWy",
+  "created_at": "2022-10-26T22:20:17Z",
   "description": "nyc office",
   "metadata": "",
   "cidr": "212.3.14.0/24",
   "ip_policy": {
-    "id": "ipp_2EmMPNpwJaHkMO1TvQ3ZTruvpg4",
-    "uri": "https://api.ngrok.com/ip_policies/ipp_2EmMPNpwJaHkMO1TvQ3ZTruvpg4"
+    "id": "ipp_2Ggv0SLYrVCAMNhhO6Qh4ltY0Hb",
+    "uri": "https://api.ngrok.com/ip_policies/ipp_2Ggv0SLYrVCAMNhhO6Qh4ltY0Hb"
   },
   "action": "allow"
 }

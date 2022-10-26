@@ -1,15 +1,14 @@
 
 #### Example Response
-
 ```json
 {
-  "id": "bkdwd_2EmMPdw8ZgpdiPQ2O33ui4jcjs3",
-  "uri": "https://api.ngrok.com/backends/weighted/bkdwd_2EmMPdw8ZgpdiPQ2O33ui4jcjs3",
-  "created_at": "2022-09-14T22:58:03Z",
+  "id": "bkdwd_2Ggv0fbpd7voDDTLcSWhT1BD5H6",
+  "uri": "https://api.ngrok.com/backends/weighted/bkdwd_2Ggv0fbpd7voDDTLcSWhT1BD5H6",
+  "created_at": "2022-10-26T22:20:19Z",
   "description": "acme weighted",
   "metadata": "{\"environment\": \"staging\"}",
   "backends": {
-    "bkdhr_2EmMPdVQj4dRiH9qEFkrgFy2nHP": 1,
-    "bkdhr_2EmMPiRD0HRRhfTm8XcRpjDrsll": 0
+    "bkdhr_2Ggv0iZPbgl6mkzAZUTOVdRLqQ7": 1,
+    "bkdhr_2Ggv0ik2jAPwU8TcMYuqFJWcGgP": 0
   }
 }
