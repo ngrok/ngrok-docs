@@ -1,22 +1,21 @@
 
 #### Example Response
-
 ```json
 {
   "credentials": [
     {
-      "id": "cr_2EmMOX7ARibQSOl7a7JBnLMDrvZ",
-      "uri": "https://api.ngrok.com/credentials/cr_2EmMOX7ARibQSOl7a7JBnLMDrvZ",
-      "created_at": "2022-09-14T22:57:54Z",
-      "description": "credential for \"api-examples-130e04e747063980@example.com\"",
+      "id": "cr_2GguzZqtBkA4f6wZEt8bwqQL32z",
+      "uri": "https://api.ngrok.com/credentials/cr_2GguzZqtBkA4f6wZEt8bwqQL32z",
+      "created_at": "2022-10-26T22:20:10Z",
+      "description": "credential for \"api-examples-17da769d6e30ba69@example.com\"",
       "metadata": "",
-      "token": "2EmMOX7ARibQSOl7a7JBnLMDrvZ_32uooQDU6kcRpKQjXHGe9",
+      "token": "2GguzZqtBkA4f6wZEt8bwqQL32z_4yxzMVxkpgsFHSA5coMeU",
       "acl": []
     },
     {
-      "id": "cr_2EmMOiIlx5Y7y6rVjzH7z3Pruja",
-      "uri": "https://api.ngrok.com/credentials/cr_2EmMOiIlx5Y7y6rVjzH7z3Pruja",
-      "created_at": "2022-09-14T22:57:55Z",
+      "id": "cr_2GguzhwPwbYWgOijLt2TylCFCZp",
+      "uri": "https://api.ngrok.com/credentials/cr_2GguzhwPwbYWgOijLt2TylCFCZp",
+      "created_at": "2022-10-26T22:20:11Z",
       "description": "for device #132",
       "metadata": "",
       "token": null,
@@ -26,9 +25,9 @@
       ]
     },
     {
-      "id": "cr_2EmMOhH24Dd8a6IUS0kGIXWaKyP",
-      "uri": "https://api.ngrok.com/credentials/cr_2EmMOhH24Dd8a6IUS0kGIXWaKyP",
-      "created_at": "2022-09-14T22:57:55Z",
+      "id": "cr_2GguzgCHAYgroRBbU34COlgA0w6",
+      "uri": "https://api.ngrok.com/credentials/cr_2GguzgCHAYgroRBbU34COlgA0w6",
+      "created_at": "2022-10-26T22:20:11Z",
       "description": "development cred for alan@example.com",
       "metadata": "",
       "token": null,

@@ -1,13 +1,12 @@
 
 #### Example Response
-
 ```json
 {
-  "id": "sshca_2EmMPjg6ZTG25MqWg1q5kcK3x0E",
-  "uri": "https://api.ngrok.com/ssh_certificate_authorities/sshca_2EmMPjg6ZTG25MqWg1q5kcK3x0E",
-  "created_at": "2022-09-14T22:58:03Z",
+  "id": "sshca_2Ggv0ZF8PvNubulz0GZOiX7laML",
+  "uri": "https://api.ngrok.com/ssh_certificate_authorities/sshca_2Ggv0ZF8PvNubulz0GZOiX7laML",
+  "created_at": "2022-10-26T22:20:18Z",
   "description": "Staging Environment Hosts",
   "metadata": "",
-  "public_key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICHk/06+DFmWogi70MkoGilJGaKLbm7pQQkBnHoCUH0f",
+  "public_key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJM0ZGhrzM30yTie8QuL+PmO4LzRSoFppdZoNlPbiAXn",
   "key_type": "ed25519"
 }

@@ -1,6 +1,5 @@
 
 #### Example Response
-
 ```json
 {
   "enabled": true,
@@ -22,7 +21,9 @@
       "email_domains": []
     },
     "linkedin": null,
-    "gitlab": null
+    "gitlab": null,
+    "twitch": null,
+    "amazon": null
   },
   "options_passthrough": true,
   "cookie_prefix": "ngrok.",

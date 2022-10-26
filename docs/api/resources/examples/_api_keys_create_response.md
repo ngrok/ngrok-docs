@@ -1,12 +1,11 @@
 
 #### Example Response
-
 ```json
 {
-  "id": "ak_2EmMOfmZREPKM4waWRim2ax8NK9",
-  "uri": "https://api.ngrok.com/api_keys/ak_2EmMOfmZREPKM4waWRim2ax8NK9",
+  "id": "ak_2GguzXtPqFrCo3WhmBP9coFZSGc",
+  "uri": "https://api.ngrok.com/api_keys/ak_2GguzXtPqFrCo3WhmBP9coFZSGc",
   "description": "ad-hoc dev testing",
   "metadata": "{\"environment\":\"dev\"}",
-  "created_at": "2022-09-14T22:57:55Z",
-  "token": "2EmMOfmZREPKM4waWRim2ax8NK9_3SqKaRJvS9URqiu9e44YE"
+  "created_at": "2022-10-26T22:20:10Z",
+  "token": "2GguzXtPqFrCo3WhmBP9coFZSGc_6UvBA6n5j62jEZLiG9tYG"
 }

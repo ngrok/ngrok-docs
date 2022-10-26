@@ -1,11 +1,10 @@
 
 #### Example Response
-
 ```json
 {
-  "id": "bkdhr_2EmMPj8cyMdWoyjT1n4vTMMDNke",
-  "uri": "https://api.ngrok.com/backends/http_response/bkdhr_2EmMPj8cyMdWoyjT1n4vTMMDNke",
-  "created_at": "2022-09-14T22:58:03Z",
+  "id": "bkdhr_2Ggv0aV87Z6UnRTEHH7g1rUEqnN",
+  "uri": "https://api.ngrok.com/backends/http_response/bkdhr_2Ggv0aV87Z6UnRTEHH7g1rUEqnN",
+  "created_at": "2022-10-26T22:20:18Z",
   "description": "acme http response",
   "metadata": "{\"environment\": \"staging\"}",
   "body": "I'm a teapot",

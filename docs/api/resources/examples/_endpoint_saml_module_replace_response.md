@@ -1,6 +1,5 @@
 
 #### Example Response
-
 ```json
 {
   "enabled": true,
@@ -13,10 +12,10 @@
   "force_authn": false,
   "allow_idp_initiated": true,
   "authorized_groups": [],
-  "entity_id": "https://idp.local-ngrok.com/saml/ec_2EmMPUGTsPInk72L0EfZQO5dDmS",
-  "assertion_consumer_service_url": "https://idp.local-ngrok.com/saml/ec_2EmMPUGTsPInk72L0EfZQO5dDmS/acs",
-  "single_logout_url": "https://idp.local-ngrok.com/saml/ec_2EmMPUGTsPInk72L0EfZQO5dDmS/slo",
-  "request_signing_certificate_pem": "-----BEGIN CERTIFICATE-----\nMIID7DCCAtSgAwIBAgIRANArKxMpJxTbHLLA0aOTx/UwDQYJKoZIhvcNAQELBQAw\ngZQxSDBGBgNVBAoMP2h0dHBzOi8vaWRwLmxvY2FsLW5ncm9rLmNvbS9zYW1sL2Vj\nXzJFbU1QVUdUc1BJbms3MkwwRWZaUU81ZERtUzFIMEYGA1UEAww/aHR0cHM6Ly9p\nZHAubG9jYWwtbmdyb2suY29tL3NhbWwvZWNfMkVtTVBVR1RzUEluazcyTDBFZlpR\nTzVkRG1TMCAXDTIyMDkxNDIyNTgwMloYDzIwNTcwOTA1MjI1ODAyWjCBlDFIMEYG\nA1UECgw/aHR0cHM6Ly9pZHAubG9jYWwtbmdyb2suY29tL3NhbWwvZWNfMkVtTVBV\nR1RzUEluazcyTDBFZlpRTzVkRG1TMUgwRgYDVQQDDD9odHRwczovL2lkcC5sb2Nh\nbC1uZ3Jvay5jb20vc2FtbC9lY18yRW1NUFVHVHNQSW5rNzJMMEVmWlFPNWREbVMw\nggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQC/lSBjLSmvQ+ykU1l46ROF\nV1+PWn5rbWyZ6S/+CtK4E1gtA7Rmu5JIGXKXYuwHQKYGJQT/xRZC2Pl6VYExgyf6\nfAS8+FtLfqDmLs6kMWA8ZfP3S6F1sgVspqFasTvP2T/wX17G6OGT2hJgl/fuqSpm\nVt5B0PqV9dRtCMiY8xY26pi6Wh9X1aC/kHTnMuBjUUuF8b+VrFQ34JfE2/bpfp1s\nEJLVIDCgLuZ+j107vIFNO2vPtppPUupbdfg7XAkvwGQu240+zws8HqM16qtQvx0h\nXuwxyqV2qAYU0AFJ+PZ5P96SaAHzlZ362iHGhwreAr0ERF/OOwgnTZpbWb1JYvir\nAgMBAAGjNTAzMA4GA1UdDwEB/wQEAwIHgDATBgNVHSUEDDAKBggrBgEFBQcDATAM\nBgNVHRMBAf8EAjAAMA0GCSqGSIb3DQEBCwUAA4IBAQAWlnvJOP2F7BtNrO5igQS3\nt8UKydDBf2xVULsBRxNO5+1nf46dCheNL25HQatH1ux5HiQyBX0dNCdGG8UCpw+O\nKXBICeUXLviH4dkdURPqsbaX71D0EBOL9Nm4qUrxsbS+ZUn5TM5KmBVodoMFCtZs\nqP8Cnmw4lXFp56DiwVmfyeoh8hnOpwPRv0zXRMwNWOspna1VK3XcKonVVuBaQrFx\nlNybc+KOVXAM+LoTV4ZYue+vZCoQmzQZVut+/QLFft5124E9loyuVtNAIOj+pjFh\nVOpvLM+4YyVsXV4t3OXH6sRRKZarw3tG2KjmUJyCSSKe3sIMHEhboXeBw5mdlZ/Y\n-----END CERTIFICATE-----\n",
-  "metadata_url": "https://idp.local-ngrok.com/saml/ec_2EmMPUGTsPInk72L0EfZQO5dDmS",
+  "entity_id": "https://idp.local-ngrok.com/saml/ec_2Ggv0QjGkcQpC961Gzio77eENhG",
+  "assertion_consumer_service_url": "https://idp.local-ngrok.com/saml/ec_2Ggv0QjGkcQpC961Gzio77eENhG/acs",
+  "single_logout_url": "https://idp.local-ngrok.com/saml/ec_2Ggv0QjGkcQpC961Gzio77eENhG/slo",
+  "request_signing_certificate_pem": "-----BEGIN CERTIFICATE-----\nMIID6zCCAtOgAwIBAgIQLXtIZ7e5R6TiuoqHMSO16zANBgkqhkiG9w0BAQsFADCB\nlDFIMEYGA1UECgw/aHR0cHM6Ly9pZHAubG9jYWwtbmdyb2suY29tL3NhbWwvZWNf\nMkdndjBRakdrY1FwQzk2MUd6aW83N2VFTmhHMUgwRgYDVQQDDD9odHRwczovL2lk\ncC5sb2NhbC1uZ3Jvay5jb20vc2FtbC9lY18yR2d2MFFqR2tjUXBDOTYxR3ppbzc3\nZUVOaEcwIBcNMjIxMDI2MjIyMDE4WhgPMjA1NzEwMTcyMjIwMThaMIGUMUgwRgYD\nVQQKDD9odHRwczovL2lkcC5sb2NhbC1uZ3Jvay5jb20vc2FtbC9lY18yR2d2MFFq\nR2tjUXBDOTYxR3ppbzc3ZUVOaEcxSDBGBgNVBAMMP2h0dHBzOi8vaWRwLmxvY2Fs\nLW5ncm9rLmNvbS9zYW1sL2VjXzJHZ3YwUWpHa2NRcEM5NjFHemlvNzdlRU5oRzCC\nASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBALCNxZMwqavceyqE+lQbMH2c\nkCPM8q282va8kQDJpB6xYDBa6An/Smulh2jfsDpR1HF9MNUB/NDDFJGbu1LYQn9g\nhCUaLiX+2Y8+1SnrZgHBqcvnsjhBDJ+34w2BU4F09CpEZh9dsIP2F2Rl1D0qTkvj\nd5zI46vgg0GNIXMx+mbqqnR/1mJal75kxOnw0mH0ApjVguK51p5wW4Qjfl7ZUpC9\nGsgb4h7EbWYGPUcVyXLAI59TeF7INHDnOfUHR2tfEB0vAqPMAgcVA7xWv69EU+4o\nNJWInC966IHVq+/O8inKwA5s+ZOMSmoWcmUdlEsg/GaMLHj8+XXUKEC1CImqQ78C\nAwEAAaM1MDMwDgYDVR0PAQH/BAQDAgeAMBMGA1UdJQQMMAoGCCsGAQUFBwMBMAwG\nA1UdEwEB/wQCMAAwDQYJKoZIhvcNAQELBQADggEBAJ1rLuLsroT1+5QSsEdmh54d\nBPIjSMy4FChiBs6wuzF58WIH89J3DHwHcYJQvK0vJd9l7aQi4+Jxy1hzIMb6u/7T\nqH3uO7nxT/JMwXzcFuNTTmwVE9Bx0kPHlapm8OrTmSAoRyAuxuWufDHTIP24+5/X\nVTLrBrSxgjzF/AFp8QOI/zBty7NlEvwhK/Q4l0NXi6KawrEE7tG9EfoaEggTfCA4\n07uhdGRxCOLPe+dkwK/WvYO+raAUn0NQgbSWB2qWQH0FT0PBkzDYPkbgnCLa5VnO\nLCSqRcwF2nPGW7+qgA+qs5Fubj8CcTzBC89YFDc7FnDigRYWRo4lYXJpoLkSiIU=\n-----END CERTIFICATE-----\n",
+  "metadata_url": "https://idp.local-ngrok.com/saml/ec_2Ggv0QjGkcQpC961Gzio77eENhG",
   "nameid_format": "urn:oasis:names:tc:SAML:2.0:nameid-format:persistent"
 }
