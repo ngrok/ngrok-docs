@@ -91,7 +91,7 @@ To register a webhook on your Dropbox account follow the instructions below:
 
 Because you registered your app with the **App folder** type of access, Dropbox creates a new folder with the name of your app under the **Apps** folder.
 
-    **Tip**: You can create a new app with **Scoped access** as **Full Dropbox** which will trigger notifications on any folder on your dropbox account.
+**Tip**: You can create a new app with **Scoped access** as **Full Dropbox** which will trigger notifications on any folder on your dropbox account.
 
 Every time you upload a file to the app folder or modify a file inside this folder, Dropbox sends a notification to your application whenever you upload files to a folder. To upload a file follow the steps below:
 
