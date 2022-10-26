@@ -85,28 +85,36 @@ To register a webhook on your Calendly account follow the instructions below:
     **Tip**: Make note of the key value.
 
 1. Open a terminal window and the run the following command to gather information about your account:
-    ```curl --request GET --url https://api.calendly.com/users/me --header 'authorization: Bearer <TOKEN>'```
-    **Note**: Replace the value <TOKEN> in the command with the token value you copied before.
+    ```
+    curl --request GET --url https://api.calendly.com/users/me \
+    --header 'authorization: Bearer TOKEN'
+    ```
+
+    **Note**: Replace the value TOKEN in the command with the token value you copied before.
 
 1. In the response of the previous command, copy the value of the **current_organization** field and the **uri** field.
 
 1. In the terminal window, run the following command to register the webhook:
-    ```curl --request POST --url https://api.calendly.com/webhook_subscriptions --header 'Authorization: Bearer <TOKEN>' --header 'Content-Type: application/json' --data '{
+    ```
+    curl --request POST --url https://api.calendly.com/webhook_subscriptions \
+    --header 'Authorization: Bearer TOKEN' \
+    --header 'Content-Type: application/json' --data '{
     "url": "https://1a2b-3c4d-5e6f-7g8h-9i0j.sa.ngrok.io",
     "events": [
         "invitee.created",
         "invitee.canceled"
     ],
-    "organization": "<ORGANIZATION_URL>",
-    "user": "<USER_URL>",
+    "organization": "ORGANIZATION_URL",
+    "user": "USER_URL",
     "scope": "user",
-    "signing_key": "<KEY>"
+    "signing_key": "KEY"
     }'
     ```
-    **Note**: Replace the value <TOKEN> with the value of the token you copied before.
-    **Note**: Replace the value <ORGANIZATION_URL> with the value of the **current_organization** field you copied before.
-    **Note**: Replace the value <USER_URL> with the value of the **uri** field you copied before.
-    **Note**: Replace the value <KEY> with the value of the key you copied before.
+
+    **Note**: Replace the value TOKEN with the value of the token you copied before.
+    **Note**: Replace the value ORGANIZATION_URL with the value of the **current_organization** field you copied before.
+    **Note**: Replace the value USER_URL with the value of the **uri** field you copied before.
+    **Note**: Replace the value KEY with the value of the key you copied before.
 
 1. Make sure the response of the previous command contains a **resource** attribute with the information you provided.
 
@@ -114,7 +122,7 @@ To register a webhook on your Calendly account follow the instructions below:
 ### Run Webhooks with Calendly and ngrok
 
 Use your Calendly link to schedule a meeting with you.
-    **Note** If you don't know your Calendly link, access [Calendly](https://Calendly/), click **Account** on the top right corner of the page, click **Share Your Link**, and then copy your link.
+    **Note** If you don't know your Calendly link, access [Calendly](https://calendly.com/), click **Account** on the top right corner of the page, click **Share Your Link**, and then copy your link.
 
 1. In your Calendly link, click **30 Minutes Meeting**, select a date, and then click **Confirm**.
 
