@@ -99,7 +99,7 @@ To register a webhook on your Calendly account follow the instructions below:
     curl --request POST --url https://api.calendly.com/webhook_subscriptions \
     --header 'Authorization: Bearer TOKEN' \
     --header 'Content-Type: application/json' --data '{
-    "url": "https://1a2b-3c4d-5e6f-7g8h-9i0j.sa.ngrok.io",
+    "url": "URL",
     "events": [
         "invitee.created",
         "invitee.canceled"
@@ -110,11 +110,18 @@ To register a webhook on your Calendly account follow the instructions below:
     "signing_key": "KEY"
     }'
     ```
+    **Note**: Replace the value URL with the value of the URL provided by the ngrok agent to expose your application to the internet (i.e. `https://1a2b-3c4d-5e6f-7g8h-9i0j.sa.ngrok.io`).
 
     **Note**: Replace the value TOKEN with the value of the token you copied before.
+
     **Note**: Replace the value ORGANIZATION_URL with the value of the **current_organization** field you copied before.
+
     **Note**: Replace the value USER_URL with the value of the **uri** field you copied before.
+
     **Note**: Replace the value KEY with the value of the key you copied before.
+
+    ![URL to Publish](img/ngrok_url_configuration_calendly.png)
+    
 
 1. Make sure the response of the previous command contains a **resource** attribute with the information you provided.
 
