@@ -51,12 +51,13 @@ const sidebars = {
       // TODO: @sudobinbash: Change to autogen (for scalability)
       items: [ 
         { label: 'Bitbucket', type: 'doc', id: 'integrations/bitbucket/webhooks', },
-        //{ label: 'Box', type: 'doc', id: 'integrations/box/webhooks', },
+        { label: 'Box', type: 'doc', id: 'integrations/box/webhooks', },
         { label: 'Brex', type: 'doc', id: 'integrations/brex/webhooks', },
-        //{ label: 'Calendly', type: 'doc', id: 'integrations/calendly/webhooks', },
+        { label: 'Calendly', type: 'doc', id: 'integrations/calendly/webhooks', },
         { label: 'Circle CI', type: 'doc', id: 'integrations/circleci/webhooks', },
-        //{ label: 'Contentful', type: 'doc', id: 'integrations/contentful/webhooks', },
+        { label: 'Contentful', type: 'doc', id: 'integrations/contentful/webhooks', },
         { label: 'DocuSign', type: 'doc', id: 'integrations/docusign/webhooks', },
+        { label: 'Dropbox', type: 'doc', id: 'integrations/dropbox/webhooks', },
         { label: 'Facebook', type: 'doc', id: 'integrations/facebook/webhooks', },
         { label: 'Facebook Messenger', type: 'doc', id: 'integrations/facebook-messenger/webhooks', },
         { label: 'Frame.io', type: 'doc', id: 'integrations/frameio/webhooks', },
