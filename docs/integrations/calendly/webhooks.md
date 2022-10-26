@@ -76,15 +76,15 @@ To register a webhook on your Calendly account follow the instructions below:
 
 1. On the **My Calendly** page, click **Integrations** on the top menu.
 
-1. On the **All integrations** page, click the **API and webhooks** tile, click **Get a token** under the **Personal access tokens** section.
+1. On the **All integrations** page, click the **API and webhooks** tile and then click **Get a token** under the **Personal access tokens** section.
 
 1. On the **Before you begin** popup, click **Continue**, enter a name for the token in the **Choose a name for this token** field, click **Create token**, click **Copy token**, and then click **Close**.
     **Tip**: Make note of the token value.
 
-1. On the **Your personal access tokens** page, scroll down and click **Copy Key** in the **API Key** setion.
+1. On the **Your personal access tokens** page, scroll down and click **Copy Key** in the **API Key** section.
     **Tip**: Make note of the key value.
 
-1. Open a terminal window and the run the following command to gather information about your account:
+1. Open a terminal window and run the following command to gather information about your account:
     ```
     curl --request GET --url https://api.calendly.com/users/me \
     --header 'authorization: Bearer TOKEN'
@@ -92,7 +92,7 @@ To register a webhook on your Calendly account follow the instructions below:
 
     **Note**: Replace the value TOKEN in the command with the token value you copied before.
 
-1. In the response of the previous command, copy the value of the **current_organization** field and the **uri** field.
+1. The terminal logs the response of the previous command. Copy the value of the **current_organization** field and the **uri** field.
 
 1. In the terminal window, run the following command to register the webhook:
     ```
@@ -175,7 +175,7 @@ This is a quick step to add extra protection to your application.
 
 1. On the **All integrations** page, click the **API and webhooks** tile.
 
-1. On the **Your personal access tokens** page, scroll down and click **Copy Key** in the **API Key** setion.
+1. On the **Your personal access tokens** page, scroll down and click **Copy Key** in the **API Key** section.
     **Tip**: This is the same value you used to register your webhook. See [Integrate Calendly] (#setup-webhook).
 
 1. Restart your ngrok agent by running the command, replacing `{your key}` with the value you have copied before:
