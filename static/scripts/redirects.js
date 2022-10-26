@@ -1,1 +1,1 @@
-// if (document.location.href.startsWith(document.location.origin + "/docs2/api")) window.location.href = document.location.href.replace(document.location.origin + "/docs2/api", document.location.origin + "/docs2/reference/api/reference")
+// if (document.location.href.startsWith(document.location.origin + "/docs/api")) window.location.href = document.location.href.replace(document.location.origin + "/docs/api", document.location.origin + "/docs/reference/api/reference")

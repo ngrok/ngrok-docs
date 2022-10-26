@@ -11,7 +11,7 @@ const config = {
   title: 'ngrok documentation',
   tagline: 'online in one line',
   url: 'https://www.ngrok.com',
-  baseUrl: '/docs2/',
+  baseUrl: '/docs/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'throw',
   favicon: 'img/favicon.ico',
@@ -24,10 +24,10 @@ const config = {
   // Even if you don't use internalization, you can use this field to set useful
   // metadata like html lang. For example, if your site is Chinese, you may want
   // to replace "en" with "zh-Hans".
-  // i18n: {
-  //   defaultLocale: 'en',
-  //   locales: ['en', 'pt-br'],
-  // },
+  i18n: {
+    defaultLocale: 'en',
+    locales: ['en'],
+  },
 
   plugins: [
     'docusaurus-plugin-hubspot',
@@ -68,15 +68,43 @@ const config = {
           alt: 'ngrok',
           src: 'img/ngrok-black.svg',
           srcDark: 'img/ngrok-white.svg',
+          href: 'https://ngrok.com',
+          width: '100%',
+          height: '100%',
         },
         items: [
           {
-            type: 'search',
+            label: 'Product',
+            to: 'https://ngrok.com/product',
             position: 'left',
           },
           {
-            label: 'go to ngrok.com',
-            to: 'https://ngrok.com',
+            label: 'Solutions',
+            to: 'https://ngrok.com/solutions',
+            position: 'left',
+          },
+          {
+            label: 'Customers',
+            to: 'https://ngrok.com/customers',
+            position: 'left',
+          },
+          {
+            label: 'Docs',
+            to: '/docs',
+            position: 'left',
+          },
+          {
+            label: 'Pricing',
+            to: 'https://ngrok.com/pricing',
+            position: 'left',
+          },
+          {
+            label: 'Download',
+            to: 'https://ngrok.com/download',
+            position: 'left',
+          },
+          {
+            type: 'search',
             position: 'right',
           },
           {
@@ -232,7 +260,7 @@ const config = {
     }),
 
   // scripts: [
-  //   { src: 'https://ngrok.com/docs2/scripts/redirects.js', defer: true, },
+  //   { src: 'https://ngrok.com/docs/scripts/redirects.js', defer: true, },
   // ]
 };
 
