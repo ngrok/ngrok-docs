@@ -102,7 +102,7 @@ Because you registered your webhook with the **File Uploaded** trigger, Box send
 
 After the file upload process is completed, Box sends a post request to your application.
 
-Confirm your localhost app receives the create-project event notification and logs both headers and body in the terminal.
+Confirm your localhost app receives the **FILE.UPLOADED** event notification and logs both headers and body in the terminal.
 
 
 ### Inspecting requests
