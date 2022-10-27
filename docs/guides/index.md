@@ -23,7 +23,7 @@ Here you will find a set of guides to help you with common (and not so common) t
 | [Per-client Authtokens](/secure-tunnels#authtoken-per-agent) | Learn best practices when deploying many ngrok agents |
 | [Rewriting the Host Header](/secure-tunnels#http-tunnels-host-header) | Learn how to rewrite the incoming host header for routing traffic to different local services |
 | [non-HTTP Services on TLS Tunnels](/secure-tunnels#tls-agnostic) | Learn how to configure non-HTTP services using our TLS tunnels |
-[Multiple Tunnels Same ngrok Agent](/ngrok-agent/config#config-ngrok-tunnel-definitions) | Learn how to use a single ngrok agent session to open many tunnels |
+| [Multiple Tunnels Same ngrok Agent](/ngrok-agent/config#config-ngrok-tunnel-definitions) | Learn how to use a single ngrok agent session to open many tunnels |
 | [Securing your Tunnels](/guides/securing-your-tunnels) | Learn how to secure your ngrok tunnels from prying eyes |
 | [Serving Local Directories](/secure-tunnels#http-tunnels-file-urls) | Learn how to use ngrok as a file server to quickly share directories with anyone |
 | [Tunneling only HTTP or HTTPS Traffic](/secure-tunnels#http-tunnels-schemes) | Learn how to configure the ngrok agent to only serve traffic on HTTP or HTTPS. |
