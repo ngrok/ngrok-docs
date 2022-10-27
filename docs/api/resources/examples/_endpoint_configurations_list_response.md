@@ -4,12 +4,11 @@
 {
   "endpoint_configurations": [
     {
-      "id": "ec_2GjCQmscgidfoHX6Enf5D6y2aal",
+      "id": "ec_2GjEybTPVxKdaYUjjeykwAF7LRD",
       "type": "https",
       "description": "app servers",
-      "metadata": "",
-      "created_at": "2022-10-27T17:43:11Z",
-      "uri": "https://api.ngrok.com/endpoint_configurations/ec_2GjCQmscgidfoHX6Enf5D6y2aal",
+      "created_at": "2022-10-27T18:04:07Z",
+      "uri": "https://api.ngrok.com/endpoint_configurations/ec_2GjEybTPVxKdaYUjjeykwAF7LRD",
       "basic_auth": null,
       "circuit_breaker": null,
       "compression": null,
@@ -33,12 +32,11 @@
       "backend": null
     },
     {
-      "id": "ec_2GjCQiLtGuGbfhOcEf2WSWD2BaK",
+      "id": "ec_2GjEybmPdRTFwOP6ocpWURyjuBk",
       "type": "https",
       "description": "web servers",
-      "metadata": "",
-      "created_at": "2022-10-27T17:43:11Z",
-      "uri": "https://api.ngrok.com/endpoint_configurations/ec_2GjCQiLtGuGbfhOcEf2WSWD2BaK",
+      "created_at": "2022-10-27T18:04:07Z",
+      "uri": "https://api.ngrok.com/endpoint_configurations/ec_2GjEybmPdRTFwOP6ocpWURyjuBk",
       "basic_auth": null,
       "circuit_breaker": {
         "enabled": true,
