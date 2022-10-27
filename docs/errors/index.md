@@ -2,7 +2,7 @@
 title: Errors
 ---
 
-import AllErrors from './_err_ngrok_list.md';
+import AllErrors from './_err_list_manual.md';
 
 # Error Codes
 

@@ -107,6 +107,14 @@ const sidebars = {
                     'api/resources/tunnel-sessions',
                   ],
                 },
+                // Application Users
+                {
+                  type: 'category', label: 'Application Users',
+                  items: [ 
+                    'api/resources/application-users',
+                    'api/resources/application-sessions',
+                  ],
+                },
                 // Backends
                 {
                   type: 'category', label: 'Backends',
