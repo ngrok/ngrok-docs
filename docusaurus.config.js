@@ -41,7 +41,7 @@ const config = {
         docs: {
           sidebarPath: require.resolve('./sidebars.js'),
           routeBasePath: '/',
-          editUrl: `${docsRepo}/edit/master`,
+          // editUrl: `${docsRepo}/edit/master`,
           showLastUpdateAuthor: true,
           showLastUpdateTime: true,
         },
