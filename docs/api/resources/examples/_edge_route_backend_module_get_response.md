@@ -4,7 +4,7 @@
 {
   "enabled": true,
   "backend": {
-    "id": "bkdtg_2GjCRqPzeiSHuuOY1MVmXhkGg6P",
-    "uri": "https://api.ngrok.com/backends/tunnel_group/bkdtg_2GjCRqPzeiSHuuOY1MVmXhkGg6P"
+    "id": "bkdtg_2GjEzWemMXED46BcWBNP5BGfn8G",
+    "uri": "https://api.ngrok.com/backends/tunnel_group/bkdtg_2GjEzWemMXED46BcWBNP5BGfn8G"
   }
 }

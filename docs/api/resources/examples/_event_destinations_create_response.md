@@ -2,9 +2,9 @@
 #### Example Response
 ```json
 {
-  "id": "ed_2GjCRYAa210j1HKdE0CTN4IsNvH",
+  "id": "ed_2GjEzRJXBuYcSC369IvXHTX7jvm",
   "metadata": "{\"environment\":\"dev\"}",
-  "created_at": "2022-10-27T17:43:18Z",
+  "created_at": "2022-10-27T18:04:14Z",
   "description": "kinesis dev stream",
   "format": "json",
   "target": {
@@ -20,5 +20,5 @@
     },
     "cloudwatch_logs": null
   },
-  "uri": "https://api.ngrok.com/event_destinations/ed_2GjCRYAa210j1HKdE0CTN4IsNvH"
+  "uri": "https://api.ngrok.com/event_destinations/ed_2GjEzRJXBuYcSC369IvXHTX7jvm"
 }

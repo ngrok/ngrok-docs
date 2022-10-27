@@ -7,4 +7,4 @@ curl \
 -H "Content-Type: application/json" \
 -H "Ngrok-Version: 2" \
 -d '{"description":"ACME Co. Device Ingress","metadata":"{\"device_sku\": \"824JS4RZ1F8X\"}"}' \
-https://api.ngrok.com/agent_ingresses/agin_2GjCRi1H6YGyhkNjJZ4la6n9PTI
+https://api.ngrok.com/agent_ingresses/agin_2GjEzW83Ri26zCo7To8C7noggWH

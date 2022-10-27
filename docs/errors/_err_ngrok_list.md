@@ -149,7 +149,7 @@ authtoken credential for the appropriate account. |
 Failed to bind the address `ADDR` for the account `ACCOUNT`.
 This account is on the `PLAN` plan.
 
-This usually only happens if you downgraded your ngrok.com account and it no
+This usually only happens if you downgraded your ngrok account and it no
 longer has permission to use reserved addresses.
 
 Upgrade to Pro or Enterprise: https://dashboard.ngrok.com/billing/subscription |
@@ -434,6 +434,9 @@ Upgrade to an Enterprise plan at: https://dashboard.ngrok.com/billing/subscripti
 		| [ERR_NGROK_628](/error_details/628) | The API key is already owned by a user and cannot be re-assigned ownership. |
 		| [ERR_NGROK_629](/error_details/629) | The SSH public key is already owned by a user and cannot be re-assigned ownership. |
 		| [ERR_NGROK_630](/error_details/630) | You must be an admin to set credential ownership. |
+		| [ERR_NGROK_631](/error_details/631) | You may specify owner_id or owner_email, but not both. |
+		| [ERR_NGROK_632](/error_details/632) | You may specify owner or membership, but not both. |
+		| [ERR_NGROK_633](/error_details/633) | Your account is not authorized to specify credential ownership. |
 		| [ERR_NGROK_702](/error_details/702) | Too many connections! The tunnel session `SESSION` has violated the rate-limit policy of `THRESHOLD` connections per minute by initiating `COUNT` connections in the last `SECONDS` seconds. Please decrease your inbound connection volume or upgrade to a paid plan for additional capacity. |
 		| [ERR_NGROK_703](/error_details/703) | Too many connections! The account hosting this endpoint has violated the rate-limit policy of `THRESHOLD` connections per minute by initiating `COUNT` connections in the last `SECONDS` seconds. Please decrease your inbound connection volume or upgrade your account plan for additional capacity. |
 		| [ERR_NGROK_708](/error_details/708) | This URL has expired. Please sign up for a free ngrok account to create URLs that do not expire. You can also restart the ngrok agent which will create a new URL that will expire after the same amount of time. |
