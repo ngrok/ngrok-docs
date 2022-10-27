@@ -2,17 +2,17 @@
 #### Example Response
 ```json
 {
-  "id": "ep_2Ggv0HNrXJ55KhQgBYxRhg8UwBQ",
+  "id": "ep_2GjCRXReMpwBnnv1wogq7YScI3D",
   "region": "us",
-  "created_at": "2022-10-26T22:20:16Z",
-  "updated_at": "2022-10-26T22:20:16Z",
-  "public_url": "https://42404f2986bc.ngrok.io",
+  "created_at": "2022-10-27T17:43:17Z",
+  "updated_at": "2022-10-27T17:43:17Z",
+  "public_url": "https://f4f79eb4ef0b.ngrok.io",
   "proto": "https",
-  "hostport": "42404f2986bc.ngrok.io:443",
+  "hostport": "f4f79eb4ef0b.ngrok.io:443",
   "type": "ephemeral",
   "metadata": "",
   "tunnel": {
-    "id": "tn_2Ggv0HNrXJ55KhQgBYxRhg8UwBQ",
-    "uri": "https://api.ngrok.com/tunnels/tn_2Ggv0HNrXJ55KhQgBYxRhg8UwBQ"
+    "id": "tn_2GjCRXReMpwBnnv1wogq7YScI3D",
+    "uri": "https://api.ngrok.com/tunnels/tn_2GjCRXReMpwBnnv1wogq7YScI3D"
   }
 }
