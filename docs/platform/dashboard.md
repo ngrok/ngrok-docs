@@ -18,7 +18,7 @@ As an additional security measure, you may restrict access to the ngrok dashboar
 
 If you are an Enterprise customer, you have the option of enabling Single Sign-On (SSO) for your users logging into the ngrok Dashboard. Account admins can find the configuration options under the ["Settings > Account"](https://dashboard.ngrok.com/settings) in the left navigation once they log into the dashboard.
 
-ngrok supports most SAML v2 compliant identity providers, including Okta and Microsoft AzureAD. To get started with the configuration, simply click on "+ New Identity Provider" and follow the instructions in the dashboard. ngrok supports multiple identity providers as well. If using multiple identity providers, the user will be prompted to choose one when logging in with SSO from the ngrok login page.
+ngrok supports most [SAML v2 compliant identity providers](https://en.wikipedia.org/wiki/SAML-based_products_and_services), including [Okta](https://help.okta.com/oie/en-us/Content/Topics/Apps/apps-about-saml.htm) and [Microsoft AzureAD](https://learn.microsoft.com/en-us/azure/active-directory/fundamentals/auth-saml). To get started with the configuration, simply click on "+ New Identity Provider" and follow the instructions in the dashboard. ngrok supports multiple identity providers as well. If using multiple identity providers, the user will be prompted to choose one when logging in with SSO from the ngrok login page.
 
 After configuring the correct information with your identity provider, you have the option to enable or disable logging in directly from your provider. This is helpful if your users want to jump directly to their ngrok account via a centralized location once they have logged into their identity provider.
 
