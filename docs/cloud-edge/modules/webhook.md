@@ -33,7 +33,7 @@ The currently supported webhook providers are:
 | Go1 | `go1` | [Documentation](https://www.go1.com/developers/partners/concepts/webhook-signature-authentification) |
 | GraphCMS (Formerly Hygraph) | `graphcms` | [Documentation](https://graphcms.com/docs/api-reference/basics/webhooks) |
 | Heroku | `heroku` | [Documentation](https://devcenter.heroku.com/articles/app-webhooks#securing-webhook-requests) |
-| Hubspot | `hubspot` | [Documentation](https://developers.hubspot.com/docs/api/webhooks/validating-requests?__hstc=83945990.b168c4bd4d28eeb985bb9c1f6f60be78.1642547408851.1665184505642.1665233861688.501&__hssc=83945990.2.1665233861688&__hsfp=3833684012) |
+| Hubspot | `hubspot` | [Documentation](https://developers.hubspot.com/docs/api/webhooks/validating-requests) |
 | Intercom | `intercom` | [Documentation](https://developers.intercom.com/building-apps/docs/webhook-model#section-signed-notifications) |
 | Launch Darkly | `launch_darkly` | [Documentation](https://docs.launchdarkly.com/home/connecting/webhooks#signing-webhooks) |
 | Mailchimp | `mailchimp` | [Documentation](https://mailchimp.com/developer/transactional/guides/track-respond-activity-webhooks/#authenticating-webhook-requests) |
