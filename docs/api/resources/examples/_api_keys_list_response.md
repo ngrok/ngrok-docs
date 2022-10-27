@@ -4,19 +4,19 @@
 {
   "keys": [
     {
-      "id": "ak_2Gj44ZLfHT2ZTNpAST94zrI9z2Y",
-      "uri": "https://api.ngrok.com/api_keys/ak_2Gj44ZLfHT2ZTNpAST94zrI9z2Y",
+      "id": "ak_2GjCQgxNSlrWwlMyfa92AkX6cIs",
+      "uri": "https://api.ngrok.com/api_keys/ak_2GjCQgxNSlrWwlMyfa92AkX6cIs",
       "description": "api key for example generation",
       "metadata": "",
-      "created_at": "2022-10-27T16:34:28Z",
+      "created_at": "2022-10-27T17:43:11Z",
       "token": null
     },
     {
-      "id": "ak_2Gj44ZUs1dE9S3IN4PIghhtLMBj",
-      "uri": "https://api.ngrok.com/api_keys/ak_2Gj44ZUs1dE9S3IN4PIghhtLMBj",
+      "id": "ak_2GjCQi2159CHPFfRLSL1u9RXyYr",
+      "uri": "https://api.ngrok.com/api_keys/ak_2GjCQi2159CHPFfRLSL1u9RXyYr",
       "description": "ad-hoc dev testing",
       "metadata": "{\"environment\":\"dev\"}",
-      "created_at": "2022-10-27T16:34:28Z",
+      "created_at": "2022-10-27T17:43:11Z",
       "token": null
     }
   ],

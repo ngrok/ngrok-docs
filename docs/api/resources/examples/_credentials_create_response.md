@@ -2,11 +2,11 @@
 #### Example Response
 ```json
 {
-  "id": "cr_2Gj44h76bx4MOvImaLcuXKHJmCh",
-  "uri": "https://api.ngrok.com/credentials/cr_2Gj44h76bx4MOvImaLcuXKHJmCh",
-  "created_at": "2022-10-27T16:34:29Z",
+  "id": "cr_2GjCQqvwmCXeLAdlhwXMhI3I9RF",
+  "uri": "https://api.ngrok.com/credentials/cr_2GjCQqvwmCXeLAdlhwXMhI3I9RF",
+  "created_at": "2022-10-27T17:43:12Z",
   "description": "development cred for alan@example.com",
   "metadata": "",
-  "token": "2Gj44h76bx4MOvImaLcuXKHJmCh_4DqLKCogXvbnFUSUHsuCH",
+  "token": "2GjCQqvwmCXeLAdlhwXMhI3I9RF_3z583Ly8j2o3RVidsn8DT",
   "acl": []
 }

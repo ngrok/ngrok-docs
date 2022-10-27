@@ -7,4 +7,4 @@ curl \
 -H "Content-Type: application/json" \
 -H "Ngrok-Version: 2" \
 -d '{"tripped_duration":120,"rolling_window":300,"num_buckets":5,"volume_threshold":20,"error_threshold_percentage":0.2}' \
-https://api.ngrok.com/endpoint_configurations/ec_2Ggv0QjGkcQpC961Gzio77eENhG/circuit_breaker
+https://api.ngrok.com/endpoint_configurations/ec_2GjCRYrx4kjpz4br7N8WEEV30Y6/circuit_breaker

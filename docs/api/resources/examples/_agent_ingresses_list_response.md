@@ -4,8 +4,8 @@
 {
   "ingresses": [
     {
-      "id": "agin_2Ggv0Wh8JeSecVT1hDWDWsnnflp",
-      "uri": "https://api.ngrok.com/agent_ingresses/agin_2Ggv0Wh8JeSecVT1hDWDWsnnflp",
+      "id": "agin_2GjCRi1H6YGyhkNjJZ4la6n9PTI",
+      "uri": "https://api.ngrok.com/agent_ingresses/agin_2GjCRi1H6YGyhkNjJZ4la6n9PTI",
       "description": "acme devices",
       "metadata": "",
       "domain": "connect.acme.com",
@@ -18,7 +18,7 @@
       "region_domains": [
         "tunnel.us.connect.acme.com"
       ],
-      "created_at": "2022-10-26T22:20:18Z"
+      "created_at": "2022-10-27T17:43:19Z"
     }
   ],
   "uri": "https://api.ngrok.com/agent_ingresses",
