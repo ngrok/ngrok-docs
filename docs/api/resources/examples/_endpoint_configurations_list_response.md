@@ -4,41 +4,12 @@
 {
   "endpoint_configurations": [
     {
-      "id": "ec_2GguzVkisO0WwcmVrDJ1FnjLEZ9",
-      "type": "https",
-      "description": "app servers",
-      "metadata": "",
-      "created_at": "2022-10-26T22:20:10Z",
-      "uri": "https://api.ngrok.com/endpoint_configurations/ec_2GguzVkisO0WwcmVrDJ1FnjLEZ9",
-      "basic_auth": null,
-      "circuit_breaker": null,
-      "compression": null,
-      "request_headers": {
-        "enabled": true,
-        "add": {
-          "x-frontend": "ngrok"
-        },
-        "remove": [
-          "cache-control"
-        ]
-      },
-      "response_headers": null,
-      "ip_policy": null,
-      "mutual_tls": null,
-      "tls_termination": null,
-      "webhook_validation": null,
-      "oauth": null,
-      "saml": null,
-      "oidc": null,
-      "backend": null
-    },
-    {
-      "id": "ec_2GguzTwtXuOoxiHfAKp6CxX4Xmh",
+      "id": "ec_2Gj44cv9MunT4LD79zJg2vSnoQf",
       "type": "https",
       "description": "web servers",
       "metadata": "",
-      "created_at": "2022-10-26T22:20:10Z",
-      "uri": "https://api.ngrok.com/endpoint_configurations/ec_2GguzTwtXuOoxiHfAKp6CxX4Xmh",
+      "created_at": "2022-10-27T16:34:28Z",
+      "uri": "https://api.ngrok.com/endpoint_configurations/ec_2Gj44cv9MunT4LD79zJg2vSnoQf",
       "basic_auth": null,
       "circuit_breaker": {
         "enabled": true,
@@ -60,6 +31,35 @@
         },
         "remove": []
       },
+      "ip_policy": null,
+      "mutual_tls": null,
+      "tls_termination": null,
+      "webhook_validation": null,
+      "oauth": null,
+      "saml": null,
+      "oidc": null,
+      "backend": null
+    },
+    {
+      "id": "ec_2Gj44c928i8lB0NcHgdx27IFCII",
+      "type": "https",
+      "description": "app servers",
+      "metadata": "",
+      "created_at": "2022-10-27T16:34:28Z",
+      "uri": "https://api.ngrok.com/endpoint_configurations/ec_2Gj44c928i8lB0NcHgdx27IFCII",
+      "basic_auth": null,
+      "circuit_breaker": null,
+      "compression": null,
+      "request_headers": {
+        "enabled": true,
+        "add": {
+          "x-frontend": "ngrok"
+        },
+        "remove": [
+          "cache-control"
+        ]
+      },
+      "response_headers": null,
       "ip_policy": null,
       "mutual_tls": null,
       "tls_termination": null,
