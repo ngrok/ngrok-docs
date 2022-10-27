@@ -1,0 +1,103 @@
+---
+slug: /events
+---
+
+import EventTable from './_event-table.md'
+import EventImports from './_event-imports.mdx'
+
+# Event Sources
+---------------
+
+Event Sources represent event types from your ngrok account. You can subscribe to one or more of them using an Event Subscription. Each Event Subscription can send these events to a configurable destination such as Amazon CloudWatch Logs, Amazon Kinesis (as a data stream) or Amazon Kinesis Firehose (as a delivery stream).
+
+Many objects within ngrok have corresponding events that are generated when an instance of the object is created, updated and deleted. All Event Types have a version, represented in the Event Type string following the period. The initial version for all Event Types is `v0`.
+
+Some event types support filters and selectable fields. Not all selectable fields are usable in filters. A full list of event types and their fields follows. A field marked "filterable" indicates that it is usable in the filter for an event source.
+
+### Event Payloads
+
+Events are sent as JSON to the configured destinations. These event payloads are purposefully identical to the ngrok API responses. All events include the following fields:
+
+| Name | Description | Example |
+| --- | --- | --- |
+| `event_id` | unique identifier for this event, always prefixed with ev_ | `ev_1vPlyBW3OR44bpPphS4HIZyajDD` |
+| `event_type` | identifies the object, action, and version of the event | `ip_policy_created.v0` |
+| `event_timestamp` | timestamp of when the event fired in RFC 3339 format | `2021-07-16T21:44:37Z` |
+| `object` | a JSON object describing the resource where the event occurred | See examples below |
+
+### Event Payloads Examples
+
+#### Complete example payload for an ip\_policy\_created.v0 event
+
+    {
+        "event_id": "ev_25X2AsJ5xpvuOParTYUQWe12XKo",
+        "event_type": "ip_policy_created.v0",
+        "event_timestamp": "2022-02-23T23:29:29Z",
+        "object": {
+            "id": "ipp_25X2Ao39z73FlVQKZ1iReMPe6Qv",
+            "uri": "https://api.ngrok.com/ip_policies/ipp_25X2Ao39z73FlVQKZ1iReMPe6Qv",
+            "created_at": "2022-02-23T23:29:29Z",
+            "description": "Home network IP",
+            "metadata": "",
+            "action": "allow"
+        }
+    }
+
+#### Complete example payload for an http\_request\_complete.v0 event
+
+    {
+        "event_id": "ev_25X3yFS6TDkig1KDJWIc4nnJO0c",
+        "event_type": "http_request_complete.v0",
+        "event_timestamp": "2022-02-23T23:44:16Z",
+        "object": {
+            "conn": {
+                "client_ip": "2601:0:8200:9e:4cd7:0:c97f:7823",
+                "server_name": "ngrok-docs-example.ngrok.io",
+                "server_port": ""
+            },
+            "http": {
+                "request": {
+                    "first_byte_ts": null,
+                    "last_byte_ts": null,
+                    "method": "GET",
+                    "url": {
+                        "path": "/docs/events"
+                    },
+                    "version": "HTTP/2.0"
+                },
+                "response": {
+                    "body_length": 13079,
+                    "first_byte_ts": "2022-02-23T23:44:16.732791273Z",
+                    "last_byte_ts": "2022-02-23T23:44:16.737257209Z",
+                    "status_code": 200
+                }
+            }
+        }
+    }
+
+#### Complete example payload for an tcp\_connection\_closed.v0 event
+
+    {
+        "event_id": "ev_25X4osod1q306srserDeFyghTC4",
+        "event_type": "tcp_connection_closed.v0",
+        "event_timestamp": "2022-02-23T23:51:14Z",
+        "object": {
+            "conn": {
+                "bytes_in": 3437,
+                "bytes_out": 90256,
+                "client_ip": "2601:0:8200:9e:4cd7:0:c97f:7823",
+                "end_ts": "2022-02-23T23:51:14.005372199Z",
+                "server_name": "ngrok-docs-example.ngrok.io",
+                "server_port": "",
+                "start_ts": "2022-02-23T23:44:16.528374173Z"
+            }
+        }
+    }
+
+<EventTable /> 
+
+## Event Types
+
+This is a complete list of all the event types and fields available in the events system.
+
+<EventImports />
