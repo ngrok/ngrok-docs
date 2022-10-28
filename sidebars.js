@@ -56,6 +56,7 @@ const sidebars = {
         { label: 'Bitbucket', type: 'doc', id: 'integrations/bitbucket/webhooks', },
         { label: 'Circle CI', type: 'doc', id: 'integrations/circleci/webhooks', },
         { label: 'DocuSign', type: 'doc', id: 'integrations/docusign/webhooks', },
+        { label: 'Dropbox', type: 'doc', id: 'integrations/dropbox/webhooks', },
         { label: 'Facebook Messenger', type: 'doc', id: 'integrations/facebook-messenger/webhooks', },
         { label: 'Frame.io', type: 'doc', id: 'integrations/frameio/webhooks', },
         { label: 'GitHub', type: 'doc', id: 'integrations/github/webhooks', },
