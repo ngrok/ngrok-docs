@@ -186,7 +186,7 @@ This is a quick step to add extra protection to your application.
     **Tip**: This is the same value you used to register your webhook. See [Integrate Calendly] (#setup-webhook).
 
 1. Restart your ngrok agent by running the command, replacing `{your key}` with the value you have copied before:
-    `ngrok http 3000 --verify-webhook CALENDLY --verify-webhook-secret {your key}`
+    `ngrok http 3000 --verify-webhook=CALENDLY --verify-webhook-secret={your key}`
 
 1. Access your Calendly link, click **30 Minutes Meeting**, select a date, and then click **Confirm**.
 
