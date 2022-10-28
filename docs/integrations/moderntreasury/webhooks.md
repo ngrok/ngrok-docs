@@ -72,9 +72,7 @@ Once your app is running successfully on localhost, let's get it on the internet
 
 To register a webhook on your Modern Treasury account follow the instructions below:
 
-1. Access [Modern Treasury](https://Modern Treasury/) and sign in using your Modern Treasury account.
-
-1. In the same browser, access [Modern Treasury Developer](https://developer.Modern Treasury/).
+1. Access the [Modern Treasury site](https://moderntreasury.com/) and sign in using your Modern Treasury account.
 
 1. On the top menu of the developer site, click **DEVELOPER TOOLS** and then click **Webhooks**.
 
@@ -91,7 +89,7 @@ To register a webhook on your Modern Treasury account follow the instructions be
 Modern Treasury sends different request body contents depending on the event that is being triggered.
 You can trigger new calls from Modern Treasury to your application by following the instructions below.
 
-1. In the same browser, access [Modern Treasury](https://Modern Treasury/), and then click **+** close to your team name on the left menu.
+1. In the same browser, access the [Modern Treasury site](https://moderntreasury.com/), and then click **+** close to your team name on the left menu.
 
 1. On the **New Project** popup, enter a project name and then click **Create Project**.
 
@@ -99,7 +97,7 @@ You can trigger new calls from Modern Treasury to your application by following 
 
 Optionally, you can verify the log of the webhook call in Modern Treasury:
 
-1. In the same browser, access [Modern Treasury Developer](https://developer.Modern Treasury/).
+1. In the same browser, access [Modern Treasury Developer](https://moderntreasury.com/).
 
 1. On the top menu of the developer site, click **DEVELOPER TOOLS** and then click **Webhooks**.
 
@@ -147,7 +145,7 @@ The ngrok signature webhook verification feature allows ngrok to assert that req
 
 This is a quick step to add extra protection to your application.
 
-1. Access [Modern Treasury Developer](https://developer.Modern Treasury/).
+1. Access the [Modern Treasury site](https://moderntreasury.com/).
 
 1. On the top menu of the developer site, click **DEVELOPER TOOLS** and then click **Webhooks**.
 
