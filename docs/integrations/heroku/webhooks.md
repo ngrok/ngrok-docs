@@ -142,7 +142,7 @@ The ngrok signature webhook verification feature allows ngrok to assert that req
 This is a quick step to add extra protection to your application.
 
 1. Restart your ngrok agent by running the command, replacing `{your webhook secret}` with the value you have entered in the **Secret** field during the webhook registration (See [Integrate ngrok and Heroku.](#setup-webhook)):
-    `ngrok http 3000 --verify-webhook heroku --verify-webhook-secret {your webhook secret}`
+    `ngrok http 3000 --verify-webhook+HEROKU --verify-webhook-secret={your webhook secret}`
 
 1. Access [Heroku](https://heroku.com/), sign in using your Heroku account, access your app, and then execute a new build.
 
