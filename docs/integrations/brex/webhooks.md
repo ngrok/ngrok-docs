@@ -152,7 +152,7 @@ This is a quick step to add extra protection to your application.
 1. Brex API responds with HTTP status 200 and a JSON containing the `"secret": "<webhook_secret>"` attribute/value pair.
 
 1. Restart your ngrok agent by running the command, replacing `{webhook_secret}` with the value of the **secret** attribute you received before:
-    `ngrok http 3000 --verify-webhook BREX --verify-webhook-secret {webhook_secret}`
+    `ngrok http 3000 --verify-webhook=REX --verify-webhook-secret={webhook_secret}`
 
 1. Access the [Brex Dashboard](https://dashboard.brex.com), sign in using your Brex account, and create a new user. See [Run Webhooks with Brex and ngrok](#run-webhook).
 
