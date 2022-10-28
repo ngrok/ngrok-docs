@@ -153,7 +153,7 @@ This is a quick step to add extra protection to your application.
 1. In the **Connect** page, click the **APPLICATIONS** tab, click your webhook, and then in the **Integration and Security Settings** section click **Include HMAC Signature**.
 
 1. Restart your ngrok agent by running the command, replacing `{your connect key}` with the value you copied before:
-    `ngrok http 3000 --verify-webhook DocuSign --verify-webhook-secret {your connect key}`
+    `ngrok http 3000 --verify-webhook=DOCUSIGN --verify-webhook-secret={your connect key}`
 
 1. Access [DocuSign](https://app.docusign.com/home) and create a new envelope.
 

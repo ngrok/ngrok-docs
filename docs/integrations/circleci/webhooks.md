@@ -142,7 +142,7 @@ The ngrok signature webhook verification feature allows ngrok to assert that req
 This is a quick step to add extra protection to your application.
 
 1. Restart your ngrok agent by running the command, replacing `{your secret token}` with the value you have provided to the **Secret token** field during your webhook registration (See [Integrate ngrok and CircleCI](#setup-webhook)):
-    `ngrok http 3000 --verify-webhook frameio --verify-webhook-secret {your secret token}`
+    `ngrok http 3000 --verify-webhook=CIRCLECI --verify-webhook-secret={your secret token}`
 
 1. Access [CircleCI](https://www.circleci.com/) and Rerun your workflow from start.
 

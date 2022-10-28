@@ -155,7 +155,7 @@ This is a quick step to add extra protection to your application.
 1. In the **Add webhook** page, provide a value to the **Secret** field.
 
 1. Restart your ngrok agent by running the command, replacing `{your secret}` with your **Secret** from GitHub:
-    `ngrok http 3000 --verify-webhook github --verify-webhook-secret {your secret}`
+    `ngrok http 3000 --verify-webhook=GITHUB --verify-webhook-secret={your secret}`
 
 1. Resend one of the messages from your GitHub webhook.
 

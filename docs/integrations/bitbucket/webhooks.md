@@ -7,7 +7,6 @@ To integrate Bitbucket webhooks with ngrok:
 1. [Launch your local webhook.](#start-your-app) `npm start`
 1. [Launch ngrok.](#start-ngrok) `ngrok http 3000`
 1. [Configure Bitbucket webhooks with your ngrok URL.](#setup-webhook)
-1. **Bonus!** [Use ngrok like a PRO.](#security)
 
 :::
 
@@ -18,7 +17,6 @@ By integrating ngrok with Bitbucket, you can:
 - **Develop and test Bitbucket webhooks locally**, eliminating the time in deploying your development code to a public environment and setting it up in HTTPS.
 - **Inspect and troubleshoot requests from Bitbucket** in real-time via the inspection UI and API.
 - **Modify and Replay Bitbucket Webhook requests** with a single click and without spending time reproducing events manually in your Bitbucket account.
-- **Secure your app with Bitbucket validation provided by ngrok**. Invalid requests are blocked by ngrok before reaching your app.
 
 
 ## **Step 1**: Start your app {#start-your-app}
@@ -132,18 +130,3 @@ The ngrok Request Inspector provides a replay function that you can use to test 
 
 Verify that your local application receives the request and logs the corresponding information to the terminal.
 
-
-## **Bonus**: Secure webhook requests {#security}
-
-This is a quick step to add extra protection to your application.
-
-1. In the repository page, click **Settings** from the left menu and then click **Webhooks**.
-
-1. In the **Webhooks** page, scroll down until the **Project Hooks** section appears, and then click **Edit** for your webhook.
-
-1. Enter a text for the **Secret token** field and click **Save changes**.
-
-1. In the **Project Hooks** section, click **Test** for your webhook, and then click **Push events**.
-
-Verify that your local application receives a request header named **x-Bitbucket-token** with the text you've provided during the webhook configuration.
-Your application can use this information to assert it comes from your Bitbucket repository.

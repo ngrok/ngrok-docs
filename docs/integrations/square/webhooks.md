@@ -140,7 +140,7 @@ The ngrok signature webhook verification feature allows ngrok to assert that req
 
 This is a quick step to add extra protection to your application.
 
-1. Access the [Square Developer](https://developer.squareup.com/apps) page, and sign in using your Square account.
+1. Access the [Square Developer](https://developer.squareup.com/apps) page and sign in using your Square account.
 
 1. On the **Applications** page, click **Open** in the application tile.
 
@@ -148,7 +148,7 @@ This is a quick step to add extra protection to your application.
     **Tip**: Depending on the environment you choose the name of the field is either **Sandbox Access token** or **Production Access token**.
 
 1. Restart your ngrok agent by running the command, replacing `{your access token}` with the value you copied before:
-    `ngrok http 3000 --verify-webhook square --verify-webhook-secret {your access token}`
+    `ngrok http 3000 --verify-webhook=SQUARE --verify-webhook-secret={your access token}`
 
 1. Access the [Square Dashboard](https://squareup.com/dashboard/) page and create a new item.
 
