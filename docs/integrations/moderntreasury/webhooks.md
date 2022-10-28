@@ -152,8 +152,8 @@ This is a quick step to add extra protection to your application.
 1. On the **Webhooks** page, click **Copy** to copy the **Secret** value.
 
 1. Restart your ngrok agent by running the command, replacing `{your webhook secret}` with the value you have copied before (See [Integrate ngrok and Modern Treasury.](#setup-webhook)):
-    `ngrok http 3000 --verify-webhook moderntreasury --verify-webhook-secret {your webhook secret}`
+    `ngrok http 3000 --verify-webhook MODERN_TREASURY --verify-webhook-secret {your webhook secret}`
 
-1. Access [Modern Treasury](https://Modern Treasury/) and create a new project.
+1. Access the [Modern Treasury site](https://moderntreasury.com/) and create a new project.
 
 Verify that your local application receives the request and logs information to the terminal.
