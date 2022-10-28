@@ -86,7 +86,7 @@ To register a webhook on your Mailchimp account follow the instructions below:
 
 ### Run Webhooks with Mailchimp and ngrok
 
-Mailchimp sends different request body contents depending on the audience you register you webhook, as well as depending on the event taking place.
+Mailchimp sends different request body contents depending on the audience you register your webhook, as well as depending on the event taking place.
 You can trigger new calls from Mailchimp to your application by following the instructions below.
 
 1. On the Mailchimp **Home** page, click **Audience** on the left menu and then click **All Contacts**.
