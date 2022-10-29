@@ -172,7 +172,9 @@ This is a quick step to add extra protection to your application.
 1. In your webhook page, click **Reveal secret** and click **Copy** to copy the **Secret key** value.
 
 1. Restart your ngrok agent by running the command, replacing `{your secret key}` with the value you copied before:
-    `ngrok http 3000 --verify-webhook zendesk --verify-webhook-secret {your secret key}`
+    ```bash
+    ngrok http 3000 --verify-webhook zendesk --verify-webhook-secret {your secret key}
+    ```
 
 1. Execute the procedures in the [Run Webhooks with Zendesk and ngrok](#run-webhook) section to create a new ticket.
 

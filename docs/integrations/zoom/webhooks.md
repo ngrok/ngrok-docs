@@ -162,7 +162,9 @@ This is a quick step to add extra protection to your application.
 1. Make sure you have copied the **Secret Token** value when you were configuring your Webhook app in Zoom.
 
 1. Restart your ngrok agent by running the command, replacing `{your secret token}` with your **Secret Token** from Zoom:
-    `ngrok http 3000 --verify-webhook Zoom --verify-webhook-secret {your secret token}`
+    ```bash
+    ngrok http 3000 --verify-webhook zoom --verify-webhook-secret {your secret token}
+    ```
 
 1. In your Zoom dashboard, start a new meeting, and after a few seconds end the meeting.
 

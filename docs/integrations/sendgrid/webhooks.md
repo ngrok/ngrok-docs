@@ -160,7 +160,9 @@ This is a quick step to add extra protection to your application.
     **Tip**: Make sure the **Signed Event Webhook Request Status** is **ENABLED**.
 
 1. Restart your ngrok agent by running the command, replacing `{your verification key}` with the value you copied before:
-    `ngrok http 3000 --verify-webhook sendgrid --verify-webhook-secret {your verification key}`
+    ```bash
+    ngrok http 3000 --verify-webhook sendgrid --verify-webhook-secret {your verification key}
+    ```
 
 1. Reproduce the steps to send an email through your SendGrid account.
 

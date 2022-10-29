@@ -145,7 +145,9 @@ This is a quick step to add extra protection to your application.
 1. In the **Basic Information** page for your Slack app, click **Show** for the **Signing Secret** and copy the value that appears.
 
 1. Restart your ngrok agent by running the command, replacing `{your signing secret}` with your **Signing Secret** from Slack:
-    `ngrok http 3000 --verify-webhook slack --verify-webhook-secret {your signing secret}`
+    ```bash
+    ngrok http 3000 --verify-webhook slack --verify-webhook-secret {your signing secret}
+    ```
 
 1. In your Slack app, select the **Slackbot**,  write `Hello Slack bot!` in the message field, and then send it.
 

@@ -151,7 +151,9 @@ This is a quick step to add extra protection to your application.
 1. In the Webhook page for your webhook, click **Reveal** under **Signing secret**, and copy the value that appears.
 
 1. Restart your ngrok agent by running the command, replacing `{your signing secret}` with your **Signing secret** from Stripe:
-    `ngrok http 3000 --verify-webhook stripe --verify-webhook-secret {your signing secret}`
+    ```bash
+    ngrok http 3000 --verify-webhook stripe --verify-webhook-secret {your signing secret}
+    ```
 
 1. In your Stripe dashboard, click **Products** in the top menu and then create a new product.
 
