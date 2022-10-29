@@ -150,7 +150,7 @@ This is a quick step to add extra protection to your application.
 1. Restart your ngrok agent by running the command, replacing `{your primary key}` with the value you have copied before:
     
     ```bash
-    ngrok http 3000 --verify-webhook=BOX --verify-webhook-secret={your primary key}
+    ngrok http 3000 --verify-webhook BOX --verify-webhook-secret {your primary key}
     ```
 
 1. Access [Box](https://box.com/), sign in using your Box account, and then upload a file from your desktop to the folder you selected during the webhook registration. See [Integrate Box](#setup-webhook).
