@@ -148,10 +148,17 @@ The ngrok signature webhook verification feature allows ngrok to assert that req
 This is a quick step to add extra protection to your application.
 
 1. Restart your ngrok agent by running the command, replacing `{your webhook payload signing}` with the value you copied before (See [Integrate ngrok and PagerDuty.](#setup-webhook)):
-    `ngrok http 3000 --verify-webhook pagerduty --verify-webhook-secret {your webhook payload signing}`
+
+    ```bash
+    ngrok http 3000 --verify-webhook pagerduty --verify-webhook-secret {your webhook payload signing}
+    ```
 
 1. Access PagerDuty (`https://{tenant}.pagerduty.com/incidents`) and create a new incident.
 
-Verify that your local application receives the request and logs information to the terminal.
+1. Verify that your local application receives the request and logs information to the terminal.
 
+:::info Need some help?
 
+We all do sometimes 😅. To get help from our team, join our [Slack Community](https://ngrok.com/slack).
+
+:::

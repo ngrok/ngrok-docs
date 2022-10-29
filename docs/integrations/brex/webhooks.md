@@ -144,7 +144,8 @@ The ngrok signature webhook verification feature allows ngrok to assert that req
 This is a quick step to add extra protection to your application.
 
 1. Use a desktop terminal to execute the following command:
-    ```
+    
+    ```bash
     curl -i -X GET https://platform.brexapis.com/v1/webhooks/secrets -H 'Authorization: Bearer YOUR_TOKEN_HERE'
     ```
     **Note**: Replace `YOUR_TOKEN_HERE` with the token value you copied before. See [Integrate ngrok and Brex](#setup-webhook).
@@ -152,11 +153,14 @@ This is a quick step to add extra protection to your application.
 1. Brex API responds with HTTP status 200 and a JSON containing the `"secret": "<webhook_secret>"` attribute/value pair.
 
 1. Restart your ngrok agent by running the command, replacing `{webhook_secret}` with the value of the **secret** attribute you received before:
-    `ngrok http 3000 --verify-webhook BREX --verify-webhook-secret {webhook_secret}`
+    
+    ```bash
+    ngrok http 3000 --verify-webhook BREX --verify-webhook-secret {webhook_secret}
+    ```
 
 1. Access the [Brex Dashboard](https://dashboard.brex.com), sign in using your Brex account, and create a new user. See [Run Webhooks with Brex and ngrok](#run-webhook).
 
-Verify that your local application receives the request and logs information to the terminal after you create the new user and the invitation is accepted.
+    Verify that your local application receives the request and logs information to the terminal after you create the new user and the invitation is accepted.
 
 
 

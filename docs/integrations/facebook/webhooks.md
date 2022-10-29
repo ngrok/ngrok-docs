@@ -73,7 +73,9 @@ Once your app is running successfully on localhost, let's get it on the internet
 1. Close the **Start a Tunnel** pane and then close the **Domain** pane.
 
 1. Start ngrok by running the following command in a terminal on your local desktop:
-    `ngrok http 3000 --region=us --hostname=myexample.ngrok.io`
+    ```bash
+    ngrok http 3000 --region=us --hostname=myexample.ngrok.io
+    ```
 
 1. ngrok will display a URL where your localhost application is exposed to the internet (copy this URL for use with Facebook).
     ![ngrok agent running](/img/integrations/launch_ngrok_tunnel_domain.png)
@@ -166,8 +168,11 @@ This is a quick step to add extra protection to your application.
 1. In the **Basic Settings** page, click **Show** to reveal the **App secret** value and copy this value.
 
 1. Restart your ngrok agent by running the command, replacing `{your app secret}` with the value you have copied before:
-    `ngrok http 3000 --region=us --hostname=myexample.ngrok.io --verify-webhook facebook --verify-webhook-secret {your app secret}`
+    
+    ```bash
+    ngrok http 3000 --region=us --hostname=myexample.ngrok.io --verify-webhook facebook_graph_api --verify-webhook-secret {your app secret}
+    ```
 
 1. Access the Facebook page you have assigned to your webhook and send a message to another Facebook user.
 
-Verify that your local application receives the request and logs information to the terminal.
+    Verify that your local application receives the request and logs information to the terminal.

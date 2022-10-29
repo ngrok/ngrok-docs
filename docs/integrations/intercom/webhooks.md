@@ -155,7 +155,9 @@ This is a quick step to add extra protection to your application.
 1. In the **Basic information** page, copy the **Client secret** value.
 
 1. Restart your ngrok agent by running the command, replacing `{your client secret}` with the value you copied before:
-    `ngrok http 3000 --verify-webhook intercom --verify-webhook-secret {your client secret}`
+    ```bash
+    ngrok http 3000 --verify-webhook intercom --verify-webhook-secret {your client secret}
+    ```
 
 1. Access the [Intercom Home](https://app.intercom.com/) page and create a new contact.
 

@@ -76,6 +76,7 @@ ngrok can leverage Okta SSO in two ways:
     --oidc-client-secret=<okta_client_secret> \
     --subdomain=okta-sso-test
     ```
+
 1. Skip to **Step 3**
 
 ### **Option 2**: ngrok Edge

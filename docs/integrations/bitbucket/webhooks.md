@@ -55,9 +55,11 @@ Once your app is running successfully on localhost, let's get it on the internet
 1. Go to the [ngrok dashboard](https://dashboard.ngrok.com) and copy your Authtoken. <br />
     **Tip:** The ngrok agent uses the auth token to log into your account when you start a tunnel.
 1. Start ngrok by running the following command:
+
     ```bash
     ngrok http 3000
     ```
+    
 1. ngrok will display a URL where your localhost application is exposed to the internet (copy this URL for use with Bitbucket).
     ![ngrok agent running](/img/integrations/launch_ngrok_tunnel.png)
 

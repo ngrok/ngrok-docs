@@ -152,7 +152,9 @@ This is a quick step to add extra protection to your application.
 1. In the **Webhooks** section of the **Notifications** page, Shopify shows a value after the **All your webhooks will be signed with** message. Copy this value.
 
 1. Restart your ngrok agent by running the command, replacing `{your signing secret}` with the value you copied before:
-    `ngrok http 3000 --verify-webhook shopify --verify-webhook-secret {your signing secret}`
+    ```bash
+    ngrok http 3000 --verify-webhook shopify --verify-webhook-secret {your signing secret}
+    ```
 
 1. Access your Shopify store admin page, click **Products** in the left menu, and then create a new product.
 

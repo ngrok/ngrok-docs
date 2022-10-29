@@ -159,7 +159,11 @@ This is a quick step to add extra protection to your application.
 
 1. Enter a text for the **Secret token** field and click **Save changes**.
 
-1. In the **Project Hooks** section, click **Test** for your webhook, and then click **Push events**.
+1. Restart your ngrok agent by running the command, replacing `{your secret token}` with the value you have provided to the **Secret token** field (See [Integrate  GitLab](#setup-webhook)):
+    ```bash
+    ngrok http 3000 --verify-webhook gitlab --verify-webhook-secret {your secret token}
+    ```
 
-Verify that your local application receives a request header named **x-gitlab-token** with the text you've provided during the webhook configuration.
-Your application can use this information to assert it comes from your GitLab repository.
+1. In the **Project Hooks** section, click **Test** for your webhook, and then click **Push events**. Alternatively, push content to your repository.
+
+Verify that your local application receives the request and logs information to the terminal.
