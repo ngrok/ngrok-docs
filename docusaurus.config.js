@@ -10,7 +10,7 @@ const docsRepo = 'https://github.com/ngrok/ngrok-docs'
 const config = {
   title: 'ngrok documentation',
   tagline: 'online in one line',
-  url: 'https://www.ngrok.com',
+  url: 'https://ngrok.com',
   baseUrl: '/docs/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'throw',
@@ -258,10 +258,6 @@ const config = {
         },
       },
     }),
-
-  // scripts: [
-  //   { src: 'https://ngrok.com/docs/scripts/redirects.js', defer: true, },
-  // ]
 };
 
 module.exports = config;
