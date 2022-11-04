@@ -58,6 +58,7 @@ const sidebars = {
         { label: 'Brex', type: 'doc', id: 'integrations/brex/webhooks', },
         { label: 'Calendly', type: 'doc', id: 'integrations/calendly/webhooks', },
         { label: 'Circle CI', type: 'doc', id: 'integrations/circleci/webhooks', },
+        { label: 'Coinbase', type: 'doc', id: 'integrations/coinbase/webhooks', },
         { label: 'Contentful', type: 'doc', id: 'integrations/contentful/webhooks', },
         { label: 'DocuSign', type: 'doc', id: 'integrations/docusign/webhooks', },
         { label: 'Dropbox', type: 'doc', id: 'integrations/dropbox/webhooks', },
