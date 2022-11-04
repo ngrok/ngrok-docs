@@ -75,7 +75,7 @@ To register a webhook on your Modern Treasury account follow the instructions be
 1. Access the [Modern Treasury site](https://app.moderntreasury.com/) and sign in using your Modern Treasury account.
 
 1. On the left menu, click **View Sandbox** to switch to Sandbox mode.
-    **Note**: The Sandbox view provides you with example accounts which allow you to test Modern Treasury funcions. If you have an active Modern Treasury account you can follow these steps without switching to Sandbox mode.
+    **Note**: The Sandbox view provides you with example accounts that allow you to test Modern Treasury functions. If you have an active Modern Treasury account you can follow these steps without switching to Sandbox mode.
 
 1. On the left menu, click **Developers**, click the **Webhooks** tab, and then click **Create New Webhook Endpoint**.
 
@@ -93,15 +93,15 @@ You can trigger new calls from Modern Treasury to your application by following 
 1. Access the [Modern Treasury site](https://app.moderntreasury.com/) and sign in using your Modern Treasury account.
 
 1. On the left menu, click **View Sandbox** to switch to Sandbox.
-    **Note**: The Sandbox view provides you with example accounts which allow you to test Modern Treasury funcions. With you have an active Modern Treasury account you can follow these steps without switching to Sandbox view.
+    **Note**: The Sandbox view provides you with example accounts that allow you to test Modern Treasury functions. If you have an active Modern Treasury account you can follow these steps without switching to Sandbox view.
 
 1. On the left menu, click **Payments** and then click **Payments Overview**.
 
 1. On the **Payments Overview** page, click **Create New** and then click **Payment Order**.
 
-1. On the **Create Payment Order** page, click **Pay**, select one of the revenue accounts in the **From** field, select one of the counterparties account in the **To** field, select **ACH** as the **Payment Method**, enter **$10.00** as the **Amount**, and then click **Create Payment Order**.
+1. On the **Create Payment Order** page, click **Pay**, select one of the revenue accounts in the **From** field, select one of the counterparties accounts in the **To** field, select **ACH** as the **Payment Method**, enter **$10.00** as the **Amount**, and then click **Create Payment Order**.
 
-    Confirm your localhost app receives event notifications every time the payment gets updated, and logs both headers and body in the terminal.
+    Confirm your localhost app receives event notifications every time the payment gets updated and logs both headers and body in the terminal.
 
 Optionally, you can verify the log of the webhook call in Modern Treasury:
 
@@ -150,7 +150,7 @@ This is a quick step to add extra protection to your application.
 1. Access the [Modern Treasury site](https://app.moderntreasury.com/) and sign in using your Modern Treasury account.
 
 1. On the left menu, click **View Sandbox** to switch to Sandbox mode.
-    **Note**: The Sandbox view provides you with example accounts which allow you to test Modern Treasury funcions. If you have an active Modern Treasury account you can follow these steps without switching to Sandbox mode.
+    **Note**: The Sandbox view provides you with example accounts that allow you to test Modern Treasury functions. If you have an active Modern Treasury account you can follow these steps without switching to Sandbox mode.
 
 1. On the left menu, click **Developers**, click the **Webhooks** tab, and then click the URL of your webhook.
 
