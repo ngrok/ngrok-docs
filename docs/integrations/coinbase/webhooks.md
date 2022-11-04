@@ -91,7 +91,9 @@ You can trigger new calls from Coinbase to your application by following the ins
 
 1. Access the [Coinbase homepage](https://www.coinbase.com/), sign in using your Coinbase account, and then click **Trade** on the left menu.
 
-1. On the **Trade** page, click **Simple** on the top menu, and then click **Buy** to buy one of the assets that appears on the screen.
+1. On the **Trade** page, click **Simple** on the top menu, and then click **Buy** to buy one of the assets that appear on the screen.
+
+1. On the **Buy** popup, enter the monetary amount, click **Preview Buy**, and then click **Buy now**.
 
     Confirm your localhost app receives the create-project event notification and logs both headers and body in the terminal.
 
@@ -119,7 +121,7 @@ The ngrok Request Inspector provides a replay function that you can use to test 
 
 1. Click **Replay** to execute the same request to your application or select **Replay with modifications** to modify the content of the original request before sending the request.
 
-1. If you choose to **Replay with modifications**, you can modify any content from the original request. For example, you can modify the **value** field inside the body of the request.
+1. If you choose to **Replay with modifications**, you can modify any content from the original request. For example, you can modify the **amount** field inside the body of the request.
 
 1. Click **Replay**.
 
