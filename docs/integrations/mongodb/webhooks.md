@@ -94,11 +94,11 @@ To register a webhook on your MongoDB account follow the instructions below:
 MongoDB sends different request body contents depending on the event that is being triggered.
 You can trigger new calls from MongoDB to your application by following the instructions below.
 
-1. In the same browser, access [MongoDB](https://MongoDB/), and then click **+** close to your team name on the left menu.
+1. On your project home page, click the person icon to invite to project.
 
-1. On the **New Project** popup, enter a project name and then click **Create Project**.
+1. In the **invite new users via email address** field, enter an email to invite to your project.
 
-    Confirm your localhost app receives the create-project event notification and logs both headers and body in the terminal.
+1. The new user receives an email and is required to register to MongoDB Atlas. After registration, confirm your localhost app receives an event notification and logs both headers and body in the terminal.
 
 
 ### Inspecting requests
