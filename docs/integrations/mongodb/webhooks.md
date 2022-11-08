@@ -12,7 +12,7 @@ To integrate MongoDB webhooks with ngrok:
 :::
 
 
-This guide covers how to use ngrok to integrate your localhost app with MongoDB by using Webhooks.
+This guide covers how to use ngrok to integrate your localhost app with MongoDB Atlas by using Webhooks.
 MongoDB webhooks can be used to notify an external application whenever specific events occur in your MongoDB account. 
 
 By integrating ngrok with MongoDB, you can:
