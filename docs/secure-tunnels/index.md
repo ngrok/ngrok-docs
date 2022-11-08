@@ -14,7 +14,7 @@ Using ngrok Secure Tunnels means that you can treat every device as being local,
 
 ngrok Secure Tunnels work by using a locally installed ngrok agent to establish a connection to the ngrok service. Once the connection is established, you get a public endpoint that you or others can use to access your local service.
 
-When a user hits the public ngrok endpoint, the ngrok edge figures out where to route the request to and forwards it over an encrypted connection to the locally running ngrok agent. From there, the local ngrok agent takes care of sending traffic to your upstream service. The communication between the ngrok edge and agent is secure and encrypted. Traffic from the user to the ngrok edge, and from the ngrok agent to the upstream service rely on the protocol you are using for encryption. For protocols that support end to end encryption using TLS, we provide a [TLS tunnel](/secure-tunnels#tls-tunnels) option.
+When a user hits the public ngrok endpoint, the ngrok edge figures out where to route the request to and forwards it over an encrypted connection to the locally running ngrok agent. From there, the local ngrok agent takes care of sending traffic to your upstream service. The communication between the ngrok edge and agent is secure and encrypted. Traffic from the user to the ngrok edge, and from the ngrok agent to the upstream service rely on the protocol you are using for encryption. For protocols that support end to end encryption using TLS, we provide a [TLS tunnel](/secure-tunnels/tunnels/tls-tunnels) option.
 
 ## Integrating with Cloud Edge
 
