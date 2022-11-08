@@ -124,7 +124,7 @@ The ngrok Request Inspector provides a replay function that you can use to test 
 
 1. Click **Replay** to execute the same request to your application or select **Replay with modifications** to modify the content of the original request before sending the request.
 
-1. If you choose to **Replay with modifications**, you can modify any content from the original request. For example, you can modify the **id** field inside the body of the request.
+1. If you choose to **Replay with modifications**, you can modify any content from the original request. For example, you can modify the **humanReadable** field inside the body of the request.
 
 1. Click **Replay**.
 
@@ -139,17 +139,11 @@ The ngrok signature webhook verification feature allows ngrok to assert that req
 
 This is a quick step to add extra protection to your application.
 
-1. Access [MongoDB Developer](https://developer.MongoDB/).
-
-1. On the top menu of the developer site, click **DEVELOPER TOOLS** and then click **Webhooks**.
-
-1. On the **Webhooks** page, click **Copy** to copy the **Secret** value.
-
-1. Restart your ngrok agent by running the command, replacing `{your webhook secret}` with the value you have copied before (See [Integrate ngrok and MongoDB.](#setup-webhook)):
+1. Restart your ngrok agent by running the command, replacing `{your webhook secret}` with the value of the **Webhook Secret** field you copied during the webhook registration (See [Integrate ngrok and MongoDB.](#setup-webhook)):
     ```bash
     ngrok http 3000 --verify-webhook MONGODB --verify-webhook-secret {your webhook secret}
     ```
 
-1. Access [MongoDB](https://MongoDB/) and create a new project.
+1. Access your project home page and invite a new person to your project.
 
 Verify that your local application receives the request and logs information to the terminal.
