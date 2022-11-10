@@ -83,6 +83,7 @@ const sidebars = {
         { label: 'SendGrid', type: 'doc', id: 'integrations/sendgrid/webhooks', },
         { label: 'Sentry', type: 'doc', id: 'integrations/sentry/webhooks', },
         { label: 'Shopify', type: 'doc', id: 'integrations/shopify/webhooks', },
+        { label: 'Svix', type: 'doc', id: 'integrations/svix/webhooks', },
         { label: 'Slack', type: 'doc', id: 'integrations/slack/webhooks', },
         { label: 'Square', type: 'doc', id: 'integrations/square/webhooks', },
         { label: 'Stripe', type: 'doc', id: 'integrations/stripe/webhooks', },
