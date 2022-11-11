@@ -13,7 +13,7 @@ To integrate Svix webhooks with ngrok:
 
 
 This guide covers how to use ngrok to integrate your localhost app with Svix by using Webhooks.
-Svix webhooks can be used to notify an external application whenever specific events occur in your Svix account. 
+Svix incoming webhooks can be used to notify an external application whenever specific events occur in your Svix account. 
 
 By integrating ngrok with Svix, you can:
 
@@ -72,16 +72,18 @@ Once your app is running successfully on localhost, let's get it on the internet
 
 To register a webhook on your Svix account follow the instructions below:
 
-1. Access [Svix](https://svix.com/) and sign in using your Svix account.
+1. Access [Svix Dashboard](https://dashboard.svix.com/) and sign in using your Svix account.
 
-1. On the top menu of the developer site, click **DEVELOPER TOOLS** and then click **Webhooks**.
+1. On the left menu, click **Incoming Webhooks** and then click **Add Endpoint**.
 
-1. On the **Webhooks** page, click **Create a Webhook**.
-
-1. On the **Create a new webhook** page, enter a name in the **NAME** field, and in the **URL** field enter the URL provided by the ngrok agent to expose your application to the internet (i.e. `https://1a2b-3c4d-5e6f-7g8h-9i0j.sa.ngrok.io`).
+1. Enter the URL provided by the ngrok agent to expose your application to the internet in the **Endpoint URL** field (i.e. `https://1a2b-3c4d-5e6f-7g8h-9i0j.sa.ngrok.io`).
     ![svix URL to Publish](img/ngrok_url_configuration_svix.png)
 
-1. Select your team for the **TEAM** field, click the **created** checkbox for **Projects** under the **EVENTS** section, and then click **Submit**.
+1. In the **Message Filtering** section, select all events by click the **endpoint** and **message** checkboxes, and then click **Create**.
+
+1. In the webhook page, click the **Testing** tab and then click **Send Example**.
+
+    Confirm your localhost app receives a request and logs both headers and body in the terminal.
 
 
 ### Run Webhooks with Svix and ngrok
@@ -89,21 +91,18 @@ To register a webhook on your Svix account follow the instructions below:
 Svix sends different request body contents depending on the event that is being triggered.
 You can trigger new calls from Svix to your application by following the instructions below.
 
-1. In the same browser, access [Svix](https://svix.com/), and then click **+** close to your team name on the left menu.
+1. On the [Svix Dashboard](https://dashboard.svix.com/), click **Consumer Applications** on the left menu and then click your app.
+    **Note**: If you don't have an application, create a new one.
 
-1. On the **New Project** popup, enter a project name and then click **Create Project**.
+1. On the app page, click **Preview App Portal** and then click **Add Endpoint**.
 
-    Confirm your localhost app receives the create-project event notification and logs both headers and body in the terminal.
+1. On the **New Endpoint** page, click **use Svix Play** or enter a URL in the **Endpoint URL** field, and then click **Create**.
 
-Optionally, you can verify the log of the webhook call in Svix:
+    Confirm your localhost app receives the request and logs both headers and body in the terminal.
 
-1. In the same browser, access [Svix Developer](https://developer.Svix/).
+Optionally, you can verify the log of the webhook in the Svix dashboard:
 
-1. On the top menu of the developer site, click **DEVELOPER TOOLS** and then click **Webhooks**.
-
-1. On the **Webhooks** page, click **View logs** close to your webhook.
-
-1. On the **Webhook Logs** page, click **View details** and confirm 
+1. Access [Svix Dashboard](https://dashboard.svix.com/), click **Incoming Webhooks** on the left menu, click the **Logs** tab, and then click one of the logs. 
     ![Webhook Logs](img/ngrok_logs_svix.png)
 
 
@@ -145,17 +144,15 @@ The ngrok signature webhook verification feature allows ngrok to assert that req
 
 This is a quick step to add extra protection to your application.
 
-1. Access [Svix Developer](https://developer.Svix/).
+1. Access [Svix Dashboard](https://dashboard.svix.com/) and sign in using your Svix account.
 
-1. On the top menu of the developer site, click **DEVELOPER TOOLS** and then click **Webhooks**.
+1. On the left menu, click **Incoming Webhooks**, click the URL of your webhook, click the eye icon under the **Signing Secret** section, and then copy the value of the signing secret.
 
-1. On the **Webhooks** page, click **Copy** to copy the **Secret** value.
-
-1. Restart your ngrok agent by running the command, replacing `{your webhook secret}` with the value you have copied before (See [Integrate ngrok and Svix.](#setup-webhook)):
+1. Restart your ngrok agent by running the command, replacing `{your webhook secret}` with the value you have copied before:
     ```bash
     ngrok http 3000 --verify-webhook svix --verify-webhook-secret {your webhook secret}
     ```
 
-1. Access [Svix](https://Svix/) and create a new project.
+1. Access [Svix Dashboard](https://dashboard.svix.com/) and create a new endpoint.
 
 Verify that your local application receives the request and logs information to the terminal.
