@@ -72,14 +72,14 @@ Once your app is running successfully on localhost, let's get it on the internet
 
 To register a webhook on your Svix account follow the instructions below:
 
-1. Access [Svix Dashboard](https://dashboard.svix.com/) and sign in using your Svix account.
+1. Access the [Svix Dashboard](https://dashboard.svix.com/) and sign in using your Svix account.
 
 1. On the left menu, click **Incoming Webhooks** and then click **Add Endpoint**.
 
 1. Enter the URL provided by the ngrok agent to expose your application to the internet in the **Endpoint URL** field (i.e. `https://1a2b-3c4d-5e6f-7g8h-9i0j.sa.ngrok.io`).
     ![svix URL to Publish](img/ngrok_url_configuration_svix.png)
 
-1. In the **Message Filtering** section, select all events by click the **endpoint** and **message** checkboxes, and then click **Create**.
+1. In the **Message Filtering** section, select all events by clicking the **endpoint** and **message** checkboxes, and then click **Create**.
 
 1. In the webhook page, click the **Testing** tab and then click **Send Example**.
 
@@ -102,7 +102,7 @@ You can trigger new calls from Svix to your application by following the instruc
 
 Optionally, you can verify the log of the webhook in the Svix dashboard:
 
-1. Access [Svix Dashboard](https://dashboard.svix.com/), click **Incoming Webhooks** on the left menu, click the **Logs** tab, and then click one of the logs. 
+1. Access the [Svix Dashboard](https://dashboard.svix.com/), click **Incoming Webhooks** on the left menu, click the **Logs** tab, and then click one of the logs. 
     ![Webhook Logs](img/ngrok_logs_svix.png)
 
 
@@ -129,7 +129,7 @@ The ngrok Request Inspector provides a replay function that you can use to test 
 
 1. Click **Replay** to execute the same request to your application or select **Replay with modifications** to modify the content of the original request before sending the request.
 
-1. If you choose to **Replay with modifications**, you can modify any content from the original request. For example, you can modify the **id** field inside the body of the request.
+1. If you choose to **Replay with modifications**, you can modify any content from the original request. For example, you can modify the **endpointId** field inside the body of the request.
 
 1. Click **Replay**.
 
@@ -144,7 +144,7 @@ The ngrok signature webhook verification feature allows ngrok to assert that req
 
 This is a quick step to add extra protection to your application.
 
-1. Access [Svix Dashboard](https://dashboard.svix.com/) and sign in using your Svix account.
+1. Access the [Svix Dashboard](https://dashboard.svix.com/) and sign in using your Svix account.
 
 1. On the left menu, click **Incoming Webhooks**, click the URL of your webhook, click the eye icon under the **Signing Secret** section, and then copy the value of the signing secret.
 
@@ -153,6 +153,6 @@ This is a quick step to add extra protection to your application.
     ngrok http 3000 --verify-webhook svix --verify-webhook-secret {your webhook secret}
     ```
 
-1. Access [Svix Dashboard](https://dashboard.svix.com/) and create a new endpoint.
+1. Access the [Svix Dashboard](https://dashboard.svix.com/) and create a new endpoint.
 
 Verify that your local application receives the request and logs information to the terminal.
