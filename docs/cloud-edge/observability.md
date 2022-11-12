@@ -1,6 +1,5 @@
 ---
-sidebar_position: 6
-description: When you create an edge, you will automatically be assigned a reserved domain or TCP address depending on the type of edge you create. You can customize this endpoint by adding your own reserved or custom branded domain. An edge can have many endpoints, and each will use the same configuration.
+sidebar_position: 7
 ---
 
 # Observability
