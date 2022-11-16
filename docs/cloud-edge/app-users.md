@@ -27,7 +27,7 @@ To view App users and sessions:
 
     The sessions are displayed in the table. 
 
-1. Alternatively, use the search bar to filter sessions by identity provider, User, and ID.
+1. Alternatively, use the search bar to filter users by identity provider, User, and ID.
 
 ### View Session Details
 
