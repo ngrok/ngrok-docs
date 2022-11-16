@@ -68,42 +68,40 @@ Once your app is running successfully on localhost, let's get it on the internet
     ![ngrok agent running](/img/integrations/launch_ngrok_tunnel.png)
 
 
-## **Step 3**: Integrate  Typeform {#setup-webhook}
+## **Step 3**: Integrate Typeform {#setup-webhook}
 
 To register a webhook on your Typeform account follow the instructions below:
 
 1. Access [Typeform](https://www.typeform.com/) and sign in using your Typeform account.
 
-1. On the top menu of the developer site, click **DEVELOPER TOOLS** and then click **Webhooks**.
+1. On your workspace click one of the forms you have listed.
+    **Note**: If you don't have a form created, click **Create typeform**, click **Create it for me**, and then click **Publish**.
 
-1. On the **Webhooks** page, click **Create a Webhook**.
+1. On your form page, click **Connect** on the top menu, click the **WEBHOOKS** tab, and then click **Add a webhook**.
 
-1. On the **Create a new webhook** page, enter a name in the **NAME** field, and in the **URL** field enter the URL provided by the ngrok agent to expose your application to the internet (i.e. `https://1a2b-3c4d-5e6f-7g8h-9i0j.sa.ngrok.io`).
-    ![typeform URL to Publish](img/ngrok_url_configuration_typeform.png)
+1. On the **Add a webhook** popup, enter the URL provided by the ngrok agent to expose your application to the internet in the **Endpoint** field (i.e. `https://1a2b-3c4d-5e6f-7g8h-9i0j.sa.ngrok.io`).
+    ![URL to Publish](img/ngrok_url_configuration_typeform.png)
 
-1. Select your team for the **TEAM** field, click the **created** checkbox for **Projects** under the **EVENTS** section, and then click **Submit**.
+1. Click **Save Webhook**.
+
+1. On the **Webhook** page, click the **Webhook** switch to turn it on, click **Edit**, enter `12345` in the **Secret** field, and then click **Save changes**.
+    ![URL to Publish](img/ngrok_url_configuration_typeform_2.png)
 
 
 ### Run Webhooks with Typeform and ngrok
 
-Typeform sends different request body contents depending on the event that is being triggered.
+Typeform sends a post request to your application whenever someone submits a new typeform.
 You can trigger new calls from Typeform to your application by following the instructions below.
 
-1. In the same browser, access [Typeform](https://www.typeform.com/), and then click **+** close to your team name on the left menu.
+1. In the same browser, access [Typeform admin console](https://www.typeform.com/), click the name of your typeform, click **Share** on the top menu, click **Copy link** and then open this link in a new web browser tab or window.
 
-1. On the **New Project** popup, enter a project name and then click **Create Project**.
+1. Answer the questions of your typeform, and then click **Submit** at the end of the form flow.
 
     Confirm your localhost app receives the create-project event notification and logs both headers and body in the terminal.
 
 Optionally, you can verify the log of the webhook call in Typeform:
 
-1. In the same browser, access [Typeform Developer](https://developer.Typeform/).
-
-1. On the top menu of the developer site, click **DEVELOPER TOOLS** and then click **Webhooks**.
-
-1. On the **Webhooks** page, click **View logs** close to your webhook.
-
-1. On the **Webhook Logs** page, click **View details** and confirm 
+1. Access[Typeform admin console](https://www.typeform.com/), click the name of your typeform, click **Connect** on the top menu, click the **WEBHOOKS** tab, and then click **View deliveries**.
     ![Webhook Logs](img/ngrok_logs_typeform.png)
 
 
@@ -130,7 +128,7 @@ The ngrok Request Inspector provides a replay function that you can use to test 
 
 1. Click **Replay** to execute the same request to your application or select **Replay with modifications** to modify the content of the original request before sending the request.
 
-1. If you choose to **Replay with modifications**, you can modify any content from the original request. For example, you can modify the **id** field inside the body of the request.
+1. If you choose to **Replay with modifications**, you can modify any content from the original request. For example, you can modify the **title** field inside the body of the request.
 
 1. Click **Replay**.
 
@@ -145,7 +143,7 @@ The ngrok signature webhook verification feature allows ngrok to assert that req
 
 This is a quick step to add extra protection to your application.
 
-1. Restart your ngrok agent by running the command, replacing `{your webhook secret}` with the value you have copied before (See [Integrate ngrok and Typeform.](#setup-webhook)):
+1. Restart your ngrok agent by running the command, replacing `{your webhook secret}` with the value of the **secret** atribute you provided in the webhook registration (See [Integrate ngrok and Typeform.](#setup-webhook)):
     ```bash
     ngrok http 3000 --verify-webhook typeform --verify-webhook-secret {your webhook secret}
     ```
