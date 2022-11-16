@@ -25,7 +25,7 @@ To view App users and sessions:
 
 1. In the [ngrok Dashboard](https://dashboard.ngrok.com), navigate to **Cloud Edge** > **App Users** (or access the [App Users](https://dashboard.ngrok.com/cloud-edge/app-users) page directly)
 
-    The sessions are displayed in the table. 
+    The users are displayed in the table. 
 
 1. Alternatively, use the search bar to filter users by identity provider, User, and ID.
 
