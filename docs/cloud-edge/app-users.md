@@ -33,7 +33,7 @@ To view App users and sessions:
 
 1. Access the [App Users](https://dashboard.ngrok.com/cloud-edge/app-users) page.
 
-1. On the App Users table, select a session:
+1. On the App Users table, select a user:
 
     - ngrok displays the table with a session overview, including the provider who authenticated your session, basic information about the user, and the identity provider used for login
     - ngrok also displays a list of tunnels and edges the user accessed.
