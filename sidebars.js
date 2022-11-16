@@ -53,6 +53,7 @@ const sidebars = {
       type: 'category',
       // TODO: @sudobinbash: Change to autogen (for scalability)
       items: [ 
+        { label: 'Airship', type: 'doc', id: 'integrations/airship/webhooks', },
         { label: 'Bitbucket', type: 'doc', id: 'integrations/bitbucket/webhooks', },
         { label: 'Box', type: 'doc', id: 'integrations/box/webhooks', },
         { label: 'Brex', type: 'doc', id: 'integrations/brex/webhooks', },
