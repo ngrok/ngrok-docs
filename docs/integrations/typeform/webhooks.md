@@ -148,6 +148,6 @@ This is a quick step to add extra protection to your application.
     ngrok http 3000 --verify-webhook typeform --verify-webhook-secret {your webhook secret}
     ```
 
-1. Access [Typeform](https://www.typeform.com/), sign in and create a new ...
+1. Access your form URL, answer the questions of your typeform, and then click **Submit** at the end of the form flow. 
 
 Verify that your local application receives the request and logs information to the terminal.
