@@ -74,16 +74,17 @@ To register a webhook on your Airship account follow the instructions below:
 
 1. Access [Airship](https://www.airship.com/) and sign in using your Airship account.
 
-1. In the same browser, access [Airship Developer](https://developer.Airship/).
+1. In the **Projects** pages, click one of the projects in the list.
+    **Note**: If you don't have a project create a new one by clicking **Create Project**.
 
-1. On the top menu of the developer site, click **DEVELOPER TOOLS** and then click **Webhooks**.
+1. On your project page, click **Settings**, click **Manage** in the **Real-Time Data Streaming** tile, and then click the **Webhooks** tile.
 
-1. On the **Webhooks** page, click **Create a Webhook**.
-
-1. On the **Create a new webhook** page, enter a name in the **NAME** field, and in the **URL** field enter the URL provided by the ngrok agent to expose your application to the internet (i.e. `https://1a2b-3c4d-5e6f-7g8h-9i0j.sa.ngrok.io`).
+1. On the **Create a new Webhook integration** page, enter a name in the **Name** field, a description in the **Description** field, and nter the URL provided by the ngrok agent to expose your application to the internet in the **Webhook Endpoint URL** field (i.e. `https://1a2b-3c4d-5e6f-7g8h-9i0j.sa.ngrok.io`).
     ![airship URL to Publish](img/ngrok_url_configuration_airship.png)
 
-1. Select your team for the **TEAM** field, click the **created** checkbox for **Projects** under the **EVENTS** section, and then click **Submit**.
+1. On the **Event Type Configuration** section, choose the eventy types you would like to send to your Webhook. For this tutorial, click the **Message Center Read, Delivery, and Delete Events** checkbox.
+
+1. Click **Activate**.
 
 
 ### Run Webhooks with Airship and ngrok
