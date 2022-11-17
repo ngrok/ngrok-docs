@@ -68,7 +68,7 @@ Once your app is running successfully on localhost, let's get it on the internet
     ![ngrok agent running](/img/integrations/launch_ngrok_tunnel.png)
 
 
-## **Step 3**: Integrate  Coinbase {#setup-webhook}
+## **Step 3**: Integrate Coinbase {#setup-webhook}
 
 To register a webhook on your Coinbase account follow the instructions below:
 
@@ -78,7 +78,7 @@ To register a webhook on your Coinbase account follow the instructions below:
 
 1. On the **Settings** page, click the **API** tab and then click **New API Key**.
 
-1. On the **New API Key** popup, click **all** under the **Accounts** section, click **Select all** under **Permissions** section, and enter the URL provided by the ngrok agent to expose your application to the internet in the **Notification URL** field (i.e. `https://1a2b-3c4d-5e6f-7g8h-9i0j.sa.ngrok.io`).
+1. On the **New API Key** popup, click **all** under the **Accounts** section, click **Select all** under the **Permissions** section, and enter the URL provided by the ngrok agent to expose your application to the internet in the **Notification URL** field (i.e. `https://1a2b-3c4d-5e6f-7g8h-9i0j.sa.ngrok.io`).
     ![coinbase URL to Publish](img/ngrok_url_configuration_coinbase.png)
 
 1. Cilck **Create**, and then copy the value of the **API Key** and **API Secret** that appear on the **API Key details** popup.
