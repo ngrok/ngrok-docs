@@ -7,7 +7,6 @@ To integrate Airship webhooks with ngrok:
 1. [Launch your local webhook.](#start-your-app) `npm start`
 1. [Launch ngrok.](#start-ngrok) `ngrok http 3000`
 1. [Configure Airship webhooks with your ngrok URL.](#setup-webhook)
-1. **Bonus!** [Use ngrok like a PRO.](#security)
 
 :::
 
@@ -20,7 +19,6 @@ By integrating ngrok with Airship, you can:
 - **Develop and test Airship webhooks locally**, eliminating the time in deploying your development code to a public environment and setting it up in HTTPS.
 - **Inspect and troubleshoot requests from Airship** in real-time via the inspection UI and API.
 - **Modify and Replay Airship Webhook requests** with a single click and without spending time reproducing events manually in your Airship account.
-- **Secure your app with Airship validation provided by ngrok**. Invalid requests are blocked by ngrok before reaching your app.
 
 
 ## **Step 1**: Start your app {#start-your-app}
@@ -74,15 +72,15 @@ To register a webhook on your Airship account follow the instructions below:
 
 1. Access [Airship](https://www.airship.com/) and sign in using your Airship account.
 
-1. In the **Projects** pages, click one of the projects in the list.
-    **Note**: If you don't have a project create a new one by clicking **Create Project**.
+1. In the **Projects** pages, click the **1st Flight DEMO** tile.
+    **Note**: Airship provides the **1st Flight** project when you register for Airship. Optionally, you can use your own project, or create a new one by clicking **Create Project**.
 
-1. On your project page, click **Settings**, click **Manage** in the **Real-Time Data Streaming** tile, and then click the **Webhooks** tile.
+1. On the **1st Flight** project page, click **Settings**, click **Manage** in the **Real-Time Data Streaming** tile, and then click the **Webhooks** tile.
 
 1. On the **Create a new Webhook integration** page, enter a name in the **Name** field, a description in the **Description** field, and nter the URL provided by the ngrok agent to expose your application to the internet in the **Webhook Endpoint URL** field (i.e. `https://1a2b-3c4d-5e6f-7g8h-9i0j.sa.ngrok.io`).
     ![airship URL to Publish](img/ngrok_url_configuration_airship.png)
 
-1. On the **Event Type Configuration** section, choose the eventy types you would like to send to your Webhook. For this tutorial, click the **Message Center Read, Delivery, and Delete Events** checkbox.
+1. On the **Event Type Configuration** section, choose the eventy types you would like to send to your Webhook. For this tutorial, click all checkboxes.
 
 1. Click **Activate**.
 
@@ -92,22 +90,15 @@ To register a webhook on your Airship account follow the instructions below:
 Airship sends different request body contents depending on the event that is being triggered.
 You can trigger new calls from Airship to your application by following the instructions below.
 
-1. In the same browser, access [Airship](https://Airship/), and then click **+** close to your team name on the left menu.
+1. Access [Airship](https://www.airship.com) and click **1st Flight** on the top left corner of the page or the **1st Flight** tile.
 
-1. On the **New Project** popup, enter a project name and then click **Create Project**.
+1. On the **1st Flight** project page, click **Connect with the 1st Flight App** on the top of the page.
 
-    Confirm your localhost app receives the create-project event notification and logs both headers and body in the terminal.
+1. Enter your email address and click **Get magic link**. Airship sends you an email containing a link to download the **1st Flight** app. 
 
-Optionally, you can verify the log of the webhook call in Airship:
+1. Open the email on your mobile phone, click the link to install the app and execute the app after the installation fininshes.
 
-1. In the same browser, access [Airship Developer](https://developer.Airship/).
-
-1. On the top menu of the developer site, click **DEVELOPER TOOLS** and then click **Webhooks**.
-
-1. On the **Webhooks** page, click **View logs** close to your webhook.
-
-1. On the **Webhook Logs** page, click **View details** and confirm 
-    ![Webhook Logs](img/ngrok_logs_airship.png)
+    Confirm your localhost app receives event notifications and logs both headers and body in the terminal.
 
 
 ### Inspecting requests
@@ -140,25 +131,3 @@ The ngrok Request Inspector provides a replay function that you can use to test 
 Verify that your local application receives the request and logs the corresponding information to the terminal.
 
 
-## **Bonus**: Secure webhook requests {#security}
-
-The ngrok signature webhook verification feature allows ngrok to assert that requests from your Airship webhook are the only traffic allowed to make calls to your localhost app.
-
-**Note:** This ngrok feature requires a Pro or Enterprise license.
-
-This is a quick step to add extra protection to your application.
-
-1. Access [Airship Developer](https://developer.Airship/).
-
-1. On the top menu of the developer site, click **DEVELOPER TOOLS** and then click **Webhooks**.
-
-1. On the **Webhooks** page, click **Copy** to copy the **Secret** value.
-
-1. Restart your ngrok agent by running the command, replacing `{your webhook secret}` with the value you have copied before (See [Integrate ngrok and Airship.](#setup-webhook)):
-    ```bash
-    ngrok http 3000 --verify-webhook airship --verify-webhook-secret {your webhook secret}
-    ```
-
-1. Access [Airship](https://Airship/) and create a new project.
-
-Verify that your local application receives the request and logs information to the terminal.
