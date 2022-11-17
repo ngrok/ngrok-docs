@@ -93,9 +93,9 @@ You can trigger new calls from Aftership to your application by following the in
 
 1. On the [Aftership console](https://admin.aftership.com/), click **Shipments** on the left menu and then click **Add shipment**.
 
-1. On the **Add new shipment** page, enter a tracking number in the **Tracking no.** field and then click **Save shipment**. Optionally, you can fill all fields in this page.
+1. On the **Add new shipment** page, enter a tracking number in the **Tracking no.** field and then click **Save shipment**. Optionally, you can fill in all fields on this page.
 
-    Confirm your localhost app receives a event notification and logs both headers and body in the terminal.
+    Confirm your localhost app receives an event notification and logs both headers and body in the terminal.
 
 
 ### Inspecting requests
