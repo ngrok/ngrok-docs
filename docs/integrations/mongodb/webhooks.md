@@ -81,7 +81,7 @@ To register a webhook on your MongoDB account follow the instructions below:
 
 1. On the **Create a New Alert** popup, under **Alert if**, click **User** as the target, and then click **User joined the project** as the condition.
 
-1. Click **Add**, click **Webhook**, enter the URL provided by the ngrok agent to expose your application to the internet in the **Webhook URL** field (i.e. `https://1a2b-3c4d-5e6f-7g8h-9i0j.sa.ngrok.io`).
+1. Click **Add**, click **Webhook**, and enter the URL provided by the ngrok agent to expose your application to the internet in the **Webhook URL** field (i.e. `https://1a2b-3c4d-5e6f-7g8h-9i0j.sa.ngrok.io`).
     ![Frameio URL to Publish](img/ngrok_url_configuration_mongodb.png)
 
 1. Enter the value `12345` in the **Webhook Secret** field. This value is used to provide more security to your webhook call. (See [Secure webhook requests](#security)).
@@ -94,7 +94,7 @@ To register a webhook on your MongoDB account follow the instructions below:
 MongoDB sends different request body contents depending on the event that is being triggered.
 You can trigger new calls from MongoDB to your application by following the instructions below.
 
-1. On your project home page, click the person icon to invite to project.
+1. On your project home page, click the person icon to invite to the project.
 
 1. In the **invite new users via email address** field, enter an email to invite to your project.
 
@@ -141,7 +141,7 @@ This is a quick step to add extra protection to your application.
 
 1. Restart your ngrok agent by running the command, replacing `{your webhook secret}` with the value of the **Webhook Secret** field you copied during the webhook registration (See [Integrate ngrok and MongoDB.](#setup-webhook)):
     ```bash
-    ngrok http 3000 --verify-webhook MONGODB --verify-webhook-secret {your webhook secret}
+    ngrok http 3000 --verify-webhook mongodb --verify-webhook-secret {your webhook secret}
     ```
 
 1. Access your project home page and invite a new person to your project.
