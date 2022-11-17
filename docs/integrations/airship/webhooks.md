@@ -124,7 +124,7 @@ The ngrok Request Inspector provides a replay function that you can use to test 
 
 1. Click **Replay** to execute the same request to your application or select **Replay with modifications** to modify the content of the original request before sending the request.
 
-1. If you choose to **Replay with modifications**, you can modify any content from the original request. For example, you can modify the **id** field inside the body of the request.
+1. If you choose to **Replay with modifications**, you can modify any content from the original request. For example, you can modify the **device_type** field inside the body of the request.
 
 1. Click **Replay**.
 
