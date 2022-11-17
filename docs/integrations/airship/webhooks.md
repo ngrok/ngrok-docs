@@ -73,14 +73,14 @@ To register a webhook on your Airship account follow the instructions below:
 1. Access [Airship](https://www.airship.com/) and sign in using your Airship account.
 
 1. In the **Projects** pages, click the **1st Flight DEMO** tile.
-    **Note**: Airship provides the **1st Flight** project when you register for Airship. Optionally, you can use your own project, or create a new one by clicking **Create Project**.
+    **Note**: Airship provides the **1st Flight** project when you register for Airship. Optionally, you can use your project or create a new one by clicking **Create Project**.
 
 1. On the **1st Flight** project page, click **Settings**, click **Manage** in the **Real-Time Data Streaming** tile, and then click the **Webhooks** tile.
 
-1. On the **Create a new Webhook integration** page, enter a name in the **Name** field, a description in the **Description** field, and nter the URL provided by the ngrok agent to expose your application to the internet in the **Webhook Endpoint URL** field (i.e. `https://1a2b-3c4d-5e6f-7g8h-9i0j.sa.ngrok.io`).
+1. On the **Create a new Webhook integration** page, enter a name in the **Name** field, a description in the **Description** field, and enter the URL provided by the ngrok agent to expose your application to the internet in the **Webhook Endpoint URL** field (i.e. `https://1a2b-3c4d-5e6f-7g8h-9i0j.sa.ngrok.io`).
     ![airship URL to Publish](img/ngrok_url_configuration_airship.png)
 
-1. On the **Event Type Configuration** section, choose the eventy types you would like to send to your Webhook. For this tutorial, click all checkboxes.
+1. On the **Event Type Configuration** section, choose the event types for your webhook. For this tutorial, click all checkboxes.
 
 1. Click **Activate**.
 
@@ -92,11 +92,11 @@ You can trigger new calls from Airship to your application by following the inst
 
 1. Access [Airship](https://www.airship.com) and click **1st Flight** on the top left corner of the page or the **1st Flight** tile.
 
-1. On the **1st Flight** project page, click **Connect with the 1st Flight App** on the top of the page.
+1. On the **1st Flight** project page, click **Connect with the 1st Flight App** at the top of the page.
 
 1. Enter your email address and click **Get magic link**. Airship sends you an email containing a link to download the **1st Flight** app. 
 
-1. Open the email on your mobile phone, click the link to install the app and execute the app after the installation fininshes.
+1. Open the email on your mobile phone, click the link to install the app, and run the app after the installation finishes.
 
     Confirm your localhost app receives event notifications and logs both headers and body in the terminal.
 
