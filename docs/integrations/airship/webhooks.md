@@ -69,7 +69,7 @@ Once your app is running successfully on localhost, let's get it on the internet
 
 
 ## **Step 3**: Integrate  Airship {#setup-webhook}
-s
+
 To register a webhook on your Airship account follow the instructions below:
 
 1. Access [Airship](https://www.airship.com/) and sign in using your Airship account.
