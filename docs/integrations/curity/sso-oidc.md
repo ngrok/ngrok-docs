@@ -13,8 +13,8 @@ To secure access to ngrok with Curity Single Sign-On using OpenID Connect:
 This article details how to configure Curity as the primary Identity Provider for ngrok tunnels.
 By integrating Curity SSO with ngrok, you can:
 
-- **Restrict access to ngrok tunnels** only to users authenticated via Curity
-- **Use Curity security policies, MFA authenticators** — including WebAuthn — **to control access to ngrok tunnels**.
+- **Restrict access to ngrok tunnels** to only users who authenticated via Curity
+- **Use Curity security policies, MFA authenticators** — including BankId, SITHS, and WebAuthn — **to control access to ngrok tunnels**.
 - **Use Curity's Dashboard to facilitate access to ngrok apps**.
 
 ## Requirements
@@ -34,7 +34,7 @@ To integrate ngrok with Curity SSO, you will need to:
 
 ## **Step 1**: Configure Curity {#configure-Curity}
 
-### Add the ngrok App in Curity
+### Add an openid client in Curity
 
 #### New Client
 
@@ -80,15 +80,56 @@ To be able to run the OpenID Code flow, add the `openid` scope to the client. 
 
 Make sure to remember to commit the changes in the **Changes -> Commit** menu.
 
-### Add an Authenticator in Curity
-
+### Add authentication to the client 
 The Curity Identity Server provides an authenticator called `html-form` that is suitable for setting up a login with username and password. It uses a Credential Manager to verify the credentials, which in turn uses a data-source.
 
-1. Open the Authentication profile by clicking the **Profiles** button in the top bar. Click the **Authentication Service** box to open the **General** page of the profile.
-1. Select the **Authenticators** page in the sidebar menu of the Authentication Service.
-1. Click **New Authenticator** on the authenticator page, and type the name `username-password`. Select the `HTML-Form` Authenticator type in the grid of authenticators and click next.
-1. The HTML Form authenticator needs a Credential Manager in order to verify credentials and optionally an Account Manager for user registration. Select the `default-account-manager` as account manager and `default-credential-manager` as credential manager.
-1. Commit the changes via the **Changes** menu.
+#### Add an Authenticator 
+Open the Authentication profile by clicking the **Profiles** button in the top bar. Click the **Authentication Service** box to open the **General** page of the profile.
+
+![img/username-00.jpg](img/username-00.jpg)
+
+#### Select Authenticators
+
+Select the **Authenticators** page in the sidebar menu of the Authentication Service.
+
+![img/username-01.jpg](img/username-01.jpg)
+
+#### Add new Authenticator
+
+Click **New Authenticator** on the authenticator page, and type the name `username-password`. Select the `HTML-Form` Authenticator type in the grid of authenticators and click next.
+
+![img/username-02.jpg](img/username-02.jpg)
+
+#### Configure Credential Manager and Account Manager
+
+The HTML Form authenticator needs a Credential Manager in order to verify credentials and optionally an Account Manager for user registration. Select the `default-account-manager` as account manager and `default-credential-manager` as credential manager.
+
+![img/username-03.jpg](img/username-03.jpg)
+
+#### Commit the Changes
+
+Commit the changes via the **Changes** menu.
+
+![img/username-04.jpg](img/username-04.jpg)
+
+
+### Expose the metadata url 
+
+ngrok makes a call to the `/.well-known/openid-configuration` endpoint at Curity to pull configuation data specific to your Authorization Server.
+
+#### Navigate to Token Service4
+
+Open the Token Service profile by clicking the **Profiles** button in the top bar. Click the **Token Service** box to open the **General** page of the profile.
+
+#### Configure the OpenID settings
+
+Scroll down to the **OpenID Connect** section and enable the `Expose Metadata` toggle.
+![expose-metadata.png](img/expose-metadata.png)
+
+#### Commit the Changes
+
+Commit the changes via the **Changes** menu.
+
 
 ## **Step 2**: Configure ngrok {#configure-ngrok}
 
@@ -162,7 +203,7 @@ To configure an edge with Curity:
 ## Step 3: Test the integration {#test-sso}
 
 1. In your browser, launch an incognito window.
-1. Access your ngrok tunnel (i.e., https://Curity-sso-test.ngrok.io or using a copied URL).
+1. Access your ngrok tunnel (i.e., https://curity-sso-test.ngrok.io or using a copied URL).
 1. You should be prompted to log in with your Curity credentials.
 1. After login, you should be able to see your web app.
 
