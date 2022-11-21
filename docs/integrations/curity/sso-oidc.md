@@ -14,7 +14,7 @@ This article details how to configure Curity as the primary Identity Provider fo
 By integrating Curity SSO with ngrok, you can:
 
 - **Restrict access to ngrok tunnels** only to users authenticated via Curity
-- **Use Curity security policies, MFA authenticators** — including Curity Verify,  FastPass, and FIDO2 — **and ThreatInsights to control access to ngrok tunnels**.
+- **Use Curity security policies, MFA authenticators** — including WebAuthn — **to control access to ngrok tunnels**.
 - **Use Curity's Dashboard to facilitate access to ngrok apps**.
 
 ## Requirements
