@@ -59,6 +59,7 @@ const sidebars = {
         { label: 'Calendly', type: 'doc', id: 'integrations/calendly/webhooks', },
         { label: 'Circle CI', type: 'doc', id: 'integrations/circleci/webhooks', },
         { label: 'Contentful', type: 'doc', id: 'integrations/contentful/webhooks', },
+        { label: 'Curity', type: 'doc', id: 'integrations/curity/sso-oidc', },
         { label: 'DocuSign', type: 'doc', id: 'integrations/docusign/webhooks', },
         { label: 'Dropbox', type: 'doc', id: 'integrations/dropbox/webhooks', },
         { label: 'Facebook', type: 'doc', id: 'integrations/facebook/webhooks', },
