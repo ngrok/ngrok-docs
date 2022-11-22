@@ -18,8 +18,10 @@ Getting started with ngrok and the ngrok-go library is simple:
 1. Launch a terminal and create a go app and file:
 
     ```bash
-    go mod init sudobinbash/hello-ngrok
+    mkdir hello-ngrok
     cd hello-ngrok
+    go mod init hello-ngrok
+    go get golang.ngrok.com/ngrok
     touch main.go
     ```
 
@@ -34,8 +36,8 @@ Getting started with ngrok and the ngrok-go library is simple:
         "log"
         "net/http"
 
-        "github.com/ngrok/ngrok-go"
-        "github.com/ngrok/ngrok-go/config"
+        "golang.ngrok.com/ngrok"
+        "golang.ngrok.com/ngrok/config"
     )
 
     func main() {
@@ -55,7 +57,7 @@ Getting started with ngrok and the ngrok-go library is simple:
 
         log.Println("tunnel created:", tun.URL())
 
-        return tun.AsHTTP().Serve(ctx, http.HandlerFunc(handler))
+        return http.Serve(tun, http.HandlerFunc(handler))
     }
 
     func handler(w http.ResponseWriter, r *http.Request) {
@@ -99,8 +101,8 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/ngrok/ngrok-go"
-	"github.com/ngrok/ngrok-go/config"
+	"golang.ngrok.com/ngrok"
+	"golang.ngrok.com/ngrok/config"
 )
 
 func main() {
@@ -124,7 +126,7 @@ func run(ctx context.Context) error {
 
 	log.Println("tunnel created:", tun.URL())
 
-	return tun.AsHTTP().Serve(ctx, http.HandlerFunc(handler))
+	return http.Serve(tun, http.HandlerFunc(handler))
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
