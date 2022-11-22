@@ -13,7 +13,7 @@ This tutorial assumes you have Go already installed.
 
 Getting started with ngrok and the ngrok-go library is simple: 
 
-1. To start, [sign up for ngrok](/signup)
+1. To start, [sign up for ngrok](https://ngrok.com/signup)
 1. In the [ngrok Dashboard](https://dashboard.ngrok.com), copy your Authtoken
 1. Launch a terminal and create a go app and file:
 
