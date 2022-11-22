@@ -85,12 +85,13 @@ Getting started with ngrok and the ngrok-go library is simple:
 
 ## Add edge functionality to your app
 
-The ngrok-go library provides functions and configuration for all features available in ngrok. Everything you can do with the ngrok agent is available using our library. In this example, I modified main.go to:
+The ngrok-go library provides functions and configuration for all features available in ngrok. Everything you can do with the ngrok agent is available using our library. In this example, you can modify main.go to:
 
-- **Line 22**: Use Google’s OAuth and limit access to users with email @ngrok.com 
-- **Line 23**: Use my-domain.ngrok.io as a custom subdomain
-- **Line 24**: Upon a successful authentication, send the user email in the email header
-- **Line 38**: Print the email header.
+- **Line 22**: Use Google’s OAuth for authentication
+- **Line 23**: Restrict access only for users from a specific email (i.e. to grant access only to users with gmail, replace `YOUR EMAIL DOMAIN` with `gmail.com`)
+- **Line 24**: Use my-domain.ngrok.io as a custom subdomain
+- **Line 25**: Upon a successful authentication, send the user email in the email header
+- **Line 39**: Print the email header.
 
 ```go
 package main
@@ -114,7 +115,8 @@ func main() {
 func run(ctx context.Context) error {
 	tun, err := ngrok.StartTunnel(ctx,
 		config.HTTPEndpoint(
-			config.WithOAuth("google", config.WithAllowOAuthDomain("ngrok.com"), ),
+			config.WithOAuth("google", 
+                              config.WithAllowOAuthDomain("YOUR EMAIL DOMAIN"), ),
 			config.WithDomain("my-domain.ngrok.io"),
 			config.WithRequestHeader("email", "${.oauth.user.email}"),
 		),
