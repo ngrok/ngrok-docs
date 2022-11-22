@@ -12,11 +12,12 @@ Here you will find notes on using ngrok with particular technologies. Think we'r
 | [Fast API](/using-ngrok-with/fastAPI) | Add ngrok into your Fast API application |
 | [Flask](/using-ngrok-with/flask) | Use ngrok to host your Flask applications |
 | [Google Colab](/using-ngrok-with/googleColab) | Run ngrok inside your Google Colab projects |
+| [Go](/using-ngrok-with/go) | Run ngrok programmatically with the ngrok-go library |
 | [gRPC](/using-ngrok-with/gRPC) | ngrok TCP tunnels work great with gRPC |
 | [Java](/using-ngrok-with/java) | Learn how to integrate with your Java projects |
 | [Minecraft](/using-ngrok-with/minecraft) | ngrok can help you and your friends connect for online gaming |
 | [NGINX](/using-ngrok-with/nginx) | Learn how to configure ngrok when using it with NGINX |
-| [Node (npm, node.js)](/using-ngrok-with/NodeJS) | Work with the ngrok agent from your Node application |
+| [Node (npm, node.js)](/using-ngrok-with/node-js) | Work with the ngrok agent from your Node application |
 | [An outbound proxy](/using-ngrok-with/outboundProxy) | Use ngrok through an HTTP or SOCKS5 proxy |
 | [Puppet](/using-ngrok-with/puppet) | Manage the ngrok Agent using Puppet |
 | [Python](/using-ngrok-with/python) | Learn how to integrate with your Python application |

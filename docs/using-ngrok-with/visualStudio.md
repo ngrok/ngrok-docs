@@ -1,5 +1,4 @@
 ---
-sidebar_position: 18
 title: Visual Studio / IIS Express
 ---
 

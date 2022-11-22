@@ -1,5 +1,4 @@
 ---
-sidebar_position: 11
 title: Node.js or npm
 ---
 
