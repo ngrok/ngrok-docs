@@ -27,7 +27,7 @@ Getting started with ngrok and the ngrok-go library is simple:
 
 1. Edit the main.go file and add the following code:
 
-    ```go
+    ```go showLineNumbers
     package main
 
     import (
@@ -47,10 +47,12 @@ Getting started with ngrok and the ngrok-go library is simple:
     }
 
     func run(ctx context.Context) error {
+        // highlight-start
         tun, err := ngrok.StartTunnel(ctx,
             config.HTTPEndpoint(),
             ngrok.WithAuthtokenFromEnv(),
         )
+        // highlight-end
         if err != nil {
             return err
         }
@@ -61,6 +63,7 @@ Getting started with ngrok and the ngrok-go library is simple:
     }
 
     func handler(w http.ResponseWriter, r *http.Request) {
+        // highlight-next-line
         fmt.Fprintln(w, "<h1>Hello from ngrok-go.</h1>")
     }
     ```
@@ -93,7 +96,7 @@ The ngrok-go library provides functions and configuration for all features avail
 - **Line 25**: Upon a successful authentication, send the user email in the email header
 - **Line 39**: Print the email header.
 
-```go
+```go showLineNumbers
 package main
 
 import (
@@ -115,10 +118,12 @@ func main() {
 func run(ctx context.Context) error {
 	tun, err := ngrok.StartTunnel(ctx,
 		config.HTTPEndpoint(
+            // highlight-start
 			config.WithOAuth("google", 
                               config.WithAllowOAuthDomain("YOUR EMAIL DOMAIN"), ),
 			config.WithDomain("my-domain.ngrok.io"),
 			config.WithRequestHeader("email", "${.oauth.user.email}"),
+            // highlight-end
 		),
 		ngrok.WithAuthtokenFromEnv(),
 	)
@@ -132,6 +137,7 @@ func run(ctx context.Context) error {
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
+    // highlight-next-line
 	fmt.Fprintln(w, "<h1>Hello from ngrok-go, ", r.Header.Values("email"), ".</h1>")
 }
 ```
