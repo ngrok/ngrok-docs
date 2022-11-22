@@ -144,7 +144,9 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 And we run the app just as we did before, again replacing TOKEN with our Authtoken:
 
-`NGROK_AUTHTOKEN="TOKEN" go run main.go`
+```bash
+NGROK_AUTHTOKEN="TOKEN" go run main.go
+```
 
 And this is our result:
 
