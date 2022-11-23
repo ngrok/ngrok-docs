@@ -74,7 +74,7 @@ To register a webhook on your Sentry account follow the instructions below:
 
 1. Access [Sentry](https://sentry.io/) and sign in using your Sentry account.
 
-1. On your Sentry organization page, click **Settings** on the left menu, click **Developer Settings** on the Organization sub menu, and then click **Create new integration**.
+1. On your Sentry organization page, click **Settings** on the left menu, click **Developer Settings** on the Organization sub-menu, and then click **Create new integration**.
 
 1. On the **Choose Integration Type** popup, choose **Internal Integration** and then click **Next**.
 
@@ -89,7 +89,7 @@ To register a webhook on your Sentry account follow the instructions below:
 Sentry sends different request body contents depending on the event that is being triggered.
 You can trigger new calls from Sentry to your application by following the instructions below.
 
-1. Access [Sentry](https://sentry.io/), sign in, and then click **Issues** on the left menu.
+1. On your Sentry organization page, click **Issues** on the left menu.
 
 1. On the **Issues** page, open an issue by clicking its name.
 
@@ -146,7 +146,7 @@ This is a quick step to add extra protection to your application.
 
 1. Access [Sentry](https://sentry.io/) and sign in using your Sentry account.
 
-1. On your Sentry organization page, click **Settings** on the left menu, click **Developer Settings** on the Organization sub menu, click **My Local App Webhook**, and then copy the value of the **Client Secret** field under the **CREDENTIALS** section.
+1. On your Sentry organization page, click **Settings** on the left menu, click **Developer Settings** on the Organization sub-menu, click **My Local App Webhook**, and then copy the value of the **Client Secret** field under the **CREDENTIALS** section.
 
 1. Restart your ngrok agent by running the command, replacing `{your client secret}` with the value you have copied before (See [Integrate ngrok and Sentry.](#setup-webhook)):
     ```bash
