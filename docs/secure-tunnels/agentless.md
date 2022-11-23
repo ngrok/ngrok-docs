@@ -25,7 +25,7 @@ This option packages the ngrok agent as a docker container, allowing you to work
 
 [Learn More](/docs/using-ngrok-with/docker)
 
-## [ngrok Library](/docs/using-ngrok-with/go)
+## [ngrok Agent Libraries](/docs/using-ngrok-with/go)
 
 With ngrok agent libraries, you can embed ngrok directly into your application allowing you to programmatically launch and manage ngrok tunnels from your code.
 
