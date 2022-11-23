@@ -100,7 +100,7 @@ You can trigger new calls from Svix to your application by following the instruc
 
     Confirm your localhost app receives the request and logs both headers and body in the terminal.
 
-Optionally, you can verify the log of the webhook in the Svix dashboard:
+Optionally, you can verify the webhook log in the Svix dashboard:
 
 1. Access the [Svix Dashboard](https://dashboard.svix.com/), click **Incoming Webhooks** on the left menu, click the **Logs** tab, and then click one of the logs. 
     ![Webhook Logs](img/ngrok_logs_svix.png)
@@ -148,7 +148,7 @@ This is a quick step to add extra protection to your application.
 
 1. On the left menu, click **Incoming Webhooks**, click the URL of your webhook, click the eye icon under the **Signing Secret** section, and then copy the value of the signing secret.
 
-1. Restart your ngrok agent by running the command, replacing `{your webhook secret}` with the value you have copied before:
+1. Restart your ngrok agent by running the command, replacing `{your webhook secret}` with the value you copied before:
     ```bash
     ngrok http 3000 --verify-webhook svix --verify-webhook-secret {your webhook secret}
     ```
