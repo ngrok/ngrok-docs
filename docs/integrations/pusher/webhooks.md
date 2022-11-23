@@ -73,6 +73,7 @@ Once your app is running successfully on localhost, let's get it on the internet
 To register a webhook on your Pusher channel follow the instructions below:
 
 1. Access the [Pusher dashboard](https://dashboard.pusher.com/), sign in using your Pusher account, and then click your channel name in the **Channels** tile.
+    
     **Tip**: If you don't have a channel, create one with the name `my-channel`.
 
 1. On your channel page, click **Webhooks** on the left menu and then click **Add webhook**.
@@ -88,21 +89,18 @@ To register a webhook on your Pusher channel follow the instructions below:
 ### Run Webhooks with Pusher and ngrok (#run-webhook)
 
 Pusher sends different request body contents depending on the event that is being triggered.
-You can trigger new calls from Pusher to your application create a client event test.
+You can trigger new calls from Pusher to your application by creating a client event test.
 
-1. On the [Pusher dashboard](https://dashboard.pusher.com/), click **Getting Started** on the left menu, click **Download** under the **Subscribe to events on the client** step, and then open the html you downloaded in a new broser tab.
-    **Note**: This browser tab simulates a client app for Pusher.
-
-1. Click **Debug console** on the left menu, expand the **Event creator** section, enter `my-channel` in the **Channel** field, enter `my-event` in the **Event** field, enter some text in the **Data** field, and then click **Send event**.
+1. On the [Pusher dashboard](https://dashboard.pusher.com/), click **Debug console** on the left menu, expand the **Event creator** section, enter `my-channel` in the **Channel** field, enter `my-event` in the **Event** field, enter some text in the **Data** field, and then click **Send event**.
 
     Confirm your localhost app receives an event notification and logs both headers and body in the terminal.
 
-Optionally, you can verify any error occuring during webhook calls in Pusher:
+Optionally, you can verify any error occurring during webhook calls in Pusher:
 
 1. On the [Pusher dashboard](https://dashboard.pusher.com/), click **Error Logs** on the left menu, and then click the **Webhook errors** tab.
     ![Webhook Logs](img/ngrok_logs_pusher.png)
 
-**Note**: In this page, Pusher only shows messages that couldn`t be delivered for any reason.
+**Note**: On this page, Pusher only shows messages that couldn`t be delivered for any reason.
 
 
 ### Inspecting requests
@@ -143,7 +141,7 @@ The ngrok signature webhook verification feature allows ngrok to assert that req
 
 This is a quick step to add extra protection to your application.
 
-1. On the [Pusher dashboard](https://dashboard.pusher.com/), click **App keys** on the left menu, and then copy the value of the **secret** field that appears in the screen.
+1. On the [Pusher dashboard](https://dashboard.pusher.com/), click **App keys** on the left menu, and then copy the value of the **secret** field that appears on the screen.
 
 1. Restart your ngrok agent by running the command, replacing `{your webhook secret}` with the value you have copied before:
     ```bash
