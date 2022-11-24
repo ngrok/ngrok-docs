@@ -17,6 +17,13 @@ By integrating Okta SSO with ngrok, you can:
 - **Use Okta security policies, MFA authenticators** — including Okta Verify,  FastPass, and FIDO2 — **and ThreatInsights to control access to ngrok tunnels**.
 - **Use Okta's Dashboard to facilitate access to ngrok apps**.
 
+## Supported Features
+
+The ngrok integration with Okta supports:
+
+- **SP-Initiated SSO**: In this mode, users access ngrok edges and tunnels and are redirected to Okta for authentication.
+- **IDP-Initiated SSO**: In this mode, users can access ngrok edges and tunnel straight from the Okta Dashboard.
+
 ## Requirements
 
 To configure ngrok tunnels with Okta, you must have:
