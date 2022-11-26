@@ -86,7 +86,7 @@ To register a webhook on your Pusher channel follow the instructions below:
 1. Repeat the previous 3 steps creating webhooks for the other **Event type** values.
 
 
-### Run Webhooks with Pusher and ngrok (#run-webhook)
+### Run Webhooks with Pusher and ngrok {#run-webhook}
 
 Pusher sends different request body contents depending on the event that is being triggered.
 You can trigger new calls from Pusher to your application by creating a client event test.
