@@ -100,7 +100,7 @@ Optionally, you can verify any error occurring during webhook calls in Pusher:
 1. On the [Pusher dashboard](https://dashboard.pusher.com/), click **Error Logs** on the left menu, and then click the **Webhook errors** tab.
     ![Webhook Logs](img/ngrok_logs_pusher.png)
 
-**Note**: On this page, Pusher only shows messages that couldn`t be delivered for any reason.
+**Note**: On this page, Pusher only shows messages that couldn't be delivered for any reason.
 
 
 ### Inspecting requests
