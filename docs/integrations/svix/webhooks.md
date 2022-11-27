@@ -148,7 +148,7 @@ This is a quick step to add extra protection to your application.
 
 1. On the left menu, click **Incoming Webhooks**, click the URL of your webhook, click the eye icon under the **Signing Secret** section, and then copy the value of the signing secret.
 
-1. Restart your ngrok agent by running the command, replacing `{your webhook secret}` with the value you copied before:
+1. Restart your ngrok agent by replacing `{your webhook secret}` with the value you copied before and running the following command:
     ```bash
     ngrok http 3000 --verify-webhook svix --verify-webhook-secret {your webhook secret}
     ```
