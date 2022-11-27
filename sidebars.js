@@ -250,6 +250,14 @@ const sidebars = {
         'http-header-templates',
       ],
     },
+    {
+      label: 'What\'s New',
+      type: 'category',
+      link: { type: 'doc', id: 'whats-new/index' },
+      items: [ 
+        'whats-new/2022'
+      ],
+    },
   ],
 
 };
