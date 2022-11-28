@@ -17,7 +17,7 @@ Modules can be added to each route of an HTTPS edge to change the behavior of th
 
 | Module | Description |
 | --- | --- |
-| [Mutual TLS](#mutual-tls) | Also known as "TLS client authentication", connections must complete a mutual TLS handshake in which the client presents a valid certificate signed by any of the root certificate authorities that you upload. |
+| [Mutual TLS](/cloud-edge/modules/mutual-tls) | Also known as "TLS client authentication", connections must complete a mutual TLS handshake in which the client presents a valid certificate signed by any of the root certificate authorities that you upload. |
 | [TLS](#tls-termination) | Allows you to configure whether ngrok terminates TLS traffic at its edge or forwards the TLS traffic through unterminated. |
 | [Circuit Breaker](#circuit-breaker) | Circuit breakers are used to protect upstream servers by rejecting traffic to them when they become overwhelmed. |
 | [Compression](#compression) | If an HTTP request includes an Accept-Encoding header, HTTP responses will be automatically compressed and a Content-Encoding response header will be added. |
