@@ -95,13 +95,13 @@ You can trigger new calls from Typeform to your application by following the ins
 
 1. In the same browser, access [Typeform admin console](https://www.typeform.com/), click the name of your typeform, click **Share** on the top menu, click **Copy link** and then open this link in a new web browser tab or window.
 
-1. Answer the questions of your typeform, and then click **Submit** at the end of the form flow.
+1. Answer the questions in your typeform, and then click **Submit** at the end of the form flow.
 
     Confirm your localhost app receives the create-project event notification and logs both headers and body in the terminal.
 
-Optionally, you can verify the log of the webhook call in Typeform:
+Alternatively, you can verify the log of the webhook call in Typeform:
 
-1. Access[Typeform admin console](https://www.typeform.com/), click the name of your typeform, click **Connect** on the top menu, click the **WEBHOOKS** tab, and then click **View deliveries**.
+1. Access the [Typeform admin console](https://www.typeform.com/), click the name of your typeform, click **Connect** on the top menu, click the **WEBHOOKS** tab, and then click **View deliveries**.
     ![Webhook Logs](img/ngrok_logs_typeform.png)
 
 
@@ -143,7 +143,7 @@ The ngrok signature webhook verification feature allows ngrok to assert that req
 
 This is a quick step to add extra protection to your application.
 
-1. Restart your ngrok agent by running the command, replacing `{your webhook secret}` with the value of the **secret** atribute you provided in the webhook registration (See [Integrate ngrok and Typeform.](#setup-webhook)):
+1. Restart your ngrok agent by running the command, replacing `{your webhook secret}` with the value of the **secret** attribute you provided in the webhook registration (See [Integrate ngrok and Typeform.](#setup-webhook)):
     ```bash
     ngrok http 3000 --verify-webhook typeform --verify-webhook-secret {your webhook secret}
     ```
