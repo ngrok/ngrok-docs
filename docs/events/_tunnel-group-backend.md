@@ -1,6 +1,3 @@
-
-### tunnel_group_backend.v0
-
 | &nbsp; | &nbsp; | &nbsp; |
 |---|---|---|
 | id | string | unique identifier for this TunnelGroup backend |

@@ -1,6 +1,3 @@
-
-### endpoint_mutual_tls_replace.v0
-
 | &nbsp; | &nbsp; | &nbsp; |
 |---|---|---|
 | id | string |  |

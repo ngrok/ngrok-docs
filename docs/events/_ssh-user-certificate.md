@@ -1,6 +1,3 @@
-
-### ssh_user_certificate.v0
-
 | &nbsp; | &nbsp; | &nbsp; |
 |---|---|---|
 | id | string | unique identifier for this SSH User Certificate |

@@ -1,6 +1,3 @@
-
-### agent_ingress_list.v0
-
 | &nbsp; | &nbsp; | &nbsp; |
 |---|---|---|
 | id | string | unique Agent Ingress resource identifier |

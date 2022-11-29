@@ -2,11 +2,11 @@
 #### Example Response
 ```json
 {
-  "id": "ec_2GjEybTPVxKdaYUjjeykwAF7LRD",
+  "id": "ec_2IEh24HHGq0DLtZyVy0mxtgt23k",
   "type": "https",
   "description": "app servers",
-  "created_at": "2022-10-27T18:04:07Z",
-  "uri": "https://api.ngrok.com/endpoint_configurations/ec_2GjEybTPVxKdaYUjjeykwAF7LRD",
+  "created_at": "2022-11-29T20:07:19Z",
+  "uri": "https://api.ngrok.com/endpoint_configurations/ec_2IEh24HHGq0DLtZyVy0mxtgt23k",
   "basic_auth": null,
   "circuit_breaker": null,
   "compression": null,

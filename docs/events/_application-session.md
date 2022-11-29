@@ -1,6 +1,3 @@
-
-### application_session.v0
-
 | &nbsp; | &nbsp; | &nbsp; |
 |---|---|---|
 | id | string | unique application session resource identifier |

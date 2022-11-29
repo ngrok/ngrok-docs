@@ -1,6 +1,3 @@
-
-### ip_policy_rule.v0
-
 | &nbsp; | &nbsp; | &nbsp; |
 |---|---|---|
 | id | string | unique identifier for this IP policy rule |

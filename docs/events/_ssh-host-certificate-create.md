@@ -1,6 +1,3 @@
-
-### ssh_host_certificate_create.v0
-
 | &nbsp; | &nbsp; | &nbsp; |
 |---|---|---|
 | ssh_certificate_authority_id | string | the ssh certificate authority that is used to sign this ssh host certificate |

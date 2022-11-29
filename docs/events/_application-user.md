@@ -1,6 +1,3 @@
-
-### application_user.v0
-
 | &nbsp; | &nbsp; | &nbsp; |
 |---|---|---|
 | id | string | unique application user resource identifier |

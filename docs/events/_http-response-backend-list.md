@@ -1,6 +1,3 @@
-
-### http_response_backend_list.v0
-
 | &nbsp; | &nbsp; | &nbsp; |
 |---|---|---|
 | id | string |  |

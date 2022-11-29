@@ -2,10 +2,10 @@
 #### Example Response
 ```json
 {
-  "id": "cr_2GjEygcuFHGDd1n8PX0Y4f89oDK",
-  "uri": "https://api.ngrok.com/credentials/cr_2GjEygcuFHGDd1n8PX0Y4f89oDK",
-  "created_at": "2022-10-27T18:04:08Z",
+  "id": "cr_2IEh2EYZF5XxPRAtzSSSnBGadhz",
+  "uri": "https://api.ngrok.com/credentials/cr_2IEh2EYZF5XxPRAtzSSSnBGadhz",
+  "created_at": "2022-11-29T20:07:20Z",
   "description": "development cred for alan@example.com",
-  "token": "2GjEygcuFHGDd1n8PX0Y4f89oDK_3FChBE1BPqv5gwY59ZeyK",
+  "token": "2IEh2EYZF5XxPRAtzSSSnBGadhz_Q43RCqus6mgsAjtVbB8Y",
   "acl": []
 }

@@ -1,6 +1,3 @@
-
-### identity_provider.v0
-
 | &nbsp; | &nbsp; | &nbsp; |
 |---|---|---|
 | name | string | name of the identity provider (e.g. Google) |

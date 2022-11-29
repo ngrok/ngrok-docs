@@ -1,6 +1,3 @@
-
-### edge_route_websocket_tcp_converter_replace.v0
-
 | &nbsp; | &nbsp; | &nbsp; |
 |---|---|---|
 | edge_id | string |  |

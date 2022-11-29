@@ -1,6 +1,3 @@
-
-### ssh_certificate_authority.v0
-
 | &nbsp; | &nbsp; | &nbsp; |
 |---|---|---|
 | id | string | unique identifier for this SSH Certificate Authority |

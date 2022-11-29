@@ -1,6 +1,3 @@
-
-### ip_restriction_list.v0
-
 | &nbsp; | &nbsp; | &nbsp; |
 |---|---|---|
 | id | string | unique identifier for this IP restriction |

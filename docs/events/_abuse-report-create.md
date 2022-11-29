@@ -1,6 +1,3 @@
-
-### abuse_report_create.v0
-
 | &nbsp; | &nbsp; | &nbsp; |
 |---|---|---|
 | urls | List&lt;string&gt; | a list of URLs containing suspected abusive content |

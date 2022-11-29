@@ -1,6 +1,3 @@
-
-### endpoint_o_auth_linked_in.v0
-
 | &nbsp; | &nbsp; | &nbsp; |
 |---|---|---|
 | client_id | string |  |

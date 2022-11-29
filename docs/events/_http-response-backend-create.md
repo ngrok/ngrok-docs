@@ -1,6 +1,3 @@
-
-### http_response_backend_create.v0
-
 | &nbsp; | &nbsp; | &nbsp; |
 |---|---|---|
 | description | string | human-readable description of this backend. Optional |

@@ -1,6 +1,3 @@
-
-### tunnel_session_list.v0
-
 | &nbsp; | &nbsp; | &nbsp; |
 |---|---|---|
 | agent_version | string | version of the ngrok agent that started this ngrok tunnel session |

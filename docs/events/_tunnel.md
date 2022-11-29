@@ -1,6 +1,3 @@
-
-### tunnel.v0
-
 | &nbsp; | &nbsp; | &nbsp; |
 |---|---|---|
 | id | string | unique tunnel resource identifier |

@@ -1,6 +1,3 @@
-
-### error.v0
-
 | &nbsp; | &nbsp; | &nbsp; |
 |---|---|---|
 | error_code | string |  |

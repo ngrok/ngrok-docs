@@ -1,6 +1,3 @@
-
-### reserved_addr.v0
-
 | &nbsp; | &nbsp; | &nbsp; |
 |---|---|---|
 | id | string | unique reserved address resource identifier |

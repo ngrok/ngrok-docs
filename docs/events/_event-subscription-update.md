@@ -1,6 +1,3 @@
-
-### event_subscription_update.v0
-
 | &nbsp; | &nbsp; | &nbsp; |
 |---|---|---|
 | id | string | Unique identifier for this Event Subscription. |

@@ -1,6 +1,3 @@
-
-### location.v0
-
 | &nbsp; | &nbsp; | &nbsp; |
 |---|---|---|
 | country_code | string | ISO country code |

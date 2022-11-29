@@ -1,6 +1,3 @@
-
-### reserved_domain_cert_policy.v0
-
 | &nbsp; | &nbsp; | &nbsp; |
 |---|---|---|
 | authority | string | certificate authority to request certificates from. The only supported value is letsencrypt. |

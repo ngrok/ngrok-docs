@@ -1,6 +1,3 @@
-
-### endpoint_webhook_validation_replace.v0
-
 | &nbsp; | &nbsp; | &nbsp; |
 |---|---|---|
 | id | string |  |

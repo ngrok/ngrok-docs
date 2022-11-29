@@ -1,6 +1,3 @@
-
-### certificate_authority_create.v0
-
 | &nbsp; | &nbsp; | &nbsp; |
 |---|---|---|
 | description | string | human-readable description of this Certificate Authority. optional, max 255 bytes. |

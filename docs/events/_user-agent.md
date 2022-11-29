@@ -1,6 +1,3 @@
-
-### user_agent.v0
-
 | &nbsp; | &nbsp; | &nbsp; |
 |---|---|---|
 | raw | string | raw User-Agent request header |

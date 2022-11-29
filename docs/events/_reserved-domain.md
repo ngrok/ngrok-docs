@@ -1,6 +1,3 @@
-
-### reserved_domain.v0
-
 | &nbsp; | &nbsp; | &nbsp; |
 |---|---|---|
 | id | string | unique reserved domain resource identifier |

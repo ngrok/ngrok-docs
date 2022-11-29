@@ -1,6 +1,3 @@
-
-### failover_backend.v0
-
 | &nbsp; | &nbsp; | &nbsp; |
 |---|---|---|
 | id | string | unique identifier for this Failover backend |

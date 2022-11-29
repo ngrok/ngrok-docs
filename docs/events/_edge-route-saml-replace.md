@@ -1,6 +1,3 @@
-
-### edge_route_saml_replace.v0
-
 | &nbsp; | &nbsp; | &nbsp; |
 |---|---|---|
 | edge_id | string |  |

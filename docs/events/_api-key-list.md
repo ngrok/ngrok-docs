@@ -1,6 +1,3 @@
-
-### api_key_list.v0
-
 | &nbsp; | &nbsp; | &nbsp; |
 |---|---|---|
 | id | string | unique API key resource identifier |
