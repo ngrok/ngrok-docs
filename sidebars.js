@@ -54,6 +54,7 @@ const sidebars = {
       // TODO: @sudobinbash: Change to autogen (for scalability)
       items: [
         { label: 'Aftership', type: 'doc', id: 'integrations/aftership/webhooks', },
+        { label: 'Azure AD', type: 'doc', id: 'integrations/azuread/sso-saml', },
         { label: 'Bitbucket', type: 'doc', id: 'integrations/bitbucket/webhooks', },
         { label: 'Box', type: 'doc', id: 'integrations/box/webhooks', },
         { label: 'Brex', type: 'doc', id: 'integrations/brex/webhooks', },
