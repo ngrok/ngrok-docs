@@ -83,7 +83,7 @@ To register a webhook on your Pusher channel follow the instructions below:
 
 1. Click **Client events** under the **Event type** section and then click **Save**.
 
-1. Repeat the previous 3 steps creating webhooks for the other **Event type** values.
+1. Repeat the previous 3 steps to create webhooks for the other **Event type** values.
 
 
 ### Run Webhooks with Pusher and ngrok {#run-webhook}
@@ -95,7 +95,7 @@ You can trigger new calls from Pusher to your application by creating a client e
 
     Confirm your localhost app receives an event notification and logs both headers and body in the terminal.
 
-Optionally, you can verify any error occurring during webhook calls in Pusher:
+Alternatively, you can verify any error occurring during webhook calls in Pusher:
 
 1. On the [Pusher dashboard](https://dashboard.pusher.com/), click **Error Logs** on the left menu, and then click the **Webhook errors** tab.
     ![Webhook Logs](img/ngrok_logs_pusher.png)
