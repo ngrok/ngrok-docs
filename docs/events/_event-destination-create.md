@@ -1,6 +1,3 @@
-
-### event_destination_create.v0
-
 | &nbsp; | &nbsp; | &nbsp; |
 |---|---|---|
 | metadata | string | Arbitrary user-defined machine-readable data of this Event Destination. Optional, max 4096 bytes. |

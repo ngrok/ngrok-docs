@@ -1,6 +1,3 @@
-
-### endpoint_o_auth_google.v0
-
 | &nbsp; | &nbsp; | &nbsp; |
 |---|---|---|
 | client_id | string | the OAuth app client ID. retrieve it from the identity provider's dashboard where you created your own OAuth app. optional. if unspecified, ngrok will use its own managed oauth application which has additional restrictions. see the OAuth module docs for more details. if present, client_secret must be present as well. |

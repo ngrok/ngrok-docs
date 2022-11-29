@@ -1,6 +1,3 @@
-
-### endpoint_circuit_breaker_replace.v0
-
 | &nbsp; | &nbsp; | &nbsp; |
 |---|---|---|
 | id | string |  |

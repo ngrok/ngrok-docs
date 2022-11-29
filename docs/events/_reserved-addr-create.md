@@ -1,6 +1,3 @@
-
-### reserved_addr_create.v0
-
 | &nbsp; | &nbsp; | &nbsp; |
 |---|---|---|
 | description | string | human-readable description of what this reserved address will be used for |

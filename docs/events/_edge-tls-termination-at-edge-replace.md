@@ -1,6 +1,3 @@
-
-### edge_tls_termination_at_edge_replace.v0
-
 | &nbsp; | &nbsp; | &nbsp; |
 |---|---|---|
 | id | string |  |

@@ -1,6 +1,3 @@
-
-### ip_policy_rule_create.v0
-
 | &nbsp; | &nbsp; | &nbsp; |
 |---|---|---|
 | description | string | human-readable description of the source IPs of this IP rule. optional, max 255 bytes. |

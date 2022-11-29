@@ -1,6 +1,3 @@
-
-### agent_ingress_create.v0
-
 | &nbsp; | &nbsp; | &nbsp; |
 |---|---|---|
 | description | string | human-readable description of the use of this Agent Ingress. optional, max 255 bytes. |

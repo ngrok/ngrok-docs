@@ -1,6 +1,3 @@
-
-### edge_ip_restriction_replace.v0
-
 | &nbsp; | &nbsp; | &nbsp; |
 |---|---|---|
 | id | string |  |

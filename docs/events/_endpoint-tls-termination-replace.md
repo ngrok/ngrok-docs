@@ -1,6 +1,3 @@
-
-### endpoint_tls_termination_replace.v0
-
 | &nbsp; | &nbsp; | &nbsp; |
 |---|---|---|
 | id | string |  |

@@ -1,6 +1,3 @@
-
-### credential_list.v0
-
 | &nbsp; | &nbsp; | &nbsp; |
 |---|---|---|
 | id | string | unique tunnel credential resource identifier |

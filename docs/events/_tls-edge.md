@@ -1,6 +1,3 @@
-
-### tls_edge.v0
-
 | &nbsp; | &nbsp; | &nbsp; |
 |---|---|---|
 | id | string | unique identifier of this edge |

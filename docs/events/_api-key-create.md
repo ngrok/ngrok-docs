@@ -1,6 +1,3 @@
-
-### api_key_create.v0
-
 | &nbsp; | &nbsp; | &nbsp; |
 |---|---|---|
 | description | string | human-readable description of what uses the API key to authenticate. optional, max 255 bytes. |

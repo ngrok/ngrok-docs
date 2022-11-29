@@ -1,6 +1,3 @@
-
-### tls_certificate_create.v0
-
 | &nbsp; | &nbsp; | &nbsp; |
 |---|---|---|
 | description | string | human-readable description of this TLS certificate. optional, max 255 bytes. |

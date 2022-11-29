@@ -1,6 +1,3 @@
-
-### endpoint_saml_replace.v0
-
 | &nbsp; | &nbsp; | &nbsp; |
 |---|---|---|
 | id | string |  |

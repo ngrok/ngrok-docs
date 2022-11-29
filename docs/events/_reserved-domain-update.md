@@ -1,6 +1,3 @@
-
-### reserved_domain_update.v0
-
 | &nbsp; | &nbsp; | &nbsp; |
 |---|---|---|
 | id | string |  |

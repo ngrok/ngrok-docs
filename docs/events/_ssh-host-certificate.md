@@ -1,6 +1,3 @@
-
-### ssh_host_certificate.v0
-
 | &nbsp; | &nbsp; | &nbsp; |
 |---|---|---|
 | id | string | unique identifier for this SSH Host Certificate |

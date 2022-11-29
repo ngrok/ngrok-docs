@@ -1,6 +1,3 @@
-
-### aws_credentials.v0
-
 | &nbsp; | &nbsp; | &nbsp; |
 |---|---|---|
 | aws_access_key_id | string | The ID portion of an AWS access key. |

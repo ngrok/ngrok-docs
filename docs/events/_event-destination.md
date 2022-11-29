@@ -1,6 +1,3 @@
-
-### event_destination.v0
-
 | &nbsp; | &nbsp; | &nbsp; |
 |---|---|---|
 | id | string | Unique identifier for this Event Destination. |

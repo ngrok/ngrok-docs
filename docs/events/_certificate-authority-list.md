@@ -1,6 +1,3 @@
-
-### certificate_authority_list.v0
-
 | &nbsp; | &nbsp; | &nbsp; |
 |---|---|---|
 | id | string | unique identifier for this Certificate Authority |

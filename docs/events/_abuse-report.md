@@ -1,6 +1,3 @@
-
-### abuse_report.v0
-
 | &nbsp; | &nbsp; | &nbsp; |
 |---|---|---|
 | id | string | ID of the abuse report |

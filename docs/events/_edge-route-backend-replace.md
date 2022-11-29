@@ -1,6 +1,3 @@
-
-### edge_route_backend_replace.v0
-
 | &nbsp; | &nbsp; | &nbsp; |
 |---|---|---|
 | edge_id | string |  |

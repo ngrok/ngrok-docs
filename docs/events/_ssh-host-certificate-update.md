@@ -1,6 +1,3 @@
-
-### ssh_host_certificate_update.v0
-
 | &nbsp; | &nbsp; | &nbsp; |
 |---|---|---|
 | id | string |  |

@@ -1,6 +1,3 @@
-
-### endpoint_list.v0
-
 | &nbsp; | &nbsp; | &nbsp; |
 |---|---|---|
 | id | string | unique endpoint resource identifier |

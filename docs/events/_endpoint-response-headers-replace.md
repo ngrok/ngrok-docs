@@ -1,6 +1,3 @@
-
-### endpoint_response_headers_replace.v0
-
 | &nbsp; | &nbsp; | &nbsp; |
 |---|---|---|
 | id | string |  |

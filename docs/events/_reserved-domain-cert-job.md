@@ -1,6 +1,3 @@
-
-### reserved_domain_cert_job.v0
-
 | &nbsp; | &nbsp; | &nbsp; |
 |---|---|---|
 | error_code | string | if present, an error code indicating why provisioning is failing. It may be either a temporary condition (INTERNAL_ERROR), or a permanent one the user must correct (DNS_ERROR). |

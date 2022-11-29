@@ -1,6 +1,3 @@
-
-### ssh_credential_list.v0
-
 | &nbsp; | &nbsp; | &nbsp; |
 |---|---|---|
 | id | string | unique ssh credential resource identifier |

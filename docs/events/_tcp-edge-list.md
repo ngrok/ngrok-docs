@@ -1,6 +1,3 @@
-
-### tcp_edge_list.v0
-
 | &nbsp; | &nbsp; | &nbsp; |
 |---|---|---|
 | id | string | unique identifier of this edge |

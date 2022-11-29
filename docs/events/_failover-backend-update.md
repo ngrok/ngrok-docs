@@ -1,6 +1,3 @@
-
-### failover_backend_update.v0
-
 | &nbsp; | &nbsp; | &nbsp; |
 |---|---|---|
 | id | string |  |

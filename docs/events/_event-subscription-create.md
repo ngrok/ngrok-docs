@@ -1,6 +1,3 @@
-
-### event_subscription_create.v0
-
 | &nbsp; | &nbsp; | &nbsp; |
 |---|---|---|
 | metadata | string | Arbitrary customer supplied information intended to be machine readable. Optional, max 4096 chars. |

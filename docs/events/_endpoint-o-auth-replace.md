@@ -1,6 +1,3 @@
-
-### endpoint_o_auth_replace.v0
-
 | &nbsp; | &nbsp; | &nbsp; |
 |---|---|---|
 | id | string |  |
