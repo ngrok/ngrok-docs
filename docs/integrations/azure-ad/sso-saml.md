@@ -25,7 +25,7 @@ To configure ngrok tunnels with Azure AD, you must have:
 
 ## Step 1: Create an ngrok Edge {#create-edge}
 
-1. Go to the [ngrok dashboard](https://dashboard.ngrok.com) https://dashboard.ngrok.com
+1. Go to the [ngrok dashboard](https://dashboard.ngrok.com)
 1. Click __Cloud Edge__ > __Edges__
 1. Create an Edge:
     1. Click __New Edge__
