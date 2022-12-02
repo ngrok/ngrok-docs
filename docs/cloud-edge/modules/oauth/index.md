@@ -7,15 +7,15 @@ The OAuth module enforces an OAuth authentication flow in front of any route it 
 
 ngrok currently supports the following OAuth providers:
 
-*   [Facebook](#oauth-providers-facebook)
-*   [Github](#oauth-providers-github)
-*   [Google](#oauth-providers-google)
+*   [Facebook](/docs/cloud-edge/modules/oauth/facebook)
+*   [Github](/docs/cloud-edge/modules/oauth/github)
+*   [Google](/docs/cloud-edge/modules/oauth/google)
 *   LinkedIn
-*   [Microsoft](#oauth-providers-microsoft)
+*   [Microsoft](/docs/cloud-edge/modules/oauth/microsoft)
 
 ## OAuth Headers Provided by ngrok
 
-ngrok strips the following headers from authorized requests and sets them with data from the OAuth provider. Your application can rely on these headers being accurate. Some providers (like [Github](#oauth-providers-github-headers)) set additional headers for your application to use. You can find more information in the dedicated section for configuring the OAuth provider.
+ngrok strips the following headers from authorized requests and sets them with data from the OAuth provider. Your application can rely on these headers being accurate. Some providers (like [Github](/docs/cloud-edge/modules/oauth/github#oauth-providers-github-headers)) set additional headers for your application to use. You can find more information in the dedicated section for configuring the OAuth provider.
 
 |Header|Description|
 |---|---|

@@ -15,6 +15,6 @@ To make ngrok work properly with Wordpress installations you usually need to do 
         define('WP_SITEURL', 'http://' . $_SERVER['HTTP_HOST']);
         define('WP_HOME', 'http://' . $_SERVER['HTTP_HOST']);
     
-3.  You must also instruct ngrok to [rewrite the host header](#http-host-header), like so:
+3.  You must also instruct ngrok to [rewrite the host header](/ngrok-agent/ngrok#ngrok-http), like so:
     
         ngrok http --host-header=rewrite https://your-site.dev

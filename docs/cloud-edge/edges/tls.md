@@ -23,6 +23,6 @@ A more complete list can be found on [the Server Name Indication page on Wikiped
 
 | Module | Description |
 | --- | --- |
-| [Mutual TLS](#mutual-tls) | Also known as "TLS client authentication", connections must complete a mutual TLS handshake in which the client presents a valid certificate signed by any of the root certificate authorities that you upload. |
-| [TLS](#tls-termination) | Allows you to configure whether ngrok terminates TLS traffic at its edge or forwards the TLS traffic through unterminated. |
-| [IP Restrictions](#ip-restrictions) | IP Restrictions allow you to attach one or more IP policies to the edge. |
+| [Mutual TLS](/cloud-edge/modules/mutual-tls) | Also known as "TLS client authentication", connections must complete a mutual TLS handshake in which the client presents a valid certificate signed by any of the root certificate authorities that you upload. |
+| [TLS](/cloud-edge/modules/tls-termination) | Allows you to configure whether ngrok terminates TLS traffic at its edge or forwards the TLS traffic through unterminated. |
+| [IP Restrictions](/cloud-edge/modules/ip-restrictions) | IP Restrictions allow you to attach one or more IP policies to the edge. |
