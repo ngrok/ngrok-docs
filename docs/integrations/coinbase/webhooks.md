@@ -136,7 +136,7 @@ The ngrok signature webhook verification feature allows ngrok to assert that req
 
 This is a quick step to add extra protection to your application.
 
-1. Restart your ngrok agent by running the command, replacing `{your api secret}` with the value you have copied during the webhook registration (See [Integrate ngrok and Coinbase.](#setup-webhook)):
+1. Restart your ngrok agent by replacing `{your api secret}` with the value you copied during the webhook registration and running the following command:
     ```bash
     ngrok http 3000 --verify-webhook coinbase --verify-webhook-secret {your api secret}
     ```
