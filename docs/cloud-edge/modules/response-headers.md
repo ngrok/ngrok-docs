@@ -5,6 +5,6 @@ The Response Headers module allows you to add and remove headers from HTTP respo
 
 Changes made to response headers will not be visible to other modules; they will only be seen by the client.
 
-Header addition and removal functions similarly for request and response headers. See [HTTP Headers](#http-headers) for more details.
+Header addition and removal functions similarly for request and response headers. See [HTTP Headers](/docs/http-header-templates) for more details.
 
-Variables can be interpolated into a header value using JSONPath expressions surrounded by `${}` syntax. See [Header Templates](#header-templates) for more details.
+Variables can be interpolated into a header value using JSONPath expressions surrounded by `${}` syntax. See [Header Templates](/docs/http-header-templates) for more details.

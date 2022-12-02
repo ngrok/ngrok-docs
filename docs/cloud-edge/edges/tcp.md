@@ -13,4 +13,4 @@ Modules can be added to a TCP edge to restrict traffic flowing through that edge
 
 | Module | Description |
 | --- | --- |
-| [IP Restrictions](#ip-restrictions) | IP Restrictions allow you to attach one or more IP policies to the edge. |
+| [IP Restrictions](/cloud-edge/modules/ip-restrictions) | IP Restrictions allow you to attach one or more IP policies to the edge. |
