@@ -22,7 +22,6 @@ By integrating Okta SSO with ngrok, you can:
 The ngrok integration with Okta supports:
 
 - **SP-Initiated SSO**: In this mode, users access ngrok edges and tunnels and are redirected to Okta for authentication.
-- **IDP-Initiated SSO**: In this mode, users can access ngrok edges and tunnel straight from the Okta Dashboard.
 
 ## Requirements
 
