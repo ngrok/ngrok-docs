@@ -48,7 +48,7 @@ Getting started with ngrok and the ngrok-go library is simple:
 
     func run(ctx context.Context) error {
         // highlight-start
-        tun, err := ngrok.StartTunnel(ctx,
+        tun, err := ngrok.Listen(ctx,
             config.HTTPEndpoint(),
             ngrok.WithAuthtokenFromEnv(),
         )
@@ -116,7 +116,7 @@ func main() {
 }
 
 func run(ctx context.Context) error {
-	tun, err := ngrok.StartTunnel(ctx,
+	tun, err := ngrok.Listen(ctx,
 		config.HTTPEndpoint(
             // highlight-start
 			config.WithOAuth("google", 
