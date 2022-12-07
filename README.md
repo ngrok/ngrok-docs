@@ -24,7 +24,7 @@ While our Docusaurus uses mostly markdowns, you can make yourself familiar with 
 
 To ensure your changes will works — i.e. its not missing links, you can run a local build:
 
-```
+```bash
 cd ngrok-docs
 yarn run build
 ```
