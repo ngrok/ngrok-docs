@@ -31,7 +31,7 @@ The currently supported webhook providers are:
 | GitHub | `github` | [Documentation](https://ngrok.com/docs/integrations/github/webhooks) |
 | GitLab | `gitlab` | [Documentation](https://ngrok.com/docs/integrations/gitlab/webhooks) |
 | Go1 | `go1` | [Documentation](https://www.go1.com/developers/partners/concepts/webhook-signature-authentification) |
-| GraphCMS (Formerly Hygraph) | `graphcms` | [Documentation](https://graphcms.com/docs/api-reference/basics/webhooks) |
+| Hygraph (Formerly GraphCMS) | `graphcms` | [Documentation](https://graphcms.com/docs/api-reference/basics/webhooks) |
 | Heroku | `heroku` | [Documentation](https://ngrok.com/docs/integrations/heroku/webhooks) |
 | Hubspot | `hubspot` | [Documentation](https://ngrok.com/docs/integrations/hubspot/webhooks) |
 | Instagram | `instagram` | [Documentation](https://ngrok.com/docs/integrations/instagram/webhooks) |

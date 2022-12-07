@@ -15,7 +15,7 @@ const config = {
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'throw',
   favicon: 'img/favicon.ico',
-
+  
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
   organizationName: 'ngrok', // Usually your GitHub org/user name.
@@ -41,7 +41,7 @@ const config = {
         docs: {
           sidebarPath: require.resolve('./sidebars.js'),
           routeBasePath: '/',
-          // editUrl: `${docsRepo}/edit/main`,
+          editUrl: `${docsRepo}/edit/main`,
           showLastUpdateAuthor: true,
           showLastUpdateTime: true,
         },
