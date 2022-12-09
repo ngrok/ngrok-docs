@@ -14,14 +14,14 @@ To integrate Airship webhooks with ngrok:
 
 
 This guide covers how to use ngrok to integrate your localhost app with Airship by using Webhooks.
-You can configure an open channel to develiver notifications tto any device through webhooks.
+You can configure an open channel to deliver notifications to any device through webhooks.
 
 By integrating ngrok with Airship, you can:
 
 - **Develop and test Airship webhooks locally**, eliminating the time in deploying your development code to a public environment and setting it up in HTTPS.
 - **Inspect and troubleshoot requests from Airship** in real-time via the inspection UI and API.
 - **Modify and Replay Airship Webhook requests** with a single click and without spending time reproducing events manually in your Airship account.
-- **Secure your app with Frame.io validation provided by ngrok**. Invalid requests are blocked by ngrok before reaching your app.
+- **Secure your app with Airship validation provided by ngrok**. Invalid requests are blocked by ngrok before reaching your app.
 
 
 ## **Step 1**: Start your app {#start-your-app}
@@ -139,7 +139,7 @@ Verify that your local application receives the request and logs the correspondi
 
 ## **Bonus**: Secure webhook requests {#security}
 
-The ngrok signature webhook verification feature allows ngrok to assert that requests from your Frame.io webhook are the only traffic allowed to make calls to your localhost app.
+The ngrok signature webhook verification feature allows ngrok to assert that requests from your Airship webhook are the only traffic allowed to make calls to your localhost app.
 
 **Note:** This ngrok feature requires a Pro or Enterprise license.
 
