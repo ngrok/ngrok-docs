@@ -60,6 +60,7 @@ const sidebars = {
         { label: 'Box', type: 'doc', id: 'integrations/box/webhooks', },
         { label: 'Brex', type: 'doc', id: 'integrations/brex/webhooks', },
         { label: 'Calendly', type: 'doc', id: 'integrations/calendly/webhooks', },
+        { label: 'Chargify', type: 'doc', id: 'integrations/chargify/webhooks', },
         { label: 'Circle CI', type: 'doc', id: 'integrations/circleci/webhooks', },
         { label: 'Coinbase', type: 'doc', id: 'integrations/coinbase/webhooks', },
         { label: 'Contentful', type: 'doc', id: 'integrations/contentful/webhooks', },
