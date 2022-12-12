@@ -49,7 +49,7 @@ To integrate ngrok with Okta SSO, you will need to:
 1. Enter the **Application label** — this is the app name that will be displayed in the okta dashboard for end users — and click **Next**. 
 1. Select **OpenID Connect**, and then enter the following:
     1. **Sign-in redirect URI**: https://idp.ngrok.com/oauth2/callback
-    1. **Login initiated by**: Either Okta or App
+    1. **Login initiated by**: Login initiated by app
 1. Click **Done**. 
 1. Under the **Sign On** tab of the ngrok application, **copy the Client ID and Client Secret**. These values will be used at ngrok to complete the configuration.
 
