@@ -103,9 +103,7 @@ Optionally, you can verify the log of the webhook call in Chargify:
 
 1. On the left menu, click **Tools** and then click **Webhook Panel**.
 
-1. ...
-
-1. On the **Webhook Logs** page, click **View details** and confirm 
+1. On the **Webhooks** page, click **Details** to see details of the webhook call. 
     ![Webhook Logs](img/ngrok_logs_chargify.png)
 
 
@@ -147,14 +145,15 @@ The ngrok signature webhook verification feature allows ngrok to assert that req
 
 This is a quick step to add extra protection to your application.
 
-1. Access your Chargfy's site home page, 
+1. Access your Chargfy's site home page and click **Edit current Site** from the Site dropdown menu on top of the page.
 
+1. On the **Site** page, copy the value of the **Site Shared Key**.
 
-1. Restart your ngrok agent by running the command, replacing `{your webhook secret}` with the value you have copied before (See [Integrate ngrok and Chargify.](#setup-webhook)):
+1. Restart your ngrok agent by running the command, replacing `{your site shared key}` with the value you have copied before:
     ```bash
-    ngrok http 3000 --verify-webhook chargify --verify-webhook-secret {your webhook secret}
+    ngrok http 3000 --verify-webhook chargify --verify-webhook-secret {your site shared key}
     ```
 
-1. Access [Chargify](https://Chargify/) and create a new project.
+1. Access the **Webhook Testing** page and send a new test notification to your webhook.
 
 Verify that your local application receives the request and logs information to the terminal.
