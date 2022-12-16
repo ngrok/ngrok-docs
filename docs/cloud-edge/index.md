@@ -20,10 +20,40 @@ ngrok provides configurable TLS termination options. By default, TLS terminates 
 
 ![ngrok TLS termination options](/img/docs/ngrok-tls-termination.png)
 
+### TLS Termination at ngrok cloud edge(default)
 ```mermaid
-graph TD;
-    A-->B;
-    A-->C;
-    B-->D;
-    C-->D;
+sequenceDiagram
+    participant Client
+    participant Ngrok Cloud Edge
+    participant Ngrok Cloud Agent
+    participant Local Service
+
+    Note over Client,Ngrok Cloud Agent: TLS Encrypted
+    Note over Ngrok Cloud Agent, Local Service: Unencrypted
+```
+
+### TLS Termination at ngrok agent(Zero-Knowledge)
+```mermaid
+sequenceDiagram
+    participant Client
+    participant Ngrok Cloud Edge
+    participant Ngrok Cloud Agent
+    participant Local Service
+
+    Note over Client,Ngrok Cloud Edge: TLS Encrypted
+    Note over Ngrok Cloud Edge, Ngrok Cloud Agent: TLS in TLS
+    Note over Ngrok Cloud Agent, Local Service: Unencrypted
+```
+
+### TLS Termination at local service(Zero-to-end Zero Knowledge)
+```mermaid
+sequenceDiagram
+    participant Client
+    participant Ngrok Cloud Edge
+    participant Ngrok Cloud Agent
+    participant Local Service
+
+    Note over Client,Ngrok Cloud Edge: TLS Encrypted
+    Note over Ngrok Cloud Edge, Ngrok Cloud Agent: TLS in TLS
+    Note over Ngrok Cloud Agent, Local Service: TLS Encrypted
 ```
