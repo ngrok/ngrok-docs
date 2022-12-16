@@ -28,9 +28,11 @@ const config = {
   //   defaultLocale: 'en',
   //   locales: ['en'],
   // },
-
+  markdown: {
+    mermaid: true,
+  },
   plugins: [
-    'docusaurus-plugin-hubspot',
+    'docusaurus-plugin-hubspot', '@docusaurus/theme-mermaid',
   ],
 
   presets: [
