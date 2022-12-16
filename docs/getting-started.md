@@ -38,21 +38,27 @@ The ngrok agent is the command line application that you will use to start your 
 
 For MacOS, use HomeBrew:
 
-    brew install ngrok/ngrok/ngrok
+```bash
+brew install ngrok/ngrok/ngrok
+```
 
 Yes, three times, for [reasons](https://docs.brew.sh/Taps#repository-naming-conventions-and-assumptions).
 
 For Linux, use Apt:
 
-    curl -s https://ngrok-agent.s3.amazonaws.com/ngrok.asc | \
-          sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null && \
-          echo "deb https://ngrok-agent.s3.amazonaws.com buster main" | \
-          sudo tee /etc/apt/sources.list.d/ngrok.list && \
-          sudo apt update && sudo apt install ngrok
+```bash
+curl -s https://ngrok-agent.s3.amazonaws.com/ngrok.asc | \
+  sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null && \
+  echo "deb https://ngrok-agent.s3.amazonaws.com buster main" | \
+  sudo tee /etc/apt/sources.list.d/ngrok.list && \
+  sudo apt update && sudo apt install ngrok
+```
 
 For Windows, use Chocolatey:
 
-    choco install ngrok
+```bash
+choco install ngrok
+```
 
 You'll need to run this in an Administrator Command Prompt.
 
@@ -60,6 +66,7 @@ If you don't have one of these package managers installed or prefer to install t
 
 You can test everything is working by running `ngrok -h` which should print the help text for the ngrok agent.
 
+```bash
     $ ngrok -h
     NAME:
       ngrok - tunnel local ports to public URLs and inspect traffic
@@ -107,36 +114,37 @@ You can test everything is working by running `ngrok -h` which should print the 
     OPTIONS:
       -h, --help      help for ngrok
       -v, --version   version for ngrok
-
+```
 ### Step 3: Connect your agent to your ngrok account
 
 Now that the ngrok agent is installed, let's connect it to your ngrok Account. If you haven't already, [sign up (or log in)](https://dashboard.ngrok.com) to the ngrok Dashboard and get your [Authtoken](https://dashboard.ngrok.com/get-started/your-authtoken). The ngrok agent uses the authtoken (sometimes called tunnel credential) to log into your account when you start a tunnel.
 
 Copy the value and run this command to add the authtoken in your terminal.
-
-    ngrok config add-authtoken TOKEN
+```
+ngrok config add-authtoken TOKEN
+```    
 
 ### Step 4: Start ngrok
 
 Start ngrok by running the following command.
-
-    ngrok http 8000
-
+```
+ngrok http 8000
+```
 You should see something similar to the following console UI in your terminal.
-
-    ngrok                                                                                                                                                         (Ctrl+C to quit)
+```
+  ngrok                                                                                                                                                         (Ctrl+C to quit)
     
-    Session Status                online
-    Account                       inconshreveable (Plan: Free)
-    Version                       3.0.0
-    Region                        United States (us)
-    Latency                       78.006541ms
-    Web Interface                 http://127.0.0.1:4040
-    Forwarding                    https://84c5df439d74.ngrok.io -> http://localhost:8000
+  Session Status                online
+  Account                       inconshreveable (Plan: Free)
+  Version                       3.0.0
+  Region                        United States (us)
+  Latency                       78.006541ms
+  Web Interface                 http://127.0.0.1:4040
+  Forwarding                    https://84c5df439d74.ngrok.io -> http://localhost:8000
     
-    Connections                   ttl     opn     rt1     rt5     p50     p90
-                                  0       0       0.00    0.00    0.00    0.00
-
+  Connections                   ttl     opn     rt1     rt5     p50     p90
+                                 0       0       0.00    0.00    0.00    0.00
+```
 Now open the Forwarding URL in your browser and you should see your local web service. At first glance, it may not seem impressive, but there are a few key differences here:
 
 *   That URL is available to anyone in the world. Seriously, test it out by sending it to a friend.
@@ -150,8 +158,9 @@ The ngrok agent allows you to dynamically add security to any public endpoint in
 
 To start simply, let's add HTTP Basic Authentication to your endpoint.
 
-    ngrok http 8000 --basic-auth 'ngrok:issecure'
-
+```
+ngrok http 8000 --basic-auth 'ngrok:issecure'
+```
 Now when you access the new ngrok URL in your browser, you should be prompted for a username and password.
 
 By the way, if you have a paid plan and want to keep the same URL each time you restart, use the [`--subdomain`](/ngrok-agent/ngrok#ngrok-http-flags) flag when starting the agent.
@@ -164,9 +173,11 @@ You now have a public URL for your web service secured by a username and passwor
 
 In most cases, you don't want to use a single set of shared credentials for all users (you can add as many basic auth credentials as you want, but still). Let's swap out Basic Auth for Google OAuth 2.0 in one line.
 
-First stop the ngrok agent again (
+First stop the ngrok agent again.
 
-    ngrok http 8000 --oauth google
+```
+ngrok http 8000 --oauth google
+```
 
 If you have a paid plan, you can explicitly specify the email addresses to allow with the `--oauth-allow-email` flag.
 
