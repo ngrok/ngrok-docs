@@ -12,7 +12,7 @@ The `ngrok` supports an optional, YAML configuration file which provides you wit
 
 The default location of the ngrok agent's configuration file varies based on your operating system. The easiest way to find the configuration file location is to run:
 
-    ngrok config verify
+    ngrok config check
 
 which will validate and print the location of the configuration file.
 

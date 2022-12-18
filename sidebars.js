@@ -56,6 +56,7 @@ const sidebars = {
         { label: 'Aftership', type: 'doc', id: 'integrations/aftership/webhooks', },
         { label: 'Airship', type: 'doc', id: 'integrations/airship/webhooks', },
         { label: 'Azure AD', type: 'doc', id: 'integrations/azure-ad/sso-saml', },
+        { label: 'Azure AD B2C', type: 'doc', id: 'integrations/azure-ad-b2c/sso-saml', },
         { label: 'Bitbucket', type: 'doc', id: 'integrations/bitbucket/webhooks', },
         { label: 'Box', type: 'doc', id: 'integrations/box/webhooks', },
         { label: 'Brex', type: 'doc', id: 'integrations/brex/webhooks', },
