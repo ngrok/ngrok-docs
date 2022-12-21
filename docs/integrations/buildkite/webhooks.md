@@ -72,18 +72,18 @@ Once your app is running successfully on localhost, let's get it on the internet
 
 To register a webhook on your Buildkite account follow the instructions below:
 
-1. Access [Buildkite](https://Buildkite/) and sign in using your Buildkite account.
+1. Access [Buildkite](https://buildkite.com/) and sign in using your Buildkite account.
 
-1. In the same browser, access [Buildkite Developer](https://developer.Buildkite/).
+1. On the welcome page, click **Settings** on the top menu and click **Notification Services** on the left menu.
 
-1. On the top menu of the developer site, click **DEVELOPER TOOLS** and then click **Webhooks**.
+1. On the **Notification Services** page, click **Add** for the **Webhook** line.
 
-1. On the **Webhooks** page, click **Create a Webhook**.
+1. On the **Add Webhook Notification** page, enter `My LocalHost App` in the **Description** field and enter the URL provided by the ngrok agent to expose your application to the internet in the **Webhook URL** field (i.e. `https://1a2b-3c4d-5e6f-7g8h-9i0j.sa.ngrok.io`).
+    ![Webhook URL](img/ngrok_url_configuration_buildkite.png)
 
-1. On the **Create a new webhook** page, enter a name in the **NAME** field, and in the **URL** field enter the URL provided by the ngrok agent to expose your application to the internet (i.e. `https://1a2b-3c4d-5e6f-7g8h-9i0j.sa.ngrok.io`).
-    ![buildkite URL to Publish](img/ngrok_url_configuration_buildkite.png)
+1. On the **Events** section, select all events.
 
-1. Select your team for the **TEAM** field, click the **created** checkbox for **Projects** under the **EVENTS** section, and then click **Submit**.
+1. On the **Pipelines** section, select **All Pipelines**, and then click **Add Webhook Notification**.
 
 
 ### Run Webhooks with Buildkite and ngrok
@@ -91,21 +91,16 @@ To register a webhook on your Buildkite account follow the instructions below:
 Buildkite sends different request body contents depending on the event that is being triggered.
 You can trigger new calls from Buildkite to your application by following the instructions below.
 
-1. In the same browser, access [Buildkite](https://Buildkite/), and then click **+** close to your team name on the left menu.
+1. On the welcome page, click **Pipelines** on the top menu and then click one of your pipelines.
+    **Note**: Create a pipeline if you don't have one by clicking **Create your first pipeline** and following the instructions on the screen.
 
-1. On the **New Project** popup, enter a project name and then click **Create Project**.
+1. On your pipeline page, click **New Build**, enter a message in the **Message** field, and then click **Create Build**.
 
-    Confirm your localhost app receives the create-project event notification and logs both headers and body in the terminal.
+    Confirm your localhost app receives event notifications and logs both headers and body in the terminal.
 
-Optionally, you can verify the log of the webhook call in Buildkite:
+Alternatively, you can verify the log of the webhook call in Buildkite:
 
-1. In the same browser, access [Buildkite Developer](https://developer.Buildkite/).
-
-1. On the top menu of the developer site, click **DEVELOPER TOOLS** and then click **Webhooks**.
-
-1. On the **Webhooks** page, click **View logs** close to your webhook.
-
-1. On the **Webhook Logs** page, click **View details** and confirm 
+1. Click **Settings** on the top menu, click **Notification Services** on the left menu, click the **My LocalHost App** webhook tile, scroll down to the **Request Log** section, and then click one of the logs:
     ![Webhook Logs](img/ngrok_logs_buildkite.png)
 
 
@@ -147,17 +142,17 @@ The ngrok signature webhook verification feature allows ngrok to assert that req
 
 This is a quick step to add extra protection to your application.
 
-1. Access [Buildkite Developer](https://developer.Buildkite/).
+1. Access [Buildkite](https://buildkite.com/) and sign in using your Buildkite account.
 
-1. On the top menu of the developer site, click **DEVELOPER TOOLS** and then click **Webhooks**.
+1. On the organization page, click **Settings** on the top menu and click **Notification Services** on the left menu.
 
-1. On the **Webhooks** page, click **Copy** to copy the **Secret** value.
+1. On the **Notification Services** page, click the **My LocalHost App** webhook tile, copy the value of the **Token** field, select **Send an HMAC signature**, and then click **Save Webhook Settings**.
 
-1. Restart your ngrok agent by running the command, replacing `{your webhook secret}` with the value you have copied before (See [Integrate ngrok and Buildkite.](#setup-webhook)):
+1. Restart your ngrok agent by running the command, replacing `{your token}` with the value you have copied before:
     ```bash
-    ngrok http 3000 --verify-webhook buildkite --verify-webhook-secret {your webhook secret}
+    ngrok http 3000 --verify-webhook buildkite --verify-webhook-secret {your token}
     ```
 
-1. Access [Buildkite](https://Buildkite/) and create a new project.
+1. Click **Pipelines** on the top menu, select one of your pipelines and create a new build.
 
 Verify that your local application receives the request and logs information to the terminal.
