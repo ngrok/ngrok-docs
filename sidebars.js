@@ -76,6 +76,7 @@ const sidebars = {
         { label: 'GitLab', type: 'doc', id: 'integrations/gitlab/webhooks', },
         { label: 'Heroku', type: 'doc', id: 'integrations/heroku/webhooks', },
         { label: 'HubSpot', type: 'doc', id: 'integrations/hubspot/webhooks', },
+        { label: 'Hygraph', type: 'doc', id: 'integrations/hygraph/webhooks', },
         { label: 'Instagram', type: 'doc', id: 'integrations/instagram/webhooks', },
         { label: 'Intercom', type: 'doc', id: 'integrations/intercom/webhooks', },
         { label: 'LaunchDarkly', type: 'doc', id: 'integrations/launchdarkly/webhooks', },
