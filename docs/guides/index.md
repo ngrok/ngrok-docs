@@ -1,8 +1,8 @@
 ---
 sidebar_position: 3
 title: Guides
-pagination_label: Configuring Okta Single Sign-On (SSO)
-pagination_next: guides/dashboard-sso-okta-setup
+pagination_next: null
+pagination_prior: null
 ---
 
 # How to Guides

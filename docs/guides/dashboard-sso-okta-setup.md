@@ -1,10 +1,6 @@
 ---
 
 title: Configuring Okta Single Sign-On (SSO)
-sidebar_label: Configuring Okta Single Sign-On (SSO)
-pagination_label: Configuring Okta Single Sign-On (SSO)
-image: https://i.imgur.com/mErPwqL.png
-slug: /guides/dashboard-sso-okta-setup
 ---
 
 # Configuring Okta Single Sign-On (SSO)
