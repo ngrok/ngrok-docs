@@ -7,7 +7,7 @@ title: Django
 
 Django is a high-level Python web framework that enables the rapid development of secure and maintainable websites. It takes care of much of the hassle of web development, so you can focus on writing your app without needing to reinvent the wheel. It's free and open source.
 
-You can use Django with ngrok to make your Django application accessible over the internet during development. Ngrok is a tool that creates a secure tunnel to your localhost, allowing you to expose your local development server to the internet. This is useful when you want to test your Django app from a remote location or share it with others for testing or collaboration.
+You can use Django with ngrok to make your Django application accessible over the internet during development. This is useful when you want to test your Django app from a remote location or share it with others for testing or collaboration.
 
 To use Django with ngrok, you first need to install and set up Django on your local machine. Then, start the Django development server by running the following command:
 
