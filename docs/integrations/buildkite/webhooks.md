@@ -81,9 +81,9 @@ To register a webhook on your Buildkite account follow the instructions below:
 1. On the **Add Webhook Notification** page, enter `My LocalHost App` in the **Description** field and enter the URL provided by the ngrok agent to expose your application to the internet in the **Webhook URL** field (i.e. `https://1a2b-3c4d-5e6f-7g8h-9i0j.sa.ngrok.io`).
     ![Webhook URL](img/ngrok_url_configuration_buildkite.png)
 
-1. On the **Events** section, select all events.
+1. In the **Events** section, select all events.
 
-1. On the **Pipelines** section, select **All Pipelines**, and then click **Add Webhook Notification**.
+1. In the **Pipelines** section, select **All Pipelines**, and then click **Add Webhook Notification**.
 
 
 ### Run Webhooks with Buildkite and ngrok
