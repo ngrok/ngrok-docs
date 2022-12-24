@@ -72,43 +72,86 @@ Once your app is running successfully on localhost, let's get it on the internet
 
 ## **Step 3**: Integrate Amazon SNS {#setup-webhook}
 
-To register a webhook on your Amazon SNS account follow the instructions below:
+To register a webhook on your Amazon SNS account follow the instructions below.
 
-1. Access [Amazon SNS](https://Amazon SNS/) and sign in using your Amazon SNS account.
+Create an Amazon SNS topic:
 
-1. In the same browser, access [Amazon SNS Developer](https://developer.Amazon SNS/).
+1. Access [Amazon Cloud Service](https://aws.amazon.com/) and sign in using your Amazon account.
 
-1. On the top menu of the developer site, click **DEVELOPER TOOLS** and then click **Webhooks**.
+1. On the AWS dashboard, enter `sns` in the search bar and then click the **Simple Notification Service** link that appears in the list.
 
-1. On the **Webhooks** page, click **Create a Webhook**.
+1. On the Amazon SNS **Dashboard**, click **Topics** on the left menu, and then click **Create topic**.
 
-1. On the **Create a new webhook** page, enter a name in the **NAME** field, and in the **URL** field enter the URL provided by the ngrok agent to expose your application to the internet (i.e. `https://1a2b-3c4d-5e6f-7g8h-9i0j.sa.ngrok.io`).
-    ![amazonsns URL to Publish](img/ngrok_url_configuration_amazonsns.png)
+1. On the **Create topic** page, click the **Standard** tile, enter `MyTopic` in the **Name** field, and then click **Create topic**.
 
-1. Select your team for the **TEAM** field, click the **created** checkbox for **Projects** under the **EVENTS** section, and then click **Submit**.
+Create an Amazon Lambda function:
+
+1. Enter `Lambda` in the search bar on the top of the screen and then click **Lambda**.
+
+1. On the **Functions** page, click **Create function**.
+
+1. On the **Create function** page, enter `myFunctionName` in the **Function name** field, make sure a version of Node.js is selected in the **Runtime** combobox, and then click **Create function**.
+
+1. On the **myFunctionName**, delete the **index.mjs** file in the **Code source** section, create a new file and name it `index.js`.
+
+1. Double click the **index.js** file and paste the following code in the right pane:
+    ```JavaScript
+    const https = require('https')
+    const url = "https://1a2b-3c4d-5e6f-7g8h-9i0j.sa.ngrok.io"
+    exports.handler = async function(event, context) {
+        const dataString = JSON.stringify(event)
+        const options = {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json','Content-Length': dataString.length,},
+            timeout: 1000
+        }
+        return new Promise((resolve, reject) => {
+            const req = https.request(url, options, (res) => {
+                if (res.statusCode < 200 || res.statusCode > 299)
+                    return reject(new Error(`HTTP status code ${res.statusCode}`))
+                const body = []
+                res.on('data', (chunk) => body.push(chunk))
+                res.on('end', () => {
+                    const resString = Buffer.concat(body).toString()
+                    resolve(resString)
+                })
+            })
+            req.on('error', (err) => {
+                reject(err)
+            })
+            req.on('timeout', () => {
+                req.destroy()
+                reject(new Error('Request time out.'))
+            })
+            req.write(dataString)
+            req.end()
+        })
+    }
+    ```
+
+    **Note**: Replace the value of the **urL** variable (i.e. `https://1a2b-3c4d-5e6f-7g8h-9i0j.sa.ngrok.io`) with the URL provided by the ngrok agent to expose your application to the internet.
+
+1. Click **Deploy** and then click **Test**.
+
+    Confirm your localhost app receives a notification and logs both headers and body in the terminal.
+
+1. In the **Function overview** section, click **Add trigger**.
+
+1. On the **Add trigger** page, select **SNS** in the **Select a source** combobox, enter your topic name in the **SNS topic**, and then click **Add**.
 
 
 ### Run Webhooks with Amazon SNS and ngrok
 
-Amazon SNS sends different request body contents depending on the event that is being triggered.
-You can trigger new calls from Amazon SNS to your application by following the instructions below.
+Any message published to the Amazon SNS topic triggers the Lambda function. The Node.js code of the Lambda function sends a post request to your local app.
+To publish a message to the SNS topic, follow the steps below:
 
-1. In the same browser, access [Amazon SNS](https://Amazon SNS/), and then click **+** close to your team name on the left menu.
+1. On the AWS dashboard, enter `sns` in the search bar and then click the **Simple Notification Service** link that appears in the list.
 
-1. On the **New Project** popup, enter a project name and then click **Create Project**.
+1. On the Amazon SNS **Dashboard**, click **Topics** on the left menu, and then click the topic you associated with the Lambda function before.
 
-    Confirm your localhost app receives the create-project event notification and logs both headers and body in the terminal.
+1. On the topic page, click **Publish message**, enter `My message` in the **Subject** field, enter `This is my message.` in the **Message body to send to the endpoint** field, and then click **Publish message**.
 
-Optionally, you can verify the log of the webhook call in Amazon SNS:
-
-1. In the same browser, access [Amazon SNS Developer](https://developer.Amazon SNS/).
-
-1. On the top menu of the developer site, click **DEVELOPER TOOLS** and then click **Webhooks**.
-
-1. On the **Webhooks** page, click **View logs** close to your webhook.
-
-1. On the **Webhook Logs** page, click **View details** and confirm 
-    ![Webhook Logs](img/ngrok_logs_amazonsns.png)
+    Confirm your localhost app receives a notification and logs both headers and body in the terminal.
 
 
 ### Inspecting requests
