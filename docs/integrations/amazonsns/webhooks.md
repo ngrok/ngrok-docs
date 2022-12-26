@@ -15,13 +15,13 @@ To integrate Amazon SNS webhooks with ngrok:
 
 
 This guide covers how to use ngrok to integrate your localhost app with Amazon SNS by using Webhooks.
-Amazon SNS webhooks can be used to notify an external application whenever specific events occur in your Amazon SNS account. 
+Amazon SNS webhooks can be used to notify an external application whenever a message is published to a topic. 
 
 By integrating ngrok with Amazon SNS, you can:
 
 - **Develop and test Amazon SNS webhooks locally**, eliminating the time in deploying your development code to a public environment and setting it up in HTTPS.
 - **Inspect and troubleshoot requests from Amazon SNS** in real-time via the inspection UI and API.
-- **Modify and Replay Amazon SNS Webhook requests** with a single click and without spending time reproducing events manually in your Amazon SNS account.
+- **Modify and Replay Amazon SNS Webhook requests** with a single click and without spending time reproducing notifications manually in your Amazon SNS topic.
 - **Secure your app with Amazon SNS validation provided by ngrok**. Invalid requests are blocked by ngrok before reaching your app.
 
 
@@ -72,9 +72,7 @@ Once your app is running successfully on localhost, let's get it on the internet
 
 ## **Step 3**: Integrate Amazon SNS {#setup-webhook}
 
-To register a webhook on your Amazon SNS account follow the instructions below.
-
-Create an Amazon SNS topic:
+To register a webhook on your Amazon SNS topic follow the instructions below.
 
 1. Access [Amazon Cloud Service](https://aws.amazon.com/) and sign in using your Amazon account.
 
@@ -102,8 +100,7 @@ Create an Amazon SNS topic:
 
 ### Run Webhooks with Amazon SNS and ngrok
 
-Any message published to the Amazon SNS topic triggers your HTTPS subscription.
-To publish a message to the SNS topic, follow the steps below:
+Any message published to the Amazon SNS topic triggers your HTTPS subscription. To publish a message to the SNS topic manually, follow the steps below:
 
 1. On the AWS dashboard, enter `sns` in the search bar and then click the **Simple Notification Service** link that appears in the list.
 
@@ -122,7 +119,7 @@ The Request Inspector shows all the requests made through your ngrok tunnel to y
 
 Seeing requests is an excellent way of validating the data sent to and retrieved by your app via the ngrok tunnel. That alone can save you some time dissecting and logging HTTP request and response headers, methods, bodies, and response codes within your app just to confirm you are getting what you expect.
 
-To inspect Amazon SNS's webhooks call, launch the ngrok web interface (i.e. `http://127.0.0.1:4040`), and then click one of the requests sent by Amazon SNS.
+To inspect Amazon SNS's webhooks call, launch the ngrok web interface (i.e. `http://127.0.0.1:4040`), and then click one of the requests sent by Amazon.
 
 From the results, review the response body, header, and other details:
 
@@ -131,7 +128,7 @@ From the results, review the response body, header, and other details:
 
 ### Replaying requests
 
-The ngrok Request Inspector provides a replay function that you can use to test your code without the need to trigger new events from Amazon SNS. To replay a request:
+The ngrok Request Inspector provides a replay function that you can use to test your code without the need to trigger new messages from Amazon SNS topics. To replay a request:
 
 1. In the ngrok inspection interface (i.e. `http://localhost:4040`), select a request from Amazon SNS.
 
@@ -146,11 +143,15 @@ Verify that your local application receives the request and logs the correspondi
 
 ## **Bonus**: Secure webhook requests {#security}
 
-The ngrok signature webhook verification feature allows ngrok to assert that requests from your Amazon SNS webhook are the only traffic allowed to make calls to your localhost app.
+The ngrok signature webhook verification feature allows ngrok to assert that requests from your Amazon SNS topic are the only traffic allowed to make calls to your localhost app.
 
 **Note:** This ngrok feature requires a Pro or Enterprise license.
 
 This is a quick step to add extra protection to your application.
+
+1. Access [Amazon Cloud Service](https://aws.amazon.com/), sign in using your Amazon account, and access the Amazon SNS **Dashboard** page.
+
+1. Click your topic and copy the value of the **** field.
 
 1. Restart your ngrok agent by running the following command:
     ```bash
