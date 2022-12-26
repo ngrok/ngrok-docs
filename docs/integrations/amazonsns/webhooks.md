@@ -151,11 +151,11 @@ This is a quick step to add extra protection to your application.
 
 1. Access [Amazon Cloud Service](https://aws.amazon.com/), sign in using your Amazon account, and access the Amazon SNS **Dashboard** page.
 
-1. Click your topic and copy the value of the **** field.
+1. Click **Topics** on the left menu, click your topic and copy the value of the **Topic owner** field.
 
-1. Restart your ngrok agent by running the following command:
+1. Restart your ngrok agent by running the command, replacing `{Topic owner}` with the value you have copied before:
     ```bash
-    ngrok http 3000 --verify-webhook sns
+    ngrok http 3000 --verify-webhook sns --verify-webhook-secret {Topic owner}
     ```
 
 1. Access [Amazon Cloud Service](https://aws.amazon.com/), sign in using your Amazon account, access the Amazon SNS **Dashboard** page, and publish a new message to your topic.
