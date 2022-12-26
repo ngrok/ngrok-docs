@@ -80,69 +80,29 @@ Create an Amazon SNS topic:
 
 1. On the AWS dashboard, enter `sns` in the search bar and then click the **Simple Notification Service** link that appears in the list.
 
-1. On the Amazon SNS **Dashboard**, click **Topics** on the left menu, and then click **Create topic**.
+1. On the Amazon SNS **Dashboard** page, click **Topics** on the left menu, and then click **Create topic**.
 
 1. On the **Create topic** page, click the **Standard** tile, enter `MyTopic` in the **Name** field, and then click **Create topic**.
 
-Create an Amazon Lambda function:
+1. Click **Subscriptions** on the left menu and then click **Create subscription**.
 
-1. Enter `Lambda` in the search bar on the top of the screen and then click **Lambda**.
+1. On the **Create subscription** page, select your topic in the **Topic ARN** field, select **HTTPS** in the **Protocol** field, enter the URL provided by the ngrok agent to expose your application to the internet in the **Endpoint** field (i.e. `https://1a2b-3c4d-5e6f-7g8h-9i0j.sa.ngrok.io`).
+    ![Endpoint](img/ngrok_url_configuration_amazonsns.png)
 
-1. On the **Functions** page, click **Create function**.
+1. Click **Create subscription**.
 
-1. On the **Create function** page, enter `myFunctionName` in the **Function name** field, make sure a version of Node.js is selected in the **Runtime** combobox, and then click **Create function**.
+1. Confirm your localhost app receives a **SubscriptionConfirmation** notification and logs both headers and body in the terminal.
 
-1. On the **myFunctionName**, delete the **index.mjs** file in the **Code source** section, create a new file and name it `index.js`.
+1. Copy the value of the **SubscribeURL** field from the body of the request.
 
-1. Double click the **index.js** file and paste the following code in the right pane:
-    ```JavaScript
-    const https = require('https')
-    const url = "https://1a2b-3c4d-5e6f-7g8h-9i0j.sa.ngrok.io"
-    exports.handler = async function(event, context) {
-        const dataString = JSON.stringify(event)
-        const options = {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json','Content-Length': dataString.length,},
-            timeout: 1000
-        }
-        return new Promise((resolve, reject) => {
-            const req = https.request(url, options, (res) => {
-                if (res.statusCode < 200 || res.statusCode > 299)
-                    return reject(new Error(`HTTP status code ${res.statusCode}`))
-                const body = []
-                res.on('data', (chunk) => body.push(chunk))
-                res.on('end', () => {
-                    const resString = Buffer.concat(body).toString()
-                    resolve(resString)
-                })
-            })
-            req.on('error', (err) => {
-                reject(err)
-            })
-            req.on('timeout', () => {
-                req.destroy()
-                reject(new Error('Request time out.'))
-            })
-            req.write(dataString)
-            req.end()
-        })
-    }
-    ```
+1. On the Amazon SNS **Subscriptions** page, select the **Pending confirmation** subscription from the list, click **Confirm subscription**, enter the value of the **SubscribeURL** in the **url** field, and then click **Confirm subscription**.
 
-    **Note**: Replace the value of the **urL** variable (i.e. `https://1a2b-3c4d-5e6f-7g8h-9i0j.sa.ngrok.io`) with the URL provided by the ngrok agent to expose your application to the internet.
-
-1. Click **Deploy** and then click **Test**.
-
-    Confirm your localhost app receives a notification and logs both headers and body in the terminal.
-
-1. In the **Function overview** section, click **Add trigger**.
-
-1. On the **Add trigger** page, select **SNS** in the **Select a source** combobox, enter your topic name in the **SNS topic**, and then click **Add**.
+    The **Subscription was confirmed successfully.** message appears.
 
 
 ### Run Webhooks with Amazon SNS and ngrok
 
-Any message published to the Amazon SNS topic triggers the Lambda function. The Node.js code of the Lambda function sends a post request to your local app.
+Any message published to the Amazon SNS topic triggers your HTTPS subscription.
 To publish a message to the SNS topic, follow the steps below:
 
 1. On the AWS dashboard, enter `sns` in the search bar and then click the **Simple Notification Service** link that appears in the list.
@@ -177,7 +137,7 @@ The ngrok Request Inspector provides a replay function that you can use to test 
 
 1. Click **Replay** to execute the same request to your application or select **Replay with modifications** to modify the content of the original request before sending the request.
 
-1. If you choose to **Replay with modifications**, you can modify any content from the original request. For example, you can modify the **id** field inside the body of the request.
+1. If you choose to **Replay with modifications**, you can modify any content from the original request. For example, you can modify the **Message** field inside the body of the request.
 
 1. Click **Replay**.
 
@@ -192,17 +152,11 @@ The ngrok signature webhook verification feature allows ngrok to assert that req
 
 This is a quick step to add extra protection to your application.
 
-1. Access [Amazon SNS Developer](https://developer.Amazon SNS/).
-
-1. On the top menu of the developer site, click **DEVELOPER TOOLS** and then click **Webhooks**.
-
-1. On the **Webhooks** page, click **Copy** to copy the **Secret** value.
-
-1. Restart your ngrok agent by running the command, replacing `{your webhook secret}` with the value you have copied before (See [Integrate ngrok and Amazon SNS.](#setup-webhook)):
+1. Restart your ngrok agent by running the following command:
     ```bash
-    ngrok http 3000 --verify-webhook amazonsns --verify-webhook-secret {your webhook secret}
+    ngrok http 3000 --verify-webhook sns
     ```
 
-1. Access [Amazon SNS](https://Amazon SNS/) and create a new project.
+1. Access [Amazon Cloud Service](https://aws.amazon.com/), sign in using your Amazon account, access the Amazon SNS **Dashboard** page, and publish a new message to your topic.
 
 Verify that your local application receives the request and logs information to the terminal.
