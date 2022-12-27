@@ -72,18 +72,20 @@ Once your app is running successfully on localhost, let's get it on the internet
 
 To register a webhook on your Mailgun account follow the instructions below:
 
-1. Access [Mailgun](https://Mailgun/) and sign in using your Mailgun account.
+1. Access [Mailgun](https://app.mailgun.com/) and sign in using your Mailgun account.
 
-1. In the same browser, access [Mailgun Developer](https://developer.Mailgun/).
+1. On the **Dashboard** page, click **Sending** in the left menu, click **Webhooks** and then click **Add webhook**.
 
-1. On the top menu of the developer site, click **DEVELOPER TOOLS** and then click **Webhooks**.
+1. On the **New webhook** popup, select **Delivered Messages** in the **Event type** field, and enter the URL provided by the ngrok agent to expose your application to the internet in the **URL** field (i.e. `https://1a2b-3c4d-5e6f-7g8h-9i0j.sa.ngrok.io`).
+    ![Webhook URL](img/ngrok_url_configuration_mailgun.png)
 
-1. On the **Webhooks** page, click **Create a Webhook**.
+1. Click **Create webhook**.
 
-1. On the **Create a new webhook** page, enter a name in the **NAME** field, and in the **URL** field enter the URL provided by the ngrok agent to expose your application to the internet (i.e. `https://1a2b-3c4d-5e6f-7g8h-9i0j.sa.ngrok.io`).
-    ![mailgun URL to Publish](img/ngrok_url_configuration_mailgun.png)
+To test the webhook follow the instructions below:
 
-1. Select your team for the **TEAM** field, click the **created** checkbox for **Projects** under the **EVENTS** section, and then click **Submit**.
+1. On the **Webhooks** page, select **Delivered Messages** in the **Event type** combobox, enter the same ngrok RL in the **URL to test** field, and then click **Test webhook**.
+
+    Confirm your localhost app receives the event notification and logs both headers and body in the terminal. Also, confirms a **Response** message appears on the **Webhooks** page.
 
 
 ### Run Webhooks with Mailgun and ngrok
@@ -91,22 +93,28 @@ To register a webhook on your Mailgun account follow the instructions below:
 Mailgun sends different request body contents depending on the event that is being triggered.
 You can trigger new calls from Mailgun to your application by following the instructions below.
 
-1. In the same browser, access [Mailgun](https://Mailgun/), and then click **+** close to your team name on the left menu.
+1. Access [Mailgun Dashboard](https://app.mailgun.com/), click **Sending** in the left menu, and then click **Overview**.
 
-1. On the **New Project** popup, enter a project name and then click **Create Project**.
+1. Enter a valid email address in the **Email address** field in the **Authorized Recipients** section, and then click **Save Recipient**.
 
-    Confirm your localhost app receives the create-project event notification and logs both headers and body in the terminal.
+Verify the recipient receives an email from mail gun asking to agree to receive emails from your Mailgun account, click the **I Agree** link in the body of the email and then click **Yes**.
 
-Optionally, you can verify the log of the webhook call in Mailgun:
+1. On the [Mailgun Dashboard](https://app.mailgun.com/), click **Select** in the **API** tile and choose one of the options to send emails that appear on the screen. For example, open a terminal window and run the following command using curl:
+    ```bash
+    curl --location --request POST 'API_BASE_URL/messages' \
+    --header 'Authorization: Basic api:API_KEY' \
+    --form 'from="mailgun@YOUR_DOMAIN"' \
+    --form 'to="AUTHORIZED_RECIPIENT"' \
+    --form 'subject="Hello from Mailgun"' \
+    --form 'text="Testing some Mailgun email!"'
+    ```
+    **Note**: Replace the following with values from your Mailgun account:
+    - API_BASE_URL: **API base URL** value that appears on the **Overview** page.
+    - API_KEY: **API Key** value that appears on the **Overview** page.
+    - YOUR_DOMAIN: Find your domain by clicking **Domains** in the left menu.
+    - AUTHORIZED_RECIPIENT: the **Email address** you registered as an authorized recipient.
 
-1. In the same browser, access [Mailgun Developer](https://developer.Mailgun/).
-
-1. On the top menu of the developer site, click **DEVELOPER TOOLS** and then click **Webhooks**.
-
-1. On the **Webhooks** page, click **View logs** close to your webhook.
-
-1. On the **Webhook Logs** page, click **View details** and confirm 
-    ![Webhook Logs](img/ngrok_logs_mailgun.png)
+    Confirm your localhost app receives an event notification and logs both headers and body in the terminal.
 
 
 ### Inspecting requests
@@ -147,17 +155,17 @@ The ngrok signature webhook verification feature allows ngrok to assert that req
 
 This is a quick step to add extra protection to your application.
 
-1. Access [Mailgun Developer](https://developer.Mailgun/).
+1. Access [Mailgun](https://app.mailgun.com/) and sign in using your Mailgun account.
 
-1. On the top menu of the developer site, click **DEVELOPER TOOLS** and then click **Webhooks**.
+1. On the **Dashboard** page, click **Sending** in the left menu and then click **Webhooks**.
 
-1. On the **Webhooks** page, click **Copy** to copy the **Secret** value.
+1. On the **Webhooks** page, click the eye icon near the **HTTP webhook signing key** text and copy the value that appears.
 
-1. Restart your ngrok agent by running the command, replacing `{your webhook secret}` with the value you have copied before (See [Integrate ngrok and Mailgun.](#setup-webhook)):
+1. Restart your ngrok agent by running the command, replacing `{webhook signing key}` with the value you have copied before:
     ```bash
-    ngrok http 3000 --verify-webhook mailgun --verify-webhook-secret {your webhook secret}
+    ngrok http 3000 --verify-webhook mailgun --verify-webhook-secret {webhook signing key}
     ```
 
-1. Access [Mailgun](https://Mailgun/) and create a new project.
+1. Access [Mailgun](https://app.mailgun.com/) and send a new email to an authorized recipient.
 
 Verify that your local application receives the request and logs information to the terminal.
