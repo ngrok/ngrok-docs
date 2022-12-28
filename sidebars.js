@@ -95,6 +95,7 @@ const sidebars = {
         { label: 'Stripe', type: 'doc', id: 'integrations/stripe/webhooks', },
         { label: 'Twilio', type: 'doc', id: 'integrations/twilio/webhooks', },
         { label: 'Typeform', type: 'doc', id: 'integrations/typeform/webhooks', },
+        { label: 'VMware Workspace', type: 'doc', id: 'integrations/vmware/webhooks', },
         { label: 'WhatsApp', type: 'doc', id: 'integrations/whatsapp/webhooks', },
         { label: 'Zendesk', type: 'doc', id: 'integrations/zendesk/webhooks', },
         { label: 'Zoom', type: 'doc', id: 'integrations/zoom/webhooks', },
