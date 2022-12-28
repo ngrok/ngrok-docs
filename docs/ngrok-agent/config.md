@@ -2,6 +2,9 @@
 sidebar_position: 2
 title: Agent Configuration File
 ---
+import Anchor from '@site/src/components/checkForAnchor.tsx'; 
+
+<Anchor />
 
 # ngrok Agent Configuration File
 ------------------------------
