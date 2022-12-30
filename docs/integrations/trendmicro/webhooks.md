@@ -72,18 +72,27 @@ Once your app is running successfully on localhost, let's get it on the internet
 
 To register a webhook on your Trend Micro account follow the instructions below:
 
-1. Access [Trend Micro](https://Trend Micro/) and sign in using your Trend Micro account.
+1. Access [Trend Micro Cloud One](https://cloudone.trendmicro.com/) and sign in using your Trend Micro account.
 
-1. In the same browser, access [Trend Micro Developer](https://developer.Trend Micro/).
+1. On the home page, click the **Conformity** tile.
 
-1. On the top menu of the developer site, click **DEVELOPER TOOLS** and then click **Webhooks**.
+1. On the 
 
-1. On the **Webhooks** page, click **Create a Webhook**.
+
+
+
+
 
 1. On the **Create a new webhook** page, enter a name in the **NAME** field, and in the **URL** field enter the URL provided by the ngrok agent to expose your application to the internet (i.e. `https://1a2b-3c4d-5e6f-7g8h-9i0j.sa.ngrok.io`).
     ![URL](img/ngrok_url_configuration_trendmicro.png)
 
-1. Select your team for the **TEAM** field, click the **created** checkbox for **Projects** under the **EVENTS** section, and then click **Submit**.
+1. Your localhost app receives a notification and log the body of the request in the terminal. Copy the **confirmation_link** value and open the link in a new browser tab.
+
+1. Refresh the **Trend Micro Cloud One** browser tab and confirm the **Status** of your webhooks appears **Enabled**.
+
+1. Click your webhook and then click **Test Integration**.
+
+    Confirm your localhost app receives a notification and logs both headers and body in the terminal.
 
 
 ### Run Webhooks with Trend Micro and ngrok
@@ -155,7 +164,7 @@ This is a quick step to add extra protection to your application.
 
 1. Restart your ngrok agent by running the command, replacing `{your webhook secret}` with the value you have copied before (See [Integrate ngrok and Trend Micro.](#setup-webhook)):
     ```bash
-    ngrok http 3000 --verify-webhook trendmicro --verify-webhook-secret {your webhook secret}
+    ngrok http 3000 --verify-webhook trendmicro_conformity --verify-webhook-secret {your webhook secret}
     ```
 
 1. Access [Trend Micro](https://Trend Micro/) and create a new project.
