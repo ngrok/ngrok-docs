@@ -72,41 +72,40 @@ Once your app is running successfully on localhost, let's get it on the internet
 
 To register a webhook on your VMware Workspace ONE account follow the instructions below:
 
-1. Access [VMware Workspace ONE](https://VMware Workspace ONE/) and sign in using your VMware Workspace ONE account.
+1. Access [VMware Workspace ONE](https://console.cloud.vmware.com/) and sign in using your VMware account.
 
-1. In the same browser, access [VMware Workspace ONE Developer](https://developer.VMware Workspace ONE/).
+1. On the **Services** page, click **LAUNCH SERVICE** in the **Workspace ONE** tile.
 
-1. On the top menu of the developer site, click **DEVELOPER TOOLS** and then click **Webhooks**.
+1. On the Workspace ONE **Home** page, click **MANAGE** in the **Unified Endpoint Management** tile.
 
-1. On the **Webhooks** page, click **Create a Webhook**.
+1. On the **Workspace ONE UEM** page, click **GROUPS & SETTINGS** on the left menu, click **All Settings**, click **Advanced** in the **System** section, click **API**, and then click **Event Notifications**.
 
-1. On the **Create a new webhook** page, enter a name in the **NAME** field, and in the **URL** field enter the URL provided by the ngrok agent to expose your application to the internet (i.e. `https://1a2b-3c4d-5e6f-7g8h-9i0j.sa.ngrok.io`).
-    ![vmware URL to Publish](img/ngrok_url_configuration_vmware.png)
+1. On the **Event Notifications** page, click the **Override** radio button and then click **ADD RULE**.
 
-1. Select your team for the **TEAM** field, click the **created** checkbox for **Projects** under the **EVENTS** section, and then click **Submit**.
+1. On the **Add Event Notification** popup, enter `My Webhook` in the **Target Name** field and enter the URL provided by the ngrok agent to expose your application to the internet in the **Target URL** field (i.e. `https://1a2b-3c4d-5e6f-7g8h-9i0j.sa.ngrok.io`).
+    ![Target URL](img/ngrok_url_configuration_vmware.png)
+
+1. Click **JSON** as the **Format** and then click **TEST CONNECTION**.
+
+    Confirm your localhost app receives a request and logs both headers and body in the terminal, and the message **Test is successful** appears on the screen.
+
+1. In the **Events** section, click **ENABLED** for all events and then click **SAVE**.
 
 
 ### Run Webhooks with VMware Workspace ONE and ngrok
 
-VMware Workspace ONE sends different request body contents depending on the event that is being triggered.
 You can trigger new calls from VMware Workspace ONE to your application by following the instructions below.
 
-1. In the same browser, access [VMware Workspace ONE](https://VMware Workspace ONE/), and then click **+** close to your team name on the left menu.
+1. Access [VMware Workspace ONE](https://console.cloud.vmware.com/), click **LAUNCH SERVICE** in the **Workspace ONE** tile, and then click **MANAGE** in the **Unified Endpoint Management** tile.
 
-1. On the **New Project** popup, enter a project name and then click **Create Project**.
+1. On the **Workspace ONE UEM** page, click **DEVICES** on the left menu, click **List View**, and then click **ADD DEVICE**.
 
-    Confirm your localhost app receives the create-project event notification and logs both headers and body in the terminal.
+1. On the **Add Device** popup, select a user, enter an valid email address in the **Email address** field, and then click **SAVE**.
+    **Note**: If you don't have any user click the **Create New User** link and enter values for all the required fields.
 
-Optionally, you can verify the log of the webhook call in VMware Workspace ONE:
+1. The email address you entered in the **Email address** field receives an email with the subject **Workspace ONE UEM Device Activation**. Click the link to enroll the device using the **Username** and **Password** of the selected user.
 
-1. In the same browser, access [VMware Workspace ONE Developer](https://developer.VMware Workspace ONE/).
-
-1. On the top menu of the developer site, click **DEVELOPER TOOLS** and then click **Webhooks**.
-
-1. On the **Webhooks** page, click **View logs** close to your webhook.
-
-1. On the **Webhook Logs** page, click **View details** and confirm 
-    ![Webhook Logs](img/ngrok_logs_vmware.png)
+    Confirm your localhost app receives a notification and logs both headers and body in the terminal.
 
 
 ### Inspecting requests
@@ -158,6 +157,6 @@ This is a quick step to add extra protection to your application.
     ngrok http 3000 --verify-webhook vmware --verify-webhook-secret {your webhook secret}
     ```
 
-1. Access [VMware Workspace ONE](https://VMware Workspace ONE/) and create a new project.
+1. Access [VMware Workspace ONE](https://console.cloud.vmware.com/), register a new user to your device, and ask the user to enroll the device.
 
 Verify that your local application receives the request and logs information to the terminal.
