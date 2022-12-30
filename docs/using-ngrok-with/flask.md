@@ -5,6 +5,10 @@ title: Flask
 # Using ngrok with Flask
 ------------
 
+:::tip
+This article assumes you have Python, PIP, and Flask already installed.
+:::
+
 To share a local Flask development server with someone else, simply run: `ngrok http 5000`.
 
 If you're looking to natively embed the ngrok agent into your Flask development flow, you can leverage the [pyngrok project](https://pyngrok.readthedocs.io/en/latest/integrations.html#flask) so that a tunnel is created each time you type `flask run`.
