@@ -98,10 +98,12 @@ To register a webhook on your TikTok app follow the instructions below:
 
 ### Run Webhooks with TikTok and ngrok {#run-webhook}
 
-By default, you are subscribed to all events that happens inyour TikTok app.
+By default, you are subscribed to all events that happens in your TikTok app.
 TikTok sends different request body contents depending on the event that is being triggered.
 
-After your app is approved, associate a user with your app. The TikTok app will send event notifications to your localhost application when a user's account is deauthorized from your application, a user video fails to upload in TikTok, or a user video has been published in TikTok.
+After your app is approved, associate a user with your app. 
+
+The TikTok app will send a notification to your localhost application when a user's account is deauthorized from your application, a user video fails to upload in TikTok, or a user video has been published in TikTok.
 
     Confirm your localhost app receives one of these event notifications and logs both headers and body in the terminal.
 
@@ -129,7 +131,7 @@ The ngrok Request Inspector provides a replay function that you can use to test 
 
 1. Click **Replay** to execute the same request to your application or select **Replay with modifications** to modify the content of the original request before sending the request.
 
-1. If you choose to **Replay with modifications**, you can modify any content from the original request. For example, you can modify the **id** field inside the body of the request.
+1. If you choose to **Replay with modifications**, you can modify any content from the original request. For example, you can modify the **content** field inside the body of the request.
 
 1. Click **Replay**.
 
