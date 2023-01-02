@@ -76,46 +76,27 @@ To register a webhook on your Trend Micro account follow the instructions below:
 
 1. On the home page, click the **Conformity** tile.
 
-1. On the 
+1. On the **Accounts** page, click **Settings**, click **Update communication settings** in the **Communication settings** section, and then click **Configure** in the **Webhooks** section. 
+    **Note**: If you don't have a cloud provider associated with your Trend Micro Conformity service, click your preferred cloud provider and associate a service account.
 
+1. On the **Webhooks** page, click **Create a Webhook channel**, click **Configure webhook**, and enter the URL provided by the ngrok agent to expose your application to the internet in the **Webhook URL** field (i.e. `https://1a2b-3c4d-5e6f-7g8h-9i0j.sa.ngrok.io`).
+    ![Webhook URL](img/ngrok_url_configuration_trendmicro.png)
 
+1. Click **Save**.
 
-
-
-
-1. On the **Create a new webhook** page, enter a name in the **NAME** field, and in the **URL** field enter the URL provided by the ngrok agent to expose your application to the internet (i.e. `https://1a2b-3c4d-5e6f-7g8h-9i0j.sa.ngrok.io`).
-    ![URL](img/ngrok_url_configuration_trendmicro.png)
-
-1. Your localhost app receives a notification and log the body of the request in the terminal. Copy the **confirmation_link** value and open the link in a new browser tab.
-
-1. Refresh the **Trend Micro Cloud One** browser tab and confirm the **Status** of your webhooks appears **Enabled**.
-
-1. Click your webhook and then click **Test Integration**.
-
-    Confirm your localhost app receives a notification and logs both headers and body in the terminal.
+1. Click the On/Off switch to turn **Automatic notifications** on.
 
 
 ### Run Webhooks with Trend Micro and ngrok
 
-Trend Micro sends different request body contents depending on the event that is being triggered.
-You can trigger new calls from Trend Micro to your application by following the instructions below.
+Trend Micro Cloud One Conformity notifies your webhook after the bot revises your cloud provider account for compliance issues.
+You can trigger new calls from Trend Micro Cloud One to your application by creating a non-compliant configuration on your cloud provider account and then running the bot as per the following:
 
-1. In the same browser, access [Trend Micro](https://Trend Micro/), and then click **+** close to your team name on the left menu.
+1. On the [Trend Micro Cloud One home](https://cloudone.trendmicro.com/home) page, click the **Conformity** tile.
 
-1. On the **New Project** popup, enter a project name and then click **Create Project**.
+1. On the **Accounts** page, click **Run Conformity Bot**.
 
-    Confirm your localhost app receives the create-project event notification and logs both headers and body in the terminal.
-
-Optionally, you can verify the log of the webhook call in Trend Micro:
-
-1. In the same browser, access [Trend Micro Developer](https://developer.Trend Micro/).
-
-1. On the top menu of the developer site, click **DEVELOPER TOOLS** and then click **Webhooks**.
-
-1. On the **Webhooks** page, click **View logs** close to your webhook.
-
-1. On the **Webhook Logs** page, click **View details** and confirm 
-    ![Webhook Logs](img/ngrok_logs_trendmicro.png)
+    After the bot finishes running, confirm your localhost app receives a notification and logs both headers and body in the terminal.
 
 
 ### Inspecting requests
@@ -141,7 +122,7 @@ The ngrok Request Inspector provides a replay function that you can use to test 
 
 1. Click **Replay** to execute the same request to your application or select **Replay with modifications** to modify the content of the original request before sending the request.
 
-1. If you choose to **Replay with modifications**, you can modify any content from the original request. For example, you can modify the **id** field inside the body of the request.
+1. If you choose to **Replay with modifications**, you can modify any content from the original request. For example, you can modify the **message** field inside the body of the request.
 
 1. Click **Replay**.
 
@@ -156,17 +137,19 @@ The ngrok signature webhook verification feature allows ngrok to assert that req
 
 This is a quick step to add extra protection to your application.
 
-1. Access [Trend Micro Developer](https://developer.Trend Micro/).
+1. Access [Trend Micro Cloud One](https://cloudone.trendmicro.com/) and sign in using your Trend Micro account.
 
-1. On the top menu of the developer site, click **DEVELOPER TOOLS** and then click **Webhooks**.
+1. On the home page, click the **Conformity** tile.
 
-1. On the **Webhooks** page, click **Copy** to copy the **Secret** value.
+1. On the **Accounts** page, click **Settings**, click **Update communication settings** in the **Communication settings** section, click **Configure** in the **Webhooks** section, and then click **Configure now** in the webhook section.
 
-1. Restart your ngrok agent by running the command, replacing `{your webhook secret}` with the value you have copied before (See [Integrate ngrok and Trend Micro.](#setup-webhook)):
+1. On the **Send notification to** popup, enter `12345` in the **Webhook Security Token** field and then click **Save**.
+
+1. Restart your ngrok agent by running the command, replacing `{your webhook token}` with the value of the **Webhook Security Token** field:
     ```bash
-    ngrok http 3000 --verify-webhook trendmicro_conformity --verify-webhook-secret {your webhook secret}
+    ngrok http 3000 --verify-webhook trendmicro_conformity --verify-webhook-secret {your webhook token}
     ```
 
-1. Access [Trend Micro](https://Trend Micro/) and create a new project.
+1. Access the [Trend Micro CLoud One home](https://cloudone.trendmicro.com/home) page, click the **Conformity** tile, and then run the Conformity bot again.
 
-Verify that your local application receives the request and logs information to the terminal.
+    After the bot finishes running, confirm your localhost app receives a notification and logs both headers and body in the terminal.
