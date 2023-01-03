@@ -78,13 +78,13 @@ To register a webhook on your TikTok app follow the instructions below:
 
 1. On the **Manage apps** page, click **Connect an app**, upload an **App icon**, select **Others** in the **Category** field, enter a description in the **Description** field, click the slider icon for **Configure for Web**, enter an URL in the **Website URL** field, and click **Save changes**.
 
-1. On the app page, click **Add products** on the left menu and click **Add** in the **Webhooks** tile.
+1. On the app page, click **Add products** on the left menu and click **Add** in the **Webhooks** tile.<br />
     **Note**: You may need to add **Login Kit** before adding **Webhooks**.
 
 1. On the left menu, click **Webhooks** and then enter the URL provided by the ngrok agent to expose your application to the internet in the **Callback URL** field (i.e. `https://1a2b-3c4d-5e6f-7g8h-9i0j.sa.ngrok.io`).
     ![URL](img/ngrok_url_configuration_tiktok.png)
 
-1. Click **Test URL**, and then click **Send**.
+1. Click **Test URL** and then click **Send**.
 
     Confirm your localhost app receives a notification and logs both headers and body in the terminal.
 
