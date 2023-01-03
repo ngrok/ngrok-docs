@@ -3,7 +3,7 @@
 
 :::tip TL;DR
 
-To integrate Autodesk webhooks with ngrok:
+To integrate Autodesk Platform Services webhooks with ngrok:
 1. [Launch your local webhook.](#start-your-app) `npm start`
 1. [Launch ngrok.](#start-ngrok) `ngrok http 3000`
 1. [Configure Autodesk webhooks with your ngrok URL.](#setup-webhook)
@@ -12,8 +12,8 @@ To integrate Autodesk webhooks with ngrok:
 :::
 
 
-This guide covers how to use ngrok to integrate your localhost app with Autodesk by using Webhooks.
-Autodesk webhooks can be used to notify an external application whenever specific events occur in your Autodesk account. 
+This guide covers how to use ngrok to integrate your localhost app with Autodesk Platform Services by using Webhooks.
+Autodesk Platform Services webhooks can be used to notify an external application whenever specific events occur in your Autodesk account. 
 
 By integrating ngrok with Autodesk, you can:
 
@@ -72,18 +72,21 @@ Once your app is running successfully on localhost, let's get it on the internet
 
 To register a webhook on your Autodesk account follow the instructions below:
 
-1. Access [Autodesk](https://aps.autodesk.com/) and sign in using your Autodesk account.
+1. Access [Autodesk Platform Services](https://aps.autodesk.com/) and sign in using your Autodesk account.
 
-1. On the **Plataform Services** page, click your avatar icon on the top-right corner of the page and click **Applications**.
+1. On the **Plataform Services** page, click your avatar icon on the top-right corner of the page and then click **Applications**.
 
-1. On your application page, copy the values of the **Client ID** and the **Client Secret** fields for later use.
+1. On the **Applications** page, click **Create Application**, enter a name in the **Name** field, and then click **Create**.
 
-1. On the **General Settings** section, enter the URL provided by the ngrok agent to expose your application to the internet in the **Callback URL** field (i.e. `https://1a2b-3c4d-5e6f-7g8h-9i0j.sa.ngrok.io`).
+1. On your application page, copy the values of the **Client ID** and the **Client Secret** fields for later use.<br>
+    **Tip**: Click the eye icon to reveal the **Client Secret** value.
+
+1. In the **General Settings** section, enter the URL provided by the ngrok agent to expose your application to the internet in the **Callback URL** field (i.e. `https://1a2b-3c4d-5e6f-7g8h-9i0j.sa.ngrok.io`).
     ![Callback URL](img/ngrok_url_configuration_autodesk.png)
 
-1. On the **API Access** section, select  are selected in the list, and then click **Save changes**.
+1. In the **API Access** section, select all the APIs in the list, and then click **Save changes**.
 
-1. In the terminal window, run the following command to obtain an access token:
+1. In a terminal window, run the following command to obtain an access token:
     ```
     curl -v 'https://developer.api.autodesk.com/authentication/v1/authenticate'
     -X 'POST'
@@ -95,9 +98,7 @@ To register a webhook on your Autodesk account follow the instructions below:
         scope=data:read
   '
     ```
-1. Copy the value of the **access_token** atributo from the response json.
-
-1. Run the following command to obtain the for:
+1. Copy the value of the **access_token** atribute from the response json.
 
 1. Run the following command to register the webhook:
     ```
@@ -123,7 +124,7 @@ To register a webhook on your Autodesk account follow the instructions below:
       }'
     ```
 
-1. Select your team for the **TEAM** field, click the **created** checkbox for **Projects** under the **EVENTS** section, and then click **Submit**.
+1. ...
 
 
 ### Run Webhooks with Autodesk and ngrok
@@ -187,15 +188,15 @@ The ngrok signature webhook verification feature allows ngrok to assert that req
 
 This is a quick step to add extra protection to your application.
 
-1. Access [Autodesk Developer](https://developer.Autodesk/).
+1. Access [Autodesk Platform Services](https://aps.autodesk.com/) and sign in using your Autodesk account.
 
-1. On the top menu of the developer site, click **DEVELOPER TOOLS** and then click **Webhooks**.
+1. On the **Plataform Services** page, click your avatar icon on the top-right corner of the page, click **Applications**, and then click your application tile.
 
-1. On the **Webhooks** page, click **Copy** to copy the **Secret** value.
+1. On your application page, click the eye icon to reveal the **Client Secret** value and copy this value.
 
-1. Restart your ngrok agent by running the command, replacing `{your webhook secret}` with the value you have copied before (See [Integrate ngrok and Autodesk.](#setup-webhook)):
+1. Restart your ngrok agent by running the command, replacing `{your client secret}` with the value you have copied before:
     ```bash
-    ngrok http 3000 --verify-webhook autodesk --verify-webhook-secret {your webhook secret}
+    ngrok http 3000 --verify-webhook autodesk_forge --verify-webhook-secret {your client secret}
     ```
 
 1. Access [Autodesk](https://Autodesk/) and create a new project.
