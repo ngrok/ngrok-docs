@@ -99,7 +99,7 @@ You can trigger new calls from Mailgun to your application by following the inst
 
 Verify the recipient receives an email from mail gun asking to agree to receive emails from your Mailgun account, click the **I Agree** link in the body of the email and then click **Yes**.
 
-1. On the [Mailgun Dashboard](https://app.mailgun.com/), click **Select** in the **API** tile and choose one of the options to send emails that appear on the screen. For example, open a terminal window and run the following command using curl:
+1. On the [Mailgun Dashboard](https://app.mailgun.com/), click **Select** in the **API** tile and choose one of the options that appear on the screen to send emails. For example, open a terminal window and run the following command using curl:
     ```bash
     curl --location --request POST 'API_BASE_URL/messages' \
     --header 'Authorization: Basic api:API_KEY' \
@@ -140,7 +140,7 @@ The ngrok Request Inspector provides a replay function that you can use to test 
 
 1. Click **Replay** to execute the same request to your application or select **Replay with modifications** to modify the content of the original request before sending the request.
 
-1. If you choose to **Replay with modifications**, you can modify any content from the original request. For example, you can modify the **id** field inside the body of the request.
+1. If you choose to **Replay with modifications**, you can modify any content from the original request. For example, you can modify the **message** field inside the body of the request.
 
 1. Click **Replay**.
 
