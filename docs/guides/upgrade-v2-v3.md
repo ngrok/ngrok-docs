@@ -7,7 +7,7 @@ The latest ngrok agent is packed with a ton of new capability but because it is 
 ### Breaking Changes
 
 **Configuration file** - The older configuration file is not compatible with the latest ngrok agent without a few changes. We've automated the process to upgrade so all you need to do is run the new upgrade command.
-```
+```bash
 ngrok config upgrade
 ```
 
