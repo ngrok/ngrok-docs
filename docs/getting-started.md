@@ -134,9 +134,9 @@ Start ngrok by running the following command.
 ngrok http 8000
 ```
 
-```
-You should see something similar to the following console UI in your terminal.
 
+You should see something similar to the following console UI in your terminal.
+```
     ngrok                                                                                                                                                         (Ctrl+C to quit)
     
     Session Status                online
