@@ -12,7 +12,7 @@ ngrok config upgrade
 ```
 
 **Unrecognized configuration parameters** - The previous ngrok agent silently ignored any config parameters it didn't understand. This means that you could have a configuration file with parameters that you thought were doing something, but they really weren't. This is also true for the ngrok agent API. The latest ngrok agent will explicitly error when it sees a configuration parameter that it doesn't recognize. It's a good idea to run a check after upgrading to find incompatible arguments.
-```
+```bash
 ngrok config check
 ```
 This will automatically add `version` and `region` options as well as convert the names of legacy options to their new format. If you're only using ngrok with a configuration file, there's nothing else to do. For more information about the changes to the config file, see the [following section](#upgrading-the-ngrok-agent-config).
