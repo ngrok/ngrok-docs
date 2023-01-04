@@ -22,9 +22,9 @@ Clicking the endpoint that was created when making this edge should open a new p
 Now let's start a tunnel to send traffic to your upstream service. You can click the "Start a Tunnel" button on this error page or look in the "Status" area of the HTTPS edge. Clicking this button will open a drawer with instructions on how to install and configure your agent.
 
 The command for starting the tunnel in the ngrok agent should look something like this:
-
-    ngrok tunnel 80 --region us --label edge=edghts_27RM7TKmP9FbDTFjT1uJuIyBgRk
-
+```
+ngrok tunnel 80 --region us --label edge=edghts_27RM7TKmP9FbDTFjT1uJuIyBgRk
+```
 This assumes your upstream service is running on port 80 and in the US region. If your upstream service is on a different port or running in a different region, just update those values in the `ngrok tunnel` command.
 
 Tunnel group backends work by looking for ngrok agents that are serving tunnels with a specific [set of labels](/cloud-edge#tunnel-group-labels). By default, the label for this tunnel group is the ID of the HTTPS edge that was created, but you can use the [API to customize those labels](/api#api-tunnel-group-backends-update) to something that makes sense for your service. For example, you might use labels that help identify the region and service you are attempting to load balance.
@@ -41,4 +41,3 @@ That's all there is to it. You now have multiple ngrok agents load balancing tra
 *   [HTTPS Edge Modules](/cloud-edge#https-modules)
 *   [Endpoints](/cloud-edge#endpoints)
 *   [Securing your ngrok Tunnels](/guides/securing-your-tunnels)
-
