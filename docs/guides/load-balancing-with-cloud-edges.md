@@ -22,7 +22,7 @@ Clicking the endpoint that was created when making this edge should open a new p
 Now let's start a tunnel to send traffic to your upstream service. You can click the "Start a Tunnel" button on this error page or look in the "Status" area of the HTTPS edge. Clicking this button will open a drawer with instructions on how to install and configure your agent.
 
 The command for starting the tunnel in the ngrok agent should look something like this:
-```
+```bash
 ngrok tunnel 80 --region us --label edge=edghts_27RM7TKmP9FbDTFjT1uJuIyBgRk
 ```
 This assumes your upstream service is running on port 80 and in the US region. If your upstream service is on a different port or running in a different region, just update those values in the `ngrok tunnel` command.
