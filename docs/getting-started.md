@@ -17,7 +17,7 @@ We'll do this in four steps:
 
 ### Step 1: Starting a local web service
 
-First, you'll need some sort of web service running on your machine. It should be available at http://localhost:\[any port\]. If you already have one, you can skip to Step 2. If not, we'll set one up using Python SimpleHTTPServer (ngrok actually has a [built in file server](/secure-tunnels#http-tunnels-file-urls) but let's not worry about that now).
+First, you'll need some sort of web service running on your machine. It should be available at http://localhost:\[any port\]. If you already have one, you can skip to Step 2. If not, we'll set one up using Python SimpleHTTPServer (ngrok actually has a [built in file server](/secure-tunnels/tunnels/http-tunnels#file-url) but let's not worry about that now).
 
 If you don't have a web service running, you can set one up for this demo using Python SimpleHTTPServer.
 
@@ -196,8 +196,8 @@ Now when you try to visit your new ngrok URL, you will be prompted to log in wit
 
 That's it, but there's a lot more you can do with ngrok!
 
-*   Configure ngrok to use the same domain each time with [`--subdomain`](/secure-tunnels#http-tunnels-subdomain)
-*   Tunnel other non-HTTP services such as SSH, RDP, or game servers using [TCP Tunnels](/secure-tunnels#tcp-tunnels)
-*   Bring your own [custom domains to ngrok](/secure-tunnels#http-tunnels-custom-domains)
+*   Configure ngrok to use the same domain each time with [`--subdomain`](/secure-tunnels/tunnels/http-tunnels#custom-subdomains)
+*   Tunnel other non-HTTP services such as SSH, RDP, or game servers using [TCP Tunnels](/secure-tunnels/tunnels/tcp-tunnels)
+*   Bring your own [custom domains to ngrok](/secure-tunnels/tunnels/http-tunnels#custom-domains)
 *   Add your [API key and automate via the `ngrok api` command](/ngrok-agent/ngrok#ngrok-api).
 *   Use [ngrok Cloud Edges](/cloud-edge) to dynamically reconfigure traffic to your ngrok agents
