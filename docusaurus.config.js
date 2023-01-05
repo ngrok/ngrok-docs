@@ -30,7 +30,7 @@ const config = {
   // },
 
   plugins: [
-    'docusaurus-plugin-hubspot',
+    'docusaurus-plugin-hubspot', '@docusaurus/theme-mermaid'
   ],
 
   presets: [
