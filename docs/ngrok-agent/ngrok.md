@@ -46,7 +46,7 @@ The root command of the ngrok agent.
 
 The `ngrok api` command provides access to ngrok's API. You can use the API through one of the api subcommands.
 
-All api subcommands require an API key. You can configure it either using a flag ([`ngrok config add-api-key`](#config-usage) command).
+All api subcommands require an API key. You can configure it either using a flag ([`ngrok config add-api-key`](#ngrok-config) command).
 
 You can get get the initial API key in the [API section of the ngrok Dashboard](https://dashboard.ngrok.com/api/keys). Additional keys can be created through `ngrok api api-key create` subcommand.
 
@@ -488,7 +488,7 @@ Using this command is only recommended with the `--hostname` option. Other uses 
 
 ## ngrok tunnel
 
-The `ngrok tunnel` command is used to start labeled tunnels for use with [Tunnel Group backends](/cloud-edge#tunnel-group-labels) and [ngrok Cloud Edges](/cloud-edge).
+The `ngrok tunnel` command is used to start labeled tunnels for use with [Tunnel Group backends](/cloud-edge/edges/#tunnel-group-labels) and [ngrok Cloud Edges](/cloud-edge).
 
 Starts a tunnel with labels so that it can be part of a tunnel group. The tunnel group consists of all the tunnels matching all the labels of a tunnel group backend.
 
