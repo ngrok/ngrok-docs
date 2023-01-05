@@ -231,6 +231,13 @@ These are a list of specifiers for what Host headers will be allowed to make req
 | example.com        |     | a hostname without preceding period will match Host header exactly (example.com) |
 | .example.com       |     | a hostname with a preceding period Host header suffix (sub.example.com or foo.example.com) |
 
+##### Allow an IP address and a Domain as Host headers
+
+    web_allow_hosts:
+      - 8.8.8.8
+      - example.com
+
+
 ## Tunnel definitions
 
 The most common use of the configuration file is to define tunnel configurations. Defining tunnel configurations is useful because you may then start pre-configured tunnels by name from your command line without remembering all of the right arguments every time. You may also use this method to start as many tunnels as you like from a single ngrok agent.
