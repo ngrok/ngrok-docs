@@ -15,7 +15,7 @@
 9.  Add any team or organization constraints by the their mention handle(s), excluding the `@` prefix.
     *   For example, the [ngrok](https://github.com/ngrok) organization's mention handle is `@ngrok`, so the organization constraint would be `ngrok`. Similarly, the `@ngrok/developers` team would be matched by the constraint `ngrok/developers`.
     *   If a constraint is specified, the `read:org` scope is required. A more permissive scope, such as `org`, also works.
-    *   Organizations must allow [third-party access](#oauth-providers-github-org-and-team) to your app.
+    *   Organizations must allow [third-party access](#using-organization-and-teams) to your app.
 
 ## Additional GitHub headers provided by ngrok
 
@@ -27,11 +27,11 @@ The username of the authorized user.
 
 `ngrok-auth-github-organization`
 
-**Only when a team or organization constraint matches:** the [first matching](#oauth-providers-github-header-ordering) GitHub organization's mention handle (e.g "coreutils").
+**Only when a team or organization constraint matches:** the [first matching](#header-presence-and-constraint-ordering) GitHub organization's mention handle (e.g "coreutils").
 
 `ngrok-auth-github-team`
 
-**Only when a team constraint matches:** the [first matching](#oauth-providers-github-header-ordering) GitHub team mention handle (e.g "coreutils/contributors").
+**Only when a team constraint matches:** the [first matching](#header-presence-and-constraint-ordering) GitHub team mention handle (e.g "coreutils/contributors").
 
 ## Using Organization and Teams
 

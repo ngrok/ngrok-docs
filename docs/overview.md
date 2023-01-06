@@ -16,6 +16,6 @@ Are you coming from a previous version of ngrok? Check out our [ngrok v2 to v3 u
 
 If you're trying to accomplish something specific, check out our [guides](/guides) for things like [securing your tunnel](/guides/securing-your-tunnels) and [setting up custom domains](/guides/how-to-set-up-a-custom-domain).
 
-If you're trying to use ngrok with a specific technology, check out our [using ngrok with](/using-ngrok-with) section for help with using ngrok with [WordPress](/using-ngrok-with#wordpress), [Docker](/using-ngrok-with#docker), or [SSH](/using-ngrok-with#ssh).
+If you're trying to use ngrok with a specific technology, check out our [using ngrok with](/using-ngrok-with) section for help with using ngrok with [WordPress](/using-ngrok-with/wordpress), [Docker](/using-ngrok-with/docker), or [SSH](/using-ngrok-with/ssh).
 
 If you're an expert at ngrok, but just need some quick reference, check out our reference documentation for the [ngrok API](/api) or [ngrok agent](/ngrok-agent).
