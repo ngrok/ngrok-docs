@@ -40,13 +40,13 @@ The following is a list of options that can be configured at the root of your co
 | [log_level](#log_level) | Logging level of detail. In increasing order of verbosity, possible values are: |
 | [log_format](#log_format) | Format of written log records. |
 | [log](#log) | Write logs to this target destination. |
-| [metadata](#metadata) | Opaque, user-supplied string that will be returned as part of the ngrok API response to the [list online sessions](/api#api-tunnel-sessions) resource for all tunnels started by this agent. |
+| [metadata](#metadata) | Opaque, user-supplied string that will be returned as part of the ngrok API response to the [list online sessions](/api/resources/tunnel-sessions) resource for all tunnels started by this agent. |
 | [proxy_url](#proxy_url) | URL of an HTTP or SOCKS5 proxy to use for establishing the tunnel connection. |
 | [region](#region) | Choose the region where the ngrok agent will connect to host its tunnels. |
 | [remote_management](#remote_management) | Set this to `true` to allow the ngrok agent to be remotely managed (stop, restart, update). Defaults to `true`. |
 | [root_cas](#root_cas) | The root certificate authorities used to validate the TLS connection to the ngrok server. |
 | [server_addr](#server_addr) | This is the URL of the ngrok server to connect to. You should only set this if you are using a custom ingress URL. |
-| [tunnels](#tunnels) | A map of names to tunnel definitions. See [tunnel definitions](/ngrok-agent/config#ngrok-tunnel-definitions) for more details. |
+| [tunnels](#tunnels) | A map of names to tunnel definitions. See [tunnel definitions](#tunnel-definitions) for more details. |
 | [update_channel](#update_channel) | The update channel determines the stability of released builds to update to. Use `stable` for all production deployments. |
 | [update_check](#update_check) | This tells the ngrok agent if it should check for updates. Defaults to `true`. |
 | [version](#version) | Specifies the version of the config file to use. |
@@ -145,7 +145,7 @@ This is the destination where ngrok should write the logs.
 
 ### `metadata`
 
-This is a user-supplied custom string that will be returned as part of the ngrok API response to the [list online sessions resource](/api#api-tunnel-sessions) for all tunnels started by this agent. This is a useful mechanism to identify tunnels by your own device or customer identifier. Maximum 4096 characters.
+This is a user-supplied custom string that will be returned as part of the ngrok API response to the [list online sessions resource](/api/resources/tunnel-sessions) for all tunnels started by this agent. This is a useful mechanism to identify tunnels by your own device or customer identifier. Maximum 4096 characters.
 
     metadata: bad8c1c0-8fce-11e4-b4a9-0800200c9a66
 
@@ -169,7 +169,7 @@ This is the region where the ngrok agent will connect to. You can only choose on
 
 ### `remote_management`
 
-Set this to `true` to allow the ngrok agent to be remotely managed (stop, restart, update) via the [ngrok API](/api#api-tunnel-sessions-restart) or the [ngrok Dashboard](https://dashboard.ngrok.com/tunnels/agents). Defaults to `true`.
+Set this to `true` to allow the ngrok agent to be remotely managed (stop, restart, update) via the [ngrok API](/api/resources/tunnel-sessions#restart-tunnel-agent) or the [ngrok Dashboard](https://dashboard.ngrok.com/tunnels/agents). Defaults to `true`.
 
 ### `root_cas`
 
@@ -187,7 +187,7 @@ This is the URL of the ngrok server to connect to. You should set this if you ar
 
 ### `tunnels`
 
-This is a map of names to tunnel definitions. See [tunnel definitions](#ngrok-tunnel-definitions) for more details.
+This is a map of names to tunnel definitions. See [tunnel definitions](#tunnel-definitions) for more details.
 
 ### `update_channel`
 
@@ -286,7 +286,7 @@ Each tunnel you define is a map of configuration option names to values. The nam
 | `oauth.allow_domains` | Array of Strings | Allow only OAuth2 users with these email domains |
 | `oauth.allow_emails` | Array of Strings | Allow only OAuth users with these emails |
 | `oauth.oauth_scopes` | Array of Strings | Request these OAuth2 scopes when a user authenticates |
-| `oauth.provider` | String | enforce authentication OAuth2 provider on the endpoint, e.g. 'google'. For a lit of available providers, see [OAuth2 providers](/cloud-edge#oauth-providers). |
+| `oauth.provider` | String | enforce authentication OAuth2 provider on the endpoint, e.g. 'google'. For a lit of available providers, see [OAuth2 providers](/cloud-edge/modules/oauth/). |
 | `proto` | `http` | The tunnel protocol name. This defines the type of tunnel you would like to start. |
 | `proxy_proto` | String | The version of [PROXY protocol](https://www.haproxy.org/download/1.8/doc/proxy-protocol.txt) to use with this tunnel, empty if not using. Example values are 1 or 2. |
 | `request_header.add` | Array of `key:value` Strings | The headers to add to the request in the key:value format. |
@@ -295,7 +295,7 @@ Each tunnel you define is a map of configuration option names to values. The nam
 | `response_header.remove` | Array of Strings | The header keys to remove from the response. |
 | `schemes` | `http`, `https` | bind to an HTTPS endpoint ( |
 | `subdomain` | Any valid combination of letters, numbers, hyphens or periods. | subdomain name to request. If unspecified, ngrok provides a unique subdomain based on your account type. |
-| `verify_webhook.provider` | String | Verify webhooks are signed by this provider, e.g. 'slack'. For a full list of providers, see [Webhook Verification Providers](/cloud-edge#webhook-verification). |
+| `verify_webhook.provider` | String | Verify webhooks are signed by this provider, e.g. 'slack'. For a full list of providers, see [Webhook Verification Providers](/cloud-edge/modules/webhook). |
 | `verify_webhook.secret` | String | The secret used by provider to sign webhooks, if there is one |
 | `websocket_tcp_converter` | `true`, `false` | Convert ingress websocket connections to TCP upstream |
 
