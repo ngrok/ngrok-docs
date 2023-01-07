@@ -78,20 +78,26 @@ How long to wait when establishing an agent session connection to the ngrok serv
 
 This option allows you to enable or disable the console UI that is displayed in your terminal window after starting ngrok.
 
+<div class="empty_headers_table">
+
 |     |     |     |
 | --- | --- | --- |
 | `true` |     | Enable the console UI |
 | `false` |     | Disable the console UI |
 | `iftty` | default | Enable the UI only if standard out is a TTY (not a file or pipe) |
+</div>
 
 ### `console_ui_color`
 
 The command sets the background color when displaying the console UI in the terminal. To choose a color other than black, set the value to transparent and change the background of your terminal window.
 
+<div class="empty_headers_table">
+
 |     |     |     |
 | --- | --- | --- |
 | `transparent` |     | Don't set a background color when displaying the console UI |
 | `black` | default | Set the console UI's background to black |
+</div>
 
 ### `dns_resolver_ips`
 
@@ -109,11 +115,14 @@ Reconnect the agent tunnel session if the server does not respond to a heartbeat
 
 This is the upper limit in bytes on memory to allocate when saving requests over HTTP tunnels for inspection and reply. The default is 0, which means 50MB.
 
+<div class="empty_headers_table">
+
 |     |     |     |
 | --- | --- | --- |
 | positive integers |     | size in bytes of the upper limit on memory to allocate to save requests over HTTP tunnels for inspection and replay. |
 | `0` | default | use the default allocation limit, 50MB |
 | `-1` |     | disable the inspection database; this has the effective behavior of disabling inspection for all tunnels |
+</div>
 
 ### `log_level`
 
@@ -123,15 +132,20 @@ This is the logging level of detail. In increasing order of verbosity, possible 
 
 This is the format of written log records.
 
+<div class="empty_headers_table">
+
 |     |     |     |
 | --- | --- | --- |
 | `logfmt` |     | human and machine friendly key/value pairs |
 | `json` |     | newline-separated JSON objects |
 | `term` | default | custom colored human format if standard out is a TTY, otherwise same as `logfmt` |
+</div>
 
 ### `log`
 
 This is the destination where ngrok should write the logs.
+
+<div class="empty_headers_table">
 
 |     |     |     |
 | --- | --- | --- |
@@ -139,6 +153,7 @@ This is the destination where ngrok should write the logs.
 | `stderr` |     | write to standard error |
 | `false` | default | disable logging |
 | other values |     | write log records to file path on disk |
+</div>
 
     log: /var/log/ngrok.log
 
@@ -156,6 +171,7 @@ This is the URL of an HTTP or SOCKS5 proxy to use for establishing the tunnel co
 
 This is the region where the ngrok agent will connect to. You can only choose one region per agent session. Choosing the region closest to you usually improves latency and performance. By default, the ngrok agent attempts to choose the best region for you.
 
+<div class="empty_headers_table">
 |     |     |     |
 | --- | --- | --- |
 | `us` |     | United States |
@@ -166,6 +182,8 @@ This is the region where the ngrok agent will connect to. You can only choose on
 | `jp` |     | Japan |
 | `in` |     | India |
 
+</div>
+
 ### `remote_management`
 
 Set this to `true` to allow the ngrok agent to be remotely managed (stop, restart, update) via the [ngrok API](/api#api-tunnel-sessions-restart) or the [ngrok Dashboard](https://dashboard.ngrok.com/tunnels/agents). Defaults to `true`.
@@ -174,11 +192,14 @@ Set this to `true` to allow the ngrok agent to be remotely managed (stop, restar
 
 This is the root certificate authorities used to validate the TLS connection to the ngrok server.
 
+<div class="empty_headers_table">
+
 |     |     |     |
 | --- | --- | --- |
 | `trusted` | default | use only the trusted certificate root for the ngrok.com tunnel service |
 | `host` |     | use the root certificates trusted by the host's operating system. This is helpful for working with machine-in-the-middle (MITM) proxies doing deep packet inspection (DPI). |
 | other values |     | path to a certificate PEM file on disk with certificate authorities to trust |
+</div>
 
 ### `server_addr`
 
@@ -192,11 +213,14 @@ This is a map of names to tunnel definitions. See [tunnel definitions](#ngrok-tu
 
 The update channel determines the stability of released builds to update to. Use 'stable' for all production deployments.
 
+<div class="empty_headers_table">
+
 |     |     |     |
 | --- | --- | --- |
 | `stable` | default | These are builds that are ready to be used in production. |
 | `unstable` |     | update to new nightly builds when available which could be broken. This should not be used in production. |
 | `beta` |     | update to new beta builds when available which could be broken. This should not be used in production. |
+</div>
 
 ### `update_check`
 
@@ -210,11 +234,14 @@ Specifies the version of the config file to use.
 
 This is the network address to bind on for serving the local agent web interface and API.
 
+<div class="empty_headers_table">
+
 |     |     |     |
 | --- | --- | --- |
 | network address |     | bind to this network address |
 | `127.0.0.1:4040` | default | default network address |
 | `false` |     | disable the web UI |
+</div>
 
 ## Tunnel definitions
 
@@ -243,12 +270,17 @@ Each tunnel you define is a map of configuration option names to values. The nam
 
 ##### Common Tunnel Configuration Properties
 
+<div class="empty_headers_table">
+
 |     |     |     |
 | --- | --- | --- |
 | `addr` | required | forward traffic to this local port number or network address. This can be just a port ( |
 | `metadata` | Optional | arbitrary user-defined metadata that will appear in the ngrok service API when listing tunnel sessions |
+</div>
 
 ##### HTTP Tunnel Configuration Properties
+
+<div class="empty_headers_table">
 
 |     |     |     |
 | --- | --- | --- |
@@ -276,8 +308,11 @@ Each tunnel you define is a map of configuration option names to values. The nam
 | `verify_webhook.provider` | String | Verify webhooks are signed by this provider, e.g. 'slack'. For a full list of providers, see [Webhook Verification Providers](/cloud-edge#webhook-verification). |
 | `verify_webhook.secret` | String | The secret used by provider to sign webhooks, if there is one |
 | `websocket_tcp_converter` | `true`, `false` | Convert ingress websocket connections to TCP upstream |
+</div>
 
 ##### TCP Tunnel Configuration Properties
+
+<div class="empty_headers_table">
 
 |     |     |     |
 | --- | --- | --- |
@@ -286,9 +321,11 @@ Each tunnel you define is a map of configuration option names to values. The nam
 | `proto` | `tcp` | The tunnel protocol name. This defines the type of tunnel you would like to start. |
 | `proxy_proto` | String | The version of [PROXY protocol](https://www.haproxy.org/download/1.8/doc/proxy-protocol.txt) to use with this tunnel, empty if not using. Example values are 1 or 2. |
 | `remote_addr` | A valid TCP address from ngrok | bind the remote TCP address and port. These addresses can be reserved in the [ngrok dashboard](https://dashboard.ngrok.com/cloud-edge/tcp-addresses) to use across sessions. For example: `remote_addr: 2.tcp.ngrok.io:21746` |
+</div>
 
 ##### TLS Tunnel Configuration Properties
 
+<div class="empty_headers_table">
 |     |     |     |
 | --- | --- | --- |
 | `mutual_tls_cas` | Valid system path | The path to the TLS certificate authority to verify client certs for mutual TLS. You will also need to specify `key` and `crt` to enable mutual TLS. |
@@ -301,15 +338,18 @@ Each tunnel you define is a map of configuration option names to values. The nam
 | `proxy_proto` | String | The version of [PROXY protocol](https://www.haproxy.org/download/1.8/doc/proxy-protocol.txt) to use with this tunnel, empty if not using. Example values are 1 or 2. |
 | `subdomain` | Any valid combination of letters, numbers, hyphens or periods. | subdomain name to request. If unspecified, ngrok provides a unique subdomain based on your account type. |
 | `terminate_at` | `edge` or `agent` | Terminate at the ngrok "edge" or "agent". defaults to no termination or "edge" if `--crt` or `--key` are present |
+</div>
 
 ##### Labeled Tunnel Configuration Properties
 
+<div class="empty_headers_table">
 |     |     |     |
 | --- | --- | --- |
 | `crt` | Valid system path | The path to a TLS certificate when doing TLS termination at the agent. |
 | `inspect` | `true`, `false` | enable/disable the http request inspection in the web and agent API (default: true) |
 | `key` | Valid system path | The path to a TLS key when doing TLS termination at the agent. |
 | `labels` | A list of labels (name=value) that can be used to identify a tunnel to an ngrok Edge (specifically a tunnel group backend). | The labels for this tunnel in the format name=value. |
+</div>
 
 ##### Define two labeled tunnels
 
