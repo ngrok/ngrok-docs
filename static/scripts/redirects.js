@@ -1,1 +1,14 @@
-// if (document.location.href.startsWith(document.location.origin + "/docs/api")) window.location.href = document.location.href.replace(document.location.origin + "/docs/api", document.location.origin + "/docs/reference/api/reference")
+$(document).ready(function () {
+  console.log("Running the script")
+  console.log(document)
+  if (document.location.hash) {
+    var anchor = document.location.hash;
+    console.log("Setting up ready for ")
+    $(anchor).ready(function () {
+      console.log("Scrolling to " + anchor)
+      setTimeout(function () {
+        $(anchor).get(0).scrollIntoView();
+      }, 500);
+    });
+  }
+});
