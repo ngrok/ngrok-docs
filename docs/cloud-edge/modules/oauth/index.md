@@ -42,7 +42,7 @@ Upstream servers behind endpoints protected by OAuth should not expect to receiv
 |Path|Description|
 |---|---|
 | `/oauth2/callback` | Creates the OAuth session as part of forwarded provider callbacks. |
-| `/oauth2/authorize` | Initiates [capture](#oauth-capture) with a capture URI of `/`. This allows easily clearing the session on an error and forcing reauthorization with the provider. |
+| `/oauth2/authorize` | Initiates [capture](#capture) with a capture URI of `/`. This allows easily clearing the session on an error and forcing reauthorization with the provider. |
 
 ### Cookies
 
@@ -59,13 +59,13 @@ OAuth endpoint configuration uses a cookie-based session. Consider the following
 
 *   Cookies are client-side and available only when users make requests.
 *   Users may successfully authorize, then visit again after any amount of time.
-*   Once authorized, reauthorization occurs after the currently configured _[authorization check interval](#oauth-auth-check-interval)_ or when the endpoint configuration changes.
+*   Once authorized, reauthorization occurs after the currently configured _[authorization check interval](#authorization-check-interval)_ or when the endpoint configuration changes.
 *   Sessions are tied to the OAuth client ID and OAuth provider from which they were created.
 *   Sessions are not shared between domain names.
 
 ## Authorization Check Interval
 
-Authorization check interval controls the frequency of the [refresh](#oauth-refresh) phase of the OAuth workflow. In order to prevent abuse, refreshes have minimum frequency of once per 3 minutes.
+Authorization check interval controls the frequency of the [refresh](#refresh) phase of the OAuth workflow. In order to prevent abuse, refreshes have minimum frequency of once per 3 minutes.
 
 When configuring an authorization check interval, note that long intervals will result in delayed authorization against changed provider data. This has security considerations, especially when revoking permissions. For example, with an authorization check interval of 1 day, the following is possible:
 
