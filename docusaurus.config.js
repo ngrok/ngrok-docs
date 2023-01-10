@@ -35,11 +35,8 @@ const config = {
 
   scripts: [
     {
-      src: 'https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.min.js',
-  },
-    {
       src:
-        '/docs/scripts/redirects.js',
+        '/docs/scripts/anchor-scroll-to.js',
       async: true,
     },
   ],
