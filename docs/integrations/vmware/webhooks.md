@@ -98,12 +98,12 @@ You can trigger new calls from VMware Workspace ONE to your application by follo
 
 1. Access [VMware Workspace ONE](https://console.cloud.vmware.com/), click **LAUNCH SERVICE** in the **Workspace ONE** tile, and then click **MANAGE** in the **Unified Endpoint Management** tile.
 
-1. On the **Workspace ONE UEM** page, click **DEVICES** on the left menu, click **List View**, and then click **ADD DEVICE**.
+1. On the **Workspace ONE UEM** page, click **DEVICES** on the left menu, click **List View** and then click **ADD DEVICE**.
 
-1. On the **Add Device** popup, select a user, enter an valid email address in the **Email address** field, and then click **SAVE**.
-    **Note**: If you don't have any user click the **Create New User** link and enter values for all the required fields.
+1. On the **Add Device** popup, select a user, enter a valid email address in the **Email address** field in the **Messaging** section, and then click **SAVE**.
+    **Note**: If you don't have any users click the **Create New User** link and enter values for all the required fields.
 
-1. The email address you entered in the **Email address** field receives an email with the subject **Workspace ONE UEM Device Activation**. Click the link to enroll the device using the **Username** and **Password** of the selected user.
+1. The email address you entered in the **Email address** field receives an email with the subject **Workspace ONE UEM Device Activation**. Use a mobile device to open the email and click the link to enroll the device using the **Username** and **Password** of the selected user.
 
     Confirm your localhost app receives a notification and logs both headers and body in the terminal.
 
@@ -131,7 +131,7 @@ The ngrok Request Inspector provides a replay function that you can use to test 
 
 1. Click **Replay** to execute the same request to your application or select **Replay with modifications** to modify the content of the original request before sending the request.
 
-1. If you choose to **Replay with modifications**, you can modify any content from the original request. For example, you can modify the **id** field inside the body of the request.
+1. If you choose to **Replay with modifications**, you can modify any content from the original request. For example, you can modify the **riskLevel** field inside the body of the request.
 
 1. Click **Replay**.
 
@@ -146,15 +146,21 @@ The ngrok signature webhook verification feature allows ngrok to assert that req
 
 This is a quick step to add extra protection to your application.
 
-1. Access [VMware Workspace ONE Developer](https://developer.VMware Workspace ONE/).
+1. Access [VMware Workspace ONE](https://console.cloud.vmware.com/) and sign in using your VMware account.
 
-1. On the top menu of the developer site, click **DEVELOPER TOOLS** and then click **Webhooks**.
+1. On the **Services** page, click **LAUNCH SERVICE** in the **Workspace ONE** tile.
 
-1. On the **Webhooks** page, click **Copy** to copy the **Secret** value.
+1. On the Workspace ONE **Home** page, click **MANAGE** in the **Unified Endpoint Management** tile.
 
-1. Restart your ngrok agent by running the command, replacing `{your webhook secret}` with the value you have copied before (See [Integrate ngrok and VMware Workspace ONE.](#setup-webhook)):
+1. On the **Workspace ONE UEM** page, click **GROUPS & SETTINGS** on the left menu, click **All Settings**, click **Advanced** in the **System** section, click **API**, and then click **Event Notifications**.
+
+1. On the **Event Notifications** page, click the radio button of your webhook and then click **EDIT**.
+
+1. On the **Edit Event Notification** page, enter a username in the **Username** field, enter a password in the **Password**, enter the same password in the **Confirm Password** field, and then click **SAVE**.
+
+1. Restart your ngrok agent by running the command, replacing `{username}` and `{password}` with the corresponding values you provided before:
     ```bash
-    ngrok http 3000 --verify-webhook vmware --verify-webhook-secret {your webhook secret}
+    ngrok http 3000 --verify-webhook vmware_workspace --verify-webhook-secret {username}::{password}
     ```
 
 1. Access [VMware Workspace ONE](https://console.cloud.vmware.com/), register a new user to your device, and ask the user to enroll the device.
