@@ -15,7 +15,7 @@ const config = {
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'throw',
   favicon: 'img/favicon.ico',
-  
+
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
   organizationName: 'ngrok', // Usually your GitHub org/user name.
@@ -31,6 +31,17 @@ const config = {
 
   plugins: [
     'docusaurus-plugin-hubspot', '@docusaurus/theme-mermaid'
+  ],
+
+  scripts: [
+    {
+      src:
+        '/docs/scripts/anchor-scroll-to.js',
+      async: true,
+    },
+  ],
+  staticDirectories: [
+    'static',
   ],
 
   presets: [
