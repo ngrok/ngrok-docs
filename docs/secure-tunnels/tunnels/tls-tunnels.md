@@ -23,7 +23,7 @@ Notice that `--insecure` option in the previous `curl` command example? You need
 
 If you want your certificates to match and be protected from man-in-the-middle attacks, you need two things. First, you'll need to buy an SSL (TLS) certificate for a domain name that you own and configure your local web server to use that certificate and its private key to terminate TLS connections. How to do this is specific to your web server and SSL certificate provider and beyond the scope of this documentation. For the sake of example, we'll assume that you were issued an SSL certificate for the domain `secure.example.com`.
 
-Once you have your key and certificate and have installed them properly, it's now time to run a TLS tunnel on your own custom domain name. The instructions to set this up are identical to those described in the HTTP tunnels section: [Tunnels on custom domains](#http-tunnels-custom-domains). The custom domain you register should be the same as the one in your SSL certificate (`-hostname` argument to start the TLS tunnel on your own domain.
+Once you have your key and certificate and have installed them properly, it's now time to run a TLS tunnel on your own custom domain name. The instructions to set this up are identical to those described in the HTTP tunnels section: [Tunnels on custom domains](/docs/secure-tunnels/tunnels/http-tunnels#custom-subdomains). The custom domain you register should be the same as the one in your SSL certificate (`-hostname` argument to start the TLS tunnel on your own domain.
 
 ###### Forward TLS traffic over your own custom domain
 
