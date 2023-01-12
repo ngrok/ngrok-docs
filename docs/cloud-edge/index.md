@@ -1,4 +1,5 @@
 ---
+pagination_next: cloud-edge/endpoints
 sidebar_position: 1
 title: What is ngrok Cloud Edge?
 ---
