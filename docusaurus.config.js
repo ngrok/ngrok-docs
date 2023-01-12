@@ -3,6 +3,7 @@
 
 const lightCodeTheme = require('prism-react-renderer/themes/github');
 const darkCodeTheme = require('prism-react-renderer/themes/dracula');
+const remarkGridTables = require('remark-grid-tables')
 
 const docsRepo = 'https://github.com/ngrok/ngrok-docs'
 
@@ -44,6 +45,7 @@ const config = {
           editUrl: `${docsRepo}/edit/main`,
           showLastUpdateAuthor: true,
           showLastUpdateTime: true,
+          remarkPlugins: [remarkGridTables]
         },
         blog: false,
         theme: {
