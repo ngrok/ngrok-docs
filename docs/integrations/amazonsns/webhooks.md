@@ -1,7 +1,5 @@
 # Amazon SNS Webhooks
 ------------
-https://hevodata.com/learn/aws-sns-webhooks-integration/
-https://www.readysetcloud.io/blog/allen.helton/adding-webhooks-to-your-app-with-amazon-sns/
 
 :::tip TL;DR
 
@@ -84,7 +82,7 @@ To register a webhook on your Amazon SNS topic follow the instructions below.
 
 1. Click **Subscriptions** on the left menu and then click **Create subscription**.
 
-1. On the **Create subscription** page, select your topic in the **Topic ARN** field, select **HTTPS** in the **Protocol** field, enter the URL provided by the ngrok agent to expose your application to the internet in the **Endpoint** field (i.e. `https://1a2b-3c4d-5e6f-7g8h-9i0j.sa.ngrok.io`).
+1. On the **Create subscription** page, select your topic in the **Topic ARN** field, select **HTTPS** in the **Protocol** field, and enter the URL provided by the ngrok agent to expose your application to the internet in the **Endpoint** field (i.e. `https://1a2b-3c4d-5e6f-7g8h-9i0j.sa.ngrok.io`).
     ![Endpoint](img/ngrok_url_configuration_amazonsns.png)
 
 1. Click **Create subscription**.
@@ -95,8 +93,8 @@ To register a webhook on your Amazon SNS topic follow the instructions below.
 
 1. On the Amazon SNS **Subscriptions** page, select the **Pending confirmation** subscription from the list, click **Confirm subscription**, enter the value of the **SubscribeURL** in the **url** field, and then click **Confirm subscription**.
 
-    The **Subscription was confirmed successfully.** message appears.
-
+    You should receive a message that says **Subscription was confirmed successfully**.
+    
 
 ### Run Webhooks with Amazon SNS and ngrok
 
@@ -104,9 +102,9 @@ Any message published to the Amazon SNS topic triggers your HTTPS subscription. 
 
 1. On the AWS dashboard, enter `sns` in the search bar and then click the **Simple Notification Service** link that appears in the list.
 
-1. On the Amazon SNS **Dashboard**, click **Topics** on the left menu, and then click the topic you associated with the Lambda function before.
+1. On the Amazon SNS **Dashboard**, click **Topics** on the left menu, and then click the topic you previously associated with the Lambda function.
 
-1. On the topic page, click **Publish message**, enter `My message` in the **Subject** field, enter `This is my message.` in the **Message body to send to the endpoint** field, and then click **Publish message**.
+1. On the topic page, click **Publish message**, enter `My message` in the **Subject** field, enter `This is my message` in the **Message body to send to the endpoint** field, and then click **Publish message**.
 
     Confirm your localhost app receives a notification and logs both headers and body in the terminal.
 
@@ -153,7 +151,7 @@ This is a quick step to add extra protection to your application.
 
 1. Click **Topics** on the left menu, click your topic and copy the value of the **Topic owner** field.
 
-1. Restart your ngrok agent by running the command, replacing `{Topic owner}` with the value you have copied before:
+1. Restart your ngrok agent by running the command, replacing `{Topic owner}` with the value you copied before:
     ```bash
     ngrok http 3000 --verify-webhook sns --verify-webhook-secret {Topic owner}
     ```
