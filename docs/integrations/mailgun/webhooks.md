@@ -83,7 +83,7 @@ To register a webhook on your Mailgun account follow the instructions below:
 
 To test the webhook follow the instructions below:
 
-1. On the **Webhooks** page, select **Delivered Messages** in the **Event type** combobox, enter the same ngrok URL in the **URL to test** field, and then click **Test webhook**.
+1. On the **Webhooks** page, select **Delivered Messages** in the **Event type** combobox, enter the ngrok URL in the **URL to test** field, and then click **Test webhook**.
 
     Confirm your localhost app receives the event notification and logs both headers and body in the terminal. Also, confirm a **Response** message appears on the **Webhooks** page.
 
