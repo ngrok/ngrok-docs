@@ -83,9 +83,9 @@ To register a webhook on your Mailgun account follow the instructions below:
 
 To test the webhook follow the instructions below:
 
-1. On the **Webhooks** page, select **Delivered Messages** in the **Event type** combobox, enter the same ngrok RL in the **URL to test** field, and then click **Test webhook**.
+1. On the **Webhooks** page, select **Delivered Messages** in the **Event type** combobox, enter the same ngrok URL in the **URL to test** field, and then click **Test webhook**.
 
-    Confirm your localhost app receives the event notification and logs both headers and body in the terminal. Also, confirms a **Response** message appears on the **Webhooks** page.
+    Confirm your localhost app receives the event notification and logs both headers and body in the terminal. Also, confirm a **Response** message appears on the **Webhooks** page.
 
 
 ### Run Webhooks with Mailgun and ngrok
@@ -93,13 +93,13 @@ To test the webhook follow the instructions below:
 Mailgun sends different request body contents depending on the event that is being triggered.
 You can trigger new calls from Mailgun to your application by following the instructions below.
 
-1. Access [Mailgun Dashboard](https://app.mailgun.com/), click **Sending** in the left menu, and then click **Overview**.
+1. Access the [Mailgun Dashboard](https://app.mailgun.com/), click **Sending** in the left menu, and then click **Overview**.
 
 1. Enter a valid email address in the **Email address** field in the **Authorized Recipients** section, and then click **Save Recipient**.
 
-Verify the recipient receives an email from mail gun asking to agree to receive emails from your Mailgun account, click the **I Agree** link in the body of the email and then click **Yes**.
+Verify the recipient receives an email from Mailgun asking to agree to receive emails from your Mailgun account, click the **I Agree** link in the body of the email and then click **Yes**.
 
-1. On the [Mailgun Dashboard](https://app.mailgun.com/), click **Select** in the **API** tile and choose one of the options that appear on the screen to send emails. For example, open a terminal window and run the following command using curl:
+1. In the [Mailgun Dashboard](https://app.mailgun.com/), click **Select** in the **API** tile and choose one of the options that appears on the screen to send emails. For example, open a terminal window and run the following command using curl:
     ```bash
     curl --location --request POST 'API_BASE_URL/messages' \
     --header 'Authorization: Basic api:API_KEY' \
