@@ -1,4 +1,5 @@
 ---
+pagination_next: guides/dashboard-sso-okta-setup
 sidebar_position: 3
 title: Guides
 ---
