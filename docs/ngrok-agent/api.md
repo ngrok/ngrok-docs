@@ -107,7 +107,7 @@ POST/api/tunnels
 
 ### Parameters
 
-Parameter names and behaviors are identical to those those defined in the configuration file. Use the [tunnel definitions](#tunnel-definitions) section as a reference for configuration parameters and their behaviors.
+Parameter names and behaviors are identical to those those defined in the configuration file. Use the [tunnel definitions](/ngrok-agent/config#tunnel-definitions) section as a reference for configuration parameters and their behaviors.
 
 ### Example request body
 
@@ -238,7 +238,7 @@ GET/api/requests/http
 
 |     |     |
 | --- | --- |
-| `requests` | list of captured requests. See the [Captured Request Detail](#request-detail) resource for docs on the request objects |
+| `requests` | list of captured requests. See the [Captured Request Detail](#captured-request-detail) resource for docs on the request objects |
 
 ### Example Response
 

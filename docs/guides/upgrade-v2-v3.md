@@ -7,13 +7,14 @@ The latest ngrok agent is packed with a ton of new capability but because it is 
 ### Breaking Changes
 
 **Configuration file** - The older configuration file is not compatible with the latest ngrok agent without a few changes. We've automated the process to upgrade so all you need to do is run the new upgrade command.
-
-    ngrok config upgrade
+```bash
+ngrok config upgrade
+```
 
 **Unrecognized configuration parameters** - The previous ngrok agent silently ignored any config parameters it didn't understand. This means that you could have a configuration file with parameters that you thought were doing something, but they really weren't. This is also true for the ngrok agent API. The latest ngrok agent will explicitly error when it sees a configuration parameter that it doesn't recognize. It's a good idea to run a check after upgrading to find incompatible arguments.
-
-    ngrok config check
-
+```bash
+ngrok config check
+```
 This will automatically add `version` and `region` options as well as convert the names of legacy options to their new format. If you're only using ngrok with a configuration file, there's nothing else to do. For more information about the changes to the config file, see the [following section](#upgrading-the-ngrok-agent-config).
 
 **Only HTTPS tunnels by default** - ngrok agent HTTP tunnels by default will only open a single HTTPS endpoint for your upstream service instead of both an HTTP and HTTPS endpoint. To enable both, you will need to add `--scheme http --scheme https` to your ngrok agent command or configuration file.
@@ -38,7 +39,7 @@ If you configure ngrok to start with a configuration file, the ngrok agent v3 ma
 
 *   It adds a `version` field which is now required and identifies the configuration version to use. The latest is `version: 2`
 *   It converts configuration parameters that have been renamed, such as `bind_tls` and `auth`, to their updated names
-
+```
     $ ngrok config upgrade -h
     NAME: 
       upgrade - auto-upgrade configuration file
@@ -69,7 +70,7 @@ If you configure ngrok to start with a configuration file, the ngrok agent v3 ma
           --log-format string   log record format: 'term', 'logfmt', 'json' (default "term")
           --log-level string    logging level: 'debug', 'info', 'warn', 'error', 'crit' (default "info")
           --relocate            relocates the config file to the default location
-
+```
 The `ngrok config upgrade` command also includes a flag `--relocate` which will move your configuration file to the updated default location for ngrok agent v3. We follow the [XDG specification](https://wiki.archlinux.org/title/XDG_Base_Directory) for storing configuration files.
 
 Once you run that command, you should be ready to go with the latest ngrok agent v3.
