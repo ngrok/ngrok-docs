@@ -9,4 +9,4 @@ ngrok includes an Events system for gaining observability into what is happening
 
 For more information on the types of events available, please see our [ngrok Event Sources reference](/events).
 
-If you are interested in configuring these event subscriptions programmatically, please see our [Event Subscription API](/api#api-event-subscriptions-create).
+If you are interested in configuring these event subscriptions programmatically, please see our [Event Subscription API](/api/resources/event-subscriptions#create-event-subscription).
