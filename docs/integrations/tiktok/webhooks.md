@@ -72,14 +72,14 @@ Once your app is running successfully on localhost, let's get it on the internet
 
 To register a webhook on your TikTok app follow the instructions below:
 
-1. Access [TikTok Develper Portal](https://developers.tiktok.com/) and sign in using your TikTok account.
+1. Access the [TikTok Developer Portal](https://developers.tiktok.com/) and sign in using your TikTok account.
 
 1. On the **Welcome** page, click **Manage apps** on the top menu.
 
-1. On the **Manage apps** page, click **Connect an app**, upload an **App icon**, select **Others** in the **Category** field, enter a description in the **Description** field, click the slider icon for **Configure for Web**, enter an URL in the **Website URL** field, and click **Save changes**.
+1. On the **Manage apps** page, click **Connect an app**, upload an **App icon**, select **Others** in the **Category** field, enter a description in the **Description** field, click the slider icon for **Configure for Web**, enter a URL in the **Website URL** field, and click **Save changes**.
 
 1. On the app page, click **Add products** on the left menu and click **Add** in the **Webhooks** tile.<br />
-    **Note**: You may need to add **Login Kit** before adding **Webhooks**.
+    **Note**: You may need to add the **Login Kit** before adding **Webhooks**.
 
 1. On the left menu, click **Webhooks** and then enter the URL provided by the ngrok agent to expose your application to the internet in the **Callback URL** field (i.e. `https://1a2b-3c4d-5e6f-7g8h-9i0j.sa.ngrok.io`).
     ![URL](img/ngrok_url_configuration_tiktok.png)
@@ -98,7 +98,7 @@ To register a webhook on your TikTok app follow the instructions below:
 
 ### Run Webhooks with TikTok and ngrok {#run-webhook}
 
-By default, you are subscribed to all events that happens in your TikTok app.
+By default, you are subscribed to all events that happen in your TikTok app.
 TikTok sends different request body contents depending on the event that is being triggered.
 
 After your app is approved, associate a user with your app. 
@@ -146,11 +146,11 @@ The ngrok signature webhook verification feature allows ngrok to assert that req
 
 This is a quick step to add extra protection to your application.
 
-1. Access [TikTok Develper Portal](https://developers.tiktok.com/) and sign in using your TikTok account.
+1. Access the [TikTok Developer Portal](https://developers.tiktok.com/) and sign in using your TikTok account.
 
 1. On the **Manage apps** page, click your app tile, click the eye icon to reveal the **Client secret** value, and then copy this value.
 
-1. Restart your ngrok agent by running the command, replacing `{your webhook secret}` with the value you have copied before:
+1. Restart your ngrok agent by running the command, replacing `{your webhook secret}` with the value you copied before:
     ```bash
     ngrok http 3000 --verify-webhook tiktok --verify-webhook-secret {your webhook secret}
     ```
