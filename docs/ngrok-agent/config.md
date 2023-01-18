@@ -78,20 +78,23 @@ How long to wait when establishing an agent session connection to the ngrok serv
 
 This option allows you to enable or disable the console UI that is displayed in your terminal window after starting ngrok.
 
-|     |     |     |
-| --- | --- | --- |
-| `true` |     | Enable the console UI |
-| `false` |     | Disable the console UI |
-| `iftty` | default | Enable the UI only if standard out is a TTY (not a file or pipe) |
++-------+----------+------------------------------------------------------------------------------------------------------------+
+|`true` |          | Enable the console UI                                                                                      |
++-------+----------+------------------------------------------------------------------------------------------------------------+
+|`false`|          |  Disable the console UI                                                                                    |
++-------+----------+------------------------------------------------------------------------------------------------------------+
+|`iftty`|default   |  Enable the UI only if standard out is a TTY (not a file or pipe)                                          |
++-------+----------+------------------------------------------------------------------------------------------------------------+
 
 ### `console_ui_color`
 
 The command sets the background color when displaying the console UI in the terminal. To choose a color other than black, set the value to transparent and change the background of your terminal window.
 
-|     |     |     |
-| --- | --- | --- |
-| `transparent` |     | Don't set a background color when displaying the console UI |
-| `black` | default | Set the console UI's background to black |
++--------------+---------+-------------------------------------------------------------+
+|`transparent` |         | Don't set a background color when displaying the console UI |                           
++--------------+---------+-------------------------------------------------------------+
+|`black`       | default | Set the console UI's background to black                    |
++--------------+---------+-------------------------------------------------------------+
 
 ### `dns_resolver_ips`
 
