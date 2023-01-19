@@ -100,7 +100,7 @@ To configure an edge with Okta:
 
     ![Okta config in ngrok](img/okta-1.png)
 
-    * **Issuer URL**: Your okta tenant url (i.e. https://okta-sso-test.ngrok.io). 
+    * **Issuer URL**: Your okta tenant url (i.e. https://acme.oktapreview.com). 
     * **Client ID**: The client id copied from Okta
     * **Client Secret**: The client secret copied from Okta
 

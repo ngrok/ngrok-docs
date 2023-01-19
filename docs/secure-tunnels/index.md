@@ -1,4 +1,5 @@
 ---
+pagination_next: secure-tunnels/ngrok-agent/tunnel-authtokens
 sidebar_position: 1
 title: What are ngrok Secure Tunnels?
 ---
