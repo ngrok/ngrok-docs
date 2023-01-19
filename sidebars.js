@@ -80,6 +80,7 @@ const sidebars = {
         { label: 'Intercom', type: 'doc', id: 'integrations/intercom/webhooks', },
         { label: 'LaunchDarkly', type: 'doc', id: 'integrations/launchdarkly/webhooks', },
         { label: 'Mailchimp', type: 'doc', id: 'integrations/mailchimp/webhooks', },
+        { label: 'Mailgun', type: 'doc', id: 'integrations/mailgun/webhooks', },
         { label: 'MongoDB', type: 'doc', id: 'integrations/mongodb/webhooks', },
         { label: 'Modern Treasury', type: 'doc', id: 'integrations/modern-treasury/webhooks', },
         { label: 'Mux', type: 'doc', id: 'integrations/mux/webhooks', },
