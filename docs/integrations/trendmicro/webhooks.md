@@ -150,6 +150,6 @@ This is a quick step to add extra protection to your application.
     ngrok http 3000 --verify-webhook trendmicro_conformity --verify-webhook-secret {your webhook token}
     ```
 
-1. Access the [Trend Micro CLoud One home](https://cloudone.trendmicro.com/home) page, click the **Conformity** tile, and then run the Conformity bot again.
+1. Access the [Trend Micro Cloud One home](https://cloudone.trendmicro.com/home) page, click the **Conformity** tile, and then run the Conformity bot again.
 
     After the bot finishes running, confirm your localhost app receives a notification and logs both headers and body in the terminal.
