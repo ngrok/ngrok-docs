@@ -98,6 +98,7 @@ const sidebars = {
         { label: 'Slack', type: 'doc', id: 'integrations/slack/webhooks', },
         { label: 'Square', type: 'doc', id: 'integrations/square/webhooks', },
         { label: 'Stripe', type: 'doc', id: 'integrations/stripe/webhooks', },
+        { label: 'Trend Micro', type: 'doc', id: 'integrations/trendmicro/webhooks', },
         { label: 'TikTok', type: 'doc', id: 'integrations/tiktok/webhooks', },
         { label: 'Twilio', type: 'doc', id: 'integrations/twilio/webhooks', },
         { label: 'Typeform', type: 'doc', id: 'integrations/typeform/webhooks', },
