@@ -414,4 +414,6 @@ Below is an example configuration file with all the options filled in.
           - region=us-east
           - team=infra
         addr: 8000
+        oauth:
+          provider: google
         inspect: false
