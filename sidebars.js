@@ -63,6 +63,7 @@ const sidebars = {
         { label: 'Brex', type: 'doc', id: 'integrations/brex/webhooks', },
         { label: 'Buildkite', type: 'doc', id: 'integrations/buildkite/webhooks', },
         { label: 'Calendly', type: 'doc', id: 'integrations/calendly/webhooks', },
+        { label: 'Castle', type: 'doc', id: 'integrations/castle/webhooks', },
         { label: 'Chargify', type: 'doc', id: 'integrations/chargify/webhooks', },
         { label: 'Circle CI', type: 'doc', id: 'integrations/circleci/webhooks', },
         { label: 'Coinbase', type: 'doc', id: 'integrations/coinbase/webhooks', },
