@@ -111,15 +111,12 @@ To register a webhook on your Calendly account follow the instructions below:
     "signing_key": "KEY"
     }'
     ```
-    **Note**: Replace the value URL with the value of the URL provided by the ngrok agent to expose your application to the internet (i.e. `https://1a2b-3c4d-5e6f-7g8h-9i0j.sa.ngrok.io`).
-
-    **Note**: Replace the value TOKEN with the value of the token you copied before.
-
-    **Note**: Replace the value ORGANIZATION_URL with the value of the **current_organization** field you copied before.
-
-    **Note**: Replace the value USER_URL with the value of the **uri** field you copied before.
-
-    **Note**: Replace the value KEY with the value of the key you copied before.
+    **Note**: Replace the following with values copied on previous steps:
+    - URL: the URL provided by the ngrok agent to expose your application to the internet (i.e. `https://1a2b-3c4d-5e6f-7g8h-9i0j.sa.ngrok.io`).
+    - TOKEN: the Calendly token.
+    - ORGANIZATION_URL: The **current_organization** field you copied before.
+    - USER_URL: The **uri** field you copied before.
+    - KEY: the key you copied before.
 
     ![URL to Publish](img/ngrok_url_configuration_calendly.png)
     
