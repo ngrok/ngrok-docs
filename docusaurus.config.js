@@ -30,7 +30,17 @@ const config = {
   // },
 
   plugins: [
-    'docusaurus-plugin-hubspot', '@docusaurus/theme-mermaid'
+    'docusaurus-plugin-hubspot', '@docusaurus/theme-mermaid', ['@docusaurus/plugin-client-redirects',
+    {
+      createRedirects(existingPath) {
+        if (existingPath.includes('/docs/ngrok-link')) {
+          return [
+            existingPath.replace('/docs/ngrok-link', '/docs/cloud-edge')
+          ];
+        }
+        return undefined; // Return a falsy value: no redirect created
+      }
+    }]
   ],
 
   scripts: [
