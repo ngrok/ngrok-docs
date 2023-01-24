@@ -73,6 +73,7 @@ const sidebars = {
         { label: 'Facebook', type: 'doc', id: 'integrations/facebook/webhooks', },
         { label: 'Facebook Messenger', type: 'doc', id: 'integrations/facebook-messenger/webhooks', },
         { label: 'Frame.io', type: 'doc', id: 'integrations/frameio/webhooks', },
+        { label: 'FusionAuth', type: 'doc', id: 'integrations/fusionauth/sso-oidc', },
         { label: 'GitHub', type: 'doc', id: 'integrations/github/webhooks', },
         { label: 'GitLab', type: 'doc', id: 'integrations/gitlab/webhooks', },
         { label: 'Heroku', type: 'doc', id: 'integrations/heroku/webhooks', },
