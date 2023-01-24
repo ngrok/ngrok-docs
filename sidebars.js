@@ -102,6 +102,7 @@ const sidebars = {
         { label: 'TikTok', type: 'doc', id: 'integrations/tiktok/webhooks', },
         { label: 'Twilio', type: 'doc', id: 'integrations/twilio/webhooks', },
         { label: 'Typeform', type: 'doc', id: 'integrations/typeform/webhooks', },
+        { label: 'VMware Workspace ONE', type: 'doc', id: 'integrations/vmware/webhooks', },
         { label: 'WhatsApp', type: 'doc', id: 'integrations/whatsapp/webhooks', },
         { label: 'Xero', type: 'doc', id: 'integrations/xero/webhooks', },
         { label: 'Zendesk', type: 'doc', id: 'integrations/zendesk/webhooks', },
