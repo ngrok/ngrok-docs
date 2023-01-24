@@ -5,6 +5,10 @@ title: Node.js or npm
 # Using ngrok with Node.js or npm
 ------------
 
+:::tip
+This article assumes you have node and npm already installed.
+:::
+
 If you need to manage the ngrok agent for starting tunnels, use bubenshchykov's npm package:
 
 *   [ngrok module on npm](https://www.npmjs.com/package/ngrok)
