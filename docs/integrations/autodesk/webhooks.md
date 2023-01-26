@@ -74,7 +74,7 @@ To register a webhook on your Autodesk account follow the instructions below:
 
 1. Access [Autodesk Platform Services](https://aps.autodesk.com/) and sign in using your Autodesk account.
 
-1. On the **Plataform Services** page, click your avatar icon on the top-right corner of the page, click **Applications**, click **Create Application**, enter a name in the **Name** field, and then click **Create**.
+1. On the **Platform Services** page, click your avatar icon on the top-right corner of the page, click **Applications**, click **Create Application**, enter a name in the **Name** field, and then click **Create**.
 
 1. In the **Client Credentials** section of your application page, copy the values of the **Client ID** and the **Client Secret** fields for later use.<br/>
     **Tip**: Click the eye icon to reveal the **Client Secret** value to copy or click the copy icon.
@@ -97,7 +97,7 @@ To register a webhook on your Autodesk account follow the instructions below:
         scope=data:read
   '
     ```
-1. Copy the value of the **access_token** atribute from the response json.
+1. Copy the value of the **access_token** attribute from the response json.
 
 1. Run the following command to register a webhook to Autodesk Data Management:
     ```
@@ -122,14 +122,16 @@ To register a webhook on your Autodesk account follow the instructions below:
     - FOLDER_URN: Your Autodesk Data Management folder URN
     - PROJECT_ID: Your Autodesk Data Management project ID.
 
+1. Make sure the response from the above command is `HTTP/1.1 201`.
+
 
 
 ### Run Webhooks with Autodesk and ngrok
 
-Autodesk Platform Services sends a request to your webhook endpoint whenever a file is added to the folder you specified in the webhook registration.
-You can trigger new calls from Autodesk to your application by following the instructions below.
+Autodesk Platform Services sends a different request to your webhook endpoint depending on the event being triggered.
+For example, you can trigger new calls from Autodesk to your application whenever you add a file to a folder in Data Management.
 
-1. On your desktop start menu, select **Autodesk Data Management**, click **Autodesk Data Management Server Console**, sign in using your username and password.
+1. On your desktop start menu, select **Autodesk Data Management**, click **Autodesk Data Management Server Console** and sign in using your username and password.
 
 1. Access the folder you assigned to your webhook, upload a text file, and confirm your localhost app receives a notification and logs both headers and body in the terminal.
 
@@ -172,11 +174,21 @@ The ngrok signature webhook verification feature allows ngrok to assert that req
 
 This is a quick step to add extra protection to your application.
 
-1. Access [Autodesk Platform Services](https://aps.autodesk.com/) and sign in using your Autodesk account.
+1. Run the following command to register a webhook secret to your webhook:
+    ```
+    curl -X 'POST'\
+     -v 'https://developer.api.autodesk.com/webhooks/v1/tokens'\
+     -H 'Content-Type: application/json'\
+     -H 'authorization: Bearer ACCESS_TOKEN'\
+     -d '{
+            "token": "YOUR_WEBHOOK_SECRET"
+      }'
+    ```
+    **Note**: Replace the following with the corresponding values:
+    - ACCESS_TOKEN: the access token copied on previous steps.
+    - YOUR_WEBHOOK_SECRET: a value to sign each webhook request.
 
-1. On the **Plataform Services** page, click your avatar icon on the top-right corner of the page, click **Applications**, and then click your application tile.
-
-1. On your application page, click the eye icon to reveal the **Client Secret** value and copy this value.
+1. Make sure the response from the above command is `HTTP/1.1 200`.
 
 1. Restart your ngrok agent by running the command, replacing `{your client secret}` with the value you have copied before:
     ```bash
