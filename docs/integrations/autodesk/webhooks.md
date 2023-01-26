@@ -76,13 +76,13 @@ To register a webhook on your Autodesk account follow the instructions below:
 
 1. On the **Plataform Services** page, click your avatar icon on the top-right corner of the page, click **Applications**, click **Create Application**, enter a name in the **Name** field, and then click **Create**.
 
-1. In the **Client Credentials** section of your application page, copy the values of the **Client ID** and the **Client Secret** fields for later use.<br>
+1. In the **Client Credentials** section of your application page, copy the values of the **Client ID** and the **Client Secret** fields for later use.<br/>
     **Tip**: Click the eye icon to reveal the **Client Secret** value to copy or click the copy icon.
 
 1. In the **General Settings** section, enter the URL provided by the ngrok agent to expose your application to the internet in the **Callback URL** field (i.e. `https://1a2b-3c4d-5e6f-7g8h-9i0j.sa.ngrok.io`).
     ![Callback URL](img/ngrok_url_configuration_autodesk.png)
 
-1. In the **API Access** section, select the **Data Management API** and the **Webhooks API** from the list, and then click **Save changes**.<br>
+1. In the **API Access** section, select the **Data Management API** and the **Webhooks API** from the list, and then click **Save changes**.<br/>
     **Tip**: This tutorial uses the ** **Data Management** service as an example. Select other APIs to use with other Autodesk Platform Services.
 
 1. In a terminal window, run the following command to obtain an access token:
