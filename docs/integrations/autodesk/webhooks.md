@@ -100,14 +100,14 @@ To register a webhook on your Autodesk account follow the instructions below:
     ```
 1. Copy the value of the **access_token** atribute from the response json.
 
-1. Run the following command to register the webhook:
+1. Run the following command to register a webhook to Autodesk Data Management:
     ```
     curl -X 'POST'\
      -v 'https://developer.api.autodesk.com/webhooks/v1/systems/data/events/dm.*/hooks'\
      -H 'Content-Type: application/json'\
      -H 'authorization: Bearer ACCESS_TOKEN'\
      -d '{
-            "callbackUrl": "https://1a2b-3c4d-5e6f-7g8h-9i0j.sa.ngrok.io",
+            "callbackUrl": "CALLBACK_URL",
             "autoReactivateHook": false,
             "scope": {
                  "folder": "urn:adsk.wipprod:fs.folder:co.wT5lCWlXSKeo3razOfHJAw"
@@ -123,6 +123,13 @@ To register a webhook on your Autodesk account follow the instructions below:
             "hookExpiry": "2017-09-21T17:04:10.444Z"
       }'
     ```
+    **Note**: Replace the following with values copied on previous steps:
+    - ACCESS_TOKEN: the access token.
+    - CALLBACK_URL: the URL provided by the ngrok agent to expose your application to the internet (i.e. `https://1a2b-3c4d-5e6f-7g8h-9i0j.sa.ngrok.io`).
+    - ORGANIZATION_URL: The **current_organization** field you copied before.
+    - USER_URL: The **uri** field you copied before.
+    - KEY: the key you copied before.
+
 
 1. ...
 
