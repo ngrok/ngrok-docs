@@ -51,6 +51,7 @@ The following is a list of options that can be configured at the root of your co
 | [update_check](#update_check) | This tells the ngrok agent if it should check for updates. Defaults to `true`. |
 | [version](#version) | Specifies the version of the config file to use. |
 | [web_addr](#web_addr) | Network address to bind on for serving the local web interface and api. |
+| [web_allow_hosts](#web_allow_hosts) | Host headers to allow access for on the local web interface and api, can be a combination of IP's, CIDR ranges, and/or hostname suffixes. |
 
 ### `api_key`
 
@@ -210,11 +211,32 @@ Specifies the version of the config file to use.
 
 This is the network address to bind on for serving the local agent web interface and API.
 
-|     |     |     |
+| Network address |     | Bind to this network address |
 | --- | --- | --- |
-| network address |     | bind to this network address |
 | `127.0.0.1:4040` | default | default network address |
 | `false` |     | disable the web UI |
+
+
+### `web_allow_hosts`
+
+These are a list of specifiers for what Host headers will be allowed to make requests agains the local agent web interface and API. Any port is stripped off the Host header before matching is performed.
+
+| Allow string |     | Example Host headers that would match |
+| --- | --- | --- |
+|     | default | requests to localhost-bound web interface or API endpoints are checked to have a localhost-like Host (localhost, 127.0.0.1, ::1, etc.) |
+| 8.8.8.8            |     | an IP matches Host header (8.8.8.8) |
+| 1:2:3:4:5:6:7:8    |     | an IPv6 matches Host header (1:2:3:4:5:6:7:8) |
+| 10.0.0.0/8         |     | a CIDR range matches a Host header that is an IP address in that range (10.0.0.1 or 10.1.2.3) |
+| 1:2:3:4:5:6:7:8/16 |     | a CIDR range matches a Host header that is an IPv6 address in that range (1:2:3:4:5:6:7:0) |
+| example.com        |     | a hostname without preceding period will match Host header exactly (example.com) |
+| .example.com       |     | a hostname with a preceding period Host header suffix (sub.example.com or foo.example.com) |
+
+##### Allow an IP address and a Domain as Host headers
+
+    web_allow_hosts:
+      - 8.8.8.8
+      - example.com
+
 
 ## Tunnel definitions
 
@@ -392,4 +414,6 @@ Below is an example configuration file with all the options filled in.
           - region=us-east
           - team=infra
         addr: 8000
+        oauth:
+          provider: google
         inspect: false

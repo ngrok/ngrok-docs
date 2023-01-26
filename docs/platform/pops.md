@@ -35,6 +35,6 @@ Reserved domains and TCP addresses are allocated for a specific region (the US r
 
 An ngrok agent may only be connected a single region, meaning you cannot host tunnels in multiple regions simultaneously with the same agent. You can run multiple ngrok agents if you need to do this.
 
-A domain cannot be reserved for multiple regions at the same time. It is not possible to geo-balance DNS to the same tunnel name in multiple regions. Use region-specific subdomains or TLDs if you need to do this (
+A domain cannot be reserved for multiple regions at the same time. It is not possible to geo-balance DNS to the same tunnel name in multiple regions. Use region-specific subdomains or TLDs if you need to do this.
 
 An ngrok Edge can only contain endpoints in the same region.

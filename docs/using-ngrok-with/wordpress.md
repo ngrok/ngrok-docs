@@ -5,6 +5,10 @@ title: Wordpress
 # Using ngrok with Wordpress
 ------------
 
+:::tip
+This article assumes you familar with moderate to advanced Wordpress configuration.
+:::
+
 To make ngrok work properly with Wordpress installations you usually need to do two things:
 
 1.  You must ensure that Wordpress issues relative URLS. You can do so by installing the following plugin:

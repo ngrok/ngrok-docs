@@ -61,6 +61,7 @@ The currently supported webhook providers are:
 | TikTok | `tiktok` | [Documentation](https://developers.tiktok.com/doc/webhooks-verification) |
 | Trend Micro Conformity | `trendmicro_conformity` | [Documentation](https://cloudone.trendmicro.com/docs/conformity/webhook-communication/) |
 | Twilio | `twilio` | [Documentation](https://ngrok.com/docs/integrations/twilio/webhooks) |
+| Twitter | `twitter` | [Documentation](https://developer.twitter.com/en/docs/twitter-api/enterprise/account-activity-api/guides/securing-webhooks) |
 | Typeform | `typeform` | [Documentation](https://developer.typeform.com/webhooks/secure-your-webhooks/) |
 | VMware Workspace | `vmware` | [Documentation](https://docs.vmware.com/en/VMware-Workspace-ONE-UEM/services/System_Settings_On_Prem/GUID-AWT-SYSTEM-ADVANCED-API-NOTIF.html) |
 | Webex | `webex` | [Documentation](https://developer.webex.com/docs/api/guides/webhooks#handling-requests-from-webex) |
