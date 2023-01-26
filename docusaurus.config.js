@@ -30,25 +30,20 @@ const config = {
   // },
 
   plugins: [
-    'docusaurus-plugin-hubspot', '@docusaurus/theme-mermaid', ['@docusaurus/plugin-client-redirects',
-    {
-      createRedirects(existingPath) {
-        if (existingPath.includes('/docs/ngrok-link')) {
-          return [
-            existingPath.replace('/docs/ngrok-link', '/docs/cloud-edge')
-          ];
-        }
-        return undefined; // Return a falsy value: no redirect created
-      }
-    }]
+    'docusaurus-plugin-hubspot', '@docusaurus/theme-mermaid'
   ],
 
   scripts: [
     {
       src:
-        '/docs/scripts/anchor-scroll-to.js',
+        '/docs/scripts/fix-redirect.js',
       async: true,
     },
+    {
+      src:
+        '/docs/scripts/anchor-scroll-to.js',
+      async: true,
+    }
   ],
   staticDirectories: [
     'static',
