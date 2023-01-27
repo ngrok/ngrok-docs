@@ -73,7 +73,7 @@ Once your app is running successfully on localhost, let's get it on the internet
 To register a webhook on your Twitter account follow the instructions below:
 
 1. Access the [Twitter Developer Portal](https://developer.twitter.com/), sign in using your Twitter account, and then click **Developer Portal**.<br/>
-    **Tip**: In order to continue, you need to have an approved developer account from the developer portal.
+    **Tip**: In order to continue, you need to have an approved developer account in the Twitter developer portal.
 
 1. On the **Dashboard** page, click **Create Project**, enter `ngrok` in the **Project name** field, and then click **Next**.
 
@@ -85,16 +85,16 @@ To register a webhook on your Twitter account follow the instructions below:
 
 1. On the **Here are your keys & tokens** page, make note of the value of the **API Key**, **API Key Secret**, and **Bearer Token** fields.
 
-API Key = JSTtW4ELL6YuvV8BUvUkjDVn
-API Key Secret = P74TmGELf4TOB7S6F9TZrrpYtc25FzmEVP0OCsQDgUy26HkzqU
-Bearer Token = AAAAAAAAAAAAAAAAAAAAAN%2FdlQEAAAAAE%2Bw3hdRLGo6wTTTHkdhyeCVfxFg%3DEcYqHgQ0sFk0bwo67hOcnrjSRwMbbGymVCC6EvSGtiDRlRe0iE
+API Key = 6nflh11GvfjkpErtEBvg5gYJm
+API Key Secret = gtffIvOBoE30OVTvGK2KGgKe2kJkRnyBVbgYWYqfj7rWcGE1Iu
+Bearer Token = AAAAAAAAAAAAAAAAAAAAAN%2FdlQEAAAAAtYCMAF3CE2IPxOdv5jXWfkf0ov4%3DeRsLELiaizu96zBK3l4CxDtbH9rgbYLkY47YCO4eUCfu0nI29l
 
 1. On the left menu, click **Projects & Apps**, click **ngrok**, and then click your app.
 
 1. On the app page, click the **Keys and tokens** tab, click **Generate** in the **Access Token and Secret** section, and then copy the value of the **Access Token** and **Access Token Secret** fields.
 
-Access Token = 64293199-05GZa0KJsxB7EZCxjRgXo86lGfL8x48ZuxhUANDeE
-Access Token Secret = dyvU0TswqMKPwqjjIv0WhSP1zcVWbwouRkvZOVElYwOqZ
+Access Token = 64293199-TIuUWA4bhqK0w7ZcXUyXuNmrTuA40OPYxmV6Thy8O
+Access Token Secret = NPc4DKeye5Q8VtiB1ebIadgMmheLniks0L8JszXb9UxhC
 
 1. On the left menu, click **Products**, click **Premium**, and then click **Dev environments**.
 
@@ -102,7 +102,7 @@ Access Token Secret = dyvU0TswqMKPwqjjIv0WhSP1zcVWbwouRkvZOVElYwOqZ
 
 1. In a terminal window, run the following command to register the webhook:
     ```
-    curl --request POST --url https://api.twitter.com/1.1/account_activity/all/APP_NAME/webhooks.json?url=ENCODED_URL \
+    curl --request POST --url https://api.twitter.com/1.1/account_activity/webhooks.json?url=ENCODED_URL \
     --header 'authorization: OAuth oauth_consumer_key="CONSUMER_KEY", oauth_nonce="GENERATED", oauth_signature="GENERATED", oauth_signature_method="HMAC-SHA1", oauth_timestamp="GENERATED", oauth_token="ACCESS_TOKEN", oauth_version="1.0"'
     ```
     **Note**: Replace the following with values copied on previous steps:
