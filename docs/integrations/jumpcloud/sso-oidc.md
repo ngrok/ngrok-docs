@@ -50,28 +50,20 @@ To integrate ngrok with JumpCloud SSO, you will need to:
 
 1. Click the **SSO** tab, enter `https://idp.ngrok.com/oauth2/callback` in the **Redirect URIs** field, select **Client Secret Basic** as the **Client Authentication Type**, and enter the URL provided by the ngrok agent to expose your application to the internet in the **Login URL** (i.e. `https://myexample.ngrok.io/webhooks`). 
 
-1. Click **Activate**. 
-
+1. Click **Activate**.
+    
 1. On the **Application Saved** popup, copy the value of the **Client ID** and the **Client Secret** fields, and then click **Got It**.
 
-88e7bb39-6f72-4ef8-bf2a-fc8c932088a5
-gq-ldnj4Ve23da-iaqwTXsH9aa
 
+### Grant access to JumpCloud users
 
-1. Select **OpenID Connect**, and then enter the following:
-    1. **Sign-in redirect URI**: https://idp.ngrok.com/oauth2/callback
-    1. **Login initiated by**: Login initiated by app
-1. Click **Done**. 
-1. Under the **Sign On** tab of the ngrok application, **copy the Client ID and Client Secret**. These values will be used at ngrok to complete the configuration.
+JumpCloud allows administrators to restrict access to SSO apps — such as ngrok — via group assignments. By default, apps created in JumpCloud have no group assignments — in other words, nobody can use JumpCloud SSO to access ngrok until you assign them to the app. To assign JumpCloud users and groups to the ngrok app:
 
-### Grant access to JumpCloud people and groups
+1. On the left menu of the [JumpCloud Console](https://console.jumpcloud.com/), click **SOO** and click the ngrok OIDC app.
 
-JumpCloud allows administrators to restrict access to SSO apps — such as ngrok — via assignments. By default, apps created in JumpCloud have no assignments — in other words, nobody can use JumpCloud SSO to access ngrok until you assign them to the app. To assign JumpCloud users and groups to the ngrok app:
+1. On the app popup, click the **User Groups** tab, click **All Users**, and then click **Save**.
+    **Tip**: Make sure to add JumpCloud users to this group when you create or manage users that should have access to the ngrok app.
 
-1. Click **Application** > **Applications** .
-1. Search for and click the **ngrok app**.
-1. Click **Assignments**.
-1. Use the **Assign** button to associate groups and users with the ngrok app. **To test the SSO with ngrok, make sure you're assigned to the app**.
 
 ## **Step 2**: Configure ngrok {#configure-ngrok}
 
@@ -85,7 +77,7 @@ ngrok can leverage JumpCloud SSO in two ways:
 > **Note:** For this tutorial, we assume you have an app running locally (i.e., on localhost:3000) with the ngrok client installed.
 
 1. Launch a terminal
-1. Enter the following command to launch an ngrok tunnel with JumpCloud SSO. Replace `<JumpCloud_url>` with your JumpCloud org address (i.e., https://acme.JumpCloud.com) and the `<JumpCloud_client_id>` and `<JumpCloud_client_secret>` with the respective values copied from the ngrok app registered at JumpCloud. Optionally, add the `--subdomain <subdomain>` argument to get your own subdomain.ngrok.io url, replacing `<subdomain>` with your URL of preference:
+1. Enter the following command to launch an ngrok tunnel with JumpCloud SSO. Replace `<JumpCloud_url>` with your JumpCloud org address (i.e., `https://oauth.id.jumpcloud.com/`) and the `<JumpCloud_client_id>` and `<JumpCloud_client_secret>` with the respective values copied from the ngrok app registered at JumpCloud. Optionally, add the `--subdomain <subdomain>` argument to get your own subdomain.ngrok.io url, replacing `<subdomain>` with your URL of preference:
 
     ```bash
     ngrok http 3000 --oidc=<JumpCloud_url> \
@@ -93,7 +85,7 @@ ngrok can leverage JumpCloud SSO in two ways:
     --oidc-client-secret=<JumpCloud_client_secret> \
     --subdomain=<subdomain>
     ```
-1. Copy the url available next to **Forwarding** (for example, `https://JumpCloud-sso-test.ngrok.io`).
+1. Copy the url available next to **Forwarding** (for example, `https://jumpcloud-sso-test.ngrok.io`).
 
 1. Skip to **Step 3**
 
