@@ -72,16 +72,21 @@ Once your app is running successfully on localhost, let's get it on the internet
 
 To register a webhook on your Clerk account follow the instructions below:
 
-1. Access [Clerk](https://www.clerk.com/) and sign in using your Clerk account.
+1. Access the [Clerk Dashboard](https://dashboard.clerk.dev/) and sign in using your Clerk account.
 
-1. On the top menu of the developer site, click **DEVELOPER TOOLS** and then click **Webhooks**.
+1. On the **Applications** page, click your application and then click **Webhook** on the left menu.
+    **Tip**: If you don`t have an application click **Add application** to create one.
 
-1. On the **Webhooks** page, click **Create a Webhook**.
+1. On the **Webhooks** page, click **Add Endpoint** and then enter the URL provided by the ngrok agent to expose your application to the internet in the **Endpoint URL** field (i.e. `https://1a2b-3c4d-5e6f-7g8h-9i0j.sa.ngrok.io`).
+    ![Clerk Endpoint URL](img/ngrok_url_configuration_clerk.png)
 
-1. On the **Create a new webhook** page, enter a name in the **NAME** field, and in the **URL** field enter the URL provided by the ngrok agent to expose your application to the internet (i.e. `https://1a2b-3c4d-5e6f-7g8h-9i0j.sa.ngrok.io`).
-    ![clerk URL to Publish](img/ngrok_url_configuration_clerk.png)
+1. On the **Message Filtering** section, select **user.created**, **user.deleted**, and **user.updated** under **Filter events**.
 
-1. Select your team for the **TEAM** field, click the **created** checkbox for **Projects** under the **EVENTS** section, and then click **Submit**.
+1. Click **Create**.
+
+1. On the **Endpoints** page, click the **Testing** tab, select **user.created** in the **Send event** field, and then click **Send Example**.
+
+    Confirm your localhost app receives the event notification and logs both headers and body in the terminal.
 
 
 ### Run Webhooks with Clerk and ngrok
@@ -89,22 +94,18 @@ To register a webhook on your Clerk account follow the instructions below:
 Clerk sends different request body contents depending on the event that is being triggered.
 You can trigger new calls from Clerk to your application by following the instructions below.
 
-1. In the same browser, access [Clerk](https://Clerk/), and then click **+** close to your team name on the left menu.
+1. On the left menu of the [Clerk Dashboard](https://dashboard.clerk.dev/), click **+Users** and then click **CREATE**.
 
-1. On the **New Project** popup, enter a project name and then click **Create Project**.
+1. On the **Create User** popup, enter an email and a password for the user and then click **CREATE**.
 
-    Confirm your localhost app receives the create-project event notification and logs both headers and body in the terminal.
+    Confirm your localhost app receives the event notification and logs both headers and body in the terminal.
 
-Optionally, you can verify the log of the webhook call in Clerk:
+Alternatively, you can verify the log of the webhook call in Clerk:
 
-1. In the same browser, access [Clerk Developer](https://www.clerk.com/).
-
-1. On the top menu of the developer site, click **DEVELOPER TOOLS** and then click **Webhooks**.
-
-1. On the **Webhooks** page, click **View logs** close to your webhook.
-
-1. On the **Webhook Logs** page, click **View details** and confirm 
+1. On the left menu of the [Clerk Dashboard](https://dashboard.clerk.dev/), click **+Webhooks** and then click the **Logs** tab. 
     ![Webhook Logs](img/ngrok_logs_clerk.png)
+
+1. Click one of the messages to see its details.
 
 
 ### Inspecting requests
@@ -130,7 +131,7 @@ The ngrok Request Inspector provides a replay function that you can use to test 
 
 1. Click **Replay** to execute the same request to your application or select **Replay with modifications** to modify the content of the original request before sending the request.
 
-1. If you choose to **Replay with modifications**, you can modify any content from the original request. For example, you can modify the **id** field inside the body of the request.
+1. If you choose to **Replay with modifications**, you can modify any content from the original request. For example, you can modify the **email_address** field inside the body of the request.
 
 1. Click **Replay**.
 
@@ -145,17 +146,15 @@ The ngrok signature webhook verification feature allows ngrok to assert that req
 
 This is a quick step to add extra protection to your application.
 
-1. Access [Clerk Developer](https://developer.Clerk/).
+1. Access the [Clerk Dashboard](https://dashboard.clerk.dev/), click **Webhooks** on the left menu, and then click your endpoint in the list of endpoints.
 
-1. On the top menu of the developer site, click **DEVELOPER TOOLS** and then click **Webhooks**.
+1. On the **Endpoint** page, click the eye icon under **Signing Secret** and copy the value that appears.
 
-1. On the **Webhooks** page, click **Copy** to copy the **Secret** value.
-
-1. Restart your ngrok agent by running the command, replacing `{your webhook secret}` with the value you copied before (See [Integrate ngrok and Clerk.](#setup-webhook)):
+1. Restart your ngrok agent by running the command, replacing `{endpoint signing secret}` with the value you copied before:
     ```bash
-    ngrok http 3000 --verify-webhook clerk --verify-webhook-secret {your webhook secret}
+    ngrok http 3000 --verify-webhook clerk --verify-webhook-secret {endpoint signing secret}
     ```
 
-1. Access [Clerk](https://Clerk/) and create a new project.
+1. Click **Users** on the left menu and then create a new user.
 
 Verify that your local application receives the request and logs information to the terminal.
