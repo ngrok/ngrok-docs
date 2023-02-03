@@ -100,7 +100,7 @@ To register a webhook on your HostedHooks account follow the instructions below:
 
 ### Run Webhooks with HostedHooks and ngrok {#run-webhook}
 
-Whenever you post a message to HostedHooks message endpoint using the value **myapp.event** as the event type inside the body of the request, HostedHooks routes this message to your localhost app through your ngrok URL.
+Whenever you post a message to the HostedHooks message endpoint using the value **myapp.event** as the event type inside the body of the request, HostedHooks routes this message to your localhost app through your ngrok URL.
 You can trigger new calls from HostedHooks to your application by following the instructions below.
 
 1. Open a terminal window and run the following command:
@@ -123,9 +123,9 @@ You can trigger new calls from HostedHooks to your application by following the 
 
     Confirm your localhost app receives the event notification and logs both headers and body in the terminal.
 
-Optionally, you can verify the log of the webhook call in HostedHooks:
+Alternatively, you can verify the log of the webhook call in HostedHooks:
 
-1. Access [HostedHooks Dashboard](https://www.hostedhooks.com/), click **Apps** on the left menu, and then click your app tile.
+1. Access the [HostedHooks Dashboard](https://www.hostedhooks.com/), click **Apps** on the left menu, and then click your app tile.
 
 1. On your app page, scroll down to the **Inbound Messages** section and verify the messages sent to your app.
     ![Webhook Logs](img/ngrok_logs_hostedhooks.png)
@@ -139,7 +139,7 @@ The Request Inspector shows all the requests made through your ngrok tunnel to y
 
 Seeing requests is an excellent way of validating the data sent to and retrieved by your app via the ngrok tunnel. That alone can save you some time dissecting and logging HTTP request and response headers, methods, bodies, and response codes within your app just to confirm you are getting what you expect.
 
-To inspect HostedHooks's webhooks call, launch the ngrok web interface (i.e. `http://127.0.0.1:4040`), and then click one of the requests sent by HostedHooks.
+To inspect HostedHooks' webhooks call, launch the ngrok web interface (i.e. `http://127.0.0.1:4040`), and then click one of the requests sent by HostedHooks.
 
 From the results, review the response body, header, and other details:
 
@@ -169,7 +169,7 @@ The ngrok signature webhook verification feature allows ngrok to assert that req
 
 This is a quick step to add extra protection to your application.
 
-1. Access [HostedHooks Dashboard](https://www.hostedhooks.com/), click **Apps** on the left menu, and then click your app tile.
+1. Access the [HostedHooks Dashboard](https://www.hostedhooks.com/), click **Apps** on the left menu, and then click your app tile.
 
 1. On the app page, click **View** in the **Subscribers** section and click **View** in the **Endpoints** section.
 
@@ -180,7 +180,7 @@ This is a quick step to add extra protection to your application.
     ngrok http 3000 --verify-webhook hostedhooks --verify-webhook-secret {app sign secret}
     ```
 
-1. Post a new message to the message endpoint of HostedHooks by following the same procedure of the [Run Webhooks with HostedHooks and ngrok](#run-webhook) section.
+1. Post a new message to the message endpoint of HostedHooks by following the same procedure as the [Run Webhooks with HostedHooks and ngrok](#run-webhook) section.
     **Tip**: Modify the value of the **event_id** field in the JSON body. This value must be unique per app.
 
 Verify that your local application receives the request and logs information to the terminal.
