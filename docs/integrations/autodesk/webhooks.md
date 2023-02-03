@@ -83,7 +83,7 @@ To register a webhook on your Autodesk account follow the instructions below:
     ![Callback URL](img/ngrok_url_configuration_autodesk.png)
 
 1. In the **API Access** section, select the **Data Management API** and the **Webhooks API** from the list, and then click **Save changes**.<br/>
-    **Tip**: This tutorial uses the ** **Data Management** service as an example. Select other APIs to use with other Autodesk Platform Services.
+    **Tip**: This tutorial uses the **Data Management** service as an example. Select other APIs to use with other Autodesk Platform Services.
 
 1. In a terminal window, run the following command to obtain an access token:
     ```
