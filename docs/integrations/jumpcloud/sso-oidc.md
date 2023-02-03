@@ -58,7 +58,7 @@ To integrate ngrok with JumpCloud SSO, you will need to:
 
 ### Grant access to JumpCloud users
 
-JumpCloud allows administrators to restrict access to SSO apps — such as ngrok — via user groups assignments. By default, apps created in JumpCloud have no group assignments — in other words, nobody can use JumpCloud SSO to access ngrok until you assign a group to the app.
+JumpCloud allows administrators to restrict access to SSO apps — such as ngrok — via user group assignments. By default, apps created in JumpCloud have no group assignments — in other words, nobody can use JumpCloud SSO to access ngrok until you assign a group to the app.
 
 To assign JumpCloud groups to the ngrok app:
 
@@ -89,12 +89,12 @@ ngrok can leverage JumpCloud SSO in two ways:
     ```
     **Note**: Replace the following with values:
     - JUMPCLOUD_OAUTH_URL: JumpCloud OAuth callback URL (i.e., `https://idp.ngrok.com/oauth2/callback`).
-    - JUMPCLOUD_CLIENT_ID: The client id copied from JumpCloud.
-    - JUMPCLOUD_CLIENT_SECRET: The client secret copied from JumpCloud.
+    - JUMPCLOUD_CLIENT_ID: The client id you copied from JumpCloud.
+    - JUMPCLOUD_CLIENT_SECRET: The client secret you copied from JumpCloud.
     
-    Optionally, add the `--subdomain YOUR_SUBDOMAIN` argument to get your own subdomain.ngrok.io url, replacing `YOUR_SUBDOMAIN` with your URL of preference.
+    Optionally, add the `--subdomain YOUR_SUBDOMAIN` argument to get your subdomain.ngrok.io URL, replacing `YOUR_SUBDOMAIN` with your URL of preference.
 
-1. Copy the url available next to **Forwarding** (for example, `https://jumpcloud-sso-test.ngrok.io`).
+1. Copy the URL available next to **Forwarding** (for example, `https://jumpcloud-sso-test.ngrok.io`).
 
 1. Skip to **Step 3**
 
@@ -102,7 +102,7 @@ ngrok can leverage JumpCloud SSO in two ways:
 
 To configure an edge with JumpCloud:
 
-1.Access the [ngrok Dashbord](https://dashboard.ngrok.com/) and sign in using your ngrok account.
+1. Access the [ngrok Dashboard](https://dashboard.ngrok.com/) and sign in using your ngrok account.
 
 1. On the left menu, click **Cloud Edge** and then click **Edges**.
 
@@ -113,13 +113,13 @@ To configure an edge with JumpCloud:
 
 1. On the edge settings menu, click **OIDC**.
 
-1. Click **Begin setup** and enter the following values to the fields:
+1. Click **Begin setup** and enter the following values into the fields:
 
     ![JumpCloud config in ngrok](img/jumpcloud-1.png)
 
-    * **Issuer URL**: Your JumpCloud OIDC base url (i.e. `https://oauth.id.jumpcloud.com/`). 
-    * **Client ID**: The client id copied from JumpCloud.
-    * **Client Secret**: The client secret copied from JumpCloud.
+    * **Issuer URL**: Your JumpCloud OIDC base URL (i.e. `https://oauth.id.jumpcloud.com/`). 
+    * **Client ID**: The client id you copied from JumpCloud.
+    * **Client Secret**: The client secret you copied from JumpCloud.
 
 1. Click **Save**.
 
@@ -137,8 +137,8 @@ To configure an edge with JumpCloud:
 
     1. Launch a tunnel:
         * Launch a terminal.
-        * Paste the command but replace `http://localhost:80` with your localhost app addess (i.e., `http://localhost:3000`).
-        * Click **Enter** and an ngrok tunnel associated to your edge configuration is launched.
+        * Paste the command but replace `http://localhost:80` with your localhost app address (i.e., `http://localhost:3000`).
+        * Click **Enter** and an ngrok tunnel associated with your edge configuration is launched.
 
     1. To confirm that the tunnel is connected to your edge:
         * Return to the ngrok dashboard
@@ -147,7 +147,7 @@ To configure an edge with JumpCloud:
 
         ![tunnel confirmed](img/jumpcloud-3.png)
 
-1. In the test edge, copy the **endpoint URL**. (You use this url to test the JumpCloud Authentication)
+1. In the test edge, copy the **endpoint URL**. (You use this URL to test the JumpCloud Authentication)
     ![tunnel url](img/jumpcloud-4.png)
 
 ## Step 3: Test the integration {#test-sso}
@@ -158,5 +158,5 @@ To configure an edge with JumpCloud:
 
 1. You should be prompted to log in with your JumpCloud credentials.
 
-1. After login, you should be able to see your web app.
+1. After login in, you should be able to see your web app.
 
