@@ -4,7 +4,7 @@
 :::tip TL;DR
 
 To secure access to ngrok with JumpCloud Single Sign-On using OpenID Connect:
-1. [Configure JumpCloud SSO](#configure-JumpCloud)
+1. [Configure JumpCloud SSO](#configure-jumpcloud)
 1. [Configure ngrok](#configure-ngrok)
 1. [Test access to ngrok with JumpCloud SSO](#test-sso)
 
@@ -38,15 +38,15 @@ To integrate ngrok with JumpCloud SSO, you will need to:
 1. Configure JumpCloud with the ngrok app
 1. Configure ngrok with the SSO settings provided by JumpCloud
 
-## **Step 1**: Configure JumpCloud {#configure-JumpCloud}
+## **Step 1**: Configure JumpCloud {#configure-jumpcloud}
 
 ### Add the ngrok App in JumpCloud
 
 1. Access the [JumpCloud Console](https://console.jumpcloud.com/), and sign in using your JumpCloud administrator account.
 
-1. On the left menu, click **SSO**, click **Get Started**, and then click **Custom OIDC App**.
+1. On the left menu, click **SSO**, click **Get Started** or **+ Add New Application**, and then click **Custom OIDC App**.
 
-1. On the **New Application** popup, enter `ngrok` in the **Display Label** field.
+1. On the **New Application** popup, enter `ngrok oidc` in the **Display Label** field.
 
 1. Click the **SSO** tab, enter `https://idp.ngrok.com/oauth2/callback` in the **Redirect URIs** field, select **Client Secret Basic** as the **Client Authentication Type**, and enter the URL provided by the ngrok agent to expose your application to the internet in the **Login URL** (i.e. `https://myexample.ngrok.io`).
     ![JumpCloud config in ngrok](img/ngrok_url_configuration_jumpcloud.png)
