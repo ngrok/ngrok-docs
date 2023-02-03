@@ -110,7 +110,9 @@ To configure an edge with JumpCloud:
     * Click **+ New Edge**.
     * Click **Create HTTPS Edge**.
     * Click the **pencil icon** next to "no description", enter `Edge with JumpCloud SSO` as the edge name and click **Save**.
-1. On the edge settings menu, click **OIDC**. 
+
+1. On the edge settings menu, click **OIDC**.
+
 1. Click **Begin setup** and enter the following values to the fields:
 
     ![JumpCloud config in ngrok](img/jumpcloud-1.png)
@@ -137,6 +139,7 @@ To configure an edge with JumpCloud:
         * Launch a terminal.
         * Paste the command but replace `http://localhost:80` with your localhost app addess (i.e., `http://localhost:3000`).
         * Click **Enter** and an ngrok tunnel associated to your edge configuration is launched.
+
     1. To confirm that the tunnel is connected to your edge:
         * Return to the ngrok dashboard
         * Close the **Start a tunnel** and the **Tunnel group** tabs
