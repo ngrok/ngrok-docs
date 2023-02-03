@@ -114,7 +114,6 @@ To configure an edge with JumpCloud:
 1. On the edge settings menu, click **OIDC**.
 
 1. Click **Begin setup** and enter the following values into the fields:
-
     ![JumpCloud config in ngrok](img/jumpcloud-1.png)
 
     * **Issuer URL**: Your JumpCloud OIDC base URL (i.e. `https://oauth.id.jumpcloud.com/`). 
@@ -132,7 +131,6 @@ To configure an edge with JumpCloud:
     1. Click **Start a tunnel**.
 
     1. Click the **copy icon** next to the tunnel command.
-
         ![tunnel config](img/jumpcloud-2.png)
 
     1. Launch a tunnel:
@@ -144,7 +142,6 @@ To configure an edge with JumpCloud:
         * Return to the ngrok dashboard
         * Close the **Start a tunnel** and the **Tunnel group** tabs
         * Refresh the test edge page. Under traffic, You will see the message _You have 1 tunnel online. Start additional tunnels to begin load balancing._
-
         ![tunnel confirmed](img/jumpcloud-3.png)
 
 1. In the test edge, copy the **endpoint URL**. (You use this URL to test the JumpCloud Authentication)
