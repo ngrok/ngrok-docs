@@ -80,7 +80,7 @@ To register a webhook on your Clerk account follow the instructions below:
 1. On the **Webhooks** page, click **Add Endpoint** and then enter the URL provided by the ngrok agent to expose your application to the internet in the **Endpoint URL** field (i.e. `https://1a2b-3c4d-5e6f-7g8h-9i0j.sa.ngrok.io`).
     ![Clerk Endpoint URL](img/ngrok_url_configuration_clerk.png)
 
-1. On the **Message Filtering** section, select **user.created**, **user.deleted**, and **user.updated** under **Filter events**.
+1. In the **Message Filtering** section, select **user.created**, **user.deleted**, and **user.updated** under **Filter events**.
 
 1. Click **Create**.
 
