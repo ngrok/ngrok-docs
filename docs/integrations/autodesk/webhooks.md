@@ -83,7 +83,7 @@ To register a webhook on your Autodesk account follow the instructions below:
     ![Callback URL](img/ngrok_url_configuration_autodesk.png)
 
 1. In the **API Access** section, select the **Data Management API** and the **Webhooks API** from the list, and then click **Save changes**.<br/>
-    **Tip**: This tutorial uses the **Data Management** service as an example. Select other APIs to use with other Autodesk Platform Services.
+    **Tip**: This tutorial uses the **Data Management** service as an example. Select other APIs for use with other Autodesk Platform Services.
 
 1. In a terminal window, run the following command to obtain an access token:
     ```
@@ -142,7 +142,7 @@ When you launch the ngrok agent on your local machine, you can see two links: on
 
 The Request Inspector shows all the requests made through your ngrok tunnel to your localhost app. When you click on a request, you can see details of both the request and the response.
 
-Seeing requests is an excellent way of validating the data sent to and retrieved by your app via the ngrok tunnel. That alone can save you some time dissecting and logging HTTP request and response headers, methods, bodies, and response codes within your app just to confirm you are getting what you expect.
+Seeing requests is an excellent way of validating the data sent to and received by your app via the ngrok tunnel. That alone can save you some time dissecting and logging HTTP request and response headers, methods, bodies, and response codes within your app just to confirm you are getting what you expect.
 
 To inspect Autodesk's webhooks call, launch the ngrok web interface (i.e. `http://127.0.0.1:4040`), and then click one of the requests sent by Autodesk.
 
@@ -190,7 +190,7 @@ This is a quick step to add extra protection to your application.
 
 1. Make sure the response from the above command is `HTTP/1.1 200`.
 
-1. Restart your ngrok agent by running the command, replacing `{your client secret}` with the value you have copied before:
+1. Restart your ngrok agent by running the command, replacing `{your client secret}` with the value you copied before:
     ```bash
     ngrok http 3000 --verify-webhook autodesk_forge --verify-webhook-secret {your client secret}
     ```
