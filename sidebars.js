@@ -56,6 +56,7 @@ const sidebars = {
         { label: 'Aftership', type: 'doc', id: 'integrations/aftership/webhooks', },
         { label: 'Airship', type: 'doc', id: 'integrations/airship/webhooks', },
         { label: 'Amazon SNS', type: 'doc', id: 'integrations/amazonsns/webhooks', },
+        { label: 'Autodesk', type: 'doc', id: 'integrations/autodesk/webhooks', },
         { label: 'Azure AD', type: 'doc', id: 'integrations/azure-ad/sso-saml', },
         { label: 'Azure AD B2C', type: 'doc', id: 'integrations/azure-ad-b2c/sso-saml', },
         { label: 'Bitbucket', type: 'doc', id: 'integrations/bitbucket/webhooks', },
