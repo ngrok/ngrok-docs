@@ -36,9 +36,14 @@ const config = {
   scripts: [
     {
       src:
-        '/docs/scripts/anchor-scroll-to.js',
+        '/docs/scripts/fix-redirect.js',
       async: true,
     },
+    {
+      src:
+        '/docs/scripts/anchor-scroll-to.js',
+      async: true,
+    }
   ],
   staticDirectories: [
     'static',
