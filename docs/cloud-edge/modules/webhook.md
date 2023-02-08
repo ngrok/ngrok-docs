@@ -21,6 +21,7 @@ The currently supported webhook providers are:
 | Chargify | `chargify` | [Documentation](https://maxio-chargify.zendesk.com/hc/en-us/articles/5405357509645-Webhooks-Reference#webhook-signature) |
 | CircleCI | `circleci` | [Documentation](https://ngrok.com/docs/integrations/circleci/webhooks) |
 | Clearbit | `clearbit` | [Documentation](https://dashboard.clearbit.com/docs#webhooks-securing-webhooks) |
+| Clerk | `clerk` | [Documentation](https://ngrok.com/docs/integrations/clerk/webhooks) |
 | Coinbase | `coinbase` | [Documentation](https://docs.cloud.coinbase.com/commerce/docs/webhooks-fields-and-security) |
 | Contentful | `contentful` | [Documentation](https://ngrok.com/docs/integrations/contentful/webhooks) |
 | DocuSign | `docusign` | [Documentation](https://ngrok.com/docs/integrations/docusign/webhooks) |
@@ -31,9 +32,10 @@ The currently supported webhook providers are:
 | GitHub | `github` | [Documentation](https://ngrok.com/docs/integrations/github/webhooks) |
 | GitLab | `gitlab` | [Documentation](https://ngrok.com/docs/integrations/gitlab/webhooks) |
 | Go1 | `go1` | [Documentation](https://www.go1.com/developers/partners/concepts/webhook-signature-authentification) |
-| Hygraph (Formerly GraphCMS) | `graphcms` | [Documentation](https://graphcms.com/docs/api-reference/basics/webhooks) |
 | Heroku | `heroku` | [Documentation](https://ngrok.com/docs/integrations/heroku/webhooks) |
+| Hosted Hooks | `hostedhooks` | [Documentation](https://docs.hostedhooks.com/security/security-features/webhook-signatures) |
 | Hubspot | `hubspot` | [Documentation](https://ngrok.com/docs/integrations/hubspot/webhooks) |
+| Hygraph (Formerly GraphCMS) | `graphcms` | [Documentation](https://graphcms.com/docs/api-reference/basics/webhooks) |
 | Instagram | `instagram` | [Documentation](https://ngrok.com/docs/integrations/instagram/webhooks) |
 | Intercom | `intercom` | [Documentation](https://ngrok.com/docs/integrations/intercom/webhooks) |
 | Launch Darkly | `launch_darkly` | [Documentation](https://ngrok.com/docs/integrations/launchdarkly/webhooks) |
