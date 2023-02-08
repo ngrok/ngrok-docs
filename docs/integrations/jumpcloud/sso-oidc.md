@@ -92,7 +92,7 @@ ngrok can leverage JumpCloud SSO in two ways:
     - JUMPCLOUD_CLIENT_ID: The client id you copied from JumpCloud.
     - JUMPCLOUD_CLIENT_SECRET: The client secret you copied from JumpCloud.
     
-    Optionally, add the `--subdomain YOUR_SUBDOMAIN` argument to get your subdomain.ngrok.io URL, replacing `YOUR_SUBDOMAIN` with your URL of preference.
+    Alternatively, add the `--subdomain YOUR_SUBDOMAIN` argument to get your subdomain.ngrok.io URL, replacing `YOUR_SUBDOMAIN` with your URL of preference.
 
 1. Copy the URL available next to **Forwarding** (for example, `https://jumpcloud-sso-test.ngrok.io`).
 
@@ -109,7 +109,7 @@ To configure an edge with JumpCloud:
 1. If you don't have an edge already set to add JumpCloud SSO, create a test edge:
     * Click **+ New Edge**.
     * Click **Create HTTPS Edge**.
-    * Click the **pencil icon** next to "no description", enter `Edge with JumpCloud SSO` as the edge name and click **Save**.
+    * Click the **pencil icon** next to "no description", enter `Edge with JumpCloud SSO OIDC` as the edge name and click **Save**.
 
 1. On the edge settings menu, click **OIDC**.
 
@@ -120,7 +120,7 @@ To configure an edge with JumpCloud:
     * **Client ID**: The client id you copied from JumpCloud.
     * **Client Secret**: The client secret you copied from JumpCloud.
 
-1. Click **Save**.
+1. Click **Save** at the top.
 
 1. Launch a tunnel connected to your JumpCloud edge:
 
@@ -136,7 +136,7 @@ To configure an edge with JumpCloud:
     1. Launch a tunnel:
         * Launch a terminal.
         * Paste the command but replace `http://localhost:80` with your localhost app address (i.e., `http://localhost:3000`).
-        * Click **Enter** and an ngrok tunnel associated with your edge configuration is launched.
+        * Click **Enter** and an ngrok tunnel associated with your edge configuration will launch.
 
     1. To confirm that the tunnel is connected to your edge:
         * Return to the ngrok dashboard
@@ -155,5 +155,5 @@ To configure an edge with JumpCloud:
 
 1. You should be prompted to log in with your JumpCloud credentials.
 
-1. After login in, you should be able to see your web app.
+1. After logging in, you should be able to see your web app.
 
