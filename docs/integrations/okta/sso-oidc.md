@@ -121,7 +121,7 @@ To configure an edge with Okta:
     1. Launch a tunnel:
         * Launch a terminal 
         * Paste the command. Replace http://localhost:80 with your local web app addess (i.e., http://localhost:3000)
-        * hit **Enter**. an ngrok tunnel associated to your edge configuration is launched.
+        * hit **Enter**. an ngrok tunnel associated to your edge configuration will launch.
     1. To confirm that the tunnel is connected to your edge:
         * Return to the ngrok dashboard
         * Close the **Start a tunnel** and the **Tunnel group** tabs
@@ -137,5 +137,5 @@ To configure an edge with Okta:
 1. In your browser, launch an incognito window.
 1. Access your ngrok tunnel (i.e., https://okta-sso-test.ngrok.io or using a copied URL).
 1. You should be prompted to log in with your Okta credentials.
-1. After login, you should be able to see your web app.
+1. After logging in, you should be able to see your web app.
 
