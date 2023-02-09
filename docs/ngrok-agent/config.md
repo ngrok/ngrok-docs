@@ -403,7 +403,14 @@ Below is an example configuration file with all the options filled in.
         hostname: myapp.example.com
         crt: example.crt
         key: example.key
-    
+        
+      iprestriction:
+        ip_restriction:
+          allow_cidrs:
+            - 1.1.1.1/32
+        addr: 8000
+        proto: tcp
+        
       ssh-access:
         addr: 22
         proto: tcp
