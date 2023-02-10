@@ -23,7 +23,7 @@
 | add | Map&lt;string, string&gt; | a map of header key to header value that will be injected into the HTTP Response returned to the HTTP client |
 | remove | List&lt;string&gt; | a list of header names that will be removed from the HTTP Response returned to the HTTP client |
 | enabled | boolean | `true` if the module will be applied to traffic, `false` to disable. default `true` if unspecified |
-| provider | string | a string indicating which webhook provider will be sending webhooks to this endpoint. Value must be one of the supported providers defined at https://ngrok.com/docs/cloud-edge#webhook-verification |
+| provider | string | a string indicating which webhook provider will be sending webhooks to this endpoint. Value must be one of the supported providers defined at https://ngrok.com/docs/cloud-edge/modules/webhook |
 | secret | string | a string secret used to validate requests from the given provider. All providers except AWS SNS require a secret |
 | enabled | boolean | `true` if the module will be applied to traffic, `false` to disable. default `true` if unspecified |
 | client_id | string | the OAuth app client ID. retrieve it from the identity provider's dashboard where you created your own OAuth app. optional. if unspecified, ngrok will use its own managed oauth application which has additional restrictions. see the OAuth module docs for more details. if present, client_secret must be present as well. |
