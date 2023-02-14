@@ -5,9 +5,15 @@ title: Go
 # Using ngrok with the ngrok-go Library
 ------------
 
-:::tip
-This tutorial assumes you have Go already installed.
-:::
+## Introduction
+
+ngrok-go is our idiomatic Go package for embedding secure ingress directly into your Go apps. If you’ve used ngrok agent before, you can think of ngrok-go as the agent packaged as a Go library. [ngrok-go is open source on github](http://github.com/ngrok/ngrok-go) and [API reference documentation is available on go.pkg.dev](https://pkg.go.dev/golang.ngrok.com/ngrok).
+
+ngrok-go let developers serve Go apps on the internet in a single line of code without requiring VPC routing, load balancers, certificates, or even ports! Applications using ngrok-go listen on ngrok’s global ingress network through the same interface (`net.Listener`) any Go app would expect if it listened on a local port by calling `net.Listen()`, making it an easy drop in to any application using go's native net and net/http packages.
+
+In this tutorial, you we build a Go App with ingress access and security provided by ngrok.
+
+**Note**: This tutorial assumes you have Go already installed.
 
 ## Get started with ngrok-go
 
