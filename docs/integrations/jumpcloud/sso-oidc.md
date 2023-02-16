@@ -88,7 +88,7 @@ ngrok can leverage JumpCloud SSO in two ways:
     --oidc-client-secret=JUMPCLOUD_CLIENT_SECRET \
     ```
     **Note**: Replace the following with values:
-    - JUMPCLOUD_OAUTH_URL: JumpCloud OAuth callback URL (i.e., `https://idp.ngrok.com/oauth2/callback`).
+    - JUMPCLOUD_OAUTH_URL: Your JumpCloud OIDC base URL (i.e. `https://oauth.id.jumpcloud.com/`).
     - JUMPCLOUD_CLIENT_ID: The client id you copied from JumpCloud.
     - JUMPCLOUD_CLIENT_SECRET: The client secret you copied from JumpCloud.
     
@@ -120,7 +120,7 @@ To configure an edge with JumpCloud:
     * **Client ID**: The client id you copied from JumpCloud.
     * **Client Secret**: The client secret you copied from JumpCloud.
 
-1. Click **Save** at the top.
+1. Click **Save** at the top, and then click the left arrow to go back to the **Edges** page.
 
 1. Launch a tunnel connected to your JumpCloud edge:
 
