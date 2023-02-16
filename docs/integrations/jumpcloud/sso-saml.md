@@ -40,7 +40,7 @@ To integrate ngrok with JumpCloud SSO, you will need to:
 
 1. On the **New Application** popup, enter `ngrok saml` in the **Display Label** field.
 
-1. Click the **SSO** tab, enter `https://ngrok-jumpcloud` in the **IdP Entity ID** field,  enter temporary values (i.e., `https://temporary`) in both the **SP Entity ID** and the **ACS URL** fields, and then click **activate**.
+1. Click the **SSO** tab, enter `https://ngrok-jumpcloud` in the **IdP Entity ID** field, enter temporary values (i.e., `https://temporary`) in both the **SP Entity ID** and the **ACS URL** fields, and then click **activate**.
 
 
 ### **Step 2**: Download the IdP metadata {#idp-metadata}

@@ -46,10 +46,10 @@ To integrate ngrok with MiniOrange SSO, you will need to:
 
 1. On the **Dashboard** page, click **Apps** on the left menu, click **Add Application**, click the **OAUTH/OIDC** tile, and then click the **OAuth2/OpenID Connect** tile.
 
-1. On the **Add App** page, enter `ngrok` in the **Client Name** field, enter `https://idp.ngrok.com/oauth2/callback` in the **Redirect-URL** field, and then click **Save**.
-    ![MiniOrange config in ngrok](img/ngrok_url_configuration_miniorange.png)
+1. On the **Add App** page, enter `ngrok OIDC` in the **Client Name** field, enter `https://idp.ngrok.com/oauth2/callback` in the **Redirect-URL** field, and then click **Save**.
+    ![MiniOrange configuration](img/ngrok_url_configuration_miniorange.png)
 
-1. On the **View Apps** page, click **Select** in the **ngrok** app line, and then click **Edit**.
+1. On the **View Apps** page, click **Select** in the **ngrok OIDC** app line, and then click **Edit**.
 
 1. On the **Edit Application** page, make note of the value of the **Client ID** field, click the **Click to reveal client secret** link, and then make note of the value of the **Client Secret** field.
 
