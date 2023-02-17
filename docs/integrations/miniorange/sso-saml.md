@@ -112,9 +112,7 @@ To configure an edge with MiniOrange:
 
 ## Grant access to MiniOrange users {#users}
 
-MiniOrange allows any user to access to SSO apps — such as ngrok — via user group assignments. By default, apps created in MiniOrange have no group assignments — in other words, nobody can use MiniOrange SSO to access ngrok until you assign a group to the app.
-
-To create a user in MiniOrange:
+allows its users to access SAML-integrated apps. To create a user follow the instructions below
 
 1. On the left menu of the [MiniOrange Dashboard](https://login.xecurify.com/moas/admin/customer/home), click **Users** and then click **User List**.
 
