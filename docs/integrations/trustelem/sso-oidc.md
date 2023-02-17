@@ -46,7 +46,7 @@ To integrate ngrok with Wallix Trustelem SSO, you will need to:
 
 1. On the **Dashboard** page, click **Apps** on the left menu, click **Add an application**, click the **OpenID Connect application** tile in the **Generic models** section.
 
-1. On the **Settings** popup, enter `ngrok oidc` in the **Name** field, enter `https://idp.ngrok.com/oauth2/callback` in the **RedirectURI** field, and entder `https://trustelem-sso-test.ngrok.io` in the **Login URL** field.
+1. On the **Settings** popup, enter `ngrok oidc` in the **Name** field, enter `https://idp.ngrok.com/oauth2/callback` in the **RedirectURI** field, and enter `https://trustelem-sso-test.ngrok.io` in the **Login URL** field.
     ![Wallix Trustelem configuration](img/ngrok_url_configuration_trustelem.png)
 
 1. On the **Settings** popup, make note of the value of both the **ClientID** and the **ClientSecret** fields, and then click **Save**.
@@ -56,12 +56,12 @@ To integrate ngrok with Wallix Trustelem SSO, you will need to:
 
 ### Grant access to Wallix Trustelem users
 
-Wallix Trustelem allows their users to access OIDC integrated apps.
+Wallix Trustelem allows its users to access OIDC-integrated apps.
 To create a user follow the instructions below:
 
-1. On the left menu the [WALLIX Trustelem administration console](https://admin.trustelem.com/login), click **Users**,  and then click **Create User**.
+1. On the left menu the [WALLIX Trustelem administration console](https://admin.trustelem.com/login), click **Users** and then click **Create User**.
 
-1. Enter values for **First Name**, **Last Name**, and **Primary Email** fields and then click **Save**.
+1. Enter values for **First Name**, **Last Name**, and **Primary Email** fields, and then click **Save**.
 
 
 ## **Step 2**: Configure ngrok {#configure-ngrok}
@@ -105,7 +105,7 @@ To configure an edge with Wallix Trustelem:
 1. If you don't have an edge already set to add Wallix Trustelem SSO, create a test edge:
     * Click **+ New Edge**.
     * Click **Create HTTPS Edge**.
-    * Click the **pencil icon** next to "no description", enter `Edge with Trustelem SSO OIDC` as the edge name and click **Save**.
+    * Click the **pencil icon** next to "no description", enter `Edge with Trustelem SSO OIDC` as the edge name, and click **Save**.
 
 1. On the edge settings menu, click **OIDC**.
 
