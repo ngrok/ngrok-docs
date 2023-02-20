@@ -93,9 +93,9 @@ You can trigger a test call from Worldline to your application by following the 
 
 1. On the **Generate link** page, enter a value in the **Amount** and **Order reference** fields, and then click **Generate link**.
 
-1. On the **Share link** page, click the copy icon close to the payment link, paste this link to a new browser tab, select one of the payment methods, and then click **Pay Securely**.
+1. On the **Share link** page, click the copy icon close to the payment link, paste this link to a new browser tab, select **Bancontact** as the payment method, and then click **Cancel**.
 
-    Confirm your localhost app receives a post request notification and logs both headers and body in the terminal.
+    Confirm your localhost app receives post request notifications and logs both headers and body in the terminal.
 
 
 ### Inspecting requests
@@ -141,6 +141,6 @@ This is a quick step to add extra protection to your application.
     ngrok http 3000 --verify-webhook worldline --verify-webhook-secret {your webhook secret}
     ```
 
-1. Access [Worldline](https://Worldline/) and create a new project.
+1. Access [Worldline](https://www.worldline.com/), sign in, create a new payment link, open the link in a new browser tab, and select **Bancontact** as the payment method.
 
 Verify that your local application receives the request and logs information to the terminal.
