@@ -78,7 +78,7 @@ To register a webhook on your Worldline account follow the instructions below:
 
 1. On the **Webhooks** page, click **Create a Webhook**.
 
-1. On the **Webhooks** page, click **Generate webhook keys**, make note of the **Secret Webhook Key** field value.
+1. On the **Webhooks** page, click **Generate webhook keys** and make note of the **Secret Webhook Key** field value.
 
 1. Click **Add webhook endpoint**, enter the URL provided by the ngrok agent to expose your application to the internet in the **Endpoint URL** field (i.e. `https://1a2b-3c4d-5e6f-7g8h-9i0j.sa.ngrok.io`), and then click **Confirm**.
     ![Worldline webhook URL](img/ngrok_url_configuration_worldline.png)
@@ -93,7 +93,7 @@ You can trigger a test call from Worldline to your application by following the 
 
 1. On the **Generate link** page, enter a value in the **Amount** and **Order reference** fields, and then click **Generate link**.
 
-1. On the **Share link** page, click the copy icon close to the payment link, paste this link to a new browser tab, select one of the payments methods, and then click **Pay Securely**.
+1. On the **Share link** page, click the copy icon close to the payment link, paste this link to a new browser tab, select one of the payment methods, and then click **Pay Securely**.
 
     Confirm your localhost app receives a post request notification and logs both headers and body in the terminal.
 
