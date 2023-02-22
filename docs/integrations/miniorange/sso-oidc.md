@@ -13,7 +13,7 @@ To secure access to ngrok with MiniOrange Single Sign-On using OpenID Connect:
 This article details how to configure MiniOrange as the primary Identity Provider for ngrok tunnels.
 By integrating MiniOrange SSO with ngrok, you can:
 
-- **Restrict access to ngrok tunnels** only to users authenticated via MiniOrange
+- **Restrict access to ngrok tunnels** only to users authenticated via MiniOrange.
 - **Use MiniOrange security policies and MFA authenticators**.
 - **Use MiniOrange's Dashboard to facilitate access to ngrok apps**.
 
@@ -27,7 +27,7 @@ The ngrok integration with MiniOrange supports:
 
 To configure ngrok tunnels with MiniOrange, you must have:
 
-- a MiniOrange account with administrative rights to create apps
+- a MiniOrange account with administrative rights to create apps.
 - an ngrok enterprise account with an access token or admin access to configure edges with OpenID Connect.
 
 
@@ -35,8 +35,8 @@ To configure ngrok tunnels with MiniOrange, you must have:
 
 To integrate ngrok with MiniOrange SSO, you will need to:
 
-1. Configure MiniOrange with the ngrok app
-1. Configure ngrok with the SSO settings provided by MiniOrange
+1. Configure MiniOrange with the ngrok app.
+1. Configure ngrok with the SSO settings provided by MiniOrange.
 
 ## **Step 1**: Configure MiniOrange {#configure-MiniOrange}
 

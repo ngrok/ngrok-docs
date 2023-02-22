@@ -13,7 +13,7 @@ To secure access to ngrok with MiniOrange Single Sign-On using SAML:
 This article details how to configure MiniOrange as the primary Identity Provider for ngrok tunnels.
 By integrating MiniOrange SSO with ngrok, you can:
 
-- **Restrict access to ngrok tunnels** only to users authenticated via MiniOrange
+- **Restrict access to ngrok tunnels** only to users authenticated via MiniOrange.
 - **Use MiniOrange security policies and MFA authenticators**.
 - **Use MiniOrange's Dashboard to facilitate access to ngrok apps**.
 
@@ -21,7 +21,7 @@ By integrating MiniOrange SSO with ngrok, you can:
 
 To configure ngrok tunnels with MiniOrange, you must have:
 
-- an MiniOrange account with administrative rights to create apps
+- an MiniOrange account with administrative rights to create apps.
 - an ngrok enterprise account with an access token or admin access to configure edges with SAML.
 
 
@@ -29,10 +29,10 @@ To configure ngrok tunnels with MiniOrange, you must have:
 
 To integrate ngrok with MiniOrange SSO, you will need to:
 
-1. Configure MiniOrange with the ngrok app
-1. Configure ngrok with the SSO settings provided by MiniOrange
+1. Configure MiniOrange with the ngrok app.
+1. Configure ngrok with the SSO settings provided by MiniOrange.
 
-## **Step 1**: Configure MiniOrange {#configure-miniorange}
+### **Step 1**: Configure MiniOrange {#configure-miniorange}
 
 1. Access [MiniOrange](https://www.miniorange.com/), and sign in using your MiniOrange administrator account.
 
@@ -112,7 +112,7 @@ To configure an edge with MiniOrange:
 
 ## Grant access to MiniOrange users {#users}
 
-allows its users to access SAML-integrated apps. To create a user follow the instructions below
+MiniOrange allows its users to access SAML-integrated apps. To create a user follow the instructions below:
 
 1. On the left menu of the [MiniOrange Dashboard](https://login.xecurify.com/moas/admin/customer/home), click **Users** and then click **User List**.
 
