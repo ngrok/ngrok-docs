@@ -41,7 +41,7 @@ The currently supported webhook providers are:
 | Launch Darkly | `launch_darkly` | [Documentation](https://ngrok.com/docs/integrations/launchdarkly/webhooks) |
 | Mailchimp | `mailchimp` | [Documentation](https://ngrok.com/docs/integrations/mailchimp/webhooks) |
 | Mailgun | `mailgun` | [Documentation](https://ngrok.com/docs/integrations/mailgun/webhooks) |
-| Microsoft Teams | `microsoft_teams` | [Documentation](https://docs.microsoft.com/en-us/microsoftteams/platform/webhooks-and-connectors/how-to/add-outgoing-webhook?tabs=verifyhmactoken%2Cdotnet) |
+| Microsoft Teams | `microsoft_teams` | [Documentation](https://ngrok.com/docs/integrations/teams/webhooks) |
 | Modern Treasury | `modern_treasury` | [Documentation](https://ngrok.com/docs/integrations/modern-treasury/webhooks) |
 | MongoDB | `mongodb` | [Documentation](https://www.mongodb.com/docs/realm/endpoints/#payload-signature-verification) |
 | Mux | `mux` | [Documentation](https://ngrok.com/docs/integrations/mux/webhooks) |
