@@ -1,8 +1,6 @@
 # Microsoft Teams Webhooks
 ------------
 
-https://eus-streaming-video-rt-microsoft-com.akamaized.net/56cfe5fe-d7da-4411-ba31-e65b029b6e09/a1dfdbcd-dd7c-4a31-bad5-c241a674_6750.mp4
-
 :::tip TL;DR
 
 To integrate Microsoft Teams webhooks with ngrok:
