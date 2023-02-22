@@ -13,7 +13,7 @@ To secure access to ngrok with Wallix Trustelem Single Sign-On using OpenID Conn
 This article details how to configure Wallix Trustelem as the primary Identity Provider for ngrok tunnels.
 By integrating Wallix Trustelem SSO with ngrok, you can:
 
-- **Restrict access to ngrok tunnels** only to users authenticated via Wallix Trustelem
+- **Restrict access to ngrok tunnels** only to users authenticated via Wallix Trustelem.
 - **Use Wallix Trustelem security policies and MFA authenticators**.
 - **Use Wallix Trustelem's Dashboard to facilitate access to ngrok apps**.
 
@@ -27,7 +27,7 @@ The ngrok integration with Wallix Trustelem supports:
 
 To configure ngrok tunnels with Wallix Trustelem, you must have:
 
-- a Wallix Trustelem account with administrative rights to create apps
+- a Wallix Trustelem account with administrative rights to create apps.
 - an ngrok enterprise account with an access token or admin access to configure edges with OpenID Connect.
 
 
@@ -35,12 +35,10 @@ To configure ngrok tunnels with Wallix Trustelem, you must have:
 
 To integrate ngrok with Wallix Trustelem SSO, you will need to:
 
-1. Configure Wallix Trustelem with the ngrok app
-1. Configure ngrok with the SSO settings provided by Wallix Trustelem
+1. Configure Wallix Trustelem with the ngrok app.
+1. Configure ngrok with the SSO settings provided by Wallix Trustelem.
 
-## **Step 1**: Configure Wallix Trustelem {#configure-Wallix Trustelem}
-
-### Add the ngrok App in Wallix Trustelem
+### **Step 1**: Configure Wallix Trustelem {#configure-Wallix Trustelem}
 
 1. Access the [WALLIX Trustelem administration console](https://admin.trustelem.com/login), and sign in using your Trustelem account.
 
@@ -54,22 +52,13 @@ To integrate ngrok with Wallix Trustelem SSO, you will need to:
 1. Make note of the value of the URL of the **Issuer** fields and then click **Close**.
 
 
-### Grant access to Wallix Trustelem users
-
-Wallix Trustelem allows its users to access OIDC-integrated apps.
-To create a user follow the instructions below:
-
-1. On the left menu the [WALLIX Trustelem administration console](https://admin.trustelem.com/login), click **Users** and then click **Create User**.
-
-1. Enter values for **First Name**, **Last Name**, and **Primary Email** fields, and then click **Save**.
-
-
-## **Step 2**: Configure ngrok {#configure-ngrok}
+### **Step 2**: Configure ngrok {#configure-ngrok}
 
 ngrok can leverage Wallix Trustelem SSO in two ways:
 
 - From the ngrok CLI (using the `--oidc` parameter)
 - From the ngrok dashboard
+
 
 ### **Option 1**: ngrok CLI
 
@@ -93,6 +82,7 @@ ngrok can leverage Wallix Trustelem SSO in two ways:
 1. Copy the URL available next to **Forwarding** (for example, `https://trustelem-sso-test.ngrok.io`).
 
 1. Skip to **Step 3**
+
 
 ### **Option 2**: ngrok Edge
 
@@ -143,7 +133,18 @@ To configure an edge with Wallix Trustelem:
 1. In the test edge, copy the **endpoint URL**. (You use this URL to test the Wallix Trustelem Authentication)
     ![tunnel url](img/trustelem-4.png)
 
-## Step 3: Test the integration {#test-sso}
+
+## Grant access to Wallix Trustelem users
+
+Wallix Trustelem allows its users to access OIDC-integrated apps.
+To create a user follow the instructions below:
+
+1. On the left menu of the [WALLIX Trustelem administration console](https://admin.trustelem.com/login), click **Users** and then click **Create User**.
+
+1. Enter values for **First Name**, **Last Name**, and **Primary Email** fields, and then click **Save**.
+
+
+## Test the integration {#test-sso}
 
 1. In your browser, launch an incognito window.
 

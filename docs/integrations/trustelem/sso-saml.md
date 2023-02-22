@@ -13,7 +13,7 @@ To secure access to ngrok with Wallix Trustelem Single Sign-On using SAML:
 This article details how to configure Wallix Trustelem as the primary Identity Provider for ngrok tunnels.
 By integrating Wallix Trustelem SSO with ngrok, you can:
 
-- **Restrict access to ngrok tunnels** only to users authenticated via Wallix Trustelem
+- **Restrict access to ngrok tunnels** only to users authenticated via Wallix Trustelem.
 - **Use Wallix Trustelem security policies and MFA authenticators**.
 - **Use Wallix Trustelem's Dashboard to facilitate access to ngrok apps**.
 
@@ -22,7 +22,7 @@ By integrating Wallix Trustelem SSO with ngrok, you can:
 
 To configure ngrok tunnels with Wallix Trustelem, you must have:
 
-- a Wallix Trustelem account with administrative rights to create apps
+- a Wallix Trustelem account with administrative rights to create apps.
 - an ngrok enterprise account with an access token or admin access to configure edges with SAML.
 
 
@@ -30,8 +30,8 @@ To configure ngrok tunnels with Wallix Trustelem, you must have:
 
 To integrate ngrok with Wallix Trustelem SSO, you will need to:
 
-1. Configure Wallix Trustelem with the ngrok app
-1. Configure ngrok with the SSO settings provided by Wallix Trustelem
+1. Configure Wallix Trustelem with the ngrok app.
+1. Configure ngrok with the SSO settings provided by Wallix Trustelem.
 
 ## **Step 1**: Configure Wallix Trustelem {#configure-Wallix Trustelem}
 
