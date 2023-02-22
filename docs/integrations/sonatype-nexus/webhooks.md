@@ -90,9 +90,9 @@ To register a webhook on your Sonatype Nexus repository follow the instructions 
 Sonatype Nexus sends different request body contents depending on the event that is being triggered.
 You can trigger new calls from Sonatype Nexus to your application by following the instructions below.
 
-1. On the **Sonatype Nexus Repository Manager** user interface, click **Repository** on the left menu, and then click **Repositories**. In this example, click **apt (hosted)**.
+1. On the **Sonatype Nexus Repository Manager** user interface, click **Repository** on the left menu and then click **Repositories**. In this example, click **apt (hosted)**.
 
-1. On the **Repositories** page, click **Create Repository**, click one of the **Recipes** from the list, enter any value in the **Name**, **Distribution** and **Signing Key**, and then click **Create repository**.
+1. On the **Repositories** page, click **Create Repository**, click one of the **Recipes** from the list, enter any value in the **Name**, **Distribution**, and **Signing Key**, and then click **Create repository**.
 
     Confirm your localhost app receives an event notification and logs both headers and body in the terminal.
 
@@ -147,9 +147,9 @@ This is a quick step to add extra protection to your application.
     ngrok http 3000 --verify-webhook sonatype_nexus --verify-webhook-secret {your webhook secret}
     ```
 
-. On the **Sonatype Nexus Repository Manager** user interface, click **Repository** on the left menu, and then click **Repositories**. In this example, click **apt (hosted)**.
+1. On the **Sonatype Nexus Repository Manager** user interface, click **Repository** on the left menu and then click **Repositories**. In this example, click **apt (hosted)**.
 
-1. On the **Repositories** page, click **Create Repository**, click one of the **Recipes** from the list, enter any value in the **Name**, **Distribution** and **Signing Key**, and then click **Create repository**.
+1. On the **Repositories** page, click **Create Repository**, click one of the **Recipes** from the list, enter any value in the **Name**, **Distribution**, and **Signing Key**, and then click **Create repository**.
 
     Confirm your localhost app receives an event notification and logs both headers and body in the terminal.
 
