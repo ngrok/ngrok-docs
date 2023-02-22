@@ -55,7 +55,7 @@ The currently supported webhook providers are:
 | Shopify | `shopify` | [Documentation](https://ngrok.com/docs/integrations/shopify/webhooks) |
 | Signal Sciences | `signal_sciences` | [Documentation](https://docs.fastly.com/signalsciences/integrations/generic-webhooks/) |
 | Slack | `slack` | [Documentation](https://ngrok.com/docs/integrations/slack/webhooks) |
-| Sonatype Nexus | `sonatype` | [Documentation](https://help.sonatype.com/repomanager3/integrations/webhooks/working-with-hmac-payloads) |
+| Sonatype Nexus | `sonatype` | [Documentation](https://ngrok.com/docs/integrations/sonatype-nexus/webhooks) |
 | Square | `square` | [Documentation](https://ngrok.com/docs/integrations/square/webhooks) |
 | Stripe | `stripe` | [Documentation](https://ngrok.com/docs/integrations/stripe/webhooks) |
 | Svix | `svix` | [Documentation](https://ngrok.com/docs/integrations/svix/webhooks) |
