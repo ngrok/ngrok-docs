@@ -4,7 +4,7 @@
 :::tip TL;DR
 
 To secure access to ngrok with MiniOrange Single Sign-On using OpenID Connect:
-1. [Configure MiniOrange SSO](#configure-MiniOrange)
+1. [Configure MiniOrange SSO](#configure-miniorange)
 1. [Configure ngrok](#configure-ngrok)
 1. [Test access to ngrok with MiniOrange SSO](#test-sso)
 
@@ -38,7 +38,7 @@ To integrate ngrok with MiniOrange SSO, you will need to:
 1. Configure MiniOrange with the ngrok app.
 1. Configure ngrok with the SSO settings provided by MiniOrange.
 
-### **Step 1**: Configure MiniOrange {#configure-MiniOrange}
+### **Step 1**: Configure MiniOrange {#configure-miniorange}
 
 1. Access [MiniOrange](https://www.miniorange.com/), and sign in using your MiniOrange administrator account.
 
