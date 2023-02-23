@@ -38,9 +38,7 @@ To integrate ngrok with MiniOrange SSO, you will need to:
 1. Configure MiniOrange with the ngrok app.
 1. Configure ngrok with the SSO settings provided by MiniOrange.
 
-## **Step 1**: Configure MiniOrange {#configure-MiniOrange}
-
-### Add the ngrok App in MiniOrange
+### **Step 1**: Configure MiniOrange {#configure-MiniOrange}
 
 1. Access [MiniOrange](https://www.miniorange.com/), and sign in using your MiniOrange administrator account.
 
@@ -60,7 +58,7 @@ To integrate ngrok with MiniOrange SSO, you will need to:
 1. On the **OAuth Endpoints** page, make note of the URL of the **Discovery Endpoints** field.
 
 
-### Grant access to MiniOrange users
+### **Step 2**: Grant access to MiniOrange users
 
 MiniOrange allows its users to access OIDC-integrated apps. To create a user follow the instructions below.
 
@@ -69,7 +67,7 @@ MiniOrange allows its users to access OIDC-integrated apps. To create a user fol
 1. On the **Users** page, click the **Add User**, enter values for the **Email**, **Username**, **First Name**, **Last Name**, and **Password** field, and then click **Create User**.
 
 
-## **Step 2**: Configure ngrok {#configure-ngrok}
+### **Step 3**: Configure ngrok {#configure-ngrok}
 
 ngrok can leverage MiniOrange SSO in two ways:
 
@@ -123,6 +121,8 @@ To configure an edge with MiniOrange:
 
 1. Click **Save** at the top, and then click the left arrow to go back to the **Edges** page.
 
+### **Step 4**: Start a Tunnel {#start-tunnel}
+
 1. Launch a tunnel connected to your MiniOrange edge:
 
     :::tip Note 
@@ -145,14 +145,15 @@ To configure an edge with MiniOrange:
         * Refresh the test edge page. Under traffic, You will see the message _You have 1 tunnel online. Start additional tunnels to begin load balancing._
         ![tunnel confirmed](img/miniorange-3.png)
 
-1. In the test edge, copy the **endpoint URL**. (You use this URL to test the MiniOrange Authentication)
-    ![tunnel url](img/miniorange-4.png)
+    1. In the test edge, copy the **endpoint URL**. (You use this URL to test the MiniOrange Authentication)
+        ![tunnel url](img/miniorange-4.png)
 
-## Step 3: Test the integration {#test-sso}
+
+## Test the integration {#test-sso}
 
 1. In your browser, launch an incognito window.
 
-1. Access your ngrok tunnel (i.e., `https://miniorange-sso-test.ngrok.io` or using the copied endpoint URL).
+1. Access your ngrok tunnel using the copied endpoint URL (i.e., `https://miniorange-sso-test.ngrok.io`).
 
 1. You should be prompted to log in with your MiniOrange credentials.
 
