@@ -4,7 +4,7 @@
 :::tip TL;DR
 
 To secure access to ngrok with Wallix Trustelem Single Sign-On using OpenID Connect:
-1. [Configure Wallix Trustelem SSO](#configure-Wallix Trustelem)
+1. [Configure Wallix Trustelem SSO](#configure-wallix)
 1. [Configure ngrok](#configure-ngrok)
 1. [Test access to ngrok with Wallix Trustelem SSO](#test-sso)
 
@@ -38,7 +38,7 @@ To integrate ngrok with Wallix Trustelem SSO, you will need to:
 1. Configure Wallix Trustelem with the ngrok app.
 1. Configure ngrok with the SSO settings provided by Wallix Trustelem.
 
-### **Step 1**: Configure Wallix Trustelem {#configure-Wallix Trustelem}
+### **Step 1**: Configure Wallix Trustelem {#configure-wallix}
 
 1. Access the [WALLIX Trustelem administration console](https://admin.trustelem.com/login), and sign in using your Trustelem account.
 
@@ -59,7 +59,6 @@ ngrok can leverage Wallix Trustelem SSO in two ways:
 - From the ngrok CLI (using the `--oidc` parameter)
 - From the ngrok dashboard
 
-
 ### **Option 1**: ngrok CLI
 
 > **Note:** For this tutorial, we assume you have an app running locally (i.e., on localhost:3000) with the ngrok client installed.
@@ -73,7 +72,7 @@ ngrok can leverage Wallix Trustelem SSO in two ways:
     --oidc-client-secret=Wallix Trustelem_CLIENT_SECRET \
     ```
     **Note**: Replace the following with values:
-    - Trustelem_OAUTH_URL: The **Issuer** URL you copied from the Trustelem console.
+    - Trustelem_OAUTH_URL: The issuer URL you copied from the Trustelem console.
     - Trustelem_CLIENT_ID: The client id you copied from the Trustelem console.
     - Trustelem_CLIENT_SECRET: The client secret you copied from the Trustelem console.
     
@@ -82,7 +81,6 @@ ngrok can leverage Wallix Trustelem SSO in two ways:
 1. Copy the URL available next to **Forwarding** (for example, `https://trustelem-sso-test.ngrok.io`).
 
 1. Skip to **Step 3**
-
 
 ### **Option 2**: ngrok Edge
 
@@ -102,7 +100,7 @@ To configure an edge with Wallix Trustelem:
 1. Click **Begin setup** and enter the following values into the fields:
     ![Wallix Trustelem config in ngrok](img/trustelem-1.png)
 
-    * **Issuer URL**: The **Issuer** URL you copied from the Trustelem console. 
+    * **Issuer URL**: The issuer URL you copied from the Trustelem console. 
     * **Client ID**: The client id you copied from the Trustelem console.
     * **Client Secret**: The client secret you copied from the Trustelem console.
 

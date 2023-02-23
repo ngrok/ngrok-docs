@@ -4,7 +4,7 @@
 :::tip TL;DR
 
 To secure access to ngrok with Wallix Trustelem Single Sign-On using SAML:
-1. [Configure Wallix Trustelem SSO](#configure-Wallix Trustelem)
+1. [Configure Wallix Trustelem SSO](#configure-wallix)
 1. [Configure ngrok](#configure-ngrok)
 1. [Test access to ngrok with Wallix Trustelem SSO](#test-sso)
 
@@ -33,7 +33,8 @@ To integrate ngrok with Wallix Trustelem SSO, you will need to:
 1. Configure Wallix Trustelem with the ngrok app.
 1. Configure ngrok with the SSO settings provided by Wallix Trustelem.
 
-## **Step 1**: Configure Wallix Trustelem {#configure-Wallix Trustelem}
+
+### **Step 1**: Configure Wallix Trustelem {#configure-wallix}
 
 1. Access the [WALLIX Trustelem administration console](https://admin.trustelem.com/login), and sign in using your Trustelem account.
 
@@ -76,14 +77,13 @@ To configure an edge with Wallix Trustelem:
 1. Click **Save**.
 
 
-### **Step 5**: Start a Tunnel {#start-tunnel}
+### **Step 4**: Start a Tunnel {#start-tunnel}
 
 1. Access the [ngrok edges page](https://dashboard.ngrok.com/cloud-edge/edges), click your edge, and then click **Start a tunnel**.
 
     :::tip Note 
     For this step, we assume you have an app running locally (i.e. on localhost:3000) with the ngrok client installed.
     :::
-
 
 1. Click the **copy icon** next to the tunnel command.
     ![tunnel config](img/trustelem-2.png)
