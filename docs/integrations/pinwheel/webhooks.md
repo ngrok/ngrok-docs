@@ -75,12 +75,12 @@ To register a webhook on your Pinwheel account follow the instructions below:
 
 1. Access [Pinwheel Developer Portal](https://developer.getpinwheel.com/) and sign in using your Pinwheel account.
 
-1. On the **Dashboard** page, click the **API Keys** tab and make note of both the **API Key** and the **API Secret** values.
+1. On the **Dashboard** page, click the **API Keys** tab and make note of the **API Secret** value.
 
 1. Open a terminal window and run the following command to create the webhook:
     ```bash
     curl --request POST --url https://api.getpinwheel.com/v1/webhooks \
-    --header 'x-api-secret: YOUR-API-SECRET' \
+    --header 'x-api-secret: API_SECRET' \
     --header 'Content-Type: application/json' --data '{
         "url": "NGROK_URL",
         "status": "active",
@@ -94,19 +94,19 @@ To register a webhook on your Pinwheel account follow the instructions below:
     ```
     **Note**: Replace the following with values copied on previous steps:
     - NGROK_URL: the URL provided by the ngrok agent to expose your application to the internet (i.e. `https://1a2b-3c4d-5e6f-7g8h-9i0j.sa.ngrok.io`).
-    - YOUR-API-SECRET: the Pinwheel secret.
+    - API_SECRET: the Pinwheel API Secret.
 
     ![URL to Publish](img/ngrok_url_configuration_pinwheel.png)
     
 
-1. Make sure the response of the previous command contains a **status** attribute with value `active`.
+1. Make sure the response of the previous command contains a **status** attribute with a value `active`.
 
 
 ### Run Webhooks with Pinwheel and ngrok
 
-Because you subscribed your webook to the `account.added` event, you can trigger new calls to your localhost application whenever users successfully log into their payroll accounts.
+Because you subscribed your webhook to the `account.added` event, you can trigger new calls to your localhost application whenever users successfully log into their payroll accounts.
 
-    Confirm your localhost app receives an event notification and logs both headers and body in the terminal.
+Confirm your localhost app receives an event notification and logs both headers and body in the terminal.
 
 
 ### Inspecting requests
@@ -147,12 +147,12 @@ The ngrok signature webhook verification feature allows ngrok to assert that req
 
 This is a quick step to add extra protection to your application.
 
-1. Restart your ngrok agent by running the command, replacing `{your api secret}` with the value you have copied before (See [Integrate Pinwheel](#setup-webhook)):
+1. Restart your ngrok agent by running the command, replacing `{your api secret}` with the value of the API Secret you copied before (See [Integrate Pinwheel](#setup-webhook)):
     
     ```bash
     ngrok http 3000 --verify-webhook pinwheel --verify-webhook-secret {your api secret}
     ```
 
-1. Rquest a user to logging into their payroll account.
+1. Request a user to log into their payroll account.
 
     Confirm your localhost app receives an event notification and logs both headers and body in the terminal.
