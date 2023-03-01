@@ -47,7 +47,7 @@ The currently supported webhook providers are:
 | Mux | `mux` | [Documentation](https://ngrok.com/docs/integrations/mux/webhooks) |
 | Orbit | `orbit` | [Documentation](https://ngrok.com/docs/integrations/orbit/webhooks) |
 | PagerDuty | `pagerduty` | [Documentation](https://ngrok.com/docs/integrations/pagerduty/webhooks) |
-| Pinwheel | `pinwheel` | [Documentation](https://docs.pinwheelapi.com/docs/webhook-signature-verification) |
+| Pinwheel | `pinwheel` | [Documentation](https://ngrok.com/docs/integrations/pinwheel/webhooks) |
 | Plivo | `plivo` | [Documentation](https://www.plivo.com/docs/sms/concepts/signature-validation) |
 | Pusher | `pusher` | [Documentation](https://ngrok.com/docs/integrations/pusher/webhooks) |
 | SendGrid | `sendgrid` | [Documentation](https://ngrok.com/docs/integrations/sendgrid/webhooks) |
