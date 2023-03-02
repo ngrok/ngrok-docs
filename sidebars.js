@@ -67,6 +67,7 @@ const sidebars = {
         { label: 'Castle', type: 'doc', id: 'integrations/castle/webhooks', },
         { label: 'Chargify', type: 'doc', id: 'integrations/chargify/webhooks', },
         { label: 'Circle CI', type: 'doc', id: 'integrations/circleci/webhooks', },
+        { label: 'Cisco Webex', type: 'doc', id: 'integrations/webex/webhooks', },
         { label: 'Clerk', type: 'doc', id: 'integrations/clerk/webhooks', },
         { label: 'Coinbase', type: 'doc', id: 'integrations/coinbase/webhooks', },
         { label: 'Contentful', type: 'doc', id: 'integrations/contentful/webhooks', },
