@@ -48,7 +48,7 @@ The `ngrok api` command provides access to ngrok's API. You can use the API thro
 
 All api subcommands require an API key. You can configure it either using a flag ([`ngrok config add-api-key`](#ngrok-config) command).
 
-You can get get the initial API key in the [API section of the ngrok Dashboard](https://dashboard.ngrok.com/api/keys). Additional keys can be created through `ngrok api api-key create` subcommand.
+You can get get the initial API key in the [API section of the ngrok Dashboard](https://dashboard.ngrok.com/api). Additional keys can be created through `ngrok api api-keys create` subcommand.
 
 These commands mirror our standard [ngrok HTTP API](/api). If you have [shell completion enabled](/ngrok-agent/ngrok#ngrok-completion), these will tab complete on the terminal.
 
@@ -62,7 +62,7 @@ These commands mirror our standard [ngrok HTTP API](/api). If you have [shell co
 | --- | --- |
 | [abuse-reports](/api#api-abuse-reports) | Creates a new abuse report which will be reviewed by our system and abuse response team. |
 | [agent-ingresses](/api#api-agent-ingresses) | Manage Agent Ingresses. The ngrok agent can be configured to connect to ngrok via the new set of addresses on the returned Agent Ingress. |
-| [api-keys](/api#api-api-keys) | Manage API keys. These keys can be used to authenticate to the ngrok API. |
+| [api-keys](/api/resources/api-keys) | Manage API keys. These keys can be used to authenticate to the ngrok API. |
 | [backends](/api#api-failover-backends) | Manage the backends that are servicing Cloud Edges. |
 | [certificate-authorities](/api#api-certificate-authorities) | Manage Certificate Authorities. |
 | [credentials](/api#api-credentials) | Manage authtoken credentials. The authtoken credential can be used to authorize a new ngrok agent session. |
