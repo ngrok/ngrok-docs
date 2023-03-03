@@ -19,7 +19,7 @@ If you are looking to programmatically start and stop tunnels, instead consult t
 | Base URL | `https://api.ngrok.com` |
 | Authentication | **Bearer token authentication with an ngrok.com API key token** |
 
-API keys to access the ngrok.com HTTP API can be provisioned on the [API Keys page of your ngrok dashboard](https://dashboard.ngrok.com/api/keys). API keys can also be created via the [API keys API Resource](#list-api-keys). All requests to the API must include an API key as a bearer token in the Authorization header as well as an `ngrok-version` header as demonstrated in the following example.
+API keys to access the ngrok.com HTTP API can be provisioned on the [API Keys page of your ngrok dashboard](https://dashboard.ngrok.com/api). API keys can also be created via the [API keys API Resource](/api/resources/api-keys#list-api-keys). All requests to the API must include an API key as a bearer token in the Authorization header as well as an `ngrok-version` header as demonstrated in the following example.
 
 ###### Access the root API resource
 
