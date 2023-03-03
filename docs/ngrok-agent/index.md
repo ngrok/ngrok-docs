@@ -26,7 +26,7 @@ There's a whole lot more to discover in the new ngrok agent v3. This [upgrade gu
 
 See our [ngrok downloads](https://ngrok.com/download) page for instructions on installing the ngrok agent on your system.
 
-The ngrok agent is most likely included in your favorite package manager (and if it's not, [let us know!](mailto:support@ngrok.com?subject=Request to add the ngrok agent to a new package manager)).
+The ngrok agent is most likely included in your favorite package manager (and if it's not, [let us know!](mailto:support@ngrok.com?subject=Request+to+add+the+ngrok+agent+to+a+new+package+manager)).
 
 ### Install your authtoken
 
