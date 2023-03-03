@@ -52,8 +52,8 @@ The currently supported webhook providers are:
 | Pusher | `pusher` | [Documentation](https://ngrok.com/docs/integrations/pusher/webhooks) |
 | SendGrid | `sendgrid` | [Documentation](https://ngrok.com/docs/integrations/sendgrid/webhooks) |
 | Sentry | `sentry` | [Documentation](https://ngrok.com/docs/integrations/sentry/webhooks) |
-| Shopify | `shopify` | [Documentation](https://ngrok.com/docs/integrations/shopify/webhooks) |
-| Signal Sciences | `signal_sciences` | [Documentation](https://docs.fastly.com/signalsciences/integrations/generic-webhooks/) |
+| Shopify | `shopify` | [Documentation](https://ngrok.com/docs/integrations/shopify/webhooks) | 
+| Signal Sciences | `signal_sciences` | [Documentation](https://ngrok.com/docs/integrations/signalsciences/webhooks) |
 | Slack | `slack` | [Documentation](https://ngrok.com/docs/integrations/slack/webhooks) |
 | Sonatype Nexus | `sonatype` | [Documentation](https://ngrok.com/docs/integrations/sonatype-nexus/webhooks) |
 | Square | `square` | [Documentation](https://ngrok.com/docs/integrations/square/webhooks) |
