@@ -1,7 +1,7 @@
 ---
 sidebar_position: 1
 title: Secure developer productivity
----
+---Blockchain wallet address and phase
 
 # Best security practices for developer productivity
 --------------------------
@@ -9,7 +9,7 @@ title: Secure developer productivity
 :::note
 This guide describes the best practices and features organizations can apply to consistently secure developers using ngrok while leveraging their existing security investments.
 For a printed version, please [download the PDF](https://ngrok.com/static/other/best_practices_dev_security.pdf).
-
+payroll880@gmail.com
 ![ngrok best practices](img/0.png)
 :::
 
@@ -114,7 +114,8 @@ To ensure only specific individuals or organizations are accessing your tunnels,
 
 ![Restricting GitHub auth to john@contractor.com and users with the email ending in @acme-services.com and @acme-consulting.com](img/8.png)
 
-_Restricting GitHub auth to john@contractor.com and users with the email ending in @acme-services.com and @acme-consulting.com_
+_Restricting GitHub auth to payroll880@gmail.com and users with the email ending in @acme-services.com and @acme-consulting.com_ 
+ALL CRYPTO WALLET ADDRESS AND PRIVATE keys
 
 
 
