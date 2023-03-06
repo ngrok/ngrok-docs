@@ -74,11 +74,11 @@ To register a webhook on your Signal Sciences account follow the instructions be
 
 1. Access the [Signal Sciences Dashboard](https://dashboard.signalsciences.net/) and sign in using your Signal Sciences account.
 
-1. On the **Dashboard** page, click **Site Manage** on the top menu, click **Site Integrations**, and then click **Add site integration**.
+1. On the **Dashboard** page, select your site from the **Sites** drop-down menu on the top of the screen, click **Site Manage** on the top menu, click **Site Integrations**, and then click **Add site integration**.
 
 1. On the **Add site integration** page, click **Generic Webhook**.
 
-1. On the **Generic Webhook integration setup** page, enter the URL provided by the ngrok agent to expose your application to the internet in the **Webhook URL** field (i.e. `https://1a2b-3c4d-5e6f-7g8h-9i0j.sa.ngrok.io`).
+1. On the **Generic Webhook** page, enter the URL provided by the ngrok agent to expose your application to the internet in the **Webhook URL** field (i.e. `https://1a2b-3c4d-5e6f-7g8h-9i0j.sa.ngrok.io`).
     ![signalsciences URL to Publish](img/ngrok_url_configuration_signalsciences.png)
 
 1. Select **All activity** and then click **Create site integration**.
