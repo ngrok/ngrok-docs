@@ -7,9 +7,9 @@ description: Learn to use ngrok with our guides, examples, integration guides, a
 
 # ngrok Documentation
 -------------------
-**Welcome to the ngrok documentation.** ngrok allows you to create secure ingress to any app, device or service without spending hours learning arcane networking technologies. You can get started with a single command or a single line of code.
+**Welcome to the ngrok documentation.** ngrok allows you to create secure ingress to any app, device or service without spending hours learning arcane networking technologies. You can get started with a single command or line of code.
 
-*What is ngrok?* What is ngrok? ngrok is an ingress-as-a-service platform that removes the hassle of getting code online from developers’ plates by decoupling ingress from infrastructure with one line of code , all without provisioning proxies or VPNs. 
+*What is ngrok?* What is ngrok? ngrok is an ingress-as-a-service platform that removes the hassle of getting code online by decoupling ingress from infrastructure with one line of code, all without provisioning proxies or VPNs. 
 
 ngrok’s platform is built around 3 main capabilities that connect the world to your work. Those capabilities have many different options depending on what you’re building, so take a moment to review them.
 
