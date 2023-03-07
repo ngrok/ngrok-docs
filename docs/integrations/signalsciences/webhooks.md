@@ -89,7 +89,7 @@ To register a webhook on your Signal Sciences account follow the instructions be
 Signal Sciences sends different request body contents depending on the event that is being triggered.
 You can trigger new calls from Signal Sciences to your application by following the instructions below.
 
-1. Access the [Signal Sciences Dashboard](https://dashboard.signalsciences.net/), click ... (Create custom Signal)
+1. Access the [Signal Sciences Dashboard](https://dashboard.signalsciences.net/), sign in, and change your site display name.
 
     Confirm your localhost app receives an event notification and logs both headers and body in the terminal.
 
@@ -102,7 +102,7 @@ The Request Inspector shows all the requests made through your ngrok tunnel to y
 
 Seeing requests is an excellent way of validating the data sent to and retrieved by your app via the ngrok tunnel. That alone can save you some time dissecting and logging HTTP request and response headers, methods, bodies, and response codes within your app just to confirm you are getting what you expect.
 
-To inspect Signal Sciences's webhooks call, launch the ngrok web interface (i.e. `http://127.0.0.1:4040`), and then click one of the requests sent by Signal Sciences.
+To inspect Signal Sciences' webhooks call, launch the ngrok web interface (i.e. `http://127.0.0.1:4040`), and then click one of the requests sent by Signal Sciences.
 
 From the results, review the response body, header, and other details:
 
@@ -141,6 +141,6 @@ This is a quick step to add extra protection to your application.
     ngrok http 3000 --verify-webhook signalsciences --verify-webhook-secret {your webhook secret}
     ```
 
-1. Access the [Signal Sciences Dashboard](https://dashboard.signalsciences.net/), click ... (Create custom Signal)
+1. Access the [Signal Sciences Dashboard](https://dashboard.signalsciences.net/), sign in, and change your site display name.
 
     Confirm your localhost app receives an event notification and logs both headers and body in the terminal.
