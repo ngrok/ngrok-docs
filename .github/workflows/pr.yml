@@ -14,8 +14,20 @@ jobs:
         with:
           node-version: 18
           cache: yarn
-
+      - name: 'Create env file'
+        run: |
+          echo DEPLOY_ENV=dev > .env
       - name: Install dependencies
         run: yarn install --frozen-lockfile
       - name: Build website
         run: yarn build
+  search-index-dev:
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: darrenjennings/algolia-docsearch-action@master
+        with:
+          algolia_application_id: ${{ secrets.DEV_ALGOLIA_APPLICATION_ID }}
+          algolia_api_key: ${{ secrets.DEV_ALGOLIA_API_KEY }}
+          file: 'algolia_dev.config.json'
