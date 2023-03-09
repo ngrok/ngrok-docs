@@ -1,5 +1,6 @@
 // @ts-check
 // Note: type annotations allow type checking and IDEs autocompletion
+require('dotenv').config();
 
 const lightCodeTheme = require('prism-react-renderer/themes/github');
 const darkCodeTheme = require('prism-react-renderer/themes/dracula');
@@ -141,7 +142,7 @@ const config = {
       algolia: {
        appId: 'SPPRT3GDNI',
        apiKey: 'e02fb8e0c4d8c7968396981d7ecb9fa8',
-       indexName: 'dev_ngrok',
+       indexName: (process.env.DEPLOY_ENV || 'dev') + '_ngrok',
       },
       hubspot: {
         accountId: 21124867,
