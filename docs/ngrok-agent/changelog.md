@@ -4,7 +4,7 @@ title: Agent Changelog
 
 # ngrok Agent Changelog
 
-### ngrok Agent 3.1.2 - \[2023-03-13\]
+### ngrok Agent 3.2.0 - \[2023-03-13\]
 * Deprecated the `--subdomain` and `--hostname` flags.
 * Updated all `--subdomain` and `--hostname` examples to use `--domain`.
 * Fixed a bug where the agent did not resolve local DNS correctly on macOS arm64
