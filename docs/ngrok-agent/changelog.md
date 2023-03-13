@@ -10,7 +10,7 @@ title: Agent Changelog
 * Fixed a bug where the agent did not resolve local DNS correctly on macOS arm64
 * Allow specifying ngrok --region=auto to pick the closest region (defaults to auto)
 * Support for the NGROK_API_KEY environment variable when using the ngrok api subcommand
-* --log-format=json now results in more output being formatted as json
+* `--log-format=json` now results in more output being formatted as json
 
 ### ngrok Agent 3.1.1 - \[2023-01-13\]
 
