@@ -8,7 +8,7 @@ title: Agent Changelog
 * Deprecated the `--subdomain` and `--hostname` flags.
 * Updated all `--subdomain` and `--hostname` examples to use `--domain`.
 * Fixed a bug where the agent did not resolve local DNS correctly on macOS arm64
-* Allow specifying ngrok --region=auto to pick the closest region (defaults to auto)
+* Allow specifying ngrok `--region=auto` to pick the closest region (defaults to auto)
 * Support for the NGROK_API_KEY environment variable when using the ngrok api subcommand
 * `--log-format=json` now results in more output being formatted as json
 
