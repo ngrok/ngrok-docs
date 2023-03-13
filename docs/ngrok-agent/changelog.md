@@ -4,13 +4,17 @@ title: Agent Changelog
 
 # ngrok Agent Changelog
 
-### ngrok Agent 3.1.2 - \[2023-03-13\]
+### ngrok Agent 3.2.1 - \[2023-03-13\]
 * Deprecated the `--subdomain` and `--hostname` flags.
 * Updated all `--subdomain` and `--hostname` examples to use `--domain`.
 * Fixed a bug where the agent did not resolve local DNS correctly on macOS arm64
 * Allow specifying ngrok `--region=auto` to pick the closest region (defaults to auto)
 * Support for the NGROK_API_KEY environment variable when using the ngrok api subcommand
 * `--log-format=json` now results in more output being formatted as json
+
+### 3.2.0
+
+This version number was intentionally skipped.
 
 ### ngrok Agent 3.1.1 - \[2023-01-13\]
 
