@@ -44,8 +44,8 @@ Note that following examples use the US region for agent ingress (tunnel.us.ngro
 
 ###### Start an http tunnel on a custom subdomain forwarding to port 8080
 
-    # equivalent: `ngrok http --domain=custom-subdomain.ngrok.io 8080`
-    ssh -R custom-subdomain.ngrok.io:443:localhost:8080 v2@tunnel.us.ngrok.com http
+    # equivalent: `ngrok http --domain=custom-subdomain.ngrok.dev 8080`
+    ssh -R custom-subdomain.ngrok.dev:443:localhost:8080 v2@tunnel.us.ngrok.com http
 
 ###### Start an http tunnel on a custom domain with auth
 
