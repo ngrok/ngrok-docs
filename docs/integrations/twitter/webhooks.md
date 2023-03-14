@@ -170,7 +170,7 @@ Verify that your local application receives the request and logs the correspondi
 
 The ngrok signature webhook verification feature allows ngrok to assert that requests from your Twitter webhook are the only traffic allowed to make calls to your localhost app.
 
-**Note:** This ngrok feature requires a Pro or Enterprise license.
+**Note:** This ngrok feature is limited to 500 per month on free ngrok accounts. For unlimited, upgrade to Pro or Enterprise.
 
 This is a quick step to add extra protection to your application.
 
