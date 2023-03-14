@@ -184,6 +184,6 @@ This is a quick step to add extra protection to your application.
     ngrok http 3000 --verify-webhook twitter --verify-webhook-secret {your webhook secret}
     ```
 
-1. Access [Twitter](https://Twitter/) and create a new project.
+1. Access [Twitter](https://twitter.com/) and create a new project.
 
 Verify that your local application receives the request and logs information to the terminal.
