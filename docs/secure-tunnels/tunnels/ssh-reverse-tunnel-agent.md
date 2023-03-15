@@ -10,7 +10,7 @@ SSH reverse tunneling is an alternative mechanism to start an ngrok tunnel witho
 
 The SSH gateway functionality should not be confused with exposing an SSH server via ngrok. If you want to expose your own SSH server for remote access, please refer to the [using ngrok with ssh](/using-ngrok-with/ssh) section of the documentation.
 
-The main features you miss out on when using the SSH Reverse Tunnel Agent instead of the ngrok agent is the ability to run multiple tunnels at the same time and the resiliency features for automatically reconnecting in case of network outages. At this point in time, the reverse tunnel agent does not support the latest capabilities found in the ngrok agent, although we plan to support that in the future.
+The main features you miss out on when using the SSH Reverse Tunnel Agent instead of the ngrok agent is the ability to run multiple tunnels at the same time and the resiliency features for automatically reconnecting in case of network outages.
 
 ## Uploading a Public Key {#uploading-a-public-key}
 
@@ -30,39 +30,44 @@ ngrok tries to honor the syntax of `ssh -R` for all of the tunnel commands in it
 
 The following examples demonstrate how to use the SSH gateway and provide the equivalent ngrok agent command to help you understand how to achieve similar functionality.
 
-Note that following examples use the US region for agent ingress (tunnel.us.ngrok.com). There are agent ingress URLs for each of the [available regions](/ngrok-agent/config#region).
+Note that following examples use the US region for agent ingress (tunnel.us.ngrok.com). There are agent ingress URLs for each of the [available regions](/ngrok-agent/config#region). They also use the `v2` version of the SSH gateway's command-line interface by specifying it as the username.
 
 ###### Start an http tunnel forwarding to port 80
 
     # equivalent: `ngrok http 80`
-    ssh -R 80:localhost:80 tunnel.us.ngrok.com http
+    ssh -R 443:localhost:80 v2@tunnel.us.ngrok.com http
+
+###### View available http options
+
+    # equivalent: `ngrok http --help`
+    ssh -R 443:localhost:80 v2@tunnel.us.ngrok.com http --help
 
 ###### Start an http tunnel on a custom subdomain forwarding to port 8080
 
-    # equivalent: `ngrok http --subdomain=custom-subdomain 8080`
-    ssh -R custom-subdomain.ngrok.io:80:localhost:8080 tunnel.us.ngrok.com http
+    # equivalent: `ngrok http --domain=custom-subdomain.ngrok.dev 8080`
+    ssh -R custom-subdomain.ngrok.dev:443:localhost:8080 v2@tunnel.us.ngrok.com http
 
 ###### Start an http tunnel on a custom domain with auth
 
-    # equivalent: `ngrok http --hostname=example.com --basic-auth "user:password" 8080`
-    ssh -R example.com:80:localhost:8080 tunnel.us.ngrok.com http -auth="user:password"
+    # equivalent: `ngrok http --domain=example.com --basic-auth "user:password" 8080`
+    ssh -R example.com:443:localhost:8080 v2@tunnel.us.ngrok.com http --basic-auth 'user:password'
 
 ###### Start a TCP tunnel
 
     # equivalent: `ngrok tcp 22`
-    ssh -R 0:localhost:22 tunnel.us.ngrok.com tcp 22
+    ssh -R 0:localhost:22 v2@tunnel.us.ngrok.com tcp 22
 
 ###### Start a TCP tunnel on a reserved address
 
     # equivalent: `ngrok tcp --remote-addr=1.tcp.ngrok.io:24313 22`
-    ssh -R 1.tcp.ngrok.io:24313:localhost:22 tunnel.us.ngrok.com tcp
+    ssh -R 1.tcp.ngrok.io:24313:localhost:22 v2@tunnel.us.ngrok.com tcp
 
 ###### Start a TLS tunnel
 
     # equivalent: `ngrok tls 8443`
-    ssh -R 443:localhost:8443 tunnel.us.ngrok.com tls
+    ssh -R 443:localhost:8443 v2@tunnel.us.ngrok.com tls
 
 ###### Start a tunnel in a different region
 
     # equivalent: `ngrok http --region=eu 80`
-    ssh -R 80:localhost:80 tunnel.eu.ngrok.com http
+    ssh -R 443:localhost:80 v2@tunnel.eu.ngrok.com http
