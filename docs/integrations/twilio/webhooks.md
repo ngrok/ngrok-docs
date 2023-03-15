@@ -7,7 +7,7 @@ To integrate Twilio webhooks with ngrok:
 1. [Start your local twillio webhook app.](#start-your-app) `npm start`
 1. [Start ngrok.](#start-ngrok) `ngrok http 3000`
 1. [Configure Twilio with your ngrok url and start testing.](#setup-twilio)
-1. **Bonus!** [Use ngrok like a PRO.](#optional)
+1. **Bonus!** [Secure your webhook requests with verification.](#optional)
 
 :::
 
@@ -82,7 +82,7 @@ Congrats! You got an end-to-end example working but there's even more you can do
 ### Add additional security using ngrok's signature webhook verification
 The webhook verification module allows ngrok to assert requests to your endpoint originate from Twillio. This is a quick step to add extra protection to your setup. 
 
-**Note:** This ngrok feature requires a Pro or Enterprise license.
+**Note:** This ngrok feature is limited to 500 validations per month on free ngrok accounts. For unlimited, upgrade to Pro or Enterprise.
 
 1. Login to [Twilio Console](https://console.twilio.com/) and copy your Auth Token value.<br />
     **Note:** ngrok Webhook Verification ensures traffic from your Twilio account is the **only traffic allowed** to make calls to your app. Because Twilio signs all Webhooks using the Primary Auth Token, ngrok can verifies the signature of every request and only authorizing requests originating from your Twilio account. 
