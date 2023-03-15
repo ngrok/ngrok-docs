@@ -85,16 +85,9 @@ To register a webhook on your Twitter account follow the instructions below:
 
 1. On the **Here are your keys & tokens** page, make note of the value of the **API Key**, **API Key Secret**, and **Bearer Token** fields.
 
-API Key = 6nflh11GvfjkpErtEBvg5gYJm
-API Key Secret = gtffIvOBoE30OVTvGK2KGgKe2kJkRnyBVbgYWYqfj7rWcGE1Iu
-Bearer Token = AAAAAAAAAAAAAAAAAAAAAN%2FdlQEAAAAAtYCMAF3CE2IPxOdv5jXWfkf0ov4%3DeRsLELiaizu96zBK3l4CxDtbH9rgbYLkY47YCO4eUCfu0nI29l
-
 1. On the left menu, click **Projects & Apps**, click **ngrok**, and then click your app.
 
 1. On the app page, click the **Keys and tokens** tab, click **Generate** in the **Access Token and Secret** section, and then copy the value of the **Access Token** and **Access Token Secret** fields.
-
-Access Token = 64293199-TIuUWA4bhqK0w7ZcXUyXuNmrTuA40OPYxmV6Thy8O
-Access Token Secret = NPc4DKeye5Q8VtiB1ebIadgMmheLniks0L8JszXb9UxhC
 
 1. On the left menu, click **Products**, click **Premium**, and then click **Dev environments**.
 
@@ -118,12 +111,12 @@ Access Token Secret = NPc4DKeye5Q8VtiB1ebIadgMmheLniks0L8JszXb9UxhC
 1. In a terminal window, run the following command to subscribe a user to this webhook:
    ```
     curl --request POST --url https://api.twitter.com/1.1/account_activity/all/APP_NAME/subscriptions.json \
-    --header 'authorization: OAuth oauth_consumer_key="CONSUMER_KEY", oauth_nonce="GENERATED", oauth_signature="GENERATED", oauth_signature_method="HMAC-SHA1", oauth_timestamp="GENERATED", oauth_token="SUBSCRIBING_USER'S_ACCESS_TOKEN", oauth_version="1.0"'
+    --header 'authorization: OAuth oauth_consumer_key="CONSUMER_KEY", oauth_nonce="GENERATED", oauth_signature="GENERATED", oauth_signature_method="HMAC-SHA1", oauth_timestamp="GENERATED", oauth_token="SUBSCRIBING_USER_ACCESS_TOKEN", oauth_version="1.0"'
     ```
     **Note**: Replace the following with values copied on previous steps:
     - APP_NAME: Your app name.
     - CONSUMER_KEY: the app API Key.
-    - SUBSCRIBING_USER'S_ACCESS_TOKEN: The access token you copied before.
+    - SUBSCRIBING_USER_ACCESS_TOKEN: The access token from a Twitter user.
 
 
 ### Run Webhooks with Twitter and ngrok
@@ -131,7 +124,7 @@ Access Token Secret = NPc4DKeye5Q8VtiB1ebIadgMmheLniks0L8JszXb9UxhC
 Twitter sends different request body contents depending on the event that is being triggered.
 You can trigger new calls from Twitter to your application by following the instructions below.
 
-1. Acces [Twitter](https://twitter.com/), sign in and post a tweet.
+1. Acces [Twitter](https://www.twitter.com/), sign in and post a tweet.
 
     Confirm your localhost app receives a notification and logs both headers and body in the terminal.
 
@@ -179,11 +172,11 @@ This is a quick step to add extra protection to your application.
 
 1. On the **Webhooks** page, click **Copy** to copy the **Secret** value.
 
-1. Restart your ngrok agent by running the command, replacing `{your webhook secret}` with the value you have copied before (See [Integrate ngrok and Twitter.](#setup-webhook)):
+1. Restart your ngrok agent by running the command, replacing `{your webhook secret}` with the value you copied before:
     ```bash
     ngrok http 3000 --verify-webhook twitter --verify-webhook-secret {your webhook secret}
     ```
 
-1. Access [Twitter](https://Twitter/) and create a new project.
+1. Access [Twitter](https://www.twitter.com/) and post a new tweet.
 
 Verify that your local application receives the request and logs information to the terminal.
