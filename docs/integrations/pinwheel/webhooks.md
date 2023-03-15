@@ -99,7 +99,7 @@ To register a webhook on your Pinwheel account follow the instructions below:
 
     ![URL to Publish](img/ngrok_url_configuration_pinwheel.png)
     
-1. Make sure the response of the previous command is JSON containing a **status** attribute with `active` as the value.
+1. Make sure the response to the previous command is JSON containing a **status** attribute with `active` as the value.
 
 
 ### Run Webhooks with Pinwheel and ngrok
