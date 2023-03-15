@@ -7,7 +7,7 @@ To integrate GitLab webhooks with ngrok:
 1. [Launch your local webhook.](#start-your-app) `npm start`
 1. [Launch ngrok.](#start-ngrok) `ngrok http 3000`
 1. [Configure GitLab webhooks with your ngrok URL.](#setup-webhook)
-1. **Bonus!** [Use ngrok like a PRO.](#security)
+1. **Bonus!** [Secure your webhook requests with verification.](#security)
 
 :::
 
