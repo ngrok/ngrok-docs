@@ -7,7 +7,7 @@ To integrate Slack webhooks with ngrok:
 1. [Launch your local webhook.](#start-your-app) `npm start`
 1. [Launch ngrok.](#start-ngrok) `ngrok http 3000`
 1. [Configure Slack webhooks with your ngrok URL.](#setup-webhook)
-1. **Bonus!** [Use ngrok like a PRO.](#security)
+1. [Secure your webhook requests with verification.](#security)
 
 :::
 
@@ -134,11 +134,11 @@ The ngrok Request Inspector provides a replay function that you can use to test 
 Verify that your local application receives the request and logs the corresponding information to the terminal.
 
 
-## **Bonus**: Secure webhook requests {#security}
+## Secure webhook requests {#security}
 
 The ngrok signature webhook verification feature allows ngrok to assert that requests from your Slack webhook are the only traffic allowed to make calls to your localhost app.
 
-**Note:** This ngrok feature requires a Pro or Enterprise license.
+**Note:** This ngrok feature is limited to 500 validations per month on free ngrok accounts. For unlimited, upgrade to Pro or Enterprise.
 
 This is a quick step to add extra protection to your application.
 
