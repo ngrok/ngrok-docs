@@ -50,9 +50,10 @@ After that, you will be able to see the available options by pressing tab after 
 
 ### Supported ENV Variables
 
-The ngrok agent supports an environment variable for the authtoken. You may use it instead if that's easier in your environment.
+The ngrok agent supports environment variables as well for the authtoken and API key. You may use them instead if that's easier in your environment.
 
 *   `NGROK_AUTHTOKEN` - For more information about authtokens, see the [ngrok secure tunnels documentation](/secure-tunnels/ngrok-agent/tunnel-authtokens).
+*   `NGROK_API_KEY` - For more information, see the [ngrok API documentation](/api#authentication).
 
 ### Examples
 
