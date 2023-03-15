@@ -7,7 +7,6 @@ To integrate Twilio webhooks with ngrok:
 1. [Start your local twillio webhook app.](#start-your-app) `npm start`
 1. [Start ngrok.](#start-ngrok) `ngrok http 3000`
 1. [Configure Twilio with your ngrok url and start testing.](#setup-twilio)
-1. **Bonus!** [Secure your webhook requests with verification.](#optional)
 
 :::
 
