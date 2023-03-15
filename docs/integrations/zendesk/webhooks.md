@@ -7,7 +7,7 @@ To integrate Zendesk webhooks with ngrok:
 1. [Launch your local webhook.](#start-your-app) `npm start`
 1. [Launch ngrok.](#start-ngrok) `ngrok http 3000`
 1. [Configure Zendesk webhooks with your ngrok URL.](#setup-webhook)
-1. **Bonus!** [Secure your webhook requests with verification.](#security)
+1. [Secure your webhook requests with verification.](#security)
 
 :::
 
@@ -153,7 +153,7 @@ The ngrok Request Inspector provides a replay function that you can use to test 
     Verify that your local application receives the request and logs the corresponding information to the terminal.
 
 
-## **Bonus**: Secure webhook requests {#security}
+## Secure webhook requests {#security}
 
 The ngrok signature webhook verification feature allows ngrok to assert that requests from your Zendesk webhook are the only traffic allowed to make calls to your localhost app.
 
