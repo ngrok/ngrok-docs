@@ -7,7 +7,7 @@ To integrate PagerDuty webhooks with ngrok:
 1. [Launch your local webhook.](#start-your-app) `npm start`
 1. [Launch ngrok.](#start-ngrok) `ngrok http 3000`
 1. [Configure PagerDuty webhooks with your ngrok URL.](#setup-webhook)
-1. **Bonus!** [Use ngrok like a PRO.](#security)
+1. **Bonus!** [Secure your webhook requests with verification.](#security)
 
 :::
 
@@ -84,7 +84,7 @@ To register a webhook on your PagerDuty account follow the instructions below:
 1. On the same page, select **Service** as **SCOPE TYPE**, select one of your service for **SCOPE**, click **Select all** under **EVENT SUBSCRIPTION**, and then click **Add Webhook**.
 
 1. In the **Webhook subscription created** popup, click **OK**.
-    **Tip**:  Click **Copy** to copy the **webhook payload signing** code for later usage. See [Use ngrok like a PRO](#security).
+    **Tip**:  Click **Copy** to copy the **webhook payload signing** code for later usage. See [Secure your webhook requests with verification](#security).
 
 1. In the **Your Webhooks** page, click the webhook you have just created.
 
@@ -143,7 +143,7 @@ Verify that your local application receives the request and logs the correspondi
 
 The ngrok signature webhook verification feature allows ngrok to assert that requests from your PagerDuty webhook are the only traffic allowed to make calls to your localhost app.
 
-**Note:** This ngrok feature requires a Pro or Enterprise license.
+**Note:** This ngrok feature is limited to 500 validations per month on free ngrok accounts. For unlimited, upgrade to Pro or Enterprise.
 
 This is a quick step to add extra protection to your application.
 
