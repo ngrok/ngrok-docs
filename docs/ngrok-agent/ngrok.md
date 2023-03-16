@@ -340,6 +340,8 @@ The `ngrok http` command is used to start a tunnel listening for HTTP/HTTPS traf
 | `--oauth string` | enforce authentication OAuth2 provider on tunnel endpoint, e.g. `google` |
 | `--oauth-allow-domain strings` | allow only OAuth2 users with these email domains |
 | `--oauth-allow-email strings` | allow only OAuth2 users with these emails |
+| `--oauth-client-id string` | oauth app client id, optional |
+| `--oauth-client-secret string` | oauth app client id, optional |
 | `--oauth-scope strings` | request these OAuth2 scopes when users authenticate |
 | `--proxy-proto string` | version of PROXY protocol to use with this tunnel, empty if not using. Example values are 1 or 2. |
 | `--region string` | ngrok server region `us`, `eu`, `au`, `ap`, `sa`, `jp`, `in` (defaults to closest) |
