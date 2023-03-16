@@ -1,3 +1,7 @@
+---
+description: Use miniOrange SAML to secure access to ngrok tunnels
+---
+
 # MiniOrange SSO (SAML)
 ------------
 

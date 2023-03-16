@@ -1,3 +1,7 @@
+---
+description: Use miniOrange OIDC to secure access to ngrok tunnels
+---
+
 # MiniOrange SSO (OpenID Connect)
 ------------
 

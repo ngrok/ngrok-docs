@@ -1,5 +1,8 @@
-# Azure Active Directory B2C SSO (SAML)
+---
+description: Use Microsoft Azure AD B2C to secure access to ngrok tunnels
+---
 
+# Azure Active Directory B2C SSO (SAML)
 ---
 
 :::tip TL;DR

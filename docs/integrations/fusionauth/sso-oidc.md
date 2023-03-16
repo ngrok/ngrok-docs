@@ -1,3 +1,7 @@
+---
+description: Use FusionAuth SSO to secure access to ngrok tunnels
+---
+
 # FusionAuth SSO (OpenID Connect)
 ------------
 

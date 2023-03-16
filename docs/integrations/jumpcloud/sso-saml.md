@@ -1,3 +1,7 @@
+---
+description: Use JumpCloud SAML to secure access to ngrok tunnels
+---
+
 # JumpCloud SSO (SAML)
 ------------
 
