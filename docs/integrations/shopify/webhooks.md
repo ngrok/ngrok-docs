@@ -1,3 +1,7 @@
+---
+description: Develop and test Shopify webhooks from localhost
+---
+
 # Shopify Webhook
 ------------
 

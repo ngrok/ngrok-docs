@@ -7,7 +7,7 @@ The currently supported webhook providers are:
 
 | Provider | Provider Identifier | Docs Link |
 | --- | --- | --- |
-| AfterShip | `aftership` | [Documentation](https://ngrok.com/docs/integrations/aftership/webhooks |
+| AfterShip | `aftership` | [Documentation](https://ngrok.com/docs/integrations/aftership/webhooks) |
 | Airship | `airship` | [Documentation](https://ngrok.com/docs/integrations/airship/webhooks) |
 | Amazon SNS | `sns` | [Documentation](https://ngrok.com/docs/integrations/amazonsns/webhooks) |
 | Autodesk Forge | `autodesk_forge` | [Documentation](https://ngrok.com/docs/integrations/autodesk/webhooks) |
@@ -41,21 +41,21 @@ The currently supported webhook providers are:
 | Launch Darkly | `launch_darkly` | [Documentation](https://ngrok.com/docs/integrations/launchdarkly/webhooks) |
 | Mailchimp | `mailchimp` | [Documentation](https://ngrok.com/docs/integrations/mailchimp/webhooks) |
 | Mailgun | `mailgun` | [Documentation](https://ngrok.com/docs/integrations/mailgun/webhooks) |
-| Microsoft Teams | `microsoft_teams` | [Documentation](https://docs.microsoft.com/en-us/microsoftteams/platform/webhooks-and-connectors/how-to/add-outgoing-webhook?tabs=verifyhmactoken%2Cdotnet) |
+| Microsoft Teams | `microsoft_teams` | [Documentation](https://ngrok.com/docs/integrations/teams/webhooks) |
 | Modern Treasury | `modern_treasury` | [Documentation](https://ngrok.com/docs/integrations/modern-treasury/webhooks) |
 | MongoDB | `mongodb` | [Documentation](https://www.mongodb.com/docs/realm/endpoints/#payload-signature-verification) |
 | Mux | `mux` | [Documentation](https://ngrok.com/docs/integrations/mux/webhooks) |
-| Orbit | `orbit` | [Documentation](https://orbit.love/knowledge-base/webhooks) |
+| Orbit | `orbit` | [Documentation](https://ngrok.com/docs/integrations/orbit/webhooks) |
 | PagerDuty | `pagerduty` | [Documentation](https://ngrok.com/docs/integrations/pagerduty/webhooks) |
-| Pinwheel | `pinwheel` | [Documentation](https://docs.pinwheelapi.com/docs/webhook-signature-verification) |
+| Pinwheel | `pinwheel` | [Documentation](https://ngrok.com/docs/integrations/pinwheel/webhooks) |
 | Plivo | `plivo` | [Documentation](https://www.plivo.com/docs/sms/concepts/signature-validation) |
 | Pusher | `pusher` | [Documentation](https://ngrok.com/docs/integrations/pusher/webhooks) |
 | SendGrid | `sendgrid` | [Documentation](https://ngrok.com/docs/integrations/sendgrid/webhooks) |
 | Sentry | `sentry` | [Documentation](https://ngrok.com/docs/integrations/sentry/webhooks) |
-| Shopify | `shopify` | [Documentation](https://ngrok.com/docs/integrations/shopify/webhooks) |
-| Signal Sciences | `signal_sciences` | [Documentation](https://docs.fastly.com/signalsciences/integrations/generic-webhooks/) |
+| Shopify | `shopify` | [Documentation](https://ngrok.com/docs/integrations/shopify/webhooks) | 
+| Signal Sciences | `signal_sciences` | [Documentation](https://ngrok.com/docs/integrations/signalsciences/webhooks) |
 | Slack | `slack` | [Documentation](https://ngrok.com/docs/integrations/slack/webhooks) |
-| Sonatype Nexus | `sonatype` | [Documentation](https://help.sonatype.com/repomanager3/integrations/webhooks/working-with-hmac-payloads) |
+| Sonatype Nexus | `sonatype` | [Documentation](https://ngrok.com/docs/integrations/sonatype-nexus/webhooks) |
 | Square | `square` | [Documentation](https://ngrok.com/docs/integrations/square/webhooks) |
 | Stripe | `stripe` | [Documentation](https://ngrok.com/docs/integrations/stripe/webhooks) |
 | Svix | `svix` | [Documentation](https://ngrok.com/docs/integrations/svix/webhooks) |

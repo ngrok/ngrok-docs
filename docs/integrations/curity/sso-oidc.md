@@ -1,3 +1,7 @@
+---
+description: Use Curity Identity Server to secure access to ngrok tunnels
+---
+
 # Curity Identity Server (OpenID Connect)
 ------------
 

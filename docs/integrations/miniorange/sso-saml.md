@@ -1,40 +1,44 @@
-# MiniOrange SSO (SAML)
+---
+description: Use miniOrange SAML to secure access to ngrok tunnels
+---
+
+# miniOrange SSO (SAML)
 ------------
 
 :::tip TL;DR
 
-To secure access to ngrok with MiniOrange Single Sign-On using SAML:
-1. [Configure MiniOrange SSO](#configure-MiniOrange)
+To secure access to ngrok with miniOrange Single Sign-On using SAML:
+1. [Configure miniOrange SSO](#configure-miniOrange)
 1. [Configure ngrok](#configure-ngrok)
-1. [Test access to ngrok with MiniOrange SSO](#test-sso)
+1. [Test access to ngrok with miniOrange SSO](#test-sso)
 
 :::
 
-This article details how to configure MiniOrange as the primary Identity Provider for ngrok tunnels.
-By integrating MiniOrange SSO with ngrok, you can:
+This article details how to configure miniOrange as the primary Identity Provider for ngrok tunnels.
+By integrating miniOrange SSO with ngrok, you can:
 
-- **Restrict access to ngrok tunnels** only to users authenticated via MiniOrange.
-- **Use MiniOrange security policies and MFA authenticators**.
-- **Use MiniOrange's Dashboard to facilitate access to ngrok apps**.
+- **Restrict access to ngrok tunnels** only to users authenticated via miniOrange.
+- **Use miniOrange security policies and MFA authenticators**.
+- **Use miniOrange's Dashboard to facilitate access to ngrok apps**.
 
 ## Requirements
 
-To configure ngrok tunnels with MiniOrange, you must have:
+To configure ngrok tunnels with miniOrange, you must have:
 
-- an MiniOrange account with administrative rights to create apps.
+- an miniOrange account with administrative rights to create apps.
 - an ngrok enterprise account with an access token or admin access to configure edges with SAML.
 
 
 ## Configuration Steps
 
-To integrate ngrok with MiniOrange SSO, you will need to:
+To integrate ngrok with miniOrange SSO, you will need to:
 
-1. Configure MiniOrange with the ngrok app.
-1. Configure ngrok with the SSO settings provided by MiniOrange.
+1. Configure miniOrange with the ngrok app.
+1. Configure ngrok with the SSO settings provided by miniOrange.
 
-### **Step 1**: Configure MiniOrange {#configure-miniorange}
+### **Step 1**: Configure miniOrange {#configure-miniorange}
 
-1. Access [MiniOrange](https://www.miniorange.com/), and sign in using your MiniOrange administrator account.
+1. Access [miniOrange](https://www.miniorange.com/), and sign in using your miniOrange administrator account.
 
 1. On the **Dashboard** page, click **Apps** on the left menu, click **Add Application**, click the **SAML/WS-Fed** tile, and then click the **Custom SAML App** tile.
 
@@ -52,21 +56,21 @@ To integrate ngrok with MiniOrange SSO, you will need to:
 
 ### **Step 3**: Configure ngrok {#configure-ngrok}
 
-To configure an edge with MiniOrange:
+To configure an edge with miniOrange:
 
 1. Access the [ngrok Dashboard](https://dashboard.ngrok.com/) and sign in using your ngrok account.
 
 1. On the left menu, click **Cloud Edge** and then click **Edges**.
 
-1. If you don't have an edge already set to add MiniOrange SSO, create a test edge:
+1. If you don't have an edge already set to add miniOrange SSO, create a test edge:
     * Click **+ New Edge**.
     * Click **Create HTTPS Edge**.
-    * Click the **pencil icon** next to "no description", enter `Edge with MiniOrange SSO SAML` as the edge name, and click **Save**.
+    * Click the **pencil icon** next to "no description", enter `Edge with miniOrange SSO SAML` as the edge name, and click **Save**.
 
 1. On the edge settings menu, click **SAML**.
 
-1. On the **SAML** page, click **Begin setup**, click **Upload XML**, and then open the XML metadata file you downloaded from MiniOrange (See [Download the IdP metadata](#idp-metadata)).
-    ![MiniOrange config in ngrok](img/miniorange-5.png)
+1. On the **SAML** page, click **Begin setup**, click **Upload XML**, and then open the XML metadata file you downloaded from miniOrange (See [Download the IdP metadata](#idp-metadata)).
+    ![miniOrange config in ngrok](img/miniorange-5.png)
 
 1. Click **Save** at the top.
 
@@ -76,12 +80,12 @@ To configure an edge with MiniOrange:
 1. On the **SAML** page of your [ngrok edge](https://dashboard.ngrok.com/cloud-edge/edges), click the three dots close to the **SP Metadata** field, click **Download XML File**, and then save the XML file on your desktop.
 
 
-### **Step 5**: Link MiniOrange with ngrok {#sp-metadata}
+### **Step 5**: Link miniOrange with ngrok {#sp-metadata}
 
-1. On the [MiniOrange Dashboard](https://login.xecurify.com/moas/admin/customer/home), click **Apps** on the left menu, click **Select** in the **ngrok SAML** app line, and then click **Edit**.
+1. On the [miniOrange Dashboard](https://login.xecurify.com/moas/admin/customer/home), click **Apps** on the left menu, click **Select** in the **ngrok SAML** app line, and then click **Edit**.
 
 1. On the **Edit Application** page, click **Import SP Metadata**, click **File**, open the XML metadata file you downloaded from ngrok (See [Download the SP metadata](#sp-metadata)), and then click **Import**.
-    ![MiniOrange config in ngrok](img/miniorange-6.png)
+    ![miniOrange config in ngrok](img/miniorange-6.png)
 
 1. On the **Edit Application** page, click **Save**.
 
@@ -108,15 +112,15 @@ To configure an edge with MiniOrange:
     * Refresh the test edge page. Under traffic, You will see the message _You have 1 tunnel online. Start additional tunnels to begin load balancing._
     ![tunnel confirmed](img/miniorange-3.png)
 
-    1. In the test edge, copy the **endpoint URL**. (You use this URL to test the MiniOrange Authentication)
+    1. In the test edge, copy the **endpoint URL**. (You use this URL to test the miniOrange Authentication)
         ![tunnel url](img/miniorange-4.png)
         
 
-## Grant access to MiniOrange users {#users}
+## Grant access to miniOrange users {#users}
 
-MiniOrange allows its users to access SAML-integrated apps. To create a user follow the instructions below:
+miniOrange allows its users to access SAML-integrated apps. To create a user follow the instructions below:
 
-1. On the left menu of the [MiniOrange Dashboard](https://login.xecurify.com/moas/admin/customer/home), click **Users** and then click **User List**.
+1. On the left menu of the [miniOrange Dashboard](https://login.xecurify.com/moas/admin/customer/home), click **Users** and then click **User List**.
 
 1. On the **Users** page, click the **Add User**, enter values for the **Email**, **Username**, **First Name**, **Last Name**, and **Password** field, and then click **Create User**.
 
@@ -127,7 +131,7 @@ MiniOrange allows its users to access SAML-integrated apps. To create a user fol
 
 1. Access your ngrok tunnel using the copied endpoint URL (i.e., `https://miniorange-sso-test.ngrok.io`).
 
-1. You should be prompted to log in with your MiniOrange credentials.
+1. You should be prompted to log in with your miniOrange credentials.
 
 1. After logging in, you should be able to see your web app.
 
