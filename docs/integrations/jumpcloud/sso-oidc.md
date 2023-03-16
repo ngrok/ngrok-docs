@@ -1,3 +1,7 @@
+---
+description: Use JumpCloud OIDC to secure access to ngrok tunnels
+---
+
 # JumpCloud SSO (OpenID Connect)
 ------------
 
