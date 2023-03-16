@@ -32,7 +32,9 @@ const config = {
   // },
 
   plugins: [
-    'docusaurus-plugin-hubspot', '@docusaurus/theme-mermaid'
+    './src/plugins/ngrok-parse-integrations',
+    'docusaurus-plugin-hubspot', 
+    '@docusaurus/theme-mermaid'
   ],
 
   scripts: [

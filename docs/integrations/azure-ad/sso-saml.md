@@ -1,5 +1,8 @@
-# Azure Active Directory SSO (SAML)
+---
+description: Use Microsoft Azure AD to secure access to ngrok tunnels
+---
 
+# Azure Active Directory SSO (SAML)
 ---
 
 :::tip TL;DR

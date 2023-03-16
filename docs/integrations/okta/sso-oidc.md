@@ -1,3 +1,7 @@
+---
+description: Use Okta OIDC to secure access to ngrok tunnels
+---
+
 # Okta SSO (OpenID Connect)
 ------------
 

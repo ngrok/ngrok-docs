@@ -1,3 +1,7 @@
+---
+description: Use Wallix Trustelem OIDC to secure access to ngrok tunnels
+---
+
 # Wallix Trustelem SSO (OpenID Connect)
 ------------
 
