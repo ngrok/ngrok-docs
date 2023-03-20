@@ -15,7 +15,7 @@ Once you have your [ngrok account](https://dashboard.ngrok.com), open up the ngr
 
 Clicking the endpoint that was created when making this edge should open a new page and display a 404 page. This makes sense because we haven't started any tunnels for the tunnel group backend to serve traffic to.
 
-![](https://www.ngrok.com/static/img/docs/default-edge-404-page.png)
+![](https://ngrok.com/static/img/docs/default-edge-404-page.png)
 
 ### Starting your ngrok Agent Tunnels
 
@@ -31,7 +31,7 @@ Tunnel group backends work by looking for ngrok agents that are serving tunnels 
 
 On each of the machines that are running your upstream service, you should start an ngrok agent with the specific label for this HTTPS edge. You can start as many as you want. Once started, you should be able to see the agents in the HTTPS edge page in the dashboard (you might have to click refresh). Traffic will now be routed round robin to each of the agents with a tunnel that matches the labels of the tunnel group backend.
 
-![](https://www.ngrok.com/static/img/docs/https-edge-three-tunnels.png)
+![](https://ngrok.com/static/img/docs/https-edge-three-tunnels.png)
 
 ### Next Steps
 

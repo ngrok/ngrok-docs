@@ -30,7 +30,7 @@ You should see `Hello, World!` in your browser. If you have any trouble getting 
 
 Unfortunately, this service is only available on your local machine for now. Now let's use ngrok to securely share it with the world. For the rest of this guide, we will assume we're working with a web service running at http://localhost:8000 but you should adjust the following commands to match your configuration.
 
-![](https://www.ngrok.com/static/img/docs/localhost-8000.png)
+![](https://ngrok.com/static/img/docs/localhost-8000.png)
 
 ### Step 2: Install the ngrok Agent
 
@@ -172,7 +172,7 @@ Now when you access the new ngrok URL in your browser, you should be prompted fo
 
 By the way, if you have a paid plan and want to keep the same URL each time you restart, use the [`--subdomain`](/ngrok-agent/ngrok#ngrok-http-flags) flag when starting the agent.
 
-![](https://www.ngrok.com/static/img/docs/ngrok-basic-auth.png)
+![](https://ngrok.com/static/img/docs/ngrok-basic-auth.png)
 
 You now have a public URL for your web service secured by a username and password, still without modifying your web service.
 
@@ -190,7 +190,7 @@ If you have a paid plan, you can explicitly specify the email addresses to allow
 
 Now when you try to visit your new ngrok URL, you will be prompted to log in with your Google account (you can open in incognito to be sure). Again, this is without modifying your web service.
 
-![](https://www.ngrok.com/static/img/docs/ngrok-oauth.png)
+![](https://ngrok.com/static/img/docs/ngrok-oauth.png)
 
 ### Next steps
 
