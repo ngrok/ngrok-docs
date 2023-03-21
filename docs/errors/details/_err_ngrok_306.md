@@ -1,10 +1,10 @@
 
 ### Additional Information
 
-Binding a custom domain such as customname.com requires a paid plan. Once you sign up for a paid plan, we'll give you an authtoken which you'll add to your ngrok agent. That will allow you to use custom domain.
+Using a custom domain such as app.example.com requires a paid ngrok plan. You can upgrade to a paid plan under the [Billing](https://dashboard.ngrok.com/billing) section in the ngrok Dashboard. Once you upgrade, you will be able to [register and use a custom domain](/docs/guides/how-to-set-up-a-custom-domain/) immediately.
 
 ### Possible Solutions
 
-Sign up for a paid plan at https://dashboard.ngrok.com/signup You will need the Pro or Business plan to use a custom hostname.
+Upgrade to a paid plan in the ngrok Dashboard under the [Billing](https://dashboard.ngrok.com/billing) section. You will need a Personal, Pro or Enterprise plan to use a custom hostname.
 
-Add your authtoken from your account dashboard to your ngrok agent in your terminal.
+If you haven't already, add [your authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) from your account dashboard to your ngrok agent in your terminal using `ngrok config add-authtoken TOKEN`.
