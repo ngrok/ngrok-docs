@@ -27,9 +27,9 @@ This option packages the ngrok agent as a docker container, allowing you to work
 
 ## [ngrok Agent Libraries](/docs/using-ngrok-with/go)
 
-With ngrok agent libraries, you can embed ngrok directly into your application allowing you to programmatically launch and manage ngrok tunnels from your code.
+With ngrok agent libraries, you can embed ngrok directly into your application allowing you to programmatically launch and manage ngrok ingress from your code.
 
 - **Pros**: Embed ngrok functionality in your code without having to manage another process. Control ngrok tunnels and configuration programmatically
-- **Caveats (vs Agent)**: At this point, we offer a library only for Go, although we plan to support additional programming languages in the near future
+- **Caveats (vs Agent)**: At this point, we offer libraries only for [Go](/docs/using-ngrok-with/go) and [Rust](/docs/using-ngrok-with/rust), although we plan to support additional programming languages in the near future
 
 [Learn More](/docs/using-ngrok-with/go)
