@@ -21,6 +21,7 @@ Here you will find notes on using ngrok with particular technologies. Think we'r
 | [An outbound proxy](/using-ngrok-with/outboundProxy) | Use ngrok through an HTTP or SOCKS5 proxy |
 | [Puppet](/using-ngrok-with/puppet) | Manage the ngrok Agent using Puppet |
 | [Python](/using-ngrok-with/python) | Learn how to integrate with your Python application |
+| [Rust](/using-ngrok-with/rust) | Run ngrok programmatically with the ngrok-rs crate |
 | [SSH](/using-ngrok-with/ssh) | Learn how to SSH to a machine from anywhere in the world |
 | [Virtual hosts (MAMP, WAMP, etc.)](/using-ngrok-with/virtualHosts) | Rewrite the host header for forwarding to virtual hosts |
 | [Visual Studio](/using-ngrok-with/visualStudio) | Leverage ngrok when working in Visual Studio |
