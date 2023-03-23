@@ -1,74 +1,74 @@
 ---
-description: Use JumpCloud SAML to secure access to ngrok tunnels
+description: Use Auth0 SAML to secure access to ngrok tunnels
 ---
 
-# JumpCloud SSO (SAML)
+# Auth0 SSO (SAML)
 ------------
 
 :::tip TL;DR
 
-To secure access to ngrok with JumpCloud Single Sign-On using SAML:
-1. [Configure JumpCloud SSO](#configure-jumpcloud)
+To secure access to ngrok with Auth0 Single Sign-On using SAML:
+1. [Configure Auth0 SSO](#configure-Auth0)
 1. [Configure ngrok](#configure-ngrok)
-1. [Test access to ngrok with JumpCloud SSO](#test-sso)
+1. [Test access to ngrok with Auth0 SSO](#test-sso)
 
 :::
 
-This article details how to configure JumpCloud as the primary Identity Provider for ngrok tunnels.
-By integrating JumpCloud SSO with ngrok, you can:
+This article details how to configure Auth0 as the primary Identity Provider for ngrok tunnels.
+By integrating Auth0 SSO with ngrok, you can:
 
-- **Restrict access to ngrok tunnels** only to users authenticated via JumpCloud
-- **Use JumpCloud security policies and MFA authenticators**.
-- **Use JumpCloud's Dashboard to facilitate access to ngrok apps**.
+- **Restrict access to ngrok tunnels** only to users authenticated via Auth0
+- **Use Auth0 security policies and MFA authenticators**.
+- **Use Auth0's Dashboard to facilitate access to ngrok apps**.
 
 ## Requirements
 
-To configure ngrok tunnels with JumpCloud, you must have:
+To configure ngrok tunnels with Auth0, you must have:
 
-- an JumpCloud account with administrative rights to create apps
+- an Auth0 account with administrative rights to create apps
 - an ngrok enterprise account with an access token or admin access to configure edges with SAML.
 
 
 ## Configuration Steps
 
-To integrate ngrok with JumpCloud SSO, you will need to:
+To integrate ngrok with Auth0 SSO, you will need to:
 
-1. Configure JumpCloud with the ngrok app
-1. Configure ngrok with the SSO settings provided by JumpCloud
+1. Configure Auth0 with the ngrok app
+1. Configure ngrok with the SSO settings provided by Auth0
 
-## **Step 1**: Configure JumpCloud {#configure-jumpcloud}
+## **Step 1**: Configure Auth0 {#configure-Auth0}
 
-1. Access the [JumpCloud Console](https://console.jumpcloud.com/), and sign in using your JumpCloud administrator account.
+1. Access the [Auth0 Console](https://console.Auth0.com/), and sign in using your Auth0 administrator account.
 
 1. On the left menu, click **SSO**, click **Get Started** or **+ Add New Application**, and then click **Custom SAML App**.
 
 1. On the **New Application** popup, enter `ngrok saml` in the **Display Label** field.
 
-1. Click the **SSO** tab, enter `https://ngrok-jumpcloud` in the **IdP Entity ID** field, enter temporary values (i.e., `https://temporary`) in both the **SP Entity ID** and the **ACS URL** fields, and then click **activate**.
+1. Click the **SSO** tab, enter `https://ngrok-Auth0` in the **IdP Entity ID** field, enter temporary values (i.e., `https://temporary`) in both the **SP Entity ID** and the **ACS URL** fields, and then click **activate**.
 
 
 ### **Step 2**: Download the IdP metadata {#idp-metadata}
 
-1. On the **SSO** page of the [JumpCloud Console](https://console.jumpcloud.com/), click your **Custom SAML App**, click the **SSO** tab, click **Export Metadata**, and then save the XML file on your desktop.
+1. On the **SSO** page of the [Auth0 Console](https://console.Auth0.com/), click your **Custom SAML App**, click the **SSO** tab, click **Export Metadata**, and then save the XML file on your desktop.
 
 
 ### **Step 3**: Configure ngrok {#configure-ngrok}
 
-To configure an edge with JumpCloud:
+To configure an edge with Auth0:
 
 1. Access the [ngrok Dashboard](https://dashboard.ngrok.com/) and sign in using your ngrok account.
 
 1. On the left menu, click **Cloud Edge** and then click **Edges**.
 
-1. If you don't have an edge already set to add JumpCloud SSO, create a test edge:
+1. If you don't have an edge already set to add Auth0 SSO, create a test edge:
     * Click **+ New Edge**.
     * Click **Create HTTPS Edge**.
-    * Click the **pencil icon** next to "no description", enter `Edge with JumpCloud SSO SAML` as the edge name, and click **Save**.
+    * Click the **pencil icon** next to "no description", enter `Edge with Auth0 SSO SAML` as the edge name, and click **Save**.
 
 1. On the edge settings menu, click **SAML**.
 
-1. On the **SAML** page, click **Begin setup**, click **Upload XML**, and then open the XML metadata file you downloaded from JumpCloud (See [Download the IdP metadata](#idp-metadata)).
-    ![JumpCloud config in ngrok](img/jumpcloud-5.png)
+1. On the **SAML** page, click **Begin setup**, click **Upload XML**, and then open the XML metadata file you downloaded from Auth0 (See [Download the IdP metadata](#idp-metadata)).
+    ![Auth0 config in ngrok](img/auth0-5.png)
 
 1. Click **Save** at the top.
 
@@ -78,10 +78,10 @@ To configure an edge with JumpCloud:
 1. On the **SAML** page of your [ngrok edge](https://dashboard.ngrok.com/cloud-edge/edges), click the three dots close to the **SP Metadata** field, click **Download XML File**, and then save the XML file on your desktop.
 
 
-### **Step 5**: Link JumpCloud with ngrok {#sp-metadata}
+### **Step 5**: Link Auth0 with ngrok {#sp-metadata}
 
-1. Access the [JumpCloud Console](https://console.jumpcloud.com/), click **SSO**, click your **Custom SAML App**, click the **SSO** tab, click **Upload Metadata**, and then open the XML metadata file you downloaded from ngrok (See [Download the SP metadata](#sp-metadata)).
-    ![JumpCloud config in ngrok](img/jumpcloud-6.png)
+1. Access the [Auth0 Console](https://console.Auth0.com/), click **SSO**, click your **Custom SAML App**, click the **SSO** tab, click **Upload Metadata**, and then open the XML metadata file you downloaded from ngrok (See [Download the SP metadata](#sp-metadata)).
+    ![Auth0 config in ngrok](img/auth0-6.png)
 
 1. Click **Save**.
 
@@ -96,7 +96,7 @@ To configure an edge with JumpCloud:
 
 
 1. Click the **copy icon** next to the tunnel command.
-    ![tunnel config](img/jumpcloud-2.png)
+    ![tunnel config](img/auth0-2.png)
 
 1. Launch a tunnel:
     * Launch a terminal.
@@ -107,31 +107,31 @@ To configure an edge with JumpCloud:
     * Return to the ngrok dashboard
     * Close the **Start a tunnel** and the **Tunnel group** tabs
     * Refresh the test edge page. Under traffic, You will see the message _You have 1 tunnel online. Start additional tunnels to begin load balancing._
-    ![tunnel confirmed](img/jumpcloud-3.png)
+    ![tunnel confirmed](img/auth0-3.png)
 
-1. In the test edge, copy the **endpoint URL**. (You use this URL to test the JumpCloud Authentication)
-    ![tunnel url](img/jumpcloud-4.png)
+1. In the test edge, copy the **endpoint URL**. (You use this URL to test the Auth0 Authentication)
+    ![tunnel url](img/auth0-4.png)
 
 
-## Grant access to JumpCloud users {#users}
+## Grant access to Auth0 users {#users}
 
-JumpCloud allows administrators to restrict access to SSO apps — such as ngrok — via user group assignments. By default, apps created in JumpCloud have no group assignments — in other words, nobody can use JumpCloud SSO to access ngrok until you assign a group to the app.
+Auth0 allows administrators to restrict access to SSO apps — such as ngrok — via user group assignments. By default, apps created in Auth0 have no group assignments — in other words, nobody can use Auth0 SSO to access ngrok until you assign a group to the app.
 
-To assign JumpCloud groups to the ngrok app:
+To assign Auth0 groups to the ngrok app:
 
-1. On the left menu of the [JumpCloud Console](https://console.jumpcloud.com/), click **SOO** and click the ngrok custom SAML app you created.
+1. On the left menu of the [Auth0 Console](https://console.Auth0.com/), click **SOO** and click the ngrok custom SAML app you created.
 
 1. On the app popup, click the **User Groups** tab, click the checkbox of the **All Users** group, and then click **Save**.
-    **Tip**: Make sure to add JumpCloud users to this group when you create or manage users that need access to the ngrok app.
+    **Tip**: Make sure to add Auth0 users to this group when you create or manage users that need access to the ngrok app.
 
 
 ## Test the integration {#test-sso}
 
 1. In your browser, launch an incognito window.
 
-1. Access your ngrok tunnel (i.e., `https://jumpcloud-sso-test.ngrok.io` or using the copied endpoint URL).
+1. Access your ngrok tunnel (i.e., `https://Auth0-sso-test.ngrok.io` or using the copied endpoint URL).
 
-1. You should be prompted to log in with your JumpCloud credentials.
+1. You should be prompted to log in with your Auth0 credentials.
 
 1. After logging in, you should be able to see your web app.
 
