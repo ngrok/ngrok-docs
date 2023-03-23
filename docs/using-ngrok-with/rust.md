@@ -42,9 +42,10 @@ Getting started with ngrok and the ngrok-rs crate is simple:
     ```rust showLineNumbers
     use axum::{routing::get, Router};
     use ngrok::prelude::*;
+    use std::error::Error;
 
     #[tokio::main]
-    async fn main() -> anyhow::Result<()> {
+    async fn main() -> Result<(), Box<dyn Error>> {
         // build our application with a route
         let app = Router::new().route("/", get(|| async { "Hello from ngrok-rs!" }));
 
@@ -102,9 +103,10 @@ The ngrok-rs library provides functions and configuration for all features avail
 ```rust showLineNumbers
 use axum::{routing::get, Router};
 use ngrok::prelude::*;
+use std::error::Error;
 
 #[tokio::main]
-async fn main() -> anyhow::Result<()> {
+async fn main() -> Result<(), Box<dyn Error>> {
     // build our application with a route
     let app = Router::new().route("/", get(|| async { "Hello World!" }));
 
