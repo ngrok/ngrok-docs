@@ -52,7 +52,7 @@ To integrate ngrok with Auth0 SSO, you will need to:
 
 1. On the **Create application** popup, enter `ngrok oidc` in the **name** field, click the **Single Page Web Applications** tile, and then click **Create**.
 
-1. On the **ngrok oidc** page, click the **Settings** tab, make note of the **Doamin**, **Client ID** and **Client Secret** values.
+1. On the **ngrok oidc** page, click the **Settings** tab and make note of the **Doamin**, **Client ID**, and **Client Secret** values.
 
 1. Enter `https://idp.ngrok.com/oauth2/callback` in the **Allowed Callback URLs** field, and enter the URL provided by the ngrok agent to expose your application to the internet in the **Application Login URI** field (i.e. `https://myexample.ngrok.io`).
     ![Auth0 configuration](img/ngrok_url_configuration_auth0.png)
@@ -112,7 +112,7 @@ To configure an edge with Auth0:
 1. If you don't have an edge already set to add Auth0 SSO, create a test edge:
     * Click **+ New Edge**.
     * Click **Create HTTPS Edge**.
-    * Click the **pencil icon** next to "no description", enter `Edge with Auth0 SSO OIDC` as the edge name and click **Save**.
+    * Click the **pencil icon** next to "no description", enter `Edge with Auth0 SSO OIDC` as the edge name, and click **Save**.
 
 1. On the edge settings menu, click **OIDC**.
 
