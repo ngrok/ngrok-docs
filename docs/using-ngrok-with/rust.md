@@ -71,7 +71,7 @@ Getting started with ngrok and the ngrok-rs crate is simple:
     ```
 
     :::note In this code:
-    - **Lines 16-22**: create an listener object with the ngrok ingress
+    - **Lines 16-22**: create a listener object with the ngrok ingress
     - **Line 23**: print your ngrok ingress url
     - **Line 24-26**: start axum with the ngrok ingress
     :::
