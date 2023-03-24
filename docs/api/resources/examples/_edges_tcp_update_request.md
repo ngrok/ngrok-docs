@@ -1,11 +1,10 @@
 
 #### Example Request
-
-```bash 
+```bash
 curl \
--XPATCH \
+-X PATCH \
 -H "Authorization: Bearer {API_KEY}" \
 -H "Content-Type: application/json" \
 -H "Ngrok-Version: 2" \
 -d '{"metadata":"{\"environment\": \"production\"}"}' \
-https://api.ngrok.com/edges/tcp/edgtcp_2EmMQDcqb2o0jIp0iEGCVoZXyLw
+https://api.ngrok.com/edges/tcp/edgtcp_2NTVHu2fkFe7UfKgVL0vFuBW4KS

@@ -1,13 +1,12 @@
 
 #### Example Response
-
 ```json
 {
-  "id": "edgtcp_2EmMQDcqb2o0jIp0iEGCVoZXyLw",
+  "id": "edgtcp_2NTVHu2fkFe7UfKgVL0vFuBW4KS",
   "description": "acme tcp edge",
   "metadata": "{\"environment\": \"production\"}",
-  "created_at": "2022-09-14T22:58:07Z",
-  "uri": "https://api.ngrok.com/edges/tcp/edgtcp_2EmMQDcqb2o0jIp0iEGCVoZXyLw",
+  "created_at": "2023-03-24T19:59:34Z",
+  "uri": "https://api.ngrok.com/edges/tcp/edgtcp_2NTVHu2fkFe7UfKgVL0vFuBW4KS",
   "hostports": null,
   "backend": null,
   "ip_restriction": null

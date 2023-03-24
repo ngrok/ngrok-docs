@@ -176,9 +176,8 @@ Sign up for an account to avoid forced version upgrades: <a href="https://ngrok.
 			<td>
 				<a id="ERR_NGROK_204" href="/docs/errors/err_ngrok_204">ERR_NGROK_204</a>
 			</td>
-			<td class="pre-wrapped">Only the Pro and Enterprise accounts can use the ngrok API.
-This is a valid API token, but the account <code>&lt;ACCOUNT&gt;</code> is not authorized to use the ngrok API. 
-Upgrade to a Pro or Enterprise plan at: <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a></td>
+			<td class="pre-wrapped">This is a valid API token, but the account <code>&lt;ACCOUNT&gt;</code> is not allowed to use the ngrok API.
+Email support@ngrok.com to gain access.</td>
 		</tr>
 		<tr>
 			<td>
@@ -208,43 +207,43 @@ Upgrade to a Pro or Enterprise plan at: <a href="https://dashboard.ngrok.com/bil
 			<td>
 				<a id="ERR_NGROK_210" href="/docs/errors/err_ngrok_210">ERR_NGROK_210</a>
 			</td>
-			<td class="pre-wrapped">The content type you specified <code>&lt;CTYPE&gt;</code> is not supported by the API. Please check your API client implementation and see the list of supported content types: <a href="https://ngrok.com/docs/ngrok-link">https://ngrok.com/docs/ngrok-link</a>#service-api-content-type</td>
+			<td class="pre-wrapped">The content type you specified <code>&lt;CTYPE&gt;</code> is not supported by the API. Please check your API client implementation and see the list of supported content types: <a href="https://ngrok.com/docs/api">https://ngrok.com/docs/api</a>#content-types</td>
 		</tr>
 		<tr>
 			<td>
 				<a id="ERR_NGROK_211" href="/docs/errors/err_ngrok_211">ERR_NGROK_211</a>
 			</td>
-			<td class="pre-wrapped">The <code>&lt;METHOD&gt;</code> request you made does not expect a body, but you provided one. Please check your API client implementation and review the API documentation: <a href="https://ngrok.com/docs/ngrok-link">https://ngrok.com/docs/ngrok-link</a>#service-api.</td>
+			<td class="pre-wrapped">The <code>&lt;METHOD&gt;</code> request you made does not expect a body, but you provided one. Please check your API client implementation and review the API documentation: <a href="https://ngrok.com/docs/api">https://ngrok.com/docs/api</a>#service-api.</td>
 		</tr>
 		<tr>
 			<td>
 				<a id="ERR_NGROK_212" href="/docs/errors/err_ngrok_212">ERR_NGROK_212</a>
 			</td>
-			<td class="pre-wrapped">The server was unable to read the complete request body. Please check your API client implementation and review the API documentation: <a href="https://ngrok.com/docs/ngrok-link">https://ngrok.com/docs/ngrok-link</a>#service-api.</td>
+			<td class="pre-wrapped">The server was unable to read the complete request body. Please check your API client implementation and review the API documentation: <a href="https://ngrok.com/docs/api">https://ngrok.com/docs/api</a>#service-api.</td>
 		</tr>
 		<tr>
 			<td>
 				<a id="ERR_NGROK_213" href="/docs/errors/err_ngrok_213">ERR_NGROK_213</a>
 			</td>
-			<td class="pre-wrapped">The <code>&lt;CTYPE&gt;</code> request body could not be parsed. Please check your API client implementation and review the API documentation: <a href="https://ngrok.com/docs/ngrok-link">https://ngrok.com/docs/ngrok-link</a>#service-api.</td>
+			<td class="pre-wrapped">The <code>&lt;CTYPE&gt;</code> request body could not be parsed. Please check your API client implementation and review the API documentation: <a href="https://ngrok.com/docs/api">https://ngrok.com/docs/api</a>#service-api.</td>
 		</tr>
 		<tr>
 			<td>
 				<a id="ERR_NGROK_214" href="/docs/errors/err_ngrok_214">ERR_NGROK_214</a>
 			</td>
-			<td class="pre-wrapped">The request parameter <code>&lt;NAME&gt;</code> is unknown and not expected. The supported fields are: <code>&lt;SUPPORTED&gt;</code>. Please check your API client implementation and review the API documentation: <a href="https://ngrok.com/docs/ngrok-link">https://ngrok.com/docs/ngrok-link</a>#service-api.</td>
+			<td class="pre-wrapped">The request parameter <code>&lt;NAME&gt;</code> is unknown and not expected. The supported fields are: <code>&lt;SUPPORTED&gt;</code>. Please check your API client implementation and review the API documentation: <a href="https://ngrok.com/docs/api">https://ngrok.com/docs/api</a>#service-api.</td>
 		</tr>
 		<tr>
 			<td>
 				<a id="ERR_NGROK_215" href="/docs/errors/err_ngrok_215">ERR_NGROK_215</a>
 			</td>
-			<td class="pre-wrapped">The value provided for the request parameter <code>&lt;NAME&gt;</code> is invalid. Please check your request and review the API documentation: <a href="https://ngrok.com/docs/ngrok-link">https://ngrok.com/docs/ngrok-link</a>#service-api</td>
+			<td class="pre-wrapped">The value provided for the request parameter <code>&lt;NAME&gt;</code> is invalid. Please check your request and review the API documentation: <a href="https://ngrok.com/docs/api">https://ngrok.com/docs/api</a>#service-api.</td>
 		</tr>
 		<tr>
 			<td>
 				<a id="ERR_NGROK_216" href="/docs/errors/err_ngrok_216">ERR_NGROK_216</a>
 			</td>
-			<td class="pre-wrapped">You did not provide a Content-Type with your request. Please check your API client implementation and use one of the supported content types: <a href="https://ngrok.com/docs/ngrok-link">https://ngrok.com/docs/ngrok-link</a>#service-api-content-type</td>
+			<td class="pre-wrapped">You did not provide a Content-Type with your request. Please check your API client implementation and use one of the supported content types: <a href="https://ngrok.com/docs/api">https://ngrok.com/docs/api</a>#content-types</td>
 		</tr>
 		<tr>
 			<td>
@@ -322,19 +321,19 @@ Upgrade to a Pro or Enterprise plan at: <a href="https://dashboard.ngrok.com/bil
 			<td>
 				<a id="ERR_NGROK_230" href="/docs/errors/err_ngrok_230">ERR_NGROK_230</a>
 			</td>
-			<td class="pre-wrapped">The query part of the requested URI is invalid: <code>&lt;ERR&gt;</code>. Please check your API client implementation and review the API documentation: <a href="https://ngrok.com/docs/ngrok-link">https://ngrok.com/docs/ngrok-link</a>#service-api.</td>
+			<td class="pre-wrapped">The query part of the requested URI is invalid: <code>&lt;ERR&gt;</code>. Please check your API client implementation and review the API documentation: <a href="https://ngrok.com/docs/api">https://ngrok.com/docs/api</a>#service-api.</td>
 		</tr>
 		<tr>
 			<td>
 				<a id="ERR_NGROK_231" href="/docs/errors/err_ngrok_231">ERR_NGROK_231</a>
 			</td>
-			<td class="pre-wrapped">The query part of the requested URI includes unknown parameters: <code>&lt;UNKNOWN&gt;</code>. The supported parameters are: <code>&lt;SUPPORTED&gt;</code>. Please check your API client implementation and review the API documentation: <a href="https://ngrok.com/docs/ngrok-link">https://ngrok.com/docs/ngrok-link</a>#service-api.</td>
+			<td class="pre-wrapped">The query part of the requested URI includes unknown parameters: <code>&lt;UNKNOWN&gt;</code>. The supported parameters are: <code>&lt;SUPPORTED&gt;</code>. Please check your API client implementation and review the API documentation: <a href="https://ngrok.com/docs/api">https://ngrok.com/docs/api</a>#service-api.</td>
 		</tr>
 		<tr>
 			<td>
 				<a id="ERR_NGROK_232" href="/docs/errors/err_ngrok_232">ERR_NGROK_232</a>
 			</td>
-			<td class="pre-wrapped">The request must specify only a single value for the <code>&lt;NAME&gt;</code> parameter but got <code>&lt;COUNT&gt;</code>: <code>&lt;VALUES&gt;</code>. Please check your API client implementation and review the API documentation: <a href="https://ngrok.com/docs/ngrok-link">https://ngrok.com/docs/ngrok-link</a>#service-api.</td>
+			<td class="pre-wrapped">The request must specify only a single value for the <code>&lt;NAME&gt;</code> parameter but got <code>&lt;COUNT&gt;</code>: <code>&lt;VALUES&gt;</code>. Please check your API client implementation and review the API documentation: <a href="https://ngrok.com/docs/api">https://ngrok.com/docs/api</a>#service-api.</td>
 		</tr>
 		<tr>
 			<td>
@@ -422,8 +421,8 @@ The parsing error encountered was:
 			<td>
 				<a id="ERR_NGROK_302" href="/docs/errors/err_ngrok_302">ERR_NGROK_302</a>
 			</td>
-			<td class="pre-wrapped">TCP tunnels are only available after you sign up.
-Sign up at: <a href="https://dashboard.ngrok.com/signup">https://dashboard.ngrok.com/signup</a>
+			<td class="pre-wrapped">TCP tunnels are only available to registered users.
+Sign up for free at: <a href="https://dashboard.ngrok.com/signup">https://dashboard.ngrok.com/signup</a>
 If you have already signed up, make sure your authtoken is installed.
 Your authtoken is available on your dashboard: <a href="https://dashboard.ngrok.com/get-started/your-authtoken">https://dashboard.ngrok.com/get-started/your-authtoken</a></td>
 		</tr>
@@ -431,7 +430,7 @@ Your authtoken is available on your dashboard: <a href="https://dashboard.ngrok.
 			<td>
 				<a id="ERR_NGROK_303" href="/docs/errors/err_ngrok_303">ERR_NGROK_303</a>
 			</td>
-			<td class="pre-wrapped">TLS tunnels are only available for Pro and Business paid plans.
+			<td class="pre-wrapped">TLS tunnels are only available for Enterprise plans.
 Sign up at: <a href="https://dashboard.ngrok.com/signup">https://dashboard.ngrok.com/signup</a>
 If you have already signed up, make sure your authtoken is installed.
 Your authtoken is available on your dashboard: <a href="https://dashboard.ngrok.com/get-started/your-authtoken">https://dashboard.ngrok.com/get-started/your-authtoken</a></td>
@@ -440,7 +439,7 @@ Your authtoken is available on your dashboard: <a href="https://dashboard.ngrok.
 			<td>
 				<a id="ERR_NGROK_304" href="/docs/errors/err_ngrok_304">ERR_NGROK_304</a>
 			</td>
-			<td class="pre-wrapped">HTTP auth is only available after you sign up.
+			<td class="pre-wrapped">HTTP auth is only available to registered users.
 Failed to bind a tunnel with HTTP authentication for an unauthenticated client.
 Sign up at: <a href="https://dashboard.ngrok.com/signup">https://dashboard.ngrok.com/signup</a>
 If you have already signed up, make sure your authtoken is installed.
@@ -450,7 +449,7 @@ Your authtoken is available on your dashboard: <a href="https://dashboard.ngrok.
 			<td>
 				<a id="ERR_NGROK_305" href="/docs/errors/err_ngrok_305">ERR_NGROK_305</a>
 			</td>
-			<td class="pre-wrapped">Only paid plans may bind custom subdomains.
+			<td class="pre-wrapped">Binding custom subdomains is a feature for paid accounts.
 Failed to bind the custom subdomain <code>&lt;SUBDOMAIN&gt;</code> for an unauthenticated client.
 Sign up at: <a href="https://dashboard.ngrok.com/signup">https://dashboard.ngrok.com/signup</a>
 If you have already signed up, make sure your authtoken is installed.
@@ -460,7 +459,7 @@ Your authtoken is available on your dashboard: <a href="https://dashboard.ngrok.
 			<td>
 				<a id="ERR_NGROK_306" href="/docs/errors/err_ngrok_306">ERR_NGROK_306</a>
 			</td>
-			<td class="pre-wrapped">Custom hostnames are only available for Pro and Business paid plans.
+			<td class="pre-wrapped">Only Personal, Pro and Enterprise plans may use custom hostnames.
 Failed to bind the custom hostname <code>&lt;HOSTNAME&gt;</code> for an unauthenticated client.
 Sign up at: <a href="https://dashboard.ngrok.com/signup">https://dashboard.ngrok.com/signup</a>
 If you have already signed up, make sure your authtoken is installed.
@@ -497,12 +496,12 @@ authtoken credential for the appropriate account.</td>
 			<td>
 				<a id="ERR_NGROK_310" href="/docs/errors/err_ngrok_310">ERR_NGROK_310</a>
 			</td>
-			<td class="pre-wrapped">Only Pro and Enterprise plans may bind reserved addresses.
+			<td class="pre-wrapped">Only Personal, Pro and Enterprise plans may bind reserved addresses.
 Failed to bind the address <code>&lt;ADDR&gt;</code> for the account <code>&lt;ACCOUNT&gt;</code>.
 This account is on the <code>&lt;PLAN&gt;</code> plan.
 This usually only happens if you downgraded your ngrok account and it no
 longer has permission to use reserved addresses.
-Upgrade to Pro or Enterprise: <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a></td>
+Upgrade your account at: <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a></td>
 		</tr>
 		<tr>
 			<td>
@@ -526,7 +525,7 @@ Upgrade to an Enterprise plan at: <a href="https://dashboard.ngrok.com/billing/s
 			<td>
 				<a id="ERR_NGROK_313" href="/docs/errors/err_ngrok_313">ERR_NGROK_313</a>
 			</td>
-			<td class="pre-wrapped">Only paid plans may bind custom subdomains.
+			<td class="pre-wrapped">Custom subdomains are a feature on ngrok's paid plans.
 Failed to bind the custom subdomain <code>&lt;SUBDOMAIN&gt;</code> for the account <code>&lt;ACCOUNT&gt;</code>.
 This account is on the <code>&lt;PLAN&gt;</code> plan.
 Upgrade to a paid plan at: <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a></td>
@@ -535,7 +534,7 @@ Upgrade to a paid plan at: <a href="https://dashboard.ngrok.com/billing/subscrip
 			<td>
 				<a id="ERR_NGROK_314" href="/docs/errors/err_ngrok_314">ERR_NGROK_314</a>
 			</td>
-			<td class="pre-wrapped">Only Pro and Enterprise plans may bind custom hostnames.
+			<td class="pre-wrapped">Only Personal, Pro and Enterprise plans may bind custom hostnames.
 Failed to bind the custom hostname <code>&lt;HOSTNAME&gt;</code> for the account <code>&lt;ACCOUNT&gt;</code>.
 This account is on the <code>&lt;PLAN&gt;</code> plan.
 Upgrade to a paid plan at: <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a></td>
@@ -544,7 +543,7 @@ Upgrade to a paid plan at: <a href="https://dashboard.ngrok.com/billing/subscrip
 			<td>
 				<a id="ERR_NGROK_315" href="/docs/errors/err_ngrok_315">ERR_NGROK_315</a>
 			</td>
-			<td class="pre-wrapped">Only Enterprise plans may bind wildcard names.
+			<td class="pre-wrapped">Wildcard domains are a feature reserved for ngrok's Enterprise plan.
 Failed to bind the wildcard name <code>&lt;DOMAIN&gt;</code> for the account <code>&lt;ACCOUNT&gt;</code>.
 This account is on the <code>&lt;PLAN&gt;</code> plan.
 Upgrade to an Enterprise plan at: <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a></td>
@@ -742,7 +741,7 @@ Your authtoken is available on your dashboard: <a href="https://dashboard.ngrok.
 			<td>
 				<a id="ERR_NGROK_342" href="/docs/errors/err_ngrok_342">ERR_NGROK_342</a>
 			</td>
-			<td class="pre-wrapped">Only Enterprise plans may use per-tunnel IP policies.
+			<td class="pre-wrapped">Per-tunnel IP policies are a feature available in ngrok's Enterprise plan.
 Your account is not authorized to use per-tunnel IP policies.
 Upgrade to Enterprise: <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a></td>
 		</tr>
@@ -809,13 +808,13 @@ Update the endpoint configuration to specify 'agent' as the auth provider or rem
 			<td>
 				<a id="ERR_NGROK_352" href="/docs/errors/err_ngrok_352">ERR_NGROK_352</a>
 			</td>
-			<td class="pre-wrapped">Anonymous sessions are limited to <code>&lt;MAX&gt;</code> tunnels.</td>
+			<td class="pre-wrapped">Unauthenticated sessions are limited to <code>&lt;MAX&gt;</code> tunnels.</td>
 		</tr>
 		<tr>
 			<td>
 				<a id="ERR_NGROK_353" href="/docs/errors/err_ngrok_353">ERR_NGROK_353</a>
 			</td>
-			<td class="pre-wrapped">Anonymous sessions are rate limited for adding <code>&lt;MAX&gt;</code> tunnels per <code>&lt;INTERVAL&gt;</code>.</td>
+			<td class="pre-wrapped">Unauthenticated sessions are rate limited for adding <code>&lt;MAX&gt;</code> tunnels per <code>&lt;INTERVAL&gt;</code>.</td>
 		</tr>
 		<tr>
 			<td>
@@ -1103,9 +1102,9 @@ Label: <code>&lt;LABEL&gt;</code></td>
 			<td>
 				<a id="ERR_NGROK_401" href="/docs/errors/err_ngrok_401">ERR_NGROK_401</a>
 			</td>
-			<td class="pre-wrapped">Only Pro or Enterprise accounts can reserve domains.
+			<td class="pre-wrapped">Only Personal, Pro or Enterprise accounts can reserve domains.
 Your account can't reserve domains. 
-Upgrade to a Pro or Enterprise plan at: <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a></td>
+Upgrade to a paid plan at: <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a></td>
 		</tr>
 		<tr>
 			<td>
@@ -1171,9 +1170,9 @@ Upgrade to a Pro or Enterprise plan at: <a href="https://dashboard.ngrok.com/bil
 			<td>
 				<a id="ERR_NGROK_412" href="/docs/errors/err_ngrok_412">ERR_NGROK_412</a>
 			</td>
-			<td class="pre-wrapped">Only Pro or Enterprise accounts can reserve tunnels on custom domains.
+			<td class="pre-wrapped">Only Personal, Pro or Enterprise accounts can reserve tunnels on custom domains.
 Your account cannot reserve tunnels on custom domains (<code>&lt;DOMAIN&gt;</code> is not a subdomain of <code>&lt;BASE&gt;</code>).
-Upgrade to a Pro or Enterprise plan at: <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a></td>
+Upgrade to a paid plan at: <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a></td>
 		</tr>
 		<tr>
 			<td>
@@ -1380,9 +1379,9 @@ The name you've requested is: <code>&lt;DOMAIN&gt;</code></td>
 			<td>
 				<a id="ERR_NGROK_501" href="/docs/errors/err_ngrok_501">ERR_NGROK_501</a>
 			</td>
-			<td class="pre-wrapped">Only Pro or Enterprise accounts can reserve addresses.
+			<td class="pre-wrapped">Only Personal, Pro or Enterprise accounts can reserve addresses.
 Your account can't reserve addresses. 
-Upgrade to a Pro or Enterprise plan at <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a></td>
+Upgrade to a paid plan at <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a></td>
 		</tr>
 		<tr>
 			<td>
@@ -1466,19 +1465,21 @@ Upgrade to a Pro or Enterprise plan at <a href="https://dashboard.ngrok.com/bill
 			<td>
 				<a id="ERR_NGROK_601" href="/docs/errors/err_ngrok_601">ERR_NGROK_601</a>
 			</td>
-			<td class="pre-wrapped">Cannot delete user credential <code>&lt;ID&gt;</code>.</td>
+			<td class="pre-wrapped">This credential is your tunnel token and cannot be deleted, only rotated.
+Credential ID: <code>&lt;ID&gt;</code>
+Description: <code>&lt;DESCRIPTION&gt;</code></td>
 		</tr>
 		<tr>
 			<td>
 				<a id="ERR_NGROK_602" href="/docs/errors/err_ngrok_602">ERR_NGROK_602</a>
 			</td>
-			<td class="pre-wrapped">Your account is limited to <code>&lt;MAX&gt;</code> tunnel credentials. Email contact@ngrok.com to increase the limit.</td>
+			<td class="pre-wrapped">Your account is limited to <code>&lt;MAX&gt;</code> tunnel credentials. Please upgrade your account or contact support@ngrok.com to increase the limit.</td>
 		</tr>
 		<tr>
 			<td>
 				<a id="ERR_NGROK_603" href="/docs/errors/err_ngrok_603">ERR_NGROK_603</a>
 			</td>
-			<td class="pre-wrapped">Your account is limited to <code>&lt;MAX&gt;</code> API keys. Email contact@ngrok.com to increase the limit.</td>
+			<td class="pre-wrapped">Your account is limited to <code>&lt;MAX&gt;</code> API keys. Please upgrade your account or contact support@ngrok.com to increase the limit.</td>
 		</tr>
 		<tr>
 			<td>
@@ -1510,7 +1511,7 @@ Upgrade to a Pro or Enterprise plan at: <a href="https://dashboard.ngrok.com/bil
 			<td>
 				<a id="ERR_NGROK_608" href="/docs/errors/err_ngrok_608">ERR_NGROK_608</a>
 			</td>
-			<td class="pre-wrapped">Your account is limited to <code>&lt;MAX&gt;</code> SSH keys. Email contact@ngrok.com to increase the limit.</td>
+			<td class="pre-wrapped">Your account is limited to <code>&lt;MAX&gt;</code> SSH keys. Please upgrade your account or contact support@ngrok.com to increase the limit.</td>
 		</tr>
 		<tr>
 			<td>
@@ -1646,6 +1647,20 @@ Upgrade to an Enterprise plan at: <a href="https://dashboard.ngrok.com/billing/s
 		</tr>
 		<tr>
 			<td>
+				<a id="ERR_NGROK_636" href="/docs/errors/err_ngrok_636">ERR_NGROK_636</a>
+			</td>
+			<td class="pre-wrapped">The credential owner is marked as inactive on the account.</td>
+		</tr>
+		<tr>
+			<td>
+				<a id="ERR_NGROK_637" href="/docs/errors/err_ngrok_637">ERR_NGROK_637</a>
+			</td>
+			<td class="pre-wrapped">This credential cannot be deleted because it is the default authtoken tied to <code>&lt;EMAIL&gt;</code>. Removing the user from this account will also delete any associated tokens.
+Credential ID: <code>&lt;ID&gt;</code>
+Description: <code>&lt;DESCRIPTION&gt;</code></td>
+		</tr>
+		<tr>
+			<td>
 				<a id="ERR_NGROK_702" href="/docs/errors/err_ngrok_702">ERR_NGROK_702</a>
 			</td>
 			<td class="pre-wrapped">Too many connections! The tunnel session <code>&lt;SESSION&gt;</code> has violated the rate-limit policy of <code>&lt;THRESHOLD&gt;</code> connections per minute by initiating <code>&lt;COUNT&gt;</code> connections in the last <code>&lt;SECONDS&gt;</code> seconds. Please decrease your inbound connection volume or upgrade to a paid plan for additional capacity.</td>
@@ -1678,13 +1693,13 @@ Upgrade to an Enterprise plan at: <a href="https://dashboard.ngrok.com/billing/s
 			<td>
 				<a id="ERR_NGROK_716" href="/docs/errors/err_ngrok_716">ERR_NGROK_716</a>
 			</td>
-			<td class="pre-wrapped">This anonymous ngrok session has reached its simultaneous connections limit.</td>
+			<td class="pre-wrapped">This unauthenticated ngrok session has reached its simultaneous connections limit. Please sign up for a free account at https://ngrok.com for a higher limit. </td>
 		</tr>
 		<tr>
 			<td>
 				<a id="ERR_NGROK_717" href="/docs/errors/err_ngrok_717">ERR_NGROK_717</a>
 			</td>
-			<td class="pre-wrapped">This anonymous ngrok session has reached its connection rate limit.</td>
+			<td class="pre-wrapped">This unauthenticated ngrok session has reached its connection rate limit. Please sign up for a free account at https://ngrok.com for a higher limit.</td>
 		</tr>
 		<tr>
 			<td>
@@ -1696,7 +1711,7 @@ Upgrade to an Enterprise plan at: <a href="https://dashboard.ngrok.com/billing/s
 			<td>
 				<a id="ERR_NGROK_719" href="/docs/errors/err_ngrok_719">ERR_NGROK_719</a>
 			</td>
-			<td class="pre-wrapped">Anonymous sessions are rate limited to <code>&lt;MAX&gt;</code> bytes incoming traffic per <code>&lt;INTERVAL&gt;</code>.</td>
+			<td class="pre-wrapped">Unauthenticated sessions are rate limited to <code>&lt;MAX&gt;</code> bytes incoming traffic per <code>&lt;INTERVAL&gt;</code>. Please sign up for a free account at https://ngrok.com for a higher limit.</td>
 		</tr>
 		<tr>
 			<td>
@@ -1708,7 +1723,7 @@ Upgrade to an Enterprise plan at: <a href="https://dashboard.ngrok.com/billing/s
 			<td>
 				<a id="ERR_NGROK_721" href="/docs/errors/err_ngrok_721">ERR_NGROK_721</a>
 			</td>
-			<td class="pre-wrapped">Anonymous sessions are rate limited to <code>&lt;MAX&gt;</code> bytes outgoing traffic per <code>&lt;INTERVAL&gt;</code>.</td>
+			<td class="pre-wrapped">Unauthenticated sessions are rate limited to <code>&lt;MAX&gt;</code> bytes outgoing traffic per <code>&lt;INTERVAL&gt;</code>.Please sign up for a free account at https://ngrok.com for a higher limit.</td>
 		</tr>
 		<tr>
 			<td>
@@ -1905,6 +1920,12 @@ The parsing error encountered was:
 				<a id="ERR_NGROK_1017" href="/docs/errors/err_ngrok_1017">ERR_NGROK_1017</a>
 			</td>
 			<td class="pre-wrapped">Accounts in bad standing may only switch to a free plan or update their payment method.</td>
+		</tr>
+		<tr>
+			<td>
+				<a id="ERR_NGROK_1018" href="/docs/errors/err_ngrok_1018">ERR_NGROK_1018</a>
+			</td>
+			<td class="pre-wrapped">You may only purchase <code>&lt;COUNT&gt;</code> licenses at the <code>&lt;TIER&gt;</code> tier.</td>
 		</tr>
 		<tr>
 			<td>
@@ -2225,6 +2246,12 @@ Use one of version '1' or '2' to enable proxy proto.</td>
 		</tr>
 		<tr>
 			<td>
+				<a id="ERR_NGROK_1228" href="/docs/errors/err_ngrok_1228">ERR_NGROK_1228</a>
+			</td>
+			<td class="pre-wrapped">You are no longer an active member of the current account.</td>
+		</tr>
+		<tr>
+			<td>
 				<a id="ERR_NGROK_1400" href="/docs/errors/err_ngrok_1400">ERR_NGROK_1400</a>
 			</td>
 			<td class="pre-wrapped">The IP Policy update failed because no values were provided. Specify at least one value</td>
@@ -2525,9 +2552,9 @@ Upgrade to a Pro or Enterprise plan at: <a href="https://dashboard.ngrok.com/bil
 			<td>
 				<a id="ERR_NGROK_1631" href="/docs/errors/err_ngrok_1631">ERR_NGROK_1631</a>
 			</td>
-			<td class="pre-wrapped">Only Pro or Enterprise accounts can use webhook validation.
-Your account is not authorized to use webhook validation.  
-Upgrade to a Pro or Enterprise plan at: <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a></td>
+			<td class="pre-wrapped">Only Personal, Pro or Enterprise accounts can use webhook validation.
+Your account is not authorized to use webhook validation.
+Upgrade to a paid plan at: <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a></td>
 		</tr>
 		<tr>
 			<td>
@@ -2587,9 +2614,9 @@ Upgrade to a Pro or Enterprise plan at: <a href="https://dashboard.ngrok.com/bil
 			<td>
 				<a id="ERR_NGROK_1641" href="/docs/errors/err_ngrok_1641">ERR_NGROK_1641</a>
 			</td>
-			<td class="pre-wrapped">Only Pro or Enterprise accounts can use OAuth.
-Your account is not authorized to use OAuth. 
-Upgrade to a Pro or Enterprise plan at: <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a></td>
+			<td class="pre-wrapped">Only Personal, Pro or Enterprise accounts can use OAuth.
+Your account is not authorized to use OAuth.
+Upgrade to a paid plan at: <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a></td>
 		</tr>
 		<tr>
 			<td>
@@ -3383,7 +3410,7 @@ Upgrade to a Pro or Enterprise plan at: <a href="https://dashboard.ngrok.com/bil
 			<td>
 				<a id="ERR_NGROK_3003" href="/docs/errors/err_ngrok_3003">ERR_NGROK_3003</a>
 			</td>
-			<td class="pre-wrapped">This client does not support TLS SNI, but the endpoint's TLS configuration requires SNI. See <a href="https://ngrok.com/docs/cloud-edge">https://ngrok.com/docs/cloud-edge</a>#compatible-clients</td>
+			<td class="pre-wrapped">This client does not support TLS SNI, but the endpoint's TLS configuration requires SNI. See <a href="https://ngrok.com/docs/cloud-edge/edges/tls">https://ngrok.com/docs/cloud-edge/edges/tls</a>#compatible-clients</td>
 		</tr>
 		<tr>
 			<td>
@@ -3984,6 +4011,12 @@ Install your authoken: <a href="https://dashboard.ngrok.com/get-started/your-aut
 		</tr>
 		<tr>
 			<td>
+				<a id="ERR_NGROK_4112" href="/docs/errors/err_ngrok_4112">ERR_NGROK_4112</a>
+			</td>
+			<td class="pre-wrapped">Bot names must be unique within an account.</td>
+		</tr>
+		<tr>
+			<td>
 				<a id="ERR_NGROK_4200" href="/docs/errors/err_ngrok_4200">ERR_NGROK_4200</a>
 			</td>
 			<td class="pre-wrapped">You may not delete all or your logins, you must have at least one.</td>
@@ -4028,7 +4061,7 @@ Install your authoken: <a href="https://dashboard.ngrok.com/get-started/your-aut
 			<td>
 				<a id="ERR_NGROK_4402" href="/docs/errors/err_ngrok_4402">ERR_NGROK_4402</a>
 			</td>
-			<td class="pre-wrapped">The invited user would exceed your team size limit of <code>&lt;TEAM_SIZE&gt;</code>. Delete unused invitations or users to make room, or upgrade to a Pro or Enterprise plan: <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a></td>
+			<td class="pre-wrapped">The invited user would exceed your current team size limit of <code>&lt;TEAM_SIZE&gt;</code>. Add another seat at: <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a>. Then you'll be able to invite your team.</td>
 		</tr>
 		<tr>
 			<td>
@@ -4092,6 +4125,18 @@ Install your authoken: <a href="https://dashboard.ngrok.com/get-started/your-aut
 		</tr>
 		<tr>
 			<td>
+				<a id="ERR_NGROK_4414" href="/docs/errors/err_ngrok_4414">ERR_NGROK_4414</a>
+			</td>
+			<td class="pre-wrapped">You are not allowed to create invitations, this account uses SCIM 2.0 to manage members.</td>
+		</tr>
+		<tr>
+			<td>
+				<a id="ERR_NGROK_4415" href="/docs/errors/err_ngrok_4415">ERR_NGROK_4415</a>
+			</td>
+			<td class="pre-wrapped">You are not allowed to redeem this invitation, this account uses SCIM 2.0 to manage members.</td>
+		</tr>
+		<tr>
+			<td>
 				<a id="ERR_NGROK_4451" href="/docs/errors/err_ngrok_4451">ERR_NGROK_4451</a>
 			</td>
 			<td class="pre-wrapped">A user with the email address <code>&lt;EMAIL&gt;</code> already exists.</td>
@@ -4131,6 +4176,12 @@ Install your authoken: <a href="https://dashboard.ngrok.com/get-started/your-aut
 				<a id="ERR_NGROK_4504" href="/docs/errors/err_ngrok_4504">ERR_NGROK_4504</a>
 			</td>
 			<td class="pre-wrapped">The host <code>&lt;HOST&gt;</code> is not a known ngrok TCP hostname.</td>
+		</tr>
+		<tr>
+			<td>
+				<a id="ERR_NGROK_4701" href="/docs/errors/err_ngrok_4701">ERR_NGROK_4701</a>
+			</td>
+			<td class="pre-wrapped">You must only specify a single SSO configuration but you specified both SAML and OpenID Connect.</td>
 		</tr>
 		<tr>
 			<td>
@@ -4890,6 +4941,12 @@ Please try again or contact the owner of this application if the issue persists.
 		</tr>
 		<tr>
 			<td>
+				<a id="ERR_NGROK_6025" href="/docs/errors/err_ngrok_6025">ERR_NGROK_6025</a>
+			</td>
+			<td class="pre-wrapped">The tunnel <code>&lt;URL&gt;</code> is already bound to another tunnel session. Please start the ngrok agent with a different domain.</td>
+		</tr>
+		<tr>
+			<td>
 				<a id="ERR_NGROK_6500" href="/docs/errors/err_ngrok_6500">ERR_NGROK_6500</a>
 			</td>
 			<td class="pre-wrapped">Your account is not authorized to use the backends feature. 
@@ -5145,6 +5202,30 @@ Please ask the account owner to upgrade your plan: <a href="https://dashboard.ng
 				<a id="ERR_NGROK_6616" href="/docs/errors/err_ngrok_6616">ERR_NGROK_6616</a>
 			</td>
 			<td class="pre-wrapped">You may not set user permissions higher than your own.</td>
+		</tr>
+		<tr>
+			<td>
+				<a id="ERR_NGROK_6617" href="/docs/errors/err_ngrok_6617">ERR_NGROK_6617</a>
+			</td>
+			<td class="pre-wrapped">Users must have a defined billing permission.</td>
+		</tr>
+		<tr>
+			<td>
+				<a id="ERR_NGROK_6618" href="/docs/errors/err_ngrok_6618">ERR_NGROK_6618</a>
+			</td>
+			<td class="pre-wrapped">You are not allowed to create members, this account uses SCIM 2.0 to manage members.</td>
+		</tr>
+		<tr>
+			<td>
+				<a id="ERR_NGROK_6619" href="/docs/errors/err_ngrok_6619">ERR_NGROK_6619</a>
+			</td>
+			<td class="pre-wrapped">You are not allowed to remove members, this account uses SCIM 2.0 to manage members.</td>
+		</tr>
+		<tr>
+			<td>
+				<a id="ERR_NGROK_6620" href="/docs/errors/err_ngrok_6620">ERR_NGROK_6620</a>
+			</td>
+			<td class="pre-wrapped">You are not allowed to activate/deactivate members, this account uses SCIM 2.0 to manage members.</td>
 		</tr>
 		<tr>
 			<td>
@@ -6282,8 +6363,8 @@ Upgrade to a Pro or Enterprise plan at: <a href="https://dashboard.ngrok.com/bil
 			<td>
 				<a id="ERR_NGROK_9009" href="/docs/errors/err_ngrok_9009">ERR_NGROK_9009</a>
 			</td>
-			<td class="pre-wrapped">Your account is not authorized to run the agent with http/s proxy.
-Upgrade to an Enterprise plan at: <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a></td>
+			<td class="pre-wrapped">Running the agent with an http/s proxy is an enterprise feature. If this is unexpected, verify that there is no proxy_url value in your ngrok configuration file and that the http_proxy environment variable is not set.
+If you need this capability, upgrade to an Enterprise plan at: <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a></td>
 		</tr>
 		<tr>
 			<td>
@@ -6646,6 +6727,30 @@ Upgrade to a Pro or Enterprise plan at: <a href="https://dashboard.ngrok.com/bil
 		</tr>
 		<tr>
 			<td>
+				<a id="ERR_NGROK_10079" href="/docs/errors/err_ngrok_10079">ERR_NGROK_10079</a>
+			</td>
+			<td class="pre-wrapped">The team member queried is of an unknown type. If the problem persists, please contact support: support@ngrok.com</td>
+		</tr>
+		<tr>
+			<td>
+				<a id="ERR_NGROK_10080" href="/docs/errors/err_ngrok_10080">ERR_NGROK_10080</a>
+			</td>
+			<td class="pre-wrapped">The invitation <code>&lt;INVITE_ID&gt;</code> was not found</td>
+		</tr>
+		<tr>
+			<td>
+				<a id="ERR_NGROK_10081" href="/docs/errors/err_ngrok_10081">ERR_NGROK_10081</a>
+			</td>
+			<td class="pre-wrapped">You must specify only the correct ID for the requested team member entry.</td>
+		</tr>
+		<tr>
+			<td>
+				<a id="ERR_NGROK_10082" href="/docs/errors/err_ngrok_10082">ERR_NGROK_10082</a>
+			</td>
+			<td class="pre-wrapped">You must specify a user, bot, or membership ID when attempting to update a credentials owner.</td>
+		</tr>
+		<tr>
+			<td>
 				<a id="ERR_NGROK_11000" href="/docs/errors/err_ngrok_11000">ERR_NGROK_11000</a>
 			</td>
 			<td class="pre-wrapped">Internal Server Error. Please refresh the page and try again. If the problem persists, please check our status page https://status.ngrok.com/ or contact the frontend team.</td>
@@ -6757,6 +6862,24 @@ Upgrade to a Pro or Enterprise plan at: <a href="https://dashboard.ngrok.com/bil
 				<a id="ERR_NGROK_14001" href="/docs/errors/err_ngrok_14001">ERR_NGROK_14001</a>
 			</td>
 			<td class="pre-wrapped">Got an invalid TLS key/cert pair for TLS termination: <code>&lt;ERR&gt;</code></td>
+		</tr>
+		<tr>
+			<td>
+				<a id="ERR_NGROK_14002" href="/docs/errors/err_ngrok_14002">ERR_NGROK_14002</a>
+			</td>
+			<td class="pre-wrapped">The PEM data provided for mutual TLS could not be parsed as a certificate: <code>&lt;ERROR&gt;</code>.</td>
+		</tr>
+		<tr>
+			<td>
+				<a id="ERR_NGROK_15000" href="/docs/errors/err_ngrok_15000">ERR_NGROK_15000</a>
+			</td>
+			<td class="pre-wrapped">You are not allowed to bind subdomains on <code>&lt;BASE&gt;</code>. Your account is on the <code>&lt;PLAN&gt;</code> plan, which doesn't allow starting tunnels on <code>&lt;BASE&gt;</code>.</td>
+		</tr>
+		<tr>
+			<td>
+				<a id="ERR_NGROK_16000" href="/docs/errors/err_ngrok_16000">ERR_NGROK_16000</a>
+			</td>
+			<td class="pre-wrapped">The email of the user you are trying to add, <code>&lt;EMAIL&gt;</code>, does not use a domain verified for your account.</td>
 		</tr>
 	</tbody>
 </table>
