@@ -2,6 +2,7 @@
 #### Example Request
 ```bash
 curl \
+-X GET \
 -H "Authorization: Bearer {API_KEY}" \
 -H "Ngrok-Version: 2" \
-https://api.ngrok.com/ip_policies/ipp_2IEh23J7r4VJ1f3KejgGuKIJHbX
+https://api.ngrok.com/ip_policies/ipp_2NTVGWp0HTTcR4fjIyxBx4RU2d9

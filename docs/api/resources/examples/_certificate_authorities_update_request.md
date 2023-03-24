@@ -2,9 +2,9 @@
 #### Example Request
 ```bash
 curl \
--XPATCH \
+-X PATCH \
 -H "Authorization: Bearer {API_KEY}" \
 -H "Content-Type: application/json" \
 -H "Ngrok-Version: 2" \
 -d '{"description":"Internal Corporate Services Authority (Legacy)"}' \
-https://api.ngrok.com/certificate_authorities/ca_2GjEzSQ4nqIsawDqtwRBz3dzCRG
+https://api.ngrok.com/certificate_authorities/ca_2NTVHP7HpVRberNQ47uBOX5tUwx
