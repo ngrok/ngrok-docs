@@ -103,6 +103,7 @@ The ngrok-rs library provides functions and configuration for all features avail
 ```rust showLineNumbers
 use axum::{routing::get, Router};
 use ngrok::prelude::*;
+use ngrok::config::*;
 use std::error::Error;
 
 #[tokio::main]
