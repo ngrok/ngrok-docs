@@ -69,7 +69,7 @@ For example, the previous tunnel would match on and become a member for all tunn
 `location=dc1`
 
 
-It is recommended to configured multiple labels on a tunnel group in order to keep the label combinations unique for a specific application. Having more complex label combinations can prevent tunnels for other applications from unexpectedly connecting to any incorrect tunnel groups. 
+It is recommended to configure multiple labels on a tunnel group in order to keep the label combinations unique for a specific application. Having more complex label combinations can prevent tunnels for other applications from unexpectedly connecting to any incorrect tunnel groups. 
 
 
 ## Pre-deploying Labeled Tunnels on Devices
