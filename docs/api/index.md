@@ -43,3 +43,7 @@ The ngrok API guarantees that breaking changes to the API will never be made unl
 ## Pagination {#pagination}
 
 List endpoints can be paginated using the query parameters `limit` and `before_id`. Results are returned ordered from newest to oldest. The maximum value of `limit` is 100. If a limit is not specified, it will default to 100. If `before_id` is not specified, the first page of results will be returned. You can provide an explicit value for `before_id` to retrieve items created before the given ID. Each response to a list request will include a `next_page_uri` field, which will be the full URL you can request to retrieve the next page of results. If there are no more results, `next_page_uri` will be `null`.
+
+## Timestamps and Tomezones {#timezones}
+
+All timestamp fields in the ngrok API are represented as strings that are returned in the [RFC 3339 format](https://www.ietf.org/rfc/rfc3339.txt). The timestamps returned by the API are in UTC time which is indicated by a `Z` at the end.
