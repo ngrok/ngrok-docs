@@ -20,8 +20,7 @@ Once you have the pre-requisites installed run the following commands:
 ```bash
 git clone https://github.com/ngrok/ngrok-docs.git
 cd ngrok-docs
-pnpm i
-pnpm start
+pnpm i && pnpm run start
 ```
 
 Our docs mostly use markdown and MDX, you can make yourself familiar with docusaurus [documentation](https://docusaurus.io/docs/en/installation) for more significant features / changes.
@@ -32,7 +31,7 @@ To ensure your changes work before submitting a pr, please run the following bef
 
 ```
 cd ngrok-docs
-pnpm build
+pnpm run build
 ```
 
 ## Looking for support?
