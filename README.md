@@ -1,32 +1,37 @@
 # [ngrok docs](https://ngrok.com/docs)
 
-This is the source for the [ngrok docs](https://ngrok.com/docs); feel free to suggest changes and improvements to our documentation!
+Source code for [ngrok docs](https://ngrok.com/docs); feel free to suggest changes and improvements to our documentation!
 
 ## Contributing
 
-We welcome and celebrate contributions! See our [Contribution Guidelines](CONTRIBUTING.md) for detailed instructions on how to help improve the ngrok docs.
+See our [Contribution Guidelines](CONTRIBUTING.md) for detailed instructions on how to help improve ngrok documentation.
 
-## Setup ngrok docs
+## Setup
 
 ngrok is built using [Docusaurus 2](https://docusaurus.io/).
 
-To setup our docs in your host, simply
+Prerequisites required:
+
+- [Node 18+](https://nodejs.org/en/download)
+- [pnpm 8+](https://pnpm.io/installation#using-npm)
+
+Once you have the pre-requisites installed run the following commands:
 
 ```bash
 git clone https://github.com/ngrok/ngrok-docs.git
 cd ngrok-docs
-yarn && yarn start
+pnpm i && pnpm run start
 ```
 
-While our Docusaurus uses mostly markdowns, you can make yourself familiar with its [documentation](https://docusaurus.io/docs/en/installation) for more significant changes.
+Our docs mostly use markdown and MDX, you can make yourself familiar with docusaurus [documentation](https://docusaurus.io/docs/en/installation) for more significant features / changes.
 
 ## Building ngrok-docs
 
-To ensure your changes will works — i.e. its not missing links, you can run a local build:
+To ensure your changes work before submitting a pr, please run the following before submission:
 
 ```
 cd ngrok-docs
-yarn run build
+pnpm run build
 ```
 
 ## Looking for support?
