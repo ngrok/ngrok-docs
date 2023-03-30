@@ -32,7 +32,7 @@ The ngrok integration with miniOrange supports:
 To configure ngrok tunnels with miniOrange, you must have:
 
 - a miniOrange account with administrative rights to create apps.
-- an ngrok enterprise account with an access token or admin access to configure edges with OpenID Connect.
+- an [ngrok Enterprise Account](https://ngrok.com/pricing) with an authtoken or admin access to configure edges with OpenID Connect.
 
 
 ## Configuration Steps

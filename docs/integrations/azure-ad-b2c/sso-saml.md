@@ -25,7 +25,7 @@ This article details how to configure Azure AD B2C as an Identity Provider for y
 
 To configure ngrok tunnels with Azure AD B2C, you must have:
 
-- an ngrok enterprise account with an access token or admin access to configure edges with SAML
+- an [ngrok Enterprise Account](https://ngrok.com/pricing) with an authtoken or admin access to configure edges with SAML
 - a Microsoft Azure account with access to an Azure AD B2C tenant
 - an understanding of Azure AD B2C [custom policies](https://learn.microsoft.com/en-us/azure/active-directory-b2c/custom-policy-overview)
 
