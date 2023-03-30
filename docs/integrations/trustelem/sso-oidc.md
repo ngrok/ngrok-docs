@@ -32,7 +32,7 @@ The ngrok integration with Wallix Trustelem supports:
 To configure ngrok tunnels with Wallix Trustelem, you must have:
 
 - a Wallix Trustelem account with administrative rights to create apps.
-- an ngrok enterprise account with an access token or admin access to configure edges with OpenID Connect.
+- an [ngrok Enterprise Account](https://ngrok.com/pricing) with an authtoken or admin access to configure edges with OpenID Connect.
 
 
 ## Configuration Steps
