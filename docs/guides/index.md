@@ -29,4 +29,5 @@ Here you will find a set of guides to help you with common (and not so common) t
 | [Serving Local Directories](/secure-tunnels/tunnels/http-tunnels#file-url) | Learn how to use ngrok as a file server to quickly share directories with anyone |
 | [Wildcard Domains](/cloud-edge/endpoints#wildcard-domains) | Learn how wildcard domains work in ngrok and configure your own |
 | [How to Round-Robin Load Balance with ngrok Cloud Edges](/guides/how-to-round-robin-load-balance-with-ngrok-cloud-edges) | Learn how to load balance ngrok tunnels using ngrok Cloud Edges |
+| [How to do Weighted Round-Robin Load Balancing with ngrok Cloud Edges](/guides/how-to-do-weighted-load-balancing-with-ngrok-cloud-edges) | Learn how to load balance ngrok tunnels using ngrok Cloud Edges |
 | [Using Labels with ngrok Edges](/guides/using-labels-within-ngrok) | Learn how to use labels and tunnel groups with ngrok Cloud Edges |
