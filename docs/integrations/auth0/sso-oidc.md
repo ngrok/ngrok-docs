@@ -52,7 +52,7 @@ To integrate ngrok with Auth0 SSO, you will need to:
 
 1. On the **Create application** popup, enter `ngrok oidc` in the **name** field, click the **Single Page Web Applications** tile, and then click **Create**.
 
-1. On the **ngrok oidc** page, click the **Settings** tab and make note of the **Doamin**, **Client ID**, and **Client Secret** values.
+1. On the **ngrok oidc** page, click the **Settings** tab and make note of the **Domain**, **Client ID**, and **Client Secret** values.
 
 1. Enter `https://idp.ngrok.com/oauth2/callback` in the **Allowed Callback URLs** field, and enter the URL provided by the ngrok agent to expose your application to the internet in the **Application Login URI** field (i.e. `https://myexample.ngrok.io`).
     ![Auth0 configuration](img/ngrok_url_configuration_auth0.png)
@@ -119,7 +119,7 @@ To configure an edge with Auth0:
 1. Click **Begin setup** and enter the following values into the fields:
     ![Auth0 config in ngrok](img/auth0-1.png)
 
-    * **Issuer URL**: The domain value you copied from Auth0, in the form of an URL (i.e. `https://dev-abcd1234.us.auth0.com/`).
+    * **Issuer URL**: The domain value you copied from Auth0, in the form of a URL (i.e. `https://dev-abcd1234.us.auth0.com/`).
     * **Client ID**:  The client id you copied from Auth0.
     * **Client Secret**: The client secret you copied from Auth0.
 
@@ -144,7 +144,7 @@ To configure an edge with Auth0:
     1. To confirm that the tunnel is connected to your edge:
         * Return to the ngrok dashboard
         * Close the **Start a tunnel** and the **Tunnel group** tabs
-        * Refresh the test edge page. Under traffic, You will see the message _You have 1 tunnel online. Start additional tunnels to begin load balancing._
+        * Refresh the test edge page. Under traffic, you will see the message _You have 1 tunnel online. Start additional tunnels to begin load balancing._
         ![tunnel confirmed](img/auth0-3.png)
 
 1. In the test edge, copy the **endpoint URL**. (You use this URL to test the Auth0 Authentication)
