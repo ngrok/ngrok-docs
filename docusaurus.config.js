@@ -33,7 +33,7 @@ const config = {
 
   plugins: [
     './src/plugins/ngrok-parse-integrations',
-    'docusaurus-plugin-hubspot', 
+    '@stackql/docusaurus-plugin-hubspot', 
     '@docusaurus/theme-mermaid'
   ],
 
@@ -72,6 +72,12 @@ const config = {
         googleAnalytics: {
           trackingID: 'UA-41575845-1',
         },
+        sitemap: {
+          changefreq: 'hourly',
+          priority: 0.5,
+          ignorePatterns: ['/docs/tags/**', '/docs/**/toc/**'],
+          filename: 'sitemap.xml',
+        }
       }),
     ],
   ],
@@ -270,7 +276,7 @@ const config = {
       prism: {
         theme: lightCodeTheme,
         darkTheme: darkCodeTheme,
-        additionalLanguages: ['hcl'],
+        additionalLanguages: ['hcl', 'rust'],
       },
       docs: {
         sidebar: {

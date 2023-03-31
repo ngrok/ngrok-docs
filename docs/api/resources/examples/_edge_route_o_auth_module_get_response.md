@@ -1,6 +1,5 @@
 
 #### Example Response
-
 ```json
 {
   "enabled": true,
@@ -14,7 +13,7 @@
       "scopes": [
         "profile",
         "email",
-        "https://www.googleapis.com/auth/gmail.compose"
+        "https://www.googleapis.com/auth/userinfo.email"
       ],
       "email_addresses": [
         "alan@example.com"
@@ -22,7 +21,9 @@
       "email_domains": []
     },
     "linkedin": null,
-    "gitlab": null
+    "gitlab": null,
+    "twitch": null,
+    "amazon": null
   },
   "options_passthrough": false,
   "cookie_prefix": "ngrok.",

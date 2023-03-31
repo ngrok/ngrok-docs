@@ -14,7 +14,7 @@ To make changes to the documentation, edit the relevant Markdown files in your l
 
 When making changes, please follow the Markdown style guide and try to keep your changes concise and to the point. If you are making significant changes or adding new content, please consider including examples or other resources to help readers understand the topic better.
 
-Once you have finished making your changes, we recommend you run a local build with docusaurus (command `yarn run build`) to ensure your contribution will not present errors with links or build. After a successful build, push them to your fork on GitHub and create a pull request to submit your changes for review.
+Once you have finished making your changes, we recommend you run a local build with docusaurus (command `pnpm run build`) to ensure your contribution will not present errors with links or build. After a successful build, push them to your fork on GitHub and create a pull request to submit your changes for review.
 
 ## Code of conduct
 

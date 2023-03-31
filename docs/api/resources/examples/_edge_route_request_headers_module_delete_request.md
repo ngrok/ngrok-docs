@@ -1,9 +1,8 @@
 
 #### Example Request
-
-```bash 
+```bash
 curl \
--XDELETE \
+-X DELETE \
 -H "Authorization: Bearer {API_KEY}" \
 -H "Ngrok-Version: 2" \
-https://api.ngrok.com/edges/https/edghts_2EmMPsuhWIP1LQXFBXVYmoVI5cz/routes/edghtsrt_2EmMQ7BWLDQEaxyoqxSQ9S0nFl3/request_headers
+https://api.ngrok.com/edges/https/edghts_2NTVHrVVN3J0TjcR4B77qDPNLiQ/routes/edghtsrt_2NTVHlOarbWhwNf9KJ2TlYrWByE/request_headers

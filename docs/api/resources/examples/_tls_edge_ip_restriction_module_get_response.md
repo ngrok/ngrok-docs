@@ -1,17 +1,16 @@
 
 #### Example Response
-
 ```json
 {
   "enabled": true,
   "ip_policies": [
     {
-      "id": "ipp_2EmMQKhLdabKpLzdS3Nlcw0rKMl",
-      "uri": "https://api.ngrok.com/ip_policies/ipp_2EmMQKhLdabKpLzdS3Nlcw0rKMl"
+      "id": "ipp_2NTVHzzXty28mJVhQG47JjVneHA",
+      "uri": "https://api.ngrok.com/ip_policies/ipp_2NTVHzzXty28mJVhQG47JjVneHA"
     },
     {
-      "id": "ipp_2EmMQNCXn91tb32dxPaDSDkZmip",
-      "uri": "https://api.ngrok.com/ip_policies/ipp_2EmMQNCXn91tb32dxPaDSDkZmip"
+      "id": "ipp_2NTVI09fA5I9wEaYYcE7Q1SxhZc",
+      "uri": "https://api.ngrok.com/ip_policies/ipp_2NTVI09fA5I9wEaYYcE7Q1SxhZc"
     }
   ]
 }

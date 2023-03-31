@@ -4,6 +4,9 @@ title: Agent Changelog
 
 # ngrok Agent Changelog
 
+### ngrok Agent 3.2.2 - \[2023-03-27\]
+* Fixed a bug introduced in v3.2.1 with tab complete for command line flags
+
 ### ngrok Agent 3.2.1 - \[2023-03-13\]
 * Deprecated the `--subdomain` and `--hostname` flags.
 * Updated all `--subdomain` and `--hostname` examples to use `--domain`.
