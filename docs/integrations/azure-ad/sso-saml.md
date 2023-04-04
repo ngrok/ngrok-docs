@@ -25,7 +25,7 @@ This article details how to configure Azure AD as an Identity Provider for your 
 
 To configure ngrok tunnels with Azure AD, you must have:
 
-- an ngrok enterprise account with an access token or admin access to configure edges with SAML
+- an [ngrok Enterprise Account](https://ngrok.com/pricing) with an authtoken or admin access to configure edges with SAML
 - a Microsoft Azure account with access to an Azure AD tenant
 
 ## Step 1: Create an ngrok Edge {#create-edge}

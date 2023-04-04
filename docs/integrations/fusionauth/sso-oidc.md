@@ -31,7 +31,7 @@ The ngrok integration with FusionAuth supports:
 To configure ngrok tunnels with FusionAuth, you must have:
 
 - A public facing FusionAuth instance. You can spin up a basic [FusionAuth Cloud instance](https://fusionauth.io/pricing) or [install it on any server](https://fusionauth.io/docs/v1/tech/installation-guide/).
-- An ngrok enterprise account with an access token or admin access to configure edges with OpenID Connect.
+- An [ngrok Enterprise Account](https://ngrok.com/pricing) with an authtoken or admin access to configure edges with OpenID Connect.
 - A local web app or application that needs to be protected by Fusion Auth.
 
 

@@ -26,7 +26,7 @@ By integrating Curity Identity Server with ngrok, you can:
 To configure ngrok tunnels with Curity, you must have:
 
 - an Curity account with administrative rights to create clients
-- an ngrok enterprise account with an access token or admin access to configure edges with OpenID Connect.
+- an [ngrok Enterprise Account](https://ngrok.com/pricing) with an authtoken or admin access to configure edges with OpenID Connect.
 
 ## Configuration Steps
 

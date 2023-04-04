@@ -26,7 +26,7 @@ By integrating Okta SSO with ngrok, you can:
 To configure ngrok tunnels with Okta, you must have:
 
 - an Okta account with administrative rights to create apps
-- an ngrok enterprise account with an access token or admin access to configure edges with SAML.
+- an [ngrok Enterprise Account](https://ngrok.com/pricing) with an authtoken or admin access to configure edges with SAML.
 
 
 ## Configuration Steps
