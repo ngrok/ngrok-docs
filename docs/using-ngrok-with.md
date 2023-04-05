@@ -15,6 +15,7 @@ Here you will find notes on using ngrok with particular technologies. Think we'r
 | [Go](/using-ngrok-with/go) | Run ngrok programmatically with the ngrok-go library |
 | [gRPC](/using-ngrok-with/gRPC) | ngrok TCP tunnels work great with gRPC |
 | [Java](/using-ngrok-with/java) | Learn how to integrate with your Java projects |
+| [Kubernetes](/using-ngrok-with/k8s) | Add public and secure ingress traffic to your k8s services with the ngrok Ingress Controller for Kubernetes |
 | [Minecraft](/using-ngrok-with/minecraft) | ngrok can help you and your friends connect for online gaming |
 | [NGINX](/using-ngrok-with/nginx) | Learn how to configure ngrok when using it with NGINX |
 | [Node (npm, node.js)](/using-ngrok-with/node-js) | Work with the ngrok agent from your Node application |
