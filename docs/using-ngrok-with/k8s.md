@@ -7,7 +7,7 @@ title: Kubernetes
 
 ## Introduction
 
-The [ngrok Ingress Controller for Kubernetes](https://github.com/ngrok/kubernetes-ingress-controller) is our official open-source controller for adding public and secure ingress traffic to your k8s clusters. If you’ve used ngrok in the past, you can think of the ngrok Ingress Controller as ngrok packaged an idiomatic k8s resource — available as helm chart, configurable via manifest (using the `kind: Ingress` construct), and compatible with k8s best practices. 
+The [ngrok Ingress Controller for Kubernetes](https://github.com/ngrok/kubernetes-ingress-controller) is our official open-source controller for adding public and secure ingress traffic to your k8s services. If you’ve used ngrok in the past, you can think of the ngrok Ingress Controller as ngrok packaged an idiomatic k8s controller — available as helm chart, configurable via manifest (using the `kind: Ingress` construct), and compatible with k8s best practices. 
 
 In this tutorial, you will install the ngrok Ingress Controller and run a sample 2048 app with public ingress access and security provided by ngrok.
 
@@ -22,7 +22,7 @@ In this tutorial, you will install the ngrok Ingress Controller and run a sample
 
 :::tip
 The ngrok Ingress Controller requires:
-- The authtoken to launch connections from ngrok's points of presence to your k8s cluster.
+- The authtoken to launch connections between ngrok's points of presence and your k8s cluster.
 - The API key to set ngrok edge configurations for your k8s cluster
 :::
 
@@ -49,74 +49,82 @@ To started with the ngrok Ingress Controller for Kubernetes:
 
 1. Install the ngrok Ingress Controller in your cluster, replacing `[AUTHTOKEN]` and `[API_KEY]` with your Authtoken and API key from above:
 
+    **Note:** For this tutorial, we're creating and using the namespace `ngrok-ingress-controller`.
+
     ```bash
     export NGROK_AUTHTOKEN=[AUTHTOKEN]
     export NGROK_API_KEY=[API_KEY]
     helm install ngrok-ingress-controller ngrok/kubernetes-ingress-controller \
-    --set credentials.apiKey=$NGROK_API_KEY \
-    --set credentials.authtoken=$NGROK_AUTHTOKEN
-    kubectl apply -f ngrok-manifest.yaml
+      --namespace ngrok-ingress-controller \
+      --create-namespace \
+      --set credentials.apiKey=$NGROK_API_KEY \
+      --set credentials.authtoken=$NGROK_AUTHTOKEN
     ```
 
 1. Create a manifest file (for example `ngrok-manifest.yaml`) with the following contents:
 
     :::tip Notes:
-    - Lines 1-32: Create the 2048 app service and deployment
-    - Lines 34-51: Create the ngrok Ingress Controller. Line 42 in specific determines the ingress URL for public requests.
+    - Lines 1-34: Create the 2048 app service and deployment
+    - Lines 35-54 (highlighed): Create the ngrok Ingress Controller. Line 45 determines the ingress URL for public requests.
     :::
 
     ```yaml showLineNumbers
     apiVersion: v1
     kind: Service
     metadata:
-    name: game-2048
+      name: game-2048
+      namespace: ngrok-ingress-controller
     spec:
-    ports:
+      ports:
         - name: http
-        port: 80
-        targetPort: 80
-    selector:
+          port: 80
+          targetPort: 80
+      selector:
         app: game-2048
     ---
     apiVersion: apps/v1
     kind: Deployment
     metadata:
-    name: game-2048
+      name: game-2048
+      namespace: ngrok-ingress-controller
     spec:
-    replicas: 1
-    selector:
+      replicas: 1
+      selector:
         matchLabels:
-        app: game-2048
-    template:
+          app: game-2048
+      template:
         metadata:
-        labels:
+          labels:
             app: game-2048
         spec:
-        containers:
+          containers:
             - name: backend
-            image: alexwhen/docker-2048
-            ports:
+              image: alexwhen/docker-2048
+              ports:
                 - name: http
-                containerPort: 80
+                  containerPort: 80
     ---
+    # highlight-start
     # ngrok Ingress Controller Configuration
     apiVersion: networking.k8s.io/v1
     kind: Ingress
     metadata:
       name: game-2048-ingress
+      namespace: ngrok-ingress-controller
     spec:
       ingressClassName: ngrok
       rules:
         - host: my-awesome-k8s-cluster.ngrok.app
           http:
-          paths:
-            - path: /
-            pathType: Prefix
-            backend:
-              service:
-              name: game-2048
-              port:
-                number: 80
+            paths:
+              - path: /
+                pathType: Prefix
+                backend:
+                  service:
+                    name: game-2048
+                    port:
+                      number: 80
+    # highlight-end
     ```
 
 1. Apply the manifest file:
@@ -129,7 +137,7 @@ To started with the ngrok Ingress Controller for Kubernetes:
 
     ![ingress created](/img/howto/ingress-controller/k8s-ingress-app-1.png)
 
-1. Access your ingress URL (i.e. `my-awesome-k8s-cluster.ngrok.app`) to confirm the 2048 app is accessible from the internet:
+1. Access your ingress URL (i.e. `https://my-awesome-k8s-cluster.ngrok.app`) to confirm the 2048 app is accessible from the internet:
     
     ![application public](/img/howto/ingress-controller/k8s-ingress-app-2.png)
 
@@ -139,10 +147,10 @@ The ngrok Ingress Controler for Kubernetes provides custom resource definitions 
 
 :::tip Notes:
 This example is very similar to the previous version, with the following changes:
-- Lines 40-42: Associates your Ingress Controller with the configuration `oauth-and-circuit-breaking` via annotation
-- Lines 56-72: Sets the edge configuration as a custom CRD (NgrokModuleSet).
-- Lines 62-67: Sets the circuit breaker module over 50% threshold.
-- Lines 68-72: Sets the OAuth module to allow access only for users with the email domains `@acme.com` or `@ngrok.com`.
+- Lines 41-42: Associates your Ingress Controller with the configuration `oauth-and-circuit-breaking` via annotation
+- Lines 57-75: Sets the edge configuration as a custom CRD (NgrokModuleSet).
+- Lines 64-69: Sets the circuit breaker module over 50% threshold.
+- Lines 70-74: Sets the OAuth module to allow access only for users with the email domains `@acme.com` or `@ngrok.com`.
 :::
 
 ```yaml showLineNumbers
@@ -150,6 +158,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: game-2048
+  namespace: ngrok-ingress-controller
 spec:
   ports:
     - name: http
@@ -162,6 +171,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: game-2048
+  namespace: ngrok-ingress-controller
 spec:
   replicas: 1
   selector:
@@ -179,33 +189,36 @@ spec:
             - name: http
               containerPort: 80
 ---
-# Instead of running the k8s ingress on port 80
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
- name: game-2048-ingress
- annotations:
-  # Associate edge with module configuration
-  k8s.ngrok.com/modules: oauth-and-circuit-breaking
+  name: game-2048-ingress
+  namespace: ngrok-ingress-controller
+  # highlight-start
+  annotations:
+    k8s.ngrok.com/modules: oauth-and-circuit-breaking
+  # highlight-end
 spec:
- ingressClassName: ngrok
- rules:
-   - host: my-awesome-k8s-cluster.ngrok.app
-     http:
-       paths:
-         - path: /
-           pathType: Prefix
-           backend:
-             service:
-               name: game-2048
-               port:
-                 number: 80
+  ingressClassName: ngrok
+  rules:
+    - host: my-awesome-k8s-cluster.ngrok.app
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: game-2048
+                port:
+                  number: 80
 ---
+# highlight-start
 # Module configurations for Circuit Breaking and OAuth
 kind: NgrokModuleSet
 apiVersion: ingress.k8s.ngrok.com/v1alpha1
 metadata:
   name: oauth-and-circuit-breaking
+  namespace: ngrok-ingress-controller
 modules:
   circuitBreaker:
     trippedDuration: 10s
@@ -216,15 +229,15 @@ modules:
   oauth:
     google:
       emailDomains:
-      - acme.com
-      - ngrok.com
+        - acme.com
+        - ngrok.com
 ---
+# highlight-end
 ```
 
 1. Save your file and reapply the manifest file:
     
     ```bash
-    kubectl delete -f ngrok-manifest.yaml
     kubectl apply -f ngrok-manifest.yaml
     ```
 
