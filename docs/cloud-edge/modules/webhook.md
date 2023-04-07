@@ -10,7 +10,7 @@ The currently supported webhook providers are:
 | AfterShip | `aftership` | [Documentation](https://ngrok.com/docs/integrations/aftership/webhooks/) |
 | Airship | `airship` | [Documentation](https://ngrok.com/docs/integrations/airship/webhooks/) |
 | Amazon SNS | `sns` | [Documentation](https://ngrok.com/docs/integrations/amazonsns/webhooks/) |
-| Autodesk Forge | `autodesk_forge` | [Documentation](https://ngrok.com/docs/integrations/autodesk/webhooks/) |
+| Autodesk Platform Services | `autodesk` | [Documentation](https://ngrok.com/docs/integrations/autodesk/webhooks/) |
 | Bitbucket | `bitbucket` | [Documentation](https://ngrok.com/docs/integrations/bitbucket/webhooks/) |
 | Bolt | `bolt` | [Documentation](https://help.bolt.com/developers/guides/webhooks/hook-verification/) |
 | Box | `box` | [Documentation](https://ngrok.com/docs/integrations/box/webhooks/) |
