@@ -196,7 +196,7 @@ This is a quick step to add extra protection to your application.
 
 1. Restart your ngrok agent by running the command, replacing `{your client secret}` with the value you copied before:
     ```bash
-    ngrok http 3000 --verify-webhook autodesk_forge --verify-webhook-secret {your client secret}
+    ngrok http 3000 --verify-webhook autodesk --verify-webhook-secret {your client secret}
     ```
 
 1. Access the folder you assigned to your webhook, upload a text file, and confirm your localhost app receives a notification and logs both headers and body in the terminal.
