@@ -100,7 +100,7 @@ You can trigger new calls from Twilio to your application by following the instr
 
 Optionally, you can verify the log of the webhook call in Twilio:
 
-1. On the your phone page, click the **Events Log** tab and then click the event log you want.
+1. On the your phone page, click the **Messages Log** tab, select **Incoming** in the **Direction** field, and then click **Filter**.
     ![Webhook Logs](img/ngrok_logs_twilio.png)
 
 
