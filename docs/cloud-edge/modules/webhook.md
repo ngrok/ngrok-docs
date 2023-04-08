@@ -20,7 +20,7 @@ The currently supported webhook providers are:
 | Castle | `castle` | [Documentation](https://ngrok.com/docs/integrations/castle/webhooks/) |
 | Chargify | `chargify` | [Documentation](https://ngrok.com/docs/integrations/chargify/webhooks/) |
 | CircleCI | `circleci` | [Documentation](https://ngrok.com/docs/integrations/circleci/webhooks/) |
-| Clearbit | `clearbit` | [Documentation](https://dashboard.clearbit.com/docs#webhooks-securing-webhooks) |
+| Clearbit | `clearbit` | [Documentation](https://ngrok.com/docs/integrations/clearbit/webhooks/) |
 | Clerk | `clerk` | [Documentation](https://ngrok.com/docs/integrations/clerk/webhooks/) |
 | Coinbase | `coinbase` | [Documentation](https://ngrok.com/docs/integrations/coinbase/webhooks/) |
 | Contentful | `contentful` | [Documentation](https://ngrok.com/docs/integrations/contentful/webhooks/) |
