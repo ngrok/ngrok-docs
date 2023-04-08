@@ -48,7 +48,7 @@ The currently supported webhook providers are:
 | Orbit | `orbit` | [Documentation](https://ngrok.com/docs/integrations/orbit/webhooks/) |
 | PagerDuty | `pagerduty` | [Documentation](https://ngrok.com/docs/integrations/pagerduty/webhooks/) |
 | Pinwheel | `pinwheel` | [Documentation](https://ngrok.com/docs/integrations/pinwheel/webhooks/) |
-| Plivo | `plivo` | [Documentation](https://www.plivo.com/docs/sms/concepts/signature-validation) |
+| Plivo | `plivo` | [Documentation](https://ngrok.com/docs/integrations/plivo/webhooks/) |
 | Pusher | `pusher` | [Documentation](https://ngrok.com/docs/integrations/pusher/webhooks/) |
 | SendGrid | `sendgrid` | [Documentation](https://ngrok.com/docs/integrations/sendgrid/webhooks/) |
 | Sentry | `sentry` | [Documentation](https://ngrok.com/docs/integrations/sentry/webhooks/) |
