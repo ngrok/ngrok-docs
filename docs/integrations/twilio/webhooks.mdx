@@ -49,7 +49,7 @@ npm start
 
 The app runs by default on port `3000`. 
 
-You can validate that the app is up and running by visiting http://localhost:3000. The application logs request headers and body in the terminal and responds with a message in the browser.
+You can validate that the app is up and running by visiting `http://localhost:3000`. The application logs request headers and body in the terminal and responds with a message in the browser.
 
 
 ## **Step 2**: Launch ngrok {#start-ngrok}
