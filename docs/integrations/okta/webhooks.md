@@ -46,7 +46,7 @@ Now you can launch the app by running the following command:
 npm run startOkta
 ```
 
-The app runs by default on port 3000. 
+The app runs by default on port `3000`. 
 
 You can validate that the app is up and running by visiting http://localhost:3000. The application logs request headers and body in the terminal and responds with a message in the browser.
 
