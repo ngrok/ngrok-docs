@@ -15,7 +15,7 @@ Consider restricting the IPs that are able to start ngrok agent sessions.
 
 ### Authtokens
 
-Assign an [unique Authtoken to each ngrok agent](/secure-tunnels/ngrok-agent/tunnel-authtokens#per-agent-authtokens) deployment to isolate issues if a specific Authtoken is compromised.
+Assign a [unique Authtoken to each ngrok agent](/secure-tunnels/ngrok-agent/tunnel-authtokens#per-agent-authtokens) deployment to isolate issues if a specific Authtoken is compromised.
 
 Set up a [minimum ACL per Authtoken](/secure-tunnels/ngrok-agent/tunnel-authtokens#authtoken-acl-enforcement) to limit the endpoints each agent is able to start.
 
