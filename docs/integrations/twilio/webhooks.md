@@ -22,7 +22,7 @@ This guide covers how to use ngrok to integrate your localhost app with [Twilio 
 - **Modify and Replay Twilio Webhook requests** with a single click and without spending time reproducing events manually in Twilio
 
 ## **Step 1**: Start your app {#start-your-app}
-An example express app can be found on Github here: [https://github.com/thomas-ngrok/ngrok-example-twilio-sms-webhook](https://github.com/thomas-ngrok/ngrok-example-twilio-sms-webhook). 
+An example express app can be found on GitHub here: [https://github.com/thomas-ngrok/ngrok-example-twilio-sms-webhook](https://github.com/thomas-ngrok/ngrok-example-twilio-sms-webhook). 
 
 ```js
 var MessagingResponse = require('twilio').twiml.MessagingResponse;

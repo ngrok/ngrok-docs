@@ -1,30 +1,30 @@
 ---
-description: Develop and test Aftership webhooks from localhost
+description: Develop and test AfterShip webhooks from localhost
 ---
 
-# Aftership Webhooks
+# AfterShip Webhooks
 ------------
 
 :::tip TL;DR
 
-To integrate Aftership webhooks with ngrok:
+To integrate AfterShip webhooks with ngrok:
 1. [Launch your local webhook.](#start-your-app) `npm start`
 1. [Launch ngrok.](#start-ngrok) `ngrok http 3000`
-1. [Configure Aftership webhooks with your ngrok URL.](#setup-webhook)
+1. [Configure AfterShip webhooks with your ngrok URL.](#setup-webhook)
 1. [Secure your webhook requests with verification.](#security)
 
 :::
 
 
-This guide covers how to use ngrok to integrate your localhost app with Aftership by using Webhooks.
-Aftership webhooks can be used to notify an external application whenever specific events occur in your Aftership account. 
+This guide covers how to use ngrok to integrate your localhost app with AfterShip by using Webhooks.
+AfterShip webhooks can be used to notify an external application whenever specific events occur in your AfterShip account. 
 
-By integrating ngrok with Aftership, you can:
+By integrating ngrok with AfterShip, you can:
 
-- **Develop and test Aftership webhooks locally**, eliminating the time in deploying your development code to a public environment and setting it up in HTTPS.
-- **Inspect and troubleshoot requests from Aftership** in real-time via the inspection UI and API.
-- **Modify and Replay Aftership Webhook requests** with a single click and without spending time reproducing events manually in your Aftership account.
-- **Secure your app with Aftership validation provided by ngrok**. Invalid requests are blocked by ngrok before reaching your app.
+- **Develop and test AfterShip webhooks locally**, eliminating the time in deploying your development code to a public environment and setting it up in HTTPS.
+- **Inspect and troubleshoot requests from AfterShip** in real-time via the inspection UI and API.
+- **Modify and Replay AfterShip Webhook requests** with a single click and without spending time reproducing events manually in your AfterShip account.
+- **Secure your app with AfterShip validation provided by ngrok**. Invalid requests are blocked by ngrok before reaching your app.
 
 
 ## **Step 1**: Start your app {#start-your-app}
@@ -68,15 +68,15 @@ Once your app is running successfully on localhost, let's get it on the internet
     ngrok http 3000
     ```
 
-1. ngrok will display a URL where your localhost application is exposed to the internet (copy this URL for use with Aftership).
+1. ngrok will display a URL where your localhost application is exposed to the internet (copy this URL for use with AfterShip).
     ![ngrok agent running](/img/integrations/launch_ngrok_tunnel.png)
 
 
-## **Step 3**: Integrate  Aftership {#setup-webhook}
+## **Step 3**: Integrate  AfterShip {#setup-webhook}
 
-To register a webhook on your Aftership account follow the instructions below:
+To register a webhook on your AfterShip account follow the instructions below:
 
-1. Access [Aftership](https://www.aftership.com/) and sign in using your Aftership account.
+1. Access [AfterShip](https://www.aftership.com/) and sign in using your AfterShip account.
 
 1. On the left menu, click **Notifications** and then click **Webhooks**.
 
@@ -90,12 +90,12 @@ To register a webhook on your Aftership account follow the instructions below:
     Confirm your localhost app receives a notification and logs both headers and body in the terminal.
 
 
-### Run Webhooks with Aftership and ngrok
+### Run Webhooks with AfterShip and ngrok
 
-Aftership sends different request body contents depending on the status of the shipments created in your account.
-You can trigger new calls from Aftership to your application by following the instructions below.
+AfterShip sends different request body contents depending on the status of the shipments created in your account.
+You can trigger new calls from AfterShip to your application by following the instructions below.
 
-1. On the [Aftership console](https://admin.aftership.com/), click **Shipments** on the left menu and then click **Add shipment**.
+1. On the [AfterShip console](https://admin.aftership.com/), click **Shipments** on the left menu and then click **Add shipment**.
 
 1. On the **Add new shipment** page, enter a tracking number in the **Tracking no.** field and then click **Save shipment**. Optionally, you can fill in all fields on this page.
 
@@ -110,7 +110,7 @@ The Request Inspector shows all the requests made through your ngrok tunnel to y
 
 Seeing requests is an excellent way of validating the data sent to and retrieved by your app via the ngrok tunnel. That alone can save you some time dissecting and logging HTTP request and response headers, methods, bodies, and response codes within your app just to confirm you are getting what you expect.
 
-To inspect Aftership's webhooks call, launch the ngrok web interface (i.e. `http://127.0.0.1:4040`), and then click one of the requests sent by Aftership.
+To inspect AfterShip's webhooks call, launch the ngrok web interface (i.e. `http://127.0.0.1:4040`), and then click one of the requests sent by AfterShip.
 
 From the results, review the response body, header, and other details:
 
@@ -119,9 +119,9 @@ From the results, review the response body, header, and other details:
 
 ### Replaying requests
 
-The ngrok Request Inspector provides a replay function that you can use to test your code without the need to trigger new events from Aftership. To replay a request:
+The ngrok Request Inspector provides a replay function that you can use to test your code without the need to trigger new events from AfterShip. To replay a request:
 
-1. In the ngrok inspection interface (i.e. `http://localhost:4040`), select a request from Aftership.
+1. In the ngrok inspection interface (i.e. `http://localhost:4040`), select a request from AfterShip.
 
 1. Click **Replay** to execute the same request to your application or select **Replay with modifications** to modify the content of the original request before sending the request.
 
@@ -134,23 +134,23 @@ Verify that your local application receives the request and logs the correspondi
 
 ## Secure webhook requests {#security}
 
-The ngrok signature webhook verification feature allows ngrok to assert that requests from your Aftership webhook are the only traffic allowed to make calls to your localhost app.
+The ngrok signature webhook verification feature allows ngrok to assert that requests from your AfterShip webhook are the only traffic allowed to make calls to your localhost app.
 
 **Note:** This ngrok feature is limited to 500 validations per month on free ngrok accounts. For unlimited, upgrade to Pro or Enterprise.
 
 This is a quick step to add extra protection to your application.
 
-1. Access [Aftership](https://www.aftership.com/) and sign in using your Aftership account.
+1. Access [AfterShip](https://www.aftership.com/) and sign in using your AfterShip account.
 
 1. On the left menu, click **Notifications** and then click **Webhooks**.
 
 1. On the **Webhooks** page, copy the value of the **Webhook secret**.
 
-1. Restart your ngrok agent by running the command, replacing `{your webhook secret}` with the value you have copied before (See [Integrate ngrok and Aftership.](#setup-webhook)):
+1. Restart your ngrok agent by running the command, replacing `{your webhook secret}` with the value you have copied before (See [Integrate ngrok and AfterShip.](#setup-webhook)):
     ```bash
     ngrok http 3000 --verify-webhook aftership --verify-webhook-secret {your webhook secret}
     ```
 
-1. Access [Aftership](https://www.aftership.com/) and create a new shipment.
+1. Access [AfterShip](https://www.aftership.com/) and create a new shipment.
 
 Verify that your local application receives the request and logs information to the terminal.
