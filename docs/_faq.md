@@ -33,7 +33,7 @@ ngrok does not require nor provide static IP addresses. When you run the ngrok a
 
 ## What's the deal with ngrok v1?
 
-The original open source ngrok agent 1.x is [available on Github](https://github.com/inconshreveable/ngrok) but is no longer developed, supported or maintained. The latest ngrok agent is available on our [ngrok downloads page](https://ngrok.com/download).
+The original open source ngrok agent 1.x is [available on GitHub](https://github.com/inconshreveable/ngrok) but is no longer developed, supported or maintained. The latest ngrok agent is available on our [ngrok downloads page](https://ngrok.com/download).
 
 ## How do I pronounce ngrok?
 

@@ -19,4 +19,4 @@ Modules are an ngrok edge component that allows you to change the behavior of th
 | [Response Headers](response-headers) | The Response Headers module allows you to add and remove headers from HTTP responses before they are returned to the client. | HTTPS |
 | [SAML](saml) | This module restricts endpoint access to only users authorized by a SAML IdP. | HTTPS |
 | [TLS Termination](tls-termination) | Allows you to configure whether ngrok terminates TLS traffic at its edge or forwards the TLS traffic through unterminated. | HTTPS, TLS |
-| [Webhook Verification](webhook) | The webhook verification module allows ngrok to assert requests to your endpoint originate from a supported webhook provider like Slack or Github. | HTTPS |
+| [Webhook Verification](webhook) | The webhook verification module allows ngrok to assert requests to your endpoint originate from a supported webhook provider like Slack or GitHub. | HTTPS |
