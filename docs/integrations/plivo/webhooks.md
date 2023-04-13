@@ -85,7 +85,12 @@ To register a webhook on your Plivo account follow the instructions below:
 
 1. Click **VALIDATE**.
 
-1. On the PHLO page, drag a line from the **API Request** of the **Start** tile to the HTTP Request component you created, and then click **Save**.
+1. On the PHLO page, drag a line from the **Incomming Message** of the **Start** component to the triangle on the top of the **HTTP Request** component you created, and then click **Save**.
+
+1. On the left menu, click **Phone Numbers** and then click one of your numbers.
+    **Note**: If you don't have numbers click **Buy NUmber** and follow the instructions on the screen.
+
+1. On the phone number page, select **PHLO** in the **Application Type** field, select **Webhook PHLO** in the **PHLO Name** field, and then click **Update Number**.
 
 
 ### Run Webhooks with Plivo and ngrok
