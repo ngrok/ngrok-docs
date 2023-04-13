@@ -81,13 +81,12 @@ To register a webhook on your Plivo account follow the instructions below:
 1. On the PHLO page, click the **pencil icon** next to `untitled PHLO` at the top left, replace the text with `Webhook PHLO`, and then click **Save**.
 
 1. Drag the function **HTTP Request** to the right side of the screen, select **POST** instead of **GET** as the HTTP Method, and enter the URL provided by the ngrok agent to expose your application to the internet in the field next to **POST** (i.e. `https://1a2b-3c4d-5e6f-7g8h-9i0j.sa.ngrok.io`).
-    ![plivo URL to Publish](img/ngrok_url_configuration_plivo.png)
+    ![Plivo URL to Publish](img/ngrok_url_configuration_plivo.png)
 
 1. Click **VALIDATE**.
 
 1. On the PHLO page, drag a line from the **API Request** of the **Start** tile to the HTTP Request component you created, and then click **Save**.
 
-...
 
 ### Run Webhooks with Plivo and ngrok
 
@@ -96,9 +95,19 @@ You can trigger new calls from Plivo to your application by following the instru
 
 1. Access [Plivo Console](https://console.plivo.com/) and sign in using your Plivo account.
 
-...
+1. On the **Overview** page, copy the value of both the **Auth ID** and **Auth Token** fields.
 
-    Confirm your localhost app receives the create-project event notification and logs both headers and body in the terminal.
+1. On the left menu, click **PHLO** and then copy the **PHLO URL** of your PHLO.
+
+1. Open a terminal window and run the following command:
+    ```bash
+    curl  --request POST '<YOUR_PHLO_URL>' \
+    --header 'Authorization: Basic <AUTH_ID>:<AUTH_TOKEN>' \
+    --header 'Content-Type: application/json' \
+    --data 'My message'
+    ```
+
+    Confirm your localhost app receives a notification and logs both headers and body in the terminal.
 
 
 ### Inspecting requests
@@ -148,6 +157,6 @@ This is a quick step to add extra protection to your application.
     ngrok http 3000 --verify-webhook plivo --verify-webhook-secret {your auth token}
     ```
 
-1. 
+1. Run a call to your PHLO.
 
 Verify that your local application receives the request and logs information to the terminal.
