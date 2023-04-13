@@ -1,3 +1,7 @@
+---
+description: Develop and test Plivo webhooks from localhost
+---
+
 # Plivo Webhooks
 ------------
 
@@ -13,12 +17,12 @@ To integrate Plivo webhooks with ngrok:
 
 
 This guide covers how to use ngrok to integrate your localhost app with Plivo by using Webhooks.
-Plivo webhooks can be used to notify an external application whenever specific events occur in your Plivo account. 
+Plivo webhooks can be used to notify an external application whenever SMS and MMS messages are sent to your Plivo numbers. 
 
 By integrating ngrok with Plivo, you can:
 
 - **Develop and test Plivo webhooks locally**, eliminating the time in deploying your development code to a public environment and setting it up in HTTPS.
-- **Inspect and troubleshoot requests from Plivo** in real-time via the inspection UI and API.
+- **Inspect and troubleshoot requests from Plivo** in real time via the inspection UI and API.
 - **Modify and Replay Plivo Webhook requests** with a single click and without spending time reproducing events manually in your Plivo account.
 - **Secure your app with Plivo validation provided by ngrok**. Invalid requests are blocked by ngrok before reaching your app.
 
@@ -78,14 +82,16 @@ To register a webhook on your Plivo account follow the instructions below:
 
 1. On the **Your PHLOs** page, click **Create New PHLO** and then click **Build My Own** on the **Choose your use case** popup.
 
-1. On the PHLO page, click the **pencil icon** next to `untitled PHLO` at the top left, replace the text with `Webhook PHLO`, and then click **Save**.
+1. On the PHLO page, click the **pencil icon** next to the `untitled PHLO` message at the top left, replace the text with `Webhook PHLO`, and then click **Save**.
 
-1. Drag the function **HTTP Request** to the right side of the screen, select **POST** instead of **GET** as the HTTP Method, and enter the URL provided by the ngrok agent to expose your application to the internet in the field next to **POST** (i.e. `https://1a2b-3c4d-5e6f-7g8h-9i0j.sa.ngrok.io`).
+1. Drag the function **HTTP Request** from the left panel to the center of the screen and then click the **HTTP Request** component.
+
+1. On the right panel, select **POST** instead of **GET** in  the **HTTP Method**, and enter the URL provided by the ngrok agent to expose your application to the internet in the field next to **POST** (i.e. `https://1a2b-3c4d-5e6f-7g8h-9i0j.sa.ngrok.io`).
     ![Plivo URL to Publish](img/ngrok_url_configuration_plivo.png)
 
-1. Click **VALIDATE**.
+1. Click **FETCH RESPONSE** in the right panel, verify your webook responds to the call with a message in the **Response** field, and then click **VALIDATE**.
 
-1. On the PHLO page, drag a line from the **Incomming Message** of the **Start** component to the triangle on the top of the **HTTP Request** component you created, and then click **Save**.
+1. On the PHLO page, drag a line from the **Incoming Message** of the **Start** component to the triangle on the top of the **HTTP Request** component you created, and then click **Save**.
 
 1. On the left menu, click **Phone Numbers** and then click one of your numbers.
     **Note**: If you don't have numbers click **Buy NUmber** and follow the instructions on the screen.
@@ -98,21 +104,16 @@ To register a webhook on your Plivo account follow the instructions below:
 Plivo sends different request body contents depending on the event that is being triggered.
 You can trigger new calls from Plivo to your application by following the instructions below.
 
-1. Access [Plivo Console](https://console.plivo.com/) and sign in using your Plivo account.
-
-1. On the **Overview** page, copy the value of both the **Auth ID** and **Auth Token** fields.
-
-1. On the left menu, click **PHLO** and then copy the **PHLO URL** of your PHLO.
-
-1. Open a terminal window and run the following command:
-    ```bash
-    curl  --request POST '<YOUR_PHLO_URL>' \
-    --header 'Authorization: Basic <AUTH_ID>:<AUTH_TOKEN>' \
-    --header 'Content-Type: application/json' \
-    --data 'My message'
-    ```
+1. Send an SMS message to your Plivo phone number.
 
     Confirm your localhost app receives a notification and logs both headers and body in the terminal.
+
+Optionally, you can verify the log of the webhook call in Plivo:
+
+1. On the left menu of the [Plivo Console](https://console.plivo.com/), click **Messaging** and then click **SMS/MMS** under **Logs** in the left panel.
+
+1. Click one of the logs and then scroll down to the ****Status Callbacks** section.
+    ![Webhook Logs](img/ngrok_logs_plivo.png)
 
 
 ### Inspecting requests
@@ -162,6 +163,6 @@ This is a quick step to add extra protection to your application.
     ngrok http 3000 --verify-webhook plivo --verify-webhook-secret {your auth token}
     ```
 
-1. Run a call to your PHLO.
+1. Send a new SMS to your Plivo phone number.
 
 Verify that your local application receives the request and logs information to the terminal.
