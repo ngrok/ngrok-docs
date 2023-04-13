@@ -23,7 +23,7 @@ import TOCInline from '@theme/TOCInline';
 
 ## Introduction
 
-ngrok is the leading way to make apps available on the internet, trusted by five million developers and recommended by category leaders — such as Twilio, Github, Okta, Microsoft, Zoom, and Shopify — for enabling remote access to apps and APIs running on localhost.
+ngrok is the leading way to make apps available on the internet, trusted by five million developers and recommended by category leaders — such as Twilio, GitHub, Okta, Microsoft, Zoom, and Shopify — for enabling remote access to apps and APIs running on localhost.
 
 While developers use ngrok for productivity, organizations must ensure security controls — such as single sign-on, MFA, network security, auditing, and shadow IT policies — are consistently applied across all networks — including ngrok communications.
 
@@ -104,7 +104,7 @@ _Using Okta authentication to restrict access to ngrok tunnels_
 
 #### Social Authentication
 
-In addition to enterprise identity, you can use social providers — such as Github and Google — for authentication. Social identity providers deliver a lightweight option for securing contractors or temp workers without onboarding them in your enterprise SSO solution:
+In addition to enterprise identity, you can use social providers — such as GitHub and Google — for authentication. Social identity providers deliver a lightweight option for securing contractors or temp workers without onboarding them in your enterprise SSO solution:
 
 ![Using GitHub for authentication](img/7.png)
 
@@ -129,7 +129,7 @@ By using webhook verification, you can ensure only legitimate webhook calls are 
 
 _Configuring Webhook verification for PagerDuty_
 
-With webhook verification, ngrok authenticates webhook request authenticity and message integrity at the edge. As a result, unauthorized calls are blocked even before they even reach your developer's apps, providing authentication and integrity while preventing reconnaissance campaigns and DDoS attacks. To learn more, check our [webhook verification](https://ngrok.com/docs/cloud-edge/modules/webhook/) docs and documentation of providers such as [Github](https://ngrok.com/docs/integrations/github/webhooks/), [Okta](https://ngrok.com/docs/integrations/okta/webhooks/), and [Twilio](https://ngrok.com/docs/integrations/twilio/webhooks/).
+With webhook verification, ngrok authenticates webhook request authenticity and message integrity at the edge. As a result, unauthorized calls are blocked even before they even reach your developer's apps, providing authentication and integrity while preventing reconnaissance campaigns and DDoS attacks. To learn more, check our [webhook verification](https://ngrok.com/docs/cloud-edge/modules/webhook/) docs and documentation of providers such as [GitHub](https://ngrok.com/docs/integrations/github/webhooks/), [Okta](https://ngrok.com/docs/integrations/okta/webhooks/), and [Twilio](https://ngrok.com/docs/integrations/twilio/webhooks/).
 
 
 ### 4. Enable IP Policies

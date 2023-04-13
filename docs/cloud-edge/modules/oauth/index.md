@@ -1,7 +1,7 @@
 # OAuth
 ----------------
 
-The OAuth module enforces an OAuth authentication flow in front of any route it is enabled on. Any HTTP client accessing an OAuth-protected route will be redirected to a chosen identity provider (currently Google, Microsoft, Github or Facebook) for authentication. When they are redirected back to the protected route, ngrok will check a series of authorization constraints that allow you to define who is authorized to access the resource by setting a list of email addresses, email domains and other requirements. If the user is authorized, their request will be forwarded through to the upstream server and ngrok's edge will set an HTTP cookie on their browser session to keep them logged in so that the authentication flow is not repeated.
+The OAuth module enforces an OAuth authentication flow in front of any route it is enabled on. Any HTTP client accessing an OAuth-protected route will be redirected to a chosen identity provider (currently Google, Microsoft, GitHub or Facebook) for authentication. When they are redirected back to the protected route, ngrok will check a series of authorization constraints that allow you to define who is authorized to access the resource by setting a list of email addresses, email domains and other requirements. If the user is authorized, their request will be forwarded through to the upstream server and ngrok's edge will set an HTTP cookie on their browser session to keep them logged in so that the authentication flow is not repeated.
 
 ## OAuth Providers Supported by ngrok
 
@@ -18,7 +18,7 @@ ngrok currently supports the following OAuth providers:
 
 ## OAuth Headers Provided by ngrok
 
-ngrok strips the following headers from authorized requests and sets them with data from the OAuth provider. Your application can rely on these headers being accurate. Some providers (like [Github](/docs/cloud-edge/modules/oauth/github#oauth-providers-github-headers)) set additional headers for your application to use. You can find more information in the dedicated section for configuring the OAuth provider.
+ngrok strips the following headers from authorized requests and sets them with data from the OAuth provider. Your application can rely on these headers being accurate. Some providers (like [GitHub](/docs/cloud-edge/modules/oauth/github#oauth-providers-github-headers)) set additional headers for your application to use. You can find more information in the dedicated section for configuring the OAuth provider.
 
 |Header|Description|
 |---|---|

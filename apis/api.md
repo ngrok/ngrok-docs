@@ -59,12 +59,12 @@ ngrok publishes API client libraries to make working with ngrok resources feel n
 
 | Language | Installation | Documentation | Repository |
 | --- | --- | --- | --- |
-| Go  | `go get github.com/ngrok/ngrok-api-go/v4` | [Documentation](https://pkg.go.dev/github.com/ngrok/ngrok-api-go/v4) | [Github](https://github.com/ngrok/ngrok-api-go) |
-| .NET | `dotnet add package NgrokApi` | [Documentation](https://github.com/ngrok/ngrok-api-dotnet) | [Github](https://github.com/ngrok/ngrok-api-dotnet) |
-| Ruby | `gem install ngrok-api` | [Documentation](https://ruby-api.docs.ngrok.com) | [Github](https://github.com/ngrok/ngrok-api-ruby) |
-| Python | `pip install ngrok-api` | [Documentation](https://python-api.docs.ngrok.com) | [Github](https://github.com/ngrok/ngrok-api-python) |
-| Java (unstable) | See the README for installing with Maven | [Documentation](https://java-api.docs.ngrok.com) | [Github](https://github.com/ngrok/ngrok-api-java) |
-| Scala (unstable) | See the README for installing with Maven | [Documentation](https://python-api.docs.ngrok.com) | [Github](https://github.com/ngrok/ngrok-api-scala) |
+| Go  | `go get github.com/ngrok/ngrok-api-go/v4` | [Documentation](https://pkg.go.dev/github.com/ngrok/ngrok-api-go/v4) | [GitHub](https://github.com/ngrok/ngrok-api-go) |
+| .NET | `dotnet add package NgrokApi` | [Documentation](https://github.com/ngrok/ngrok-api-dotnet) | [GitHub](https://github.com/ngrok/ngrok-api-dotnet) |
+| Ruby | `gem install ngrok-api` | [Documentation](https://ruby-api.docs.ngrok.com) | [GitHub](https://github.com/ngrok/ngrok-api-ruby) |
+| Python | `pip install ngrok-api` | [Documentation](https://python-api.docs.ngrok.com) | [GitHub](https://github.com/ngrok/ngrok-api-python) |
+| Java (unstable) | See the README for installing with Maven | [Documentation](https://java-api.docs.ngrok.com) | [GitHub](https://github.com/ngrok/ngrok-api-java) |
+| Scala (unstable) | See the README for installing with Maven | [Documentation](https://python-api.docs.ngrok.com) | [GitHub](https://github.com/ngrok/ngrok-api-scala) |
 
 ### Terraform Provider
 
