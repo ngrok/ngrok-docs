@@ -1,7 +1,7 @@
 # GitHub
 -----------
 
-## Creating a custom Github OAuth application
+## Creating a custom GitHub OAuth application
 
 1.  Follow [GitHub's documentation](https://developer.github.com/apps/building-oauth-apps/creating-an-oauth-app/) until the final step of submitting the registration form.
 2.  Set the Authorization callback URL to `https://idp.ngrok.com/oauth2/callback`.
@@ -19,7 +19,7 @@
 
 ## Additional GitHub headers provided by ngrok
 
-In addition to the headers set for every OAuth provider, these additional headers are available when using Github.
+In addition to the headers set for every OAuth provider, these additional headers are available when using GitHub.
 
 `ngrok-auth-github-user-id`
 
