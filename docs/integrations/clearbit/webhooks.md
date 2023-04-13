@@ -76,12 +76,14 @@ Once your app is running successfully on localhost, let's get it on the internet
 
 To register a webhook on your Clearbit account follow the instructions below:
 
-1. Access [Clearbit API Dashboard](https://dashboard.clearbit.com/) and sign in using your Clearbit account.
+1. Access [Clearbit API Dashboard](https://dashboard.clearbit.com/api) and sign in using your Clearbit account.
 
 1. On the **API Settings** section, enter the URL provided by the ngrok agent to expose your application to the internet in the **Webhook URL** field (i.e. `https://1a2b-3c4d-5e6f-7g8h-9i0j.sa.ngrok.io`).
-    ![clearbit URL to Publish](img/ngrok_url_configuration_clearbit.png)
+    ![Clearbit URL to Publish](img/ngrok_url_configuration_clearbit.png)
 
 1. Click **Update account**.
+
+1. Make note of the value of the **Secret Hey** that appears in the [Clearbit API Dashboard](https://dashboard.clearbit.com/api) page.
 
 
 ### Run Webhooks with Clearbit and ngrok
@@ -89,22 +91,16 @@ To register a webhook on your Clearbit account follow the instructions below:
 Clearbit sends different request body contents depending on the event that is being triggered.
 You can trigger new calls from Clearbit to your application by following the instructions below.
 
-1. In the same browser, access [Clearbit](https://Clearbit/), and then click **+** close to your team name on the left menu.
-
-1. On the **New Project** popup, enter a project name and then click **Create Project**.
-
-    Confirm your localhost app receives the create-project event notification and logs both headers and body in the terminal.
-
-Optionally, you can verify the log of the webhook call in Clearbit:
-
-1. In the same browser, access [Clearbit Developer](https://developer.Clearbit/).
-
-1. On the top menu of the developer site, click **DEVELOPER TOOLS** and then click **Webhooks**.
-
-1. On the **Webhooks** page, click **View logs** close to your webhook.
-
-1. On the **Webhook Logs** page, click **View details** and confirm 
-    ![Webhook Logs](img/ngrok_logs_clearbit.png)
+1. Open a terminal window and run the following command to gather information about your account:
+    ```
+    curl --request GET --url https://person.clearbit.com/v1/people/email/EMAIL_ADDRESS \
+    --header 'Authorization: Bearer TOKEN'
+    ```
+    **Note**: Replace the following with values copied on previous steps:
+    - EMAIL_ADDRESS: An email address of a user on your Clearbit account organization.
+    - TOKEN: The Clearbit secret key you copied before.
+ 
+    Confirm your localhost app receives a notification and logs both headers and body in the terminal.
 
 
 ### Inspecting requests
@@ -147,13 +143,13 @@ This is a quick step to add extra protection to your application.
 
 1. Access [Clearbit API Dashboard](https://dashboard.clearbit.com/api/) and sign in using your Clearbit account.
 
-1. Make note of the **API Key** appearing on the screen.
+1. Copy the value of the **API Key** field appearing on the screen.
 
 1. Restart your ngrok agent by running the command, replacing `{your api key}` with the value you copied before:
     ```bash
     ngrok http 3000 --verify-webhook clearbit --verify-webhook-secret {your api key}
     ```
 
-1. Access [Clearbit](https://Clearbit/) and create a new project.
+1. Repeat the command to gather information about your account.
 
 Verify that your local application receives the request and logs information to the terminal.
