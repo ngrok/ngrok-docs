@@ -7,13 +7,13 @@ title: Kubernetes
 
 ## Introduction
 
-The [ngrok Ingress Controller for Kubernetes](https://github.com/ngrok/kubernetes-ingress-controller) is our official open-source controller for adding public and secure ingress traffic to your k8s services. If you’ve used ngrok in the past, you can think of the ngrok Ingress Controller as ngrok packaged an idiomatic k8s controller — available as helm chart, configurable via manifest (using the `kind: Ingress` construct), and compatible with k8s best practices. 
+The [ngrok Ingress Controller for Kubernetes](https://github.com/ngrok/kubernetes-ingress-controller) is our official open-source controller for adding public and secure ingress traffic to your k8s services. You can think of the ngrok Ingress Controller as ngrok packaged as an idiomatic k8s controller — deployed via a simple helm chart, configurable via standard k8s Ingress object (using the `kind: Ingress` construct), and compatible with k8s best practices. 
 
-In this tutorial, you will install the ngrok Ingress Controller and run a sample 2048 app with public ingress access and security provided by ngrok.
+In this tutorial, you will install the ngrok Ingress Controller and run a sample 2048 app with public access and security provided by ngrok.
 
 :::caution This tutorial requires:
-1. A local environment with Kubernetes installed and configured. For this tutorial, we will use `k3d`, `kubectl`, and `helm`.
-1. An [ngrok account](https://ngrok.com/signup) with a Pro subscription. The subscription is required in order to configure the ngrok Ingress Controller with a custom domain and an Edge Configuration.
+1. A local environment with Kubernetes installed and configured. For this tutorial, we will use `k3d`, `kubectl`, and `helm`, but you can also use `minikube` if you'd like.
+1. A [free ngrok account](https://ngrok.com/signup).
 :::
 
 ## Get started with the ngrok Ingress Controller for Kubernetes
@@ -22,16 +22,15 @@ In this tutorial, you will install the ngrok Ingress Controller and run a sample
 
 :::tip
 The ngrok Ingress Controller requires:
-- The authtoken to launch connections between ngrok's points of presence and your k8s cluster.
-- The API key to set ngrok edge configurations for your k8s cluster
+- An ngrok authtoken to launch connections between ngrok's points of presence and your k8s cluster. You can find your authtoken in the [ngrok dashboard under "Your Authtoken"](https://dashboard.ngrok.com/get-started/your-authtoken).
+- An ngrok API key to create and configure the ngrok edges for your services. You can generate an API key in the [ngrok Dashboard under "API"](https://dashboard.ngrok.com/api).
 :::
 
 To started with the ngrok Ingress Controller for Kubernetes:
 
 1. Access the [ngrok Dashboard](https://dashboard.ngrok.com) with your Pro account.
 1. Click [Your Authtoken](https://dashboard.ngrok.com/get-started/your-authtoken). Copy the Authtoken to a text editor.
-1. Click [API](https://dashboard.ngrok.com/api).
-1. Follow the instructions to create a new API key. Copy the API key to a text editor.
+1. Click [API](https://dashboard.ngrok.com/api) and follow the instructions to create a new API key. Copy the API key to a text editor.
 
 ## Step 2: Setup your Kubernetes cluster and install the ngrok Ingress Controller
 
@@ -47,13 +46,18 @@ To started with the ngrok Ingress Controller for Kubernetes:
     helm repo add ngrok https://ngrok.github.io/kubernetes-ingress-controller
     ```
 
+1. Set your environment variables with your ngrok credentials. Replace `[AUTHTOKEN]` and `[API_KEY]` with your Authtoken and API key from above.
+
+    ```bash
+    export NGROK_AUTHTOKEN=[AUTHTOKEN]
+    export NGROK_API_KEY=[API_KEY]
+    ```
+
 1. Install the ngrok Ingress Controller in your cluster, replacing `[AUTHTOKEN]` and `[API_KEY]` with your Authtoken and API key from above:
 
     **Note:** For this tutorial, we're creating and using the namespace `ngrok-ingress-controller`.
 
     ```bash
-    export NGROK_AUTHTOKEN=[AUTHTOKEN]
-    export NGROK_API_KEY=[API_KEY]
     helm install ngrok-ingress-controller ngrok/kubernetes-ingress-controller \
       --namespace ngrok-ingress-controller \
       --create-namespace \
@@ -61,11 +65,11 @@ To started with the ngrok Ingress Controller for Kubernetes:
       --set credentials.authtoken=$NGROK_AUTHTOKEN
     ```
 
-1. Create a manifest file (for example `ngrok-manifest.yaml`) with the following contents:
+1. Create a manifest file (for example `ngrok-manifest.yaml`) with the following contents. You will need to replace the `NGROK_SUBDOMAIN` on line 45 with your own custom value. It needs to be globally unique within ngrok so something like `username-loves-ingress` might work.
 
     :::tip Notes:
     - Lines 1-34: Create the 2048 app service and deployment
-    - Lines 35-54 (highlighed): Create the ngrok Ingress Controller. Line 45 determines the ingress URL for public requests.
+    - Lines 35-54 (highlighted): Create the ngrok Ingress Controller. Line 45 determines the ingress URL for public requests.
     :::
 
     ```yaml showLineNumbers
@@ -114,7 +118,7 @@ To started with the ngrok Ingress Controller for Kubernetes:
     spec:
       ingressClassName: ngrok
       rules:
-        - host: my-awesome-k8s-cluster.ngrok.app
+        - host: NGROK_SUBDOMAIN.ngrok.app
           http:
             paths:
               - path: /
@@ -127,23 +131,26 @@ To started with the ngrok Ingress Controller for Kubernetes:
     # highlight-end
     ```
 
-1. Apply the manifest file:
+1. Apply the manifest file to your k8s cluster.
     
     ```bash
     kubectl apply -f ngrok-manifest.yaml
     ```
+   **Note:** If you get an error when applying the manifest, double check that you've updated the `NGROK_SUBDOMAIN` value and try again.
 
 1. To confirm the manifest is successfully applied, go to the [ngrok Dashboard](https://dashboard.ngrok.com) and click [Edge Configurations](https://dashboard.ngrok.com/edge-configurations). You should see a new Edge Configuration for your cluster with the name matching your URL (1) — for example: `my-awesome-k8s-cluster.ngrok.app`. Also note that your some of your cluster configurations are presented int the dashboard as annotations (2).
 
     ![ingress created](/img/howto/ingress-controller/k8s-ingress-app-1.png)
 
-1. Access your ingress URL (i.e. `https://my-awesome-k8s-cluster.ngrok.app`) to confirm the 2048 app is accessible from the internet:
+1. Access your ingress URL using the subdomain you chose in the manifest file above (i.e. `https://my-awesome-k8s-cluster.ngrok.app`) to confirm the 2048 app is accessible from the internet. If you forgot what url you chose, you can always run `kubectl get ingresses --namespace=ngrok-ingress-controller` to see what it is.
     
     ![application public](/img/howto/ingress-controller/k8s-ingress-app-2.png)
 
 ## Step 3: Add edge security to your app
 
-The ngrok Ingress Controler for Kubernetes provides custom resource definitions (CRDs) for additional edge features available in ngrok. In this example, we're expanding the Ingress Controller with Google OAuth to allow access only from users with the email domains `@acme.com` or `@ngrok.com` and to apply a circuit breaker to your app at 80%. These features are enforced at the ngrok edge, ensuring only authorized users can access your app.
+The ngrok Ingress Controller for Kubernetes provides custom resource definitions (CRDs) for additional edge features available in ngrok. In this example, we're expanding the Ingress Controller with Google OAuth to allow access only from users with the email domains `@acme.com` or `@ngrok.com` and to apply a circuit breaker to your app at 80%. These features are enforced at the ngrok edge, ensuring only authorized users can access your app.
+
+As before, you will need to update line 46 of this manifest with your `NGROK_SUBDOMAIN` in the Ingress object.
 
 :::tip Notes:
 This example is very similar to the previous version, with the following changes:
@@ -201,7 +208,7 @@ metadata:
 spec:
   ingressClassName: ngrok
   rules:
-    - host: my-awesome-k8s-cluster.ngrok.app
+    - host: NGROK_SUBDOMAIN.ngrok.app
       http:
         paths:
           - path: /
@@ -240,6 +247,8 @@ modules:
     ```bash
     kubectl apply -f ngrok-manifest.yaml
     ```
+
+    **Note:** Again, if you get an error when applying the manifest, double check that you've updated the NGROK_SUBDOMAIN value and try again.
 
 1. To confirm the circuit breaking configuration is successfully applied:
 
