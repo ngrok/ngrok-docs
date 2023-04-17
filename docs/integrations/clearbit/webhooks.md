@@ -83,7 +83,7 @@ To register a webhook on your Clearbit account follow the instructions below:
 
 1. Click **Update account**.
 
-1. Make note of the value of the **Secret Hey** that appears in the [Clearbit API Dashboard](https://dashboard.clearbit.com/api) page.
+1. Make note of the value of the **Secret Hey** that appears on the [Clearbit API Dashboard](https://dashboard.clearbit.com/api) page.
 
 
 ### Run Webhooks with Clearbit and ngrok
