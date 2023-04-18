@@ -65,7 +65,7 @@ To started with the ngrok Ingress Controller for Kubernetes:
       --set credentials.authtoken=$NGROK_AUTHTOKEN
     ```
 
-1. Create a manifest file (for example `ngrok-manifest.yaml`) with the following contents. You will need to replace the `NGROK_SUBDOMAIN` on line 45 with your own custom value. It needs to be globally unique within ngrok so something like `username-loves-ingress` might work.
+1. Create a manifest file (for example `ngrok-manifest.yaml`) with the following contents. You will need to replace the `NGROK_DOMAIN` on line 45 with your own custom value. This is the URL you will use to access your service from anywhere. If you're on a free account, it must be a subdomain of either `ngrok-free.app` or `ngrok-free.dev` (for example, `username-loves-ingress.ngrok-free.app`). For paid accounts, you can use a custom domain or a subdomain of `ngrok.app` or `ngrok.dev` (for example, `username-loves-ingress.ngrok.app` or `k8s.example.com`).
 
     :::tip Notes:
     - Lines 1-34: Create the 2048 app service and deployment
@@ -118,7 +118,7 @@ To started with the ngrok Ingress Controller for Kubernetes:
     spec:
       ingressClassName: ngrok
       rules:
-        - host: NGROK_SUBDOMAIN.ngrok.app
+        - host: NGROK_DOMAIN
           http:
             paths:
               - path: /
@@ -136,7 +136,7 @@ To started with the ngrok Ingress Controller for Kubernetes:
     ```bash
     kubectl apply -f ngrok-manifest.yaml
     ```
-   **Note:** If you get an error when applying the manifest, double check that you've updated the `NGROK_SUBDOMAIN` value and try again.
+   **Note:** If you get an error when applying the manifest, double check that you've updated the `NGROK_DOMAIN` value and try again.
 
 1. To confirm the manifest is successfully applied, go to the [ngrok Dashboard](https://dashboard.ngrok.com) and click [Edge Configurations](https://dashboard.ngrok.com/edge-configurations). You should see a new Edge Configuration for your cluster with the name matching your URL (1) — for example: `my-awesome-k8s-cluster.ngrok.app`. Also note that your some of your cluster configurations are presented int the dashboard as annotations (2).
 
@@ -148,9 +148,9 @@ To started with the ngrok Ingress Controller for Kubernetes:
 
 ## Step 3: Add edge security to your app
 
-The ngrok Ingress Controller for Kubernetes provides custom resource definitions (CRDs) for additional edge features available in ngrok. In this example, we're expanding the Ingress Controller with Google OAuth to allow access only from users with the email domains `@acme.com` or `@ngrok.com` and to apply a circuit breaker to your app at 80%. These features are enforced at the ngrok edge, ensuring only authorized users can access your app.
+The ngrok Ingress Controller for Kubernetes provides custom resource definitions (CRDs) for additional edge features available in ngrok. In this example, we're expanding the Ingress Controller with Google OAuth to allow access only from users with the email domains `@acme.com` or `@ngrok.com` and to apply a circuit breaker to your app at 80% (requires a paid account). These features are enforced at the ngrok edge, ensuring only authorized users can access your app.
 
-As before, you will need to update line 46 of this manifest with your `NGROK_SUBDOMAIN` in the Ingress object.
+As before, you will need to update line 46 of this manifest with your `NGROK_DOMAIN` in the Ingress object.
 
 :::tip Notes:
 This example is very similar to the previous version, with the following changes:
@@ -208,7 +208,7 @@ metadata:
 spec:
   ingressClassName: ngrok
   rules:
-    - host: NGROK_SUBDOMAIN.ngrok.app
+    - host: NGROK_DOMAIN
       http:
         paths:
           - path: /
@@ -248,7 +248,7 @@ modules:
     kubectl apply -f ngrok-manifest.yaml
     ```
 
-    **Note:** Again, if you get an error when applying the manifest, double check that you've updated the NGROK_SUBDOMAIN value and try again.
+    **Note:** Again, if you get an error when applying the manifest, double check that you've updated the `NGROK_DOMAIN` value and try again.
 
 1. To confirm the circuit breaking configuration is successfully applied:
 
