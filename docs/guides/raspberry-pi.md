@@ -1,6 +1,6 @@
 ---
-title: Using the ngrok Agent on a Remote Raspberry Pi Device
-description: Learn how to instal ngrok on a remote Raspberry Pi device to provide secure access and management.
+title: Using the ngrok Agent on a Raspberry Pi
+description: Learn how to instal ngrok on a Raspberry Pi to provide secure remote access and management.
 
 tags:
     - guides
@@ -11,9 +11,9 @@ tags:
 
 ngrok allows you to create secure ingress to any app, device or service without spending hours learning arcane networking technologies. You can get started with a single command or a single line of code.
 
-What is ngrok? ngrok is an ingress-as-a-service platform that removes the hassle of getting code online from developers’ plates by decoupling ingress from infrastructure with one line of code , all without provisioning proxies or VPNs. 
+What is ngrok? ngrok is an ingress-as-a-service platform that removes the hassle of getting code online from developers’ plates by decoupling ingress from infrastructure with one line of code, all without provisioning proxies or VPNs. 
 
-In this guide, we'll walk you through the process of installing the ngrok agent on a remote Linux device, ensuring the agent runs integrated to your operating system, restricting traffic to trusted origins, and integrating traffic events with your preferred logging tool.
+In this guide, we'll walk you through the process of installing the ngrok agent on a remote Raspberry Pi device, ensuring the agent runs and is integrated into your operating system, restricting traffic to trusted origins, and integrating traffic events with your preferred logging tool.
 
 ## Step 1: Install the ngrok Agent
 To download and install the ngrok agent on your remote Raspberry Pi device, follow these steps:
@@ -39,7 +39,7 @@ sudo mv ngrok /usr/local/bin
 ngrok authtoken NGROK_AUTHTOKEN
 ```
 
-Replace `NGROK_AUTHTOKEN` with your unique ngrok authtoken found in the [ngrok dashboard](https://dashboard.ngrok.com/get-started/your-authtoken##).
+Replace `NGROK_AUTHTOKEN` with your unique ngrok authtoken found in the [ngrok dashboard](https://dashboard.ngrok.com/get-started/your-authtoken).
 
 ## Step 2: Enable SSH access
 
@@ -112,7 +112,7 @@ ngrok service install -config $HOME/.ngrok/ngrok.yml
 You may need to run this command using `sudo` depending on your system
 :::
 
-2. Run the following command ensure your operating system launches ngrok with the ssh ingress whenever your systems start:
+2. Run the following command ensure your operating system launches ngrok with the SSH ingress whenever your system starts:
 
 ```bash
 ngrok service start
@@ -140,4 +140,4 @@ You can also forward all or some of your traffic events from [ngrok to your pref
 
 ### Remote checks, stop, start, and updates
 
-ngrok provides [APIs](/docs/api/resources/tunnel-sessions/#restart-tunnel-agent) and a [dashboard UI](https://dashboard.ngrok.com/tunnels/agents) for you to monitor the health of ngrok agents running in your fleet. The interfaces also allow you to remotely stop, start, and update agents remotely. 
+ngrok provides [APIs](/docs/api/resources/tunnel-sessions/#restart-tunnel-agent) and a [dashboard UI](https://dashboard.ngrok.com/tunnels/agents) for you to monitor the health of ngrok agents running in your fleet. The interfaces also allow you to remotely stop, start, and update agents. 
