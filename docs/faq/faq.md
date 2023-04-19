@@ -29,7 +29,7 @@ ngrok does not require nor provide static IP addresses. When you run the ngrok a
 
 ## What information is stored about my tunnels?
 
-**ngrok does not log or store any data transmitted through your tunneled connections.** ngrok does log some information about the connections which are used for debugging purposes and metrics like the name of the tunnel and the duration of connections. For complete end-to-end security, use a [TLS tunnel](/docs/secure-tunnels/tunnels/tls-tunnels). Please see our [Terms of Service](https://ngrok.com/tos) and [Data Processing Agreement](https://ngrok.com/dpa) for more information.
+Please see our [Terms of Service](https://ngrok.com/tos) and [Data Processing Agreement](https://ngrok.com/dpa) for more information.
 
 ## What's the deal with ngrok v1?
 
