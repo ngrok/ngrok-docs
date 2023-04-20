@@ -1,5 +1,5 @@
 ---
-description: Develop and test Gitlab webhooks from localhost
+description: Develop and test GitLab webhooks from localhost
 ---
 
 # GitLab Repository Webhooks

@@ -87,7 +87,7 @@ To register a webhook on your Brex account follow the instructions below:
 1. The following page shows a token value. Copy this value and then click **Done**.
 
 1. Use a desktop terminal to execute the following command:
-    ```
+    ```bash
     curl -i -X POST https://platform.brexapis.com/v1/webhooks -H 'Authorization: Bearer YOUR_TOKEN_HERE' -H 'Content-Type: application/json' -H 'Idempotency-Key: string' -d '{"YOUR_NGROK_URL": "string","event_types": ["USER_UPDATED"]}'
     ```
 

@@ -90,7 +90,7 @@ To register a webhook on your Autodesk account follow the instructions below:
     **Tip**: This tutorial uses the **Data Management** service as an example. Select other APIs for use with other Autodesk Platform Services.
 
 1. In a terminal window, run the following command to obtain an access token:
-    ```
+    ```bash
     curl -v 'https://developer.api.autodesk.com/authentication/v1/authenticate'
     -X 'POST'
     -H 'Content-Type: application/x-www-form-urlencoded'
@@ -104,7 +104,7 @@ To register a webhook on your Autodesk account follow the instructions below:
 1. Copy the value of the **access_token** attribute from the response json.
 
 1. Run the following command to register a webhook to Autodesk Data Management:
-    ```
+    ```bash
     curl -X 'POST'\
      -v 'https://developer.api.autodesk.com/webhooks/v1/systems/data/events/dm.*/hooks'\
      -H 'Content-Type: application/json'\
@@ -179,7 +179,7 @@ The ngrok signature webhook verification feature allows ngrok to assert that req
 This is a quick step to add extra protection to your application.
 
 1. Run the following command to register a webhook secret to your webhook:
-    ```
+    ```bash
     curl -X 'POST'\
      -v 'https://developer.api.autodesk.com/webhooks/v1/tokens'\
      -H 'Content-Type: application/json'\
@@ -196,7 +196,7 @@ This is a quick step to add extra protection to your application.
 
 1. Restart your ngrok agent by running the command, replacing `{your client secret}` with the value you copied before:
     ```bash
-    ngrok http 3000 --verify-webhook autodesk_forge --verify-webhook-secret {your client secret}
+    ngrok http 3000 --verify-webhook autodesk --verify-webhook-secret {your client secret}
     ```
 
 1. Access the folder you assigned to your webhook, upload a text file, and confirm your localhost app receives a notification and logs both headers and body in the terminal.
