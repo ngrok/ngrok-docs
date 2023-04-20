@@ -159,7 +159,7 @@ Verify that your local application receives the request and logs the correspondi
 
 ## Secure webhook requests {#security}
 
-The ngrok signature webhook verification feature allows ngrok to assert that requests from your Hubspot webhook are the only traffic allowed to make calls to your localhost app.
+The ngrok signature webhook verification feature allows ngrok to assert that requests from your HubSpot webhook are the only traffic allowed to make calls to your localhost app.
 
 **Note:** This ngrok feature is limited to 500 validations per month on free ngrok accounts. For unlimited, upgrade to Pro or Enterprise.
 
