@@ -46,7 +46,7 @@ Yes, three times, for [reasons](https://docs.brew.sh/Taps#repository-naming-conv
 
 For Linux, use Apt:
 
-```
+```bash
 curl -s https://ngrok-agent.s3.amazonaws.com/ngrok.asc | \
   sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null && \
   echo "deb https://ngrok-agent.s3.amazonaws.com buster main" | \
@@ -67,36 +67,36 @@ If you don't have one of these package managers installed or prefer to install t
 You can test everything is working by running `ngrok -h` which should print the help text for the ngrok agent.
 
 ```
-    $ ngrok -h
+    $ ngrok -h                                                                                                                                                                                                                  
     NAME:
       ngrok - tunnel local ports to public URLs and inspect traffic
-    
+
     USAGE:
       ngrok [command] [flags]
-    
-    DESCRIPTION:
+
+    DESCRIPTION: 
       ngrok exposes local networked services behinds NATs and firewalls to the
       public internet over a secure tunnel. Share local websites, build/test
       webhook consumers and self-host personal services.
       Detailed help for each command is available with 'ngrok help <command>'.
       Open http://localhost:4040 for ngrok's web interface to inspect traffic.
-    
+
     Author:
       ngrok - <support@ngrok.com>
-    
+
     TERMS OF SERVICE: https://ngrok.com/tos
-    
-    EXAMPLES:
-      ngrok http 80                    # secure public URL for port 80 web server
-      ngrok http --subdomain=baz 8080  # port 8080 available at baz.ngrok.io
-      ngrok http foo.dev:80            # tunnel to host:port instead of localhost
-      ngrok http https://localhost     # expose a local https server
-      ngrok tcp 22                     # tunnel arbitrary TCP traffic to port 22
-      ngrok tls --hostname=foo.com 443 # TLS traffic for foo.com to port 443
-      ngrok start foo bar baz          # start tunnels from the configuration file
-    
+
+    EXAMPLES: 
+      ngrok http 80                           # secure public URL for port 80 web server
+      ngrok http --domain baz.ngrok.dev 8080  # port 8080 available at baz.ngrok.dev
+      ngrok http foo.dev:80                   # tunnel to host:port instead of localhost
+      ngrok http https://localhost            # expose a local https server
+      ngrok tcp 22                            # tunnel arbitrary TCP traffic to port 22
+      ngrok tls --domain=foo.com 443          # TLS traffic for foo.com to port 443
+      ngrok start foo bar baz                 # start tunnels from the configuration file
+
     COMMANDS:
-      api                            use ngrok Agent as an api client
+      api                            use ngrok agent as an api client
       completion                     generates shell completion code for bash or zsh
       config                         update or migrate ngrok's configuration file
       credits                        prints author and licensing information
@@ -110,10 +110,11 @@ You can test everything is working by running `ngrok -h` which should print the 
       tunnel                         start a tunnel for use with a tunnel-group backend
       update                         update ngrok to the latest version
       version                        print the version string
-    
+
     OPTIONS:
-      -h, --help      help for ngrok
-      -v, --version   version for ngrok
+          --config strings   path to config files; they are merged if multiple
+      -h, --help             help for ngrok
+      -v, --version          version for ngrok
   ```
 
 ### Step 3: Connect your agent to your ngrok account
@@ -136,16 +137,16 @@ ngrok http 8000
 
 
 You should see something similar to the following console UI in your terminal.
-```
-    ngrok                                                                                                                                                         (Ctrl+C to quit)
+```bash
+    ngrok                                                                       (Ctrl+C to quit)
     
     Session Status                online
     Account                       inconshreveable (Plan: Free)
     Version                       3.0.0
     Region                        United States (us)
-    Latency                       78.006541ms
+    Latency                       78ms
     Web Interface                 http://127.0.0.1:4040
-    Forwarding                    https://84c5df439d74.ngrok.io -> http://localhost:8000
+    Forwarding                    https://84c5df439d74.ngrok-free.dev -> http://localhost:8000
     
     Connections                   ttl     opn     rt1     rt5     p50     p90
                                   0       0       0.00    0.00    0.00    0.00

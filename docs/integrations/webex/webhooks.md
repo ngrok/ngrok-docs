@@ -81,7 +81,7 @@ To register a webhook on your Cisco Webex account follow the instructions below:
 1. Click the copy icon in the **Your Personal Access Token** field.
 
 1. Open a terminal window and run the following command to register your webhook:
-    ```
+    ```bash
     curl --location 'https://webexapis.com/v1/webhooks' \
     --header 'Authorization: Bearer TOKEN' \
     --header 'Content-Type: application/json' --data '{

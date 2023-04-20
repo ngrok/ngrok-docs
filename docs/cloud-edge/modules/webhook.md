@@ -1,7 +1,7 @@
 # Webhook Verification
 ------------
 
-The webhook verification module allows ngrok to assert requests to your endpoint originate from a supported webhook provider like Slack or Github.
+The webhook verification module allows ngrok to assert requests to your endpoint originate from a supported webhook provider like Slack or GitHub.
 
 The currently supported webhook providers are:
 
@@ -10,7 +10,7 @@ The currently supported webhook providers are:
 | AfterShip | `aftership` | [Documentation](https://ngrok.com/docs/integrations/aftership/webhooks/) |
 | Airship | `airship` | [Documentation](https://ngrok.com/docs/integrations/airship/webhooks/) |
 | Amazon SNS | `sns` | [Documentation](https://ngrok.com/docs/integrations/amazonsns/webhooks/) |
-| Autodesk Forge | `autodesk_forge` | [Documentation](https://ngrok.com/docs/integrations/autodesk/webhooks/) |
+| Autodesk Platform Services | `autodesk` | [Documentation](https://ngrok.com/docs/integrations/autodesk/webhooks/) |
 | Bitbucket | `bitbucket` | [Documentation](https://ngrok.com/docs/integrations/bitbucket/webhooks/) |
 | Bolt | `bolt` | [Documentation](https://help.bolt.com/developers/guides/webhooks/hook-verification/) |
 | Box | `box` | [Documentation](https://ngrok.com/docs/integrations/box/webhooks/) |
@@ -34,7 +34,7 @@ The currently supported webhook providers are:
 | Go1 | `go1` | [Documentation](https://www.go1.com/developers/partners/concepts/webhook-signature-authentification) |
 | Heroku | `heroku` | [Documentation](https://ngrok.com/docs/integrations/heroku/webhooks/) |
 | Hosted Hooks | `hostedhooks` | [Documentation](https://ngrok.com/docs/integrations/hostedhooks/webhooks/) |
-| Hubspot | `hubspot` | [Documentation](https://ngrok.com/docs/integrations/hubspot/webhooks/) |
+| HubsSpot | `hubspot` | [Documentation](https://ngrok.com/docs/integrations/hubspot/webhooks/) |
 | Hygraph (Formerly GraphCMS) | `graphcms` | [Documentation](https://ngrok.com/docs/integrations/hygraph/webhooks/) |
 | Instagram | `instagram` | [Documentation](https://ngrok.com/docs/integrations/instagram/webhooks/) |
 | Intercom | `intercom` | [Documentation](https://ngrok.com/docs/integrations/intercom/webhooks/) |
