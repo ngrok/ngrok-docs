@@ -155,7 +155,7 @@ Verify that your local application receives the request and logs the correspondi
 
 ## Secure webhook requests {#security}
 
-The ngrok signature webhook verification feature allows ngrok to assert that requests from your Frame.io webhook are the only traffic allowed to make calls to your localhost app.
+The ngrok signature webhook verification feature allows ngrok to assert that requests from your Gitlab webhooks are the only traffic allowed to make calls to your localhost app.
 
 **Note:** This ngrok feature is limited to 500 validations per month on free ngrok accounts. For unlimited, upgrade to Pro or Enterprise.
 
