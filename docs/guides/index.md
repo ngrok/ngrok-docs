@@ -32,3 +32,4 @@ Here you will find a set of guides to help you with common (and not so common) t
 | [How to do Weighted Round-Robin Load Balancing with ngrok Cloud Edges](/guides/how-to-do-weighted-load-balancing-with-ngrok-cloud-edges) | Learn how to load balance ngrok tunnels using ngrok Cloud Edges |
 | [Using Labels with ngrok Edges](/guides/using-labels-within-ngrok) | Learn how to use labels and tunnel groups with ngrok Cloud Edges |
 | [Remote Linux Device Management using ngrok](/guides/remote-device-mgmt-linux) | Learn how to remotely manage Linux devices using ngrok |
+| [Remote Raspberry Pi Management using ngrok](/guides/raspberry-pi) | Learn how to remotely manage Raspberry Pi devices using ngrok |

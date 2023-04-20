@@ -155,6 +155,10 @@ Verify that your local application receives the request and logs the correspondi
 
 ## Secure webhook requests {#security}
 
+The ngrok signature webhook verification feature allows ngrok to assert that requests from your Gitlab webhooks are the only traffic allowed to make calls to your localhost app.
+
+**Note:** This ngrok feature is limited to 500 validations per month on free ngrok accounts. For unlimited, upgrade to Pro or Enterprise.
+
 This is a quick step to add extra protection to your application.
 
 1. In the repository page, click **Settings** from the left menu and then click **Webhooks**.
