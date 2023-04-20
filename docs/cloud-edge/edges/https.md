@@ -27,4 +27,4 @@ Modules can be added to each route of an HTTPS edge to change the behavior of th
 | [Request Headers](/cloud-edge/modules/request-headers) | The Request Headers module allows you to add and remove headers from HTTP requests before they are sent to your upstream server. |
 | [Response Headers](/cloud-edge/modules/response-headers) | The Response Headers module allows you to add and remove headers from HTTP responses before they are returned to the client. |
 | [SAML](/cloud-edge/modules/saml) | This module restricts endpoint access to only users authorized by a SAML IdP. |
-| [Webhook Verification](/cloud-edge/modules/webhook) | The webhook verification module allows ngrok to assert requests to your endpoint originate from a supported webhook provider like Slack or Github. |
+| [Webhook Verification](/cloud-edge/modules/webhook) | The webhook verification module allows ngrok to assert requests to your endpoint originate from a supported webhook provider like Slack or GitHub. |

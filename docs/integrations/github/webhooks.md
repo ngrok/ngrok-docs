@@ -1,5 +1,5 @@
 ---
-description: Develop and test Github webhooks from localhost
+description: Develop and test GitHub webhooks from localhost
 ---
 
 # GitHub Repository Webhooks
@@ -139,9 +139,9 @@ The ngrok Request Inspector provides a replay function that you can use to test 
 
 1. Click **Replay** to execute the same request to your application or select **Replay with modifications** to modify the content of the original request before sending the request.
 
-1. If you choose to **Replay with modifications**, you can modify any content from the original request. Optionally, modify the request header with different content. For example, modify the **X-Github-Event** header with the value **MyCustomPush**.
+1. If you choose to **Replay with modifications**, you can modify any content from the original request. Optionally, modify the request header with different content. For example, modify the **X-GitHub-Event** header with the value **MyCustomPush**.
 
-1. If you choose to **Replay with modifications**, you can modify any content from the original request. For example, you can modify the **X-Github-Event** header field with the value `MyCustomPush`.
+1. If you choose to **Replay with modifications**, you can modify any content from the original request. For example, you can modify the **X-GitHub-Event** header field with the value `MyCustomPush`.
 
 1. Click **Replay**.
 

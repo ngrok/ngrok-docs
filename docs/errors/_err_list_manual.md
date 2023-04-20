@@ -2605,13 +2605,13 @@ Your account is not authorized to use OAuth. Upgrade to a Pro or Enterprise plan
 			<td>
 				<a id="ERR_NGROK_1657" href="/docs/errors/err_ngrok_1657">ERR_NGROK_1657</a>
 			</td>
-			<td class="pre-wrapped">The endpoint configuration exceeds the maximum number of OAuth Github teams. You specified <code>&lt;COUNT&gt;</code>, the max is <code>&lt;MAX&gt;</code>.</td>
+			<td class="pre-wrapped">The endpoint configuration exceeds the maximum number of OAuth GitHub teams. You specified <code>&lt;COUNT&gt;</code>, the max is <code>&lt;MAX&gt;</code>.</td>
 		</tr>
 		<tr>
 			<td>
 				<a id="ERR_NGROK_1658" href="/docs/errors/err_ngrok_1658">ERR_NGROK_1658</a>
 			</td>
-			<td class="pre-wrapped">The endpoint configuration exceeds the maximum number of OAuth Github orgs. You specified <code>&lt;COUNT&gt;</code>, the max is <code>&lt;MAX&gt;</code>.</td>
+			<td class="pre-wrapped">The endpoint configuration exceeds the maximum number of OAuth GitHub orgs. You specified <code>&lt;COUNT&gt;</code>, the max is <code>&lt;MAX&gt;</code>.</td>
 		</tr>
 		<tr>
 			<td>
