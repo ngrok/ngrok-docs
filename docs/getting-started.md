@@ -46,7 +46,7 @@ Yes, three times, for [reasons](https://docs.brew.sh/Taps#repository-naming-conv
 
 For Linux, use Apt:
 
-```
+```bash
 curl -s https://ngrok-agent.s3.amazonaws.com/ngrok.asc | \
   sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null && \
   echo "deb https://ngrok-agent.s3.amazonaws.com buster main" | \
@@ -137,8 +137,8 @@ ngrok http 8000
 
 
 You should see something similar to the following console UI in your terminal.
-```
-    ngrok                                                                                                                                                         (Ctrl+C to quit)
+```bash
+    ngrok                                                                       (Ctrl+C to quit)
     
     Session Status                online
     Account                       inconshreveable (Plan: Free)

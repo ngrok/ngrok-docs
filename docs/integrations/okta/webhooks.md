@@ -2,83 +2,133 @@
 description: Develop and test Okta webhooks from localhost
 ---
 
-# Okta Event Hooks
+# Okta Webhooks
 ------------
 
 :::tip TL;DR
 
-To integrate Okta Event Hooks with ngrok:
-1. [Download and launch ngrok](#start-ngrok) `ngrok http 3000`
-1. [Configure Okta Event Hooks with your ngrok URL](#setup-webhook)
-1. [Inspect and replay requests from Okta](#inspect-replay)
+To integrate Okta webhooks with ngrok:
+1. [Launch your local webhook.](#start-your-app) `npm start`
+1. [Launch ngrok.](#start-ngrok) `ngrok http 3000`
+1. [Configure Okta webhooks with your ngrok URL.](#setup-webhook)
 
 :::
 
-This guide covers how to use ngrok to integrate your localhost app with Okta Event Hooks. By integrating ngrok with Okta Event Hooks, you can:
 
-- **Develop and test Okta Event Hooks locally**, eliminating the time in deploying your development code to a public environment
-- **Inspect and troubleshoot requests from Okta** in real-time via the inspection UI and API
-- **Modify and Replay Okta Event Hook requests** with a single click and without spending time reproducing events manually in Okta
+This guide covers how to use ngrok to integrate your localhost app with Okta by using Webhooks.
+Okta webhooks can be used to notify an external application whenever specific events occur in your Okta account. 
+
+By integrating ngrok with Okta, you can:
+
+- **Develop and test Okta webhooks locally**, eliminating the time in deploying your development code to a public environment and setting it up in HTTPS.
+- **Inspect and troubleshoot requests from Okta** in real-time via the inspection UI and API.
+- **Modify and Replay Okta Webhook requests** with a single click and without spending time reproducing events manually in your Okta account.
+- **Secure your app with Okta validation provided by ngrok**. Invalid requests are blocked by ngrok before reaching your app.
 
 
-## **Step 1**: Download and Launch ngrok {#start-ngrok}
+## **Step 1**: Start your app {#start-your-app}
 
-1. Launch your localhost app. Record the port where the app is running (i.e. for `http://localhost:3000`, the port is `3000`).
+For this tutorial, we'll use the [sample NodeJS app available on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample). 
 
-1. If you're not an ngrok user yet, just [sign up to ngrok for free](https://ngrok.com/signup).
+To install this sample, run the following commands in a terminal:
+
+```bash
+git clone https://github.com/ngrok/ngrok-webhook-nodejs-sample.git
+cd ngrok-webhook-nodejs-sample
+npm install
+```
+
+This will get the project installed locally.
+
+Now you can launch the app by running the following command: 
+
+```bash
+npm run startOkta
+```
+
+The app runs by default on port `3000`. 
+
+You can validate that the app is up and running by visiting http://localhost:3000. The application logs request headers and body in the terminal and responds with a message in the browser.
+
+
+## **Step 2**: Launch ngrok {#start-ngrok}
+
+Once your app is running successfully on localhost, let's get it on the internet securely using ngrok! 
+
+1. If you're not an ngrok user yet, just [sign up for ngrok for free](https://ngrok.com/signup).
 
 1. [Download the ngrok agent](https://ngrok.com/download).
 
-1. Go to the [ngrok dashboard](https://dashboard.ngrok.com) and copy your Authtoken. 
-    **Tip:** The ngrok agent uses the authtoken to log into your account when you start a tunnel.
+1. Go to the [ngrok dashboard](https://dashboard.ngrok.com) and copy your Authtoken. <br />
+    **Tip:** The ngrok agent uses the auth token to log into your account when you start a tunnel.
+    
+1. Start ngrok by running the following command:
+    ```bash
+    ngrok http 3000
+    ```
 
-1. Start ngrok by running the command: `ngrok http <port>`, replacing port with your app running port (i.e. `3000`).
-
-1. ngrok will display a url where your application is exposed to the internet (copy this URL for use with Okta).
+1. ngrok will display a URL where your localhost application is exposed to the internet (copy this URL for use with Okta).
     ![ngrok agent running](/img/integrations/launch_ngrok_tunnel.png)
 
 
-## **Step 2**: Integrate Okta {#setup-webhook}
+## **Step 3**: Integrate Okta {#setup-webhook}
 
-1. Sign in to your Okta tenant.
-1. From the Admin Console, go to **Workflow** > **Event Hooks**.
-1. Follow the UI instructions for creating or updating an existing event hook. In the **URL** field, enter the ngrok URL to your service with your localhost app path. (i.e. `https://2d20-142-126-163-77.ngrok.io/userCreated`)
-1. Save the event hook.
-1. Follow the Okta steps to verify the Event webhook.
+To register a webhook on your Okta account follow the instructions below:
 
-### Run Event Hooks with Okta and ngrok
+1. Access yout Okta tentant (i.e. `https://mytenant.okta.com/`) and sign in using your Okta account.
 
-To run a preview call of your Event Hook:
+1. On the left menu, click **Workflow**, click **Event Hooks**, and then click **Create Event Hook**.
 
-1. Select the Event Hook you validated.
-1. Click **Actions** > **Preview**.
-1. Select an event and click **Deliver Request**.
-1. Okta displays the result of the Event Hook request delivered via ngrok:
-     `The user john.doe@example.com has been added to the Okta org!`
+1. On the **Add Event Hook Endpoint** page, enter `My Webhook` in the **Name** field, and in the **URL** field enter the URL provided by the ngrok agent to expose your application to the internet (i.e. `https://1a2b-3c4d-5e6f-7g8h-9i0j.sa.ngrok.io`).
+    ![Okta URL to Publish](img/ngrok_url_configuration_okta.png)
+
+1. In the **Subscribe to events** field select **User sign in attempt** and then click **Save & Continue**.
+
+1. On the **Verification** page, click **Verify** to confirme Okta can contact your localhost through ngrok.
 
 
-## **Step 3**: Inspect and Replay Requests {#inspect-replay}
+### Run Webhooks with Okta and ngrok
+
+Okta sends different request body contents depending on the event that is being triggered.
+You can test your webhook by following the steps below.
+
+1. On the **Event Hooks** page, click **Actions** for your webhook and then click **Preview**.
+
+1. On the **Preview** page, select the **Event Type** from the list of event types and then click **Deliver Request**.
+
+    Confirm your localhost app receives an event notification and logs both headers and body in the terminal.
+
+Optionally, You can trigger new calls from Okta to your application by signing out from Okta console, signing in again, and then clicking **Admin** to enter the administrative console.
+
+    Confirm your localhost app receives an event notification and logs both headers and body in the terminal.
+
 
 ### Inspecting requests
 
-When you launch ngrok, you can see two links: One for the tunnel to your app (it ends up in ngrok.io unless you're using custom domains) and a local URL (http://localhost:4040) for the Request Inspector.
+When you launch the ngrok agent on your local machine, you can see two links: one for the tunnel to your app (it ends up in `ngrok.io` unless you're using custom domains) and a local URL for the Web Interface (a.k.a **Request Inspector**).
 
-The Request Inspector shows all the requests made through your tunnel. When you click a request, you can see details of both requests and responses.
+The Request Inspector shows all the requests made through your ngrok tunnel to your localhost app. When you click on a request, you can see details of both the request and the response.
 
-Seeing requests are an excellent way for validating the data sent to and retrieved by your app via the ngrok tunnel. That alone can save you some time dissecting and logging HTTP request and response headers, methods, bodies, and response codes within your app just to confirm you are getting what you expect.
+Seeing requests is an excellent way of validating the data sent to and retrieved by your app via the ngrok tunnel. That alone can save you some time dissecting and logging HTTP request and response headers, methods, bodies, and response codes within your app just to confirm you are getting what you expect.
 
-To inspect the Okta Event Hook request, launch the ngrok inspection interface (`http://localhost:4040`), and then click the request sent by Okta.
+To inspect Okta's webhooks call, launch the ngrok web interface (i.e. `http://127.0.0.1:4040`), and then click one of the requests sent by Okta.
 
 From the results, review the response body, header, and other details:
 
-![ngrok agent introspection](img/ngrok_introspection_okta_hooks.png)
+![ngrok Request Inspector](img/ngrok_introspection_okta_webhooks.png)
+
 
 ### Replaying requests
 
-The ngrok inspection interface provides a replay function that you can use to test your code without reproducing test conditions in Okta. To replay your call:
+The ngrok Request Inspector provides a replay function that you can use to test your code without the need to trigger new events from Okta. To replay a request:
 
-1. In the ngrok inspection interface (`http://localhost:4040`), select an Event Hook from Okta.
-1. Click **Replay** > **Replay with modifications:**
-1. Optionally, modify the request body with a different content. For example: `"target": [{ "alternateId": "jane.doe@example.com"}]`
+1. In the ngrok inspection interface (i.e. `http://localhost:4040`), select a request from Okta.
+
+1. Click **Replay** to execute the same request to your application or select **Replay with modifications** to modify the content of the original request before sending the request.
+
+1. If you choose to **Replay with modifications**, you can modify any content from the original request. For example, you can modify the **id** field inside the body of the request.
+
 1. Click **Replay**.
-1. Your local application receives the modified request to process and provide a response.
+
+Verify that your local application receives the request and logs the corresponding information to the terminal.
+

@@ -98,7 +98,7 @@ To register a webhook on your Twitter account follow the instructions below:
 1. On the **Dev environments** page, click **Set up dev environment** in the **Account Activity API** section, enter a name for environment and then select you app in the **App** combobox.
 
 1. In a terminal window, run the following command to register the webhook:
-    ```
+    ```bash
     curl --request POST --url https://api.twitter.com/1.1/account_activity/webhooks.json?url=ENCODED_URL \
     --header 'authorization: OAuth oauth_consumer_key="CONSUMER_KEY", oauth_nonce="GENERATED", oauth_signature="GENERATED", oauth_signature_method="HMAC-SHA1", oauth_timestamp="GENERATED", oauth_token="ACCESS_TOKEN", oauth_version="1.0"'
     ```
@@ -113,7 +113,7 @@ To register a webhook on your Twitter account follow the instructions below:
 1. Copy the ID of the webhook you created.
 
 1. In a terminal window, run the following command to subscribe a user to this webhook:
-   ```
+   ```bash
     curl --request POST --url https://api.twitter.com/1.1/account_activity/all/APP_NAME/subscriptions.json \
     --header 'authorization: OAuth oauth_consumer_key="CONSUMER_KEY", oauth_nonce="GENERATED", oauth_signature="GENERATED", oauth_signature_method="HMAC-SHA1", oauth_timestamp="GENERATED", oauth_token="SUBSCRIBING_USER_ACCESS_TOKEN", oauth_version="1.0"'
     ```
