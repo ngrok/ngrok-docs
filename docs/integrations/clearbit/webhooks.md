@@ -83,7 +83,8 @@ To register a webhook on your Clearbit account follow the instructions below:
 
 1. Click **Update account**.
 
-1. Make note of the value of the **Secret Hey** that appears on the [Clearbit API Dashboard](https://dashboard.clearbit.com/api) page.
+1. Make note of the value of the **Secret API Key** that appears on the [Clearbit API Dashboard](https://dashboard.clearbit.com/api) page.
+    **Note**: Usually the secret key value starts with `sk_`.
 
 
 ### Run Webhooks with Clearbit and ngrok
@@ -146,7 +147,8 @@ This is a quick step to add extra protection to your application.
 
 1. Access [Clearbit API Dashboard](https://dashboard.clearbit.com/api/) and sign in using your Clearbit account.
 
-1. Copy the value of the **API Key** field appearing on the screen.
+1. Copy the value of the **Secret API Key** field appearing on the screen.
+    **Note**: Usually the secret key value starts with `sk_`.
 
 1. Restart your ngrok agent by running the command, replacing `{your api key}` with the value you copied before:
     ```bash
