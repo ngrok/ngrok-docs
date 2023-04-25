@@ -10,7 +10,7 @@ The currently supported webhook providers are:
 | AfterShip | `aftership` | [Documentation](https://ngrok.com/docs/integrations/aftership/webhooks/) |
 | Airship | `airship` | [Documentation](https://ngrok.com/docs/integrations/airship/webhooks/) |
 | Amazon SNS | `sns` | [Documentation](https://ngrok.com/docs/integrations/amazonsns/webhooks/) |
-| Autodesk Forge | `autodesk_forge` | [Documentation](https://ngrok.com/docs/integrations/autodesk/webhooks/) |
+| Autodesk Platform Services | `autodesk` | [Documentation](https://ngrok.com/docs/integrations/autodesk/webhooks/) |
 | Bitbucket | `bitbucket` | [Documentation](https://ngrok.com/docs/integrations/bitbucket/webhooks/) |
 | Bolt | `bolt` | [Documentation](https://help.bolt.com/developers/guides/webhooks/hook-verification/) |
 | Box | `box` | [Documentation](https://ngrok.com/docs/integrations/box/webhooks/) |
@@ -48,7 +48,7 @@ The currently supported webhook providers are:
 | Orbit | `orbit` | [Documentation](https://ngrok.com/docs/integrations/orbit/webhooks/) |
 | PagerDuty | `pagerduty` | [Documentation](https://ngrok.com/docs/integrations/pagerduty/webhooks/) |
 | Pinwheel | `pinwheel` | [Documentation](https://ngrok.com/docs/integrations/pinwheel/webhooks/) |
-| Plivo | `plivo` | [Documentation](https://www.plivo.com/docs/sms/concepts/signature-validation) |
+| Plivo | `plivo` | [Documentation](https://ngrok.com/docs/integrations/plivo/webhooks/) |
 | Pusher | `pusher` | [Documentation](https://ngrok.com/docs/integrations/pusher/webhooks/) |
 | SendGrid | `sendgrid` | [Documentation](https://ngrok.com/docs/integrations/sendgrid/webhooks/) |
 | Sentry | `sentry` | [Documentation](https://ngrok.com/docs/integrations/sentry/webhooks/) |

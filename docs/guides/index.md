@@ -1,6 +1,6 @@
 ---
 pagination_next: guides/dashboard-sso-okta-setup
-sidebar_position: 3
+sidebar_position: 1
 title: Guides
 ---
 
@@ -31,4 +31,4 @@ Here you will find a set of guides to help you with common (and not so common) t
 | [How to Round-Robin Load Balance with ngrok Cloud Edges](/guides/how-to-round-robin-load-balance-with-ngrok-cloud-edges) | Learn how to load balance ngrok tunnels using ngrok Cloud Edges |
 | [How to do Weighted Round-Robin Load Balancing with ngrok Cloud Edges](/guides/how-to-do-weighted-load-balancing-with-ngrok-cloud-edges) | Learn how to load balance ngrok tunnels using ngrok Cloud Edges |
 | [Using Labels with ngrok Edges](/guides/using-labels-within-ngrok) | Learn how to use labels and tunnel groups with ngrok Cloud Edges |
-| [Remote Linux Device Management using ngrok](/guides/remote-device-mgmt-linux) | Learn how to remotely manage Linux devices using ngrok |
+| [Using ngrok with IoT devices](/guides/device-gateway) | Learn how to remotely manage IoT devices using ngrok |

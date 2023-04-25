@@ -90,7 +90,7 @@ To register a webhook on your Calendly account follow the instructions below:
     **Tip**: Make note of the key value.
 
 1. Open a terminal window and run the following command to gather information about your account:
-    ```
+    ```bash
     curl --request GET --url https://api.calendly.com/users/me \
     --header 'authorization: Bearer TOKEN'
     ```
@@ -100,7 +100,7 @@ To register a webhook on your Calendly account follow the instructions below:
 1. The terminal logs the response of the previous command. Copy the value of the **current_organization** field and the **uri** field.
 
 1. In the terminal window, run the following command to register the webhook:
-    ```
+    ```bash
     curl --request POST --url https://api.calendly.com/webhook_subscriptions \
     --header 'Authorization: Bearer TOKEN' \
     --header 'Content-Type: application/json' --data '{
