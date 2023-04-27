@@ -10,7 +10,7 @@ tags:
 
 ngrok allows you to create secure ingress to any app, device or service without spending hours learning arcane networking technologies. You can get started with a single command or a single line of code.
 
-What is ngrok? ngrok is an ingress-as-a-service platform that removes the hassle of getting code online from developers’ plates by decoupling ingress from infrastructure with one line of code , all without provisioning proxies or VPNs. 
+What is ngrok? ngrok is an ingress-as-a-service platform that removes the hassle of getting code online from developers’ plates by decoupling ingress from infrastructure with one line of code, all without provisioning proxies or VPNs. 
 
 In this guide, we'll walk you through the process of installing the ngrok agent on a remote Linux device, ensuring the agent runs integrated to your operating system, restricting traffic to trusted origins, and integrating traffic events with your preferred logging tool.
 
@@ -22,13 +22,13 @@ To download and install the ngrok agent on your remote Linux device, follow thes
 2. Download the latest ngrok binary for your Linux distribution. You can find the correct binary on our [ngrok download page](https://ngrok.com/download). Here's an example for ARM64:
 
 ```bash
-wget https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip
+wget https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-arm64.tgz
 ```
 
-3. Unzip the downloaded file and move it to a directory in your PATH:
+3. Unzip the downloaded file and move it to a directory in your PATH. Below an example for `/usr/local/bin`:
 
 ```bash
-unzip ngrok-stable-linux-amd64.zip
+sudo tar xvzf ./ngrok-v3-stable-linux-arm64.tgz -C /usr/local/bin
 sudo mv ngrok /usr/local/bin
 ```
 
@@ -38,7 +38,8 @@ sudo mv ngrok /usr/local/bin
 ngrok authtoken NGROK_AUTHTOKEN
 ```
 
-Replace `NGROK_AUTHTOKEN` with your unique ngrok authtoken found in the [ngrok dashboard](https://dashboard.ngrok.com/get-started/your-authtoken##).
+  **Note**: Replace `NGROK_AUTHTOKEN` with your unique ngrok authtoken found in the [ngrok dashboard](https://dashboard.ngrok.com/get-started/your-authtoken).
+
 
 ## Step 2: Enable SSH access
 
@@ -56,13 +57,17 @@ ngrok tcp 22
 ssh -p NGROK_PORT user@NGROK_TCP_ADDRESS
 ```
 
+  **Note**: Replace `user` with your device user
+
+
 ## Step 3: Adding IP restrictions (Requires a paid plan)
 
-Once you've confirmed that you have connectivity to the device, let's add some security so that you are the only one that can access it. This capability requires IP Restrictions which are only available with a paid subscription to ngrok
+Once you confirmed that you have connectivity to the device, add some security so that you are the only one that can access it.
+  **Note**: This capability requires the **IP Restrictions** feature from ngrok, which are only available with a paid subscription.
 
-1. Stop the ngrok process using ctrl+c in your terminal.
+1. Stop the ngrok process using `ctrl+c` command in your terminal.
 
-1. We are going to restrict access to your machine using your public IP address. The following command will fetch your public IP address and add an IP Restriction to your tunnel so that only you can access it. 
+1. Add an allow rule to restrict access to your machine using your public IP address. The following command will fetch your public IP address and add an IP Restriction to your tunnel so that only you can access it. 
 
 ```bash
 ngrok tcp 22 --cidr-allow $(curl http://ifconfig.me/ip)/32
