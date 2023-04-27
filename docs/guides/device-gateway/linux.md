@@ -1,7 +1,6 @@
 ---
-title: Using the ngrok Agent on a Remote Linux Device
+title: Linux
 description: Learn how to instal ngrok on a remote Linux device to provide secure access and management.
-
 tags:
     - guides
     - agent
