@@ -152,7 +152,7 @@ THe following are quick steps to add extra protection to your application.
     
     **Note:** This feature requires ngrok Pro or Enterprise plan.
 
-    1. You can find a list of CloudFront IP Address used by Bitbucket Cloud in [Bitbucket Cloud IP addresses to allowlist document](https://support.atlassian.com/bitbucket-cloud/docs/what-are-the-bitbucket-cloud-ip-addresses-i-should-use-to-configure-my-corporate-firewall/).
+    1. You can find a list of CloudFront IP Addresses used by Bitbucket Cloud in the [Bitbucket Support documents](https://support.atlassian.com/bitbucket-cloud/docs/what-are-the-bitbucket-cloud-ip-addresses-i-should-use-to-configure-my-corporate-firewall/).
 
     1. Go to the [ngrok dashboard](https://dashboard.ngrok.com), sign in, click **Security** in the left menu, and then click **IP Restrictions**.
 
