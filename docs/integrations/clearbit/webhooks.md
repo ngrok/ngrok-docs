@@ -76,7 +76,7 @@ Once your app is running successfully on localhost, let's get it on the internet
 
 To register a webhook on your Clearbit account follow the instructions below:
 
-1. Access [Clearbit API Dashboard](https://dashboard.clearbit.com/api) and sign in using your Clearbit account.
+1. Access the [Clearbit API Dashboard](https://dashboard.clearbit.com/api) and sign in using your Clearbit account.
 
 1. On the **API Settings** section, enter the URL provided by the ngrok agent to expose your application to the internet in the **Webhook URL** field (i.e. `https://1a2b-3c4d-5e6f-7g8h-9i0j.sa.ngrok.io`).
     ![Clearbit URL to Publish](img/ngrok_url_configuration_clearbit.png)
@@ -98,7 +98,7 @@ You can trigger new calls from Clearbit to your application by following the ins
     --header 'Authorization: Bearer TOKEN'
     ```
     **Note**: Replace the following with values copied on previous steps:
-    - EMAIL_ADDRESS: An email address of a user on your Clearbit account organization.
+    - EMAIL_ADDRESS: An email address of a user in your Clearbit account organization.
     - TOKEN: The Clearbit secret key you copied before.
  
     Confirm your localhost app receives a notification and logs both headers and body in the terminal.
@@ -145,9 +145,9 @@ The ngrok signature webhook verification feature allows ngrok to assert that req
 
 This is a quick step to add extra protection to your application.
 
-1. Access [Clearbit API Dashboard](https://dashboard.clearbit.com/api/) and sign in using your Clearbit account.
+1. Access the [Clearbit API Dashboard](https://dashboard.clearbit.com/api/) and sign in using your Clearbit account.
 
-1. Copy the value of the **Secret API Key** field appearing on the screen.
+1. Copy the value of the **Secret API Key** field that appears on the screen.
     **Note**: Usually the secret key value starts with `sk_`.
 
 1. Restart your ngrok agent by running the command, replacing `{your api key}` with the value you copied before:
@@ -157,4 +157,4 @@ This is a quick step to add extra protection to your application.
 
 1. Repeat the command to gather information about your account.
 
-Verify that your local application receives the request and logs information to the terminal.
+Verify that your local application receives the request and logs the information to the terminal.
