@@ -17,11 +17,11 @@ To send ngrok events to Datadog:
 
 
 This guide covers how to send ngrok events into Datadog.
-ngrok events can be used for amongst many other user cases; providing a history of changes within an account and per request visbility for active monitoring/troubleshooting and security traffic inspection.
+Some essential use-cases for ngrok events include providing a history of changes within an account, per request visibility for active monitoring/troubleshooting and security traffic inspection or SIEM usage.
 
 By integrating ngrok with Datadog, you can:
 
-- **Quickly identify application issues** in real-time using ngork request events in conjucntion with Datadog ml based monitoring.
+- **Quickly identify application issues** in real-time using ngrok request events in conjunction with Datadog ML based monitoring.
 - **Historically audit changes occurring within an account**.  Be able to historically audit changes within an account.
 - **Profile usage of your service** by using Datadog queries and analytic charts.
 - **Identify security issues** by using ngrok events and Datadog SIEM.
@@ -57,7 +57,7 @@ To send the events to Datadog we'll need to assign an Event Destination to the E
 
 ![ngrok event destination](img/event_destination.png)
 
-3. Once all required input have values, select <strong>Send Test Event</strong> and you should be presented with a Success message.  Select <strong>Done</strong> and the Datadog Event Destination setup is complete.
+3. Once all required inputs have values, select <strong>Send Test Event</strong> and you should be presented with a Success message.  Select <strong>Done</strong> and the Datadog Event Destination setup is complete.
 
 ![ngrok event destination success](img/success.png)
 
