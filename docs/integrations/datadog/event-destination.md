@@ -1,5 +1,11 @@
 ---
-description: Send ngrok events to Datadog
+title: Send Network Logs from ngrok to Datadog
+description: Send network traffic logs from ngrok to Datadog
+tags:
+    - events
+    - logs
+    - datadog
+    - event destinations
 ---
 
 # Datadog Event Destination
@@ -16,7 +22,7 @@ To send ngrok events to Datadog:
 :::
 
 
-This guide covers how to send ngrok events into Datadog.
+This guide covers how to send ngrok events including network traffic logs into Datadog.
 Some essential use-cases for ngrok events include providing a history of changes within an account, per request visibility for active monitoring/troubleshooting and security traffic inspection or SIEM usage.
 
 By integrating ngrok with Datadog, you can:
@@ -34,13 +40,14 @@ For ngrok to successfully send events into Datadog we'll require an API key. To 
 
 ## **Step 2**: Create an Event Subscription {#create-event-subscription}
 
-1. Using a browser, go to the [ngrok dashboard](https://dashboard.ngrok.com) and navigate to <strong>Events</strong> on the left hand navigation and select <strong>Create Subscription</strong>.
+1. Using a browser, go to the [ngrok dashboard](https://dashboard.ngrok.com) and navigate to **Events** on the left hand navigation and select **Create Subscription**.
     
     ![ngrok event subscription](img/event_sub.png)
 
 
-2. Within the Event Subscription configuration, provide a description for the event and within the sources tab select <strong>Add Source</strong> to pick and choose which events you would like to send to Datadog.<br></br><br></br>
-Once complete, select <strong>Add Event Sources</strong> to confirm your selections.
+2. Within the Event Subscription configuration, provide a description for the event and within the sources tab select **Add Source** to pick and choose which events you would like to send to Datadog.
+
+Once complete, select **Add Event Sources** to confirm your selections.
 
 ![ngrok event sources](img/event_sources.png)
 
@@ -48,16 +55,16 @@ Once complete, select <strong>Add Event Sources</strong> to confirm your selecti
 
 To send the events to Datadog we'll need to assign an Event Destination to the Event Subscription.
 
-1. Within the Event Subscription configuration Destination Tab, select <strong>Add Destination.</strong>
+1. Within the Event Subscription configuration Destination Tab, select **Add Destination.**
 
-1. Choose Datadog as the target and fill in the correct information being mindful of <strong>which region you Datadog data resides in</strong>.  Target, Region and API Key values are required, all other values are optional.
+1. Choose Datadog as the target and fill in the correct information being mindful of **which region you Datadog data resides in**.  Target, Region and API Key values are required, all other values are optional.
 
-    - <strong>Service Name</strong> is a locally significant value and will be appended to the event destination name.<br></br>
-    - <strong>DD Tags</strong> values will be added as tags to the event data being sent to be utilized within Datadog.
+    - **Service Name** is a locally significant value and will be appended to the event destination name.<br></br>
+    - **DD Tags** values will be added as tags to the event data being sent to be utilized within Datadog.
 
 ![ngrok event destination](img/event_destination.png)
 
-3. Once all required inputs have values, select <strong>Send Test Event</strong> and you should be presented with a Success message.  Select <strong>Done</strong> and the Datadog Event Destination setup is complete.
+3. Once all required inputs have values, select **Send Test Event** and you should be presented with a Success message.  Select **Done** and the Datadog Event Destination setup is complete.
 
 ![ngrok event destination success](img/success.png)
 
