@@ -11,11 +11,11 @@ Starting an HTTP tunnel is a easy as `ngrok http 80`, or whatever local port you
 
 ## Custom subdomains {#custom-subdomains}
 
-ngrok assigns random names to the HTTP tunnels it opens for you. This is okay for one-time personal uses. But if you're displaying the URL at a hackathon or integrating with a third-party webhook, it can be frustrating if the tunnel name changes or is difficult to read. You can specify a custom subdomain for your tunnel URL with the `--subdomain` switch.
+ngrok assigns random names to the HTTP tunnels it opens for you. This is okay for one-time personal uses. But if you're displaying the URL at a hackathon or integrating with a third-party webhook, it can be frustrating if the tunnel name changes or is difficult to read. You can specify a custom domain for your tunnel URL with the `--domain` switch.
 
-###### Example: Open a tunnel with the subdomain 'inconshreveable'
+###### Example: Open a tunnel with the domain 'inconshreveable.ngrok.dev'
 
-    ngrok http --subdomain=inconshreveable 80
+    ngrok http --domain=inconshreveable.ngrok.dev 80
 
 ## Password protecting your tunnel with Basic Auth {#basic-auth}
 
@@ -34,11 +34,11 @@ Instead of your tunnel appearing as a subdomain of `ngrok.io`, you can connect n
     
     ![](/img/docs/cname.png)
 3.  Create a DNS CNAME record from `dev.example.com` to your CNAME target. In this example, we would point the CNAME record to `2w9c34maz.cname.ngrok.io`
-4.  Invoke ngrok with the `--hostname` switch and specify the name of your custom domain as an argument. Make sure the `--region` you specify matches the region in which you reserved your domain.
+4.  Invoke ngrok with the `--domain` switch and specify the name of your custom domain as an argument. Make sure the `--region` you specify matches the region in which you reserved your domain.
     
     ###### Example: Run a tunnel over a custom domain
     
-        ngrok http --region=us --hostname=dev.example.com 8000
+        ngrok http --region=us --domain=dev.example.com 8000
     
 
 ## Local HTTPS servers {#local-https}
@@ -103,8 +103,8 @@ By default, when ngrok runs an HTTP tunnel, it opens endpoints for both HTTP and
 
     ngrok http 8080                             # forwards provided ngrok URL to port 80
     ngrok http example.com:9000                 # forward traffic to example.com:9000
-    ngrok http --subdomain=bar 80               # request subdomain name: 'bar.ngrok.io'
-    ngrok http --hostname=www.ex.com 1234       # request tunnel 'ex.com' (DNS CNAME)
+    ngrok http --domain=bar.ngrok.dev 80        # request subdomain name: 'bar.ngrok.dev'
+    ngrok http --domain=www.ex.com 1234         # request tunnel 'www.ex.com' (DNS CNAME)
     ngrok http --basic-auth='falken:joshua' 80  # enforce basic auth on tunnel endpoint
     ngrok http --host-header=ex.com 80          # rewrite the Host header to 'ex.com'
     ngrok http file:///var/log                  # serve local files in /var/log

@@ -19,11 +19,11 @@ You can also register [wildcard domains](#wildcard-domains) to your account whic
 
 ### Wildcard Domains
 
-ngrok permits you to bind HTTP and TLS tunnels to wildcard domains. All wildcard domains, even those that are subdomains of `ngrok.io` must first be reserved for your account on your dashboard. When using `--hostname` or `--subdomain`, specify a leading asterisk to bind a wildcard domain.
+ngrok permits you to bind HTTP and TLS tunnels to wildcard domains. All wildcard domains, even those that are subdomains of `ngrok.io` must first be reserved for your account on your dashboard. When using `--domain`, specify a leading asterisk to bind a wildcard domain.
 
 ###### Bind a tunnel to receive traffic on all subdomains of `example.com`
 
-    ngrok http --region=us --hostname *.example.com 80
+    ngrok http --region=us --domain *.example.com 80
 
 #### Wildcard Domain Rules
 

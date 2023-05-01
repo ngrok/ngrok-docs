@@ -311,8 +311,8 @@ The `ngrok http` command is used to start a tunnel listening for HTTP/HTTPS traf
 
     ngrok http 8080                             # forwards provided ngrok URL to port 80
     ngrok http example.com:9000                 # forward traffic to example.com:9000
-    ngrok http --subdomain=bar 80               # request subdomain name: 'bar.ngrok.io'
-    ngrok http --hostname=www.ex.com 1234       # request tunnel 'www.ex.com' (DNS CNAME)
+    ngrok http --domain=bar.ngrok.dev 80        # request subdomain name: 'bar.ngrok.dev'
+    ngrok http --domain=www.ex.com 1234         # request tunnel 'www.ex.com' (DNS CNAME)
     ngrok http --basic-auth='falken:joshua' 80  # enforce basic auth on tunnel endpoint
     ngrok http --host-header=ex.com 80          # rewrite the Host header to 'ex.com'
     ngrok http file:///var/log                  # serve local files in /var/log
@@ -329,9 +329,9 @@ The `ngrok http` command is used to start a tunnel listening for HTTP/HTTPS traf
 | `--circuit-breaker float` | reject requests when 5XX responses exceed this ratio |
 | `--compression` | gzip compress http responses from your web service |
 | `--config strings` | path to config files; they are merged if multiple |
+| `--domain string` | host tunnel on a custom domain |
 | `-h`, `--help` | help for this command |
 | `--host-header string` | set Host header; if `rewrite` use local address hostname |
-| `--hostname string` | host tunnel on custom hostname (requires DNS CNAME) |
 | `--inspect` | enable/disable http introspection (default true) |
 | `--log string` | path to log file, `stdout`, `stderr` or `false` (default `false`) |
 | `--log-format string` | log record format: `term`, `logfmt`, `json` (default `term`) |
@@ -350,7 +350,6 @@ The `ngrok http` command is used to start a tunnel listening for HTTP/HTTPS traf
 | `--response-header-add strings` | header key:value to add to response |
 | `--response-header-remove strings` | header field to remove from response if present |
 | `--scheme strings` | which scheme to listen on (default `https`) |
-| `--subdomain string` | host tunnel on a custom subdomain |
 | `--verify-webhook string` | validate webhooks are signed by this provider, e.g. `slack` |
 | `--verify-webhook-secret string` | secret used by provider to sign webhooks, if any |
 | `--websocket-tcp-converter` | convert ingress websocket connections to TCP upstream |
@@ -450,7 +449,7 @@ The `ngrok tls` command starts a TLS tunnel listening for traffic on port 443 wi
 
 The ngrok server does not terminate TLS connections forwarded with this command. Any underlying protocol may be used. You may optionally specify a TLS key/cert pair which will be used to terminate the traffic at the ngrok agent before it is forwarded. If not specified, the traffic will be forwarded still encrypted.
 
-Using this command is only recommended with the `--hostname` option. Other uses will work, but will always result in certificate mismatch warnings.
+Using this command is only recommended with the `--domain` option. Other uses will work, but will always result in certificate mismatch warnings.
 
 ### Usage
 
@@ -459,13 +458,13 @@ Using this command is only recommended with the `--hostname` option. Other uses 
 ### Examples
 
     # forward TLS traffic for www.example.com to port 443 (requires CNAME)
-    ngrok tls --hostname=www.example.com 443
+    ngrok tls --domain=www.example.com 443
     
     # forward TLS traffic on subdomain (mismatch certificate warning)
     ngrok tls 1234
     
     # terminate TLS traffic for t.co before forwarding
-    ngrok tls --hostname=t.co --crt=/path/to/t.co.crt --key=/path/to/t.co.key 443
+    ngrok tls --domain=t.co --crt=/path/to/t.co.crt --key=/path/to/t.co.key 443
 
 ### Flags
 
@@ -476,8 +475,8 @@ Using this command is only recommended with the `--hostname` option. Other uses 
 | `--cidr-deny strings` | reject connections that match the given CIDRs |
 | `--config strings` | path to config files; they are merged if multiple |
 | `--crt string` | path to a TLS certificate for TLS termination |
+| `--domain string` | host tunnel on a custom domain |
 | `-h`, `--help` | help for this command |
-| `--hostname string` | host tunnel on custom hostname (requires DNS CNAME) |
 | `--key string` | path to a TLS key for TLS termination |
 | `--log string` | path to log file, `stdout`, `stderr` or `false` (default `false`) |
 | `--log-format string` | log record format: `term`, `logfmt`, `json` (default `term`) |
@@ -485,7 +484,6 @@ Using this command is only recommended with the `--hostname` option. Other uses 
 | `--mutual-tls-cas string` | path to TLS certificate authority to verify client certs in mutual TLS |
 | `--proxy-proto string` | version of proxy proto to use with this tunnel, empty if not using |
 | `--region string` | ngrok server region `us`, `eu`, `au`, `ap`, `sa`, `jp`, `in` (defaults to closest) |
-| `--subdomain string` | host tunnel on a custom subdomain |
 | `--terminate-at string` | terminate at ngrok "edge" or "agent". defaults to no termination or "edge" if `--crt` or `--key` are present |
 
 ## ngrok tunnel

@@ -76,7 +76,7 @@ ngrok can leverage FusionAuth SSO in two ways:
     ngrok http 3000 --oidc=<FusionAuth_url> \
     --oidc-client-id=<FusionAuth_client_id> \
     --oidc-client-secret=<FusionAuth_client_secret> \
-    --subdomain=fusionauth-sso-test
+    --domain=fusionauth-sso-test.ngrok.dev
     ```
 
 1. Skip to **Step 3**

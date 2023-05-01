@@ -127,12 +127,10 @@ Starts a tunnel with a random subdomain, for example a URL like `http://d95211d2
 
 ##### How to keep the old behavior
 
-Add a `subdomain` property with the same name as the tunnel:
+Add a `domain` property with the same name as the tunnel:
 
     tunnels:
       webapp:
       proto: http
       addr: 80
-      subdomain: webapp
-
-This behavior changed in order to make it possible to launch tunnels with random domains. This was preventing the use of the configuration file and agent API to free tier users.
+      domain: webapp.ngrok.io

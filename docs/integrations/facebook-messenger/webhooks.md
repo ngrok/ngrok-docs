@@ -9,7 +9,7 @@ description: Develop and test Facebook Messenger webhooks from localhost
 
 To integrate Facebook Messenger webhooks with ngrok:
 1. [Launch your local webhook.](#start-your-app) `node appFB`
-1. [Launch ngrok.](#start-ngrok) `ngrok http 3000 --region us --hostname myexample.ngrok.io`
+1. [Launch ngrok.](#start-ngrok) `ngrok http 3000 --region us --domain myexample.ngrok.io`
 1. [Configure Facebook webhooks with your ngrok URL.](#setup-webhook)
 1. [Secure your webhook requests with verification.](#security)
 
@@ -78,7 +78,7 @@ Once your app is running successfully on localhost, let's get it on the internet
 
 1. Start ngrok by running the following command in a terminal on your local desktop:
     ```bash
-    ngrok http 3000 --region us --hostname myexample.ngrok.io
+    ngrok http 3000 --region us --domain myexample.ngrok.io
     ```
 
 1. ngrok will display a URL where your localhost application is exposed to the internet (copy this URL for use with Facebook).
@@ -199,7 +199,7 @@ This is a quick step to add extra protection to your application.
 1. Restart your ngrok agent by running the command, replacing `{your app secret}` with the value you have copied before:
     
     ```bash
-    ngrok http 3000 --region us --hostname myexample.ngrok.io --verify-webhook facebook_messenger --verify-webhook-secret {your app secret}
+    ngrok http 3000 --region us --domain myexample.ngrok.io --verify-webhook facebook_messenger --verify-webhook-secret {your app secret}
     ```
 
 1. Access the Facebook page you have assigned to your webhook and send a message to another Facebook user.

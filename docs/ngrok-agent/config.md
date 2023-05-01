@@ -250,11 +250,11 @@ Tunnels are defined as mapping of name -> configuration under the `tunnels` prop
       httpbin:
         proto: http
         addr: 8000
-        hostname: alan-httpbin.ngrok.io
+        domain: alan-httpbin.ngrok.dev
       demo:
         proto: http
         addr: 9090
-        hostname: demo.inconshreveable.com
+        domain: demo.inconshreveable.com
         inspect: false
 
 ##### Start the tunnel named 'httpbin'
@@ -278,7 +278,7 @@ Each tunnel you define is a map of configuration option names to values. The nam
 | `circuit_breaker` | Float | Reject requests when 5XX responses exceed this ratio |
 | `compression` | `true`, `false` | gzip compress HTTP responses from your web service |
 | `host_header` | `rewrite`, `preserve`, custom | Rewrite the HTTP Host header to this value, or `preserve` to leave it unchanged. The `rewrite` option will rewrite the host header to match the hostname of the upstream service you are sending traffic to. |
-| `hostname` | Any valid hostname that you have previously registered with ngrok. | The hostname to request. If using a custom domain, this requires registering in the [ngrok dashboard](https://dashboard.ngrok.com/cloud-edge/domains) and setting a DNS CNAME value. When using wildcard domains you will need to surround the value with single quotes (hostname: '*.example.com'). |
+| `domain` | Any valid domain or hostname that you have previously registered with ngrok. | The domain to request. If using a custom domain, this requires registering in the [ngrok dashboard](https://dashboard.ngrok.com/cloud-edge/domains) and setting a DNS CNAME value. When using wildcard domains you will need to surround the value with single quotes (domain: '*.example.com'). |
 | `inspect` | `true`, `false` | enable/disable the http request inspection in the web and agent API (default: true) |
 | `ip_restriction.allow_cidrs` | Array of CIDRs | Rejects connections that do not match the given CIDRs |
 | `ip_restriction.deny_cidrs` | Array of CIDRs | Rejects connections that match the given CIDRs and allows all other CIDRs. |
@@ -315,7 +315,7 @@ Each tunnel you define is a map of configuration option names to values. The nam
 | --- | --- | --- |
 | `mutual_tls_cas` | Valid system path | The path to the TLS certificate authority to verify client certs for mutual TLS. You will also need to specify `key` and `crt` to enable mutual TLS. |
 | `crt` | Valid system path | PEM TLS certificate at this path to terminate TLS traffic before forwarding locally. Requires `--key` to also be specified. |
-| `hostname` | Any valid hostname that you have previously registered with ngrok. | The hostname to request. If using a custom domain, this requires registering in the ngrok Dashboard and setting a DNS CNAME value. When using wildcard domains you will need to surround the value with single quotes (hostname: '*.example.com'). |
+| `domain` | Any valid domain or hostname that you have previously registered with ngrok. | The domain to request. If using a custom domain, this requires registering in the ngrok Dashboard and setting a DNS CNAME value. When using wildcard domains you will need to surround the value with single quotes (domain: '*.example.com'). |
 | `ip_restriction.allow_cidrs` | Array of CIDRs | Rejects connections that do not match the given CIDRs |
 | `ip_restriction.deny_cidrs` | Array of CIDRs | Rejects connections that match the given CIDRs and allows all other CIDRs. |
 | `key` | Valid system path | PEM TLS private key at this path to terminate TLS traffic before forwarding locally. Requires `--crt` to also be specified. |
@@ -392,15 +392,15 @@ Below is an example configuration file with all the options filled in.
           - "bob:bobpassword"
         schemes: 
           - https
-        host_header: "myapp.dev"
+        host_header: "myapp.ngrok.dev"
         inspect: false
         proto: http
-        subdomain: myapp
+        domain: myapp.ngrok.dev
     
       e2etls:
         addr: 9000
         proto: tls
-        hostname: myapp.example.com
+        domain: myapp.example.com
         crt: example.crt
         key: example.key
         
