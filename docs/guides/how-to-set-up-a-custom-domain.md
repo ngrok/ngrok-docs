@@ -30,6 +30,6 @@ Once created it may take a few minutes before the new record is reflected in the
 
 Once your DNS record is in place you can create a tunnel using your new domain. Try running:
 
-`ngrok http --hostname=foo.example.com 8080`
+`ngrok http --domain=foo.example.com 8080`
 
 and presuming you're actually running an application on port 8080 then making an HTTP request to `https://foo.example.com` should return a response from your app.

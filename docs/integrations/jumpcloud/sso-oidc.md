@@ -96,9 +96,9 @@ ngrok can leverage JumpCloud SSO in two ways:
     - JUMPCLOUD_CLIENT_ID: The client id you copied from JumpCloud.
     - JUMPCLOUD_CLIENT_SECRET: The client secret you copied from JumpCloud.
     
-    Alternatively, add the `--subdomain YOUR_SUBDOMAIN` argument to get your subdomain.ngrok.io URL, replacing `YOUR_SUBDOMAIN` with your URL of preference.
+    Alternatively, add the `--domain YOUR_DOMAIN` argument to get your custom URL, replacing `YOUR_DOMAIN` with your URL of preference.
 
-1. Copy the URL available next to **Forwarding** (for example, `https://jumpcloud-sso-test.ngrok.io`).
+1. Copy the URL available next to **Forwarding** (for example, `https://jumpcloud-sso-test.ngrok.dev`).
 
 1. Skip to **Step 3**
 

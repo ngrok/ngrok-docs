@@ -11,7 +11,7 @@ Check out the [ngrok agent TLS tunnel documentation](/ngrok-agent/ngrok#ngrok-tl
 
 ###### Forward TLS traffic to a local HTTPS server on port 443
 
-    ngrok tls --subdomain=encrypted 443
+    ngrok tls --domain=encrypted.ngrok.dev 443
 
 Once your tunnel is running, try accessing it with curl.
 
@@ -27,7 +27,7 @@ Once you have your key and certificate and have installed them properly, it's no
 
 ###### Forward TLS traffic over your own custom domain
 
-    ngrok tls --region=us --hostname=secure.example.com 443
+    ngrok tls --region=us --domain=secure.example.com 443
 
 ## Terminating TLS connections {#tls-termination}
 
@@ -35,7 +35,7 @@ It's possible that the service you're trying to expose may not have the capabili
 
 ###### Offload TLS Termination to the ngrok Agent
 
-    ngrok tls --region=us --hostname secure.example.com --key /path/to/tls.key --crt /path/to/tls.crt 80
+    ngrok tls --region=us --domain secure.example.com --key /path/to/tls.key --crt /path/to/tls.crt 80
 
 ## Running non-HTTP services over TLS tunnels {#tls-agnostic}
 
@@ -56,13 +56,13 @@ A more complete list can be found on [the Server Name Indication page on Wikiped
 ## TLS Tunnel Examples {#examples}
 
     # forward TLS traffic for www.example.com to port 443 (requires CNAME)
-    ngrok tls --hostname=www.example.com 443
+    ngrok tls --domain=www.example.com 443
     
     # forward TLS traffic on subdomain (mismatch certificate warning)
     ngrok tls 1234
     
     # terminate TLS traffic for t.co before forwarding
-    ngrok tls --hostname=t.co --crt=/path/to/t.co.crt --key=/path/to/t.co.key 443
+    ngrok tls --domain=t.co --crt=/path/to/t.co.crt --key=/path/to/t.co.key 443
 
 ## TLS Tunnel Configuration Options {#configuration-options}
 

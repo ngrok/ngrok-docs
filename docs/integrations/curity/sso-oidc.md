@@ -111,7 +111,7 @@ ngrok can leverage Curity Identity Server in two ways:
     ngrok http 3000 --oidc=<curity_url> \
     --oidc-client-id=<curity_client_id> \
     --oidc-client-secret=<curity_client_secret> \
-    --subdomain=curity-sso-test
+    --domain=curity-sso-test.ngrok.dev
     ```
 
 1. [Skip to **Step 4**: ](#test-sso) Test the integration

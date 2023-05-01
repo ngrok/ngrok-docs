@@ -51,7 +51,24 @@ ngrok provides functionality for consuming logs for events in the system. For mo
 
 ### Blocking non-corporate accounts
 
-For a tighter security policy, most administrators will want to block ngrok accounts that are not a part of their organization. The fastest approach is to block the ingress to the ngrok cloud for all regions with `tunnel.*.ngrok.com` or each region individually via `tunnel.us.ngrok.com`, `tunnel.eu.ngrok.com`, `tunnel.ap.ngrok.com`, `tunnel.au.ngrok.com`, `tunnel.sa.ngrok.com`, `tunnel.jp.ngrok.com`, and `tunnel.in.ngrok.com`
+For a tighter security policy, most administrators will want to block ngrok accounts that are not a part of their organization. The fastest approach is to block DNS lookups to the URLs used by the agent to connect to the ngrok cloud. These are the DNS lookups to block:
+
+- tunnel.ngrok-agent.com
+- tunnel.us.ngrok-agent.com
+- tunnel.eu.ngrok-agent.com
+- tunnel.ap.ngrok-agent.com
+- tunnel.au.ngrok-agent.com
+- tunnel.sa.ngrok-agent.com
+- tunnel.jp.ngrok-agent.com
+- tunnel.in.ngrok-agent.com
+- tunnel.ngrok.com
+- tunnel.us.ngrok.com
+- tunnel.eu.ngrok.com
+- tunnel.ap.ngrok.com
+- tunnel.au.ngrok.com
+- tunnel.sa.ngrok.com
+- tunnel.jp.ngrok.com
+- tunnel.in.ngrok.com
 
 
 ## API Configuration
