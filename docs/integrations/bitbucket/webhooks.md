@@ -11,6 +11,7 @@ To integrate Bitbucket webhooks with ngrok:
 1. [Launch your local webhook.](#start-your-app) `npm start`
 1. [Launch ngrok.](#start-ngrok) `ngrok http 3000`
 1. [Configure Bitbucket webhooks with your ngrok URL.](#setup-webhook)
+1. [Secure your webhook requests with verification.](#security)
 
 :::
 
@@ -142,3 +143,45 @@ The ngrok Request Inspector provides a replay function that you can use to test 
 1. Click **Replay**.
 
 Verify that your local application receives the request and logs the corresponding information to the terminal.
+
+## Secure webhook requests {#security}
+
+THe following are quick steps to add extra protection to your application.
+
+* If you are running Bitbucket Cloud, use ngrok IP Restrictions to allow ingress access for a list of IP addresses.
+    
+    **Note:** This feature requires ngrok Pro or Enterprise plan.
+
+    1. You can find a list of CloudFront IP Addresses used by Bitbucket Cloud in the [Bitbucket Support documents](https://support.atlassian.com/bitbucket-cloud/docs/what-are-the-bitbucket-cloud-ip-addresses-i-should-use-to-configure-my-corporate-firewall/).
+
+    1. Go to the [ngrok dashboard](https://dashboard.ngrok.com), sign in, click **Security** in the left menu, and then click **IP Restrictions**.
+
+    1. In the **Agent** section, click **Attach IP Policies**, click **New IP Policy**, and then click **Add Rule**.
+
+    1. In the **Add Rule** section, click **Allow** and then enter the CIDR that covers the IP Address from Bitbucket (i.e `123.456.789.1/32`) in the **CIDR** field.
+
+    1. Enter a **Description** for both the rule and the policy, click **Save**, and then click **Attach IP Policy**.
+
+    1. On the **IP Restrictions** page, click **Save**.
+
+
+* If you are running Bitbucket Server, ngrok signature webhook verification feature to allow ngrok to assert that requests from your Bitbucket webhook are the only traffic allowed to make calls to your localhost app.
+
+    **Note:** This ngrok feature is limited to 500 validations per month on free ngrok accounts. For unlimited, upgrade to Pro or Enterprise.
+
+    1. Access your Bitbucket repository, navigate through the interface to the webhook page, and then edit the webhook.
+
+    1. In the **Authentication** section, select **Secret token** as the method, and then enter a value for the secret token.
+
+    1. Restart your ngrok agent by running the command, replacing `{your secret token}` with the value you entered before:
+    ```bash
+    ngrok http 3000 --verify-webhook bitbucket --verify-webhook-secret {your secret token}
+    ```
+
+    1. Access your repository, add a new file and then commit the file.
+
+    Verify that your local application receives the request and logs information to the terminal.
+
+
+
+
