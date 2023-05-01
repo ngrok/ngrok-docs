@@ -45,39 +45,44 @@ ngrok authtoken NGROK_AUTHTOKEN
 
 To enable remote SSH access via ngrok:
 
-1. Test that ngrok is configured correctly by quickly starting a TCP tunnel. If you get an error, ensure your authtoken is configured correctly.
+1. Test that the ngrok agent is configured correctly by quickly starting a TCP tunnel.
+  **Note**: If you get an error, ensure your authtoken is configured correctly.
 
 ```bash
 ngrok tcp 22
 ```
 
-2. ngrok will assign you a TCP address and port. Use that to test the SSH access.
+2. The ngrok agent assigns you a TCP address and port. Use these values to test the SSH access by running the following command from another server or from a desktop.
 
 ```bash
-ssh -p NGROK_PORT user@NGROK_TCP_ADDRESS
+ssh -p NGROK_PORT USER@NGROK_TCP_ADDRESS
 ```
 
-  **Note**: Replace `user` with your device user
+  **Note**: Replace the variables in the command line with the following:
+  - NGROK_PORT: The port number of the ngrok agent (i.e if the agent shows `tcp://1.tcp.ngrok.io:12345`, your port number is `12345`.
+  - USER: A valid ssh login to access your device operating system.
+  - NGROK_TCP_ADDRESS: The address of the ngrok agent (i.e if the agent shows `tcp://1.tcp.ngrok.io:12345`, your TCP address is `1.tcp.ngrok.io`.
 
 
 ## Step 3: Adding IP restrictions (Requires a paid plan)
 
-Once you confirmed that you have connectivity to the device, add some security so that you are the only one that can access it.
-  **Note**: This capability requires the **IP Restrictions** feature from ngrok, which are only available with a paid subscription.
+Once you confirmed that you have connectivity to the device, add some security so that you are the only one who can access it.
+  **Note**: This capability requires the **IP Restrictions** feature from ngrok, which is only available with a paid subscription.
 
-1. Stop the ngrok process using `ctrl+c` command in your terminal.
+1. On the operating system terminal, stop the ngrok process using `ctrl+c` command.
 
-1. Add an allow rule to restrict access to your machine using your public IP address. The following command will fetch your public IP address and add an IP Restriction to your tunnel so that only you can access it. 
-
+1. Add an allow rule to restrict access to your linux device to an IP address or a range of IP addresses.
 ```bash
-ngrok tcp 22 --cidr-allow $(curl http://ifconfig.me/ip)/32
+ngrok tcp 22 --cidr-allow ALLOWED_IP_ADDRESS_CIDR
 ```
+  **Note**: Replace `ALLOWED_IP_ADDRESS_CIDR` with the CIDR notation of the allowed IP Address(es) (i.e. `123.123.123.0/24`).
+
 
 ## Step 4: Configure ngrok to recover on outages
 
 The ngrok agent works with native OS services like `systemd`. This helps you ensure that the ngrok service is available even after machine restarts. Before we do this though, it's useful to reserve a TCP address in the ngrok dashboard which allows you to reuse the same address each time the device is restarted.
 
-1. Navigate to the ngrok Dashboard and look for [Cloud Edges > TCP Addresses](https://dashboard.ngrok.com/cloud-edge/tcp-addresses). Add a new TCP address with a description and click Save. Your new TCP address will look something like `7.tcp.ngrok.io:20241`.
+1. Navigate to the ngrok Dashboard and look for [Cloud Edge > TCP Addresses](https://dashboard.ngrok.com/cloud-edge/tcp-addresses). Create a new TCP address with a description and click Save. Your new TCP address will look something like `1.tcp.ngrok.io:12345`.
 
 1. Update the ngrok config file to create the TCP tunnel when ngrok is started. First, grab your public IP using the command from before:
 
@@ -102,10 +107,10 @@ tunnels:
     remote_addr: NGROK_TCP_ADDRESS
     ip_restriction:
       allow_cidrs:
-        - PUBLIC_IP_ADDRESS/32
+        - ALLOWED_IP_ADDRESS_CIDR
 ```
 
-Make sure to replace the `NGROK_TCP_ADDRESS` with the address you reserved earlier in the dashboard (including the port) and `PUBLIC_IP_ADDRESS` with your public IP address from earlier.
+Make sure to replace the `NGROK_TCP_ADDRESS` with the address you reserved earlier in the ngrok dashboard (i.e. `1.tcp.ngrok.io:12345`) and `ALLOWED_IP_ADDRESS_CIDR` with the CIDR notation of the allowed IP Address(es) (i.e. `123.123.123.0/24`).
 
 1. Enable ngrok in service mode:
 
