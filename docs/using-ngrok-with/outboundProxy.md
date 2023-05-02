@@ -1,5 +1,5 @@
 ---
-title: an outbound proxy
+title: Outbound Proxy
 ---
 
 # Using ngrok with an outbound proxy
