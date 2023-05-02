@@ -11,14 +11,14 @@ The only events that can be filtered today are [`http_request_complete.v0`](/eve
 
 ###### Log requests to an endpoint that didn't use TLS:
 
-    ev.conn.server_name.matches(".*-your-org\\.ngrok\\.io") &&
+    ev.conn.server_name.matches(".*-your-org\\.ngrok\\.dev") &&
     ev.conn.server_port == 80
 
-###### Only allow events from the ngrok-docs-examples.ngrok.io hostname
+###### Only allow events from the ngrok-docs-examples.ngrok.dev hostname
 
-    ev.conn.server_name.matches("ngrok-docs-examples\\.ngrok\\.io")
+    ev.conn.server_name.matches("ngrok-docs-examples\\.ngrok\\.dev")
 
-###### Only allow events that aren't from this client IP and attempting to access ngrok-docs-examples.ngrok.io
+###### Only allow events that aren't from this client IP and attempting to access ngrok-docs-examples.ngrok.dev
 
     ev.conn.client_ip != "2601:0:8200:0:4cd7:fd52:0:7823" && 
-    ev.conn.server_name == "ngrok-docs-examples.ngrok.io"
+    ev.conn.server_name == "ngrok-docs-examples.ngrok.dev"

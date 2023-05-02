@@ -2,7 +2,7 @@
 # How to set up a custom domain
 -----------------------------
 
-If you're already using ngrok with subdomains of `ngrok.io` but would like to have your tunnels available from a domain that you own, you're in the right place.
+If you're already using ngrok with subdomains of an ngrok owned domain but would like to have your tunnels available from a domain that you own, you're in the right place.
 
 Let's assume you've registered a domain name like `example.com` with a domain name registrar and you want to use it with ngrok. First you'll need to decide exactly which DNS name you want to use. Because we assign each of your custom domains a randomly-generated name under our domain to use as a CNAME record value, we usually recommend you choose a subdomain of your primary domain rather than the primary domain itself. So let's say you're going to set up `foo.example.com`.
 
@@ -14,7 +14,7 @@ Add your domain name to your ngrok account. We currently call this process "rese
 
 Click "New Domain" and then put `foo.example.com` into the form that appears to add that domain to your account. Once validated you can also add a Description, attach an Edge and select your TLS Certificate configuration (we recommend our automated TLS certificates).
 
-After adding your domain you should see instructions related to creating a CNAME record. Copy the value of your newly-added domain's CNAME target hostname, which will be something like `<random-string>.cname.<region>.ngrok.io.`
+After adding your domain you should see instructions related to creating a CNAME record. Copy the value of your newly-added domain's CNAME target hostname, which will be something like `<random-string>.<random-string>.ngrok-cname.com.`
 
 ### Create a CNAME record
 
@@ -22,7 +22,7 @@ Head over to your DNS provider and create a new record on the `example.com` doma
 
 ![](https://ngrok.com/static/img/customdomain-img1.png)
 
-You'll create a record of type CNAME where the name is `foo` and the value is your ngrok CNAME target, `<random-string>.cname.<region>.ngrok.io`. This will ensure that any DNS queries for `foo.example.com` are resolved with an IP from our service edge.
+You'll create a record of type CNAME where the name is `foo` and the value is your ngrok CNAME target, `<random-string>.<random-string>.ngrok-cname.com`. This will ensure that any DNS queries for `foo.example.com` are resolved with an IP from our service edge.
 
 Once created it may take a few minutes before the new record is reflected in the DNS, but you can confirm that your record is created using a command line tool like `dig` or `nslookup`. Or if you still have the ngrok dashboard displayed with your CNAME target hostname from Step 1, you should be able to use the "Check Status" button at the bottom right of the page to confirm that your record was created correctly.
 

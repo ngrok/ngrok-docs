@@ -27,13 +27,13 @@ Anyone who can guess your tunnel URL can access your local web server unless you
 
 ## Tunnels on custom branded domains {#custom-domains}
 
-Instead of your tunnel appearing as a subdomain of `ngrok.io`, you can connect ngrok tunnels to your custom domains. To run a tunnel over `dev.example.com`, follow these steps:
+Instead of your tunnel appearing as a subdomain of an ngrok owned domain, you can connect ngrok tunnels to your custom domains. To run a tunnel over `dev.example.com`, follow these steps:
 
 1.  Navigate to the [Domains tab of your ngrok.com dashboard](https://dashboard.ngrok.com/cloud-edge/domains) and click 'Add a domain'. Enter `dev.example.com` as a Reserved Domain. This guarantees that no one else can hijack your domain name with their own tunnel.
 2.  On your dashboard, click on the 'CNAME' icon to copy your CNAME target.
     
     ![](/img/docs/cname.png)
-3.  Create a DNS CNAME record from `dev.example.com` to your CNAME target. In this example, we would point the CNAME record to `2w9c34maz.cname.ngrok.io`
+3.  Create a DNS CNAME record from `dev.example.com` to your CNAME target. In this example, we would point the CNAME record to `2w9c34maz.wdv31sd.ngrok-cname.com`
 4.  Invoke ngrok with the `--domain` switch and specify the name of your custom domain as an argument. Make sure the `--region` you specify matches the region in which you reserved your domain.
     
     ###### Example: Run a tunnel over a custom domain

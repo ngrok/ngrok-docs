@@ -9,7 +9,7 @@ description: Develop and test Instagram webhooks from localhost
 
 To integrate Instagram webhooks with ngrok:
 1. [Launch your local webhook.](#start-your-app) `npm run startFacebook`
-1. [Launch ngrok.](#start-ngrok) `ngrok http 3000 --region us --domain myexample.ngrok.io`
+1. [Launch ngrok.](#start-ngrok) `ngrok http 3000 --domain myexample.ngrok.dev`
 1. [Configure Instagram webhooks with your ngrok URL.](#setup-webhook)
 1. [Secure your webhook requests with verification.](#security)
 
@@ -78,7 +78,7 @@ Once your app is running successfully on localhost, let's get it on the internet
 
 1. Start ngrok by running the following command in a terminal on your local desktop:
     ```bash
-    ngrok http 3000 --region us --domain myexample.ngrok.io
+    ngrok http 3000 --domain myexample.ngrok.dev
     ```
 
 1. ngrok will display a URL where your localhost application is exposed to the internet (copy this URL for use with Facebook).
@@ -109,7 +109,7 @@ After you connect your Instagram account to your Facebook page, follow the instr
 
 1. On the **Webhooks** page, select **Instagram** from the combo box and then click **Subscribe to this object**.
 
-1. In the **Edit User subscription** popup, for the **Callback URL** field enter the URL provided by the ngrok agent to expose your application to the internet, with `/webhooks` at the end (i.e. `https://myexample.ngrok.io/webhooks`).
+1. In the **Edit User subscription** popup, for the **Callback URL** field enter the URL provided by the ngrok agent to expose your application to the internet, with `/webhooks` at the end (i.e. `https://myexample.ngrok.dev/webhooks`).
     ![Callback URL](img/ngrok_url_configuration_instagram.png)
 
 1. Enter `12345` for the **Verify token** field, click **No** on the **Include values** slider to turn it to **Yes**, and then click **Verify and save**.
@@ -184,7 +184,7 @@ This is a quick step to add extra protection to your application.
 
 1. Restart your ngrok agent by running the command, replacing `{your app secret}` with the value you have copied before:
     ```bash
-    ngrok http 3000 --region us --domain myexample.ngrok.io --verify-webhook FACEBOOK_GRAPH_API --verify-webhook-secret {your app secret}
+    ngrok http 3000 --domain myexample.ngrok.dev --verify-webhook FACEBOOK_GRAPH_API --verify-webhook-secret {your app secret}
     ```
 
 1. Access the Instagram page you have assigned to your webhook and send a message to another Instagram user.
