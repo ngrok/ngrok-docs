@@ -55,7 +55,7 @@ Getting started with ngrok and the ngrok-rs crate is simple:
         //  .await?;
         // Ok(())
 
-        // listen on ngrok ingress (i.e. https://myapp.ngrok.io)
+        // listen on ngrok ingress (i.e. https://myapp.ngrok.dev)
         let listener = ngrok::Session::builder()
             .authtoken_from_env()
             .connect()
@@ -93,7 +93,7 @@ Getting started with ngrok and the ngrok-rs crate is simple:
 
 The ngrok-rs library provides functions and configuration for all features available in ngrok. Everything you can do with the ngrok agent is available using our library. In this example, you can modify main.rs to:
 
-- **Line 21**: Use my-rust-app.ngrok.io as a custom subdomain
+- **Line 21**: Use my-rust-app.ngrok.dev as a custom subdomain
 - **Line 22**: Apply a circuit breaker if the Rust app returns errors over 50% of the time
 - **Line 23**: Compress http responses
 - **Line 24**: Deny requests from the CIDR range `200.2.0.0/16`
@@ -117,13 +117,13 @@ async fn main() -> Result<(), Box<dyn Error>> {
     //  .await?;
     // Ok(())
 
-    // listen on ngrok ingress (i.e. https://my-rust-app.ngrok.io)
+    // listen on ngrok ingress (i.e. https://my-rust-app.ngrok.dev)
     let listener = ngrok::Session::builder()
         .authtoken_from_env()
         .connect()
         .await?
         .http_endpoint()
-        .domain("my-rust-app.ngrok.io")
+        .domain("my-rust-app.ngrok.dev")
         .circuit_breaker(0.5)
         .compression()
         .deny_cidr("200.2.0.0/16")

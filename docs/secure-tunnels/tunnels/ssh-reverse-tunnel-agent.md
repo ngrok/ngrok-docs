@@ -30,44 +30,44 @@ ngrok tries to honor the syntax of `ssh -R` for all of the tunnel commands in it
 
 The following examples demonstrate how to use the SSH gateway and provide the equivalent ngrok agent command to help you understand how to achieve similar functionality.
 
-Note that following examples use the US region for agent ingress (tunnel.us.ngrok.com). There are agent ingress URLs for each of the [available regions](/ngrok-agent/config#region). They also use the `v2` version of the SSH gateway's command-line interface by specifying it as the username.
+Note that following examples use the US region for agent ingress (tunnel.ngrok-agent.com). There are agent ingress URLs for each of the [available regions](/ngrok-agent/config#region). They also use the `v2` version of the SSH gateway's command-line interface by specifying it as the username.
 
 ###### Start an http tunnel forwarding to port 80
 
     # equivalent: `ngrok http 80`
-    ssh -R 443:localhost:80 v2@tunnel.us.ngrok.com http
+    ssh -R 443:localhost:80 v2@tunnel.ngrok-agent.com http
 
 ###### View available http options
 
     # equivalent: `ngrok http --help`
-    ssh -R 443:localhost:80 v2@tunnel.us.ngrok.com http --help
+    ssh -R 443:localhost:80 v2@tunnel.ngrok-agent.com http --help
 
 ###### Start an http tunnel on a custom subdomain forwarding to port 8080
 
     # equivalent: `ngrok http --domain=custom-subdomain.ngrok.dev 8080`
-    ssh -R custom-subdomain.ngrok.dev:443:localhost:8080 v2@tunnel.us.ngrok.com http
+    ssh -R custom-subdomain.ngrok.dev:443:localhost:8080 v2@tunnel.ngrok-agent.com http
 
 ###### Start an http tunnel on a custom domain with auth
 
     # equivalent: `ngrok http --domain=example.com --basic-auth "user:password" 8080`
-    ssh -R example.com:443:localhost:8080 v2@tunnel.us.ngrok.com http --basic-auth 'user:password'
+    ssh -R example.com:443:localhost:8080 v2@tunnel.ngrok-agent.com http --basic-auth 'user:password'
 
 ###### Start a TCP tunnel
 
     # equivalent: `ngrok tcp 22`
-    ssh -R 0:localhost:22 v2@tunnel.us.ngrok.com tcp 22
+    ssh -R 0:localhost:22 v2@tunnel.ngrok-agent.com tcp 22
 
 ###### Start a TCP tunnel on a reserved address
 
     # equivalent: `ngrok tcp --remote-addr=1.tcp.ngrok.io:24313 22`
-    ssh -R 1.tcp.ngrok.io:24313:localhost:22 v2@tunnel.us.ngrok.com tcp
+    ssh -R 1.tcp.ngrok.io:24313:localhost:22 v2@tunnel.ngrok-agent.com tcp
 
 ###### Start a TLS tunnel
 
     # equivalent: `ngrok tls 8443`
-    ssh -R 443:localhost:8443 v2@tunnel.us.ngrok.com tls
+    ssh -R 443:localhost:8443 v2@tunnel.ngrok-agent.com tls
 
 ###### Start a tunnel in a different region
 
     # equivalent: `ngrok http --region=eu 80`
-    ssh -R 443:localhost:80 v2@tunnel.eu.ngrok.com http
+    ssh -R 443:localhost:80 v2@tunnel.eu.ngrok-agent.com http

@@ -11,7 +11,7 @@ When you create an edge, you will automatically be assigned a reserved domain or
 
 ### Reserved Domains
 
-Domains in ngrok are the public URL you can use to access your service. They can be subdomains of \*.ngrok.io or they can be completely customized by bringing your own domain.
+Domains in ngrok are the public URL you can use to access your service. They can be subdomains of a domain owned by ngrok, such as ngrok.dev, or they can be completely customized by bringing your own domain.
 
 Any domain that you intend to use should be registered in the ngrok Dashboard to ensure no other account can use it if your tunnel goes offline.
 
@@ -19,7 +19,7 @@ You can also register [wildcard domains](#wildcard-domains) to your account whic
 
 ### Wildcard Domains
 
-ngrok permits you to bind HTTP and TLS tunnels to wildcard domains. All wildcard domains, even those that are subdomains of `ngrok.io` must first be reserved for your account on your dashboard. When using `--domain`, specify a leading asterisk to bind a wildcard domain.
+ngrok permits you to bind HTTP and TLS tunnels to wildcard domains. All wildcard domains, even those that are subdomains of an ngrok owned domain must first be reserved for your account on your dashboard. When using `--domain`, specify a leading asterisk to bind a wildcard domain.
 
 ###### Bind a tunnel to receive traffic on all subdomains of `example.com`
 

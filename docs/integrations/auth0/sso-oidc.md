@@ -54,7 +54,7 @@ To integrate ngrok with Auth0 SSO, you will need to:
 
 1. On the **ngrok oidc** page, click the **Settings** tab and make note of the **Domain**, **Client ID**, and **Client Secret** values.
 
-1. Enter `https://idp.ngrok.com/oauth2/callback` in the **Allowed Callback URLs** field, and enter the URL provided by the ngrok agent to expose your application to the internet in the **Application Login URI** field (i.e. `https://myexample.ngrok.io`).
+1. Enter `https://idp.ngrok.com/oauth2/callback` in the **Allowed Callback URLs** field, and enter the URL provided by the ngrok agent to expose your application to the internet in the **Application Login URI** field (i.e. `https://myexample.ngrok.dev`).
     ![Auth0 configuration](img/ngrok_url_configuration_auth0.png)
 
 1. Click **Save Changes**.

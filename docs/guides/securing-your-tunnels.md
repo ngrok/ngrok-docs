@@ -43,7 +43,7 @@ It is possible to specify the minimum TLS version that clients are required to u
 
 ### Automated TLS certificates provisioning
 
-For HTTPS endpoints, ngrok will take care of TLS certificates automatically. For endpoints that are ngrok subdomains, ngrok uses a wildcard \*.ngrok.io certificate. We also provision certificates for your custom domains through Let's Encrypt and handle keeping them up to date for you.
+For HTTPS endpoints, ngrok will take care of TLS certificates automatically. For endpoints that are ngrok subdomains, ngrok uses a wildcard certificate. We also provision certificates for your custom domains through Let's Encrypt and handle keeping them up to date for you.
 
 ### Observability
 

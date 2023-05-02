@@ -38,7 +38,7 @@ To resolve these issues, you have a couple options:
 
 When working with the network team, you'll want to set up the following exceptions and allow:
 
-- Tunnel ingress domains (our default is tunnel.us.ngrok.com, but there is one for each region), so that the ngrok agent can connect with our servers
+- Tunnel ingress domains (our default is tunnel.ngrok-agent.com, but there is one for each region), so that the ngrok agent can connect with our servers
 - Our update URL (the default is update.equinox.io), so that the ngrok agent can quickly update itself
 
 Setting up a custom ingress domain can be useful because it ensures that no one can bring their own ngrok account. In this case, the network admins could continue to block traffic to our normal ingress domains and only allow the custom branded ingress domains. For this, you'll need to:
