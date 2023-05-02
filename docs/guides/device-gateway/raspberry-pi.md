@@ -5,6 +5,7 @@ tags:
     - guides
     - agent
     - Raspberry Pi
+    - Raspbian
     - iot
 ---
 
@@ -12,61 +13,72 @@ ngrok allows you to create secure ingress to any app, device or service without 
 
 What is ngrok? ngrok is an ingress-as-a-service platform that removes the hassle of getting code online from developers’ plates by decoupling ingress from infrastructure with one line of code, all without provisioning proxies or VPNs. 
 
-In this guide, we'll walk you through the process of installing the ngrok agent on a remote Raspberry Pi device, ensuring the agent runs and is integrated into your operating system, restricting traffic to trusted origins, and integrating traffic events with your preferred logging tool.
+In this guide, we'll walk you through the process of installing the ngrok agent on a remote Raspberry Pi device running Linux, ensuring the agent runs integrated to your operating system, restricting traffic to trusted origins, and integrating traffic events with your preferred logging tool.
+
 
 ## Step 1: Install the ngrok Agent
 To download and install the ngrok agent on your remote Raspberry Pi device, follow these steps:
 
 1. Open a terminal into your remote Raspberry Pi device.
 
-2. Download the latest ngrok binary for ARM. You can find the correct binary on our [ngrok download page](https://ngrok.com/download). Here's an example for ARM64:
-
+2. Download the latest ngrok binary for your Linux distribution. You can find the correct binary on our [ngrok download page](https://ngrok.com/download): Select your operating system, select the version and copy the link that appears in the **Download** button. Below is an example for ARM64:
 ```bash
-wget https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip
+wget https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-arm64.tgz
 ```
 
-3. Unzip the downloaded file and move it to a directory in your PATH:
-
+3. Unzip the downloaded file and move it to a directory in your PATH. Below is an example for `/usr/local/bin`:
 ```bash
-unzip ngrok-stable-linux-amd64.zip
+sudo tar xvzf ./ngrok-v3-stable-linux-arm64.tgz -C /usr/local/bin
 sudo mv ngrok /usr/local/bin
 ```
 
 4. Now that you have installed ngrok on your Raspberry Pi device, link it to your ngrok account by using your authtoken:
-
 ```bash
 ngrok authtoken NGROK_AUTHTOKEN
 ```
+  **Note**: Replace `NGROK_AUTHTOKEN` with your unique ngrok authtoken found in the [ngrok dashboard](https://dashboard.ngrok.com/get-started/your-authtoken).
 
-Replace `NGROK_AUTHTOKEN` with your unique ngrok authtoken found in the [ngrok dashboard](https://dashboard.ngrok.com/get-started/your-authtoken).
 
 ## Step 2: Enable SSH access
 
-To enable remote SSH access via ngrok:
+To enable remote SSH access to your remove device via ngrok:
 
-1. Test that ngrok is configured correctly by quickly starting a TCP tunnel. If you get an error, ensure your authtoken is configured correctly.
-
+1. Test that the ngrok agent is configured correctly by starting a TCP tunnel on your remove device.
+  **Note**: If you get an error, ensure your authtoken is configured correctly.
 ```bash
 ngrok tcp 22
 ```
 
-2. ngrok will assign you a TCP address and port. Use that to test the SSH access.
-
+2. The ngrok agent assigns you a TCP address and port. Use these values to test the SSH access via ngrok by running the following command from another server or from a desktop.
 ```bash
-ssh -p NGROK_PORT user@NGROK_TCP_ADDRESS
+ssh -p NGROK_PORT USER@NGROK_TCP_ADDRESS
 ```
+
+  **Note**: Replace the variables in the command line with the following:
+  - NGROK_PORT: The port number of the ngrok agent (i.e if the agent shows `tcp://1.tcp.ngrok.io:12345`, your port number is `12345`.
+  - USER: A valid ssh login to access your remote device's operating system.
+  - NGROK_TCP_ADDRESS: The address of the ngrok agent (i.e if the agent shows `tcp://1.tcp.ngrok.io:12345`, your TCP address is `1.tcp.ngrok.io`.
+
 
 ## Step 3: Adding IP restrictions (Requires a paid plan)
 
-Once you've confirmed that you have connectivity to the device, let's add some security so that you are the only one that can access it. This capability requires IP Restrictions which are only available with a paid subscription to ngrok
+Once you confirmed that you have connectivity to the device, add some security so that you are the only one who can access it.
+  **Note**: This capability requires ngrok's **IP Restrictions** feature, which is only available with a paid subscription.
 
-1. Stop the ngrok process using ctrl+c in your terminal.
+1. On the remote Raspberry Pi device terminal, stop the ngrok process using the `ctrl+c` command.
 
-1. We are going to restrict access to your machine using your public IP address. The following command will fetch your public IP address and add an IP Restriction to your tunnel so that only you can access it. 
-
+1. Add an allow rule to restrict access to your linux device to an IP address or a range of IP addresses.
 ```bash
-ngrok tcp 22 --cidr-allow $(curl http://ifconfig.me/ip)/32
+ngrok tcp 22 --cidr-allow ALLOWED_IP_ADDRESS_CIDR
 ```
+  **Note**: Replace `ALLOWED_IP_ADDRESS_CIDR` with a CIDR notation for the allowed IP Address(es) (i.e. `123.123.123.0/24`).
+
+Alternatively, you can add the IP address allow rule using the [ngrok dashboard's IP Restrictions](https://dashboard.ngrok.com/security/ip-restrictions) feature. This option eliminates the need to provide the `--cidr-allow ` option for the ngrok command line.
+
+1. In the **Agent** section, click **Attach IP Policy**, click **New IP Policy**, enter a **Description** and click **Add Rule**.
+
+2. On the **New IP Policy** popup, enter a CIDR notation for the allowed IP Address(es) in the **CIDR** field, enter a **Description** for the rule, and then click **Save**.
+
 
 ## Step 4: Configure ngrok to recover on outages
 
