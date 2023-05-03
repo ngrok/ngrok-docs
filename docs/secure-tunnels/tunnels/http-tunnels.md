@@ -34,11 +34,11 @@ Instead of your tunnel appearing as a subdomain of an ngrok owned domain, you ca
     
     ![](/img/docs/cname.png)
 3.  Create a DNS CNAME record from `dev.example.com` to your CNAME target. In this example, we would point the CNAME record to `2w9c34maz.wdv31sd.ngrok-cname.com`
-4.  Invoke ngrok with the `--domain` switch and specify the name of your custom domain as an argument. Make sure the `--region` you specify matches the region in which you reserved your domain.
+4.  Invoke ngrok with the `--domain` switch and specify the name of your custom domain as an argument.
     
     ###### Example: Run a tunnel over a custom domain
     
-        ngrok http --region=us --domain=dev.example.com 8000
+        ngrok http --domain=dev.example.com 8000
     
 
 ## Local HTTPS servers {#local-https}

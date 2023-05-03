@@ -70,7 +70,7 @@ Once your app is running successfully on localhost, let's get it on the internet
 
 1. On the **Domains** page, click **+ Create Domain** or **+ New Domain**.
 
-1. In the **Domain** pane, select a **Region** for your domain (i.e. `United States`), provide a value for the **Domain** field (i.e. `myexample.ngrok.dev`), and then click **Continue**.
+1. In the **Domain** pane, provide a value for the **Domain** field (i.e. `myexample.ngrok.dev`), and then click **Continue**.
     ![ngrok New Domain](/img/integrations/ngrok_new_domain.png)
     **Tip**: Make sure your domain is available.
 

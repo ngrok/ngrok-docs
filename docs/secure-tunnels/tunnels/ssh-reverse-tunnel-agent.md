@@ -30,7 +30,7 @@ ngrok tries to honor the syntax of `ssh -R` for all of the tunnel commands in it
 
 The following examples demonstrate how to use the SSH gateway and provide the equivalent ngrok agent command to help you understand how to achieve similar functionality.
 
-Note that following examples use the US region for agent ingress (tunnel.ngrok-agent.com). There are agent ingress URLs for each of the [available regions](/ngrok-agent/config#region). They also use the `v2` version of the SSH gateway's command-line interface by specifying it as the username.
+Note that following examples use the global address for agent ingress (tunnel.ngrok-agent.com). There are agent ingress URLs for each of the [available regions](/ngrok-agent/config#region). They also use the `v2` version of the SSH gateway's command-line interface by specifying it as the username.
 
 ###### Start an http tunnel forwarding to port 80
 

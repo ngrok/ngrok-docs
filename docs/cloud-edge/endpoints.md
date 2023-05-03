@@ -23,7 +23,7 @@ ngrok permits you to bind HTTP and TLS tunnels to wildcard domains. All wildcard
 
 ###### Bind a tunnel to receive traffic on all subdomains of `example.com`
 
-    ngrok http --region=us --domain *.example.com 80
+    ngrok http --domain *.example.com 80
 
 #### Wildcard Domain Rules
 

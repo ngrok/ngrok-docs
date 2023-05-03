@@ -27,7 +27,7 @@ Once you have your key and certificate and have installed them properly, it's no
 
 ###### Forward TLS traffic over your own custom domain
 
-    ngrok tls --region=us --domain=secure.example.com 443
+    ngrok tls --domain=secure.example.com 443
 
 ## Terminating TLS connections {#tls-termination}
 
@@ -35,7 +35,7 @@ It's possible that the service you're trying to expose may not have the capabili
 
 ###### Offload TLS Termination to the ngrok Agent
 
-    ngrok tls --region=us --domain secure.example.com --key /path/to/tls.key --crt /path/to/tls.crt 80
+    ngrok tls --domain secure.example.com --key /path/to/tls.key --crt /path/to/tls.crt 80
 
 ## Running non-HTTP services over TLS tunnels {#tls-agnostic}
 
