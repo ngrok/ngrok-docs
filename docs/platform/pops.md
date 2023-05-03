@@ -29,12 +29,12 @@ To explicitly choose the region, add the `--region` flag or set the `region` pro
 
     ngrok http --region eu 8080
 
-Reserved domains and TCP addresses are allocated for a specific region (the US region by default). When you reserve a domain or TCP address, you must select a target region. You may not bind a domain or TCP address reserved in another region other than the one it was allocated for. Attempting to do so will yield an error and prevent your tunnel session from initializing.
+Reserved domains are globally routable to agents connected into any region.
+
+TCP addresses are allocated for a specific region (the US region by default). When you reserve a TCP address, you must select a target region. You may not bind a TCP address reserved in another region other than the one it was allocated for. Attempting to do so will yield an error and prevent your tunnel session from initializing.
 
 ### Limitations {#limits}
 
 An ngrok agent may only be connected a single region, meaning you cannot host tunnels in multiple regions simultaneously with the same agent. You can run multiple ngrok agents if you need to do this.
 
-A domain cannot be reserved for multiple regions at the same time. It is not possible to geo-balance DNS to the same tunnel name in multiple regions. Use region-specific subdomains or TLDs if you need to do this.
-
-An ngrok Edge can only contain endpoints in the same region.
+It is not possible to geo-balance DNS to the same tunnel name in multiple regions. Use region-specific subdomains or TLDs if you need to do this.

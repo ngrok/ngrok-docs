@@ -68,4 +68,4 @@ To send the events to Datadog we'll need to assign an Event Destination to the E
 
 ![ngrok event destination success](img/success.png)
 
-**Tip**: If instead of a Success message you receive a 403 error, double-check your API key and validate that you have selected the correct Datadog region.
+**Tip**: If instead of a Success message you receive a 403 error, double-check your API key and validate that you have selected the correct Datadog site.

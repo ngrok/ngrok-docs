@@ -9,7 +9,7 @@ description: Develop and test Facebook webhooks from localhost
 
 To integrate Facebook webhooks with ngrok:
 1. [Launch your local webhook.](#start-your-app) `npm run startFacebook`
-1. [Launch ngrok.](#start-ngrok) `ngrok http 3000 --region us --domain myexample.ngrok.dev`
+1. [Launch ngrok.](#start-ngrok) `ngrok http 3000 --domain myexample.ngrok.dev`
 1. [Configure Facebook webhooks with your ngrok URL.](#setup-webhook)
 1. [Secure your webhook requests with verification.](#security)
 
@@ -70,7 +70,7 @@ Once your app is running successfully on localhost, let's get it on the internet
 
 1. On the **Domains** page, click **+ Create Domain** or **+ New Domain**.
 
-1. In the **Domain** pane, select a **Region** for your domain (i.e. `United States`), provide a value for the **Domain** field (i.e. `myexample.ngrok.dev`), and then click **Continue**.
+1. In the **Domain** pane, provide a value for the **Domain** field (i.e. `myexample.ngrok.dev`), and then click **Continue**.
     ![ngrok New Domain](/img/integrations/ngrok_new_domain.png)
     **Tip**: Make sure your domain is available.
 
