@@ -20,18 +20,18 @@ To download and install the ngrok agent on your remote Linux device, follow thes
 
 1. Open a terminal into your remote Linux device.
 
-2. Download the latest ngrok binary for your Linux distribution. You can find the correct binary on our [ngrok download page](https://ngrok.com/download): Select your operating system, select the version and copy the link that appears in the **Download** button. Below is an example for x86-64:
+1. Download the latest ngrok binary for your Linux distribution. You can find the correct binary on our [ngrok download page](https://ngrok.com/download): Select your operating system, select the version and copy the link that appears in the **Download** button. Below is an example for x86-64:
 ```bash
 wget https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz
 ```
 
-3. Unzip the downloaded file and move it to a directory in your PATH. Below is an example for `/usr/local/bin`:
+1. Unzip the downloaded file and move it to a directory in your PATH. Below is an example for `/usr/local/bin`:
 ```bash
 sudo tar xvzf ./ngrok-v3-stable-linux-arm64.tgz -C /usr/local/bin
 sudo mv ngrok /usr/local/bin
 ```
 
-4. Now that you have installed ngrok on your linux device, link it to your ngrok account by using your authtoken:
+1. Now that you have installed ngrok on your linux device, link it to your ngrok account by using your authtoken:
 ```bash
 ngrok authtoken NGROK_AUTHTOKEN
 ```
@@ -48,7 +48,7 @@ To enable remote SSH access to your remove device via ngrok:
 ngrok tcp 22
 ```
 
-2. The ngrok agent assigns you a TCP address and port. Use these values to test the SSH access via ngrok by running the following command from another server or from a desktop.
+1. The ngrok agent assigns you a TCP address and port. Use these values to test the SSH access via ngrok by running the following command from another server or from a desktop.
 ```bash
 ssh -p NGROK_PORT USER@NGROK_TCP_ADDRESS
 ```
@@ -72,18 +72,20 @@ ngrok tcp 22 --cidr-allow ALLOWED_IP_ADDRESS_CIDR
 ```
   **Note**: Replace `ALLOWED_IP_ADDRESS_CIDR` with a CIDR notation for the allowed IP Address(es) (i.e. `123.123.123.0/24`).
 
-Alternatively, you can add the IP address allow rule using the [ngrok dashboard's IP Restrictions](https://dashboard.ngrok.com/security/ip-restrictions) feature. This option eliminates the need to provide the `--cidr-allow ` option for the ngrok command line.
+Alternatively, you can add the IP address allow rule in the ngrok dashboard. This option eliminates the need to pass the `--cidr-allow ` argument in the ngrok agent command line.
 
-1. In the **Agent** section, click **Attach IP Policy**, click **New IP Policy**, enter a **Description** and click **Add Rule**.
+1. Navigate to the ngrok Dashboard and access [Security > IP Restrictions](https://dashboard.ngrok.com/security/ip-restrictions).
 
-2. On the **New IP Policy** popup, enter a CIDR notation for the allowed IP Address(es) in the **CIDR** field, enter a **Description** for the rule, and then click **Save**.
+1. In the **Agent** section of the **IP Restrictions** page, click **Attach IP Policy**, click **New IP Policy**, enter a **Description** and click **Add Rule**.
+
+1. On the **New IP Policy** popup, enter a CIDR notation for the allowed IP Address(es) in the **CIDR** field, enter a **Description** for the rule, and then click **Save**.
 
 
 ## Step 4: Configure ngrok to recover on outages
 
 The ngrok agent works with native OS services like `systemd`. This helps you ensure that the ngrok service is available even after machine restarts. Before we do this though, it's useful to reserve a TCP address in the ngrok dashboard which allows you to reuse the same address each time the device is restarted.
 
-1. Navigate to the ngrok Dashboard and look for [Cloud Edge > TCP Addresses](https://dashboard.ngrok.com/cloud-edge/tcp-addresses). Create a new TCP address with a description and click Save. Your new TCP address will look something like `1.tcp.ngrok.io:12345`.
+1. Navigate to the ngrok Dashboard and access [Cloud Edge > TCP Addresses](https://dashboard.ngrok.com/cloud-edge/tcp-addresses). Create a new TCP address with a description and click Save. Your new TCP address will look something like `1.tcp.ngrok.io:12345`.
 
 1. Update the ngrok config file to create the TCP tunnel when ngrok is started. First, grab your public IP using the command from before:
 
