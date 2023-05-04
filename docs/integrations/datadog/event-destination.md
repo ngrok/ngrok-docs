@@ -52,7 +52,7 @@ To send the events to Datadog we'll need to assign an Event Destination to the E
 
 1. Choose Datadog as the target and fill in the correct information being mindful of <strong>which region you Datadog data resides in</strong>.  Target, Region and API Key values are required, all other values are optional.
 
-    - <strong>Service Name</strong> is a locally significant value and will be appended to the event destination name.<br></br>
+    - <strong>Service Name</strong> will be added as a key-value pair to the event payload as <strong>service:value</strong>.<br></br>
     - <strong>DD Tags</strong> values will be added as tags to the event data being sent to be utilized within Datadog.
 
 ![ngrok event destination](img/event_destination.png)
