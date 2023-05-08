@@ -82,16 +82,18 @@ The ngrok agent works with native OS services like `systemd`. This helps you ens
 
 1. Navigate to the ngrok Dashboard and access [Cloud Edge > TCP Addresses](https://dashboard.ngrok.com/cloud-edge/tcp-addresses). Create a new TCP address with a description and click **Save**. Your new TCP address will look something like `1.tcp.ngrok.io:12345`.
 
-1. Update the ngrok config file in your linux device to create the TCP tunnel when ngrok is started. First, grab your public IP using the command from before:
+Update the ngrok config file in your linux device to start the ngrok agent using this TCP address.
+
+1. Open the ngrok config file:
 ```bash
 ngrok config edit
 ```
 
-Once the config file is open, add the following to the end:
+1. Add the following to the end of the file and then save it:
 
 ```yaml
 tunnels:
-  ssh:
+  device-ssh:
     proto: tcp
     addr: 22
     remote_addr: NGROK_TCP_ADDRESS
@@ -100,24 +102,28 @@ tunnels:
         - ALLOWED_IP_ADDRESS_CIDR
 ```
 
-Make sure to replace the `NGROK_TCP_ADDRESS` with the address you reserved earlier in the ngrok dashboard (i.e. `1.tcp.ngrok.io:12345`) and `ALLOWED_IP_ADDRESS_CIDR` with the CIDR notation of the allowed IP Address(es) (i.e. `123.123.123.0/24`).
+  **Note**: Make sure to replace the `NGROK_TCP_ADDRESS` with the address you reserved earlier in the ngrok dashboard (i.e. `1.tcp.ngrok.io:12345`) and `ALLOWED_IP_ADDRESS_CIDR` with the CIDR notation of the allowed IP Address(es) (i.e. `123.123.123.0/24`).
 
-1. Enable ngrok in service mode:
+1. Enable ngrok in your device operating system service mode:
 
 ```bash
-ngrok service install -config $HOME/.ngrok/ngrok.yml
+ngrok service install --config $HOME/.ngrok/ngrok.yml
 ```
 :::note
 You may need to run this command using `sudo` depending on your system
 :::
 
-2. Run the following command ensure your operating system launches ngrok with the ssh ingress whenever your systems start:
+1. Run the following command to ensure your operating system launches ngrok with the ssh ingress whenever your systems start:
 
 ```bash
 ngrok service start
 ```
+:::note
+You may need to run this command using `sudo` depending on your system
+:::
 
-3. With ngrok running on your device, you should be able to try to SSH into the device again using the reserved address from your dashboard.
+
+1. With ngrok running on your device, you should be able to SSH into the device using the reserved address from the dashboard.
 
 ```bash
 ssh -p NGROK_PORT user@NGROK_TCP_ADDRESS
