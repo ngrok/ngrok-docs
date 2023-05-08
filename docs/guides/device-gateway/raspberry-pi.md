@@ -59,10 +59,11 @@ ssh -p NGROK_PORT USER@NGROK_TCP_ADDRESS
   - NGROK_TCP_ADDRESS: The address of the ngrok agent (i.e if the agent shows `tcp://1.tcp.ngrok.io:12345`, your TCP address is `1.tcp.ngrok.io`.
 
 
-## Step 3: Adding IP restrictions (Requires a paid plan)
+## Step 3: Adding IP restrictions
 
 Once you confirmed that you have connectivity to the device, add some security so that you are the only one who can access it.
-  **Note**: This capability requires ngrok's **IP Restrictions** feature, which is only available with a paid subscription.
+
+**Note**: This capability requires ngrok's **IP Restrictions** feature, which is only available with a paid subscription.
 
 1. On the remote Raspberry Pi device terminal, stop the ngrok process using the `ctrl+c` command.
 
@@ -92,38 +93,36 @@ ngrok config edit
 
 1. Add the following to the end of the file and then save it:
 
-```yaml
-tunnels:
-  device-ssh:
-    proto: tcp
-    addr: 22
-    remote_addr: NGROK_TCP_ADDRESS
-    ip_restriction:
-      allow_cidrs:
-        - ALLOWED_IP_ADDRESS_CIDR
-```
+  ```yaml
+  tunnels:
+    device-ssh:
+      proto: tcp
+      addr: 22
+      remote_addr: NGROK_TCP_ADDRESS
+      ip_restriction:
+        allow_cidrs:
+          - ALLOWED_IP_ADDRESS_CIDR
+  ```
 
-  **Note**: Make sure to replace the **NGROK_TCP_ADDRESS** with the address you reserved earlier in the ngrok dashboard (i.e. `1.tcp.ngrok.io:12345`) and **ALLOWED_IP_ADDRESS_CIDR** with the CIDR notation of the allowed IP Address(es) (i.e. `123.123.123.0/24`).
+  **Note**: Make sure to replace **NGROK_TCP_ADDRESS** with the address you reserved earlier in the ngrok dashboard (i.e. `1.tcp.ngrok.io:12345`) and **ALLOWED_IP_ADDRESS_CIDR** with the CIDR notation of the allowed IP Address(es) (i.e. `123.123.123.0/24`).
 
   **Note**: Make note of the location of the `ngrok.yml` file.
-  
+
 1. Enable ngrok in service mode:
 
 ```bash
 ngrok service install --config $HOME/.config/ngrok/ngrok.yml
 ```
-:::note
-You may need to run this command using `sudo` depending on your system
-:::
+**Note**: You may need to run this command using `sudo` depending on your system
+
 
 1. Run the following command to ensure your operating system launches ngrok with the ssh ingress whenever your device start:
 
 ```bash
 ngrok service start
 ```
-:::note
-You may need to run this command using `sudo` depending on your system
-:::
+**Note**: You may need to run this command using `sudo` depending on your system
+
 
 1. With ngrok running on your device, you should be able to SSH into the device using the reserved address from the dashboard.
 

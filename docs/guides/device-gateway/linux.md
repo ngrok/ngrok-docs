@@ -58,10 +58,11 @@ ssh -p NGROK_PORT USER@NGROK_TCP_ADDRESS
   - NGROK_TCP_ADDRESS: The address of the ngrok agent (i.e if the agent shows `tcp://1.tcp.ngrok.io:12345`, your TCP address is `1.tcp.ngrok.io`.
 
 
-## Step 3: Adding IP restrictions (Requires a paid plan)
+## Step 3: Adding IP restrictions
 
 Once you confirmed that you have connectivity to the device, add some security so that you are the only one who can access it.
-  **Note**: This capability requires ngrok's **IP Restrictions** feature, which is only available with a paid subscription.
+
+**Note**: This capability requires ngrok's **IP Restrictions** feature, which is only available with a paid subscription.
 
 1. On the remote Linux device terminal, stop the ngrok process using the `ctrl+c` command.
 
@@ -102,7 +103,7 @@ tunnels:
         - ALLOWED_IP_ADDRESS_CIDR
 ```
 
-  **Note**: Make sure to replace the **NGROK_TCP_ADDRESS** with the address you reserved earlier in the ngrok dashboard (i.e. `1.tcp.ngrok.io:12345`) and **ALLOWED_IP_ADDRESS_CIDR** with the CIDR notation of the allowed IP Address(es) (i.e. `123.123.123.0/24`).
+  **Note**: Make sure to replace **NGROK_TCP_ADDRESS** with the address you reserved earlier in the ngrok dashboard (i.e. `1.tcp.ngrok.io:12345`) and **ALLOWED_IP_ADDRESS_CIDR** with the CIDR notation of the allowed IP Address(es) (i.e. `123.123.123.0/24`).
 
   **Note**: Make note of the location of the `ngrok.yml` file.
 
