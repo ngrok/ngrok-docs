@@ -4,6 +4,12 @@ title: Agent Changelog
 
 # ngrok Agent Changelog
 
+### ngrok Agent 3.3.0 - \[2023-05-09\]
+* Added new default tunnel ingress names: the agent now connects to [`connect.ngrok-agent.com`](https://ngrok.com/docs/best-practices/security-dev-productivity/#6-track-and-block-unauthorized-tunnel-activity) when starting a session
+* Improved `ngrok diagnose` output to check that the DNS entry for `localhost` resolves
+* Added the command `ngrok config add-server-addr` for configuring custom agent ingresses
+* Re-wrote the tunnel and session backend to use the `ngrok-go` library
+
 ### ngrok Agent 3.2.2 - \[2023-03-27\]
 * Fixed a bug introduced in v3.2.1 with tab complete for command line flags
 
