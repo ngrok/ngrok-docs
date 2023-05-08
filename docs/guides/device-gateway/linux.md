@@ -107,7 +107,7 @@ tunnels:
 1. Enable ngrok in your device operating system service mode:
 
 ```bash
-ngrok service install --config $HOME/.ngrok/ngrok.yml
+ngrok service install --config $HOME/.config/ngrok/ngrok.yml
 ```
 :::note
 You may need to run this command using `sudo` depending on your system
