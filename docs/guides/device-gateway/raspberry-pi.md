@@ -1,6 +1,6 @@
 ---
 title: Raspberry Pi
-description: Learn how to install ngrok on a Raspberry Pi to provide secure remote access and management.
+description: Learn how to install ngrok on a Raspberry Pi running Linux to provide secure remote access and management.
 tags:
     - guides
     - agent
