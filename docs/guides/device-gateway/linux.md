@@ -27,8 +27,7 @@ wget https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz
 
 1. Unzip the downloaded file and move it to a directory in your PATH. Below is an example for `/usr/local/bin`:
 ```bash
-sudo tar xvzf ./ngrok-v3-stable-linux-arm64.tgz -C /usr/local/bin
-sudo mv ngrok /usr/local/bin
+sudo tar xvzf ./ngrok-v3-stable-linux-amd64.tgz -C /usr/local/bin
 ```
 
 1. Now that you have installed ngrok on your linux device, link it to your ngrok account by using your authtoken:
@@ -70,15 +69,11 @@ Once you confirmed that you have connectivity to the device, add some security s
 ```bash
 ngrok tcp 22 --cidr-allow ALLOWED_IP_ADDRESS_CIDR
 ```
-  **Note**: Replace `ALLOWED_IP_ADDRESS_CIDR` with a CIDR notation for the allowed IP Address(es) (i.e. `123.123.123.0/24`).
+  **Note**: Replace `ALLOWED_IP_ADDRESS_CIDR` with the CIDR notation for the allowed IP Address(es) (i.e. `123.123.123.0/24`).
 
-Alternatively, you can add the IP address allow rule in the ngrok dashboard. This option eliminates the need to pass the `--cidr-allow ` argument in the ngrok agent command line.
-
-1. Navigate to the ngrok Dashboard and access [Security > IP Restrictions](https://dashboard.ngrok.com/security/ip-restrictions).
-
-1. In the **Agent** section of the **IP Restrictions** page, click **Attach IP Policy**, click **New IP Policy**, enter a **Description** and click **Add Rule**.
-
-1. On the **New IP Policy** popup, enter a CIDR notation for the allowed IP Address(es) in the **CIDR** field, enter a **Description** for the rule, and then click **Save**.
+:::tip Setting IP restrictions for the entire fleet
+Alternatively, you can create an IP policy in the ngrok dashboard (under [Security > IP Restrictions](https://dashboard.ngrok.com/security/ip-restrictions)), and leverage the same policy to control access to your entire device fleet.
+:::
 
 
 ## Step 4: Configure ngrok to recover on outages
