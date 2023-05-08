@@ -37,4 +37,4 @@ TCP addresses are allocated for a specific region (the US region by default). Wh
 
 An ngrok agent may only be connected a single region, meaning you cannot host tunnels in multiple regions simultaneously with the same agent. You can run multiple ngrok agents if you need to do this.
 
-It is not possible to geo-balance DNS to the same tunnel name in multiple regions. Use region-specific subdomains or TLDs if you need to do this.
+To geo-balance DNS in multiple regions you can use labeled tunnels with ngrok Cloud Edges or use region-specific subdomains or TLDs.
