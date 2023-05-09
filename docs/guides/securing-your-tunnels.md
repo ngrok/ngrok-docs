@@ -53,14 +53,14 @@ ngrok provides functionality for consuming logs for events in the system. For mo
 
 For a tighter security policy, most administrators will want to block ngrok accounts that are not a part of their organization. The fastest approach is to block DNS lookups to the URLs used by the agent to connect to the ngrok cloud. These are the DNS lookups to block:
 
-- tunnel.ngrok-agent.com
-- tunnel.us.ngrok-agent.com
-- tunnel.eu.ngrok-agent.com
-- tunnel.ap.ngrok-agent.com
-- tunnel.au.ngrok-agent.com
-- tunnel.sa.ngrok-agent.com
-- tunnel.jp.ngrok-agent.com
-- tunnel.in.ngrok-agent.com
+- connect.ngrok-agent.com
+- connect.us.ngrok-agent.com
+- connect.eu.ngrok-agent.com
+- connect.ap.ngrok-agent.com
+- connect.au.ngrok-agent.com
+- connect.sa.ngrok-agent.com
+- connect.jp.ngrok-agent.com
+- connect.in.ngrok-agent.com
 - tunnel.ngrok.com
 - tunnel.us.ngrok.com
 - tunnel.eu.ngrok.com

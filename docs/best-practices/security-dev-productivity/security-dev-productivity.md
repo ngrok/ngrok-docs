@@ -170,7 +170,7 @@ _Using ACLs to restrict access to specific edges configurations and domains_
 
 To ensure ngrok tunnels leverage right security policies, many organizations want to identify and block the use of independent ngrok accounts — using free plans and without the enterprise security controls — inside their networks. Organizations can accomplish that by defining custom ingress domains within ngrok while blocking free ngrok traffic.
 
-With custom ingress domains, ngrok customers can define their own URLs for ngrok tunnel traffic within their networks — i.e., `tunnels-dev.mycompany.com`. This definition ensures that sanctioned ngrok traffic uses a dedicated URL, known and approved by IT. Any non-sanctioned traffic on `tunnel.ngrok.com` or `tunnel.ngrok-agent.com` can be blocked by the firewall at the URL level, without causing outages on approved tunnels:
+With custom ingress domains, ngrok customers can define their own URLs for ngrok tunnel traffic within their networks — i.e., `tunnels-dev.mycompany.com`. This definition ensures that sanctioned ngrok traffic uses a dedicated URL, known and approved by IT. Any non-sanctioned traffic on `tunnel.ngrok.com` or `connect.ngrok-agent.com` can be blocked by the firewall at the URL level, without causing outages on approved tunnels:
 
 ![Defining a custom ingress: Picking an address](img/12.png)
 
