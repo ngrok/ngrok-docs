@@ -22,15 +22,12 @@ To download and install the ngrok agent on your remote Windows device, follow th
 
 1. Download the latest ngrok binary for your Windows distribution. You can find the correct binary on our [ngrok download page](https://ngrok.com/download): Select your operating system, select the version, and copy the link that appears in the **Download** button. Below is an example for x86-64:
 ```bash
-wget https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-Windows-amd64.tgz
+wget https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-windows-amd64.zip
 ```
 
-1. Unzip the downloaded file and move it to a directory in your PATH. Below is an example for `/usr/local/bin`:
-```bash
-sudo tar xvzf ./ngrok-v3-stable-Windows-amd64.tgz -C /usr/local/bin
-```
+1. Unzip the downloaded file and move it to a directory in your PATH.
 
-1. Now that you have installed ngrok on your Windows device, link it to your ngrok account by using your authtoken:
+1. Open a command prompt and run the following command:
 ```bash
 ngrok authtoken NGROK_AUTHTOKEN
 ```
