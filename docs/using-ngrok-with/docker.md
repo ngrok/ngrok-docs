@@ -35,3 +35,8 @@ services:
         ports:
           - 4040:4040
 ```
+
+# Using ngrok with Docker Desktop Extensions
+------------
+
+[Docker Desktop Extensions](https://docs.docker.com/desktop/extensions/) provide an easy way to use ngrok for ingress to your web applications running in Docker. You can find and install the [ngrok Docker Extension in the extensions marketplace](https://hub.docker.com/search?q=ngrok&type=extension).
