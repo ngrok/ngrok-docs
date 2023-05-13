@@ -1,0 +1,1 @@
+The images in this folder are used for the Docker Desktop Extension hosted at https://github.com/ngrok/ngrok-docker-extension
