@@ -105,7 +105,7 @@ Optionally, You can trigger new calls from Okta to your application by signing o
 
 ### Inspecting requests
 
-When you launch the ngrok agent on your local machine, you can see two links: one for the tunnel to your app (it ends up in `ngrok.io` unless you're using custom domains) and a local URL for the Web Interface (a.k.a **Request Inspector**).
+When you launch the ngrok agent on your local machine, you can see two links: one for the tunnel to your app (it ends with an ngrok owned domain unless you're using custom domains) and a local URL for the Web Interface (a.k.a **Request Inspector**).
 
 The Request Inspector shows all the requests made through your ngrok tunnel to your localhost app. When you click on a request, you can see details of both the request and the response.
 

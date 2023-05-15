@@ -43,7 +43,7 @@ It is possible to specify the minimum TLS version that clients are required to u
 
 ### Automated TLS certificates provisioning
 
-For HTTPS endpoints, ngrok will take care of TLS certificates automatically. For endpoints that are ngrok subdomains, ngrok uses a wildcard \*.ngrok.io certificate. We also provision certificates for your custom domains through Let's Encrypt and handle keeping them up to date for you.
+For HTTPS endpoints, ngrok will take care of TLS certificates automatically. For endpoints that are ngrok subdomains, ngrok uses a wildcard certificate. We also provision certificates for your custom domains through Let's Encrypt and handle keeping them up to date for you.
 
 ### Observability
 
@@ -51,7 +51,24 @@ ngrok provides functionality for consuming logs for events in the system. For mo
 
 ### Blocking non-corporate accounts
 
-For a tighter security policy, most administrators will want to block ngrok accounts that are not a part of their organization. The fastest approach is to block the ingress to the ngrok cloud for all regions with `tunnel.*.ngrok.com` or each region individually via `tunnel.us.ngrok.com`, `tunnel.eu.ngrok.com`, `tunnel.ap.ngrok.com`, `tunnel.au.ngrok.com`, `tunnel.sa.ngrok.com`, `tunnel.jp.ngrok.com`, and `tunnel.in.ngrok.com`
+For a tighter security policy, most administrators will want to block ngrok accounts that are not a part of their organization. The fastest approach is to block DNS lookups to the URLs used by the agent to connect to the ngrok cloud. These are the DNS lookups to block:
+
+- connect.ngrok-agent.com
+- connect.us.ngrok-agent.com
+- connect.eu.ngrok-agent.com
+- connect.ap.ngrok-agent.com
+- connect.au.ngrok-agent.com
+- connect.sa.ngrok-agent.com
+- connect.jp.ngrok-agent.com
+- connect.in.ngrok-agent.com
+- tunnel.ngrok.com
+- tunnel.us.ngrok.com
+- tunnel.eu.ngrok.com
+- tunnel.ap.ngrok.com
+- tunnel.au.ngrok.com
+- tunnel.sa.ngrok.com
+- tunnel.jp.ngrok.com
+- tunnel.in.ngrok.com
 
 
 ## API Configuration
