@@ -24,7 +24,7 @@
       {
         devShell = pkgs.mkShell {
           shellHook = ''
-            export PATH="$PATH:node_modules/.bin"
+            export PATH="$PATH:$(git rev-parse --show-toplevel)/node_modules/.bin"
           '';
           buildInputs = with pkgs; [
             node-toolchain
