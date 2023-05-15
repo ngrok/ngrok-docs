@@ -11,23 +11,23 @@ Check out the [ngrok agent TLS tunnel documentation](/ngrok-agent/ngrok#ngrok-tl
 
 ###### Forward TLS traffic to a local HTTPS server on port 443
 
-    ngrok tls --subdomain=encrypted 443
+    ngrok tls --domain=encrypted.ngrok.dev 443
 
 Once your tunnel is running, try accessing it with curl.
 
-    curl --insecure https://encrypted.ngrok.io
+    curl --insecure https://encrypted.ngrok.dev
 
 ## TLS Tunnels without certificate warnings {#tls-cert-warnings}
 
-Notice that `--insecure` option in the previous `curl` command example? You need to specify that because your local HTTPS server doesn't have the TLS key and certificate necessary to terminate traffic for any `ngrok.io` subdomains. If you try to load up that page in a web browser, you'll notice that it tells you the page could be insecure because the certificate does not match.
+Notice that `--insecure` option in the previous `curl` command example? You need to specify that because your local HTTPS server doesn't have the TLS key and certificate necessary to terminate traffic for any subdomains of ngrok owned domains. If you try to load up that page in a web browser, you'll notice that it tells you the page could be insecure because the certificate does not match.
 
 If you want your certificates to match and be protected from man-in-the-middle attacks, you need two things. First, you'll need to buy an SSL (TLS) certificate for a domain name that you own and configure your local web server to use that certificate and its private key to terminate TLS connections. How to do this is specific to your web server and SSL certificate provider and beyond the scope of this documentation. For the sake of example, we'll assume that you were issued an SSL certificate for the domain `secure.example.com`.
 
-Once you have your key and certificate and have installed them properly, it's now time to run a TLS tunnel on your own custom domain name. The instructions to set this up are identical to those described in the HTTP tunnels section: [Tunnels on custom domains](/docs/secure-tunnels/tunnels/http-tunnels#custom-subdomains). The custom domain you register should be the same as the one in your SSL certificate (`-hostname` argument to start the TLS tunnel on your own domain.
+Once you have your key and certificate and have installed them properly, it's now time to run a TLS tunnel on your own custom domain name. The instructions to set this up are identical to those described in the HTTP tunnels section: [Tunnels on custom domains](/docs/secure-tunnels/tunnels/http-tunnels#custom-subdomains). The custom domain you register should be the same as the one in your SSL certificate (use the `--domain` argument to start the TLS tunnel on your own domain).
 
 ###### Forward TLS traffic over your own custom domain
 
-    ngrok tls --region=us --hostname=secure.example.com 443
+    ngrok tls --domain=secure.example.com 443
 
 ## Terminating TLS connections {#tls-termination}
 
@@ -35,7 +35,7 @@ It's possible that the service you're trying to expose may not have the capabili
 
 ###### Offload TLS Termination to the ngrok Agent
 
-    ngrok tls --region=us --hostname secure.example.com --key /path/to/tls.key --crt /path/to/tls.crt 80
+    ngrok tls --domain secure.example.com --key /path/to/tls.key --crt /path/to/tls.crt 80
 
 ## Running non-HTTP services over TLS tunnels {#tls-agnostic}
 
@@ -56,13 +56,13 @@ A more complete list can be found on [the Server Name Indication page on Wikiped
 ## TLS Tunnel Examples {#examples}
 
     # forward TLS traffic for www.example.com to port 443 (requires CNAME)
-    ngrok tls --hostname=www.example.com 443
+    ngrok tls --domain=www.example.com 443
     
     # forward TLS traffic on subdomain (mismatch certificate warning)
     ngrok tls 1234
     
     # terminate TLS traffic for t.co before forwarding
-    ngrok tls --hostname=t.co --crt=/path/to/t.co.crt --key=/path/to/t.co.key 443
+    ngrok tls --domain=t.co --crt=/path/to/t.co.crt --key=/path/to/t.co.key 443
 
 ## TLS Tunnel Configuration Options {#configuration-options}
 

@@ -78,15 +78,15 @@ ngrok can leverage Okta SSO in two ways:
 > **Note:** For this tutorial, we assume you have an app running locally (i.e., on localhost:3000) with the ngrok client installed.
 
 1. Launch a terminal
-1. Enter the following command to launch an ngrok tunnel with Okta SSO. Replace `<okta_url>` with your okta org address (i.e., https://acme.okta.com) and the `<okta_client_id>` and `<okta_client_secret>` with the respective values copied from the ngrok app registered at Okta. Optionally, add the `--subdomain <subdomain>` argument to get your own subdomain.ngrok.io url, replacing `<subdomain>` with your URL of preference:
+1. Enter the following command to launch an ngrok tunnel with Okta SSO. Replace `<okta_url>` with your okta org address (i.e., https://acme.okta.com) and the `<okta_client_id>` and `<okta_client_secret>` with the respective values copied from the ngrok app registered at Okta. Optionally, add the `--domain <domain>` argument to get your own custom URL, replacing `<domain>` with your URL of preference:
 
     ```bash
     ngrok http 3000 --oidc=<okta_url> \
     --oidc-client-id=<okta_client_id> \
     --oidc-client-secret=<okta_client_secret> \
-    --subdomain=<subdomain>
+    --domain=<domain>
     ```
-1. Copy the url available next to **Forwarding** (for example, `https://okta-sso-test.ngrok.io`).
+1. Copy the url available next to **Forwarding** (for example, `https://okta-sso-test.ngrok.dev`).
 
 1. Skip to **Step 3**
 

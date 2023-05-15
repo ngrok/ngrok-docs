@@ -52,7 +52,7 @@ To integrate ngrok with JumpCloud SSO, you will need to:
 
 1. On the **New Application** popup, enter `ngrok oidc` in the **Display Label** field.
 
-1. Click the **SSO** tab, enter `https://idp.ngrok.com/oauth2/callback` in the **Redirect URIs** field, select **Client Secret Basic** as the **Client Authentication Type**, and enter the URL provided by the ngrok agent to expose your application to the internet in the **Login URL** (i.e. `https://myexample.ngrok.io`).
+1. Click the **SSO** tab, enter `https://idp.ngrok.com/oauth2/callback` in the **Redirect URIs** field, select **Client Secret Basic** as the **Client Authentication Type**, and enter the URL provided by the ngrok agent to expose your application to the internet in the **Login URL** (i.e. `https://myexample.ngrok.dev`).
     ![JumpCloud configuration](img/ngrok_url_configuration_jumpcloud.png)
 
 1. Click **Activate**.
@@ -96,9 +96,9 @@ ngrok can leverage JumpCloud SSO in two ways:
     - JUMPCLOUD_CLIENT_ID: The client id you copied from JumpCloud.
     - JUMPCLOUD_CLIENT_SECRET: The client secret you copied from JumpCloud.
     
-    Alternatively, add the `--subdomain YOUR_SUBDOMAIN` argument to get your subdomain.ngrok.io URL, replacing `YOUR_SUBDOMAIN` with your URL of preference.
+    Alternatively, add the `--domain YOUR_DOMAIN` argument to get your custom URL, replacing `YOUR_DOMAIN` with your URL of preference.
 
-1. Copy the URL available next to **Forwarding** (for example, `https://jumpcloud-sso-test.ngrok.io`).
+1. Copy the URL available next to **Forwarding** (for example, `https://jumpcloud-sso-test.ngrok.dev`).
 
 1. Skip to **Step 3**
 
