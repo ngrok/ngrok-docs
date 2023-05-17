@@ -96,7 +96,7 @@ The webhook verification module allows ngrok to assert requests to your endpoint
 
 ### Inspecting requests
 
-When you launch ngrok, you can see two links: One for the tunnel to your app (it ends up in ngrok.io unless you're using custom domains) and a local URL (http://localhost:4040) for the Request Inspector.
+When you launch ngrok, you can see two links: One for the tunnel to your app (it ends up with an ngrok domain unless you're using custom domains) and a local URL (http://localhost:4040) for the Request Inspector.
 
 The Request Inspector shows all the requests made through your tunnel. When you click a request, you can see details of both requests and responses.
 

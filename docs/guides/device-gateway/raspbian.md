@@ -1,10 +1,11 @@
 ---
-title: Linux
-description: Learn how to instal ngrok on a remote Linux device to provide secure access and management.
+title: Raspberry Pi OS (formerly Raspbian)
+description: Learn how to install ngrok on a Raspberry Pi OS (formerly Raspbian) to provide secure remote access and management.
 tags:
     - guides
     - agent
-    - linux
+    - Raspberry Pi
+    - Raspbian
     - iot
 ---
 
@@ -12,25 +13,25 @@ ngrok allows you to create secure ingress to any app, device, or service without
 
 What is ngrok? ngrok is an ingress-as-a-service platform that removes the hassle of getting code online from developers’ plates by decoupling ingress from infrastructure with one line of code, all without provisioning proxies or VPNs. 
 
-In this guide, we'll walk you through the process of installing the ngrok agent on a remote Linux device, ensuring the agent runs integrated into your operating system, restricting traffic to trusted origins, and integrating traffic events with your preferred logging tool.
+In this guide, we'll walk you through the process of installing the ngrok agent on a remote Raspberry Pi OS (formerly Raspbian) device, ensuring the agent runs integrated into your operating system, restricting traffic to trusted origins, and integrating traffic events with your preferred logging tool.
+
 
 ## Step 1: Install the ngrok Agent
+To download and install the ngrok agent on your remote LinuxRaspberry Pi OS device, follow these steps:
 
-To download and install the ngrok agent on your remote Linux device, follow these steps:
+1. Open a terminal into your remote Raspberry Pi OS device.
 
-1. Open a terminal into your remote Linux device.
-
-1. Download the latest ngrok binary for your Linux distribution. You can find the correct binary on our [ngrok download page](https://ngrok.com/download): Select your operating system, select the version, and copy the link that appears in the **Download** button. Below is an example for x86-64:
+2. Download the latest ngrok binary for your Linux distribution. You can find the correct binary on our [ngrok download page](https://ngrok.com/download): Select your operating system, select the version, and copy the link that appears in the **Download** button.:
 ```bash
-wget https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz
+wget https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-arm.tgz
 ```
 
-1. Unzip the downloaded file and move it to a directory in your PATH. Below is an example for `/usr/local/bin`:
+3. Unzip the downloaded file and move it to a directory in your PATH. Below is an example for `/usr/local/bin`:
 ```bash
-sudo tar xvzf ./ngrok-v3-stable-linux-amd64.tgz -C /usr/local/bin
+sudo tar xvzf ./ngrok-v3-stable-linux-arm64.tgz -C /usr/local/bin
 ```
 
-1. Now that you have installed ngrok on your Linux device, link it to your ngrok account by using your authtoken:
+4. Now that you have installed ngrok on your LinuxRaspberry Pi OS device, link it to your ngrok account by using your authtoken:
 ```bash
 ngrok authtoken NGROK_AUTHTOKEN
 ```
@@ -41,13 +42,13 @@ ngrok authtoken NGROK_AUTHTOKEN
 
 To enable remote SSH access to your device via ngrok:
 
-1. Test that the ngrok agent is configured correctly by starting a TCP tunnel on your remote device.
+1. Test that the ngrok agent is configured correctly by starting a TCP tunnel on your remove device.
   **Note**: If you get an error, ensure your authtoken is configured correctly.
 ```bash
 ngrok tcp 22
 ```
 
-1. The ngrok agent assigns you a TCP address and port. Use these values to test the SSH access via ngrok by running the following command from another server or from a desktop.
+2. The ngrok agent assigns you a TCP address and port. Use these values to test the SSH access via ngrok by running the following command from another server or from a desktop.
 ```bash
 ssh -p NGROK_PORT USER@NGROK_TCP_ADDRESS
 ```
@@ -64,9 +65,9 @@ Once you confirmed that you have connectivity to the device, add some security s
 
 **Note**: This capability requires ngrok's **IP Restrictions** feature, which is only available with a paid subscription.
 
-1. On the remote Linux device terminal, stop the ngrok process using the `ctrl+c` command.
+1. On the remote LinuxRaspberry Pi OS device terminal, stop the ngrok process using the `ctrl+c` command.
 
-1. Add an allow rule to restrict access to your Linux device to an IP address or a range of IP addresses.
+1. Add an allow rule to restrict access to your LinuxRaspberry Pi OS device to an IP address or a range of IP addresses.
 ```bash
 ngrok tcp 22 --cidr-allow ALLOWED_IP_ADDRESS_CIDR
 ```
@@ -83,7 +84,7 @@ The ngrok agent works with native OS services like `systemd`. This helps you ens
 
 1. Navigate to the ngrok Dashboard and access [Cloud Edge > TCP Addresses](https://dashboard.ngrok.com/cloud-edge/tcp-addresses). Create a new TCP address with a description and click **Save**. Your new TCP address will look something like `1.tcp.ngrok.io:12345`.
 
-Update the ngrok config file in your Linux device to start the ngrok agent using this TCP address.
+Update the ngrok config file in your LinuxRaspberry Pi OS device to start the ngrok agent using this TCP address.
 
 1. Open the ngrok config file:
 ```bash
@@ -92,16 +93,16 @@ ngrok config edit
 
 1. Add the following to the end of the file and then save it:
 
-```yaml
-tunnels:
-  device-ssh:
-    proto: tcp
-    addr: 22
-    remote_addr: NGROK_TCP_ADDRESS
-    ip_restriction:
-      allow_cidrs:
-        - ALLOWED_IP_ADDRESS_CIDR
-```
+  ```yaml
+  tunnels:
+    device-ssh:
+      proto: tcp
+      addr: 22
+      remote_addr: NGROK_TCP_ADDRESS
+      ip_restriction:
+        allow_cidrs:
+          - ALLOWED_IP_ADDRESS_CIDR
+  ```
 
   **Note**: Make sure to replace **NGROK_TCP_ADDRESS** with the address you reserved earlier in the ngrok dashboard (i.e. `1.tcp.ngrok.io:12345`) and **ALLOWED_IP_ADDRESS_CIDR** with the CIDR notation of the allowed IP Address(es) (i.e. `123.123.123.0/24`).
 
@@ -112,18 +113,16 @@ tunnels:
 ```bash
 ngrok service install --config $HOME/.config/ngrok/ngrok.yml
 ```
-:::note
-You may need to run this command using `sudo` depending on your system
-:::
+**Note**: You may need to run this command using `sudo` depending on your system
+
 
 1. Run the following command to ensure your operating system launches ngrok with the ssh ingress whenever your device start:
 
 ```bash
 ngrok service start
 ```
-:::note
-You may need to run this command using `sudo` depending on your system
-:::
+**Note**: You may need to run this command using `sudo` depending on your system
+
 
 1. With ngrok running on your device, you should be able to SSH into the device using the reserved address from the dashboard.
 

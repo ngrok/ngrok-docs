@@ -22,10 +22,12 @@ This will automatically add `version` and `region` options as well as convert th
 **Automation using the ngrok agent** - If you have written any scripts or built wrappers around the ngrok agent using command line flags, there are additional changes you will need to make.
 
 *   Installing the Authtoken is now done with the command `ngrok config add-authtoken TOKEN`. Check out the [ngrok config reference documentation](/ngrok-agent/ngrok#ngrok-config) for more information.
-*   The ngrok agent only accepts long name flags prefixed with `--` and will error if a single hyphen is used. When updating your scripts, ensure things like `--hostname` and `--host-header` are using double hyphens.
+*   The ngrok agent only accepts long name flags prefixed with `--` and will error if a single hyphen is used. When updating your scripts, ensure flags like `--host-header` are using double hyphens.
 *   The following command flags have changed:
     *   `-auth` -> [`--basic-auth`](/ngrok-agent/ngrok#ngrok-http-flags)
     *   `-bind-tls` -> [`--scheme`](/ngrok-agent/ngrok#ngrok-http-flags)
+    *   `-hostname` -> [`--domain`](/ngrok-agent/ngrok#ngrok-http-flags)
+    *   `-subdomain` -> [`--domain subdomain.ngrok-free.dev`](/ngrok-agent/ngrok#ngrok-http-flags)
 
 For a full list of changes to the agent for v3, see the [changelog](/ngrok-agent/changelog).
 
