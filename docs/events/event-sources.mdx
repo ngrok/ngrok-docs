@@ -15,12 +15,26 @@ Some event types support filters and selectable fields. Not all selectable field
 
 Events are sent as JSON to the configured destinations. These event payloads are purposefully identical to the ngrok API responses. All events include the following fields:
 
-| Name | Description | Example |
-| --- | --- | --- |
-| `event_id` | unique identifier for this event, always prefixed with ev_ | `ev_1vPlyBW3OR44bpPphS4HIZyajDD` |
-| `event_type` | identifies the object, action, and version of the event | `ip_policy_created.v0` |
-| `event_timestamp` | timestamp of when the event fired in RFC 3339 format | `2021-07-16T21:44:37Z` |
-| `object` | a JSON object describing the resource where the event occurred | See examples below |
+| Name              | Description                                                                  | Example                          |
+|-------------------|------------------------------------------------------------------------------|----------------------------------|
+| `account_id`      | unique identifier for the account, always prefixed with ac_                  | `ac_2OtNvAlhso10Gx6s7eupzX3F98q` |
+| `event_id`        | unique identifier for this event, always prefixed with ev_                   | `ev_1vPlyBW3OR44bpPphS4HIZyajDD` |
+| `event_type`      | identifies the object, action, and version of the event                      | `ip_policy_created.v0`           |
+| `event_timestamp` | timestamp of when the event fired in RFC 3339 format                         | `2021-07-16T21:44:37Z`           |
+| `object`          | a JSON object describing the resource where the event occurred               | See examples below               |
+| `principal`       | a JSON object containing details about the principal who actioned this event | See example below                |
+
+
+#### Principal Object
+
+The principal object in every event contains details about the principal or actor who actioned an event. Typically populated on configuration events.
+
+| Name       | Description                                                                                                         | Example                                                                                                               |
+|------------|---------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------|
+| id         | unique identifier for the principal, either a user or bot                                                           | `usr_2OtNv9qH5Nk4NuNeszZ39gBxZ4H`                                                                                     |
+| subject    | human readable unique identifier for the principal, either a user email or a bot name                               | `foo@example.com`                                                                                                     |
+| source     | mode of ingress into ngrok, typically Dashboard or API                                                              | `API`                                                                                                                 |
+| credential | id and uri resource for the credential used for authentication, only defined for programmatic access (API, Tunnels) | ```{"id": "ak_2Oxt94wYsBTLwFUoMZcJRvJTaub","uri": "https://api.ngrok.com/api_keys/ak_2Oxt94wYsBTLwFUoMZcJRvJTaub"}``` |
 
 ### Event Payloads Examples
 
@@ -30,6 +44,16 @@ Events are sent as JSON to the configured destinations. These event payloads are
         "event_id": "ev_25X2AsJ5xpvuOParTYUQWe12XKo",
         "event_type": "ip_policy_created.v0",
         "event_timestamp": "2022-02-23T23:29:29Z",
+        "account_id": "ac_2OtNvAlhso10Gx6s7eupzX3F98q",
+        "principal": {
+            "id": "usr_2OtNv9qH5Nk4NuNeszZ39gBxZ4H",
+            "subject": "foo@example.com",
+            "source": "API",
+            "credential": {
+                "id": "ak_2Oxt94wYsBTLwFUoMZcJRvJTaub",
+                "uri": "https://api.ngrok.com/api_keys/ak_2Oxt94wYsBTLwFUoMZcJRvJTaub"
+            }
+        },
         "object": {
             "id": "ipp_25X2Ao39z73FlVQKZ1iReMPe6Qv",
             "uri": "https://api.ngrok.com/ip_policies/ipp_25X2Ao39z73FlVQKZ1iReMPe6Qv",
@@ -46,6 +70,7 @@ Events are sent as JSON to the configured destinations. These event payloads are
         "event_id": "ev_25X3yFS6TDkig1KDJWIc4nnJO0c",
         "event_type": "http_request_complete.v0",
         "event_timestamp": "2022-02-23T23:44:16Z",
+        "account_id": "ac_2OtNvAlhso10Gx6s7eupzX3F98q",
         "object": {
             "conn": {
                 "client_ip": "2601:0:8200:9e:4cd7:0:c97f:7823",
@@ -78,6 +103,7 @@ Events are sent as JSON to the configured destinations. These event payloads are
         "event_id": "ev_25X4osod1q306srserDeFyghTC4",
         "event_type": "tcp_connection_closed.v0",
         "event_timestamp": "2022-02-23T23:51:14Z",
+        "account_id": "ac_2OtNvAlhso10Gx6s7eupzX3F98q",
         "object": {
             "conn": {
                 "bytes_in": 3437,
@@ -274,8 +300,8 @@ This event type does not support filters or selectable fields.
 | description | string | human-readable description of what this reserved domain will be used for |
 | metadata | string | arbitrary user-defined machine-readable data of this reserved domain. Optional, max 4096 bytes. |
 | domain | string | hostname of the reserved domain |
-| region | string | reserve the domain in this geographic ngrok datacenter. Optional, default is us. (au, eu, ap, us, jp, in, sa) |
-| cname_target | string | DNS CNAME target for a custom hostname, or null if the reserved domain is a subdomain of *.ngrok.io |
+| region | string | reserve the domain in this geographic ngrok region. Optional, default is us. (au, eu, ap, us, jp, in, sa) |
+| cname_target | string | DNS CNAME target for a custom hostname, or null if the reserved domain is a subdomain of an ngrok domain |
 | certificate.id | string | a resource identifier |
 | certificate.uri | string | a uri for locating a resource |
 | certificate\_management\_policy.authority | string | certificate authority to request certificates from. The only supported value is letsencrypt. |
@@ -301,7 +327,7 @@ This event type does not support filters or selectable fields.
 | description | string | human-readable description of what this reserved domain will be used for |
 | metadata | string | arbitrary user-defined machine-readable data of this reserved domain. Optional, max 4096 bytes. |
 | domain | string | hostname of the reserved domain |
-| region | string | reserve the domain in this geographic ngrok datacenter. Optional, default is us. (au, eu, ap, us, jp, in, sa) |
+| region | string | reserve the domain in this geographic ngrok region. Optional, default is us. (au, eu, ap, us, jp, in, sa) |
 | cname_target | string | DNS CNAME target for a custom hostname, or null if the reserved domain is a subdomain of *.ngrok.io |
 | certificate.id | string | a resource identifier |
 | certificate.uri | string | a uri for locating a resource |
@@ -328,7 +354,7 @@ This event type does not support filters or selectable fields.
 | description | string | human-readable description of what this reserved domain will be used for |
 | metadata | string | arbitrary user-defined machine-readable data of this reserved domain. Optional, max 4096 bytes. |
 | domain | string | hostname of the reserved domain |
-| region | string | reserve the domain in this geographic ngrok datacenter. Optional, default is us. (au, eu, ap, us, jp, in, sa) |
+| region | string | reserve the domain in this geographic ngrok region. Optional, default is us. (au, eu, ap, us, jp, in, sa) |
 | cname_target | string | DNS CNAME target for a custom hostname, or null if the reserved domain is a subdomain of *.ngrok.io |
 | certificate.id | string | a resource identifier |
 | certificate.uri | string | a uri for locating a resource |
@@ -938,7 +964,7 @@ This event type does not support filters or selectable fields.
 | description | string | human-readable description of what this reserved address will be used for |
 | metadata | string | arbitrary user-defined machine-readable data of this reserved address. Optional, max 4096 bytes. |
 | addr | string | hostname:port of the reserved address that was assigned at creation time |
-| region | string | reserve the address in this geographic ngrok datacenter. Optional, default is us. (au, eu, ap, us, jp, in, sa) |
+| region | string | reserve the address in this geographic ngrok region. Optional, default is us. (au, eu, ap, us, jp, in, sa) |
 
 #### tcp\_address\_deleted.v0
 
@@ -954,7 +980,7 @@ This event type does not support filters or selectable fields.
 | description | string | human-readable description of what this reserved address will be used for |
 | metadata | string | arbitrary user-defined machine-readable data of this reserved address. Optional, max 4096 bytes. |
 | addr | string | hostname:port of the reserved address that was assigned at creation time |
-| region | string | reserve the address in this geographic ngrok datacenter. Optional, default is us. (au, eu, ap, us, jp, in, sa) |
+| region | string | reserve the address in this geographic ngrok region. Optional, default is us. (au, eu, ap, us, jp, in, sa) |
 
 #### tcp\_address\_updated.v0
 
@@ -970,7 +996,7 @@ This event type does not support filters or selectable fields.
 | description | string | human-readable description of what this reserved address will be used for |
 | metadata | string | arbitrary user-defined machine-readable data of this reserved address. Optional, max 4096 bytes. |
 | addr | string | hostname:port of the reserved address that was assigned at creation time |
-| region | string | reserve the address in this geographic ngrok datacenter. Optional, default is us. (au, eu, ap, us, jp, in, sa) |
+| region | string | reserve the address in this geographic ngrok region. Optional, default is us. (au, eu, ap, us, jp, in, sa) |
 
 
 ### TCP Connection Closed

@@ -171,7 +171,7 @@ ngrok http 8000 --basic-auth 'ngrok:issecure'
 
 Now when you access the new ngrok URL in your browser, you should be prompted for a username and password.
 
-By the way, if you have a paid plan and want to keep the same URL each time you restart, use the [`--subdomain`](/ngrok-agent/ngrok#ngrok-http-flags) flag when starting the agent.
+By the way, if you have a paid plan and want to keep the same URL each time you restart, use the [`--domain`](/ngrok-agent/ngrok#ngrok-http-flags) flag when starting the agent.
 
 ![](https://ngrok.com/static/img/docs/ngrok-basic-auth.png)
 
@@ -197,7 +197,7 @@ Now when you try to visit your new ngrok URL, you will be prompted to log in wit
 
 That's it, but there's a lot more you can do with ngrok!
 
-*   Configure ngrok to use the same domain each time with [`--subdomain`](/secure-tunnels/tunnels/http-tunnels#custom-subdomains)
+*   Configure ngrok to use the same domain each time with [`--domain`](/secure-tunnels/tunnels/http-tunnels#custom-subdomains)
 *   Tunnel other non-HTTP services such as SSH, RDP, or game servers using [TCP Tunnels](/secure-tunnels/tunnels/tcp-tunnels)
 *   Bring your own [custom domains to ngrok](/secure-tunnels/tunnels/http-tunnels#custom-domains)
 *   Add your [API key and automate via the `ngrok api` command](/ngrok-agent/ngrok#ngrok-api).
