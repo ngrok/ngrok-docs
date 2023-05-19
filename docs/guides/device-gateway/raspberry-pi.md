@@ -54,9 +54,9 @@ ssh -p NGROK_PORT USER@NGROK_TCP_ADDRESS
 ```
 
   **Note**: Replace the variables in the command line with the following:
-  - NGROK_PORT: The port number of the ngrok agent (i.e if the agent shows `tcp://1.tcp.ngrok.io:12345`, your port number is `12345`.
+  - NGROK_PORT: The port number of the ngrok agent (i.e. if the agent shows `tcp://1.tcp.ngrok.io:12345`, your port number is `12345`.
   - USER: A valid ssh login to access your remote device's operating system.
-  - NGROK_TCP_ADDRESS: The address of the ngrok agent (i.e if the agent shows `tcp://1.tcp.ngrok.io:12345`, your TCP address is `1.tcp.ngrok.io`.
+  - NGROK_TCP_ADDRESS: The address of the ngrok agent (i.e. if the agent shows `tcp://1.tcp.ngrok.io:12345`, your TCP address is `1.tcp.ngrok.io`.
 
 
 ## Step 3: Adding IP restrictions
@@ -80,7 +80,7 @@ Alternatively, you can create an IP policy in the ngrok dashboard (under [Securi
 
 ## Step 4: Configure ngrok to recover on outages
 
-The ngrok agent works with native OS services like `systemd`. This helps you ensure that the ngrok service is available even after machine restarts. Before we do this though, it's useful to reserve a TCP address in the ngrok dashboard which allows you to reuse the same address each time the device is restarted.
+The ngrok agent works with native OS services like `systemd`. This helps you ensure that the ngrok service is available even after the machine restarts. Before we do this though, it's useful to reserve a TCP address in the ngrok dashboard which allows you to reuse the same address each time the device is restarted.
 
 1. Navigate to the ngrok Dashboard and access [Cloud Edge > TCP Addresses](https://dashboard.ngrok.com/cloud-edge/tcp-addresses). Create a new TCP address with a description and click **Save**. Your new TCP address will look something like `1.tcp.ngrok.io:12345`.
 
@@ -116,7 +116,7 @@ ngrok service install --config $HOME/.config/ngrok/ngrok.yml
 **Note**: You may need to run this command using `sudo` depending on your system
 
 
-1. Run the following command to ensure your operating system launches ngrok with the ssh ingress whenever your device start:
+1. Run the following command to ensure your operating system launches ngrok with the ssh ingress whenever your device starts:
 
 ```bash
 ngrok service start
