@@ -16,8 +16,8 @@ If you'd like to programmatically manage your ngrok account and resources (regis
 If you're looking to programmatically start tunnels with the ngrok agent, check out Alex's [pyngrok](https://github.com/alexdlaird/pyngrok) library.
 
 ### Python SDK (beta)
-Embed ngrok secure ingress into your Python apps with a single line of code with our beta [ngrok Python SDK](https://github.com/ngrok/ngrok-py).
+Embed ngrok secure ingress into your Python apps with a single line of code with our beta [ngrok Python SDK](https://github.com/ngrok/ngrok-python).
 
 *   [ngrok SDK on PyPi](https://pypi.org/project/ngrok/)
-*   [ngrok SDK on Github](https://github.com/ngrok/ngrok-py)
-*   [Reference Documentation](https://ngrok.github.io/ngrok-py/)
+*   [ngrok SDK on Github](https://github.com/ngrok/ngrok-python)
+*   [Reference Documentation](https://ngrok.github.io/ngrok-python/)
