@@ -25,13 +25,14 @@ To download and install the ngrok agent on your remote Windows IoT device, follo
 
 1. Download the latest ngrok binary for your Windows IoT distribution. You can find the correct binary on our [ngrok download page](https://ngrok.com/download): Select your operating system, select the version, and copy the link that appears in the **Download** button. Below is an example using PowerShell:
 ```bash
-Invoke-WebRequest -Uri https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-windows-386.zip -OutFile ngrok-v3-stable-Windows IoT-amd64.zip
+Invoke-WebRequest -Uri https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-windows-386.zip -OutFile ngrok-v3-stable-windows-386.zip
 ```
 
 1. Unzip the downloaded file and move it to a directory in your PATH. Below is an example using PowerShell:
 ```bash
-Expand-Archive .\ngrok-v3-stable-Windows IoT-amd64.zip -DestinationPath .\
+Expand-Archive .\ngrok-v3-stable-windows-386.zip -DestinationPath .\
 ```
+  **Note**: Make sure your local directory is set in your PATH enviroment variable.
 
 1. Open a PowerShell and run the following command:
 ```bash
