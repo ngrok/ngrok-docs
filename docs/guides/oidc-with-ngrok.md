@@ -1,6 +1,6 @@
 ---
-title: Adding OpenID Connect Authentication to Your App
-description: Simplest way to add OpenID Connect (OIDC) authentication to you application without code change
+title: Adding OpenID Connect to Your App
+description: Simplest way to add OpenID Connect (OIDC) to you application without code change
 tags:
     - guides
     - authentication
