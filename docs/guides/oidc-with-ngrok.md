@@ -93,7 +93,7 @@ The ngrok agent provides a **Forwarding** URL to expose your application to the 
   curl --location 'NGROK_AGENT_FORWARDING_URL' --header 'Authorization: Bearer TOKEN'
   ```
 
-  **Note**: Replace the `TOKEN` value with a valid access token from Google. 
+  **Note**: Replace the `TOKEN` value with a valid access token from Google.
 
   Verify that the application responds correctly.
 
