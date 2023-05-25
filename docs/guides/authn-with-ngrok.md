@@ -1,5 +1,5 @@
 ---
-title: Adding authentication support to your app
+title: Adding authentication to your app
 description: Simplest way to add authentication to you application without code change
 tags:
     - guides
@@ -20,9 +20,11 @@ ngrok provides a variety of authentication options such as [Basic Authentication
 
 ## HTTP Basic Authentication {#basic}
 
-Basic Authentication is a simple authentication mechanism built into the HTTP protocol. To access an app protected by Basic Authentication the user must provide a username and password. 
+Basic Authentication is a simple authentication mechanism built into the HTTP protocol. To access an application protected by Basic Authentication the user must provide credentials in the form of a authorization basic header for every request.
 
-By adding the `--basic-auth` flag to your ngrok tunnel you enforce the very basic access control to your application without changing anything in your application. The credential you pass as value to this flag can be used by the end-user to log into the app through ngrok.
+### Command line configuration 
+
+By adding the `--basic-auth` flag to your ngrok tunnel you enforce this access control mechanism to your application without changing anything in your application. The credential you pass as value to this flag can be used by the end-user to access the application resources through ngrok.
 
 For example:
 ```bash
@@ -33,20 +35,62 @@ You can add the `--basic-auth` flag multiple times to create a list of authorize
 
 For example:
 ```bash
-ngrok http --basic-auth="user1:pass1" --basic-auth="user2:pass2" 3000
+ngrok http --basic-auth="user1:password1" --basic-auth="user2:password2" 3000
 ```
 
-Once the credentials is validate by the ngrok tunnel the application receives the authorization header in every request. Therefore the application can use it for futher validation.
+### Using Configuration File
+
+The previous setup can also be done by using the [Agent Configuration File](/ngrok-agent/config/#tunnel-definitions).
+
+1. Link your ngrok agent to your ngrok account by using your authtoken:
+```bash
+ngrok authtoken NGROK_AUTHTOKEN
+```
+**Note**: Replace `NGROK_AUTHTOKEN` with your unique ngrok authtoken found in the [ngrok dashboard](https://dashboard.ngrok.com/get-started/your-authtoken).
+
+1. Run the following command to create an edit a configuration file:
+```bash
+ngrok config edit
+```
+
+1. Add a tunnel definition at the end of the configuration file as follows:
+```yaml
+tunnels:
+  httpbin:
+    proto: http
+    addr: 3000
+    basic_auth: ['USERNAME:PASSWORD']
+```
+
+1. Run the ngrok agent using the following command:
+```bash
+ngrok start httpbin
+```
+
+**Note**: After the credentials is validated by the ngrok tunnel, it forwards the authorization header to the application. Therefore the application can use the information inside this header (this may require some application code change).
 
 ```bash
 "authorization": "Basic VVNFUk5BTUU6UEFTU1dPUkQ="
 ```
 
-
 ## OpenID Connect (OIDC) {#oidc}
 
-OpenID Connect (OIDC) is an identity layer built on top of the OAuth 2.0. It allows applications to verify the identity of the end-user and to obtain basic user profile information.
+OpenID Connect (OIDC) is an open identity layer protocol built on top of the OAuth 2.0. It allows applications to verify the identity of the end-user and to obtain basic user profile information.
 
+OpenID Connect brings to the table the concept of an **Identity Provider**, i.e. an external application that provides authentication services to relying applications.
+
+
+### Command line configuration 
+
+Use the `--oidc`, `--oidc-client-id` and `--oidc-client-secret` flags with your ngrok tunnel to enable an identity provider for your application with no code change.
+By adding OIDC support to your ngrok tunnel you also enable your application to participate in the Single Sign On provided by the identity provider.
+
+For example, if you want to enable OIDC support with Google run the following command:
+```bash
+ngrok http --oidc="https://accounts.google.com/o/oauth2/v2/auth" --oidc-client-id="806764744727-3j3t4n6s1m1hna6ahlq08q555a4j06t5.apps.googleusercontent.com" --oidc-client-secret="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" 3000
+```
+
+**Note**: The oidc URL, client id and client secret can be defined in [Google Cloud Credentials](https://console.developers.google.com/apis/credentials) page by creating a **OAuth Client ID Credential** and setting up a **OAuth consent screen**.
 
 
 ## SAML {#saml}
