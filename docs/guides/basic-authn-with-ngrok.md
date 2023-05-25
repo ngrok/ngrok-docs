@@ -12,7 +12,7 @@ Modifying legacy applications to add support to a minimum of security such as au
 
 This guide will walk you through how to quickly add authentication to your application without code change.
 
-ngrok provides a variety of authentication options such as [Basic Authentication](/guides/basic-authn-with-ngrok/), [OpenID Connect](/guides/oidc-with-ngrok/), or [SAML](/guides/saml-with-ngrok/).
+ngrok provides a variety of authentication options such as [Basic Authentication](/guides/basic-authn-with-ngrok/), OpenID Connect, or SAML.
  
 
 ## HTTP Basic Authentication {#basic}
