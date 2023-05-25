@@ -86,12 +86,41 @@ Use the `--oidc`, `--oidc-client-id` and `--oidc-client-secret` flags with your 
 By adding OIDC support to your ngrok tunnel you also enable your application to participate in the Single Sign On provided by the identity provider.
 
 For example, if you want to enable OIDC support with Google run the following command:
+
 ```bash
-ngrok http --oidc="https://accounts.google.com/o/oauth2/v2/auth" --oidc-client-id="806764744727-3j3t4n6s1m1hna6ahlq08q555a4j06t5.apps.googleusercontent.com" --oidc-client-secret="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" 3000
+ngrok http --oidc=https://accounts.google.com/o/oauth2/v2/auth --oidc-client-id=806764744727-3j3t4n6s1m1hna6ahlq08q555a4j06t5.apps.googleusercontent.com --oidc-client-secret=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 3000
 ```
 
-**Note**: The oidc URL, client id and client secret can be defined in [Google Cloud Credentials](https://console.developers.google.com/apis/credentials) page by creating a **OAuth Client ID Credential** and setting up a **OAuth consent screen**.
+**Note**: In this example, the **oidc**, **oidc-client-id** and **oidc-client-secret** values can be copied from the [Google Cloud Credentials](https://console.developers.google.com/apis/credentials) page after setting up a **OAuth consent screen** and creating an **OAuth Client ID Credential**.
 
+### Using Configuration File
+
+Instead of passing the values as arguments to the ngrok agent, you can setup the [Agent Configuration File](/ngrok-agent/config/#tunnel-definitions).
+
+1. Set up the ngrok authtoken and run the following command to create an edit a configuration file:
+```bash
+ngrok authtoken NGROK_AUTHTOKEN
+ngrok config edit
+```
+
+1. Add a tunnel definition at the end of the configuration file as follows:
+```yaml
+tunnels:
+  oidc:
+    proto: http
+    addr: 3000
+    issuer_url: https://accounts.google.com/o/oauth2/v2/auth
+    client_id: 806764744727-3j3t4n6s1m1hna6ahlq08q555a4j06t5.apps.googleusercontent.com
+    client_secret: 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
+    scopes: *
+```
+
+1. Run the ngrok agent using the following command:
+```bash
+ngrok start google
+```
+
+**Note**: Again we are using Google as an example of OIDC identity provider. See the documentation of your OIDC provider and follow the ngrok configuration procedure in this tutorial.
 
 ## SAML {#saml}
 
