@@ -90,8 +90,10 @@ The ngrok agent provides a **Forwarding** URL to expose your application to the 
 
   1. Execute the following command line to access the application:
   ```bash
-  curl --location 'NGROK_AGENT_FORWARDING_URL' --header 'Authorization: Basic VVNFUk5BTUU6UEFTU1dPUkQ='
+  curl --location 'NGROK_AGENT_FORWARDING_URL' --header 'Authorization: Bearer TOKEN'
   ```
+
+  **Note**: Replace the `TOKEN` value with a valid access token from Google. 
 
   Verify that the application responds correctly.
 
