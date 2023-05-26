@@ -37,7 +37,7 @@ ngrok http --oidc=https://accounts.google.com --oidc-client-id=GOOGLE_OAUTH2_CLI
 
 **Note**: The **oidc** URL is the base URL where the identity provider exposes the well-known configuration endpoint (i.e. `https://accounts.google.com/.well-known/openid-configuration`).
 
-**Note**: Replace the **oidc-client-id** and **oidc-client-secret** values with the ones you get from the [Google Cloud Credentials](https://console.developers.google.com/apis/credentials) page after setting up an **OAuth consent screen** and creating an **OAuth Client ID Credential**.
+**Note**: Replace the **GOOGLE_OAUTH2_CLIENT_ID** and **GOOGLE_OAUTH2_CLIENT_SECRET** values with the ones you get from the [Google Cloud Credentials](https://console.developers.google.com/apis/credentials) page after setting up an **OAuth consent screen** and creating an **OAuth Client ID Credential**.
 
 
 ### Using Configuration File
@@ -63,8 +63,6 @@ Instead of passing the values as arguments to the ngrok agent, you can set up th
           scopes: []
   ```
 
-  **Note**: The **issuer_url** is the base URL where Google exposes the well-known configuration endpoint (i.e. `https://accounts.google.com/.well-known/openid-configuration`).
-
   **Note**: In this example, we used Google as the identity provider. Follow the documentation of your preferred OIDC identity provider to collect the valid values for **issuer_url**, **client_id**, **client_secret**, and **scopes**.
   
   1. Run the ngrok agent using the following command:
@@ -72,10 +70,12 @@ Instead of passing the values as arguments to the ngrok agent, you can set up th
   ngrok start mytunnel
   ```
 
-The ngrok agent provides a **Forwarding** URL to expose your application to the internet (i.e. `https://1a2b-3c4d-5e6f-7g8h-9i0j.sa.ngrok.io`).
+  The ngrok agent provides a **Forwarding** URL to expose your application to the internet (i.e. `https://1a2b-3c4d-5e6f-7g8h-9i0j.sa.ngrok.io`).
 
 
 ## Test the Authentication
+
+Test the integration.
 
 ### Test the application access in a browser:
 
