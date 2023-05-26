@@ -19,7 +19,7 @@ Basic Authentication is an authentication mechanism built into the HTTP protocol
 
 The basic authentication method serves as a practical and simple solution for protecting application access in many scenarios. This ease of implementation allows for quick integration with a wide range of platforms, operating systems, and web browsers, making it accessible for developers and users. 
 
-Although it may lack the advanced security features of more complex authentication methods, its ubiquity and ease of use make it a valuable option for securing applications with lower security requirements, comunication between modules of an application, or where additional security measures are in place.
+Although it may lack the advanced security features of more complex authentication methods, its ubiquity and ease of use make it a valuable option for securing applications with lower security requirements, communication between modules of an application, or where additional security measures are in place.
 
 
 ### Command line configuration 
