@@ -8,16 +8,19 @@ tags:
     - basic authentication
 ---
 
-Modifying legacy applications to add support to a minimum of security such as authentication may be 
+This guide will walk you through how to quickly add Basic authentication to your application without code change by using ngrok tunnels.
 
-This guide will walk you through how to quickly add authentication to your application without code change.
-
-ngrok provides a variety of authentication options such as [Basic Authentication](/guides/basic-authn-with-ngrok/), OpenID Connect, or SAML.
+ngrok provides a variety of authentication options such as Basic Authentication, OpenID Connect, and SAML.
  
 
 ## HTTP Basic Authentication {#basic}
 
-Basic Authentication is a simple authentication mechanism built into the HTTP protocol. To access an application protected by Basic Authentication the user must provide credentials in the form of an authorization basic header for every request.
+Basic Authentication is an authentication mechanism built into the HTTP protocol. It offers basic access control  that relies on user authentication, such as username and password, to verify the identity of users before granting them access to the system or application.
+
+The basic authentication method serves as a practical and simple solution for protecting application access in many scenarios. This ease of implementation allows for quick integration with a wide range of platforms, operating systems, and web browsers, making it accessible for developers and users. 
+
+Although it may lack the advanced security features of more complex authentication methods, its ubiquity and ease of use make it a valuable option for securing applications with lower security requirements, comunication between modules of an application, or where additional security measures are in place.
+
 
 ### Command line configuration 
 
