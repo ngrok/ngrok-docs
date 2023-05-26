@@ -9,20 +9,23 @@ tags:
     - oidc
 ---
 
-Modifying legacy applications to add support to a minimum of security such as authentication may be 
+This guide will walk you through how to quickly add Basic authentication to your application without code change by using ngrok tunnels.
 
-This guide will walk you through how to quickly add authentication to your application without code change.
-
-ngrok provides a variety of authentication options such as Basic Authentication, OpenID Connect, or SAML.
+ngrok provides a variety of authentication options such as Basic Authentication, OpenID Connect, and SAML.
  
 
 ## OpenID Connect (OIDC) {#oidc}
 
-OpenID Connect (OIDC) is an open identity layer protocol built on top of OAuth 2.0. It allows applications to verify the identity of the end user and to obtain basic user profile information.
+OpenID Connect (OIDC) is an open identity layer protocol built on top of the OAuth 2.0 framework. It provides a secure and scalable identity layer for authentication and authorization. It leverages industry-standard encryption algorithms and token-based authentication, enhancing the overall security of the application.
 
-OpenID Connect brings to the table the concept of an **Identity Provider**, i.e. an external application that provides authentication services to relying applications.
+OIDC brings to the table the concept of an **Identity Provider**, i.e. an external application that provides authentication services to relying applications.
+ngrok integrates with a variety of them. For example, [Auth0](/integrations/auth0/), [Curity](/integrations/curity/), Facebook, [FusionAuth](/integrations/fusionauth/), Google, [JumpCloud](/integrations/jumpcloud/), LinkedIn, [MiniOrange](/integrations/miniorange/), [Okta](/integrations/okta/), [Wallix Trustelem](/integrations/trustelem/), and others.
 
-By adding OIDC support to your application you also enable the application to participate in the Single Sign-On provided by the identity provider.
+Applications can benefit from identity provider's features such as social login, multi-factor authentication, and other security-enchanced measures, to expand their options for user authentication.
+
+By adding OIDC support to your application you also enable the application to participate in the Single Sign-On (SSO) provided by the identity provider: users authenticate once and access multiple applications seamlessly.
+
+The OIDC widespread adoption and active developer community ensure continued support, updates, and security improvements, providing a standardized, secure, and flexible solution for protecting your application.
 
 
 ### Command line configuration 
