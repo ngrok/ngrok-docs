@@ -14,3 +14,5 @@ This section provides getting started guides for adding ngrok to the most popula
 | ----------- | ----------- |
 | [Linux](/guides/device-gateway/linux) | Learn how to remotely manage Linux devices using ngrok |
 | [Raspberry Pi](/guides/device-gateway/raspberry-pi) | Learn how to remotely manage Raspberry Pi devices using ngrok |
+| [Raspberry Pi OS](/guides/device-gateway/raspbian) | Learn how to remotely manage Raspberry Pi OS (formerly Raspbian) devices using ngrok |
+| [Windows](/guides/device-gateway/windows) | Learn how to remotely manage Windows devices using ngrok |
