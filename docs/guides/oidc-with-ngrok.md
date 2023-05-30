@@ -1,6 +1,6 @@
 ---
 title: Adding OpenID Connect to Your App
-description: Simplest way to add OpenID Connect (OIDC) to you application without code change
+description: Simplest way to add OpenID Connect (OIDC) to you application without code changes
 tags:
     - guides
     - authentication
@@ -9,7 +9,7 @@ tags:
     - oidc
 ---
 
-This guide will walk you through how to quickly add Basic authentication to your application without code change by using ngrok tunnels.
+This guide will walk you through how to quickly add Basic authentication to your application without code changes by using ngrok tunnels.
 
 ngrok provides a variety of authentication options such as Basic Authentication, OpenID Connect, and SAML.
  
@@ -22,13 +22,13 @@ OIDC brings to the table the concept of an **Identity Provider**, i.e. an extern
 
 ngrok integrates with a variety of them. For example, [Auth0](/integrations/auth0/), [Curity](/integrations/curity/), Facebook, [FusionAuth](/integrations/fusionauth/), Google, [JumpCloud](/integrations/jumpcloud/), LinkedIn, [MiniOrange](/integrations/miniorange/), [Okta](/integrations/okta/), [Wallix Trustelem](/integrations/trustelem/), and others. See [ngrok partners](https://ngrok.com/partners).
 
-By adding OIDC support to your application you also enable the application to participate in the Single Sign-On (SSO) provided by the identity provider: users authenticate once and access multiple applications seamlessly.
+By adding OIDC to your application you also enable the application to participate in the Single Sign-On (SSO) provided by the identity provider: users authenticate once and access multiple applications seamlessly.
 
 The OIDC widespread adoption and active developer community ensure continued support, updates, and security improvements, providing a standardized, secure, and flexible solution for protecting your application. 
 
 ### Command line configuration 
 
-Use the `--oidc`, `--oidc-client-id`, and `--oidc-client-secret` flags with your ngrok agent to enable an identity provider for your application with no code change.
+Use the `--oidc`, `--oidc-client-id`, and `--oidc-client-secret` flags with your ngrok agent to enable an identity provider for your application with no code changes.
 
 For example, if you want to enable OIDC with Google run the following command:
 
@@ -101,7 +101,7 @@ Test the integration.
 
 ## After Authentication
 
-After the credentials are validated by the ngrok tunnel, the agent forwards to the application some headers containing information about the logged-in user. Therefore the application can use the information inside these headers (this may require some application code change).
+After the credentials are validated by the ngrok tunnel, the agent forwards to the application some headers containing information about the logged-in user. Therefore the application can use the information inside these headers (this may require some application code changes).
 
 ```bash
 "ngrok-auth-user-email": "myuser@gmail.com"
