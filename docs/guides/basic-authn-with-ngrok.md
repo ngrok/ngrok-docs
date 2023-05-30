@@ -1,6 +1,6 @@
 ---
 title: Adding Basic Authentication to Your App
-description: Simplest way to add basic authentication to you application without code change
+description: Simplest way to add basic authentication to you application without code changes
 tags:
     - guides
     - authentication
@@ -8,7 +8,7 @@ tags:
     - basic authentication
 ---
 
-This guide will walk you through how to quickly add Basic authentication to your application without code change by using ngrok tunnels.
+This guide will walk you through how to quickly add Basic authentication to your application without code changes by using ngrok tunnels.
 
 ngrok provides a variety of authentication options such as Basic Authentication, OpenID Connect, and SAML.
  
@@ -91,7 +91,7 @@ Verify that the application responds correctly.
 
 ## After Authentication
 
-After the credentials are validated by the ngrok tunnel, the agent forwards the authorization header to the application. Therefore the application can use the information inside this header (this may require some application code change).
+After the credentials are validated by the ngrok tunnel, the agent forwards the authorization header to the application. Therefore the application can use the information inside this header (this may require some application code changes).
 
 ```bash
 "authorization": "Basic VVNFUk5BTUU6UEFTU1dPUkQ="
