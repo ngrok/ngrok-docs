@@ -14,7 +14,7 @@ This guide will walk you through how to quickly add Basic authentication to your
 ngrok provides a variety of authentication options such as Basic Authentication, OpenID Connect, and SAML.
  
 
-## OpenID Connect (OIDC) {#oidc}
+## OpenID Connect (OIDC)
 
 OpenID Connect (OIDC) is an open identity layer protocol built on top of the OAuth 2.0 framework. It provides a secure and scalable identity layer for authentication and authorization. It leverages industry-standard encryption algorithms and token-based authentication, enhancing the overall security of the application.
 
@@ -26,7 +26,7 @@ By adding OIDC to your application you also enable the application to participat
 
 The OIDC widespread adoption and active developer community ensure continued support, updates, and security improvements, providing a standardized, secure, and flexible solution for protecting your application. 
 
-### Command line configuration 
+### Using Command Line Configuration 
 
 Use the `--oidc`, `--oidc-client-id`, and `--oidc-client-secret` flags with your ngrok agent to enable an identity provider for your application with no code changes.
 
@@ -40,6 +40,7 @@ ngrok http --oidc=https://accounts.google.com --oidc-client-id=GOOGLE_OAUTH2_CLI
 
 **Note**: Replace the **GOOGLE_OAUTH2_CLIENT_ID** and **GOOGLE_OAUTH2_CLIENT_SECRET** values with the ones you get from the [Google Cloud Credentials](https://console.developers.google.com/apis/credentials) page after setting up an **OAuth consent screen** and creating an **OAuth Client ID Credential**.
 
+**Note**: The identity provider requires **Authorized redirect URIs**. ngrok's OIDC redirect URI is `https://idp.ngrok.com/oauth2/callback`.
 
 ### Using Configuration File
 
@@ -73,19 +74,54 @@ Instead of passing the values as arguments to the ngrok agent, you can set up th
 
   The ngrok agent provides a **Forwarding** URL to expose your application to the internet (i.e. `https://1a2b-3c4d-5e6f-7g8h-9i0j.sa.ngrok.io`).
 
+### Using ngrok Edges
+
+Another option to set OIDC to your ngrok tunnel is via [ngrok Edges](/cloud-edge/).
+
+**Note**: This feature requires a ngrok PRO or Enteprise account. See [ngrok pricing](https://ngrok.com/pricing).
+
+  1. Sign in to the [ngrok Dashboard](https://dashboard.ngrok.com/), click **Cloud Edge** on the left menu and then click **Edges**.
+
+  1. On the **Edges** page, click **+ New Edge**, select **HTTPS Edge** on the left side of the popup screen, and then click **Create HTTPS Edge**.
+
+  1. Click the **pencil icon** next to `no description`, enter `OIDC Edge` as the edge name, and click **Save**.
+
+  1. Down in the **OIDC Edge** page, click **Add OIDC**, and then click **Begin setup**.
+
+  1. On the **OpenID Connect** page, enter `https://accounts.google.com` in the **Issuer URL** field.
+
+  1. In the **Client ID** and **Client Secret** fields the respective values from the [Google Cloud Credentials](https://console.developers.google.com/apis/credentials) page after setting up an **OAuth consent screen** and creating an **OAuth Client ID Credential**.
+
+  **Note**: In this example, we used Google as the identity provider. Follow the documentation of your preferred OIDC identity provider to collect the valid values for **issuer_url**, **client_id**, **client_secret**, and **OAuth Scopes**.
+    
+  1. Click **Save** at the top and then click **Start a tunnel**.
+
+  1. On the **Start a Tunnel** popup, click the **copy icon** next to the tunnel command.
+
+  1. Launch a terminal or command prompt, paste the copied command line, replace `http://localhost:80` with your localhost app address (i.e., `http://localhost:3000`), and then hit enter. For example:
+  ```bash
+  ngrok tunnel --label edge=<edge_id> http://localhost:3000
+  ```
+
+  **Note**: To confirm that the tunnel is connected to your edge, return to the ngrok dashboard, close the **Start a tunnel** and the **Tunnel group** popups, and refresh the test edge page.
+  Under traffic, you will see the message _You have 1 tunnel online. Start additional tunnels to begin load balancing._
+
+  1. Make note of the **Endpoints** URL that appears in the page.
+
 
 ## Test the Authentication
 
 Test the integration.
 
+**Note**: Make sure you have a localhost application running on port `3000`. Use the [sample NodeJS app available on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample). 
+
 ### Test the application access in a browser:
 
   1. Open the **Forwarding** URL provided by the ngrok agent in a web browser and the **Sign in with Google** page appears.
 
+  **Note**: If you used **Edges**, the URL appears in the **Edge page** as one of the **Endpoints**.
+
   1. Provide your Google credentials and after successfully logging into Google the browser will be redirected to your application.
-
-  **Note**: Make sure you have a localhost application running on port `3000`. Use the [sample NodeJS app available on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample). 
-
 
 ### Programmatically access the application.
 
