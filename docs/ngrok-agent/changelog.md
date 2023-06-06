@@ -6,6 +6,7 @@ title: Agent Changelog
 
 ### ngrok Agent 3.3.1 - \[2023-06-05\]
 * Fixed a bug where colons in request header and response header values were not allowed (e.g. `--request-header-add "Access-Control-Allow-Origin:https://developer.mozilla.org"`)
+* Fixed a bug introduced in v3.3.0 where `--terminate-at edge` was not using the correct TLS certificate
 
 ### ngrok Agent 3.3.0 - \[2023-05-09\]
 * Added new default tunnel ingress names: the agent now connects to [`connect.ngrok-agent.com`](https://ngrok.com/docs/best-practices/security-dev-productivity/#6-track-and-block-unauthorized-tunnel-activity) when starting a session
