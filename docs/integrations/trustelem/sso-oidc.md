@@ -80,7 +80,7 @@ ngrok can leverage Wallix Trustelem SSO in two ways:
     - Trustelem_CLIENT_ID: The client id you copied from the Trustelem console.
     - Trustelem_CLIENT_SECRET: The client secret you copied from the Trustelem console.
     
-    Alternatively, add the `--subdomain YOUR_SUBDOMAIN` argument to get your subdomain.ngrok.io URL, replacing `YOUR_SUBDOMAIN` with your URL of preference.
+    Alternatively, add the `--domain YOUR_DOMAIN` argument to get your a custom URL, replacing `YOUR_DOMAIN` with your URL of preference.
 
 1. Copy the URL available next to **Forwarding** (for example, `https://trustelem-sso-test.ngrok.io`).
 

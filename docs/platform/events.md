@@ -35,6 +35,7 @@ An Event Destination specifies a service and configuration that allows ngrok to 
 * AWS Firehose
 * AWS S3 (via Firehose)
 * AWS Kinesis
+* Datadog
 
 As noted above, you can configure AWS Kinesis Firehose to [deliver events into an S3 bucket](https://docs.aws.amazon.com/firehose/latest/dev/create-destination.html#create-destination-s3).
 

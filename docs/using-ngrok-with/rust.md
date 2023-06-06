@@ -2,22 +2,22 @@
 title: Rust
 ---
 
-# Using ngrok with the ngrok-rs crate
+# Using ngrok with the ngrok-rust crate
 ------------
 
 ## Introduction
 
-ngrok-rs is an idiomatic Rust crate for embedding secure ingress directly into your Rust applications. If you’ve used the ngrok agent before, you can think of ngrok-rs as the agent packaged as a Rust crate. [ngrok-rs is open source](http://github.com/ngrok/ngrok-rs) with [API reference available on docs.rs](https://docs.rs/ngrok).
+ngrok-rust is an idiomatic Rust crate for embedding secure ingress directly into your Rust applications. If you’ve used the ngrok agent before, you can think of ngrok-rust as the agent packaged as a Rust crate. [ngrok-rust is open source](http://github.com/ngrok/ngrok-rust) with [API reference available on docs.rs](https://docs.rs/ngrok).
 
-ngrok-rs lets developers serve Rust services on the internet in a single line of code without setting up low-level network primitives like IPs, certificates, load balancers, and even ports. Applications using ngrok-rs listen on ngrok’s global ingress network using an incoming stream with tokio’s `AsyncRead` and `AsyncWrite` traits — compatible with `axium::Server::builder()` and `hyper::Server::builder()`. This makes it easy to add ngrok-rs into any application that uses axium or hyper — the most beloved Web Framework and HTTP implementations in Rust. 
+ngrok-rust lets developers serve Rust services on the internet in a single line of code without setting up low-level network primitives like IPs, certificates, load balancers, and even ports. Applications using ngrok-rust listen on ngrok’s global ingress network using an incoming stream with tokio’s `AsyncRead` and `AsyncWrite` traits — compatible with `axium::Server::builder()` and `hyper::Server::builder()`. This makes it easy to add ngrok-rust into any application that uses axium or hyper — the most beloved Web Framework and HTTP implementations in Rust. 
 
 In this tutorial, you will build a Rust app with ingress access and security provided by ngrok.
 
 **Note**: This tutorial assumes you have Rust already installed.
 
-## Get started with ngrok-rs
+## Get started with ngrok-rust
 
-Getting started with ngrok and the ngrok-rs crate is simple: 
+Getting started with ngrok and the ngrok-rust crate is simple: 
 
 1. To start, [sign up for ngrok](https://ngrok.com/signup).
 1. In the [ngrok Dashboard](https://dashboard.ngrok.com), copy your Authtoken.
@@ -47,7 +47,7 @@ Getting started with ngrok and the ngrok-rs crate is simple:
     #[tokio::main]
     async fn main() -> Result<(), Box<dyn Error>> {
         // build our application with a route
-        let app = Router::new().route("/", get(|| async { "Hello from ngrok-rs!" }));
+        let app = Router::new().route("/", get(|| async { "Hello from ngrok-rust!" }));
 
         // listen on localhost:8000
         // axum::Server::bind(&"0.0.0.0:8000".parse().unwrap())
@@ -55,7 +55,7 @@ Getting started with ngrok and the ngrok-rs crate is simple:
         //  .await?;
         // Ok(())
 
-        // listen on ngrok ingress (i.e. https://myapp.ngrok.io)
+        // listen on ngrok ingress (i.e. https://myapp.ngrok.dev)
         let listener = ngrok::Session::builder()
             .authtoken_from_env()
             .connect()
@@ -86,14 +86,14 @@ Getting started with ngrok and the ngrok-rs crate is simple:
 
 1. The terminal will display an ngrok URL. 
     
-    Access it to confirm you see the message `Hello from ngrok-rs`.
+    Access it to confirm you see the message `Hello from ngrok-rust`.
     Your Rust application is now live on the internet, with a public url that anyone in the world can access.
 
 ## Add edge functionality to your app
 
-The ngrok-rs library provides functions and configuration for all features available in ngrok. Everything you can do with the ngrok agent is available using our library. In this example, you can modify main.rs to:
+The ngrok-rust library provides functions and configuration for all features available in ngrok. Everything you can do with the ngrok agent is available using our library. In this example, you can modify main.rs to:
 
-- **Line 21**: Use my-rust-app.ngrok.io as a custom subdomain
+- **Line 21**: Use my-rust-app.ngrok.dev as a custom subdomain
 - **Line 22**: Apply a circuit breaker if the Rust app returns errors over 50% of the time
 - **Line 23**: Compress http responses
 - **Line 24**: Deny requests from the CIDR range `200.2.0.0/16`
@@ -117,13 +117,13 @@ async fn main() -> Result<(), Box<dyn Error>> {
     //  .await?;
     // Ok(())
 
-    // listen on ngrok ingress (i.e. https://my-rust-app.ngrok.io)
+    // listen on ngrok ingress (i.e. https://my-rust-app.ngrok.dev)
     let listener = ngrok::Session::builder()
         .authtoken_from_env()
         .connect()
         .await?
         .http_endpoint()
-        .domain("my-rust-app.ngrok.io")
+        .domain("my-rust-app.ngrok.dev")
         .circuit_breaker(0.5)
         .compression()
         .deny_cidr("200.2.0.0/16")

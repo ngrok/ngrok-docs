@@ -27,7 +27,7 @@ Here you will find notes on using ngrok with particular technologies. Think we'r
 | [Puppet](/using-ngrok-with/puppet) | Manage the ngrok Agent using Puppet |
 | [Python](/using-ngrok-with/python) | Learn how to integrate with your Python application |
 | [RDP](/using-ngrok-with/rdp) | Use ngrok with Windows Remote Desktop Protocol (RDP) |
-| [Rust](/using-ngrok-with/rust) | Run ngrok programmatically with the ngrok-rs crate |
+| [Rust](/using-ngrok-with/rust) | Run ngrok programmatically with the ngrok-rust crate |
 | [SMTP](/using-ngrok-with/smtp) | Use ngrok with SMTP mail servers |
 | [SSH](/using-ngrok-with/ssh) | Learn how to SSH to a machine from anywhere in the world |
 | [Virtual hosts (MAMP, WAMP, etc.)](/using-ngrok-with/virtualHosts) | Rewrite the host header for forwarding to virtual hosts |

@@ -54,7 +54,7 @@ To integrate ngrok with Auth0 SSO, you will need to:
 
 1. On the **ngrok oidc** page, click the **Settings** tab and make note of the **Domain**, **Client ID**, and **Client Secret** values.
 
-1. Enter `https://idp.ngrok.com/oauth2/callback` in the **Allowed Callback URLs** field, and enter the URL provided by the ngrok agent to expose your application to the internet in the **Application Login URI** field (i.e. `https://myexample.ngrok.io`).
+1. Enter `https://idp.ngrok.com/oauth2/callback` in the **Allowed Callback URLs** field, and enter the URL provided by the ngrok agent to expose your application to the internet in the **Application Login URI** field (i.e. `https://myexample.ngrok.dev`).
     ![Auth0 configuration](img/ngrok_url_configuration_auth0.png)
 
 1. Click **Save Changes**.
@@ -95,9 +95,9 @@ ngrok can leverage Auth0 SSO in two ways:
     - Auth0_CLIENT_ID: The client id you copied from Auth0.
     - Auth0_CLIENT_SECRET: The client secret you copied from Auth0.
     
-    Alternatively, add the `--subdomain YOUR_SUBDOMAIN` argument to get your subdomain.ngrok.io URL, replacing `YOUR_SUBDOMAIN` with your URL of preference.
+    Alternatively, add the `--domain YOUR_DOMAIN` argument to get your custom URL, replacing `YOUR_DOMAIN` with your URL of preference.
 
-1. Copy the URL available next to **Forwarding** (for example, `https://Auth0-sso-test.ngrok.io`).
+1. Copy the URL available next to **Forwarding** (for example, `https://Auth0-sso-test.ngrok.dev`).
 
 1. Skip to **Step 3**
 

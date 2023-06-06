@@ -59,7 +59,7 @@ To send the events to Datadog we'll need to assign an Event Destination to the E
 
 1. Choose Datadog as the target and fill in the correct information being mindful of **which Datadog site your data resides in**.  Target, Region and API Key values are required, all other values are optional.
 
-    - **Service Name** is a locally significant value and will be appended to the event destination name.
+    - **Service Name** will be added as a key-value pair to the event payload as **service:value**.<br></br>
     - **DD Tags** values will be added as tags to the event data being sent to be utilized within Datadog.
 
 ![ngrok event destination](img/event_destination.png)
@@ -68,4 +68,4 @@ To send the events to Datadog we'll need to assign an Event Destination to the E
 
 ![ngrok event destination success](img/success.png)
 
-**Tip**: If instead of a Success message you receive a 403 error, double-check your API key and validate that you have selected the correct Datadog region.
+**Tip**: If instead of a Success message you receive a 403 error, double-check your API key and validate that you have selected the correct Datadog site.
