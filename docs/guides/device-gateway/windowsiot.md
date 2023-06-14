@@ -1,6 +1,6 @@
 ---
 title: Windows IoT (Running on x86 or x86_64 hardware)
-description: Learn how to install ngrok on a remote Windows IoT device to provide secure access and management.
+description: Learn how to install ngrok on a remote Windows IoT device running on x86 or x86_64 hardware to provide secure access and management.
 tags:
     - guides
     - agent
@@ -21,23 +21,25 @@ In this guide, we'll walk you through the process of installing the ngrok agent 
 
 To download and install the ngrok agent on your remote Windows IoT device, follow these steps:
 
-1. Open a terminal into your remote Windows IoT device.
+1. Download the latest ngrok binary for your Windows IoT distribution. You can find the correct binary on our [ngrok download page](https://ngrok.com/download).
 
-1. Download the latest ngrok binary for your Windows IoT distribution. You can find the correct binary on our [ngrok download page](https://ngrok.com/download): Select your operating system, select the version, and copy the link that appears in the **Download** button. Below is an example using PowerShell:
-```bash
-Invoke-WebRequest -Uri https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-windows-386.zip -OutFile ngrok-v3-stable-windows-386.zip
-```
+1. On the **Install ngrok** page, select your operating system, select the version, and click **Download** button to save it to your desktop.
+  **Note**: Because your IoT device is based on x86 ou x86_64 architecture, make sure to download either the **Windows (32-bit)** or **Windows (64-bit)** version of the ngrok agent.
 
-1. Unzip the downloaded file and move it to a directory in your PATH. Below is an example using PowerShell:
-```bash
-Expand-Archive .\ngrok-v3-stable-windows-386.zip -DestinationPath .\
-```
-  **Note**: Make sure your local directory is set in your PATH enviroment variable.
+1. Unzip the downloaded file to a temporary folder on your desktop.
 
-1. Open a PowerShell and run the following command:
+1. Download and run the **Windows IoT Core Dashboard** application, click **My devices**, right-click the device name and select **Open in Device Portal**. 
+  **Note**: Make sure your Windows IoT device is connected to the same network of your desktop.
+
+1. In the **Device Portal** application, select **App File Explorer** and upload the ngrok agent file from your desktop to the IoT device.
+
+1. Back to the **Windows IoT Core Dashboard** application, click **My devices**, right-click the device name and select **Launch Powershell**. 
+
+1. On the PowerShell window, run the following command:
 ```bash
 ngrok authtoken NGROK_AUTHTOKEN
 ```
+  **Note**: Make sure your folder location is the same where you uploaded the agent.
   **Note**: Replace `NGROK_AUTHTOKEN` with your unique ngrok authtoken found in the [ngrok dashboard](https://dashboard.ngrok.com/get-started/your-authtoken).
 
 
