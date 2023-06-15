@@ -23,23 +23,23 @@ To download and install the ngrok agent on your remote Windows IoT device, follo
 
 1. Download the latest ngrok binary for your Windows IoT distribution. You can find the correct binary on our [ngrok download page](https://ngrok.com/download).
 
-1. On the **Install ngrok** page, select your operating system, select the version, and click **Download** button to save it to your desktop.
+1. On the **Install ngrok** page, select your operating system, select the version, and click the **Download** button to save it to your desktop.
   **Note**: Because your IoT device is based on x86 ou x86_64 architecture, make sure to download either the **Windows (32-bit)** or **Windows (64-bit)** version of the ngrok agent.
 
 1. Unzip the downloaded file to a temporary folder on your desktop.
 
-1. Download and run the **Windows IoT Core Dashboard** application, click **My devices**, right-click the device name and select **Open in Device Portal**. 
-  **Note**: Make sure your Windows IoT device is connected to the same network of your desktop.
+1. Download and run the **Windows IoT Core Dashboard** application, click **My devices**, right-click the device name, and select **Open in Device Portal**. 
+  **Note**: Make sure your Windows IoT device is connected to the same network as your desktop.
 
 1. In the **Device Portal** application, select **App File Explorer** and upload the ngrok agent file from your desktop to the IoT device.
 
-1. Back to the **Windows IoT Core Dashboard** application, click **My devices**, right-click the device name and select **Launch Powershell**. 
+1. Back to the **Windows IoT Core Dashboard** application, click **My devices**, right-click the device name, and select **Launch Powershell**. 
 
 1. On the PowerShell window, run the following command:
 ```bash
 ngrok authtoken NGROK_AUTHTOKEN
 ```
-  **Note**: Make sure your folder location is the same where you uploaded the agent.
+  **Note**: Make sure your folder location is the same as where you uploaded the agent.
   **Note**: Replace `NGROK_AUTHTOKEN` with your unique ngrok authtoken found in the [ngrok dashboard](https://dashboard.ngrok.com/get-started/your-authtoken).
 
 
