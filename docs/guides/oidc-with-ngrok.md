@@ -9,9 +9,9 @@ tags:
     - oidc
 ---
 
-This guide will walk you through how to quickly add Basic authentication to your application without code changes by using ngrok tunnels.
-
 ngrok provides a variety of authentication options such as Basic Authentication, OpenID Connect, and SAML.
+
+This guide will walk you through how to quickly add OpenID Connect to your application without code changes by using ngrok tunnels.
  
 
 ## OpenID Connect (OIDC)
