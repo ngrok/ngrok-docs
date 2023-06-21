@@ -13,8 +13,8 @@ Here you will find a set of guides to help you with common (and not so common) t
 | Name        | Description |
 | ----------- | ----------- |
 | [Adding OpenID Connect to Your App](/guides/oidc-with-ngrok) | Learn how to add OpenID Connect to Your App using ngrok |
-| [Corporate Firewalls](/guides/running-behind-firewalls) | Learn how to use ngrok securely behind your corporate firewalls |
 | [Configure Okta Single Sign-On for your ngrok Account](/guides/dashboard-sso-okta-setup) | Learn how to enable Single Sign-On (SSO) for logging into your ngrok dashboard |
+| [Corporate Firewalls](/guides/running-behind-firewalls) | Learn how to use ngrok securely behind your corporate firewalls |
 | [Forwarding to HTTPS Service](/secure-tunnels/tunnels/http-tunnels#local-https) | Learn how to use the ngrok agent to route traffic to a local TLS service |
 | [Forwarding to Another Machine](/secure-tunnels/non-local) | Learn how to leverage a single ngrok agent to route to any machine in your network |
 | [How to Round-Robin Load Balance with ngrok Cloud Edges](/guides/how-to-round-robin-load-balance-with-ngrok-cloud-edges) | Learn how to load balance ngrok tunnels using ngrok Cloud Edges |
