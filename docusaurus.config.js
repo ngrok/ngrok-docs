@@ -37,6 +37,30 @@ const config = {
     "./src/plugins/ngrok-parse-integrations",
     "@stackql/docusaurus-plugin-hubspot",
     "@docusaurus/theme-mermaid",
+    [
+      '@docusaurus/plugin-client-redirects',
+      {
+        // replace all the 'to' links with their commented out versions that
+        // include anchors after this issue is fixed:
+        // https://github.com/facebook/docusaurus/issues/6845
+        redirects: [
+          {
+            from: ['/docs/api/api-clients', '/docs/api/client-libraries'],
+            to: '/docs/api/',
+            // to: '/docs/api/#client-libraries',
+          },
+          {
+            from: ['/docs/api/terraform'],
+            to: '/docs/api',
+            // to: '/docs/api#terraform-provider',
+          },
+          {
+            from: ['/docs/platform/api'],
+            to: '/docs/api',
+          },
+        ],
+      },
+    ],
   ],
   headTags: [
     {
