@@ -1,5 +1,5 @@
 ---
-sidebar\_position: 1
+sidebar_position: 1
 title: Overview
 ---
 
