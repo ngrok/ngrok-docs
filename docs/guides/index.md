@@ -1,5 +1,5 @@
 ---
-pagination_next: guides/dashboard-sso-okta-setup
+pagination_next: guides/device-gateway/index
 sidebar_position: 1
 title: Guides
 ---

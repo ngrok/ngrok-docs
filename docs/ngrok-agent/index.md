@@ -1,4 +1,5 @@
 ---
+pagination_next: ngrok-agent/config
 sidebar_position: 1
 title: Agent
 ---
