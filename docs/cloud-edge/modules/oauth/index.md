@@ -24,7 +24,7 @@ ngrok strips the following headers from authorized requests and sets them with d
 |---|---|
 | `ngrok-auth-user-id` | Numeric ID of the authorized user. |
 | `ngrok-auth-user-name` | Full name of the authorized user. |
-| `ngrok-auth-email` | Authorized user's primary email address. |
+| `ngrok-auth-user-email` | Authorized user's primary email address. |
 | `ngrok-oauth-access-token` | **Custom applications only:** the user's OAuth access token. It is valid for at least 5 seconds. |
 
 ## Managed Application Limitations
