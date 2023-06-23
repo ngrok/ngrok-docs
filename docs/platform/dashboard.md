@@ -1,4 +1,5 @@
 ---
+pagination_next: platform/botusers
 sidebar_position: 1
 ---
 
