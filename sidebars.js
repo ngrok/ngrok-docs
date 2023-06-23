@@ -194,9 +194,9 @@ const sidebars = {
         'errors/index',
         {
           type: 'category', label: 'Events',
-          link: { type: 'doc', id: 'events/event-sources' },
+          link: { type: 'doc', id: 'events/index' },
           items: [ 
-            'events/event-sources',
+            'events/index',
             'events/filtering',
           ],
         },
