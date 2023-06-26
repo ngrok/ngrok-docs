@@ -21,6 +21,9 @@ libraries in your programming language of choice. We also publish other ways to
 interact with the API like native API client libraries, a native CLI and a
 Terraform Provider.
 
+The API is available to all ngrok users at no additional charge. You only incur
+costs if the resources provisioned by the API have a cost.
+
 #### API Reference Docs
 
 - **[API Reference](/api/reference)**: Documentation of all API resources and endpoints. We know it's important, that's why it's first :)
@@ -147,3 +150,36 @@ the next page of results. If there are no more results, `next_page_uri` will be
 Timestamp fields in the ngrok API are represented as strings that are returned
 in the [RFC 3339 format](https://www.ietf.org/rfc/rfc3339.txt). Timestamps
 returned by the API are in UTC time which is indicated by a `Z` at the end.
+
+## Rate Limits
+
+The ngrok API enforces a limit on all accounts of 120 requests over a rolling
+60 second window. If you exceed the rate limit, ngrok will return
+[ERR_NGROK_226](/docs/errors/ERR_NGROK_226) and an HTTP Status Code of 429.
+
+## Errors
+
+We believe that it is important to provide a well-defined interface to errors
+you encounter when working with the ngrok API. Well-defined error surfaces and codes
+are what allow your software to appropriately handle error conditions.
+
+Errors returned by the ngrok API are serialized with the following example format:
+
+```
+{
+  "error_code": "ERR_NGROK_218",
+  "status_code": 400,
+  "msg": "Your request has not specified an API version. Please include the version you wish to use in the Ngrok-Version header. Supported versions: 2.",
+  "details": {
+    "operation_id": "op_2RfSBcv0nsy71XCHWOegjx1OoKh"
+  }
+}
+```
+
+Every error returned by the ngrok API includes a globally unique error code in
+the `error_code` property field. This error code is distinct for every possible
+error condition that can be encountered so your software can properly handle
+different error conditions.
+
+Consult the **[Error Reference Documentation](/docs/errors)** for the complete list of all
+error codes returned by ngrok.
