@@ -10,7 +10,7 @@ title: Overview
 
 The ngrok API provides programmatic access to all of ngrok's resources.
 
-The API is REST-ish. It follows most of the conventions of a REST API but
+The API is REST. It follows most of the conventions of a REST API but
 diverges slightly when the REST model does not fit well.
 
 The API is available at `https://api.ngrok.com`. The API listens only on
