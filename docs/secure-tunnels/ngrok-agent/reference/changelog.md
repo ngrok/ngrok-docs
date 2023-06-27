@@ -35,7 +35,7 @@ This version number was intentionally skipped.
 * Updated `--config` option to be accepted in any position with cli command.
 * Fixed `ngrok config add-authtoken <AUTHTOKEN>` to also save the default version if it does not exist in the config file.
 * Fixed rare race condition where agent would crash unexpectedly.
-* Added DNS rebinding protection which includes [`web_allow_hosts`](/docs/ngrok-agent/config#web_allow_hosts) configuration.
+* Added DNS rebinding protection which includes [`web_allow_hosts`](/secure-tunnels/ngrok-agent/reference/config#web_allow_hosts) configuration.
 
 ### ngrok Agent 3.1.0 - \[2022-09-14\]
 

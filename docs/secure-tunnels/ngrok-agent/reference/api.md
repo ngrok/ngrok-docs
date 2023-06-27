@@ -107,7 +107,7 @@ POST/api/tunnels
 
 ### Parameters
 
-Parameter names and behaviors are identical to those those defined in the configuration file. Use the [tunnel definitions](/ngrok-agent/config#tunnel-definitions) section as a reference for configuration parameters and their behaviors.
+Parameter names and behaviors are identical to those those defined in the configuration file. Use the [tunnel definitions](/secure-tunnels/ngrok-agent/reference/config#tunnel-definitions) section as a reference for configuration parameters and their behaviors.
 
 ### Example request body
 

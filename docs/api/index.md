@@ -21,22 +21,19 @@ libraries in your programming language of choice. We also publish other ways to
 interact with the API like native API client libraries, a native CLI and a
 Terraform Provider.
 
-The API is available to all ngrok users at no additional charge. You only incur
-costs if the resources provisioned by the API have a cost.
-
 #### API Reference Docs
 
 - **[API Reference](/api/reference)**: Documentation of all API resources and endpoints. We know it's important, that's why it's first :)
 
 #### Other ways to interact with the API
 
-- **[Agent API CLI](/ngrok-agent/ngrok#ngrok-api)**: Explore and script the API via the `ngrok api` commands included in the ngrok agent.
+- **[Agent API CLI](/secure-tunnels/ngrok-agent/reference/ngrok#ngrok-api)**: Explore and script the API via the `ngrok api` commands included in the ngrok agent.
 - **[API Client Libraries](#client-libraries)**: We publish idiomatic API client libraries for all major programming languages
 - **[Terraform Provider](#terraform-provider)**: Use ngrok's Terraform provider to manage ngrok resources
 
 #### You may be looking for other programmatic ways to work with ngrok
 
-- **[Agent API](/ngrok-agent/api)**: The ngrok agent has its own API if you're trying to dynamically start and stop endpoints and tunnels
+- **[Agent API](/secure-tunnels/ngrok-agent/reference/api)**: The ngrok agent has its own API if you're trying to dynamically start and stop endpoints and tunnels
 - **[Agent SDKs](secure-tunnels/agentless/#ngrok-agent-libraries)**: If you're looking to embed ngrok agent functionality as a library in your own software
 
 ## Quickstart {#quickstart}
@@ -183,3 +180,8 @@ different error conditions.
 
 Consult the **[Error Reference Documentation](/docs/errors)** for the complete list of all
 error codes returned by ngrok.
+
+### Licensing
+
+The API is available to all ngrok users at no additional charge. You only incur
+costs if the resources provisioned by the API have a cost.
