@@ -222,7 +222,7 @@ The ngrok Ingress Controller can send traffic to services across different names
 
 ## **Step 4**: Configure Public Ingress for the sample application {#configure-public-ingress-for-the-sample-application}
 
-Now that the ngrok Ingress Controller can communicate with the `frontend` service and `public-api` service through the Consul Service Mesh via Service Intentions, we can create an ingress to route traffic to the app. We'll create a ingress objects to route traffic to the frontend service and the public-api service.
+Now that the ngrok Ingress Controller can communicate with the `frontend` service and `public-api` service through the Consul Service Mesh via Service Intentions, we can create an ingress to route traffic to the app. We'll create ingress objects to route traffic to the frontend service and the public-api service.
 
 :::caution Update This First!
 Update the line `host: $NGROK_DOMAIN_NAME` in the ingress object below to your ngrok domain name. For a free account, select something unique that is a subdomain of `ngrok.app`. For example, `host: my-unique-hashicups.ngrok.app`.
@@ -270,11 +270,11 @@ spec:
 
 ## **Step 5**: Add OAuth Protection to the App {#add-oauth-protection-to-the-app}
 
-Now that we have the Hashicups application running, we can add oauth protection to it. We'll use the oauth module of the ngrok Ingress Controller to add oauth protection to the app. This will allow us to use Google oauth to protect the app.
+Now that we have the Hashicups application running, we can add OAuth protection to it. We'll use the OAuth module of the ngrok Ingress Controller to add OAuth protection to the app. This will allow us to use Google OAuth to protect the app.
 
 1. Create an [NgrokModuleSet](https://github.com/ngrok/kubernetes-ingress-controller/blob/main/docs/user-guide/route-modules.md)
 
-  The NgrokModuleSet is a custom resource that allows you to configure the modules of the ngrok Ingress Controller. We'll create one to configure the oauth module. Create the following `NgrokModuleSet`
+  The NgrokModuleSet is a custom resource that allows you to configure the modules of the ngrok Ingress Controller. We'll create one to configure the OAuth module. Create the following `NgrokModuleSet`
 
   ```yaml
   kind: NgrokModuleSet
@@ -306,7 +306,7 @@ Now that we have the Hashicups application running, we can add oauth protection 
   kubectl annotate ingress ingress-consul k8s.ngrok.com/modules=oauth-module -n consul
   ```
 
-  This applies the oauth module to each route on our ingress object. Navigate to your Hashicups app at `$NGROK_DOMAIN_NAME` and you'll see the Google oauth screen.
+  This applies the OAuth module to each route on our ingress object. Navigate to your Hashicups app at `$NGROK_DOMAIN_NAME` and you'll see the Google OAuth screen.
 
   ![Google Oauth Screen](./img/google-oauth.png)
 
