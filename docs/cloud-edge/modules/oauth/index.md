@@ -12,7 +12,7 @@ ngrok currently supports the following OAuth providers:
 *   [GitHub](/docs/cloud-edge/modules/oauth/github)
 *   GitLab
 *   [Google](/docs/cloud-edge/modules/oauth/google)
-*   LinkedIn
+*   [LinkedIn](/docs/cloud-edge/modules/oauth/linkedin)
 *   [Microsoft](/docs/cloud-edge/modules/oauth/microsoft)
 *   Twitch
 
