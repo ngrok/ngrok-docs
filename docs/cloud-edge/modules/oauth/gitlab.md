@@ -1,13 +1,15 @@
 # GitLab
 -------------
 
-## Configure GitLab as an OAuth 2.0 authentication identity provider
+## Configure GitLab OAuth with ngrok
 
-he step-by-step instructions below follow GitLab's documentation on [setting up OAuth 2.0](https://docs.gitlab.com/ee/integration/oauth_provider.html) for a web application.
+The step-by-step instructions below follow GitLab's documentation on [setting up OAuth 2.0](https://docs.gitlab.com/ee/integration/oauth_provider.html) for a web application.
 
-### Create an Applications
+### Create an Application
 
 1.  Access your [GitLab profile page](https://gitlab.com/-/profile) and select **Applications** on the left menu.
+
+    **Note**: If you want to restrict the list of users able to log in with GitLab, either create an application under one of your groups or an instance-wide application. See [Additional application setup information](#additional-application-setup-information).
 
 2. Provide a **Name** for your application and enter `https://idp.ngrok.com/oauth2/callback` in the **Redirect URI** field.
 [![](/img/howto/oauth/1-gitlab-register.png)](/img/howto/oauth/1-gitlab-register.png)
