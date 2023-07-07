@@ -11,7 +11,7 @@ To use the ngrok Ingress Controller with Consul in a local demo environment:
 1. [Install the ngrok Ingress Controller](#install-the-ngrok-ingress-controller)
 1. [Install a sample application](#install-a-sample-application)
 1. [Configure Public Ingress for the sample application](#configure-public-ingress-for-the-sample-application)
-1. [Secure the app with Oauth](#secure-the-app-with-oauth)
+1. [Secure the app with OAuth](#secure-the-app-with-oauth)
 :::
 
 ## Introduction
@@ -31,7 +31,7 @@ Together, Consul provides a robust and secure way for Services within a cluster 
 
 ## **Step 1**: Setup a local Consul Service Mesh on Kubernetes {#setup-a-consul-service-mesh-on-kubernetes}
 
-For this guide, we'll need access to a remote or local Kubernetes cluster with Consul installed. If you have an existing cluster with Consul setup, you can skip this step and proceed to [Step 2: Install the ngrok Ingress Controller](#install-the-ngrok-ingress-controller)
+For this guide, we'll need access to a remote or local Kubernetes cluster with Consul installed. If you have an existing cluster with Consul setup, you can skip this step and proceed to [Step 2: Install the ngrok Ingress Controller](#install-the-ngrok-ingress-controller).
 
 If you don't have one setup, we'll set up a local Minikube cluster and install Consul now.
 
@@ -80,7 +80,7 @@ If you don't have one setup, we'll set up a local Minikube cluster and install C
   ```
   :::caution Depending on your computer, this can take some time for the pods to become healthy. You can watch the status of the pods with `kubectl get pods --namespace consul -w`
 
-1. Verify consul is installed and all its pods are healthy
+1. Verify Consul is installed and all its pods are healthy
   ```bash
   kubectl get pods --namespace consul
   NAME                                           READY   STATUS    RESTARTS        AGE
@@ -126,7 +126,7 @@ Now that we have a Kubernetes cluster with Consul installed, we can install the 
     export NGROK_API_KEY=[API_KEY]
     ```
 1. Install the ngrok Ingress Controller
-  Next, we'll install the ngrok Ingress controller into our cluster. We want the controller pods to be in the consul service mesh in order to proxy traffic to our other services. We'll use pod annotations to enable the Consul Connect sidecar injector and allow outbound traffic to use the Consul mesh. Consul documents to set these 2 annotations in the [Configure Ingress Controllers for Consul on Kubernetes](https://developer.hashicorp.com/consul/docs/k8s/connect/ingress-controllers) doc.
+  Next, we'll install the ngrok Ingress Controller into our cluster. We want the controller pods to be in the Consul service mesh in order to proxy traffic to our other services. We'll use pod annotations to enable the Consul Connect sidecar injector and allow outbound traffic to use the Consul mesh. Consul documents to set these 2 annotations in the [Configure Ingress Controllers for Consul on Kubernetes](https://developer.hashicorp.com/consul/docs/k8s/connect/ingress-controllers) doc.
 
     ```yaml
     # This annotation is required to enable the Consul Connect sidecar injector
@@ -161,7 +161,7 @@ Now that we have a Kubernetes cluster with Consul installed, we can install the 
 
 ## **Step 3**: Install a Sample Application {#install-a-sample-application}
 
-Now let's install a sample application to try out our service mesh and ingress controller combination. We'll use the [HashiCups Demo Application](https://github.com/hashicorp-demoapp) Hashicorp uses for demos and guides such as in their [Getting Started with Consul Service Mesh for Kubernetes](https://developer.hashicorp.com/consul/tutorials/kubernetes-features/service-mesh-deploy) guide. This application is a simple e-commerce application that allows users to order coffee cups.
+Now let's install a sample application to try out our service mesh and Ingress Controller combination. We'll use the [HashiCups Demo Application](https://github.com/hashicorp-demoapp) Hashicorp uses for demos and guides such as in their [Getting Started with Consul Service Mesh for Kubernetes](https://developer.hashicorp.com/consul/tutorials/kubernetes-features/service-mesh-deploy) guide. This application is a simple e-commerce application that allows users to order coffee cups.
 The application has a frontend and public API services that are also backed by a private API and database. These communicate with each other through the Consul service mesh. This comes with nginx installed as a proxy for the frontend and Public API services. We'll replace this with ngrok to provide public access and other features.
 
 :::tip For this demo, everything will be installed in the `consul` namespace.
@@ -294,7 +294,7 @@ Now that we have the Hashicups application running, we can add OAuth protection 
   ```
   :::tip Ngrok vs User Managed OAuth Application
 
-  This example uses the ngrok Managed Oauth Application for simplicity. To use your own Managed Oauth Application, you can [Creating a custom Google OAuth application](https://ngrok.com/docs/cloud-edge/modules/oauth/google/) or use an existing one.
+  This example uses the ngrok Managed OAuth Application for simplicity. To use your own Managed OAuth Application, you can [Creating a custom Google OAuth application](https://ngrok.com/docs/cloud-edge/modules/oauth/google/) or use an existing one.
   You can then create a Kubernetes Secret with the `clientId` and `clientSecret` and reference the secret in your module set like this [example](https://github.com/ngrok/kubernetes-ingress-controller/blob/main/docs/user-guide/route-modules.md#user-managed-oauth-application).
   :::
 
@@ -308,6 +308,6 @@ Now that we have the Hashicups application running, we can add OAuth protection 
 
   This applies the OAuth module to each route on our ingress object. Navigate to your Hashicups app at `$NGROK_DOMAIN_NAME` and you'll see the Google OAuth screen.
 
-  ![Google Oauth Screen](./img/google-oauth.png)
+  ![Google OAuth Screen](./img/google-oauth.png)
 
   Sign into your account and you'll be redirected to the Hashicups app! Now only you can order from Hashicups from anywhere!
