@@ -14,7 +14,7 @@ The step-by-step instructions below follow GitLab's documentation on [setting up
 2. Provide a **Name** for your application and enter `https://idp.ngrok.com/oauth2/callback` in the **Redirect URI** field.
 [![](/img/howto/oauth/1-gitlab-register.png)](/img/howto/oauth/1-gitlab-register.png)
 
-3. In the **Scopes** section, mark the **openid**, **profile**, and **email** fields, and then click **Save application**.
+3. In the **Scopes** section, select the ones needed by your app and then click **Save application**. In this example, mark the **openid**, **profile**, and **email** fields.
 [![](/img/howto/oauth/2-gitlab-scopes.png)](/img/howto/oauth/2-gitlab-scopes.png)
 
 
