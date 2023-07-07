@@ -9,10 +9,9 @@ description: Setup a local Consul Service mesh to demonstrate how to use the ngr
 To use the ngrok Ingress Controller with Consul in a local demo environment:
 1. [Setup a local Consul Service Mesh on Kubernetes](#setup-a-consul-service-mesh-on-kubernetes)
 1. [Install the ngrok Ingress Controller](#install-the-ngrok-ingress-controller)
-1. [Install a sample app](#Install-a-sample-app)
-1. [Configure Public Ingress for the sample app](#configure-public-ingress-for-the-sample-app)
+1. [Install a sample application](#install-a-sample-application)
+1. [Configure Public Ingress for the sample application](#configure-public-ingress-for-the-sample-application)
 1. [Secure the app with Oauth](#secure-the-app-with-oauth)
-
 :::
 
 ## Introduction
@@ -165,8 +164,6 @@ Now that we have a Kubernetes cluster with Consul installed, we can install the 
 Now let's install a sample application to try out our service mesh and ingress controller combination. We'll use the [HashiCups Demo Application](https://github.com/hashicorp-demoapp) Hashicorp uses for demos and guides such as in their [Getting Started with Consul Service Mesh for Kubernetes](https://developer.hashicorp.com/consul/tutorials/kubernetes-features/service-mesh-deploy) guide. This application is a simple e-commerce application that allows users to order coffee cups.
 The application has a frontend and public API services that are also backed by a private API and database. These communicate with each other through the Consul service mesh. This comes with nginx installed as a proxy for the frontend and Public API services. We'll replace this with ngrok to provide public access and other features.
 
-TODO: Make Diagram
-
 :::tip For this demo, everything will be installed in the `consul` namespace.
 
 The ngrok Ingress Controller can send traffic to services across different namespaces, but [Consul Service Intentions](https://developer.hashicorp.com/consul/docs/connect/config-entries/service-intentions) across namespaces [require an enterprise account](https://developer.hashicorp.com/consul/docs/connect/config-entries/service-intentions#sources-namespace). For now, we'll keep everything in the same namespace.
@@ -181,7 +178,7 @@ The ngrok Ingress Controller can send traffic to services across different names
   kubectl apply -f learn-consul-kubernetes/service-mesh/deploy/hashicups -n consul
   ```
 
-1. Remove the existing Service Intentions for the public-api and frontend services and add our own.
+1. Remove the existing [Service Intentions](https://developer.hashicorp.com/consul/docs/connect/config-entries/service-intentions) for the public-api and frontend services and add our own.
 
   Consul has the concept of [Service Intentions](https://developer.hashicorp.com/consul/docs/connect/config-entries/service-intentions). In short, they are a programmatic way config the Consul Service mesh to allow or deny traffic between services.
 
@@ -223,9 +220,9 @@ The ngrok Ingress Controller can send traffic to services across different names
       name: public-api
   ```
 
-## **Step 4**: Create an Ingress to the Sample Application {#create-an-ingress-to-the-sample-application}
+## **Step 4**: Configure Public Ingress for the sample application {#configure-public-ingress-for-the-sample-application}
 
-Now that the ngrok Ingress Controller can communicate with the `frontend` service and `public-api` service through the Consul Service Mesh vis Service Intentions, we can create an ingress to route traffic to the app. We'll create a ingress objects to route traffic to the frontend service and the public-api service.
+Now that the ngrok Ingress Controller can communicate with the `frontend` service and `public-api` service through the Consul Service Mesh via Service Intentions, we can create an ingress to route traffic to the app. We'll create a ingress objects to route traffic to the frontend service and the public-api service.
 
 :::caution Update This First!
 Update the line `host: $NGROK_DOMAIN_NAME` in the ingress object below to your ngrok domain name. For a free account, select something unique that is a subdomain of `ngrok.app`. For example, `host: my-unique-hashicups.ngrok.app`.
@@ -275,7 +272,7 @@ spec:
 
 Now that we have the Hashicups application running, we can add oauth protection to it. We'll use the oauth module of the ngrok Ingress Controller to add oauth protection to the app. This will allow us to use Google oauth to protect the app.
 
-1. Create an NgrokModuleSet
+1. Create an [NgrokModuleSet](https://github.com/ngrok/kubernetes-ingress-controller/blob/main/docs/user-guide/route-modules.md)
 
   The NgrokModuleSet is a custom resource that allows you to configure the modules of the ngrok Ingress Controller. We'll create one to configure the oauth module. Create the following `NgrokModuleSet`
 
