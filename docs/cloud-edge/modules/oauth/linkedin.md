@@ -8,7 +8,7 @@ The step-by-step instructions below follow LinkedIn's documentation on [setting 
 
 ### Create credentials for ngrok
 
-1.  Navigate to [LinkedIn Developer Portal](https://developer.linkedin.com/), sign in, click **My apps** on the top menu, and then click **Create app**.
+1.  Navigate to the [LinkedIn Developer Portal](https://developer.linkedin.com/), sign in, click **My apps** on the top menu, and then click **Create app**.
 
 2. Enter **App name**, select a **LinkedIn Page**, enter the **Privacy policy URL** in the corresponding fields, and then click **Create app**.
 
@@ -27,7 +27,7 @@ The step-by-step instructions below follow LinkedIn's documentation on [setting 
 
 2.  Select **LinkedIn** in the **Identity Provider** selector, and select **Use my own OAuth application** in the **OAuth Application** field.
 
-    **Note**: Alternatively you can select **Use an ngrok-managed OAuth application**. If so, there is no need to create an application in the LinkedIn developer portal.
+    **Note**: Alternatively, you can select **Use an ngrok-managed OAuth application**. If so, there is no need to create an application in the LinkedIn developer portal.
 
 3.  Enter the **Client ID** and **Client Secret** values you copied previously in the corresponding fields and then click **Save** to save the edge configuration.
 
