@@ -26,7 +26,7 @@ The step-by-step instructions below follow Twitch's documentation on [Using OAut
 
 2. Select **Twitch** in the **Identity Provider** selector, and select **Use my own OAuth application** in the **OAuth Application** field.
 
-    **Note**: Alternatively you can select **Use an ngrok-managed OAuth application**. If so, there is no need to create an application in the Twitch developer console.
+    **Note**: Alternatively, you can select **Use an ngrok-managed OAuth application**. If so, there is no need to create an application in the Twitch developer console.
 
 3. Enter the **Client ID** and **Client Secret** values you copied previously in the corresponding fields and then click **Save** to save the edge configuration.
 
