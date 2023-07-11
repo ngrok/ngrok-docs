@@ -16,7 +16,7 @@ To use the ngrok Ingress Controller with Consul in a local demo environment:
 
 ## Introduction
 
-The [ngrok Ingress Controller for Kubernetes](https://github.com/ngrok/kubernetes-ingress-controller) is our official open-source controller for adding public and secure ingress traffic to your k8s services. It works on any Cloud, local, or On-Prem Kubernetes cluster to provide ingress to your services no matter the network configuration, as long as it has outbound access to the ngrok service. This allows ngrok to be portable and work seamlessly across any type of infrastructure.
+The [ngrok Ingress Controller for Kubernetes](https://github.com/ngrok/kubernetes-ingress-controller) is our official open-source controller for adding public and secure ingress traffic to your k8s services. It works on any cloud, local, or on-prem Kubernetes cluster to provide ingress to your services no matter the network configuration, as long as it has outbound access to the ngrok service. This allows ngrok to be portable and work seamlessly across any type of infrastructure.
 
 [Consul](https://www.consul.io/) is a secure and resilient service mesh that provides service discovery, configuration, and segmentation functionality. Consul Connect provides service-to-service connection authorization and encryption using mutual TLS, automatically enabling TLS for all Connect services. Consul can be used with Kubernetes to provide a service mesh for your Kubernetes cluster.
 
