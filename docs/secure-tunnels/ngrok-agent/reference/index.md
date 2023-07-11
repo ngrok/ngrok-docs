@@ -1,10 +1,10 @@
 ---
-pagination_next: ngrok-agent/config
-sidebar_position: 1
-title: Agent
+pagination_next: secure-tunnels/ngrok-agent/reference/config
+sidebar_position: 11
+title: Reference
 ---
 
-# ngrok Agent
+# ngrok Agent Reference
 -----------
 
 The `ngrok` command includes everything you need to securely tunnel traffic to the internet as well as interact with the ngrok API.
@@ -13,7 +13,7 @@ Any flags that accept a list can be specified multiple times, one for each list 
 
 ### What's New in v3
 
-The ngrok agent v3 includes a large number of improvements over the v2 agent. Here are some major highlights, but you can find a complete list in the [changelog](/ngrok-agent/changelog).
+The ngrok agent v3 includes a large number of improvements over the v2 agent. Here are some major highlights, but you can find a complete list in the [changelog](/secure-tunnels/ngrok-agent/reference/changelog).
 
 *   Linux and Mac users can install tab autocompletion capability for the ngrok agent to make discovery of new commands and flags much easier.
 *   We've added an easy way to work with the ngrok API using the `ngrok api` command. You can use this to access any part of the API without having to worry about authenticating or formatting requests properly.
@@ -47,7 +47,7 @@ This is an optional step but it will drastically improve the usability of the ng
 
     . <(ngrok completion)
 
-After that, you will be able to see the available options by pressing tab after a command. Check out the [`ngrok completion` reference documentation](/ngrok-agent/ngrok#ngrok-completion) for details on adding this to your login scripts.
+After that, you will be able to see the available options by pressing tab after a command. Check out the [`ngrok completion` reference documentation](/secure-tunnels/ngrok-agent/reference/ngrok#ngrok-completion) for details on adding this to your login scripts.
 
 ### Supported ENV Variables
 
@@ -68,4 +68,4 @@ The ngrok agent supports environment variables as well for the authtoken and API
 
 ### ngrok Agent Changelog
 
-The full changelog for the ngrok agent can be found on the [ngrok agent changelog](/ngrok-agent/changelog) page.
+The full changelog for the ngrok agent can be found on the [ngrok agent changelog](/secure-tunnels/ngrok-agent/reference/changelog) page.

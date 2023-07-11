@@ -50,7 +50,7 @@ All api subcommands require an API key. You can configure it either using a flag
 
 You can get get the initial API key in the [API section of the ngrok Dashboard](https://dashboard.ngrok.com/api). Additional keys can be created through `ngrok api api-keys create` subcommand.
 
-These commands mirror our standard [ngrok HTTP API](/api). If you have [shell completion enabled](/ngrok-agent/ngrok#ngrok-completion), these will tab complete on the terminal.
+These commands mirror our standard [ngrok HTTP API](/api). If you have [shell completion enabled](/secure-tunnels/ngrok-agent/reference/ngrok#ngrok-completion), these will tab complete on the terminal.
 
 ### Usage
 
