@@ -23,7 +23,7 @@ The [ngrok Ingress Controller for Kubernetes](https://github.com/ngrok/kubernete
 Together, Consul provides a robust and secure way for Services within a cluster to communicate, while ngrok can seamlessly and securely provide public ingress to those services. This guide will walk you through setting up a Consul Service Mesh on Kubernetes and then using the ngrok Ingress Controller to provide ingress to your services to illustrate how they can work together.
 
 :::caution This tutorial requires:
-1. A [free ngrok account](https://ngrok.com/signup).
+1. An [ngrok account](https://ngrok.com/signup).
 1. [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
 1. [Helm 3.0.0+](https://helm.sh/docs/intro/install/)
 1. A remote or local Kubernetes cluster with Consul installed _OR_ [minikube](https://minikube.sigs.k8s.io/docs/start/) to setup a demo cluster locally.
