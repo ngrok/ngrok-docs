@@ -163,7 +163,7 @@ Now that we have a Kubernetes cluster with Consul installed, we can install the 
 ## **Step 3**: Install a Sample Application {#install-a-sample-application}
 
 Now let's install a sample application to try out our service mesh and Ingress Controller combination. We'll use the [HashiCups Demo Application](https://github.com/hashicorp-demoapp) HashiCorp uses for demos and guides such as in their [Getting Started with Consul Service Mesh for Kubernetes](https://developer.hashicorp.com/consul/tutorials/kubernetes-features/service-mesh-deploy) guide. This application is a simple e-commerce application that allows users to order coffee cups.
-The application has a frontend and public API services that are also backed by a private API and database. These communicate with each other through the Consul service mesh. This comes with nginx installed as a proxy for the frontend and Public API services. We'll replace this with ngrok to provide public access and other features.
+The application has a `frontend` and public API services that are also backed by a private API and database. These communicate with each other through the Consul service mesh. This comes with nginx installed as a proxy for the `frontend` and Public API services. We'll replace this with ngrok to provide public access and other features.
 
 :::tip For this demo, everything will be installed in the `consul` namespace.
 
@@ -179,11 +179,11 @@ The ngrok Ingress Controller can send traffic to services across different names
   kubectl apply -f learn-consul-kubernetes/service-mesh/deploy/hashicups -n consul
   ```
 
-1. Remove the existing [Service Intentions](https://developer.hashicorp.com/consul/docs/connect/config-entries/service-intentions) for the public-api and frontend services and add our own.
+1. Remove the existing [Service Intentions](https://developer.hashicorp.com/consul/docs/connect/config-entries/service-intentions) for the `public-api` and `frontend` services and add our own.
 
   Consul has the concept of [Service Intentions](https://developer.hashicorp.com/consul/docs/connect/config-entries/service-intentions). In short, they are a programmatic way to configure the Consul Service mesh to allow or deny traffic between services.
 
-  HashiCups comes with `nginx` installed with intentions to the frontend and public-api services. We'll remove these and add our own intentions to allow traffic from the ngrok Ingress Controller to the frontend and public-api services.
+  HashiCups comes with `nginx` installed with intentions to the `frontend` and `public-api` services. We'll remove these and add our own intentions to allow traffic from the ngrok Ingress Controller to the `frontend` and `public-api` services.
 
   ```bash
   kubectl delete serviceintentions public-api -n consul
@@ -223,7 +223,7 @@ The ngrok Ingress Controller can send traffic to services across different names
 
 ## **Step 4**: Configure Public Ingress for the sample application {#configure-public-ingress-for-the-sample-application}
 
-Now that the ngrok Ingress Controller can communicate with the `frontend` service and `public-api` service through the Consul Service Mesh via Service Intentions, we can create an ingress to route traffic to the app. We'll create ingress objects to route traffic to the frontend service and the public-api service.
+Now that the ngrok Ingress Controller can communicate with the `frontend` service and `public-api` service through the Consul Service Mesh via Service Intentions, we can create an ingress to route traffic to the app. We'll create ingress objects to route traffic to the `frontend` service and the `public-api` service.
 
 :::caution Update This First!
 Update the line `host: $NGROK_DOMAIN_NAME` in the ingress object below to your ngrok domain name. For a free account, select something unique that is a subdomain of `ngrok.app`. For example, `host: my-unique-hashicups.ngrok.app`.
@@ -260,8 +260,8 @@ spec:
 :::tip This ingress object:
 - Uses the `ngrok` ingress class
 - The host is the ngrok domain name you selected that is static
-- There is a route for `/` that routes to the frontend service on port 3000
-- There is a route for `/api` that routes to the public-api service on port 8080
+- There is a route for `/` that routes to the `frontend` service on port `3000`
+- There is a route for `/api` that routes to the `public-api` service on port `8080`
 :::
 
   Open your `$NGROK_DOMAIN_NAME` domain in your browser and see the HashiCups application!
