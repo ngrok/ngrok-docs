@@ -126,6 +126,7 @@ Now that we have a Kubernetes cluster with Consul installed, we can install the 
     export NGROK_API_KEY=[API_KEY]
     ```
 1. Install the ngrok Ingress Controller
+
   Next, we'll install the ngrok Ingress Controller into our cluster. We want the controller pods to be in the Consul service mesh in order to proxy traffic to our other services. We'll use pod annotations to enable the Consul Connect sidecar injector and allow outbound traffic to use the Consul mesh. Consul documents how to set these 2 annotations in the [Configure Ingress Controllers for Consul on Kubernetes](https://developer.hashicorp.com/consul/docs/k8s/connect/ingress-controllers) doc.
 
     ```yaml
