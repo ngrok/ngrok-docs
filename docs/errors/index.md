@@ -29,7 +29,7 @@ Some error codes occur more frequently than others. Here is a list of the common
 | [ERR\_NGROK\_4101](/docs/errors/err_ngrok_4101) | A user with the email address already exists. |
 | [ERR\_NGROK\_4108](/docs/errors/err_ngrok_4108) | Sign ups are disallowed for the email provider. Please sign up with a different email provider. |
 | [ERR\_NGROK\_6022](/docs/errors/err_ngrok_6022) | Before you can serve HTML content, you must sign up for an ngrok account and install your authtoken. |
-| [ERR\_NGROK\_6024](/docs/errors/err_ngrok_6024) | You are about to visit <HOSTPORT>, served by <SERVINGIP>. This website is served for free through ngrok.com. You should only visit this website if you trust whoever sent the link to you. |
+| [ERR\_NGROK\_6024](/docs/errors/err_ngrok_6024) | You are about to visit `HOSTPORT`, served by `SERVINGIP`. This website is served for free through ngrok.com. You should only visit this website if you trust whoever sent the link to you. |
 | [ERR\_NGROK\_8012](/docs/errors/err_ngrok_8012) | Traffic was successfully tunneled to the ngrok agent, but the agent failed to establish a connection to the upstream web service |
 
 
