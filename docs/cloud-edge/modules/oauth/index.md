@@ -10,7 +10,7 @@ ngrok currently supports the following OAuth providers:
 *   Amazon
 *   [Facebook](/docs/cloud-edge/modules/oauth/facebook)
 *   [GitHub](/docs/cloud-edge/modules/oauth/github)
-*   GitLab
+*   [GitLab](/docs/cloud-edge/modules/oauth/gitlab)
 *   [Google](/docs/cloud-edge/modules/oauth/google)
 *   LinkedIn
 *   [Microsoft](/docs/cloud-edge/modules/oauth/microsoft)
