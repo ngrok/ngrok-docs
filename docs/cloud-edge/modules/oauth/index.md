@@ -14,7 +14,7 @@ ngrok currently supports the following OAuth providers:
 *   [Google](/docs/cloud-edge/modules/oauth/google)
 *   [LinkedIn](/docs/cloud-edge/modules/oauth/linkedin)
 *   [Microsoft](/docs/cloud-edge/modules/oauth/microsoft)
-*   Twitch
+*   [Twitch](/docs/cloud-edge/modules/oauth/twitch)
 
 ## OAuth Headers Provided by ngrok
 
