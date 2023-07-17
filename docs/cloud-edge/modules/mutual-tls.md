@@ -182,7 +182,7 @@ string string "bad certificate".
 
 This example assumes you have an x509 private key and certificate encoded as
 PEM files called `client-key.pem` and `client-cert.pem`, respectively. The
-certificate must be signed by one of the CA certificates you provied to the
+certificate must be signed by one of the CA certificates you provided to the
 Mutual TLS module.
 
 Run `curl` with the following command:
