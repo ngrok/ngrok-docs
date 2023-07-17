@@ -109,7 +109,7 @@ modules:
 
 ### Edges
 
-IP Restrictions is a supported module for HTTPS, TLS and TCP edges. The IP
+IP Restrictions is a supported module for HTTPS, TLS and TCP edges.
 When using IP Restrictions via Edges, you specify a set of
 references to one or more IP Policy objects, each of which contains a list of
 IP Policy Rule objects.
