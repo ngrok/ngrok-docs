@@ -151,7 +151,7 @@ Policies are unioned together for evaluation.
 
 ### IPv6
 
-ngrok supports IPv6 addresses for all IP rules. You may use stanard abbreviated
+ngrok supports IPv6 addresses for all IP rules. You may use standard abbreviated
 notations.
 
 ```
