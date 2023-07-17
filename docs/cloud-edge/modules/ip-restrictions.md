@@ -118,7 +118,7 @@ IP Restrictions and the IP Policy and IP Policy Rule objects they reference can
 be configured via the ngrok dashboard and via API.
 
 - [HTTPS Edge IP Restrictions Module API Resource](/api/resources/https-edge-route-ip-restriction-module/)
-- [TLS Edge IP Restrctions Module API Resource](/api/resources/tls-edge-ip-restriction-module/)
+- [TLS Edge IP Restrictions Module API Resource](/api/resources/tls-edge-ip-restriction-module/)
 - [TCP Edge IP Restrictions Module API Resource](/api/resources/tcp-edge-ip-restriction-module/)
 - [IP Policy API Resource](/api/resources/ip-policies/)
 - [IP Policy Rule API Resource](/api/resources/ip-policy-rules/)
