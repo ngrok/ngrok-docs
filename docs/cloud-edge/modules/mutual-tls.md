@@ -101,7 +101,7 @@ tracking its implementation.
 ### Edges
 
 Mutual TLS is a supported Edge module. When the Mutual TLS module is configured
-via an Edge, you will specify one or more references to Certificate Authority
+via an Edge, you must specify one or more references to Certificate Authority
 objects.
 
 The Mutual TLS Edge module is applied to the edge directly and not to any
