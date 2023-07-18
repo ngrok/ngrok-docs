@@ -18,7 +18,7 @@ Mutual TLS is supported on both HTTP and TLS endpoints.
 ### Agent CLI
 
 ```
-ngrok http --mutual-tls-cas /path/to/cas.pem 80
+ngrok http 80 --mutual-tls-cas /path/to/cas.pem
 ```
 
 ### Agent Configuration File
