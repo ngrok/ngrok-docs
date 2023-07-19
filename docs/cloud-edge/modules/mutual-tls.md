@@ -111,32 +111,28 @@ processing can begin.
 - [Mutual TLS Edge Module API Resource](/api/resources/https-edge-mutual-tls-module/)
 - [Certificate Authority API Resource](/api/resources/certificate-authorities/)
 
+## Try it out
+
+This example assumes you have an x509 private key and certificate encoded as
+PEM files called `client-key.pem` and `client-cert.pem`, respectively. The
+certificate must be signed by one of the CA certificates you provided to the
+Mutual TLS module.
+
+Run `curl` with the following command:
+
+```
+curl --client client-cert.pem --key client-key.pem https://yourapp.ngrok.app
+```
+
+`curl` has a shortcut to pass a single file if the private key and certificate
+are concatenated together.
+
+```
+cat client-cert.pem client-key.pem > client-cert-and-key.pem
+curl --cert client-cert-and-key.pem https://yourapp.ngrok.app
+```
+
 ## Behavior
-
-### Upstream Headers {#upstream-headers}
-
-When the Mutual TLS module is enabled, ngrok will insert headers into the HTTP
-request sent to your upstream server with details about the client certificate
-that was presented for the Mutual TLS handshake.
-
-| Header Name | Value |
-| ----------- | ----- |
-| `ngrok-mtls-subject-cn` | The client certificate subject common name |
-| `ngrok-mtls-subject-alt-name-dns` | The client certificate's DNS subject alternative names |
-| `ngrok-mtls-email-addresses` | The client certificate's email subject alternative names  |
-| `ngrok-mtls-serial-number` | The client certificate's serial number |
-
-### Events
-
-When the mutual TLS module is enabled, it populates the following fields in
-[http\_request\_complete.v0](/events/reference/#http-request-complete) events.
-
-| Fields |
-| ------ |
-| `tls.client_cert.serial_number` |
-| `tls.client_cert.subject.cn` |
-
-No event data is captured when the module is enabled on TLS endpoints.
 
 ### Multiple CAs
 
@@ -165,6 +161,33 @@ unless this constraint is set to true.
 
 See [RFC 5280 4.2.1.9](https://datatracker.ietf.org/doc/html/rfc5280#section-4.2.1.9).
 
+## Reference
+
+### Upstream Headers {#upstream-headers}
+
+When the Mutual TLS module is enabled, ngrok will insert headers into the HTTP
+request sent to your upstream server with details about the client certificate
+that was presented for the Mutual TLS handshake.
+
+| Header Name | Value |
+| ----------- | ----- |
+| `ngrok-mtls-subject-cn` | The client certificate subject common name |
+| `ngrok-mtls-subject-alt-name-dns` | The client certificate's DNS subject alternative names |
+| `ngrok-mtls-email-addresses` | The client certificate's email subject alternative names  |
+| `ngrok-mtls-serial-number` | The client certificate's serial number |
+
+### Events
+
+When the mutual TLS module is enabled, it populates the following fields in
+[http\_request\_complete.v0](/events/reference/#http-request-complete) events.
+
+| Fields |
+| ------ |
+| `tls.client_cert.serial_number` |
+| `tls.client_cert.subject.cn` |
+
+No event data is captured when the module is enabled on TLS endpoints.
+
 ### Errors
 
 If the client does not present any certificate or it does not present a valid
@@ -178,27 +201,6 @@ common alert code returned for a failed mutual TLS handshake is code 42
 (`bad_certificate`) which most TLS implementations will report with the error
 string string "bad certificate".
 
-## Try it out
-
-This example assumes you have an x509 private key and certificate encoded as
-PEM files called `client-key.pem` and `client-cert.pem`, respectively. The
-certificate must be signed by one of the CA certificates you provided to the
-Mutual TLS module.
-
-Run `curl` with the following command:
-
-```
-curl --client client-cert.pem --key client-key.pem https://yourapp.ngrok.app
-```
-
-`curl` has a shortcut to pass a single file if the private key and certificate
-are concatenated together.
-
-```
-cat client-cert.pem client-key.pem > client-cert-and-key.pem
-curl --cert client-cert-and-key.pem https://yourapp.ngrok.app
-```
-
-## Licensing
+### Licensing
 
 Mutual TLS is available on the Enterprise plan only.
