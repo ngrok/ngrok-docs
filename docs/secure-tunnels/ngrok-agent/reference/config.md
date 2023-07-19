@@ -295,7 +295,7 @@ Each tunnel you define is a map of configuration option names to values. The nam
 | `response_header.remove` | Array of Strings | The header keys to remove from the response. |
 | `schemes` | `http`, `https` | bind to an HTTPS endpoint ( |
 | `subdomain` | Any valid combination of letters, numbers, hyphens or periods. | subdomain name to request. If unspecified, ngrok provides a unique subdomain based on your account type. |
-| `verify_webhook.provider` | String | Verify webhooks are signed by this provider, e.g. 'slack'. For a full list of providers, see [Webhook Verification Providers](/cloud-edge/modules/webhook). |
+| `verify_webhook.provider` | String | Verify webhooks are signed by this provider, e.g. 'slack'. For a full list of providers, see [Webhook Verification Providers](/cloud-edge/modules/webhook-verification). |
 | `verify_webhook.secret` | String | The secret used by provider to sign webhooks, if there is one |
 | `websocket_tcp_converter` | `true`, `false` | Convert ingress websocket connections to TCP upstream |
 

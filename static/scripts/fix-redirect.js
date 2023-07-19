@@ -17,6 +17,7 @@ if (path.includes("/docs/best-practices/security-dev-productivity/")) goto(`/doc
 if (path.includes("/docs/platform/ip-policies/")) goto(`/docs/cloud-edge/ip-policies/`)
 if (path.includes("/docs/platform/botusers/")) goto(`/docs/user-management/#bot-users`)
 if (path.includes("/docs/platform/dashboard/")) goto(`/docs/user-management/#sso`)
+if (path.includes("/docs/cloud-edge/modules/webhook/")) goto(`/docs/cloud-edge/modules/webhook-verification/`)
 const match = path.match(/\/docs\/ngrok-agent(\/[\w]*)/);
 if (!!match) {
 	goto(`/docs/secure-tunnels/ngrok-agent/reference${match[1]}${window.location.hash}`)

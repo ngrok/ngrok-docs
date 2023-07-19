@@ -19,7 +19,7 @@ The IP Restrictions module is supported on HTTP, TCP and TLS endpoints.
 ### Agent CLI
 
 ```
-ngrok http --allow-cidr 110.0.0.0/8 --allow-cidr 220.12.0.0/16 --deny-cidr 110.2.3.4/32 80
+ngrok http 80 --allow-cidr 110.0.0.0/8 --allow-cidr 220.12.0.0/16 --deny-cidr 110.2.3.4/32
 ```
 
 ### Agent Configuration File
@@ -104,6 +104,26 @@ modules:
     policies:
     - "policy-1" # Reference to the `ippolicy.ingress.k8s.ngrok.com` Custom Resource above
     - "ipp_1234567890" # Reference to an IP Policy by its ngrok API ID
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: example-ingress
+  annotations:
+    k8s.ngrok.com/modules: ngrok-module-set
+spec:
+  ingressClassName: ngrok
+  rules:
+    - host: your-domain.ngrok.app
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: example-service
+                port:
+                  number: 80
 ```
 
 
