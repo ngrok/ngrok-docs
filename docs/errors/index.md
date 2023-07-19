@@ -1,17 +1,36 @@
 ---
-title: Errors
+title: Overview
 ---
 
-import AllErrors from './_err_list_manual.md';
+# Errors
 
-# Error Codes
+## Philosophy
 
-When something goes wrong with ngrok, we report a unique error code. Each error code points to a specific location in our codebase and our engineers can use that to triage or give you specific instructions about what happened and the steps you can take to fix it. These codes were also designed so that you could quickly search your favorite search engine to find more information. Adding this code to your issue, comment, or support message will help everyone else trying to fix this issue.
+When you encounter an error while using ngrok, we report a globally unique
+error code. Each error code corresponds to a specific location in ngrok's code
+which helps us quickly identify where something went wrong and help you know
+exactly how to fix it.
 
+When your report a bug or email us about a support issue, please include the
+unique error code if you have encountered one. It will help us diagnose and
+solve your issue much more quickly.
 
-## Common Error Codes
+ngrok's error codes were also designed so that you can paste them into your
+favorite search engine and immediately find a dedicated page with instructions
+on how to fix your problem.
 
-Some error codes occur more frequently than others. Here is a list of the common error codes.
+## Programmatic Error Handling
+
+When working with ngrok's programmatically, we return these unique error codes
+in a structured way so that you can write software which appropriately handles
+different error conditions.
+
+- [API Error Handling](/api/#errors)
+
+## Common Errors
+
+You're more likely to run into some errors than others. The most common are
+listed here to help make your troubleshooting easier.
 
 | Code | Message |
 | --- | --- |
@@ -28,8 +47,7 @@ Some error codes occur more frequently than others. Here is a list of the common
 | [ERR\_NGROK\_4108](/docs/errors/err_ngrok_4108) | Sign ups are disallowed for the email provider. Please sign up with a different email provider. |
 
 
-## All Error Codes
+## All Errors
 
-Use this table to find more information about the error code you received.
-
-<AllErrors />
+Consult the [Errors Reference Documentation](/docs/errors/reference) for a
+complete list of all of ngrok's error codes.
