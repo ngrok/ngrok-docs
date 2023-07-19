@@ -1,5 +1,5 @@
 ---
-title: Reference
+title: Errors Reference
 ---
 
 # Errors Reference

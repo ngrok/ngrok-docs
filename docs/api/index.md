@@ -152,7 +152,25 @@ returned by the API are in UTC time which is indicated by a `Z` at the end.
 
 The ngrok API enforces a limit on all accounts of 120 requests over a rolling
 60 second window. If you exceed the rate limit, ngrok will return
-[ERR_NGROK_226](/docs/errors/ERR_NGROK_226) and an HTTP Status Code of 429.
+[ERR\_NGROK\_226](/docs/errors/ERR_NGROK_226) and an HTTP Status Code of 429.
+
+## IP Restrictions {#ip-restrictions}
+
+All API access requires an API key, but you may also further restrict which IPs
+are permitted to make requests to the API. You may define one or more IP
+Policies to configure which CIDR blocks may manipulate the API for your
+account.
+
+If you use SCIM with an IdP, you may need to add the IPs of your IdP as well
+because SCIM requests to the ngrok API are subject to these IP restrictions as
+well.
+
+IP Restrictions can be configured manually on the ngrok dashboard or
+programatically via API with a `type` of `agent`.
+
+
+- **[IP Restrictions on your ngrok dashboard](https://dashboard.ngrok.com/security/ip-restrictions)**
+- **[IP Restrictions API Resource](/api/resources/ip-restrictions/)**
 
 ## Errors
 
@@ -181,7 +199,9 @@ different error conditions.
 Consult the **[Error Reference Documentation](/docs/errors)** for the complete list of all
 error codes returned by ngrok.
 
-### Licensing
+## Licensing
 
 The API is available to all ngrok users at no additional charge. You only incur
 costs if the resources provisioned by the API have a cost.
+
+[API IP Restrictions](#ip-restrictions) is available on the Enterprise plan.
