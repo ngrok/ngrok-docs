@@ -98,7 +98,7 @@ spec:
 kind: NgrokModuleSet
 apiVersion: ingress.k8s.ngrok.com/v1alpha1
 metadata:
-  name: ngrok-module-set
+  name: ip-restrictions
 modules:
   ipRestriction:
     policies:
@@ -143,6 +143,58 @@ be configured via the ngrok dashboard or API.
 - [IP Policy API Resource](/api/resources/ip-policies/)
 - [IP Policy Rule API Resource](/api/resources/ip-policy-rules/)
 
+## Behavior
+
+### Upstream Headers {#upstream-headers}
+
+No additional upstream headers are injected when IP Restrictions are enforced.
+
+### Events
+
+When the IP Restrictions module is enforced, it populates the following fields
+in both the
+[http\_request\_complete.v0](/events/reference/#http-request-complete) and the
+[tcp\_connection\_closed.v0](/events/reference/#tcp-connection-closed) events.
+
+| Fields |
+| ------ |
+| `ip_policy.decision` |
+
+### Rule Evaluation
+
+A connection is allowed only if its source IP matches at least one rule with an
+'allow' action and does not match any rule with a 'deny' action.
+
+When using Edges and the Kubernetes Ingress Controller, if the IP Restrictions
+module references multiple IP Policies, then the rules of all referenced IP
+Policies are unioned together for evaluation.
+
+### IPv6
+
+ngrok supports IPv6 addresses for all IP rules. You may use standard abbreviated
+notations.
+
+```
+ngrok http --allow-cidr "::/0" --deny-cidr "2600:1f16:d83:1202::6e:2/128" 80
+```
+
+Don't forget to create IPv6 rules. It's easy to test only with IPv4 and then
+suddenly things don't work when your software starts using IPv6 because you've
+forgotten to create rules to allow traffic from your IPv6 addresses.
+
+### Source IP
+
+The IP Restrictions module always evaluates the true source IP of a connection.
+IPs in HTTP headers like `forwarded-for` are never evaluated by this module.
+
+### Errors
+
+For TCP and TLS endpoints, if a connection is disallowed by IP Restrictions
+then the connection will simply be closed.
+
+For HTTP endpoints, an HTTP response will return
+[ERR\_NGROK\_3205](/errors/err_ngrok_3205/) with a 403 Forbidden status.
+
 ## Try it out
 
 First, grab your IPv4 and IPv6 addresses:
@@ -168,60 +220,6 @@ curl -4 https://your-domain.ngrok.app
 curl -6 https://your-domain.ngrok.app
 ```
 
-## Behavior
-
-### Rule Evaluation
-
-A connection is allowed only if its source IP matches at least one rule with an
-'allow' action and does not match any rule with a 'deny' action.
-
-When using Edges and the Kubernetes Ingress Controller, if the IP Restrictions
-module references multiple IP Policies, then the rules of all referenced IP
-Policies are unioned together for evaluation.
-
-### IPv6
-
-ngrok supports IPv6 addresses for all IP rules. You may use standard abbreviated
-notations.
-
-```
-ngrok http --allow-cidr "::/0" --deny-cidr "2600:1f16:d83:1202::6e:2/128" 80
-```
-
-Don't forget to create IPv6 rules. It's easy to test only with IPv4 and then
-suddenly things don't work when your software starts using IPv6 because you've
-forgotten to create rules to allow traffic from IPv6 addresses.
-
-### Source IP
-
-The IP Restrictions module evaluates the layer 4 source IP of a connection.
-HTTP headers like `forwarded-for` are never consulted by this module.
-
-## Reference
-
-### Upstream Headers {#upstream-headers}
-
-No additional upstream headers are added by the Compression module.
-
-### Events
-
-When the IP Restrictions module is enforced, it populates the following fields
-in both the
-[http\_request\_complete.v0](/events/reference/#http-request-complete) and the
-[tcp\_connection\_closed.v0](/events/reference/#tcp-connection-closed) events.
-
-| Fields |
-| ------ |
-| `ip_policy.decision` |
-
-### Errors
-
-For TCP and TLS endpoints, if a connection is disallowed by IP Restrictions
-then the connection will simply be closed.
-
-For HTTP endpoints, an HTTP response will return
-[ERR\_NGROK\_3205](/errors/err_ngrok_3205/) with a 403 Forbidden status.
-
-### Licensing
+## Licensing
 
 IP Restrictions is available on the Pro or Enterprise plans.
