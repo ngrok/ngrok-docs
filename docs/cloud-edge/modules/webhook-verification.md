@@ -56,7 +56,7 @@ import (
 	"golang.ngrok.com/ngrok/config"
 )
 
-func listenIPRestrictions(ctx context.Context) net.Listener {
+func listenWebhookVerification(ctx context.Context) net.Listener {
 	listener, _ := ngrok.Listen(ctx,
 		config.HTTPEndpoint(
 			config.WithWebhookVerification("shopify", "app-client-secret"),
