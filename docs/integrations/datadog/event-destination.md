@@ -29,7 +29,7 @@ By integrating ngrok with Datadog, you can:
 
 - **Quickly identify application issues** in real-time using ngrok request events in conjunction with Datadog ML based monitoring.
 - **Historically audit changes occurring within an account**.  Be able to historically audit changes within an account.
-- **Profile usage of your service** by using Datadog queries and analytic charts.
+- **Visualize usage of your service** by using Datadog queries and analytic charts.
 - **Identify security issues** by using ngrok events and Datadog SIEM.
 
 

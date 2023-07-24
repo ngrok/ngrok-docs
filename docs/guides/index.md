@@ -1,5 +1,5 @@
 ---
-pagination_next: guides/dashboard-sso-okta-setup
+pagination_next: guides/device-gateway/index
 sidebar_position: 1
 title: Guides
 ---
@@ -24,7 +24,7 @@ Here you will find a set of guides to help you with common (and not so common) t
 | [Per-client Authtokens](secure-tunnels/ngrok-agent/tunnel-authtokens#per-agent-authtokens) | Learn best practices when deploying many ngrok agents |
 | [Rewriting the Host Header](/secure-tunnels/tunnels/http-tunnels#host-header) | Learn how to rewrite the incoming host header for routing traffic to different local services |
 | [non-HTTP Services on TLS Tunnels](/secure-tunnels/tunnels/tls-tunnels#tls-agnostic) | Learn how to configure non-HTTP services using our TLS tunnels |
-| [Multiple Tunnels Same ngrok Agent](/ngrok-agent/config#tunnel-definitions) | Learn how to use a single ngrok agent session to open many tunnels |
+| [Multiple Tunnels Same ngrok Agent](/secure-tunnels/ngrok-agent/reference/config#tunnel-definitions) | Learn how to use a single ngrok agent session to open many tunnels |
 | [Securing your Tunnels](/guides/securing-your-tunnels) | Learn how to secure your ngrok tunnels from prying eyes |
 | [Serving Local Directories](/secure-tunnels/tunnels/http-tunnels#file-url) | Learn how to use ngrok as a file server to quickly share directories with anyone |
 | [Wildcard Domains](/cloud-edge/endpoints#wildcard-domains) | Learn how wildcard domains work in ngrok and configure your own |

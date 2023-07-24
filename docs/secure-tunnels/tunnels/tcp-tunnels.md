@@ -35,4 +35,4 @@ Normally, the remote address and port is assigned randomly each time you start a
 
 ## TCP Tunnel Configuration Options {#configuration-options}
 
-Check out the [ngrok agent TCP tunnel documentation](/ngrok-agent/ngrok#ngrok-tcp) for all the configuration options for TCP tunnels.
+Check out the [ngrok agent TCP tunnel documentation](/secure-tunnels/ngrok-agent/reference/ngrok#ngrok-tcp) for all the configuration options for TCP tunnels.

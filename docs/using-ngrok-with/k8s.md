@@ -28,7 +28,7 @@ The ngrok Ingress Controller requires:
 
 To started with the ngrok Ingress Controller for Kubernetes:
 
-1. Access the [ngrok Dashboard](https://dashboard.ngrok.com) with your Pro account.
+1. Access the [ngrok Dashboard](https://dashboard.ngrok.com)
 1. Click [Your Authtoken](https://dashboard.ngrok.com/get-started/your-authtoken). Copy the Authtoken to a text editor.
 1. Click [API](https://dashboard.ngrok.com/api) and follow the instructions to create a new API key. Copy the API key to a text editor.
 
@@ -65,7 +65,7 @@ To started with the ngrok Ingress Controller for Kubernetes:
       --set credentials.authtoken=$NGROK_AUTHTOKEN
     ```
 
-1. Create a manifest file (for example `ngrok-manifest.yaml`) with the following contents. You will need to replace the `NGROK_DOMAIN` on line 45 with your own custom value. This is the URL you will use to access your service from anywhere. If you're on a free account, it must be a subdomain of either `ngrok-free.app` or `ngrok-free.dev` (for example, `username-loves-ingress.ngrok-free.app`). For paid accounts, you can use a custom domain or a subdomain of `ngrok.app` or `ngrok.dev` (for example, `username-loves-ingress.ngrok.app` or `k8s.example.com`).
+1. Create a manifest file (for example `ngrok-manifest.yaml`) with the following contents. You will need to replace the `NGROK_DOMAIN` on line 45 with your own custom value. This is the URL you will use to access your service from anywhere. If you're on a free account, it must be on a static subdomain which you can claim by logging into your account and following the instructions on the claim static subdomain banner. For paid accounts, you can use a custom domain or a subdomain of `ngrok.app` or `ngrok.dev` (for example, `username-loves-ingress.ngrok.app` or `k8s.example.com`).
 
     :::tip Notes:
     - Lines 1-34: Create the 2048 app service and deployment
