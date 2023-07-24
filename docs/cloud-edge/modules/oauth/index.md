@@ -7,14 +7,14 @@ The OAuth module enforces an OAuth authentication flow in front of any route it 
 
 ngrok currently supports the following OAuth providers:
 
-*   Amazon
+*   [Amazon](/docs/cloud-edge/modules/oauth/amazon)
 *   [Facebook](/docs/cloud-edge/modules/oauth/facebook)
 *   [GitHub](/docs/cloud-edge/modules/oauth/github)
-*   GitLab
+*   [GitLab](/docs/cloud-edge/modules/oauth/gitlab)
 *   [Google](/docs/cloud-edge/modules/oauth/google)
-*   LinkedIn
+*   [LinkedIn](/docs/cloud-edge/modules/oauth/linkedin)
 *   [Microsoft](/docs/cloud-edge/modules/oauth/microsoft)
-*   Twitch
+*   [Twitch](/docs/cloud-edge/modules/oauth/twitch)
 
 ## OAuth Headers Provided by ngrok
 

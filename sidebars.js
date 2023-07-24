@@ -185,7 +185,15 @@ const sidebars = {
       ],
     },
     'user-management/index',
-    'errors/index',
+    {
+      label: 'Errors',
+      type: 'category',
+      link: { type: 'doc', id: 'errors/index' },
+      items: [
+	'errors/index',
+	'errors/reference',
+      ],
+    },
     {
       label: 'Integrations',
       type: 'category',
