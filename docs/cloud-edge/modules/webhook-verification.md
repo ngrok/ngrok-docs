@@ -45,6 +45,14 @@ tunnels:
       secret: "twilio-auth-token"
 ```
 
+### SSH
+
+```
+ssh -R 443:localhost:80 connect.ngrok-agent.com http \
+  --verify-webhook slack \
+  --verify-webhook-secret slack_signing_secret
+```
+
 ### Go SDK
 
 ```

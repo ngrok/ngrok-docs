@@ -16,7 +16,7 @@ ngrok takes no action.
 ### Agent CLI
 
 ```
-ngrok http --compression 80
+ngrok http 80 --compression
 ```
 
 ### Agent Configuration File
@@ -27,6 +27,12 @@ tunnels:
     proto: http
     addr: 80
     compression: true
+```
+
+### SSH
+
+```
+ssh -R 443:localhost:80 connect.ngrok-agent.com http --compression
 ```
 
 ### Go SDK
