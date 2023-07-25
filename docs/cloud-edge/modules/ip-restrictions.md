@@ -19,7 +19,7 @@ The IP Restrictions module is supported on HTTP, TCP and TLS endpoints.
 ### Agent CLI
 
 ```
-ngrok http 80 --allow-cidr 110.0.0.0/8 --allow-cidr 220.12.0.0/16 --deny-cidr 110.2.3.4/32
+ngrok http 80 --cidr-allow 110.0.0.0/8 --cidr-allow 220.12.0.0/16 --cidr-deny 110.2.3.4/32
 ```
 
 ### Agent Configuration File
@@ -31,6 +31,15 @@ tunnels:
     addr: 80
     allow_cidrs: [110.0.0.0/8, 220.12.0.0/16]
     deny_cidrs: [110.2.3.4/32]
+```
+
+### SSH
+
+```
+ssh -R 443:localhost:80 connect.ngrok-agent.com http \
+  --cidr-allow 110.0.0.0/8 \
+  --cidr-allow 220.12.0.0/16 \
+  --cidr-deny 110.2.3.4/32
 ```
 
 ### Go SDK
@@ -201,7 +210,7 @@ HTTP headers like `forwarded-for` are never consulted by this module.
 
 ### Upstream Headers {#upstream-headers}
 
-No additional upstream headers are added by the Compression module.
+No additional upstream headers are added.
 
 ### Events
 

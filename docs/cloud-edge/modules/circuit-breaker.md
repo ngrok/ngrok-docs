@@ -36,6 +36,12 @@ tunnels:
     circuit_breaker: 0.5
 ```
 
+### SSH
+
+```
+ssh -R 443:localhost:80 connect.ngrok-agent.com http --circuit-breaker 0.5
+```
+
 ### Go SDK
 
 ```
