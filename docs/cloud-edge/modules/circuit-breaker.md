@@ -38,7 +38,7 @@ tunnels:
 
 ### Go SDK
 
-```
+```go
 import (
 	"context"
 	"net"
