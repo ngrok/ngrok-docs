@@ -338,7 +338,7 @@ Each tunnel you define is a map of configuration option names to values. The nam
     tunnels:
       my-cool-website:
         labels:
-          - region=us-east
+          - env=prod
           - team=infra
         addr: 8000
         inspect: false
@@ -418,7 +418,7 @@ Below is an example configuration file with all the options filled in.
       
       my-cool-website:
         labels:
-          - region=us-east
+          - env=prod
           - team=infra
         addr: 8000
         oauth:
