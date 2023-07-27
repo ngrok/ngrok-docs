@@ -239,7 +239,7 @@ Circuit Breaker behavior can be cutomized. Defaults will be chosen for you for s
 
 - If you enable the module via the Agent or Agent SDK. They don't allow you to
   customize a number of the module's parameters.
-- If you enable the module via the Edge API and don't explicity set values for
+- If you enable the module via the Edge API and don't explicitly set values for
   all parameters.
 
 | Parameter | Default | Description |
