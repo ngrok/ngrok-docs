@@ -283,4 +283,4 @@ Service Unavailable HTTP status code.
 
 ### Licensing
 
-The Circuit Breaker module is available on the Free tier.
+The Circuit Breaker module is available on all plans.
