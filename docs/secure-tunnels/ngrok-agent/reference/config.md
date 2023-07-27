@@ -418,7 +418,7 @@ Below is an example configuration file with all the options filled in.
       
       my-cool-website:
         labels:
-          - region=us-east
+          - env=prod
           - team=infra
         addr: 8000
         oauth:
