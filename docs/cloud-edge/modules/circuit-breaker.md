@@ -221,7 +221,7 @@ func makeRequests(appURL string) {
 ## Behavior
 
 If the upstream server responds with more than the threshold percentage of
-requests with 5XX status codes, the circuit breaker preemptively reject all
+requests with 5XX status codes, the circuit breaker preemptively rejects all
 subsequent requests at the ngrok edge with a 503 until the upstream server's
 error rate drops below the threshold percentage.
 
