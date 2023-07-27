@@ -45,6 +45,14 @@ tunnels:
       secret: "twilio-auth-token"
 ```
 
+### SSH
+
+```
+ssh -R 443:localhost:80 connect.ngrok-agent.com http \
+  --verify-webhook slack \
+  --verify-webhook-secret slack_signing_secret
+```
+
 ### Go SDK
 
 ```
@@ -56,7 +64,7 @@ import (
 	"golang.ngrok.com/ngrok/config"
 )
 
-func listenIPRestrictions(ctx context.Context) net.Listener {
+func listenWebhookVerification(ctx context.Context) net.Listener {
 	listener, _ := ngrok.Listen(ctx,
 		config.HTTPEndpoint(
 			config.WithWebhookVerification("shopify", "app-client-secret"),
@@ -165,19 +173,20 @@ that.
 
 Otherwise, ngrok uses a tolerance of **180 seconds**.
 
-### Preflight Request Verification
+### Endpoint Verification
 
-Some webhook providers require a [one-time
+Some webhook providers require [endpoint
 verification](https://webhooks.fyi/security/one-time-verification-challenge)
 from your application before they will begin sending webhook requests. This
 helps providers prevent their webhook infrastructure from being used for DOS
 attacks.
 
-When you configure verification for the following providers, ngrok will
-automatically handle the pre-flight verification request for your application.
+When you configure webhook verification for the following providers, ngrok will
+automatically handle the endpoint verification request for your application.
 
 - Twitter
 - Wordline
+- Xero
 - Zoom
 
 ## Reference

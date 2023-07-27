@@ -31,6 +31,14 @@ tunnels:
     mutual_tls_cas: /path/to/cas.pem
 ```
 
+### SSH
+
+:::note
+
+Mutual TLS is not supported via SSH.
+
+:::
+
 ### Go SDK
 
 ```
