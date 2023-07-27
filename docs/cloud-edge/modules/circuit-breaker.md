@@ -235,7 +235,7 @@ as an error response that counts toward the circuit breaker threshold.
 
 ### Parameters
 
-Circuit Breaker behavior can be cutomized. Defaults will be chosen for you for some values in two cases.
+Circuit Breaker behavior can be customized. Defaults will be chosen for you for some values in two cases.
 
 - If you enable the module via the Agent or Agent SDK. They don't allow you to
   customize a number of the module's parameters.
