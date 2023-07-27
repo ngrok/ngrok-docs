@@ -4,6 +4,9 @@ title: Agent Changelog
 
 # ngrok Agent Changelog
 
+### ngrok Agent 3.3.2 - \[2023-07-27\]
+* Added support for the [Datadog event destination](https://ngrok.com/docs/integrations/datadog/event-destination/) in `ngrok api`
+
 ### ngrok Agent 3.3.1 - \[2023-06-05\]
 * Fixed a bug where colons in request header and response header values were not allowed (e.g. `--request-header-add "Access-Control-Allow-Origin:https://developer.mozilla.org"`)
 * Fixed a bug introduced in v3.3.0 where `--terminate-at edge` was not using the correct TLS certificate
@@ -22,7 +25,7 @@ title: Agent Changelog
 * Updated all `--subdomain` and `--hostname` examples to use `--domain`.
 * Fixed a bug where the agent did not resolve local DNS correctly on macOS arm64
 * Allow specifying ngrok `--region=auto` to pick the closest region (defaults to auto)
-* Support for the NGROK_API_KEY environment variable when using the ngrok api subcommand
+* Support for the `NGROK_API_KEY` environment variable when using the ngrok api subcommand
 * `--log-format=json` now results in more output being formatted as json
 
 ### 3.2.0
