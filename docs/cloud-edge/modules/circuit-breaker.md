@@ -137,7 +137,7 @@ go run example.go
 ```
 
 ##### `example.go`
-```
+```go
 package main
 
 import (
