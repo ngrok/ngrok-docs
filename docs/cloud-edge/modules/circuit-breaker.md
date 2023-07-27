@@ -61,7 +61,7 @@ func listenCircuitBreaker(ctx context.Context) net.Listener {
 
 ### Rust SDK
 
-```
+```rust
 use ngrok::prelude::*;
 
 async fn start_tunnel() -> anyhow::Result<impl Tunnel> {
