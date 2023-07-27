@@ -28,7 +28,7 @@ ngrok http 80 --circuit-breaker 0.5
 
 ### Agent Configuration File
 
-```
+```yaml
 tunnels:
   example:
     proto: http
