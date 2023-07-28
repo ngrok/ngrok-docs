@@ -34,7 +34,7 @@ Terraform Provider.
 #### You may be looking for other programmatic ways to work with ngrok
 
 - **[Agent API](/secure-tunnels/ngrok-agent/reference/api)**: The ngrok agent has its own API if you're trying to dynamically start and stop endpoints and tunnels
-- **[Agent SDKs](secure-tunnels/agentless/#ngrok-agent-libraries)**: If you're looking to embed ngrok agent functionality as a library in your own software
+- **[Agent SDKs](/secure-tunnels/agentless/#ngrok-agent-libraries)**: If you're looking to embed ngrok agent functionality as a library in your own software
 
 ## Quickstart {#quickstart}
 
