@@ -27,7 +27,7 @@ This option packages the ngrok agent as a docker container, allowing you to work
 
 ## ngrok Agent Libraries
 
-ngrok Agent libraries allow you to embed ngrok functionality in your code without having to manage another process or bundling the ngrok binary in your project. Allowing you to control ngrok tunnels and configuration programmatically.
+Agent libraries embed ngrok in your app's code. You don't have to manage another process or bundle the ngrok agent with your project. They allow you to create ngrok endpoints and define configuration programatically.
 
 ### List of ngrok Agent Libraries:
 
