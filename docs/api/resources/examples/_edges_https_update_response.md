@@ -1,12 +1,12 @@
-
+<!-- Code generated for API Clients. DO NOT EDIT. -->
 #### Example Response
 ```json
 {
-  "id": "edghts_2NTVHZS1sVc6bragxNUzpdg46vD",
+  "id": "edghts_2TMGJ0R7Sx8kdgJaOkKhuNwwpAd",
   "description": "acme https edge",
   "metadata": "{\"environment\": \"production\"}",
-  "created_at": "2023-03-24T19:59:31Z",
-  "uri": "https://api.ngrok.com/edges/https/edghts_2NTVHZS1sVc6bragxNUzpdg46vD",
+  "created_at": "2023-07-31T23:17:40Z",
+  "uri": "https://api.ngrok.com/edges/https/edghts_2TMGJ0R7Sx8kdgJaOkKhuNwwpAd",
   "hostports": [
     "example.com:443"
   ],

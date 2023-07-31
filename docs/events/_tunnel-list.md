@@ -1,9 +1,11 @@
+<!-- Code generated for API Clients. DO NOT EDIT. -->
+
 | &nbsp; | &nbsp; | &nbsp; |
 |---|---|---|
 | id | string | unique tunnel resource identifier |
 | public_url | string | URL of the ephemeral tunnel's public endpoint |
 | started_at | string | timestamp when the tunnel was initiated in RFC 3339 format |
-| metadata | string | user-supplied metadata for the tunnel defined in the ngrok configuration file. See the tunnel [metadata configuration option](/ngrok-agent/config#common-tunnel-configuration-properties) In API version 0, this value was instead pulled from the top-level [metadata configuration option](/ngrok-agent/config#metadata). |
+| metadata | string | user-supplied metadata for the tunnel defined in the ngrok configuration file. See the tunnel [metadata configuration option](/secure-tunnels/ngrok-agent/reference/config#common-tunnel-configuration-properties) In API version 0, this value was instead pulled from the top-level [metadata configuration option](/secure-tunnels/ngrok-agent/reference/config#metadata). |
 | proto | string | tunnel protocol for ephemeral tunnels. one of `http`, `https`, `tcp` or `tls` |
 | region | string | identifier of tune region where the tunnel is running |
 | id | string | a resource identifier |

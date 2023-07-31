@@ -1,12 +1,12 @@
-
+<!-- Code generated for API Clients. DO NOT EDIT. -->
 #### Example Response
 ```json
 {
-  "id": "ec_2NTVGZPJYevUXrQf3NWongxLIVQ",
+  "id": "ec_2TMGG6nQqXn94aQlprd7d1hiLOc",
   "type": "https",
   "description": "app servers",
-  "created_at": "2023-03-24T19:59:23Z",
-  "uri": "https://api.ngrok.com/endpoint_configurations/ec_2NTVGZPJYevUXrQf3NWongxLIVQ",
+  "created_at": "2023-07-31T23:17:17Z",
+  "uri": "https://api.ngrok.com/endpoint_configurations/ec_2TMGG6nQqXn94aQlprd7d1hiLOc",
   "basic_auth": null,
   "circuit_breaker": null,
   "compression": null,

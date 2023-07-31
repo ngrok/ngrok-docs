@@ -1,3 +1,5 @@
+<!-- Code generated for API Clients. DO NOT EDIT. -->
+
 | &nbsp; | &nbsp; | &nbsp; |
 |---|---|---|
 | type | string | they type of traffic this endpoint configuration can be applied to. one of: `http`, `https`, `tcp` |

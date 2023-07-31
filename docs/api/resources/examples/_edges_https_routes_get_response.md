@@ -1,13 +1,13 @@
-
+<!-- Code generated for API Clients. DO NOT EDIT. -->
 #### Example Response
 ```json
 {
-  "edge_id": "edghts_2NTVHVP15KjqmYQ9zneCgN1g6jt",
-  "id": "edghtsrt_2NTVHZDzqhegMQLdvEDJgDTvuiG",
-  "created_at": "2023-03-24T19:59:31Z",
+  "edge_id": "edghts_2TMGJDuLzZ7s1TfQQ1rDvIfHgpc",
+  "id": "edghtsrt_2TMGJBL2QsvCC1QHIenm86G21ik",
+  "created_at": "2023-07-31T23:17:41Z",
   "match_type": "path_prefix",
   "match": "/",
-  "uri": "https://api.ngrok.com/edges/https/edghts_2NTVHVP15KjqmYQ9zneCgN1g6jt/routes/edghtsrt_2NTVHZDzqhegMQLdvEDJgDTvuiG",
+  "uri": "https://api.ngrok.com/edges/https/edghts_2TMGJDuLzZ7s1TfQQ1rDvIfHgpc/routes/edghtsrt_2TMGJBL2QsvCC1QHIenm86G21ik",
   "description": "acme edge route",
   "metadata": "{\"environment\": \"staging\"}",
   "backend": null,

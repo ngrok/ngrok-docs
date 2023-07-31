@@ -1,12 +1,20 @@
-
+<!-- Code generated for API Clients. DO NOT EDIT. -->
 #### Example Response
 ```json
 {
   "backends": [
     {
-      "id": "bkdhr_2NTVHUq4QExzORngi23BEolDmrJ",
-      "uri": "https://api.ngrok.com/backends/http_response/bkdhr_2NTVHUq4QExzORngi23BEolDmrJ",
-      "created_at": "2023-03-24T19:59:31Z",
+      "id": "bkdhr_2TMGJ2TIm31qPPearUgcXAX7vrq",
+      "uri": "https://api.ngrok.com/backends/http_response/bkdhr_2TMGJ2TIm31qPPearUgcXAX7vrq",
+      "created_at": "2023-07-31T23:17:40Z",
+      "body": "one",
+      "headers": null,
+      "status_code": 200
+    },
+    {
+      "id": "bkdhr_2TMGJ2ONPI9hANFI6I64gyQsryj",
+      "uri": "https://api.ngrok.com/backends/http_response/bkdhr_2TMGJ2ONPI9hANFI6I64gyQsryj",
+      "created_at": "2023-07-31T23:17:40Z",
       "description": "acme http response",
       "metadata": "{\"environment\": \"staging\"}",
       "body": "I'm a teapot",
@@ -16,17 +24,9 @@
       "status_code": 418
     },
     {
-      "id": "bkdhr_2NTVHAmzyLHsPdMekk0niUVDFeC",
-      "uri": "https://api.ngrok.com/backends/http_response/bkdhr_2NTVHAmzyLHsPdMekk0niUVDFeC",
-      "created_at": "2023-03-24T19:59:28Z",
-      "body": "one",
-      "headers": null,
-      "status_code": 200
-    },
-    {
-      "id": "bkdhr_2NTVHakkOGd8LzjwMdXE5tUjtwC",
-      "uri": "https://api.ngrok.com/backends/http_response/bkdhr_2NTVHakkOGd8LzjwMdXE5tUjtwC",
-      "created_at": "2023-03-24T19:59:31Z",
+      "id": "bkdhr_2TMGI9f8rFdzz5PANNNn2CTfES0",
+      "uri": "https://api.ngrok.com/backends/http_response/bkdhr_2TMGI9f8rFdzz5PANNNn2CTfES0",
+      "created_at": "2023-07-31T23:17:33Z",
       "body": "one",
       "headers": null,
       "status_code": 200

@@ -1,4 +1,4 @@
-
+<!-- Code generated for API Clients. DO NOT EDIT. -->
 #### Example Request
 ```bash
 curl \
@@ -6,5 +6,5 @@ curl \
 -H "Authorization: Bearer {API_KEY}" \
 -H "Content-Type: application/json" \
 -H "Ngrok-Version: 2" \
--d '{"metadata":"{\"proto\": \"ssh\"}","endpoint_configuration_id":"ec_2NTVGguD2ttxSD5NMcng2lM4sIn"}' \
-https://api.ngrok.com/reserved_addrs/ra_2NTUzbDPGnHYVI8K3hYBaPfGia3
+-d '{"metadata":"{\"proto\": \"ssh\"}","endpoint_configuration_id":"ec_2TMGGEpgHMgrIttyaddquAacBpB"}' \
+https://api.ngrok.com/reserved_addrs/ra_2TMGAKbzLCHnh3QXN8iwP7I7cDE

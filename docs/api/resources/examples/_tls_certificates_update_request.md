@@ -1,4 +1,4 @@
-
+<!-- Code generated for API Clients. DO NOT EDIT. -->
 #### Example Request
 ```bash
 curl \
@@ -7,4 +7,4 @@ curl \
 -H "Content-Type: application/json" \
 -H "Ngrok-Version: 2" \
 -d '{"metadata":"{\"example\": true}"}' \
-https://api.ngrok.com/tls_certificates/cert_2NTVHQlDXrEf1EGHRoHIRJPx1bw
+https://api.ngrok.com/tls_certificates/cert_2TMGIsfbzkUI3WorhkSId7zOKFH
