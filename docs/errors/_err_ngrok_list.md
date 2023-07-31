@@ -64,6 +64,8 @@ Go to your ngrok dashboard and double check that your authtoken is correct:
 				<a id="ERR_NGROK_108" href="/docs/errors/err_ngrok_108">ERR_NGROK_108</a>
 			</td>
 			<td class="pre-wrapped">Your account is limited to <code>&lt;MAX&gt;</code> simultaneous ngrok agent session<code>&lt;PLURAL&gt;</code>.
+You can run multiple tunnels on a single agent session using a configuration file.
+To learn more, see <a href="https://ngrok.com/docs/secure-tunnels/ngrok-agent/reference/config">https://ngrok.com/docs/secure-tunnels/ngrok-agent/reference/config</a>/
 <code>&lt;MSG&gt;</code></td>
 		</tr>
 		<tr>
@@ -126,15 +128,15 @@ Upgrade to an Enterprise plan at: <a href="https://dashboard.ngrok.com/billing/s
 			<td>
 				<a id="ERR_NGROK_120" href="/docs/errors/err_ngrok_120">ERR_NGROK_120</a>
 			</td>
-			<td class="pre-wrapped">Your ngrok agent version "<code>&lt;VERSION&gt;</code>" is no longer supported. Only the most recent version of the ngrok agent is supported without an account.
-Update to a newer version with `ngrok update` or by downloading from <a href="https://ngrok.com/download">https://ngrok.com/download</a>.
+			<td class="pre-wrapped">Your <code>&lt;PRODUCT&gt;</code> version "<code>&lt;VERSION&gt;</code>" is no longer supported. Only the most recent version of the ngrok agent is supported without an account.
+Update to a newer version with `ngrok update`, by downloading from <a href="https://ngrok.com/download">https://ngrok.com/download</a>, or by updating your SDK version.
 Sign up for an account to avoid forced version upgrades: <a href="https://ngrok.com/signup">https://ngrok.com/signup</a>.</td>
 		</tr>
 		<tr>
 			<td>
 				<a id="ERR_NGROK_121" href="/docs/errors/err_ngrok_121">ERR_NGROK_121</a>
 			</td>
-			<td class="pre-wrapped">Your ngrok agent version "<code>&lt;VERSION&gt;</code>" is too old. The minimum supported agent version for your account is "<code>&lt;MINVERSION&gt;</code>". Please update to a newer version with `ngrok update` or by downloading from <a href="https://ngrok.com/download">https://ngrok.com/download</a>.</td>
+			<td class="pre-wrapped">Your <code>&lt;PRODUCT&gt;</code> version "<code>&lt;VERSION&gt;</code>" is too old. The minimum supported agent version for your account is "<code>&lt;MINVERSION&gt;</code>". Please update to a newer version with `ngrok update`, by downloading from <a href="https://ngrok.com/download">https://ngrok.com/download</a>, or by updating your SDK version.</td>
 		</tr>
 		<tr>
 			<td>
@@ -147,6 +149,21 @@ Sign up for an account to avoid forced version upgrades: <a href="https://ngrok.
 				<a id="ERR_NGROK_123" href="/docs/errors/err_ngrok_123">ERR_NGROK_123</a>
 			</td>
 			<td class="pre-wrapped">The account "<code>&lt;NAME&gt;</code>" may not start an ngrok agent session until the admin's email address is verified. Verify your email at <a href="https://dashboard.ngrok.com/user/settings">https://dashboard.ngrok.com/user/settings</a></td>
+		</tr>
+		<tr>
+			<td>
+				<a id="ERR_NGROK_124" href="/docs/errors/err_ngrok_124">ERR_NGROK_124</a>
+			</td>
+			<td class="pre-wrapped">Your agent provided an invalid UserAgent: <code>&lt;ERR&gt;</code></td>
+		</tr>
+		<tr>
+			<td>
+				<a id="ERR_NGROK_125" href="/docs/errors/err_ngrok_125">ERR_NGROK_125</a>
+			</td>
+			<td class="pre-wrapped">The analytics payload you specified is not valid.
+This usually indiciates a bug in the client's protocol implementation.
+The parsing error encountered was:
+<code>&lt;ERR&gt;</code></td>
 		</tr>
 		<tr>
 			<td>
@@ -1865,7 +1882,7 @@ The parsing error encountered was:
 			<td>
 				<a id="ERR_NGROK_1007" href="/docs/errors/err_ngrok_1007">ERR_NGROK_1007</a>
 			</td>
-			<td class="pre-wrapped">Your subscription was updated, by we failed to charge your card: <code>&lt;MSG&gt;</code>.</td>
+			<td class="pre-wrapped">Your subscription was updated, but we failed to charge your card: <code>&lt;MSG&gt;</code>.</td>
 		</tr>
 		<tr>
 			<td>
@@ -2249,6 +2266,12 @@ Use one of version '1' or '2' to enable proxy proto.</td>
 				<a id="ERR_NGROK_1228" href="/docs/errors/err_ngrok_1228">ERR_NGROK_1228</a>
 			</td>
 			<td class="pre-wrapped">You are no longer an active member of the current account.</td>
+		</tr>
+		<tr>
+			<td>
+				<a id="ERR_NGROK_1229" href="/docs/errors/err_ngrok_1229">ERR_NGROK_1229</a>
+			</td>
+			<td class="pre-wrapped">The resource you are attempting to access requires MFA, please authenticate via a second factor.</td>
 		</tr>
 		<tr>
 			<td>
@@ -2712,13 +2735,13 @@ Upgrade to a paid plan at: <a href="https://dashboard.ngrok.com/billing/subscrip
 			<td>
 				<a id="ERR_NGROK_1657" href="/docs/errors/err_ngrok_1657">ERR_NGROK_1657</a>
 			</td>
-			<td class="pre-wrapped">The endpoint configuration exceeds the maximum number of OAuth GitHub teams. You specified <code>&lt;COUNT&gt;</code>, the max is <code>&lt;MAX&gt;</code>.</td>
+			<td class="pre-wrapped">The endpoint configuration exceeds the maximum number of OAuth Github teams. You specified <code>&lt;COUNT&gt;</code>, the max is <code>&lt;MAX&gt;</code>.</td>
 		</tr>
 		<tr>
 			<td>
 				<a id="ERR_NGROK_1658" href="/docs/errors/err_ngrok_1658">ERR_NGROK_1658</a>
 			</td>
-			<td class="pre-wrapped">The endpoint configuration exceeds the maximum number of OAuth GitHub orgs. You specified <code>&lt;COUNT&gt;</code>, the max is <code>&lt;MAX&gt;</code>.</td>
+			<td class="pre-wrapped">The endpoint configuration exceeds the maximum number of OAuth Github orgs. You specified <code>&lt;COUNT&gt;</code>, the max is <code>&lt;MAX&gt;</code>.</td>
 		</tr>
 		<tr>
 			<td>
@@ -3351,6 +3374,12 @@ Upgrade to a Pro or Enterprise plan at: <a href="https://dashboard.ngrok.com/bil
 				<a id="ERR_NGROK_1966" href="/docs/errors/err_ngrok_1966">ERR_NGROK_1966</a>
 			</td>
 			<td class="pre-wrapped">The certificate <code>&lt;ID&gt;</code> could not be deleted because it has an attached Managed Certificate Policy. If this certificate is automatically generated, delete the domain reservation or use a different certificate type.</td>
+		</tr>
+		<tr>
+			<td>
+				<a id="ERR_NGROK_2032" href="/docs/errors/err_ngrok_2032">ERR_NGROK_2032</a>
+			</td>
+			<td class="pre-wrapped">Webhook Validation middleware requires a secret for <code>&lt;PROVIDER&gt;</code>.</td>
 		</tr>
 		<tr>
 			<td>
@@ -4017,6 +4046,12 @@ Install your authoken: <a href="https://dashboard.ngrok.com/get-started/your-aut
 		</tr>
 		<tr>
 			<td>
+				<a id="ERR_NGROK_4114" href="/docs/errors/err_ngrok_4114">ERR_NGROK_4114</a>
+			</td>
+			<td class="pre-wrapped">The email domain "<code>&lt;DOMAIN&gt;</code>" does not allow self-serve user registrations. Please contact your ngrok administrator or support@ngrok.com for access.</td>
+		</tr>
+		<tr>
+			<td>
 				<a id="ERR_NGROK_4200" href="/docs/errors/err_ngrok_4200">ERR_NGROK_4200</a>
 			</td>
 			<td class="pre-wrapped">You may not delete all or your logins, you must have at least one.</td>
@@ -4185,6 +4220,12 @@ Install your authoken: <a href="https://dashboard.ngrok.com/get-started/your-aut
 		</tr>
 		<tr>
 			<td>
+				<a id="ERR_NGROK_4702" href="/docs/errors/err_ngrok_4702">ERR_NGROK_4702</a>
+			</td>
+			<td class="pre-wrapped">You cannot delete your last IdP provider when SSO enforced is enabled</td>
+		</tr>
+		<tr>
+			<td>
 				<a id="ERR_NGROK_5000" href="/docs/errors/err_ngrok_5000">ERR_NGROK_5000</a>
 			</td>
 			<td class="pre-wrapped">Your account is limited to <code>&lt;MAX&gt;</code> <code>&lt;RESOURCE&gt;</code>.</td>
@@ -4344,6 +4385,24 @@ Install your authoken: <a href="https://dashboard.ngrok.com/get-started/your-aut
 				<a id="ERR_NGROK_5131" href="/docs/errors/err_ngrok_5131">ERR_NGROK_5131</a>
 			</td>
 			<td class="pre-wrapped">You have reached the maximum of <code>&lt;MAX&gt;</code> event subscriptions for your account.</td>
+		</tr>
+		<tr>
+			<td>
+				<a id="ERR_NGROK_5132" href="/docs/errors/err_ngrok_5132">ERR_NGROK_5132</a>
+			</td>
+			<td class="pre-wrapped">The Datadog API key provided is not authorized to send events into Datadog: <code>&lt;ERR&gt;</code></td>
+		</tr>
+		<tr>
+			<td>
+				<a id="ERR_NGROK_5133" href="/docs/errors/err_ngrok_5133">ERR_NGROK_5133</a>
+			</td>
+			<td class="pre-wrapped">Event Destination target is missing API Key.</td>
+		</tr>
+		<tr>
+			<td>
+				<a id="ERR_NGROK_5134" href="/docs/errors/err_ngrok_5134">ERR_NGROK_5134</a>
+			</td>
+			<td class="pre-wrapped">The Datadog site provided (<code>&lt;DDSITE&gt;</code>) is not valid, please see the "SITE" column from <a href="https://docs.datadoghq.com/getting_started/site">https://docs.datadoghq.com/getting_started/site</a>/.</td>
 		</tr>
 		<tr>
 			<td>
@@ -6751,6 +6810,12 @@ Upgrade to a Pro or Enterprise plan at: <a href="https://dashboard.ngrok.com/bil
 		</tr>
 		<tr>
 			<td>
+				<a id="ERR_NGROK_10083" href="/docs/errors/err_ngrok_10083">ERR_NGROK_10083</a>
+			</td>
+			<td class="pre-wrapped">You already have a valid MFA configuration of this type enabled.</td>
+		</tr>
+		<tr>
+			<td>
 				<a id="ERR_NGROK_11000" href="/docs/errors/err_ngrok_11000">ERR_NGROK_11000</a>
 			</td>
 			<td class="pre-wrapped">Internal Server Error. Please refresh the page and try again. If the problem persists, please check our status page https://status.ngrok.com/ or contact the frontend team.</td>
@@ -6880,6 +6945,36 @@ Upgrade to a Pro or Enterprise plan at: <a href="https://dashboard.ngrok.com/bil
 				<a id="ERR_NGROK_16000" href="/docs/errors/err_ngrok_16000">ERR_NGROK_16000</a>
 			</td>
 			<td class="pre-wrapped">The email of the user you are trying to add, <code>&lt;EMAIL&gt;</code>, does not use a domain verified for your account.</td>
+		</tr>
+		<tr>
+			<td>
+				<a id="ERR_NGROK_17000" href="/docs/errors/err_ngrok_17000">ERR_NGROK_17000</a>
+			</td>
+			<td class="pre-wrapped">The MFA device type "<code>&lt;TYPE&gt;</code>" is invalid.</td>
+		</tr>
+		<tr>
+			<td>
+				<a id="ERR_NGROK_17001" href="/docs/errors/err_ngrok_17001">ERR_NGROK_17001</a>
+			</td>
+			<td class="pre-wrapped">The information supplied for MFA verification was incorrect and verification was not successful.</td>
+		</tr>
+		<tr>
+			<td>
+				<a id="ERR_NGROK_17002" href="/docs/errors/err_ngrok_17002">ERR_NGROK_17002</a>
+			</td>
+			<td class="pre-wrapped">You do not have any recovery codes configured.</td>
+		</tr>
+		<tr>
+			<td>
+				<a id="ERR_NGROK_17003" href="/docs/errors/err_ngrok_17003">ERR_NGROK_17003</a>
+			</td>
+			<td class="pre-wrapped">The information supplied for recovery code verification was incorrect and verification was not successful.</td>
+		</tr>
+		<tr>
+			<td>
+				<a id="ERR_NGROK_17004" href="/docs/errors/err_ngrok_17004">ERR_NGROK_17004</a>
+			</td>
+			<td class="pre-wrapped">A matching MFA device was not found.</td>
 		</tr>
 	</tbody>
 </table>

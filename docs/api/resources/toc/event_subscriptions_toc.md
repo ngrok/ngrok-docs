@@ -1,3 +1,5 @@
+<!-- Code generated for API Clients. DO NOT EDIT. -->
+
 
 [Event Subscriptions](#api-event-subscriptions)
 - [Create](#api-event-subscriptions-create)

@@ -1,3 +1,5 @@
+<!-- Code generated for API Clients. DO NOT EDIT. -->
+
 | &nbsp; | &nbsp; | &nbsp; |
 |---|---|---|
 | metadata | string | Arbitrary customer supplied information intended to be machine readable. Optional, max 4096 chars. |

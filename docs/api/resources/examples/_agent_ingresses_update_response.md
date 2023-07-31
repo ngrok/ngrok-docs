@@ -1,9 +1,9 @@
-
+<!-- Code generated for API Clients. DO NOT EDIT. -->
 #### Example Response
 ```json
 {
-  "id": "agin_2NTVHbcf9IpYGHRvSdiuGs2sKJy",
-  "uri": "https://api.ngrok.com/agent_ingresses/agin_2NTVHbcf9IpYGHRvSdiuGs2sKJy",
+  "id": "agin_2TMGJ5XTkNXxX2o9kiFMMLhTHw7",
+  "uri": "https://api.ngrok.com/agent_ingresses/agin_2TMGJ5XTkNXxX2o9kiFMMLhTHw7",
   "description": "ACME Co. Device Ingress",
   "metadata": "{\"device_sku\": \"824JS4RZ1F8X\"}",
   "domain": "connect.acme.com",
@@ -16,5 +16,5 @@
   "region_domains": [
     "tunnel.us.connect.acme.com"
   ],
-  "created_at": "2023-03-24T19:59:31Z"
+  "created_at": "2023-07-31T23:17:40Z"
 }

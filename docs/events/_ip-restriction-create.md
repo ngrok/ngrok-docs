@@ -1,3 +1,5 @@
+<!-- Code generated for API Clients. DO NOT EDIT. -->
+
 | &nbsp; | &nbsp; | &nbsp; |
 |---|---|---|
 | description | string | human-readable description of this IP restriction. optional, max 255 bytes. |

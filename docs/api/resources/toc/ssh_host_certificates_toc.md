@@ -1,3 +1,5 @@
+<!-- Code generated for API Clients. DO NOT EDIT. -->
+
 
 [SSH Host Certificates](#api-ssh-host-certificates)
 - [Create](#api-ssh-host-certificates-create)

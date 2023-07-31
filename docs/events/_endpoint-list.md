@@ -1,3 +1,5 @@
+<!-- Code generated for API Clients. DO NOT EDIT. -->
+
 | &nbsp; | &nbsp; | &nbsp; |
 |---|---|---|
 | id | string | unique endpoint resource identifier |

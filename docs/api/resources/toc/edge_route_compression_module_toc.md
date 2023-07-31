@@ -1,3 +1,5 @@
+<!-- Code generated for API Clients. DO NOT EDIT. -->
+
 
 [HTTPS Edge Route Compression Module](#api-edge-route-compression-module)
 - [Replace](#api-edge-route-compression-module-replace)

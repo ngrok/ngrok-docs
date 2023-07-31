@@ -1,3 +1,5 @@
+<!-- Code generated for API Clients. DO NOT EDIT. -->
+
 
 [Event Sources](#api-event-sources)
 - [Create](#api-event-sources-create)

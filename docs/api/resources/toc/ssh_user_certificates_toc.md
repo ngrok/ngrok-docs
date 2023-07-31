@@ -1,3 +1,5 @@
+<!-- Code generated for API Clients. DO NOT EDIT. -->
+
 
 [SSH User Certificates](#api-ssh-user-certificates)
 - [Create](#api-ssh-user-certificates-create)

@@ -1,3 +1,5 @@
+<!-- Code generated for API Clients. DO NOT EDIT. -->
+
 | &nbsp; | &nbsp; | &nbsp; |
 |---|---|---|
 | renews_at | string | timestamp when the next renewal will be requested, RFC 3339 format |
