@@ -1,0 +1,170 @@
+---
+title: SSH Reverse Tunnel
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+import RandomHttpSshExample from "/examples/ssh/http-random.mdx";
+import StaticDomainSshExample from "/examples/ssh/http-static-domain.mdx";
+import BasicAuthSshExample from "/examples/ssh/http-basic-auth.mdx";
+import OAuthSshExample from "/examples/ssh/http-oauth-authn.mdx";
+import NonLocalSshExample from "/examples/ssh/http-nonlocal.mdx";
+import RandomTcpSshExample from "/examples/ssh/tcp-random.mdx";
+import FixedTcpSshExample from "/examples/ssh/tcp-fixed.mdx";
+import RandomTlsSshExample from "/examples/ssh/tls-terminate-at-upstream.mdx";
+
+# SSH Reverse Tunnel Agent
+
+---
+
+## Overview
+
+SSH reverse tunneling (`ssh -R`) is an alternative mechanism deliver services
+via ngrok without running an [ngrok agent](/agent/) or [Agent
+SDK](/agent-sdks/).
+
+The SSH reverse tunnel agent should not be confused with creating remote access
+to an SSH server via ngrok. If you want to use ngrok to create access to your
+own SSH server for remote access, please refer to the [using ngrok with
+ssh](/using-ngrok-with/ssh) documentation.
+
+You should only ngrok via SSH if you really can't use an Agent or Agent SDK.
+The SSH reverse tunnel agent has [many functional limitations compared to the
+ngrok agent](#differences).
+
+## Example Usage
+
+### Random HTTP Endpoint
+
+<RandomHttpSshExample />
+
+### Custom Domain
+
+<StaticDomainSshExample />
+
+### Basic Auth
+
+<BasicAuthSshExample />
+
+### OAuth
+
+<OAuthSshExample />
+
+### Forward to non-local service
+
+<NonLocalSshExample />
+
+### Random TCP Endpoint
+
+<RandomTcpSshExample />
+
+### Fixed TCP Endpoint
+
+<FixedTcpSshExample />
+
+### TLS Endpoint
+
+<RandomTlsSshExample />
+
+### Explicit Region Selection
+
+Normally you will connect to ngrok's closest point of present via [Global
+Server Load Balancing](/network-edge/gslb/), but you can also explicitly choose
+a region.
+
+```bash
+ssh -R 443:localhost:80 v2@connect.eu.ngrok-agent.com http
+```
+
+## Authentication {#authentication}
+
+Instead of an ngrok authtoken, when you use ngrok via the SSH reverse tunnel
+agent, it uses a public key for authentication. You'll first need to upload
+yours to the [SSH Public Keys page on your ngrok
+dashboard](https://dashboard.ngrok.com/tunnels/ssh-keys).
+
+Copy your default SSH public key with:
+
+<Tabs groupId="os" queryString="os">
+<TabItem value="macos" label="Mac OS" default>
+
+```bash
+cat ~/.ssh/id_rsa.pub | pbcopy
+```
+
+</TabItem>
+<TabItem value="linux" label="Linux">
+
+```bash
+cat ~/.ssh/id_rsa.pub
+```
+
+</TabItem>
+</Tabs>
+
+## Command Syntax
+
+ngrok does its best to honor the syntax of `ssh -R`. You may wish to consult
+`man ssh`, and the section devoted to the `-R` option for additional details.
+ngrok uses additional command line options to implement features that are not
+otherwise available via the `-R` syntax.
+
+Let's break down the following command.
+
+```bash
+ssh -R \
+  app.example.com:443:127.0.0.1:8080 \
+  v2@connect.ngrok-agent.com \
+  http --basic-auth 'user:password'
+```
+
+An `ssh -R` command has the following components:
+
+```bash
+ssh -R \
+  "<remote name>:<remote port>:<local name>:<local port>" \
+  <user>@connect.ngrok-agent.com \
+  <command> [flags]
+```
+
+In our example:
+
+- Remote Name: `app.example.com`. ngrok will listen on the domain 'app.example.com'. You may omit this value. If you do, ngrok chooses a random endpoint name.
+- Remote Port: `443`. ngrok will listen for HTTPS traffic on port 443. The only
+  valid values for HTTP endpoints are 80 and 443. For TLS endpoints it must be 443. You may `0` and ngrok will simply choose the appropriate port for you.
+- Local Name: `127.0.0.1`. This is the local hostname or IP address that traffic will be sent to. It's most commonly `localhost`.
+- Local Port: `8080`. This is the local port that traffic will be sent to.
+- User: `v2`. ngrok uses the user portion of the command to version the command options. You may omit this value. If you do, ngrok will use the latest version.
+- Command: `http`. This the type of endpoint to create. ngrok accepts either `http`, `tls` or `tcp`. This value is required.
+- Flags: `--basic-auth 'user:password'`. Run the same command with the `--help` flag to get the list of supported flags or consult the [Agent CLI reference](/agent/cli/).
+
+## Versioning
+
+ngrok uses the user portion of the SSH command to version the CLI syntax. The
+latest version is `v2`.
+
+## Differences from the Agent {#differences}
+
+When you use ngrok via SSH reverse tunnel, you will need to [upload an SSH
+public key](#authentication) to authenticate with instead of using an
+ngrok authtoken like the agent.
+
+Additionally, you'll find that using ngrok via SSH has many functional
+limitations compared to the experience with the agent. An incomplete list of
+differences from the ngrok agent includes:
+
+- Your endpoints won't automatically reconnect if there is a network interruption
+- There is no equivalent to the agent's [traffic inspection interface](/agent/web-inspection-interface/)
+- You can't create endpoints for multiple services with the same command
+- You can't [forward to upstream https services](/http/#upstream-https-servers)
+- You can't create multiple endpoints over the same connection
+- You can't [serve file system directories](/http/#file-serving) with the `file://` protocol
+- You can't terminate TLS at the agent when doing [zero-knowledge TLS](/tls/tls-termination/#zero-knowledge-tls-at-the-agent)
+- You can't run labeled tunnels for use with [Edges](/network-edge/edges).
+
+## Pricing
+
+The SSH reverse tunnel agent is available to all ngrok users at no additional
+charge. You only incur costs if resources you provision via its usage incur a
+cost.

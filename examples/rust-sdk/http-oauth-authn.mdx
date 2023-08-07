@@ -1,0 +1,22 @@
+```rust
+use ngrok::prelude::*;
+
+async fn listen_ngrok() -> anyhow::Result<impl Tunnel> {
+    let sess = ngrok::Session::builder()
+        .authtoken_from_env()
+        .connect()
+        .await?;
+    let tun = sess
+        .http_endpoint()
+        .oauth(OauthOptions::new("google"))
+        .listen()
+        .await?;
+    println!("Listening on URL: {:?}", tun.url());
+    Ok(tun)
+}
+```
+
+Rust Crate Docs:
+
+- [https://docs.rs/ngrok/latest/ngrok/config/struct.HttpTunnelBuilder.html#method.oauth](https://docs.rs/ngrok/latest/ngrok/config/struct.HttpTunnelBuilder.html#method.oauth)
+- [https://docs.rs/ngrok/latest/ngrok/config/struct.OauthOptions.html](https://docs.rs/ngrok/latest/ngrok/config/struct.OauthOptions.html)

@@ -1,0 +1,168 @@
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+import KubernetesExample from "/examples/k8s/http-basic-auth.mdx";
+import AgentCliExample from "/examples/agent-cli/http-basic-auth.mdx";
+import AgentConfigExample from "/examples/agent-config/http-basic-auth.mdx";
+import SshExample from "/examples/ssh/http-basic-auth.mdx";
+import GoSdkExample from "/examples/go-sdk/http-basic-auth.mdx";
+import RustSdkExample from "/examples/rust-sdk/http-basic-auth.mdx";
+
+# Basic Auth
+
+---
+
+## Overview
+
+This modules enforces HTTP Basic Authentication in front of you endpoints.
+Requests with a valid username and password will be sent to your upstream
+service, all others will be rejected with a 401 Unauthorized response.
+
+## Example Usage
+
+Allow requests from two different users, each with a different password.
+
+<Tabs groupId="connectivity" queryString="cty">
+	<TabItem value="agent-cli" label="Agent CLI" default>
+		<AgentCliExample />
+	</TabItem>
+	<TabItem value="agent-config" label="Agent Config File">
+		<AgentConfigExample />
+	</TabItem>
+	<TabItem value="ssh" label="SSH">
+		<SshExample />
+	</TabItem>
+	<TabItem value="go-sdk" label="Go SDK">
+		<GoSdkExample />
+	</TabItem>
+	<TabItem value="rust-sdk" label="Rust SDK">
+		<RustSdkExample />
+	</TabItem>
+	<TabItem value="k8s" label="Kubernetes Controller">
+		<KubernetesExample />
+	</TabItem>
+</Tabs>
+
+## Behavior
+
+This module enforces HTTP Basic Auth as defined by [RFC
+7617](https://datatracker.ietf.org/doc/html/rfc7617).
+
+Requests with a valid username and password are sent to the upstream
+application. All other requests receive an HTTP 401 response.
+
+### Multiple Credentials
+
+You may specify multiple username/password credential pairs. A request is
+allowed if it matches any of the configured credentials.
+
+```bash
+ngrok http 80 \
+  --basic-auth "user1:password1" \
+  --basic-auth "user2:password2"
+```
+
+### Realm
+
+The HTTP Basic Auth realm is always 'ngrok'. It may not be configured.
+
+### Basic Auth on Upstream Service
+
+If your upstream service also enforces HTTP Basic Auth, it is not recommended
+to use this module with it. Instead, you should choose to either not use this
+module or to disable http basic auth enforcement on your upstream service. If
+you absolutely must use HTTP Basic Auth on both your ngrok endpoint and your
+upstream service, you have two options:
+
+1. Ensure that the username/password credentials enforced by ngrok and those
+   enforced by the upstream service are identical. If you don't, no requests will
+   ever be successful because they will always be rejected by either your ngrok
+   endpoint or the upstream service.
+
+2. Use the [Request Headers](/http/request-headers) module to rewrite the
+   `authorization` header to the value expected by the upstream service. For
+   example, if you want to accept requests with credentials of "username:password,
+   but the upstream service expects credentials of "Aladdin:open sesame", you
+   could use the following command. Keep in mind that you need to base64 encode
+   the username and password for the upstream service.
+
+```
+ngrok http 80 \
+  --basic-auth "username:password" \
+  --request-header-remove "authorization" \
+  --request-header-add "authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ=="
+```
+
+## Reference
+
+### Configuration
+
+| Parameter       | Description                                                                                                                               |
+| --------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| **Credentials** | A list of username/password pairs specified as 'username:password'. Passwords must be at least 8 characters and more than 128 characters. |
+
+### Upstream Headers {#upstream-headers}
+
+This module does not add any upstream headers.
+
+### Errors
+
+| Code                | HTTP Status | Error                                              |
+| ------------------- | ----------- | -------------------------------------------------- |
+| no ngrok error code | `401`       | This error is returned if a request is disallowed. |
+
+### Events
+
+This module does not populate any fields in events.
+When this module is enabled, it populates the following fields in the
+[http_request_complete.v0](/obs/reference/#http-request-complete) event:
+
+| Fields                |
+| --------------------- |
+| `basic_auth.decision` |
+| `basic_auth.username` |
+
+### Edges
+
+:::info
+
+Basic Auth is not a supported HTTPS Edge module yet.
+
+:::
+
+### Pricing
+
+This module is available on all plans.
+
+## Try it out
+
+Start ngrok in one terminal:
+
+```bash
+ngrok http https://httpbin.org --domain your-domain.ngrok.app --basic-auth "falken:joshuahunter2"
+```
+
+In another terminal, curl that endpoint.
+
+Without any credentials:
+
+```bash
+curl https://your-domain.ngrok.app/status/200
+
+401 Unauthorized
+```
+
+With incorrect credentials:
+
+```bash
+curl https://your-domain.ngrok.app/status/200 --user "foo:bar"
+
+401 Unauthorized
+```
+
+And finally with valid credentials:
+
+```bash
+curl https://your-domain.ngrok.app/status/200 --user "falken:joshuahunter2" -I
+
+HTTP/2 200
+```

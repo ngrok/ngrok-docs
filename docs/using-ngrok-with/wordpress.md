@@ -12,7 +12,7 @@ This article assumes you familiar with moderate to advanced Wordpress configurat
 
 To make ngrok work properly with Wordpress installations you usually need to do these three things:
 
-1.  You must instruct ngrok to [rewrite the host header](/secure-tunnels/ngrok-agent/reference/ngrok#ngrok-http) and point to the port of your Wordpress install (usually port 80), like so:
+1.  You must instruct ngrok to [rewrite the host header](/http/#rewrite-host-header) and point to the port of your Wordpress install (usually port 80), like so:
 
     ```bash
     ngrok http 80 --host-header=rewrite --domain www.your-site.dev

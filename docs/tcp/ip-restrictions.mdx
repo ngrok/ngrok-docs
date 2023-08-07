@@ -1,0 +1,144 @@
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+import KubernetesExample from "/examples/k8s/tcp-ip-restrictions.mdx";
+import AgentCliExample from "/examples/agent-cli/tcp-ip-restrictions.mdx";
+import AgentConfigExample from "/examples/agent-config/tcp-ip-restrictions.mdx";
+import SshExample from "/examples/ssh/tcp-ip-restrictions.mdx";
+import GoSdkExample from "/examples/go-sdk/tcp-ip-restrictions.mdx";
+import RustSdkExample from "/examples/rust-sdk/tcp-ip-restrictions.mdx";
+
+# IP Restrictions
+
+---
+
+## Overview
+
+The IP Restrictions module enables you to allow or deny traffic based on the
+source IP of the connection that was initiated to your ngrok endpoints. You
+define rules which allow or deny connections from IPv4 or IPv6 CIDR blocks.
+
+A connection is allowed only if its source IP matches at least one rule with an
+'allow' action and does not match any rule with a 'deny' action.
+
+## Example Usage
+
+Allow TCP connections from `110.0.0.0/8` and `220.12.0.0/16` but not from
+`110.2.3.4/32`.
+
+<Tabs groupId="connectivity" queryString="cty">
+	<TabItem value="agent-cli" label="Agent CLI" default>
+		<AgentCliExample />
+	</TabItem>
+	<TabItem value="agent-config" label="Agent Config File">
+		<AgentConfigExample />
+	</TabItem>
+	<TabItem value="ssh" label="SSH">
+		<SshExample />
+	</TabItem>
+	<TabItem value="go-sdk" label="Go SDK">
+		<GoSdkExample />
+	</TabItem>
+	<TabItem value="rust-sdk" label="Rust SDK">
+		<RustSdkExample />
+	</TabItem>
+	<TabItem value="k8s" label="Kubernetes Controller">
+		<KubernetesExample />
+	</TabItem>
+</Tabs>
+
+## Behavior
+
+### Rule Evaluation
+
+A connection is allowed only if its source IP matches at least one rule with an
+'allow' action and does not match any rule with a 'deny' action.
+
+When using Edges and the Kubernetes Ingress Controller, if the IP Restrictions
+module references multiple IP Policies, then the rules of all referenced IP
+Policies are unioned together for evaluation.
+
+### IPv6
+
+ngrok supports IPv6 addresses for all IP rules. You may use standard abbreviated
+notations.
+
+```
+ngrok tcp 22 --allow-cidr "::/0" --deny-cidr "2600:1f16:d83:1202::6e:2/128"
+```
+
+Don't forget to create IPv6 rules. It's easy to test only with IPv4 and then
+suddenly things don't work when your software starts using IPv6 because you've
+forgotten to create rules to allow traffic from IPv6 addresses.
+
+## Reference
+
+### Configuration
+
+###### **Agent Configuration**
+
+| Parameter       | Description                            |
+| --------------- | -------------------------------------- |
+| **Allow CIDRs** | A set of IPv4 and IPv6 CIDRs to allow. |
+| **Deny CIDRs**  | A set of IPv4 and IPv6 CIDRs to deny.  |
+
+###### **Edge Configuration**
+
+| Parameter         | Description                                                                                                                                                                                                      |
+| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **IP Policy IDs** | A set of IP policies that will be used to check if a source IP is allowed access. See the [TCP Edge IP Restrictions Module API Resource](/api/resources/tcp-edge-ip-restriction-module/) for additional details. |
+
+### Errors
+
+If a connection is disallowed by IP Restrictions then the connection is closed.
+
+### Events
+
+When the IP Restrictions module is enforced, it populates the following fields
+in the [tcp_connection_closed.v0](/obs/reference/#tcp-connection-closed)
+event.
+
+| Fields               |
+| -------------------- |
+| `ip_policy.decision` |
+
+### Edges
+
+IP Restrictions is a supported TCP Edge module. When using IP Restrictions via
+Edges, you specify a set of references to one or more IP Policy objects, each
+of which contains a list of IP Policy Rule objects.
+
+IP Restrictions and the IP Policy and IP Policy Rule objects they reference can
+be configured via the ngrok dashboard or API.
+
+- [TCP Edge IP Restrictions Module API Resource](/api/resources/tcp-edge-ip-restriction-module/)
+- [IP Policy API Resource](/api/resources/ip-policies/)
+- [IP Policy Rule API Resource](/api/resources/ip-policy-rules/)
+
+### Pricing
+
+This module is available on the Pro and Enterprise plans.
+
+## Try it out
+
+First, grab your IPv4 and IPv6 addresses:
+
+```bash
+curl -4 icanhazip.com
+curl -6 icanhazip.com
+```
+
+Then run ngrok with IP Restrictions with the IPv4 and IPv6 addresses you got in the previous step:
+
+```bash
+ngrok tcp 80 \
+  --remote-addr 1.tcp.ngrok.io:12345 \
+  --allow-cidr 2600:8c00::a03c:91ee:fe69:9695/32 \
+  --allow-cidr 78.227.75.230/32
+```
+
+Then make requests to your ngrok domain using the `-4` and `-6` flags to test both IPv4 and IPv6:
+
+```bash
+curl -4 http://1.tcp.ngrok.io:12345
+curl -6 http://1.tcp.ngrok.io:12345
+```

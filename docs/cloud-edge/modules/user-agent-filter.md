@@ -153,7 +153,7 @@ This module does not add any upstream headers.
 
 When the User Agent Filter module is enabled, it populates the following
 fields in the
-[http_request_complete.v0](/events/reference/#http-request-complete) event:
+[http_request_complete.v0](/obs/reference/#http-request-complete) event:
 
 | Fields                       |
 | ---------------------------- |

@@ -1,0 +1,251 @@
+import HttpHeaderTemplates from "./_http_header_templates.mdx";
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+import KubernetesExample from "/examples/k8s/http-response-headers.mdx";
+import AgentCliExample from "/examples/agent-cli/http-response-headers.mdx";
+import AgentConfigExample from "/examples/agent-config/http-response-headers.mdx";
+import SshExample from "/examples/ssh/http-response-headers.mdx";
+import GoSdkExample from "/examples/go-sdk/http-response-headers.mdx";
+import RustSdkExample from "/examples/rust-sdk/http-response-headers.mdx";
+
+# Response Headers
+
+---
+
+## Overview
+
+This module adds and removes headers from the HTTP response before it is
+returned to the client. This is useful for stripping internal headers or
+enforcing the use of security headers without modifying your upstream service.
+
+You may [interpolate variables into header values](#variable-interpolation) to make them dynamic.
+
+## Example Usage
+
+<Tabs groupId="connectivity" queryString="cty">
+	<TabItem value="agent-cli" label="Agent CLI" default>
+		<AgentCliExample />
+	</TabItem>
+	<TabItem value="agent-config" label="Agent Config File">
+		<AgentConfigExample />
+	</TabItem>
+	<TabItem value="ssh" label="SSH">
+		<SshExample />
+	</TabItem>
+	<TabItem value="go-sdk" label="Go SDK">
+		<GoSdkExample />
+	</TabItem>
+	<TabItem value="rust-sdk" label="Rust SDK">
+		<RustSdkExample />
+	</TabItem>
+	<TabItem value="k8s" label="Kubernetes Controller">
+		<KubernetesExample />
+	</TabItem>
+</Tabs>
+
+## Behavior
+
+### Variable Interpolation
+
+You may interpolate variables into header values. Variables are interpolated
+into headers with JSONPath expressions surrounded by the `${}` syntax.
+
+For example to return to the duration spent dialing the upstream service,
+you may construct a header value like so.
+
+```bash
+ngrok http 80 --response-header-add 'dial-duration: ${.backend.dial_duration}'
+```
+
+If you are specifying variable interpolation from the command line, make sure
+to use single quotes for the command line argument otherwise it is likely that
+the shell will interpret your variable definition.
+
+Consult the [Variables Reference](#variables) for the available variables.
+
+### Multiple Header Values
+
+HTTP headers may include the same header multiple times. You may add a header
+multiple times with different values and it will be added multiple times. For
+example:
+
+```bash
+ngrok http 80 --response-header-add "foo: bar" --response-header-add "foo: baz"
+```
+
+will result in a header with multiple values set
+
+```http
+HTTP/2 200
+foo: bar
+foo: baz
+```
+
+:::note
+
+There is a bug which currently causes the above behavior to not be correct.
+Only the last header will be used when specifying multiple headers. This behavior
+will be fixed to match what is documented above.
+
+:::
+
+If you remove a header that has multiple values, all values will be removed.
+
+### Replacing Header Values
+
+If you add a header that is already present in the HTTP response, it will add
+another header. For example, if you run:
+
+```bash
+ngrok http 80 --response-header-add "foo: new-value"
+```
+
+And the HTTP response from the upstream server was:
+
+```http
+HTTP/2
+foo: original-value
+```
+
+The client will receive the following:
+
+```http
+HTTP/2
+foo: original-value
+foo: new-value
+```
+
+If you wish to replace a header, you can combine header removal and addition to
+achieve that effect.
+
+```bash
+ngrok http 80 --response-header-remove "foo" --response-header-add "foo: new-value"
+```
+
+This will cause the HTTP response in this case to become:
+
+```http
+HTTP/2
+foo: new-value
+```
+
+### Case Sensitivity
+
+When adding headers, ngrok normalizes all header keys to a lower case
+representation per the http/2 RFC. See [RFC
+7540](https://datatracker.ietf.org/doc/html/rfc7540#section-8.1.2).
+
+When removing headers, ngrok will remove any headers that match with a
+case-insensitive comparison.
+
+### Ordering
+
+Response header changes made by other modules can be overridden by this module
+because this module is executed immediately before the HTTP header is written
+to the client.
+
+[http_request_complete.v0](/obs/reference/#http-request-complete) events
+include any header changes made by this module because those events are
+published after this module executes.
+
+## Reference
+
+### Configuration
+
+| Parameter           | Description                                     |
+| ------------------- | ----------------------------------------------- |
+| **Added Headers**   | A list of header names to header values. Max 5. |
+| **Removed Headers** | A list of header names to remove. Max 5.        |
+
+### Upstream Headers {#upstream-headers}
+
+This module does not add any upstream headers.
+
+### Errors
+
+This module does not return any errors.
+
+### Events
+
+This module does not populate any fields in events.
+
+### Edges
+
+Response Headers is an HTTPS Edge module which can be applied to Routes.
+
+- [Response Headers Edge Module API
+  Resource](/api/resources/https-edge-route-response-headers-module/)
+
+### Pricing
+
+This module is available on all plans.
+
+If you are not subscribed to a paid account, it is not permitted to remove the
+`ngrok-agent-ip` header. This header is part of ngrok's abuse deterrence
+mechanism.
+
+### Variables
+
+<HttpHeaderTemplates />
+
+## Try it out
+
+First let's create a directory with an example file to serve.
+
+```bash
+mkdir test-response-headers
+cd test-response-headers
+echo "response headers test" > t.txt
+```
+
+Next, start ngrok and specify that we want to add a header.
+
+```bash
+ngrok http file://`pwd` --response-header-add="foo: bar"
+```
+
+In a separate terminal, curl that endpoint.
+
+```bash
+curl -I https://your-domain.ngrok.app/t.txt
+```
+
+You can see the `foo: bar` header in the response.
+
+```http
+HTTP/2 200
+accept-ranges: bytes
+content-type: text/plain; charset=utf-8
+date: Sat, 29 Jul 2023 14:58:28 GMT
+foo: bar
+last-modified: Sat, 29 Jul 2023 14:50:23 GMT
+ngrok-agent-ips: 1.2.3.4
+ngrok-trace-id: 85874fc497b4b0f0d849688dfe4df83c
+content-length: 22
+```
+
+Now, let's try removing a header. We'll remove the `last-modified` header we
+saw in the previous response. Stop your previous instance of ngrok with `Ctrl+C`
+and then restart ngrok with a new command.
+
+```bash
+ngrok http file://`pwd` --response-header-remove="last-modified"
+```
+
+In a separate terminal, make another request to it.
+
+```bash
+curl -I https://your-domain.ngrok.app/t.txt
+```
+
+You can see that the `last-modified` header has been removed from the response.
+
+```http
+HTTP/2 200
+accept-ranges: bytes
+content-type: text/plain; charset=utf-8
+date: Sat, 29 Jul 2023 15:01:47 GMT
+ngrok-agent-ips: 1.2.3.4
+ngrok-trace-id: de01adaa98a96eef167e96485051d786
+content-length: 22
+```
