@@ -4,6 +4,9 @@ title: Agent Changelog
 
 # ngrok Agent Changelog
 
+### ngrok Agent 3.3.3 - \[2023-08-11\]
+* Added performance improvements. 
+
 ### ngrok Agent 3.3.2 - \[2023-07-27\]
 
 - Added support for the [Datadog event destination](https://ngrok.com/docs/integrations/datadog/event-destination/) in `ngrok api`
