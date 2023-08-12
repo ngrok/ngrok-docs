@@ -4,7 +4,8 @@ title: Installing as a Service
 ---
 
 # ngrok as a Background Service
---------------------
+
+---
 
 The ngrok agent includes additional functionality that makes it easy to install and manage itself as a native operating system service on Windows, MacOS and Linux. This makes it extraordinarily easy to set up ngrok in a production configuration that will cause it to start on machine boot, restart after crashes, and integrate with the native tools system administrators are familiar with to manage and inspect its state.
 
@@ -42,7 +43,7 @@ After your service is installed, you probably want to start it. You can easily d
 
 ngrok exposes the following commands to make service administration easy. The commands take no arguments and do what you would expect.
 
-*   `ngrok service start`
-*   `ngrok service stop`
-*   `ngrok service restart`
-*   `ngrok service uninstall`
+- `ngrok service start`
+- `ngrok service stop`
+- `ngrok service restart`
+- `ngrok service uninstall`

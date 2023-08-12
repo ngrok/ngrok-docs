@@ -5,7 +5,8 @@ title: Reference
 ---
 
 # ngrok Agent Reference
------------
+
+---
 
 The `ngrok` command includes everything you need to securely tunnel traffic to the internet as well as interact with the ngrok API.
 
@@ -15,11 +16,11 @@ Any flags that accept a list can be specified multiple times, one for each list 
 
 The ngrok agent v3 includes a large number of improvements over the v2 agent. Here are some major highlights, but you can find a complete list in the [changelog](/secure-tunnels/ngrok-agent/reference/changelog).
 
-*   Linux and Mac users can install tab autocompletion capability for the ngrok agent to make discovery of new commands and flags much easier.
-*   We've added an easy way to work with the ngrok API using the `ngrok api` command. You can use this to access any part of the API without having to worry about authenticating or formatting requests properly.
-*   The agent now includes native capability to run ngrok as a service via the `ngrok service` command. Previously that was only available to ngrok link customers.
-*   The `ngrok diagnose` command can be used to identify and troubleshoot common connection issues between the agent and the ngrok service.
-*   HTTP tunnels now use HTTPS by default and include support for a large number of middleware modules for securing and manipulating traffic. See `ngrok http -h` for details.
+- Linux and Mac users can install tab autocompletion capability for the ngrok agent to make discovery of new commands and flags much easier.
+- We've added an easy way to work with the ngrok API using the `ngrok api` command. You can use this to access any part of the API without having to worry about authenticating or formatting requests properly.
+- The agent now includes native capability to run ngrok as a service via the `ngrok service` command. Previously that was only available to ngrok link customers.
+- The `ngrok diagnose` command can be used to identify and troubleshoot common connection issues between the agent and the ngrok service.
+- HTTP tunnels now use HTTPS by default and include support for a large number of middleware modules for securing and manipulating traffic. See `ngrok http -h` for details.
 
 There's a whole lot more to discover in the new ngrok agent v3. This [upgrade guide](/guides/upgrade-v2-v3) will help you move to the new version and make you aware of the breaking changes.
 
@@ -53,8 +54,8 @@ After that, you will be able to see the available options by pressing tab after 
 
 The ngrok agent supports environment variables as well for the authtoken and API key. You may use them instead if that's easier in your environment.
 
-*   `NGROK_AUTHTOKEN` - For more information about authtokens, see the [ngrok secure tunnels documentation](/secure-tunnels/ngrok-agent/tunnel-authtokens).
-*   `NGROK_API_KEY` - For more information, see the [ngrok API documentation](/api#authentication).
+- `NGROK_AUTHTOKEN` - For more information about authtokens, see the [ngrok secure tunnels documentation](/secure-tunnels/ngrok-agent/tunnel-authtokens).
+- `NGROK_API_KEY` - For more information, see the [ngrok API documentation](/api#authentication).
 
 ### Examples
 

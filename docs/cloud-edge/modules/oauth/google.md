@@ -1,5 +1,6 @@
 # Google
--------------
+
+---
 
 ## Creating a custom Google OAuth application
 
@@ -12,13 +13,13 @@ Step-by-step instructions below follow Google's documentation on [setting up OAu
 3.  Select whether your application is an [internal or external app](https://support.google.com/cloud/answer/6158849?hl=en#public-and-internal).
 4.  Fill out the application name and support email.
 5.  Add additional scopes required by your application, saving the full scope URI for later.
-    *   [Possible scope URIs](https://developers.google.com/identity/protocols/oauth2/scopes)
-    .
+    - [Possible scope URIs](https://developers.google.com/identity/protocols/oauth2/scopes)
+      .
 6.  Ensure that the `email` and `profile` scopes are still selected.
 7.  Under Authorized domains, add `ngrok.com` and your application homepage domain.
 8.  Add links to your application homepage and privacy policy. The final consent screen should resemble: [![](/img/howto/oauth/1-google-consent_screen_complete.png)](/img/howto/oauth/1-google-consent_screen_complete.png)
 9.  Save the application.
-    *   Applications that require verification cannot complete the consent screen and are not supported by ngrok.
+    - Applications that require verification cannot complete the consent screen and are not supported by ngrok.
 
 ### Create credentials for ngrok
 
@@ -34,11 +35,11 @@ Step-by-step instructions below follow Google's documentation on [setting up OAu
 2.  Choose to use your own application with Google as the provider.
 3.  Include the client ID, secret, and scopes configured in your application.
 4.  Add the following scopes to your application if they are not already present:
-    *   `https://www.googleapis.com/auth/userinfo.profile`
-    *   `https://www.googleapis.com/auth/userinfo.email`
+    - `https://www.googleapis.com/auth/userinfo.profile`
+    - `https://www.googleapis.com/auth/userinfo.email`
 
 ### Additional application setup information
 
-*   [Google OAuth 2.0 Web Server](https://developers.google.com/identity/protocols/oauth2/web-server) (prerequisite steps)
-*   [GCP Help: Setting up OAuth 2.0](https://support.google.com/cloud/answer/6158849?hl=en)
-*   [Google OAuth 2.0 workflow](https://developers.google.com/identity/protocols/oauth2)
+- [Google OAuth 2.0 Web Server](https://developers.google.com/identity/protocols/oauth2/web-server) (prerequisite steps)
+- [GCP Help: Setting up OAuth 2.0](https://support.google.com/cloud/answer/6158849?hl=en)
+- [Google OAuth 2.0 workflow](https://developers.google.com/identity/protocols/oauth2)

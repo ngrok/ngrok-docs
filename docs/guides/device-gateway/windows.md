@@ -2,15 +2,15 @@
 title: Windows
 description: Learn how to install ngrok on a remote Windows device to provide secure access and management.
 tags:
-    - guides
-    - agent
-    - windows
-    - iot
+  - guides
+  - agent
+  - windows
+  - iot
 ---
 
 ngrok allows you to create secure ingress to any app, device, or service without spending hours learning arcane networking technologies. You can get started with a single command or a single line of code.
 
-What is ngrok? ngrok is an ingress-as-a-service platform that removes the hassle of getting code online from developers’ plates by decoupling ingress from infrastructure with one line of code, all without provisioning proxies or VPNs. 
+What is ngrok? ngrok is an ingress-as-a-service platform that removes the hassle of getting code online from developers’ plates by decoupling ingress from infrastructure with one line of code, all without provisioning proxies or VPNs.
 
 In this guide, we'll walk you through the process of installing the ngrok agent on a remote Windows device, ensuring the agent runs integrated into your operating system, restricting traffic to trusted origins, and integrating traffic events with your preferred logging tool.
 
@@ -21,41 +21,46 @@ To download and install the ngrok agent on your remote Windows device, follow th
 1. Open a terminal into your remote Windows device.
 
 1. Download the latest ngrok binary for your Windows distribution. You can find the correct binary on our [ngrok download page](https://ngrok.com/download): Select your operating system, select the version, and copy the link that appears in the **Download** button. Below is an example using PowerShell:
+
 ```bash
 Invoke-WebRequest -Uri https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-windows-amd64.zip -OutFile ngrok-v3-stable-windows-amd64.zip
 ```
 
 1. Unzip the downloaded file and move it to a directory in your PATH. Below is an example using PowerShell:
+
 ```bash
 Expand-Archive .\ngrok-v3-stable-windows-amd64.zip -DestinationPath .\
 ```
 
 1. Open a PowerShell and run the following command:
+
 ```bash
 ngrok authtoken NGROK_AUTHTOKEN
 ```
-  **Note**: Replace `NGROK_AUTHTOKEN` with your unique ngrok authtoken found in the [ngrok dashboard](https://dashboard.ngrok.com/get-started/your-authtoken).
 
+**Note**: Replace `NGROK_AUTHTOKEN` with your unique ngrok authtoken found in the [ngrok dashboard](https://dashboard.ngrok.com/get-started/your-authtoken).
 
 ## Step 2: Enable SSH access
 
 To enable Remote Desktop Protocol (RDP) access to your device via ngrok:
 
 1. Test that the ngrok agent is configured correctly by starting a TCP tunnel on your remote device to enable you to connect through RDP.
-  **Note**: If you get an error, ensure your authtoken is configured correctly.
+   **Note**: If you get an error, ensure your authtoken is configured correctly.
+
 ```bash
 ngrok tcp 3389
 ```
 
 1. The ngrok agent assigns you a TCP address and port. Use these values to test the RDP access via ngrok by running the Remote Desktop Protocol app on your local Windows desktop. Below is an example using PowerShell:
+
 ```bash
 Start-Process "$env:windir\system32\mstsc.exe" -ArgumentList "/v:NGROK_TCP_ADDRESS:NGROK_PORT"
 ```
 
-  **Note**: Replace the variables in the command line with the following:
-  - NGROK_TCP_ADDRESS: The address of the ngrok agent (i.e. if the agent shows `tcp://1.tcp.ngrok.io:12345`, your TCP address is `1.tcp.ngrok.io`.
-  - NGROK_PORT: The port number of the ngrok agent (i.e. if the agent shows `tcp://1.tcp.ngrok.io:12345`, your port number is `12345`.
+**Note**: Replace the variables in the command line with the following:
 
+- NGROK_TCP_ADDRESS: The address of the ngrok agent (i.e. if the agent shows `tcp://1.tcp.ngrok.io:12345`, your TCP address is `1.tcp.ngrok.io`.
+- NGROK_PORT: The port number of the ngrok agent (i.e. if the agent shows `tcp://1.tcp.ngrok.io:12345`, your port number is `12345`.
 
 ## Step 3: Adding IP restrictions
 
@@ -66,15 +71,16 @@ Once you confirmed that you have connectivity to the device, add some security s
 1. On the remote Windows device PowerShell terminal, stop the ngrok process using the `ctrl+c` command.
 
 1. Add an allow rule to restrict access to your Windows device to an IP address or a range of IP addresses.
+
 ```bash
 ngrok tcp 3389 --cidr-allow ALLOWED_IP_ADDRESS_CIDR
 ```
-  **Note**: Replace `ALLOWED_IP_ADDRESS_CIDR` with the CIDR notation for the allowed IP Address(es) (i.e. `123.123.123.0/24`).
+
+**Note**: Replace `ALLOWED_IP_ADDRESS_CIDR` with the CIDR notation for the allowed IP Address(es) (i.e. `123.123.123.0/24`).
 
 :::tip Setting IP restrictions for the entire fleet
 Alternatively, you can create an IP policy in the ngrok dashboard (under [Security > IP Restrictions](https://dashboard.ngrok.com/security/ip-restrictions)), and leverage the same policy to control access to your entire device fleet.
 :::
-
 
 ## Step 4: Configure ngrok to recover on outages
 
@@ -85,6 +91,7 @@ The ngrok agent works with native OS services like `systemd`. This helps you ens
 Update the ngrok config file in your Windows device to start the ngrok agent using this TCP address.
 
 1. Open the ngrok config file:
+
 ```bash
 ngrok config edit
 ```
@@ -102,14 +109,16 @@ tunnels:
         - ALLOWED_IP_ADDRESS_CIDR
 ```
 
-  **Note**: Make sure to replace **NGROK_TCP_ADDRESS** with the address you reserved earlier in the ngrok dashboard (i.e. `1.tcp.ngrok.io:12345`) and **ALLOWED_IP_ADDRESS_CIDR** with the CIDR notation of the allowed IP Address(es) (i.e. `123.123.123.0/24`).
+**Note**: Make sure to replace **NGROK_TCP_ADDRESS** with the address you reserved earlier in the ngrok dashboard (i.e. `1.tcp.ngrok.io:12345`) and **ALLOWED_IP_ADDRESS_CIDR** with the CIDR notation of the allowed IP Address(es) (i.e. `123.123.123.0/24`).
 
-  **Note**: Make note of the location of the `ngrok.yml` file (i.e. `%HOMEPATH%\AppData\Local\ngrok\`).
+**Note**: Make note of the location of the `ngrok.yml` file (i.e. `%HOMEPATH%\AppData\Local\ngrok\`).
 
 1. Enable ngrok in service mode:
+
 ```bash
 ngrok service install --config %HOMEPATH%\AppData\Local\ngrok\ngrok.yml"
 ```
+
 :::note
 You may need to run this command in a PowerShell terminal with administrator privileges.
 :::
@@ -119,11 +128,13 @@ You may need to run this command in a PowerShell terminal with administrator pri
 ```bash
 ngrok service start
 ```
+
 :::note
 You may need to run this command in a PowerShell terminal with administrator privileges.
 :::
 
 1. With ngrok running on your device, you should be able to RDP into the device using the reserved address from the dashboard.
+
 ```bash
 Start-Process "$env:windir\system32\mstsc.exe" -ArgumentList "/v:NGROK_TCP_ADDRESS:NGROK_PORT"
 ```
@@ -144,4 +155,4 @@ You can also forward all or some of your traffic events from [ngrok to your pref
 
 ### Remote checks, stop, start, and updates
 
-ngrok provides [APIs](/docs/api/resources/tunnel-sessions/#restart-tunnel-agent) and a [dashboard UI](https://dashboard.ngrok.com/tunnels/agents) for you to monitor the health of ngrok agents running in your fleet. The interfaces also allow you to remotely stop, start, and update agents. 
+ngrok provides [APIs](/docs/api/resources/tunnel-sessions/#restart-tunnel-agent) and a [dashboard UI](https://dashboard.ngrok.com/tunnels/agents) for you to monitor the health of ngrok agents running in your fleet. The interfaces also allow you to remotely stop, start, and update agents.

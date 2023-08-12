@@ -3,7 +3,8 @@ sidebar_position: 5
 ---
 
 # Running ngrok without agents
---------------------
+
+---
 
 ngrok offers different options using launching tunnels without downloading or running the ngrok agent. Each option is best suited for different use-cases:
 

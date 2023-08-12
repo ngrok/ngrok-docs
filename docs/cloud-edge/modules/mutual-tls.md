@@ -1,5 +1,6 @@
 # Mutual TLS
-----------------
+
+---
 
 ## Overview
 
@@ -161,7 +162,7 @@ concatenated together. A file like that might look like:
 
 ### CA Basic Constraint
 
-x509 certificates contain a basic constraint attribute  called `cA` which
+x509 certificates contain a basic constraint attribute called `cA` which
 defines whether or not the certificate may be used as a CA.
 
 ngrok will refuse to accept a certificate as an mTLS certificate authority
@@ -177,22 +178,22 @@ When the Mutual TLS module is enabled, ngrok will insert headers into the HTTP
 request sent to your upstream server with details about the client certificate
 that was presented for the Mutual TLS handshake.
 
-| Header Name | Value |
-| ----------- | ----- |
-| `ngrok-mtls-subject-cn` | The client certificate subject common name |
-| `ngrok-mtls-subject-alt-name-dns` | The client certificate's DNS subject alternative names |
-| `ngrok-mtls-email-addresses` | The client certificate's email subject alternative names  |
-| `ngrok-mtls-serial-number` | The client certificate's serial number |
+| Header Name                       | Value                                                    |
+| --------------------------------- | -------------------------------------------------------- |
+| `ngrok-mtls-subject-cn`           | The client certificate subject common name               |
+| `ngrok-mtls-subject-alt-name-dns` | The client certificate's DNS subject alternative names   |
+| `ngrok-mtls-email-addresses`      | The client certificate's email subject alternative names |
+| `ngrok-mtls-serial-number`        | The client certificate's serial number                   |
 
 ### Events
 
 When the mutual TLS module is enabled, it populates the following fields in
-[http\_request\_complete.v0](/events/reference/#http-request-complete) events.
+[http_request_complete.v0](/events/reference/#http-request-complete) events.
 
-| Fields |
-| ------ |
+| Fields                          |
+| ------------------------------- |
 | `tls.client_cert.serial_number` |
-| `tls.client_cert.subject.cn` |
+| `tls.client_cert.subject.cn`    |
 
 No event data is captured when the module is enabled on TLS endpoints.
 

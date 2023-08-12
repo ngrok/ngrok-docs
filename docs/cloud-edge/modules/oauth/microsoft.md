@@ -1,5 +1,6 @@
 # Microsoft
---------------
+
+---
 
 ## Creating a custom Microsoft OAuth application
 
@@ -13,8 +14,8 @@ Step-by-step instructions below closely follow [Microsoft documentation](https:/
 4.  Select "New registration" at the top.
 5.  Enter a name for your application.
 6.  ngrok does not support [**single tenant** applications](https://docs.microsoft.com/en-us/azure/active-directory/develop/single-and-multi-tenant-apps). Choose supported account types from:
-    *   Accounts in any organizational directory (Any Azure AD directory - Multitenant)
-    *   Accounts in any organizational directory (Any Azure AD directory - Multitenant) and personal Microsoft accounts (e.g. Skype, Xbox)
+    - Accounts in any organizational directory (Any Azure AD directory - Multitenant)
+    - Accounts in any organizational directory (Any Azure AD directory - Multitenant) and personal Microsoft accounts (e.g. Skype, Xbox)
 7.  Choose a "Web" redirect URI and enter `https://idp.ngrok.com/oauth2/callback`.
 8.  Register your application. The final form should resemble: [![](/img/howto/oauth/1-microsoft-create_app.png)](/img/howto/oauth/1-microsoft-create_app.png)
 
@@ -24,8 +25,8 @@ Step-by-step instructions below closely follow [Microsoft documentation](https:/
 2.  Store the "Application (client) ID" in the top information section for later. [![](/img/howto/oauth/2-microsoft-app_overview.png)](/img/howto/oauth/2-microsoft-app_overview.png)
 3.  Select "API permissions" on the left hand navigation.
 4.  Add additional scopes that your application requires and store them for later.
-    *   Scopes which require an application review by Microsoft are unsupported.
-    *   Scopes that [require admin consent](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-permissions-and-consent#admin-restricted-permissions) prevent tenants' users from authorizing until consent is granted.
+    - Scopes which require an application review by Microsoft are unsupported.
+    - Scopes that [require admin consent](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-permissions-and-consent#admin-restricted-permissions) prevent tenants' users from authorizing until consent is granted.
 5.  Ensure `User.Read` or a more permissive scope (e.g. `User.Read.All`) is configured for ngrok. Example minimal configuration: [![](/img/howto/oauth/3-microsoft-api_permissions.png)](/img/howto/oauth/3-microsoft-api_permissions.png)
 6.  Choose "Certificates and Secrets" on the left hand navigation.
 7.  Select "New Client Secret" at the bottom, name the secret, set an expiration, and hit create.
@@ -39,6 +40,6 @@ Step-by-step instructions below closely follow [Microsoft documentation](https:/
 
 ### Additional application setup information
 
-*   [Creating an Azure AD tenant](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-create-new-tenant)
-*   [Permissions and consent](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-permissions-and-consent#admin-restricted-permissions) (restricted permissions)
-*   [Graph API User object properties](https://developers.facebook.com/docs/facebook-login/handling-declined-permissions#reprompt) (id, displayName, and mail/userPrincipalName)
+- [Creating an Azure AD tenant](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-create-new-tenant)
+- [Permissions and consent](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-permissions-and-consent#admin-restricted-permissions) (restricted permissions)
+- [Graph API User object properties](https://developers.facebook.com/docs/facebook-login/handling-declined-permissions#reprompt) (id, displayName, and mail/userPrincipalName)

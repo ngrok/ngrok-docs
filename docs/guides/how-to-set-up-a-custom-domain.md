@@ -1,6 +1,6 @@
-
 # How to set up a custom domain
------------------------------
+
+---
 
 If you're already using ngrok with subdomains of an ngrok owned domain but would like to have your tunnels available from a domain that you own, you're in the right place.
 

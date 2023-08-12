@@ -1,6 +1,6 @@
-
 # Facebook
--------------
+
+---
 
 ## Creating a custom Facebook application
 
@@ -22,16 +22,16 @@ For additional assistance, see the [Facebook app registration](https://developer
 5.  Save the Facebook Login settings page. Final configuration should match: [![](/img/howto/oauth/3-facebook-login_settings.png)](/img/howto/oauth/3-facebook-login_settings.png)
 6.  Select Settings on the left hand navigation, then choose advanced.
 7.  Fill out additional settings for your application.
-    *   ngrok does not support Server IP allowlisting.
+    - ngrok does not support Server IP allowlisting.
 8.  Enable "Require App Secret". See [documentation](https://developers.facebook.com/docs/facebook-login/security/#appsecret) for how to call Facebook Graph API with this feature.
 9.  Save settings. A minimally complete security section of advanced settings: [![](/img/howto/oauth/4-facebook-security.png)](/img/howto/oauth/4-facebook-security.png)
-10.  Visit basic settings on the left hand navigation.
-11.  At the top, save your App ID and App Secret for later.
-12.  Fill out the privacy policy URL. This URL must accessible when entered for verification.
-13.  Select a category for your application.
-14.  Hit save changes. A minimally complete basic settings: [![](/img/howto/oauth/5-facebook-basic_settings.png)](/img/howto/oauth/5-facebook-basic_settings.png)
-15.  Select the toggle for "In development" at the top of the page and confirm switching to live mode.
-16.  Your application should now show as live: [![](/img/howto/oauth/6-facebook-live.png)](/img/howto/oauth/6-facebook-live.png)
+10. Visit basic settings on the left hand navigation.
+11. At the top, save your App ID and App Secret for later.
+12. Fill out the privacy policy URL. This URL must accessible when entered for verification.
+13. Select a category for your application.
+14. Hit save changes. A minimally complete basic settings: [![](/img/howto/oauth/5-facebook-basic_settings.png)](/img/howto/oauth/5-facebook-basic_settings.png)
+15. Select the toggle for "In development" at the top of the page and confirm switching to live mode.
+16. Your application should now show as live: [![](/img/howto/oauth/6-facebook-live.png)](/img/howto/oauth/6-facebook-live.png)
 
 ### Update your endpoint configuration
 
@@ -39,17 +39,16 @@ For additional assistance, see the [Facebook app registration](https://developer
 2.  Choose to use your own application with Facebook as the provider.
 3.  Include the app ID and app secret that were stored earlier.
 4.  Add [any scopes](https://developers.facebook.com/docs/apps/review/login-permissions) required by your application.
-    *   Scopes which require a Facebook [app review](https://developers.facebook.com/docs/apps/review/#app-review) are unsupported.
-    *   ngrok will enforce that users [accept all permissions](https://developers.facebook.com/docs/facebook-login/handling-declined-permissions#reprompt) before completing authorization.
+    - Scopes which require a Facebook [app review](https://developers.facebook.com/docs/apps/review/#app-review) are unsupported.
+    - ngrok will enforce that users [accept all permissions](https://developers.facebook.com/docs/facebook-login/handling-declined-permissions#reprompt) before completing authorization.
 5.  Add the `email` scope if it is not already present.
 
 ### Additional application setup information
 
-*   [Handling declined permissions](https://developers.facebook.com/docs/facebook-login/handling-declined-permissions)
-*   [App review](https://developers.facebook.com/docs/apps/review)
-*   [App secret proof](https://developers.facebook.com/docs/graph-api/securing-requests/#appsecret_proof)
+- [Handling declined permissions](https://developers.facebook.com/docs/facebook-login/handling-declined-permissions)
+- [App review](https://developers.facebook.com/docs/apps/review)
+- [App secret proof](https://developers.facebook.com/docs/graph-api/securing-requests/#appsecret_proof)
 
 ## User permission revocation
 
 Facebook allows revocation of any permission as part of the authorization flow. ngrok will enforce that users initially grant all configured permissions. However, at any time after endpoint authorization, users may selectively revoke permissions. If your application requires more than the `default` or `email` scope, you must follow [Facebook's rules](https://developers.facebook.com/docs/facebook-login/handling-declined-permissions#reprompt) for handling revoked permissions without violating terms of use.
-

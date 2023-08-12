@@ -19,7 +19,7 @@ type IntegrationDoc = {
 export default function IntegrationPageList({ name }) {
 	const integrations: any = usePluginData("ngrok-parse-integrations");
 	const data: Integration = integrations.find(
-		(x: Integration) => x.name === name
+		(x: Integration) => x.name === name,
 	);
 	const cards: any = [];
 	let group: any = [];
@@ -33,7 +33,7 @@ export default function IntegrationPageList({ name }) {
 				size="sm"
 				title={frontMatter?.title || contentTitle}
 				description={frontMatter?.description || excerpt}
-			/>
+			/>,
 		);
 
 		if (

@@ -3,7 +3,8 @@ sidebar_position: 8
 ---
 
 # IP Policies and Restrictions
---------------
+
+---
 
 Allowing or restricting access to a particular service by IP address is a great way to keep your service secure and protected from outside threats. ngrok includes a complete system for adding IP protection to all parts of the ngrok Platform including dashboard access, endpoint access, agent access or API access.
 

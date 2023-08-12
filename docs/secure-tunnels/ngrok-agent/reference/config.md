@@ -4,7 +4,8 @@ title: Agent Configuration File
 ---
 
 # ngrok Agent Configuration File
-------------------------------
+
+---
 
 The `ngrok` supports an optional, YAML configuration file which provides you with the power to run multiple tunnels simultaneously as well as to tweak some of ngrok's more advanced settings.
 
@@ -18,40 +19,40 @@ which will validate and print the location of the configuration file.
 
 For the main operating systems we support, their default file locations are:
 
-* Linux: `"~/.config/ngrok/ngrok.yml"`
-* MacOS (Darwin): `"~/Library/Application Support/ngrok/ngrok.yml"`
-* Windows: `"%HOMEPATH%\AppData\Local\ngrok\ngrok.yml"`
+- Linux: `"~/.config/ngrok/ngrok.yml"`
+- MacOS (Darwin): `"~/Library/Application Support/ngrok/ngrok.yml"`
+- Windows: `"%HOMEPATH%\AppData\Local\ngrok\ngrok.yml"`
 
 ## Global Options
 
 The following is a list of options that can be configured at the root of your configuration file and specify the behavior of the agent.
 
-| Name | Description |
-| --- | --- |
-| [api_key](#api_key) | Specifies the ngrok API key used to connect to the ngrok API. This is only needed when using the `ngrok api` command and should not be confused with the authtoken. |
-| [authtoken](#authtoken) | Specifies the authentication token (authtoken) used to connect to the ngrok service. |
-| [connect_timeout](#connect_timeout) | How long to wait when establishing an agent session connection to the ngrok service. The default is 10s. |
-| [console_ui](#console_ui) | Enable/disable the console UI |
-| [console\_ui\_color](#console_ui_color) | Set the background color of the console UI |
-| [dns\_resolver\_ips](#dns_resolver_ips) | Consult these DNS servers for tunnel session DNS resolution. |
-| [heartbeat_interval](#heartbeat_interval) | How often the ngrok agent should heartbeat to the ngrok servers defined as a duration. Default is 10s. |
-| [heartbeat_tolerance](#heartbeat_tolerance) | Reconnect the agent tunnel session if the server does not respond to a heartbeat within this tolerance defined as a duration. Default is 15s. |
-| [inspect\_db\_size](#inspect_db_size) | The size in bytes of the upper limit on memory to allocate to save requests over HTTP tunnels for inspection and replay. |
-| [log_level](#log_level) | Logging level of detail. In increasing order of verbosity, possible values are: |
-| [log_format](#log_format) | Format of written log records. |
-| [log](#log) | Write logs to this target destination. |
-| [metadata](#metadata) | Opaque, user-supplied string that will be returned as part of the ngrok API response to the [list online sessions](/api/resources/tunnel-sessions) resource for all tunnels started by this agent. |
-| [proxy_url](#proxy_url) | URL of an HTTP or SOCKS5 proxy to use for establishing the tunnel connection. |
-| [region](#region) | Choose the region where the ngrok agent will connect to host its tunnels. |
-| [remote_management](#remote_management) | Set this to `true` to allow the ngrok agent to be remotely managed (stop, restart, update). Defaults to `true`. |
-| [root_cas](#root_cas) | The root certificate authorities used to validate the TLS connection to the ngrok server. |
-| [server_addr](#server_addr) | This is the URL of the ngrok server to connect to. You should only set this if you are using a custom ingress URL. |
-| [tunnels](#tunnels) | A map of names to tunnel definitions. See [tunnel definitions](#tunnel-definitions) for more details. |
-| [update_channel](#update_channel) | The update channel determines the stability of released builds to update to. Use `stable` for all production deployments. |
-| [update_check](#update_check) | This tells the ngrok agent if it should check for updates. Defaults to `true`. |
-| [version](#version) | Specifies the version of the config file to use. |
-| [web_addr](#web_addr) | Network address to bind on for serving the local web interface and api. |
-| [web_allow_hosts](#web_allow_hosts) | Host headers to allow access for on the local web interface and api, can be a combination of IP's, CIDR ranges, and/or hostname suffixes. |
+| Name                                        | Description                                                                                                                                                                                        |
+| ------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [api_key](#api_key)                         | Specifies the ngrok API key used to connect to the ngrok API. This is only needed when using the `ngrok api` command and should not be confused with the authtoken.                                |
+| [authtoken](#authtoken)                     | Specifies the authentication token (authtoken) used to connect to the ngrok service.                                                                                                               |
+| [connect_timeout](#connect_timeout)         | How long to wait when establishing an agent session connection to the ngrok service. The default is 10s.                                                                                           |
+| [console_ui](#console_ui)                   | Enable/disable the console UI                                                                                                                                                                      |
+| [console_ui_color](#console_ui_color)       | Set the background color of the console UI                                                                                                                                                         |
+| [dns_resolver_ips](#dns_resolver_ips)       | Consult these DNS servers for tunnel session DNS resolution.                                                                                                                                       |
+| [heartbeat_interval](#heartbeat_interval)   | How often the ngrok agent should heartbeat to the ngrok servers defined as a duration. Default is 10s.                                                                                             |
+| [heartbeat_tolerance](#heartbeat_tolerance) | Reconnect the agent tunnel session if the server does not respond to a heartbeat within this tolerance defined as a duration. Default is 15s.                                                      |
+| [inspect_db_size](#inspect_db_size)         | The size in bytes of the upper limit on memory to allocate to save requests over HTTP tunnels for inspection and replay.                                                                           |
+| [log_level](#log_level)                     | Logging level of detail. In increasing order of verbosity, possible values are:                                                                                                                    |
+| [log_format](#log_format)                   | Format of written log records.                                                                                                                                                                     |
+| [log](#log)                                 | Write logs to this target destination.                                                                                                                                                             |
+| [metadata](#metadata)                       | Opaque, user-supplied string that will be returned as part of the ngrok API response to the [list online sessions](/api/resources/tunnel-sessions) resource for all tunnels started by this agent. |
+| [proxy_url](#proxy_url)                     | URL of an HTTP or SOCKS5 proxy to use for establishing the tunnel connection.                                                                                                                      |
+| [region](#region)                           | Choose the region where the ngrok agent will connect to host its tunnels.                                                                                                                          |
+| [remote_management](#remote_management)     | Set this to `true` to allow the ngrok agent to be remotely managed (stop, restart, update). Defaults to `true`.                                                                                    |
+| [root_cas](#root_cas)                       | The root certificate authorities used to validate the TLS connection to the ngrok server.                                                                                                          |
+| [server_addr](#server_addr)                 | This is the URL of the ngrok server to connect to. You should only set this if you are using a custom ingress URL.                                                                                 |
+| [tunnels](#tunnels)                         | A map of names to tunnel definitions. See [tunnel definitions](#tunnel-definitions) for more details.                                                                                              |
+| [update_channel](#update_channel)           | The update channel determines the stability of released builds to update to. Use `stable` for all production deployments.                                                                          |
+| [update_check](#update_check)               | This tells the ngrok agent if it should check for updates. Defaults to `true`.                                                                                                                     |
+| [version](#version)                         | Specifies the version of the config file to use.                                                                                                                                                   |
+| [web_addr](#web_addr)                       | Network address to bind on for serving the local web interface and api.                                                                                                                            |
+| [web_allow_hosts](#web_allow_hosts)         | Host headers to allow access for on the local web interface and api, can be a combination of IP's, CIDR ranges, and/or hostname suffixes.                                                          |
 
 ### `api_key`
 
@@ -79,20 +80,20 @@ How long to wait when establishing an agent session connection to the ngrok serv
 
 This option allows you to enable or disable the console UI that is displayed in your terminal window after starting ngrok.
 
-|     |     |     |
-| --- | --- | --- |
-| `true` |     | Enable the console UI |
-| `false` |     | Disable the console UI |
+|         |         |                                                                  |
+| ------- | ------- | ---------------------------------------------------------------- |
+| `true`  |         | Enable the console UI                                            |
+| `false` |         | Disable the console UI                                           |
 | `iftty` | default | Enable the UI only if standard out is a TTY (not a file or pipe) |
 
 ### `console_ui_color`
 
 The command sets the background color when displaying the console UI in the terminal. To choose a color other than black, set the value to transparent and change the background of your terminal window.
 
-|     |     |     |
-| --- | --- | --- |
-| `transparent` |     | Don't set a background color when displaying the console UI |
-| `black` | default | Set the console UI's background to black |
+|               |         |                                                             |
+| ------------- | ------- | ----------------------------------------------------------- |
+| `transparent` |         | Don't set a background color when displaying the console UI |
+| `black`       | default | Set the console UI's background to black                    |
 
 ### `dns_resolver_ips`
 
@@ -110,11 +111,11 @@ Reconnect the agent tunnel session if the server does not respond to a heartbeat
 
 This is the upper limit in bytes on memory to allocate when saving requests over HTTP tunnels for inspection and reply. The default is 0, which means 50MB.
 
-|     |     |     |
-| --- | --- | --- |
-| positive integers |     | size in bytes of the upper limit on memory to allocate to save requests over HTTP tunnels for inspection and replay. |
-| `0` | default | use the default allocation limit, 50MB |
-| `-1` |     | disable the inspection database; this has the effective behavior of disabling inspection for all tunnels |
+|                   |         |                                                                                                                      |
+| ----------------- | ------- | -------------------------------------------------------------------------------------------------------------------- |
+| positive integers |         | size in bytes of the upper limit on memory to allocate to save requests over HTTP tunnels for inspection and replay. |
+| `0`               | default | use the default allocation limit, 50MB                                                                               |
+| `-1`              |         | disable the inspection database; this has the effective behavior of disabling inspection for all tunnels             |
 
 ### `log_level`
 
@@ -124,22 +125,22 @@ This is the logging level of detail. In increasing order of verbosity, possible 
 
 This is the format of written log records.
 
-|     |     |     |
-| --- | --- | --- |
-| `logfmt` |     | human and machine friendly key/value pairs |
-| `json` |     | newline-separated JSON objects |
-| `term` | default | custom colored human format if standard out is a TTY, otherwise same as `logfmt` |
+|          |         |                                                                                  |
+| -------- | ------- | -------------------------------------------------------------------------------- |
+| `logfmt` |         | human and machine friendly key/value pairs                                       |
+| `json`   |         | newline-separated JSON objects                                                   |
+| `term`   | default | custom colored human format if standard out is a TTY, otherwise same as `logfmt` |
 
 ### `log`
 
 This is the destination where ngrok should write the logs.
 
-|     |     |     |
-| --- | --- | --- |
-| `stdout` |     | write to standard out |
-| `stderr` |     | write to standard error |
-| `false` | default | disable logging |
-| other values |     | write log records to file path on disk |
+|              |         |                                        |
+| ------------ | ------- | -------------------------------------- |
+| `stdout`     |         | write to standard out                  |
+| `stderr`     |         | write to standard error                |
+| `false`      | default | disable logging                        |
+| other values |         | write log records to file path on disk |
 
     log: /var/log/ngrok.log
 
@@ -157,15 +158,15 @@ This is the URL of an HTTP or SOCKS5 proxy to use for establishing the tunnel co
 
 This is the region where the ngrok agent will connect to. You can only choose one region per agent session. Choosing the region closest to you usually improves latency and performance. By default, the ngrok agent attempts to choose the best region for you.
 
-| Region Code | Region Name |
-| ---- | --- |
-| `us` | United States |
-| `eu` | Europe |
-| `ap` | Asia/Pacific |
-| `au` | Australia |
-| `sa` | South America |
-| `jp` | Japan |
-| `in` | India |
+| Region Code | Region Name   |
+| ----------- | ------------- |
+| `us`        | United States |
+| `eu`        | Europe        |
+| `ap`        | Asia/Pacific  |
+| `au`        | Australia     |
+| `sa`        | South America |
+| `jp`        | Japan         |
+| `in`        | India         |
 
 ### `remote_management`
 
@@ -175,11 +176,11 @@ Set this to `true` to allow the ngrok agent to be remotely managed (stop, restar
 
 This is the root certificate authorities used to validate the TLS connection to the ngrok server.
 
-|     |     |     |
-| --- | --- | --- |
-| `trusted` | default | use only the trusted certificate root for the ngrok.com tunnel service |
-| `host` |     | use the root certificates trusted by the host's operating system. This is helpful for working with machine-in-the-middle (MITM) proxies doing deep packet inspection (DPI). |
-| other values |     | path to a certificate PEM file on disk with certificate authorities to trust |
+|              |         |                                                                                                                                                                             |
+| ------------ | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `trusted`    | default | use only the trusted certificate root for the ngrok.com tunnel service                                                                                                      |
+| `host`       |         | use the root certificates trusted by the host's operating system. This is helpful for working with machine-in-the-middle (MITM) proxies doing deep packet inspection (DPI). |
+| other values |         | path to a certificate PEM file on disk with certificate authorities to trust                                                                                                |
 
 ### `server_addr`
 
@@ -193,11 +194,11 @@ This is a map of names to tunnel definitions. See [tunnel definitions](#tunnel-d
 
 The update channel determines the stability of released builds to update to. Use 'stable' for all production deployments.
 
-|     |     |     |
-| --- | --- | --- |
-| `stable` | default | These are builds that are ready to be used in production. |
-| `unstable` |     | update to new nightly builds when available which could be broken. This should not be used in production. |
-| `beta` |     | update to new beta builds when available which could be broken. This should not be used in production. |
+|            |         |                                                                                                           |
+| ---------- | ------- | --------------------------------------------------------------------------------------------------------- |
+| `stable`   | default | These are builds that are ready to be used in production.                                                 |
+| `unstable` |         | update to new nightly builds when available which could be broken. This should not be used in production. |
+| `beta`     |         | update to new beta builds when available which could be broken. This should not be used in production.    |
 
 ### `update_check`
 
@@ -211,32 +212,30 @@ Specifies the version of the config file to use.
 
 This is the network address to bind on for serving the local agent web interface and API.
 
-| Network address |     | Bind to this network address |
-| --- | --- | --- |
-| `127.0.0.1:4040` | default | default network address |
-| `false` |     | disable the web UI |
-
+| Network address  |         | Bind to this network address |
+| ---------------- | ------- | ---------------------------- |
+| `127.0.0.1:4040` | default | default network address      |
+| `false`          |         | disable the web UI           |
 
 ### `web_allow_hosts`
 
 These are a list of specifiers for what Host headers will be allowed to make requests agains the local agent web interface and API. Any port is stripped off the Host header before matching is performed.
 
-| Allow string |     | Example Host headers that would match |
-| --- | --- | --- |
-|     | default | requests to localhost-bound web interface or API endpoints are checked to have a localhost-like Host (localhost, 127.0.0.1, ::1, etc.) |
-| 8.8.8.8            |     | an IP matches Host header (8.8.8.8) |
-| 1:2:3:4:5:6:7:8    |     | an IPv6 matches Host header (1:2:3:4:5:6:7:8) |
-| 10.0.0.0/8         |     | a CIDR range matches a Host header that is an IP address in that range (10.0.0.1 or 10.1.2.3) |
-| 1:2:3:4:5:6:7:8/16 |     | a CIDR range matches a Host header that is an IPv6 address in that range (1:2:3:4:5:6:7:0) |
-| example.com        |     | a hostname without preceding period will match Host header exactly (example.com) |
-| .example.com       |     | a hostname with a preceding period Host header suffix (sub.example.com or foo.example.com) |
+| Allow string       |         | Example Host headers that would match                                                                                                  |
+| ------------------ | ------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+|                    | default | requests to localhost-bound web interface or API endpoints are checked to have a localhost-like Host (localhost, 127.0.0.1, ::1, etc.) |
+| 8.8.8.8            |         | an IP matches Host header (8.8.8.8)                                                                                                    |
+| 1:2:3:4:5:6:7:8    |         | an IPv6 matches Host header (1:2:3:4:5:6:7:8)                                                                                          |
+| 10.0.0.0/8         |         | a CIDR range matches a Host header that is an IP address in that range (10.0.0.1 or 10.1.2.3)                                          |
+| 1:2:3:4:5:6:7:8/16 |         | a CIDR range matches a Host header that is an IPv6 address in that range (1:2:3:4:5:6:7:0)                                             |
+| example.com        |         | a hostname without preceding period will match Host header exactly (example.com)                                                       |
+| .example.com       |         | a hostname with a preceding period Host header suffix (sub.example.com or foo.example.com)                                             |
 
 ##### Allow an IP address and a Domain as Host headers
 
     web_allow_hosts:
       - 8.8.8.8
       - example.com
-
 
 ## Tunnel definitions
 
@@ -265,73 +264,73 @@ Each tunnel you define is a map of configuration option names to values. The nam
 
 ##### Common Tunnel Configuration Properties
 
-|     |     |     |
-| --- | --- | --- |
-| `addr` | required | forward traffic to this local port number or network address. This can be just a port ( |
+|            |          |                                                                                                        |
+| ---------- | -------- | ------------------------------------------------------------------------------------------------------ |
+| `addr`     | required | forward traffic to this local port number or network address. This can be just a port (                |
 | `metadata` | Optional | arbitrary user-defined metadata that will appear in the ngrok service API when listing tunnel sessions |
 
 ##### HTTP Tunnel Configuration Properties
 
-|     |     |     |
-| --- | --- | --- |
-| `basic_auth` | Array of `username:password` Strings | This is a list of username:password combinations to use for basic authenticate. Passwords must be at least 8 characters long. |
-| `circuit_breaker` | Float | Reject requests when 5XX responses exceed this ratio |
-| `compression` | `true`, `false` | gzip compress HTTP responses from your web service |
-| `host_header` | `rewrite`, `preserve`, custom | Rewrite the HTTP Host header to this value, or `preserve` to leave it unchanged. The `rewrite` option will rewrite the host header to match the hostname of the upstream service you are sending traffic to. |
-| `domain` | Any valid domain or hostname that you have previously registered with ngrok. | The domain to request. If using a custom domain, this requires registering in the [ngrok dashboard](https://dashboard.ngrok.com/cloud-edge/domains) and setting a DNS CNAME value. When using wildcard domains you will need to surround the value with single quotes (domain: '*.example.com'). |
-| `inspect` | `true`, `false` | enable/disable the http request inspection in the web and agent API (default: true) |
-| `ip_restriction.allow_cidrs` | Array of CIDRs | Rejects connections that do not match the given CIDRs |
-| `ip_restriction.deny_cidrs` | Array of CIDRs | Rejects connections that match the given CIDRs and allows all other CIDRs. |
-| `mutual_tls_cas` | Valid system path | The path to the TLS certificate authority to verify client certs in mutual TLS |
-| `oauth.allow_domains` | Array of Strings | Allow only OAuth2 users with these email domains |
-| `oauth.allow_emails` | Array of Strings | Allow only OAuth users with these emails |
-| `oauth.oauth_scopes` | Array of Strings | Request these OAuth2 scopes when a user authenticates |
-| `oauth.provider` | String | enforce authentication OAuth2 provider on the endpoint, e.g. 'google'. For a lit of available providers, see [OAuth2 providers](/cloud-edge/modules/oauth/). |
-| `proto` | `http` | The tunnel protocol name. This defines the type of tunnel you would like to start. |
-| `proxy_proto` | String | The version of [PROXY protocol](https://www.haproxy.org/download/1.8/doc/proxy-protocol.txt) to use with this tunnel, empty if not using. Example values are 1 or 2. |
-| `request_header.add` | Array of `key:value` Strings | The headers to add to the request in the key:value format. |
-| `request_header.remove` | Array of Strings | The header keys to remove from the request. |
-| `response_header.add` | Array of Strings | The headers to add to the response in the key:value format. |
-| `response_header.remove` | Array of Strings | The header keys to remove from the response. |
-| `schemes` | `http`, `https` | bind to an HTTPS endpoint ( |
-| `subdomain` | Any valid combination of letters, numbers, hyphens or periods. | subdomain name to request. If unspecified, ngrok provides a unique subdomain based on your account type. |
-| `verify_webhook.provider` | String | Verify webhooks are signed by this provider, e.g. 'slack'. For a full list of providers, see [Webhook Verification Providers](/cloud-edge/modules/webhook-verification). |
-| `verify_webhook.secret` | String | The secret used by provider to sign webhooks, if there is one |
-| `websocket_tcp_converter` | `true`, `false` | Convert ingress websocket connections to TCP upstream |
+|                              |                                                                              |                                                                                                                                                                                                                                                                                                   |
+| ---------------------------- | ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `basic_auth`                 | Array of `username:password` Strings                                         | This is a list of username:password combinations to use for basic authenticate. Passwords must be at least 8 characters long.                                                                                                                                                                     |
+| `circuit_breaker`            | Float                                                                        | Reject requests when 5XX responses exceed this ratio                                                                                                                                                                                                                                              |
+| `compression`                | `true`, `false`                                                              | gzip compress HTTP responses from your web service                                                                                                                                                                                                                                                |
+| `host_header`                | `rewrite`, `preserve`, custom                                                | Rewrite the HTTP Host header to this value, or `preserve` to leave it unchanged. The `rewrite` option will rewrite the host header to match the hostname of the upstream service you are sending traffic to.                                                                                      |
+| `domain`                     | Any valid domain or hostname that you have previously registered with ngrok. | The domain to request. If using a custom domain, this requires registering in the [ngrok dashboard](https://dashboard.ngrok.com/cloud-edge/domains) and setting a DNS CNAME value. When using wildcard domains you will need to surround the value with single quotes (domain: '\*.example.com'). |
+| `inspect`                    | `true`, `false`                                                              | enable/disable the http request inspection in the web and agent API (default: true)                                                                                                                                                                                                               |
+| `ip_restriction.allow_cidrs` | Array of CIDRs                                                               | Rejects connections that do not match the given CIDRs                                                                                                                                                                                                                                             |
+| `ip_restriction.deny_cidrs`  | Array of CIDRs                                                               | Rejects connections that match the given CIDRs and allows all other CIDRs.                                                                                                                                                                                                                        |
+| `mutual_tls_cas`             | Valid system path                                                            | The path to the TLS certificate authority to verify client certs in mutual TLS                                                                                                                                                                                                                    |
+| `oauth.allow_domains`        | Array of Strings                                                             | Allow only OAuth2 users with these email domains                                                                                                                                                                                                                                                  |
+| `oauth.allow_emails`         | Array of Strings                                                             | Allow only OAuth users with these emails                                                                                                                                                                                                                                                          |
+| `oauth.oauth_scopes`         | Array of Strings                                                             | Request these OAuth2 scopes when a user authenticates                                                                                                                                                                                                                                             |
+| `oauth.provider`             | String                                                                       | enforce authentication OAuth2 provider on the endpoint, e.g. 'google'. For a lit of available providers, see [OAuth2 providers](/cloud-edge/modules/oauth/).                                                                                                                                      |
+| `proto`                      | `http`                                                                       | The tunnel protocol name. This defines the type of tunnel you would like to start.                                                                                                                                                                                                                |
+| `proxy_proto`                | String                                                                       | The version of [PROXY protocol](https://www.haproxy.org/download/1.8/doc/proxy-protocol.txt) to use with this tunnel, empty if not using. Example values are 1 or 2.                                                                                                                              |
+| `request_header.add`         | Array of `key:value` Strings                                                 | The headers to add to the request in the key:value format.                                                                                                                                                                                                                                        |
+| `request_header.remove`      | Array of Strings                                                             | The header keys to remove from the request.                                                                                                                                                                                                                                                       |
+| `response_header.add`        | Array of Strings                                                             | The headers to add to the response in the key:value format.                                                                                                                                                                                                                                       |
+| `response_header.remove`     | Array of Strings                                                             | The header keys to remove from the response.                                                                                                                                                                                                                                                      |
+| `schemes`                    | `http`, `https`                                                              | bind to an HTTPS endpoint (                                                                                                                                                                                                                                                                       |
+| `subdomain`                  | Any valid combination of letters, numbers, hyphens or periods.               | subdomain name to request. If unspecified, ngrok provides a unique subdomain based on your account type.                                                                                                                                                                                          |
+| `verify_webhook.provider`    | String                                                                       | Verify webhooks are signed by this provider, e.g. 'slack'. For a full list of providers, see [Webhook Verification Providers](/cloud-edge/modules/webhook-verification).                                                                                                                          |
+| `verify_webhook.secret`      | String                                                                       | The secret used by provider to sign webhooks, if there is one                                                                                                                                                                                                                                     |
+| `websocket_tcp_converter`    | `true`, `false`                                                              | Convert ingress websocket connections to TCP upstream                                                                                                                                                                                                                                             |
 
 ##### TCP Tunnel Configuration Properties
 
-|     |     |     |
-| --- | --- | --- |
-| `ip_restriction.allow_cidrs` | Array of CIDRs | Rejects connections that do not match the given CIDRs |
-| `ip_restriction.deny_cidrs` | Array of CIDRs | Rejects connections that match the given CIDRs and allows all other CIDRs. |
-| `proto` | `tcp` | The tunnel protocol name. This defines the type of tunnel you would like to start. |
-| `proxy_proto` | String | The version of [PROXY protocol](https://www.haproxy.org/download/1.8/doc/proxy-protocol.txt) to use with this tunnel, empty if not using. Example values are 1 or 2. |
-| `remote_addr` | A valid TCP address from ngrok | bind the remote TCP address and port. These addresses can be reserved in the [ngrok dashboard](https://dashboard.ngrok.com/cloud-edge/tcp-addresses) to use across sessions. For example: `remote_addr: 2.tcp.ngrok.io:21746` |
+|                              |                                |                                                                                                                                                                                                                               |
+| ---------------------------- | ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ip_restriction.allow_cidrs` | Array of CIDRs                 | Rejects connections that do not match the given CIDRs                                                                                                                                                                         |
+| `ip_restriction.deny_cidrs`  | Array of CIDRs                 | Rejects connections that match the given CIDRs and allows all other CIDRs.                                                                                                                                                    |
+| `proto`                      | `tcp`                          | The tunnel protocol name. This defines the type of tunnel you would like to start.                                                                                                                                            |
+| `proxy_proto`                | String                         | The version of [PROXY protocol](https://www.haproxy.org/download/1.8/doc/proxy-protocol.txt) to use with this tunnel, empty if not using. Example values are 1 or 2.                                                          |
+| `remote_addr`                | A valid TCP address from ngrok | bind the remote TCP address and port. These addresses can be reserved in the [ngrok dashboard](https://dashboard.ngrok.com/cloud-edge/tcp-addresses) to use across sessions. For example: `remote_addr: 2.tcp.ngrok.io:21746` |
 
 ##### TLS Tunnel Configuration Properties
 
-|     |     |     |
-| --- | --- | --- |
-| `mutual_tls_cas` | Valid system path | The path to the TLS certificate authority to verify client certs for mutual TLS. You will also need to specify `key` and `crt` to enable mutual TLS. |
-| `crt` | Valid system path | PEM TLS certificate at this path to terminate TLS traffic before forwarding locally. Requires `--key` to also be specified. |
-| `domain` | Any valid domain or hostname that you have previously registered with ngrok. | The domain to request. If using a custom domain, this requires registering in the ngrok Dashboard and setting a DNS CNAME value. When using wildcard domains you will need to surround the value with single quotes (domain: '*.example.com'). |
-| `ip_restriction.allow_cidrs` | Array of CIDRs | Rejects connections that do not match the given CIDRs |
-| `ip_restriction.deny_cidrs` | Array of CIDRs | Rejects connections that match the given CIDRs and allows all other CIDRs. |
-| `key` | Valid system path | PEM TLS private key at this path to terminate TLS traffic before forwarding locally. Requires `--crt` to also be specified. |
-| `proto` | `tls` | The tunnel protocol name. This defines the type of tunnel you would like to start. |
-| `proxy_proto` | String | The version of [PROXY protocol](https://www.haproxy.org/download/1.8/doc/proxy-protocol.txt) to use with this tunnel, empty if not using. Example values are 1 or 2. |
-| `subdomain` | Any valid combination of letters, numbers, hyphens or periods. | subdomain name to request. If unspecified, ngrok provides a unique subdomain based on your account type. |
-| `terminate_at` | `edge` or `agent` | Terminate at the ngrok "edge" or "agent". defaults to no termination or "edge" if `--crt` or `--key` are present |
+|                              |                                                                              |                                                                                                                                                                                                                                                 |
+| ---------------------------- | ---------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `mutual_tls_cas`             | Valid system path                                                            | The path to the TLS certificate authority to verify client certs for mutual TLS. You will also need to specify `key` and `crt` to enable mutual TLS.                                                                                            |
+| `crt`                        | Valid system path                                                            | PEM TLS certificate at this path to terminate TLS traffic before forwarding locally. Requires `--key` to also be specified.                                                                                                                     |
+| `domain`                     | Any valid domain or hostname that you have previously registered with ngrok. | The domain to request. If using a custom domain, this requires registering in the ngrok Dashboard and setting a DNS CNAME value. When using wildcard domains you will need to surround the value with single quotes (domain: '\*.example.com'). |
+| `ip_restriction.allow_cidrs` | Array of CIDRs                                                               | Rejects connections that do not match the given CIDRs                                                                                                                                                                                           |
+| `ip_restriction.deny_cidrs`  | Array of CIDRs                                                               | Rejects connections that match the given CIDRs and allows all other CIDRs.                                                                                                                                                                      |
+| `key`                        | Valid system path                                                            | PEM TLS private key at this path to terminate TLS traffic before forwarding locally. Requires `--crt` to also be specified.                                                                                                                     |
+| `proto`                      | `tls`                                                                        | The tunnel protocol name. This defines the type of tunnel you would like to start.                                                                                                                                                              |
+| `proxy_proto`                | String                                                                       | The version of [PROXY protocol](https://www.haproxy.org/download/1.8/doc/proxy-protocol.txt) to use with this tunnel, empty if not using. Example values are 1 or 2.                                                                            |
+| `subdomain`                  | Any valid combination of letters, numbers, hyphens or periods.               | subdomain name to request. If unspecified, ngrok provides a unique subdomain based on your account type.                                                                                                                                        |
+| `terminate_at`               | `edge` or `agent`                                                            | Terminate at the ngrok "edge" or "agent". defaults to no termination or "edge" if `--crt` or `--key` are present                                                                                                                                |
 
 ##### Labeled Tunnel Configuration Properties
 
-|     |     |     |
-| --- | --- | --- |
-| `crt` | Valid system path | The path to a TLS certificate when doing TLS termination at the agent. |
-| `inspect` | `true`, `false` | enable/disable the http request inspection in the web and agent API (default: true) |
-| `key` | Valid system path | The path to a TLS key when doing TLS termination at the agent. |
-| `labels` | A list of labels (name=value) that can be used to identify a tunnel to an ngrok Edge (specifically a tunnel group backend). | The labels for this tunnel in the format name=value. |
+|           |                                                                                                                             |                                                                                     |
+| --------- | --------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| `crt`     | Valid system path                                                                                                           | The path to a TLS certificate when doing TLS termination at the agent.              |
+| `inspect` | `true`, `false`                                                                                                             | enable/disable the http request inspection in the web and agent API (default: true) |
+| `key`     | Valid system path                                                                                                           | The path to a TLS key when doing TLS termination at the agent.                      |
+| `labels`  | A list of labels (name=value) that can be used to identify a tunnel to an ngrok Edge (specifically a tunnel group backend). | The labels for this tunnel in the format name=value.                                |
 
 ##### Define two labeled tunnels
 
@@ -353,9 +352,9 @@ Each tunnel you define is a map of configuration option names to values. The nam
 
 The `--config` flag in the `ngrok` command allows you to specify one or more ngrok configuration files to merge when starting the ngrok agent. The rules for merging are as follows:
 
-* Values from later configs override those from earlier configs. For example, if config1.yml and config2.yml both set `api_key`, then calling `ngrok http --config config1.yml,config2.yml 80` will use the `api_key` from config2.yml.
-* Lists are overwritten using the last value.
-* Maps, including the `tunnels` map, are merged by key and in the case of a duplicate key, the latter value is taken.
+- Values from later configs override those from earlier configs. For example, if config1.yml and config2.yml both set `api_key`, then calling `ngrok http --config config1.yml,config2.yml 80` will use the `api_key` from config2.yml.
+- Lists are overwritten using the last value.
+- Maps, including the `tunnels` map, are merged by key and in the case of a duplicate key, the latter value is taken.
 
 ## Full Example
 
@@ -366,7 +365,7 @@ Below is an example configuration file with all the options filled in.
     connect_timeout: 30s
     console_ui: true
     console_ui_color: transparent
-    dns_resolver_ips: 
+    dns_resolver_ips:
       - 1.1.1.1
       - 8.8.8.8
     heartbeat_interval: 1m
@@ -388,34 +387,34 @@ Below is an example configuration file with all the options filled in.
     tunnels:
       website:
         addr: 8888
-        basic_auth: 
+        basic_auth:
           - "bob:bobpassword"
-        schemes: 
+        schemes:
           - https
         host_header: "myapp.ngrok.dev"
         inspect: false
         proto: http
         domain: myapp.ngrok.dev
-    
+
       e2etls:
         addr: 9000
         proto: tls
         domain: myapp.example.com
         crt: example.crt
         key: example.key
-        
+
       iprestriction:
         ip_restriction:
           allow_cidrs:
             - 1.1.1.1/32
         addr: 8000
         proto: tcp
-        
+
       ssh-access:
         addr: 22
         proto: tcp
         remote_addr: 1.tcp.ngrok.io:12345
-      
+
       my-cool-website:
         labels:
           - env=prod

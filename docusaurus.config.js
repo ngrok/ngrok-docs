@@ -48,52 +48,52 @@ const config = {
 		},
 	],
 
-  scripts: [
-    {
-      src: "/docs/scripts/ketch.js",
-    },
-    {
-      src: "/docs/scripts/fix-redirect.js",
-      async: true,
-    },
-    {
-      src: "/docs/scripts/anchor-scroll-to.js",
-      async: true,
-    },
-    {
-      src: "https://tag.clearbitscripts.com/v1/pk_1caf9e9fb3222466245fb17c8f807837/tags.js",
-    },
-  ],
-  staticDirectories: ["static"],
+	scripts: [
+		{
+			src: "/docs/scripts/ketch.js",
+		},
+		{
+			src: "/docs/scripts/fix-redirect.js",
+			async: true,
+		},
+		{
+			src: "/docs/scripts/anchor-scroll-to.js",
+			async: true,
+		},
+		{
+			src: "https://tag.clearbitscripts.com/v1/pk_1caf9e9fb3222466245fb17c8f807837/tags.js",
+		},
+	],
+	staticDirectories: ["static"],
 
-  presets: [
-    [
-      "classic",
-      /** @type {import('@docusaurus/preset-classic').Options} */
-      ({
-        docs: {
-          sidebarPath: require.resolve("./sidebars.js"),
-          routeBasePath: "/",
-          editUrl: `${docsRepo}/edit/main`,
-          showLastUpdateAuthor: true,
-          showLastUpdateTime: true,
-        },
-        blog: false,
-        theme: {
-          customCss: require.resolve("./src/css/custom.css"),
-        },
-        googleTagManager: {
-          containerId: 'GTM-P4F37ZW',
-        },
-        sitemap: {
-          changefreq: "hourly",
-          priority: 0.5,
-          ignorePatterns: ["/docs/tags/**", "/docs/**/toc/**"],
-          filename: "sitemap.xml",
-        },
-      }),
-    ],
-  ],
+	presets: [
+		[
+			"classic",
+			/** @type {import('@docusaurus/preset-classic').Options} */
+			({
+				docs: {
+					sidebarPath: require.resolve("./sidebars.js"),
+					routeBasePath: "/",
+					editUrl: `${docsRepo}/edit/main`,
+					showLastUpdateAuthor: true,
+					showLastUpdateTime: true,
+				},
+				blog: false,
+				theme: {
+					customCss: require.resolve("./src/css/custom.css"),
+				},
+				googleTagManager: {
+					containerId: "GTM-P4F37ZW",
+				},
+				sitemap: {
+					changefreq: "hourly",
+					priority: 0.5,
+					ignorePatterns: ["/docs/tags/**", "/docs/**/toc/**"],
+					filename: "sitemap.xml",
+				},
+			}),
+		],
+	],
 
 	themeConfig:
 		/** @type {import('@docusaurus/preset-classic').ThemeConfig} */

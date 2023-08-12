@@ -1,5 +1,6 @@
 # GitLab
--------------
+
+---
 
 ## Configure GitLab OAuth with ngrok
 
@@ -11,12 +12,11 @@ The step-by-step instructions below follow GitLab's documentation on [setting up
 
     **Note**: If you want to restrict the list of users able to log in with GitLab, either create an application under one of your groups or an instance-wide application. See [Additional application setup information](#additional-application-setup-information).
 
-2. Provide a **Name** for your application and enter `https://idp.ngrok.com/oauth2/callback` in the **Redirect URI** field.
-[![](/img/howto/oauth/1-gitlab-register.png)](/img/howto/oauth/1-gitlab-register.png)
+2.  Provide a **Name** for your application and enter `https://idp.ngrok.com/oauth2/callback` in the **Redirect URI** field.
+    [![](/img/howto/oauth/1-gitlab-register.png)](/img/howto/oauth/1-gitlab-register.png)
 
-3. In the **Scopes** section, select all the fields appropriate for your app and then click **Save application**. In this example, mark the **openid**, **profile**, and **email** fields.
-[![](/img/howto/oauth/2-gitlab-scopes.png)](/img/howto/oauth/2-gitlab-scopes.png)
-
+3.  In the **Scopes** section, select all the fields appropriate for your app and then click **Save application**. In this example, mark the **openid**, **profile**, and **email** fields.
+    [![](/img/howto/oauth/2-gitlab-scopes.png)](/img/howto/oauth/2-gitlab-scopes.png)
 
 ### Update your ngrok edge configuration
 
@@ -28,5 +28,5 @@ The step-by-step instructions below follow GitLab's documentation on [setting up
 
 ### Additional application setup information
 
-*   [Configure GitLab as an OAuth 2.0 authentication identity provider](https://docs.gitlab.com/ee/integration/oauth_provider.html)
-*   [OAuth 2.0 identity provider API](https://docs.gitlab.com/ee/api/oauth2.html)
+- [Configure GitLab as an OAuth 2.0 authentication identity provider](https://docs.gitlab.com/ee/integration/oauth_provider.html)
+- [OAuth 2.0 identity provider API](https://docs.gitlab.com/ee/api/oauth2.html)

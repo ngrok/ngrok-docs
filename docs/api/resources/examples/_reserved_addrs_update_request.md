@@ -1,5 +1,7 @@
 <!-- Code generated for API Clients. DO NOT EDIT. -->
+
 #### Example Request
+
 ```bash
 curl \
 -X PATCH \
@@ -8,3 +10,4 @@ curl \
 -H "Ngrok-Version: 2" \
 -d '{"metadata":"{\"proto\": \"ssh\"}","endpoint_configuration_id":"ec_2TMGGEpgHMgrIttyaddquAacBpB"}' \
 https://api.ngrok.com/reserved_addrs/ra_2TMGAKbzLCHnh3QXN8iwP7I7cDE
+```

@@ -3,7 +3,8 @@ sidebar_position: 6
 ---
 
 # Web Inspection Interface
---------------------
+
+---
 
 The ngrok agent ships with a realtime inspection interface which allows you to see what traffic is sent to your application server and what responses your server is returning.
 
@@ -35,7 +36,6 @@ Your application server may receive many requests, but you are often only intere
 
 ![](/img/docs/inspect-filter-select.png)
 
-  
 You may specify multiple filters. If you do, requests will only be shown if they much all filters.
 
 ###### Filter requests by path and status code
@@ -58,7 +58,6 @@ Sometimes you want to modify a request before you replay it to test a new behavi
 
 ![](/img/docs/replay-modify-button.png)
 
-  
 The replay editor allows you to modify every aspect of the http request before replaying it, including the method, path, headers, trailers and request body.
 
 ###### The request replay modification editor
@@ -75,7 +74,6 @@ The status page displays the configuration of each running tunnel and any global
 
 ![](/img/docs/status-configuration.png)
 
-  
 The status page also display metrics about the traffic through each tunnel. It display connection rates and connection duration percentiles for all tunnels. For http tunnels, it also displays http request rates and http response duration percentiles.
 
 ###### Tunnel traffic metrics

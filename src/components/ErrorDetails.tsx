@@ -4,7 +4,7 @@ import loadable from "@loadable/component";
 
 export default function ErrorDetails({ error }) {
 	const Error = loadable(
-		() => import("/docs/errors/details/_" + error + ".md")
+		() => import("/docs/errors/details/_" + error + ".md"),
 	);
 	return (
 		<ErrorBoundary fallback={() => <br />}>

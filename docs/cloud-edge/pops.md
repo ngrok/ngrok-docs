@@ -3,7 +3,8 @@ sidebar_position: 7
 ---
 
 # Global Infrastructure
---------------
+
+---
 
 ngrok runs globally distributed tunnel servers around the world to enable fast, low latency traffic to your applications.
 
@@ -11,15 +12,15 @@ ngrok runs globally distributed tunnel servers around the world to enable fast, 
 
 ngrok runs servers in data centers around the world. The location of the data center within a given region may change without notice (e.g. the European servers may move from Frankfurt to London).
 
-| Region Code | Location |
-| --- | --- |
-| ap  | Asia/Pacific (Singapore) |
-| au  | Australia (Sydney) |
-| eu  | Europe (Frankfurt) |
-| in  | India (Mumbai) |
-| jp  | Japan (Tokyo) |
-| sa  | South America (São Paulo) |
-| us  | United States (Ohio) |
+| Region Code | Location                  |
+| ----------- | ------------------------- |
+| ap          | Asia/Pacific (Singapore)  |
+| au          | Australia (Sydney)        |
+| eu          | Europe (Frankfurt)        |
+| in          | India (Mumbai)            |
+| jp          | Japan (Tokyo)             |
+| sa          | South America (São Paulo) |
+| us          | United States (Ohio)      |
 
 ### Usage {#usage}
 

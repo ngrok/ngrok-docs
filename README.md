@@ -40,4 +40,3 @@ pnpm run build
 
 For questions and support on contributing please join our [Slack community](https://ngrok.com/slack), channel `#support`.
 To file an issue within our doc, use our [github issues](https://github.com/ngrok/ngrok-docs/issues)
-

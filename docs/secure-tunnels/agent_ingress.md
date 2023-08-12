@@ -3,7 +3,8 @@ sidebar_position: 4
 ---
 
 # Agent ingress
---------------------
+
+---
 
 Agent ingress refers to the specific URL that the ngrok agent attempts to connect through to send requests. By default, that ingress URL is `connect.ngrok-agent.com:443` but it can be customized with your own custom ingress URL if needed.
 

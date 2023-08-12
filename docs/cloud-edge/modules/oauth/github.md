@@ -1,5 +1,6 @@
 # GitHub
------------
+
+---
 
 ## Creating a custom GitHub OAuth application
 
@@ -11,11 +12,11 @@
 6.  Choose to use your own application with GitHub as the provider.
 7.  Include the client ID and secret from earlier.
 8.  Add any scopes your application requires.
-    *   Include the `read:user` scope (or more permissive, like `user`) for ngrok.
+    - Include the `read:user` scope (or more permissive, like `user`) for ngrok.
 9.  Add any team or organization constraints by the their mention handle(s), excluding the `@` prefix.
-    *   For example, the [ngrok](https://github.com/ngrok) organization's mention handle is `@ngrok`, so the organization constraint would be `ngrok`. Similarly, the `@ngrok/developers` team would be matched by the constraint `ngrok/developers`.
-    *   If a constraint is specified, the `read:org` scope is required. A more permissive scope, such as `org`, also works.
-    *   Organizations must allow [third-party access](#using-organization-and-teams) to your app.
+    - For example, the [ngrok](https://github.com/ngrok) organization's mention handle is `@ngrok`, so the organization constraint would be `ngrok`. Similarly, the `@ngrok/developers` team would be matched by the constraint `ngrok/developers`.
+    - If a constraint is specified, the `read:org` scope is required. A more permissive scope, such as `org`, also works.
+    - Organizations must allow [third-party access](#using-organization-and-teams) to your app.
 
 ## Additional GitHub headers provided by ngrok
 
@@ -37,10 +38,10 @@ The username of the authorized user.
 
 To authorize users based on organization or team membership, the organization must allow third party access. There are multiple ways to grant access:
 
-*   Organizations may allow unrestricted third-party access from settings.
-*   Owners can grant access to an application during authorization.
-*   Members can request access as part of authorization.
-*   Members can [request access from settings.](https://help.github.com/en/github/setting-up-and-managing-your-github-user-account/requesting-organization-approval-for-oauth-apps)
+- Organizations may allow unrestricted third-party access from settings.
+- Owners can grant access to an application during authorization.
+- Members can request access as part of authorization.
+- Members can [request access from settings.](https://help.github.com/en/github/setting-up-and-managing-your-github-user-account/requesting-organization-approval-for-oauth-apps)
 
 The ngrok managed application can authorize users based on organization or team. **For organizations concerned about membership privacy, your own application should always be used**. When granting third-party access to the managed application, anyone using the managed application may constrain based on your organization's membership.
 

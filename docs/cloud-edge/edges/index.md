@@ -3,7 +3,8 @@ sidebar_position: 4
 ---
 
 # Edges
-----------------
+
+---
 
 Edges allow you to configure endpoints that connect your services to the world. Define edges to serve HTTPS, TCP, or TLS traffic and use modules to secure and manipulate network traffic.
 
@@ -37,10 +38,10 @@ You can create an edge through the ngrok Dashboard by navigating to Endpoints > 
 
 Each edge contains one or more backends, which define how to handle the traffic in that edge. There are different types of backends depending on the behavior you desire for the edge.
 
-*   Failover - Failover backends allow you to specify multiple backends to try in a specific order. When you define a failover backend, you provide an ordered list of backends to try.
-*   Tunnel Group - Tunnel group backends allow you to define a set of ngrok tunnels that can respond to requests. The requests to a tunnel group backend will load balance across all active tunnels in the group. These backends use a set of labels to identify the tunnels that should be used to serve these requests. You can find examples for starting a tunnel in the ngrok Dashboard.
-*   Weighted - Weighted backends will route traffic based on percentage to multiple backends. This can be useful when rolling out updates to existing services, where you want to send a small percentage to the new service for testing.
-*   HTTP Response - An HTTP Response backend allows you to specify a static response to serve with a specific status code. This is useful for defining error pages such as 404 when used as part of a failover backend.
+- Failover - Failover backends allow you to specify multiple backends to try in a specific order. When you define a failover backend, you provide an ordered list of backends to try.
+- Tunnel Group - Tunnel group backends allow you to define a set of ngrok tunnels that can respond to requests. The requests to a tunnel group backend will load balance across all active tunnels in the group. These backends use a set of labels to identify the tunnels that should be used to serve these requests. You can find examples for starting a tunnel in the ngrok Dashboard.
+- Weighted - Weighted backends will route traffic based on percentage to multiple backends. This can be useful when rolling out updates to existing services, where you want to send a small percentage to the new service for testing.
+- HTTP Response - An HTTP Response backend allows you to specify a static response to serve with a specific status code. This is useful for defining error pages such as 404 when used as part of a failover backend.
 
 ### Tunnel Group Labels
 

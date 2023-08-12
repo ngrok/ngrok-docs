@@ -3,11 +3,13 @@ description: Develop and test PagerDuty webhooks from localhost
 ---
 
 # PagerDuty Webhooks
-------------
+
+---
 
 :::tip TL;DR
 
 To integrate PagerDuty webhooks with ngrok:
+
 1. [Launch your local webhook.](#start-your-app) `npm start`
 1. [Launch ngrok.](#start-ngrok) `ngrok http 3000`
 1. [Configure PagerDuty webhooks with your ngrok URL.](#setup-webhook)
@@ -15,9 +17,8 @@ To integrate PagerDuty webhooks with ngrok:
 
 :::
 
-
 This guide covers how to use ngrok to integrate your localhost app with PagerDuty by using Webhooks.
-PagerDuty webhooks can be used to notify an external application whenever specific events occur in your PagerDuty account. 
+PagerDuty webhooks can be used to notify an external application whenever specific events occur in your PagerDuty account.
 
 By integrating ngrok with PagerDuty, you can:
 
@@ -26,10 +27,9 @@ By integrating ngrok with PagerDuty, you can:
 - **Modify and Replay PagerDuty Webhook requests** with a single click and without spending time reproducing events manually in your PagerDuty account.
 - **Secure your app with PagerDuty validation provided by ngrok**. Invalid requests are blocked by ngrok before reaching your app.
 
-
 ## **Step 1**: Start your app {#start-your-app}
 
-For this tutorial, we'll use the [sample NodeJS app available on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample). 
+For this tutorial, we'll use the [sample NodeJS app available on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
 
 To install this sample, run the following commands in a terminal:
 
@@ -41,38 +41,36 @@ npm install
 
 This will get the project installed locally.
 
-Now you can launch the app by running the following command: 
+Now you can launch the app by running the following command:
 
 ```bash
 npm start
 ```
 
-The app runs by default on port 3000. 
+The app runs by default on port 3000.
 
 You can validate that the app is up and running by visiting http://localhost:3000. The application logs request headers and body in the terminal and responds with a message in the browser.
 
-
 ## **Step 2**: Launch ngrok {#start-ngrok}
 
-Once your app is running successfully on localhost, let's get it on the internet securely using ngrok! 
+Once your app is running successfully on localhost, let's get it on the internet securely using ngrok!
 
 1. If you're not an ngrok user yet, just [sign up for ngrok for free](https://ngrok.com/signup).
 
 1. [Download the ngrok agent](https://ngrok.com/download).
 
 1. Go to the [ngrok dashboard](https://dashboard.ngrok.com) and copy your Authtoken. <br />
-    **Tip:** The ngrok agent uses the auth token to log into your account when you start a tunnel.
-    
+   **Tip:** The ngrok agent uses the auth token to log into your account when you start a tunnel.
 1. Start ngrok by running the following command:
-    ```bash
-    ngrok http 3000
-    ```
+
+   ```bash
+   ngrok http 3000
+   ```
 
 1. ngrok will display a URL where your localhost application is exposed to the internet (copy this URL for use with PagerDuty).
-    ![ngrok agent running](/img/integrations/launch_ngrok_tunnel.png)
+   ![ngrok agent running](/img/integrations/launch_ngrok_tunnel.png)
 
-
-## **Step 3**: Integrate  PagerDuty {#setup-webhook}
+## **Step 3**: Integrate PagerDuty {#setup-webhook}
 
 To register a webhook on your PagerDuty account follow the instructions below:
 
@@ -83,18 +81,17 @@ To register a webhook on your PagerDuty account follow the instructions below:
 1. On the **Your Webhooks** page, click **+New Webook** for your application.
 
 1. On the **New Webhook** page, in the **WEBHOOK URL** field enter the URL provided by the ngrok agent to expose your application to the internet (i.e. `https://1a2b-3c4d-5e6f-7g8h-9i0j.sa.ngrok.io`).
-    ![Your request endpoint URL](img/ngrok_url_configuration_pagerduty.png)
+   ![Your request endpoint URL](img/ngrok_url_configuration_pagerduty.png)
 
 1. On the same page, select **Service** as **SCOPE TYPE**, select one of your service for **SCOPE**, click **Select all** under **EVENT SUBSCRIPTION**, and then click **Add Webhook**.
 
 1. In the **Webhook subscription created** popup, click **OK**.
-    **Tip**:  Click **Copy** to copy the **webhook payload signing** code for later usage. See [Secure your webhook requests with verification](#security).
+   **Tip**: Click **Copy** to copy the **webhook payload signing** code for later usage. See [Secure your webhook requests with verification](#security).
 
 1. In the **Your Webhooks** page, click the webhook you have just created.
 
 1. In your webhook's settings page, scroll down until the **Test** section, click **Send Test Event**, and then click **Yes, Send Event**.
-    Confirm your localhost app receives the test event notification and logs both headers and body in the terminal.
-
+   Confirm your localhost app receives the test event notification and logs both headers and body in the terminal.
 
 ### Run Webhooks with PagerDuty and ngrok
 
@@ -110,15 +107,14 @@ You can trigger new calls from PagerDuty to your application by following the in
 1. In the **Integrations** step, click **Create service without an integration**.
 
 1. On your service page, click **New Incident**, select your service for **Create an incident on the following service**, provide a short title, select **Urgency** as **Low**, and then click **Create Incident**.
-    Confirm your localhost app receives the create new incident event notification and logs both headers and body in the terminal.
-
+   Confirm your localhost app receives the create new incident event notification and logs both headers and body in the terminal.
 
 ### Inspecting requests
 
-When you launch the ngrok agent on your local machine, you can see two links: 
+When you launch the ngrok agent on your local machine, you can see two links:
 
-* The URL to your app (it ends with `ngrok-free.app` for free accounts or `ngrok.app` for paid accounts when not using custom domains)
-* A local URL for the Web Interface (a.k.a **Request Inspector**).
+- The URL to your app (it ends with `ngrok-free.app` for free accounts or `ngrok.app` for paid accounts when not using custom domains)
+- A local URL for the Web Interface (a.k.a **Request Inspector**).
 
 The Request Inspector shows all the requests made through your ngrok tunnel to your localhost app. When you click on a request, you can see details of both the request and the response.
 
@@ -129,7 +125,6 @@ To inspect PagerDuty's webhooks call, launch the ngrok web interface (i.e. `http
 From the results, review the response body, header, and other details:
 
 ![ngrok Request Inspector](img/ngrok_introspection_pagerduty_webhooks.png)
-
 
 ### Replaying requests
 
@@ -145,7 +140,6 @@ The ngrok Request Inspector provides a replay function that you can use to test 
 
 Verify that your local application receives the request and logs the corresponding information to the terminal.
 
-
 ## Secure webhook requests {#security}
 
 The ngrok signature webhook verification feature allows ngrok to assert that requests from your PagerDuty webhook are the only traffic allowed to make calls to your localhost app.
@@ -156,9 +150,9 @@ This is a quick step to add extra protection to your application.
 
 1. Restart your ngrok agent by running the command, replacing `{your webhook payload signing}` with the value you copied before (See [Integrate ngrok and PagerDuty.](#setup-webhook)):
 
-    ```bash
-    ngrok http 3000 --verify-webhook pagerduty --verify-webhook-secret {your webhook payload signing}
-    ```
+   ```bash
+   ngrok http 3000 --verify-webhook pagerduty --verify-webhook-secret {your webhook payload signing}
+   ```
 
 1. Access PagerDuty (`https://{tenant}.pagerduty.com/incidents`) and create a new incident.
 

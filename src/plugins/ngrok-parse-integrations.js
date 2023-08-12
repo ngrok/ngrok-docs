@@ -10,7 +10,7 @@ module.exports = function (context, options) {
 			const integrationsDir = path.join(
 				context.siteDir,
 				"docs",
-				"integrations"
+				"integrations",
 			);
 			const integrations = [];
 
@@ -28,7 +28,7 @@ module.exports = function (context, options) {
 					path: path.join(
 						context.siteConfig.baseUrl,
 						"integrations",
-						dirent.name
+						dirent.name,
 					),
 					docs: [],
 				};

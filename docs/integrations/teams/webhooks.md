@@ -1,16 +1,17 @@
 # Microsoft Teams Webhooks
-------------
+
+---
 
 :::tip TL;DR
 
 To integrate Microsoft Teams webhooks with ngrok:
+
 1. [Launch your local webhook.](#start-your-app) `npm start`
 1. [Launch ngrok.](#start-ngrok) `ngrok http 3000 --domain myexample.ngrok.dev`
 1. [Configure Microsoft Teams webhooks with your ngrok URL.](#setup-webhook)
 1. [Secure your webhook requests with verification.](#security)
 
 :::
-
 
 This guide covers how to use ngrok to integrate your localhost app with Microsoft Teams by using Webhooks.
 Microsoft Teams webhooks can be used to notify an external application whenever page or account events occur in your Microsoft Teams account.
@@ -22,10 +23,9 @@ By integrating ngrok with Microsoft Teams, you can:
 - **Modify and Replay Microsoft Teams Webhook requests** with a single click and without spending time reproducing events manually in your Microsoft Teams account.
 - **Secure your app with Microsoft Teams validation provided by ngrok**. Invalid requests are blocked by ngrok before reaching your app.
 
-
 ## **Step 1**: Start your app {#start-your-app}
 
-For this tutorial, we'll use the [sample NodeJS app available on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample). 
+For this tutorial, we'll use the [sample NodeJS app available on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
 
 To install this sample, run the following commands in a terminal:
 
@@ -37,16 +37,15 @@ npm install
 
 This will get the project installed locally.
 
-Now you can launch the app by running the following command: 
+Now you can launch the app by running the following command:
 
 ```bash
 npm start
 ```
 
-The app runs by default on port 3000. 
+The app runs by default on port 3000.
 
 You can validate that the app is up and running by visiting http://localhost:3000. The application logs request headers and body in the terminal and responds with a message in the browser.
-
 
 ## **Step 2**: Launch ngrok {#start-ngrok}
 
@@ -59,48 +58,46 @@ Once your app is running successfully on localhost, let's get it on the internet
 1. [Download the ngrok agent](https://ngrok.com/download).
 
 1. Go to the [ngrok dashboard](https://dashboard.ngrok.com), click **Your Authtoken**, and copy your Authtoken. <br />
-    **Tip:** The ngrok agent uses the auth token to log into your account when you start a tunnel.
+   **Tip:** The ngrok agent uses the auth token to log into your account when you start a tunnel.
 
 1. On the left menu, expand **Cloud Edge** and then click **Domains**.
-    **Tip:** If you don't have an ngrok Pro or Enterprise license, sign up for one by clicking **Update Subscription** and following the subscribe procedure.
+   **Tip:** If you don't have an ngrok Pro or Enterprise license, sign up for one by clicking **Update Subscription** and following the subscribe procedure.
 
 1. On the **Domains** page, click **+ Create Domain** or **+ New Domain**.
 
 1. In the **Domain** pane, provide a value for the **Domain** field (i.e. `myexample.ngrok.io`), and then click **Continue**.
-    ![ngrok New Domain](/img/integrations/ngrok_new_domain.png)
-    **Tip**: Make sure your domain is available.
+   ![ngrok New Domain](/img/integrations/ngrok_new_domain.png)
+   **Tip**: Make sure your domain is available.
 
 1. Close the **Start a Tunnel** pane and then close the **Domain** pane.
 
 1. Start ngrok by running the following command in a terminal on your local desktop:
-    ```bash
-    ngrok http 3000 --domain myexample.ngrok.dev
-    ```
+
+   ```bash
+   ngrok http 3000 --domain myexample.ngrok.dev
+   ```
 
 1. ngrok will display a URL where your localhost application is exposed to the internet (copy this URL for use with Microsoft Teams).
-    ![ngrok agent running](/img/integrations/launch_ngrok_tunnel_domain.png)
-
+   ![ngrok agent running](/img/integrations/launch_ngrok_tunnel_domain.png)
 
 ## **Step 3**: Integrate Microsoft Teams {#setup-webhook}
 
 To register a webhook on your Microsoft Teams account follow the instructions below:
 
-**Requirements**: You'll need a Microsoft Teams page and a Microsoft Teams app associated with your Microsoft Teams page. Create one before following the rest of these steps. 
+**Requirements**: You'll need a Microsoft Teams page and a Microsoft Teams app associated with your Microsoft Teams page. Create one before following the rest of these steps.
 
 1. Access the [Microsoft Teams web interface](https://teams.microsoft.com/) and sign in using your Microsoft account.
-    **Tip**: You can use the Microsoft Teams app instead.
+   **Tip**: You can use the Microsoft Teams app instead.
 
 1. On the **Microsoft Teams** page, click **Teams** on the left menu, select one of your channels and then click the plus sign (**+**) on the top of your team page.
-   
 1. On the **Add a tab** popup, click **Manage apps** and then click **Create an outgoing webhook** at the bottom of the page.
 
-1. On the **Create an outgoing webhook** popup, enter `My local app` in the **Name** field, enter  `My local app` in the **Description** field, and enter the URL provided by the ngrok agent to expose your application to the internet in the **Callback URL** field (i.e. `https://myexample.ngrok.dev`).
-    ![Callback URL](img/ngrok_url_configuration_teams.png)
+1. On the **Create an outgoing webhook** popup, enter `My local app` in the **Name** field, enter `My local app` in the **Description** field, and enter the URL provided by the ngrok agent to expose your application to the internet in the **Callback URL** field (i.e. `https://myexample.ngrok.dev`).
+   ![Callback URL](img/ngrok_url_configuration_teams.png)
 
 1. Click **Create**.
 
 1. On the **Congratulations** popup, make note of the **Security token** value and then click **Close**.
-
 
 ### Run Webhooks with Microsoft Teams and ngrok
 
@@ -114,13 +111,12 @@ To send notifications to your application follow the instructions below:
 
 Confirm your localhost app receives a notification call and logs both headers and body in the terminal.
 
-
 ### Inspecting requests
 
-When you launch the ngrok agent on your local machine, you can see two links: 
+When you launch the ngrok agent on your local machine, you can see two links:
 
-* The URL to your app (it ends with `ngrok-free.app` for free accounts or `ngrok.app` for paid accounts when not using custom domains)
-* A local URL for the Web Interface (a.k.a **Request Inspector**).
+- The URL to your app (it ends with `ngrok-free.app` for free accounts or `ngrok.app` for paid accounts when not using custom domains)
+- A local URL for the Web Interface (a.k.a **Request Inspector**).
 
 The Request Inspector shows all the requests made through your ngrok tunnel to your localhost app. When you click on a request, you can see details of both the request and the response.
 
@@ -131,7 +127,6 @@ To inspect Microsoft Teams' webhooks call, launch the ngrok web interface (i.e. 
 From the results, review the response body, header, and other details:
 
 ![ngrok Request Inspector](img/ngrok_introspection_teams_hooks.png)
-
 
 ### Replaying requests
 
@@ -147,7 +142,6 @@ The ngrok Request Inspector provides a replay function that you can use to test 
 
 Verify that your local application receives the request and logs the corresponding information to the terminal.
 
-
 ## Secure webhook requests {#security}
 
 The ngrok signature webhook verification feature allows ngrok to assert that requests from your Microsoft Teams webhook are the only traffic allowed to make calls to your localhost app.
@@ -157,10 +151,11 @@ The ngrok signature webhook verification feature allows ngrok to assert that req
 This is a quick step to add extra protection to your application.
 
 1. Restart your ngrok agent by running the command, replacing `{your app secret}` with the **Security token** value you copied before (See [Integrate Microsoft Teams](#setup-webhook)):
-    ```bash
-    ngrok http 3000 --domain myexample.ngrok.dev --verify-webhook microsoft_teams --verify-webhook-secret {your app secret}
-    ```
+
+   ```bash
+   ngrok http 3000 --domain myexample.ngrok.dev --verify-webhook microsoft_teams --verify-webhook-secret {your app secret}
+   ```
 
 1. Access the Microsoft Teams page you have assigned to your webhook and send a message to another Microsoft Teams user.
 
-    Verify that your local application receives the request and logs information to the terminal.
+   Verify that your local application receives the request and logs information to the terminal.

@@ -4,7 +4,8 @@ title: Getting Started
 ---
 
 # Getting Started with ngrok
---------------------------
+
+---
 
 This guide will get you up and running with the ngrok agent, giving you a secure way to access your local service from anywhere in the world.
 
@@ -67,14 +68,14 @@ If you don't have one of these package managers installed or prefer to install t
 You can test everything is working by running `ngrok -h` which should print the help text for the ngrok agent.
 
 ```
-    $ ngrok -h                                                                                                                                                                                                                  
+    $ ngrok -h
     NAME:
       ngrok - tunnel local ports to public URLs and inspect traffic
 
     USAGE:
       ngrok [command] [flags]
 
-    DESCRIPTION: 
+    DESCRIPTION:
       ngrok exposes local networked services behinds NATs and firewalls to the
       public internet over a secure tunnel. Share local websites, build/test
       webhook consumers and self-host personal services.
@@ -86,7 +87,7 @@ You can test everything is working by running `ngrok -h` which should print the 
 
     TERMS OF SERVICE: https://ngrok.com/tos
 
-    EXAMPLES: 
+    EXAMPLES:
       ngrok http 80                           # secure public URL for port 80 web server
       ngrok http --domain baz.ngrok.dev 8080  # port 8080 available at baz.ngrok.dev
       ngrok http foo.dev:80                   # tunnel to host:port instead of localhost
@@ -115,7 +116,7 @@ You can test everything is working by running `ngrok -h` which should print the 
           --config strings   path to config files; they are merged if multiple
       -h, --help             help for ngrok
       -v, --version          version for ngrok
-  ```
+```
 
 ### Step 3: Connect your agent to your ngrok account
 
@@ -125,7 +126,7 @@ Copy the value and run this command to add the authtoken in your terminal.
 
 ```bash
 ngrok config add-authtoken TOKEN
-``` 
+```
 
 ### Step 4: Start ngrok
 
@@ -135,11 +136,11 @@ Start ngrok by running the following command.
 ngrok http 8000
 ```
 
-
 You should see something similar to the following console UI in your terminal.
+
 ```bash
     ngrok                                                                       (Ctrl+C to quit)
-    
+
     Session Status                online
     Account                       inconshreveable (Plan: Free)
     Version                       3.0.0
@@ -147,15 +148,15 @@ You should see something similar to the following console UI in your terminal.
     Latency                       78ms
     Web Interface                 http://127.0.0.1:4040
     Forwarding                    https://84c5df439d74.ngrok-free.dev -> http://localhost:8000
-    
+
     Connections                   ttl     opn     rt1     rt5     p50     p90
                                   0       0       0.00    0.00    0.00    0.00
 ```
 
 Now open the Forwarding URL in your browser and you should see your local web service. At first glance, it may not seem impressive, but there are a few key differences here:
 
-*   That URL is available to anyone in the world. Seriously, test it out by sending it to a friend.
-*   You are now using TLS (notice the 🔒 in your browser window) with a valid certificate without making any changes to your local service.
+- That URL is available to anyone in the world. Seriously, test it out by sending it to a friend.
+- You are now using TLS (notice the 🔒 in your browser window) with a valid certificate without making any changes to your local service.
 
 Since the whole world can access this URL, we need to secure it quickly. Let's stop the ngrok agent with `ctrl+c`.
 
@@ -197,8 +198,8 @@ Now when you try to visit your new ngrok URL, you will be prompted to log in wit
 
 That's it, but there's a lot more you can do with ngrok!
 
-*   Configure ngrok to use the same domain each time with [`--domain`](/secure-tunnels/tunnels/http-tunnels#custom-subdomains)
-*   Tunnel other non-HTTP services such as SSH, RDP, or game servers using [TCP Tunnels](/secure-tunnels/tunnels/tcp-tunnels)
-*   Bring your own [custom domains to ngrok](/secure-tunnels/tunnels/http-tunnels#custom-domains)
-*   Add your [API key and automate via the `ngrok api` command](/secure-tunnels/ngrok-agent/reference/ngrok#ngrok-api).
-*   Use [ngrok Cloud Edges](/cloud-edge) to dynamically reconfigure traffic to your ngrok agents
+- Configure ngrok to use the same domain each time with [`--domain`](/secure-tunnels/tunnels/http-tunnels#custom-subdomains)
+- Tunnel other non-HTTP services such as SSH, RDP, or game servers using [TCP Tunnels](/secure-tunnels/tunnels/tcp-tunnels)
+- Bring your own [custom domains to ngrok](/secure-tunnels/tunnels/http-tunnels#custom-domains)
+- Add your [API key and automate via the `ngrok api` command](/secure-tunnels/ngrok-agent/reference/ngrok#ngrok-api).
+- Use [ngrok Cloud Edges](/cloud-edge) to dynamically reconfigure traffic to your ngrok agents

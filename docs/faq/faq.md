@@ -3,8 +3,8 @@ title: FAQ
 ---
 
 # FAQ
----------------
 
+---
 
 ## CORS with HTTP Basic Authentication
 

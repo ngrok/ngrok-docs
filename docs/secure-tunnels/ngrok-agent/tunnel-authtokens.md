@@ -3,7 +3,8 @@ sidebar_position: 1
 ---
 
 # Tunnel Authtokens
---------------------
+
+---
 
 Once you've signed up for an ngrok account, you need to configure ngrok with the authtoken that appears on your dashboard. This will grant you access to all the features of ngrok. ngrok has a simple `ngrok config add-authtoken` command to make installing the authtoken simple. Under the hood, all the command does is to add (or modify) the `authtoken` property in your [ngrok configuration file](/secure-tunnels/ngrok-agent/reference/config).
 

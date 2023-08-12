@@ -3,7 +3,8 @@ sidebar_position: 2
 ---
 
 # ngrok Tunnels
---------------------
+
+---
 
 ngrok supports different types of tunnels — with different protocols, the use of agents, and features available — for enabling access to remote systems:
 
@@ -38,5 +39,3 @@ The SSH Reverse Tunnel is also known as the **agentless tunnel**, because it doe
 SSH reverse tunneling is an alternative mechanism to start an ngrok tunnel without needing to download or run the ngrok agent. You can start tunnels via SSH without downloading an ngrok agent by running an SSH reverse tunnel command (`ssh -r`)
 
 [Learn More >](ssh-reverse-tunnel-agent)
-
-

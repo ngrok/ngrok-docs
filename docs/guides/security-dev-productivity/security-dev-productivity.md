@@ -4,7 +4,8 @@ title: Secure developer productivity
 ---
 
 # Best security practices for developer productivity
---------------------------
+
+---
 
 :::note
 This guide describes the best practices and features organizations can apply to consistently secure developers using ngrok while leveraging their existing security investments.
@@ -29,18 +30,16 @@ While developers use ngrok for productivity, organizations must ensure security 
 
 This guide describes the best practices and features organizations can apply to consistently secure developers using ngrok while leveraging their existing security investments.
 
-
 ### Why developers use ngrok?
 
 Developers use ngrok to increase their productivity while building and validating software in two ways:
 
 - **Exposing localhost apps to the internet for user access and collaboration**: In this use-case, developers expose localhost apps for public access so other peers — i.e., product designers, product managers, contractors, and users — can review and validate their work.
-- **Exposing local environments, APIs, and webhooks for SaaS services and API clients**: In this use-case, developers expose webhooks and APIs running on localhost for integration tests with SaaS services — i.e., Slack & MS Team bots, Twilio webhook listeners, Zoom apps — and APIs clients — i.e., mobile apps, desktop apps, B2B services.  
+- **Exposing local environments, APIs, and webhooks for SaaS services and API clients**: In this use-case, developers expose webhooks and APIs running on localhost for integration tests with SaaS services — i.e., Slack & MS Team bots, Twilio webhook listeners, Zoom apps — and APIs clients — i.e., mobile apps, desktop apps, B2B services.
 
 By enabling public access to their localhost apps/APIs, developers eliminate the repetitive tasks and time spent packaging and deploying their apps while testing and tweaking their apps for production usage, saving up to 90% time on each integrated test and review cycle:
 
 ![development and test cycle with ngrok](img/1.png)
-
 
 ### How does ngrok secure remote access?
 
@@ -50,7 +49,6 @@ While most developers begin and end their ngrok usage with simple connectivity, 
 
 Leveraging and combining edge components allows you to meet your security requirements fast and without rearchitecting your services.
 
-
 ## Secure developer productivity
 
 Many organizations allow developers to use ngrok at an individual level. In this deployment model, each developer owns and manage their ngrok tenants and decide which ngrok policies to use:
@@ -59,8 +57,8 @@ Many organizations allow developers to use ngrok at an individual level. In this
 
 _Each developer manages their ngrok tenant with different levels of security_
 
-
 This leads to three challenges:
+
 - **Security inconsistency**: Each developer applies ngrok security based on their own needs and discretion, making security controls inconsistent.
 - **No reuse of security investments**: Developers don't have access and bandwidth to appropriately leverage your company's security investments — such as MFA, SSO, and SIEM systems.
 - **Difficulty for security oversight**: Security teams have multiple tenants to monitor and secure to keep developers productive and safe.
@@ -78,6 +76,7 @@ By following the best practices, organizations manage the ngrok usage in a singl
 To implement security best practices consistently and enable security operations at scale, We recommend using a unified tenant for the team, with a limited number of administrators.
 
 The process of electing and setting up a single tenant involves the following steps:
+
 1. Subscribe to the team tenant and sign up as an administrator
 1. Create administrative accounts for your security and management teams
 1. Invite developers to use ngrok with limited access
@@ -116,12 +115,9 @@ To ensure only specific individuals or organizations are accessing your tunnels,
 
 _Restricting GitHub auth to john@contractor.com and users with the email ending in @acme-services.com and @acme-consulting.com_
 
-
-
 ### 3. Secure webhook communications
 
 By using webhook verification, you can ensure only legitimate webhook calls are sent to your tunnels. The setup is available from the ngrok CLI — using the `--verify-webhook` argument — admin dashboard, and terraform provider.
-
 
 #### Webhook Verification
 
@@ -131,15 +127,14 @@ _Configuring Webhook verification for PagerDuty_
 
 With webhook verification, ngrok authenticates webhook request authenticity and message integrity at the edge. As a result, unauthorized calls are blocked even before they even reach your developer's apps, providing authentication and integrity while preventing reconnaissance campaigns and DDoS attacks. To learn more, check our [webhook verification](https://ngrok.com/docs/cloud-edge/modules/webhook/) docs and documentation of providers such as [GitHub](https://ngrok.com/docs/integrations/github/webhooks/), [Okta](https://ngrok.com/docs/integrations/okta/webhooks/), and [Twilio](https://ngrok.com/docs/integrations/twilio/webhooks/).
 
-
 ### 4. Enable IP Policies
 
 IP Policies allow companies to restrict access to ngrok based on IPs on all ngrok network communications, including:
 
-* Public access to your developer apps
-* The ngrok Dashboard (Admin UI)
-* The ngrok APIs (includes the ngrok REST APIs, Admin SDKs, and Terraform Provider)
-* Where ngrok agents are launched (includes the ngrok agent and docker container)
+- Public access to your developer apps
+- The ngrok Dashboard (Admin UI)
+- The ngrok APIs (includes the ngrok REST APIs, Admin SDKs, and Terraform Provider)
+- Where ngrok agents are launched (includes the ngrok agent and docker container)
 
 An ngrok tenant can have multiple policies set for different communications. Each policy may contain multiple deny and allow rules to specific IPv4 and IPv6 addresses:
 
@@ -147,14 +142,12 @@ An ngrok tenant can have multiple policies set for different communications. Eac
 
 _Restricting access to approved IPs_
 
-
 #### Combining IP Policies and other security controls
 
 IP Policies can be combined with other security controls — such as network, identity, authentication, and device security — for a multi-layered security approach. Examples:
 
-* Combining **IP Policies and SSO/MFA** helps ensure that **only authenticated users on approved networks** can access ngrok tunnels.
-* Combining **IP Policies and webhook verification** helps ensure that **only webhook calls from expected IPs** — i.e., [Brex](https://developer.brex.com/docs/webhooks/#ip-whitelisting), [Castle](https://docs.castle.io/docs/subscribe-to-webhooks#allowlisting-castle-ips), and [Zoom](https://marketplace.zoom.us/docs/api-reference/webhook-reference/#ip-addresses), **authenticated and with message integrity** can reach your developer environment.
-
+- Combining **IP Policies and SSO/MFA** helps ensure that **only authenticated users on approved networks** can access ngrok tunnels.
+- Combining **IP Policies and webhook verification** helps ensure that **only webhook calls from expected IPs** — i.e., [Brex](https://developer.brex.com/docs/webhooks/#ip-whitelisting), [Castle](https://docs.castle.io/docs/subscribe-to-webhooks#allowlisting-castle-ips), and [Zoom](https://marketplace.zoom.us/docs/api-reference/webhook-reference/#ip-addresses), **authenticated and with message integrity** can reach your developer environment.
 
 ### 5. Enforce and restrict ngrok agents with ACLs
 
@@ -180,7 +173,6 @@ _Defining a custom ingress: Picking an address_
 
 _Defining a custom ingress: Configurations for your DNS server_
 
-
 ### 7. Add SSO and MFA to the admin UI
 
 With Dashboard SSO, you can restrict access to the ngrok administrative interface only for users authenticated in your identity providers — such as Okta, Azure AD, Ping, AD FS, and Auth0. The ngrok dashboard SSO works with any SAML provider, and can be used with your identity provider MFA — i.e., Windows Hello, Okta Verify, FIDO, and PingID — to ensure two-factor authentication (2FA) in compliance with your security requirements.
@@ -197,5 +189,5 @@ By following the best practices in this document, you can secure ngrok usage by 
 
 ## Learn more
 
-- To learn more about ngrok’s capabilities: [https://ngrok.com/product](https://ngrok.com/product) 
-- To explore configuration options, visit [https://ngrok.com/docs](https://ngrok.com/docs) 
+- To learn more about ngrok’s capabilities: [https://ngrok.com/product](https://ngrok.com/product)
+- To explore configuration options, visit [https://ngrok.com/docs](https://ngrok.com/docs)

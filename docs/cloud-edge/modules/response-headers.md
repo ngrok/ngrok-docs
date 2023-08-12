@@ -1,5 +1,6 @@
 # Response Headers
-----------------
+
+---
 
 The Response Headers module allows you to add and remove headers from HTTP responses before they are returned to the client. This is especially useful for enforcing the use of security headers on all responses returned by your application.
 

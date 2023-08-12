@@ -1,5 +1,7 @@
 <!-- Code generated for API Clients. DO NOT EDIT. -->
+
 #### Example Request
+
 ```bash
 curl \
 -X POST \
@@ -8,3 +10,4 @@ curl \
 -H "Ngrok-Version: 2" \
 -d '{"description":"acme https edge","metadata":"{\"environment\": \"staging\"}","hostports":["example.com:443"]}' \
 https://api.ngrok.com/edges/https
+```

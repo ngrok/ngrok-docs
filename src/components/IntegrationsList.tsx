@@ -17,7 +17,7 @@ export default function IntegrationsList() {
 				img={metadata?.logo || false}
 				title={metadata?.sidebar_label || name}
 				description={metadata?.excerpt || false}
-			/>
+			/>,
 		);
 
 		if (group.length == 2 || data.length < 2 || i == data.length - 1) {
