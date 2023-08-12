@@ -4,7 +4,8 @@ title: Overview
 ---
 
 # ngrok API Reference Overview
-------------------
+
+---
 
 We love API reference documentation and we know you do too. As a developer,
 it's often the first place to go to understand a system's domain model and to

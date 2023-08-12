@@ -3,7 +3,8 @@ sidebar_position: 1
 ---
 
 # HTTP Tunnels
---------------------
+
+---
 
 ngrok HTTP tunnels allow you to route HTTP protocols quickly and easily. These include websites, RESTful APIs, web servers, websockets, and much more.
 
@@ -31,15 +32,15 @@ Instead of your tunnel appearing as a subdomain of an ngrok owned domain, you ca
 
 1.  Navigate to the [Domains tab of your ngrok.com dashboard](https://dashboard.ngrok.com/cloud-edge/domains) and click 'Add a domain'. Enter `dev.example.com` as a Reserved Domain. This guarantees that no one else can hijack your domain name with their own tunnel.
 2.  On your dashboard, click on the 'CNAME' icon to copy your CNAME target.
-    
+
     ![](/img/docs/cname.png)
+
 3.  Create a DNS CNAME record from `dev.example.com` to your CNAME target. In this example, we would point the CNAME record to `2w9c34maz.wdv31sd.ngrok-cname.com`
 4.  Invoke ngrok with the `--domain` switch and specify the name of your custom domain as an argument.
-    
+
     ###### Example: Run a tunnel over a custom domain
-    
+
         ngrok http --domain=dev.example.com 8000
-    
 
 ## Local HTTPS servers {#local-https}
 

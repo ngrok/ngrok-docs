@@ -1,5 +1,6 @@
 # TLS Termination
-----------------
+
+---
 
 This module is used to configure how the TLS connection is terminated at the edge. For HTTPS Edges, TLS is always terminated at the ngrok Edge which means you can only configure the TLS version enforced there. For TLS tunnels, you can configure where the TLS termination occurs.
 

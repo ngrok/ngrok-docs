@@ -1,5 +1,6 @@
 # Request Headers
-----------------
+
+---
 
 The Request Headers module allows you to add and remove headers from HTTP requests before they are sent to your upstream server.
 

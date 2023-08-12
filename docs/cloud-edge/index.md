@@ -5,7 +5,8 @@ title: What is ngrok Cloud Edge?
 ---
 
 # ngrok Cloud Edge
-----------------
+
+---
 
 ## What is ngrok Cloud Edge?
 

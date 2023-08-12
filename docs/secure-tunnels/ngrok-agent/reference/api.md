@@ -5,20 +5,21 @@ toc_max_heading_level: 2
 ---
 
 # ngrok Agent API
----------------
+
+---
 
 The ngrok agent exposes an HTTP API that grants programmatic access to:
 
-* Collect status and metrics information
-* Collect and replay captured requests
-* Start and stop tunnels dynamically
+- Collect status and metrics information
+- Collect and replay captured requests
+- Start and stop tunnels dynamically
 
 ## Base URL and Authentication
 
-|     |     |
-| --- | --- |
-| Base URL | `http://127.0.0.1:4040/api` |
-| Authentication | **None** |
+|                |                             |
+| -------------- | --------------------------- |
+| Base URL       | `http://127.0.0.1:4040/api` |
+| Authentication | **None**                    |
 
 The ngrok agent API is exposed as part of ngrok's local web inspection interface. Because it is served on a local interface, the API has no authentication. The Base URL will change if you override `web_addr` in your configuration file.
 
@@ -34,10 +35,10 @@ Request parameters must be encoded to the API using `application/json`. Ensure t
 
 The ngrok agent API guarantees that breaking changes to the API will never be made unless the caller explicitly opts in to a newer version. The mechanism by which a caller opts into a new version of the API will be determined in the future when it becomes necessary. Examples of non-breaking changes to the API that will not be opt-in include the following.
 
-* The addition of new resources
-* The addition of new methods to existing resources
-* The addition of new fields on existing resource representations
-* Bug fixes which change the API to match documented behavior
+- The addition of new resources
+- The addition of new methods to existing resources
+- The addition of new fields on existing resource representations
+- Bug fixes which change the API to match documented behavior
 
 ## List Tunnels
 
@@ -51,8 +52,8 @@ GET/api/tunnels
 
 ### Parameters
 
-|     |     |
-| --- | --- |
+|           |                                                                                                                                |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------ |
 | `tunnels` | list of all running tunnels. See the [Tunnel detail](#tunnel-detail) resource for docs on the parameters of each tunnel object |
 
 ### Example Response
@@ -225,9 +226,9 @@ GET/api/requests/http
 
 ### Query Parameters
 
-|     |     |
-| --- | --- |
-| `limit` | maximum number of requests to return |
+|               |                                                |
+| ------------- | ---------------------------------------------- |
+| `limit`       | maximum number of requests to return           |
 | `tunnel_name` | filter requests only for the given tunnel name |
 
 ### Example Request
@@ -236,8 +237,8 @@ GET/api/requests/http
 
 ### Response
 
-|     |     |
-| --- | --- |
+|            |                                                                                                                                 |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------- |
 | `requests` | list of captured requests. See the [Captured Request Detail](#captured-request-detail) resource for docs on the request objects |
 
 ### Example Response
@@ -304,9 +305,9 @@ POST/api/requests/http
 
 ### Parameters
 
-|     |     |
-| --- | --- |
-| `id` | id of request to replay |
+|               |                                                                                                                                  |
+| ------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `id`          | id of request to replay                                                                                                          |
 | `tunnel_name` | name of the tunnel to play the request against. If unspecified, the request is played against the same tunnel it was recorded on |
 
 ### Example Request

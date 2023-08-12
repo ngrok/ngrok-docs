@@ -4,7 +4,8 @@ title: Overview
 ---
 
 # The ngrok API
-------------------
+
+---
 
 ## Overview
 
@@ -54,18 +55,18 @@ ngrok api endpoints list
 ## Client Libraries {#client-libraries}
 
 We publish open-source API client libraries to make working with the ngrok API
-feel native and fluent in your favorite programming language.  Library
+feel native and fluent in your favorite programming language. Library
 repositories are published in the [ngrok github
 organization](https://github.com/ngrok).
 
-| Language | Installation | Documentation | Repository |
-| --- | --- | --- | --- |
-| Go  | `go get github.com/ngrok/ngrok-api-go/v4` | [Documentation](https://pkg.go.dev/github.com/ngrok/ngrok-api-go/v4) | [GitHub](https://github.com/ngrok/ngrok-api-go) |
-| .NET | `dotnet add package NgrokApi` | [Documentation](https://github.com/ngrok/ngrok-api-dotnet) | [GitHub](https://github.com/ngrok/ngrok-api-dotnet) |
-| Ruby | `gem install ngrok-api` | [Documentation](https://ruby-api.docs.ngrok.com) | [GitHub](https://github.com/ngrok/ngrok-api-ruby) |
-| Python | `pip install ngrok-api` | [Documentation](https://python-api.docs.ngrok.com) | [GitHub](https://github.com/ngrok/ngrok-api-python) |
-| Java (unstable) | See the README for installing with Maven | [Documentation](https://java-api.docs.ngrok.com) | [GitHub](https://github.com/ngrok/ngrok-api-java) |
-| Scala (unstable) | See the README for installing with Maven | [Documentation](https://python-api.docs.ngrok.com) | [GitHub](https://github.com/ngrok/ngrok-api-scala) |
+| Language         | Installation                              | Documentation                                                        | Repository                                          |
+| ---------------- | ----------------------------------------- | -------------------------------------------------------------------- | --------------------------------------------------- |
+| Go               | `go get github.com/ngrok/ngrok-api-go/v4` | [Documentation](https://pkg.go.dev/github.com/ngrok/ngrok-api-go/v4) | [GitHub](https://github.com/ngrok/ngrok-api-go)     |
+| .NET             | `dotnet add package NgrokApi`             | [Documentation](https://github.com/ngrok/ngrok-api-dotnet)           | [GitHub](https://github.com/ngrok/ngrok-api-dotnet) |
+| Ruby             | `gem install ngrok-api`                   | [Documentation](https://ruby-api.docs.ngrok.com)                     | [GitHub](https://github.com/ngrok/ngrok-api-ruby)   |
+| Python           | `pip install ngrok-api`                   | [Documentation](https://python-api.docs.ngrok.com)                   | [GitHub](https://github.com/ngrok/ngrok-api-python) |
+| Java (unstable)  | See the README for installing with Maven  | [Documentation](https://java-api.docs.ngrok.com)                     | [GitHub](https://github.com/ngrok/ngrok-api-java)   |
+| Scala (unstable) | See the README for installing with Maven  | [Documentation](https://python-api.docs.ngrok.com)                   | [GitHub](https://github.com/ngrok/ngrok-api-scala)  |
 
 ## Terraform Provider
 
@@ -99,9 +100,9 @@ resource "ngrok_reserved_domain" "my_domain" {
 
 ## Authentication {#authentication}
 
-|     |     |
-| --- | --- |
-| Base URL | `https://api.ngrok.com` |
+|                       |                                       |
+| --------------------- | ------------------------------------- |
+| Base URL              | `https://api.ngrok.com`               |
 | Authentication Header | **`authorization: Bearer {API Key}`** |
 
 Requests to the API must include an API key as a bearer token in the
@@ -125,10 +126,10 @@ The ngrok API guarantees that breaking changes to the API will never be made
 unless the caller explicitly opts in to a newer version. The following
 non-breaking changes to the API may be made to existing versions:
 
-* The addition of new resources
-* The addition of new methods to existing resources
-* The addition of new fields on existing resource representations
-* Bug fixes which change the API to match documented behavior
+- The addition of new resources
+- The addition of new methods to existing resources
+- The addition of new fields on existing resource representations
+- Bug fixes which change the API to match documented behavior
 
 ## Pagination {#pagination}
 
@@ -152,7 +153,7 @@ returned by the API are in UTC time which is indicated by a `Z` at the end.
 
 The ngrok API enforces a limit on all accounts of 120 requests over a rolling
 60 second window. If you exceed the rate limit, ngrok will return
-[ERR\_NGROK\_226](/docs/errors/ERR_NGROK_226) and an HTTP Status Code of 429.
+[ERR_NGROK_226](/docs/errors/ERR_NGROK_226) and an HTTP Status Code of 429.
 
 ## IP Restrictions {#ip-restrictions}
 
@@ -167,7 +168,6 @@ well.
 
 IP Restrictions can be configured manually on the ngrok dashboard or
 programatically via API with a `type` of `agent`.
-
 
 - **[IP Restrictions on your ngrok dashboard](https://dashboard.ngrok.com/security/ip-restrictions)**
 - **[IP Restrictions API Resource](/api/resources/ip-restrictions/)**

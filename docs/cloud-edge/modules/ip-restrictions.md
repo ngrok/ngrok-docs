@@ -1,5 +1,6 @@
 # IP Restrictions
-----------------
+
+---
 
 ## Overview
 
@@ -97,12 +98,12 @@ metadata:
 spec:
   description: "My Trusted IPs"
   rules:
-  - action: "allow"
-    cidr: "110.0.0.0/8"
-  - action: "allow"
-    cidr: "220.12.0.0/16"
-  - action: "deny"
-    cidr: "110.2.3.4/32"
+    - action: "allow"
+      cidr: "110.0.0.0/8"
+    - action: "allow"
+      cidr: "220.12.0.0/16"
+    - action: "deny"
+      cidr: "110.2.3.4/32"
 ---
 kind: NgrokModuleSet
 apiVersion: ingress.k8s.ngrok.com/v1alpha1
@@ -111,8 +112,8 @@ metadata:
 modules:
   ipRestriction:
     policies:
-    - "policy-1" # Reference to the `ippolicy.ingress.k8s.ngrok.com` Custom Resource above
-    - "ipp_1234567890" # Reference to an IP Policy by its ngrok API ID
+      - "policy-1" # Reference to the `ippolicy.ingress.k8s.ngrok.com` Custom Resource above
+      - "ipp_1234567890" # Reference to an IP Policy by its ngrok API ID
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -134,7 +135,6 @@ spec:
                 port:
                   number: 80
 ```
-
 
 ### Edges
 
@@ -216,11 +216,11 @@ No additional upstream headers are added.
 
 When the IP Restrictions module is enforced, it populates the following fields
 in both the
-[http\_request\_complete.v0](/events/reference/#http-request-complete) and the
-[tcp\_connection\_closed.v0](/events/reference/#tcp-connection-closed) events.
+[http_request_complete.v0](/events/reference/#http-request-complete) and the
+[tcp_connection_closed.v0](/events/reference/#tcp-connection-closed) events.
 
-| Fields |
-| ------ |
+| Fields               |
+| -------------------- |
 | `ip_policy.decision` |
 
 ### Errors
@@ -229,7 +229,7 @@ For TCP and TLS endpoints, if a connection is disallowed by IP Restrictions
 then the connection will simply be closed.
 
 For HTTP endpoints, an HTTP response will return
-[ERR\_NGROK\_3205](/errors/err_ngrok_3205/) with a 403 Forbidden status.
+[ERR_NGROK_3205](/errors/err_ngrok_3205/) with a 403 Forbidden status.
 
 ### Licensing
 

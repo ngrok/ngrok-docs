@@ -3,7 +3,8 @@ sidebar_position: 2
 ---
 
 # Endpoints
-----------------
+
+---
 
 When you create an edge, you will automatically be assigned a reserved domain or TCP address depending on the type of edge you create. You can customize this endpoint by adding your own reserved or custom branded domain. An edge can have many endpoints, and each will use the same configuration.
 
@@ -31,10 +32,10 @@ The use of wildcard domains creates ambiguities in some aspects of the ngrok.com
 
 For the purposes of example, assume you have reserved the address `*.example.com` for your account.
 
-*   Connections to nested subdomains (e.g. `foo.bar.baz.example.com`) will route to your wildcard tunnel.
-*   You may bind tunnels on any valid subdomain of `example.com` without creating an additional reserved domain entry.
-*   No other account may reserve `foo.example.com` or any other subdomain that would match a wildcard domain reserved by another account.
-*   Connections are routed to the most specific matching tunnel online. If you are running tunnels for both `foo.example.com` and `*.example.com`, requests to `foo.example.com` will always route to `foo.example.com`
+- Connections to nested subdomains (e.g. `foo.bar.baz.example.com`) will route to your wildcard tunnel.
+- You may bind tunnels on any valid subdomain of `example.com` without creating an additional reserved domain entry.
+- No other account may reserve `foo.example.com` or any other subdomain that would match a wildcard domain reserved by another account.
+- Connections are routed to the most specific matching tunnel online. If you are running tunnels for both `foo.example.com` and `*.example.com`, requests to `foo.example.com` will always route to `foo.example.com`
 
 ## Certificates
 
@@ -53,20 +54,18 @@ When uploading a new certificate to ngrok via the API, the `certificate_pem` fie
 Certificate bundles are a series of PEM-encoded X.509 certificates that have been concatenated together in a specific order. A bundle will look like the following:
 
 ```
------BEGIN CERTIFICATE----- 
-... 
------END CERTIFICATE----- 
+-----BEGIN CERTIFICATE-----
+...
+-----END CERTIFICATE-----
 
------BEGIN CERTIFICATE----- 
-... 
------END CERTIFICATE----- 
+-----BEGIN CERTIFICATE-----
+...
+-----END CERTIFICATE-----
 
------BEGIN CERTIFICATE----- 
-... 
+-----BEGIN CERTIFICATE-----
+...
 -----END CERTIFICATE-----
 ```
-        
-      
 
 The first certificate in the bundle must be the leaf certificate. You can think of the leaf certificate as the one which is signed for your domain and [the private key](#private-keys) you will upload.
 
@@ -76,9 +75,9 @@ After the leaf are the intermediates certificates, if any. Each intermediate sig
 
 ngrok accepts the following formats for the `private_key_pem` field:
 
-*   RSA, in either PKCS#1 or PKCS#8 form.
-*   ECDSA, in either SEC 1 or PKCS#8 form.
-*   Ed25519, in PKCS#8 form.
+- RSA, in either PKCS#1 or PKCS#8 form.
+- ECDSA, in either SEC 1 or PKCS#8 form.
+- Ed25519, in PKCS#8 form.
 
 All of the above (PKCS#1, PKCS#8, and SEC 1) are represented with ASN.1 DER (a binary format), encoded as PEM.
 

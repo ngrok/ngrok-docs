@@ -1,5 +1,6 @@
 # Securing ngrok
---------------
+
+---
 
 This guide will walk you through recommendations for ensuring you are using ngrok securely.
 
@@ -70,7 +71,6 @@ For a tighter security policy, most administrators will want to block ngrok acco
 - tunnel.jp.ngrok.com
 - tunnel.in.ngrok.com
 
-
 ## API Configuration
 
 You need a API key to authenticate with the ngrok REST API. API keys are Base64 encoded strings and are available from the ngrok dashboard and also from an API endpoint, which makes it easy to rotate your API keys.
@@ -86,12 +86,3 @@ For authenticating access to the dashboard, ngrok has features for role based ac
 With RBAC, you can configure permissions for groups of users within your team (for example admins and developers).
 
 Consider restricting the IPs permitted to access the dashboard.
-
-
-
-
-
-
-
-
-

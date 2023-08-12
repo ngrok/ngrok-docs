@@ -4,7 +4,8 @@ title: Configuration File
 ---
 
 # ngrok Agent Configuration File
---------------------
+
+---
 
 For a full list of configuration options, see the [ngrok agent configuration reference documentation](/secure-tunnels/ngrok-agent/reference/config).
 

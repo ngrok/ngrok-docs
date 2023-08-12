@@ -10,12 +10,12 @@ tags:
 
 # 1Password CLI Integration for ngrok
 
-------------
-
+---
 
 :::tip TL;DR
 
 To activate the 1Password ngrok shell plugin:
+
 1. [Sign up for 1Password](https://1password.com/sign-up/)
 1. Install and sign in to [1Password](https://support.1password.com/get-the-apps/) on your machine
 1. Install the [1Password CLI](https://app-updates.agilebits.com/product_history/CLI2) on your machine
@@ -29,21 +29,22 @@ This guide covers how to set up the 1Password CLI with the ngrok shell extension
 
 By integrating ngrok with 1Password, you can:
 
-* *Store your credentials in exactly one place*, limiting the risk of not updating environments after resetting tokens
-* *Share credentials between environments securely*, eliminating the risk of copy and pasting credentials in other tools or reusing credentials between multiple projects accidentally
-* *Switch between credentials as necessary* to test with different ngrok configurations, feature sets, or even accounts
+- _Store your credentials in exactly one place_, limiting the risk of not updating environments after resetting tokens
+- _Share credentials between environments securely_, eliminating the risk of copy and pasting credentials in other tools or reusing credentials between multiple projects accidentally
+- _Switch between credentials as necessary_ to test with different ngrok configurations, feature sets, or even accounts
 
 Prerequisites:
 
-* A 1Password account
-* [1Password desktop app](https://support.1password.com/get-the-apps/) installed on your machine (v8 or later)
-* [1Password CLI](https://app-updates.agilebits.com/product_history/CLI2) installed on your machine (v2.14.0 or later)
-* [ngrok](https://ngrok.com/download) installed on your machine
-* Basic familiarity with the command line
+- A 1Password account
+- [1Password desktop app](https://support.1password.com/get-the-apps/) installed on your machine (v8 or later)
+- [1Password CLI](https://app-updates.agilebits.com/product_history/CLI2) installed on your machine (v2.14.0 or later)
+- [ngrok](https://ngrok.com/download) installed on your machine
+- Basic familiarity with the command line
 
-Tip: One of the easiest mistakes is failing to connect the App to the CLI. In the 1Password App, go to Settings > Developer and select “Connect with the 1Password CLI” 
+Tip: One of the easiest mistakes is failing to connect the App to the CLI. In the 1Password App, go to Settings > Developer and select “Connect with the 1Password CLI”
 
 ## **Step 1**: Initialize the 1Password ngrok shell plugin
+
 To configure the ngrok shell extension, open a terminal and run this command:
 
 ```bash
@@ -74,7 +75,7 @@ You can delete the entire authtoken line right now but to test safely, you can a
 
 ## **Step 3**: Start your tunnel
 
-Now that we have our environment configured, we start our tunnel. 1Password will intercept the request, determine which credential to use, and start a tunnel as we requested. 
+Now that we have our environment configured, we start our tunnel. 1Password will intercept the request, determine which credential to use, and start a tunnel as we requested.
 
 ![Import your ngrok credentials into 1Password](img/1password-start-ngrok.gif)
 

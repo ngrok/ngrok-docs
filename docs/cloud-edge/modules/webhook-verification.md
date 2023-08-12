@@ -1,5 +1,6 @@
 # Webhook Verification
-----------------
+
+---
 
 ## Overview
 
@@ -139,7 +140,6 @@ spec:
                   number: 80
 ```
 
-
 ### Edges
 
 Webhook Verification is a supported module for HTTPS edges. It is attached to
@@ -193,73 +193,73 @@ automatically handle the endpoint verification request for your application.
 
 ### Supported Providers {#supported-providers}
 
-| Provider | Provider Identifier | Integration Guide |
-| --- | --- | --- |
-| AfterShip | `aftership` | [Documentation](/docs/integrations/aftership/webhooks/) |
-| Airship | `airship` | [Documentation](/docs/integrations/airship/webhooks/) |
-| Amazon SNS | `sns` | [Documentation](/docs/integrations/amazonsns/webhooks/) |
-| Autodesk Platform Services | `autodesk` | [Documentation](/docs/integrations/autodesk/webhooks/) |
-| Bitbucket | `bitbucket` | [Documentation](/docs/integrations/bitbucket/webhooks/) |
-| Bolt | `bolt` | [Documentation](https://help.bolt.com/developers/guides/webhooks/hook-verification/) |
-| Box | `box` | [Documentation](/docs/integrations/box/webhooks/) |
-| Brex | `brex` | [Documentation](/docs/integrations/brex/webhooks/) |
-| Buildkite | `buildkite` | [Documentation](/docs/integrations/buildkite/webhooks/) |
-| Calendly | `calendly` | [Documentation](/docs/integrations/calendly/webhooks/) |
-| Castle | `castle` | [Documentation](/docs/integrations/castle/webhooks/) |
-| Chargify | `chargify` | [Documentation](/docs/integrations/chargify/webhooks/) |
-| CircleCI | `circleci` | [Documentation](/docs/integrations/circleci/webhooks/) |
-| Clearbit | `clearbit` | [Documentation](/docs/integrations/clearbit/webhooks/) |
-| Clerk | `clerk` | [Documentation](/docs/integrations/clerk/webhooks/) |
-| Coinbase | `coinbase` | [Documentation](/docs/integrations/coinbase/webhooks/) |
-| Contentful | `contentful` | [Documentation](/docs/integrations/contentful/webhooks/) |
-| DocuSign | `docusign` | [Documentation](/docs/integrations/docusign/webhooks/) |
-| Dropbox | `dropbox` | [Documentation](/docs/integrations/dropbox/webhooks/) |
-| Facebook Graph API | `facebook_graph_api` | [Documentation](/docs/integrations/facebook/webhooks/) |
-| Facebook Messenger | `facebook_messenger` | [Documentation](/docs/integrations/facebook-messenger/webhooks/) |
-| Frame.io | `frameio` | [Documentation](/docs/integrations/frameio/webhooks/) |
-| GitHub | `github` | [Documentation](/docs/integrations/github/webhooks/) |
-| GitLab | `gitlab` | [Documentation](/docs/integrations/gitlab/webhooks/) |
-| Go1 | `go1` | [Documentation](https://www.go1.com/developers/partners/concepts/webhook-signature-authentification) |
-| Heroku | `heroku` | [Documentation](/docs/integrations/heroku/webhooks/) |
-| Hosted Hooks | `hostedhooks` | [Documentation](/docs/integrations/hostedhooks/webhooks/) |
-| HubsSpot | `hubspot` | [Documentation](/docs/integrations/hubspot/webhooks/) |
-| Hygraph (Formerly GraphCMS) | `graphcms` | [Documentation](/docs/integrations/hygraph/webhooks/) |
-| Instagram | `instagram` | [Documentation](/docs/integrations/instagram/webhooks/) |
-| Intercom | `intercom` | [Documentation](/docs/integrations/intercom/webhooks/) |
-| Launch Darkly | `launch_darkly` | [Documentation](/docs/integrations/launchdarkly/webhooks/) |
-| Mailchimp | `mailchimp` | [Documentation](/docs/integrations/mailchimp/webhooks/) |
-| Mailgun | `mailgun` | [Documentation](/docs/integrations/mailgun/webhooks/) |
-| Microsoft Teams | `microsoft_teams` | [Documentation](/docs/integrations/teams/webhooks/) |
-| Modern Treasury | `modern_treasury` | [Documentation](/docs/integrations/modern-treasury/webhooks/) |
-| MongoDB | `mongodb` | [Documentation](/docs/integrations/mongodb/webhooks/) |
-| Mux | `mux` | [Documentation](/docs/integrations/mux/webhooks/) |
-| Orbit | `orbit` | [Documentation](/docs/integrations/orbit/webhooks/) |
-| PagerDuty | `pagerduty` | [Documentation](/docs/integrations/pagerduty/webhooks/) |
-| Pinwheel | `pinwheel` | [Documentation](/docs/integrations/pinwheel/webhooks/) |
-| Plivo | `plivo` | [Documentation](/docs/integrations/plivo/webhooks/) |
-| Pusher | `pusher` | [Documentation](/docs/integrations/pusher/webhooks/) |
-| SendGrid | `sendgrid` | [Documentation](/docs/integrations/sendgrid/webhooks/) |
-| Sentry | `sentry` | [Documentation](/docs/integrations/sentry/webhooks/) |
-| Shopify | `shopify` | [Documentation](/docs/integrations/shopify/webhooks/) | 
-| Signal Sciences | `signal_sciences` | [Documentation](/docs/integrations/signalsciences/webhooks/) |
-| Slack | `slack` | [Documentation](/docs/integrations/slack/webhooks/) |
-| Sonatype Nexus | `sonatype` | [Documentation](/docs/integrations/sonatype-nexus/webhooks/) |
-| Square | `square` | [Documentation](/docs/integrations/square/webhooks/) |
-| Stripe | `stripe` | [Documentation](/docs/integrations/stripe/webhooks/) |
-| Svix | `svix` | [Documentation](/docs/integrations/svix/webhooks/) |
-| Terraform | `terraform` | [Documentation](/docs/integrations/terraform/webhooks/) |
-| TikTok | `tiktok` | [Documentation](/docs/integrations/tiktok/webhooks/) |
-| Trend Micro Conformity | `trendmicro_conformity` | [Documentation](/docs/integrations/trendmicro/webhooks/) |
-| Twilio | `twilio` | [Documentation](/docs/integrations/twilio/webhooks/) |
-| Twitter | `twitter` | [Documentation](/docs/integrations/twitter/webhooks/) |
-| Typeform | `typeform` | [Documentation](/docs/integrations/typeform/webhooks/) |
-| VMware Workspace | `vmware` | [Documentation](/docs/integrations/vmware/webhooks/) |
-| Webex | `webex` | [Documentation](/docs/integrations/webex/webhooks/) |
-| WhatsApp | `whatsapp` | [Documentation](/docs/integrations/whatsapp/webhooks/) |
-| Worldline | `worldline` | [Documentation](/docs/integrations/worldline/webhooks/) |
-| Xero | `xero` | [Documentation](/docs/integrations/xero/webhooks/) |
-| Zendesk | `zendesk` | [Documentation](/docs/integrations/zendesk/webhooks/) |
-| Zoom | `zoom` | [Documentation](/docs/integrations/zoom/webhooks/) |
+| Provider                    | Provider Identifier     | Integration Guide                                                                                    |
+| --------------------------- | ----------------------- | ---------------------------------------------------------------------------------------------------- |
+| AfterShip                   | `aftership`             | [Documentation](/docs/integrations/aftership/webhooks/)                                              |
+| Airship                     | `airship`               | [Documentation](/docs/integrations/airship/webhooks/)                                                |
+| Amazon SNS                  | `sns`                   | [Documentation](/docs/integrations/amazonsns/webhooks/)                                              |
+| Autodesk Platform Services  | `autodesk`              | [Documentation](/docs/integrations/autodesk/webhooks/)                                               |
+| Bitbucket                   | `bitbucket`             | [Documentation](/docs/integrations/bitbucket/webhooks/)                                              |
+| Bolt                        | `bolt`                  | [Documentation](https://help.bolt.com/developers/guides/webhooks/hook-verification/)                 |
+| Box                         | `box`                   | [Documentation](/docs/integrations/box/webhooks/)                                                    |
+| Brex                        | `brex`                  | [Documentation](/docs/integrations/brex/webhooks/)                                                   |
+| Buildkite                   | `buildkite`             | [Documentation](/docs/integrations/buildkite/webhooks/)                                              |
+| Calendly                    | `calendly`              | [Documentation](/docs/integrations/calendly/webhooks/)                                               |
+| Castle                      | `castle`                | [Documentation](/docs/integrations/castle/webhooks/)                                                 |
+| Chargify                    | `chargify`              | [Documentation](/docs/integrations/chargify/webhooks/)                                               |
+| CircleCI                    | `circleci`              | [Documentation](/docs/integrations/circleci/webhooks/)                                               |
+| Clearbit                    | `clearbit`              | [Documentation](/docs/integrations/clearbit/webhooks/)                                               |
+| Clerk                       | `clerk`                 | [Documentation](/docs/integrations/clerk/webhooks/)                                                  |
+| Coinbase                    | `coinbase`              | [Documentation](/docs/integrations/coinbase/webhooks/)                                               |
+| Contentful                  | `contentful`            | [Documentation](/docs/integrations/contentful/webhooks/)                                             |
+| DocuSign                    | `docusign`              | [Documentation](/docs/integrations/docusign/webhooks/)                                               |
+| Dropbox                     | `dropbox`               | [Documentation](/docs/integrations/dropbox/webhooks/)                                                |
+| Facebook Graph API          | `facebook_graph_api`    | [Documentation](/docs/integrations/facebook/webhooks/)                                               |
+| Facebook Messenger          | `facebook_messenger`    | [Documentation](/docs/integrations/facebook-messenger/webhooks/)                                     |
+| Frame.io                    | `frameio`               | [Documentation](/docs/integrations/frameio/webhooks/)                                                |
+| GitHub                      | `github`                | [Documentation](/docs/integrations/github/webhooks/)                                                 |
+| GitLab                      | `gitlab`                | [Documentation](/docs/integrations/gitlab/webhooks/)                                                 |
+| Go1                         | `go1`                   | [Documentation](https://www.go1.com/developers/partners/concepts/webhook-signature-authentification) |
+| Heroku                      | `heroku`                | [Documentation](/docs/integrations/heroku/webhooks/)                                                 |
+| Hosted Hooks                | `hostedhooks`           | [Documentation](/docs/integrations/hostedhooks/webhooks/)                                            |
+| HubsSpot                    | `hubspot`               | [Documentation](/docs/integrations/hubspot/webhooks/)                                                |
+| Hygraph (Formerly GraphCMS) | `graphcms`              | [Documentation](/docs/integrations/hygraph/webhooks/)                                                |
+| Instagram                   | `instagram`             | [Documentation](/docs/integrations/instagram/webhooks/)                                              |
+| Intercom                    | `intercom`              | [Documentation](/docs/integrations/intercom/webhooks/)                                               |
+| Launch Darkly               | `launch_darkly`         | [Documentation](/docs/integrations/launchdarkly/webhooks/)                                           |
+| Mailchimp                   | `mailchimp`             | [Documentation](/docs/integrations/mailchimp/webhooks/)                                              |
+| Mailgun                     | `mailgun`               | [Documentation](/docs/integrations/mailgun/webhooks/)                                                |
+| Microsoft Teams             | `microsoft_teams`       | [Documentation](/docs/integrations/teams/webhooks/)                                                  |
+| Modern Treasury             | `modern_treasury`       | [Documentation](/docs/integrations/modern-treasury/webhooks/)                                        |
+| MongoDB                     | `mongodb`               | [Documentation](/docs/integrations/mongodb/webhooks/)                                                |
+| Mux                         | `mux`                   | [Documentation](/docs/integrations/mux/webhooks/)                                                    |
+| Orbit                       | `orbit`                 | [Documentation](/docs/integrations/orbit/webhooks/)                                                  |
+| PagerDuty                   | `pagerduty`             | [Documentation](/docs/integrations/pagerduty/webhooks/)                                              |
+| Pinwheel                    | `pinwheel`              | [Documentation](/docs/integrations/pinwheel/webhooks/)                                               |
+| Plivo                       | `plivo`                 | [Documentation](/docs/integrations/plivo/webhooks/)                                                  |
+| Pusher                      | `pusher`                | [Documentation](/docs/integrations/pusher/webhooks/)                                                 |
+| SendGrid                    | `sendgrid`              | [Documentation](/docs/integrations/sendgrid/webhooks/)                                               |
+| Sentry                      | `sentry`                | [Documentation](/docs/integrations/sentry/webhooks/)                                                 |
+| Shopify                     | `shopify`               | [Documentation](/docs/integrations/shopify/webhooks/)                                                |
+| Signal Sciences             | `signal_sciences`       | [Documentation](/docs/integrations/signalsciences/webhooks/)                                         |
+| Slack                       | `slack`                 | [Documentation](/docs/integrations/slack/webhooks/)                                                  |
+| Sonatype Nexus              | `sonatype`              | [Documentation](/docs/integrations/sonatype-nexus/webhooks/)                                         |
+| Square                      | `square`                | [Documentation](/docs/integrations/square/webhooks/)                                                 |
+| Stripe                      | `stripe`                | [Documentation](/docs/integrations/stripe/webhooks/)                                                 |
+| Svix                        | `svix`                  | [Documentation](/docs/integrations/svix/webhooks/)                                                   |
+| Terraform                   | `terraform`             | [Documentation](/docs/integrations/terraform/webhooks/)                                              |
+| TikTok                      | `tiktok`                | [Documentation](/docs/integrations/tiktok/webhooks/)                                                 |
+| Trend Micro Conformity      | `trendmicro_conformity` | [Documentation](/docs/integrations/trendmicro/webhooks/)                                             |
+| Twilio                      | `twilio`                | [Documentation](/docs/integrations/twilio/webhooks/)                                                 |
+| Twitter                     | `twitter`               | [Documentation](/docs/integrations/twitter/webhooks/)                                                |
+| Typeform                    | `typeform`              | [Documentation](/docs/integrations/typeform/webhooks/)                                               |
+| VMware Workspace            | `vmware`                | [Documentation](/docs/integrations/vmware/webhooks/)                                                 |
+| Webex                       | `webex`                 | [Documentation](/docs/integrations/webex/webhooks/)                                                  |
+| WhatsApp                    | `whatsapp`              | [Documentation](/docs/integrations/whatsapp/webhooks/)                                               |
+| Worldline                   | `worldline`             | [Documentation](/docs/integrations/worldline/webhooks/)                                              |
+| Xero                        | `xero`                  | [Documentation](/docs/integrations/xero/webhooks/)                                                   |
+| Zendesk                     | `zendesk`               | [Documentation](/docs/integrations/zendesk/webhooks/)                                                |
+| Zoom                        | `zoom`                  | [Documentation](/docs/integrations/zoom/webhooks/)                                                   |
 
 ### Upstream Headers {#upstream-headers}
 
@@ -269,16 +269,16 @@ No additional upstream headers are added by the Webhook Verification module.
 
 When the Webhook Verification module is enabled, it populates the following
 fields in the
-[http\_request\_complete.v0](/events/reference/#http-request-complete) event:
+[http_request_complete.v0](/events/reference/#http-request-complete) event:
 
-| Fields |
-| ------ |
+| Fields                          |
+| ------------------------------- |
 | `webhook_verification.decision` |
 
 ### Errors
 
 If a webhook request fails verification for any reason, the ngrok edge will
-return [ERR\_NGROK\_3204](/errors/err_ngrok_3204/) with a 403 Forbidden status.
+return [ERR_NGROK_3204](/errors/err_ngrok_3204/) with a 403 Forbidden status.
 
 ### Licensing
 

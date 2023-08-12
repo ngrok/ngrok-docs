@@ -3,11 +3,13 @@ description: Develop and test Slack webhooks from localhost
 ---
 
 # Slack Webhook
-------------
+
+---
 
 :::tip TL;DR
 
 To integrate Slack webhooks with ngrok:
+
 1. [Launch your local webhook.](#start-your-app) `npm start`
 1. [Launch ngrok.](#start-ngrok) `ngrok http 3000`
 1. [Configure Slack webhooks with your ngrok URL.](#setup-webhook)
@@ -15,9 +17,8 @@ To integrate Slack webhooks with ngrok:
 
 :::
 
-
 This guide covers how to use ngrok to integrate your localhost app with Slack using Webhooks.
-Slack webhooks can be used to notify an external application whenever specific events occur in your Slack account. 
+Slack webhooks can be used to notify an external application whenever specific events occur in your Slack account.
 Slack requires your application to be available through an HTTPS endpoint.
 
 By integrating ngrok with Slack, you can:
@@ -27,10 +28,9 @@ By integrating ngrok with Slack, you can:
 - **Modify and Replay Slack Webhook requests** with a single click and without spending time reproducing events manually in your Slack account.
 - **Secure your app with Slack validation provided by ngrok**. Invalid requests are blocked by ngrok before reaching your app.
 
-
 ## **Step 1**: Start your app {#start-your-app}
 
-For this tutorial, we'll use the [sample NodeJS app available on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample). 
+For this tutorial, we'll use the [sample NodeJS app available on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
 
 To install this sample, run the following commands in a terminal:
 
@@ -42,58 +42,55 @@ npm install
 
 This will get the project installed locally.
 
-Now you can launch the app by running the following command: 
+Now you can launch the app by running the following command:
 `npm run startSlack`
 
-The app runs by default on port 3000. 
+The app runs by default on port 3000.
 
 You can validate that the app is up and running by visiting http://localhost:3000. The application logs request headers and body in the terminal and a message in the browser.
 
-
 ## **Step 2**: Launch ngrok {#start-ngrok}
 
-Once your app runs successfully on localhost, let's get it on the internet securely using ngrok! 
+Once your app runs successfully on localhost, let's get it on the internet securely using ngrok!
 
 1. If you're not an ngrok user yet, just [sign up for ngrok for free](https://ngrok.com/signup).
 
 1. [Download the ngrok agent](https://ngrok.com/download).
 
 1. Go to the [ngrok dashboard](https://dashboard.ngrok.com) and copy your Authtoken.
-    **Tip:** The ngrok agent uses the auth token to log into your account when you start a tunnel.
-    
+   **Tip:** The ngrok agent uses the auth token to log into your account when you start a tunnel.
 1. Start ngrok by running the following command:
-    ```bash
-    ngrok http 3000
-    ```
+
+   ```bash
+   ngrok http 3000
+   ```
 
 1. ngrok will display a URL where your localhost application is exposed to the internet (copy this URL for use with Slack).
-    ![ngrok agent running](/img/integrations/launch_ngrok_tunnel.png)
+   ![ngrok agent running](/img/integrations/launch_ngrok_tunnel.png)
 
-
-## **Step 3**: Integrate  Slack {#setup-webhook}
+## **Step 3**: Integrate Slack {#setup-webhook}
 
 To register a webhook with your Slack account, follow the instructions below:
 
 1. Access the [Slack Web app](https://app.slack.com/) and sign in using your Slack account.
-    **Tip**: There is no need to open the slack app on your desktop for now. Continue with the **use Slack in your browser** option.
+   **Tip**: There is no need to open the slack app on your desktop for now. Continue with the **use Slack in your browser** option.
 
 1. In the same browser tab, access the [Slack API portal](https://api.slack.com/apps) and then click **Create an App**.
-    **Tip**: If you already have some apps created, click ****.
+   **Tip**: If you already have some apps created, click \*\*\*\*.
 
 1. In the **Create an app** window, click **From scratch**, provide the **App Name**, select a workspace under **Pick a workspace to develop your app in**, and then click **Create App**.
 
 1. In the **Basic Information** page, expand **Add features and functionality** and then click **Event Subscriptions**.
 
 1. In the **Event Subscriptions** page, click the **Enable Events** slider to turn it on. In the **Request URL** field, enter the URL provided by the ngrok agent to expose your application to the internet (i.e., `https://1a2b-3c4d-5e6f-7g8h-9i0j.sa.ngrok.io`).
-    ![Slack Request URL](img/ngrok_url_configuration_slack.png)
+   ![Slack Request URL](img/ngrok_url_configuration_slack.png)
 
-    **Note**: Slack makes a one-time call to your app. It sends a challenge parameter as part of the request body and expects the app to respond with this value.
+   **Note**: Slack makes a one-time call to your app. It sends a challenge parameter as part of the request body and expects the app to respond with this value.
 
 1. On the same page, expand **Subscribe to events on behalf of users**, click **Add Workspace Event**, select `message.im`, and then click **Save Changes**.
-    **Tip**: More about Slack event types [here](https://api.slack.com/events).
+   **Tip**: More about Slack event types [here](https://api.slack.com/events).
 
 1. In the left menu, click **Install App**, click **Install to Workspace**, and then click **Allow** to allow your application to access your workspace.
-
 
 ### Run Webhooks with Slack and ngrok
 
@@ -101,19 +98,18 @@ Because you've subscribed to the `message.im` event and installed your app to yo
 
 1. Access the [Slack Web app](https://app.slack.com/) or open the slack app on your desktop, and verify that your application appears under **Apps** in the left menu.
 
-1. Select one person in your workspace and send the person a message. Alternatively, you can select the **Slackbot**,  write `Hello Slack bot!` in the message field, and then send it.
+1. Select one person in your workspace and send the person a message. Alternatively, you can select the **Slackbot**, write `Hello Slack bot!` in the message field, and then send it.
 
 Confirm your localhost app receives notifications about the message.
 
 **Tip:** Slack sends different request body contents and headers depending on the trigger event.
 
-
 ### Inspecting requests
 
-When you launch the ngrok agent on your local machine, you can see two links: 
+When you launch the ngrok agent on your local machine, you can see two links:
 
-* The URL to your app (it ends with `ngrok-free.app` for free accounts or `ngrok.app` for paid accounts when not using custom domains)
-* A local URL for the Web Interface (a.k.a **Request Inspector**).
+- The URL to your app (it ends with `ngrok-free.app` for free accounts or `ngrok.app` for paid accounts when not using custom domains)
+- A local URL for the Web Interface (a.k.a **Request Inspector**).
 
 The Request Inspector shows all the requests made through your ngrok tunnel to your localhost app. When you click on a request, you can see details of both the request and the response.
 
@@ -124,7 +120,6 @@ To inspect Slack's event requests, launch the ngrok web interface (i.e. `http://
 ![ngrok Request Inspector](img/ngrok_introspection_slack_hooks.png)
 
 From the results, review the response body, header, and other details:
-
 
 ### Replaying requests
 
@@ -140,7 +135,6 @@ The ngrok Request Inspector provides a replay function that you can use to test 
 
 Verify that your local application receives the request and logs the corresponding information to the terminal.
 
-
 ## Secure webhook requests {#security}
 
 The ngrok signature webhook verification feature allows ngrok to assert that requests from your Slack webhook are the only traffic allowed to make calls to your localhost app.
@@ -152,12 +146,11 @@ This is a quick step to add extra protection to your application.
 1. In the **Basic Information** page for your Slack app, click **Show** for the **Signing Secret** and copy the value that appears.
 
 1. Restart your ngrok agent by running the command, replacing `{your signing secret}` with your **Signing Secret** from Slack:
-    ```bash
-    ngrok http 3000 --verify-webhook slack --verify-webhook-secret {your signing secret}
-    ```
 
-1. In your Slack app, select the **Slackbot**,  write `Hello Slack bot!` in the message field, and then send it.
+   ```bash
+   ngrok http 3000 --verify-webhook slack --verify-webhook-secret {your signing secret}
+   ```
+
+1. In your Slack app, select the **Slackbot**, write `Hello Slack bot!` in the message field, and then send it.
 
 Verify that your local application receives the request and logs information to the terminal.
-
-

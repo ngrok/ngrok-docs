@@ -5,7 +5,8 @@ toc_max_heading_level: 2
 ---
 
 # ngrok Agent Command Line Interface (CLI)
-----------------------------------------
+
+---
 
 ## ngrok
 
@@ -18,29 +19,29 @@ The root command of the ngrok agent.
 
 ### Commands
 
-| Command | Description |
-| --- | --- |
-| [api](#ngrok-api) | use ngrok agent as an api client |
-| [completion](#ngrok-completion) | generates shell completion code for bash or zsh |
-| [config](#ngrok-config) | update or migrate ngrok's configuration file |
-| [credits](#ngrok-credits) | prints author and licensing information |
-| [diagnose](#ngrok-diagnose) | diagnose connection issues |
-| [help](#ngrok-help) | Help about any command |
-| [http](#ngrok-http) | start an HTTP tunnel |
-| [service](#ngrok-service) | run and control an ngrok service on a target operating system |
-| [start](#ngrok-start) | start tunnels by name from the configuration file |
-| [tcp](#ngrok-tcp) | start a TCP tunnel |
-| [tls](#ngrok-tls) | start a TLS tunnel |
-| [tunnel](#ngrok-tunnel) | start a tunnel for use with a tunnel-group backend |
-| [update](#ngrok-update) | update ngrok to the latest version |
-| [version](#ngrok-version) | print the version string |
+| Command                         | Description                                                   |
+| ------------------------------- | ------------------------------------------------------------- |
+| [api](#ngrok-api)               | use ngrok agent as an api client                              |
+| [completion](#ngrok-completion) | generates shell completion code for bash or zsh               |
+| [config](#ngrok-config)         | update or migrate ngrok's configuration file                  |
+| [credits](#ngrok-credits)       | prints author and licensing information                       |
+| [diagnose](#ngrok-diagnose)     | diagnose connection issues                                    |
+| [help](#ngrok-help)             | Help about any command                                        |
+| [http](#ngrok-http)             | start an HTTP tunnel                                          |
+| [service](#ngrok-service)       | run and control an ngrok service on a target operating system |
+| [start](#ngrok-start)           | start tunnels by name from the configuration file             |
+| [tcp](#ngrok-tcp)               | start a TCP tunnel                                            |
+| [tls](#ngrok-tls)               | start a TLS tunnel                                            |
+| [tunnel](#ngrok-tunnel)         | start a tunnel for use with a tunnel-group backend            |
+| [update](#ngrok-update)         | update ngrok to the latest version                            |
+| [version](#ngrok-version)       | print the version string                                      |
 
 ### Flags
 
-| Flag | Description |
-| --- | --- |
-| `-h`, `--help` | Prints the help for the `ngrok` command |
-| `-v`, `--version` | Prints the version for ngrok agent |
+| Flag              | Description                             |
+| ----------------- | --------------------------------------- |
+| `-h`, `--help`    | Prints the help for the `ngrok` command |
+| `-v`, `--version` | Prints the version for ngrok agent      |
 
 ## ngrok api
 
@@ -58,43 +59,43 @@ These commands mirror our standard [ngrok HTTP API](/api). If you have [shell co
 
 ### Commands
 
-| Command | Description |
-| --- | --- |
-| [abuse-reports](/api#api-abuse-reports) | Creates a new abuse report which will be reviewed by our system and abuse response team. |
-| [agent-ingresses](/api#api-agent-ingresses) | Manage Agent Ingresses. The ngrok agent can be configured to connect to ngrok via the new set of addresses on the returned Agent Ingress. |
-| [api-keys](/api/resources/api-keys) | Manage API keys. These keys can be used to authenticate to the ngrok API. |
-| [backends](/api#api-failover-backends) | Manage the backends that are servicing Cloud Edges. |
-| [certificate-authorities](/api#api-certificate-authorities) | Manage Certificate Authorities. |
-| [credentials](/api#api-credentials) | Manage authtoken credentials. The authtoken credential can be used to authorize a new ngrok agent session. |
-| [edge-modules](/api#api-edge-route-backend-module) | Manage ngrok Cloud Edge Modules. |
-| [edges](/api#api-edges-https) | Manage ngrok Cloud Edges. |
-| [endpoints](/api#api-endpoints) | List all active endpoints on the account. |
-| [event-destinations](/api#api-event-destinations) | Manage Event Destinations. |
-| [event-sources](/api#api-event-sources) | Manage types for which an event subscription will trigger. |
-| [event-subscriptions](/api#api-event-subscriptions) | Manage Event Subscriptions. |
-| [ip-policies](/api#api-ip-policies) | Manage IP policies. |
-| [ip-policy-rules](/api#api-ip-policy-rules) | Manage IP policy rules attached to IP Policies. |
-| [ip-restrictions](/api#api-ip-restrictions) | Manage IP restrictions. |
-| [reserved-addrs](/api#api-reserved-addrs) | Manage reserved TCP addresses. |
-| [reserved-domains](/api#api-reserved-domains) | Manage reserved domains. |
-| [ssh-certificate-authorities](/api#api-ssh-certificate-authorities) | Manage SSH Certificate Authorities. |
-| [ssh-credentials](/api#api-ssh-credentials) | Manage SSH Credentials that can be used to start new tunnels via ngrok's SSH gateway. |
-| [ssh-host-certificates](/api#api-ssh-host-certificates) | Manage SSH Host Certificates. |
-| [ssh-user-certificates](/api#api-ssh-user-certificates) | Manage SSH User Certificates. |
-| [tls-certificates](/api#api-tls-certificates) | Manage TLS certificates |
-| [tunnel-sessions](/api#api-tunnel-sessions) | List all online tunnel sessions running on this account. |
-| [tunnels](/api#api-tunnels) | List all online tunnels currently running on the account. |
+| Command                                                             | Description                                                                                                                               |
+| ------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| [abuse-reports](/api#api-abuse-reports)                             | Creates a new abuse report which will be reviewed by our system and abuse response team.                                                  |
+| [agent-ingresses](/api#api-agent-ingresses)                         | Manage Agent Ingresses. The ngrok agent can be configured to connect to ngrok via the new set of addresses on the returned Agent Ingress. |
+| [api-keys](/api/resources/api-keys)                                 | Manage API keys. These keys can be used to authenticate to the ngrok API.                                                                 |
+| [backends](/api#api-failover-backends)                              | Manage the backends that are servicing Cloud Edges.                                                                                       |
+| [certificate-authorities](/api#api-certificate-authorities)         | Manage Certificate Authorities.                                                                                                           |
+| [credentials](/api#api-credentials)                                 | Manage authtoken credentials. The authtoken credential can be used to authorize a new ngrok agent session.                                |
+| [edge-modules](/api#api-edge-route-backend-module)                  | Manage ngrok Cloud Edge Modules.                                                                                                          |
+| [edges](/api#api-edges-https)                                       | Manage ngrok Cloud Edges.                                                                                                                 |
+| [endpoints](/api#api-endpoints)                                     | List all active endpoints on the account.                                                                                                 |
+| [event-destinations](/api#api-event-destinations)                   | Manage Event Destinations.                                                                                                                |
+| [event-sources](/api#api-event-sources)                             | Manage types for which an event subscription will trigger.                                                                                |
+| [event-subscriptions](/api#api-event-subscriptions)                 | Manage Event Subscriptions.                                                                                                               |
+| [ip-policies](/api#api-ip-policies)                                 | Manage IP policies.                                                                                                                       |
+| [ip-policy-rules](/api#api-ip-policy-rules)                         | Manage IP policy rules attached to IP Policies.                                                                                           |
+| [ip-restrictions](/api#api-ip-restrictions)                         | Manage IP restrictions.                                                                                                                   |
+| [reserved-addrs](/api#api-reserved-addrs)                           | Manage reserved TCP addresses.                                                                                                            |
+| [reserved-domains](/api#api-reserved-domains)                       | Manage reserved domains.                                                                                                                  |
+| [ssh-certificate-authorities](/api#api-ssh-certificate-authorities) | Manage SSH Certificate Authorities.                                                                                                       |
+| [ssh-credentials](/api#api-ssh-credentials)                         | Manage SSH Credentials that can be used to start new tunnels via ngrok's SSH gateway.                                                     |
+| [ssh-host-certificates](/api#api-ssh-host-certificates)             | Manage SSH Host Certificates.                                                                                                             |
+| [ssh-user-certificates](/api#api-ssh-user-certificates)             | Manage SSH User Certificates.                                                                                                             |
+| [tls-certificates](/api#api-tls-certificates)                       | Manage TLS certificates                                                                                                                   |
+| [tunnel-sessions](/api#api-tunnel-sessions)                         | List all online tunnel sessions running on this account.                                                                                  |
+| [tunnels](/api#api-tunnels)                                         | List all online tunnels currently running on the account.                                                                                 |
 
 ### Flags
 
-| Flag | Description |
-| --- | --- |
-| `--api-key string` | API key to use |
-| `--config strings` | path to config files; they are merged if multiple |
-| `-h`, `--help` | help for this command |
-| `--log string` | path to log file, 'stdout', 'stderr' or 'false' (default "false") |
-| `--log-format string` | log record format: 'term', 'logfmt', 'json' (default "term") |
-| `--log-level string` | logging level: 'debug', 'info', 'warn', 'error', 'crit' (default "info") |
+| Flag                  | Description                                                              |
+| --------------------- | ------------------------------------------------------------------------ |
+| `--api-key string`    | API key to use                                                           |
+| `--config strings`    | path to config files; they are merged if multiple                        |
+| `-h`, `--help`        | help for this command                                                    |
+| `--log string`        | path to log file, 'stdout', 'stderr' or 'false' (default "false")        |
+| `--log-format string` | log record format: 'term', 'logfmt', 'json' (default "term")             |
+| `--log-level string`  | logging level: 'debug', 'info', 'warn', 'error', 'crit' (default "info") |
 
 ## ngrok completion
 
@@ -117,8 +118,9 @@ Once you add this to your profile, you'll need to `source ~/.bashrc` or `source 
     ngrok completion [flags]
 
 ### Flags
-| Flag | Description |
-| --- | --- |
+
+| Flag           | Description           |
+| -------------- | --------------------- |
 | `-h`, `--help` | help for this command |
 
 ## ngrok config
@@ -134,18 +136,19 @@ Use `check` to test a configuration file for validity. If you have an old config
     ngrok config [flags]
 
 ### Commands
-| Command | Description |
-| --- | --- |
-| [add-api-key](#ngrok-config-add-api-key) | save an API key to configuration file. The API key can be generated in the [API section of the ngrok dashboard](https://dashboard.ngrok.com/api). |
-| [add-authtoken](#ngrok-config-add-authtoken) | save authtoken to configuration file |
-| [check](#ngrok-config-check) | check configuration file |
-| [edit](#ngrok-config-edit) | opens the config file in your system's default editor. It looks specifically for the `SHELL` and `EDITOR` environment variables. |
-| [upgrade](#ngrok-config-upgrade) | auto-upgrade configuration file |
+
+| Command                                      | Description                                                                                                                                       |
+| -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [add-api-key](#ngrok-config-add-api-key)     | save an API key to configuration file. The API key can be generated in the [API section of the ngrok dashboard](https://dashboard.ngrok.com/api). |
+| [add-authtoken](#ngrok-config-add-authtoken) | save authtoken to configuration file                                                                                                              |
+| [check](#ngrok-config-check)                 | check configuration file                                                                                                                          |
+| [edit](#ngrok-config-edit)                   | opens the config file in your system's default editor. It looks specifically for the `SHELL` and `EDITOR` environment variables.                  |
+| [upgrade](#ngrok-config-upgrade)             | auto-upgrade configuration file                                                                                                                   |
 
 ### Flags
 
-| Flag | Description |
-| --- | --- |
+| Flag           | Description           |
+| -------------- | --------------------- |
 | `-h`, `--help` | help for this command |
 
 ## ngrok config add-api-key
@@ -153,6 +156,7 @@ Use `check` to test a configuration file for validity. If you have an old config
 The `ngrok config add-api-key` command saves the ngrok API key to the configuration file. The API key can be generated in the [API section of the ngrok dashboard](https://dashboard.ngrok.com/api).
 
 ### Usage
+
     ngrok config add-api-key TOKEN [flags]
 
 ### Examples
@@ -161,13 +165,13 @@ The `ngrok config add-api-key` command saves the ngrok API key to the configurat
 
 ### Flags
 
-| Flag | Description |
-| --- | --- |
-| `--config string` | save in this config file |
-| `-h`, `--help` | help for this command |
-| `--log string` | path to log file, `stdout`, `stderr` or `false` (default `false`) |
-| `--log-format string` | log record format: `term`, `logfmt`, `json` (default `term`) |
-| `--log-level string` | `debug`, `info`, `warn`, `error`, `crit` (default `info`) |
+| Flag                  | Description                                                       |
+| --------------------- | ----------------------------------------------------------------- |
+| `--config string`     | save in this config file                                          |
+| `-h`, `--help`        | help for this command                                             |
+| `--log string`        | path to log file, `stdout`, `stderr` or `false` (default `false`) |
+| `--log-format string` | log record format: `term`, `logfmt`, `json` (default `term`)      |
+| `--log-level string`  | `debug`, `info`, `warn`, `error`, `crit` (default `info`)         |
 
 ## ngrok config add-authtoken
 
@@ -180,17 +184,18 @@ The ngrok service requires that you [sign up for an account](https://dashboard.n
     ngrok config add-authtoken TOKEN [flags]
 
 ### Examples
+
     ngrok config add-authtoken 1rlHSX3HqrqmOWZdeJ6bIv8rfuo_4cmS1QswRGyxcQD8NOukF
 
 ### Flags
 
-| Flag | Description |
-| --- | --- |
-| `--config string` | save in this config file |
-| `-h`, `--help` | help for this command |
-| `--log string` | path to log file, `stdout`, `stderr` or `false` (default `false`) |
-| `--log-format string` | log record format: `term`, `logfmt`, `json` (default `term`) |
-| `--log-level string` | `debug`, `info`, `warn`, `error`, `crit` (default `info`) |
+| Flag                  | Description                                                       |
+| --------------------- | ----------------------------------------------------------------- |
+| `--config string`     | save in this config file                                          |
+| `-h`, `--help`        | help for this command                                             |
+| `--log string`        | path to log file, `stdout`, `stderr` or `false` (default `false`) |
+| `--log-format string` | log record format: `term`, `logfmt`, `json` (default `term`)      |
+| `--log-level string`  | `debug`, `info`, `warn`, `error`, `crit` (default `info`)         |
 
 ## ngrok config check
 
@@ -202,13 +207,13 @@ The `ngrok config check` command checks a configuration file for validity/correc
 
 ### Flags
 
-| Flag | Description |
-| --- | --- |
-| `--config string` | check this config file |
-| `-h`, `--help` | help for this command |
-| `--log string` | path to log file, `stdout`, `stderr` or `false` (default `false`) |
-| `--log-format string` | log record format: `term`, `logfmt`, `json` (default `term`) |
-| `--log-level string` | `debug`, `info`, `warn`, `error`, `crit` (default `info`) |
+| Flag                  | Description                                                       |
+| --------------------- | ----------------------------------------------------------------- |
+| `--config string`     | check this config file                                            |
+| `-h`, `--help`        | help for this command                                             |
+| `--log string`        | path to log file, `stdout`, `stderr` or `false` (default `false`) |
+| `--log-format string` | log record format: `term`, `logfmt`, `json` (default `term`)      |
+| `--log-level string`  | `debug`, `info`, `warn`, `error`, `crit` (default `info`)         |
 
 ## ngrok config edit
 
@@ -220,13 +225,13 @@ The `ngrok config edit` command opens the configuration file in an editor define
 
 ### Flags
 
-| Flag | Description |
-| --- | --- |
-| `--config string` | open this config file to edit |
-| `-h`, `--help` | help for this command |
-| `--log string` | path to log file, `stdout`, `stderr` or `false` (default `false`) |
-| `--log-format string` | log record format: `term`, `logfmt`, `json` (default `term`) |
-| `--log-level string` | `debug`, `info`, `warn`, `error`, `crit` (default `info`) |
+| Flag                  | Description                                                       |
+| --------------------- | ----------------------------------------------------------------- |
+| `--config string`     | open this config file to edit                                     |
+| `-h`, `--help`        | help for this command                                             |
+| `--log string`        | path to log file, `stdout`, `stderr` or `false` (default `false`) |
+| `--log-format string` | log record format: `term`, `logfmt`, `json` (default `term`)      |
+| `--log-level string`  | `debug`, `info`, `warn`, `error`, `crit` (default `info`)         |
 
 ## ngrok config upgrade
 
@@ -244,15 +249,15 @@ By default this command will not move any configuration files to their new defau
 
 ### Flags
 
-| Flag | Description |
-| --- | --- |
-| `--config string` | save in this config file |
-| `--dry-run` | preview the proposed changes |
-| `-h`, `--help` | help for this command |
-| `--log string` | path to log file, `stdout`, `stderr` or `false` (default `false`) |
-| `--log-format string` | log record format: `term`, `logfmt`, `json` (default `term`) |
-| `--log-level string` | `debug`, `info`, `warn`, `error`, `crit` (default `info`) |
-| `--relocate` | relocates the config file to the default location |
+| Flag                  | Description                                                       |
+| --------------------- | ----------------------------------------------------------------- |
+| `--config string`     | save in this config file                                          |
+| `--dry-run`           | preview the proposed changes                                      |
+| `-h`, `--help`        | help for this command                                             |
+| `--log string`        | path to log file, `stdout`, `stderr` or `false` (default `false`) |
+| `--log-format string` | log record format: `term`, `logfmt`, `json` (default `term`)      |
+| `--log-level string`  | `debug`, `info`, `warn`, `error`, `crit` (default `info`)         |
+| `--relocate`          | relocates the config file to the default location                 |
 
 ## ngrok credits
 
@@ -264,8 +269,8 @@ The `ngrok credits` command displays the software credits and license informatio
 
 ### Flags
 
-| Flag | Description |
-| --- | --- |
+| Flag           | Description           |
+| -------------- | --------------------- |
 | `-h`, `--help` | help for this command |
 
 ## ngrok diagnose
@@ -278,12 +283,12 @@ The `ngrok diagnose` command runs a series of tests to diagnose potential connec
 
 ### Flags
 
-| Flag | Description |
-| --- | --- |
-| `--config strings` | path to config files; they are merged if multiple |
-| `-h`, `--help` | help for this command |
-| `-6`, `--ipv6` | Enable testing of IPV6 addresses |
-| `-w`, `--write-report string` | Write a JSON report |
+| Flag                          | Description                                       |
+| ----------------------------- | ------------------------------------------------- |
+| `--config strings`            | path to config files; they are merged if multiple |
+| `-h`, `--help`                | help for this command                             |
+| `-6`, `--ipv6`                | Enable testing of IPV6 addresses                  |
+| `-w`, `--write-report string` | Write a JSON report                               |
 
 ## ngrok help
 
@@ -295,8 +300,8 @@ The `ngrok help` command provides help for any command in the application. Simpl
 
 ### Flags
 
-| Flag | Description |
-| --- | --- |
+| Flag           | Description           |
+| -------------- | --------------------- |
 | `-h`, `--help` | help for this command |
 
 ## ngrok http
@@ -320,39 +325,39 @@ The `ngrok http` command is used to start a tunnel listening for HTTP/HTTPS traf
 
 ### Flags
 
-| Flag | Description |
-| --- | --- |
-| `--authtoken string` | ngrok authtoken |
-| `--basic-auth strings` | enforce basic auth on tunnel endpoint, `user:password` |
-| `--cidr-allow strings` | reject connections that do not match the given CIDRs |
-| `--cidr-deny strings` | reject connections that match the given CIDRs |
-| `--circuit-breaker float` | reject requests when 5XX responses exceed this ratio |
-| `--compression` | gzip compress http responses from your web service |
-| `--config strings` | path to config files; they are merged if multiple |
-| `--domain string` | host tunnel on a custom domain |
-| `-h`, `--help` | help for this command |
-| `--host-header string` | set Host header; if `rewrite` use local address hostname |
-| `--inspect` | enable/disable http introspection (default true) |
-| `--log string` | path to log file, `stdout`, `stderr` or `false` (default `false`) |
-| `--log-format string` | log record format: `term`, `logfmt`, `json` (default `term`) |
-| `--log-level string` | logging level: `debug`, `info`, `warn`, `error`, `crit` (default `info`) |
-| `--mutual-tls-cas string` | path to TLS certificate authority to verify client certs in mutual TLS. |
-| `--oauth string` | enforce authentication OAuth2 provider on tunnel endpoint, e.g. `google` |
-| `--oauth-allow-domain strings` | allow only OAuth2 users with these email domains |
-| `--oauth-allow-email strings` | allow only OAuth2 users with these emails |
-| `--oauth-client-id string` | oauth app client id, optional |
-| `--oauth-client-secret string` | oauth app client id, optional |
-| `--oauth-scope strings` | request these OAuth2 scopes when users authenticate |
-| `--proxy-proto string` | version of PROXY protocol to use with this tunnel, empty if not using. Example values are 1 or 2. |
-| `--region string` | ngrok server region `us`, `eu`, `au`, `ap`, `sa`, `jp`, `in` (defaults to closest) |
-| `--request-header-add strings` | header key:value to add to request |
-| `--request-header-remove strings` | header field to remove from request if present |
-| `--response-header-add strings` | header key:value to add to response |
-| `--response-header-remove strings` | header field to remove from response if present |
-| `--scheme strings` | which scheme to listen on (default `https`) |
-| `--verify-webhook string` | validate webhooks are signed by this provider, e.g. `slack` |
-| `--verify-webhook-secret string` | secret used by provider to sign webhooks, if any |
-| `--websocket-tcp-converter` | convert ingress websocket connections to TCP upstream |
+| Flag                               | Description                                                                                       |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------- |
+| `--authtoken string`               | ngrok authtoken                                                                                   |
+| `--basic-auth strings`             | enforce basic auth on tunnel endpoint, `user:password`                                            |
+| `--cidr-allow strings`             | reject connections that do not match the given CIDRs                                              |
+| `--cidr-deny strings`              | reject connections that match the given CIDRs                                                     |
+| `--circuit-breaker float`          | reject requests when 5XX responses exceed this ratio                                              |
+| `--compression`                    | gzip compress http responses from your web service                                                |
+| `--config strings`                 | path to config files; they are merged if multiple                                                 |
+| `--domain string`                  | host tunnel on a custom domain                                                                    |
+| `-h`, `--help`                     | help for this command                                                                             |
+| `--host-header string`             | set Host header; if `rewrite` use local address hostname                                          |
+| `--inspect`                        | enable/disable http introspection (default true)                                                  |
+| `--log string`                     | path to log file, `stdout`, `stderr` or `false` (default `false`)                                 |
+| `--log-format string`              | log record format: `term`, `logfmt`, `json` (default `term`)                                      |
+| `--log-level string`               | logging level: `debug`, `info`, `warn`, `error`, `crit` (default `info`)                          |
+| `--mutual-tls-cas string`          | path to TLS certificate authority to verify client certs in mutual TLS.                           |
+| `--oauth string`                   | enforce authentication OAuth2 provider on tunnel endpoint, e.g. `google`                          |
+| `--oauth-allow-domain strings`     | allow only OAuth2 users with these email domains                                                  |
+| `--oauth-allow-email strings`      | allow only OAuth2 users with these emails                                                         |
+| `--oauth-client-id string`         | oauth app client id, optional                                                                     |
+| `--oauth-client-secret string`     | oauth app client id, optional                                                                     |
+| `--oauth-scope strings`            | request these OAuth2 scopes when users authenticate                                               |
+| `--proxy-proto string`             | version of PROXY protocol to use with this tunnel, empty if not using. Example values are 1 or 2. |
+| `--region string`                  | ngrok server region `us`, `eu`, `au`, `ap`, `sa`, `jp`, `in` (defaults to closest)                |
+| `--request-header-add strings`     | header key:value to add to request                                                                |
+| `--request-header-remove strings`  | header field to remove from request if present                                                    |
+| `--response-header-add strings`    | header key:value to add to response                                                               |
+| `--response-header-remove strings` | header field to remove from response if present                                                   |
+| `--scheme strings`                 | which scheme to listen on (default `https`)                                                       |
+| `--verify-webhook string`          | validate webhooks are signed by this provider, e.g. `slack`                                       |
+| `--verify-webhook-secret string`   | secret used by provider to sign webhooks, if any                                                  |
+| `--websocket-tcp-converter`        | convert ingress websocket connections to TCP upstream                                             |
 
 ## ngrok service
 
@@ -376,10 +381,10 @@ When the ngrok service runs, it has the same behavior as if it were invoked from
 
 ### Flags
 
-| Flag | Description |
-| --- | --- |
+| Flag               | Description                                       |
+| ------------------ | ------------------------------------------------- |
 | `--config strings` | path to config files; they are merged if multiple |
-| `-h`, `--help` | help for this command |
+| `-h`, `--help`     | help for this command                             |
 
 ## ngrok start
 
@@ -397,17 +402,17 @@ The `ngrok start` command starts tunnels by name from the configuration file. Yo
 
 ### Flags
 
-| Flag | Description |
-| --- | --- |
-| `--all` | start all tunnels in the configuration file |
-| `--authtoken string` | ngrok authtoken identifying a user |
-| `--config strings` | path to config files; they are merged if multiple |
-| `-h`, `--help` | help for this command |
-| `--log string` | path to log file, `stdout`, `stderr` or `false` (default `false`) |
-| `--log-format string` | log record format: `term`, `logfmt`, `json` (default `term`) |
-| `--log-level string` | `debug`, `info`, `warn`, `error`, `crit` (default `info`) |
-| `--none` | start running no tunnels |
-| `--region string` | ngrok server region `us`, `eu`, `au`, `ap`, `sa`, `jp`, `in` (defaults to closest) |
+| Flag                  | Description                                                                        |
+| --------------------- | ---------------------------------------------------------------------------------- |
+| `--all`               | start all tunnels in the configuration file                                        |
+| `--authtoken string`  | ngrok authtoken identifying a user                                                 |
+| `--config strings`    | path to config files; they are merged if multiple                                  |
+| `-h`, `--help`        | help for this command                                                              |
+| `--log string`        | path to log file, `stdout`, `stderr` or `false` (default `false`)                  |
+| `--log-format string` | log record format: `term`, `logfmt`, `json` (default `term`)                       |
+| `--log-level string`  | `debug`, `info`, `warn`, `error`, `crit` (default `info`)                          |
+| `--none`              | start running no tunnels                                                           |
+| `--region string`     | ngrok server region `us`, `eu`, `au`, `ap`, `sa`, `jp`, `in` (defaults to closest) |
 
 ## ngrok tcp
 
@@ -423,25 +428,25 @@ A TCP tunnel binds a public address on the remote ngrok server. Any services whi
 
     # forward a port to your local ssh server
     ngrok tcp 22
-    
+
     # expose an RDP server on a specific public address that you reserved
     ngrok tcp --remote-addr=1.tcp.ngrok.io:27210 3389
 
 ### Flags
 
-| Flag | Description |
-| --- | --- |
-| `--authtoken string` | ngrok authtoken |
-| `--cidr-allow strings` | reject connections that do not match the given CIDRs |
-| `--cidr-deny strings` | reject connections that match the given CIDRs |
-| `--config strings` | path to config files; they are merged if multiple |
-| `-h`, `--help` | help for this command |
-| `--log string` | path to log file, `stdout`, `stderr` or `false` (default `false`) |
-| `--log-format string` | log record format: `term`, `logfmt`, `json` (default `term`) |
-| `--log-level string` | `debug`, `info`, `warn`, `error`, `crit` (default `info`) |
-| `--proxy-proto string` | version of proxy proto to use with this tunnel, empty if not using |
-| `--region string` | ngrok server region `us`, `eu`, `au`, `ap`, `sa`, `jp`, `in` (default to closest) |
-| `--remote-addr string` | bind remote address (requires you reserve a TCP Address) |
+| Flag                   | Description                                                                       |
+| ---------------------- | --------------------------------------------------------------------------------- |
+| `--authtoken string`   | ngrok authtoken                                                                   |
+| `--cidr-allow strings` | reject connections that do not match the given CIDRs                              |
+| `--cidr-deny strings`  | reject connections that match the given CIDRs                                     |
+| `--config strings`     | path to config files; they are merged if multiple                                 |
+| `-h`, `--help`         | help for this command                                                             |
+| `--log string`         | path to log file, `stdout`, `stderr` or `false` (default `false`)                 |
+| `--log-format string`  | log record format: `term`, `logfmt`, `json` (default `term`)                      |
+| `--log-level string`   | `debug`, `info`, `warn`, `error`, `crit` (default `info`)                         |
+| `--proxy-proto string` | version of proxy proto to use with this tunnel, empty if not using                |
+| `--region string`      | ngrok server region `us`, `eu`, `au`, `ap`, `sa`, `jp`, `in` (default to closest) |
+| `--remote-addr string` | bind remote address (requires you reserve a TCP Address)                          |
 
 ## ngrok tls
 
@@ -459,32 +464,32 @@ Using this command is only recommended with the `--domain` option. Other uses wi
 
     # forward TLS traffic for www.example.com to port 443 (requires CNAME)
     ngrok tls --domain=www.example.com 443
-    
+
     # forward TLS traffic on subdomain (mismatch certificate warning)
     ngrok tls 1234
-    
+
     # terminate TLS traffic for t.co before forwarding
     ngrok tls --domain=t.co --crt=/path/to/t.co.crt --key=/path/to/t.co.key 443
 
 ### Flags
 
-| Flag | Description |
-| --- | --- |
-| `--authtoken string` | ngrok authtoken |
-| `--cidr-allow strings` | reject connections that do not match the given CIDRs |
-| `--cidr-deny strings` | reject connections that match the given CIDRs |
-| `--config strings` | path to config files; they are merged if multiple |
-| `--crt string` | path to a TLS certificate for TLS termination |
-| `--domain string` | host tunnel on a custom domain |
-| `-h`, `--help` | help for this command |
-| `--key string` | path to a TLS key for TLS termination |
-| `--log string` | path to log file, `stdout`, `stderr` or `false` (default `false`) |
-| `--log-format string` | log record format: `term`, `logfmt`, `json` (default `term`) |
-| `--log-level string` | `debug`, `info`, `warn`, `error`, `crit` (default `info`) |
-| `--mutual-tls-cas string` | path to TLS certificate authority to verify client certs in mutual TLS |
-| `--proxy-proto string` | version of proxy proto to use with this tunnel, empty if not using |
-| `--region string` | ngrok server region `us`, `eu`, `au`, `ap`, `sa`, `jp`, `in` (defaults to closest) |
-| `--terminate-at string` | terminate at ngrok "edge" or "agent". defaults to no termination or "edge" if `--crt` or `--key` are present |
+| Flag                      | Description                                                                                                  |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| `--authtoken string`      | ngrok authtoken                                                                                              |
+| `--cidr-allow strings`    | reject connections that do not match the given CIDRs                                                         |
+| `--cidr-deny strings`     | reject connections that match the given CIDRs                                                                |
+| `--config strings`        | path to config files; they are merged if multiple                                                            |
+| `--crt string`            | path to a TLS certificate for TLS termination                                                                |
+| `--domain string`         | host tunnel on a custom domain                                                                               |
+| `-h`, `--help`            | help for this command                                                                                        |
+| `--key string`            | path to a TLS key for TLS termination                                                                        |
+| `--log string`            | path to log file, `stdout`, `stderr` or `false` (default `false`)                                            |
+| `--log-format string`     | log record format: `term`, `logfmt`, `json` (default `term`)                                                 |
+| `--log-level string`      | `debug`, `info`, `warn`, `error`, `crit` (default `info`)                                                    |
+| `--mutual-tls-cas string` | path to TLS certificate authority to verify client certs in mutual TLS                                       |
+| `--proxy-proto string`    | version of proxy proto to use with this tunnel, empty if not using                                           |
+| `--region string`         | ngrok server region `us`, `eu`, `au`, `ap`, `sa`, `jp`, `in` (defaults to closest)                           |
+| `--terminate-at string`   | terminate at ngrok "edge" or "agent". defaults to no termination or "edge" if `--crt` or `--key` are present |
 
 ## ngrok tunnel
 
@@ -496,7 +501,7 @@ Starts a tunnel with labels so that it can be part of a tunnel group. The tunnel
 
     # tunnel-group traffic for app=foo may be forwarded to port 80
     ngrok tunnel --label app=foo 80
-    
+
     # match tunnel-group with multiple labels
     ngrok tunnel --label app=foo --label dc=bar 80
 
@@ -506,20 +511,20 @@ Starts a tunnel with labels so that it can be part of a tunnel group. The tunnel
 
 ### Flags
 
-| Flag | Description |
-| --- | --- |
-| `--authtoken string` | ngrok authtoken identifying a user |
-| `--config strings` | path to config files; they are merged if multiple |
-| `--crt string` | path to a TLS certificate for TLS termination |
-| `-h`, `--help` | help for this command |
-| `--inspect` | enable/disable http introspection (default true) |
-| `--key string` | path to a TLS key for TLS termination |
-| `--label strings` | labels to associate with the tunnel in key=value format |
-| `--log string` | path to log file, `stdout`, `stderr` or `false` (default `false`) |
-| `--log-format string` | log record format: `term`, `logfmt`, `json` (default `term`) |
-| `--log-level string` | `debug`, `info`, `warn`, `error`, `crit` (default `info`) |
-| `--proxy-proto string` | version of proxy proto to use with this tunnel, empty if not using |
-| `--region string` | ngrok server region `us`, `eu`, `au`, `ap`, `sa`, `jp`, `in` (defaults to closest) |
+| Flag                   | Description                                                                        |
+| ---------------------- | ---------------------------------------------------------------------------------- |
+| `--authtoken string`   | ngrok authtoken identifying a user                                                 |
+| `--config strings`     | path to config files; they are merged if multiple                                  |
+| `--crt string`         | path to a TLS certificate for TLS termination                                      |
+| `-h`, `--help`         | help for this command                                                              |
+| `--inspect`            | enable/disable http introspection (default true)                                   |
+| `--key string`         | path to a TLS key for TLS termination                                              |
+| `--label strings`      | labels to associate with the tunnel in key=value format                            |
+| `--log string`         | path to log file, `stdout`, `stderr` or `false` (default `false`)                  |
+| `--log-format string`  | log record format: `term`, `logfmt`, `json` (default `term`)                       |
+| `--log-level string`   | `debug`, `info`, `warn`, `error`, `crit` (default `info`)                          |
+| `--proxy-proto string` | version of proxy proto to use with this tunnel, empty if not using                 |
+| `--region string`      | ngrok server region `us`, `eu`, `au`, `ap`, `sa`, `jp`, `in` (defaults to closest) |
 
 ## ngrok update
 
@@ -540,13 +545,13 @@ In order to update successfully, the ngrok binary must be in a directory that is
 
 ### Flags
 
-| Flag | Description |
-| --- | --- |
-| `--channel string` | update channel (stable, unstable, beta) (default "stable") |
-| `-h`, `--help` | help for this command |
-| `--log string` | path to log file, 'stdout', 'stderr' or 'false' (default "false") |
-| `--log-format string` | log record format: 'term', 'logfmt', 'json' (default "term") |
-| `--log-level string` | logging level: 'debug', 'info', 'warn', 'error', 'crit' (default "info") |
+| Flag                  | Description                                                              |
+| --------------------- | ------------------------------------------------------------------------ |
+| `--channel string`    | update channel (stable, unstable, beta) (default "stable")               |
+| `-h`, `--help`        | help for this command                                                    |
+| `--log string`        | path to log file, 'stdout', 'stderr' or 'false' (default "false")        |
+| `--log-format string` | log record format: 'term', 'logfmt', 'json' (default "term")             |
+| `--log-level string`  | logging level: 'debug', 'info', 'warn', 'error', 'crit' (default "info") |
 
 ## ngrok version
 
@@ -556,6 +561,6 @@ In order to update successfully, the ngrok binary must be in a directory that is
 
 ### Flags
 
-| Flag | Description |
-| --- | --- |
+| Flag           | Description           |
+| -------------- | --------------------- |
 | `-h`, `--help` | help for this command |

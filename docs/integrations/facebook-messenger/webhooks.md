@@ -3,18 +3,19 @@ description: Develop and test Facebook Messenger webhooks from localhost
 ---
 
 # Facebook Messenger Webhooks
-------------
+
+---
 
 :::tip TL;DR
 
 To integrate Facebook Messenger webhooks with ngrok:
+
 1. [Launch your local webhook.](#start-your-app) `node appFB`
 1. [Launch ngrok.](#start-ngrok) `ngrok http 3000 --domain myexample.ngrok.dev`
 1. [Configure Facebook webhooks with your ngrok URL.](#setup-webhook)
 1. [Secure your webhook requests with verification.](#security)
 
 :::
-
 
 This guide covers how to use ngrok to integrate your localhost app with Facebook by using Webhooks.
 Facebook webhooks can be used to notify an external application whenever specific events occur in your Facebook account.
@@ -26,10 +27,9 @@ By integrating ngrok with Facebook, you can:
 - **Modify and Replay Facebook Messenger Webhook requests** with a single click and without spending time reproducing events manually in your Facebook Messenger account.
 - **Secure your app with Facebook Messenger validation provided by ngrok**. Invalid requests are blocked by ngrok before reaching your app.
 
-
 ## **Step 1**: Start your app {#start-your-app}
 
-For this tutorial, we'll use the [sample NodeJS app available on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample). 
+For this tutorial, we'll use the [sample NodeJS app available on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
 
 To install this sample, run the following commands in a terminal:
 
@@ -41,16 +41,15 @@ npm install
 
 This will get the project installed locally.
 
-Now you can launch the app by running the following command: 
+Now you can launch the app by running the following command:
 
 ```bash
 npm run startFacebook
 ```
 
-The app runs by default on port 3000. 
+The app runs by default on port 3000.
 
 You can validate that the app is up and running by visiting http://localhost:3000. The application logs request headers and body in the terminal and responds with a message in the browser.
-
 
 ## **Step 2**: Launch ngrok {#start-ngrok}
 
@@ -63,44 +62,43 @@ Once your app is running successfully on localhost, let's get it on the internet
 1. [Download the ngrok agent](https://ngrok.com/download).
 
 1. Go to the [ngrok dashboard](https://dashboard.ngrok.com), click **Your Authtoken**, and copy your Authtoken. <br />
-    **Tip:** The ngrok agent uses the auth token to log into your account when you start a tunnel.
+   **Tip:** The ngrok agent uses the auth token to log into your account when you start a tunnel.
 
 1. On the left menu, expand **Cloud Edge** and then click **Domains**.
-    **Tip:** If you don't have a ngrok Pro or Enterprise license, subscribe for one by clicking **Update Subscription** and following the subscribe procedure.
+   **Tip:** If you don't have a ngrok Pro or Enterprise license, subscribe for one by clicking **Update Subscription** and following the subscribe procedure.
 
 1. In the **Domains** page, click **+ Create Domain** or **+ New Domain**.
 
 1. In the **Domain** pane, provide a value for the **Domain** field (i.e. `myexample.ngrok.io`), and then click **Continue**.
-    ![ngrok New Domain](img/ngrok_new_domain.png)
-    **Tip**: Make sure your domain is available.
+   ![ngrok New Domain](img/ngrok_new_domain.png)
+   **Tip**: Make sure your domain is available.
 
 1. Close the **Start a Tunnel** pane and then close the **Domain** pane.
 
 1. Start ngrok by running the following command in a terminal on your local desktop:
-    ```bash
-    ngrok http 3000 --domain myexample.ngrok.dev
-    ```
+
+   ```bash
+   ngrok http 3000 --domain myexample.ngrok.dev
+   ```
 
 1. ngrok will display a URL where your localhost application is exposed to the internet (copy this URL for use with Facebook).
-    ![ngrok agent running](img/launch_ngrok_tunnel_domain.png)
+   ![ngrok agent running](img/launch_ngrok_tunnel_domain.png)
 
-
-## **Step 3**: Integrate  Facebook Messenger {#setup-webhook}
+## **Step 3**: Integrate Facebook Messenger {#setup-webhook}
 
 To register a webhook on your Facebook account follow the instructions below:
 
-**Note**: You'll need a Facebook page associated with your Facebook account. Create one before continuing this procedure. 
+**Note**: You'll need a Facebook page associated with your Facebook account. Create one before continuing this procedure.
 
 1. Access the [Meta for Developers](https://developers.facebook.com/) page, and Log in using your Facebook account.
 
 1. On the Developers page, click **My Apps**.
-   
 1. On the **Apps** page, click **Create App**.
 
 1. On the **Create an App** page, click **Business** for the **Select an app type** section and then click **Next**.
 
 1. On the **Provide basic information** page, provide the **Display name** as `My Example App`, make sure your email appears in the **App contact email** field otherwise enter your email, and then click **Create App**.
-    **Tip:** Facebook may request your Facebook account password. Provide your password in the **Please Re-enter Your Password** popup.
+   **Tip:** Facebook may request your Facebook account password. Provide your password in the **Please Re-enter Your Password** popup.
 
 1. On the app page, click **Add Product** on the left menu.
 
@@ -109,7 +107,7 @@ To register a webhook on your Facebook account follow the instructions below:
 1. On the **Messenger Settings** page, click **Add Callback URL** in the **Webhooks** section.
 
 1. In the **Edit Callback URL** popup, for the **Callback URL** field enter the URL provided by the ngrok agent to expose your application to the internet, with `/webhook` at the end (i.e. `https://myexample.ngrok.dev/webhook`).
-    ![Callback URL](img/ngrok_url_configuration_facebookmessenger.png)
+   ![Callback URL](img/ngrok_url_configuration_facebookmessenger.png)
 
 1. Enter `12345` for the **Verify token** field and then click **Verify and save**.
 
@@ -129,12 +127,11 @@ To register a webhook on your Facebook account follow the instructions below:
 
 1. On the top of the **MyExampleApp** page, click the **App Mode** slider to turn the app to **Live** mode.
 
-
 ### Run Webhooks with Facebook and ngrok
 
 You can test the integration by following the procedure below:
 
-1. On the **Meta for Developers** page, click the **Webhooks** under the **Products** section in the left menu. 
+1. On the **Meta for Developers** page, click the **Webhooks** under the **Products** section in the left menu.
 
 1. In the **Webhooks** page, select **Page** in the combo box, find one of the subscription fields you have subscribed to during the webhook registration and then click **Test**.
 
@@ -148,13 +145,12 @@ Now that you have successfully registered your webhook and tested it, access the
 
 Verify that your local application receives the request and logs information to the terminal.
 
-
 ### Inspecting requests
 
-When you launch the ngrok agent on your local machine, you can see two links: 
+When you launch the ngrok agent on your local machine, you can see two links:
 
-* The URL to your app (it ends with `ngrok-free.app` for free accounts or `ngrok.app` for paid accounts when not using custom domains)
-* A local URL for the Web Interface (a.k.a **Request Inspector**).
+- The URL to your app (it ends with `ngrok-free.app` for free accounts or `ngrok.app` for paid accounts when not using custom domains)
+- A local URL for the Web Interface (a.k.a **Request Inspector**).
 
 The Request Inspector shows all the requests made through your ngrok tunnel to your localhost app. When you click on a request, you can see details of both the request and the response.
 
@@ -165,7 +161,6 @@ To inspect Facebook's webhooks call, launch the ngrok web interface (i.e. `http:
 From the results, review the response body, header, and other details:
 
 ![ngrok Request Inspector](img/ngrok_introspection_facebookmessenger_hooks.png)
-
 
 ### Replaying requests
 
@@ -180,7 +175,6 @@ The ngrok Request Inspector provides a replay function that you can use to test 
 1. Click **Replay**.
 
 Verify that your local application receives the request and logs the corresponding information to the terminal.
-
 
 ## Secure webhook requests {#security}
 
@@ -197,11 +191,11 @@ This is a quick step to add extra protection to your application.
 1. In the **Basic Settings** page, click **Show** to reveal the **App secret** value and copy this value.
 
 1. Restart your ngrok agent by running the command, replacing `{your app secret}` with the value you have copied before:
-    
-    ```bash
-    ngrok http 3000 --domain myexample.ngrok.dev --verify-webhook facebook_messenger --verify-webhook-secret {your app secret}
-    ```
+
+   ```bash
+   ngrok http 3000 --domain myexample.ngrok.dev --verify-webhook facebook_messenger --verify-webhook-secret {your app secret}
+   ```
 
 1. Access the Facebook page you have assigned to your webhook and send a message to another Facebook user.
 
-    Verify that your local application receives the request and logs information to the terminal.
+   Verify that your local application receives the request and logs information to the terminal.

@@ -1,5 +1,6 @@
 # Circuit Breaker
------------------
+
+---
 
 ## Overview
 
@@ -143,6 +144,7 @@ go run example.go
 ```
 
 ##### `example.go`
+
 ```go
 package main
 
@@ -248,13 +250,13 @@ Circuit Breaker behavior can be customized. Defaults will be chosen for you for 
 - If you enable the module via the Edge API and don't explicitly set values for
   all parameters.
 
-| Parameter | Default | Description |
-| --------- | ------- | ----------- |
-| **Error Threshold** | - |  The threshold percentage of upstream requests that must fail before the circuit is opened. |
-| **Tripped Duration** | 10 seconds | The number of seconds to reject requests, once the circuit is opened, before rechecking if the circuit should again be closed. |
-| **Rolling Window** | 10 seconds | The window of time we keep metrics for the circuit breaker, the error threshold only considers successes and errors that fall within this window. |
-| **Number of Buckets** | 10 buckets | The number of discrete time intervals the rolling window duration is divided into. Along with the rolling window duration, this defines the granularity at which requests expire out of the rolling window. |
-| **Volume Threshold** | 20 requests | The minimum number of requests required in a rolling window that will trip the circuit. |
+| Parameter             | Default     | Description                                                                                                                                                                                                 |
+| --------------------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Error Threshold**   | -           | The threshold percentage of upstream requests that must fail before the circuit is opened.                                                                                                                  |
+| **Tripped Duration**  | 10 seconds  | The number of seconds to reject requests, once the circuit is opened, before rechecking if the circuit should again be closed.                                                                              |
+| **Rolling Window**    | 10 seconds  | The window of time we keep metrics for the circuit breaker, the error threshold only considers successes and errors that fall within this window.                                                           |
+| **Number of Buckets** | 10 buckets  | The number of discrete time intervals the rolling window duration is divided into. Along with the rolling window duration, this defines the granularity at which requests expire out of the rolling window. |
+| **Volume Threshold**  | 20 requests | The minimum number of requests required in a rolling window that will trip the circuit.                                                                                                                     |
 
 ### Circuit Breaker State {#state}
 
@@ -275,16 +277,16 @@ No additional upstream headers are added by the Circuit Breaker module.
 ### Events
 
 When the Circuit Breaker module is enabled, it populates the following fields in
-[http\_request\_complete.v0](/events/reference/#http-request-complete) events.
+[http_request_complete.v0](/events/reference/#http-request-complete) events.
 
-| Fields |
-| ------ |
+| Fields                     |
+| -------------------------- |
 | `circuit_breaker.decision` |
 
 ### Errors
 
 If the Circuit Breaker is open because the upstream service is failing, the
-ngrok edge will return [ERR\_NGROK\_3202](/errors/err_ngrok_3202/) with a 503
+ngrok edge will return [ERR_NGROK_3202](/errors/err_ngrok_3202/) with a 503
 Service Unavailable HTTP status code.
 
 ### Licensing

@@ -1,5 +1,6 @@
 # Compression
-----------------
+
+---
 
 ## Overview
 
@@ -204,7 +205,7 @@ vary: Accept-Encoding
 ### Streaming Compression
 
 When ngrok performs compression, the response body is not buffered; the
-response body is compressed as it is streamed through the ngrok edge. 
+response body is compressed as it is streamed through the ngrok edge.
 
 ### Algorithm Choice
 
@@ -219,12 +220,12 @@ the highest q-value.
 ngrok supports the following compression algorithms in the `Accept-Encoding`
 header.
 
-| Algorithm | Supported |
-| ------ | ----- |
-| `br` | no |
-| `compress` | no |
-| `deflate` | yes |
-| `gzip` | yes |
+| Algorithm  | Supported |
+| ---------- | --------- |
+| `br`       | no        |
+| `compress` | no        |
+| `deflate`  | yes       |
+| `gzip`     | yes       |
 
 ### Response Headers
 
@@ -239,7 +240,7 @@ the HTTP response header:
 
 The compression level is a value which indicates whether the compression
 algorithm should prefer to save more space at the expense of being slower and
-using more compute.  This value is not currently configurable. ngrok
+using more compute. This value is not currently configurable. ngrok
 automatically chooses a value that provides a reasonable tradeoff.
 
 ## Reference
@@ -251,11 +252,11 @@ No additional upstream headers are added by the Compression module.
 ### Events
 
 When the compression module is enabled, it populates the following fields in
-[http\_request\_complete.v0](/events/reference/#http-request-complete) events.
+[http_request_complete.v0](/events/reference/#http-request-complete) events.
 
-| Fields |
-| ------ |
-| `compression.algorithm` |
+| Fields                    |
+| ------------------------- |
+| `compression.algorithm`   |
 | `compression.bytes_saved` |
 
 ### Errors
