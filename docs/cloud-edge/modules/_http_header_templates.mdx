@@ -1,62 +1,46 @@
----
-sidebar_position: 9
----
+ngrok makes variables available for [interpolation into
+headers](#variable-interpolation).
 
-# HTTP Header Templates
+Some variables will only be populated with values if you have configured the
+corresponding module for your endpoint, otherwise they will be empty. For
+example, the variable `${.basic_auth.username}` is only available if you have
+enabled the basic auth module on your endpoint.
 
----
+#### Backend Variables {#backend}
 
-When using any of our features that manipulate HTTP header values, variables can be interpolated into a header value using [JSONPath](https://goessner.net/articles/JsonPath/) expressions surrounded by `${}` syntax. For example, using `${.ngrok.request_id}` as a header value will cause it to be filled in with the ngrok-generated Request ID.
+|                                 |                                                                                                                          |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `${.backend.connection_reused}` | True if ngrok reused a TCP connection to transmit the HTTP request to the upstream service.                              |
+| `${.backend.dial_duration}`     | The time to establish a connection from ngrok to the agent.                                                              |
+| `${.backend.id}`                | This is the ngrok ID of the backend that serviced this request. This is empty if the endpoint is not handled by an Edge. |
 
-Depending on the modules you leverage in your secure tunnel or cloud edge, you will have access to different objects that you can use for templating. For example, the variable `${.basic_auth.username}` is only available if you are using basic auth on your tunnel or endpoint.
+#### Basic Auth Variables {#basic-auth}
 
-## Examples
+These variables are only populated when using the Basic Auth module.
 
-##### Add the basic auth username to the username header
+|                           |                                                                                                               |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `${.basic_auth.decision}` | `allow` if the request successfully authenticated via the Basic Auth module, `block` otherwise.               |
+| `${.basic_auth.username}` | If the request successfully authenticated via the Basic Auth module, this is the username that authenticated. |
 
-    ngrok http --request-header-add 'username:${.basic_auth.username}' 3000
+#### Circuit Breaker Variables {#circuit-breaker}
 
-##### Add the two letter country code to the geo-country header
-
-    ngrok http --request-header-add 'geo-country:${.ngrok.geo.country_code}' 3000
-
-## Template Variables
-
-### Backend Template Variables {#backend}
-
-|                                 |                                                                                                                             |
-| ------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| `${.backend.connection_reused}` | True if ngrok reused a TCP connection to transmit the HTTP request to the upstream service.                                 |
-| `${.backend.dial_duration}`     | The time to establish a connection from ngrok to the agent.                                                                 |
-| `${.backend.id}`                | This is the ngrok ID of the backend that serviced this request. This is empty for secure tunnels since there is no backend. |
-
-### Basic Auth Template Variables {#basic-auth}
-
-Note: These values are only available when using the Basic Auth module.
-
-|                           |                                                             |
-| ------------------------- | ----------------------------------------------------------- |
-| `${.basic_auth.decision}` | This is the decision based on the credentials provided.     |
-| `${.basic_auth.username}` | This is the username of the credentials that were provided. |
-
-### Circuit Breaker Template Variables {#circuit-breaker}
-
-Note: These values are only available when using the Circuit Breaker module.
+These variables are only available when using the Circuit Breaker module.
 
 |                                |                                                                                                                                                                                                         |
 | ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `${.circuit_breaker.decision}` | Whether the HTTP request was sent to the upstream service. 'allow' if the breaker was closed, 'block' if the breaker was open, 'allow_while_open' if the request was allowed while the breaker is open. |
+| `${.circuit_breaker.decision}` | Whether the HTTP request was sent to the upstream service. `allow` if the breaker was closed, `block` if the breaker was open, `allow_while_open` if the request was allowed while the breaker is open. |
 
-### Compression Template Variables {#compression}
+#### Compression Variables {#compression}
 
-Note: These values are only available when using the Compression module.
+These variables are only populated when using the Compression module.
 
 |                               |                                                                                                            |
 | ----------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| `${.compression.algorithm}`   | The compression algorithm used to encode responses from the endpoint. Either 'gzip', 'deflate', or 'none'. |
+| `${.compression.algorithm}`   | The compression algorithm used to encode responses from the endpoint. Either `gzip`, `deflate`, or `none`. |
 | `${.compression.bytes_saved}` | The difference between the size of the raw response and the size of the response as compressed by ngrok.   |
 
-### Connection Template Variables {#conn}
+#### Connection Variables {#conn}
 
 |                        |                                                                                                 |
 | ---------------------- | ----------------------------------------------------------------------------------------------- |
@@ -71,9 +55,9 @@ Note: These values are only available when using the Compression module.
 | `${.conn.server_port}` | The port that the connection for this request came in on.                                       |
 | `${.conn.start_ts}`    | The timestamp when the TCP connection to the ngrok edge is established.                         |
 
-### Geo IP Template Variables {#ngrok-geo}
+#### Geo IP Variables {#ngrok-geo}
 
-This data is provided by [MaxMind GeoIP](https://www.maxmind.com/en/home).
+The source of this data is subject to change. It is currently provided by [MaxMind GeoIP](https://www.maxmind.com/en/home).
 
 |                                    |                                                                                                                |
 | ---------------------------------- | -------------------------------------------------------------------------------------------------------------- |
@@ -82,7 +66,7 @@ This data is provided by [MaxMind GeoIP](https://www.maxmind.com/en/home).
 | `${.ngrok.geo.latitude}`           | This is the approximate latitude based on the client IP.                                                       |
 | `${.ngrok.geo.longitude}`          | This is the approximate longitude based on the client IP.                                                      |
 
-### HTTP Template Variables {#http}
+#### HTTP Variables {#http}
 
 |                                 |                                                                             |
 | ------------------------------- | --------------------------------------------------------------------------- |
@@ -97,26 +81,35 @@ This data is provided by [MaxMind GeoIP](https://www.maxmind.com/en/home).
 | `${.http.request.version}`      | The HTTP version used in the request.                                       |
 | `${.http.response.status_code}` | The status code of the response returned by the ngrok edge.                 |
 
-### IP Policy Template Variables {#ip-policy}
+#### IP Restrictions Variables {#ip-restrictions}
 
-Note: These values are only available when using the IP Policy module.
+These variables are only populated when using the IP Restrictions module.
 
 |                               |                                                                                               |
 | ----------------------------- | --------------------------------------------------------------------------------------------- |
-| `${.ip_policy.decision}`      | 'allow' if IP Policy module permitted the request to the upstream service, 'block' otherwise. |
+| `${.ip_policy.decision}`      | `allow` if IP Policy module permitted the request to the upstream service, `block` otherwise. |
 | `${.ip_policy.matching_rule}` | The rule that triggered an IP Policy match on the endpoint.                                   |
 
-### ngrok Template Variables {#ngrok-variables}
+#### Mutual TLS {#mutual-tls}
 
-|                          |                                                  |
-| ------------------------ | ------------------------------------------------ |
-| `${.ngrok.client_ip}`    | This is the original client IP of the request.   |
-| `${.ngrok.request_id}`   | This is the unique request Id generated by ngrok |
-| `${.ngrok.saml.subject}` | The SAML subject of the the authenticated user.  |
+These variables are only populated when using the Mutual TLS module.
 
-### OAuth2 Template Variables {#oauth}
+|                                     |                                                                                           |
+| ----------------------------------- | ----------------------------------------------------------------------------------------- |
+| `${.tls.client_cert.serial_number}` | The serial number of the client's leaf TLS certificate in the Mutual TLS handshake.       |
+| `${.tls.client_cert.subject.cn}`    | The subject common name of the client's leaf TLS certificate in the Mutual TLS handshake. |
+| `${.tls.client_cert.subject}`       | The subject of the client's leaf TLS certificate in the Mutual TLS handshake              |
 
-Note: These values are only available when using the OAuth module.
+#### ngrok Variables {#ngrok-variables}
+
+|                        |                                                  |
+| ---------------------- | ------------------------------------------------ |
+| `${.ngrok.client_ip}`  | This is the original client IP of the request.   |
+| `${.ngrok.request_id}` | This is the unique request ID generated by ngrok |
+
+#### OAuth Variables {#oauth}
+
+These variables are only populated when using the OAuth module.
 
 |                           |                                                                                               |
 | ------------------------- | --------------------------------------------------------------------------------------------- |
@@ -126,21 +119,39 @@ Note: These values are only available when using the OAuth module.
 | `${.oauth.user.id}`       | The authenticated user's ID returned by the OAuth provider.                                   |
 | `${.oauth.user.name}`     | The authenticated user's name returned by the OAuth provider.                                 |
 
-### TLS Template Variables {#tls}
+#### OpenID Connect Variables {#openid-connect}
 
-Note: These values are only available when using the Mutual TLS module.
+These variables are only populated when using the OpenID Connect module. These
+variables are identical to the [OAuth Variables](#oauth).
 
-|                                     |                                                                                           |
-| ----------------------------------- | ----------------------------------------------------------------------------------------- |
-| `${.tls.cipher_suite}`              | The cipher suite selected during the TLS handshake.                                       |
-| `${.tls.client_cert.serial_number}` | The serial number of the client's leaf TLS certificate in the Mutual TLS handshake.       |
-| `${.tls.client_cert.subject.cn}`    | The subject common name of the client's leaf TLS certificate in the Mutual TLS handshake. |
-| `${.tls.client_cert.subject}`       | The subject of the client's leaf TLS certificate in the Mutual TLS handshake              |
-| `${.tls.version}`                   | The version of the TLS protocol used between the client and the ngrok edge.               |
+|                           |                                                                                                        |
+| ------------------------- | ------------------------------------------------------------------------------------------------------ |
+| `${.oauth.app_client_id}` | The is the ID of the OAuth application used to handle this request.                                    |
+| `${.oauth.decision}`      | `allow` if the OpenID Connect module permitted the request to the upstream service, `block` otherwise. |
+| `${.oauth.user.email}`    | This is the email address of the user that was authenticated.                                          |
+| `${.oauth.user.id}`       | The authenticated user's ID returned by the OpenID Connect provider.                                   |
+| `${.oauth.user.name}`     | The authenticated user's name returned by the OpenID Connect provider.                                 |
 
-### Webhook Verification Template Variables {#webhook-verification}
+#### SAML Variables {#saml}
 
-Note: These values are only available when using the Webhook Verification module.
+These variables are only populated when using the SAML module.
+
+|                          |                                                 |
+| ------------------------ | ----------------------------------------------- |
+| `${.ngrok.saml.subject}` | The SAML subject of the the authenticated user. |
+
+#### TLS Termination Variables {#tls}
+
+These variables are only populated on requests to HTTPS endpoints.
+
+|                        |                                                                             |
+| ---------------------- | --------------------------------------------------------------------------- |
+| `${.tls.cipher_suite}` | The cipher suite selected during the TLS handshake.                         |
+| `${.tls.version}`      | The version of the TLS protocol used between the client and the ngrok edge. |
+
+#### Webhook Verification Variables {#webhook-verification}
+
+These variables are only populated when using the Webhook Verification module.
 
 |                                   |                                                                                                              |
 | --------------------------------- | ------------------------------------------------------------------------------------------------------------ |

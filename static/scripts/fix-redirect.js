@@ -18,6 +18,7 @@ if (path.includes("/docs/platform/ip-policies/")) goto(`/docs/cloud-edge/ip-poli
 if (path.includes("/docs/platform/botusers/")) goto(`/docs/user-management/#bot-users`)
 if (path.includes("/docs/platform/dashboard/")) goto(`/docs/user-management/#sso`)
 if (path.includes("/docs/cloud-edge/modules/webhook/")) goto(`/docs/cloud-edge/modules/webhook-verification/`)
+if (path.includes("/docs/cloud-edge/http-header-templates/")) goto(`/docs/cloud-edge/modules/request-headers/#variables`)
 const match = path.match(/\/docs\/ngrok-agent(\/[\w]*)/);
 if (!!match) {
 	goto(`/docs/secure-tunnels/ngrok-agent/reference${match[1]}${window.location.hash}`)
