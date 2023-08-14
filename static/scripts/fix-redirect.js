@@ -18,6 +18,14 @@ if (path.includes("/docs/platform/ip-policies/")) goto(`/docs/cloud-edge/ip-poli
 if (path.includes("/docs/platform/botusers/")) goto(`/docs/user-management/#bot-users`)
 if (path.includes("/docs/platform/dashboard/")) goto(`/docs/user-management/#sso`)
 if (path.includes("/docs/cloud-edge/modules/webhook/")) goto(`/docs/cloud-edge/modules/webhook-verification/`)
+if (path.includes("/docs/cloud-edge/modules/oauth/amazon/")) goto(`/docs/integrations/amazon/oauth/`)
+if (path.includes("/docs/cloud-edge/modules/oauth/facebook/")) goto(`/docs/integrations/facebook/oauth/`)
+if (path.includes("/docs/cloud-edge/modules/oauth/github/")) goto(`/docs/integrations/github/oauth/`)
+if (path.includes("/docs/cloud-edge/modules/oauth/gitlab/")) goto(`/docs/integrations/gitlab/oauth/`)
+if (path.includes("/docs/cloud-edge/modules/oauth/google/")) goto(`/docs/integrations/google/oauth/`)
+if (path.includes("/docs/cloud-edge/modules/oauth/linkedin/")) goto(`/docs/integrations/linkedin/oauth/`)
+if (path.includes("/docs/cloud-edge/modules/oauth/microsoft/")) goto(`/docs/integrations/microsoft/oauth/`)
+if (path.includes("/docs/cloud-edge/modules/oauth/twitch/")) goto(`/docs/integrations/twitch/oauth/`)
 const match = path.match(/\/docs\/ngrok-agent(\/[\w]*)/);
 if (!!match) {
 	goto(`/docs/secure-tunnels/ngrok-agent/reference${match[1]}${window.location.hash}`)
