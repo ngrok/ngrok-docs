@@ -5,7 +5,7 @@ title: Agent Changelog
 # ngrok Agent Changelog
 
 ### ngrok Agent 3.3.3 - \[2023-08-11\]
-* Added performance improvements. 
+* Added new `us-cal-1` region which will reduce latency for users in the western half of North America 
 
 ### ngrok Agent 3.3.2 - \[2023-07-27\]
 
