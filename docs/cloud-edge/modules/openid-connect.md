@@ -1,4 +1,4 @@
-# OpenID Connect (OIDC)
+# OpenID Connect
 
 ---
 

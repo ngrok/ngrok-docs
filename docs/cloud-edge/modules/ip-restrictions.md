@@ -5,10 +5,9 @@
 ## Overview
 
 IP Restrictions allows you to allow or deny traffic based on the source IP of
-the connection that was initiated to your ngrok endpoints. You may define allow
-and deny rules that apply to CIDR blocks of IP addresses.
-
-Rules may be set for both IPv4 and IPv6 addresses.
+the connection that was initiated to your ngrok endpoints. You configure the
+module by defining rules that apply allow or deny actions to IPv4 or IPv6 CIDR
+blocks.
 
 A connection is allowed only if its source IP matches at least one rule with an
 'allow' action and does not match any rule with a 'deny' action.
@@ -19,13 +18,13 @@ The IP Restrictions module is supported on HTTP, TCP and TLS endpoints.
 
 ### Agent CLI
 
-```
+```bash
 ngrok http 80 --cidr-allow 110.0.0.0/8 --cidr-allow 220.12.0.0/16 --cidr-deny 110.2.3.4/32
 ```
 
 ### Agent Configuration File
 
-```
+```yaml
 tunnels:
   example:
     proto: http
@@ -36,7 +35,7 @@ tunnels:
 
 ### SSH
 
-```
+```bash
 ssh -R 443:localhost:80 connect.ngrok-agent.com http \
   --cidr-allow 110.0.0.0/8 \
   --cidr-allow 220.12.0.0/16 \
@@ -45,7 +44,7 @@ ssh -R 443:localhost:80 connect.ngrok-agent.com http \
 
 ### Go SDK
 
-```
+```go
 import (
 	"context"
 	"net"
@@ -68,7 +67,7 @@ func listenIPRestrictions(ctx context.Context) net.Listener {
 
 ### Rust SDK
 
-```
+```rust
 use ngrok::prelude::*;
 
 async fn start_tunnel() -> anyhow::Result<impl Tunnel> {
@@ -152,31 +151,6 @@ be configured via the ngrok dashboard or API.
 - [IP Policy API Resource](/api/resources/ip-policies/)
 - [IP Policy Rule API Resource](/api/resources/ip-policy-rules/)
 
-## Try it out
-
-First, grab your IPv4 and IPv6 addresses:
-
-```
-curl -4 icanhazip.com
-curl -6 icanhazip.com
-```
-
-Then run ngrok with IP Restrictions with the IPv4 and IPv6 addresses you got in the previous step:
-
-```
-ngrok http 80 \
-  --domain your-domain.ngrok.app \
-  --allow-cidr 2600:8c00::a03c:91ee:fe69:9695/32 \
-  --allow-cidr 78.227.75.230/32
-```
-
-Then make requests to your ngrok domain using the `-4` and `-6` flags to test both IPv4 and IPv6:
-
-```
-curl -4 https://your-domain.ngrok.app
-curl -6 https://your-domain.ngrok.app
-```
-
 ## Behavior
 
 ### Rule Evaluation
@@ -201,16 +175,48 @@ Don't forget to create IPv6 rules. It's easy to test only with IPv4 and then
 suddenly things don't work when your software starts using IPv6 because you've
 forgotten to create rules to allow traffic from IPv6 addresses.
 
-### Source IP
+### Forwarded-For
 
-The IP Restrictions module evaluates the layer 4 source IP of a connection.
-HTTP headers like `forwarded-for` are never consulted by this module.
+The IP Restrictions always evaluates its rules against the layer 4 source IP of
+a connection. HTTP headers like `forwarded-for` are never consulted by this
+module.
 
 ## Reference
 
+### Configuration
+
+###### **Agent Configuration**
+
+| Parameter       | Description                            |
+| --------------- | -------------------------------------- |
+| **Allow CIDRs** | A set of IPv4 and IPv6 CIDRs to allow. |
+| **Deny CIDRs**  | A set of IPv4 and IPv6 CIDRs to deny.  |
+
+###### **Edge Configuration**
+
+| Parameter         | Description                                                                                                                                                                                                                |
+| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **IP Policy IDs** | A set of IP policies that will be used to check if a source IP is allowed access. See the [HTTPS Edge IP Restrictions Module API Resource](/api/resources/https-edge-route-ip-restriction-module/) for additional details. |
+
 ### Upstream Headers {#upstream-headers}
 
-No additional upstream headers are added.
+This module does not add any upstream headers.
+
+### Errors
+
+#### HTTP
+
+The following errors are returned on HTTP endpoints.
+
+| Code                                      | HTTP Status | Error                                                                |
+| ----------------------------------------- | ----------- | -------------------------------------------------------------------- |
+| [ERR_NGROK_3205](/errors/err_ngrok_3205/) | `403`       | This error is returned if a connection is disallowed by this module. |
+
+#### TCP + TLS
+
+For TCP and TLS endpoints, if a connection is disallowed by IP Restrictions
+then the connection is closed because there is no standardized error reporting
+at these protocol layers.
 
 ### Events
 
@@ -223,14 +229,31 @@ in both the
 | -------------------- |
 | `ip_policy.decision` |
 
-### Errors
+### Limits
 
-For TCP and TLS endpoints, if a connection is disallowed by IP Restrictions
-then the connection will simply be closed.
+This module is available on the Pro and Enterprise plans.
 
-For HTTP endpoints, an HTTP response will return
-[ERR_NGROK_3205](/errors/err_ngrok_3205/) with a 403 Forbidden status.
+## Try it out
 
-### Licensing
+First, grab your IPv4 and IPv6 addresses:
 
-IP Restrictions is available on the Pro or Enterprise plans.
+```bash
+curl -4 icanhazip.com
+curl -6 icanhazip.com
+```
+
+Then run ngrok with IP Restrictions with the IPv4 and IPv6 addresses you got in the previous step:
+
+```bash
+ngrok http 80 \
+  --domain your-domain.ngrok.app \
+  --allow-cidr 2600:8c00::a03c:91ee:fe69:9695/32 \
+  --allow-cidr 78.227.75.230/32
+```
+
+Then make requests to your ngrok domain using the `-4` and `-6` flags to test both IPv4 and IPv6:
+
+```bash
+curl -4 https://your-domain.ngrok.app
+curl -6 https://your-domain.ngrok.app
+```
