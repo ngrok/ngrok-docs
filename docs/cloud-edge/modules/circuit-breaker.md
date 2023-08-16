@@ -23,7 +23,7 @@ upstream application once again.
 
 ### Agent CLI
 
-```
+```bash
 ngrok http 80 --circuit-breaker 0.5
 ```
 
@@ -39,7 +39,7 @@ tunnels:
 
 ### SSH
 
-```
+```bash
 ssh -R 443:localhost:80 connect.ngrok-agent.com http --circuit-breaker 0.5
 ```
 
@@ -130,6 +130,62 @@ spec:
 Circuit Breaker is a supported Edge module which can be applied to routes.
 
 - [Circuit Breaker Edge Module API Resource](/api/resources/https-edge-route-circuit-breaker-module/)
+
+## Behavior
+
+The Circuit Breaker module is an implementation of [Netflix's Hystrix circuit
+breaker specification](https://github.com/Netflix/Hystrix/wiki/How-it-Works).
+
+If the upstream server responds with more than the threshold percentage of
+requests with 5XX status codes, the circuit breaker preemptively reject all
+subsequent requests at the ngrok edge with a 503 until the upstream server's
+error rate drops below the threshold percentage.
+
+Circuit breaker state is tracked on each ngrok edge server individually. There
+are many ngrok edge servers which means that your upstream server may observe
+requests even after you would expect the circuit breaker to open. All of
+ngrok's edge servers will eventually open their circuits to protect an failing
+upstream application but the behavior you observe may not exactly match the
+parameters you've set because circuit breaker state is tracked individually on
+each of ngrok's edge servers.
+
+## Reference
+
+### Configuration
+
+The Agent and Agent SDKs do not support configuration of some parameters of the
+Circuit Breaker.
+
+| Parameter             | Default | Description                                                                                                                                                                                                                                                                                 |
+| --------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Error Threshold**   |         | The threshold percentage of upstream requests that must fail before the circuit is opened expressed a decimal value between 0 and 1. ngrok defines any HTTP response with a status code greater than or equal to 500 as an error response that counts toward the circuit breaker threshold. |
+| **Tripped Duration**  | 10      | The number of seconds to reject requests, once the circuit is opened, before rechecking if the circuit should again be closed.                                                                                                                                                              |
+| **Rolling Window**    | 10      | The window of time we keep metrics for the circuit breaker, the error threshold only considers successes and errors that fall within this window.                                                                                                                                           |
+| **Number of Buckets** | 10      | The number of discrete time intervals the rolling window duration is divided into. Along with the rolling window duration, this defines the granularity at which requests expire out of the rolling window. Max 128.                                                                        |
+| **Volume Threshold**  | 20      | The minimum number of requests required in a rolling window that will trip the circuit.                                                                                                                                                                                                     |
+
+### Upstream Headers {#upstream-headers}
+
+This module does not add any upstream headers.
+
+### Errors
+
+| Code                                      | HTTP Status | Error                                                                                          |
+| ----------------------------------------- | ----------- | ---------------------------------------------------------------------------------------------- |
+| [ERR_NGROK_3202](/errors/err_ngrok_3202/) | `503`       | This error is returned if the circuit breaker is open because the upstream service is failing. |
+
+### Events
+
+When the Circuit Breaker module is enabled, it populates the following fields in
+[http_request_complete.v0](/events/reference/#http-request-complete) events.
+
+| Fields                     |
+| -------------------------- |
+| `circuit_breaker.decision` |
+
+### Limits
+
+This module is available on all plans.
 
 ## Try it out
 
@@ -225,70 +281,3 @@ func makeRequests(appURL string) {
 	}
 }
 ```
-
-## Behavior
-
-If the upstream server responds with more than the threshold percentage of
-requests with 5XX status codes, the circuit breaker preemptively rejects all
-subsequent requests at the ngrok edge with a 503 until the upstream server's
-error rate drops below the threshold percentage.
-
-The Circuit Breaker module is an implementation of [Netflix's Hystrix circuit
-breaker specification](https://github.com/Netflix/Hystrix/wiki/How-it-Works).
-
-### What contributes to the threshold?
-
-ngrok defines any HTTP response with a status code greater than or equal to 500
-as an error response that counts toward the circuit breaker threshold.
-
-### Parameters
-
-Circuit Breaker behavior can be customized. Defaults will be chosen for you for some values in two cases.
-
-- If you enable the module via the Agent or Agent SDK. They don't allow you to
-  customize a number of the module's parameters.
-- If you enable the module via the Edge API and don't explicitly set values for
-  all parameters.
-
-| Parameter             | Default     | Description                                                                                                                                                                                                 |
-| --------------------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Error Threshold**   | -           | The threshold percentage of upstream requests that must fail before the circuit is opened.                                                                                                                  |
-| **Tripped Duration**  | 10 seconds  | The number of seconds to reject requests, once the circuit is opened, before rechecking if the circuit should again be closed.                                                                              |
-| **Rolling Window**    | 10 seconds  | The window of time we keep metrics for the circuit breaker, the error threshold only considers successes and errors that fall within this window.                                                           |
-| **Number of Buckets** | 10 buckets  | The number of discrete time intervals the rolling window duration is divided into. Along with the rolling window duration, this defines the granularity at which requests expire out of the rolling window. |
-| **Volume Threshold**  | 20 requests | The minimum number of requests required in a rolling window that will trip the circuit.                                                                                                                     |
-
-### Circuit Breaker State {#state}
-
-At the time of writing, circuit breaker state is kept on each ngrok edge server
-individually. There are many ngrok edge servers which means that your upstream
-server may observe requests even after you would expect the circuit breaker to
-open. All of ngrok's edge servers will eventually open their circuits to
-protect an overloaded upstream but the behavior you observe may not exactly
-match the parameters you've set because those parameters are applied
-individually on each of ngrok's edge servers.
-
-## Reference
-
-### Upstream Headers {#upstream-headers}
-
-No additional upstream headers are added by the Circuit Breaker module.
-
-### Events
-
-When the Circuit Breaker module is enabled, it populates the following fields in
-[http_request_complete.v0](/events/reference/#http-request-complete) events.
-
-| Fields                     |
-| -------------------------- |
-| `circuit_breaker.decision` |
-
-### Errors
-
-If the Circuit Breaker is open because the upstream service is failing, the
-ngrok edge will return [ERR_NGROK_3202](/errors/err_ngrok_3202/) with a 503
-Service Unavailable HTTP status code.
-
-### Licensing
-
-The Circuit Breaker module is available on all plans.

@@ -30,33 +30,33 @@ community at [Webhooks.fyi](https://webhooks.fyi).
 
 ### Agent CLI
 
-```
-ngrok http 80 --verify-webhook stripe --verify-webhook-secret whsec_secret
+```bash
+ngrok http 80 --verify-webhook stripe --verify-webhook-secret "{webhook secret}"
 ```
 
 ### Agent Configuration File
 
-```
+```yaml
 tunnels:
   example:
     proto: http
     addr: 80
     verify_webhook:
       provider: "twilio"
-      secret: "twilio-auth-token"
+      secret: "{twilio-auth-token}"
 ```
 
 ### SSH
 
-```
+```bash
 ssh -R 443:localhost:80 connect.ngrok-agent.com http \
   --verify-webhook slack \
-  --verify-webhook-secret slack_signing_secret
+  --verify-webhook-secret "{slack signing secret}"
 ```
 
 ### Go SDK
 
-```
+```go
 import (
 	"context"
 	"net"
@@ -68,7 +68,7 @@ import (
 func listenWebhookVerification(ctx context.Context) net.Listener {
 	listener, _ := ngrok.Listen(ctx,
 		config.HTTPEndpoint(
-			config.WithWebhookVerification("shopify", "app-client-secret"),
+			config.WithWebhookVerification("shopify", "{shopify app client secret}"),
 		),
 		ngrok.WithAuthtokenFromEnv(),
 	)
@@ -78,7 +78,7 @@ func listenWebhookVerification(ctx context.Context) net.Listener {
 
 ### Rust SDK
 
-```
+```rust
 use ngrok::prelude::*;
 
 async fn start_tunnel() -> anyhow::Result<impl Tunnel> {
@@ -88,7 +88,7 @@ async fn start_tunnel() -> anyhow::Result<impl Tunnel> {
         .await?;
     let tun = sess
         .http_endpoint()
-        .webhook_verification("zendesk", "zendesk-signing-secret")
+        .webhook_verification("zendesk", "{zendesk signing secret}")
         .listen()
         .await?;
     println!("Listening on URL: {:?}", tun.url());
@@ -116,7 +116,7 @@ modules:
   webhookVerification:
     provider: github
     secret:
-      name: github-webhook-secret
+      name: "{github webhook secret}"
       key: secret-token
 ---
 apiVersion: networking.k8s.io/v1
@@ -146,11 +146,6 @@ Webhook Verification is a supported module for HTTPS edges. It is attached to
 an edge route. Like all edge modules, it can be configured via API.
 
 - [HTTPS Edge Webhook Verification Module API Resource](/api/resources/https-edge-route-webhook-validation-module/)
-
-## Try it out
-
-Consult the [comprehensive step-by-step integration
-guides](#supported-providers) we've written for every supported provider.
 
 ## Behavior
 
@@ -190,6 +185,45 @@ automatically handle the endpoint verification request for your application.
 - Zoom
 
 ## Reference
+
+### Configuration
+
+| Parameter            | Description                                                                                                                                                                          |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Webhook Provider** | The identifier of one of [ngrok's supported webhook providers](#supported-providers)                                                                                                 |
+| **Webhook Secret**   | The signing key or secret token which the webhook provider supplied to you for request verification. Consult the [guide for your provider](#supported-providers) to find this value. |
+
+### Upstream Headers {#upstream-headers}
+
+This module does not add any upstream headers.
+
+### Errors
+
+| Code                                      | HTTP Status | Error                                                                          |
+| ----------------------------------------- | ----------- | ------------------------------------------------------------------------------ |
+| [ERR_NGROK_3204](/errors/err_ngrok_3204/) | `403`       | This error is returned if a webhook request fails verification for any reason. |
+
+### Events
+
+When the Webhook Verification module is enabled, it populates the following
+fields in the
+[http_request_complete.v0](/events/reference/#http-request-complete) event:
+
+| Fields                          |
+| ------------------------------- |
+| `webhook_verification.decision` |
+
+### Limits
+
+Webhook Verification limits are enforced account-wide, they are not specific to
+an endpoint.
+
+| Plan       | Verified Requests |
+| ---------- | ----------------- |
+| Free       | 500               |
+| Personal   | 500               |
+| Pro        | Unlimited         |
+| Enterprise | Unlimited         |
 
 ### Supported Providers {#supported-providers}
 
@@ -261,27 +295,7 @@ automatically handle the endpoint verification request for your application.
 | Zendesk                     | `zendesk`               | [Documentation](/docs/integrations/zendesk/webhooks/)                                                |
 | Zoom                        | `zoom`                  | [Documentation](/docs/integrations/zoom/webhooks/)                                                   |
 
-### Upstream Headers {#upstream-headers}
+## Try it out
 
-No additional upstream headers are added by the Webhook Verification module.
-
-### Events
-
-When the Webhook Verification module is enabled, it populates the following
-fields in the
-[http_request_complete.v0](/events/reference/#http-request-complete) event:
-
-| Fields                          |
-| ------------------------------- |
-| `webhook_verification.decision` |
-
-### Errors
-
-If a webhook request fails verification for any reason, the ngrok edge will
-return [ERR_NGROK_3204](/errors/err_ngrok_3204/) with a 403 Forbidden status.
-
-### Licensing
-
-Webhook Verification is available on the Free and Personal plans for up to 500
-verifications per month. For additional verifications, you must be subscribed
-to a Pro or Enterprise plan.
+Consult the [comprehensive step-by-step integration
+guides](#supported-providers) we've written for every supported provider.
