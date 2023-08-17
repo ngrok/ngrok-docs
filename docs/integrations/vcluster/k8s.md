@@ -6,15 +6,30 @@ description: Setup a local virtual cluster to demonstrate how to use the ngrok I
 ------------
 
 :::tip TL;DR
-To use the ngrok Ingress Controller with vcluster in a local demo environment:
+To use the ngrok Ingress Controller for Kubernetes with vcluster in a local cluster:
 1. [Set up a local virtual cluster with vcluster](#set-up-a-consul-service-mesh-on-kubernetes)
 1. [Install the ngrok Ingress Controller](#install-the-ngrok-ingress-controller)
 1. [Install a sample application](#install-a-sample-application)
 1. [Add OAuth protection to your demo app](#add-oauth-protection)
-1. ***TK***
 :::
 
-***INTRODUCTION TK***
+The ngrok [Ingress Controller for Kubernetes](https://ngrok.com/blog-post/ngrok-k8s) is the official controller for
+adding public and secure ingress traffic to your k8s services. This open source Ingress Controller works with any cloud,
+locally-hosted, or on-premises Kubernetes cluster to provide ingress to your applications, APIs, or other services while
+also offloading network ingress and middleware execution to ngrok's cloud edge.
+
+[vcluster](https://www.vcluster.com/) is an open source project for creating virtual clusters that run inside regular
+namespaces, which provides strong isolation and easy access for multiple tenants with low cost and overhead. The pods
+you deploy on a vcluster are scheduled inside of the underlying cluster, while other resources, like deployments and
+CRDs, exist only inside the virtual cluster.
+
+Together, the ngrok Ingress Controller and vcluster work together to provide secure and load-balanced ingress for
+services running on a virtual cluster, which lets you isolate development environments or run cluster simulations
+virtually while also properly routing external traffic.
+
+With this guide, you'll use an existing Kubernetes cluster, or set up a local development cluster with minikube, to
+launch a virtual cluster, and deploy a demo application. You'll then deploy the ngrok Ingress Controller to connect your
+demo application to the ngrok cloud edge to route traffic to your vcluster.
 
 :::caution This tutorial requires:
 1. An [ngrok account](https://ngrok.com/signup).
@@ -223,11 +238,142 @@ cluster, virtual cluster, and ultimately an exposed service or endpoint, you can
   multiple tunnels for load balancing, enabling the [Mutual TLS module](/cloud-edge/modules/mutual-tls/), add
   compression, and more.
 
-1. Access your 2048 demo app by navigating to the ingress domain, e.g. `https://one-two-three.ngrok.app`. As long as
-   your vcluster remains operational, you can access your 2048 game from any device or network.
+1. Access your 2048 demo app by navigating to the ingress domain, e.g. `https://one-two-three.ngrok-free.app`. As long
+   as your vcluster remains operational, you can access your 2048 game from any device or network.
 
-  !["Navigating directly to the https://one-two-three.ngrok.app domain to see the 2048 application"](./img/ngrok-k8s-vcluster_2048.png)
+  !["Navigating directly to the https://one-two-three.ngrok-free.app domain to see the 2048 application"](./img/ngrok-k8s-vcluster_2048.png)
 
-## Step 4: Add OAuth protection to your demo app {#add-oauth-protection}
+## **Step 4**: Add OAuth protection to your demo app {#add-oauth-protection}
 
-**TK**
+Let's take your ingress needs a little further by assuming you want to add edge security, in the form of Google OAuth,
+to the endpoint where your 2048 application is humming along.
+
+The OAuth protection is entirely managed by ngrok at the cloud edge, which means you don't need to add any additional
+services to your cluster, or alter routes, to ensure all requests are authenticated and authorized to access your
+endpoint.
+
+1. Edit your existing `2048.yaml` manifest with the following configuration.
+
+  :::tip Notes:
+    - See L42-43 for the additional annotation that this OAuth setup requires.
+    - See L58-69 for the newly added configuration for ngrok's OAuth module, replacing `acme.com` or `ngrok.com` with the domain name for your email address. You can also [configure the OAuth module](/user-guide/route-modules/#ngrok-managed-oauth-application) to authenticate individual email addresses.
+  :::
+
+  ```yaml showLineNumbers
+  apiVersion: v1
+  kind: Service
+  metadata:
+    name: game-2048
+    namespace: ngrok-ingress-controller
+  spec:
+    ports:
+      - name: http
+        port: 80
+        targetPort: 80
+    selector:
+      app: game-2048
+  ---
+  # Configuration for the 2048 application, service, and deployment
+  apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: game-2048
+    namespace: ngrok-ingress-controller
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app: game-2048
+    template:
+      metadata:
+        labels:
+          app: game-2048
+      spec:
+        containers:
+          - name: backend
+            image: alexwhen/docker-2048
+            ports:
+              - name: http
+                containerPort: 80
+  ---
+  # Configuration for ngrok's Kubernetes Ingress Controller
+  apiVersion: networking.k8s.io/v1
+  kind: Ingress
+  metadata:
+    name: game-2048-ingress
+    namespace: ngrok-ingress-controller
+    # highlight-start
+    annotations:
+      k8s.ngrok.com/modules: oauth
+    # highlight-end
+  spec:
+    ingressClassName: ngrok
+    rules:
+      - host: NGROK_DOMAIN
+        http:
+          paths:
+            - path: /
+              pathType: Prefix
+              backend:
+                service:
+                  name: game-2048
+                  port:
+                    number: 80
+  ---
+  # highlight-start
+  # Configuration for ngrok's OAuth authentication module
+  kind: NgrokModuleSet
+  apiVersion: ingress.k8s.ngrok.com/v1alpha1
+  metadata:
+    name: oauth
+    namespace: ngrok-ingress-controller
+  modules:
+    oauth:
+      google:
+        emailDomains:
+          - acme.com
+          - ngrok.com
+  #highlight-end
+  ```
+
+1. Re-apply your `2048.yaml` configuration.
+
+  ```bash
+  kubectl apply -f 2048.yaml
+  ```
+
+1. Visit the [**Edges** section](https://dashboard.ngrok.com/cloud-edge/edges/) of the ngrok dashboard, click on the
+   edge for your deployment, then click **OAuth** to confirm the module is using the configuration you added to your
+   `2048.yaml` manifest.
+
+  ![Verifying the OAuth module configuration in the ngrok dashboard](./img/ngrok-k8s-vcluster_oauth-config.png)
+
+1. Access your 2048 app at your domain (e.g. `https://one-two-three.ngrok-free.app`) to verify that it requests
+   authentication via Google OAuth before allowing you to access the 2048 application.
+
+## What's next?
+
+You've now used the open source ngrok Ingress Controller for Kubernetes to add secure access to your endpoint without
+worrying about IPs, network interfaces, or VPC routing. Because ngrok offloads ingress and middleware execution to its
+global edge, you can follow the same procedure listed above for any Kubernetes environment, like EKS, GKE, and
+OpenShift, with similar results.
+
+If you want to clean up the work you did for this demo application, the easiest way (and the advantage of virtual
+clusters in the first place) is to disconnect from your vcluster and then delete it with the `vcluster` CLI. That will
+remove the namespace and all its resources, putting your primary cluster back into its initial state.
+
+```bash
+vcluster disconnect
+vcluster delete my-vcluster
+```
+
+If you choose to keep your vcluster running, you can extend your new Ingress Controller with [additional
+modules](https://github.com/ngrok/kubernetes-ingress-controller/blob/main/docs/user-guide/route-modules.md), a [fanout
+configuration](https://github.com/ngrok/kubernetes-ingress-controller/blob/main/docs/user-guide/ingress-to-edge-relationship.md#simple-fanout)
+to route traffic to multiple services from a single domain or IP address, or even [multiple Ingress
+Controller](https://github.com/ngrok/kubernetes-ingress-controller/blob/main/docs/deployment-guide/multiple-installations.md)
+installations running alongside one another.
+
+Learn more about the ngrok Ingress Controller, or contribute, by checking out the [GitHub
+repository](https://github.com/ngrok/kubernetes-ingress-controller) and the [project-specific
+documentation](https://github.com/ngrok/kubernetes-ingress-controller/tree/main/docs).
