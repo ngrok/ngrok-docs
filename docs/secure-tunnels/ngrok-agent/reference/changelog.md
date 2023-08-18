@@ -4,6 +4,11 @@ title: Agent Changelog
 
 # ngrok Agent Changelog
 
+### ngrok Agent 3.3.4 - \[2023-08-18\]
+
+- Fixed a bug where the agent running as a service would log to syslog even when another log destination was specified
+- Fixed a bug where the agent could incorrectly ignore `dns_resolver_ips`
+
 ### ngrok Agent 3.3.3 - \[2023-08-11\]
 
 - Added new `us-cal-1` region which will reduce latency for users in the western half of North America
