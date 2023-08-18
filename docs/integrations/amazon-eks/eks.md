@@ -1,8 +1,16 @@
 ---
-description: ngrok Ingress Controller on AWS EKS
+sidebar_label: Getting Started
+title: ngrok Kubernetes Ingress Controller on EKS
+description: Learn how to get started running the ngrok Ingress Controller on AWS EKS
+tags:
+  - kubernetes
+  - k8s
+  - eks
+  - elastic kubernetes service
+  - ingress controller
 ---
 
-# AWS EKS
+# ngrok Kubernetes Ingress Controller on Amazon EKS
 
 ---
 
@@ -85,11 +93,11 @@ Now we can install the ngrok Ingress Controller to provide ingress to our servic
 
 Create a manifest file (for example `ngrok-manifest.yaml`) with the following contents. You will need to replace the `NGROK_DOMAIN` on line 45 with your own custom value. This is the URL you will use to access your service from anywhere. If you're on a free account, it must be on a static subdomain which you can claim by logging into your account and following the instructions on the claim static subdomain banner. For paid accounts, you can use a custom domain or a subdomain of `ngrok.app` or `ngrok.dev` (for example, `username-loves-ingress.ngrok.app` or `k8s.example.com`).
 
-   :::tip Notes:
+:::tip Notes:
 
    - Lines 1-34: Create the 2048 app service and deployment
    - Lines 35-54 (highlighted): Create the ngrok Ingress Controller. Line 45 determines the ingress URL for public requests.
-     :::
+:::
 
    ```yaml showLineNumbers
    apiVersion: v1
@@ -179,7 +187,7 @@ This example is very similar to the previous version, with the following changes
 - Lines 57-75: Sets the edge configuration as a custom CRD (NgrokModuleSet).
 - Lines 64-69: Sets the circuit breaker module over 50% threshold.
 - Lines 70-74: Sets the OAuth module to allow access only for users with the email domains `@acme.com` or `@ngrok.com`.
-  :::
+:::
 
 ```yaml showLineNumbers
 apiVersion: v1
