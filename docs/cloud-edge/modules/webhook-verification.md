@@ -231,7 +231,7 @@ an endpoint.
 | --------------------------- | ----------------------- | ---------------------------------------------------------------------------------------------------- |
 | AfterShip                   | `aftership`             | [Documentation](/docs/integrations/aftership/webhooks/)                                              |
 | Airship                     | `airship`               | [Documentation](/docs/integrations/airship/webhooks/)                                                |
-| Amazon SNS                  | `sns`                   | [Documentation](/docs/integrations/amazonsns/webhooks/)                                              |
+| Amazon SNS                  | `sns`                   | [Documentation](/docs/integrations/amazon-sns/webhooks/)                                              |
 | Autodesk Platform Services  | `autodesk`              | [Documentation](/docs/integrations/autodesk/webhooks/)                                               |
 | Bitbucket                   | `bitbucket`             | [Documentation](/docs/integrations/bitbucket/webhooks/)                                              |
 | Bolt                        | `bolt`                  | [Documentation](https://help.bolt.com/developers/guides/webhooks/hook-verification/)                 |
