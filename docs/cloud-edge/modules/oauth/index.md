@@ -1,5 +1,6 @@
 # OAuth
-----------------
+
+---
 
 The OAuth module enforces an OAuth authentication flow in front of any route it is enabled on. Any HTTP client accessing an OAuth-protected route will be redirected to a chosen identity provider (currently Google, Microsoft, GitHub or Facebook) for authentication. When they are redirected back to the protected route, ngrok will check a series of authorization constraints that allow you to define who is authorized to access the resource by setting a list of email addresses, email domains and other requirements. If the user is authorized, their request will be forwarded through to the upstream server and ngrok's edge will set an HTTP cookie on their browser session to keep them logged in so that the authentication flow is not repeated.
 
@@ -7,34 +8,34 @@ The OAuth module enforces an OAuth authentication flow in front of any route it 
 
 ngrok currently supports the following OAuth providers:
 
-*   Amazon
-*   [Facebook](/docs/cloud-edge/modules/oauth/facebook)
-*   [GitHub](/docs/cloud-edge/modules/oauth/github)
-*   GitLab
-*   [Google](/docs/cloud-edge/modules/oauth/google)
-*   LinkedIn
-*   [Microsoft](/docs/cloud-edge/modules/oauth/microsoft)
-*   Twitch
+- [Amazon](/docs/cloud-edge/modules/oauth/amazon)
+- [Facebook](/docs/cloud-edge/modules/oauth/facebook)
+- [GitHub](/docs/cloud-edge/modules/oauth/github)
+- [GitLab](/docs/cloud-edge/modules/oauth/gitlab)
+- [Google](/docs/cloud-edge/modules/oauth/google)
+- [LinkedIn](/docs/cloud-edge/modules/oauth/linkedin)
+- [Microsoft](/docs/cloud-edge/modules/oauth/microsoft)
+- [Twitch](/docs/cloud-edge/modules/oauth/twitch)
 
 ## OAuth Headers Provided by ngrok
 
 ngrok strips the following headers from authorized requests and sets them with data from the OAuth provider. Your application can rely on these headers being accurate. Some providers (like [GitHub](/docs/cloud-edge/modules/oauth/github#oauth-providers-github-headers)) set additional headers for your application to use. You can find more information in the dedicated section for configuring the OAuth provider.
 
-|Header|Description|
-|---|---|
-| `ngrok-auth-user-id` | Numeric ID of the authorized user. |
-| `ngrok-auth-user-name` | Full name of the authorized user. |
-| `ngrok-auth-email` | Authorized user's primary email address. |
+| Header                     | Description                                                                                      |
+| -------------------------- | ------------------------------------------------------------------------------------------------ |
+| `ngrok-auth-user-id`       | Numeric ID of the authorized user.                                                               |
+| `ngrok-auth-user-name`     | Full name of the authorized user.                                                                |
+| `ngrok-auth-user-email`    | Authorized user's primary email address.                                                         |
 | `ngrok-oauth-access-token` | **Custom applications only:** the user's OAuth access token. It is valid for at least 5 seconds. |
 
 ## Managed Application Limitations
 
 Managed OAuth applications are owned by ngrok and intended for quick use or testing. We highly recommend that you bring your own application. There are limitations on managed application since since many endpoints share them:
 
-*   User access tokens are not provided.
-*   Custom scopes are not allowed.
-*   At least one email address or one email domain must be specified.
-*   Common email domains are not allowed (e.g. gmail.com, yahoo.com).
+- User access tokens are not provided.
+- Custom scopes are not allowed.
+- At least one email address or one email domain must be specified.
+- Common email domains are not allowed (e.g. gmail.com, yahoo.com).
 
 ## Request Modifications
 
@@ -42,29 +43,29 @@ Managed OAuth applications are owned by ngrok and intended for quick use or test
 
 Upstream servers behind endpoints protected by OAuth should not expect to receive any paths beginning with `/oauth2/`. Although more paths may be added, the following paths are currently used by ngrok:
 
-|Path|Description|
-|---|---|
-| `/oauth2/callback` | Creates the OAuth session as part of forwarded provider callbacks. |
+| Path                | Description                                                                                                                                                 |
+| ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/oauth2/callback`  | Creates the OAuth session as part of forwarded provider callbacks.                                                                                          |
 | `/oauth2/authorize` | Initiates [capture](#capture) with a capture URI of `/`. This allows easily clearing the session on an error and forcing reauthorization with the provider. |
 
 ### Cookies
 
 ngrok uses cookies to secure the authorization workflow, store user credentials, and cache authorized user data for headers. Cookie values should be considered opaque and not modified. Cookies names are prefixed with `ngrok.` by default. ngrok may overwrite, modify, hide, or delete prefixed cookies with the names below as part of every request:
 
-|Cookie|Description|
-|---|---|
-| `session` | Stores all user data and credentials.|
-| `nonce` | Ties an authorization attempt to a single browser. The nonce value is within the cookie name, for example: `ngrok.nonce.1692b0c51436f5ed`|
+| Cookie    | Description                                                                                                                               |
+| --------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `session` | Stores all user data and credentials.                                                                                                     |
+| `nonce`   | Ties an authorization attempt to a single browser. The nonce value is within the cookie name, for example: `ngrok.nonce.1692b0c51436f5ed` |
 
 ## Constraint Changes and Sessions
 
 OAuth endpoint configuration uses a cookie-based session. Consider the following when changing authorization constraints:
 
-*   Cookies are client-side and available only when users make requests.
-*   Users may successfully authorize, then visit again after any amount of time.
-*   Once authorized, reauthorization occurs after the currently configured _[authorization check interval](#authorization-check-interval)_ or when the endpoint configuration changes.
-*   Sessions are tied to the OAuth client ID and OAuth provider from which they were created.
-*   Sessions are not shared between domain names.
+- Cookies are client-side and available only when users make requests.
+- Users may successfully authorize, then visit again after any amount of time.
+- Once authorized, reauthorization occurs after the currently configured _[authorization check interval](#authorization-check-interval)_ or when the endpoint configuration changes.
+- Sessions are tied to the OAuth client ID and OAuth provider from which they were created.
+- Sessions are not shared between domain names.
 
 ## Authorization Check Interval
 
@@ -79,11 +80,11 @@ When configuring an authorization check interval, note that long intervals will 
 
 Any of the following actions, taken between step 2 and 3, would force reauthorization:
 
-*   Updating the authorization check interval to less than two hours.
-    *   The default interval is **3 minutes**.
-*   Changing the OAuth provider or provider's client ID.
-*   Modifying the endpoint configuration.
-*   Redirecting the user to `/oauth2/authorize`.
+- Updating the authorization check interval to less than two hours.
+  - The default interval is **3 minutes**.
+- Changing the OAuth provider or provider's client ID.
+- Modifying the endpoint configuration.
+- Redirecting the user to `/oauth2/authorize`.
 
 ## OAuth Workflow
 

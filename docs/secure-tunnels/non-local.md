@@ -4,7 +4,8 @@ title: Forwarding to different machines
 ---
 
 # Forwarding to servers on a different machine (non-local services)
---------------------
+
+---
 
 ngrok can forward to services that aren't running on your local machine. Instead of specifying a port number, just specify a network address and port instead.
 

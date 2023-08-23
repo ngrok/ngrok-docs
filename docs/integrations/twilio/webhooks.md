@@ -54,7 +54,7 @@ You can validate that the app is up and running by visiting `http://localhost:30
 
 ## **Step 2**: Launch ngrok {#start-ngrok}
 
-Once your app is running successfully on localhost, let's get it on the internet securely using ngrok! 
+Once your app is running successfully on localhost, let's get it on the internet securely using ngrok!
 
 1. If you're not an ngrok user yet, just [sign up for ngrok for free](https://ngrok.com/signup).
 
@@ -70,7 +70,6 @@ Once your app is running successfully on localhost, let's get it on the internet
 
 1. ngrok will display a URL where your localhost application is exposed to the internet (copy this URL for use with Twilio).
     ![ngrok agent running](/img/integrations/launch_ngrok_tunnel.png)
-
 
 ## **Step 3**: Integrate Twilio {#setup-webhook}
 

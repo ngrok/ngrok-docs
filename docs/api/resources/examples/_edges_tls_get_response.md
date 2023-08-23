@@ -1,17 +1,18 @@
+<!-- Code generated for API Clients. DO NOT EDIT. -->
 
 #### Example Response
+
 ```json
 {
-  "id": "edgtls_2NTVHsHoSOClY0mrWICYeydHWFl",
-  "description": "acme tls edge",
-  "metadata": "{\"environment\": \"staging\"}",
-  "created_at": "2023-03-24T19:59:34Z",
-  "uri": "https://api.ngrok.com/edges/tls/edgtls_2NTVHsHoSOClY0mrWICYeydHWFl",
-  "hostports": [
-    "example.com:443"
-  ],
-  "backend": null,
-  "ip_restriction": null,
-  "mutual_tls": null,
-  "tls_termination": null
+	"id": "edgtls_2TMGJdBbx5IBRCRycI7hKUwANB1",
+	"description": "acme tls edge",
+	"metadata": "{\"environment\": \"staging\"}",
+	"created_at": "2023-07-31T23:17:45Z",
+	"uri": "https://api.ngrok.com/edges/tls/edgtls_2TMGJdBbx5IBRCRycI7hKUwANB1",
+	"hostports": ["example.com:443"],
+	"backend": null,
+	"ip_restriction": null,
+	"mutual_tls": null,
+	"tls_termination": null
 }
+```

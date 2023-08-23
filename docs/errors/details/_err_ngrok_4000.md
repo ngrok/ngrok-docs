@@ -1,4 +1,3 @@
-
 ### Possible solutions
 
 If you believe you own the email address in question, you can attempt a password

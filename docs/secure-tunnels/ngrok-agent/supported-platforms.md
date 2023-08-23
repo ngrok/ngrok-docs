@@ -4,7 +4,8 @@ title: Supported Platforms
 ---
 
 # Installation and Supported Platforms
---------------------
+
+---
 
 The ngrok agent runs on all major platforms including Linux, MacOS, Windows. For a full list of the platforms we support, please see our [ngrok agent download](https://ngrok.com/download) page.
 

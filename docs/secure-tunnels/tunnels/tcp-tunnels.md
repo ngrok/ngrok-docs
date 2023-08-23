@@ -3,7 +3,8 @@ sidebar_position: 3
 ---
 
 # TCP Tunnels
---------------------
+
+---
 
 Not all services you wish to expose are HTTP or TLS based. ngrok TCP tunnels allow you to expose any networked service that runs over TCP. This is commonly used to expose SSH, game servers, databases and more. Starting a TCP tunnel is easy.
 
@@ -35,4 +36,4 @@ Normally, the remote address and port is assigned randomly each time you start a
 
 ## TCP Tunnel Configuration Options {#configuration-options}
 
-Check out the [ngrok agent TCP tunnel documentation](/ngrok-agent/ngrok#ngrok-tcp) for all the configuration options for TCP tunnels.
+Check out the [ngrok agent TCP tunnel documentation](/secure-tunnels/ngrok-agent/reference/ngrok#ngrok-tcp) for all the configuration options for TCP tunnels.
