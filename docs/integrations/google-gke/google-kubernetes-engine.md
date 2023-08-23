@@ -1,8 +1,17 @@
 ---
-description: ngrok Ingress Controller on GCP GKE
+sidebar_label: Getting Started
+title: ngrok Kubernetes Ingress Controller on EKS
+description: ngrok Kubernetes Ingress Controller on Google Kubernetes Engine (GKE)
+tags:
+  - kubernetes
+  - k8s
+  - google kubernetes engine
+  - gke
+  - google
+  - ingress controller
 ---
 
-# Google Kubernetes Engine
+# Google Kubernetes Engine (GKE)
 
 ---
 
@@ -17,7 +26,7 @@ To use the ngrok Ingress Controller with Google Kubernetes Engine:
 
 ## Introduction
 
-The [ngrok Ingress Controller for Kubernetes](https://github.com/ngrok/kubernetes-ingress-controller) is our official open-source controller for adding public and secure ingress traffic to your k8s services. It works out of the box with  Google Kubernetes Engine cluster to provide ingress to your services no matter the network configuration, as long as it has outbound access to the ngrok service. This allows ngrok to be portable and work seamlessly across any type of infrastructure.
+The [ngrok Ingress Controller for Kubernetes](https://github.com/ngrok/kubernetes-ingress-controller) is our official open-source controller for adding public and secure ingress traffic to your k8s services. It works out of the box with Google Kubernetes Engine cluster to provide ingress to your services no matter the network configuration, as long as it has outbound access to the ngrok service. This allows ngrok to be portable and work seamlessly across any type of infrastructure.
 
 :::caution This tutorial requires:
 
@@ -85,11 +94,11 @@ Now we can install the ngrok Ingress Controller to provide ingress to our servic
 
 Create a manifest file (for example `ngrok-manifest.yaml`) with the following contents. You will need to replace the `NGROK_DOMAIN` on line 45 with your own custom value. This is the URL you will use to access your service from anywhere. If you're on a free account, it must be on a static subdomain which you can claim by logging into your account and following the instructions on the claim static subdomain banner. For paid accounts, you can use a custom domain or a subdomain of `ngrok.app` or `ngrok.dev` (for example, `username-loves-ingress.ngrok.app` or `k8s.example.com`).
 
-   :::tip Notes:
+:::tip Notes:
 
    - Lines 1-34: Create the 2048 app service and deployment
    - Lines 35-54 (highlighted): Create the ngrok Ingress Controller. Line 45 determines the ingress URL for public requests.
-     :::
+:::
 
    ```yaml showLineNumbers
    apiVersion: v1
@@ -166,7 +175,7 @@ Create a manifest file (for example `ngrok-manifest.yaml`) with the following co
 
    ![application public](/img/howto/ingress-controller/k8s-ingress-app-2.png)
 
-## Step 3: Add edge security to your app {#add-edge-security}
+## Step 4: Add edge security to your app {#add-edge-security}
 
 The ngrok Ingress Controller for Kubernetes provides custom resource definitions (CRDs) for additional edge features available in ngrok. In this example, we're expanding the Ingress Controller with Google OAuth to allow access only from users with the email domains `@acme.com` or `@ngrok.com` and to apply a circuit breaker to your app at 80% (requires a paid account). These features are enforced at the ngrok edge, ensuring only authorized users can access your app.
 
@@ -179,7 +188,7 @@ This example is very similar to the previous version, with the following changes
 - Lines 57-75: Sets the edge configuration as a custom CRD (NgrokModuleSet).
 - Lines 64-69: Sets the circuit breaker module over 50% threshold.
 - Lines 70-74: Sets the OAuth module to allow access only for users with the email domains `@acme.com` or `@ngrok.com`.
-  :::
+:::
 
 ```yaml showLineNumbers
 apiVersion: v1
