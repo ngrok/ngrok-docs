@@ -22,7 +22,7 @@ To use the ngrok Ingress Controller with Google Kubernetes Engine:
 1. [Install the ngrok Ingress Controller](#install-the-ngrok-ingress-controller)
 1. [Install a sample application](#install-a-sample-application)
 1. [Add edge security to your app](#add-edge-security)
-:::
+   :::
 
 ## Introduction
 
@@ -34,7 +34,7 @@ The [ngrok Ingress Controller for Kubernetes](https://github.com/ngrok/kubernete
 1. [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
 1. [Helm 3.0.0+](https://helm.sh/docs/intro/install/)
 1. A [GKE cluster](https://cloud.google.com/kubernetes-engine/docs/deploy-app-cluster)
-:::
+   :::
 
 ## **Step 1**: Ensure `kubectl` can speak with your cluster {#prereqs}
 
@@ -74,21 +74,22 @@ Now we can install the ngrok Ingress Controller to provide ingress to our servic
    export NGROK_API_KEY=[API_KEY]
    ```
 3. Next, we'll install the ngrok Ingress Controller into our cluster.
-    ```shell
-    helm install ngrok-ingress-controller ngrok/kubernetes-ingress-controller \
-      --namespace ngrok \
-      --set fullnameOverride=ngrok-ingress-controller \
-      --set credentials.apiKey=$NGROK_API_KEY \
-      --set credentials.authtoken=$NGROK_AUTHTOKEN
-    ```
+
+   ```shell
+   helm install ngrok-ingress-controller ngrok/kubernetes-ingress-controller \
+     --namespace ngrok \
+     --set fullnameOverride=ngrok-ingress-controller \
+     --set credentials.apiKey=$NGROK_API_KEY \
+     --set credentials.authtoken=$NGROK_AUTHTOKEN
+   ```
 
 4. Verify the ngrok Ingress Controller is installed and all its pods are healthy
 
-    ```shell
-    kubectl get pods -l 'app.kubernetes.io/name=kubernetes-ingress-controller' -n ngrok
-    NAME                                                READY   STATUS    RESTARTS      AGE
-    ngrok-ingress-controller-manager-5b796c88f7-k7v6z   2/2     Running   1 (64s ago)   67s
-    ```
+   ```shell
+   kubectl get pods -l 'app.kubernetes.io/name=kubernetes-ingress-controller' -n ngrok
+   NAME                                                READY   STATUS    RESTARTS      AGE
+   ngrok-ingress-controller-manager-5b796c88f7-k7v6z   2/2     Running   1 (64s ago)   67s
+   ```
 
 ## **Step 3**: Install a Sample Application {#install-a-sample-application}
 
@@ -96,68 +97,68 @@ Create a manifest file (for example `ngrok-manifest.yaml`) with the following co
 
 :::tip Notes:
 
-   - Lines 1-34: Create the 2048 app service and deployment
-   - Lines 35-54 (highlighted): Create the ngrok Ingress Controller. Line 45 determines the ingress URL for public requests.
-:::
+- Lines 1-34: Create the 2048 app service and deployment
+- Lines 35-54 (highlighted): Create the ngrok Ingress Controller. Line 45 determines the ingress URL for public requests.
+  :::
 
-   ```yaml showLineNumbers
-   apiVersion: v1
-   kind: Service
-   metadata:
-     name: game-2048
-     namespace: ngrok-ingress-controller
-   spec:
-     ports:
-       - name: http
-         port: 80
-         targetPort: 80
-     selector:
-       app: game-2048
-   ---
-   apiVersion: apps/v1
-   kind: Deployment
-   metadata:
-     name: game-2048
-     namespace: ngrok-ingress-controller
-   spec:
-     replicas: 1
-     selector:
-       matchLabels:
-         app: game-2048
-     template:
-       metadata:
-         labels:
-           app: game-2048
-       spec:
-         containers:
-           - name: backend
-             image: alexwhen/docker-2048
-             ports:
-               - name: http
-                 containerPort: 80
-   ---
-   # highlight-start
-   # ngrok Ingress Controller Configuration
-   apiVersion: networking.k8s.io/v1
-   kind: Ingress
-   metadata:
-     name: game-2048-ingress
-     namespace: ngrok-ingress-controller
-   spec:
-     ingressClassName: ngrok
-     rules:
-       - host: NGROK_DOMAIN
-         http:
-           paths:
-             - path: /
-               pathType: Prefix
-               backend:
-                 service:
-                   name: game-2048
-                   port:
-                     number: 80
-   # highlight-end
-   ```
+```yaml showLineNumbers
+apiVersion: v1
+kind: Service
+metadata:
+  name: game-2048
+  namespace: ngrok-ingress-controller
+spec:
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+  selector:
+    app: game-2048
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: game-2048
+  namespace: ngrok-ingress-controller
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: game-2048
+  template:
+    metadata:
+      labels:
+        app: game-2048
+    spec:
+      containers:
+        - name: backend
+          image: alexwhen/docker-2048
+          ports:
+            - name: http
+              containerPort: 80
+---
+# highlight-start
+# ngrok Ingress Controller Configuration
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: game-2048-ingress
+  namespace: ngrok-ingress-controller
+spec:
+  ingressClassName: ngrok
+  rules:
+    - host: NGROK_DOMAIN
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: game-2048
+                port:
+                  number: 80
+# highlight-end
+```
 
 1. Apply the manifest file to your k8s cluster.
 
@@ -188,7 +189,7 @@ This example is very similar to the previous version, with the following changes
 - Lines 57-75: Sets the edge configuration as a custom CRD (NgrokModuleSet).
 - Lines 64-69: Sets the circuit breaker module over 50% threshold.
 - Lines 70-74: Sets the OAuth module to allow access only for users with the email domains `@acme.com` or `@ngrok.com`.
-:::
+  :::
 
 ```yaml showLineNumbers
 apiVersion: v1
