@@ -16,7 +16,8 @@ In this tutorial, you will install the ngrok Ingress Controller and run a sample
 
 1. A local environment with Kubernetes installed and configured. For this tutorial, we will use `k3d`, `kubectl`, and `helm`, but you can also use `minikube` if you'd like.
 1. A [free ngrok account](https://ngrok.com/signup).
-   :::
+
+:::
 
 ## Get started with the ngrok Ingress Controller for Kubernetes
 
@@ -27,7 +28,8 @@ The ngrok Ingress Controller requires:
 
 - An ngrok authtoken to launch connections between ngrok's points of presence and your k8s cluster. You can find your authtoken in the [ngrok dashboard under "Your Authtoken"](https://dashboard.ngrok.com/get-started/your-authtoken).
 - An ngrok API key to create and configure the ngrok edges for your services. You can generate an API key in the [ngrok Dashboard under "API"](https://dashboard.ngrok.com/api).
-  :::
+
+:::
 
 To started with the ngrok Ingress Controller for Kubernetes:
 
@@ -70,70 +72,71 @@ To started with the ngrok Ingress Controller for Kubernetes:
 
 1. Create a manifest file (for example `ngrok-manifest.yaml`) with the following contents. You will need to replace the `NGROK_DOMAIN` on line 45 with your own custom value. This is the URL you will use to access your service from anywhere. If you're on a free account, it must be on a static subdomain which you can claim by logging into your account and following the instructions on the claim static subdomain banner. For paid accounts, you can use a custom domain or a subdomain of `ngrok.app` or `ngrok.dev` (for example, `username-loves-ingress.ngrok.app` or `k8s.example.com`).
 
-   :::tip Notes:
+:::tip Notes:
 
-   - Lines 1-34: Create the 2048 app service and deployment
-   - Lines 35-54 (highlighted): Create the ngrok Ingress Controller. Line 45 determines the ingress URL for public requests.
-     :::
+- Lines 1-34: Create the 2048 app service and deployment
+- Lines 35-54 (highlighted): Create the ngrok Ingress Controller. Line 45 determines the ingress URL for public requests.
 
-   ```yaml showLineNumbers
-   apiVersion: v1
-   kind: Service
-   metadata:
-     name: game-2048
-     namespace: ngrok-ingress-controller
-   spec:
-     ports:
-       - name: http
-         port: 80
-         targetPort: 80
-     selector:
-       app: game-2048
-   ---
-   apiVersion: apps/v1
-   kind: Deployment
-   metadata:
-     name: game-2048
-     namespace: ngrok-ingress-controller
-   spec:
-     replicas: 1
-     selector:
-       matchLabels:
-         app: game-2048
-     template:
-       metadata:
-         labels:
-           app: game-2048
-       spec:
-         containers:
-           - name: backend
-             image: alexwhen/docker-2048
-             ports:
-               - name: http
-                 containerPort: 80
-   ---
-   # highlight-start
-   # ngrok Ingress Controller Configuration
-   apiVersion: networking.k8s.io/v1
-   kind: Ingress
-   metadata:
-     name: game-2048-ingress
-     namespace: ngrok-ingress-controller
-   spec:
-     ingressClassName: ngrok
-     rules:
-       - host: NGROK_DOMAIN
-         http:
-           paths:
-             - path: /
-               pathType: Prefix
-               backend:
-                 service:
-                   name: game-2048
-                   port:
-                     number: 80
-   # highlight-end
-   ```
+:::
+
+```yaml showLineNumbers
+apiVersion: v1
+kind: Service
+metadata:
+  name: game-2048
+  namespace: ngrok-ingress-controller
+spec:
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+  selector:
+    app: game-2048
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: game-2048
+  namespace: ngrok-ingress-controller
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: game-2048
+  template:
+    metadata:
+      labels:
+        app: game-2048
+    spec:
+      containers:
+        - name: backend
+          image: alexwhen/docker-2048
+          ports:
+            - name: http
+              containerPort: 80
+---
+# highlight-start
+# ngrok Ingress Controller Configuration
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: game-2048-ingress
+  namespace: ngrok-ingress-controller
+spec:
+  ingressClassName: ngrok
+  rules:
+    - host: NGROK_DOMAIN
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: game-2048
+                port:
+                  number: 80
+# highlight-end
+```
 
 1. Apply the manifest file to your k8s cluster.
 
@@ -164,7 +167,8 @@ This example is very similar to the previous version, with the following changes
 - Lines 57-75: Sets the edge configuration as a custom CRD (NgrokModuleSet).
 - Lines 64-69: Sets the circuit breaker module over 50% threshold.
 - Lines 70-74: Sets the OAuth module to allow access only for users with the email domains `@acme.com` or `@ngrok.com`.
-  :::
+
+:::
 
 ```yaml showLineNumbers
 apiVersion: v1

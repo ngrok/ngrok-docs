@@ -75,12 +75,13 @@ Getting started with ngrok and the ngrok-go library is simple:
    }
    ```
 
-   :::note In this code:
+:::note In this code:
 
-   - **Lines 20-23**: start the ngrok tunnel with a preset configuration
-   - **Line 22**: fetch your the ngrok auth token from your environment variable
-   - **Line 34**: serve a static page with a hello.
-     :::
+- **Lines 20-23**: start the ngrok tunnel with a preset configuration
+- **Line 22**: fetch your the ngrok auth token from your environment variable
+- **Line 34**: serve a static page with a hello.
+
+:::
 
 1. Save and close the file
 1. Launch your tunnel replacing `TOKEN` with your Authtoken from above:
