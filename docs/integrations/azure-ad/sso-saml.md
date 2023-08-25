@@ -14,7 +14,8 @@ To have ngrok enforce Single Sign-On using SAML with Azure Active Directory (Azu
 1. [Update the ngrok Edge with the IdP metadata](#update-ngrok-edge)
 1. [Test your integration](#test-integration)
 1. [Bonus: configure ngrok to enforce authorization based on Azure groups](#bonus)
-   :::
+
+:::
 
 This article details how to configure Azure AD as an Identity Provider for your ngrok Edge. By integrating Azure AD with ngrok, you can:
 
