@@ -132,30 +132,30 @@ To configure an edge with miniOrange:
 
 1. Launch a tunnel connected to your miniOrange edge:
 
-   :::tip Note
-   For this step, we assume you have an app running locally (i.e. on localhost:3000) with the ngrok client installed.
-   :::
+:::tip Note
+For this step, we assume you have an app running locally (i.e. on localhost:3000) with the ngrok client installed.
+:::
 
-   1. Click **Start a tunnel**.
+1.  Click **Start a tunnel**.
 
-   1. Click the **copy icon** next to the tunnel command.
-      ![tunnel config](img/miniorange-2.png)
+1.  Click the **copy icon** next to the tunnel command.
+    ![tunnel config](img/miniorange-2.png)
 
-   1. Launch a tunnel:
+1.  Launch a tunnel:
 
-      - Launch a terminal.
-      - Paste the command but replace `http://localhost:80` with your localhost app address (i.e., `http://localhost:3000`).
-      - Click **Enter** and an ngrok tunnel associated with your edge configuration will launch.
+    - Launch a terminal.
+    - Paste the command but replace `http://localhost:80` with your localhost app address (i.e., `http://localhost:3000`).
+    - Click **Enter** and an ngrok tunnel associated with your edge configuration will launch.
 
-   1. To confirm that the tunnel is connected to your edge:
+1.  To confirm that the tunnel is connected to your edge:
 
-      - Return to the ngrok dashboard
-      - Close the **Start a tunnel** and the **Tunnel group** tabs
-      - Refresh the test edge page. Under traffic, You will see the message _You have 1 tunnel online. Start additional tunnels to begin load balancing._
-        ![tunnel confirmed](img/miniorange-3.png)
+    - Return to the ngrok dashboard
+    - Close the **Start a tunnel** and the **Tunnel group** tabs
+    - Refresh the test edge page. Under traffic, You will see the message _You have 1 tunnel online. Start additional tunnels to begin load balancing._
+      ![tunnel confirmed](img/miniorange-3.png)
 
-   1. In the test edge, copy the **endpoint URL**. (You use this URL to test the miniOrange Authentication)
-      ![tunnel url](img/miniorange-4.png)
+1.  In the test edge, copy the **endpoint URL**. (You use this URL to test the miniOrange Authentication)
+    ![tunnel url](img/miniorange-4.png)
 
 ## Test the integration {#test-sso}
 

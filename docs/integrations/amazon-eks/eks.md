@@ -1,76 +1,100 @@
 ---
-title: Kubernetes
+sidebar_label: Getting Started
+title: ngrok Kubernetes Ingress Controller on EKS
+description: Learn how to get started running the ngrok Ingress Controller on AWS EKS
+tags:
+  - kubernetes
+  - k8s
+  - eks
+  - elastic kubernetes service
+  - ingress controller
 ---
 
-# Using ngrok with Kubernetes
+# ngrok Kubernetes Ingress Controller on Amazon EKS
 
 ---
+
+:::tip TL;DR
+To use the ngrok Ingress Controller with AWS EKS:
+
+1. [Ensure `kubectl` can speak with your cluster](#prereqs)
+1. [Install the ngrok Ingress Controller](#install-the-ngrok-ingress-controller)
+1. [Install a sample application](#install-a-sample-application)
+1. [Add edge security to your app](#add-edge-security)
+
+:::
 
 ## Introduction
 
-The [ngrok Ingress Controller for Kubernetes](https://github.com/ngrok/kubernetes-ingress-controller) is our official open-source controller for adding public and secure ingress traffic to your k8s services. You can think of the ngrok Ingress Controller as ngrok packaged as an idiomatic k8s controller — deployed via a simple helm chart, configurable via standard k8s Ingress object (using the `kind: Ingress` construct), and compatible with k8s best practices.
-
-In this tutorial, you will install the ngrok Ingress Controller and run a sample 2048 app with public access and security provided by ngrok.
+The [ngrok Ingress Controller for Kubernetes](https://github.com/ngrok/kubernetes-ingress-controller) is our official open-source controller for adding public and secure ingress traffic to your k8s services. It works out of the box with n AWS EKS Kubernetes cluster to provide ingress to your services no matter the network configuration, as long as it has outbound access to the ngrok service. This allows ngrok to be portable and work seamlessly across any type of infrastructure.
 
 :::caution This tutorial requires:
 
-1. A local environment with Kubernetes installed and configured. For this tutorial, we will use `k3d`, `kubectl`, and `helm`, but you can also use `minikube` if you'd like.
-1. A [free ngrok account](https://ngrok.com/signup).
+1. An [ngrok account](https://ngrok.com/signup).
+1. [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
+1. [Helm 3.0.0+](https://helm.sh/docs/intro/install/)
+1. An [AWS EKS cluster](https://eksctl.io/usage/creating-and-managing-clusters/)
 
 :::
 
-## Get started with the ngrok Ingress Controller for Kubernetes
+## **Step 1**: Ensure `kubectl` can speak with your cluster {#prereqs}
 
-## Step 1: Get your ngrok authtoken and API key
+With an AWS EKS cluster, authentication for `kubectl` happens with a credential helper. So in-order to deploy the ngrok Ingress Controller to your cluster, you'll need to ensure that you can use the `aws` CLI and that the credential helper is available.
 
-:::tip
-The ngrok Ingress Controller requires:
+Recent versions of `eksctl` rely on the `aws eks get-token` command, which requires the `aws` CLI to be at-least version `1.16.156`.
 
-- An ngrok authtoken to launch connections between ngrok's points of presence and your k8s cluster. You can find your authtoken in the [ngrok dashboard under "Your Authtoken"](https://dashboard.ngrok.com/get-started/your-authtoken).
-- An ngrok API key to create and configure the ngrok edges for your services. You can generate an API key in the [ngrok Dashboard under "API"](https://dashboard.ngrok.com/api).
+Let's ensure that you have the `aws` CLI installed and configured with your AWS credentials. You can confirm this works and you're authenticated correctly by running the following command:
 
-:::
+```shell
+aws --version
+aws sts get-caller-identity
+```
 
-To started with the ngrok Ingress Controller for Kubernetes:
+If this works, we can now request a kubeconfig:
 
-1. Access the [ngrok Dashboard](https://dashboard.ngrok.com)
-1. Click [Your Authtoken](https://dashboard.ngrok.com/get-started/your-authtoken). Copy the Authtoken to a text editor.
-1. Click [API](https://dashboard.ngrok.com/api) and follow the instructions to create a new API key. Copy the API key to a text editor.
+```shell
+# This will merge the cluster into your $KUBECONFIG or ~/.kube/config
+aws eks update-kubeconfig --region <region-code> --name <my-cluster>
 
-## Step 2: Setup your Kubernetes cluster and install the ngrok Ingress Controller
+# To keep your kubeconfig isolated, use:
+aws eks update-kubeconfig --kubeconfig kubeconfig --region <region-code> --name <my-cluster>
+export KUBECONFIG=$(pwd)/kubeconfig
+```
 
-1. In your terminal, create a k8s cluster:
+## **Step 2**: Install the ngrok Ingress Controller {#install-the-ngrok-ingress-controller}
 
-   ```bash
-   k3d cluster create ngrok
-   ```
+Now we can install the ngrok Ingress Controller to provide ingress to our services. We'll use Helm to install the ngrok Ingress Controller into our cluster.
 
-1. Using `helm`, add the ngrok repo:
-
-   ```bash
+1. Add the ngrok Ingress Controller Helm repo
+   ```shell
    helm repo add ngrok https://ngrok.github.io/kubernetes-ingress-controller
    ```
-
-1. Set your environment variables with your ngrok credentials. Replace `[AUTHTOKEN]` and `[API_KEY]` with your Authtoken and API key from above.
-
-   ```bash
+2. Set your environment variables with your ngrok credentials. Replace `[AUTHTOKEN]` and `[API_KEY]` with your Authtoken and API key for your account.
+   ```shell
    export NGROK_AUTHTOKEN=[AUTHTOKEN]
    export NGROK_API_KEY=[API_KEY]
    ```
+3. Next, we'll install the ngrok Ingress Controller into our cluster.
 
-1. Install the ngrok Ingress Controller in your cluster, replacing `[AUTHTOKEN]` and `[API_KEY]` with your Authtoken and API key from above:
-
-   **Note:** For this tutorial, we're creating and using the namespace `ngrok-ingress-controller`.
-
-   ```bash
+   ```shell
    helm install ngrok-ingress-controller ngrok/kubernetes-ingress-controller \
-     --namespace ngrok-ingress-controller \
-     --create-namespace \
+     --namespace consul \
+     --set fullnameOverride=ngrok-ingress-controller \
      --set credentials.apiKey=$NGROK_API_KEY \
      --set credentials.authtoken=$NGROK_AUTHTOKEN
    ```
 
-1. Create a manifest file (for example `ngrok-manifest.yaml`) with the following contents. You will need to replace the `NGROK_DOMAIN` on line 45 with your own custom value. This is the URL you will use to access your service from anywhere. If you're on a free account, it must be on a static subdomain which you can claim by logging into your account and following the instructions on the claim static subdomain banner. For paid accounts, you can use a custom domain or a subdomain of `ngrok.app` or `ngrok.dev` (for example, `username-loves-ingress.ngrok.app` or `k8s.example.com`).
+4. Verify the ngrok Ingress Controller is installed and all its pods are healthy
+
+   ```shell
+   kubectl get pods -l 'app.kubernetes.io/name=kubernetes-ingress-controller' -n consul
+   NAME                                                READY   STATUS    RESTARTS      AGE
+   ngrok-ingress-controller-manager-5b796c88f7-k7v6z   2/2     Running   1 (64s ago)   67s
+   ```
+
+## **Step 3**: Install a Sample Application {#install-a-sample-application}
+
+Create a manifest file (for example `ngrok-manifest.yaml`) with the following contents. You will need to replace the `NGROK_DOMAIN` on line 45 with your own custom value. This is the URL you will use to access your service from anywhere. If you're on a free account, it must be on a static subdomain which you can claim by logging into your account and following the instructions on the claim static subdomain banner. For paid accounts, you can use a custom domain or a subdomain of `ngrok.app` or `ngrok.dev` (for example, `username-loves-ingress.ngrok.app` or `k8s.example.com`).
 
 :::tip Notes:
 
@@ -154,7 +178,7 @@ spec:
 
    ![application public](/img/howto/ingress-controller/k8s-ingress-app-2.png)
 
-## Step 3: Add edge security to your app
+## Step 4: Add edge security to your app {#add-edge-security}
 
 The ngrok Ingress Controller for Kubernetes provides custom resource definitions (CRDs) for additional edge features available in ngrok. In this example, we're expanding the Ingress Controller with Google OAuth to allow access only from users with the email domains `@acme.com` or `@ngrok.com` and to apply a circuit breaker to your app at 80% (requires a paid account). These features are enforced at the ngrok edge, ensuring only authorized users can access your app.
 

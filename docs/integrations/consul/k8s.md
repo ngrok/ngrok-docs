@@ -14,7 +14,8 @@ To use the ngrok Ingress Controller with Consul in a local demo environment:
 1. [Install a sample application](#install-a-sample-application)
 1. [Configure Public Ingress for the sample application](#configure-public-ingress-for-the-sample-application)
 1. [Secure the app with OAuth](#secure-the-app-with-oauth)
-   :::
+
+:::
 
 ## Introduction
 
@@ -30,7 +31,8 @@ Together, Consul provides a robust and secure way for Services within a cluster 
 1. [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
 1. [Helm 3.0.0+](https://helm.sh/docs/intro/install/)
 1. A remote or local Kubernetes cluster with Consul installed _OR_ [minikube](https://minikube.sigs.k8s.io/docs/start/) to set up a demo cluster locally.
-   :::
+
+:::
 
 ## **Step 1**: Set up a local Consul Service Mesh on Kubernetes {#set-up-a-consul-service-mesh-on-kubernetes}
 
@@ -162,7 +164,8 @@ helm install ngrok-ingress-controller ngrok/kubernetes-ingress-controller \
 - HashiCorp's docs also mention the annotation `consul.hashicorp.com/transparent-proxy-exclude-inbound-ports`. This is not applicable to the ngrok Ingress Controller as we create an outbound connection for Ingress rather than exposing ports.
 - The `--set-string` flag allows the pod annotation to escape the `.` character in the annotation name while ensuring the value `true` is a boolean and not a string.
 - In a production environment, or anywhere you wish to use Infrastructure as Code and source control your Helm configurations, you can set up your credentials following this [guide](https://github.com/ngrok/kubernetes-ingress-controller/blob/main/docs/deployment-guide/credentials.md).
-  :::
+
+:::
 
 5. Verify the ngrok Ingress Controller is installed and all its pods are healthy
 
@@ -279,11 +282,12 @@ spec:
 - The host is the ngrok domain name you selected that is static
 - There is a route for `/` that routes to the `frontend` service on port `3000`
 - There is a route for `/api` that routes to the `public-api` service on port `8080`
-  :::
 
-  Open your `$NGROK_DOMAIN_NAME` domain in your browser and see the HashiCups application!
+:::
 
-  ![HashiCups App](./img/hashicups.png)
+Open your `$NGROK_DOMAIN_NAME` domain in your browser and see the HashiCups application!
+
+![HashiCups App](./img/hashicups.png)
 
 ## **Step 5**: Add OAuth Protection to the App {#add-oauth-protection-to-the-app}
 

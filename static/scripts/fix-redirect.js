@@ -26,6 +26,11 @@ if (path.includes("/docs/cloud-edge/modules/oauth/google/")) goto(`/docs/integra
 if (path.includes("/docs/cloud-edge/modules/oauth/linkedin/")) goto(`/docs/integrations/linkedin/oauth/`)
 if (path.includes("/docs/cloud-edge/modules/oauth/microsoft/")) goto(`/docs/integrations/microsoft/oauth/`)
 if (path.includes("/docs/cloud-edge/modules/oauth/twitch/")) goto(`/docs/integrations/twitch/oauth/`)
+if (path.includes("/docs/cloud-edge/http-header-templates/")) goto(`/docs/cloud-edge/modules/request-headers/#variables`)
+if (path.includes("/docs/integrations/awscloudwatch")) goto(`/docs/integrations/amazon-cloudwatch/`)
+if (path.includes("/docs/integrations/awsfirehose")) goto(`/docs/integrations/amazon-firehose/`)
+if (path.includes("/docs/integrations/awskinesis")) goto(`/docs/integrations/amazon-kinesis/`)
+
 const match = path.match(/\/docs\/ngrok-agent(\/[\w]*)/);
 if (!!match) {
 	goto(`/docs/secure-tunnels/ngrok-agent/reference${match[1]}${window.location.hash}`)

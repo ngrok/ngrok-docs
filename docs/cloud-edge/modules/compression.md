@@ -16,13 +16,13 @@ ngrok takes no action.
 
 ### Agent CLI
 
-```
+```bash
 ngrok http 80 --compression
 ```
 
 ### Agent Configuration File
 
-```
+```yaml
 tunnels:
   example:
     proto: http
@@ -32,13 +32,13 @@ tunnels:
 
 ### SSH
 
-```
+```bash
 ssh -R 443:localhost:80 connect.ngrok-agent.com http --compression
 ```
 
 ### Go SDK
 
-```
+```go
 import (
 	"context"
 	"net"
@@ -61,7 +61,7 @@ func listenCompressed(ctx context.Context) net.Listener {
 
 ### Rust SDK
 
-```
+```rust
 use ngrok::prelude::*;
 
 async fn start_tunnel() -> anyhow::Result<impl Tunnel> {
@@ -121,85 +121,6 @@ has no configuration parameters. It is either enabled or disabled.
 
 - [Compression Edge Module API Resource](/api/resources/https-edge-route-compression-module/)
 
-## Try it out
-
-For testing purposes, create a directory with a file in it and then enter that
-directory.
-
-```
-mkdir test-dir
-cd test-dir
-echo "hello world" > t.txt
-```
-
-ngrok can serve files from any directory (just like Python's Simple HTTP
-Server) by forwarding to a `file://` URL. We're going to use that capability
-for our compression testing.
-
-First let's see what this looks like without using compression by running the
-following in your `test-dir` directory:
-
-```
-ngrok http file://`pwd` --domain your-domain.ngrok.app
-```
-
-Then in another terminal while ngrok is still running:
-
-```
-curl --compressed -D - https://your-domain.ngrok.app/
-```
-
-- `--compressed` instructs curl to set the `Accept-Encoding` header to request
-  compressed content
-- `-D -` instructs curl to show the HTTP response headers
-
-You should get a response that looks like:
-
-```
-HTTP/2 200
-content-type: text/html; charset=utf-8
-date: Tue, 18 Jul 2023 09:52:49 GMT
-last-modified: Tue, 18 Jul 2023 09:52:34 GMT
-ngrok-agent-ips: 71.227.75.230
-ngrok-trace-id: 24e925dd0f348c1040d7ff62b06606cd
-content-length: 39
-
-<pre>
-<a href="t.txt">t.txt</a>
-</pre>
-```
-
-Now let's try it again with compression. Stop your ngrok agent and restart it
-by changing the command to:
-
-```
-ngrok http file://`pwd` --domain your-domain.ngrok.app --compression
-```
-
-Rerun the same curl command:
-
-```
-curl --compressed -D - https://your-domain.ngrok.app/
-```
-
-This time you should see that HTTP response headers include `content-encoding:
-deflate` indicating that the response was compressed.
-
-```
-HTTP/2 200
-content-encoding: deflate
-content-type: text/html; charset=utf-8
-date: Tue, 18 Jul 2023 10:03:22 GMT
-last-modified: Tue, 18 Jul 2023 09:52:34 GMT
-ngrok-agent-ips: 71.227.75.230
-ngrok-trace-id: b6b6cdce029e94123188ce53c0febee4
-vary: Accept-Encoding
-
-<pre>
-<a href="t.txt">t.txt</a>
-</pre>
-```
-
 ## Behavior
 
 ### Streaming Compression
@@ -245,13 +166,22 @@ automatically chooses a value that provides a reasonable tradeoff.
 
 ## Reference
 
+### Configuration
+
+This module does not support any configuration. It is either enabled or
+disabled.
+
 ### Upstream Headers {#upstream-headers}
 
-No additional upstream headers are added by the Compression module.
+This module does not add any upstream headers.
+
+### Errors
+
+This module does not return any errors.
 
 ### Events
 
-When the compression module is enabled, it populates the following fields in
+When this module is enabled, it populates the following fields in
 [http_request_complete.v0](/events/reference/#http-request-complete) events.
 
 | Fields                    |
@@ -259,10 +189,85 @@ When the compression module is enabled, it populates the following fields in
 | `compression.algorithm`   |
 | `compression.bytes_saved` |
 
-### Errors
+### Limits
 
-The compression module does not return any errors.
+This module is available on all plans.
 
-### Licensing
+## Try it out
 
-The compression module is available on the Free tier.
+For testing purposes, create a directory with a file in it and then enter that
+directory.
+
+```bash
+mkdir test-dir
+cd test-dir
+echo "hello world" > t.txt
+```
+
+ngrok can serve files from any directory (just like Python's Simple HTTP
+Server) by forwarding to a `file://` URL. We're going to use that capability
+for our compression testing.
+
+First let's see what this looks like without using compression by running the
+following in your `test-dir` directory:
+
+```bash
+ngrok http file://`pwd` --domain your-domain.ngrok.app
+```
+
+Then in another terminal while ngrok is still running:
+
+```bash
+curl --compressed -D - https://your-domain.ngrok.app/
+```
+
+- `--compressed` instructs curl to set the `Accept-Encoding` header to request
+  compressed content
+- `-D -` instructs curl to show the HTTP response headers
+
+You should get a response that looks like:
+
+```http
+HTTP/2 200
+content-type: text/html; charset=utf-8
+date: Tue, 18 Jul 2023 09:52:49 GMT
+last-modified: Tue, 18 Jul 2023 09:52:34 GMT
+ngrok-agent-ips: 71.227.75.230
+ngrok-trace-id: 24e925dd0f348c1040d7ff62b06606cd
+content-length: 39
+
+<pre>
+<a href="t.txt">t.txt</a>
+</pre>
+```
+
+Now let's try it again with compression. Stop your ngrok agent and restart it
+by changing the command to:
+
+```bash
+ngrok http file://`pwd` --domain your-domain.ngrok.app --compression
+```
+
+Rerun the same curl command:
+
+```bash
+curl --compressed -D - https://your-domain.ngrok.app/
+```
+
+This time you should see that HTTP response headers include `content-encoding:
+deflate` indicating that the response was compressed.
+
+```http
+HTTP/2 200
+content-encoding: deflate
+content-type: text/html; charset=utf-8
+date: Tue, 18 Jul 2023 10:03:22 GMT
+last-modified: Tue, 18 Jul 2023 09:52:34 GMT
+ngrok-agent-ips: 71.227.75.230
+ngrok-trace-id: b6b6cdce029e94123188ce53c0febee4
+vary: Accept-Encoding
+
+<pre>
+<a href="t.txt">t.txt</a>
+</pre>
+```

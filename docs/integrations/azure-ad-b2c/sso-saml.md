@@ -15,7 +15,8 @@ To have ngrok enforce Single Sign-On using SAML with Azure Active Directory B2C 
 1. [Update the ngrok Edge with the IdP metadata](#update-ngrok-edge)
 1. [Test your integration](#test-integration)
 1. [Bonus: Update your Azure AD B2C custom policies to support the password reset flow](#bonus)
-   :::
+
+:::
 
 This article details how to configure Azure AD B2C as an Identity Provider for your ngrok Edge. By integrating Azure AD B2C with ngrok, you can:
 

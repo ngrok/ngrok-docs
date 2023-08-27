@@ -43,9 +43,9 @@ To view App users and sessions:
 
    ngrok displays session information captured while the user was accessing the endpoint. That includes the user device, IP, browser, agent, country, and geo coordinates based on IP
 
-   :::tip
-   Pasting the coordinates into your favorite mapping service will give you more detailed information about the IP geolocation.
-   :::
+:::tip
+Pasting the coordinates into your favorite mapping service will give you more detailed information about the IP geolocation.
+:::
 
 ### Revoke Sessions
 
