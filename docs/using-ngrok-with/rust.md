@@ -72,12 +72,13 @@ Getting started with ngrok and the ngrok-rust crate is simple:
    }
    ```
 
-   :::note In this code:
+:::note In this code:
 
-   - **Lines 16-22**: create a listener object with the ngrok ingress
-   - **Line 23**: print your ngrok ingress url
-   - **Line 24-26**: start axum with the ngrok ingress
-     :::
+- **Lines 16-22**: create a listener object with the ngrok ingress
+- **Line 23**: print your ngrok ingress url
+- **Line 24-26**: start axum with the ngrok ingress
+
+:::
 
 1. Save and close the file.
 1. Launch your tunnel replacing `TOKEN` with your Authtoken from above:

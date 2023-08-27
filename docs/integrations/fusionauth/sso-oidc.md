@@ -103,29 +103,29 @@ To configure an edge with FusionAuth:
 
 1. Launch a tunnel connected to your FusionAuth edge:
 
-   :::tip Note
-   For this step, we assume you have an app running locally (i.e. on localhost:3000) with the ngrok client installed.
-   :::
+:::tip Note
+For this step, we assume you have an app running locally (i.e. on localhost:3000) with the ngrok client installed.
+:::
 
-   1. Click **Start a tunnel**.
-   1. Click the **copy icon** next to the tunnel command.
+1.  Click **Start a tunnel**.
+1.  Click the **copy icon** next to the tunnel command.
 
-      ![tunnel config](img/fa-2.png)
+    ![tunnel config](img/fa-2.png)
 
-   1. Launch a tunnel:
-      - Launch a terminal
-      - Paste the command. Replace http://localhost:80 with your local web app addess (i.e., http://localhost:3000)
-      - hit **Enter**. an ngrok tunnel associated to your edge configuration is launched.
-   1. To confirm that the tunnel is connected to your edge:
+1.  Launch a tunnel:
+    - Launch a terminal
+    - Paste the command. Replace http://localhost:80 with your local web app addess (i.e., http://localhost:3000)
+    - hit **Enter**. an ngrok tunnel associated to your edge configuration is launched.
+1.  To confirm that the tunnel is connected to your edge:
 
-      - Return to the ngrok dashboard
-      - Close the **Start a tunnel** and the **Tunnel group** tabs
-      - Refresh the test edge page. Under traffic, You will see the message _You have 1 tunnel online. Start additional tunnels to begin load balancing_
+    - Return to the ngrok dashboard
+    - Close the **Start a tunnel** and the **Tunnel group** tabs
+    - Refresh the test edge page. Under traffic, You will see the message _You have 1 tunnel online. Start additional tunnels to begin load balancing_
 
-      ![tunnel confirmed](img/fa-3.png)
+    ![tunnel confirmed](img/fa-3.png)
 
-1. In the **Endpoints** section, copy the **endpoint URL**. (you will use this url to test the FusionAuth Authentication)
-   ![tunnel url](img/ngrok-url.png)
+1.  In the **Endpoints** section, copy the **endpoint URL**. (you will use this url to test the FusionAuth Authentication)
+    ![tunnel url](img/ngrok-url.png)
 
 ## Step 3: Test the integration {#test-sso}
 
