@@ -22,7 +22,7 @@ To use the ngrok Ingress Controller with Google Kubernetes Engine:
 1. [Install the ngrok Ingress Controller](#install-the-ngrok-ingress-controller)
 1. [Install a sample application](#install-a-sample-application)
 1. [Add edge security to your app](#add-edge-security)
-   :::
+:::
 
 ## Introduction
 
@@ -34,7 +34,7 @@ The [ngrok Ingress Controller for Kubernetes](https://github.com/ngrok/kubernete
 1. [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
 1. [Helm 3.0.0+](https://helm.sh/docs/intro/install/)
 1. A [GKE cluster](https://cloud.google.com/kubernetes-engine/docs/deploy-app-cluster)
-   :::
+:::
 
 ## **Step 1**: Ensure `kubectl` can speak with your cluster {#prereqs}
 
