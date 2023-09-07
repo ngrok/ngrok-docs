@@ -16,12 +16,14 @@ tags:
 ---
 
 :::tip TL;DR
+
 To use the ngrok Ingress Controller with Google Kubernetes Engine:
 
 1. [Ensure `kubectl` can speak with your cluster](#prereqs)
 1. [Install the ngrok Ingress Controller](#install-the-ngrok-ingress-controller)
 1. [Install a sample application](#install-a-sample-application)
 1. [Add edge security to your app](#add-edge-security)
+
 :::
 
 ## Introduction
@@ -34,6 +36,7 @@ The [ngrok Ingress Controller for Kubernetes](https://github.com/ngrok/kubernete
 1. [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
 1. [Helm 3.0.0+](https://helm.sh/docs/intro/install/)
 1. A [GKE cluster](https://cloud.google.com/kubernetes-engine/docs/deploy-app-cluster)
+
 :::
 
 ## **Step 1**: Ensure `kubectl` can speak with your cluster {#prereqs}
@@ -99,6 +102,7 @@ Create a manifest file (for example `ngrok-manifest.yaml`) with the following co
 
 - Lines 1-34: Create the 2048 app service and deployment
 - Lines 35-54 (highlighted): Create the ngrok Ingress Controller. Line 45 determines the ingress URL for public requests.
+
 :::
 
 ```yaml showLineNumbers
@@ -183,12 +187,14 @@ The ngrok Ingress Controller for Kubernetes provides custom resource definitions
 As before, you will need to update line 46 of this manifest with your `NGROK_DOMAIN` in the Ingress object.
 
 :::tip Notes:
+
 This example is very similar to the previous version, with the following changes:
 
 - Lines 41-42: Associates your Ingress Controller with the configuration `oauth-and-circuit-breaking` via annotation
 - Lines 57-75: Sets the edge configuration as a custom CRD (NgrokModuleSet).
 - Lines 64-69: Sets the circuit breaker module over 50% threshold.
 - Lines 70-74: Sets the OAuth module to allow access only for users with the email domains `@acme.com` or `@ngrok.com`.
+
 :::
 
 ```yaml showLineNumbers
