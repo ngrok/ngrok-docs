@@ -99,7 +99,7 @@ Create a manifest file (for example `ngrok-manifest.yaml`) with the following co
 
 - Lines 1-34: Create the 2048 app service and deployment
 - Lines 35-54 (highlighted): Create the ngrok Ingress Controller. Line 45 determines the ingress URL for public requests.
-  :::
+:::
 
 ```yaml showLineNumbers
 apiVersion: v1
@@ -189,7 +189,7 @@ This example is very similar to the previous version, with the following changes
 - Lines 57-75: Sets the edge configuration as a custom CRD (NgrokModuleSet).
 - Lines 64-69: Sets the circuit breaker module over 50% threshold.
 - Lines 70-74: Sets the OAuth module to allow access only for users with the email domains `@acme.com` or `@ngrok.com`.
-  :::
+:::
 
 ```yaml showLineNumbers
 apiVersion: v1
