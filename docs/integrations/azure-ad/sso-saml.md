@@ -3,6 +3,7 @@ description: Use Microsoft Azure AD to secure access to ngrok tunnels
 ---
 
 # Azure Active Directory SSO (SAML)
+
 ---
 
 :::tip TL;DR
@@ -13,6 +14,7 @@ To have ngrok enforce Single Sign-On using SAML with Azure Active Directory (Azu
 1. [Update the ngrok Edge with the IdP metadata](#update-ngrok-edge)
 1. [Test your integration](#test-integration)
 1. [Bonus: configure ngrok to enforce authorization based on Azure groups](#bonus)
+
 :::
 
 This article details how to configure Azure AD as an Identity Provider for your ngrok Edge. By integrating Azure AD with ngrok, you can:
@@ -52,7 +54,7 @@ To configure ngrok tunnels with Azure AD, you must have:
 
     1. Click **Save**
 
-    1. Note that ngrok has now generated values for the fields in the Service Provider section.  You will need to configure Azure AD with these values later 
+    1. Note that ngrok has now generated values for the fields in the Service Provider section. You will need to configure Azure AD with these values later
 
 ## Step 2: Create an Azure AD application {#create-app}
 
@@ -60,28 +62,28 @@ To configure ngrok tunnels with Azure AD, you must have:
 
 1. Create an enterprise application
 
-    1. Starting from the sidebar, in the Manage section, click **Enterprise Applications** > **New application**
-    1. Give your application a name (eg `www` for a website client). Click **Create**
+   1. Starting from the sidebar, in the Manage section, click **Enterprise Applications** > **New application**
+   1. Give your application a name (eg `www` for a website client). Click **Create**
 
-    ![img/2-2.png](img/2-2.png)
+   ![img/2-2.png](img/2-2.png)
 
 1. To assign users/groups for this application, in the Getting Started section, click **1. Assign users and groups** > **Add user/group**
 
 1. Set up single sign on with SAML
 
-    1. In the Getting Started section, click on the box titled **2. Set up single sign on** > **SAML**
-    1. Configure SAML. In the Basic SAML Configuration box click **Edit**
+   1. In the Getting Started section, click on the box titled **2. Set up single sign on** > **SAML**
+   1. Configure SAML. In the Basic SAML Configuration box click **Edit**
 
-    ![img/2-4.png](img/2-4.png)
+   ![img/2-4.png](img/2-4.png)
 
-    1. Add Identifier (Entity ID) and Reply URL (Assertion Consumer Service URL) values using the previously the ngrok generated Entity ID and ACS URL
+   1. Add Identifier (Entity ID) and Reply URL (Assertion Consumer Service URL) values using the previously the ngrok generated Entity ID and ACS URL
 
-    ![img/2-4b.png](img/2-4b.png)
+   ![img/2-4b.png](img/2-4b.png)
 
-    1. Click **Save**
-    1. Download the Metadata XML. In the SAML Certificates box > Token signing certificate section > click **Download** for the Federation Metadata XML
+   1. Click **Save**
+   1. Download the Metadata XML. In the SAML Certificates box > Token signing certificate section > click **Download** for the Federation Metadata XML
 
-    ![img/2-4c.png](img/2-4c.png)
+   ![img/2-4c.png](img/2-4c.png)
 
 ## Step 3: Update the ngrok Edge with the IdP metadata {#update-ngrok-edge}
 
@@ -112,45 +114,45 @@ For this step, we assume you have an app running locally (i.e. on localhost:3000
 
 1. Confirm that the tunnel is connected to your edge
 
-    1. Return to the ngrok dashboard
-    1. Close the **Start a tunnel** and the **Tunnel group** drawers
-    1. Refresh the Edge page
-    1. In the Routes section > Traffic section you will see the message _You have 1 tunnel online. Start additional tunnels to begin load balancing._
+   1. Return to the ngrok dashboard
+   1. Close the **Start a tunnel** and the **Tunnel group** drawers
+   1. Refresh the Edge page
+   1. In the Routes section > Traffic section you will see the message _You have 1 tunnel online. Start additional tunnels to begin load balancing._
 
-    ![img/4-2.png](img/4-2.png)
+   ![img/4-2.png](img/4-2.png)
 
 1. Copy the ngrok url on the Endpoints section
 
 1. Access your Edge application
 
-    1. In your browser, launch an incognito window
-    1. Access your ngrok tunnel via your copied URL
-    1. You should be prompted to log in with your Microsoft credentials
-    1. After login, you should be able to see the application
+   1. In your browser, launch an incognito window
+   1. Access your ngrok tunnel via your copied URL
+   1. You should be prompted to log in with your Microsoft credentials
+   1. After login, you should be able to see the application
 
 ## Bonus: Configure ngrok to enforce authorization based on Azure groups {#bonus}
 
 1. In Azure, configure the SAML response to include group claims. In the Attributes & Claims box click **Edit**
 
-    ![img/5-1.png](img/5-1.png)
+   ![img/5-1.png](img/5-1.png)
 
 1. Click **Add a group claim** > **Advanced options** > Customize the name of the group claim
 1. Set the name of the group claim to `groups`. This specific value is required for ngrok
 
-    ![img/5-3.png](img/5-3.png)
+   ![img/5-3.png](img/5-3.png)
 
 1. Click **Save**
 1. Go to your group page and copy the object Id (Azure AD returns group object Ids in the group claim)
 
-    ![img/5-5.png](img/5-5.png)
+   ![img/5-5.png](img/5-5.png)
 
 1. Configure ngrok to enforce group authorization. In ngrok on your Edge's page, in the Authorization section, update the groups input with your Azure group object Id (NOT group name) values
 
-    ![img/5-6.png](img/5-6.png)
+   ![img/5-6.png](img/5-6.png)
 
 1. Access your Edge application
 
-    1. In your browser, launch an incognito window
-    1. Access your ngrok tunnel via your copied URL
-    1. You should be prompted to log in with your Microsoft credentials
-    1. Only users assigned to the authorized groups will have access to the application
+   1. In your browser, launch an incognito window
+   1. Access your ngrok tunnel via your copied URL
+   1. You should be prompted to log in with your Microsoft credentials
+   1. Only users assigned to the authorized groups will have access to the application

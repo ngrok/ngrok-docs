@@ -1,11 +1,10 @@
 ---
-sidebar_position: 9
-title: Troubleshooting / FAQ
+title: FAQ
 ---
 
-# Troubleshooting / FAQ
----------------
+# FAQ
 
+---
 
 ## CORS with HTTP Basic Authentication
 

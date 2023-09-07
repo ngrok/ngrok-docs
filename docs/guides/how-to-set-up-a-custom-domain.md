@@ -1,6 +1,6 @@
-
 # How to set up a custom domain
------------------------------
+
+---
 
 If you're already using ngrok with subdomains of an ngrok owned domain but would like to have your tunnels available from a domain that you own, you're in the right place.
 
@@ -20,7 +20,7 @@ After adding your domain you should see instructions related to creating a CNAME
 
 Head over to your DNS provider and create a new record on the `example.com` domain. Every DNS provider has a distinct user interface but just by way of example here's what this interface looks like when setting up DNS records with Google Domains:
 
-![](https://ngrok.com/static/img/customdomain-img1.png)
+![](/img/docs/customdomain-img1.png)
 
 You'll create a record of type CNAME where the name is `foo` and the value is your ngrok CNAME target, `<random-string>.<random-string>.ngrok-cname.com`. This will ensure that any DNS queries for `foo.example.com` are resolved with an IP from our service edge.
 

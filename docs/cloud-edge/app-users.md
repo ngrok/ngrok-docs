@@ -3,7 +3,8 @@ sidebar_position: 6
 ---
 
 # App Users and Sessions
-----------------
+
+---
 
 ## Introduction
 
@@ -25,7 +26,7 @@ To view App users and sessions:
 
 1. In the [ngrok Dashboard](https://dashboard.ngrok.com), navigate to **Cloud Edge** > **App Users** (or access the [App Users](https://dashboard.ngrok.com/cloud-edge/app-users) page directly)
 
-    The users are displayed in the table. 
+   The users are displayed in the table.
 
 1. Alternatively, use the search bar to filter users by identity provider, User, and ID.
 
@@ -35,33 +36,31 @@ To view App users and sessions:
 
 1. On the App Users table, select a user:
 
-    - ngrok displays the table with the user identity overview, including the provider who authenticated your user, basic information about the user, and the identity provider used for login
-    - ngrok also displays a list of endpoints the user has accessed.
+   - ngrok displays the table with the user identity overview, including the provider who authenticated your user, basic information about the user, and the identity provider used for login
+   - ngrok also displays a list of endpoints the user has accessed.
 
-1. Click on an endpoint that the user has accessed. 
+1. Click on an endpoint that the user has accessed.
 
-    ngrok displays session information captured while the user was accessing the endpoint. That includes the user device, IP, browser, agent, country, and geo coordinates based on IP
-    
-    :::tip 
-    Pasting the coordinates into your favorite mapping service will give you more detailed information about the IP geolocation.
-    :::
+   ngrok displays session information captured while the user was accessing the endpoint. That includes the user device, IP, browser, agent, country, and geo coordinates based on IP
+
+:::tip
+Pasting the coordinates into your favorite mapping service will give you more detailed information about the IP geolocation.
+:::
 
 ### Revoke Sessions
 
 1. Access the [App Users](https://dashboard.ngrok.com/cloud-edge/app-users) page and locate your user.
 
-1. Click the trash can next to the user and then confirm the deletion. 
+1. Click the trash can next to the user and then confirm the deletion.
 
-    The user is deleted and all sessions are invalidated immediately. 
-    Users can reinitiate sessions by logging in again via their Authentication provider.
+   The user is deleted and all sessions are invalidated immediately.
+   Users can reinitiate sessions by logging in again via their Authentication provider.
 
 ## Managing Sessions from the API
 
 You can also programmatically investigate and revoke user sessions using the [App Users](/docs/api/resources/application-users) and [App Sessions](/docs/api/resources/application-sessions) APIs. APIs are the recommended approach when you want to drive session monitoring and deletion from third-party apps such as security management solutions and identity workflows.
 
-
-Examples: 
-
+Examples:
 
 ### To list user sessions
 

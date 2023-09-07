@@ -3,7 +3,8 @@ title: Go
 ---
 
 # Using ngrok with the ngrok-go Library
-------------
+
+---
 
 ## Introduction
 
@@ -17,80 +18,82 @@ In this tutorial, you we build a Go App with ingress access and security provide
 
 ## Get started with ngrok-go
 
-Getting started with ngrok and the ngrok-go library is simple: 
+Getting started with ngrok and the ngrok-go library is simple:
 
 1. To start, [sign up for ngrok](https://ngrok.com/signup)
 1. In the [ngrok Dashboard](https://dashboard.ngrok.com), copy your Authtoken
 1. Launch a terminal and create a go app and file:
 
-    ```bash
-    mkdir hello-ngrok
-    cd hello-ngrok
-    go mod init hello-ngrok
-    go get golang.ngrok.com/ngrok
-    touch main.go
-    ```
+   ```bash
+   mkdir hello-ngrok
+   cd hello-ngrok
+   go mod init hello-ngrok
+   go get golang.ngrok.com/ngrok
+   touch main.go
+   ```
 
 1. Edit the main.go file and add the following code:
 
-    ```go showLineNumbers
-    package main
+   ```go showLineNumbers
+   package main
 
-    import (
-        "context"
-        "fmt"
-        "log"
-        "net/http"
+   import (
+       "context"
+       "fmt"
+       "log"
+       "net/http"
 
-        "golang.ngrok.com/ngrok"
-        "golang.ngrok.com/ngrok/config"
-    )
+       "golang.ngrok.com/ngrok"
+       "golang.ngrok.com/ngrok/config"
+   )
 
-    func main() {
-        if err := run(context.Background()); err != nil {
-            log.Fatal(err)
-        }
-    }
+   func main() {
+       if err := run(context.Background()); err != nil {
+           log.Fatal(err)
+       }
+   }
 
-    func run(ctx context.Context) error {
-        // highlight-start
-        tun, err := ngrok.Listen(ctx,
-            config.HTTPEndpoint(),
-            ngrok.WithAuthtokenFromEnv(),
-        )
-        // highlight-end
-        if err != nil {
-            return err
-        }
+   func run(ctx context.Context) error {
+       // highlight-start
+       tun, err := ngrok.Listen(ctx,
+           config.HTTPEndpoint(),
+           ngrok.WithAuthtokenFromEnv(),
+       )
+       // highlight-end
+       if err != nil {
+           return err
+       }
 
-        log.Println("tunnel created:", tun.URL())
+       log.Println("tunnel created:", tun.URL())
 
-        return http.Serve(tun, http.HandlerFunc(handler))
-    }
+       return http.Serve(tun, http.HandlerFunc(handler))
+   }
 
-    func handler(w http.ResponseWriter, r *http.Request) {
-        // highlight-next-line
-        fmt.Fprintln(w, "<h1>Hello from ngrok-go.</h1>")
-    }
-    ```
+   func handler(w http.ResponseWriter, r *http.Request) {
+       // highlight-next-line
+       fmt.Fprintln(w, "<h1>Hello from ngrok-go.</h1>")
+   }
+   ```
 
-    :::note In this code:
-    - **Lines 20-23**: start the ngrok tunnel with a preset configuration 
-    - **Line 22**: fetch your the ngrok auth token from your environment variable
-    - **Line 34**: serve a static page with a hello.
-    :::
+:::note In this code:
+
+- **Lines 20-23**: start the ngrok tunnel with a preset configuration
+- **Line 22**: fetch your the ngrok auth token from your environment variable
+- **Line 34**: serve a static page with a hello.
+
+:::
 
 1. Save and close the file
 1. Launch your tunnel replacing `TOKEN` with your Authtoken from above:
 
-    ```bash
-    NGROK_AUTHTOKEN="TOKEN" go run main.go
-    ```
+   ```bash
+   NGROK_AUTHTOKEN="TOKEN" go run main.go
+   ```
 
-1. The terminal will display an ngrok URL. 
-    
-    Access it to confirm you see the message `Hello from ngrok-go`.
-    Your Go application is now live on the internet, with a public url that anyone in the world can access.
+1. The terminal will display an ngrok URL.
+
+   Access it to confirm you see the message `Hello from ngrok-go`.
+   Your Go application is now live on the internet, with a public url that anyone in the world can access.
 
 ## Add edge functionality to your app
 
@@ -125,7 +128,7 @@ func run(ctx context.Context) error {
 	tun, err := ngrok.Listen(ctx,
 		config.HTTPEndpoint(
             // highlight-start
-			config.WithOAuth("google", 
+			config.WithOAuth("google",
                               config.WithAllowOAuthDomain("YOUR EMAIL DOMAIN"), ),
 			config.WithDomain("my-domain.ngrok.dev"),
 			config.WithRequestHeader("email", "${.oauth.user.email}"),

@@ -1,15 +1,18 @@
+<!-- Code generated for API Clients. DO NOT EDIT. -->
 
 #### Example Response
+
 ```json
 {
-  "id": "ipr_2NTVHQK0hhWUVWvcyHjyOKMVYP6",
-  "uri": "https://api.ngrok.com/ip_policy_rules/ipr_2NTVHQK0hhWUVWvcyHjyOKMVYP6",
-  "created_at": "2023-03-24T19:59:30Z",
-  "description": "nyc office",
-  "cidr": "212.3.15.0/24",
-  "ip_policy": {
-    "id": "ipp_2NTVHO7WnQtkGuRQR2cHQl9Fw0m",
-    "uri": "https://api.ngrok.com/ip_policies/ipp_2NTVHO7WnQtkGuRQR2cHQl9Fw0m"
-  },
-  "action": "allow"
+	"id": "ipr_2TMGItv8Hgeo4XLgLnhyBbHdSMA",
+	"uri": "https://api.ngrok.com/ip_policy_rules/ipr_2TMGItv8Hgeo4XLgLnhyBbHdSMA",
+	"created_at": "2023-07-31T23:17:39Z",
+	"description": "nyc office",
+	"cidr": "212.3.15.0/24",
+	"ip_policy": {
+		"id": "ipp_2TMGIwB04GGz7E6ZH6TQD1MGITV",
+		"uri": "https://api.ngrok.com/ip_policies/ipp_2TMGIwB04GGz7E6ZH6TQD1MGITV"
+	},
+	"action": "allow"
 }
+```

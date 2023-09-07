@@ -3,7 +3,8 @@ title: Minecraft
 ---
 
 # Using ngrok with Minecraft
-------------
+
+---
 
 Minecraft requires the use of an ngrok TCP tunnel to share your server with others. Use `ngrok tcp 25565` to open a TCP tunnel on the default Minecraft port. You can then use the address provided to connect to your Minecraft server.
 

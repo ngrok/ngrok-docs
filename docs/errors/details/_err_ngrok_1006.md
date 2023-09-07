@@ -1,4 +1,3 @@
-
 ### Additional Information
 
 We encountered an issue when trying to process your card. We accept most major payment cards, but do not accept payment via PayPal, Venmo or any form of cryptocurrency at this time.

@@ -3,11 +3,13 @@ description: Develop and test Signal Sciences webhooks from localhost
 ---
 
 # Signal Sciences Webhooks
-------------
+
+---
 
 :::tip TL;DR
 
 To integrate Signal Sciences webhooks with ngrok:
+
 1. [Launch your local webhook.](#start-your-app) `npm start`
 1. [Launch ngrok.](#start-ngrok) `ngrok http 3000`
 1. [Configure Signal Sciences webhooks with your ngrok URL.](#setup-webhook)
@@ -15,9 +17,8 @@ To integrate Signal Sciences webhooks with ngrok:
 
 :::
 
-
 This guide covers how to use ngrok to integrate your localhost app with Signal Sciences by using Webhooks.
-Signal Sciences webhooks can be used to notify an external application whenever specific events occur in your Signal Sciences account. 
+Signal Sciences webhooks can be used to notify an external application whenever specific events occur in your Signal Sciences account.
 
 By integrating ngrok with Signal Sciences, you can:
 
@@ -26,10 +27,9 @@ By integrating ngrok with Signal Sciences, you can:
 - **Modify and Replay Signal Sciences Webhook requests** with a single click and without spending time reproducing events manually in your Signal Sciences account.
 - **Secure your app with Signal Sciences validation provided by ngrok**. Invalid requests are blocked by ngrok before reaching your app.
 
-
 ## **Step 1**: Start your app {#start-your-app}
 
-For this tutorial, we'll use the [sample NodeJS app available on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample). 
+For this tutorial, we'll use the [sample NodeJS app available on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
 
 To install this sample, run the following commands in a terminal:
 
@@ -41,36 +41,34 @@ npm install
 
 This will get the project installed locally.
 
-Now you can launch the app by running the following command: 
+Now you can launch the app by running the following command:
 
 ```bash
 npm start
 ```
 
-The app runs by default on port 3000. 
+The app runs by default on port 3000.
 
 You can validate that the app is up and running by visiting http://localhost:3000. The application logs request headers and body in the terminal and responds with a message in the browser.
 
-
 ## **Step 2**: Launch ngrok {#start-ngrok}
 
-Once your app is running successfully on localhost, let's get it on the internet securely using ngrok! 
+Once your app is running successfully on localhost, let's get it on the internet securely using ngrok!
 
 1. If you're not an ngrok user yet, just [sign up for ngrok for free](https://ngrok.com/signup).
 
 1. [Download the ngrok agent](https://ngrok.com/download).
 
 1. Go to the [ngrok dashboard](https://dashboard.ngrok.com) and copy your Authtoken. <br />
-    **Tip:** The ngrok agent uses the auth token to log into your account when you start a tunnel.
-    
+   **Tip:** The ngrok agent uses the auth token to log into your account when you start a tunnel.
 1. Start ngrok by running the following command:
-    ```bash
-    ngrok http 3000
-    ```
+
+   ```bash
+   ngrok http 3000
+   ```
 
 1. ngrok will display a URL where your localhost application is exposed to the internet (copy this URL for use with Signal Sciences).
-    ![ngrok agent running](/img/integrations/launch_ngrok_tunnel.png)
-
+   ![ngrok agent running](/img/integrations/launch_ngrok_tunnel.png)
 
 ## **Step 3**: Integrate Signal Sciences {#setup-webhook}
 
@@ -83,10 +81,9 @@ To register a webhook on your Signal Sciences account follow the instructions be
 1. On the **Add site integration** page, click **Generic Webhook**.
 
 1. On the **Generic Webhook** page, enter the URL provided by the ngrok agent to expose your application to the internet in the **Webhook URL** field (i.e. `https://1a2b-3c4d-5e6f-7g8h-9i0j.sa.ngrok.io`).
-    ![signalsciences URL to Publish](img/ngrok_url_configuration_signalsciences.png)
+   ![signalsciences URL to Publish](img/ngrok_url_configuration_signalsciences.png)
 
 1. Select **All activity** and then click **Create site integration**.
-
 
 ### Run Webhooks with Signal Sciences and ngrok
 
@@ -95,15 +92,14 @@ You can trigger new calls from Signal Sciences to your application by following 
 
 1. Access the [Signal Sciences Dashboard](https://dashboard.signalsciences.net/), sign in, and change your site display name.
 
-    Confirm your localhost app receives an event notification and logs both headers and body in the terminal.
-
+   Confirm your localhost app receives an event notification and logs both headers and body in the terminal.
 
 ### Inspecting requests
 
-When you launch the ngrok agent on your local machine, you can see two links: 
+When you launch the ngrok agent on your local machine, you can see two links:
 
-* The URL to your app (it ends with `ngrok-free.app` for free accounts or `ngrok.app` for paid accounts when not using custom domains)
-* A local URL for the Web Interface (a.k.a **Request Inspector**).
+- The URL to your app (it ends with `ngrok-free.app` for free accounts or `ngrok.app` for paid accounts when not using custom domains)
+- A local URL for the Web Interface (a.k.a **Request Inspector**).
 
 The Request Inspector shows all the requests made through your ngrok tunnel to your localhost app. When you click on a request, you can see details of both the request and the response.
 
@@ -114,7 +110,6 @@ To inspect Signal Sciences' webhooks call, launch the ngrok web interface (i.e. 
 From the results, review the response body, header, and other details:
 
 ![ngrok Request Inspector](img/ngrok_introspection_signalsciences_webhooks.png)
-
 
 ### Replaying requests
 
@@ -130,7 +125,6 @@ The ngrok Request Inspector provides a replay function that you can use to test 
 
 Verify that your local application receives the request and logs the corresponding information to the terminal.
 
-
 ## Secure webhook requests {#security}
 
 The ngrok signature webhook verification feature allows ngrok to assert that requests from your Signal Sciences webhook are the only traffic allowed to make calls to your localhost app.
@@ -144,10 +138,11 @@ This is a quick step to add extra protection to your application.
 1. On the **Webhook** page, click the eye icon to reveal the **secret key** value and then copy this value.
 
 1. Restart your ngrok agent by running the command, replacing `{your webhook secret}` with the value you have copied before:
-    ```bash
-    ngrok http 3000 --verify-webhook signalsciences --verify-webhook-secret {your webhook secret}
-    ```
+
+   ```bash
+   ngrok http 3000 --verify-webhook signalsciences --verify-webhook-secret {your webhook secret}
+   ```
 
 1. Access the [Signal Sciences Dashboard](https://dashboard.signalsciences.net/), sign in, and change your site display name.
 
-    Confirm your localhost app receives an event notification and logs both headers and body in the terminal.
+   Confirm your localhost app receives an event notification and logs both headers and body in the terminal.

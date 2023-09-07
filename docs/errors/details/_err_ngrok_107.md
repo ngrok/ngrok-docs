@@ -1,4 +1,3 @@
-
 ### Additional Information
 
 The authtoken in your configuration file is no longer valid. You can learn more about the location of the ngrok.yml configuration file [here](https://ngrok.com/docs#config-location).

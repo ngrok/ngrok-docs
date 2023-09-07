@@ -3,7 +3,8 @@ title: Flask
 ---
 
 # Using ngrok with Flask
-------------
+
+---
 
 :::tip
 This article assumes you have Python, PIP, and Flask already installed.
@@ -18,8 +19,9 @@ Note: For users on the latest MacOS, there is an issue where the default port of
 If you're looking to natively embed the ngrok agent into your Flask development flow, you can leverage the [pyngrok project](https://pyngrok.readthedocs.io/en/latest/integrations.html#flask) so that a tunnel is created each time you type `flask run`.
 
 ### Python SDK (beta)
+
 You can also use the beta [ngrok Python SDK](https://github.com/ngrok/ngrok-python) to start a tunnel to the Flask dev server via [python code](https://github.com/ngrok/ngrok-python#frameworks), or using a [ngrok ASGI runner](https://github.com/ngrok/ngrok-python#asgi-runner---tunnels-to-uvicorn-gunicorn-django-and-more-with-no-code) with an [ASGI Wrapper](https://flask.palletsprojects.com/en/2.3.x/deploying/asgi/).
 
-*   [ngrok SDK on PyPi](https://pypi.org/project/ngrok/)
-*   [ngrok SDK on Github](https://github.com/ngrok/ngrok-python)
-*   [Reference Documentation](https://ngrok.github.io/ngrok-python/)
+- [ngrok SDK on PyPi](https://pypi.org/project/ngrok/)
+- [ngrok SDK on Github](https://github.com/ngrok/ngrok-python)
+- [Reference Documentation](https://ngrok.github.io/ngrok-python/)

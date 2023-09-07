@@ -3,11 +3,13 @@ description: Use miniOrange OIDC to secure access to ngrok tunnels
 ---
 
 # miniOrange SSO (OpenID Connect)
-------------
+
+---
 
 :::tip TL;DR
 
 To secure access to ngrok with miniOrange Single Sign-On using OpenID Connect:
+
 1. [Configure miniOrange SSO](#configure-miniorange)
 1. [Configure ngrok](#configure-ngrok)
 1. [Test access to ngrok with miniOrange SSO](#test-sso)
@@ -34,7 +36,6 @@ To configure ngrok tunnels with miniOrange, you must have:
 - a miniOrange account with administrative rights to create apps.
 - an [ngrok Enterprise Account](https://ngrok.com/pricing) with an authtoken or admin access to configure edges with OpenID Connect.
 
-
 ## Configuration Steps
 
 To integrate ngrok with miniOrange SSO, you will need to:
@@ -49,7 +50,7 @@ To integrate ngrok with miniOrange SSO, you will need to:
 1. On the **Dashboard** page, click **Apps** on the left menu, click **Add Application**, click the **OAUTH/OIDC** tile, and then click the **OAuth2/OpenID Connect** tile.
 
 1. On the **Add App** page, enter `ngrok OIDC` in the **Client Name** field, enter `https://idp.ngrok.com/oauth2/callback` in the **Redirect-URL** field, and then click **Save**.
-    ![miniOrange configuration](img/ngrok_url_configuration_miniorange.png)
+   ![miniOrange configuration](img/ngrok_url_configuration_miniorange.png)
 
 1. On the **View Apps** page, click **Select** in the **ngrok OIDC** app line, and then click **Edit**.
 
@@ -58,9 +59,8 @@ To integrate ngrok with miniOrange SSO, you will need to:
 1. Click **Save**.
 
 1. On the **View Apps** page, click **Select** in the **ngrok** app line, and then click **OAuth Endpoints**.
- 
-1. On the **OAuth Endpoints** page, make note of the URL of the **Discovery Endpoints** field.
 
+1. On the **OAuth Endpoints** page, make note of the URL of the **Discovery Endpoints** field.
 
 ### **Step 2**: Grant access to miniOrange users
 
@@ -69,7 +69,6 @@ miniOrange allows its users to access OIDC-integrated apps. To create a user fol
 1. On the left menu of the [miniOrange Dashboard](https://login.xecurify.com/moas/admin/customer/home), click **Users** and then click **User List**.
 
 1. On the **Users** page, click the **Add User**, enter values for the **Email**, **Username**, **First Name**, **Last Name**, and **Password** field, and then click **Create User**.
-
 
 ### **Step 3**: Configure ngrok {#configure-ngrok}
 
@@ -85,17 +84,20 @@ ngrok can leverage miniOrange SSO in two ways:
 1. Launch a terminal
 
 1. Enter the following command to launch an ngrok tunnel with miniOrange SSO:
-    ```bash
-    ngrok http 3000 --oidc=MINIORANGE_OAUTH_URL \
-    --oidc-client-id=MINIORANGE_CLIENT_ID \
-    --oidc-client-secret=MINIORANGE_CLIENT_SECRET \
-    ```
-    **Note**: Replace the following with values:
-    - MINIORANGE_OAUTH_URL: The **Discovery Endpoint** URL you copied from miniOrange, without the `/.well-known/openid-configuration` sufix (i.e. `https://login.xecurify.com/moas/discovery/v2.0/abcd1234`). 
-    - MINIORANGE_CLIENT_ID: The client id you copied from miniOrange.
-    - MINIORANGE_CLIENT_SECRET: The client secret you copied from miniOrange.
-    
-    Alternatively, add the `--domain YOUR_DOMAIN` argument to get your a custom URL, replacing `YOUR_DOMAIN` with your URL of preference.
+
+   ```bash
+   ngrok http 3000 --oidc=MINIORANGE_OAUTH_URL \
+   --oidc-client-id=MINIORANGE_CLIENT_ID \
+   --oidc-client-secret=MINIORANGE_CLIENT_SECRET \
+   ```
+
+   **Note**: Replace the following with values:
+
+   - MINIORANGE_OAUTH_URL: The **Discovery Endpoint** URL you copied from miniOrange, without the `/.well-known/openid-configuration` sufix (i.e. `https://login.xecurify.com/moas/discovery/v2.0/abcd1234`).
+   - MINIORANGE_CLIENT_ID: The client id you copied from miniOrange.
+   - MINIORANGE_CLIENT_SECRET: The client secret you copied from miniOrange.
+
+   Alternatively, add the `--domain YOUR_DOMAIN` argument to get your a custom URL, replacing `YOUR_DOMAIN` with your URL of preference.
 
 1. Copy the URL available next to **Forwarding** (for example, `https://miniOrange-sso-test.ngrok.io`).
 
@@ -110,18 +112,19 @@ To configure an edge with miniOrange:
 1. On the left menu, click **Cloud Edge** and then click **Edges**.
 
 1. If you don't have an edge already set to add miniOrange SSO, create a test edge:
-    * Click **+ New Edge**.
-    * Click **Create HTTPS Edge**.
-    * Click the **pencil icon** next to "no description", enter `Edge with miniOrange SSO OIDC` as the edge name and click **Save**.
+
+   - Click **+ New Edge**.
+   - Click **Create HTTPS Edge**.
+   - Click the **pencil icon** next to "no description", enter `Edge with miniOrange SSO OIDC` as the edge name and click **Save**.
 
 1. On the edge settings menu, click **OIDC**.
 
 1. Click **Begin setup** and enter the following values into the fields:
-    ![miniOrange config in ngrok](img/miniorange-1.png)
+   ![miniOrange config in ngrok](img/miniorange-1.png)
 
-    * **Issuer URL**: The **Discovery Endpoint** URL you copied from miniOrange, without the `/.well-known/openid-configuration` sufix (i.e. `https://login.xecurify.com/moas/discovery/v2.0/abcd1234efG`). 
-    * **Client ID**: The client id you copied from miniOrange.
-    * **Client Secret**: The client secret you copied from miniOrange.
+   - **Issuer URL**: The **Discovery Endpoint** URL you copied from miniOrange, without the `/.well-known/openid-configuration` sufix (i.e. `https://login.xecurify.com/moas/discovery/v2.0/abcd1234efG`).
+   - **Client ID**: The client id you copied from miniOrange.
+   - **Client Secret**: The client secret you copied from miniOrange.
 
 1. Click **Save** at the top, and then click the left arrow to go back to the **Edges** page.
 
@@ -129,29 +132,30 @@ To configure an edge with miniOrange:
 
 1. Launch a tunnel connected to your miniOrange edge:
 
-    :::tip Note 
-    For this step, we assume you have an app running locally (i.e. on localhost:3000) with the ngrok client installed.
-    :::
+:::tip Note
+For this step, we assume you have an app running locally (i.e. on localhost:3000) with the ngrok client installed.
+:::
 
-    1. Click **Start a tunnel**.
+1.  Click **Start a tunnel**.
 
-    1. Click the **copy icon** next to the tunnel command.
-        ![tunnel config](img/miniorange-2.png)
+1.  Click the **copy icon** next to the tunnel command.
+    ![tunnel config](img/miniorange-2.png)
 
-    1. Launch a tunnel:
-        * Launch a terminal.
-        * Paste the command but replace `http://localhost:80` with your localhost app address (i.e., `http://localhost:3000`).
-        * Click **Enter** and an ngrok tunnel associated with your edge configuration will launch.
+1.  Launch a tunnel:
 
-    1. To confirm that the tunnel is connected to your edge:
-        * Return to the ngrok dashboard
-        * Close the **Start a tunnel** and the **Tunnel group** tabs
-        * Refresh the test edge page. Under traffic, You will see the message _You have 1 tunnel online. Start additional tunnels to begin load balancing._
-        ![tunnel confirmed](img/miniorange-3.png)
+    - Launch a terminal.
+    - Paste the command but replace `http://localhost:80` with your localhost app address (i.e., `http://localhost:3000`).
+    - Click **Enter** and an ngrok tunnel associated with your edge configuration will launch.
 
-    1. In the test edge, copy the **endpoint URL**. (You use this URL to test the miniOrange Authentication)
-        ![tunnel url](img/miniorange-4.png)
+1.  To confirm that the tunnel is connected to your edge:
 
+    - Return to the ngrok dashboard
+    - Close the **Start a tunnel** and the **Tunnel group** tabs
+    - Refresh the test edge page. Under traffic, You will see the message _You have 1 tunnel online. Start additional tunnels to begin load balancing._
+      ![tunnel confirmed](img/miniorange-3.png)
+
+1.  In the test edge, copy the **endpoint URL**. (You use this URL to test the miniOrange Authentication)
+    ![tunnel url](img/miniorange-4.png)
 
 ## Test the integration {#test-sso}
 
@@ -162,4 +166,3 @@ To configure an edge with miniOrange:
 1. You should be prompted to log in with your miniOrange credentials.
 
 1. After logging in, you should be able to see your web app.
-

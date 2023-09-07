@@ -1,4 +1,3 @@
-
 ### Additional Info
 
 ngrok resource limits are per-user, not per-account. For example, an account with 3 users will have its limits multiplied by 3.

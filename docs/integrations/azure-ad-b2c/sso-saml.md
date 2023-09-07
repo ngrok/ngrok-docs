@@ -3,6 +3,7 @@ description: Use Microsoft Azure AD B2C to secure access to ngrok tunnels
 ---
 
 # Azure Active Directory B2C SSO (SAML)
+
 ---
 
 :::tip TL;DR
@@ -14,6 +15,7 @@ To have ngrok enforce Single Sign-On using SAML with Azure Active Directory B2C 
 1. [Update the ngrok Edge with the IdP metadata](#update-ngrok-edge)
 1. [Test your integration](#test-integration)
 1. [Bonus: Update your Azure AD B2C custom policies to support the password reset flow](#bonus)
+
 :::
 
 This article details how to configure Azure AD B2C as an Identity Provider for your ngrok Edge. By integrating Azure AD B2C with ngrok, you can:
@@ -53,7 +55,7 @@ To configure ngrok tunnels with Azure AD B2C, you must have:
 
     1. Click **Save**
 
-    1. Note that ngrok has now generated values for the fields in the Service Provider section.  We will use these to configure Azure AD B2C later 
+    1. Note that ngrok has now generated values for the fields in the Service Provider section. We will use these to configure Azure AD B2C later
 
 ## Step 2: Configure Azure AD B2C custom policies {#create-policies}
 
@@ -61,10 +63,10 @@ To configure ngrok tunnels with Azure AD B2C, you must have:
 
 1. Some hints
 
-    1. For a SAML application, you need to configure custom policies as it is not possible to use the user flows, as noted elsewhere in the [Azure docs](https://learn.microsoft.com/en-us/azure/active-directory-b2c/saml-service-provider?tabs=macos&pivots=b2c-user-flow#register-your-saml-application-in-azure-ad-b2c)
-    1. A couple resources to make the process of following these steps easier: you can follow along the docs with the templates shared in [Azure AD B2C custom policy starterpack](https://github.com/Azure-Samples/active-directory-b2c-custom-policy-starterpack), or you can to use the [IEF Setup App](https://b2ciefsetupapp.azurewebsites.net) to automate these steps
-    1. To keep things simple, use the `LocalAccounts` starter pack.  This means users will sign up and log in as users in your Azure AD B2C tenant vs. with another identity provider  This means you can skip configuring Facebook as an identity provider.  If you are using the IEF Setup App, click the checkbox for `Remove Facebook references` before you deploy the starter pack
-    1. Skip the steps of `Register a web application` and `Enable ID token implicit grant` unless you'd like to test this now.  We will register a SAML application and test it later
+   1. For a SAML application, you need to configure custom policies as it is not possible to use the user flows, as noted elsewhere in the [Azure docs](https://learn.microsoft.com/en-us/azure/active-directory-b2c/saml-service-provider?tabs=macos&pivots=b2c-user-flow#register-your-saml-application-in-azure-ad-b2c)
+   1. A couple resources to make the process of following these steps easier: you can follow along the docs with the templates shared in [Azure AD B2C custom policy starterpack](https://github.com/Azure-Samples/active-directory-b2c-custom-policy-starterpack), or you can to use the [IEF Setup App](https://b2ciefsetupapp.azurewebsites.net) to automate these steps
+   1. To keep things simple, use the `LocalAccounts` starter pack. This means users will sign up and log in as users in your Azure AD B2C tenant vs. with another identity provider This means you can skip configuring Facebook as an identity provider. If you are using the IEF Setup App, click the checkbox for `Remove Facebook references` before you deploy the starter pack
+   1. Skip the steps of `Register a web application` and `Enable ID token implicit grant` unless you'd like to test this now. We will register a SAML application and test it later
 
 ## Step 3: Create an Azure AD B2C SAML application {#create-app}
 
@@ -72,25 +74,25 @@ To configure ngrok tunnels with Azure AD B2C, you must have:
 
 1. Some hints
 
-    1. Update your previously created custom policies to use SAML. You can either update the files in the starterpack repo, or you can download the XML files for your existing policies from the [Identity Experience Framework page](https://portal.azure.com/#view/Microsoft_AAD_B2CAdmin/CustomPoliciesMenuBlade/~/overview/tenantId/ngroksaml.onmicrosoft.com)  
-    1. If you are using the `LocalAccounts` starter pack, remember to adjust the orchestration step order value to `4` as noted in these docs 
-    1. Use the following mapping of Azure AD B2C configuration properties to ngrok generated values (found in your Edge's SAML configuration in the Service Provider section) to configure your application 
+   1. Update your previously created custom policies to use SAML. You can either update the files in the starterpack repo, or you can download the XML files for your existing policies from the [Identity Experience Framework page](https://portal.azure.com/#view/Microsoft_AAD_B2CAdmin/CustomPoliciesMenuBlade/~/overview/tenantId/ngroksaml.onmicrosoft.com)
+   1. If you are using the `LocalAccounts` starter pack, remember to adjust the orchestration step order value to `4` as noted in these docs
+   1. Use the following mapping of Azure AD B2C configuration properties to ngrok generated values (found in your Edge's SAML configuration in the Service Provider section) to configure your application
 
-    | Azure AD B2C | ngrok |
-    | --- | --- |
-    | `RedirectURI` | `ACS URL` |
-    | `identifierUri` | `EntityID` |
-    | `samlMetadataUrl` | `SP Metadata` |
+   | Azure AD B2C      | ngrok         |
+   | ----------------- | ------------- |
+   | `RedirectURI`     | `ACS URL`     |
+   | `identifierUri`   | `EntityID`    |
+   | `samlMetadataUrl` | `SP Metadata` |
 
-    ![img/3-2.png](img/3-2.png)
+   ![img/3-2.png](img/3-2.png)
 
-    ![img/3-2b.png](img/3-2b.png)
+   ![img/3-2b.png](img/3-2b.png)
 
 ## Step 4: Update the ngrok Edge with the IdP metadata {#update-ngrok-edge}
 
-1. Back in the ngrok dashboard for your Edge's SAML configuration, copy and paste the XML found at the IdP Saml Metadata URL in the Identity Provider section, replacing the previously set placeholder value.  Note the IdP Metadata URL follows this format: `https://<tenant-name>.b2clogin.com/<tenant-name>.onmicrosoft.com/<policy-name>/Samlp/metadata`.
+1. Back in the ngrok dashboard for your Edge's SAML configuration, copy and paste the XML found at the IdP Saml Metadata URL in the Identity Provider section, replacing the previously set placeholder value. Note the IdP Metadata URL follows this format: `https://<tenant-name>.b2clogin.com/<tenant-name>.onmicrosoft.com/<policy-name>/Samlp/metadata`.
 
-    ![img/4-1.png](img/4-1.png)
+   ![img/4-1.png](img/4-1.png)
 
 1. Click **Save**
 
@@ -104,11 +106,11 @@ For this step, we assume you have an app running locally (i.e. on localhost:3000
 
 1. On your Edge's page, in the Routes section, click **Start a tunnel**
 
-    ![img/5-1.png](img/5-1.png)
+   ![img/5-1.png](img/5-1.png)
 
 1. Copy the tunnel command
 
-    ![img/5-1b.png](img/5-1b.png)
+   ![img/5-1b.png](img/5-1b.png)
 
 1. Launch a terminal and paste the command, replacing `http://localhost:80` with your local web app address (e.g., `http://localhost:3000`)
 
@@ -116,24 +118,24 @@ For this step, we assume you have an app running locally (i.e. on localhost:3000
 
 1. Confirm that the tunnel is connected to your edge
 
-    1. Return to the ngrok dashboard
-    1. Close the **Start a tunnel** and the **Tunnel group** drawers
-    1. Refresh the Edge page
-    1. In the Routes section > Traffic section you will see the message _You have 1 tunnel online. Start additional tunnels to begin load balancing._
+   1. Return to the ngrok dashboard
+   1. Close the **Start a tunnel** and the **Tunnel group** drawers
+   1. Refresh the Edge page
+   1. In the Routes section > Traffic section you will see the message _You have 1 tunnel online. Start additional tunnels to begin load balancing._
 
-    ![img/5-2.png](img/5-2.png)
+   ![img/5-2.png](img/5-2.png)
 
 1. Copy the ngrok url on the Endpoints section
 
 1. Access your Edge application
 
-    1. In your browser, launch an incognito window
-    1. Access your ngrok tunnel via your copied URL
-    1. You should be prompted to log in or sign up
+   1. In your browser, launch an incognito window
+   1. Access your ngrok tunnel via your copied URL
+   1. You should be prompted to log in or sign up
 
-    ![img/5-3.png](img/5-3.png)
+   ![img/5-3.png](img/5-3.png)
 
-    4. After login, you should be able to see the application
+   4. After login, you should be able to see the application
 
 ## Bonus: Update your Azure AD B2C custom policies to support the password reset flow {#bonus}
 

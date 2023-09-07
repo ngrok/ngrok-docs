@@ -3,11 +3,12 @@ sidebar_position: 1
 ---
 
 # HTTP Tunnels
---------------------
+
+---
 
 ngrok HTTP tunnels allow you to route HTTP protocols quickly and easily. These include websites, RESTful APIs, web servers, websockets, and much more.
 
-Starting an HTTP tunnel is a easy as `ngrok http 80`, or whatever local port your service is running on. For a full list of options for starting HTTP tunnels, see our [ngrok agent HTTP Tunnel reference](/ngrok-agent/ngrok#ngrok-http).
+Starting an HTTP tunnel is a easy as `ngrok http 80`, or whatever local port your service is running on. For a full list of options for starting HTTP tunnels, see our [ngrok agent HTTP Tunnel reference](/secure-tunnels/ngrok-agent/reference/ngrok#ngrok-http).
 
 ## Custom subdomains {#custom-subdomains}
 
@@ -31,15 +32,15 @@ Instead of your tunnel appearing as a subdomain of an ngrok owned domain, you ca
 
 1.  Navigate to the [Domains tab of your ngrok.com dashboard](https://dashboard.ngrok.com/cloud-edge/domains) and click 'Add a domain'. Enter `dev.example.com` as a Reserved Domain. This guarantees that no one else can hijack your domain name with their own tunnel.
 2.  On your dashboard, click on the 'CNAME' icon to copy your CNAME target.
-    
+
     ![](/img/docs/cname.png)
+
 3.  Create a DNS CNAME record from `dev.example.com` to your CNAME target. In this example, we would point the CNAME record to `2w9c34maz.wdv31sd.ngrok-cname.com`
 4.  Invoke ngrok with the `--domain` switch and specify the name of your custom domain as an argument.
-    
+
     ###### Example: Run a tunnel over a custom domain
-    
+
         ngrok http --domain=dev.example.com 8000
-    
 
 ## Local HTTPS servers {#local-https}
 
@@ -112,4 +113,4 @@ By default, when ngrok runs an HTTP tunnel, it opens endpoints for both HTTP and
 
 ## HTTP Tunnel Configuration Options {#configuration-options}
 
-For a full list of options for configuring HTTP tunnels, see our [ngrok agent HTTP Tunnel reference](/ngrok-agent/ngrok#ngrok-http).
+For a full list of options for configuring HTTP tunnels, see our [ngrok agent HTTP Tunnel reference](/secure-tunnels/ngrok-agent/reference/ngrok#ngrok-http).

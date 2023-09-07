@@ -3,7 +3,8 @@ sidebar_position: 2
 ---
 
 # ngrok Tunnels
---------------------
+
+---
 
 ngrok supports different types of tunnels — with different protocols, the use of agents, and features available — for enabling access to remote systems:
 
@@ -11,7 +12,7 @@ ngrok supports different types of tunnels — with different protocols, the use 
 
 ngrok HTTP tunnels allow you to route HTTP protocols quickly and easily. These include websites, RESTful APIs, web servers, websockets, and much more.
 
-Starting an HTTP tunnel is a easy as `ngrok http 80`, or whatever local port your service is running on. For a full list of options for starting HTTP tunnels, see our [ngrok agent HTTP Tunnel reference](/ngrok-agent/ngrok#ngrok-http).
+Starting an HTTP tunnel is a easy as `ngrok http 80`, or whatever local port your service is running on. For a full list of options for starting HTTP tunnels, see our [ngrok agent HTTP Tunnel reference](/secure-tunnels/ngrok-agent/reference/ngrok#ngrok-http).
 
 [Learn More >](http-tunnels)
 
@@ -38,5 +39,3 @@ The SSH Reverse Tunnel is also known as the **agentless tunnel**, because it doe
 SSH reverse tunneling is an alternative mechanism to start an ngrok tunnel without needing to download or run the ngrok agent. You can start tunnels via SSH without downloading an ngrok agent by running an SSH reverse tunnel command (`ssh -r`)
 
 [Learn More >](ssh-reverse-tunnel-agent)
-
-

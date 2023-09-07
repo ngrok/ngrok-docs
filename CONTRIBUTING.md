@@ -4,7 +4,7 @@ Thank you for your interest in contributing to the ngrok documentation! We welco
 
 ## Getting started
 
-To get started, fork the ngrok documentation repository on GitHub and clone your fork locally. 
+To get started, fork the ngrok documentation repository on GitHub and clone your fork locally.
 ngrok docs is built using Docusaurus. Use the instructions on [README.md](README.md) to setup your local environment.
 The documentation is written in Markdown and organized into directories by topic.
 

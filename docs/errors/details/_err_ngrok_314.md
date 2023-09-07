@@ -1,4 +1,3 @@
-
 ### Additional Information
 
 Custom hostnames such as something.com can only be reserved with a Pro or Business level plan. See our pricing page for more information [pricing](https://ngrok.com/pricing).

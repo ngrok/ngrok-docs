@@ -1,5 +1,6 @@
 # Securing ngrok
---------------
+
+---
 
 This guide will walk you through recommendations for ensuring you are using ngrok securely.
 
@@ -29,7 +30,7 @@ For custom domains, use ngrok's [Automated TLS certificates](/cloud-edge/endpoin
 
 ### Using a custom ingress domain
 
-If your organization uses a custom ingress domain, your default ngrok configuration will not work. Edit your ngrok agent confirmation to add a [`server_addr`](/ngrok-agent/config#server_addr) parameter to use the custom ingress domain of your organization.
+If your organization uses a custom ingress domain, your default ngrok configuration will not work. Edit your ngrok agent confirmation to add a [`server_addr`](/secure-tunnels/ngrok-agent/reference/config#server_addr) parameter to use the custom ingress domain of your organization.
 
 ## Tunnel Configuration
 
@@ -70,7 +71,6 @@ For a tighter security policy, most administrators will want to block ngrok acco
 - tunnel.jp.ngrok.com
 - tunnel.in.ngrok.com
 
-
 ## API Configuration
 
 You need a API key to authenticate with the ngrok REST API. API keys are Base64 encoded strings and are available from the ngrok dashboard and also from an API endpoint, which makes it easy to rotate your API keys.
@@ -81,17 +81,8 @@ Consider restricting the IPs permitted to access the API. You can do so in the n
 
 ### Dashboard authentication
 
-For authenticating access to the dashboard, ngrok has features for role based access control (RBAC), IP Policy, and [Single Sign-On](/platform/dashboard#dashboard-sso).
+For authenticating access to the dashboard, ngrok has features for role based access control (RBAC), IP Policy, and [Single Sign-On](/user-management#dashboard-sso).
 
 With RBAC, you can configure permissions for groups of users within your team (for example admins and developers).
 
 Consider restricting the IPs permitted to access the dashboard.
-
-
-
-
-
-
-
-
-
