@@ -355,6 +355,8 @@ The `ngrok http` command is used to start a tunnel listening for HTTP/HTTPS traf
 | `--response-header-add strings`    | header key:value to add to response                                                               |
 | `--response-header-remove strings` | header field to remove from response if present                                                   |
 | `--scheme strings`                 | which scheme to listen on (default `https`)                                                       |
+| `--ua-filter-allow strings`        | a list of regular expressions for user-agents to allow                                            |
+| `--ua-filter-deny strings`         | a list of regular expressions for user-agents to deny                                             |
 | `--verify-webhook string`          | validate webhooks are signed by this provider, e.g. `slack`                                       |
 | `--verify-webhook-secret string`   | secret used by provider to sign webhooks, if any                                                  |
 | `--websocket-tcp-converter`        | convert ingress websocket connections to TCP upstream                                             |
