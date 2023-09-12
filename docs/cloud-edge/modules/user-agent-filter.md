@@ -30,28 +30,50 @@ tunnels:
 ```
 
 ### Go SDK
-
+Here is an example using the [ngrok-go](https://github.com/ngrok/ngrok-go) library
 ```go
-import (
-	"context"
-	"net"
+package main
 
-	"golang.ngrok.com/ngrok"
-	"golang.ngrok.com/ngrok/config"
+import (
+        "context"
+        "fmt"
+        "log"
+        "net/http"
+
+        "golang.ngrok.com/ngrok"
+        "golang.ngrok.com/ngrok/config"
 )
 
-func listenUserAgentFIlter(ctx context.Context) net.Listener {
-	listener, _ := ngrok.Listen(ctx,
-		config.HTTPEndpoint(
-			config.WithUserAgentFilter([]string{`(foo)/(\d)+.(\d)+`}, []string{`bar/(\d)+.(\d)+`}),
-		),
-		ngrok.WithAuthtokenFromEnv(),
-	)
-	return listener
+func main() {
+        if err := run(context.Background()); err != nil {
+                log.Fatal(err)
+        }
+}
+
+func run(ctx context.Context) error {
+        tun, err := ngrok.Listen(ctx,
+                config.HTTPEndpoint(
+                        config.WithAllowUserAgentFilter(`(foo)/(\d)+.(\d)+`),
+                        config.WithDenyUserAgentFilter(`(bar)/(\d)+.(\d)+`),
+                ),
+                ngrok.WithAuthtokenFromEnv(),
+        )
+        if err != nil {
+                return err
+        }
+
+        log.Println("tunnel created:", tun.URL())
+
+        return http.Serve(tun, http.HandlerFunc(handler))
+}
+
+func handler(w http.ResponseWriter, r *http.Request) {
+        fmt.Fprintln(w, "<h1>Hello from ngrok-go.</h1>")
 }
 ```
 
 ### Rust SDK
+Here is an example using the [ngrok-rust](https://github.com/ngrok/ngrok-rust) library
 
 ```rust
 use axum::{routing::get, Router};
@@ -62,20 +84,14 @@ use std::error::Error;
 async fn main() -> Result<(), Box<dyn Error>> {
     let app = Router::new().route("/", get(|| async { "Hello from ngrok-rust!" }));
 
-    let allow_pattern: Vec<&str> = vec!(
-        r"bar",
-    );
-    let allow_ua: Vec<String> = allow_pattern.iter().map(|&s| s.to_string()).collect();
-    let deny_pattern: Vec<&str> = vec!(
-        r"foo",
-    );
-    let deny_ua: Vec<String> = deny_pattern.iter().map(|&s| s.to_string()).collect();
     let listener = ngrok::Session::builder()
         .authtoken_from_env()
         .connect()
         .await?
         .http_endpoint()
-        .user_agent_filter(allow_ua,deny_ua)
+        .allow_user_agent(r"foo/(\d)+")
+        .allow_user_agent(r"bar/(\d)+")
+        .deny_user_agent(r"buz/(\d)+")
         .listen()
         .await?;
     println!("Ingress URL: {:?}", listener.url());
