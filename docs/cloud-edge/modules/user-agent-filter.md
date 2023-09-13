@@ -55,8 +55,8 @@ func main() {
 func run(ctx context.Context) error {
         tun, err := ngrok.Listen(ctx,
                 config.HTTPEndpoint(
-                        config.WithAllowUserAgentFilter(`(foo)/(\d)+.(\d)+`),
-                        config.WithDenyUserAgentFilter(`(bar)/(\d)+.(\d)+`),
+                        config.WithAllowUserAgent(`(foo)/(\d)+.(\d)+`),
+                        config.WithDenyUserAgent(`(bar)/(\d)+.(\d)+`),
                 ),
                 ngrok.WithAuthtokenFromEnv(),
         )
@@ -92,9 +92,9 @@ async fn main() -> Result<(), Box<dyn Error>> {
         .connect()
         .await?
         .http_endpoint()
-        .allow_user_agent(r"foo/(\d)+")
-        .allow_user_agent(r"bar/(\d)+")
-        .deny_user_agent(r"buz/(\d)+")
+        .allow_ua(r"foo/(\d)+")
+        .allow_ua(r"bar/(\d)+")
+        .deny_ua(r"buz/(\d)+")
         .listen()
         .await?;
     println!("Ingress URL: {:?}", listener.url());
