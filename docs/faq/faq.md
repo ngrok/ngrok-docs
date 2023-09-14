@@ -22,6 +22,16 @@ Yes, here is the [official ngrok status page](https://status.ngrok.com).
 
 ngrok does not allow users to change the public ports on any reserved Domain or TCP Address. HTTPS and TLS tunnels will use port 443, and TCP tunnels will use the port assigned to you when the tunnel is created.
 
+##What's the difference between the usage-based and seat-based plans?
+Ngrok services are and will always be offered on a limited free tier to the broader community. 
+
+Seat-based plans are intended for developers, teams, and organizations using ngrok to test and share their apps publicly. 
+
+Usage-based plans are intended for developers who have production workloads and services that they choose to front with ngrok. 
+
+For details and to select a different plan, see [ngrok pricing](https://ngrok.com/pricing?docs). 
+
+
 ## Can I get a static IP address?
 
 ngrok does not require nor provide static IP addresses. When you run the ngrok agent, it will update automatically as your public IP address changes, and you do not need to restart the agent. We do offer reserved Domains and TCP Addresses with our paid plans.
