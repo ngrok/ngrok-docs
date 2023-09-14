@@ -70,6 +70,4 @@ On ngrok’s advanced plan you get more features and fewer limits (with the opti
 | HTTP Requests<br />$0.01 per additional 100,000        | Up to 100,000/month    | Up to 100,000/m                          |
 | Webhook verifications<br />$0.10 per additional 10,000 | Up to 500/month        | Up to 2,500/m                            |
 
----
-
 [^1]: Active Endpoints: a domain that sends or receives data through ngrok in a given month
