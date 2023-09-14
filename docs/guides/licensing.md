@@ -1,16 +1,16 @@
-# ngrok SaaS licensing
+# ngrok Platform Licensing FAQ
 
 ---
 
-This guide will walk you through commonly asked questions about ngrok's licensing model.
+This guide will walk you through frequently asked questions about ngrok's licensing model.
 
 ## How it works
 
-Ngrok’s plans are designed to suit the use cases of individuals, teams, and organizations using ngrok to create secure ingress for development and production workloads.
+ngrok’s plans are designed to suit the use cases of individuals, teams, and organizations using ngrok to create secure ingress for development and production workloads. Each license at ngrok roughly represents a developer using an ngrok agent for building an application. It includes the ability to run an ngrok agent (or use the agent SDKs or Kubernetes Ingress Controller) with a custom domain or TCP Address.
 
 ## What's the difference between the usage-based and seat-based plans?
 
-Ngrok services are and will always be offered on a limited free tier to the broader community.
+ngrok services are and will always be offered on a limited free tier to the broader community.
 
 Seat-based plans are intended for developers, teams, and organizations using ngrok to test and share their apps publicly.
 
@@ -52,7 +52,7 @@ Features included for free on all plans
 
 ## What do I pay for in ngrok’s Pay-as-you-go pricing?
 
-On ngrok’s advanced plan you get more features and fewer limits (with the option to pay more for resources) than you would on free or the user-based plans.
+On ngrok’s Advanced plan, you get more features and fewer limits (with the option to pay more for resources) than you would on free or the user-based plans.
 
 | Resource                                                | Limit on Free          | Advanced Usage-Based plan                |
 | ------------------------------------------------------- | ---------------------- | ---------------------------------------- |
