@@ -154,16 +154,17 @@ For this step, we assume you have an app running locally (i.e. on localhost:3000
     - Return to the ngrok dashboard
     - Close the **Start a tunnel** and the **Tunnel group** tabs
     - Refresh the test edge page. Under traffic, You will see the message _You have 1 tunnel online. Start additional tunnels to begin load balancing._
-      ![tunnel confirmed](img/Frontegg-3.png)
+      ![tunnel confirmed](img/frontegg-3.png)
 
-1.  In the test edge, copy the **endpoint URL**. (You use this URL to test the Frontegg Authentication)
-    ![tunnel url](img/Frontegg-4.png)
+1.  In the test edge, copy the **endpoint URL**. (You use this URL to test the Frontegg authentication)
+    ![tunnel url](img/frontegg-4.png)
+
 
 ## Step 3: Test the integration {#test-sso}
 
 1. In your browser, launch an incognito window.
 
-1. Access your ngrok tunnel (i.e., `https://Frontegg-sso-test.ngrok.io` or using the copied endpoint URL).
+1. Access your ngrok tunnel (i.e., `https://frontegg-sso-test.ngrok.app` or using the copied endpoint URL).
 
 1. You should be prompted to log in with your Frontegg credentials.
 
