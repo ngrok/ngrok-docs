@@ -38,16 +38,17 @@ Resources included for free:
 | Webhook verifications                                                                 | Up to 500/month        |
 
 Features included for free on all plans
-*HTTPS Tunnels
-*HTTPS Edges
-*Web Inspection Agent
-*Replay Requests
-*ngrok SDKs
-*ngrok Kubernetes Ingress Controller
-*Remote Agent Management
-*Circuit Breaking
-*Automatic Certificates and Encryption
-*Email Support
+
+- HTTPS Tunnels
+- HTTPS Edges
+- Web Inspection Agent
+- Replay Requests
+- ngrok SDKs
+- ngrok Kubernetes Ingress Controller
+- Remote Agent Management
+- Circuit Breaking
+- Automatic Certificates and Encryption
+- Email Support
 
 ## What do I pay for in ngrok’s Pay-as-you-go pricing?
 
