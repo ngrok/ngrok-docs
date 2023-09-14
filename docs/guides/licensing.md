@@ -21,20 +21,21 @@ For details and to select a different plan, see [ngrok pricing](https://https://
 ## What do I get for free on ngrok?
 
 Resources included for free:
-| Resource | Limit on Free |
-| --- | --- |
-| Users | 1 |
-| Active Endpoints:a domain that sends or receives data through ngrok in a given month | 1|
-| ngrok static domain | 1 |
-| Tunnels per agent | up to 3|
-| Bandwidth | 1 GB/month|
-| TCP Connection Rate | 120/min|
-| Agents | 1|
-| Edges | 1|
-| Logs/Events | Up to 10,000 per month|
-| OAuth/OIDC MAU | Up to 5 per month|
-| HTTP Requests | Up to 100,000/month |
-| Webhook verifications | Up to 500/month |
+
+| Resource                                                                              | Limit on Free          |
+| ------------------------------------------------------------------------------------- | ---------------------- |
+| Users                                                                                 | 1                      |
+| Active Endpoints: a domain that sends or receives data through ngrok in a given month | 1                      |
+| ngrok static domain                                                                   | 1                      |
+| Tunnels per agent                                                                     | up to 3                |
+| Bandwidth                                                                             | 1 GB/month             |
+| TCP Connection Rate                                                                   | 120/min                |
+| Agents                                                                                | 1                      |
+| Edges                                                                                 | 1                      |
+| Logs/Events                                                                           | Up to 10,000 per month |
+| OAuth/OIDC MAU                                                                        | Up to 5 per month      |
+| HTTP Requests                                                                         | Up to 100,000/month    |
+| Webhook verifications                                                                 | Up to 500/month        |
 
 Features included for free on all plans
 *HTTPS Tunnels
