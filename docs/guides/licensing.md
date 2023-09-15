@@ -54,20 +54,20 @@ Features included for free on all plans
 
 On ngrok’s Advanced plan, you get more features and fewer limits (with the option to pay more for resources) than you would on free or the user-based plans.
 
-| Resource                                                | Limit on Free          | Advanced Usage-Based plan                                  |
-| ------------------------------------------------------- | ---------------------- | ---------------------------------------------------------- |
-| Users                                                   | 1                      | Unlimited at $0                                            |
-| Active Endpoints[^1]                                    | 1                      | $15 per active endpoint per month                          |
-| Custom Domains                                          | None                   | Unlimited at $0, pay per active endpoint                   |
-| Tunnels per agent                                       | up to 3                | Up to 20                                                   |
-| Bandwidth                                               | 1 GB/month             | Up to 1GB per month at $0<br /> $0.10 per additional GB    |
-| TCP Connection Rate                                     | 120/min                | 120/min                                                    |
-| Agents                                                  | 1                      | Unlimited at $0, pay per active endpoint                   |
-| Edges                                                   | 1                      | Unlimited at $0, pay per active endpoint                   |
-| Logs/Events                                             | Up to 10,000 per month | Up to 10,000/m <br /> $1 per additional 10,000             |
-| OAuth/OIDC MAU                                          | Up to 5 per month      | Up to 5/month  <br /> $0.07 per additional MAU             |
-| SAML MAU                                                | None                   | Up to 5/month   <br /> $5 per additional MAU               |
-| HTTP Requests                                           | Up to 100,000/month    | Up to 100,000/m <br /> $0.01 per additional 100,000        |
-| Webhook verifications                                   | Up to 500/month        | Up to 2,500/m <br /> $0.10 per additional 10,000           |
+| Resource              | Limit on Free          | Advanced Usage-Based plan                               |
+| --------------------- | ---------------------- | ------------------------------------------------------- |
+| Users                 | 1                      | Unlimited at $0                                         |
+| Active Endpoints[^1]  | 1                      | $15 per active endpoint per month                       |
+| Custom Domains        | None                   | Unlimited at $0, pay per active endpoint                |
+| Tunnels per agent     | up to 3                | Up to 20                                                |
+| Bandwidth             | 1 GB/month             | Up to 1GB per month at $0<br /> $0.10 per additional GB |
+| TCP Connection Rate   | 120/min                | 120/min                                                 |
+| Agents                | 1                      | Unlimited at $0, pay per active endpoint                |
+| Edges                 | 1                      | Unlimited at $0, pay per active endpoint                |
+| Logs/Events           | Up to 10,000 per month | Up to 10,000/m <br /> $1 per additional 10,000          |
+| OAuth/OIDC MAU        | Up to 5 per month      | Up to 5/month <br /> $0.07 per additional MAU           |
+| SAML MAU              | None                   | Up to 5/month <br /> $5 per additional MAU              |
+| HTTP Requests         | Up to 100,000/month    | Up to 100,000/m <br /> $0.01 per additional 100,000     |
+| Webhook verifications | Up to 500/month        | Up to 2,500/m <br /> $0.10 per additional 10,000        |
 
 [^1]: Active Endpoints: a domain that sends or receives data through ngrok in a given month
