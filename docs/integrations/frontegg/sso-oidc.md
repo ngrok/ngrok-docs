@@ -51,10 +51,10 @@ To integrate ngrok with Frontegg SSO, you will need to:
 
 1. On the left menu, click the environment you want to integrate with ngrok. In this example click the **Development** environment.
 
-1. On the left menu, click **Authentication**, click **Login method**, enter the URL `https://idp.ngrok.com/oauth2/callback` in the field below **Hosted login**, and then click **Save**.
+1. On the left menu, click **Authentication**, click **Login method**, enter the URL `https://idp.ngrok.com/oauth2/callback` under the **Hosted login** field, and then click **Save**.
    ![Frontegg configuration](img/ngrok_url_configuration_frontegg.png)
 
-1. On the left menu, click **Env settings**, copy the value of both the **Client ID** and the **API key** fields.
+1. On the left menu, click **Env settings**, and copy the value of both the **Client ID** and the **API key** fields.
 
 1. Click the **Domains** tab, and copy the value of the **Domain name**.
 
@@ -70,7 +70,7 @@ Create a Frontegg user:
 1. On the left menu, click **Backoffice**, click **Users**, and then click **Add New**.
 
 1. On the **Add new user** popup, enter a name, email, select the account you have created, and then click **Save**.
-   **Note**: By default the user is assigned the **Admin** role.
+   **Note**: By default, the user is assigned the **Admin** role.
 
 
 ## **Step 2**: Configure ngrok {#configure-ngrok}
