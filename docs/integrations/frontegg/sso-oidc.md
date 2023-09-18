@@ -142,6 +142,7 @@ For this step, we assume you have an app running locally (i.e. on localhost:3000
 
 1. Click the **copy icon** next to the tunnel command.
    ![tunnel config](img/frontegg-2.png)
+   
 
 1. Launch a tunnel:
 
