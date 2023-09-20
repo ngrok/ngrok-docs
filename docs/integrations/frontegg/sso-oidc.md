@@ -89,16 +89,16 @@ ngrok can leverage Frontegg SSO in two ways:
 1. Enter the following command to launch an ngrok tunnel with Frontegg SSO:
 
    ```bash
-   ngrok http 3000 --oidc=Frontegg_OAUTH_URL \
-   --oidc-client-id=Frontegg_CLIENT_ID \
-   --oidc-client-secret=Frontegg_CLIENT_SECRET \
+   ngrok http 3000 --oidc=FRONTEGG_OAUTH_URL \
+   --oidc-client-id=FRONTEGG_CLIENT_ID \
+   --oidc-client-secret=FRONTEGG_CLIENT_SECRET \
    ```
 
    **Note**: Replace the following with values:
 
-   - Frontegg_OAUTH_URL: Your Frontegg **Domain name** URL (i.e. `https://app-123456.frontegg.com`).
-   - Frontegg_CLIENT_ID: The client id you copied from Frontegg.
-   - Frontegg_CLIENT_SECRET: The API key you copied from Frontegg.
+   - FRONTEGG_OAUTH_URL: Your Frontegg **Domain name** URL (i.e. `https://app-123456.frontegg.com`).
+   - FRONTEGG_CLIENT_ID: The client id you copied from Frontegg.
+   - FRONTEGG_CLIENT_SECRET: The API key you copied from Frontegg.
 
    Alternatively, add the `--domain YOUR_DOMAIN` argument to get your custom URL, replacing `YOUR_DOMAIN` with your URL of preference.
 
