@@ -12,16 +12,16 @@ ngrok runs globally distributed dataplanes around the world to enable fast, low 
 
 ngrok runs dataplanes in data centers around the world. The location of the data center within a given region may change without notice (e.g. the European servers may move from Frankfurt to London).
 
-| Region Code | Location                  |
-| ----------- | ------------------------- |
-| ap          | Asia/Pacific (Singapore)  |
-| au          | Australia (Sydney)        |
-| eu          | Europe (Frankfurt)        |
-| in          | India (Mumbai)            |
-| jp          | Japan (Tokyo)             |
-| sa          | South America (São Paulo) |
-| us          | United States (Ohio)      |
-| us-cal-1    | United States (California)|
+| Region Code | Location                   |
+| ----------- | -------------------------- |
+| ap          | Asia/Pacific (Singapore)   |
+| au          | Australia (Sydney)         |
+| eu          | Europe (Frankfurt)         |
+| in          | India (Mumbai)             |
+| jp          | Japan (Tokyo)              |
+| sa          | South America (São Paulo)  |
+| us          | United States (Ohio)       |
+| us-cal-1    | United States (California) |
 
 ### Usage {#usage}
 
