@@ -1,6 +1,6 @@
 ---
 sidebar_label: Getting Started
-title: ngrok Kubernetes Ingress Controller on EKS
+title: ngrok Kubernetes Ingress Controller on GKE
 description: ngrok Kubernetes Ingress Controller on Google Kubernetes Engine (GKE)
 tags:
   - kubernetes
