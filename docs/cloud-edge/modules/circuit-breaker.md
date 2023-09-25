@@ -97,7 +97,7 @@ apiVersion: ingress.k8s.ngrok.com/v1alpha1
 metadata:
   name: ngrok-module-set
 modules:
-  circuit_breaker:
+  circuitBreaker:
     errorThresholdPercentage: "0.50"
     trippedDuration: 10s
     rollingWindow: 10s
