@@ -10,8 +10,10 @@ description: Use Frontegg SAML to secure access to ngrok tunnels
 
 To secure access to ngrok with Frontegg Single Sign-On using SAML:
 
-1. [Configure Frontegg SSO](#configure-frontegg)
+1. [Download the IDP metadata](#idp-metadata)
 1. [Configure ngrok](#configure-ngrok)
+1. [Configure Frontegg](#configure-frontegg)
+1. [Update Frontegg Login Method](#frontegg-login)
 1. [Test access to ngrok with Frontegg SSO](#test-sso)
 
 :::
@@ -37,7 +39,7 @@ To integrate ngrok with Frontegg SSO, you will need to:
 1. Configure Frontegg with the ngrok app
 1. Configure ngrok with the SSO settings provided by Frontegg
 
-## **Step 1**: Configure Frontegg {#configure-frontegg}
+### **Step 1**: Download the IDP metadata {#idp-metadata}
 
 1. Access the [Frontegg Portal](https://portal.Frontegg.com/) and sign in using your Frontegg administrator account.
 
@@ -45,7 +47,7 @@ To integrate ngrok with Frontegg SSO, you will need to:
 
 1. On the **General Settings** page, copy both the **Client ID** and **API Key** values.
 
-1. Open a terminal window and run the following command to get a access token:
+1. Open a terminal window and run the following command to get an access token:
 
    ```bash
    curl --request POST \
@@ -62,42 +64,29 @@ To integrate ngrok with Frontegg SSO, you will need to:
 
 1. Copy the value of the **token** attribute from the response.
 
-1. In the terminal window, run the following command to create a SAML configuration and to download de metadata from Frontegg:
+1. In the same terminal window, run the following command to download de metadata XML file from Frontegg:
 
    ```bash
-   curl --location --request POST 'https://api.frontegg.com/oauth/resources/configurations/saml/v1/ENCODED-ENTITY-ID-FROM-NGROK' \
+   curl --location --request POST 'https://api.frontegg.com/oauth/resources/configurations/saml/v1/https%3A%2F%2Ftemporary' \
    --header 'frontegg-vendor-host: YOUR-FRONTEGG-HOST-URL' \
    --header 'Authorization: Bearer TOKEN' \
    --header 'Content-Type: application/json' \
    --data-raw '{
-      "acsUrl": "ACS-URL-FROM-NGROK",
-      "entityId": "ENTITY-ID-FROM-NGROK",
-      "singleLogoutService": "REDIRECT-URL-AFTER-LOGOUT"
+      "acsUrl": "https://temporary",
+      "entityId": "https://temporary"
    }'
    ```
 
    **Note**: Replace the following with values copied on previous steps:
 
-   - ENCODED-ENTITY-ID: Base64 value of the ngrok entity ID.
    - YOUR-FRONTEGG-HOST-URL: The value of the **Domain name** from the **Env settings** > **Domains** tab.
    - TOKEN: The token you copied before.
-   - ACS-URL-FROM-NGROK: 
-   - ENTITY-ID-FROM-NGROK: 
-   - REDIRECT-URL-AFTER-LOGOUT: 
+
+1. Copy the response and save it as the `idp_metadata.xml` file localy on your desktop.
+   **Note**: The response starts with `<EntityDescriptor` and ends with `</EntityDescriptor>`. Anything different may be an error.
 
 
-
-
-
-1. On the **New Application** popup, enter `ngrok saml` in the **Display Label** field.
-
-1. Click the **SSO** tab, enter `https://ngrok-Frontegg` in the **IdP Entity ID** field, enter temporary values (i.e., `https://temporary`) in both the **SP Entity ID** and the **ACS URL** fields, and then click **activate**.
-
-### **Step 2**: Download the IdP metadata {#idp-metadata}
-
-1. On the **SSO** page of the [Frontegg Console](https://console.Frontegg.com/), click your **Custom SAML App**, click the **SSO** tab, click **Export Metadata**, and then save the XML file on your desktop.
-
-### **Step 3**: Configure ngrok {#configure-ngrok}
+### **Step 2**: Configure ngrok {#configure-ngrok}
 
 To configure an edge with Frontegg:
 
@@ -109,7 +98,7 @@ To configure an edge with Frontegg:
 
    - Click **+ New Edge**.
    - Click **Create HTTPS Edge**.
-   - Click the **pencil icon** next to "no description", enter `Edge with Frontegg SSO SAML` as the edge name, and click **Save**.
+   - Click the **pencil icon** next to "no description", enter `Frontegg SSO SAML` as the edge name, and click **Save**.
 
 1. On the edge settings menu, click **SAML**.
 
@@ -118,18 +107,48 @@ To configure an edge with Frontegg:
 
 1. Click **Save** at the top.
 
-### **Step 4**: Download the SP metadata {#sp-metadata}
+1. Copy both the **Entity ID** and the **ACS URL** values for later use.
 
-1. On the **SAML** page of your [ngrok edge](https://dashboard.ngrok.com/cloud-edge/edges), click the three dots close to the **SP Metadata** field, click **Download XML File**, and then save the XML file on your desktop.
 
-### **Step 5**: Link Frontegg with ngrok {#sp-metadata}
+### **Step 3**: Configure Frontegg {#configure-frontegg}
 
-1. Access the [Frontegg Portal](https://portal.Frontegg.com/), click **SSO**, click your **Custom SAML App**, click the **SSO** tab, click **Upload Metadata**, and then open the XML metadata file you downloaded from ngrok (See [Download the SP metadata](#sp-metadata)).
+1. In the same terminal window you ran the previous commands, run the following command to create a SAML configuration related to your ngrok SAML edge:
+
+   ```bash
+   curl --location --request POST 'https://api.frontegg.com/oauth/resources/configurations/saml/v1/URL-ENCODED-NGROK-ENTITY-ID' \
+   --header 'frontegg-vendor-host: YOUR-FRONTEGG-HOST-URL' \
+   --header 'Authorization: Bearer TOKEN' \
+   --header 'Content-Type: application/json' \
+   --data-raw '{
+      "acsUrl": "NGROK-ACS-URL",
+      "entityId": "NGROK-ENTITY-ID-URL"
+   }'
+   ```
+
+   **Note**: Replace the following with values copied on previous steps:
+
+   - URL-ENCODED-NGROK-ENTITY-ID: URL-Enconded value of the ngrok **Entity ID*** copied from the edge SAML configuration.
+   - YOUR-FRONTEGG-HOST-URL: The value of the **Domain name** from the **Env settings** > **Domains** tab.
+   - TOKEN: The frontegg token you copied before.
+   - NGROK-ACS-URL: The value of the ngrok **Entity ID** copied from the edge SAML configuration.
+   - NGROK-ENTITY-ID-URL: The value of the ngrok **ACS URL** copied from the edge SAML configuration.
+
+
+### **Step 4**: Update Frontegg Login Method {#frontegg-login}
+
+1. Access the [Frontegg Portal](https://portal.Frontegg.com/) and sign in using your Frontegg administrator account.
+
+1. On the left menu, click your environemtn under **Environments**, click **Authentication**, and then click **Login method**.
+
+1. On the **Select your login method** page, make sure **Hosted login** is selected, click **Add new** twice.
+
+1. In the first empty field, enter the endpoint URL from your ngrok edge (i.e., `https://123456789.ngrok.app/`). In the second field, enter the **ACS URL** from your edge SAML configuration.
    ![Frontegg config in ngrok](img/frontegg-6.png)
 
 1. Click **Save**.
 
-### **Step 6**: Start a Tunnel {#start-tunnel}
+
+### **Step 5**: Start a Tunnel {#start-tunnel}
 
 1. Access the [ngrok edges page](https://dashboard.ngrok.com/cloud-edge/edges), click your edge, and then click **Start a tunnel**.
 
@@ -154,7 +173,7 @@ For this step, we assume you have an app running locally (i.e. on localhost:3000
      ![tunnel confirmed](img/frontegg-3.png)
 
 1. In the test edge, copy the **endpoint URL**. (You use this URL to test the Frontegg Authentication)
-   ![tunnel url](img/frontegg-4.png)
+   ![tunnel url](img/frontegg-7.png)
 
 ## Grant access to Frontegg users {#users}
 
