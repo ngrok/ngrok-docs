@@ -4,6 +4,10 @@ title: Agent Changelog
 
 # ngrok Agent Changelog
 
+### ngrok Agent 3.3.5 - \[2023-09-26\]
+- Added new UserAgentFilter module that gives access to HTTP endpoints based on incoming user agents.
+- Added `--ua-filter-allow` and `--ua-filter-deny` flags that accept a list of regular expression strings
+
 ### ngrok Agent 3.3.4 - \[2023-08-18\]
 
 - Fixed a bug where the agent running as a service would log to syslog even when another log destination was specified
@@ -124,7 +128,7 @@ For more information about upgrading from previous versions of the agent to v3.0
 ### Changes in 2.3
 
 If asked to forward to port 443, ngrok will now automatically forward HTTPS traffic instead of HTTP. This change would only affect you if you previously ran a server accepting unencrypted HTTP on port 443. To workaround this, you may specify an explicit http URL if you need the old behavior: `ngrok http http://localhost:443`.
-
+/
 If run under sudo, the ngrok agent previously consulted the sudo-ing user's home directory file when looking for its default configuration file. It now consults the home directory of the assumed user. To workaround this, you may specify an explicit configuration file location with the `-config` option.
 
 ### Changes in 2.2
