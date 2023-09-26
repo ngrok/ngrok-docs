@@ -4,6 +4,11 @@ title: Agent Changelog
 
 # ngrok Agent Changelog
 
+### ngrok Agent 3.3.5 - \[2023-09-26\]
+
+- Added support for the [User Agent Filter module](https://ngrok.com/docs/cloud-edge/modules/user-agent-filter/) that allows or denies traffic to HTTPS endpoints based on incoming user agents.
+- Added `--ua-filter-allow` and `--ua-filter-deny` flags that accept a list of regular expression strings
+
 ### ngrok Agent 3.3.4 - \[2023-08-18\]
 
 - Fixed a bug where the agent running as a service would log to syslog even when another log destination was specified
