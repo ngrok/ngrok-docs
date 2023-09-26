@@ -175,16 +175,20 @@ For this step, we assume you have an app running locally (i.e. on localhost:3000
 1. In the test edge, copy the **endpoint URL**. (You use this URL to test the Frontegg Authentication)
    ![tunnel url](img/frontegg-7.png)
 
-## Grant access to Frontegg users {#users}
 
-Frontegg allows administrators to restrict access to SSO apps — such as ngrok — via user group assignments. By default, apps created in Frontegg have no group assignments — in other words, nobody can use Frontegg SSO to access ngrok until you assign a group to the app.
+### Grant access to Frontegg users
 
-To assign Frontegg groups to the ngrok app:
+Create a Frontegg user:
 
-1. On the left menu of the [Frontegg Portal](https://portal.Frontegg.com/), click **SOO** and click the ngrok custom SAML app you created.
+1. On the left menu of the [Frontegg Portal](https://portal.frontegg.com/), click your environment, click **Backoffice**, click **Accounts**, and then click **Add New**.
 
-1. On the app popup, click the **User Groups** tab, click the checkbox of the **All Users** group, and then click **Save**.
-   **Tip**: Make sure to add Frontegg users to this group when you create or manage users that need access to the ngrok app.
+1. On the **Add new account** popup, enter a name for the account, `ngrok.com` in the **Domain** field, and then click **Save**.
+
+1. On the left menu, click **Backoffice**, click **Users**, and then click **Add New**.
+
+1. On the **Add new user** popup, enter a name, email, select the account you have created, and then click **Save**.
+   **Note**: By default, the user is assigned the **Admin** role.
+
 
 ## Test the integration {#test-sso}
 
