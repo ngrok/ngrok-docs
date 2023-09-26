@@ -10,7 +10,7 @@ description: Use Frontegg OIDC to secure access to ngrok tunnels
 
 To secure access to ngrok with Frontegg Single Sign-On using OpenID Connect:
 
-1. [Configure Frontegg SSO](#configure-Frontegg)
+1. [Configure Frontegg SSO](#configure-frontegg)
 1. [Configure ngrok](#configure-ngrok)
 1. [Test access to ngrok with Frontegg SSO](#test-sso)
 
@@ -43,7 +43,7 @@ To integrate ngrok with Frontegg SSO, you will need to:
 1. Configure Frontegg with the ngrok app
 1. Configure ngrok with the SSO settings provided by Frontegg
 
-## **Step 1**: Configure Frontegg {#configure-Frontegg}
+## **Step 1**: Configure Frontegg {#configure-frontegg}
 
 ### Add the ngrok App in Frontegg
 
@@ -154,10 +154,10 @@ For this step, we assume you have an app running locally (i.e. on localhost:3000
 
     - Return to the ngrok dashboard
     - Close the **Start a tunnel** and the **Tunnel group** tabs
-    - Refresh the test edge page. Under traffic, You will see the message _You have 1 tunnel online. Start additional tunnels to begin load balancing._
+    - Refresh the test edge page. Under traffic, you will see the message _You have 1 tunnel online. Start additional tunnels to begin load balancing._
       ![tunnel confirmed](img/frontegg-3.png)
 
-1. In the test edge, copy the **endpoint URL**. (You use this URL to test the Frontegg authentication)
+1. In the test edge, copy the **endpoint URL** (You use this URL to test the Frontegg authentication).
     ![tunnel url](img/frontegg-4.png)
 
 
