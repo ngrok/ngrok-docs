@@ -176,7 +176,7 @@ For this step, we assume you have an app running locally (i.e. on localhost:3000
    ![tunnel url](img/frontegg-7.png)
 
 
-### Grant access to Frontegg users
+## Grant access to Frontegg users
 
 Create a Frontegg user:
 
