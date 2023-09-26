@@ -9,7 +9,7 @@ title: Secure developer productivity
 
 :::note
 This guide describes the best practices and features organizations can apply to consistently secure developers using ngrok while leveraging their existing security investments.
-For a printed version, please [download the PDF](/other/best_practices_dev_security.pdf).
+For a printed version, please [download the PDF](pathname:///other/best_practices_dev_security.pdf).
 
 ![ngrok best practices](img/0.png)
 :::
