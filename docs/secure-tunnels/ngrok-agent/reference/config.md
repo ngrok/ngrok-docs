@@ -158,15 +158,16 @@ This is the URL of an HTTP or SOCKS5 proxy to use for establishing the tunnel co
 
 This is the region where the ngrok agent will connect to. You can only choose one region per agent session. Choosing the region closest to you usually improves latency and performance. By default, the ngrok agent attempts to choose the best region for you.
 
-| Region Code | Region Name   |
-| ----------- | ------------- |
-| `us`        | United States |
-| `eu`        | Europe        |
-| `ap`        | Asia/Pacific  |
-| `au`        | Australia     |
-| `sa`        | South America |
-| `jp`        | Japan         |
-| `in`        | India         |
+| Region Code | Region Name                |
+| ----------- | -------------------------- |
+| `us-cal-1`  | United States (California) |
+| `us`        | United States (Virginia)   |
+| `eu`        | Europe                     |
+| `ap`        | Asia/Pacific               |
+| `au`        | Australia                  |
+| `sa`        | South America              |
+| `jp`        | Japan                      |
+| `in`        | India                      |
 
 ### `remote_management`
 
@@ -264,10 +265,10 @@ Each tunnel you define is a map of configuration option names to values. The nam
 
 ##### Common Tunnel Configuration Properties
 
-|            |          |                                                                                                        |
-| ---------- | -------- | ------------------------------------------------------------------------------------------------------ |
-| `addr`     | required | forward traffic to this local port number or network address. This can be just a port (                |
-| `metadata` | Optional | arbitrary user-defined metadata that will appear in the ngrok service API when listing tunnel sessions |
+|            |          |                                                                                                                                           |
+| ---------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `addr`     | required | forward traffic to this local port number or network address. This can be just a port (`8000`) or (`localhost:8000`) for local addresses. |
+| `metadata` | Optional | arbitrary user-defined metadata that will appear in the ngrok service API when listing tunnel sessions                                    |
 
 ##### HTTP Tunnel Configuration Properties
 
@@ -292,7 +293,7 @@ Each tunnel you define is a map of configuration option names to values. The nam
 | `request_header.remove`      | Array of Strings                                                             | The header keys to remove from the request.                                                                                                                                                                                                                                                       |
 | `response_header.add`        | Array of Strings                                                             | The headers to add to the response in the key:value format.                                                                                                                                                                                                                                       |
 | `response_header.remove`     | Array of Strings                                                             | The header keys to remove from the response.                                                                                                                                                                                                                                                      |
-| `schemes`                    | `http`, `https`                                                              | bind to an HTTPS endpoint (                                                                                                                                                                                                                                                                       |
+| `schemes`                    | `http`, `https`                                                              | bind to an HTTP or HTTPS endpoint                                                                                                                                                                                                                                                                 |
 | `subdomain`                  | Any valid combination of letters, numbers, hyphens or periods.               | subdomain name to request. If unspecified, ngrok provides a unique subdomain based on your account type.                                                                                                                                                                                          |
 | `user_agent_filter.allow`    | Array of Strings                                                             | Allows User-Agents that match against these RE2 Regular Expressions                                                                                                                                                                                                                               |
 | `user_agent_filter.deny`     | Array of Strings                                                             | Denies User-Agents that match against these RE2 Regular Expressions                                                                                                                                                                                                                               |
