@@ -29,7 +29,7 @@ By integrating Frontegg SSO with ngrok, you can:
 
 To configure ngrok tunnels with Frontegg, you must have:
 
-- an Frontegg account with administrative rights to create apps
+- a Frontegg account with administrative rights to create apps
 - an [ngrok Enterprise Account](https://ngrok.com/pricing) with an authtoken or admin access to configure edges with SAML.
 
 ## Configuration Steps
@@ -43,7 +43,7 @@ To integrate ngrok with Frontegg SSO, you will need to:
 
 1. Access the [Frontegg Portal](https://portal.Frontegg.com/) and sign in using your Frontegg administrator account.
 
-1. On the left menu, click your environemtn under **Environments** and then click **Env settings**.
+1. On the left menu, click your environment under **Environments** and then click **Env settings**.
 
 1. On the **General Settings** page, copy both the **Client ID** and **API Key** values.
 
@@ -59,8 +59,8 @@ To integrate ngrok with Frontegg SSO, you will need to:
 
     **Note**: Replace the following with values:
 
-    - CLIENT_ID: The client id value you copied before.
-    - API_KEY: The api key value you copied before.
+    - CLIENT_ID: The client ID value you copied before.
+    - API_KEY: The API key value you copied before.
 
 1. Copy the value of the **token** attribute from the response.
 
@@ -82,7 +82,7 @@ To integrate ngrok with Frontegg SSO, you will need to:
    - YOUR-FRONTEGG-HOST-URL: The value of the **Domain name** from the **Env settings** > **Domains** tab.
    - TOKEN: The token you copied before.
 
-1. Copy the response and save it as the `idp_metadata.xml` file localy on your desktop.
+1. Copy the response and save it as the `idp_metadata.xml` file locally on your desktop.
    **Note**: The response starts with `<EntityDescriptor` and ends with `</EntityDescriptor>`. Anything different may be an error.
 
 
@@ -112,7 +112,7 @@ To configure an edge with Frontegg:
 
 ### **Step 3**: Configure Frontegg {#configure-frontegg}
 
-1. In the same terminal window you ran the previous commands, run the following command to create a SAML configuration related to your ngrok SAML edge:
+1. In the same terminal window, you ran the previous commands, run the following command to create a SAML configuration related to your ngrok SAML edge:
 
    ```bash
    curl --location --request POST 'https://api.frontegg.com/oauth/resources/configurations/saml/v1/URL-ENCODED-NGROK-ENTITY-ID' \
@@ -138,11 +138,11 @@ To configure an edge with Frontegg:
 
 1. Access the [Frontegg Portal](https://portal.Frontegg.com/) and sign in using your Frontegg administrator account.
 
-1. On the left menu, click your environemtn under **Environments**, click **Authentication**, and then click **Login method**.
+1. On the left menu, click your environment under **Environments**, click **Authentication**, and then click **Login method**.
 
-1. On the **Select your login method** page, make sure **Hosted login** is selected, click **Add new** twice.
+1. On the **Select your login method** page, make sure **Hosted login** is selected, and click **Add new** twice.
 
-1. In the first empty field, enter the endpoint URL from your ngrok edge (i.e., `https://123456789.ngrok.app/`). In the second field, enter the **ACS URL** from your edge SAML configuration.
+1. In the first empty field, enter the endpoint URL from your ngrok edge (i.e., `https://123456789.ngrok.app/`). In the second field, enter the **ACS URL** from your Edge SAML configuration.
    ![Frontegg config in ngrok](img/frontegg-6.png)
 
 1. Click **Save**.
@@ -186,7 +186,7 @@ Create a Frontegg user:
 
 1. On the left menu, click **Backoffice**, click **Users**, and then click **Add New**.
 
-1. On the **Add new user** popup, enter a name, email, select the account you have created, and then click **Save**.
+1. On the **Add new user** popup, enter a name and email, select the account you have created, and then click **Save**.
    **Note**: By default, the user is assigned the **Admin** role.
 
 
