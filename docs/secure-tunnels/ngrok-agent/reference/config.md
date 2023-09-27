@@ -158,16 +158,16 @@ This is the URL of an HTTP or SOCKS5 proxy to use for establishing the tunnel co
 
 This is the region where the ngrok agent will connect to. You can only choose one region per agent session. Choosing the region closest to you usually improves latency and performance. By default, the ngrok agent attempts to choose the best region for you.
 
-| Region Code | Region Name                |
-| ----------- | -------------------------- |
-| `us-cal-1`  | United States (California) |
-| `us`        | United States (Virginia)   |
-| `eu`        | Europe                     |
-| `ap`        | Asia/Pacific               |
-| `au`        | Australia                  |
-| `sa`        | South America              |
-| `jp`        | Japan                      |
-| `in`        | India                      |
+| Region Code   | Region Name                |
+| ------------- | -------------------------- |
+| `ap`          | Asia/Pacific (Singapore)   |
+| `au`          | Australia (Sydney)         |
+| `eu`          | Europe (Frankfurt)         |
+| `in`          | India (Mumbai)             |
+| `jp`          | Japan (Tokyo)              |
+| `sa`          | South America (São Paulo)  |
+| `us`          | United States (Ohio)       |
+| `us-cal-1`    | United States (California) |
 
 ### `remote_management`
 
