@@ -265,10 +265,10 @@ Each tunnel you define is a map of configuration option names to values. The nam
 
 ##### Common Tunnel Configuration Properties
 
-|            |          |                                                                                                                                        |
-| ---------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| `addr`     | required | forward traffic to this local port number or network address. This can be just a port (`8000`) for local addresses (`localhost:8000`). |
-| `metadata` | Optional | arbitrary user-defined metadata that will appear in the ngrok service API when listing tunnel sessions                                 |
+|            |          |                                                                                                                                           |
+| ---------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `addr`     | required | forward traffic to this local port number or network address. This can be just a port (`8000`) or (`localhost:8000`) for local addresses. |
+| `metadata` | Optional | arbitrary user-defined metadata that will appear in the ngrok service API when listing tunnel sessions                                    |
 
 ##### HTTP Tunnel Configuration Properties
 
