@@ -86,12 +86,12 @@ From within the [ngrok dashboard](https://dashboard.ngrok.com) follow the next s
 ## **Testing mTLS**
 To test that mTLS is working correctly, first try to access without specifying your client cert.  An error will be returned without being able to access the endpoint.<br></br>
 ```bash
-curl https://<your_ngrok_endpoint/
+curl https://<your_ngrok_endpoint>/
 ```
 
 Now let's specify the client certificate and key when accessing the site.  This will be successful verifying the mTLS is protecting you endpoint.<br></br>
 ```bash
-curl --cert ngrokclient.crt --key ngrokclient.key https://<your_ngrok_endpoint/
+curl --cert ngrokclient.crt --key ngrokclient.key https://<your_ngrok_endpoint>/
 ```
 
 
