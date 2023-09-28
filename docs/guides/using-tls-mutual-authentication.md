@@ -9,22 +9,24 @@ tags:
   - security
 ---
 
-Mutual TLS (mTLS) is a method of providing security to sensitive applications, providing an extra layer of confidence by requiring both parties identify themselves.  In a majority of the TLS connections being made everyday, the client will verify the identify of server confirming that the correct server is being accessed.  For example when accessing [https://ngrok.com/docs](https://ngrok.com/docs), you will receive a certificate identifying the server as ngrok.com.  
+Mutual TLS Authenctication (mTLS) is a method for providing security to sensitive applications in a zero trust security posture.  This additional layer of security provides confidence by validating the identify of both the client and server before any transfer of data.  In a majority of the TLS connections being made everyday, the client will verify the identify of server confirming that the correct server is being accessed.  For example, when accessing [https://ngrok.com/docs](https://ngrok.com/docs), you will receive a certificate correctly identifying the server as ngrok.com.  
 
-mTLS adds an additional steps to this flow.  The client still verifies the server's identity, but now the server will in turn verify the the client's identity.  This allows for the server owner to restrict access only to verified clients.
+mTLS adds an additional flow to the previous TLS server verification steps.  The client will still verifiy the server's identity, but now the server will in turn also verify the identity of the client.  By verifying the clients, the server owner is able to restrict access only to verified clients strengthening security.
 ![](img/mtls-diag.png)
 
-The intent of this document is to provide a quick start guide for how to enable mTLS on your ngrok hosted endpoints.  For a deeper understanding for how mTLS is implemented within ngrok, reference the [Mutual TLS module page.](https://ngrok.com/docs/cloud-edge/modules/mutual-tls/)
+This document will provide a quick start guide for how to enable mTLS on your ngrok hosted endpoints.  For a deeper understanding for how mTLS is implemented within ngrok, reference the [Mutual TLS module page.](https://ngrok.com/docs/cloud-edge/modules/mutual-tls/)
 
 
 ## **Prerequisites**
 
+A certificate authority (CA) is required for mTLS.  The CA is responsible for issuing and digitally signing certificates (client certificates).  The CA will also be used to verify the authenticity of the certificates.  
+
 1. CA certificate to be used by ngrok to verify the clients
-2. Client certificates signed by the CA
+2. Client certificates signed by the CA used to access the endpoints
 
-Most organizations will have their own certificate mangement infrastructure, examples are provided below for creating the CA and client certificates.  The examples below for certificate creation are optional, and provided for demo purposes.
+Most organizations will have their own certificate mangement infrastructure, examples are provided below for creating the CA and client certificates.  These examples of certificate creation are optional, and provided for reference/demo purposes.
 
-### Create the CA
+### Example - Create the CA
 
 Generate the CA private key, providing a strong passphrase is desirable<br></br>
 ```bash
@@ -32,12 +34,12 @@ openssl genrsa -aes256 -out ca.key 4096
 ```
 
 
-Now we'll generate the CA certificate.  Feel free to leave all attribute fields blank by entering a period `.`, the CommonName used in this example was ngrok.mtls to identify the certificate.<br></br>
+Now we'll generate the CA certificate.  Feel free to leave attribute fields blank by entering a period `.`.  It's recommended to specify the CommonName this will be used to identify the certificate authority.<br></br>
 ```bash
 openssl req -new -x509 -sha256 -days 365 -key ca.key -out ca.crt
 ```
 
-### Create a Client Certificate
+### Example - Create a Client Certificate
 
 Generate the client private key<br></br>
 ```bash
@@ -68,7 +70,7 @@ ngrok http 80 --mutual-tls-cas ca.crt
 
 
 ### Cloud Edges
-If using the Cloud Edges product, we'll need to upload the CA certificate creating a CA object to be referenced by the Cloud Edge mTLS module.
+If using the Cloud Edges product, we'll need to upload the CA certificate creating a [Certificate Authority](https://ngrok.com/docs/api/resources/certificate-authorities/) object that will be referenced by the Cloud Edge mTLS module.
 From within the [ngrok dashboard](https://dashboard.ngrok.com) follow the next steps.
 
 #### Upload CA cert ####
@@ -79,17 +81,17 @@ From within the [ngrok dashboard](https://dashboard.ngrok.com) follow the next s
 #### Enable mTLS on Edge ####
 
 * From within the [ngrok dashboard](https://dashboard.ngrok.com), navigate to [**Cloud Edge** --> **Edges**](https://dashboard.ngrok.com/cloud-edge/edges) and select your existing Edge or click on + New Edge to create either a HTTPs or TLS edge.
-* Within the Edges configuration, select the **Mutual TLS** module and select **Begin Setup**
-* Click **Attach Authority**, select the previously uplodaed CA and click **Attach 1 Certificate Authority**, and the click **Save**.
+* Within the Edges configuration, select the **Mutual TLS** module and click **Begin Setup**
+* Click **Attach Authority**, select the previously uploaded CA and click **Attach 1 Certificate Authority**, and then click **Save**.
 
 
 ## **Testing mTLS**
-To test that mTLS is working correctly, first try to access without specifying your client cert.  An error will be returned without being able to access the endpoint.<br></br>
+To test that mTLS is working correctly, first try to access without specifying your client cert.  A certificate error will be returned denying access to the endpoint.<br></br>
 ```bash
 curl https://<your_ngrok_endpoint>/
 ```
 
-Now let's specify the client certificate and key when accessing the site.  This will be successful verifying the mTLS is protecting you endpoint.<br></br>
+Now let's specify the client certificate and key when accessing the site.  This will be successful verifying that mTLS is protecting your endpoint.<br></br>
 ```bash
 curl --cert ngrokclient.crt --key ngrokclient.key https://<your_ngrok_endpoint>/
 ```
@@ -98,4 +100,4 @@ curl --cert ngrokclient.crt --key ngrokclient.key https://<your_ngrok_endpoint>/
 
 ## **Conclusion**
 
-mTLS is an extremely effective way to control who is able to access your endpoints.  Utilizing the ngrok platform vastly simplifies the implementation of mTLS providing enhanced security to your endpoints in seconds.
+mTLS is an extremely effective way to control who/what is able to access your endpoints.  Utilizing the ngrok platform vastly simplifies the implementation of mTLS providing enhanced security for your endpoints in seconds.
