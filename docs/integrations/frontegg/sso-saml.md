@@ -64,7 +64,7 @@ To integrate ngrok with Frontegg SSO, you will need to:
 
 1. Copy the value of the **token** attribute from the response.
 
-1. In the same terminal window, run the following command to download de metadata XML file from Frontegg:
+1. In the same terminal window, run the following command to download the metadata XML file from Frontegg:
 
    ```bash
    curl --location --request POST 'https://api.frontegg.com/oauth/resources/configurations/saml/v1/https%3A%2F%2Ftemporary' \
@@ -112,7 +112,7 @@ To configure an edge with Frontegg:
 
 ### **Step 3**: Configure Frontegg {#configure-frontegg}
 
-1. In the same terminal window, you ran the previous commands, run the following command to create a SAML configuration related to your ngrok SAML edge:
+1. In the same terminal window in which you ran the previous commands, run the following command to create a SAML configuration related to your ngrok SAML edge:
 
    ```bash
    curl --location --request POST 'https://api.frontegg.com/oauth/resources/configurations/saml/v1/URL-ENCODED-NGROK-ENTITY-ID' \
@@ -125,11 +125,11 @@ To configure an edge with Frontegg:
    }'
    ```
 
-   **Note**: Replace the following with values copied on previous steps:
+   **Note**: Replace the following with the values copied on previous steps:
 
    - URL-ENCODED-NGROK-ENTITY-ID: URL-Enconded value of the ngrok **Entity ID*** copied from the edge SAML configuration.
    - YOUR-FRONTEGG-HOST-URL: The value of the **Domain name** from the **Env settings** > **Domains** tab.
-   - TOKEN: The frontegg token you copied before.
+   - TOKEN: The Frontegg token you copied before.
    - NGROK-ACS-URL: The value of the ngrok **Entity ID** copied from the edge SAML configuration.
    - NGROK-ENTITY-ID-URL: The value of the ngrok **ACS URL** copied from the edge SAML configuration.
 
@@ -172,7 +172,7 @@ For this step, we assume you have an app running locally (i.e. on localhost:3000
    - Refresh the test edge page. Under traffic, You will see the message _You have 1 tunnel online. Start additional tunnels to begin load balancing._
      ![tunnel confirmed](img/frontegg-3.png)
 
-1. In the test edge, copy the **endpoint URL**. (You use this URL to test the Frontegg Authentication)
+1. In the test edge, copy the **endpoint URL**. (you use this URL to test the Frontegg Authentication)
    ![tunnel url](img/frontegg-7.png)
 
 
@@ -187,14 +187,14 @@ Create a Frontegg user:
 1. On the left menu, click **Backoffice**, click **Users**, and then click **Add New**.
 
 1. On the **Add new user** popup, enter a name and email, select the account you have created, and then click **Save**.
-   **Note**: By default, the user is assigned the **Admin** role.
+   **Note**: by default value to assign the **Admin** role to the user
 
 
 ## Test the integration {#test-sso}
 
 1. In your browser, launch an incognito window.
 
-1. Access your ngrok tunnel (i.e., `https://frontegg-sso-test.ngrok.app` or using the copied endpoint URL).
+1. Access your ngrok tunnel (i.e., `https://frontegg-sso-test.ngrok.app`. Use the copied endpoint URL).
 
 1. You should be prompted to log in with your Frontegg credentials.
 

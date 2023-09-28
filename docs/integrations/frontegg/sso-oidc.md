@@ -70,7 +70,7 @@ Create a Frontegg user:
 1. On the left menu, click **Backoffice**, click **Users**, and then click **Add New**.
 
 1. On the **Add new user** popup, enter a name, email, select the account you have created, and then click **Save**.
-   **Note**: By default, the user is assigned the **Admin** role.
+   **Note**: by default, the user is assigned the **Admin** role.
 
 
 ## **Step 2**: Configure ngrok {#configure-ngrok}
@@ -94,7 +94,7 @@ ngrok can leverage Frontegg SSO in two ways:
    --oidc-client-secret=FRONTEGG_CLIENT_SECRET \
    ```
 
-   **Note**: Replace the following with values:
+   **Note**: Replace the following with the values:
 
    - FRONTEGG_OAUTH_URL: Your Frontegg **Domain name** URL (i.e. `https://app-123456.frontegg.com`).
    - FRONTEGG_CLIENT_ID: The client id you copied from Frontegg.
@@ -157,7 +157,7 @@ For this step, we assume you have an app running locally (i.e. on localhost:3000
     - Refresh the test edge page. Under traffic, you will see the message _You have 1 tunnel online. Start additional tunnels to begin load balancing._
       ![tunnel confirmed](img/frontegg-3.png)
 
-1. In the test edge, copy the **endpoint URL** (You use this URL to test the Frontegg authentication).
+1. In the test edge, copy the **endpoint URL** (you use this URL to test the Frontegg Authentication).
     ![tunnel url](img/frontegg-4.png)
 
 
