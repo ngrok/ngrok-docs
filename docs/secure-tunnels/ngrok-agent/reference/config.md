@@ -160,14 +160,14 @@ This is the region where the ngrok agent will connect to. You can only choose on
 
 | Region Code | Region Name                |
 | ----------- | -------------------------- |
+| `ap`        | Asia/Pacific (Singapore)   |
+| `au`        | Australia (Sydney)         |
+| `eu`        | Europe (Frankfurt)         |
+| `in`        | India (Mumbai)             |
+| `jp`        | Japan (Tokyo)              |
+| `sa`        | South America (São Paulo)  |
+| `us`        | United States (Ohio)       |
 | `us-cal-1`  | United States (California) |
-| `us`        | United States (Virginia)   |
-| `eu`        | Europe                     |
-| `ap`        | Asia/Pacific               |
-| `au`        | Australia                  |
-| `sa`        | South America              |
-| `jp`        | Japan                      |
-| `in`        | India                      |
 
 ### `remote_management`
 
