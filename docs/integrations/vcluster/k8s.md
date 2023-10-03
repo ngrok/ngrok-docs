@@ -241,7 +241,7 @@ cluster, virtual cluster, and ultimately an exposed service or endpoint, you can
   namespace and connected service, to validate that your demo application is accessible to external traffic via the
   Ingress Controller.
 
-  !["Looking at existing Edge configurations in the ngrok dashboard"](./img/ngrok-k8s-vcluster_edges.png)
+  !["Looking at existing Edge configurations in the ngrok dashboard"](img/ngrok-k8s-vcluster_edges.png)
 
   Click on your edge configuration to see additional details and options for advanced ingress needs, like creating
   multiple tunnels for load balancing, enabling the [Mutual TLS module](/cloud-edge/modules/mutual-tls/), adding
@@ -251,7 +251,7 @@ cluster, virtual cluster, and ultimately an exposed service or endpoint, you can
    and your Ingress Controller will route traffic to your app from any device or external network as long as your
    vcluster remains operational.
 
-  !["Navigating directly to the https://one-two-three.ngrok-free.app domain to see the 2048 application"](./img/ngrok-k8s-vcluster_2048.png)
+  !["Navigating directly to the https://one-two-three.ngrok-free.app domain to see the 2048 application"](img/ngrok-k8s-vcluster_2048.png)
 
 ## **Step 4**: Add OAuth protection to your demo app {#add-oauth-protection}
 
@@ -356,7 +356,7 @@ allowing ingress and access to your endpoint.
    edge for your deployment, then click **OAuth** to confirm the module is using the configuration you added to your
    `2048.yaml` manifest.
 
-  ![Verifying the OAuth module configuration in the ngrok dashboard](./img/ngrok-k8s-vcluster_oauth-config.png)
+  ![Verifying the OAuth module configuration in the ngrok dashboard](img/ngrok-k8s-vcluster_oauth-config.png)
 
 1. Access your 2048 app at your domain (e.g. `https://one-two-three.ngrok-free.app`) to verify that it requests
    authentication via Google OAuth before allowing you to access the 2048 app.
