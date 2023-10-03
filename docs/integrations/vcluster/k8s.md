@@ -152,7 +152,7 @@ At this point, you have a functional vcluster with the ngrok Ingress Controller 
 ngrok credentials. To demonstrate how the Ingress Controller simplifies routing external traffic to your primary
 cluster, virtual cluster, and ultimately an exposed service or endpoint, you can install a sample application.
 
-1. Create a ngrok static subdomain for ingress if you don't have one already done. Navigate to the [**Domains**
+1. Create a ngrok static subdomain for ingress if you don't have one already. Navigate to the [**Domains**
    section](https://dashboard.ngrok.com/cloud-edge/domains) of the ngrok dashboard and click **Create Domain** or **New
    Domain**. This static subdomain will be your `NGROK_DOMAIN` for the remainder of this guide.
 
