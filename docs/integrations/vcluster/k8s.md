@@ -268,7 +268,7 @@ allowing ingress and access to your endpoint.
 
   :::tip Notes:
     - See L42-43 for the additional annotation that this OAuth setup requires.
-    - See L58-69 for the newly added configuration for ngrok's OAuth module, replacing `acme.com` or `ngrok.com` with the domain name for your email address. You can also [configure the OAuth module](/user-guide/route-modules/#ngrok-managed-oauth-application) to authenticate individual email addresses.
+    - See L58-69 for the newly added configuration for ngrok's OAuth module, replacing `acme.com` or `ngrok.com` with the domain name for your email address. You can also [configure the OAuth module](https://github.com/ngrok/kubernetes-ingress-controller/blob/main/docs/user-guide/route-modules.md#ngrok-managed-oauth-application) to authenticate individual email addresses.
   :::
 
   ```yaml showLineNumbers
