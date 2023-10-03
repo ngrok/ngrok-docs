@@ -6,11 +6,13 @@ description: Setup a local virtual cluster to demonstrate how to use the ngrok I
 ------------
 
 :::tip TL;DR
+
 To use the ngrok Ingress Controller for Kubernetes with vcluster in a local cluster:
-1. [Set up a local virtual cluster with vcluster](#set-up-a-consul-service-mesh-on-kubernetes)
-1. [Install the ngrok Ingress Controller](#install-the-ngrok-ingress-controller)
-1. [Install a sample application](#install-a-sample-application)
-1. [Add OAuth protection to your demo app](#add-oauth-protection)
+1. [Set up a local virtual cluster](#set-up-a-consul-service-mesh-on-kubernetes)
+2. [Install the ngrok Ingress Controller](#install-the-ngrok-ingress-controller)
+3. [Install a sample application](#install-a-sample-application)
+4. [Add OAuth protection to your demo app](#add-oauth-protection)
+
 :::
 
 The ngrok [Ingress Controller for Kubernetes](https://ngrok.com/blog-post/ngrok-k8s) is the official controller for
@@ -34,10 +36,10 @@ demo application to the ngrok platform to route traffic to your vcluster.
 
 :::caution This tutorial requires:
 1. An [ngrok account](https://ngrok.com/signup).
-1. The [vcluster CLI](https://www.vcluster.com/docs/quickstart) installed locally.
-1. [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) installed locally.
-1. [Helm 3.0.0+](https://helm.sh/docs/intro/install/) installed locally.
-1. An existing remote or local Kubernetes cluster _OR_ [minikube](https://minikube.sigs.k8s.io/docs/start/) to create a 
+2. The [vcluster CLI](https://www.vcluster.com/docs/quickstart) installed locally.
+3. [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) installed locally.
+4. [Helm 3.0.0+](https://helm.sh/docs/intro/install/) installed locally.
+5. An existing remote or local Kubernetes cluster _OR_ [minikube](https://minikube.sigs.k8s.io/docs/start/) to create a 
    new demo cluster locally.
 :::
 
