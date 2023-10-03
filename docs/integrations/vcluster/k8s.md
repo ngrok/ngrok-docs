@@ -16,20 +16,21 @@ To use the ngrok Ingress Controller for Kubernetes with vcluster in a local clus
 The ngrok [Ingress Controller for Kubernetes](https://ngrok.com/blog-post/ngrok-k8s) is the official controller for
 adding public and secure ingress traffic to your k8s services. This open source Ingress Controller works with any cloud,
 locally-hosted, or on-premises Kubernetes cluster to provide ingress to your applications, APIs, or other services while
-also offloading network ingress and middleware execution to ngrok's cloud edge.
+also offloading network ingress and middleware execution to ngrok's platform.
 
 [vcluster](https://www.vcluster.com/) is an open source project for creating virtual clusters that run inside regular
 namespaces, which provides strong isolation and easy access for multiple tenants with low cost and overhead. The pods
 you deploy on a vcluster are scheduled inside of the underlying cluster, while other resources, like deployments and
 CRDs, exist only inside the virtual cluster.
 
-Together, the ngrok Ingress Controller and vcluster work provide secure and load-balanced ingress for services running
-on a virtual cluster, which lets you isolate development environments, create an internal developer platform (IDP) in
-cloud native environments, and run experiments or simulations virtually while properly routing external traffic.
+Together, the ngrok Ingress Controller and vcluster work to provide secure and load-balanced ingress for services
+running on a virtual cluster, which lets you isolate development environments, create an internal developer platform
+(IDP) in cloud native environments, and run experiments or simulations virtually while properly routing external
+traffic.
 
 With this guide, you'll use an existing Kubernetes cluster, or set up a local development cluster with minikube, to
 launch a virtual cluster, and deploy a demo application. You'll then deploy the ngrok Ingress Controller to connect your
-demo application to the ngrok cloud edge to route traffic to your vcluster.
+demo application to the ngrok platform to route traffic to your vcluster.
 
 :::caution This tutorial requires:
 1. An [ngrok account](https://ngrok.com/signup).
@@ -57,7 +58,7 @@ If you don't have a cluster already, create one locally with minikube and instal
 1. Use the `minikube` CLI to ensure your new local cluster is running properly.
 
   ```bash
-  minikube kubectl -- get namespaces
+  kubectl get namespaces
 
   NAME              STATUS   AGE
   default           Active   5m55s
@@ -73,7 +74,8 @@ If you don't have a cluster already, create one locally with minikube and instal
   vcluster create my-vcluster --expose-local
   ```
 
-1. Double check you're connected to the vcluster context by viewing the namespaces again.
+1. To ensure your new local cluster is running properly get the namespaces for your instance. Your list of namespaces in
+   the `my-vcluster` context should look something like this.
 
   ```bash
   kubectl get namespaces
