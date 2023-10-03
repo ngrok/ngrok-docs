@@ -1,5 +1,5 @@
 ---
-title: Using Mutual TLS Authentication
+title: Using Mutual TLS (mTLS) Authentication
 description: Protecting your endpoints with mutual TLS authentication (mTLS)
 tags:
   - guides
