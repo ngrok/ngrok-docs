@@ -101,7 +101,7 @@ The ngrok-go library provides functions and configuration for all features avail
 
 - **Line 22**: Use Google’s OAuth for authentication
 - **Line 23**: Restrict access only for users from a specific email (i.e. to grant access only to users with gmail, replace `YOUR EMAIL DOMAIN` with `gmail.com`)
-- **Line 24**: Use my-domain.ngrok.dev as a custom subdomain
+- **Line 24**: Use my-domain.ngrok.dev as a custom subdomain. You can also use your own [custom domain](https://ngrok.com/docs/guides/how-to-set-up-a-custom-domain/).
 - **Line 25**: Upon a successful authentication, send the user email in the email header
 - **Line 39**: Print the email header.
 
