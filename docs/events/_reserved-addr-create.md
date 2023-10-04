@@ -1,7 +1,7 @@
 <!-- Code generated for API Clients. DO NOT EDIT. -->
 
-| &nbsp;      | &nbsp; | &nbsp;                                                                                                         |
-| ----------- | ------ | -------------------------------------------------------------------------------------------------------------- |
-| description | string | human-readable description of what this reserved address will be used for                                      |
-| metadata    | string | arbitrary user-defined machine-readable data of this reserved address. Optional, max 4096 bytes.               |
-| region      | string | reserve the address in this geographic ngrok datacenter. Optional, default is us. (au, eu, ap, us, jp, in, sa) |
+| &nbsp;      | &nbsp; | &nbsp;                                                                                                                                                                                                                                                 |
+| ----------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| description | string | human-readable description of what this reserved address will be used for                                                                                                                                                                              |
+| metadata    | string | arbitrary user-defined machine-readable data of this reserved address. Optional, max 4096 bytes.                                                                                                                                                       |
+| region      | string | deprecated: With the launch of the ngrok Global Network domains traffic is now handled globally. This field applied only to endpoints. Note that agents may still connect to specific regions. Optional, null by default. (au, eu, ap, us, jp, in, sa) |
