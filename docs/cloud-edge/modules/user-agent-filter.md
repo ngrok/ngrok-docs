@@ -25,8 +25,9 @@ tunnels:
   example:
     proto: http
     addr: 80
-    ua_filter_allow: ["(foo/(\d)+.(\d)+)", "(bar/(\d)+.(\d)+)"]
-    ua_filter_deny: ["(buzz/(\d)+.(\d)+)"]
+    user_agent_filter:
+      allow: ["(foo/(\d)+.(\d)+)", "(bar/(\d)+.(\d)+)"]
+      deny: ["(buzz/(\d)+.(\d)+)"]
 ```
 
 ### Go SDK
@@ -92,8 +93,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
         .connect()
         .await?
         .http_endpoint()
-        .allow_ua(r"foo/(\d)+")
-        .allow_ua(r"bar/(\d)+")
+        .allow_user_agent(r"foo/(\d)+")
+        .allow_user_agent(r"bar/(\d)+")
         .deny_ua(r"buz/(\d)+")
         .listen()
         .await?;
