@@ -44,6 +44,8 @@ ssh -R 443:localhost:80 connect.ngrok-agent.com http \
 
 ### Go SDK
 
+See [WithAllowCIDRString](https://pkg.go.dev/golang.ngrok.com/ngrok/config#WithAllowCIDRString) and [WithDenyCIDRString](https://pkg.go.dev/golang.ngrok.com/ngrok/config#WithDenyCIDRString) in the Go SDK docs.
+
 ```go
 import (
 	"context"
@@ -65,7 +67,42 @@ func listenIPRestrictions(ctx context.Context) net.Listener {
 }
 ```
 
+### NodeJS SDK
+
+See [ip_restriction_allow_cidrs](https://ngrok.github.io/ngrok-nodejs/interfaces/Config.html#ip_restriction_allow_cidrs) and [ip_restriction_deny_cidrs](https://ngrok.github.io/ngrok-nodejs/interfaces/Config.html#ip_restriction_deny_cidrs) in the NodeJS SDK docs.
+
+```jsx
+const ngrok = require("@ngrok/ngrok");
+
+(async function () {
+	const url = await ngrok.connect({
+		addr: 8080,
+		authtoken_from_env: true,
+		ip_restriction_allow_cidrs: ["110.0.0.0/8", "220.12.0.0/16"],
+		ip_restriction_deny_cidrs: "110.2.3.4/32",
+	});
+
+	console.log(`Ingress established at: ${url}`);
+})();
+```
+
+### Python SDK
+
+See [allow_cidr](https://ngrok.github.io/ngrok-python/http_listener_builder.html#ngrok.HttpListenerBuilder.allow_cidr) and [deny_cidr](https://ngrok.github.io/ngrok-python/http_listener_builder.html#ngrok.HttpListenerBuilder.deny_cidr) in the Python SDK docs.
+
+```python
+import ngrok
+
+listener = ngrok.connect("localhost:8080", authtoken_from_env=True,
+  ip_restriction_allow_cidrs=["110.0.0.0/8", "220.12.0.0/16"],
+  ip_restriction_deny_cidrs="110.2.3.4/32")
+
+print(f"Ingress established at: {listener.url()}");
+```
+
 ### Rust SDK
+
+See [allow_cidr](https://docs.rs/ngrok/latest/ngrok/config/struct.HttpTunnelBuilder.html#method.allow_cidr) and [deny_cidr](https://docs.rs/ngrok/latest/ngrok/config/struct.HttpTunnelBuilder.html#method.deny_cidr) in the Rust SDK docs.
 
 ```rust
 use ngrok::prelude::*;

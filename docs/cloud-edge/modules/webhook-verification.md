@@ -56,6 +56,8 @@ ssh -R 443:localhost:80 connect.ngrok-agent.com http \
 
 ### Go SDK
 
+See [WithWebhookVerification](https://pkg.go.dev/golang.ngrok.com/ngrok/config#WithWebhookVerification) in the Go SDK docs.
+
 ```go
 import (
 	"context"
@@ -76,7 +78,42 @@ func listenWebhookVerification(ctx context.Context) net.Listener {
 }
 ```
 
+### NodeJS SDK
+
+See [verify_webhook_provider](https://ngrok.github.io/ngrok-nodejs/interfaces/Config.html#verify_webhook_provider) and [verify_webhook_secret](https://ngrok.github.io/ngrok-nodejs/interfaces/Config.html#verify_webhook_secret) in the NodeJS SDK docs.
+
+```jsx
+const ngrok = require("@ngrok/ngrok");
+
+(async function () {
+	const url = await ngrok.connect({
+		addr: 8080,
+		authtoken_from_env: true,
+		verify_webhook_provider: "twilio",
+		verify_webhook_secret: "{twilio signing secret}",
+	});
+
+	console.log(`Ingress established at: ${url}`);
+})();
+```
+
+### Python SDK
+
+See [webhook_verification](https://ngrok.github.io/ngrok-python/http_listener_builder.html#ngrok.HttpListenerBuilder.webhook_verification) in the Python SDK docs.
+
+```python
+import ngrok
+
+listener = ngrok.connect("localhost:8080", authtoken_from_env=True,
+  verify_webhook_provider="twilio",
+  verify_webhook_secret="{twilio signing secret}")
+
+print(f"Ingress established at: {listener.url()}");
+```
+
 ### Rust SDK
+
+See [webhook_verification](https://docs.rs/ngrok/latest/ngrok/config/struct.HttpTunnelBuilder.html#method.webhook_verification) in the Rust SDK docs.
 
 ```rust
 use ngrok::prelude::*;

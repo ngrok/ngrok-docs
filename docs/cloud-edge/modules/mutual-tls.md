@@ -42,6 +42,8 @@ Mutual TLS is not supported via SSH.
 
 ### Go SDK
 
+See [WithMutualTLSCA](https://pkg.go.dev/golang.ngrok.com/ngrok/config#WithMutualTLSCA) in the Go SDK docs.
+
 ```go
 import (
 	"context"
@@ -70,7 +72,45 @@ func listenMutualTLS(ctx context.Context) net.Listener {
 }
 ```
 
+### NodeJS SDK
+
+See [mutual_tls_cas](https://ngrok.github.io/ngrok-nodejs/interfaces/Config.html#mutual_tls_cas) in the NodeJS SDK docs.
+
+```jsx
+const ngrok = require("@ngrok/ngrok");
+const fs = require("fs");
+
+(async function () {
+	const url = await ngrok.connect({
+		addr: 8080,
+		authtoken_from_env: true,
+		mutual_tls_cas: [fs.readFileSync("cas.pem", "utf8")],
+	});
+
+	console.log(`Ingress established at: ${url}`);
+})();
+```
+
+### Python SDK
+
+See [mutual_tlsca](https://ngrok.github.io/ngrok-python/http_listener_builder.html#ngrok.HttpListenerBuilder.mutual_tlsca) in the Python SDK docs.
+
+```python
+import ngrok
+
+def load_file(name):
+    with open(name, "r") as crt:
+        return bytearray(crt.read().encode())
+
+listener = ngrok.connect("localhost:8080", authtoken_from_env=True,
+	mutual_tls_cas=load_file("cas.pem"))
+
+print(f"Ingress established at: {listener.url()}");
+```
+
 ### Rust SDK
+
+See [mutual_tlsca](https://docs.rs/ngrok/latest/ngrok/config/struct.HttpTunnelBuilder.html#method.mutual_tlsca) in the Rust SDK docs.
 
 ```rust
 use ngrok::prelude::*;
