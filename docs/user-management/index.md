@@ -24,6 +24,10 @@ ngrok supports two enforcement options once you have configured your identity pr
 
 ## Bot Users {#bot-users}
 
+### What is a Bot User?
+
+A Bot User is a service account that owns a set of credentials - authtokens, API keys, and SSH keys - independently of a person. You can see and manage your bot users in the [ngrok Dashboard](https://dashboard.ngrok.com/users/bots).
+
 Bot Users are similar to [Users](#users) but they are intended for automated
 systems that programmatically interact with your ngrok accounts either by
 starting ngrok Agents or making requests to the API.
@@ -35,41 +39,33 @@ Bot Users differ from Users in a few important ways:
 
 - Bot Users may not log into the Dashboard
 - Bot Users may not be a member of more than one Account
-- If your Bot Users do not counta
+- Bot users do not count against any seat counts or limits.
+- Bot users can only be leveraged in ngrok pay-as-you-go plans.
 
-Bot Users may be
+Bot Users facts and limitations:
 
-- Does not count as a standard user against your ngrok seat count
-- May be attached to services that consume ngrok platform resources and can trigger overages. These areas include metrics like bandwidth, total sessions and endpoints, auth tokens, API tokens, and more.
-- Has limited functionality
-  - Cannot log into the ngrok Dashboard
-  - Cannot be assigned or shared among multiple accounts
-- Has some great benefits
-  - Credentials that are unique to a specific service or function instead of being connected to a person. A standard user may leave the account or want to rotate their credentials, and these actions should not impact production services running in ngrok.
-  - Events are attributed to the Bot User and can help you better understand what a specific production service in ngrok is doing, even when there are multiple production services in the same account.
-  - Can be deactivated to temporarily suspend all credentials associated with it
-  - Can be deleted to immediately revoke and delete all credentials associated with it
+- Bot users may be attached to services that consume ngrok platform resources and can trigger overages. These areas include metrics like bandwidth, total sessions and endpoints, auth tokens, API tokens, and more.
+- Bot users have limited functionality:
+  - Bot users cannot log into the ngrok Dashboard
+  - Bot users cannot be assigned or shared among multiple accounts
+- Benefits of bot users:
+  - Credentials that are unique to a specific service or function can be connected to a bot user instead of being connected to a person. A standard user may leave the account or want to rotate their credentials, and these actions should not impact production services running in ngrok.
+  - Events are attributed to a Bot User and can help you better understand what a specific production service in ngrok is doing, even when there are multiple production services in the same account.
+  - Bot users can be deactivated to temporarily suspend all credentials associated with it—making ngrok more secure.
+  - Bot users can be deleted to immediately revoke and delete all credentials associated with it—making ngrok more secure.
 
-### What is a Bot User?
+### How do I create a Bot User? {#bot-user-creation}
 
-A Bot User is a service account that owns a set of credentials - authtokens, API keys, and SSH keys - independently of a person. You can see and manage your bot users in the [ngrok Dashboard](https://dashboard.ngrok.com/users/bots).
+Access the [ngrok Dashboard](https://dashboard.ngrok.com/users/bots) to create a new bot user.
+Navigate to the "Users" section of the left hand navigation, and then "Bot Users".
 
-### A Bot User: {#bot-user}
-
-- Does not count as a standard user against your ngrok seat count
-- May be attached to services that consume ngrok platform resources and can trigger overages. These areas include metrics like bandwidth, total sessions and endpoints, auth tokens, API tokens, and more.
-- Has limited functionality
-  - Cannot log into the ngrok Dashboard
-  - Cannot be assigned or shared among multiple accounts
-- Has some great benefits
-  - Credentials that are unique to a specific service or function instead of being connected to a person. A standard user may leave the account or want to rotate their credentials, and these actions should not impact production services running in ngrok.
-  - Events are attributed to the Bot User and can help you better understand what a specific production service in ngrok is doing, even when there are multiple production services in the same account.
-  - Can be deactivated to temporarily suspend all credentials associated with it
-  - Can be deleted to immediately revoke and delete all credentials associated with it
+Bot users are available on ngrok pay-as-you go plans.
 
 ### When should I use a Bot User? {#bot-user-use-cases}
 
 A Bot User is the best suited to own the credentials of shipped products, devices, and integrations in production. The ideal flow is a credential you can associate with a specific task, keep active, and can rotate on a predictable schedule because it is unique to that integration, service, or function.
+
+Bot users are available on ngrok pay-as-you go plans.
 
 ### When should I not use a Bot User? {#bot-user-vs-user}
 
@@ -82,7 +78,3 @@ When you delete a Bot User, all credentials owned the user are immediately revok
 ### Can I move my former employees credentials (API keys, authtokens, SSH keys) to a Bot User? {#bot-user-existing-credentials}
 
 Credentials are assigned an owner when they are created and the owner cannot be changed. Access the [ngrok Dashboard](https://dashboard.ngrok.com/users/bots) to create a new bot user.
-
-### How come I didn't know ngrok had Bot Users? {#bot-user-launch}
-
-We are continuously improving the ngrok platform with new features! We launched Bot Users in early 2023 and are excited to see our customers adopt this functionality.
