@@ -40,7 +40,7 @@ Bot Users differ from Users in a few important ways:
 - Bot Users may not log into the Dashboard
 - Bot Users may not be a member of more than one Account
 - Bot users do not count against any seat counts or limits.
-- Bot users can only be leveraged in ngrok Pay-as-you-go plans. 
+- Bot users can only be leveraged in ngrok pay-as-you-go plans. 
 
 Bot Users facts and limitations:
 
