@@ -52,7 +52,7 @@ Bot Users facts and limitations:
   - Credentials that are unique to a specific service or function can be connected to a bot user instead of being connected to a person. A standard user may leave the account or want to rotate their credentials, and these actions should not impact production services running in ngrok.
   - Events are attributed to a Bot User and can help you better understand what a specific production service in ngrok is doing, even when there are multiple production services in the same account.
   - Bot users can be deactivated to temporarily suspend all credentials associated with it—making ngrok more secure. 
-  - Bot users can be deleted to immediately revoke and delete all credentials associated with it--making ngrok more secure.
+  - Bot users can be deleted to immediately revoke and delete all credentials associated with it—making ngrok more secure.
 
  ### How do I create a Bot User? {#bot-user-creation}
 Access the [ngrok Dashboard](https://dashboard.ngrok.com/users/bots) to create a new bot user. 
