@@ -1,5 +1,5 @@
 ---
-title: SSH
+title: SSH 32
 ---
 
 # Using ngrok with SSH
