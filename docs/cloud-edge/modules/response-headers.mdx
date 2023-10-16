@@ -51,6 +51,8 @@ ssh -R 443:localhost:80 connect.ngrok-agent.com http \
 
 ### Go SDK
 
+See [WithResponseHeader](https://pkg.go.dev/golang.ngrok.com/ngrok/config#WithResponseHeader) and [WithRemoveResponseHeader](https://pkg.go.dev/golang.ngrok.com/ngrok/config#WithRemoveResponseHeader) in the Go SDK docs.
+
 ```go
 import (
 	"context"
@@ -74,7 +76,45 @@ func listenResponseHeaders(ctx context.Context) net.Listener {
 }
 ```
 
+### NodeJS SDK
+
+See [response_header_add](https://ngrok.github.io/ngrok-nodejs/interfaces/Config.html#response_header_add) and [response_header_remove](https://ngrok.github.io/ngrok-nodejs/interfaces/Config.html#response_header_remove) in the NodeJS SDK docs.
+
+```jsx
+const ngrok = require("@ngrok/ngrok");
+
+(async function () {
+	const url = await ngrok.connect({
+		addr: 8080,
+		authtoken_from_env: true,
+		response_header_add: [
+			"content-security-policy:self",
+			"dial-duration:${.backend.dial_duration}",
+		],
+		response_header_remove: "internal-trace-id",
+	});
+
+	console.log(`Ingress established at: ${url}`);
+})();
+```
+
+### Python SDK
+
+See [response_header](https://ngrok.github.io/ngrok-python/http_listener_builder.html#ngrok.HttpListenerBuilder.response_header) and [remove_response_header](https://ngrok.github.io/ngrok-python/http_listener_builder.html#ngrok.HttpListenerBuilder.remove_response_header) in the Python SDK docs.
+
+```python
+import ngrok
+
+listener = ngrok.connect("localhost:8080", authtoken_from_env=True,
+  response_header_add=["content-security-policy:self", "dial-duration:${.backend.dial_duration}"],
+  response_header_remove="internal-trace-id")
+
+print(f"Ingress established at: {listener.url()}");
+```
+
 ### Rust SDK
+
+See [response_header](https://docs.rs/ngrok/latest/ngrok/config/struct.HttpTunnelBuilder.html#method.response_header) and [remove_response_header](https://docs.rs/ngrok/latest/ngrok/config/struct.HttpTunnelBuilder.html#method.remove_response_header) in the Rust SDK docs.
 
 ```rust
 use ngrok::prelude::*;

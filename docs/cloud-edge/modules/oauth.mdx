@@ -156,6 +156,8 @@ ssh -R 443:localhost:80 connect.ngrok-agent.com http \
 
 ### Go SDK
 
+See [WithOAuth](https://pkg.go.dev/golang.ngrok.com/ngrok/config#WithOAuth) in the Go SDK docs.
+
 ###### **Authenticate**
 
 ```go
@@ -251,7 +253,137 @@ func listenOAuth(ctx context.Context) net.Listener {
 }
 ```
 
+### NodeJS SDK
+
+See [oauth_provider](https://ngrok.github.io/ngrok-nodejs/interfaces/Config.html#oauth_provider) in the NodeJS SDK docs.
+
+###### **Authenticate**
+
+```jsx
+const ngrok = require("@ngrok/ngrok");
+
+(async function () {
+	const url = await ngrok.connect({
+		addr: 8080,
+		authtoken_from_env: true,
+		oauth_provider: "google",
+	});
+
+	console.log(`Ingress established at: ${url}`);
+})();
+```
+
+###### **Authenticate + Authorize by email and domain**
+
+```jsx
+const ngrok = require("@ngrok/ngrok");
+
+(async function () {
+	const url = await ngrok.connect({
+		addr: 8080,
+		authtoken_from_env: true,
+		oauth_provider: "google",
+		oauth_allow_emails: "kate.libby@gmail.com",
+		oauth_allow_domains: "acme.org",
+	});
+
+	console.log(`Ingress established at: ${url}`);
+})();
+```
+
+###### **Authenticate with your own OAuth app**
+
+```jsx
+const ngrok = require("@ngrok/ngrok");
+
+(async function () {
+	const url = await ngrok.connect({
+		addr: 8080,
+		authtoken_from_env: true,
+		oauth_provider: "microsoft",
+		oauth_client_id: "{client id}",
+		oauth_client_secret: "{client secret}",
+	});
+
+	console.log(`Ingress established at: ${url}`);
+})();
+```
+
+###### **Customize requested authentication scopes**
+
+```jsx
+const ngrok = require("@ngrok/ngrok");
+
+(async function () {
+
+  const url = await ngrok.connect({ addr: 8080, authtoken_from_env: true,
+    oauth_provider: "github",
+    oauth_client_id: "{client id}",
+    oauth_client_secret: "{client secret}"},
+    oauth_scopes: ["repo", "user"]);
+
+  console.log(`Ingress established at: ${url}`);
+})();
+```
+
+### Python SDK
+
+See [oauth](https://ngrok.github.io/ngrok-python/http_listener_builder.html#ngrok.HttpListenerBuilder.oauth) in the Python SDK docs.
+
+###### **Authenticate**
+
+```python
+import ngrok
+
+listener = ngrok.connect("localhost:8080", authtoken_from_env=True,
+  oauth_provider="google")
+
+print(f"Ingress established at: {listener.url()}");
+```
+
+###### **Authenticate + Authorize by email and domain**
+
+```python
+import ngrok
+
+listener = ngrok.connect("localhost:8080", authtoken_from_env=True,
+  oauth_provider="google",
+  oauth_allow_emails="kate.libby@gmail.com",
+  oauth_allow_domains="acme.org")
+
+print(f"Ingress established at: {listener.url()}");
+```
+
+###### **Authenticate with your own OAuth app**
+
+```python
+import ngrok
+
+listener = ngrok.connect("localhost:8080", authtoken_from_env=True,
+  oauth_provider="microsoft",
+  oauth_client_id="{client id}",
+  oauth_client_secret="{client secret}")
+
+print(f"Ingress established at: {listener.url()}");
+```
+
+###### **Customize requested authentication scopes**
+
+```python
+import ngrok
+
+listener = ngrok.connect("localhost:8080", authtoken_from_env=True,
+  oauth_provider="github",
+  oauth_client_id="{client id}",
+  oauth_client_secret="{client secret}",
+  oauth_scopes=["repo", "user"])
+
+print(f"Ingress established at: {listener.url()}");
+```
+
 ### Rust SDK
+
+See [oauth](https://docs.rs/ngrok/latest/ngrok/config/struct.HttpTunnelBuilder.html#method.oauth) in the Rust SDK docs.
 
 ###### **Authenticate**
 

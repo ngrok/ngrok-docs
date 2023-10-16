@@ -45,6 +45,8 @@ ssh -R 443:localhost:80 connect.ngrok-agent.com http --circuit-breaker 0.5
 
 ### Go SDK
 
+See [WithCircuitBreaker](https://pkg.go.dev/golang.ngrok.com/ngrok/config#WithCircuitBreaker) in the Go SDK docs.
+
 ```go
 import (
 	"context"
@@ -66,7 +68,39 @@ func listenCircuitBreaker(ctx context.Context) net.Listener {
 }
 ```
 
+### NodeJS SDK
+
+See [circuit_breaker](https://ngrok.github.io/ngrok-nodejs/interfaces/Config.html#circuit_breaker) in the NodeJS SDK docs.
+
+```jsx
+const ngrok = require("@ngrok/ngrok");
+
+(async function () {
+	const url = await ngrok.connect({
+		addr: 8080,
+		authtoken_from_env: true,
+		circuit_breaker: 0.5,
+	});
+
+	console.log(`Ingress established at: ${url}`);
+})();
+```
+
+### Python SDK
+
+See [circuit_breaker](https://ngrok.github.io/ngrok-python/http_listener_builder.html#ngrok.HttpListenerBuilder.circuit_breaker) in the Python SDK docs.
+
+```python
+import ngrok
+
+listener = ngrok.connect("localhost:8080", authtoken_from_env=True, circuit_breaker=0.5)
+
+print(f"Ingress established at: {listener.url()}");
+```
+
 ### Rust SDK
+
+See [circuit_breaker](https://docs.rs/ngrok/latest/ngrok/config/struct.HttpTunnelBuilder.html#method.circuit_breaker) in the Rust SDK docs.
 
 ```rust
 use ngrok::prelude::*;
