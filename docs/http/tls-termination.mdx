@@ -1,0 +1,105 @@
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+import KubernetesExample from "/examples/k8s/http-tls-termination.mdx";
+import AgentCliExample from "/examples/agent-cli/http-tls-termination.mdx";
+import AgentConfigExample from "/examples/agent-config/http-tls-termination.mdx";
+import SshExample from "/examples/ssh/http-tls-termination.mdx";
+import GoSdkExample from "/examples/go-sdk/http-tls-termination.mdx";
+import RustSdkExample from "/examples/rust-sdk/http-tls-termination.mdx";
+
+# TLS Termination
+
+---
+
+## Overview
+
+On HTTPS endpoints, TLS is always terminated at the ngrok edge.
+
+This module allows you to configure the particulars of how TLS is terminated.
+At the moment, the only behavior that is configurable is the minimum version of
+TLS to support.
+
+By default, endpoints will attempt to to use the latest supported version of
+TLS 1.3 but they will support clients down to a minimum version of TLS 1.2.
+
+## Example Usage
+
+Set the minimum supported TLS version to 1.3.
+
+<Tabs groupId="connectivity" queryString="cty">
+	<TabItem value="agent-cli" label="Agent CLI" default>
+		<AgentCliExample />
+	</TabItem>
+	<TabItem value="agent-config" label="Agent Config File">
+		<AgentConfigExample />
+	</TabItem>
+	<TabItem value="ssh" label="SSH">
+		<SshExample />
+	</TabItem>
+	<TabItem value="go-sdk" label="Go SDK">
+		<GoSdkExample />
+	</TabItem>
+	<TabItem value="rust-sdk" label="Rust SDK">
+		<RustSdkExample />
+	</TabItem>
+	<TabItem value="k8s" label="Kubernetes Controller">
+		<KubernetesExample />
+	</TabItem>
+</Tabs>
+
+## Behavior
+
+This module allows you to configure particulars of how TLS is terminated.
+
+On HTTPS endpoints, TLS is always terminated at the ngrok edge. The ngrok edge
+will attempt to use the latest supported version of TLS, TLS 1.3.
+
+If you configure a minimum version of TLS older than the default of 1.2, be
+aware that older versions of TLS have known security flaws.
+
+## Reference
+
+### Configuration
+
+| Parameter               | Default | Description                                                                                                                   |
+| ----------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| **Minimum TLS Version** | 1.2     | The minimum version of TLS to negotiate. Clients which do not support at least this version of TLS will be unable to connect. |
+
+### Upstream Headers {#upstream-headers}
+
+This module does not add any upstream headers.
+
+### Errors
+
+This module does not return any errors.
+
+### Edges
+
+TLS Termination is an HTTPS Edge module. It is attached directly to the Edge,
+it can not be configured on a per-Route basis. This is because TLS termination
+occurs before any HTTP multiplexing may begin.
+
+- [TLS Termination Edge Module API Resource](/api/resources/https-edge-tls-termination-module/)
+
+### Events
+
+When this module is enabled, it populates the following fields in
+[http_request_complete.v0](/obs/reference/#http-request-complete) events.
+
+| Fields             |
+| ------------------ |
+| `tls.version`      |
+| `tls.cipher_suite` |
+
+### Pricing
+
+This module is available on all plans.
+
+## Try it out
+
+:::note Coming Soon
+
+This documentation is incomplete. Please check back later, we appreciate your
+patience.
+
+:::

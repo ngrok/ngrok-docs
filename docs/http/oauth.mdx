@@ -1,0 +1,365 @@
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+import AuthnKubernetesExample from "/examples/k8s/http-oauth-authn.mdx";
+import AuthnAgentCliExample from "/examples/agent-cli/http-oauth-authn.mdx";
+import AuthnAgentConfigExample from "/examples/agent-config/http-oauth-authn.mdx";
+import AuthnSshExample from "/examples/ssh/http-oauth-authn.mdx";
+import AuthnGoSdkExample from "/examples/go-sdk/http-oauth-authn.mdx";
+import AuthnRustSdkExample from "/examples/rust-sdk/http-oauth-authn.mdx";
+
+import AuthzKubernetesExample from "/examples/k8s/http-oauth-authz.mdx";
+import AuthzAgentCliExample from "/examples/agent-cli/http-oauth-authz.mdx";
+import AuthzAgentConfigExample from "/examples/agent-config/http-oauth-authz.mdx";
+import AuthzSshExample from "/examples/ssh/http-oauth-authz.mdx";
+import AuthzGoSdkExample from "/examples/go-sdk/http-oauth-authz.mdx";
+import AuthzRustSdkExample from "/examples/rust-sdk/http-oauth-authz.mdx";
+
+import ByoAppKubernetesExample from "/examples/k8s/http-oauth-byo-app.mdx";
+import ByoAppAgentCliExample from "/examples/agent-cli/http-oauth-byo-app.mdx";
+import ByoAppAgentConfigExample from "/examples/agent-config/http-oauth-byo-app.mdx";
+import ByoAppSshExample from "/examples/ssh/http-oauth-byo-app.mdx";
+import ByoAppGoSdkExample from "/examples/go-sdk/http-oauth-byo-app.mdx";
+import ByoAppRustSdkExample from "/examples/rust-sdk/http-oauth-byo-app.mdx";
+
+import CustomizeScopesKubernetesExample from "/examples/k8s/http-oauth-customize-scopes.mdx";
+import CustomizeScopesAgentCliExample from "/examples/agent-cli/http-oauth-customize-scopes.mdx";
+import CustomizeScopesAgentConfigExample from "/examples/agent-config/http-oauth-customize-scopes.mdx";
+import CustomizeScopesSshExample from "/examples/ssh/http-oauth-customize-scopes.mdx";
+import CustomizeScopesGoSdkExample from "/examples/go-sdk/http-oauth-customize-scopes.mdx";
+import CustomizeScopesRustSdkExample from "/examples/rust-sdk/http-oauth-customize-scopes.mdx";
+
+# OAuth
+
+---
+
+## Overview
+
+The OAuth module enforces a browser-based OAuth flow in front of your HTTP
+endpoints to an identity provider like Google.
+
+See the [full list of OAuth providers](#supported-providers) that ngrok
+supports.
+
+Any client accessing an OAuth-protected endpoint will be redirected to the
+chosen identity provider for authentication. When they are redirected back to
+your endpoint, ngrok checks an optional set of authorization constraints (e.g.
+email address). If authorized, the user is forwarded to your upstream
+application and ngrok sets a cookie to avoid repeating the authentication flow.
+
+ngrok [sets headers for your upstream service](#upstream-headers) with
+information about the authenticated user.
+
+To get started faster, ngrok maintains [managed OAuth
+apps](#managed-applications) for some identity providers so you don't need to
+bring your own client id and client secret. These managed OAuth applications
+are shared among ngrok accounts and have some additional limitations.
+
+## Example Usage
+
+### Auth with Google
+
+Require all users authenticate with Google before accessing your upstream
+service.
+
+You can also choose other [supported providers](#supported-providers) like
+`github` or `microsoft`.
+
+<Tabs groupId="connectivity" queryString="cty">
+	<TabItem value="agent-cli" label="Agent CLI" default>
+		<AuthnAgentCliExample />
+	</TabItem>
+	<TabItem value="agent-config" label="Agent Config File">
+		<AuthnAgentConfigExample />
+	</TabItem>
+	<TabItem value="ssh" label="SSH">
+		<AuthnSshExample />
+	</TabItem>
+	<TabItem value="go-sdk" label="Go SDK">
+		<AuthnGoSdkExample />
+	</TabItem>
+	<TabItem value="rust-sdk" label="Rust SDK">
+		<AuthnRustSdkExample />
+	</TabItem>
+	<TabItem value="k8s" label="Kubernetes Controller">
+		<AuthnKubernetesExample />
+	</TabItem>
+</Tabs>
+
+<br />
+
+### Restrict by email and domain
+
+Allow only users who authenticate via Google with an email of
+`kate.libby@gmail.com` or emails that end in `acme.org` to access your upstream
+service.
+
+<Tabs groupId="connectivity" queryString="cty">
+	<TabItem value="agent-cli" label="Agent CLI" default>
+		<AuthzAgentCliExample />
+	</TabItem>
+	<TabItem value="agent-config" label="Agent Config File">
+		<AuthzAgentConfigExample />
+	</TabItem>
+	<TabItem value="ssh" label="SSH">
+		<AuthzSshExample />
+	</TabItem>
+	<TabItem value="go-sdk" label="Go SDK">
+		<AuthzGoSdkExample />
+	</TabItem>
+	<TabItem value="rust-sdk" label="Rust SDK">
+		<AuthzRustSdkExample />
+	</TabItem>
+	<TabItem value="k8s" label="Kubernetes Controller">
+		<AuthzKubernetesExample />
+	</TabItem>
+</Tabs>
+
+<br />
+
+### Bring your own OAuth app
+
+<Tabs groupId="connectivity" queryString="cty">
+	<TabItem value="agent-cli" label="Agent CLI" default>
+		<ByoAppAgentCliExample />
+	</TabItem>
+	<TabItem value="agent-config" label="Agent Config File">
+		<ByoAppAgentConfigExample />
+	</TabItem>
+	<TabItem value="ssh" label="SSH">
+		<ByoAppSshExample />
+	</TabItem>
+	<TabItem value="go-sdk" label="Go SDK">
+		<ByoAppGoSdkExample />
+	</TabItem>
+	<TabItem value="rust-sdk" label="Rust SDK">
+		<ByoAppRustSdkExample />
+	</TabItem>
+	<TabItem value="k8s" label="Kubernetes Controller">
+		<ByoAppKubernetesExample />
+	</TabItem>
+</Tabs>
+
+<br />
+
+### Customize Scopes
+
+Users must authenticate with GitHub and grant your application the `repo` and
+`user` scopes to access your upstream service.
+
+<Tabs groupId="connectivity" queryString="cty">
+	<TabItem value="agent-cli" label="Agent CLI" default>
+		<CustomizeScopesAgentCliExample />
+	</TabItem>
+	<TabItem value="agent-config" label="Agent Config File">
+		<CustomizeScopesAgentConfigExample />
+	</TabItem>
+	<TabItem value="ssh" label="SSH">
+		<CustomizeScopesSshExample />
+	</TabItem>
+	<TabItem value="go-sdk" label="Go SDK">
+		<CustomizeScopesGoSdkExample />
+	</TabItem>
+	<TabItem value="rust-sdk" label="Rust SDK">
+		<CustomizeScopesRustSdkExample />
+	</TabItem>
+	<TabItem value="k8s" label="Kubernetes Controller">
+		<CustomizeScopesKubernetesExample />
+	</TabItem>
+</Tabs>
+
+## Behavior
+
+### Callback URL
+
+When you create your own OAuth app, you must specify a 'Callback URL' or
+'Redirect URL' to the OAuth provider. When using ngrok's OAuth module, that
+Callback URL is always:
+
+```
+https://idp.ngrok.com/oauth2/callback
+```
+
+### Authentication
+
+When an unauthenticated request is made to an OAuth-protected endpoint, it
+returns a redirect response that begins an authentication flow with the
+configured identity provider. The original URI path is saved so that users can
+be redirected to it if they successfully authenticate.
+
+**If the user fails to authenticate with the identity provider**, ngrok will
+display an error describing the failure returned by the identity provider and
+prompt them to try logging in again.
+
+**If the user successfully authenticates with the identity provider**, ngrok
+will take the following actions:
+
+- Check any authorization constraints you've defined (like allowed
+  emails or allowed email domains). If the user is not authorized, ngrok renders
+  an error and prompts them to try logging in again.
+- Sets a [session cookie](#cookies) to avoid repeating the authentication flow again.
+- Redirects the user to the original URI path they were attempting to access
+  before the authentication flow began. If no such URI path was captured, they
+  are redirected to `/`.
+
+### Continuous Authorization
+
+When an authenticated user makes a request, ngrok will sometimes refresh a
+user's data from the identity provider (email, name, etc) and re-evaluate
+authorization constraints. This refresh is executed as a backchannel request to
+the identity provider; it is transparent to the user and they do not go through
+a reauthentication flow.
+
+The following circumstances trigger refresh and authorization re-evaluation:
+
+- On a periodic interval defined by the the [Auth Check
+  Interval](#configuration) parameter.
+- If you update the OAuth configuration of the endpoint by restarting your
+  agent with a new configuration.
+- If you update the OAuth configuration of the endpoint by modifying your Edge.
+
+If a previously authenticated user becomes unauthorized because their identity
+provider information changed or because the OAuth module configuration changed,
+they are presented an error and are prompted to try logging in again.
+
+### Managed Applications
+
+Managed applications allow you to use ngrok's OAuth module without setting up
+your own OAuth apps with the identity providers. More practically, this means
+you can use the OAuth module without configuring a client id and client secret.
+
+Managed applications are great for getting started but they have some
+limitations.
+
+- They are [only available for some identity providers](#supported-providers)
+- You may not pass custom scopes when using a managed application.
+- The [upstream headers](#upstream-headers) `ngrok-auth-oauth-access-token` and
+  `ngrok-auth-oauth-refresh-token` are not sent to your application.
+
+### App Users
+
+ngrok's [App Users](/docs/network-edge/app-users/) feature can be used to observe
+all of the authenticated user activity across your account in the ngrok
+dashboard or via API. Whenever a user authenticates or accesses an endpoint
+with a configured OAuth module, their App User record is created or updated.
+
+You may also use App Users to remotely log a user out by [revoking a
+session](/network-edge/app-users/#revoke-sessions).
+
+### Cookies
+
+This module sets two cookies in its operation. Cookies values are opaque to the
+upstream service and must not be modified.
+
+| Cookie    | Description                             |
+| --------- | --------------------------------------- |
+| `session` | Used to track an authenticated user.    |
+| `nonce`   | Used to secure the authentication flow. |
+
+## Reference
+
+### Configuration
+
+| Parameter                 | Default | Description                                                                                                                                                                                                                                                                                                                                                |
+| ------------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Provider**              | -       | The identifier of the OAuth identity provider to use for authentication. [Supported OAuth Providers](#supported-providers)                                                                                                                                                                                                                                 |
+| **Client ID**             | -       | Your OAuth app's Client ID. Leave this empty if you want to use a managed application.                                                                                                                                                                                                                                                                     |
+| **Client Secret**         | -       | Your OAuth app's Client Secret. Leave this empty if you want to use a managed application.                                                                                                                                                                                                                                                                 |
+| **Allowed Emails**        | -       | If specified, only users whose emails match a value in this list will be allowed.                                                                                                                                                                                                                                                                          |
+| **Allowed Email Domains** | -       | If specified, only users whose emails match one of the given domains in this list will be allowed.                                                                                                                                                                                                                                                         |
+| **Scopes**                |         | A list of additional scopes to request when users authenticate with the identity provider.                                                                                                                                                                                                                                                                 |
+| **Auth Check Interval**   | 0       | When a request is received after this interval has passed since the last auth check or the initial authentication, ngrok will re-validate its authorization constraints. As part of this process, ngrok refreshes data about the authenticated user from the identity provider. If zero, authorization is only ever checked during an authentication flow. |
+| **Inactivity Timeout**    | 0       | If an authenticated client does not make a request to the endpoint within this duration, they are forced to reauthenticate. If 0, no inactivity timeout is enforced.                                                                                                                                                                                       |
+| **Maximum Duration**      | 0       | An authenticated client session may never last longer than this duration. If 0, no maximum duration is enforced.                                                                                                                                                                                                                                           |
+| **Options Passthrough**   | `false` | Don't enforce authentication on OPTIONS requests. Useful if this endpoint needs to be accessible via CORS.                                                                                                                                                                                                                                                 |
+
+### Upstream Headers {#upstream-headers}
+
+This module adds headers to the HTTP request sent to your upstream service with
+details about the OAuth user who has authenticated. These headers will not be
+set for `OPTIONS` requests if you enable options passthrough.
+
+| Header                           | Description                                                                 |
+| -------------------------------- | --------------------------------------------------------------------------- |
+| `ngrok-auth-user-id`             | Provider-defined identifier of the authorized user.                         |
+| `ngrok-auth-user-name`           | Full name of the authorized user.                                           |
+| `ngrok-auth-user-email`          | Authorized user's primary email address.                                    |
+| `ngrok-auth-oauth-access-token`  | The user's OAuth access token. Undefined when using a managed application.  |
+| `ngrok-auth-oauth-refresh-token` | The user's OAuth refresh token. Undefined when using a managed application. |
+
+### Special Paths
+
+Upstream applications behind endpoints with this module enabled do not receive
+any requests to paths beginning with `/auth/`. Your application may redirect
+clients to the following paths to invoke different behaviors.
+
+| Path           | Description                                                                                                                                                                                                                                                                                                                    |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `/auth/authn`  | Redirect users to this path to explicitly begin an authentication flow. After authentication, users will be redirected to `/`. If the IdP supports it, ngrok will attempt to instruct the IdP to force reauthentication which will force users to re-enter their credentials with the IdP even if they were already logged in. |
+| `/auth/logout` | Logs the user out by clearing their session cookie. Redirect users to this path to log them out.                                                                                                                                                                                                                               |
+
+### Events
+
+When this module is enabled, it populates the following fields in the
+[http_request_complete.v0](/obs/reference/#http-request-complete) event:
+
+| Fields                |
+| --------------------- |
+| `oauth.app_client_id` |
+| `oauth.decision`      |
+| `oauth.user.id`       |
+| `oauth.user.name`     |
+
+### Errors
+
+:::note Coming Soon
+
+This documentation is incomplete. Please check back later, we appreciate your
+patience.
+
+:::
+
+### Edges
+
+OAuth is an HTTPS Edge module which can be applied to Routes.
+
+- [OAuth Edge Module API Resource](/api/resources/https-edge-route-oauth-module/)
+
+### Pricing
+
+MAU stands for "Monthly Active User". Monthly Active Users are the number of
+uniquely authenticated OAuth users who have accessed your endpoints within a
+month.
+
+OAuth MAU usage is calculated account-wide. It is not calculated on a
+per-endpoint basis.
+
+An authenticated user with the same ID from the identity provider is counted as
+a single MAU even if they connect to multiple endpoints on your account.
+
+| Plan       | MAUs                           |
+| ---------- | ------------------------------ |
+| Free       | 5                              |
+| Personal   | 50                             |
+| Pro        | Unlimited, usage-based-pricing |
+| Enterprise | Unlimited, usage-based-pricing |
+
+### Supported Providers {#supported-providers}
+
+ngrok currently supports the following OAuth providers:
+
+| Provider  | Provider Identifier | Managed App Available | Integration Guide                                    |
+| --------- | ------------------- | --------------------- | ---------------------------------------------------- |
+| Amazon    | `amazon`            | no                    | [Documentation](/docs/integrations/amazon/oauth/)    |
+| Facebook  | `facebook`          | no                    | [Documentation](/docs/integrations/facebook/oauth/)  |
+| GitHub    | `github`            | yes                   | [Documentation](/docs/integrations/github/oauth/)    |
+| GitLab    | `gitlab`            | yes                   | [Documentation](/docs/integrations/gitlab/oauth/)    |
+| Google    | `google`            | yes                   | [Documentation](/docs/integrations/google/oauth/)    |
+| LinkedIn  | `linkedin`          | yes                   | [Documentation](/docs/integrations/linkedin/oauth/)  |
+| Microsoft | `microsoft`         | yes                   | [Documentation](/docs/integrations/microsoft/oauth/) |
+| Twitch    | `twitch`            | yes                   | [Documentation](/docs/integrations/twitch/oauth/)    |
+
+## Try it out
+
+Consult the list of [supported providers](#supported-providers) for
+step-by-step integration guides.
