@@ -1,0 +1,62 @@
+# Account Domain Controls
+
+## Overview
+
+Account Domain Controls enable you to claim ownership of an email domain like
+'example.com' and force all log-in and sign-up attempts from emails on that
+domain to use your account. Domain Controls are a policy tool to enforce
+all users at your organization to use a single ngrok account that you've set up
+with appropriate security controls.
+
+A Domain Control may only be created on an account that has a Single Sign-On
+Identity Provider configured.
+
+## Verification
+
+Creating an Account Domain Control requires that you verify your ownership of
+the domain.
+
+When our Customer Success team creates your Account Domain Control, you'll be
+asked to prove your ownership of the domain. There are different verification
+methods, but the most common is to create a DNS TXT record on the domain you're
+setting up.
+
+## Behavior Changes
+
+### Log in
+
+When an Account Domain Control for `example.com` exists, anyone attempting to
+log in with an `example.com` email address will be required to log in with the
+Single Sign-On IdPs configured on your account. They will be presented with
+links to those IdP on the log-in page.
+
+### Account Sign-Up
+
+When an Account Domain Control for `example.com` exists, signing up for a new
+account with an email address on `example.com` can be disallowed. Users will be
+redirected instead to log in with the SSO IdPs configured on your existing
+account.
+
+### Account Creation
+
+When an Account Domain Control for `example.com` exists, any ngrok users with
+`example.com` email addresses can be disallowed from creating new ngrok
+accounts owned by their user.
+
+### Email Address Changes
+
+Users with an email address matching your Account Domain Control are no longer
+allowed to change their email address to one that doesn't match your domain
+control.
+
+### Retroactive Account Consolidation
+
+Creating an Account Domain Control does not retroactively consolidate existing
+accounts created by users with matching email addresses. If you require account
+consolidation as part of creating an Account Domain Control, please [contact
+us](mailto:support@ngrok.com) for pricing.
+
+## Pricing
+
+[Contact us](mailto:support@ngrok.com) to enquire about pricing for Account
+Domain Controls.

@@ -1,0 +1,33 @@
+```go
+import (
+	"context"
+	"crypto/x509"
+	"encoding/pem"
+	"net"
+	"os"
+
+	"golang.ngrok.com/ngrok"
+	"golang.ngrok.com/ngrok/config"
+)
+
+func ngrokListener(ctx context.Context) (net.Listener, error) {
+	caBytes, _ := os.ReadFile("/path/to/cas.pem")
+	der, _ := pem.Decode(caBytes)
+	certs, _ := x509.ParseCertificates(der.Bytes)
+
+	return ngrok.Listen(ctx,
+		config.TLSEndpoint(
+			config.WithDomain("app.example.com"),
+			config.WithTLSTermination(
+				config.WithTLSTerminationAt(config.TLSAtEdge),
+			),
+			config.WithMutualTLSCA(certs...),
+		),
+		ngrok.WithAuthtokenFromEnv(),
+	)
+}
+```
+
+Go Package Docs:
+
+- [https://pkg.go.dev/golang.ngrok.com/ngrok/config#WithMutualTLSCA](https://pkg.go.dev/golang.ngrok.com/ngrok/config#WithMutualTLSCA)

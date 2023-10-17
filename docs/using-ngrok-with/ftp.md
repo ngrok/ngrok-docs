@@ -3,7 +3,8 @@ title: FTP / FTPS / SFTP
 ---
 
 # Using ngrok with FTP, FTPS, SFTP
-------------
+
+---
 
 ## Compatibility with FTP & FTPS
 
@@ -21,4 +22,4 @@ From there, you can use the resulting TCP address in your preferred SFTP client 
 
 ## Alternatives to FTP for sharing files
 
-If you're just looking for a quick and easy way to serve local files, ngrok has a [built in file server](/docs/secure-tunnels/tunnels/http-tunnels/#file-url). 
+If you're just looking for a quick and easy way to serve local files, ngrok has a [built in file server](/docs/http/#file-serving).

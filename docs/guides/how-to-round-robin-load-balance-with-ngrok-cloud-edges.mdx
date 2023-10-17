@@ -2,15 +2,16 @@
 title: How to Round-Robin Load Balance with ngrok Cloud Edges
 description: How to use ngrok edges to do round-robin load balancing.
 tags:
-    - guides
-    - edges
-    - load-balancing
+  - guides
+  - edges
+  - load-balancing
 ---
 
+<!-- prettier-ignore -->
 <!-- Imports -->
 
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
 
 <!-- Guide -->
 
@@ -18,13 +19,12 @@ import TabItem from '@theme/TabItem';
 
 ![](img/round-robin-load-balancing.png)
 
-The purpose of **Load balancing** is to improve application performance and reduce burden by distributing incoming 
+The purpose of **Load balancing** is to improve application performance and reduce burden by distributing incoming
 traffic across servers. This leads to faster response times for user-facing applications.
 
-**Round-robin load balancing** is a simple method to distribute client requests among a group of services. To do this, 
-the load balancer goes through the list of servers and sends each request to the next server in the list, starting 
+**Round-robin load balancing** is a simple method to distribute client requests among a group of services. To do this,
+the load balancer goes through the list of servers and sends each request to the next server in the list, starting
 again from the beginning after reaching the end of the list.
-
 
 ## Prerequisites
 
@@ -45,11 +45,11 @@ If you are going to be following along using **CURL**, you will need:
 
 We're going to be using ngrok edges to load balance across multiple tunnels.
 
-To start load balancing traffic with ngrok edges, you need to have a reserved domain. 
+To start load balancing traffic with ngrok edges, you need to have a reserved domain.
 Let’s reserve a subdomain on `ngrok.app`:
 
 <Tabs groupId="guide">
-  <TabItem value="cli" label="ngrok CLI" default>
+<TabItem value="cli" label="ngrok CLI" default>
 
 ```bash
 ngrok api reserved-domains create \
@@ -58,9 +58,8 @@ ngrok api reserved-domains create \
 
 - Replace or set `NGROK_SUBDOMAIN` as the subdomain you'd like to use for this guide.
 
-
-  </TabItem>
-  <TabItem value="curl" label="CURL">
+</TabItem>
+<TabItem value="curl" label="CURL">
 
 ```bash
 curl \
@@ -78,8 +77,8 @@ BODY
 - Replace or set `NGROK_API_KEY` to your ngrok API key.
 - Replace or set `NGROK_SUBDOMAIN` as the subdomain you'd like to use for this guide.
 
+</TabItem>
 
-  </TabItem>
 </Tabs>
 
 After running, you should see the following:
@@ -96,11 +95,11 @@ When you have completed this step, you can move on to the next step.
 
 ## **Step 2** — Create a ngrok Cloud Edge
 
-Now we can create a ngrok Cloud Edge that points to our 
+Now we can create a ngrok Cloud Edge that points to our
 newly reserved domain on port `443`:
 
 <Tabs groupId="guide">
-  <TabItem value="cli" label="ngrok CLI" default>
+<TabItem value="cli" label="ngrok CLI" default>
 
 ```bash
 ngrok api edges https create \
@@ -110,9 +109,8 @@ ngrok api edges https create \
 
 - Replace or set `NGROK_SUBDOMAIN` with the value used in the previous step.
 
-
-  </TabItem>
-  <TabItem value="curl" label="CURL">
+</TabItem>
+<TabItem value="curl" label="CURL">
 
 ```bash
 curl \
@@ -132,9 +130,9 @@ BODY
 - Replace or set `NGROK_API_KEY` to your ngrok API key.
 - Replace or set `NGROK_SUBDOMAIN` with the value used in the previous step.
 
+</TabItem>
 
-  </TabItem>
-</Tabs>
+  </Tabs>
 
 After running, you should see:
 
@@ -159,12 +157,12 @@ Now that we have an edge, we can move onto the next step.
 
 ## **Step 3** — Create a Tunnel Group Backend
 
-Now that we have an edge we can begin to build the parts to load balance. 
-Lets create a tunnel-group backend to do traffic management on our 
+Now that we have an edge we can begin to build the parts to load balance.
+Lets create a tunnel-group backend to do traffic management on our
 edge with a label named `region=us`:
 
 <Tabs groupId="guide">
-  <TabItem value="cli" label="ngrok CLI" default>
+<TabItem value="cli" label="ngrok CLI" default>
 
 ```bash
 ngrok api backends tunnel-group create \
@@ -172,8 +170,8 @@ ngrok api backends tunnel-group create \
 	--description "us tunnel group"
 ```
 
-  </TabItem>
-  <TabItem value="curl" label="CURL">
+</TabItem>
+<TabItem value="curl" label="CURL">
 
 ```bash
 curl \
@@ -194,9 +192,9 @@ BODY
 
 - Replace or set `NGROK_API_KEY` to your ngrok API key.
 
+</TabItem>
 
-  </TabItem>
-</Tabs>
+  </Tabs>
 
 After running, you should see:
 
@@ -221,13 +219,13 @@ Now that we have a tunnel-group backend, we can move onto the next step.
 
 ## **Step 4** — Create a Catch-All Route
 
-Now that we have an edge and a backend, we need a way to route incoming traffic across 
-tunnels. 
+Now that we have an edge and a backend, we need a way to route incoming traffic across
+tunnels.
 
 Let's create a catch-all route by using `path_prefix` matching on the path `/` that will handle all incoming traffic on our edge to our newly created backend:
 
 <Tabs groupId="guide">
-  <TabItem value="cli" label="ngrok CLI" default>
+<TabItem value="cli" label="ngrok CLI" default>
 
 ```bash
 ngrok api edges https-routes create ${NGROK_EDGE_ID} \
@@ -238,10 +236,9 @@ ngrok api edges https-routes create ${NGROK_EDGE_ID} \
 
 - Replace or set `NGROK_EDGE_ID` to the id returned in step 2.
 - Replace or set `NGROK_BACKEND_ID` to the id returned in step 3.
-  
 
-  </TabItem>
-  <TabItem value="curl" label="CURL">
+</TabItem>
+<TabItem value="curl" label="CURL">
 
 ```bash
 curl \
@@ -267,9 +264,9 @@ BODY
 - Replace or set `NGROK_API_KEY` to your ngrok API key.
 - Replace or set `NGROK_BACKEND_ID` to the id returned in step 3.
 
+</TabItem>
 
-  </TabItem>
-</Tabs>
+  </Tabs>
 
 After running, you should get back a route with our edge and backend configured:
 

@@ -1,0 +1,25 @@
+```go
+import (
+	"context"
+	"net"
+
+	"golang.ngrok.com/ngrok"
+	"golang.ngrok.com/ngrok/config"
+)
+
+func ngrokListener(ctx context.Context) (net.Listener, error) {
+	return ngrok.Listen(ctx,
+		config.HTTPEndpoint(
+			config.WithRequestHeader("is-ngrok", "1"),
+			config.WithRequestHeader("country", "${.ngrok.geo.country_code}"),
+			config.WithRemoveRequestHeader("referrer"),
+		),
+		ngrok.WithAuthtokenFromEnv(),
+	)
+}
+```
+
+Go Package Docs:
+
+- [https://pkg.go.dev/golang.ngrok.com/ngrok/config#WithRequestHeader](https://pkg.go.dev/golang.ngrok.com/ngrok/config#WithRequestHeader)
+- [https://pkg.go.dev/golang.ngrok.com/ngrok/config#WithRemoveRequestHeader](https://pkg.go.dev/golang.ngrok.com/ngrok/config#WithRemoveRequestHeader)

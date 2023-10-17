@@ -1,0 +1,42 @@
+```yaml
+---
+kind: Secret
+apiVersion: v1
+metadata:
+  name: ngrok-oauth-secret
+type: Opaque
+data:
+  CLIENT_SECRET: "<base64-encoded-client-secret>"
+---
+kind: NgrokModuleSet
+apiVersion: ingress.k8s.ngrok.com/v1alpha1
+metadata:
+  name: ngrok-module-set
+modules:
+  oauth:
+    github:
+      clientId: "{client id}"
+      clientSecret:
+        name: ngrok-oauth-secret
+        key: CLIENT_SECRET
+      scopes: ["repo", "user"]
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: example-ingress
+  annotations:
+    k8s.ngrok.com/modules: ngrok-module-set
+spec:
+  ingressClassName: ngrok
+  rules:
+    - host: your-domain.ngrok.app
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: example-service
+                port:
+                  number: 80
+```

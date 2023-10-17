@@ -1,5 +1,6 @@
 # Securing ngrok
---------------
+
+---
 
 This guide will walk you through recommendations for ensuring you are using ngrok securely.
 
@@ -15,27 +16,27 @@ Consider restricting the IPs that are able to start ngrok agent sessions.
 
 ### Authtokens
 
-Assign a [unique Authtoken to each ngrok agent](/secure-tunnels/ngrok-agent/tunnel-authtokens#per-agent-authtokens) deployment to isolate issues if a specific Authtoken is compromised.
+Assign a [unique Authtoken to each ngrok agent](/agent/#authtokens) deployment to isolate issues if a specific Authtoken is compromised.
 
-Set up a [minimum ACL per Authtoken](/secure-tunnels/ngrok-agent/tunnel-authtokens#authtoken-acl-enforcement) to limit the endpoints each agent is able to start.
+Set up a [minimum ACL per Authtoken](/agent/#authtoken-acls) to limit the endpoints each agent is able to start.
 
 ### Encryption
 
 For our HTTP tunnel type, use `scheme https` to configure the ngrok agent to open only a HTTPS endpoint and not a HTTP endpoint. If you are running the latest ngrok agent, this is the default.
 
-If your local service is not running on the same machine as the ngrok agent, we recommend that you set up TLS encryption for the ngrok agent to upstream service leg of the tunnel using our [local HTTPS feature](/secure-tunnels/tunnels/http-tunnels#local-https).
+If your local service is not running on the same machine as the ngrok agent, we recommend that you set up TLS encryption for the ngrok agent to upstream service leg of the tunnel using our [local HTTPS feature](/http/#upstream-https-servers).
 
-For custom domains, use ngrok's [Automated TLS certificates](/cloud-edge/endpoints#automated-tls-certificates) to have ngrok automatically provision a TLS certificate for your endpoint from Let's Encrypt.
+For custom domains, use ngrok's [Automated TLS certificates](/network-edge/tls-certificates/#automated) to have ngrok automatically provision a TLS certificate for your endpoint from Let's Encrypt.
 
 ### Using a custom ingress domain
 
-If your organization uses a custom ingress domain, your default ngrok configuration will not work. Edit your ngrok agent confirmation to add a [`server_addr`](/ngrok-agent/config#server_addr) parameter to use the custom ingress domain of your organization.
+If your organization uses a custom ingress domain, your default ngrok configuration will not work. Edit your ngrok agent confirmation to add a [`server_addr`](/agent/config#server_addr) parameter to use the custom ingress domain of your organization.
 
 ## Tunnel Configuration
 
 ### TLS termination
 
-TLS Encryption is terminated at different locations depending on the ngrok Tunnel / Edge type and configuration. See the documentation on [Terminating TLS Connections](/cloud-edge#terminating-tls-connections) for more details.
+TLS Encryption is terminated at different locations depending on the ngrok Tunnel / Edge type and configuration. See the documentation on [Terminating TLS Connections](/network-edge#tls-termination) for more details.
 
 ### Minimum TLS version
 
@@ -47,7 +48,7 @@ For HTTPS endpoints, ngrok will take care of TLS certificates automatically. For
 
 ### Observability
 
-ngrok provides functionality for consuming logs for events in the system. For more information, check out our [ngrok Event Subscriptions documentation](/cloud-edge/observability).
+ngrok provides functionality for consuming logs for events in the system. For more information, check out our [ngrok Event Subscriptions documentation](/obs/).
 
 ### Blocking non-corporate accounts
 
@@ -70,7 +71,6 @@ For a tighter security policy, most administrators will want to block ngrok acco
 - tunnel.jp.ngrok.com
 - tunnel.in.ngrok.com
 
-
 ## API Configuration
 
 You need a API key to authenticate with the ngrok REST API. API keys are Base64 encoded strings and are available from the ngrok dashboard and also from an API endpoint, which makes it easy to rotate your API keys.
@@ -81,17 +81,8 @@ Consider restricting the IPs permitted to access the API. You can do so in the n
 
 ### Dashboard authentication
 
-For authenticating access to the dashboard, ngrok has features for role based access control (RBAC), IP Policy, and [Single Sign-On](/platform/dashboard#dashboard-sso).
+For authenticating access to the dashboard, ngrok has features for role based access control (RBAC), IP Policy, and [Single Sign-On](/iam#dashboard-sso).
 
 With RBAC, you can configure permissions for groups of users within your team (for example admins and developers).
 
 Consider restricting the IPs permitted to access the dashboard.
-
-
-
-
-
-
-
-
-

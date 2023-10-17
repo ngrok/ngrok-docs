@@ -1,5 +1,7 @@
+<!-- Code generated for API Clients. DO NOT EDIT. -->
 
 #### Example Request
+
 ```bash
 curl \
 -X POST \
@@ -8,3 +10,4 @@ curl \
 -H "Ngrok-Version: 2" \
 -d '{"urls":["http://legit-facebook-login.ngrok.io/login"],"metadata":"{\"incident_id\":1233122}"}' \
 https://api.ngrok.com/abuse_reports
+```

@@ -1,0 +1,126 @@
+---
+title: Ingress Address
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+import CustomIngressKubernetesExample from "/examples/k8s/custom-agent-ingress.mdx";
+import CustomIngressAgentCliExample from "/examples/agent-cli/custom-agent-ingress.mdx";
+import CustomIngressAgentConfigExample from "/examples/agent-config/custom-agent-ingress.mdx";
+import CustomIngressSshExample from "/examples/ssh/custom-agent-ingress.mdx";
+import CustomIngressGoSdkExample from "/examples/go-sdk/custom-agent-ingress.mdx";
+import CustomIngressRustSdkExample from "/examples/rust-sdk/custom-agent-ingress.mdx";
+
+# Agent Ingress Address
+
+---
+
+## Overview
+
+The Agent Ingress Address is the network address that the ngrok agent and agent
+SDKs use to connect to when ngrok service. The default agent ingress address is
+`connect.ngrok-agent.com:443`.
+
+## Customize Agent Ingress Address
+
+You can customize the ingress address by creating your own Agent Ingress. You
+do this by delegating control of a DNS subdomain. ngrok will then populate the
+A/AAAA records and issue the certificates for your new agent ingress address.
+Lastly, you must update the `ngrok.yml` [config file](/agent/config/) to instruct
+your ngrok agent to connect to the new address.
+
+Agents authenticating to your agent ingress address must authenticate to your
+ngrok account. Agents attempting to authenticate with credentials for other
+accounts through your ingress address are disallowed.
+
+### Create the Agent Ingress
+
+When you create a new agent ingress, you specify the domain you wish to use.
+You must own this domain yourself and have the ability to create `NS` records
+on it via your DNS provider.
+
+- **[Create a new Agent Ingress on the ngrok
+  Dashboard](https://dashboard.ngrok.com/tunnels/ingress)**
+- **[Create a new Agent Ingress via API](/docs/api/resources/agent-ingresses/)**
+
+### Delegate DNS records
+
+After you create a new Agent Ingress, you will be prompted to create `NS`
+records on the domain you chose.
+
+### Update agent configuration
+
+Finally, you must reconfigure your ngrok agent or agent SDKs to use your new
+agent ingress address by adding the [`server_addr`](/docs/agent/config#server-addr)
+option to your ngrok agent's configuration file.
+
+For example, if the domain of your custom agent ingress is
+`ingress.example.com` then you might add the following line to the agent's
+configuration file:
+
+<Tabs groupId="connectivity" queryString="cty">
+	<TabItem value="agent-cli" label="Agent CLI">
+		<CustomIngressAgentCliExample />
+	</TabItem>
+	<TabItem value="agent-config" label="Agent Config" default>
+		<CustomIngressAgentConfigExample />
+	</TabItem>
+	<TabItem value="ssh" label="SSH" default>
+		<CustomIngressSshExample />
+	</TabItem>
+	<TabItem value="go-sdk" label="Go SDK">
+		<CustomIngressGoSdkExample />
+	</TabItem>
+	<TabItem value="rust-sdk" label="Rust SDK">
+		<CustomIngressRustSdkExample />
+	</TabItem>
+	<TabItem value="k8s" label="Kubernetes Controller">
+		<CustomIngressKubernetesExample />
+	</TabItem>
+</Tabs>
+
+## Incompatibility with GSLB
+
+:::note
+
+Custom agent ingress requires the you choose a particular region that your
+agent connects to. It does not yet support [Global Server Load
+Balancing](/network-edge/gslb) which allows the agent to connect to the closest
+ngrok point of presence.
+
+Endpoints created by agents using custom agent ingress are still delivered with
+Global Server Load Balancing.
+
+:::
+
+## Dedicated IPs
+
+When you create a custom agent ingress, the DNS, certificates and hostnames are
+all custom branded but you address will still resolve to ngrok's shared set of
+IP addresses. Dedicated IPs that are unique for your account are also available
+at additional cost. [Contact us](mailto:support@ngrok.com) to get in touch for
+additional details.
+
+## Why customize the ingress address?
+
+### Branded Connectivity
+
+If you are using ngrok for production connectivity to your devices in the field
+or APIs inside of your customers' networks, a custom ingress address allows you
+to brand ngrok's connectivity as your own.
+
+### Policy Enforcement
+
+If you are using ngrok for development and testing, you can use your own
+ingress address to ensure everyone at your org does not use their personal
+accounts and instead uses a shared ngrok account with appropriate observability
+and security controls set up. You can do this by blocking ngrok's default
+ingress address of from your machines and networks, but allowing traffic to
+your custom ingress address.
+
+## Pricing
+
+Creating your own Agent Ingress is not available on any self-serve plan.
+[Contact us](mailto:support@ngrok.com) to get in touch about using custom agent
+ingress.

@@ -1,4 +1,3 @@
-
 ### Additional Information
 
 An ngrok account is limited in how many agents it can simultaneously run. This limit is listed for each plan as "online ngrok processes" on the [pricing page](https://ngrok.com/pricing). This error indicates you've exceeded that limit.
