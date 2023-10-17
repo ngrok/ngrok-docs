@@ -1,5 +1,5 @@
 ---
-description: Use Frontegg OIDC to secure access to ngrok tunnels
+description: Use Frontegg OIDC to secure access to ngrok endpoints
 ---
 
 # Frontegg SSO (OpenID Connect)
@@ -8,7 +8,7 @@ description: Use Frontegg OIDC to secure access to ngrok tunnels
 
 :::tip TL;DR
 
-To secure access to ngrok with Frontegg Single Sign-On using OpenID Connect:
+To secure access to ngrok with Frontegg Single Sign-On (SSO) using OpenID Connect:
 
 1. [Configure Frontegg SSO](#configure-frontegg)
 1. [Configure ngrok](#configure-ngrok)
@@ -16,10 +16,10 @@ To secure access to ngrok with Frontegg Single Sign-On using OpenID Connect:
 
 :::
 
-This article details how to configure Frontegg as the primary Identity Provider for ngrok tunnels.
+This article details how to configure Frontegg as the primary Identity Provider (IDP) for ngrok endpoints.
 By integrating Frontegg SSO with ngrok, you can:
 
-- **Restrict access to ngrok tunnels** only to users authenticated via Frontegg
+- **Restrict access to ngrok endpoints** only to users authenticated via Frontegg
 - **Use Frontegg security policies and MFA authenticators**.
 - **Use Frontegg's Dashboard to facilitate access to ngrok apps**.
 
@@ -27,14 +27,14 @@ By integrating Frontegg SSO with ngrok, you can:
 
 The ngrok integration with Frontegg supports:
 
-- **SP-Initiated SSO**: In this mode, users access ngrok edges and tunnels and are redirected to Frontegg for authentication.
+- **SP-Initiated SSO**: In this mode, users access ngrok endpoints and are redirected to Frontegg for authentication.
 
 ## Requirements
 
-To configure ngrok tunnels with Frontegg, you must have:
+To configure an ngrok edge with Frontegg, you must have:
 
-- a Frontegg account with administrative rights to create apps
-- an [ngrok Enterprise Account](https://ngrok.com/pricing) with an authtoken or admin access to configure edges with OpenID Connect.
+- A Frontegg account with administrative rights to create apps
+- An [ngrok Enterprise Account](https://ngrok.com/pricing) with an authtoken or admin access to configure edges with OpenID Connect.
 
 ## Configuration Steps
 
