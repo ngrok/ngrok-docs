@@ -1,0 +1,40 @@
+Add the `k8s.ngrok.com/app-protocols` label to the **Service** definition
+targeted by your ingress backend to instruct the Ingress Controller to use
+`https` when forwarding connections.
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: example-service
+  annotations:
+    k8s.ngrok.com/app-protocols: '{"example-https-port":"HTTPS"}'
+spec:
+  ports:
+    - name: example-https-port
+      port: 443
+      protocol: TCP
+      targetPort: 8443
+  selector:
+    app-name: some-example-app-label
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: example-ingress
+  annotations:
+    k8s.ngrok.com/modules: ngrok-module-set
+spec:
+  ingressClassName: ngrok
+  rules:
+    - host: app.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: example-service
+                port:
+                  number: 443
+```

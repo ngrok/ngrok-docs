@@ -1,0 +1,145 @@
+# Domains + TCP Addresses
+
+## Domains
+
+Domain objects enable you to create [Endpoints](/concepts/#endpoints) to listen
+for traffic on those domain names. Domains may be a subdomain of an
+ngrok-managed base domain like `foo.ngrok.app` or you can bring your own
+[branded domain](#branded-domains) like `foo.example.com`.
+
+The ngrok edge accelerates traffic to endpoints on your domains by receiving it
+on all of our [global points of presence](/network-edge/#points-of-presence) via [Global
+Server Load Balancing](/network-edge/gslb/).
+
+Once you have created a Domain object, your account exclusively owns that
+domain and all of its nested subdomains. For instance, if you have created a
+domain, `foo.ngrok.app`, no other account is permitted to create
+`bar.foo.ngrok.app`.
+
+### Ephemeral domains
+
+If you run create an endpoint via the Agent or Agent SDKs without specifying a
+domain, ngrok will automatically assign a random domain on one of our
+[ngrok-managed Domains](#ngrok-managed-domains) to your endpoint. For example,
+the command `ngrok http 80` may create an endpoint like
+`https://1eb2-181-80-12-3.ngrok.app`.
+
+### ngrok-managed Domains
+
+If you don't own a domain that you want to use with ngrok, we have multiple
+base domains that you can claim your own subdomain of. These 'ngrok-managed' base domains are:
+
+| Domain           | Notes                                              |
+| ---------------- | -------------------------------------------------- |
+| `ngrok.app`      | Available to paying accounts                       |
+| `ngrok.dev`      | Available to paying accounts                       |
+| `ngrok-free.app` | Used by free accounts                              |
+| `ngrok-free.dev` | Used by free accounts                              |
+| `ngrok.io`       | Discontinued and only available to legacy accounts |
+
+All of the above domains are included on the [Public Suffix
+List](https://publicsuffix.org/). Modern browsers use the Public Suffix List to
+guarantee that cookies from one subdomain cannot be accessed by other
+subdomains.
+
+### Branded Domains
+
+You can use any domain that you already own (e.g. `app.your-domain.com`) with
+ngrok. In order to do so, you must create a CNAME record for that domain to
+point it at the ngrok edge. When you create the ngrok Domain object, you will
+be presented with a target value for the CNAME record you need to create. If
+you [create the Domain via API](/api/resources/reserved-domains/), this value is
+the `cname_target` field.
+
+If you want to use an apex domain (e.g. `example.com`) with ngrok, you must use
+a DNS provider that supports an ALIAS record or CNAME flattening. This is
+because the DNS RFC does not permit CNAMEs for apex domains. Because of how
+ALIAS/CNAME flattening is implemented, apex domains can not take advantage of
+[Global Server Load Balancing](/network-edge/gslb).
+
+### Wildcard Domains
+
+You may also create a wildcard domain on your ngrok account. For example,
+`*.example.com`. Wildcard domains allow you to create endpoints that receive
+traffic for all subdomains of that domain. Both HTTP and TLS endpoints support
+the use of wildcard domains. The wildcard `*` character may only be used as the
+first part of a domain, you may not create domains like `app.*.example.com` or
+`*-app.example.com`.
+
+Once you have created a wildcard domain object, you may create an endpoint on
+it via the [Agent](/agent/) or attach it to an [Edge](/network-edge/edges/).
+For example:
+
+###### Listen for all subdomains of `example.com`
+
+```bash
+ngrok http 80 --domain *.example.com
+```
+
+The following rules define the behavior of endpoints on wildcard domains. To
+illustrate the rules, assume you have created the wildcard domain
+`*.example.com`:
+
+- Connections to nested subdomains (e.g. `foo.bar.baz.example.com`) will route
+  to a wildcard endpoint of `*.example.com`.
+- You may create endpoints on any valid subdomain of `example.com` without
+  creating an additional Domain object. For example, `ngrok 80 http --domain
+foo.bar.baz.example.com` works without creating a domain for
+  `foo.bar.baz.example.com`.
+- Connections are routed to the most specific online endpoint. If there are
+  endpoints for both `app.example.com` and `*.example.com`, connections to
+  `app.example.com` will be sent to the `app.example.com` endpoint and not to
+  `\*.example.com.
+
+### HSTS
+
+ngrok's [managed domains](#ngrok-managed-domains) that are on the `.dev` or
+`.app` TLDs are on the global HSTS preload list. This means that domains on
+`ngrok.app`, `ngrok.dev`, `ngrok-free.app`, etc. require the use of HTTPS.
+
+ngrok currently still allows you to create endpoints with an `http` scheme, but
+all modern browsers will automatically force the use of a corresponding `https`
+endpoint.
+
+If you need to use the unencrypted `http` scheme, you should continue to use
+the domains on the `ngrok.io` base domain.
+
+## TCP Addresses
+
+TCP Addresses are a network address: a host and port. You may use TCP addresses
+to deliver applications via TCP endpoints. TCP Address look something like
+`1.tcp.eu.ngrok.io:12345`.
+
+You may [provision TCP addresses via API](/api/resources/reserved-addrs/).
+
+### Ephemeral addresses
+
+If you do not specify a TCP address when creating an endpoint from the agent, a
+random one is assigned to you. For example, if you run `ngrok tcp 22`, you will
+receive a randomly assigned TCP address each time.
+
+### Fixed addresses
+
+The hostname and port of the TCP Address is randomly assigned when you create
+it, after which it will not change. You may not choose the hostname or port.
+The port of your TCP address is uniquely assigned to your account, but other
+ports on that same hostname may be assigned to other accounts. While the
+hostname and port of a TCP Address is fixed, they do not have [static
+IPs](#ip-addresses).
+
+### GSLB support
+
+Unlike [Domains](#domains), TCP Addresses are not region-independent. They do
+not support [global server load balancing](/network-edge/gslb). When you create
+a TCP Address, you provision it in a region of your choice. Connections to that
+address are received exclusively in that region.
+
+Beyond that that, when you create an endpoint on a TCP address, you must
+instruct your Agent or Agent SDK to connect explicitly to the region the TCP
+Address was provisioned in. For example, if your TCP address is
+`1.tcp.eu.ngrok.io:12345` you must invoke the ngrok agent with the matching
+region, like:
+
+```bash
+ngrok tcp 22 --region=eu --remote-addr 1.tcp.eu.ngrok.io:12345
+```

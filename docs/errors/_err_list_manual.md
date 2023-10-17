@@ -3288,6 +3288,12 @@ Your account is not authorized to use endpoints IP restrictions.  Upgrade to a P
 		</tr>
 		<tr>
 			<td>
+				<a id="ERR_NGROK_2090" href="/docs/errors/err_ngrok_2090">ERR_NGROK_2090</a>
+			</td>
+			<td class="pre-wrapped">The user agent filter regular expression `REGEX` is an invalid regular expression: `ERR`.</td>
+		</tr>
+		<tr>
+			<td>
 				<a id="ERR_NGROK_3002" href="/docs/errors/err_ngrok_3002">ERR_NGROK_3002</a>
 			</td>
 			<td class="pre-wrapped">Error performing TLS handshake: <code>&lt;ERR&gt;</code></td>
@@ -3633,6 +3639,12 @@ Received an HTTP response with unknown status code <code>&lt;CODE&gt;</code> fro
 				<a id="ERR_NGROK_3210" href="/docs/errors/err_ngrok_3210">ERR_NGROK_3210</a>
 			</td>
 			<td class="pre-wrapped">Error forwarding the connection to the ngrok agent</td>
+		</tr>
+		<tr>
+			<td>
+				<a id="ERR_NGROK_3211" href="/docs/errors/err_ngrok_3211">ERR_NGROK_3211</a>
+			</td>
+			<td class="pre-wrapped">The server does not authorize requests from your user-agent</td>
 		</tr>
 		<tr>
 			<td>
@@ -6184,6 +6196,12 @@ Your account is not authorized to use OAuth.  Upgrade to a Pro or Enterprise pla
 				<a id="ERR_NGROK_9021" href="/docs/errors/err_ngrok_9021">ERR_NGROK_9021</a>
 			</td>
 			<td class="pre-wrapped">You may specify at most one of subdomain, hostname, or domain for a tunnel.</td>
+		</tr>
+		<tr>
+			<td>
+				<a id="ERR_NGROK_9022" href="/docs/errors/err_ngrok_9022">ERR_NGROK_9022</a>
+			</td>
+			<td class="pre-wrapped">Your account is not authorized to use user agent filter.Upgrade to a Pro or Enterprise plan at: https://dashboard.ngrok.com/billing/subscription</td>
 		</tr>
 		<tr>
 			<td>

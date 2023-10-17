@@ -145,13 +145,13 @@ Now that your device is integrated to ngrok, you can ​​execute tasks at the 
 
 ### Logging Traffic Events from ngrok
 
-Each action that happens in ngrok is published as an event, and [Event Subscriptions](/docs/events/) allow you to subscribe to the events that are interested in and write them to one or more destinations.
+Each action that happens in ngrok is published as an event, and [Event Subscriptions](/docs/obs/) allow you to subscribe to the events that are interested in and write them to one or more destinations.
 
 An Event Subscription is made up of a set of event sources (some of which can be filtered), and event destinations. Each subscription can send the events to one or more destinations, such as Amazon CloudWatch Logs, Amazon Kinesis (as a data stream), or Amazon Kinesis Firehose (as a delivery stream).
 
-Event subscriptions can be configured through the [ngrok Dashboard](https://dashboard.ngrok.com/events/subscriptions) or the [ngrok API](/docs/api/resources/event-destinations/).
+Event subscriptions can be configured through the [ngrok Dashboard](https://dashboard.ngrok.com/obs/subscriptions) or the [ngrok API](/docs/api/resources/event-destinations/).
 
-You can also forward all or some of your traffic events from [ngrok to your preferred logging tool](/docs/events/).
+You can also forward all or some of your traffic events from [ngrok to your preferred logging tool](/docs/obs/).
 
 ### Remote checks, stop, start, and updates
 

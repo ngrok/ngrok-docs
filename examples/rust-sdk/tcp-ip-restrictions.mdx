@@ -1,0 +1,24 @@
+```rust
+use ngrok::prelude::*;
+
+async fn listen_ngrok() -> anyhow::Result<impl Tunnel> {
+    let sess = ngrok::Session::builder()
+        .authtoken_from_env()
+        .connect()
+        .await?;
+    let tun = sess
+        .tcp_endpoint()
+        .allow_cidr("110.0.0.0/8"),
+        .allow_cidr("220.12.0.0/16"),
+        .deny_cidr("110.2.3.4/32"),
+        .listen()
+        .await?;
+    println!("Listening on URL: {:?}", tun.url());
+    Ok(tun)
+}
+```
+
+Rust Crate Docs:
+
+- [https://docs.rs/ngrok/latest/ngrok/config/struct.TcpTunnelBuilder.html#method.allow_cidr](https://docs.rs/ngrok/latest/ngrok/config/struct.TcpTunnelBuilder.html#method.allow_cidr)
+- [https://docs.rs/ngrok/latest/ngrok/config/struct.TcpTunnelBuilder.html#method.deny_cidr](https://docs.rs/ngrok/latest/ngrok/config/struct.TcpTunnelBuilder.html#method.deny_cidr)

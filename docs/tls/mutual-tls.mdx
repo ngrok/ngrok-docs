@@ -1,0 +1,185 @@
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+import AtEdgeKubernetesExample from "/examples/k8s/tls-mtls-at-edge.mdx";
+import AtEdgeAgentCliExample from "/examples/agent-cli/tls-mtls-at-edge.mdx";
+import AtEdgeAgentConfigExample from "/examples/agent-config/tls-mtls-at-edge.mdx";
+import AtEdgeSshExample from "/examples/ssh/tls-mtls-at-edge.mdx";
+import AtEdgeGoSdkExample from "/examples/go-sdk/tls-mtls-at-edge.mdx";
+import AtEdgeRustSdkExample from "/examples/rust-sdk/tls-mtls-at-edge.mdx";
+
+import AtAgentKubernetesExample from "/examples/k8s/tls-mtls-at-agent.mdx";
+import AtAgentAgentCliExample from "/examples/agent-cli/tls-mtls-at-agent.mdx";
+import AtAgentAgentConfigExample from "/examples/agent-config/tls-mtls-at-agent.mdx";
+import AtAgentSshExample from "/examples/ssh/tls-mtls-at-agent.mdx";
+import AtAgentGoSdkExample from "/examples/go-sdk/tls-mtls-at-agent.mdx";
+import AtAgentRustSdkExample from "/examples/rust-sdk/tls-mtls-at-agent.mdx";
+
+# Mutual TLS
+
+---
+
+## Overview
+
+This module performs mutual TLS (mTLS) authentication for your TLS endpoints.
+The client must present a valid TLS certificate that is signed by one of the
+specified CAs or the connection will be rejected.
+
+Mutual TLS can only be enforced where TLS is terminated. This means ngrok's
+Mutual TLS module may only be used where you also use ngrok to terminates TLS
+on your behalf. You may choose whether Mutual TLS is enforced at ngrok's edge
+or in the ngrok agent.
+
+## Example Usage
+
+Remember that by default, TLS endpoints do not terminate TLS connections and
+send them through to your upstream service. Thus, all examples you
+see for mutual TLS will also include TLS termination.
+
+### mTLS at ngrok edge
+
+Only allow connections which present a client certificate signed by one of the
+CAs present in the PEM bundle.
+
+<Tabs groupId="connectivity" queryString="cty">
+	<TabItem value="agent-cli" label="Agent CLI" default>
+		<AtEdgeAgentCliExample />
+	</TabItem>
+	<TabItem value="agent-config" label="Agent Config File">
+		<AtEdgeAgentConfigExample />
+	</TabItem>
+	<TabItem value="ssh" label="SSH">
+		<AtEdgeSshExample />
+	</TabItem>
+	<TabItem value="go-sdk" label="Go SDK">
+		<AtEdgeGoSdkExample />
+	</TabItem>
+	<TabItem value="rust-sdk" label="Rust SDK">
+		<AtEdgeRustSdkExample />
+	</TabItem>
+	<TabItem value="k8s" label="Kubernetes Controller">
+		<AtEdgeKubernetesExample />
+	</TabItem>
+</Tabs>
+
+<br />
+
+### mTLS at ngrok agent
+
+Mutual TLS enforcement at the ngrok agent is used with [Zero-Knowledge
+TLS](/tls/tls-termination#zero-knowledge-tls) end-to-end encryption.
+
+<Tabs groupId="connectivity" queryString="cty">
+	<TabItem value="agent-cli" label="Agent CLI" default>
+		<AtAgentAgentCliExample />
+	</TabItem>
+	<TabItem value="agent-config" label="Agent Config File">
+		<AtAgentAgentConfigExample />
+	</TabItem>
+	<TabItem value="ssh" label="SSH">
+		<AtAgentSshExample />
+	</TabItem>
+	<TabItem value="go-sdk" label="Go SDK">
+		<AtAgentGoSdkExample />
+	</TabItem>
+	<TabItem value="rust-sdk" label="Rust SDK">
+		<AtAgentRustSdkExample />
+	</TabItem>
+	<TabItem value="k8s" label="Kubernetes Controller">
+		<AtAgentKubernetesExample />
+	</TabItem>
+</Tabs>
+
+## Behavior
+
+### Multiple CAs
+
+You may specify multiple CAs to be used for mTLS authentication. A connection
+is considered authenticated if it presents a certificate signed by any of the
+specified CAs. Agents allow you to specify multiple CAs by simply specifying a
+PEM file that contains multiple x509 CA certificates concatenated together. A
+file like that might look like:
+
+```pem
+-----BEGIN CERTIFICATE-----
+...
+-----END CERTIFICATE-----
+-----BEGIN CERTIFICATE-----
+...
+-----END CERTIFICATE-----
+```
+
+### CA Basic Constraint
+
+x509 certificates contain a basic constraint attribute called `cA` which
+defines whether or not the certificate may be used as a CA.
+
+ngrok will refuse to accept a certificate as an mTLS certificate authority
+unless this constraint is set to true.
+
+See [RFC 5280 4.2.1.9](https://datatracker.ietf.org/doc/html/rfc5280#section-4.2.1.9).
+
+## Reference
+
+### Configuration
+
+###### **Agent Configuration**
+
+| Parameter                   | Description                                                                                                                                        |
+| --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Certificate Authorities** | PEM-encoded certificate authorities. You may concatenate CAs to multiple together. A client certificate must be signed by at least one of the CAs. |
+
+###### **Edge Configuration**
+
+| Parameter                     | Description                                                                                                                                                                                                                                    |
+| ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Certificate Authority IDs** | A set of certificates authorities. A client certificate must be signed by at least one of the configured CAs. See the [TLS Edge Mutual TLS Module API Resource](/api/resources/tls-edge-mutual-tls-module/) for additional details. Max of 10. |
+
+### Errors
+
+If the client does not present any certificate or it does not present a valid
+certificate signed by the CA, the TLS handshake will be aborted.
+
+The TLS connection aborts with a TLS error as defined by [RFC
+5246](https://datatracker.ietf.org/doc/html/rfc5246#section-7.2). The most
+common alert code returned for a failed mutual TLS handshake is code 42
+(`bad_certificate`) which most TLS implementations will report with the error
+string string "bad certificate".
+
+### Events
+
+No event data is captured for this module on TLS endpoints.
+
+### Edges
+
+Mutual TLS is a supported Edge module. When the Mutual TLS module is configured
+via an Edge, you must specify one or more references to Certificate Authority
+objects.
+
+- [Mutual TLS Edge Module API Resource](/api/resources/tls-edge-mutual-tls-module/)
+- [Certificate Authority API Resource](/api/resources/certificate-authorities/)
+
+### Pricing
+
+This module is available on the Enterprise plan.
+
+## Try it out
+
+This example assumes you have an x509 private key and certificate encoded as
+PEM files called `client-key.pem` and `client-cert.pem`, respectively. The
+certificate must be signed by one of the CA certificates you provided to the
+Mutual TLS module.
+
+Run `curl` with the following command:
+
+```bash
+curl --client client-cert.pem --key client-key.pem https://yourapp.ngrok.app
+```
+
+`curl` has a shortcut to pass a single file if the private key and certificate
+are concatenated together.
+
+```bash
+cat client-cert.pem client-key.pem > client-cert-and-key.pem
+curl --cert client-cert-and-key.pem https://yourapp.ngrok.app
+```

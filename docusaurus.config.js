@@ -297,7 +297,7 @@ const config = {
 			prism: {
 				theme: lightCodeTheme,
 				darkTheme: darkCodeTheme,
-				additionalLanguages: ["hcl", "rust"],
+				additionalLanguages: ["hcl", "rust", "http", "bash"],
 			},
 			docs: {
 				sidebar: {
