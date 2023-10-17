@@ -1,5 +1,5 @@
 ---
-description: Use Frontegg SAML to secure access to ngrok tunnels
+description: Use Frontegg SAML to secure access to ngrok endpoints
 ---
 
 # Frontegg SSO (SAML)
@@ -18,10 +18,10 @@ To secure access to ngrok with Frontegg Single Sign-On using SAML:
 
 :::
 
-This article details how to configure Frontegg as the primary Identity Provider for ngrok tunnels.
+This article details how to configure Frontegg as the primary Identity Provider for ngrok endpoints.
 By integrating Frontegg SSO with ngrok, you can:
 
-- **Restrict access to ngrok tunnels** only to users authenticated via Frontegg
+- **Restrict access to ngrok endpoints** only to users authenticated via Frontegg
 - **Use Frontegg security policies and MFA authenticators**.
 - **Use Frontegg's Dashboard to facilitate access to ngrok apps**.
 
@@ -29,8 +29,8 @@ By integrating Frontegg SSO with ngrok, you can:
 
 To configure ngrok tunnels with Frontegg, you must have:
 
-- a Frontegg account with administrative rights to create apps
-- an [ngrok Enterprise Account](https://ngrok.com/pricing) with an authtoken or admin access to configure edges with SAML.
+- A Frontegg account with administrative rights to create apps
+- An [ngrok Enterprise Account](https://ngrok.com/pricing) with an authtoken or admin access to configure edges with SAML.
 
 ## Configuration Steps
 
@@ -68,7 +68,7 @@ To integrate ngrok with Frontegg SSO, you will need to:
 
    ```bash
    curl --location --request POST 'https://api.frontegg.com/oauth/resources/configurations/saml/v1/https%3A%2F%2Ftemporary' \
-   --header 'frontegg-vendor-host: YOUR-FRONTEGG-HOST-URL' \
+   --header 'frontegg-vendor-host: YOUR_FRONTEGG_HOST_URL' \
    --header 'Authorization: Bearer TOKEN' \
    --header 'Content-Type: application/json' \
    --data-raw '{
@@ -79,7 +79,7 @@ To integrate ngrok with Frontegg SSO, you will need to:
 
    **Note**: Replace the following with values copied on previous steps:
 
-   - YOUR-FRONTEGG-HOST-URL: The value of the **Domain name** from the **Env settings** > **Domains** tab.
+   - YOUR_FRONTEGG_HOST_URL: The value of the **Domain name** from the **Env settings** > **Domains** tab.
    - TOKEN: The token you copied before.
 
 1. Copy the response and save it as the `idp_metadata.xml` file locally on your desktop.
@@ -116,22 +116,22 @@ To configure an edge with Frontegg:
 
    ```bash
    curl --location --request POST 'https://api.frontegg.com/oauth/resources/configurations/saml/v1/URL-ENCODED-NGROK-ENTITY-ID' \
-   --header 'frontegg-vendor-host: YOUR-FRONTEGG-HOST-URL' \
+   --header 'frontegg-vendor-host: YOUR_FRONTEGG_HOST_URL' \
    --header 'Authorization: Bearer TOKEN' \
    --header 'Content-Type: application/json' \
    --data-raw '{
-      "acsUrl": "NGROK-ACS-URL",
-      "entityId": "NGROK-ENTITY-ID-URL"
+      "acsUrl": "NGROK_ACS_URL",
+      "entityId": "NGROK_ENTITY_ID_URL"
    }'
    ```
 
    **Note**: Replace the following with the values copied on previous steps:
 
-   - URL-ENCODED-NGROK-ENTITY-ID: URL-Enconded value of the ngrok **Entity ID*** copied from the edge SAML configuration.
-   - YOUR-FRONTEGG-HOST-URL: The value of the **Domain name** from the **Env settings** > **Domains** tab.
+   - URL_ENCODED_NGROK_ENTITY_ID: URL-Encoded value of the ngrok **Entity ID*** copied from the edge SAML configuration.
+   - YOUR_FRONTEGG_HOST_URL: The value of the **Domain name** from the **Env settings** > **Domains** tab.
    - TOKEN: The Frontegg token you copied before.
-   - NGROK-ACS-URL: The value of the ngrok **Entity ID** copied from the edge SAML configuration.
-   - NGROK-ENTITY-ID-URL: The value of the ngrok **ACS URL** copied from the edge SAML configuration.
+   - NGROK_ACS_URL: The value of the ngrok **Entity ID** copied from the edge SAML configuration.
+   - NGROK_ENTITY_ID_URL: The value of the ngrok **ACS URL** copied from the edge SAML configuration.
 
 
 ### **Step 4**: Update Frontegg Login Method {#frontegg-login}
