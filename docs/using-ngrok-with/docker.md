@@ -34,7 +34,7 @@ docker run -it -e NGROK_AUTHTOKEN=xyz ngrok/ngrok:latest http host.docker.intern
 
 ---
 
-If you're more comfortable using Docker Compose, you can use the following as a starting point. Copy the contents below into a new file named `docker-compose.yaml`, then run `docker compose up` in that directory. This Docker compose file assumes that you have an `ngrok.yml` file in the same directory with at least one tunnel defined. Check out the [ngrok agent config file documentation](/docs/secure-tunnels/ngrok-agent/reference/config/) for help creating a configuration file with a tunnel definition. If you want to use the same configuration file as your local ngrok agent, you can view the location of the default config file using `ngrok config check`.
+If you're more comfortable using Docker Compose, you can use the following as a starting point. Copy the contents below into a new file named `docker-compose.yaml`, then run `docker compose up` in that directory. This Docker compose file assumes that you have an `ngrok.yml` file in the same directory with at least one tunnel defined. Check out the [ngrok agent config file documentation](/docs/agent/config/) for help creating a configuration file with a tunnel definition. If you want to use the same configuration file as your local ngrok agent, you can view the location of the default config file using `ngrok config check`.
 
 ```bash
 services:

@@ -1,0 +1,25 @@
+```go
+import (
+	"context"
+	"net"
+
+	"golang.ngrok.com/ngrok"
+	"golang.ngrok.com/ngrok/config"
+)
+
+func ngrokListener(ctx context.Context) (net.Listener, error) {
+	return ngrok.Listen(ctx,
+		config.HTTPEndpoint(
+			config.WithResponseHeader("content-security-policy", "self"),
+			config.WithResponseHeader("dial-duration", "${.backend.dial_duration}"),
+			config.WithRemoveResponseHeader("internal-trace-id"),
+		),
+		ngrok.WithAuthtokenFromEnv(),
+	)
+}
+```
+
+Go Package Docs:
+
+- [https://pkg.go.dev/golang.ngrok.com/ngrok/config#WithResponseHeader](https://pkg.go.dev/golang.ngrok.com/ngrok/config#WithResponseHeader)
+- [https://pkg.go.dev/golang.ngrok.com/ngrok/config#WithRemoveResponseHeader](https://pkg.go.dev/golang.ngrok.com/ngrok/config#WithRemoveResponseHeader)

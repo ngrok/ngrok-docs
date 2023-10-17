@@ -1,0 +1,255 @@
+import HttpHeaderTemplates from "./_http_header_templates.mdx";
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+import KubernetesExample from "/examples/k8s/http-request-headers.mdx";
+import AgentCliExample from "/examples/agent-cli/http-request-headers.mdx";
+import AgentConfigExample from "/examples/agent-config/http-request-headers.mdx";
+import SshExample from "/examples/ssh/http-request-headers.mdx";
+import GoSdkExample from "/examples/go-sdk/http-request-headers.mdx";
+import RustSdkExample from "/examples/rust-sdk/http-request-headers.mdx";
+
+# Request Headers
+
+---
+
+## Overview
+
+This module adds and removes headers from HTTP requests before they are sent to
+your upstream service. This is useful for providing additional data to upstream
+services about the behavior of the ngrok edge.
+
+Changes made to request headers will not be visible to other modules; they will
+only be seen by your upstream service.
+
+You may [interpolate variables into header values](#variable-interpolation) to
+make them dynamic.
+
+## Example Usage
+
+<Tabs groupId="connectivity" queryString="cty">
+	<TabItem value="agent-cli" label="Agent CLI" default>
+		<AgentCliExample />
+	</TabItem>
+	<TabItem value="agent-config" label="Agent Config File">
+		<AgentConfigExample />
+	</TabItem>
+	<TabItem value="ssh" label="SSH">
+		<SshExample />
+	</TabItem>
+	<TabItem value="go-sdk" label="Go SDK">
+		<GoSdkExample />
+	</TabItem>
+	<TabItem value="rust-sdk" label="Rust SDK">
+		<RustSdkExample />
+	</TabItem>
+	<TabItem value="k8s" label="Kubernetes Controller">
+		<KubernetesExample />
+	</TabItem>
+</Tabs>
+
+## Behavior
+
+### Variable Interpolation
+
+You may interpolate variables into header values. Variables are interpolated
+into headers with JSONPath expressions surrounded by the `${}` syntax.
+
+For example to include geographical data about the client IP that initiated the
+request, you may construct a header value like so.
+
+```bash
+ngrok http 80 --request-header-add 'country: ${.ngrok.geo.country_code}'
+```
+
+If you are specifying variable interpolation from the command line, make sure
+to use single quotes for the command line argument otherwise it is likely that
+the shell will interpret your variable definition.
+
+Consult the [Variables Reference](#variables) for the available variables.
+
+### Automatic Headers {#automatic-headers}
+
+Regardless of whether you enable the request headers module or not, [ngrok adds
+default headers to every HTTP request](/http/#upstream-headers).
+
+You may remove these default headers with the request headers module.
+
+### Multiple Header Values
+
+HTTP headers may include the same header multiple times. You may add a header
+multiple times with different values and it will be added multiple times. For
+example:
+
+```bash
+ngrok http 80 --request-header-add "foo: bar" --request-header-add "foo: baz"
+```
+
+will result in a header with multiple values set
+
+```http
+GET / HTTP/1.1
+host: example.ngrok.app
+foo: bar
+foo: baz
+```
+
+:::note
+
+There is a bug which currently causes the above behavior to not be correct.
+Only the last header will be used when specifying multiple headers. This behavior
+will be fixed to match what is documented above.
+
+:::
+
+If you remove a header that has multiple values, all values will be removed.
+
+### Replacing Header Values
+
+If you add a header that is already present in the HTTP request, it will add
+another header. For example, if you run:
+
+```bash
+ngrok http 80 --request-header-add "foo: new-value"
+```
+
+And the HTTP request was already:
+
+```http
+GET / HTTP/1.1
+host: example.ngrok.app
+foo: original-value
+```
+
+The client will receive the following:
+
+```http
+GET / HTTP/1.1
+host: example.ngrok.app
+foo: original-value
+foo: new-value
+```
+
+If you wish to replace a header, you can combine header removal and addition to
+achieve that effect.
+
+```bash
+ngrok http 80 --request-header-remove "foo" --request-header-add "foo: new-value"
+```
+
+This will cause the HTTP request in this case to become:
+
+```http
+GET / HTTP/1.1
+host: example.ngrok.app
+foo: new-value
+```
+
+### Case Sensitivity
+
+When adding headers, ngrok normalizes all header keys to a lower case
+representation per the http/2 RFC. See [RFC
+7540](https://datatracker.ietf.org/doc/html/rfc7540#section-8.1.2).
+
+When removing headers, ngrok will remove any headers that match with a
+case-insensitive comparison.
+
+### Ordering
+
+Request header changes made by other modules can be overridden by this module
+because this module is executed immediately before the HTTP request is
+transmitted to the upstream service.
+
+### Special Cases
+
+- You may not add or remove the `user-agent` header.
+- You may not remove the `host` header without adding it with a different value.
+- Adding a `host` header will replace the existing value instead of adding a second value.
+- You may not use this module to add the `ngrok-skip-browser-warning` header to skip the ngrok browser warning on free accounts.
+
+## Reference
+
+### Configuration
+
+| Parameter           | Description                                     |
+| ------------------- | ----------------------------------------------- |
+| **Added Headers**   | A list of header names to header values. Max 5. |
+| **Removed Headers** | A list of header names to remove. Max 5.        |
+
+### Upstream Headers {#upstream-headers}
+
+This module adds the configured headers to requests sent to the upstream
+application.
+
+### Errors
+
+This module does not return any errors.
+
+### Events
+
+This module does not populate any fields in events.
+
+### Edges
+
+Request Headers is an HTTPS Edge module which can be applied to Routes.
+
+- [Request Headers Edge Module API
+  Resource](/api/resources/https-edge-route-request-headers-module/)
+
+### Pricing
+
+This module is available on all plans.
+
+### Variables
+
+<HttpHeaderTemplates />
+
+## Try it out
+
+To try out the request headers module we're going to foward to httpbin.
+
+```bash
+ngrok http https://httpbin.org --domain your-domain.ngrok.app
+```
+
+In another terminal, curl that endpoint:
+
+```bash
+curl https://your-domain.ngrok.app/headers
+
+{
+  "headers": {
+    "Accept": "*/*",
+    "Accept-Encoding": "gzip",
+    "Host": "your-domain.ngrok.app",
+    "User-Agent": "curl/7.85.0",
+    "X-Amzn-Trace-Id": "Root=1-64d939d7-638343a031ac3f895e36af65"
+  }
+}
+```
+
+Now, let's try manipulating the headers. We'll remove the `user-agent` header
+and add a header of our own with geo data. Stop your previous instance of ngrok
+with `Ctrl+C` and then restart ngrok with a new command.
+
+```bash
+ngrok http https://httpbin.org \
+  --domain your-domain.ngrok.app \
+  --request-header-remove='user-agent' \
+  --request-header-add='country: ${.ngrok.geo.country_code}'
+```
+
+Then curl your endpoint again to see how the request headers have been updated:
+
+```bash
+curl https://your-domain.ngrok.app/headers
+
+{
+  "headers": {
+    "Accept": "*/*",
+    "Accept-Encoding": "gzip",
+    "Country": "US",
+    "Host": "your-domain.ngrok.app",
+    "X-Amzn-Trace-Id": "Root=1-64d93b73-689c799b056568ff13546ef4"
+  }
+}
+```

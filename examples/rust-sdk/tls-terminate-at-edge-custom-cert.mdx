@@ -1,0 +1,29 @@
+```rust
+use ngrok::prelude::*;
+
+async fn listen_ngrok() -> anyhow::Result<impl Tunnel> {
+    let cert: &[u8] = load_bytes!("/path/to/app-example-com-crt.pem");
+    let key: &[u8] = load_bytes!("/path/to/app-example-com-key.pem");
+
+    let sess = ngrok::Session::builder()
+        .authtoken_from_env()
+        .connect()
+        .await?;
+
+    let tun = sess
+        .tls_endpoint()
+        .domain("app.example.com")
+        .termination(cert.into(), key.into())
+        .termination(
+        .listen()
+        .await?;
+
+    println!("Listening on URL: {:?}", tun.url());
+
+    Ok(tun)
+}
+```
+
+Rust Crate Docs:
+
+- [https://docs.rs/ngrok/latest/ngrok/session/struct.Session.html#method.tls_endpoint](https://docs.rs/ngrok/latest/ngrok/session/struct.Session.html#method.tls_endpoint)

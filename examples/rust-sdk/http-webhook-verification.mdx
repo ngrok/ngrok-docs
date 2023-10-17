@@ -1,0 +1,21 @@
+```rust
+use ngrok::prelude::*;
+
+async fn listen_ngrok() -> anyhow::Result<impl Tunnel> {
+    let sess = ngrok::Session::builder()
+        .authtoken_from_env()
+        .connect()
+        .await?;
+    let tun = sess
+        .http_endpoint()
+        .webhook_verification("twilio", "{twilio webhook secret}")
+        .listen()
+        .await?;
+    println!("Listening on URL: {:?}", tun.url());
+    Ok(tun)
+}
+```
+
+Rust Crate Docs:
+
+- [https://docs.rs/ngrok/latest/ngrok/config/struct.HttpTunnelBuilder.html#method.webhook_verification](https://docs.rs/ngrok/latest/ngrok/config/struct.HttpTunnelBuilder.html#method.webhook_verification)
