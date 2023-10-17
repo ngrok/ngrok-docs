@@ -58,7 +58,6 @@ To integrate ngrok with Frontegg SSO, you will need to:
 
 1. Click the **Domains** tab, and copy the value of the **Domain name**.
 
-
 ### Grant access to Frontegg users
 
 Create a Frontegg user:
@@ -71,7 +70,6 @@ Create a Frontegg user:
 
 1. On the **Add new user** popup, enter a name, email, select the account you have created, and then click **Save**.
    **Note**: by default, the user is assigned the **Admin** role.
-
 
 ## **Step 2**: Configure ngrok {#configure-ngrok}
 
@@ -105,7 +103,6 @@ ngrok can leverage Frontegg SSO in two ways:
 1. Copy the URL available next to **Forwarding** (for example, `https://frontegg-sso-test.ngrok.app`).
 
 1. Skip to **Step 3**
-
 
 ### **Option 2**: ngrok Edge
 
@@ -142,24 +139,22 @@ For this step, we assume you have an app running locally (i.e. on localhost:3000
 
 1. Click the **copy icon** next to the tunnel command.
    ![tunnel config](img/frontegg-2.png)
-   
 
 1. Launch a tunnel:
 
-    - Launch a terminal.
-    - Paste the command but replace `http://localhost:80` with your localhost app address (i.e., `http://localhost:3000`).
-    - Click **Enter** and an ngrok tunnel associated with your edge configuration will launch.
+   - Launch a terminal.
+   - Paste the command but replace `http://localhost:80` with your localhost app address (i.e., `http://localhost:3000`).
+   - Click **Enter** and an ngrok tunnel associated with your edge configuration will launch.
 
 1. To confirm that the tunnel is connected to your edge:
 
-    - Return to the ngrok dashboard
-    - Close the **Start a tunnel** and the **Tunnel group** tabs
-    - Refresh the test edge page. Under traffic, you will see the message _You have 1 tunnel online. Start additional tunnels to begin load balancing._
-      ![tunnel confirmed](img/frontegg-3.png)
+   - Return to the ngrok dashboard
+   - Close the **Start a tunnel** and the **Tunnel group** tabs
+   - Refresh the test edge page. Under traffic, you will see the message _You have 1 tunnel online. Start additional tunnels to begin load balancing._
+     ![tunnel confirmed](img/frontegg-3.png)
 
 1. In the test edge, copy the **endpoint URL** (you use this URL to test the Frontegg Authentication).
-    ![tunnel url](img/frontegg-4.png)
-
+   ![tunnel url](img/frontegg-4.png)
 
 ## Step 3: Test the integration {#test-sso}
 
