@@ -69,7 +69,7 @@ Bot users are available on ngrok pay-as-you go plans.
 
 ### When should I not use a Bot User? {#bot-user-vs-user}
 
-A Bot User is very useful, but it is not a good subsitute for a standard ngrok User. When a developer is building with ngrok they may need to rotate credentials after adding them to a build environment or accidentally committing them to a repository. The developer needs to be able to use the ngrok dashboard to see endpoint status, make configuration changes, and manage their own credentials, which a Bot User cannot do.
+A Bot User is very useful, but it is not a good substitute for a standard ngrok User. When a developer is building with ngrok they may need to rotate credentials after adding them to a build environment or accidentally committing them to a repository. The developer needs to be able to use the ngrok dashboard to see endpoint status, make configuration changes, and manage their own credentials, which a Bot User cannot do.
 
 ### What happens when I delete a Bot User? {#bot-user-delete}
 
