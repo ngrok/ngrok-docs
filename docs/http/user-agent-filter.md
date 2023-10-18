@@ -6,6 +6,8 @@ import AgentCliExample from "/examples/agent-cli/http-user-agent-filter.mdx";
 import AgentConfigExample from "/examples/agent-config/http-user-agent-filter.mdx";
 import SshExample from "/examples/ssh/http-user-agent-filter.mdx";
 import GoSdkExample from "/examples/go-sdk/http-user-agent-filter.mdx";
+import NodejsSdkExample from "/examples/nodejs-sdk/http-user-agent-filter.mdx";
+import PythonSdkExample from "/examples/python-sdk/http-user-agent-filter.mdx";
 import RustSdkExample from "/examples/rust-sdk/http-user-agent-filter.mdx";
 
 # User Agent Filter
@@ -31,16 +33,22 @@ requests if they match the `User-Agent` header.
 	<TabItem value="agent-cli" label="Agent CLI" default>
 		<AgentCliExample />
 	</TabItem>
-	<TabItem value="agent-config" label="Agent Config File">
+	<TabItem value="agent-config" label="Agent Config">
 		<AgentConfigExample />
 	</TabItem>
 	<TabItem value="ssh" label="SSH">
 		<SshExample />
 	</TabItem>
-	<TabItem value="go-sdk" label="Go SDK">
+	<TabItem value="go-sdk" label="Go">
 		<GoSdkExample />
 	</TabItem>
-	<TabItem value="rust-sdk" label="Rust SDK">
+	<TabItem value="nodejs-sdk" label="NodeJS">
+		<NodejsSdkExample />
+	</TabItem>
+	<TabItem value="python-sdk" label="Python">
+		<PythonSdkExample />
+	</TabItem>
+	<TabItem value="rust-sdk" label="Rust">
 		<RustSdkExample />
 	</TabItem>
 	<TabItem value="k8s" label="Kubernetes Controller">
