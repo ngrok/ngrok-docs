@@ -4,9 +4,9 @@
 
 ```json
 {
-	"id": "ed_2TMGIzH7ICCoRTLXwFq5OOXTQDD",
+	"id": "ed_2Wzky6MSGDhD9m1PwD1nPSJSQ9b",
 	"metadata": "{\"environment\":\"dev\"}",
-	"created_at": "2023-07-31T23:17:40Z",
+	"created_at": "2023-10-19T19:17:26Z",
 	"description": "kinesis dev stream",
 	"format": "json",
 	"target": {
@@ -23,6 +23,6 @@
 		"cloudwatch_logs": null,
 		"datadog": null
 	},
-	"uri": "https://api.ngrok.com/event_destinations/ed_2TMGIzH7ICCoRTLXwFq5OOXTQDD"
+	"uri": "https://api.ngrok.com/event_destinations/ed_2Wzky6MSGDhD9m1PwD1nPSJSQ9b"
 }
 ```

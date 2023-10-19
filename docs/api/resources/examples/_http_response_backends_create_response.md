@@ -4,9 +4,9 @@
 
 ```json
 {
-	"id": "bkdhr_2TMGJ2ONPI9hANFI6I64gyQsryj",
-	"uri": "https://api.ngrok.com/backends/http_response/bkdhr_2TMGJ2ONPI9hANFI6I64gyQsryj",
-	"created_at": "2023-07-31T23:17:40Z",
+	"id": "bkdhr_2Wzky6cgWdRogGxkxER67YEkpoA",
+	"uri": "https://api.ngrok.com/backends/http_response/bkdhr_2Wzky6cgWdRogGxkxER67YEkpoA",
+	"created_at": "2023-10-19T19:17:27Z",
 	"description": "acme http response",
 	"metadata": "{\"environment\": \"staging\"}",
 	"body": "I'm a teapot",

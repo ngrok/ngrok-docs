@@ -4,8 +4,8 @@
 
 ```json
 {
-	"id": "agin_2TMGJ5XTkNXxX2o9kiFMMLhTHw7",
-	"uri": "https://api.ngrok.com/agent_ingresses/agin_2TMGJ5XTkNXxX2o9kiFMMLhTHw7",
+	"id": "agin_2Wzky8cfzlcW0ehnaTJaGHNzL9h",
+	"uri": "/agent_ingresses/agin_2Wzky8cfzlcW0ehnaTJaGHNzL9h",
 	"description": "acme devices",
 	"domain": "connect.acme.com",
 	"ns_targets": [
@@ -15,6 +15,8 @@
 		"4.kube-dns.kube-system.svc.cluster.local."
 	],
 	"region_domains": ["tunnel.us.connect.acme.com"],
-	"created_at": "2023-07-31T23:17:40Z"
+	"created_at": "2023-10-19T19:17:27Z",
+	"certificate_management_policy": null,
+	"certificate_management_status": null
 }
 ```
