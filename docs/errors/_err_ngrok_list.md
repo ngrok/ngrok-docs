@@ -167,6 +167,18 @@ The parsing error encountered was:
 		</tr>
 		<tr>
 			<td>
+				<a id="ERR_NGROK_126" href="/docs/errors/err_ngrok_126">ERR_NGROK_126</a>
+			</td>
+			<td class="pre-wrapped">The agent ingress "<code>&lt;DOMAIN&gt;</code>" is not available via "<code>&lt;IP&gt;</code>".</td>
+		</tr>
+		<tr>
+			<td>
+				<a id="ERR_NGROK_127" href="/docs/errors/err_ngrok_127">ERR_NGROK_127</a>
+			</td>
+			<td class="pre-wrapped">Your account is not permitted to use the agent ingress via "<code>&lt;IP&gt;</code>".</td>
+		</tr>
+		<tr>
+			<td>
 				<a id="ERR_NGROK_200" href="/docs/errors/err_ngrok_200">ERR_NGROK_200</a>
 			</td>
 			<td class="pre-wrapped">The ngrok API requires that you set the Authorization header for authentication. Your API keys and instructions are available on your dashboard: <a href="https://dashboard.ngrok.com/api">https://dashboard.ngrok.com/api</a></td>
@@ -586,7 +598,7 @@ Try connecting to a different region: <a href="https://ngrok.com/docs/platform/p
 				<a id="ERR_NGROK_318" href="/docs/errors/err_ngrok_318">ERR_NGROK_318</a>
 			</td>
 			<td class="pre-wrapped">You must reserve a wildcard domain for your account before it can be bound.
-Failed to bind the wildcard domain <code>&lt;DOMAIN&gt;</code> for the account <code>&lt;ACCOUNT&gt;</code> in region <code>&lt;REGION&gt;</code>.
+Failed to bind the wildcard domain <code>&lt;DOMAIN&gt;</code> for the account <code>&lt;ACCOUNT&gt;</code>.
 Reserve a domain on your dashboard: <a href="https://dashboard.ngrok.com/cloud-edge/domains/new">https://dashboard.ngrok.com/cloud-edge/domains/new</a></td>
 		</tr>
 		<tr>
@@ -594,8 +606,7 @@ Reserve a domain on your dashboard: <a href="https://dashboard.ngrok.com/cloud-e
 				<a id="ERR_NGROK_319" href="/docs/errors/err_ngrok_319">ERR_NGROK_319</a>
 			</td>
 			<td class="pre-wrapped">You must reserve a custom hostname for your account before it can be bound.
-Failed to bind the domain <code>&lt;DOMAIN&gt;</code> for the account <code>&lt;ACCOUNT&gt;</code> in region <code>&lt;REGION&gt;</code>.
-(Hint: Did you reserve the domain in this region?)
+Failed to bind the domain <code>&lt;DOMAIN&gt;</code> for the account <code>&lt;ACCOUNT&gt;</code>'.
 Reserve this name on your dashboard: <a href="https://dashboard.ngrok.com/cloud-edge/domains/new">https://dashboard.ngrok.com/cloud-edge/domains/new</a></td>
 		</tr>
 		<tr>
@@ -1207,7 +1218,7 @@ Upgrade to a paid plan at: <a href="https://dashboard.ngrok.com/billing/subscrip
 			<td>
 				<a id="ERR_NGROK_415" href="/docs/errors/err_ngrok_415">ERR_NGROK_415</a>
 			</td>
-			<td class="pre-wrapped">Your account is limited to <code>&lt;MAX&gt;</code> reserved domains. Email sales@ngrok.com to purchase additional domains.</td>
+			<td class="pre-wrapped">Your account is limited to <code>&lt;MAX&gt;</code> reserved domains. If you need more domains, you can turn overages on for your existing account or subscribe to a usage-based billing plan at: <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a>.</td>
 		</tr>
 		<tr>
 			<td>
@@ -1231,9 +1242,8 @@ Upgrade to a paid plan at: <a href="https://dashboard.ngrok.com/billing/subscrip
 			<td>
 				<a id="ERR_NGROK_419" href="/docs/errors/err_ngrok_419">ERR_NGROK_419</a>
 			</td>
-			<td class="pre-wrapped">Only Pro or Enterprise accounts can reserve wildcard domains.
-Your account can't reserve wildcard domains.
-Upgrade to a Pro or Enterprise plan at <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a></td>
+			<td class="pre-wrapped">Only Enterprise accounts can reserve wildcard domains.
+Upgrade to an Enterprise plan at <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a></td>
 		</tr>
 		<tr>
 			<td>
@@ -1306,7 +1316,7 @@ The name you've requested is: <code>&lt;DOMAIN&gt;</code></td>
 			<td>
 				<a id="ERR_NGROK_431" href="/docs/errors/err_ngrok_431">ERR_NGROK_431</a>
 			</td>
-			<td class="pre-wrapped">Your account is limited to <code>&lt;MAX&gt;</code> reserved domains.</td>
+			<td class="pre-wrapped">Your account is limited to <code>&lt;MAX&gt;</code> reserved domains. If you need more domains, you can turn overages on for your existing account or subscribe to a usage-based billing plan at: <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a>.</td>
 		</tr>
 		<tr>
 			<td>
@@ -1318,7 +1328,7 @@ The name you've requested is: <code>&lt;DOMAIN&gt;</code></td>
 			<td>
 				<a id="ERR_NGROK_433" href="/docs/errors/err_ngrok_433">ERR_NGROK_433</a>
 			</td>
-			<td class="pre-wrapped">Your account is limited to <code>&lt;MAX&gt;</code> reserved wildcard domains.</td>
+			<td class="pre-wrapped">Your account is limited to <code>&lt;MAX&gt;</code> reserved wildcard domains. If you need more domains, you can turn overages on for your existing account or subscribe to a usage-based billing plan at: <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a>.</td>
 		</tr>
 		<tr>
 			<td>
@@ -1404,7 +1414,7 @@ Upgrade to a paid plan at <a href="https://dashboard.ngrok.com/billing/subscript
 			<td>
 				<a id="ERR_NGROK_502" href="/docs/errors/err_ngrok_502">ERR_NGROK_502</a>
 			</td>
-			<td class="pre-wrapped">Your account is limited to <code>&lt;MAX&gt;</code> reserved addresses. Email sales@ngrok.com to purchase additional addresses.</td>
+			<td class="pre-wrapped">Your account is limited to <code>&lt;MAX&gt;</code> reserved addresses. If you need more addresses, you can turn overages on for your existing account or subscribe to a usage-based billing plan at: <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a>.</td>
 		</tr>
 		<tr>
 			<td>
@@ -1440,7 +1450,7 @@ Upgrade to a paid plan at <a href="https://dashboard.ngrok.com/billing/subscript
 			<td>
 				<a id="ERR_NGROK_508" href="/docs/errors/err_ngrok_508">ERR_NGROK_508</a>
 			</td>
-			<td class="pre-wrapped">Your account is limited to <code>&lt;MAX&gt;</code> reserved addresses.</td>
+			<td class="pre-wrapped">Your account is limited to <code>&lt;MAX&gt;</code> reserved addresses. If you need more addresses, you can turn overages on for your existing account or subscribe to a usage-based billing plan at: <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a>.</td>
 		</tr>
 		<tr>
 			<td>
@@ -1675,6 +1685,12 @@ Upgrade to an Enterprise plan at: <a href="https://dashboard.ngrok.com/billing/s
 			<td class="pre-wrapped">This credential cannot be deleted because it is the default authtoken tied to <code>&lt;EMAIL&gt;</code>. Removing the user from this account will also delete any associated tokens.
 Credential ID: <code>&lt;ID&gt;</code>
 Description: <code>&lt;DESCRIPTION&gt;</code></td>
+		</tr>
+		<tr>
+			<td>
+				<a id="ERR_NGROK_638" href="/docs/errors/err_ngrok_638">ERR_NGROK_638</a>
+			</td>
+			<td class="pre-wrapped">Your account is not allowed to create credentials with pre-computed tokens. To create a new credential, omit pre-computed token field and let ngrok generate one for you. Its value will be available as part of the response.</td>
 		</tr>
 		<tr>
 			<td>
@@ -2139,7 +2155,7 @@ Use one of version '1' or '2' to enable proxy proto.</td>
 			<td>
 				<a id="ERR_NGROK_1205" href="/docs/errors/err_ngrok_1205">ERR_NGROK_1205</a>
 			</td>
-			<td class="pre-wrapped">You failed to solve the catpcha, please try again.</td>
+			<td class="pre-wrapped">You failed to solve the CAPTCHA, please try again.</td>
 		</tr>
 		<tr>
 			<td>
@@ -2151,7 +2167,7 @@ Use one of version '1' or '2' to enable proxy proto.</td>
 			<td>
 				<a id="ERR_NGROK_1208" href="/docs/errors/err_ngrok_1208">ERR_NGROK_1208</a>
 			</td>
-			<td class="pre-wrapped">You failed to solve the catpcha, please try again.</td>
+			<td class="pre-wrapped">You failed to solve the CAPTCHA, please try again.</td>
 		</tr>
 		<tr>
 			<td>
@@ -2441,9 +2457,7 @@ Upgrade to a Pro or Enterprise plan at: <a href="https://dashboard.ngrok.com/bil
 			<td>
 				<a id="ERR_NGROK_1608" href="/docs/errors/err_ngrok_1608">ERR_NGROK_1608</a>
 			</td>
-			<td class="pre-wrapped">Only Pro or Enterprise accounts can use endpoint configuration.
-Your account is not authorized to use endpoint configurations. 
-Upgrade to a Pro or Enterprise plan at: <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a></td>
+			<td class="pre-wrapped">Endpoint Configurations are deprecated. Please use Cloud Edges instead.</td>
 		</tr>
 		<tr>
 			<td>
@@ -2575,9 +2589,7 @@ Upgrade to a Pro or Enterprise plan at: <a href="https://dashboard.ngrok.com/bil
 			<td>
 				<a id="ERR_NGROK_1631" href="/docs/errors/err_ngrok_1631">ERR_NGROK_1631</a>
 			</td>
-			<td class="pre-wrapped">Only Personal, Pro or Enterprise accounts can use webhook validation.
-Your account is not authorized to use webhook validation.
-Upgrade to a paid plan at: <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a></td>
+			<td class="pre-wrapped">Endpoint Configurations are deprecated. Please use Cloud Edges instead.</td>
 		</tr>
 		<tr>
 			<td>
@@ -2637,9 +2649,7 @@ Upgrade to a paid plan at: <a href="https://dashboard.ngrok.com/billing/subscrip
 			<td>
 				<a id="ERR_NGROK_1641" href="/docs/errors/err_ngrok_1641">ERR_NGROK_1641</a>
 			</td>
-			<td class="pre-wrapped">Only Personal, Pro or Enterprise accounts can use OAuth.
-Your account is not authorized to use OAuth.
-Upgrade to a paid plan at: <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a></td>
+			<td class="pre-wrapped">Endpoint Configurations are deprecated. Please use Cloud Edges instead.</td>
 		</tr>
 		<tr>
 			<td>
@@ -3431,6 +3441,12 @@ Upgrade to a Pro or Enterprise plan at: <a href="https://dashboard.ngrok.com/bil
 		</tr>
 		<tr>
 			<td>
+				<a id="ERR_NGROK_2090" href="/docs/errors/err_ngrok_2090">ERR_NGROK_2090</a>
+			</td>
+			<td class="pre-wrapped">The user agent filter regular expression <code>&lt;REGEX&gt;</code> is an invalid regular expression: <code>&lt;ERR&gt;</code>.</td>
+		</tr>
+		<tr>
+			<td>
 				<a id="ERR_NGROK_3002" href="/docs/errors/err_ngrok_3002">ERR_NGROK_3002</a>
 			</td>
 			<td class="pre-wrapped">Error performing TLS handshake: <code>&lt;ERR&gt;</code></td>
@@ -3809,6 +3825,12 @@ If you are the account owner and believe this is a mistake, please contact suppo
 		</tr>
 		<tr>
 			<td>
+				<a id="ERR_NGROK_3211" href="/docs/errors/err_ngrok_3211">ERR_NGROK_3211</a>
+			</td>
+			<td class="pre-wrapped">The server does not authorize requests from your user-agent</td>
+		</tr>
+		<tr>
+			<td>
 				<a id="ERR_NGROK_3300" href="/docs/errors/err_ngrok_3300">ERR_NGROK_3300</a>
 			</td>
 			<td class="pre-wrapped">URL "state" parameter is invalid</td>
@@ -4052,6 +4074,18 @@ Install your authoken: <a href="https://dashboard.ngrok.com/get-started/your-aut
 		</tr>
 		<tr>
 			<td>
+				<a id="ERR_NGROK_4115" href="/docs/errors/err_ngrok_4115">ERR_NGROK_4115</a>
+			</td>
+			<td class="pre-wrapped">The email domain "<code>&lt;DOMAIN&gt;</code>" does not allow account creation. Please contact your ngrok administrator or support@ngrok.com for access.</td>
+		</tr>
+		<tr>
+			<td>
+				<a id="ERR_NGROK_4116" href="/docs/errors/err_ngrok_4116">ERR_NGROK_4116</a>
+			</td>
+			<td class="pre-wrapped">The domain of the email entered is registered under a domain control and must signup via SSO</td>
+		</tr>
+		<tr>
+			<td>
 				<a id="ERR_NGROK_4200" href="/docs/errors/err_ngrok_4200">ERR_NGROK_4200</a>
 			</td>
 			<td class="pre-wrapped">You may not delete all or your logins, you must have at least one.</td>
@@ -4169,6 +4203,12 @@ Install your authoken: <a href="https://dashboard.ngrok.com/get-started/your-aut
 				<a id="ERR_NGROK_4415" href="/docs/errors/err_ngrok_4415">ERR_NGROK_4415</a>
 			</td>
 			<td class="pre-wrapped">You are not allowed to redeem this invitation, this account uses SCIM 2.0 to manage members.</td>
+		</tr>
+		<tr>
+			<td>
+				<a id="ERR_NGROK_4416" href="/docs/errors/err_ngrok_4416">ERR_NGROK_4416</a>
+			</td>
+			<td class="pre-wrapped">Your email does not match the email intended for this invitation, <code>&lt;EMAIL&gt;</code>.</td>
 		</tr>
 		<tr>
 			<td>
@@ -5288,6 +5328,18 @@ Please ask the account owner to upgrade your plan: <a href="https://dashboard.ng
 		</tr>
 		<tr>
 			<td>
+				<a id="ERR_NGROK_6621" href="/docs/errors/err_ngrok_6621">ERR_NGROK_6621</a>
+			</td>
+			<td class="pre-wrapped">You are not allowed to activate/deactivate admins. Only other administrators may make that change.</td>
+		</tr>
+		<tr>
+			<td>
+				<a id="ERR_NGROK_6622" href="/docs/errors/err_ngrok_6622">ERR_NGROK_6622</a>
+			</td>
+			<td class="pre-wrapped">You may not deactivate the last administrator of the account. Grant administrator privileges to another member first.</td>
+		</tr>
+		<tr>
+			<td>
 				<a id="ERR_NGROK_6700" href="/docs/errors/err_ngrok_6700">ERR_NGROK_6700</a>
 			</td>
 			<td class="pre-wrapped">The description is limited to <code>&lt;MAX&gt;</code> characters, but the provided value had <code>&lt;VAL&gt;</code> characters.</td>
@@ -5327,6 +5379,25 @@ Please ask the account owner to upgrade your plan: <a href="https://dashboard.ng
 				<a id="ERR_NGROK_6706" href="/docs/errors/err_ngrok_6706">ERR_NGROK_6706</a>
 			</td>
 			<td class="pre-wrapped">The agent ingress domain "<code>&lt;DOMAIN&gt;</code>" already exists, choose another domain.</td>
+		</tr>
+		<tr>
+			<td>
+				<a id="ERR_NGROK_6707" href="/docs/errors/err_ngrok_6707">ERR_NGROK_6707</a>
+			</td>
+			<td class="pre-wrapped">Your account can't reserve custom agent ingresses.
+Contact us for access to the Agent Ingresses feature.</td>
+		</tr>
+		<tr>
+			<td>
+				<a id="ERR_NGROK_6708" href="/docs/errors/err_ngrok_6708">ERR_NGROK_6708</a>
+			</td>
+			<td class="pre-wrapped">Multiple certificate sources provided.</td>
+		</tr>
+		<tr>
+			<td>
+				<a id="ERR_NGROK_6709" href="/docs/errors/err_ngrok_6709">ERR_NGROK_6709</a>
+			</td>
+			<td class="pre-wrapped">Some of the ips "<code>&lt;IPS&gt;</code>" are already used in different agent ingress.</td>
 		</tr>
 		<tr>
 			<td>
@@ -6212,18 +6283,6 @@ Upgrade to a Pro or Enterprise plan at: <a href="https://dashboard.ngrok.com/bil
 		</tr>
 		<tr>
 			<td>
-				<a id="ERR_NGROK_7156" href="/docs/errors/err_ngrok_7156">ERR_NGROK_7156</a>
-			</td>
-			<td class="pre-wrapped">Failed to attach hostport. The domain <code>&lt;HOSTPORT&gt;</code> is allocated for region <code>&lt;NEW_REGION&gt;</code> but the previous hostport is allocated in <code>&lt;OLD_REGION&gt;</code>.</td>
-		</tr>
-		<tr>
-			<td>
-				<a id="ERR_NGROK_7157" href="/docs/errors/err_ngrok_7157">ERR_NGROK_7157</a>
-			</td>
-			<td class="pre-wrapped">Failed to attach hostport. The address <code>&lt;HOSTPORT&gt;</code> is allocated for region <code>&lt;NEW_REGION&gt;</code> but the previous hostport is allocated in <code>&lt;OLD_REGION&gt;</code></td>
-		</tr>
-		<tr>
-			<td>
 				<a id="ERR_NGROK_7158" href="/docs/errors/err_ngrok_7158">ERR_NGROK_7158</a>
 			</td>
 			<td class="pre-wrapped">Invalid edge module, OAuth auth check interval must be no greater than <code>&lt;MAX&gt;</code>, was <code>&lt;ACTUAL&gt;</code>.</td>
@@ -6507,6 +6566,13 @@ Upgrade to a Pro or Enterprise plan at: <a href="https://dashboard.ngrok.com/bil
 				<a id="ERR_NGROK_9021" href="/docs/errors/err_ngrok_9021">ERR_NGROK_9021</a>
 			</td>
 			<td class="pre-wrapped">You may specify at most one of subdomain, hostname, or domain for a tunnel.</td>
+		</tr>
+		<tr>
+			<td>
+				<a id="ERR_NGROK_9022" href="/docs/errors/err_ngrok_9022">ERR_NGROK_9022</a>
+			</td>
+			<td class="pre-wrapped">Your account is not authorized to use user agent filtering.
+Please upgrade to a Pro or Enterprise plan at: <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a></td>
 		</tr>
 		<tr>
 			<td>
@@ -6942,6 +7008,18 @@ Upgrade to a Pro or Enterprise plan at: <a href="https://dashboard.ngrok.com/bil
 		</tr>
 		<tr>
 			<td>
+				<a id="ERR_NGROK_15001" href="/docs/errors/err_ngrok_15001">ERR_NGROK_15001</a>
+			</td>
+			<td class="pre-wrapped">The Webhook Verification secret exceeds the maximum length of <code>&lt;MAX&gt;</code>, got <code>&lt;SIZE&gt;</code>.</td>
+		</tr>
+		<tr>
+			<td>
+				<a id="ERR_NGROK_15002" href="/docs/errors/err_ngrok_15002">ERR_NGROK_15002</a>
+			</td>
+			<td class="pre-wrapped">Your account is on the <code>&lt;PLAN&gt;</code> plan, which requires you to register a Domain through the ngrok Dashboard before starting an Endpoint. Visit <a href="https://dashboard.ngrok.com/cloud-edge/domains">https://dashboard.ngrok.com/cloud-edge/domains</a> to register a domain and then use the `--domain` flag when starting your Agent.</td>
+		</tr>
+		<tr>
+			<td>
 				<a id="ERR_NGROK_16000" href="/docs/errors/err_ngrok_16000">ERR_NGROK_16000</a>
 			</td>
 			<td class="pre-wrapped">The email of the user you are trying to add, <code>&lt;EMAIL&gt;</code>, does not use a domain verified for your account.</td>
@@ -6956,7 +7034,7 @@ Upgrade to a Pro or Enterprise plan at: <a href="https://dashboard.ngrok.com/bil
 			<td>
 				<a id="ERR_NGROK_17001" href="/docs/errors/err_ngrok_17001">ERR_NGROK_17001</a>
 			</td>
-			<td class="pre-wrapped">The information supplied for MFA verification was incorrect and verification was not successful.</td>
+			<td class="pre-wrapped">The information supplied for MFA verification was invalid.</td>
 		</tr>
 		<tr>
 			<td>
@@ -6968,13 +7046,19 @@ Upgrade to a Pro or Enterprise plan at: <a href="https://dashboard.ngrok.com/bil
 			<td>
 				<a id="ERR_NGROK_17003" href="/docs/errors/err_ngrok_17003">ERR_NGROK_17003</a>
 			</td>
-			<td class="pre-wrapped">The information supplied for recovery code verification was incorrect and verification was not successful.</td>
+			<td class="pre-wrapped">The information supplied for recovery code verification was invalid.</td>
 		</tr>
 		<tr>
 			<td>
 				<a id="ERR_NGROK_17004" href="/docs/errors/err_ngrok_17004">ERR_NGROK_17004</a>
 			</td>
 			<td class="pre-wrapped">A matching MFA device was not found.</td>
+		</tr>
+		<tr>
+			<td>
+				<a id="ERR_NGROK_17005" href="/docs/errors/err_ngrok_17005">ERR_NGROK_17005</a>
+			</td>
+			<td class="pre-wrapped">MFA Device verification is not supported.</td>
 		</tr>
 	</tbody>
 </table>
