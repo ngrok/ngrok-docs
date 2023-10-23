@@ -52,7 +52,7 @@ Features included for free on all plans
 
 ## What do I pay for in ngrok’s Pay-as-you-go pricing?
 
-On ngrok’s pay-as-you-go plan, you get more features and fewer limits (with the option to pay more for resources) than you would on free or the user-based plans. Please note: Our pay-as-you-go plan does have a minimum of $15 per month, invoiced monthly. 
+On ngrok’s pay-as-you-go plan, you get more features and fewer limits (with the option to pay more for resources) than you would on free or the user-based plans. Please note: Our pay-as-you-go plan does have a minimum of $15 per month, invoiced monthly.
 
 | Resource              | Limit on Free          | Advanced Usage-Based plan                               |
 | --------------------- | ---------------------- | ------------------------------------------------------- |
