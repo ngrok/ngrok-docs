@@ -9,5 +9,5 @@ curl \
 -H "Content-Type: application/json" \
 -H "Ngrok-Version: 2" \
 -d '{"enabled":true}' \
-https://api.ngrok.com/edges/https/edghts_2TMGJITQzqzAeBxJzbDiUVtiK39/routes/edghtsrt_2TMGJR2Go2MeZLC7e5j76driaez/compression
+https://api.ngrok.com/edges/https/edghts_2XB9wRk7MLpb9xBBlp2RHm5xcVq/routes/edghtsrt_2XB9wORYvldxe3PSnZ6uoXkTjfN/compression
 ```

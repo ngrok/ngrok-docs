@@ -6,11 +6,11 @@
 {
 	"tcp_edges": [
 		{
-			"id": "edgtcp_2TMGJcNYozDQcdDZWPz1g4GrpYi",
+			"id": "edgtcp_2XB9x1SPgrURP3FZYnwbjjB1B51",
 			"description": "acme tcp edge",
 			"metadata": "{\"environment\": \"staging\"}",
-			"created_at": "2023-07-31T23:17:45Z",
-			"uri": "https://api.ngrok.com/edges/tcp/edgtcp_2TMGJcNYozDQcdDZWPz1g4GrpYi",
+			"created_at": "2023-10-23T20:10:48Z",
+			"uri": "https://api.ngrok.com/edges/tcp/edgtcp_2XB9x1SPgrURP3FZYnwbjjB1B51",
 			"hostports": null,
 			"backend": null,
 			"ip_restriction": null

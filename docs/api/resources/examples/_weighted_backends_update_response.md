@@ -4,9 +4,9 @@
 
 ```json
 {
-	"id": "bkdwd_2TMGJ6jReY87lsxmMNRzyyB3ERN",
-	"uri": "https://api.ngrok.com/backends/weighted/bkdwd_2TMGJ6jReY87lsxmMNRzyyB3ERN",
-	"created_at": "2023-07-31T23:17:40Z",
+	"id": "bkdwd_2XB9wGeouHawzmdfUbMuDjlOS9o",
+	"uri": "https://api.ngrok.com/backends/weighted/bkdwd_2XB9wGeouHawzmdfUbMuDjlOS9o",
+	"created_at": "2023-10-23T20:10:42Z",
 	"description": "acme weighted",
 	"metadata": "{\"environment\": \"production\"}",
 	"backends": {}

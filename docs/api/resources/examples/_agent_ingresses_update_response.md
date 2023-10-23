@@ -4,8 +4,8 @@
 
 ```json
 {
-	"id": "agin_2TMGJ5XTkNXxX2o9kiFMMLhTHw7",
-	"uri": "https://api.ngrok.com/agent_ingresses/agin_2TMGJ5XTkNXxX2o9kiFMMLhTHw7",
+	"id": "agin_2XB9wJxE0yuMq0TFERGTX7Jr7TA",
+	"uri": "/agent_ingresses/agin_2XB9wJxE0yuMq0TFERGTX7Jr7TA",
 	"description": "ACME Co. Device Ingress",
 	"metadata": "{\"device_sku\": \"824JS4RZ1F8X\"}",
 	"domain": "connect.acme.com",
@@ -16,6 +16,8 @@
 		"4.kube-dns.kube-system.svc.cluster.local."
 	],
 	"region_domains": ["tunnel.us.connect.acme.com"],
-	"created_at": "2023-07-31T23:17:40Z"
+	"created_at": "2023-10-23T20:10:42Z",
+	"certificate_management_policy": null,
+	"certificate_management_status": null
 }
 ```
