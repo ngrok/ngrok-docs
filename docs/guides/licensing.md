@@ -68,6 +68,6 @@ On ngrok’s Advanced plan, you get more features and fewer limits (with the opt
 | OAuth/OIDC MAU        | Up to 5 per month      | Up to 5/month <br /> $0.07 per additional MAU           |
 | SAML MAU              | None                   | Up to 5/month <br /> $5 per additional MAU              |
 | HTTP Requests         | Up to 100,000/month    | Up to 100,000/m <br /> $0.01 per additional 100,000     |
-| Webhook verifications | Up to 500/month        | Up to 2,500/m <br /> $0.10 per additional 10,000        |
+| Webhook verifications | Up to 500/month        | Up to 2,500/m <br /> $0.20 per additional 10,000        |
 
 [^1]: Active Endpoints: a domain that sends or receives data through ngrok in a given month
