@@ -2,11 +2,11 @@
 
 ---
 
-ngrok allows for using hostnames from a custom domain that you own to be used with your tunnel endpoints or [Edges](https://ngrok.com/docs/network-edge/edges/).  Utilizing CNAMEs, ngrok will host an endpoint using your custom domain while also providing the ability to manage the complete TLS certficate lifecycyle for you.  
+ngrok allows for using hostnames from a custom domain that you own to be used with your tunnel endpoints or [Edges](https://ngrok.com/docs/network-edge/edges/). Utilizing CNAMEs, ngrok will host an endpoint using your custom domain while also providing the ability to manage the complete TLS certficate lifecycyle for you.
 
-ngrok is not a domain registrar will not provide nor manage custom domains. As a prerequisite it is required that you have already reserved your custom domain from any available domain registrar.  For demo purposes in this guide, we've registered the domain name `example.com` with a domain name registrar and will be using it with ngrok.
+ngrok is not a domain registrar will not provide nor manage custom domains. As a prerequisite it is required that you have already reserved your custom domain from any available domain registrar. For demo purposes in this guide, we've registered the domain name `example.com` with a domain name registrar and will be using it with ngrok.
 
-To get the hostname `foo.example.com` working with an ngrok tunnel we'll need to perform one step within the ngrok account dashboard and one step with the DNS host for your domain. In many cases your DNS records are hosted by your domain name registrar, but not always.  The process can be summed up in 3 steps.
+To get the hostname `foo.example.com` working with an ngrok tunnel we'll need to perform one step within the ngrok account dashboard and one step with the DNS host for your domain. In many cases your DNS records are hosted by your domain name registrar, but not always. The process can be summed up in 3 steps.
 
 - Create hostname within ngrok dashboard
 - Create CNAME record in domain DNS
@@ -16,7 +16,7 @@ To get the hostname `foo.example.com` working with an ngrok tunnel we'll need to
 
 Adding your custom domain hostname will be done from within your ngrok account, this "reservation" process is perfromed from the domains page of [your ngrok dashboard](https://dashboard.ngrok.com/cloud-edge/domains).
 
-Select "New Domain" and then put `foo.example.com` into the form that appears to add that domain hostname to your account. ngrok will validate that the custom name isn't currently reserved.  Select the available name from the list provided and then you'll be able to add a Description, attach an Edge if desired and select your TLS Certificate configuration (we recommend our automated TLS certificates).
+Select "New Domain" and then put `foo.example.com` into the form that appears to add that domain hostname to your account. ngrok will validate that the custom name isn't currently reserved. Select the available name from the list provided and then you'll be able to add a Description, attach an Edge if desired and select your TLS Certificate configuration (we recommend our automated TLS certificates).
 
 After adding your domain you should see instructions along with the CNAME value to be used when creating the CNAME record. Copy the `value` of your newly-added domain's CNAME target hostname, which will be something like `<random-string>.<random-string>.ngrok-cname.com.`
 
