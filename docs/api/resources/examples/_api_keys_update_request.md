@@ -9,5 +9,5 @@ curl \
 -H "Content-Type: application/json" \
 -H "Ngrok-Version: 2" \
 -d '{"metadata":"{\"environment\":\"dev\", \"owner_id\": 123}"}' \
-https://api.ngrok.com/api_keys/ak_2XB9tGarlOtxFgq9veXnKAJ0V7v
+https://api.ngrok.com/api_keys/ak_2XGwAoLKu31FxZWqZguDhbbY45U
 ```

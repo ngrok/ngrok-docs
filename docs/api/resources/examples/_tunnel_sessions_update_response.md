@@ -7,7 +7,7 @@
 	"status_code": 404,
 	"msg": "Resource not found",
 	"details": {
-		"operation_id": "op_2XB9vQzU9x2BgrSho5SCiYaThau"
+		"operation_id": "op_2XGwCi6Jo8Sc9dj7ok2l6UcKqs2"
 	}
 }
 ```

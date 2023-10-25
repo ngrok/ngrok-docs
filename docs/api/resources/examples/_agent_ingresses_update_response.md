@@ -4,8 +4,8 @@
 
 ```json
 {
-	"id": "agin_2XB9wJxE0yuMq0TFERGTX7Jr7TA",
-	"uri": "/agent_ingresses/agin_2XB9wJxE0yuMq0TFERGTX7Jr7TA",
+	"id": "agin_2XGwDfaL11un8IAFUHzPaqsLt6C",
+	"uri": "/agent_ingresses/agin_2XGwDfaL11un8IAFUHzPaqsLt6C",
 	"description": "ACME Co. Device Ingress",
 	"metadata": "{\"device_sku\": \"824JS4RZ1F8X\"}",
 	"domain": "connect.acme.com",
@@ -16,7 +16,7 @@
 		"4.kube-dns.kube-system.svc.cluster.local."
 	],
 	"region_domains": ["tunnel.us.connect.acme.com"],
-	"created_at": "2023-10-23T20:10:42Z",
+	"created_at": "2023-10-25T21:16:45Z",
 	"certificate_management_policy": null,
 	"certificate_management_status": null
 }

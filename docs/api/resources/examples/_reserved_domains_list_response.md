@@ -6,14 +6,14 @@
 {
 	"reserved_domains": [
 		{
-			"id": "rd_2XB9tTYAvtbLjUnVgzkbfFzBUrq",
-			"uri": "https://api.ngrok.com/reserved_domains/rd_2XB9tTYAvtbLjUnVgzkbfFzBUrq",
-			"created_at": "2023-10-23T20:10:19Z",
+			"id": "rd_2XGwAtz9MIBoxfHLtQXAthTe1u8",
+			"uri": "https://api.ngrok.com/reserved_domains/rd_2XGwAtz9MIBoxfHLtQXAthTe1u8",
+			"created_at": "2023-10-25T21:16:23Z",
 			"description": "Device 0001 Dashboard",
 			"metadata": "{\"service\": \"dashboard\"}",
 			"domain": "manage-0001.app.example.com",
 			"region": "",
-			"cname_target": "4mgkuazanf1yq46m3.2mqoyzcuze25mlp5s.local-ngrok-cname.com",
+			"cname_target": "4mgkuazanf1yq46m3.4uwzxjsp34s6gjnnv.local-ngrok-cname.com",
 			"http_endpoint_configuration": null,
 			"https_endpoint_configuration": null,
 			"certificate": null,
@@ -26,24 +26,24 @@
 				"provisioning_job": {
 					"error_code": null,
 					"msg": "Managed certificate provisioning in progress.",
-					"started_at": "2023-10-23T20:10:20Z",
+					"started_at": "2023-10-25T21:16:23Z",
 					"retries_at": null
 				}
 			},
 			"acme_challenge_cname_target": null
 		},
 		{
-			"id": "rd_2XB9tRy081d4pEyST3e5ori9IGX",
-			"uri": "https://api.ngrok.com/reserved_domains/rd_2XB9tRy081d4pEyST3e5ori9IGX",
-			"created_at": "2023-10-23T20:10:18Z",
+			"id": "rd_2XGwAsh6IVsDrCgeEFiyUk14xOI",
+			"uri": "https://api.ngrok.com/reserved_domains/rd_2XGwAsh6IVsDrCgeEFiyUk14xOI",
+			"created_at": "2023-10-25T21:16:23Z",
 			"domain": "myapp.mydomain.com",
 			"region": "",
-			"cname_target": "2udamkamcl8pjmrff.2mqoyzcuze25mlp5s.local-ngrok-cname.com",
+			"cname_target": "2udamkamcl8pjmrff.4uwzxjsp34s6gjnnv.local-ngrok-cname.com",
 			"http_endpoint_configuration": null,
 			"https_endpoint_configuration": null,
 			"certificate": {
-				"id": "cert_2XB9tGTNIQbWhsqoFzoSmvkq2DD",
-				"uri": "https://api.ngrok.com/tls_certificates/cert_2XB9tGTNIQbWhsqoFzoSmvkq2DD"
+				"id": "cert_2XGwApXwnTRZxMsUMnl447vC9MW",
+				"uri": "https://api.ngrok.com/tls_certificates/cert_2XGwApXwnTRZxMsUMnl447vC9MW"
 			},
 			"certificate_management_policy": null,
 			"certificate_management_status": null,
