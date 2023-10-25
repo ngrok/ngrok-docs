@@ -4,14 +4,14 @@
 
 ```json
 {
-	"id": "ipr_2XB9w7RuQvkIQ2B7ozC0w08ohJT",
-	"uri": "https://api.ngrok.com/ip_policy_rules/ipr_2XB9w7RuQvkIQ2B7ozC0w08ohJT",
-	"created_at": "2023-10-23T20:10:41Z",
+	"id": "ipr_2XH3sNmZ7O4m4zMGGYFaTr1T3Ic",
+	"uri": "https://api.ngrok.com/ip_policy_rules/ipr_2XH3sNmZ7O4m4zMGGYFaTr1T3Ic",
+	"created_at": "2023-10-25T22:19:43Z",
 	"description": "nyc office",
 	"cidr": "212.3.14.0/24",
 	"ip_policy": {
-		"id": "ipp_2XB9wDvIcCG5JAWJMWFupa25Jtw",
-		"uri": "https://api.ngrok.com/ip_policies/ipp_2XB9wDvIcCG5JAWJMWFupa25Jtw"
+		"id": "ipp_2XH3sKqVUgK6M3D00LDdn0C8Zy0",
+		"uri": "https://api.ngrok.com/ip_policies/ipp_2XH3sKqVUgK6M3D00LDdn0C8Zy0"
 	},
 	"action": "allow"
 }

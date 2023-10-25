@@ -7,5 +7,5 @@ curl \
 -X DELETE \
 -H "Authorization: Bearer {API_KEY}" \
 -H "Ngrok-Version: 2" \
-https://api.ngrok.com/edges/https/edghts_2XB9x0Yui6Q9Ilgb0M6337SUS7z/routes/edghtsrt_2XB9x54DtEm0JgDIMupcwCLYgWf/websocket_tcp_converter
+https://api.ngrok.com/edges/https/edghts_2XH3t8SUR7sO966oBi5NPQavfq7/routes/edghtsrt_2XH3tBH5mluglWG41wAxhcGVMuQ/websocket_tcp_converter
 ```
