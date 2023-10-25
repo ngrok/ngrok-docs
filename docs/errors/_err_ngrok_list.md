@@ -3807,9 +3807,15 @@ Please try again.</td>
 			<td>
 				<a id="ERR_NGROK_3208" href="/docs/errors/err_ngrok_3208">ERR_NGROK_3208</a>
 			</td>
-			<td class="pre-wrapped">The account associated with this hostname has been banned.
-We've determined this account to be in violation of ngrok's terms of service.
-If you are the account owner and believe this is a mistake, please contact support@ngrok.com.</td>
+			<td class="pre-wrapped">The ngrok account that was hosting this webpage has been banned for violation of ngrok's Terms of Service.
+If you're seeing this page because of a message about your Facebook page, this was NOT an official Facebook page and you did NOT receive an official Facebook message. Your Facebook account has not been affected and ngrok has blocked the phishing attack against you. ngrok is helping to block an ongoing phishing attack against Meta's Facebook Business customers.
+If you did enter your password into this site, please contact Facebook immediately.
+How to protect yourself from Facebook phishing scams:
+<a href="https://www.facebook.com/help">https://www.facebook.com/help</a>/166863010078512
+Contact Facebook support for assistance:
+<a href="https://facebook.com/business/help">https://facebook.com/business/help</a>
+Additional information about protecting yourself from phishing attacks:
+<a href="https://consumer.ftc.gov/articles/how-recognize-and-avoid-phishing-scams">https://consumer.ftc.gov/articles/how-recognize-and-avoid-phishing-scams</a></td>
 		</tr>
 		<tr>
 			<td>
@@ -4970,7 +4976,15 @@ Please try again or contact the owner of this application if the issue persists.
 			<td>
 				<a id="ERR_NGROK_6009" href="/docs/errors/err_ngrok_6009">ERR_NGROK_6009</a>
 			</td>
-			<td class="pre-wrapped">This endpoint is unavailable as its account is suspended.</td>
+			<td class="pre-wrapped">The ngrok account that was hosting this webpage has been suspended for violation of ngrok's Terms of Service.
+If you're seeing this page because of a message about your Facebook page, this was NOT an official Facebook page and you did NOT receive an official Facebook message. Your Facebook account has not been affected and ngrok has blocked the phishing attack against you. ngrok is helping to block an ongoing phishing attack against Meta's Facebook Business customers.
+If you did enter your password into this site, please contact Facebook immediately.
+How to protect yourself from Facebook phishing scams:
+<a href="https://www.facebook.com/help">https://www.facebook.com/help</a>/166863010078512
+Contact Facebook support for assistance:
+<a href="https://facebook.com/business/help">https://facebook.com/business/help</a>
+Additional information about protecting yourself from phishing attacks:
+<a href="https://consumer.ftc.gov/articles/how-recognize-and-avoid-phishing-scams">https://consumer.ftc.gov/articles/how-recognize-and-avoid-phishing-scams</a></td>
 		</tr>
 		<tr>
 			<td>
