@@ -6,33 +6,33 @@
 {
 	"endpoints": [
 		{
-			"id": "ep_2XB9vY6vZdiWemlFxmrXvw5FTB9",
-			"created_at": "2023-10-23T20:10:36Z",
-			"updated_at": "2023-10-23T20:10:36Z",
-			"public_url": "https://98b54fe6c992.ngrok.paid",
+			"id": "ep_2XH3rm09KTWshJqfRsKEWKkfVmQ",
+			"created_at": "2023-10-25T22:19:38Z",
+			"updated_at": "2023-10-25T22:19:38Z",
+			"public_url": "https://278344fb9f46.ngrok.paid",
 			"proto": "https",
-			"hostport": "98b54fe6c992.ngrok.paid:443",
+			"hostport": "278344fb9f46.ngrok.paid:443",
 			"type": "ephemeral",
 			"tunnel": {
-				"id": "tn_2XB9vY6vZdiWemlFxmrXvw5FTB9",
-				"uri": "https://api.ngrok.com/tunnels/tn_2XB9vY6vZdiWemlFxmrXvw5FTB9"
+				"id": "tn_2XH3rm09KTWshJqfRsKEWKkfVmQ",
+				"uri": "https://api.ngrok.com/tunnels/tn_2XH3rm09KTWshJqfRsKEWKkfVmQ"
 			}
 		},
 		{
-			"id": "ep_2XB9vWrt3YSE7xas2LV0AeadBeU",
-			"created_at": "2023-10-23T20:10:36Z",
-			"updated_at": "2023-10-23T20:10:36Z",
+			"id": "ep_2XH3ri996MLHVtJKpPIMAV4Jh8c",
+			"created_at": "2023-10-25T22:19:38Z",
+			"updated_at": "2023-10-25T22:19:38Z",
 			"public_url": "tls://endpoint-example.com",
 			"proto": "tls",
 			"hostport": "endpoint-example.com:443",
 			"type": "edge",
 			"domain": {
-				"id": "rd_2XB9vQWt2ZgOaXGtF2WXa1xI9gF",
-				"uri": "https://api.ngrok.com/reserved_domains/rd_2XB9vQWt2ZgOaXGtF2WXa1xI9gF"
+				"id": "rd_2XH3rhgkg4Mr3Xms4hKGNAz1ScM",
+				"uri": "https://api.ngrok.com/reserved_domains/rd_2XH3rhgkg4Mr3Xms4hKGNAz1ScM"
 			},
 			"edge": {
-				"id": "edgtls_2XB9vLg2GzBAev1Pi7txk4hFOBP",
-				"uri": "https://api.ngrok.com/edges/tls/edgtls_2XB9vLg2GzBAev1Pi7txk4hFOBP"
+				"id": "edgtls_2XH3rkKv3a3yOP7TuT9MipimLJm",
+				"uri": "https://api.ngrok.com/edges/tls/edgtls_2XH3rkKv3a3yOP7TuT9MipimLJm"
 			}
 		}
 	],
