@@ -13,6 +13,7 @@ To use the ngrok Ingress Controller for Kubernetes with Rancher in a local clust
 1. [Install Rancher via Docker](#install-rancher-via-docker)
 2. [Install the ngrok Ingress Controller](#install-the-ngrok-ingress-controller)
 3. [Install a sample application](#install-a-sample-application)
+
 :::
 
 The ngrok [Ingress Controller for Kubernetes](https://ngrok.com/blog-post/ngrok-k8s) is the official controller for
@@ -41,7 +42,8 @@ to ngrok using Rancher's Chart repository, and deploy a demo application, which 
    operating as Kubernetes nodes. Your hosts can be local/on-prem virtual machines, cloud-based virtual machines, or bare
    metal servers.
 3. [Docker](https://docs.docker.com/engine/install/) installed locally.
-3. [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) installed locally.
+4. [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) installed locally.
+
 :::
 
 ## **Step 1**: Install Rancher via Docker {#install-rancher-via-docker}
@@ -67,36 +69,35 @@ Controller](#install-the-ngrok-ingress-controller) once you’ve finalized your 
 
 1. Launch the Rancher server in a detached, privileged Docker container. With this configuration, you'll access Rancher on `localhost` using a specific port.
 
-  ```bash
-  docker run --privileged --restart=unless-stopped -d -p 81:80 -p 444:443 rancher/rancher:latest 
-  ```
+```bash
+docker run --privileged --restart=unless-stopped -d -p 81:80 -p 444:443 rancher/rancher:latest
+```
 
 1. Once Docker finishes running, check to ensure your Rancher container is running properly.
 
-  ```bash
-  docker ps
-  CONTAINER ID   IMAGE                    COMMAND           CREATED        STATUS             PORTS                                                                      NAMES
-  d43eceb2e5b2   rancher/rancher:latest   "entrypoint.sh"   About a minute ago   Up About a minute   0.0.0.0:81->80/tcp, :::81->80/tcp, 0.0.0.0:444->443/tcp, :::444->443/tcp   vigilant_clarke
-  ```
+```bash
+docker ps
+CONTAINER ID   IMAGE                    COMMAND           CREATED        STATUS             PORTS                                                                      NAMES
+d43eceb2e5b2   rancher/rancher:latest   "entrypoint.sh"   About a minute ago   Up About a minute   0.0.0.0:81->80/tcp, :::81->80/tcp, 0.0.0.0:444->443/tcp, :::444->443/tcp   vigilant_clarke
+```
 
 1. Navigate to `https://localhost:444` in your browser, which will warn you about self-signed SSL certificates. Pass
    through that warning, which will show you a prompt from Rancher asking for your **bootstrap password**, which you
    need to initialize Rancher. Copy and paste that command into your terminal, replacing `[DOCKER_NAME]` with the name
    output using `docker ps`.
 
-  ```bash
-  docker logs [DOCKER_NAME] 2>&1 | grep "Bootstrap Password:"
-  ```
+```bash
+docker logs [DOCKER_NAME] 2>&1 | grep "Bootstrap Password:"
+```
 
 1. Copy the terminal output into the password input and click **Log in with Local User**. Next, choose between a
    randomly-generated password or one of your choosing to initialize the **admin** user.
-   
 1. The **Server URL** field will default to `https://localhost:444`, but your worker nodes won't be able to connect to
    Rancher in this configuration. Find your local IP address—try `hostname -I` for Linux or `ipconfig getifaddr en0` on macOs—which will look similar to `192.168.1.123`, and
    replace `localhost` with it, similar to the following: `https://192.168.1.107:444`.
 
    ![Configure the Rancher installation URL](img/rancher_install-url.png)
-   
+
    When the Rancher dashboard loads, Rancher should have already deployed a single K3s-based cluster named `local`—click on the cluster's name to explore. Rancher recommends that its server management and your workloads run on separate clusters, which is what you'll do next.
 
 1. Create a new [RKE2](https://docs.rke2.io/) cluster by clicking **Create** in your Rancher dashboard home, then
@@ -106,10 +107,10 @@ Controller](#install-the-ngrok-ingress-controller) once you’ve finalized your 
    ![Configure the RKE2 cluster](img/rancher_cluster-config.png)
 
 1. Register your Linux node(s) with your RKE2 cluster. Leave the **Node Role** options at their defaults, and under the
-   **Registration Command** heading and command example, click the **Insecure** checkbox. 
-   
+   **Registration Command** heading and command example, click the **Insecure** checkbox.
+
    ![Configure the agent registration command](img/rancher_cluster-agent.png)
-   
+
    Once you copy-paste the command into your Linux node and execute it, your new cluster will begin bootstrapping the
    node. When Rancher finishes bootstrapping your node(s), you can navigate to the **Cluster Dashboard** for your RKE2
    cluster, explore deployed resources, and see basic usage metrics.
@@ -124,20 +125,20 @@ Controller](#install-the-ngrok-ingress-controller) once you’ve finalized your 
 1. Ensure your new RKE2 cluster is active by getting the namespaces for your instance. Your list of namespaces should
    look like the following:
 
-  ```bash
-  kubectl get namespaces
+```bash
+kubectl get namespaces
 
-  NAME                          STATUS   AGE
-  calico-system                 Active   4m
-  cattle-impersonation-system   Active   29s
-  cattle-system                 Active   5m
-  default                       Active   5m4s
-  kube-node-lease               Active   5m6s
-  kube-public                   Active   5m6s
-  kube-system                   Active   5m6s
-  local                         Active   23s
-  tigera-operator               Active   4m10s
-  ```
+NAME                          STATUS   AGE
+calico-system                 Active   4m
+cattle-impersonation-system   Active   29s
+cattle-system                 Active   5m
+default                       Active   5m4s
+kube-node-lease               Active   5m6s
+kube-public                   Active   5m6s
+kube-system                   Active   5m6s
+local                         Active   23s
+tigera-operator               Active   4m10s
+```
 
 You have now installed Rancher in a Docker container, created a new Kubernetes cluster for your applications, and
 connected one or more Linux nodes to Rancher for handling future workloads.
@@ -159,7 +160,7 @@ You can also install the ngrok Ingress Controller with Helm instead of via Ranch
    kubectl create namespace ngrok-ingress-controller
    ```
 
-1. Get your ngrok `AUTHTOKEN` and `API_KEY` credentials. 
+1. Get your ngrok `AUTHTOKEN` and `API_KEY` credentials.
 
    Find your `AUTHTOKEN` under [**Your Authtoken**](https://dashboard.ngrok.com/get-started/your-authtoken) in
    the ngrok dashboard.
@@ -190,13 +191,13 @@ You can also install the ngrok Ingress Controller with Helm instead of via Ranch
 
    In the **Values** step, update the `credentials` portion of the default YAML to include the
    `ngrok-ingress-controller-credentials` secret you created previously.
-   
+
    ```yaml
    credentials:
-     apiKey: ''
-     authtoken: ''
+     apiKey: ""
+     authtoken: ""
      secret:
-        name: 'ngrok-ingress-controller-credentials'
+       name: "ngrok-ingress-controller-credentials"
    ```
 
    Click **Install**. Rancher will take a few moments to initialize the necessary resources, then show that the ngrok
@@ -220,7 +221,7 @@ simplifying how you route external traffic through your Rancher-managed cluster.
    service and deployment, then configures the ngrok Ingress Controller to connect the `game-2048` service to the ngrok
    edge via your `NGROK_DOMAIN`.
 
-   :::tip 
+   :::tip
    Make sure you edit line 45 of the manifest below, which contains the `NGROK_DOMAIN` variable, with the ngrok subdomain you created in the previous step. It should look something like `one-two-three.ngrok-free.app`.
    :::
 
@@ -352,4 +353,3 @@ edge security with OAuth](/docs/using-ngrok-with/k8s/#step-3-add-edge-security-t
 Learn more about the ngrok Ingress Controller, or contribute, by checking out the [GitHub
 repository](https://github.com/ngrok/kubernetes-ingress-controller) and the [project-specific
 documentation](https://github.com/ngrok/kubernetes-ingress-controller/tree/main/docs).
-
