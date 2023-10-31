@@ -1,5 +1,5 @@
 ---
-description: TK
+description: Set up a local installation of Rancher to deploy a new RKE2 cluster and add ingress to applications with ngrok's Kubernetes Ingress Controller.
 ---
 
 # Ingress to applications managed by Rancher in Kubernetes
@@ -16,7 +16,7 @@ To use the ngrok Ingress Controller for Kubernetes with Rancher in a local clust
 :::
 
 The ngrok [Ingress Controller for Kubernetes](https://ngrok.com/blog-post/ngrok-k8s) is the official controller for
-adding secure public ingress and middleware execution to your Kubernetes applications with ngrok's cloud edge. With
+adding secure public ingress and middleware execution to your Kubernetes applications with ngrok's Cloud Edge. With
 ngrok, you can manage and secure traffic to your applications at every stage of the development lifecycle while also
 benefitting from simpler configurations, security, and edge acceleration.
 
@@ -31,14 +31,14 @@ creation of an internal developer platform (IDP) or enabling developers to focus
 applications.
 
 With this guide, you'll launch Rancher's management platform, create a new RKE2 cluster, connect your cluster's ingress
-to ngrok using Rancher's Chart repository, and deploy a demo application, which then be reachable to public traffic.
+to ngrok using Rancher's Chart repository, and deploy a demo application, which will then be reachable to public traffic.
 
 :::caution This tutorial requires:
 
 1. An [ngrok account](https://ngrok.com/signup).
 2. One or more Linux hosts that meet Rancher's
    [requirements](https://ranchermanager.docs.rancher.com/v2.5/pages-for-subheaders/installation-requirements) for
-   operating as Kubernetes nodes. Your hosts can local/on-prem virtual machines, cloud-based virtual machines, or bare
+   operating as Kubernetes nodes. Your hosts can be local/on-prem virtual machines, cloud-based virtual machines, or bare
    metal servers.
 3. [Docker](https://docs.docker.com/engine/install/) installed locally.
 3. [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) installed locally.
@@ -62,12 +62,10 @@ new Kubernetes cluster managed by Rancher.
 
 :::note
 Another viable option is to launch a single Linux virtual machine on your local workstation or with a cloud provider to host a K3s cluster for [installing Rancher with Helm](https://ranchermanager.docs.rancher.com/getting-started/quick-start-guides/deploy-rancher-manager/helm-cli). If you choose that option, you can skip ahead to [Step 2: Install the ngrok Ingress
-Controller](#install-the-ngrok-ingress-controller) once finalizing your K3s cluster.
+Controller](#install-the-ngrok-ingress-controller) once you’ve finalized your K3s cluster.
 :::
 
-1. Launch the Rancher server in a detached, privileged Docker container. With this configuration, you'll access Rancher
-   at `https://localhost:444`, but you can edit the `-p 81:80 444:443` portion to forward different ports based on your
-   local development environment.
+1. Launch the Rancher server in a detached, privileged Docker container. With this configuration, you'll access Rancher on `localhost` using a specific port.
 
   ```bash
   docker run --privileged --restart=unless-stopped -d -p 81:80 -p 444:443 rancher/rancher:latest 
@@ -94,14 +92,14 @@ Controller](#install-the-ngrok-ingress-controller) once finalizing your K3s clus
    randomly-generated password or one of your choosing to initialize the **admin** user.
    
 1. The **Server URL** field will default to `https://localhost:444`, but your worker nodes won't be able to connect to
-   Rancher in this configuration. Find your local IP address, which will likely look similar to `192.168.1.123`, and
+   Rancher in this configuration. Find your local IP address—try `hostname -I` for Linux or `ipconfig getifaddr en0` on macOs—which will look similar to `192.168.1.123`, and
    replace `localhost` with it, similar to the following: `https://192.168.1.107:444`.
 
    ![Configure the Rancher installation URL](img/rancher_install-url.png)
    
-   When the Rancher dashboard loads, Rancher should have already deployed a single K3s-based cluster named `local`&mdash;click on the cluster's name to explore. Rancher recommends that its server management and your workloads run on separate clusters, which is what you'll do next.
+   When the Rancher dashboard loads, Rancher should have already deployed a single K3s-based cluster named `local`—click on the cluster's name to explore. Rancher recommends that its server management and your workloads run on separate clusters, which is what you'll do next.
 
-1. Create a new [RKE2](https://docs.rke2.io/) cluster by kicking **Create** in your Rancher dashboard home, then
+1. Create a new [RKE2](https://docs.rke2.io/) cluster by clicking **Create** in your Rancher dashboard home, then
    **Custom** to deploy a custom cluster. Give your cluster a name, and under the **System Services** heading, uncheck
    **NGINX Ingress**, as you'll add ngrok-based ingress in the next step. Click **Create** to initialize the cluster.
 
@@ -161,7 +159,7 @@ You can also install the ngrok Ingress Controller with Helm instead of via Ranch
    kubectl create namespace ngrok-ingress-controller
    ```
 
-1. Get your your ngrok `AUTHTOKEN` and `API_KEY` credentials. 
+1. Get your ngrok `AUTHTOKEN` and `API_KEY` credentials. 
 
    Find your `AUTHTOKEN` under [**Your Authtoken**](https://dashboard.ngrok.com/get-started/your-authtoken) in
    the ngrok dashboard.
@@ -285,7 +283,7 @@ simplifying how you route external traffic through your Rancher-managed cluster.
                      number: 80
    ```
 
-1. Apply the `2048.yaml` manifest to your vcluster.
+1. Apply the `2048.yaml` manifest to your RKE2 cluster.
 
    ```bash
    kubectl apply -f 2048.yaml
@@ -296,7 +294,7 @@ simplifying how you route external traffic through your Rancher-managed cluster.
    and try again.
    :::
 
-1. Access your 2048 demo app by navigating to the your ngrok subdomain, e.g. `https://one-two-three.ngrok-free.app`.
+1. Access your 2048 demo app by navigating to your ngrok subdomain, e.g. `https://one-two-three.ngrok-free.app`.
    ngrok's edge and your Ingress Controller will route traffic to your app from any device or external network as long
    as your Rancher server and application cluster remain operational.
 
@@ -312,15 +310,13 @@ Controller in several directions.
 
 ### Backup and/or migrate to a high-availability Rancher installation
 
-Backups are always a good idea to prevent data loss, but are also the best way to convert your Docker-based installation
+Backups are always a good idea to prevent data loss, and are also the best way to convert your Docker-based installation
 of Rancher into a production-grade environment that leverages the ngrok cloud edge to handle ingress with no additional
 configuration.
 
-1. [Back up your Rancher
-   installation](https://ranchermanager.docs.rancher.com/how-to-guides/new-user-guides/backup-restore-and-disaster-recovery/back-up-docker-installed-rancher)
+1. [Back up your Rancher installation](https://ranchermanager.docs.rancher.com/how-to-guides/new-user-guides/backup-restore-and-disaster-recovery/back-up-docker-installed-rancher)
    using a sequence of `docker ...` commands to create a data container and a backup tarball.
-2. [Migrate your
-   installation](https://ranchermanager.docs.rancher.com/how-to-guides/new-user-guides/backup-restore-and-disaster-recovery/migrate-rancher-to-new-cluster)
+2. [Migrate your installation](https://ranchermanager.docs.rancher.com/how-to-guides/new-user-guides/backup-restore-and-disaster-recovery/migrate-rancher-to-new-cluster)
    to a new cluster using the backup tarball as the data source.
 
 ### Clean up
@@ -356,3 +352,4 @@ edge security with OAuth](/docs/using-ngrok-with/k8s/#step-3-add-edge-security-t
 Learn more about the ngrok Ingress Controller, or contribute, by checking out the [GitHub
 repository](https://github.com/ngrok/kubernetes-ingress-controller) and the [project-specific
 documentation](https://github.com/ngrok/kubernetes-ingress-controller/tree/main/docs).
+
