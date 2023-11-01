@@ -16,7 +16,7 @@ export default function IntegrationsList() {
 				size="sm"
 				img={metadata?.logo || false}
 				title={metadata?.sidebar_label || name}
-				description={metadata?.excerpt || false}
+				description={metadata?.excerpt}
 			/>,
 		);
 

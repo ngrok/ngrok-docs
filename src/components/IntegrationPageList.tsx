@@ -1,11 +1,12 @@
 import React from "react";
 import NgrokCard from "./NgrokCard";
 import { usePluginData } from "@docusaurus/useGlobalData";
+import { ReactNode } from "react";
 
 type Integration = {
 	name: string;
 	path: string;
-	docs: Array<IntegrationDoc>;
+	docs?: Array<IntegrationDoc> | undefined;
 };
 
 type IntegrationDoc = {
@@ -13,14 +14,32 @@ type IntegrationDoc = {
 	excerpt: string;
 	content: string;
 	contentTitle: string;
-	frontMatter: any;
+	frontMatter?: FrontMatter | undefined;
 };
 
-export default function IntegrationPageList({ name }) {
-	const integrations: any = usePluginData("ngrok-parse-integrations");
-	const data: Integration = integrations.find(
-		(x: Integration) => x.name === name,
-	);
+type FrontMatter = {
+	title?: string | undefined;
+	description?: string | undefined;
+};
+
+const pluginKey = "ngrok-parse-integrations" as const;
+
+type Props = {
+	name: string;
+};
+
+export default function IntegrationPageList({ name }: Props) {
+	const pluginData = usePluginData(pluginKey);
+	console.log("IntegrationPageList", { name, pluginData });
+	const integrations: Array<Integration> = Array.isArray(pluginData)
+		? pluginData
+		: [];
+	const data = integrations.find((x: Integration) => x.name === name);
+
+	if (!data || !data.docs) {
+		return null;
+	}
+
 	const cards: any = [];
 	let group: any = [];
 
