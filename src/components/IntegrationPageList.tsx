@@ -16,7 +16,7 @@ export default function IntegrationPageList({ name }: Props) {
 	return (
 		<ul className="m-0 mb-5 grid list-none grid-cols-2 gap-5 p-0" role="list">
 			{integration.docs.map((doc) => (
-				<li key={doc.path}>
+				<li className="last-of-type:col-span-full" key={doc.path}>
 					<NgrokCard
 						to={doc.path}
 						size="sm"

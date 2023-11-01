@@ -8,7 +8,7 @@ export default function IntegrationsList() {
 	return (
 		<ul className="m-0 mb-5 grid list-none grid-cols-2 gap-5 p-0" role="list">
 			{integrations.map((integration) => (
-				<li key={integration.name}>
+				<li className="last-of-type:col-span-full" key={integration.name}>
 					<NgrokCard
 						to={integration.path}
 						size="sm"
