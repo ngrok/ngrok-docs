@@ -1,31 +1,23 @@
 import React from "react";
 import NgrokCard from "./NgrokCard";
-import useGlobalData, { usePluginData } from "@docusaurus/useGlobalData";
+import { useIntegrations } from "./integrations/use-integrations";
 
 export default function IntegrationsList() {
-	const data: any = usePluginData("ngrok-parse-integrations");
-	const cards: any = [];
-	let group: any = [];
+	const integrations = useIntegrations();
 
-	for (let i = 0; i < data.length; i++) {
-		const { name, path, metadata } = data[i];
-
-		group.push(
-			<NgrokCard
-				to={path}
-				size="sm"
-				img={metadata?.logo || false}
-				title={metadata?.sidebar_label || name}
-				description={metadata?.excerpt}
-			/>,
-		);
-
-		if (group.length == 2 || data.length < 2 || i == data.length - 1) {
-			cards.push(<div className="ngrok--cards ngrok--cards-row">{group}</div>);
-
-			group = [];
-		}
-	}
-
-	return <>{cards}</>;
+	return (
+		<ul className="m-0 mb-5 list-none grid grid-cols-2 gap-5" role="list">
+			{integrations.map((integration) => (
+				<li key={integration.name}>
+					<NgrokCard
+						to={integration.path}
+						size="sm"
+						img={integration.metadata?.logo}
+						title={integration.metadata?.sidebar_label || integration.name}
+						description={integration.metadata?.excerpt}
+					/>
+				</li>
+			))}
+		</ul>
+	);
 }
