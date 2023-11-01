@@ -37,6 +37,17 @@ function CardHeading({ size, title, icon }) {
 	return null;
 }
 
+type Props = {
+	to: string;
+	note?: boolean;
+	size?: string;
+	title: string;
+	img?: string;
+	icon?: React.ReactNode;
+	description?: string | undefined;
+	descriptionLink?: string | undefined;
+};
+
 export default function NgrokCard({
 	to,
 	note = false,
@@ -44,8 +55,8 @@ export default function NgrokCard({
 	title,
 	img = "",
 	icon = false,
-	description = false,
-	descriptionLink = false,
+	description,
+	descriptionLink,
 }) {
 	size = size.toLowerCase();
 
