@@ -37,39 +37,43 @@ function CardHeading({ size, title, icon }) {
 	return null;
 }
 
+const sizes = ["sm", "lg", "xl"] as const;
+type Size = (typeof sizes)[number];
+
 type Props = {
-	to: string;
-	note?: boolean;
-	size?: string;
-	title: string;
-	img?: string;
-	icon?: React.ReactNode;
 	description?: string | undefined;
 	descriptionLink?: string | undefined;
+	icon?: React.ReactNode;
+	img?: string;
+	note?: boolean;
+	size?: Size;
+	title: string;
+	to: string;
 };
 
 export default function NgrokCard({
-	to,
-	note = false,
-	size = "",
-	title,
-	img = "",
-	icon = false,
 	description,
 	descriptionLink,
-}) {
-	size = size.toLowerCase();
-
-	let classNames = clsx("ngrok--card", {
-		"ngrok--card-note": note,
-		"ngrok--card-sm": size == "sm",
-		"ngrok--card-lg": size == "lg",
-		"ngrok--card-xl": size == "xl",
-	});
-
+	icon,
+	img,
+	note = false,
+	size,
+	title,
+	to,
+}: Props) {
 	return (
-		<Link to={to}>
-			<div className={classNames}>
+		<Link
+			to={to}
+			className="rounded-md text-inherit no-underline hover:text-inherit hover:no-underline focus:text-inherit focus:no-underline"
+		>
+			<div
+				className={clsx("ngrok--card h-full", {
+					"ngrok--card-note": note,
+					"ngrok--card-sm": size == "sm",
+					"ngrok--card-lg": size == "lg",
+					"ngrok--card-xl": size == "xl",
+				})}
+			>
 				{img && <img src={img} />}
 				<CardHeading size={size} title={title} icon={icon} />
 				{description && <p>{description}</p>}
