@@ -1,23 +1,21 @@
 import { z } from "zod";
 
-export const docFrontMatterSchema = z.object({
+const docFrontMatterSchema = z.object({
 	description: z.string().optional(),
 	sidebar_label: z.string().optional(),
 	tags: z.array(z.string()).optional(),
 	title: z.string().optional(),
 });
-export type DocFrontMatter = z.infer<typeof docFrontMatterSchema>;
 
-export const integrationDocSchema = z.object({
+const integrationDocSchema = z.object({
 	content: z.string().trim().min(1),
 	contentTitle: z.string().trim().min(1),
 	excerpt: z.string().trim().min(1),
 	frontMatter: docFrontMatterSchema.optional(),
 	path: z.string().trim().min(1),
 });
-export type IntegrationDoc = z.infer<typeof integrationDocSchema>;
 
-export const IntegrationMetadataSchema = z.object({
+const integrationMetadataSchema = z.object({
 	description: z.string().trim(),
 	excerpt: z.string().trim().optional(),
 	logo: z.string().trim().optional(),
@@ -25,15 +23,23 @@ export const IntegrationMetadataSchema = z.object({
 	sidebar_label: z.string().trim(),
 	title: z.string().trim(),
 });
-export type IntegrationMetadata = z.infer<typeof IntegrationMetadataSchema>;
 
-export const integrationSchema = z.object({
+const integrationSchema = z.object({
 	docs: z.array(integrationDocSchema),
-	metadata: IntegrationMetadataSchema,
+	metadata: integrationMetadataSchema,
 	name: z.string().trim().toLowerCase().min(1),
 	path: z.string().trim().min(1),
 });
 export type Integration = z.infer<typeof integrationSchema>;
 
-export const integrationsSchema = z.array(integrationSchema);
+const integrationsSchema = z.array(integrationSchema);
 export type Integrations = z.infer<typeof integrationsSchema>;
+
+export function parseIntegrations(data: unknown): Integrations {
+	try {
+		return integrationsSchema.parse(data);
+	} catch (error) {
+		console.error(error);
+		return [];
+	}
+}

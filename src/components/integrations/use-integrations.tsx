@@ -1,16 +1,11 @@
 import { usePluginData } from "@docusaurus/useGlobalData";
-import { Integrations, integrationsSchema } from "./schema";
+import { parseIntegrations } from "./schema";
 
 const pluginKey = "ngrok-parse-integrations" as const;
 
-export function useIntegrations(): Integrations {
+export function useIntegrations() {
 	const rawData = usePluginData(pluginKey);
-	try {
-		return integrationsSchema.parse(rawData);
-	} catch (error) {
-		console.error(error);
-		return [];
-	}
+	return parseIntegrations(rawData);
 }
 
 export function useIntegration(name: string) {
