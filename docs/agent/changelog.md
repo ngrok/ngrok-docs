@@ -6,6 +6,12 @@ title: Changelog
 
 ## v3
 
+### ngrok Agent 3.4.0 - \[2023-11-03\]
+
+- Added support for upstream TLS verification when forwarding to `https://` or `tls://` addresses.
+  - `--verify-upstream-tls` enables TLS verification of server TLS certificates
+  - `--upstream-ca-path` sets the certificate authority used to verify upstream server certificates
+
 ### ngrok Agent 3.3.5 - \[2023-09-26\]
 
 - Added support for the [User Agent Filter module](/http/user-agent-filter/) that allows or denies traffic to HTTPS endpoints based on incoming user agents.
