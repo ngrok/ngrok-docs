@@ -4,22 +4,22 @@
 
 ```json
 {
-	"id": "sucrt_2TMGIzH24CRw0d7HHqUHb9KO3i5",
-	"uri": "https://api.ngrok.com/ssh_user_certificates/sucrt_2TMGIzH24CRw0d7HHqUHb9KO3i5",
-	"created_at": "2023-07-31T23:17:40Z",
+	"id": "sucrt_2XH3sZIiVEPU3fktiG104zlHyRz",
+	"uri": "https://api.ngrok.com/ssh_user_certificates/sucrt_2XH3sZIiVEPU3fktiG104zlHyRz",
+	"created_at": "2023-10-25T22:19:44Z",
 	"description": "temporary access to staging machine for alan",
 	"metadata": "{\"user_email\": \"alan@example.com\"}",
 	"public_key": "ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBK58lFzmWlDimDtBz78wVT4oauA8PjY0CiXTCEIsBNC6UwOJvZ0jdSaYNhDaa7dRV84DfBb/gKzqlXC7cVMZjl0= alan@work-laptop",
 	"key_type": "ecdsa",
-	"ssh_certificate_authority_id": "sshca_2TMGJ6loFb2szEAbmq4alsurdyt",
+	"ssh_certificate_authority_id": "sshca_2XH3sXagvK02iyadh0z0tJjfL0z",
 	"principals": ["ec2-user", "root"],
 	"critical_options": {},
 	"extensions": {
 		"permit-pty": "",
 		"permit-user-rc": ""
 	},
-	"valid_after": "2023-07-31T23:17:40Z",
-	"valid_until": "2023-10-29T23:17:40Z",
-	"certificate": "ecdsa-sha2-nistp256-cert-v01@openssh.com AAAAKGVjZHNhLXNoYTItbmlzdHAyNTYtY2VydC12MDFAb3BlbnNzaC5jb20AAAAgE1tRjInCcfBXzvt1JIyIa+lthl06eDrhw8K2IP+BdNsAAAAIbmlzdHAyNTYAAABBBK58lFzmWlDimDtBz78wVT4oauA8PjY0CiXTCEIsBNC6UwOJvZ0jdSaYNhDaa7dRV84DfBb/gKzqlXC7cVMZjl0AAAAAAAAAAAAAAAEAAAAhc3VjcnRfMlRNR0l6SDI0Q1J3MGQ3SEhxVUhiOUtPM2k1AAAAFAAAAAhlYzItdXNlcgAAAARyb290AAAAAGTIQRQAAAAAZT7oFAAAAAAAAAAoAAAACnBlcm1pdC1wdHkAAAAAAAAADnBlcm1pdC11c2VyLXJjAAAAAAAAAAAAAAAzAAAAC3NzaC1lZDI1NTE5AAAAIMTULg6WcNwg3Z8ma5/hslN+69DExLDFuNKW/wJNvH/yAAAAUwAAAAtzc2gtZWQyNTUxOQAAAEBRqPLiFr0/U0Q8Zqot/gmi2ym0sBP2Yi6s7PTi9PRFggqhGJVvvYMtf5kECp1x7SYijKxkfUcB/7f/9O4IoHcM sucrt_2TMGIzH24CRw0d7HHqUHb9KO3i5"
+	"valid_after": "2023-10-25T22:19:44Z",
+	"valid_until": "2024-01-23T22:19:44Z",
+	"certificate": "ecdsa-sha2-nistp256-cert-v01@openssh.com AAAAKGVjZHNhLXNoYTItbmlzdHAyNTYtY2VydC12MDFAb3BlbnNzaC5jb20AAAAgZIs1UMjBL/gWHy/aEbw9DMXmLkGMoOSLvLXf7hRmDawAAAAIbmlzdHAyNTYAAABBBK58lFzmWlDimDtBz78wVT4oauA8PjY0CiXTCEIsBNC6UwOJvZ0jdSaYNhDaa7dRV84DfBb/gKzqlXC7cVMZjl0AAAAAAAAAAAAAAAEAAAAhc3VjcnRfMlhIM3NaSWlWRVBVM2ZrdGlHMTA0emxIeVJ6AAAAFAAAAAhlYzItdXNlcgAAAARyb290AAAAAGU5lIAAAAAAZbA7gAAAAAAAAAAoAAAACnBlcm1pdC1wdHkAAAAAAAAADnBlcm1pdC11c2VyLXJjAAAAAAAAAAAAAAAzAAAAC3NzaC1lZDI1NTE5AAAAIEMhXGtbP4zr5rbyVoJmN93U3Rd1GV6Se1H33A7D+3m7AAAAUwAAAAtzc2gtZWQyNTUxOQAAAEAL48tgdYAFMiaxkuzQAk0egxmNec+fA2+az5jsqYaZG5d0fPtU6okM9UkN/RKGl4pSyI8QsnsCFq22ZdVq5fIG sucrt_2XH3sZIiVEPU3fktiG104zlHyRz"
 }
 ```

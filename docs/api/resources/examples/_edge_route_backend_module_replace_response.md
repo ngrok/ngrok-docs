@@ -6,8 +6,8 @@
 {
 	"enabled": true,
 	"backend": {
-		"id": "bkdtg_2TMGJ9skTr3VVtmnOwvtWRBA6jq",
-		"uri": "https://api.ngrok.com/backends/tunnel_group/bkdtg_2TMGJ9skTr3VVtmnOwvtWRBA6jq"
+		"id": "bkdtg_2XH3smnbuZ5oB4lLto6JkiVDeof",
+		"uri": "https://api.ngrok.com/backends/tunnel_group/bkdtg_2XH3smnbuZ5oB4lLto6JkiVDeof"
 	}
 }
 ```

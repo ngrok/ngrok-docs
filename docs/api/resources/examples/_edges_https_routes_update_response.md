@@ -4,12 +4,12 @@
 
 ```json
 {
-	"edge_id": "edghts_2TMGJDuLzZ7s1TfQQ1rDvIfHgpc",
-	"id": "edghtsrt_2TMGJBL2QsvCC1QHIenm86G21ik",
-	"created_at": "2023-07-31T23:17:41Z",
+	"edge_id": "edghts_2XH3sc6A8kn2n1KlfjA6BOWnjJE",
+	"id": "edghtsrt_2XH3shJRyeSOLpo6IScfmu95KCQ",
+	"created_at": "2023-10-25T22:19:45Z",
 	"match_type": "path_prefix",
 	"match": "/",
-	"uri": "https://api.ngrok.com/edges/https/edghts_2TMGJDuLzZ7s1TfQQ1rDvIfHgpc/routes/edghtsrt_2TMGJBL2QsvCC1QHIenm86G21ik",
+	"uri": "https://api.ngrok.com/edges/https/edghts_2XH3sc6A8kn2n1KlfjA6BOWnjJE/routes/edghtsrt_2XH3shJRyeSOLpo6IScfmu95KCQ",
 	"metadata": "{\"environment\": \"production\"}",
 	"backend": null,
 	"ip_restriction": null,

@@ -4,14 +4,14 @@
 
 ```json
 {
-	"id": "bkdwd_2TMGJ6jReY87lsxmMNRzyyB3ERN",
-	"uri": "https://api.ngrok.com/backends/weighted/bkdwd_2TMGJ6jReY87lsxmMNRzyyB3ERN",
-	"created_at": "2023-07-31T23:17:40Z",
+	"id": "bkdwd_2XH3saUSvch0aW0CCKki7bGANR9",
+	"uri": "https://api.ngrok.com/backends/weighted/bkdwd_2XH3saUSvch0aW0CCKki7bGANR9",
+	"created_at": "2023-10-25T22:19:45Z",
 	"description": "acme weighted",
 	"metadata": "{\"environment\": \"staging\"}",
 	"backends": {
-		"bkdhr_2TMGIzrH6VOqTmv4yYE2TCk6VnT": 0,
-		"bkdhr_2TMGJ1GczK2Z0CQe7tsXiTdSOnP": 1
+		"bkdhr_2XH3sap9xwOSviklyfnOwdTffVE": 0,
+		"bkdhr_2XH3sfbuDmkwRON2qOxvmwLt6xo": 1
 	}
 }
 ```

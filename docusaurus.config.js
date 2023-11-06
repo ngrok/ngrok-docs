@@ -37,6 +37,7 @@ const config = {
 		"./src/plugins/ngrok-parse-integrations",
 		"@stackql/docusaurus-plugin-hubspot",
 		"@docusaurus/theme-mermaid",
+		"./src/plugins/tailwindcss",
 	],
 	headTags: [
 		{
@@ -165,9 +166,21 @@ const config = {
 				],
 			},
 			algolia: {
-				appId: "SPPRT3GDNI",
-				apiKey: "e02fb8e0c4d8c7968396981d7ecb9fa8",
-				indexName: (process.env.DEPLOY_ENV || "dev") + "_ngrok",
+				// The application ID provided by Algolia
+				appId: "8D7MHVMLBR",
+
+				// Public API key: it is safe to commit it
+				apiKey: "269bab201a436456bd9b0107bfdb7bfa",
+
+				indexName: "ngrok",
+
+				// Optional: see doc section below
+				contextualSearch: true,
+
+				// Optional: path for search page that enabled by default (`false` to disable it)
+				searchPagePath: false,
+
+				//... other Algolia params
 			},
 			hubspot: {
 				accountId: 21124867,
