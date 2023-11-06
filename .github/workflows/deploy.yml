@@ -40,17 +40,3 @@ jobs:
           aws s3 sync ./build s3://docs-s3.dev-ngrok.com/docs --acl public-read
           aws s3 sync ./build s3://docs-s3.stage-ngrok.com/docs --acl public-read
           aws s3 sync ./build s3://docs-s3.ngrok.com/docs --acl public-read
-  search-index-prod:
-    needs: deploy
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Run algolia/docsearch-scraper
-        run: |
-          docker pull algolia/docsearch-scraper
-          docker run \
-            -e ALGOLIA_APP_ID=${{ secrets.DEV_ALGOLIA_APPLICATION_ID }} \
-            -e API_KEY=${{ secrets.DEV_ALGOLIA_API_KEY }} \
-            -e INDEX_NAME_TMP="prod_ngrok_tmp_$(date +%s)"  \
-            -e "CONFIG=$(cat ./algolia_prod.config.json | jq -r tostring)" \
-            algolia/docsearch-scraper
