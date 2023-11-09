@@ -158,7 +158,7 @@ const config = {
 						label: "Log in",
 						to: "https://dashboard.ngrok.com/login",
 						position: "right",
-						className: "dev-portal-signup dev-portal-link",
+						className: "dev-portal-login dev-portal-link",
 					},
 					{
 						label: "Sign Up",
