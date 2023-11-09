@@ -131,8 +131,8 @@ const config = {
 						position: "left",
 					},
 					{
-						label: "Customers",
-						to: "https://ngrok.com/customers",
+						label: "Resources",
+						to: "https://ngrok.com/resources",
 						position: "left",
 					},
 					{
