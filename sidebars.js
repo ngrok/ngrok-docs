@@ -34,7 +34,7 @@ const sidebars = {
 		},
 		{
 			type: "html",
-			value: "<hr />",
+			value: "<div class='menu__section'>Endpoints</div>",
 		},
 		{
 			label: "HTTP",
@@ -56,24 +56,7 @@ const sidebars = {
 		},
 		{
 			type: "html",
-			value: "<hr />",
-		},
-		{
-			label: "Network Edge",
-			type: "category",
-			link: { type: "doc", id: "network-edge/index" },
-			items: [
-				"network-edge/index",
-				"network-edge/domains-and-tcp-addresses",
-				"network-edge/edges",
-				"network-edge/gslb",
-				"network-edge/tls-certificates",
-				"network-edge/app-users",
-			],
-		},
-		{
-			type: "html",
-			value: "<hr />",
+			value: "<div class='menu__section'>Connectivity</div>",
 		},
 		{
 			label: "Agent",
@@ -104,7 +87,20 @@ const sidebars = {
 		},
 		{
 			type: "html",
-			value: "<hr />",
+			value: "<div class='menu__section'>Platform</div>",
+		},
+		{
+			label: "Network Edge",
+			type: "category",
+			link: { type: "doc", id: "network-edge/index" },
+			items: [
+				"network-edge/index",
+				"network-edge/domains-and-tcp-addresses",
+				"network-edge/edges",
+				"network-edge/gslb",
+				"network-edge/tls-certificates",
+				"network-edge/app-users",
+			],
 		},
 		{
 			label: "API",
@@ -276,7 +272,7 @@ const sidebars = {
 		},
 		{
 			type: "html",
-			value: "<hr />",
+			value: "<div class='menu__section'>Walkthroughs</div>",
 		},
 		{
 			label: "Guides",
