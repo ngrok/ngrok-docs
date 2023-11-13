@@ -151,10 +151,6 @@ const config = {
 						position: "left",
 					},
 					{
-						type: "search",
-						position: "right",
-					},
-					{
 						label: "Log in",
 						to: "https://dashboard.ngrok.com/login",
 						position: "right",
