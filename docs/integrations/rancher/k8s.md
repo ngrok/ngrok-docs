@@ -4,8 +4,6 @@ description: Set up a local installation of Rancher to deploy a new RKE2 cluster
 
 # Ingress to applications managed by Rancher in Kubernetes
 
----
-
 :::tip TL;DR
 
 To use the ngrok Ingress Controller for Kubernetes with Rancher in a local cluster:

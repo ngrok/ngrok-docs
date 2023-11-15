@@ -4,8 +4,6 @@ title: FAQ
 
 # FAQ
 
----
-
 ## Does ngrok have an official Status page? {#status-page}
 
 Yes. The official ngrok status page is [status.ngrok.com](https://status.ngrok.com).

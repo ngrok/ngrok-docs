@@ -4,8 +4,6 @@ title: Docker
 
 # Using ngrok with Docker
 
----
-
 ngrok provides [pre-built docker images](https://hub.docker.com/r/ngrok/ngrok) for the ngrok Agent with instructions for getting started. An example command for starting a tunnel to port 80 on the host machine looks like this:
 
 ```bash
@@ -31,8 +29,6 @@ docker run -it -e NGROK_AUTHTOKEN=xyz ngrok/ngrok:latest http host.docker.intern
 ```
 
 # Using ngrok with Docker Compose
-
----
 
 If you're more comfortable using Docker Compose, you can use the following as a starting point. Copy the contents below into a new file named `docker-compose.yaml`, then run `docker compose up` in that directory. This Docker compose file assumes that you have an `ngrok.yml` file in the same directory with at least one tunnel defined. Check out the [ngrok agent config file documentation](/docs/agent/config/) for help creating a configuration file with a tunnel definition. If you want to use the same configuration file as your local ngrok agent, you can view the location of the default config file using `ngrok config check`.
 

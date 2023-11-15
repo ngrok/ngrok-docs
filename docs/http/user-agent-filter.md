@@ -12,8 +12,6 @@ import RustSdkExample from "/examples/rust-sdk/http-user-agent-filter.mdx";
 
 # User Agent Filter
 
----
-
 ## Overview
 
 The User Agent Filter module enables you to block bots, crawlers, or certain

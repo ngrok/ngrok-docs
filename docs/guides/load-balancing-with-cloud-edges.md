@@ -4,8 +4,6 @@ description: How to use load balancer with ngrok cloud edge
 
 # Load Balancing with ngrok Cloud Edges
 
----
-
 This guide will walk you through the process of configuring load balancing on your HTTPS edge. For completing this guide, you will need an ngrok account, and upstream service deployed across multiple machines that you would like to load balance requests to, and the latest ngrok agent installed on each of those machines.
 
 ### Setting up an HTTPS Edge

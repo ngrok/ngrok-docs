@@ -4,8 +4,6 @@ description: Use Frontegg SAML to secure access to ngrok endpoints
 
 # Frontegg SSO (SAML)
 
----
-
 :::tip TL;DR
 
 To secure access to ngrok with Frontegg Single Sign-On using SAML:

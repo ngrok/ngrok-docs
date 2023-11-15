@@ -1,7 +1,5 @@
 # Web Inspection Interface
 
----
-
 The ngrok agent ships with a realtime inspection interface which allows you to see what traffic is sent to your upstream service and what responses it is returning.
 
 ## Inspecting requests

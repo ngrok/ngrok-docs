@@ -6,8 +6,6 @@ title: Guides
 
 # How to Guides
 
----
-
 Here you will find a set of guides to help you with common (and not so common) tasks in ngrok. Think we're missing something? Send a note to [support@ngrok.com](mailto:support@ngrok.com) and let us know.
 
 | Name                                                                                                                                     | Description                                                                                    |

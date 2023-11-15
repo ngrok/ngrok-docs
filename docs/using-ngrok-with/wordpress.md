@@ -4,8 +4,6 @@ title: Wordpress
 
 # Using ngrok with Wordpress
 
----
-
 :::tip
 This article assumes you familiar with moderate to advanced Wordpress configuration.
 :::

@@ -4,8 +4,6 @@ title: Node.js or npm
 
 # Using ngrok with Node.js or npm
 
----
-
 :::tip
 This article assumes you have node and npm already installed.
 :::

@@ -4,8 +4,6 @@ description: Use Frontegg OIDC to secure access to ngrok endpoints
 
 # Frontegg SSO (OpenID Connect)
 
----
-
 :::tip TL;DR
 
 To secure access to ngrok with Frontegg Single Sign-On (SSO) using OpenID Connect:

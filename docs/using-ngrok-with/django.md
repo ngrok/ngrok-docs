@@ -4,8 +4,6 @@ title: Django
 
 # Using ngrok with Django
 
----
-
 :::tip
 This article assumes you have Python, PIP, and Django already installed.
 :::

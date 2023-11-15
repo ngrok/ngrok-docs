@@ -4,8 +4,6 @@ title: RDP
 
 # Using ngrok with RDP
 
----
-
 ngrok's TCP tunnels can be used for RDP traffic but we recommend they only be used in conjunction with restricting access to a specific set of IP addresses using IP restrictions. Start a TCP tunnel to port 3389 and add the `--cidr-allow` flag with the IP addresses you'll be connecting from.
 
     ngrok tcp 3389 --cidr-allow 0.0.0.0/32
