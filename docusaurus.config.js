@@ -113,23 +113,26 @@ const config = {
 					src: "img/ngrok-black.svg",
 					srcDark: "img/ngrok-white.svg",
 					href: "https://ngrok.com",
-					width: "100%",
-					height: "100%",
 				},
 				items: [
 					{
-						label: "Product",
-						to: "https://ngrok.com/product",
+						label: "Platform",
+						to: "https://ngrok.com/product/platform",
 						position: "left",
 					},
 					{
-						label: "Solutions",
-						to: "https://ngrok.com/solutions",
+						label: "Use cases",
+						to: "https://ngrok.com/use-cases",
 						position: "left",
 					},
 					{
-						label: "Customers",
-						to: "https://ngrok.com/customers",
+						label: "Blog",
+						to: "https://ngrok.com/blog",
+						position: "left",
+					},
+					{
+						label: "Resources",
+						to: "https://ngrok.com/resources",
 						position: "left",
 					},
 					{
@@ -143,7 +146,7 @@ const config = {
 						position: "left",
 					},
 					{
-						label: "Download",
+						label: "Get ngrok",
 						to: "https://ngrok.com/download",
 						position: "left",
 					},
@@ -152,10 +155,10 @@ const config = {
 						position: "right",
 					},
 					{
-						label: "Login",
+						label: "Log in",
 						to: "https://dashboard.ngrok.com/login",
 						position: "right",
-						className: "dev-portal-signup dev-portal-link",
+						className: "dev-portal-login dev-portal-link",
 					},
 					{
 						label: "Sign Up",
