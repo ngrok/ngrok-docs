@@ -199,7 +199,7 @@ const config = {
 								to: "https://dashboard.ngrok.com/signup",
 							},
 							{
-								label: "Login",
+								label: "Log in",
 								to: "https://dashboard.ngrok.com/login",
 							},
 							{
