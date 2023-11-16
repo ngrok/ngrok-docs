@@ -71,6 +71,7 @@ const sidebars = {
 				"agent/ssh-reverse-tunnel-agent",
 				"agent/ingress",
 				"agent/changelog",
+				"agent/version-support-policy",
 			],
 		},
 		{
