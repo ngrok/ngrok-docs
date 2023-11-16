@@ -4,8 +4,6 @@ title: MySQL
 
 # Using ngrok with MySQL
 
----
-
 Hevo provides a great guide on [using ngrok to connect to a local MySQL database](https://docs.hevodata.com/sources/dbfs/databases/connecting-to-a-local-db/). Once you have your database up and running, you should be able to remotely connect to it using an ngrok TCP tunnel and the default port of `3306`.
 
 ```bash

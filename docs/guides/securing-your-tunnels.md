@@ -1,7 +1,5 @@
 # Securing ngrok
 
----
-
 This guide will walk you through recommendations for ensuring you are using ngrok securely.
 
 ## Agent Configuration

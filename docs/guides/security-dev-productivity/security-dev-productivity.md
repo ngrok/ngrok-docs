@@ -5,8 +5,6 @@ title: Secure developer productivity
 
 # Best security practices for developer productivity
 
----
-
 :::note
 This guide describes the best practices and features organizations can apply to consistently secure developers using ngrok while leveraging their existing security investments.
 For a printed version, please [download the PDF](pathname:///other/best_practices_dev_security.pdf).
@@ -19,8 +17,6 @@ For a printed version, please [download the PDF](pathname:///other/best_practice
 import TOCInline from '@theme/TOCInline';
 
 <TOCInline toc={toc} />
-
----
 
 ## Introduction
 
@@ -66,8 +62,6 @@ This leads to three challenges:
 By following the best practices, organizations manage the ngrok usage in a single tenant, leveraging their security stack and the security team expertise while keeping developer developers happy and productive:
 
 ![All developers on the same ngrok tenant with best practices applied](img/4.png)
-
----
 
 ## Best practices
 

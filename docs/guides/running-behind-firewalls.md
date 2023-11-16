@@ -4,8 +4,6 @@ title: Corporate Firewall
 
 # Running ngrok Behind a Corporate Firewall
 
----
-
 When you need to deploy ngrok behind a corporate firewall, there may be additional steps that you will need to take to make sure ngrok is working properly.
 
 As background, this is usually not an issue. Firewalls usually allow outbound connections, which is what an ngrok Agent makes in order to establish a session with the ngrok service and subsequently your tunnel.

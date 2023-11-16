@@ -5,8 +5,6 @@ toc_max_heading_level: 2
 
 # ngrok Agent API
 
----
-
 :::tip
 
 If you want to programmatically control the ngrok agent, the [Agent

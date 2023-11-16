@@ -4,8 +4,6 @@ title: Go
 
 # Using ngrok with Go
 
----
-
 ## Agent SDK
 
 We publish the ngrok-go [Agent SDK](/agent-sdks/) which is an idiomatic Go

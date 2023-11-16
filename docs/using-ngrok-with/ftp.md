@@ -4,8 +4,6 @@ title: FTP / FTPS / SFTP
 
 # Using ngrok with FTP, FTPS, SFTP
 
----
-
 ## Compatibility with FTP & FTPS
 
 Because using FTP or FTPS (FTP over SSL) requires multiple dynamic ports for transferring data between server and client, ngrok is not a good solution for that traffic. We recommend using SFTP instead which relies on a single port number.

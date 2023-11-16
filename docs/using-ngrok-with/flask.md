@@ -4,8 +4,6 @@ title: Flask
 
 # Using ngrok with Flask
 
----
-
 :::tip
 This article assumes you have Python, PIP, and Flask already installed.
 :::

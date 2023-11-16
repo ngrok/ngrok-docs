@@ -4,8 +4,6 @@ description: Setup a local virtual cluster to demonstrate how to use the ngrok I
 
 # Ingress to services in a vcluster on Kubernetes
 
----
-
 :::tip TL;DR
 
 To use the ngrok Ingress Controller for Kubernetes with vcluster in a local cluster:

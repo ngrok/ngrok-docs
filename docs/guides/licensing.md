@@ -1,7 +1,5 @@
 # ngrok Platform Licensing FAQ
 
----
-
 This guide will walk you through frequently asked questions about ngrok's licensing model.
 
 ## How it works

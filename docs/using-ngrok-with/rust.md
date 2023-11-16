@@ -4,8 +4,6 @@ title: Rust
 
 # Using ngrok with Rust
 
----
-
 ## Agent SDK
 
 We publish the ngrok-rust [Agent SDK](/agent-sdks/) which is an idiomatic Rust
