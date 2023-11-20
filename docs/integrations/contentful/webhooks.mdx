@@ -4,20 +4,25 @@
 
 To integrate Contentful webhooks with ngrok:
 
-1. [Launch your local webhook.](#start-your-app) `npm start`
-1. [Launch ngrok.](#start-ngrok) `ngrok http 3000`
-1. [Configure Contentful webhooks with your ngrok URL.](#setup-webhook)
+1. [Launch your local app that will process Contentful webhook requests](#start-your-app) `npm start`
+1. [Launch ngrok](#start-ngrok) `ngrok http 3000`
+1. [Configure Contentful webhooks with your ngrok URL](#setup-webhook)
 
 :::
 
-This guide covers how to use ngrok to integrate your localhost app with Contentful by using Webhooks.
+This guide covers how to use ngrok to route Contentful Webhooks to your localhost app for development and integration testing.
 Contentful webhooks can be used to notify an external application whenever specific events occur in your Contentful account.
 
 By integrating ngrok with Contentful, you can:
 
 - **Develop and test Contentful webhooks locally**, eliminating the time in deploying your development code to a public environment and setting it up in HTTPS.
 - **Inspect and troubleshoot requests from Contentful** in real-time via the inspection UI and API.
-- **Modify and Replay Contentful Webhook requests** with a single click and without spending time reproducing events manually in your Contentful account.
+- **Modify and Replay Contentful webhook requests** with a single click and without spending time reproducing events manually in your Contentful account.
+- **Verify signed Contentful webhook requests** at the edge using ngrok's webhook verification options: `--verify-webhook=contentful --verify-webhook-secret=<webhook signing secret>`
+  
+  :::info NOTE
+  [Webhook Request Verification](https://www.contentful.com/developers/docs/webhooks/request-verification/) can be enabled by Contentful customers with a Premium+ subscription.
+  :::
 
 ## **Step 1**: Start your app {#start-your-app}
 
@@ -57,6 +62,12 @@ Once your app is running successfully on localhost, let's get it on the internet
 
    ```bash
    ngrok http 3000
+   ```
+
+   Or with Contentful [Webhook Request Verification](https://www.contentful.com/developers/docs/webhooks/request-verification/) enabled:
+   
+   ```bash
+   ngrok http 3000 --verify-webhook=contentful --verify-webhook-secret=<webhook signing secret>
    ```
 
 1. ngrok will display a URL where your localhost application is exposed to the internet (copy this URL for use with Contentful).
@@ -128,3 +139,7 @@ The ngrok Request Inspector provides a replay function that you can use to test 
 1. Click **Replay**.
 
 Verify that your local application receives the request and logs the corresponding information to the terminal.
+
+:::info NOTE
+If Contentful [Webhook Request Verification](https://www.contentful.com/developers/docs/webhooks/request-verification/) is enabled and you are verify signed Contentful webhook requests at the edge using ngrok's webhook verification options: `--verify-webhook=contentful --verify-webhook-secret=<webhook signing secret>` replaying requests will not work outside of the 3 minute TTL.
+:::
