@@ -21,7 +21,7 @@ const sidebars = {
 		"why-ngrok",
 		// These aren't ready yet
 		// "install",
-		// "core-concepts",
+		"core-concepts",
 		{
 			label: "Getting Started",
 			type: "category",
