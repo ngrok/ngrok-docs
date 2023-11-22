@@ -240,6 +240,112 @@ WARNING: Use this with caution if you have made changes to the config file. If
 for some reason ngrok cannot restart, you may lose access to the agent
 completely.
 
+## Connectivity
+
+When the ngrok agent and Agent SDKs start, they establish long-lived TLS
+connections to the ngrok service through which they create new endpoints and
+receive connections from ngrok's edge that are intended for your upstream
+services.
+
+### Address {#connectivity-address}
+
+By default, the ngrok agent dials the following "agent ingress address" when it
+connects to the ngrok service. This address resolves to a [dyanmic set of IP
+Addresses](/network-edge/#ip-addresses).
+
+```
+connect.ngrok-agent.com:443
+```
+
+You can [customize the agent ingress address](/agent/ingress/) to brand it with
+your own domain.
+
+### DNS Resolution
+
+When the ngrok agent dials the ngrok service to establish its TLS connections,
+it resolves DNS for the [connection address](/agent/ingress/) which is defined
+by the [`server_addr`](/agent/config/#server_addr) configuration property.
+ngrok attempts to resolve DNS using multiple mechanisms so that it can
+establish connectivity even in network environments where DNS service is
+failing. ngrok attempts to resolve the IPs of its service using the following
+mechanisms:
+
+- Via the system's default DNS resolvers
+- Via Google's DNS servers (`8.8.8.8` and `8.8.4.4`)
+- Via Google's DNS-over-HTTPS service (https://developers.google.com/speed/public-dns/docs/doh)
+- Via a file hosted on an ngrok-controlled S3 bucket
+
+Instead of using the system's default DNS resolvers, you can configure
+the DNS servers the ngrok agent uses for resolution with the
+[`dns_resolver_ips`](/agent/config/#dns_resolver_ips) configuration option.
+
+### TLS Verification
+
+The ngrok agent connects to the ngrok service over TLS connections. The agent
+verifies the TLS Certificate returned by the ngrok service. The certificates
+returned by the ngrok service are signed by ngrok's own root certificate
+authority. The ngrok agent verifies the returned certificate against
+certificate authorities bundled into the agent itself.
+
+Lastly, the ngrok agent makes a request to `crl.ngrok.com` to verify that the
+certificate returned by the ngrok service has not been revoked.
+
+### Heartbeating
+
+Once the ngrok agent has established connectivity to the ngrok service, it
+periodically sends application-level heartbeat messages to validate the
+liveness of the connection. You may customize this behavior via the
+[`heartbeat_interval`](/agent/config/#heartbeat_interval) and
+[`heartbeat_tolerance`](/agent/config/#heartbeat_tolerance) configuration
+parameters.
+
+If the ngrok agent does not receive a response to its heartbeat within the
+tolerance window, it terminates the connection and begins reconnecting.
+
+ngrok's heartbeating mechanism allows it to recover from any type of network
+outage, even those caused by packet loss, dynamic IP changes, interface changes
+(e.g. WiFi to LTE) or complete network outages.
+
+The ngrok service also sends its own heartbeats to the agent which it uses to detect
+liveness and terminate dead connections.
+
+### Reconnection
+
+If the ngrok agent is disconnected for any reason, it will automatically begin
+reconnecting. Reconnecting begins the entire connection process over again,
+beginning with DNS resolution. The ngrok agent attempts to recover quickly and
+slowly backs off its reconnection attempts but always attempts to re-establish
+connectivity unless the ngrok service explicitly instructs it to stop
+reconnecting.
+
+### Troubleshooting {#troubleshooting-connectivity}
+
+If the ngrok agent can't connect to the ngrok service, it is often difficult to
+understand why.
+
+The ngrok agent includes the [`ngrok diagnose`](/agent/cli/#ngrok-diagnose)
+command to help you troubleshoot connection failures. It runs a series of tests
+to diagnose potential issues when connecting to the ngrok service. Consult the
+[`ngrok diagnose` documentation](/agent/cli/#ngrok-diagnose) for additional
+details.
+
+```
+    $ ngrok diagnose
+    Testing ngrok connectivity...
+
+    Internet Connectivity
+      Name Resolution                           [ OK ]
+      TCP                                       [ OK ]
+      TLS                                       [ OK ]
+    Ngrok Connectivity
+      Name Resolution                           [ OK ]
+      TCP                                       [ OK ]
+      TLS                                       [ OK ]
+      Tunnel Protocol                           [ OK ]
+
+    Successfully established ngrok connection! (region: 'us', latency: 112.461875ms)
+```
+
 ## System Requirements
 
 #### Supported Platforms
@@ -300,47 +406,6 @@ runs. If an update is available, it will prompt you to update by pressing
 You can configure which release channel (e.g. `stable`, `beta`) the agent uses
 for updates via the [`update_channel` config
 parameter](/agent/config/#update_channel).
-
-## Connection Address
-
-By default, the ngrok agent dials the following "agent ingress address" when it
-connects to the ngrok service. This address resolves to a [dyanmic set of IP
-Addresses](/network-edge/#ip-addresses).
-
-```
-connect.ngrok-agent.com:443
-```
-
-You can [customize the agent ingress address](/agent/ingress/) to brand it with
-your own domain.
-
-## Troubleshooting Connectivity
-
-If the ngrok agent can't connect to the ngrok service, it is often difficult to
-understand why.
-
-The ngrok agent includes the [`ngrok diagnose`](/agent/cli/#ngrok-diagnose)
-command to help you troubleshoot connection failures. It runs a series of tests
-to diagnose potential issues when connecting to the ngrok service. Consult the
-[`ngrok diagnose` documentation](/agent/cli/#ngrok-diagnose) for additional
-details.
-
-```
-    $ ngrok diagnose
-    Testing ngrok connectivity...
-
-    Internet Connectivity
-      Name Resolution                           [ OK ]
-      TCP                                       [ OK ]
-      TLS                                       [ OK ]
-    Ngrok Connectivity
-      Name Resolution                           [ OK ]
-      TCP                                       [ OK ]
-      TLS                                       [ OK ]
-      Tunnel Protocol                           [ OK ]
-
-    Successfully established ngrok connection! (region: 'us', latency: 112.461875ms)
-```
 
 ## IP Restrictions
 
