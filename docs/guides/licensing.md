@@ -14,7 +14,7 @@ Seat-based plans are intended for developers, teams, and organizations using ngr
 
 Usage-based plans are intended for developers who have production workloads and services that they choose to front with ngrok.
 
-For details and to select a different plan, see [ngrok pricing](https://https://ngrok.com/pricing?ref=docs).
+For details and to select a different plan, see [ngrok pricing](https://ngrok.com/pricing?ref=docs).
 
 ## What do I get for free on ngrok?
 
