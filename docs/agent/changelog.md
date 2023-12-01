@@ -6,6 +6,15 @@ title: Changelog
 
 ## v3
 
+### ngrok Agent 3.5.0 - \[2023-12-01\]
+
+- The `--region` flag has been deprecated, ngrok automatically chooses the region with lowest latency
+- The upstream tls configs have been renamed, with backwards compatibility:
+  - `--verify-upstream-tls` is now `--upstream-tls-verify`
+  - `--upstream-ca-path` is now `--upstream-tls-verify-cas`
+- An option for `--app-protocol` of the upstream, which can be set to `http2`, has been added
+- The `StopTunnel` message is now handled by the agent
+
 ### ngrok Agent 3.4.0 - \[2023-11-03\]
 
 - Added support for upstream TLS verification when forwarding to `https://` or `tls://` addresses.
