@@ -50,21 +50,25 @@ https://dashboard.ngrok.com/get-started/your-authtoken</td>
 			<td>
 				<a id="ERR_NGROK_107" href="/docs/errors/err_ngrok_107">ERR_NGROK_107</a>
 			</td>
-			<td class="pre-wrapped">The authtoken you specified is properly formed, but it is invalid.
-Your authtoken: <code>&lt;TOKEN&gt;</code>
-This usually happens when:
-    - You reset your authtoken
-    - Your authtoken was for a team account that you were removed from
-    - You are using ngrok link and this credential was explicitly revoked
-Go to your ngrok dashboard and double check that your authtoken is correct:
-https://dashboard.ngrok.com/get-started/your-authtoken</td>
+			<td class="pre-wrapped">
+				The authtoken you specified is properly formed, but it is invalid.
+				Your authtoken: <code>&lt;TOKEN&gt;</code>
+				This usually happens when:
+				- You reset your authtoken
+				- Your authtoken was for a team account that you were removed from
+				- You are using ngrok link and this credential was explicitly revoked
+				Go to your ngrok dashboard and double check that your authtoken is correct:
+				https://dashboard.ngrok.com/get-started/your-authtoken
+			</td>
 		</tr>
 		<tr>
 			<td>
 				<a id="ERR_NGROK_108" href="/docs/errors/err_ngrok_108">ERR_NGROK_108</a>
 			</td>
-			<td class="pre-wrapped">Your account is limited to <code>&lt;MAX&gt;</code> simultaneous ngrok agent session<code>&lt;PLURAL&gt;</code>.
-<code>&lt;MSG&gt;</code></td>
+			<td class="pre-wrapped">
+				Your account is limited to <code>&lt;MAX&gt;</code> simultaneous ngrok agent session<code>&lt;PLURAL&gt;</code>.
+				<code>&lt;MSG&gt;</code>
+			</td>
 		</tr>
 		<tr>
 			<td>
@@ -600,10 +604,11 @@ Your authtoken is available on your dashboard: https://dashboard.ngrok.com/get-s
 			<td>
 				<a id="ERR_NGROK_324" href="/docs/errors/err_ngrok_324">ERR_NGROK_324</a>
 			</td>
-			<td class="pre-wrapped">Your account may not run more than <code>&lt;MAX&gt;</code> tunnels over a single ngrok agent session.
-The tunnels already running on this session are:
-<code>&lt;URLS&gt;</code>
-</td>
+			<td class="pre-wrapped">
+				Your account may not run more than <code>&lt;MAX&gt;</code> tunnels over a single ngrok agent session.
+				The tunnels already running on this session are:
+				<code>&lt;URLS&gt;</code>
+			</td>
 		</tr>
 		<tr>
 			<td>
@@ -633,7 +638,9 @@ The tunnels already running on this session are:
 			<td>
 				<a id="ERR_NGROK_330" href="/docs/errors/err_ngrok_330">ERR_NGROK_330</a>
 			</td>
-			<td class="pre-wrapped">Domain has an invalid character sequence. Valid domains may not contain '--' in positions 3 and 4 unless the domain has a punycode prefix of 'xn--'. Failed to bind the domain <code>&lt;DOMAIN&gt;</code>.</td>
+			<td class="pre-wrapped">
+				Domain has an invalid character sequence. Valid domains may not contain '--' in positions 3 and 4 unless the domain has a punycode prefix of 'xn--'. Failed to bind the domain <code>&lt;DOMAIN&gt;</code>.
+			</td>
 		</tr>
 		<tr>
 			<td>
@@ -733,17 +740,21 @@ Update the endpoint configuration to specify 'agent' as the auth provider or rem
 			<td>
 				<a id="ERR_NGROK_345" href="/docs/errors/err_ngrok_345">ERR_NGROK_345</a>
 			</td>
-			<td class="pre-wrapped">Endpoint configuration <code>&lt;ID&gt;</code>s HTTPS module terminates TLS which is incompatible with a 'tls' tunnel. You may either:
-  - Modify the endpoint configuration to include the HTTPS module with 'terminate_tls' disabled.
-  - OR start an 'http' tunnel with -bind-tls=true or -bind-tls=both instead</td>
+			<td class="pre-wrapped">
+				Endpoint configuration <code>&lt;ID&gt;</code>s HTTPS module terminates TLS which is incompatible with a 'tls' tunnel. You may either:
+				- Modify the endpoint configuration to include the HTTPS module with 'terminate_tls' disabled.
+				- OR start an 'http' tunnel with -bind-tls=true or -bind-tls=both instead
+			</td>
 		</tr>
 		<tr>
 			<td>
 				<a id="ERR_NGROK_346" href="/docs/errors/err_ngrok_346">ERR_NGROK_346</a>
 			</td>
-			<td class="pre-wrapped">Endpoint configuration <code>&lt;ID&gt;</code>s HTTPS module does not terminate TLS which is incompatible with a 'https' tunnel. You may either:
-  - Modify the endpoint configuration to enable the 'terminate_tls' option
-  - OR start a 'tls' tunnel instead</td>
+			<td class="pre-wrapped">
+				Endpoint configuration <code>&lt;ID&gt;</code>s HTTPS module does not terminate TLS which is incompatible with a 'https' tunnel. You may either:
+				- Modify the endpoint configuration to enable the 'terminate_tls' option
+				- OR start a 'tls' tunnel instead
+			</td>
 		</tr>
 		<tr>
 			<td>
