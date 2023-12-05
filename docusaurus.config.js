@@ -9,6 +9,18 @@ const docsRepo = "https://github.com/ngrok/ngrok-docs";
 
 const isProduction = /production/i.test(process.env.NODE_ENV || "development");
 
+const fontHrefs = [
+	"https://cdn.ngrok.com/static/fonts/euclid-square/EuclidSquare-Regular-WebS.woff",
+	"https://cdn.ngrok.com/static/fonts/euclid-square/EuclidSquare-RegularItalic-WebS.woff",
+	"https://cdn.ngrok.com/static/fonts/euclid-square/EuclidSquare-Medium-WebS.woff",
+	"https://cdn.ngrok.com/static/fonts/euclid-square/EuclidSquare-Semibold-WebS.woff",
+	"https://cdn.ngrok.com/static/fonts/euclid-square/EuclidSquare-MediumItalic-WebS.woff",
+	"https://cdn.ngrok.com/static/fonts/ibm-plex-mono/IBMPlexMono-Text.woff",
+	"https://cdn.ngrok.com/static/fonts/ibm-plex-mono/IBMPlexMono-TextItalic.woff",
+	"https://cdn.ngrok.com/static/fonts/ibm-plex-mono/IBMPlexMono-SemiBold.woff",
+	"https://cdn.ngrok.com/static/fonts/ibm-plex-mono/IBMPlexMono-SemiBoldItalic.woff",
+];
+
 /** @type {import('@docusaurus/types').Config} */
 const config = {
 	title: "ngrok documentation",
@@ -47,6 +59,16 @@ const config = {
 				content: isProduction ? "ngrok_ketch_tag" : "ngrok_ketch_tag_local",
 			},
 		},
+		...fontHrefs.map((href) => ({
+			tagName: "link",
+			attributes: {
+				rel: "preload",
+				href,
+				as: "font",
+				type: "font/woff",
+				crossorigin: "anonymous",
+			},
+		})),
 	],
 
 	scripts: [
