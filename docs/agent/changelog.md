@@ -148,10 +148,12 @@ This change was made to help protect against maliciously crafted web pages that 
 
 Behavior changes for `http` and `tls` tunnels defined in the configuration file or started via the API that do not have a `subdomain` or `hostname` property.
 
-    tunnels:
-      webapp:
-        proto: http
-        addr: 80
+```yaml
+tunnels:
+  webapp:
+    proto: http
+    addr: 80
+```
 
 Given this example tunnel configuration, behavior will change in the following ways.
 
@@ -167,8 +169,10 @@ Starts a tunnel with a random subdomain, for example a URL like `http://d95211d2
 
 Add a `domain` property with the same name as the tunnel:
 
-    tunnels:
-      webapp:
-        proto: http
-        addr: 80
-        domain: webapp.ngrok.io
+```yaml
+tunnels:
+  webapp:
+    proto: http
+    addr: 80
+    domain: webapp.ngrok.io
+```

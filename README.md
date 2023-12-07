@@ -8,7 +8,7 @@ See our [Contribution Guidelines](CONTRIBUTING.md) for detailed instructions on 
 
 ## Setup
 
-ngrok is built using [Docusaurus 2](https://docusaurus.io/).
+ngrok is built using [Docusaurus 3](https://docusaurus.io/).
 
 Prerequisites required:
 

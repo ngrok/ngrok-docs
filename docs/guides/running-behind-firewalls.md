@@ -12,21 +12,21 @@ However, certain corporate firewalls have more restrictions around outbound conn
 
 If you're having trouble using the ngrok agent to start a tunnel, the first step is to run `ngrok diagnose` which will produce a report that will help you identify connection issues.
 
-```
-    $ ngrok diagnose
-    Testing ngrok connectivity...
+```sh
+$ ngrok diagnose
+  Testing ngrok connectivity...
 
-    Internet Connectivity
-      Name Resolution                           [ OK ]
-      TCP                                       [ OK ]
-      TLS                                       [ OK ]
-    Ngrok Connectivity
-      Name Resolution                           [ OK ]
-      TCP                                       [ OK ]
-      TLS                                       [ OK ]
-    Tunnel Protocol                           [ OK ]
+  Internet Connectivity
+    Name Resolution                           [ OK ]
+    TCP                                       [ OK ]
+    TLS                                       [ OK ]
+  Ngrok Connectivity
+    Name Resolution                           [ OK ]
+    TCP                                       [ OK ]
+    TLS                                       [ OK ]
+  Tunnel Protocol                           [ OK ]
 
-  Successfully established ngrok connection! (region: 'us', latency: 54.895145ms)
+Successfully established ngrok connection! (region: 'us', latency: 54.895145ms)
 ```
 
 To resolve these issues, you have a couple options:
