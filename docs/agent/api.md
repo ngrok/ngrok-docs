@@ -31,7 +31,7 @@ The ngrok agent API is exposed as part of ngrok's local web inspection interface
 
 ### Access the root API resource of a running ngrok agent
 
-```
+```sh
 curl http://localhost:4040/api/
 ```
 
@@ -67,45 +67,45 @@ GET/api/tunnels
 ### Example Response
 
 ```
-    {
-      "tunnels": [
-          {
-              "name": "command_line",
-              "uri": "/api/tunnels/command_line",
-              "public_url": "https://d95211d2.ngrok.io",
-              "proto": "https",
-              "config": {
-                  "addr": "localhost:80",
-                  "inspect": true,
-              },
-              "metrics": {
-                  "conns": {
-                      "count": 0,
-                      "gauge": 0,
-                      "rate1": 0,
-                      "rate5": 0,
-                      "rate15": 0,
-                      "p50": 0,
-                      "p90": 0,
-                      "p95": 0,
-                      "p99": 0
-                  },
-                  "http": {
-                      "count": 0,
-                      "rate1": 0,
-                      "rate5": 0,
-                      "rate15": 0,
-                      "p50": 0,
-                      "p90": 0,
-                      "p95": 0,
-                      "p99": 0
-                  }
-              }
-          },
-          ...
-      ],
-      "uri": "/api/tunnels"
-    }
+{
+    "tunnels": [
+        {
+            "name": "command_line",
+            "uri": "/api/tunnels/command_line",
+            "public_url": "https://d95211d2.ngrok.io",
+            "proto": "https",
+            "config": {
+                "addr": "localhost:80",
+                "inspect": true,
+            },
+            "metrics": {
+                "conns": {
+                    "count": 0,
+                    "gauge": 0,
+                    "rate1": 0,
+                    "rate5": 0,
+                    "rate15": 0,
+                    "p50": 0,
+                    "p90": 0,
+                    "p95": 0,
+                    "p99": 0
+                },
+                "http": {
+                    "count": 0,
+                    "rate1": 0,
+                    "rate5": 0,
+                    "rate15": 0,
+                    "p50": 0,
+                    "p90": 0,
+                    "p95": 0,
+                    "p99": 0
+                }
+            }
+        },
+        ...
+    ],
+    "uri": "/api/tunnels"
+}
 ```
 
 ## Start tunnel
@@ -249,7 +249,9 @@ GET/api/requests/http
 
 ### Example Request
 
-    curl http://localhost:4040/api/requests/http?limit=50
+```sh
+curl http://localhost:4040/api/requests/http?limit=50
+```
 
 ### Response
 
@@ -330,7 +332,7 @@ POST/api/requests/http
 
 ### Example Request
 
-```
+```sh
 curl -H "Content-Type: application/json" -d '{"id": "548fb5c700000002"}' http://localhost:4040/api/requests/http
 ```
 
