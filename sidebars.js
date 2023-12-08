@@ -207,7 +207,7 @@ const sidebars = {
 								"api/resources/edge-route-response-headers-module",
 								"api/resources/edge-route-saml-module",
 								"api/resources/edge-route-user-agent-filter-module",
-								"api/resources/edge-route-webhook-validation-module",
+								"api/resources/edge-route-webhook-verification-module",
 								"api/resources/edge-route-websocket-tcp-converter-module",
 								"api/resources/https-edge-tls-termination-module",
 							],
