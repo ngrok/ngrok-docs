@@ -6,11 +6,11 @@
 {
 	"tls_edges": [
 		{
-			"id": "edgtls_2XH3t6dOwxX6BHivpIl5Tvmqukq",
+			"id": "edgtls_2ZGowrkr36rFKLYeJWsitMB2ex8",
 			"description": "acme tls edge",
 			"metadata": "{\"environment\": \"staging\"}",
-			"created_at": "2023-10-25T22:19:49Z",
-			"uri": "https://api.ngrok.com/edges/tls/edgtls_2XH3t6dOwxX6BHivpIl5Tvmqukq",
+			"created_at": "2023-12-08T17:53:38Z",
+			"uri": "https://api.ngrok.com/edges/tls/edgtls_2ZGowrkr36rFKLYeJWsitMB2ex8",
 			"hostports": ["example.com:443"],
 			"backend": null,
 			"ip_restriction": null,
@@ -18,16 +18,16 @@
 			"tls_termination": null
 		},
 		{
-			"id": "edgtls_2XH3rkKv3a3yOP7TuT9MipimLJm",
+			"id": "edgtls_2ZGovXyRKLQYOM8hHyRHm4zMYO0",
 			"description": "acme tls edge",
-			"created_at": "2023-10-25T22:19:38Z",
-			"uri": "https://api.ngrok.com/edges/tls/edgtls_2XH3rkKv3a3yOP7TuT9MipimLJm",
+			"created_at": "2023-12-08T17:53:27Z",
+			"uri": "https://api.ngrok.com/edges/tls/edgtls_2ZGovXyRKLQYOM8hHyRHm4zMYO0",
 			"hostports": ["endpoint-example.com:443"],
 			"backend": {
 				"enabled": true,
 				"backend": {
-					"id": "bkdhr_2XH3rkv29O6qNSWjrzpv2nNNnWD",
-					"uri": "https://api.ngrok.com/backends/http_response/bkdhr_2XH3rkv29O6qNSWjrzpv2nNNnWD"
+					"id": "bkdhr_2ZGovZIhgHOGfq5ny1rB3PNZ4WJ",
+					"uri": "https://api.ngrok.com/backends/http_response/bkdhr_2ZGovZIhgHOGfq5ny1rB3PNZ4WJ"
 				}
 			},
 			"ip_restriction": null,

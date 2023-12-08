@@ -4,8 +4,8 @@
 
 ```json
 {
-	"id": "agin_2XH3sbe13yeJa7sLMKmAdC0h6DF",
-	"uri": "/agent_ingresses/agin_2XH3sbe13yeJa7sLMKmAdC0h6DF",
+	"id": "agin_2ZGowH3pegfESQIkazOCPfz5LiE",
+	"uri": "/agent_ingresses/agin_2ZGowH3pegfESQIkazOCPfz5LiE",
 	"description": "acme devices",
 	"domain": "connect.acme.com",
 	"ns_targets": [
@@ -15,7 +15,7 @@
 		"4.kube-dns.kube-system.svc.cluster.local."
 	],
 	"region_domains": ["tunnel.us.connect.acme.com"],
-	"created_at": "2023-10-25T22:19:45Z",
+	"created_at": "2023-12-08T17:53:33Z",
 	"certificate_management_policy": null,
 	"certificate_management_status": null
 }

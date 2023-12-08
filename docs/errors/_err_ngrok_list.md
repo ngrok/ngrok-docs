@@ -984,13 +984,13 @@ Your authtoken is available on your dashboard: <a href="https://dashboard.ngrok.
 			<td>
 				<a id="ERR_NGROK_377" href="/docs/errors/err_ngrok_377">ERR_NGROK_377</a>
 			</td>
-			<td class="pre-wrapped">The header beginning with <code>&lt;PREFIX&gt;</code>...' exceeds the maximum header name length of 128 bytes.</td>
+			<td class="pre-wrapped">The header beginning with <code>&lt;PREFIX&gt;</code>...' exceeds the maximum header name length of <code>&lt;BYTES&gt;</code> bytes.</td>
 		</tr>
 		<tr>
 			<td>
 				<a id="ERR_NGROK_378" href="/docs/errors/err_ngrok_378">ERR_NGROK_378</a>
 			</td>
-			<td class="pre-wrapped">The header value for <code>&lt;HEADERKEY&gt;</code> beginning with <code>&lt;PREFIX&gt;</code>...' exceeds the maximum header value length of 1024 bytes.</td>
+			<td class="pre-wrapped">The header value for <code>&lt;HEADERKEY&gt;</code> beginning with <code>&lt;PREFIX&gt;</code>...' exceeds the maximum header value length of <code>&lt;BYTES&gt;</code> bytes.</td>
 		</tr>
 		<tr>
 			<td>
@@ -1851,6 +1851,12 @@ The parsing error encountered was:
 				<a id="ERR_NGROK_812" href="/docs/errors/err_ngrok_812">ERR_NGROK_812</a>
 			</td>
 			<td class="pre-wrapped">Your request exceeded the maximum size of <code>&lt;SIZE&gt;</code>.</td>
+		</tr>
+		<tr>
+			<td>
+				<a id="ERR_NGROK_813" href="/docs/errors/err_ngrok_813">ERR_NGROK_813</a>
+			</td>
+			<td class="pre-wrapped">Your message "<code>&lt;MESSAGE&gt;</code>"" is not supported by this version of the protocol: <code>&lt;PROTOVERSION&gt;</code>.</td>
 		</tr>
 		<tr>
 			<td>
@@ -2937,13 +2943,13 @@ Upgrade to a Pro or Enterprise plan at: <a href="https://dashboard.ngrok.com/bil
 			<td>
 				<a id="ERR_NGROK_1697" href="/docs/errors/err_ngrok_1697">ERR_NGROK_1697</a>
 			</td>
-			<td class="pre-wrapped">The header beginning with <code>&lt;PREFIX&gt;</code>...' exceeds the maximum header name length of 128 bytes.</td>
+			<td class="pre-wrapped">The header beginning with <code>&lt;PREFIX&gt;</code>...' exceeds the maximum header name length of <code>&lt;BYTES&gt;</code> bytes.</td>
 		</tr>
 		<tr>
 			<td>
 				<a id="ERR_NGROK_1698" href="/docs/errors/err_ngrok_1698">ERR_NGROK_1698</a>
 			</td>
-			<td class="pre-wrapped">The header value for <code>&lt;HEADERKEY&gt;</code> beginning with <code>&lt;PREFIX&gt;</code>...' exceeds the maximum header value length of 1024 bytes.</td>
+			<td class="pre-wrapped">The header value for <code>&lt;HEADERKEY&gt;</code> beginning with <code>&lt;PREFIX&gt;</code>...' exceeds the maximum header value length of <code>&lt;BYTES&gt;</code> bytes.</td>
 		</tr>
 		<tr>
 			<td>
@@ -3447,6 +3453,36 @@ Upgrade to a Pro or Enterprise plan at: <a href="https://dashboard.ngrok.com/bil
 		</tr>
 		<tr>
 			<td>
+				<a id="ERR_NGROK_2091" href="/docs/errors/err_ngrok_2091">ERR_NGROK_2091</a>
+			</td>
+			<td class="pre-wrapped">Unknown policy action type specified: <code>&lt;TYP&gt;</code>.</td>
+		</tr>
+		<tr>
+			<td>
+				<a id="ERR_NGROK_2092" href="/docs/errors/err_ngrok_2092">ERR_NGROK_2092</a>
+			</td>
+			<td class="pre-wrapped">Failed to parse the configuration specified for action type <code>&lt;TYP&gt;</code>.</td>
+		</tr>
+		<tr>
+			<td>
+				<a id="ERR_NGROK_2093" href="/docs/errors/err_ngrok_2093">ERR_NGROK_2093</a>
+			</td>
+			<td class="pre-wrapped">Policy action type <code>&lt;TYP&gt;</code> does not support the specified protocol: <code>&lt;PROTO&gt;</code>.</td>
+		</tr>
+		<tr>
+			<td>
+				<a id="ERR_NGROK_2094" href="/docs/errors/err_ngrok_2094">ERR_NGROK_2094</a>
+			</td>
+			<td class="pre-wrapped">Failed to provision action type <code>&lt;TYP&gt;</code> for unknown protocol <code>&lt;PROTO&gt;</code>.</td>
+		</tr>
+		<tr>
+			<td>
+				<a id="ERR_NGROK_2095" href="/docs/errors/err_ngrok_2095">ERR_NGROK_2095</a>
+			</td>
+			<td class="pre-wrapped">Configuration for policy action type <code>&lt;TYP&gt;</code> has invalid <code>&lt;FIELD&gt;</code>.</td>
+		</tr>
+		<tr>
+			<td>
 				<a id="ERR_NGROK_3002" href="/docs/errors/err_ngrok_3002">ERR_NGROK_3002</a>
 			</td>
 			<td class="pre-wrapped">Error performing TLS handshake: <code>&lt;ERR&gt;</code></td>
@@ -3808,13 +3844,9 @@ Please try again.</td>
 				<a id="ERR_NGROK_3208" href="/docs/errors/err_ngrok_3208">ERR_NGROK_3208</a>
 			</td>
 			<td class="pre-wrapped">The ngrok account that was hosting this webpage has been banned for violation of ngrok's Terms of Service.
-If you're seeing this page because of a message about your Facebook page, this was NOT an official Facebook page and you did NOT receive an official Facebook message. Your Facebook account has not been affected and ngrok has blocked the phishing attack against you. ngrok is helping to block an ongoing phishing attack against Meta's Facebook Business customers.
-If you did enter your password into this site, please contact Facebook immediately.
-How to protect yourself from Facebook phishing scams:
-<a href="https://www.facebook.com/help">https://www.facebook.com/help</a>/166863010078512
-Contact Facebook support for assistance:
-<a href="https://facebook.com/business/help">https://facebook.com/business/help</a>
-Additional information about protecting yourself from phishing attacks:
+If you're seeing this page instead of the one you were expecting, ngrok has most likely blocked a phishing attack targeting you.
+If you did enter any sensitive information before seeing this notice, please contact the real site by directly entering their URL in your browser.
+Learn more about how to protect yourself from phishing scams:
 <a href="https://consumer.ftc.gov/articles/how-recognize-and-avoid-phishing-scams">https://consumer.ftc.gov/articles/how-recognize-and-avoid-phishing-scams</a></td>
 		</tr>
 		<tr>
@@ -3915,6 +3947,18 @@ Additional information about protecting yourself from phishing attacks:
 		</tr>
 		<tr>
 			<td>
+				<a id="ERR_NGROK_3401" href="/docs/errors/err_ngrok_3401">ERR_NGROK_3401</a>
+			</td>
+			<td class="pre-wrapped">Your request lacks valid credentials.</td>
+		</tr>
+		<tr>
+			<td>
+				<a id="ERR_NGROK_3403" href="/docs/errors/err_ngrok_3403">ERR_NGROK_3403</a>
+			</td>
+			<td class="pre-wrapped">You are forbidden from making this request.</td>
+		</tr>
+		<tr>
+			<td>
 				<a id="ERR_NGROK_4001" href="/docs/errors/err_ngrok_4001">ERR_NGROK_4001</a>
 			</td>
 			<td class="pre-wrapped">Plan <code>&lt;PLAN_ID&gt;</code> does not exist.</td>
@@ -3999,6 +4043,12 @@ Install your authoken: <a href="https://dashboard.ngrok.com/get-started/your-aut
 				<a id="ERR_NGROK_4020" href="/docs/errors/err_ngrok_4020">ERR_NGROK_4020</a>
 			</td>
 			<td class="pre-wrapped">Your password must be less then <code>&lt;LENGTH&gt;</code> characters.</td>
+		</tr>
+		<tr>
+			<td>
+				<a id="ERR_NGROK_4021" href="/docs/errors/err_ngrok_4021">ERR_NGROK_4021</a>
+			</td>
+			<td class="pre-wrapped">This account cannot be deleted because it has an unpaid invoice. Please contact support@ngrok.com for help deleting this account.</td>
 		</tr>
 		<tr>
 			<td>
@@ -4977,13 +5027,9 @@ Please try again or contact the owner of this application if the issue persists.
 				<a id="ERR_NGROK_6009" href="/docs/errors/err_ngrok_6009">ERR_NGROK_6009</a>
 			</td>
 			<td class="pre-wrapped">The ngrok account that was hosting this webpage has been suspended for violation of ngrok's Terms of Service.
-If you're seeing this page because of a message about your Facebook page, this was NOT an official Facebook page and you did NOT receive an official Facebook message. Your Facebook account has not been affected and ngrok has blocked the phishing attack against you. ngrok is helping to block an ongoing phishing attack against Meta's Facebook Business customers.
-If you did enter your password into this site, please contact Facebook immediately.
-How to protect yourself from Facebook phishing scams:
-<a href="https://www.facebook.com/help">https://www.facebook.com/help</a>/166863010078512
-Contact Facebook support for assistance:
-<a href="https://facebook.com/business/help">https://facebook.com/business/help</a>
-Additional information about protecting yourself from phishing attacks:
+If you're seeing this page instead of the one you were expecting, ngrok has most likely blocked a phishing attack targeting you.
+If you did enter any sensitive information before seeing this notice, please contact the real site by directly entering their URL in your browser.
+Learn more about how to protect yourself from phishing scams:
 <a href="https://consumer.ftc.gov/articles/how-recognize-and-avoid-phishing-scams">https://consumer.ftc.gov/articles/how-recognize-and-avoid-phishing-scams</a></td>
 		</tr>
 		<tr>
@@ -5117,13 +5163,13 @@ Upgrade to a Pro or Enterprise plan at: <a href="https://dashboard.ngrok.com/bil
 			<td>
 				<a id="ERR_NGROK_6509" href="/docs/errors/err_ngrok_6509">ERR_NGROK_6509</a>
 			</td>
-			<td class="pre-wrapped">Tunnel group label key length is limited to <code>&lt;MAX&gt;</code>; key <code>&lt;NAME&gt;</code> has <code>&lt;VAL&gt;</code> characters.</td>
+			<td class="pre-wrapped">Tunnel group label key length is limited to between <code>&lt;MIN&gt;</code> and <code>&lt;MAX&gt;</code>; key <code>&lt;NAME&gt;</code> has <code>&lt;VAL&gt;</code> characters.</td>
 		</tr>
 		<tr>
 			<td>
 				<a id="ERR_NGROK_6510" href="/docs/errors/err_ngrok_6510">ERR_NGROK_6510</a>
 			</td>
-			<td class="pre-wrapped">Tunnel group label value length is limited to <code>&lt;MAX&gt;</code>; value <code>&lt;NAME&gt;</code> has <code>&lt;VAL&gt;</code> characters.</td>
+			<td class="pre-wrapped">Tunnel group label value length is limited to between <code>&lt;MIN&gt;</code> and <code>&lt;MAX&gt;</code>; value <code>&lt;NAME&gt;</code> has <code>&lt;VAL&gt;</code> characters.</td>
 		</tr>
 		<tr>
 			<td>
@@ -5174,13 +5220,13 @@ The status code <code>&lt;STATUS&gt;</code> is an invalid HTTP Status Code.</td>
 			<td>
 				<a id="ERR_NGROK_6522" href="/docs/errors/err_ngrok_6522">ERR_NGROK_6522</a>
 			</td>
-			<td class="pre-wrapped">The header beginning with <code>&lt;PREFIX&gt;</code>...' exceeds the maximum header name length of 128 bytes.</td>
+			<td class="pre-wrapped">The header beginning with <code>&lt;PREFIX&gt;</code>...' exceeds the maximum header name length of <code>&lt;BYTES&gt;</code> bytes.</td>
 		</tr>
 		<tr>
 			<td>
 				<a id="ERR_NGROK_6523" href="/docs/errors/err_ngrok_6523">ERR_NGROK_6523</a>
 			</td>
-			<td class="pre-wrapped">The header value for <code>&lt;HEADERKEY&gt;</code> beginning with <code>&lt;PREFIX&gt;</code>...' exceeds the maximum header value length of 1024 bytes.</td>
+			<td class="pre-wrapped">The header value for <code>&lt;HEADERKEY&gt;</code> beginning with <code>&lt;PREFIX&gt;</code>...' exceeds the maximum header value length of <code>&lt;BYTES&gt;</code> bytes.</td>
 		</tr>
 		<tr>
 			<td>
@@ -5224,6 +5270,12 @@ Upgrade to an Enterprise plan at: <a href="https://dashboard.ngrok.com/billing/s
 				<a id="ERR_NGROK_6530" href="/docs/errors/err_ngrok_6530">ERR_NGROK_6530</a>
 			</td>
 			<td class="pre-wrapped">The <code>&lt;ID&gt;</code> header cannot be removed without specifying a replacement.</td>
+		</tr>
+		<tr>
+			<td>
+				<a id="ERR_NGROK_6531" href="/docs/errors/err_ngrok_6531">ERR_NGROK_6531</a>
+			</td>
+			<td class="pre-wrapped">The tunnel group label key/value <code>&lt;ID&gt;</code> may not contain '=' characters.</td>
 		</tr>
 		<tr>
 			<td>
@@ -5411,7 +5463,19 @@ Contact us for access to the Agent Ingresses feature.</td>
 			<td>
 				<a id="ERR_NGROK_6709" href="/docs/errors/err_ngrok_6709">ERR_NGROK_6709</a>
 			</td>
-			<td class="pre-wrapped">Some of the ips "<code>&lt;IPS&gt;</code>" are already used in different agent ingress.</td>
+			<td class="pre-wrapped">Some of the dedicated IPs "<code>&lt;IPS&gt;</code>" are already used in a different agent ingress.</td>
+		</tr>
+		<tr>
+			<td>
+				<a id="ERR_NGROK_6710" href="/docs/errors/err_ngrok_6710">ERR_NGROK_6710</a>
+			</td>
+			<td class="pre-wrapped">Dedicated IP "<code>&lt;IP&gt;</code>" is not a valid IP.</td>
+		</tr>
+		<tr>
+			<td>
+				<a id="ERR_NGROK_6711" href="/docs/errors/err_ngrok_6711">ERR_NGROK_6711</a>
+			</td>
+			<td class="pre-wrapped">Dedicated IP "<code>&lt;IP&gt;</code>" is duplicated in the set of IPs.</td>
 		</tr>
 		<tr>
 			<td>
@@ -5992,13 +6056,13 @@ Upgrade to an Enterprise plan at: <a href="https://dashboard.ngrok.com/billing/s
 			<td>
 				<a id="ERR_NGROK_7105" href="/docs/errors/err_ngrok_7105">ERR_NGROK_7105</a>
 			</td>
-			<td class="pre-wrapped">The header beginning with <code>&lt;PREFIX&gt;</code>...' exceeds the maximum header name length of 128 bytes.</td>
+			<td class="pre-wrapped">The header beginning with <code>&lt;PREFIX&gt;</code>...' exceeds the maximum header name length of <code>&lt;BYTES&gt;</code> bytes.</td>
 		</tr>
 		<tr>
 			<td>
 				<a id="ERR_NGROK_7106" href="/docs/errors/err_ngrok_7106">ERR_NGROK_7106</a>
 			</td>
-			<td class="pre-wrapped">The header value for <code>&lt;HEADERKEY&gt;</code> beginning with <code>&lt;PREFIX&gt;</code>...' exceeds the maximum header value length of 1024 bytes.</td>
+			<td class="pre-wrapped">The header value for <code>&lt;HEADERKEY&gt;</code> beginning with <code>&lt;PREFIX&gt;</code>...' exceeds the maximum header value length of <code>&lt;BYTES&gt;</code> bytes.</td>
 		</tr>
 		<tr>
 			<td>
@@ -6349,6 +6413,170 @@ Upgrade to a Pro or Enterprise plan at: <a href="https://dashboard.ngrok.com/bil
 				<a id="ERR_NGROK_7166" href="/docs/errors/err_ngrok_7166">ERR_NGROK_7166</a>
 			</td>
 			<td class="pre-wrapped">The "<code>&lt;PROVIDER&gt;</code>" OAuth Provider does not currently have a managed app available, specify a client id and client secret.</td>
+		</tr>
+		<tr>
+			<td>
+				<a id="ERR_NGROK_7167" href="/docs/errors/err_ngrok_7167">ERR_NGROK_7167</a>
+			</td>
+			<td class="pre-wrapped">Your account is not authorized to use user agent filter. 
+Upgrade to a Pro or Enterprise plan at: <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a></td>
+		</tr>
+		<tr>
+			<td>
+				<a id="ERR_NGROK_7168" href="/docs/errors/err_ngrok_7168">ERR_NGROK_7168</a>
+			</td>
+			<td class="pre-wrapped">Your account is not authorized to use JWT Validation. 
+Upgrade to a Pay-as-you-go or Enterprise plan at: <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a></td>
+		</tr>
+		<tr>
+			<td>
+				<a id="ERR_NGROK_7169" href="/docs/errors/err_ngrok_7169">ERR_NGROK_7169</a>
+			</td>
+			<td class="pre-wrapped">The <code>&lt;TYPE&gt;</code> token type is invalid. Valid values are 'jwt', 'at+jwt', and 'it+jwt'.</td>
+		</tr>
+		<tr>
+			<td>
+				<a id="ERR_NGROK_7170" href="/docs/errors/err_ngrok_7170">ERR_NGROK_7170</a>
+			</td>
+			<td class="pre-wrapped">The <code>&lt;METHOD&gt;</code> token method is invalid. Valid values are 'header' and 'body'.</td>
+		</tr>
+		<tr>
+			<td>
+				<a id="ERR_NGROK_7171" href="/docs/errors/err_ngrok_7171">ERR_NGROK_7171</a>
+			</td>
+			<td class="pre-wrapped">The JWT Validation configuration is invalid: <code>&lt;DETAIL&gt;</code>.</td>
+		</tr>
+		<tr>
+			<td>
+				<a id="ERR_NGROK_7172" href="/docs/errors/err_ngrok_7172">ERR_NGROK_7172</a>
+			</td>
+			<td class="pre-wrapped">The JWT Validation configuration must have at least one issuer in the allow list.</td>
+		</tr>
+		<tr>
+			<td>
+				<a id="ERR_NGROK_7173" href="/docs/errors/err_ngrok_7173">ERR_NGROK_7173</a>
+			</td>
+			<td class="pre-wrapped">The JWT Validation issuer is invalid: <code>&lt;ISSUER&gt;</code> is not a valid URL.</td>
+		</tr>
+		<tr>
+			<td>
+				<a id="ERR_NGROK_7174" href="/docs/errors/err_ngrok_7174">ERR_NGROK_7174</a>
+			</td>
+			<td class="pre-wrapped">The JWT Validation configuration must have at least one audience in the allow list.</td>
+		</tr>
+		<tr>
+			<td>
+				<a id="ERR_NGROK_7175" href="/docs/errors/err_ngrok_7175">ERR_NGROK_7175</a>
+			</td>
+			<td class="pre-wrapped">The JWT Validation audience is invalid: <code>&lt;MSG&gt;</code>.</td>
+		</tr>
+		<tr>
+			<td>
+				<a id="ERR_NGROK_7176" href="/docs/errors/err_ngrok_7176">ERR_NGROK_7176</a>
+			</td>
+			<td class="pre-wrapped">The JWT Validation configuration must have at least one allowed algorithm.</td>
+		</tr>
+		<tr>
+			<td>
+				<a id="ERR_NGROK_7177" href="/docs/errors/err_ngrok_7177">ERR_NGROK_7177</a>
+			</td>
+			<td class="pre-wrapped">The <code>&lt;TYPE&gt;</code> algorithm is invalid. Please consult the documentation for valid algorithms.</td>
+		</tr>
+		<tr>
+			<td>
+				<a id="ERR_NGROK_7178" href="/docs/errors/err_ngrok_7178">ERR_NGROK_7178</a>
+			</td>
+			<td class="pre-wrapped">The JWT Validation configuration must have at least one token configuration.</td>
+		</tr>
+		<tr>
+			<td>
+				<a id="ERR_NGROK_7179" href="/docs/errors/err_ngrok_7179">ERR_NGROK_7179</a>
+			</td>
+			<td class="pre-wrapped">The JWT Validation http token is invalid: <code>&lt;MSG&gt;</code>.</td>
+		</tr>
+		<tr>
+			<td>
+				<a id="ERR_NGROK_7180" href="/docs/errors/err_ngrok_7180">ERR_NGROK_7180</a>
+			</td>
+			<td class="pre-wrapped">The JWT Validation http token name <code>&lt;NAME&gt;</code> is invalid.</td>
+		</tr>
+		<tr>
+			<td>
+				<a id="ERR_NGROK_7181" href="/docs/errors/err_ngrok_7181">ERR_NGROK_7181</a>
+			</td>
+			<td class="pre-wrapped">The JWT Validation http token prefix <code>&lt;PREFIX&gt;</code> is invalid.</td>
+		</tr>
+		<tr>
+			<td>
+				<a id="ERR_NGROK_7182" href="/docs/errors/err_ngrok_7182">ERR_NGROK_7182</a>
+			</td>
+			<td class="pre-wrapped">The JWT Validation sigining key must have a way to be identified such as the 'kid' token claim.</td>
+		</tr>
+		<tr>
+			<td>
+				<a id="ERR_NGROK_7183" href="/docs/errors/err_ngrok_7183">ERR_NGROK_7183</a>
+			</td>
+			<td class="pre-wrapped">The JWT Validation sigining key must have a valid identification mechanism such as the 'kid' token claim.</td>
+		</tr>
+		<tr>
+			<td>
+				<a id="ERR_NGROK_7184" href="/docs/errors/err_ngrok_7184">ERR_NGROK_7184</a>
+			</td>
+			<td class="pre-wrapped">The JWT Validation sigining key must have at least one source.</td>
+		</tr>
+		<tr>
+			<td>
+				<a id="ERR_NGROK_7185" href="/docs/errors/err_ngrok_7185">ERR_NGROK_7185</a>
+			</td>
+			<td class="pre-wrapped">The JWT Validation sigining key source has an invalid additional jku: <code>&lt;JKU&gt;</code> is not a valid URL.</td>
+		</tr>
+		<tr>
+			<td>
+				<a id="ERR_NGROK_7186" href="/docs/errors/err_ngrok_7186">ERR_NGROK_7186</a>
+			</td>
+			<td class="pre-wrapped">The JWT Validation sigining key source has an invalid additional jku: <code>&lt;JKU&gt;</code> did not serve a JWKS.</td>
+		</tr>
+		<tr>
+			<td>
+				<a id="ERR_NGROK_7187" href="/docs/errors/err_ngrok_7187">ERR_NGROK_7187</a>
+			</td>
+			<td class="pre-wrapped">The JWT Validation issuer <code>&lt;ISSUER&gt;</code> must be unique. Make sure to include it only once in the allow list.</td>
+		</tr>
+		<tr>
+			<td>
+				<a id="ERR_NGROK_7188" href="/docs/errors/err_ngrok_7188">ERR_NGROK_7188</a>
+			</td>
+			<td class="pre-wrapped">The JWT Validation audience <code>&lt;AUDIENCE&gt;</code> must be unique. Make sure to include it only once in the allow list.</td>
+		</tr>
+		<tr>
+			<td>
+				<a id="ERR_NGROK_7189" href="/docs/errors/err_ngrok_7189">ERR_NGROK_7189</a>
+			</td>
+			<td class="pre-wrapped">The JWT Validation http token identified by the method: <code>&lt;METHOD&gt;</code> and name: <code>&lt;NAME&gt;</code> must be unique. Make sure to include it only once in the token list.</td>
+		</tr>
+		<tr>
+			<td>
+				<a id="ERR_NGROK_7190" href="/docs/errors/err_ngrok_7190">ERR_NGROK_7190</a>
+			</td>
+			<td class="pre-wrapped">The JWT Validation signing key algorithm <code>&lt;ALGORITHM&gt;</code> must be unique. Make sure to include it only once in the allowed algorithms list.</td>
+		</tr>
+		<tr>
+			<td>
+				<a id="ERR_NGROK_7191" href="/docs/errors/err_ngrok_7191">ERR_NGROK_7191</a>
+			</td>
+			<td class="pre-wrapped">The JWT Validation signing key identification token claim <code>&lt;CLAIM&gt;</code> must be unique. Make sure to include it only once in the token claim list.</td>
+		</tr>
+		<tr>
+			<td>
+				<a id="ERR_NGROK_7192" href="/docs/errors/err_ngrok_7192">ERR_NGROK_7192</a>
+			</td>
+			<td class="pre-wrapped">The JWT Validation signing key source additional jku <code>&lt;JKU&gt;</code> must be unique. Make sure to include it only once in the additional jku list.</td>
+		</tr>
+		<tr>
+			<td>
+				<a id="ERR_NGROK_7193" href="/docs/errors/err_ngrok_7193">ERR_NGROK_7193</a>
+			</td>
+			<td class="pre-wrapped">The JWT Validation signing key sources have too many possible sources. You can supply at most 100.</td>
 		</tr>
 		<tr>
 			<td>
@@ -6893,6 +7121,12 @@ Please upgrade to a Pro or Enterprise plan at: <a href="https://dashboard.ngrok.
 				<a id="ERR_NGROK_10083" href="/docs/errors/err_ngrok_10083">ERR_NGROK_10083</a>
 			</td>
 			<td class="pre-wrapped">You already have a valid MFA configuration of this type enabled.</td>
+		</tr>
+		<tr>
+			<td>
+				<a id="ERR_NGROK_10084" href="/docs/errors/err_ngrok_10084">ERR_NGROK_10084</a>
+			</td>
+			<td class="pre-wrapped">You cannot delete the SSO Identity Provider you used to logged when SSO Enforcement is enabled on your account.</td>
 		</tr>
 		<tr>
 			<td>

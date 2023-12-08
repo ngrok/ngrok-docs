@@ -4,21 +4,21 @@
 
 ```json
 {
-	"id": "rd_2XH3pmjhqgS14aXEX95DmtgmvIf",
-	"uri": "https://api.ngrok.com/reserved_domains/rd_2XH3pmjhqgS14aXEX95DmtgmvIf",
-	"created_at": "2023-10-25T22:19:22Z",
+	"id": "rd_2ZGotV06Dz84SUmVhymK8c5wAHx",
+	"uri": "https://api.ngrok.com/reserved_domains/rd_2ZGotV06Dz84SUmVhymK8c5wAHx",
+	"created_at": "2023-12-08T17:53:11Z",
 	"description": "point-of-sale new york #302",
 	"metadata": "{env: \"staging\", \"connector_id\":\"64698fcc-5f5c-4b63-910e-8669d04bd943\"}",
 	"domain": "myapp.mydomain.com",
 	"region": "",
-	"cname_target": "2udamkamcl8pjmrff.3vqvon9ntpngqygbv.local-ngrok-cname.com",
+	"cname_target": "2udamkamcl8pjmrff.2ohqtgddyku5fqgcv.local-ngrok-cname.com",
 	"http_endpoint_configuration": {
-		"id": "ec_2XH3ppTpuhPJTbRfywYD4cUzf9C",
-		"uri": "https://api.ngrok.com/endpoint_configurations/ec_2XH3ppTpuhPJTbRfywYD4cUzf9C"
+		"id": "ec_2ZGotWqj3ema76r9PN3QOQRMfW1",
+		"uri": "https://api.ngrok.com/endpoint_configurations/ec_2ZGotWqj3ema76r9PN3QOQRMfW1"
 	},
 	"https_endpoint_configuration": {
-		"id": "ec_2XH3pvLsNVVb68GZTATa22birov",
-		"uri": "https://api.ngrok.com/endpoint_configurations/ec_2XH3pvLsNVVb68GZTATa22birov"
+		"id": "ec_2ZGotZk1pcuRGxRaaoDKGiPqNfR",
+		"uri": "https://api.ngrok.com/endpoint_configurations/ec_2ZGotZk1pcuRGxRaaoDKGiPqNfR"
 	},
 	"certificate": null,
 	"certificate_management_policy": {

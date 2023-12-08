@@ -4,12 +4,12 @@
 
 ```json
 {
-	"edge_id": "edghts_2XH3sc6A8kn2n1KlfjA6BOWnjJE",
-	"id": "edghtsrt_2XH3shJRyeSOLpo6IScfmu95KCQ",
-	"created_at": "2023-10-25T22:19:45Z",
+	"edge_id": "edghts_2ZGowM07HqhUHsrMc1qIgNFbbHG",
+	"id": "edghtsrt_2ZGowQs94dubXfftgLxCxhqWXBC",
+	"created_at": "2023-12-08T17:53:34Z",
 	"match_type": "path_prefix",
 	"match": "/",
-	"uri": "https://api.ngrok.com/edges/https/edghts_2XH3sc6A8kn2n1KlfjA6BOWnjJE/routes/edghtsrt_2XH3shJRyeSOLpo6IScfmu95KCQ",
+	"uri": "https://api.ngrok.com/edges/https/edghts_2ZGowM07HqhUHsrMc1qIgNFbbHG/routes/edghtsrt_2ZGowQs94dubXfftgLxCxhqWXBC",
 	"metadata": "{\"environment\": \"production\"}",
 	"backend": null,
 	"ip_restriction": null,
@@ -21,6 +21,8 @@
 	"oauth": null,
 	"saml": null,
 	"oidc": null,
-	"websocket_tcp_converter": null
+	"websocket_tcp_converter": null,
+	"user_agent_filter": null,
+	"jwt_validation": null
 }
 ```
