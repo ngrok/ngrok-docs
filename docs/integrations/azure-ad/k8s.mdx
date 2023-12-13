@@ -2,20 +2,22 @@
 description: TK
 ---
 
-# Ingress to applications managed by Azure AD (Microsoft Entra ID) in Kubernetes
+# Ingress to apps secured by Azure AD (Microsoft Entra ID) in Kubernetes
 
 :::tip TL;DR
 
-To use the ngrok Ingress Controller for Kubernetes with Azure AD:
+To use the ngrok Kubernetes Ingress Controller with Azure AD (Microsoft Entra ID):
 
 1. [Create a cluster and deploy an example app](#create-cluster-deploy-example-app)
 2. [Add the ngrok Kubernetes ingress controller](#add-the-ngrok-kubernetes-ingress-controller)
-3. [Create an enterprise app in Microsoft Entra ID](#create-an-enterprise-app)
-4. ***TK***
+3. [Update your ngrok Edge to enable SAML](#update-your-ngrok-edge-to-enable-SAML)
+4. [Create an enterprise app in Microsoft Entra ID](#create-an-enterprise-app)
+5. [Finish adding Microsoft Entra ID authorization to your ngrok Edge](#finish-adding-entra-ID-authorization-ngrok-edge)
+6. ***TK***
 
 :::
 
-The [ngrok Ingress Controller for Kubernetes](https://ngrok.com/blog-post/ngrok-k8s) is the official controller for adding secure public ingress and middleware execution to your Kubernetes applications with ngrok's Cloud Edge. With ngrok, you can manage and secure traffic to your applications at every stage of the development lifecycle while also benefitting from simpler configurations, security, and edge acceleration.
+The [ngrok Kubernetes Ingress Controller](https://ngrok.com/blog-post/ngrok-k8s) is ngrok's official controller for adding secure public ingress and middleware execution to your Kubernetes apps with ngrok's Cloud Edge. With ngrok, you can manage and secure traffic to your apps at every stage of the development lifecycle while also benefitting from simpler configurations, security, and edge acceleration.
 
 Microsoft Azure Active Directory (AD)—now known as [Micosoft Entra ID](https://www.microsoft.com/en-us/security/business/identity-access/microsoft-entra-id) (see the tip below)—is an identity and access management platform that helps administrators and DevOps engineers safeguard their organization's multicloud environment with strong authentication and unified identity management, whether they operate in Azure cloud or on-premises.
 
@@ -25,23 +27,23 @@ In October 2023, Microsoft Azure Active Directory (AD) was [renamed Microsoft En
 
 :::
 
-***TK NOTE ON HOW THEY INTEGRATE***
+The ngrok Kubernetes Ingress Controller and Entra ID integrate by letting you not only route public traffic to an app deployed on a Kubernetes cluster, but also restrict access only to users who are authorized by Entra ID.
 
-With this guide, you'll ***TK RESULT***
+With this guide, you'll (optionally) create a new Kubernetes cluster and example deployment and install the ngrok Kubernetes Ingress Controller to securely route traffic through the ngrok Cloud Edge. You'll then use the ngrok dashboard to enable Security Assertion Markup Language (SAML), using Entra ID as your identity provider, to authorize specific users with a single sign-on experience.
 
 :::caution This tutorial requires:
 
-1. An [ngrok account](https://ngrok.com/signup).
+1. An [ngrok account](https://ngrok.com/signup) at the **pay-as-you-go** or **custom** tiers.
 2. A Microsoft Azure account with access to an existing Entra ID tenant, or the ability to create a new tenant with an Entra ID P1 or P2 license.
-3. A Kubernetes cluster either locally in a public cloud.
+3. A Kubernetes cluster, either locally in a public cloud, with an app you'd like to be publicly accessible to specific users.
 
 :::
 
 ## **Step 1**: Create a cluster and deploy an example app {#create-cluster-deploy-example-app}
 
-This guide requires a deploy some application on Kubernetes cluster, either locally in a public cloud, to provide an endpoint for ngrok's secure tunnel. You can use any cluster and any application, but for the sake of demonstration, we'll create a local Kubernetes cluster with minikube and deploy the [Online Boutique](https://github.com/GoogleCloudPlatform/microservices-demo) example app.
+This guide requires you deploy *some* app on *any* Kubernetes cluster, either locally in a public cloud, to provide an endpoint for ngrok's secure tunnel. You can use any cluster and any app, but for the sake of demonstration, we'll create a local Kubernetes cluster with minikube and deploy the [Online Boutique](https://github.com/GoogleCloudPlatform/microservices-demo) example.
 
-If you already have a cluster and application, you can skip ahead to [Step 2: Add the ngrok Kubernetes ingress controller](#add-the-ngrok-kubernetes-ingress-controller).
+If you already have a cluster and app, you can skip ahead to [Step 2: Add the ngrok Kubernetes ingress controller](#add-the-ngrok-kubernetes-ingress-controller).
 
 1. Download the `GoogleCloudPlatform/microservices-demo` project to your local workstation and navigate into the new directory.
 
@@ -53,7 +55,7 @@ If you already have a cluster and application, you can skip ahead to [Step 2: Ad
 1. Create a new minikube cluster.
 
   ```bash
-  minikube start -p boutique-shop
+  minikube start -p online-boutique
   ```
 
 1. Apply the manifests for the Online Boutique.
@@ -90,6 +92,8 @@ Controller](https://github.com/ngrok/kubernetes-ingress-controller) to
 
   ```bash
   helm install ngrok-ingress-controller ngrok/kubernetes-ingress-controller \
+    --namespace ngrok-ingress-controller \
+    --create-namespace \
     --set credentials.apiKey=$NGROK_API_KEY \
     --set credentials.authtoken=$NGROK_AUTHTOKEN
   ```
@@ -152,33 +156,94 @@ Controller](https://github.com/ngrok/kubernetes-ingress-controller) to
 
   ![Viewing the Online Boutique with ingress from ngrok](img/k8s_view-boutique.png)
 
-## **Step 3**: 
+## **Step 3**: Update your ngrok Edge to enable SAML {#update-your-ngrok-edge-to-enable-SAML}
 
-***TK SETTING UP YOUR EDGE***
+Your Kubernetes-based app is now publicly accessible through the ngrok Cloud Edge—to restrict access to only authorized users with proper Entra ID credentials, you first need to enable SAML on your Edge.
+
+1. Navigate to the [**Edges** section](https://dashboard.ngrok.com/cloud-edge/edges) of the ngrok dashboard and click on the Edge created by the ngrok Kubernetes Ingress Controller. The domain name should match your `NGROK_DOMAIN`, and you should see **Created by kubernetes-ingress-controller** in the edge's description.
+
+  ![Finding your edge in the ngrok dashboard](img/k8s_edge-dashboard.png)
+
+1. From the Overview, click **Add SAML**, then **Begin setup**.
+
+1. In the **IdP Metadata** textbox, add the following:
+
+  ```xml
+  <EntityDescriptor xmlns="urn:oasis:names:tc:SAML:2.0:metadata"></EntityDescriptor>
+  ```
+
+1. Click **Save**, at which point ngrok will update your SAML configuration with **SP Metadata**, **Entity ID**, and **ACS URL** values—you'll need these in the next step.
+
+  ![An ngrok Edge with SAML enabled](img/k8s_saml-enabled.png)
 
 ## **Step 4**: Create an enterprise app in Microsoft Entra ID {#create-an-enterprise-app}
 
-With your ngrok Edge established and ready for SAML, you can now configure Microsoft Entra ID to operate as your authentication provider.
+With SAML configured on your ngrok Edge, you can now configure Microsoft Entra ID to operate as your identity provider, often referred to as **IdP**.
 
 1. Access your [Entra ID tenant](https://portal.azure.com/#view/Microsoft_AAD_IAM/ActiveDirectoryMenuBlade/~/Overview) in the Azure console.
 
-2. Click **Enterprise applications** in the left-hand sidebar, then **+ New application**, and finally **+ Create your own application**. Give your app a name—in this case, `boutique` will work nicely, and make sure you've selected the **Integrate any other application you don't find in the gallery (Non-gallery)** option.
+1. Click **Enterprise applications** in the left-hand sidebar, then **+ New application**, and finally **+ Create your own application**. Give your app a name—for our example, `online-boutique` will work nicely, and make sure you've selected the **Integrate any other application you don't find in the gallery (Non-gallery)** option.
 
   ![Create an application on Amazon Entra ID](img/k8s_create-app.png)
 
-3. Click **Create** to build your enterprise app, which will take you to its Overview dashboard.
+1. Click **Create** to build your enterprise app, which will take you to its Overview dashboard.
 
-4. To provide specific users or groups access to your app, click **Assign users and groups** and follow the steps.
+1. To provide specific users or groups access to your app, click **Assign users and groups** and follow the steps before heading back to the **Overview**.
 
-5. Click **Set up single sign on** to allow users to sign in to your app using their Microsoft Entra credentials, then choose **SAML** as your single sign-on protocol.
+1. Click **Set up single sign on** to allow users to sign in to your app using their Microsoft Entra credentials, then choose **SAML** as your single sign-on protocol.
 
   ![Choose SAML as your app's single sign-on protocol](img/k8s_choose-saml.png)
 
+1. Click **Edit** in the **Basic SAML Configuration** box. Copy the **Entity ID** from ngrok into the **Identifier (Entity ID)** field, and the **ACS URL** from ngrok into the **Reply URL (Assertion Consumer Service URL)** field. Click **Save** before you close the modal.
 
+  ![Configuring SAML in Microsoft Entra ID](img/k8s_configure-saml.png)
+
+1. In the **SAML Certificates** box, download the **Federation Metadata XML**.
+
+## **Step 5**: Finish adding Entra ID authorization to your ngrok Edge {#finish-adding-entra-ID-authorization-ngrok-edge}
+
+Time to head back to your ngrok dashboard to finish the SAML configuration.
+
+1. Update the **IdP Metadata** field by clicking **Upload XML** and choosing the `.xml` file you just downloaded.
+
+  ![Updating the existing SAML configuration](img/k8s_update-saml-xml.png)
+
+1. Click **Save**.
+
+## **Step 6**: Test authorization to your app using Microsoft Entra ID
+
+You've finished the integration between the ngrok Kubernetes Ingress Controller and Microsoft Entra ID! Your app, whether the Online Boutique used throughout this guide or a custom deployment, is now publicly accessible only to those authorized with their Entra ID credentials. Time to test how it works:
+
+1. Open an incognito/private window in your browser, or a different browser than you've used so far, and navigate once again to your `NGROK_DOMAIN`. You should see a single sign-on screen from Microsoft.
+
+  ![The single sign-on screen from Microsoft](img/k8s_sso-enabled.png)
+
+2. Enter credentials for a Microsoft account you assigned, either as an individual user or a group, to your enterprise application in Entra ID during [step 4](#create-an-enterprise-app). Behind the scenes, Entra ID and ngrok are 
+
+Entra ID will then redirect back to your app with full authorization!
 
 ## What's next?
 
-***TK***
+You've now integrated the ngrok Kubernetes Ingress Controller with Microsoft Entra ID to restrict access to your app to only authenticated users. With ngrok operating as middleware, handling both ingress to your Kubernetes cluster and the handshake with and Entra ID as an identity provider, you can deploy and secure new apps in a multi-cloud environment using your existing Microsoft/Azure identity and access management settings.
+
+From here, you have a few options:
+
+### Clean up
+
+If you created a local cluster with Minikube to launch the Online Boutique demo app, you can delete the cluster entirely:
+
+```bash
+minikube delete -p online-boutique
+```
+
+ngrok will delete your Edge automatically. You'll then need to navigate back to [Microsoft Entra ID](https://portal.azure.com/#view/Microsoft_AAD_IAM/ActiveDirectoryMenuBlade/~/Overview) to delete your enterprise application and any user/group settings you'd like to revert.
+
+### Extend your ngrok Kubernetes Ingress Controller and Microsoft Entra ID integration
+
+ngrok can manage multiple routes on a single Edge, which would allow you to configure [name-based virtual hosting](https://github.com/ngrok/kubernetes-ingress-controller/blob/main/docs/user-guide/ingress-to-edge-relationship.md#name-based-virtual-hosting) or [route
+modules](https://github.com/ngrok/kubernetes-ingress-controller/blob/main/docs/user-guide/route-modules.md) to secure multiple apps with a single sign-on experience.
+
+[Custom domains](https://github.com/ngrok/kubernetes-ingress-controller/blob/main/docs/user-guide/custom-domain.md) and a [circuit breaker](/docs/http/circuit-breaker/) are also great next steps to make your integration production-ready.
 
 Learn more about the ngrok Ingress Controller, or contribute, by checking out the [GitHub
 repository](https://github.com/ngrok/kubernetes-ingress-controller) and the [project-specific
