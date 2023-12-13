@@ -49,9 +49,11 @@ Features included for free on all plans
 - Email Support
 
 ## I hit a limit on my plan. What are my options?
-ngrok's [free plans](https://ngrok.com/docs/guides/licensing/#what-do-i-get-for-free-on-ngrok) are generous, but some users on Free and Personal plans will find that they run into limits. 
+
+ngrok's [free plans](https://ngrok.com/docs/guides/licensing/#what-do-i-get-for-free-on-ngrok) are generous, but some users on Free and Personal plans will find that they run into limits.
 
 If you run into a limit, you have two options:
+
 - You can wait for your cycle to refresh (limits refresh every 30 days per account)
 - Upgrade to a plan with higher limits. If you're using ngrok for testing webhooks, the Pro plan is probably the best fit. If you're using ngrok for production, try the Pay-as-you-go plan.
 
