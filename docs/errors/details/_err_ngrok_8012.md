@@ -1,7 +1,6 @@
-### Troubleshooting
-
-```tsx
 import ReactPlayer from "react-player/lazy";
+
+### Troubleshooting
 
 <div className="player-wrapper">
 	<ReactPlayer
@@ -10,5 +9,4 @@ import ReactPlayer from "react-player/lazy";
 		width="100%"
 		height="100%"
 	/>
-</div>;
-```
+</div>

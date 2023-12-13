@@ -1,0 +1,106 @@
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+# JWT Validation
+
+## Overview
+
+The JWT Validation module allows or denies traffic based on validation of the JSON Web Token (JWT) provided within the request that
+was initiated to your ngrok endpoints. You will define the claims used to validate the token in conjunction with verifying it has been properly signed by the issuer.
+
+A connection is allowed only if it has been signed by the issuer and the defined claims match.
+
+:::note Coming Soon
+
+This documentation is incomplete. Please check back later, we appreciate your
+patience.
+
+**You can consult the [JWT Validation API documentation](https://ngrok.com/docs/api/resources/edge-route-jwt-validation-module/) in the interim.**
+:::
+
+<Tabs groupId="connectivity" queryString="cty">
+	<TabItem value="agent-cli" label="Agent CLI" default>
+		Currently Unavailable
+	</TabItem>
+	<TabItem value="agent-config" label="Agent Config">
+		Currently Unavailable
+	</TabItem>
+	<TabItem value="ssh" label="SSH">
+		Currently Unavailable
+	</TabItem>
+	<TabItem value="go-sdk" label="Go">
+		Currently Unavailable
+	</TabItem>
+	<TabItem value="javascript-sdk" label="Javascript">
+		Currently Unavailable
+	</TabItem>
+	<TabItem value="python-sdk" label="Python">
+		Currently Unavailable
+	</TabItem>
+	<TabItem value="rust-sdk" label="Rust">
+		Currently Unavailable
+	</TabItem>
+	<TabItem value="k8s" label="Kubernetes Controller">
+		Currently Unavailable
+	</TabItem>
+</Tabs>
+
+## Behavior
+
+### Multiple Issuers
+
+You may specify multiple Issuers to be used for JWT validation. A request
+is considered validated if it presents a JWT signed by any of the
+specified issuers.
+
+### Multiple Audience Claims
+
+You may specify multiple audience claims to be used for JWT validation. JWT validation will require one of the audience claims to be present within the JWT.
+
+### Multiple JWS
+
+You have the ability to provide multiple JWKS urls and signing algorithms. During JWT validation the list of JWKS and algorithms provided will be used in an attempt to validate the JWT.
+
+### Multiple Tokens
+
+If multiple tokens are defined within the HTTP configuration parameter, all tokens must be present in the request. If all tokens are not present a 401 status code will be returned.
+
+## Reference
+
+### Configuration
+
+| Parameter    | Description                                                                                                   |
+| ------------ | ------------------------------------------------------------------------------------------------------------- |
+| **issuer**   | A list of allowed issuers.                                                                                    |
+| **audience** | A list of allowed aud claims.                                                                                 |
+| **http**     | Configurations for handling JWTs within a requests. Options include JWT type and location within the request. |
+| **jws**      | Configurations defining how the JWTs were signed. Options include signing algorithms and url for the JWKS.    |
+
+### Upstream Headers {#upstream-headers}
+
+This module does not add any upstream headers.
+
+### Errors
+
+| Code                                      | HTTP Status | Error                                                                |
+| ----------------------------------------- | ----------- | -------------------------------------------------------------------- |
+| [ERR_NGROK_3401](/errors/err_ngrok_3401/) | `401`       | This error is returned if the request is unauthorized.               |
+| [ERR_NGROK_3403](/errors/err_ngrok_3403/) | `403`       | This error is returned if the JWT cannot be validated by the issuer. |
+
+### Events
+
+This module does not populate any fields in events.
+
+### Edges
+
+JWT Validation is an HTTPS Edge module which can be applied to Routes.
+
+When using JWT Validation via Edges, you specify an issuer, audience, token location, algorithms and JKUs.
+
+JWT Validation can be configured via the ngrok dashboard or API.
+
+- [JWT Validation API Resource](https://ngrok.com/docs/api/resources/edge-route-jwt-validation-module/)
+
+### Pricing
+
+This module is available on Enterprise and Pay-As-You-Go plans.
