@@ -4,8 +4,6 @@ title: Python
 
 # Using ngrok with Python
 
----
-
 :::tip
 This article assumes you have Python and PIP already installed.
 :::

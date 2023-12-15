@@ -6,14 +6,14 @@
 {
 	"backends": [
 		{
-			"id": "bkdwd_2TMGJ6jReY87lsxmMNRzyyB3ERN",
-			"uri": "https://api.ngrok.com/backends/weighted/bkdwd_2TMGJ6jReY87lsxmMNRzyyB3ERN",
-			"created_at": "2023-07-31T23:17:40Z",
+			"id": "bkdwd_2ZGowQWDF9zTnscnELayzwEK5ja",
+			"uri": "https://api.ngrok.com/backends/weighted/bkdwd_2ZGowQWDF9zTnscnELayzwEK5ja",
+			"created_at": "2023-12-08T17:53:34Z",
 			"description": "acme weighted",
 			"metadata": "{\"environment\": \"staging\"}",
 			"backends": {
-				"bkdhr_2TMGIzrH6VOqTmv4yYE2TCk6VnT": 0,
-				"bkdhr_2TMGJ1GczK2Z0CQe7tsXiTdSOnP": 1
+				"bkdhr_2ZGowEaj4CCcL8Qzq1FcrjvpZDU": 0,
+				"bkdhr_2ZGowGr4B6RgEOgPsx17ke0iWmo": 1
 			}
 		}
 	],

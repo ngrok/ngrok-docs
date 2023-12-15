@@ -6,8 +6,8 @@
 {
 	"ingresses": [
 		{
-			"id": "agin_2TMGJ5XTkNXxX2o9kiFMMLhTHw7",
-			"uri": "https://api.ngrok.com/agent_ingresses/agin_2TMGJ5XTkNXxX2o9kiFMMLhTHw7",
+			"id": "agin_2ZGowH3pegfESQIkazOCPfz5LiE",
+			"uri": "/agent_ingresses/agin_2ZGowH3pegfESQIkazOCPfz5LiE",
 			"description": "acme devices",
 			"domain": "connect.acme.com",
 			"ns_targets": [
@@ -17,7 +17,9 @@
 				"4.kube-dns.kube-system.svc.cluster.local."
 			],
 			"region_domains": ["tunnel.us.connect.acme.com"],
-			"created_at": "2023-07-31T23:17:40Z"
+			"created_at": "2023-12-08T17:53:33Z",
+			"certificate_management_policy": null,
+			"certificate_management_status": null
 		}
 	],
 	"uri": "https://api.ngrok.com/agent_ingresses",

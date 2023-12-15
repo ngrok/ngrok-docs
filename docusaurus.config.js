@@ -2,12 +2,24 @@
 // Note: type annotations allow type checking and IDEs autocompletion
 require("dotenv").config();
 
-const lightCodeTheme = require("prism-react-renderer/themes/github");
-const darkCodeTheme = require("prism-react-renderer/themes/dracula");
+const lightCodeTheme = require("prism-react-renderer").themes.github;
+const darkCodeTheme = require("prism-react-renderer").themes.dracula;
 
 const docsRepo = "https://github.com/ngrok/ngrok-docs";
 
 const isProduction = /production/i.test(process.env.NODE_ENV || "development");
+
+const fontHrefs = [
+	"https://cdn.ngrok.com/static/fonts/euclid-square/EuclidSquare-Regular-WebS.woff",
+	"https://cdn.ngrok.com/static/fonts/euclid-square/EuclidSquare-RegularItalic-WebS.woff",
+	"https://cdn.ngrok.com/static/fonts/euclid-square/EuclidSquare-Medium-WebS.woff",
+	"https://cdn.ngrok.com/static/fonts/euclid-square/EuclidSquare-Semibold-WebS.woff",
+	"https://cdn.ngrok.com/static/fonts/euclid-square/EuclidSquare-MediumItalic-WebS.woff",
+	"https://cdn.ngrok.com/static/fonts/ibm-plex-mono/IBMPlexMono-Text.woff",
+	"https://cdn.ngrok.com/static/fonts/ibm-plex-mono/IBMPlexMono-TextItalic.woff",
+	"https://cdn.ngrok.com/static/fonts/ibm-plex-mono/IBMPlexMono-SemiBold.woff",
+	"https://cdn.ngrok.com/static/fonts/ibm-plex-mono/IBMPlexMono-SemiBoldItalic.woff",
+];
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
@@ -37,6 +49,7 @@ const config = {
 		"./src/plugins/ngrok-parse-integrations",
 		"@stackql/docusaurus-plugin-hubspot",
 		"@docusaurus/theme-mermaid",
+		"./src/plugins/tailwindcss",
 	],
 	headTags: [
 		{
@@ -46,6 +59,16 @@ const config = {
 				content: isProduction ? "ngrok_ketch_tag" : "ngrok_ketch_tag_local",
 			},
 		},
+		...fontHrefs.map((href) => ({
+			tagName: "link",
+			attributes: {
+				rel: "preload",
+				href,
+				as: "font",
+				type: "font/woff",
+				crossorigin: "anonymous",
+			},
+		})),
 	],
 
 	scripts: [
@@ -112,23 +135,26 @@ const config = {
 					src: "img/ngrok-black.svg",
 					srcDark: "img/ngrok-white.svg",
 					href: "https://ngrok.com",
-					width: "100%",
-					height: "100%",
 				},
 				items: [
 					{
-						label: "Product",
-						to: "https://ngrok.com/product",
+						label: "Platform",
+						to: "https://ngrok.com/product/platform",
 						position: "left",
 					},
 					{
-						label: "Solutions",
-						to: "https://ngrok.com/solutions",
+						label: "Use cases",
+						to: "https://ngrok.com/use-cases",
 						position: "left",
 					},
 					{
-						label: "Customers",
-						to: "https://ngrok.com/customers",
+						label: "Blog",
+						to: "https://ngrok.com/blog",
+						position: "left",
+					},
+					{
+						label: "Resources",
+						to: "https://ngrok.com/resources",
 						position: "left",
 					},
 					{
@@ -142,19 +168,15 @@ const config = {
 						position: "left",
 					},
 					{
-						label: "Download",
+						label: "Get ngrok",
 						to: "https://ngrok.com/download",
 						position: "left",
 					},
 					{
-						type: "search",
-						position: "right",
-					},
-					{
-						label: "Login",
+						label: "Log in",
 						to: "https://dashboard.ngrok.com/login",
 						position: "right",
-						className: "dev-portal-signup dev-portal-link",
+						className: "dev-portal-login dev-portal-link",
 					},
 					{
 						label: "Sign Up",
@@ -165,9 +187,21 @@ const config = {
 				],
 			},
 			algolia: {
-				appId: "SPPRT3GDNI",
-				apiKey: "e02fb8e0c4d8c7968396981d7ecb9fa8",
-				indexName: (process.env.DEPLOY_ENV || "dev") + "_ngrok",
+				// The application ID provided by Algolia
+				appId: "8D7MHVMLBR",
+
+				// Public API key: it is safe to commit it
+				apiKey: "269bab201a436456bd9b0107bfdb7bfa",
+
+				indexName: "ngrok",
+
+				// Optional: see doc section below
+				contextualSearch: true,
+
+				// Optional: path for search page that enabled by default (`false` to disable it)
+				searchPagePath: false,
+
+				//... other Algolia params
 			},
 			hubspot: {
 				accountId: 21124867,
@@ -187,7 +221,7 @@ const config = {
 								to: "https://dashboard.ngrok.com/signup",
 							},
 							{
-								label: "Login",
+								label: "Log in",
 								to: "https://dashboard.ngrok.com/login",
 							},
 							{
@@ -297,7 +331,7 @@ const config = {
 			prism: {
 				theme: lightCodeTheme,
 				darkTheme: darkCodeTheme,
-				additionalLanguages: ["hcl", "rust"],
+				additionalLanguages: ["hcl", "rust", "http", "bash"],
 			},
 			docs: {
 				sidebar: {

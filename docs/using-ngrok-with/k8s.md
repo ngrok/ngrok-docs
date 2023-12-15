@@ -4,8 +4,6 @@ title: Kubernetes
 
 # Using ngrok with Kubernetes
 
----
-
 ## Introduction
 
 The [ngrok Ingress Controller for Kubernetes](https://github.com/ngrok/kubernetes-ingress-controller) is our official open-source controller for adding public and secure ingress traffic to your k8s services. You can think of the ngrok Ingress Controller as ngrok packaged as an idiomatic k8s controller — deployed via a simple helm chart, configurable via standard k8s Ingress object (using the `kind: Ingress` construct), and compatible with k8s best practices.
@@ -36,6 +34,7 @@ To started with the ngrok Ingress Controller for Kubernetes:
 1. Access the [ngrok Dashboard](https://dashboard.ngrok.com)
 1. Click [Your Authtoken](https://dashboard.ngrok.com/get-started/your-authtoken). Copy the Authtoken to a text editor.
 1. Click [API](https://dashboard.ngrok.com/api) and follow the instructions to create a new API key. Copy the API key to a text editor.
+1. Click [Cloud Edge > Domains](https://dashboard.ngrok.com/cloud-edge/domains) and register or claim a domain. Save this value, you will need it later. This is the URL you will use to access your service from anywhere.
 
 ## Step 2: Setup your Kubernetes cluster and install the ngrok Ingress Controller
 
@@ -70,7 +69,7 @@ To started with the ngrok Ingress Controller for Kubernetes:
      --set credentials.authtoken=$NGROK_AUTHTOKEN
    ```
 
-1. Create a manifest file (for example `ngrok-manifest.yaml`) with the following contents. You will need to replace the `NGROK_DOMAIN` on line 45 with your own custom value. This is the URL you will use to access your service from anywhere. If you're on a free account, it must be on a static subdomain which you can claim by logging into your account and following the instructions on the claim static subdomain banner. For paid accounts, you can use a custom domain or a subdomain of `ngrok.app` or `ngrok.dev` (for example, `username-loves-ingress.ngrok.app` or `k8s.example.com`).
+1. Create a manifest file (for example `ngrok-manifest.yaml`) with the following contents. You will need to replace the `NGROK_DOMAIN` on line 45 with the domain you registered in Step 1.
 
 :::tip Notes:
 

@@ -1,0 +1,33 @@
+```yaml
+kind: NgrokModuleSet
+apiVersion: ingress.k8s.ngrok.com/v1alpha1
+metadata:
+  name: ngrok-module-set
+modules:
+  circuitBreaker:
+    errorThresholdPercentage: "0.50"
+    trippedDuration: 10s
+    rollingWindow: 10s
+    numBuckets: 10
+    volumeThreshold: 10
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: example-ingress
+  annotations:
+    k8s.ngrok.com/modules: ngrok-module-set
+spec:
+  ingressClassName: ngrok
+  rules:
+    - host: your-domain.ngrok.app
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: example-service
+                port:
+                  number: 80
+```

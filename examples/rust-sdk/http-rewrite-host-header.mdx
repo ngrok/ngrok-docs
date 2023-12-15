@@ -1,0 +1,24 @@
+```rust
+use ngrok::prelude::*;
+
+async fn listen_ngrok() -> anyhow::Result<impl Tunnel> {
+    let sess = ngrok::Session::builder()
+        .authtoken_from_env()
+        .connect()
+        .await?;
+
+    let tun = sess
+        .http_endpoint()
+        .request_header("host", "localhost")
+        .listen()
+        .await?;
+
+    println!("Listening on URL: {:?}", tun.url());
+
+    Ok(tun)
+}
+```
+
+Rust Crate Docs:
+
+- [https://docs.rs/ngrok/latest/ngrok/config/struct.HttpTunnelBuilder.html#method.request_header](https://docs.rs/ngrok/latest/ngrok/config/struct.HttpTunnelBuilder.html#method.request_header)
