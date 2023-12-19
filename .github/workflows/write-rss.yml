@@ -14,6 +14,8 @@ jobs:
 
       - name: Fetch and Modify RSS Feed
         run: |
+          curl -s https://webflow.dev-ngrok.com/blog-post/rss.xml | sed 's/webflow.dev-ngrok.com/dev-ngrok.com/g' > dev-rss.xml
+          curl -s https://webflow.stage-ngrok.com/blog-post/rss.xml | sed 's/webflow.stage-ngrok.com/stage-ngrok.com/g' > stage-rss.xml
           curl -s https://webflow.ngrok.com/blog-post/rss.xml | sed 's/webflow.ngrok.com/ngrok.com/g' > rss.xml
 
       - name: Configure AWS credentials
@@ -24,10 +26,10 @@ jobs:
           aws-region: us-west-2
 
       - name: Sync to Dev S3 Bucket
-        run: aws s3 cp rss.xml s3://docs-s3.dev-ngrok.com/docs/blog-post/rss.xml --acl public-read
+        run: aws s3 cp dev-rss.xml s3://docs-s3.dev-ngrok.com/docs/blog-post/rss.xml --acl public-read
 
       - name: Sync to Stage S3 Bucket
-        run: aws s3 cp rss.xml s3://docs-s3.stage-ngrok.com/docs/blog-post/rss.xml --acl public-read
+        run: aws s3 cp stage-rss.xml s3://docs-s3.stage-ngrok.com/docs/blog-post/rss.xml --acl public-read
 
       - name: Sync to Prod S3 Bucket
         run: aws s3 cp rss.xml s3://docs-s3.ngrok.com/docs/blog-post/rss.xml --acl public-read
