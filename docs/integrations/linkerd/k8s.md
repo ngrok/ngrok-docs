@@ -18,11 +18,11 @@ To use the ngrok Ingress Controller for Kubernetes with Linkerd in a local clust
 
 :::
 
-The ngrok Ingress Controller for Kubernetes is the official controller for adding secure public ingress and middleware execution to your Kubernetes applications with ngrok's Cloud Edge. With ngrok, you can manage and secure traffic to your applications at every stage of the development lifecycle while also benefitting from simpler configurations, security, and edge acceleration.
+The ngrok Ingress Controller for Kubernetes is the official controller for adding secure public ingress and middleware execution to your Kubernetes applications with ngrok's Cloud Edge. With ngrok, you can manage and secure traffic to your applications at every stage of the development lifecycle while also benefiting from simpler configurations, security, and edge acceleration.
 
 Linkerd is an open source [service mesh](https://linkerd.io/what-is-a-service-mesh/#), which is a set of network proxies that handle communications between microservices to add in observability, security, and reliability at the platform level, rather than the application level, of your cloud native infrastructure. For example, Linkerd enables mutual TLS (mTLS) between microservices, which ensures confidentiality (encryption) and authenticity (identity validation) on both sides of the connection. After you deploy Linkerd's control plane, you can then install extensions for additional functionality, like a dashboard for debugging errors, exploring workloads, and more.
 
-When integrated, the ngrok Ingress Controller and Linkerd abstract complexity away from your entire networking stack (both both internal and external traffic), while giving you access to additional monitoring features and more resiliency.
+When integrated, the ngrok Ingress Controller and Linkerd abstract complexity away from your entire networking stack (both internal and external traffic), while giving you access to additional monitoring features and more resiliency.
 
 Using this guide, you will launch a local cluster (or use an existing local/remote cluster) to mesh a microservices-based application with Linkerd, and leverage ngrok to route public traffic through an encrypted tunnel to your cluster.
 
@@ -184,7 +184,7 @@ To demonstrate how Linkerd and the ngrok Ingress Controller integrate to add add
 
    :::tip 
    
-   Make sure you edit line `9` of the manifest below, which contains the `NGROK_DOMAIN` variable, with the ngrok subdomain you created in the previous step. It should look something like `one-two-three.ngrok-free.app`.
+   Make sure you edit line `9` of the manifest below, which contains the `NGROK_DOMAIN` variable, with the ngrok subdomain you created in the previous step. It should look something like `one-two-three.ngrok.app`.
 
    :::
 
