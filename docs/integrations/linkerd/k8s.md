@@ -62,13 +62,13 @@ Using this guide, you will launch a local cluster (or use an existing local/remo
 
    ```bash
    kubectl get namespaces
-   
+
    NAME              STATUS   AGE
    default           Active   72s
    kube-node-lease   Active   72s
    kube-public       Active   72s
    kube-system       Active   72s
-  ```
+   ```
 
 ## **Step 2**: Deploy Linkerd's service mesh to your cluster {#deploy-linkerds-service-mesh}
 
@@ -109,9 +109,9 @@ Using this guide, you will launch a local cluster (or use an existing local/remo
    ```
 
    :::note
-   
+
    These steps are based on the [Linkerd documentation](https://linkerd.io/2.14/getting-started/), which we encourage you to explore for additional details on the value of a service mesh, additional Linkerd features, and more.
-   
+
    :::
 
 ## **Step 3**: Install the ngrok Ingress Controller {#install-the-ngrok-ingress-controller}
@@ -148,7 +148,7 @@ Controller](https://github.com/ngrok/kubernetes-ingress-controller) to simplify 
 
    ```bash
    kubectl get pods -l 'app.kubernetes.io/name=kubernetes-ingress-controller' --namespace ngrok-ingress-controller
-   
+
    NAME                                                              READY   STATUS    RESTARTS   AGE
    ngrok-ingress-controller-kubernetes-ingress-controller-man2fg5p   1/1     Running   0          2m23s
    ```
@@ -216,13 +216,13 @@ To demonstrate how Linkerd and the ngrok Ingress Controller integrate to add add
    ```bash
    kubectl apply -f emojivoto-ingress.yaml
    ```
-   
+
    Give your cluster a few moments to launch the necessary resources and for ngrok's Cloud Edge to pick up the new tunnel created by the ngrok Ingress Controller.
-   
+
    :::tip
-   
+
    If you see an error when applying the manifest, double-check that you've updated the `NGROK_DOMAIN` value and try again.
-   
+
    :::
 
 1. Access your Emojivoto application by navigating to the your ngrok domain, e.g. `https://one-two-three.ngrok-free.app`, in your browser.
