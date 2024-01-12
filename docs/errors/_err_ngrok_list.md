@@ -1772,6 +1772,12 @@ Description: <code>&lt;DESCRIPTION&gt;</code></td>
 		</tr>
 		<tr>
 			<td>
+				<a id="ERR_NGROK_725" href="/docs/errors/err_ngrok_725">ERR_NGROK_725</a>
+			</td>
+			<td class="pre-wrapped">This ngrok account has reached its network bandwidth limit for the month. Please log into https://dashboard.ngrok.com to view your options.</td>
+		</tr>
+		<tr>
+			<td>
 				<a id="ERR_NGROK_800" href="/docs/errors/err_ngrok_800">ERR_NGROK_800</a>
 			</td>
 			<td class="pre-wrapped">Unknown stream type: <code>&lt;TYPE&gt;</code>.
@@ -3483,6 +3489,12 @@ Upgrade to a Pro or Enterprise plan at: <a href="https://dashboard.ngrok.com/bil
 		</tr>
 		<tr>
 			<td>
+				<a id="ERR_NGROK_2097" href="/docs/errors/err_ngrok_2097">ERR_NGROK_2097</a>
+			</td>
+			<td class="pre-wrapped">Policy action type <code>&lt;TYP&gt;</code> is not supported on <code>&lt;DIRECTION&gt;</code> policies.</td>
+		</tr>
+		<tr>
+			<td>
 				<a id="ERR_NGROK_3002" href="/docs/errors/err_ngrok_3002">ERR_NGROK_3002</a>
 			</td>
 			<td class="pre-wrapped">Error performing TLS handshake: <code>&lt;ERR&gt;</code></td>
@@ -4028,9 +4040,9 @@ Upgrade to get access: <a href="https://dashboard.ngrok.com/billing/subscription
 			<td>
 				<a id="ERR_NGROK_4018" href="/docs/errors/err_ngrok_4018">ERR_NGROK_4018</a>
 			</td>
-			<td class="pre-wrapped">You must signup for ngrok and add your authtoken to perform this operation.
+			<td class="pre-wrapped">Usage of ngrok requires a verified account and authtoken.
 Sign up for an account: <a href="https://dashboard.ngrok.com/signup">https://dashboard.ngrok.com/signup</a>
-Install your authoken: <a href="https://dashboard.ngrok.com/get-started/your-authtoken">https://dashboard.ngrok.com/get-started/your-authtoken</a></td>
+Install your authtoken: <a href="https://dashboard.ngrok.com/get-started/your-authtoken">https://dashboard.ngrok.com/get-started/your-authtoken</a></td>
 		</tr>
 		<tr>
 			<td>
@@ -5206,7 +5218,7 @@ Please start tunnels matching its labels in order to serve traffic.</td>
 			<td>
 				<a id="ERR_NGROK_6516" href="/docs/errors/err_ngrok_6516">ERR_NGROK_6516</a>
 			</td>
-			<td class="pre-wrapped">HTTP Reseponse Backend <code>&lt;ID&gt;</code> had too large of a body.
+			<td class="pre-wrapped">HTTP Response Backend <code>&lt;ID&gt;</code> had too large of a body.
 The maximum is length <code>&lt;MAX&gt;</code> bytes, but the supplied body was <code>&lt;VAL&gt;</code> bytes long.</td>
 		</tr>
 		<tr>
@@ -6580,6 +6592,12 @@ Upgrade to a Pay-as-you-go or Enterprise plan at: <a href="https://dashboard.ngr
 		</tr>
 		<tr>
 			<td>
+				<a id="ERR_NGROK_7194" href="/docs/errors/err_ngrok_7194">ERR_NGROK_7194</a>
+			</td>
+			<td class="pre-wrapped">Your account is not authorized to use policies.</td>
+		</tr>
+		<tr>
+			<td>
 				<a id="ERR_NGROK_8000" href="/docs/errors/err_ngrok_8000">ERR_NGROK_8000</a>
 			</td>
 			<td class="pre-wrapped">Failed to resolve host <code>&lt;HOST&gt;</code>: <code>&lt;ERR&gt;</code></td>
@@ -6815,6 +6833,12 @@ Upgrade to a Pro or Enterprise plan at: <a href="https://dashboard.ngrok.com/bil
 			</td>
 			<td class="pre-wrapped">Your account is not authorized to use user agent filtering.
 Please upgrade to a Pro or Enterprise plan at: <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a></td>
+		</tr>
+		<tr>
+			<td>
+				<a id="ERR_NGROK_9023" href="/docs/errors/err_ngrok_9023">ERR_NGROK_9023</a>
+			</td>
+			<td class="pre-wrapped">Your account is not authorized to use the policy module.</td>
 		</tr>
 		<tr>
 			<td>

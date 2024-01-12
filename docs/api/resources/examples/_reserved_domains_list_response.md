@@ -6,31 +6,31 @@
 {
 	"reserved_domains": [
 		{
-			"id": "rd_2ZGotV06Dz84SUmVhymK8c5wAHx",
-			"uri": "https://api.ngrok.com/reserved_domains/rd_2ZGotV06Dz84SUmVhymK8c5wAHx",
-			"created_at": "2023-12-08T17:53:11Z",
+			"id": "rd_2arwYiUeCgS3OgwMEccNvXZAP8c",
+			"uri": "https://api.ngrok.com/reserved_domains/rd_2arwYiUeCgS3OgwMEccNvXZAP8c",
+			"created_at": "2024-01-12T20:07:34Z",
 			"domain": "myapp.mydomain.com",
 			"region": "",
-			"cname_target": "2udamkamcl8pjmrff.2ohqtgddyku5fqgcv.local-ngrok-cname.com",
+			"cname_target": "2udamkamcl8pjmrff.3z4fzoxgapltuwtta.local-ngrok-cname.com",
 			"http_endpoint_configuration": null,
 			"https_endpoint_configuration": null,
 			"certificate": {
-				"id": "cert_2ZGotUruJWcBOAmKjowvzGND51X",
-				"uri": "https://api.ngrok.com/tls_certificates/cert_2ZGotUruJWcBOAmKjowvzGND51X"
+				"id": "cert_2arwYf0cqnJGX9y1yw4Ky2ZQRAe",
+				"uri": "https://api.ngrok.com/tls_certificates/cert_2arwYf0cqnJGX9y1yw4Ky2ZQRAe"
 			},
 			"certificate_management_policy": null,
 			"certificate_management_status": null,
 			"acme_challenge_cname_target": null
 		},
 		{
-			"id": "rd_2ZGotSc9lykdwizRQRsu3e6rcUR",
-			"uri": "https://api.ngrok.com/reserved_domains/rd_2ZGotSc9lykdwizRQRsu3e6rcUR",
-			"created_at": "2023-12-08T17:53:11Z",
+			"id": "rd_2arwYf05elTYpTarRvGqxm0QUF6",
+			"uri": "https://api.ngrok.com/reserved_domains/rd_2arwYf05elTYpTarRvGqxm0QUF6",
+			"created_at": "2024-01-12T20:07:34Z",
 			"description": "Device 0001 Dashboard",
 			"metadata": "{\"service\": \"dashboard\"}",
 			"domain": "manage-0001.app.example.com",
 			"region": "",
-			"cname_target": "4mgkuazanf1yq46m3.2ohqtgddyku5fqgcv.local-ngrok-cname.com",
+			"cname_target": "4mgkuazanf1yq46m3.3z4fzoxgapltuwtta.local-ngrok-cname.com",
 			"http_endpoint_configuration": null,
 			"https_endpoint_configuration": null,
 			"certificate": null,
@@ -43,7 +43,7 @@
 				"provisioning_job": {
 					"error_code": null,
 					"msg": "Managed certificate provisioning in progress.",
-					"started_at": "2023-12-08T17:53:11Z",
+					"started_at": "2024-01-12T20:07:34Z",
 					"retries_at": null
 				}
 			},
