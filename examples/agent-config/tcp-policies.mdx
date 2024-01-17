@@ -1,0 +1,22 @@
+```yaml
+tunnels:
+  example:
+    proto: tcp
+    addr: 22
+    policies: 
+      inbound:
+      - name: DenyTrafficOutsideUS
+        expressions:
+          - "conn.Geo.CountryCode != 'US'"
+        actions:
+          - type: deny
+      - name: "LogRequestsFromKnownIP"
+        expressions:
+          - "conn.ClientIP == '110.0.0.1'"
+        actions:
+          - type: log
+            config:
+              metadata:
+                event: "known-ip",
+                data: "110.0.0.1"
+```
