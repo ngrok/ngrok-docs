@@ -1,0 +1,71 @@
+
+# Expressions
+
+A policy is written with [Common Expression Language (CEL)](https://github.com/google/cel-spec) expressions 
+to determine on which connections it is applicable. Each policy expression must evaluate to true in order for 
+the policy's actions to take effect against a connection. 
+
+## Variables
+
+Attributes of the connection are exposed on the `conn` struct. The following variables are available using this struct:
+
+| Name                       | Type       | Description                                                                                            | 
+| ---------------------------|------------|--------------------------------------------------------------------------------------------------------|
+| `conn.ClientIP`            | string     | The source IP of the TCP connection to the ngrok endpoint.                                             |
+| `conn.Geo.CountryCode`     | string     | The two-letter ISO country code based on the client IP.                                                |
+| `conn.Geo.Latitude`        | string     | The approximate latitude based on the client IP.                                                       |
+| `conn.Geo.Longitude`       | string     | The approximate longitude based on the client IP.                                                      |
+| `conn.Geo.LatLongRadiusKm` | string     | The radius in kilometers around the latitude and longitude where the client IP is likely to originate. |
+
+Attributes of the request are exposed on the `req` struct. The following variables are available using this struct:
+
+| Name                        | Type       | Description                                                                                            | 
+| ----------------------------|------------|--------------------------------------------------------------------------------------------------------|
+| `req.Method`                | string     | The request method.                                                                                    |
+| `req.URL`                   | string     | The URL of the request.                                                                                |
+| `req.Params`                | map        | The query parameters of the request URL wherein a string key maps to a list of string values.          |
+| `req.Protocol`              | string     | The protocol version of the request.                                                                   |
+| `req.Host`                  | string     | The host of the request.                                                                               |
+| `req.Location`              | string     | The 'Location' header of the request.                                                                  |
+| `req.Cookies`               | list       | The list of http cookie objects provided in the request.                                               |
+| `req.Headers`               | map        | The headers of the request wherein a string key maps to a list of string values.                       |
+| `req.Trailers`              | map        | The trailers of the request wherein a string key maps to a list of string values.                      |
+| `req.Form`                  | map        | The url-encoded form data of the request wherein a string key maps to a list of string values.         |
+| `req.ContentLength`         | int        | The length of the content associated with the request.                                                 |
+| `req.ClientTLS.CertCN`      | string     | The subject common name of the client's leaf TLS certificate                                           |
+| `req.ClientTLS.CipherSuite` | string     | The cipher suite negotiated on the connection.                                                         |
+| `req.ClientTLS.Version`     | string     | The TLS Version used on the connection.                                                                | 
+| `req.ClientTLS.SNI`         | string     | The Server Name Indication extension sent by the client.                                               |
+
+Attributes of the response are exposed on the `res` struct. The following variables are available for use on outbound policy expressions using this struct:
+
+| Name                        | Type       | Description                                                                                            | 
+| ----------------------------|------------|--------------------------------------------------------------------------------------------------------|
+| `res.StatusCode`            | string     | The status code of the response.                                                                       |
+| `res.Location`              | string     | The 'Location' header of the response.                                                                 |
+| `res.Cookies`               | list       | The list of http cookie objects provided in the response.                                              |
+| `res.Headers`               | map        | The headers of the response wherein a string key maps to a list of string values.                      |
+| `res.Trailers`              | map        | The trailers of the resposne wherein a string key maps to a list of string values.                     |
+| `res.ContentLength`         | int        | The length of the content associated with the response.                                                |
+| `res.ServerTLS.CertCN`      | string     | The subject common name of the leaf TLS certificate.                                                   |
+| `res.ServerTLS.CipherSuite` | string     | The cipher suite negotiated on the connection.                                                         |
+| `res.ServerTLS.Version`     | string     | The TLS Version used on the connection.                                                                | 
+| `res.ServerTLS.SNI`         | string     | The Server Name Indication extension sent by the client.                                               |
+
+## Macros
+
+CEL provides a set of [predefined macros](https://github.com/google/cel-spec/blob/master/doc/langdef.md#macros) that can 
+also be used in policy expressions. For convenience, the following custom macros are also supported:
+
+| Name                       | Return Type | Description                                                                                            | 
+| ---------------------------|-------------|--------------------------------------------------------------------------------------------------------|
+| `hasReqHeader(string)`     | bool        | Returns true or false if the provided header key is present on the request.                            |
+| `getReqHeader(string)`     | list        | Returns a list of header values for the provided key on the request.                                   |
+| `hasQueryParam(string)`    | bool        | Returns true or false if the specified query parameter key is part of the request URL.                 |
+| `getQueryParam(string)`    | list        | Returns a list of the query parameter values from the request URL for the specified key.               |
+| `hasReqCookie(string)`     | bool        | Returns true or false if a cookie exists on the request with the specified name.                       |
+| `getReqCookie(string)`     | bool        | Returns the cookie struct for the specified cookie name, if it exists on the request.                  |
+| `hasResHeader(string)`     | bool        | Returns true or false if the provided header key is present on the response.                           |
+| `getResHeader(string)`     | list        | Returns a list of header values for the provided key on the response.                                  |
+| `hasResCookie(string)`     | bool        | Returns true or false if a cookie exists on the response with the specified name.                      |
+| `getResCookie(string)`     | bool        | Returns the cookie struct for the specified cookie name, if it exists on the response.                 |

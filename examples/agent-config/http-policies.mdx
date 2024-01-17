@@ -1,0 +1,34 @@
+```yaml
+tunnels:
+  example:
+    proto: http
+    addr: 80
+    policies: 
+      inbound:
+      - name: return not found page and log when ?foo=bar
+        expressions:
+          - "'bar' in getQueryParam('foo')"
+        actions:
+          - type: "custom-response"
+            config:
+              status_code: 404
+              content_type: text/plain
+              content: not found
+          - type: "log"
+            config:
+              metadata:
+                message: "foobar request was made"
+      - name: "require baz cookie for large request bodies"
+        expressions:
+          - "!hasReqCookie('baz')"
+          - "req.ContentLength > 5000"
+        actions:
+          - type: deny
+      outbound:
+      - name: "remove trace id header"
+        actions:
+          - type: remove-headers
+            config:
+              headers:
+                - internal-trace-id
+```
