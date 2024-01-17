@@ -1,0 +1,22 @@
+```yaml
+tunnels:
+  example:
+    proto: tls
+    addr: 443
+    policies: 
+      inbound:
+      - name: EnforceTLS1.3
+        expressions:
+          - "conn.TLS.Version != 'TLS 1.3'"
+        actions:
+          - type: deny
+      - name: "LogRequestsFromKnownIP"
+        expressions:
+          - "conn.ClientIP == '110.0.0.1'"
+        actions:
+          - type: log
+            config:
+              metadata:
+                event: "known-ip",
+                data: "110.0.0.1"
+```
