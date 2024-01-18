@@ -26,7 +26,7 @@ Resources included for free:
 | Active Endpoints[^1]  | 1                      |
 | ngrok static domain   | 1                      |
 | Tunnels per agent     | up to 3                |
-| Bandwidth             | 1 GB/month             |
+| Bandwidth             | 1 GB Outgoing/month    |
 | TCP Connection Rate   | 120/min                |
 | Agents                | 1                      |
 | Edges                 | 1                      |
@@ -47,6 +47,15 @@ Features included for free on all plans
 - Circuit Breaking
 - Automatic Certificates and Encryption
 - Email Support
+
+## I hit a limit on my plan. What are my options?
+
+ngrok's [free plans](https://ngrok.com/docs/guides/licensing/#what-do-i-get-for-free-on-ngrok) are generous, but some users on Free and Personal plans will find that they run into limits.
+
+If you run into a limit, you have two options:
+
+- You can wait for your cycle to refresh (limits refresh every 30 days per account)
+- Upgrade to a plan with higher limits. If you're using ngrok for testing webhooks, the Pro plan is probably the best fit. If you're using ngrok for production, try the Pay-as-you-go plan.
 
 ## What do I pay for in ngrok’s Pay-as-you-go pricing?
 

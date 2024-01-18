@@ -8,10 +8,9 @@ title: Java
 
 If you'd like to programmatically manage your ngrok account and resources (register domains, create edges, configure IP restrictions, etc.), you can use the native [ngrok Java API Client](https://github.com/ngrok/ngrok-api-java) in your project.
 
-### Agent Management
+### Java SDK
 
-If you're looking to programmatically start tunnels with the ngrok agent, check out Alex's [java-ngrok](https://github.com/alexdlaird/java-ngrok) library.
+Embed ngrok secure ingress into your Java apps with a single line of code with our [ngrok Java SDK](https://github.com/ngrok/ngrok-java).
 
-### Java SDK (alpha)
-
-Embed ngrok secure ingress into your Java apps with a single line of code with our alpha [ngrok Java SDK](https://github.com/ngrok/ngrok-java).
+- [ngrok SDK on Maven](https://mvnrepository.com/artifact/com.ngrok/ngrok-java)
+- [ngrok SDK on Github](https://github.com/ngrok/ngrok-java)
