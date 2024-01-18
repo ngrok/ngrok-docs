@@ -14,7 +14,7 @@ To use the ngrok Kubernetes Ingress Controller with Azure AD (Microsoft Entra ID
 4. [Create an enterprise app in Microsoft Entra ID](#create-an-enterprise-app)
 5. [Finish adding Microsoft Entra ID authorization to your ngrok Edge](#finish-adding-entra-ID-authorization-ngrok-edge)
 6. [Test authorization to your app using Microsoft Entra ID](#test-authorization-using-microsoft-entra-id)
-:::
+   :::
 
 The [ngrok Kubernetes Ingress Controller](https://ngrok.com/blog-post/ngrok-k8s) is ngrok's official controller for adding secure public ingress and middleware execution to your Kubernetes apps with ngrok's Cloud Edge. With ngrok, you can manage and secure traffic to your apps at every stage of the development lifecycle while also benefitting from simpler configurations, security, and edge acceleration.
 
@@ -40,28 +40,28 @@ With this guide, you'll (optionally) create a new Kubernetes cluster and example
 
 ## **Step 1**: Create a cluster and deploy an example app {#create-cluster-deploy-example-app}
 
-This guide requires you to deploy *some* app on *any* Kubernetes cluster, either locally or in a public cloud, to provide an endpoint for ngrok's secure tunnel. You can use any cluster and any app, but for demonstration, we'll create a local Kubernetes cluster with [minikube](https://minikube.sigs.k8s.io/docs/) and deploy the [Online Boutique](https://github.com/GoogleCloudPlatform/microservices-demo) example.
+This guide requires you to deploy _some_ app on _any_ Kubernetes cluster, either locally or in a public cloud, to provide an endpoint for ngrok's secure tunnel. You can use any cluster and any app, but for demonstration, we'll create a local Kubernetes cluster with [minikube](https://minikube.sigs.k8s.io/docs/) and deploy the [Online Boutique](https://github.com/GoogleCloudPlatform/microservices-demo) example.
 
 If you already have a cluster and app, skip to [Step 2: Add the ngrok Kubernetes ingress controller](#add-the-ngrok-kubernetes-ingress-controller).
 
 1. Download the `GoogleCloudPlatform/microservices-demo` project to your local workstation and navigate into the new directory.
 
-  ```bash
-  git clone https://github.com/GoogleCloudPlatform/microservices-demo
-  cd microservices-demo
-  ```
+   ```bash
+   git clone https://github.com/GoogleCloudPlatform/microservices-demo
+   cd microservices-demo
+   ```
 
 1. Create a new minikube cluster.
 
-  ```bash
-  minikube start -p online-boutique
-  ```
+   ```bash
+   minikube start -p online-boutique
+   ```
 
 1. Apply the manifests for the Online Boutique.
 
-  ```bash
-  kubectl apply -f ./release/kubernetes-manifests.yaml
-  ```
+   ```bash
+   kubectl apply -f ./release/kubernetes-manifests.yaml
+   ```
 
 ## **Step 2**: Add the ngrok Kubernetes ingress controller {#add-the-ngrok-kubernetes-ingress-controller}
 
@@ -69,86 +69,86 @@ Next, you'll configure and deploy the [ngrok Kubernetes Ingress Controller](http
 
 1. Add the ngrok Helm repository if you haven't already.
 
-  ```bash
-  helm repo add ngrok https://ngrok.github.io/kubernetes-ingress-controller
-  ```
+   ```bash
+   helm repo add ngrok https://ngrok.github.io/kubernetes-ingress-controller
+   ```
 
 1. Create a ngrok static subdomain for ingress if you don't have one already. Navigate to the [**Domains** section](https://dashboard.ngrok.com/cloud-edge/domains) of the ngrok dashboard and click **Create Domain** or **New Domain**. This static subdomain will be your `NGROK_DOMAIN` for the remainder of this guide.
 
-  Creating a subdomain on the ngrok network provides a public route to accept HTTP, HTTPS, and TLS traffic.
+   Creating a subdomain on the ngrok network provides a public route to accept HTTP, HTTPS, and TLS traffic.
 
 1. Set up the `AUTHTOKEN` and `API_KEY` exports, which allows Helm to install the Ingress Controller using your ngrok credentials. Find your `AUTHTOKEN` under [**Your Authtoken**](https://dashboard.ngrok.com/get-started/your-authtoken) in the ngrok dashboard.
 
-  To create a new API key, navigate to the [**API** section](https://dashboard.ngrok.com/api) of the ngrok dashboard, click the **New API Key** button, change the description or owner, and click the **Add API Key** button. Copy the API key token shown in the modal window before closing it, as the ngrok dashboard will not show you the token again.
-
-  ```bash
-  export NGROK_AUTHTOKEN=[YOUR-AUTHTOKEN]
-  export NGROK_API_KEY=[YOUR-API-KEY]
-  ```
+   To create a new API key, navigate to the [**API** section](https://dashboard.ngrok.com/api) of the ngrok dashboard, click the **New API Key** button, change the description or owner, and click the **Add API Key** button. Copy the API key token shown in the modal window before closing it, as the ngrok dashboard will not show you the token again.
+   
+   ```bash
+   export NGROK_AUTHTOKEN=[YOUR-AUTHTOKEN]
+   export NGROK_API_KEY=[YOUR-API-KEY]
+   ```
 
 1. Install the ngrok Kubernetes Ingress Controller with Helm.
 
-  ```bash
-  helm install ngrok-ingress-controller ngrok/kubernetes-ingress-controller \
-    --namespace ngrok-ingress-controller \
-    --create-namespace \
-    --set credentials.apiKey=$NGROK_API_KEY \
-    --set credentials.authtoken=$NGROK_AUTHTOKEN
-  ```
+   ```bash
+   helm install ngrok-ingress-controller ngrok/kubernetes-ingress-controller \
+     --namespace ngrok-ingress-controller \
+     --create-namespace \
+     --set credentials.apiKey=$NGROK_API_KEY \
+     --set credentials.authtoken=$NGROK_AUTHTOKEN
+   ```
 
 1. Verify the health of your new Ingress Controller pod.
 
-  ```bash
-  kubectl get pods -l 'app.kubernetes.io/name=kubernetes-ingress-controller'
-
-  NAME                                                              READY   STATUS    RESTARTS   AGE
-  ngrok-ingress-controller-kubernetes-ingress-controller-man2fg5p   1/1     Running   0          2m23s
-  ```
+   ```bash
+   kubectl get pods -l 'app.kubernetes.io/name=kubernetes-ingress-controller'
+   
+   NAME                                                              READY   STATUS    RESTARTS   AGE
+   ngrok-ingress-controller-kubernetes-ingress-controller-man2fg5p   1/1     Running   0          2m23s
+   ```
 
 1. Create a new `boutique-ingress.yml` file, which defines how the ngrok Kubernetes Ingress Controller should route traffic on your `NGROK_DOMAIN` to your Online Boutique app.
 
-  :::tip
+   :::tip
+
+   Make sure you edit line `9` of the manifest below, which contains the `NGROK_DOMAIN` variable, with the ngrok subdomain you already created. It should look something like `one-two-three.ngrok.app`.
+
+   If you are adding the ngrok Kubernetes Ingress Controller to a different deployment, you will need also change the `metadata.name`, `service.name`, and `service.port.number` values to match your app's configuration. See the [controller docs](https://github.com/ngrok/kubernetes-ingress-controller/tree/main/docs) for additional details on `spec` settings and common overrides.
+
+   :::
    
-    Make sure you edit line `9` of the manifest below, which contains the `NGROK_DOMAIN` variable, with the ngrok subdomain you already created. It should look something like `one-two-three.ngrok.app`.
-
-   Iif you are adding the ngrok Kubernetes Ingress Controller to a different deployment, you will need also change the `metadata.name`, `service.name`, and `service.port.number` values to match your app's configuration. See the [controller docs](https://github.com/ngrok/kubernetes-ingress-controller/tree/main/docs) for additional details on `spec` settings and common overrides.
-
-  :::
-
-  ```yaml
-  apiVersion: networking.k8s.io/v1
-  kind: Ingress
-  metadata:
-    name: boutique-ingress
-    namespace: default
-  spec:
-    ingressClassName: ngrok
-    rules:
-      - host: NGROK_DOMAIN
-        http:
-          paths:
-            - path: /
-              pathType: Prefix
-              backend:
-                service:
-                  name: frontend
-                  port:
-                    number: 80
-  ```
-
+   ```yaml
+   apiVersion: networking.k8s.io/v1
+   kind: Ingress
+   metadata:
+     name: boutique-ingress
+     namespace: default
+   spec:
+     ingressClassName: ngrok
+     rules:
+       - host: NGROK_DOMAIN
+         http:
+           paths:
+             - path: /
+               pathType: Prefix
+               backend:
+                 service:
+                   name: frontend
+                   port:
+                     number: 80
+   ```
+   
 1. Apply the `boutique-ingress.yaml` manifest you just created.
 
-  ```bash
-  kubectl apply -f boutique-ingress.yaml
-  ```
+   ```bash
+   kubectl apply -f boutique-ingress.yaml
+   ```
 
-  Give your cluster a few moments to launch the necessary resources and for ngrok's Cloud Edge to pick up the new tunnel.
+   Give your cluster a few moments to launch the necessary resources and for ngrok's Cloud Edge to pick up the new tunnel.
 
-  :::tip
+   :::tip
 
-  If you see an error when applying the manifest, double-check that you've updated the `NGROK_DOMAIN` value and re-apply.
+   If you see an error when applying the manifest, double-check that you've updated the `NGROK_DOMAIN` value and re-apply.
 
-  :::
+   :::
 
 1. Access your app, with ingress now handled by ngrok, by navigating to your ngrok domain, e.g. `https://one-two-three.ngrok.app`, in your browser.
 
@@ -158,19 +158,19 @@ Your Kubernetes-based app is now publicly accessible through the ngrok Cloud Edg
 
 1. Navigate to the [**Edges** section](https://dashboard.ngrok.com/cloud-edge/edges) of the ngrok dashboard and click on the Edge created by the ngrok Kubernetes Ingress Controller. The domain name should match your `NGROK_DOMAIN`, and you should see **Created by kubernetes-ingress-controller** in the edge's description.
 
-  ![Finding your edge in the ngrok dashboard](img/k8s_edge-dashboard.png)
+   ![Finding your edge in the ngrok dashboard](img/k8s_edge-dashboard.png)
 
 1. From the Overview, click **Add SAML**, then **Begin setup**.
 
 1. In the **IdP Metadata** textbox, add the following:
 
-  ```xml
-  <EntityDescriptor xmlns="urn:oasis:names:tc:SAML:2.0:metadata"></EntityDescriptor>
-  ```
+   ```xml
+   <EntityDescriptor xmlns="urn:oasis:names:tc:SAML:2.0:metadata"></EntityDescriptor>
+   ```
 
 1. Click **Save**, at which point ngrok will update your SAML configuration with **SP Metadata**, **Entity ID**, and **ACS URL** values—you'll need these in the next step.
 
-  ![An ngrok Edge with SAML enabled](img/k8s_saml-enabled.png)
+![An ngrok Edge with SAML enabled](img/k8s_saml-enabled.png)
 
 ## **Step 4**: Create an enterprise app in Microsoft Entra ID {#create-an-enterprise-app}
 
@@ -180,7 +180,7 @@ With SAML configured on your ngrok Edge, you can now configure Microsoft Entra I
 
 1. Click **Enterprise applications** in the left-hand sidebar, then **+ New application**, and finally **+ Create your own application**. Give your app a name—for our example, `online-boutique` will work nicely, and make sure you've selected the **Integrate any other application you don't find in the gallery (Non-gallery)** option.
 
-  ![Create an application on Amazon Entra ID](img/k8s_create-app.png)
+   ![Create an application on Amazon Entra ID](img/k8s_create-app.png)
 
 1. Click **Create** to build your enterprise app, which will take you to its Overview dashboard.
 
@@ -188,11 +188,11 @@ With SAML configured on your ngrok Edge, you can now configure Microsoft Entra I
 
 1. Click **Set up single sign on** to allow users to sign in to your app using their Microsoft Entra credentials, then choose **SAML** as your single sign-on protocol.
 
-  ![Choose SAML as your app's single sign-on protocol](img/k8s_choose-saml.png)
+   ![Choose SAML as your app's single sign-on protocol](img/k8s_choose-saml.png)
 
 1. Click **Edit** in the **Basic SAML Configuration** box. Copy the **Entity ID** from ngrok into the **Identifier (Entity ID)** field, and the **ACS URL** from ngrok into the **Reply URL (Assertion Consumer Service URL)** field. Click **Save** before you close the modal.
 
-  ![Configuring SAML in Microsoft Entra ID](img/k8s_configure-saml.png)
+   ![Configuring SAML in Microsoft Entra ID](img/k8s_configure-saml.png)
 
 1. In the **SAML Certificates** box, download the **Federation Metadata XML**.
 
@@ -202,7 +202,7 @@ Time to head back to your ngrok dashboard to finish the SAML configuration.
 
 1. Update the **IdP Metadata** field by clicking **Upload XML** and choosing the `.xml` file you just downloaded.
 
-  ![Updating the existing SAML configuration](img/k8s_update-saml-xml.png)
+   ![Updating the existing SAML configuration](img/k8s_update-saml-xml.png)
 
 1. Click **Save**.
 
@@ -212,13 +212,13 @@ You've finished integrating the ngrok Kubernetes Ingress Controller and Microsof
 
 1. Open an incognito/private window in your browser, or a different browser than you've used so far, and navigate again to your `NGROK_DOMAIN`. You should see a single sign-on screen from Microsoft.
 
-  ![The single sign-on screen from Microsoft](img/k8s_sso-enabled.png)
+   ![The single sign-on screen from Microsoft](img/k8s_sso-enabled.png)
 
-2. Enter credentials for a Microsoft account you assigned, either as an individual user or a group, to your enterprise application in Entra ID during [step 4](#create-an-enterprise-app). 
+2. Enter credentials for a Microsoft account you assigned, either as an individual user or a group, to your enterprise application in Entra ID during [step 4](#create-an-enterprise-app).
 
-  Behind the scenes, ngrok requests your identity provider, Microsoft Entra ID, for authentication. Once you sign in, or are already logged in, Entra ID then returns a SAML assertion to ngrok, telling ngrok your authentication is confirmed and you have authorization to access the app.
+   Behind the scenes, ngrok requests your identity provider, Microsoft Entra ID, for authentication. Once you sign in, or are already logged in, Entra ID then returns a SAML assertion to ngrok, telling ngrok your authentication is confirmed and you have authorization to access the app.
 
-  Entra ID will then redirect you back to your app!
+   Entra ID will then redirect you back to your app!
 
 ## What's next?
 
