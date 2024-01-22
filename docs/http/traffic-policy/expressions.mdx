@@ -10,7 +10,7 @@ Attributes of the connection are exposed on the `conn` struct. The following var
 
 | Name                                                  | Type   | Description                                                                                            |
 | ----------------------------------------------------- | ------ | ------------------------------------------------------------------------------------------------------ |
-| [`conn.ClientIP`](#connclientip)                      | string | The source IP of the TCP connection to the ngrok endpoint.                                             |
+| [`conn.ClientIP`](#connclientip)                      | string | The source IP of the client connection to the ngrok endpoint.                                             |
 | [`conn.Geo.CountryCode`](#conngeocountrycode)         | string | The two-letter ISO country code based on the client IP.                                                |
 | [`conn.Geo.Latitude`](#conngeolatitude)               | string | The approximate latitude based on the client IP.                                                       |
 | [`conn.Geo.LatLongRadiusKm`](#conngeolatlongradiuskm) | string | The radius in kilometers around the latitude and longitude where the client IP is likely to originate. |
@@ -18,10 +18,11 @@ Attributes of the connection are exposed on the `conn` struct. The following var
 
 ### `conn.ClientIP`
 
-The source IP of the TCP connection to the ngrok endpoint as a string.
+The source IP of the client connection to the ngrok endpoint as a string.
 
 ```yaml
-- "conn.ClientIP in ['::1', '127.0.0.1']"
+expressions:
+  - "conn.ClientIP in ['::1', '127.0.0.1']"
 ```
 
 ### `conn.Geo.CountryCode`
@@ -29,7 +30,8 @@ The source IP of the TCP connection to the ngrok endpoint as a string.
 The two-letter ISO country code based on the client IP.
 
 ```yaml
-- "conn.Geo.CountryCode != 'US'"
+expressions:
+  - "conn.Geo.CountryCode != 'US'"
 ```
 
 ### `conn.Geo.Latitude`
@@ -37,7 +39,8 @@ The two-letter ISO country code based on the client IP.
 The approximate latitude based on the client IP.
 
 ```yaml
-- "double(conn.Geo.Latitude) >= 45.0"
+expressions:
+  - "double(conn.Geo.Latitude) >= 45.0"
 ```
 
 ### `conn.Geo.LatLongRadiusKm`
@@ -45,7 +48,8 @@ The approximate latitude based on the client IP.
 The radius in kilometers around the latitude and longitude where the client IP is likely to originate.
 
 ```yaml
-- "conn.Geo.LatLongRadiusKm <= '20'"
+expressions:
+  - "conn.Geo.LatLongRadiusKm <= '20'"
 ```
 
 ### `conn.Geo.Longitude`
@@ -53,7 +57,8 @@ The radius in kilometers around the latitude and longitude where the client IP i
 The approximate longitude based on the client IP.
 
 ```yaml
-- "double(conn.Geo.Longitude) <= -93.0"
+expressions:
+  - "double(conn.Geo.Longitude) <= -93.0"
 ```
 
 ---
@@ -83,7 +88,8 @@ Attributes of the request are exposed on the `req` struct. The following variabl
 The subject common name of the client's leaf TLS certificate.
 
 ```yaml
-- "req.ClientTLS.CertCN.startsWith('example')"
+expressions:
+  - "req.ClientTLS.CertCN.startsWith('example')"
 ```
 
 ### `req.ClientTLS.CipherSuite`
@@ -91,7 +97,8 @@ The subject common name of the client's leaf TLS certificate.
 The cipher suite negotiated on the connection.
 
 ```yaml
-- "req.ClientTLS.CipherSuite.contains('SHA256')"
+expressions:
+  - "req.ClientTLS.CipherSuite.contains('SHA256')"
 ```
 
 ### `req.ClientTLS.SNI`
@@ -99,7 +106,8 @@ The cipher suite negotiated on the connection.
 The Server Name Indication extension sent by the client.
 
 ```yaml
-- "req.ClientTLS.SNI.startsWith('domain')"
+expressions:
+  - "req.ClientTLS.SNI.startsWith('domain')"
 ```
 
 ### `req.ClientTLS.Version`
@@ -107,7 +115,8 @@ The Server Name Indication extension sent by the client.
 The TLS Version used on the connection.
 
 ```yaml
-- "req.ClientTLS.Version.contains('1.3')"
+expressions:
+  - "req.ClientTLS.Version.contains('1.3')"
 ```
 
 ### `req.ContentLength`
@@ -115,7 +124,8 @@ The TLS Version used on the connection.
 The length of the content associated with the request.
 
 ```yaml
-- "req.ContentLength > 10000000"
+expressions:
+  - "req.ContentLength > 10000000"
 ```
 
 ### `req.Method`
@@ -123,7 +133,8 @@ The length of the content associated with the request.
 The request method.
 
 ```yaml
-- "req.Method == 'POST' || req.Method == 'PUT'"
+expressions:
+  - "req.Method == 'POST' || req.Method == 'PUT'"
 ```
 
 ### `req.Cookies`
@@ -131,7 +142,8 @@ The request method.
 The list of http cookie objects provided in the request.
 
 ```yaml
-- "size(req.Cookies) > 0"
+expressions:
+  - "size(req.Cookies) > 0"
 ```
 
 ### `req.Form`
@@ -139,7 +151,8 @@ The list of http cookie objects provided in the request.
 The url-encoded form data of the request wherein a string key maps to a list of string values.
 
 ```yaml
-- "'val' in req.Form['key']"
+expressions:
+  - "'val' in req.Form['key']"
 ```
 
 ### `req.URL`
@@ -147,7 +160,8 @@ The url-encoded form data of the request wherein a string key maps to a list of 
 The URL of the request.
 
 ```yaml
-- "req.URL.contains('/admin')"
+expressions:
+  - "req.URL.contains('/admin')"
 ```
 
 ### `req.Params`
@@ -155,7 +169,8 @@ The URL of the request.
 The query parameters of the request URL wherein a string key maps to a list of string values.
 
 ```yaml
-- "'bar' in req.Params['foo']"
+expressions:
+  - "'bar' in req.Params['foo']"
 ```
 
 ### `req.Protocol`
@@ -163,7 +178,8 @@ The query parameters of the request URL wherein a string key maps to a list of s
 The protocol version of the request.
 
 ```yaml
-- "`req.Protocol == 'HTTP/1.1'"
+expressions:
+  - "`req.Protocol == 'HTTP/1.1'"
 ```
 
 ### `req.Host`
@@ -171,7 +187,8 @@ The protocol version of the request.
 The host of the request.
 
 ```yaml
-- "req.Host.contains(':8080')"
+expressions:
+  - "req.Host.contains(':8080')"
 ```
 
 ### `req.Location`
@@ -179,7 +196,8 @@ The host of the request.
 The 'Location' header of the request.
 
 ```yaml
-- "req.Location == '/index.html'"
+expressions:
+  - "req.Location == '/index.html'"
 ```
 
 ### `req.Headers`
@@ -187,7 +205,8 @@ The 'Location' header of the request.
 The headers of the request wherein a string key maps to a list of string values.
 
 ```yaml
-- "'fizz' in req.Headers['baz']"
+expressions:
+  - "'fizz' in req.Headers['baz']"
 ```
 
 ### `req.Trailers`
@@ -195,7 +214,8 @@ The headers of the request wherein a string key maps to a list of string values.
 The trailers of the request wherein a string key maps to a list of string values.
 
 ```yaml
-- "'fizz' in req.Trailers['baz']"
+expressions:
+  - "'fizz' in req.Trailers['baz']"
 ```
 
 ---
@@ -220,7 +240,8 @@ Attributes of the response are exposed on the `res` struct. The following variab
 The length of the content associated with the response.
 
 ```yaml
-- "res.ContentLength != 0"
+expressions:
+  - "res.ContentLength != 0"
 ```
 
 ### `res.Cookies`
@@ -228,7 +249,8 @@ The length of the content associated with the response.
 The list of http cookie objects provided in the response.
 
 ```yaml
-- "size(req.Cookies) > 0"
+expressions:
+  - "size(req.Cookies) > 0"
 ```
 
 ### `res.Headers`
@@ -236,7 +258,8 @@ The list of http cookie objects provided in the response.
 The headers of the response wherein a string key maps to a list of string values.
 
 ```yaml
-- "'fizz' in res.Headers['baz']"
+expressions:
+  - "'fizz' in res.Headers['baz']"
 ```
 
 ### `res.Location`
@@ -244,7 +267,8 @@ The headers of the response wherein a string key maps to a list of string values
 The 'Location' header of the response.
 
 ```yaml
-- "res.Location == '/index.html'"
+expressions:
+  - "res.Location == '/index.html'"
 ```
 
 ### `res.ServerTLS.CertCN`
@@ -252,7 +276,8 @@ The 'Location' header of the response.
 The subject common name of the leaf TLS certificate.
 
 ```yaml
-- "res.ClientTLS.CertCN.startsWith('example')"
+expressions:
+  - "res.ClientTLS.CertCN.startsWith('example')"
 ```
 
 ### `res.ServerTLS.CipherSuite`
@@ -260,7 +285,8 @@ The subject common name of the leaf TLS certificate.
 The cipher suite negotiated on the connection.
 
 ```yaml
-- "res.ClientTLS.CipherSuite.contains('SHA256')"
+expressions:
+  - "res.ClientTLS.CipherSuite.contains('SHA256')"
 ```
 
 ### `res.ServerTLS.SNI`
@@ -268,7 +294,8 @@ The cipher suite negotiated on the connection.
 The Server Name Indication extension sent by the client.
 
 ```yaml
-- "res.ClientTLS.SNI.startsWith('domain')"
+expressions:
+  - "res.ClientTLS.SNI.startsWith('domain')"
 ```
 
 ### `res.ServerTLS.Version`
@@ -276,7 +303,8 @@ The Server Name Indication extension sent by the client.
 The TLS Version used on the connection.
 
 ```yaml
-- "res.ClientTLS.Version.contains('1.3')"
+expressions:
+  - "res.ClientTLS.Version.contains('1.3')"
 ```
 
 ### `res.StatusCode`
@@ -284,7 +312,8 @@ The TLS Version used on the connection.
 The status code of the response.
 
 ```yaml
-- "res.StatusCode >= '300'"
+expressions:
+  - "res.StatusCode >= '300'"
 ```
 
 ### `res.Trailers`
@@ -292,7 +321,8 @@ The status code of the response.
 The trailers of the response wherein a string key maps to a list of string values.
 
 ```yaml
-- "'fizz' in res.Trailers['baz']"
+expressions:
+  - "'fizz' in res.Trailers['baz']"
 ```
 
 ---
@@ -302,15 +332,33 @@ The trailers of the response wherein a string key maps to a list of string value
 CEL provides a set of [predefined macros](https://github.com/google/cel-spec/blob/master/doc/langdef.md#macros) that can
 also be used in policy expressions. For convenience, the following custom macros are also supported:
 
-| Name                    | Return Type | Description                                                                              | Example                                                               |
-| ----------------------- | ----------- | ---------------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
-| `hasReqHeader(string)`  | bool        | Returns true or false if the provided header key is present on the request.              | `hasReqHeader("x-version-id")`                                        |
-| `getReqHeader(string)`  | list        | Returns a list of header values for the provided key on the request.                     | `getReqHeader("User-Agent").exists(v, v.matches("(?i)google-images))` |
-| `hasQueryParam(string)` | bool        | Returns true or false if the specified query parameter key is part of the request URL.   |                                                                       |
-| `getQueryParam(string)` | list        | Returns a list of the query parameter values from the request URL for the specified key. |                                                                       |
-| `hasReqCookie(string)`  | bool        | Returns true or false if a cookie exists on the request with the specified name.         |                                                                       |
-| `getReqCookie(string)`  | bool        | Returns the cookie struct for the specified cookie name, if it exists on the request.    |                                                                       |
-| `hasResHeader(string)`  | bool        | Returns true or false if the provided header key is present on the response.             |                                                                       |
-| `getResHeader(string)`  | list        | Returns a list of header values for the provided key on the response.                    |                                                                       |
-| `hasResCookie(string)`  | bool        | Returns true or false if a cookie exists on the response with the specified name.        |                                                                       |
-| `getResCookie(string)`  | bool        | Returns the cookie struct for the specified cookie name, if it exists on the response.   |                                                                       |
+| Name                                          | Return Type | Description                                                                              |
+| --------------------------------------------- | ----------- | ---------------------------------------------------------------------------------------- |
+| [`hasReqHeader(string)`](#hasreqheaderstring) | bool        | Returns true or false if the provided header key is present on the request.              |
+| [`getReqHeader(string)`](#getreqheaderstring) | list        | Returns a list of header values for the provided key on the request.                     |
+| `hasQueryParam(string)`                       | bool        | Returns true or false if the specified query parameter key is part of the request URL.   |
+| `getQueryParam(string)`                       | list        | Returns a list of the query parameter values from the request URL for the specified key. |
+| `hasReqCookie(string)`                        | bool        | Returns true or false if a cookie exists on the request with the specified name.         |
+| `getReqCookie(string)`                        | bool        | Returns the cookie struct for the specified cookie name, if it exists on the request.    |
+| `hasResHeader(string)`                        | bool        | Returns true or false if the provided header key is present on the response.             |
+| `getResHeader(string)`                        | list        | Returns a list of header values for the provided key on the response.                    |
+| `hasResCookie(string)`                        | bool        | Returns true or false if a cookie exists on the response with the specified name.        |
+| `getResCookie(string)`                        | bool        | Returns the cookie struct for the specified cookie name, if it exists on the response.   |
+
+### `hasReqHeader(string)`
+
+Returns `true` or `false` if the provided header key is present on the request.
+
+```yaml
+expressions:
+  - "hasReqHeader('x-version-id')"
+```
+
+### `getReqHeader(string)`
+
+Returns a list of header values for the provided key on the request.
+
+```yaml
+expressions:
+  - "getReqHeader('User-Agent').exists(v, v.matches('(?i)google-images'))"
+```
