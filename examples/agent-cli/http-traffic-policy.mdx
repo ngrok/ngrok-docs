@@ -1,3 +1,35 @@
 ```bash
 ngrok http 80 --policy-config /path/to/policy-config.yml
 ```
+
+```yaml
+# policy-config.yml
+
+inbound:
+  - name: FooBarParamNotFound
+    expressions:
+      - "'bar' in getQueryParam('foo')"
+    actions:
+      - type: "custom-response"
+        config:
+          status_code: 404
+          content_type: text/plain
+          content: not found
+      - type: "log"
+        config:
+          metadata:
+            message: "foobar request was made"
+  - name: "BazCookieForLargeRequests"
+    expressions:
+      - "!hasReqCookie('baz')"
+      - "req.ContentLength > 5000"
+    actions:
+      - type: deny
+outbound:
+  - name: "RemoveTraceHeader"
+    actions:
+      - type: remove-headers
+        config:
+          headers:
+            - internal-trace-id
+```

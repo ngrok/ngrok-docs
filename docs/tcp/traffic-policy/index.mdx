@@ -8,17 +8,23 @@ import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
 import AgentCliExample from "/examples/agent-cli/tcp-traffic-policy.mdx";
 import AgentConfigExample from "/examples/agent-config/tcp-traffic-policy.mdx";
+import SshExample from "/examples/ssh/tcp-traffic-policy.mdx";
+import GoSdkExample from "/examples/go-sdk/tcp-traffic-policy.mdx";
+import JavascriptSdkExample from "/examples/javascript-sdk/tcp-traffic-policy.mdx";
+import PythonSdkExample from "/examples/python-sdk/tcp-traffic-policy.mdx";
+import RustSdkExample from "/examples/rust-sdk/tcp-traffic-policy.mdx";
+import KubernetesExample from "/examples/k8s/tcp-traffic-policy.mdx";
 
-# Policies
+# Traffic Policy
 
 ## Overview
 
-The Policy module allows you to configure a series of inbound and outbound
-policies that can be used to influence and control traffic to and from your
-upstream service.
+This module allows you to assign a policy to your endpoints containing a series
+of inbound and outbound rules that can be used to influence and control traffic
+to and from your upstream service.
 
-Policies are composed of zero-to-many expressions that filter the traffic on which they apply and one-to-many actions
-which will be taken against the traffic.
+Policy rules are composed of expressions that filter the traffic on which they are applicable
+and actions that should take effect.
 
 ## Example Usage
 
@@ -29,31 +35,65 @@ which will be taken against the traffic.
 	<TabItem value="agent-config" label="Agent Config">
 		<AgentConfigExample />
 	</TabItem>
+	<TabItem value="ssh" label="SSH">
+		<SshExample />
+	</TabItem>
+	<TabItem value="go-sdk" label="Go">
+		<GoSdkExample />
+	</TabItem>
+	<TabItem value="javascript-sdk" label="Javascript">
+		<JavascriptSdkExample />
+	</TabItem>
+	<TabItem value="python-sdk" label="Python">
+		<PythonSdkExample />
+	</TabItem>
+	<TabItem value="rust-sdk" label="Rust">
+		<RustSdkExample />
+	</TabItem>
+	<TabItem value="k8s" label="Kubernetes Controller">
+		<KubernetesExample />
+	</TabItem>
 </Tabs>
 
 ## Behavior
 
-Policies are evaluated sequentially in the order they are configured with inbound policies taking effect before the
-upstream server is reached and outbound policies taking effect after the upstream server responds. Whether or not a
-policy's actions are performed is determined at runtime.
+Policy rules are evaluated sequentially in the order they are configured with inbound rules taking effect before the
+upstream server is reached and outbound rules taking effect after the upstream server responds. Whether or not the configured
+actions are performed is determined at runtime by the expressions.
 
 ### Expression Evaluation
 
-Policy expressions are a set of [Common Expression Language (CEL)](https://github.com/google/cel-spec) expressions that must evaluate to true
-in order for a policy actions to take effect. There is no behavioral difference between adding multiple expressions to a policy or having one
-single expression with multiple statements logically conjoined (`&&`) together.
+Policy expressions are written using the [Common Expression Language (CEL)](https://github.com/google/cel-spec). Policy expressions must evaluate to true
+in order for policy actions to take effect. There is no behavioral difference between adding multiple expressions to a single policy rule and having one
+single expression with multiple statements logically conjoined together (i.e. `["1 == 1 && 2 == 2"]` is the same
+s `["1 == 1", "2 == 2"]`).
 
-If no expressions are specified on a policy, the actions will always take effect.
+If no expressions are specified on a policy rule, its actions will always take effect.
 
 ### Action Execution
 
 If a policy's expressions are evaluated as a match against a connection, the policy's actions will be executed. If multiple actions are defined
 on a policy, the actions will execute sequentially.
 
+## Reference
+
+### Configuration
+
+| Parameter       | Description                                                                                                            |
+| --------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| **inbound**     | A list of policy rules that will be applied to inbound traffic in the order specified.                                 |
+| **outbound**    | A list of policy rules that will be applied to outbound traffic in the order specified.                                |
+| **name**        | Policy rules can optionally be given a name for convenience.                                                           |
+| **expressions** | A list of CEL expressions that filter which traffic a policy rule will apply to.                                       |
+| **actions**     | A list of actions that will execute sequentially if the associated policy rule's expressions all match on the traffic. |
+| **type**        | The type of action.                                                                                                    |
+| **config**      | The configuration details of how an action should execute. Each action has its own configuration structure.            |
+
 ## Edges
 
-Policies is an HTTPS Edge module which can be applied to Routes.
+Traffic Policy is a TCP Edge module.
 
-Policies can be configured vai the ngrok dashboard or API.
+The Traffic Policy module can be configured vai the ngrok dashboard or API.
 
-//todo add api reference
+- [Traffic Policy Edge Module API Resource](/api/resources/tcp-edge-policies-module/)
+
