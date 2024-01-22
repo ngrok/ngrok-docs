@@ -288,6 +288,7 @@ const sidebars = {
 								"api/resources/edge-route-jwt-validation-module",
 								"api/resources/edge-route-o-auth-module",
 								"api/resources/edge-route-oidc-module",
+								"api/resources/edge-route-policies-module",
 								"api/resources/edge-route-request-headers-module",
 								"api/resources/edge-route-response-headers-module",
 								"api/resources/edge-route-saml-module",
@@ -315,6 +316,7 @@ const sidebars = {
 								"api/resources/edges-tcp",
 								"api/resources/tcp-edge-backend-module",
 								"api/resources/tcp-edge-ip-restriction-module",
+								"api/resources/tcp-edge-policies-module",
 							],
 						},
 						// TLS Edges
@@ -326,6 +328,7 @@ const sidebars = {
 								"api/resources/tls-edge-backend-module",
 								"api/resources/tls-edge-ip-restriction-module",
 								"api/resources/tls-edge-mutual-tls-module",
+								"api/resources/tls-edge-policies-module",
 								"api/resources/tls-edge-tls-termination-module",
 							],
 						},
