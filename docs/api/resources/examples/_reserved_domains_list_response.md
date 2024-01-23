@@ -6,31 +6,14 @@
 {
 	"reserved_domains": [
 		{
-			"id": "rd_2arwYiUeCgS3OgwMEccNvXZAP8c",
-			"uri": "https://api.ngrok.com/reserved_domains/rd_2arwYiUeCgS3OgwMEccNvXZAP8c",
-			"created_at": "2024-01-12T20:07:34Z",
-			"domain": "myapp.mydomain.com",
-			"region": "",
-			"cname_target": "2udamkamcl8pjmrff.3z4fzoxgapltuwtta.local-ngrok-cname.com",
-			"http_endpoint_configuration": null,
-			"https_endpoint_configuration": null,
-			"certificate": {
-				"id": "cert_2arwYf0cqnJGX9y1yw4Ky2ZQRAe",
-				"uri": "https://api.ngrok.com/tls_certificates/cert_2arwYf0cqnJGX9y1yw4Ky2ZQRAe"
-			},
-			"certificate_management_policy": null,
-			"certificate_management_status": null,
-			"acme_challenge_cname_target": null
-		},
-		{
-			"id": "rd_2arwYf05elTYpTarRvGqxm0QUF6",
-			"uri": "https://api.ngrok.com/reserved_domains/rd_2arwYf05elTYpTarRvGqxm0QUF6",
-			"created_at": "2024-01-12T20:07:34Z",
+			"id": "rd_2bMmTzJ1xmgumB0ZHvTe3c3mqVH",
+			"uri": "https://api.ngrok.com/reserved_domains/rd_2bMmTzJ1xmgumB0ZHvTe3c3mqVH",
+			"created_at": "2024-01-23T18:08:52Z",
 			"description": "Device 0001 Dashboard",
 			"metadata": "{\"service\": \"dashboard\"}",
 			"domain": "manage-0001.app.example.com",
 			"region": "",
-			"cname_target": "4mgkuazanf1yq46m3.3z4fzoxgapltuwtta.local-ngrok-cname.com",
+			"cname_target": "4mgkuazanf1yq46m3.3zayobjlpsc5htge2.local-ngrok-cname.com",
 			"http_endpoint_configuration": null,
 			"https_endpoint_configuration": null,
 			"certificate": null,
@@ -43,10 +26,27 @@
 				"provisioning_job": {
 					"error_code": null,
 					"msg": "Managed certificate provisioning in progress.",
-					"started_at": "2024-01-12T20:07:34Z",
+					"started_at": "2024-01-23T18:08:53Z",
 					"retries_at": null
 				}
 			},
+			"acme_challenge_cname_target": null
+		},
+		{
+			"id": "rd_2bMmTsuWRZ6pi6U7819MzMhIuQL",
+			"uri": "https://api.ngrok.com/reserved_domains/rd_2bMmTsuWRZ6pi6U7819MzMhIuQL",
+			"created_at": "2024-01-23T18:08:52Z",
+			"domain": "myapp.mydomain.com",
+			"region": "",
+			"cname_target": "2udamkamcl8pjmrff.3zayobjlpsc5htge2.local-ngrok-cname.com",
+			"http_endpoint_configuration": null,
+			"https_endpoint_configuration": null,
+			"certificate": {
+				"id": "cert_2bMmTuCZv8emWUX7GhOk7ZAE197",
+				"uri": "https://api.ngrok.com/tls_certificates/cert_2bMmTuCZv8emWUX7GhOk7ZAE197"
+			},
+			"certificate_management_policy": null,
+			"certificate_management_status": null,
 			"acme_challenge_cname_target": null
 		}
 	],
