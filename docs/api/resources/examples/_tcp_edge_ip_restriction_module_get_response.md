@@ -7,8 +7,8 @@
 	"enabled": true,
 	"ip_policies": [
 		{
-			"id": "ipp_2arwcNFyvNkY4hB2UFXaWiKcCo2",
-			"uri": "https://api.ngrok.com/ip_policies/ipp_2arwcNFyvNkY4hB2UFXaWiKcCo2"
+			"id": "ipp_2bMmXaJFCmc44PIL8wpPDAEtzGA",
+			"uri": "https://api.ngrok.com/ip_policies/ipp_2bMmXaJFCmc44PIL8wpPDAEtzGA"
 		}
 	]
 }
