@@ -63,7 +63,7 @@ If you don't have a cluster already, create one locally with minikube and instal
 
    ```bash
    kubectl get namespaces
-   
+
    NAME              STATUS   AGE
    default           Active   5m55s
    kube-node-lease   Active   5m55s
@@ -78,28 +78,28 @@ If you don't have a cluster already, create one locally with minikube and instal
    ```
 
 1. To ensure your new local cluster is running properly get the namespaces for your instance. Your list of namespaces in the `my-vcluster` context should look something like this.
-   
+
    ```bash
    kubectl get namespaces
-   
+
    NAME              STATUS   AGE
    default           Active   19s
    kube-system       Active   19s
    kube-public       Active   19s
    kube-node-lease   Active   19s
    ```
-   
+
    If you are not connected to your new vcluster and its kube context, you can run `vcluster connect my-vcluster` to try
    again.
-   
+
    You know have a vcluster installed on your local minikube cluster.
-   
+
    :::note
 
    These steps are partially based the guide [Using the ngrok Ingress Controller to create Preview Environments with vcluster](https://loft.sh/blog/using-the-ngrok-ingress-controller-to-create-preview-environments-with-vcluster/) from [Loft](https://loft.sh/), the maintainers of vcluster.
 
    :::
-   
+
 ## **Step 2**: Install the ngrok Ingress Controller {#install-the-ngrok-ingress-controller}
 
 Now that you have a Kubernetes cluster integrated with vcluster, you can install the [ngrok Kubernetes Ingress
@@ -135,7 +135,7 @@ on your virtual cluster.
 
    ```bash
    kubectl get pods -l 'app.kubernetes.io/name=kubernetes-ingress-controller' --namespace ngrok-ingress-controller
-   
+
    NAME                                                              READY   STATUS    RESTARTS   AGE
    ngrok-ingress-controller-kubernetes-ingress-controller-man2fg5p   1/1     Running   0          2m23s
    ```
@@ -157,9 +157,9 @@ cluster, virtual cluster, and ultimately an exposed service or endpoint, you can
    edge via your `NGROK_DOMAIN`.
 
    :::tip
-   
+
    Make sure you edit line 45 of the manifest below, which contains the `NGROK_DOMAIN` variable, with the ngrok subdomain you created in the previous step. It should look something like `one-two-three.ngrok.app`.
-   
+
    :::
 
    ```yaml showLineNumbers
@@ -228,28 +228,28 @@ cluster, virtual cluster, and ultimately an exposed service or endpoint, you can
    ```
 
    :::tip
-   
+
    **Note:** If you get an error when applying the manifest, double check that you've updated the `NGROK_DOMAIN` value
    and try again.
-   
+
    :::
 
 1. Confirm your vcluster successfully deployed your 2048 application by navigating to the [**Edges**
    section](https://dashboard.ngrok.com/cloud-edge/edges) in the ngrok dashboard.
 
    An edge connects your 2048 application, running in your vcluster, to the rest of the world through the ngrok Ingress
-Controller. You should see a new edge configuration created by `kubernetes-ingress-controller` that matches the domain
-name you entered on L45 of your `2048.yaml` manifest.
+   Controller. You should see a new edge configuration created by `kubernetes-ingress-controller` that matches the domain
+   name you entered on L45 of your `2048.yaml` manifest.
 
    Under the **Backend** section of your edge configuration, you can also see cluster details as annotations, like the
-namespace and connected service, to validate that your demo application is accessible to external traffic via the
-Ingress Controller.
+   namespace and connected service, to validate that your demo application is accessible to external traffic via the
+   Ingress Controller.
 
    !["Looking at existing Edge configurations in the ngrok dashboard"](img/ngrok-k8s-vcluster_edges.png)
 
    Click on your edge configuration to see additional details and options for advanced ingress needs, like creating
-multiple tunnels for load balancing, enabling the [Mutual TLS module](/http/mutual-tls/), adding
-compression, and more. We'll use one of these options, OAuth, in the next step.
+   multiple tunnels for load balancing, enabling the [Mutual TLS module](/http/mutual-tls/), adding
+   compression, and more. We'll use one of these options, OAuth, in the next step.
 
 1. Access your 2048 demo app by navigating to the your domain, e.g. `https://one-two-three.ngrok.app`. ngrok's edge
    and your Ingress Controller will route traffic to your app from any device or external network as long as your
@@ -269,12 +269,12 @@ allowing ingress and access to your endpoint.
 1. Edit your existing `2048.yaml` manifest with the following configuration.
 
    :::tip
-   
-   - See L42-43 for the additional annotation that this OAuth setup requires. 
+
+   - See L42-43 for the additional annotation that this OAuth setup requires.
    - See L58-69 for the newly added configuration for ngrok's OAuth module, replacing `acme.com` or `ngrok.com` with the domain name for your email address. You can also [configure the OAuth module](https://github.com/ngrok/kubernetes-ingress-controller/blob/main/docs/user-guide/route-modules.md#ngrok-managed-oauth-application) to authenticate individual email addresses.
-   
+
    :::
-   
+
    ```yaml showLineNumbers
    apiVersion: v1
    kind: Service

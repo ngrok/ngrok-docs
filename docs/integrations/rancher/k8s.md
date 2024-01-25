@@ -126,7 +126,7 @@ docker logs [DOCKER_NAME] 2>&1 | grep "Bootstrap Password:"
 
    ```bash
    kubectl get namespaces
-   
+
    NAME                          STATUS   AGE
    calico-system                 Active   4m
    cattle-impersonation-system   Active   29s
@@ -269,18 +269,18 @@ simplifying how you route external traffic through your Rancher-managed cluster.
    spec:
      ingressClassName: ngrok
      rules:
-         # highlight-start
-         - host: NGROK_DOMAIN
+       # highlight-start
+       - host: NGROK_DOMAIN
          # highlight-end
-           http:
-             paths:
-               - path: /
-                 pathType: Prefix
-                 backend:
-                   service:
-                     name: game-2048
-                     port:
-                       number: 80
+         http:
+           paths:
+             - path: /
+               pathType: Prefix
+               backend:
+                 service:
+                   name: game-2048
+                   port:
+                     number: 80
    ```
 
 1. Apply the `2048.yaml` manifest to your RKE2 cluster.
