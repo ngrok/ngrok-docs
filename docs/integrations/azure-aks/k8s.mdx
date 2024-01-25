@@ -1,12 +1,12 @@
 ---
-description: TK
+description: Learn how to deploy a new Kubernetes cluster and demo app via AKS, then add ingress to applications with ngrok's Kubernetes Ingress Controller.
 ---
 
-# Ingress to apps deployed on Azure Azure Managed Kubernetes Service (AKS)
+# Ingress to apps deployed on Azure Kubernetes Service (AKS)
 
 :::tip TL;DR
 
-To use the ngrok Kubernetes Ingress Controller with Azure Managed Kubernetes Service (AKS):
+To use the ngrok Kubernetes Ingress Controller with Azure Kubernetes Service (AKS):
 
 1. [Create your cluster in AKS](#create-your-cluster-in-AKS)
 2. [Install the ngrok Ingress Controller](#install-the-ngrok-kubernetes-ingress-controller)
@@ -16,20 +16,19 @@ To use the ngrok Kubernetes Ingress Controller with Azure Managed Kubernetes Ser
 
 :::
 
-In this guide, you'll launch a new cluster with [Azure Kubernetes Service](https://azure.microsoft.com/en-us/products/kubernetes-service) and launch an demo app. You'll then add the ngrok Kubernetes Ingress Controller to route public traffic through an encrypted, feature-rich tunnel directly to your demo app for a complete proof of concept.
+In this guide, you'll launch a new cluster with [Azure Kubernetes Service (AKS)](https://azure.microsoft.com/en-us/products/kubernetes-service) and a demo app. You'll then add the ngrok Kubernetes Ingress Controller to route public traffic directly to your demo app through an encrypted, feature-rich tunnel for a complete proof of concept.
 
-In the end, you'll have learned enough to deploy a real production-ready Kubernetes app with AKS.
+In the end, you'll have learned enough to deploy your next production-ready Kubernetes app with AKS, with the ngrok Kubernetes Ingress Controller giving you access to additional features, like observability and resiliency, with no extra configuration complexity.
 
-The [ngrok Kubernetes Ingress Controller](https://ngrok.com/blog-post/ngrok-k8s) is ngrok's official controller for adding secure public ingress and middleware execution to your Kubernetes apps with ngrok's Cloud Edge. With ngrok, you can manage and secure traffic to your apps at every stage of the development lifecycle while also benefitting from simpler configurations, security, and edge acceleration.
+Here is what you'll be building with:
 
-AKS is a managed hosted Kubernetes environment from Microsoft. AKS simplifies the deployment, health monitoring, and maintenance of cloud native applications, whether you deploy them in Azure, in on-premises data centers, or at the edge. With [40 regions](https://azure.microsoft.com/en-us/explore/global-infrastructure/products-by-region/?products=kubernetes-service), you should be able to deploy a cluster close to your customers.
-
-Together, the ngrok Kubernetes Ingress Controller and AKS abstract complexity away from your entire networking stack (both internal and external traffic), while giving you access to additional monitoring features and more resiliency.
+- The [ngrok Kubernetes Ingress Controller](https://ngrok.com/blog-post/ngrok-k8s): ngrok's official controller for adding secure public ingress and middleware execution to your Kubernetes apps with ngrok's Cloud Edge. With ngrok, you can manage and secure traffic to your apps at every stage of the development lifecycle while also benefitting from simpler configurations, security, and edge acceleration.
+- Azure Kubernetes Service (AKS): A managed Kubernetes environment from Microsoft. AKS simplifies the deployment, health monitoring, and maintenance of cloud native applications, whether you deploy them in Azure, in on-premises data centers, or at the edge. With [40 regions](https://azure.microsoft.com/en-us/explore/global-infrastructure/products-by-region/?products=kubernetes-service), you should be able to deploy a cluster close to your customers.
 
 :::caution This how-to requires:
 
 1. An [ngrok account](https://ngrok.com/signup) at the [**pay-as-you-go** or **custom**](https://ngrok.com/pricing) tiers.
-2. An [Azure account](https://azure.microsoft.com/en-us/pricing/purchase-options/pay-as-you-go).
+2. An [Azure account](https://azure.microsoft.com/en-us/pricing/purchase-options/pay-as-you-go) with permissions to create new Kubernetes clusters.
 3. [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) installed locally.
 4. [Helm 3.0.0+](https://helm.sh/docs/intro/install/) installed locally.
 
@@ -41,7 +40,7 @@ Start by creating a new managed Kubernetes cluster in AKS. If you already have o
 
 1. Go to the [Kubernetes services](https://portal.azure.com/#view/HubsExtension/BrowseResource/resourceType/Microsoft.ContainerService%2FmanagedClusters) section in your Azure console and click **Create**&rarr;**Create a Kubernetes cluster**.
 
-1. Configure your new cluster with the wizard. The default options are generally safe bets, but there are a few you might want to look at depending on your needs, how your Azure subscription is configured, and budget:
+1. Configure your new cluster with the wizard. The default options are generally safe bets, but there are a few you might want to look at depending on your requirements and budget:
 
    - Cluster present configuration: You can choose a production-ready deployment, a dev/test deployment, and others.
    - Region: The data center where AKS will deploy your cluster—pick a region geographically close to your primary customers and/or your organization.
@@ -99,7 +98,7 @@ Controller](https://github.com/ngrok/kubernetes-ingress-controller) before your 
      --set credentials.authtoken=$NGROK_AUTHTOKEN
    ```
 
-1. Verify you have installed the ngrok Ingress Controller successfully and that pods are healthy.
+1. Verify you have successfully installed the ngrok Ingress Controller and that pods are healthy.
 
    ```bash
    kubectl get pods -l 'app.kubernetes.io/name=kubernetes-ingress-controller' --namespace ngrok-ingress-controller
@@ -110,11 +109,11 @@ Controller](https://github.com/ngrok/kubernetes-ingress-controller) before your 
 
 ## **Step 3**: Deploy a demo microservices app {#deploy-a-demo-microservices-app}
 
-To showcase how this integration works, you'll deploy the [AKS Store](https://github.com/Azure-Samples/azure-voting-app-redis) app, which uses a microservices architecture for connecting frontend UI to API-like services, which pass data to RabbitMQ and MongoDB in the backend. To showcase the features of AKS, you'll deploy this demo app directly in the Azure Portal.
+To showcase how this integration works, you'll deploy the [AKS Store](https://github.com/Azure-Samples/azure-voting-app-redis) app, which uses a microservices architecture to connect frontend UI to API-like services, passing data to RabbitMQ and MongoDB in the backend. To showcase the features of AKS, you'll deploy this demo app directly in the Azure Portal.
 
 :::tip
 
-If you prefer the CLI, you can also save the YAML below to a `.yaml` file on your local workstation and deploy with `kubectl apply -f ...`.
+If you prefer the CLI, save the YAML below to a `.yaml` file on your local workstation and deploy with `kubectl apply -f ...`.
 
 :::
 
@@ -140,36 +139,36 @@ If you prefer the CLI, you can also save the YAML below to a `.yaml` file on you
          nodeSelector:
            "kubernetes.io/os": linux
          containers:
-         - name: rabbitmq
-           image: mcr.microsoft.com/mirror/docker/library/rabbitmq:3.10-management-alpine
-           ports:
-           - containerPort: 5672
-             name: rabbitmq-amqp
-           - containerPort: 15672
-             name: rabbitmq-http
-           env:
-           - name: RABBITMQ_DEFAULT_USER
-             value: "username"
-           - name: RABBITMQ_DEFAULT_PASS
-             value: "password"
-           resources:
-             requests:
-               cpu: 10m
-               memory: 128Mi
-             limits:
-               cpu: 250m
-               memory: 256Mi
-           volumeMounts:
-           - name: rabbitmq-enabled-plugins
-             mountPath: /etc/rabbitmq/enabled_plugins
-             subPath: enabled_plugins
+           - name: rabbitmq
+             image: mcr.microsoft.com/mirror/docker/library/rabbitmq:3.10-management-alpine
+             ports:
+               - containerPort: 5672
+                 name: rabbitmq-amqp
+               - containerPort: 15672
+                 name: rabbitmq-http
+             env:
+               - name: RABBITMQ_DEFAULT_USER
+                 value: "username"
+               - name: RABBITMQ_DEFAULT_PASS
+                 value: "password"
+             resources:
+               requests:
+                 cpu: 10m
+                 memory: 128Mi
+               limits:
+                 cpu: 250m
+                 memory: 256Mi
+             volumeMounts:
+               - name: rabbitmq-enabled-plugins
+                 mountPath: /etc/rabbitmq/enabled_plugins
+                 subPath: enabled_plugins
          volumes:
-         - name: rabbitmq-enabled-plugins
-           configMap:
-             name: rabbitmq-enabled-plugins
-             items:
-             - key: rabbitmq_enabled_plugins
-               path: enabled_plugins
+           - name: rabbitmq-enabled-plugins
+             configMap:
+               name: rabbitmq-enabled-plugins
+               items:
+                 - key: rabbitmq_enabled_plugins
+                   path: enabled_plugins
    ---
    apiVersion: v1
    data:
@@ -212,41 +211,46 @@ If you prefer the CLI, you can also save the YAML below to a `.yaml` file on you
          nodeSelector:
            "kubernetes.io/os": linux
          containers:
-         - name: order-service
-           image: ghcr.io/azure-samples/aks-store-demo/order-service:latest
-           ports:
-           - containerPort: 3000
-           env:
-           - name: ORDER_QUEUE_HOSTNAME
-             value: "rabbitmq"
-           - name: ORDER_QUEUE_PORT
-             value: "5672"
-           - name: ORDER_QUEUE_USERNAME
-             value: "username"
-           - name: ORDER_QUEUE_PASSWORD
-             value: "password"
-           - name: ORDER_QUEUE_NAME
-             value: "orders"
-           - name: FASTIFY_ADDRESS
-             value: "0.0.0.0"
-           resources:
-             requests:
-               cpu: 1m
-               memory: 50Mi
-             limits:
-               cpu: 75m
-               memory: 128Mi
+           - name: order-service
+             image: ghcr.io/azure-samples/aks-store-demo/order-service:latest
+             ports:
+               - containerPort: 3000
+             env:
+               - name: ORDER_QUEUE_HOSTNAME
+                 value: "rabbitmq"
+               - name: ORDER_QUEUE_PORT
+                 value: "5672"
+               - name: ORDER_QUEUE_USERNAME
+                 value: "username"
+               - name: ORDER_QUEUE_PASSWORD
+                 value: "password"
+               - name: ORDER_QUEUE_NAME
+                 value: "orders"
+               - name: FASTIFY_ADDRESS
+                 value: "0.0.0.0"
+             resources:
+               requests:
+                 cpu: 1m
+                 memory: 50Mi
+               limits:
+                 cpu: 75m
+                 memory: 128Mi
          initContainers:
-         - name: wait-for-rabbitmq
-           image: busybox
-           command: ['sh', '-c', 'until nc -zv rabbitmq 5672; do echo waiting for rabbitmq; sleep 2; done;']
-           resources:
-             requests:
-               cpu: 1m
-               memory: 50Mi
-             limits:
-               cpu: 75m
-               memory: 128Mi
+           - name: wait-for-rabbitmq
+             image: busybox
+             command:
+               [
+                 "sh",
+                 "-c",
+                 "until nc -zv rabbitmq 5672; do echo waiting for rabbitmq; sleep 2; done;",
+               ]
+             resources:
+               requests:
+                 cpu: 1m
+                 memory: 50Mi
+               limits:
+                 cpu: 75m
+                 memory: 128Mi
    ---
    apiVersion: v1
    kind: Service
@@ -255,9 +259,9 @@ If you prefer the CLI, you can also save the YAML below to a `.yaml` file on you
    spec:
      type: ClusterIP
      ports:
-     - name: http
-       port: 3000
-       targetPort: 3000
+       - name: http
+         port: 3000
+         targetPort: 3000
      selector:
        app: order-service
    ---
@@ -278,17 +282,17 @@ If you prefer the CLI, you can also save the YAML below to a `.yaml` file on you
          nodeSelector:
            "kubernetes.io/os": linux
          containers:
-         - name: product-service
-           image: ghcr.io/azure-samples/aks-store-demo/product-service:latest
-           ports:
-           - containerPort: 3002
-           resources:
-             requests:
-               cpu: 1m
-               memory: 1Mi
-             limits:
-               cpu: 1m
-               memory: 7Mi
+           - name: product-service
+             image: ghcr.io/azure-samples/aks-store-demo/product-service:latest
+             ports:
+               - containerPort: 3002
+             resources:
+               requests:
+                 cpu: 1m
+                 memory: 1Mi
+               limits:
+                 cpu: 1m
+                 memory: 7Mi
    ---
    apiVersion: v1
    kind: Service
@@ -297,9 +301,9 @@ If you prefer the CLI, you can also save the YAML below to a `.yaml` file on you
    spec:
      type: ClusterIP
      ports:
-     - name: http
-       port: 3002
-       targetPort: 3002
+       - name: http
+         port: 3002
+         targetPort: 3002
      selector:
        app: product-service
    ---
@@ -320,23 +324,23 @@ If you prefer the CLI, you can also save the YAML below to a `.yaml` file on you
          nodeSelector:
            "kubernetes.io/os": linux
          containers:
-         - name: store-front
-           image: ghcr.io/azure-samples/aks-store-demo/store-front:latest
-           ports:
-           - containerPort: 8080
-             name: store-front
-           env:
-           - name: VUE_APP_ORDER_SERVICE_URL
-             value: "http://order-service:3000/"
-           - name: VUE_APP_PRODUCT_SERVICE_URL
-             value: "http://product-service:3002/"
-           resources:
-             requests:
-               cpu: 1m
-               memory: 200Mi
-             limits:
-               cpu: 1000m
-               memory: 512Mi
+           - name: store-front
+             image: ghcr.io/azure-samples/aks-store-demo/store-front:latest
+             ports:
+               - containerPort: 8080
+                 name: store-front
+             env:
+               - name: VUE_APP_ORDER_SERVICE_URL
+                 value: "http://order-service:3000/"
+               - name: VUE_APP_PRODUCT_SERVICE_URL
+                 value: "http://product-service:3002/"
+             resources:
+               requests:
+                 cpu: 1m
+                 memory: 200Mi
+               limits:
+                 cpu: 1000m
+                 memory: 512Mi
    ---
    apiVersion: v1
    kind: Service
@@ -344,8 +348,8 @@ If you prefer the CLI, you can also save the YAML below to a `.yaml` file on you
      name: store-front
    spec:
      ports:
-     - port: 80
-       targetPort: 8080
+       - port: 80
+         targetPort: 8080
      selector:
        app: store-front
      type: LoadBalancer
@@ -355,7 +359,7 @@ If you prefer the CLI, you can also save the YAML below to a `.yaml` file on you
 
 ## **Step 4**: Add ngrok-based ingress to your demo app {#add-ngrok-based-ingress-to-your-demo-app}
 
-***TK***
+Next, you'll configure and deploy the [ngrok Kubernetes Ingress Controller](https://github.com/ngrok/kubernetes-ingress-controller) to expose your demo app to the public internet through the ngrok Cloud Edge.
 
 1. In the Azure Portal, click **Create&rarr;Apply a YAML**.
 
@@ -398,9 +402,9 @@ If you prefer the CLI, you can also save the YAML below to a `.yaml` file on you
 
    ![The AKS Store demo app accessible from the public internet](img/store-front.png)
 
-## Add OAuth authentication to your demo app {#add-oauth-authentication-to-your-demo-app}
+## **Step 5**: Add OAuth authentication to your demo app {#add-oauth-authentication-to-your-demo-app}
 
-Now that your demo app is publicly accessible through the ngrok Cloud Edge, you can quickly layer on [additional capabilities](https://ngrok.com/docs/http/), like authentication, without having to configure and deploy complex infrastructure. Let's see what that looks like for restricting access to your demo app to the owners of specific email addresses or domains.
+Now that your demo app is publicly accessible through the ngrok Cloud Edge, you can quickly layer on [additional capabilities](https://ngrok.com/docs/http/), like authentication, without configuring and deploying complex infrastructure. Let's see how that works for restricting access to individual Google accounts or any Google account under a specific domain name.
 
 1. Apply a new YAML definition to your cluster with the YAML below, replacing `YOUR_DOMAIN.TLD` with the domain name you'd like to authenticate visitors against.
 
@@ -427,10 +431,10 @@ Now that your demo app is publicly accessible through the ngrok Cloud Edge, you 
    metadata:
      name: store-ingress
      namespace: ngrok-ingress-controller
-      # highlight-start
+   # highlight-start
    annotations:
      k8s.ngrok.com/modules: ngrok-managed-google-oauth
-      # highlight-end
+   # highlight-end
    spec:
      ingressClassName: ngrok
      rules:
@@ -450,4 +454,8 @@ Now that your demo app is publicly accessible through the ngrok Cloud Edge, you 
 
 ## What's next?
 
-**_TK_**
+You've now used the open source ngrok Kubernetes Ingress Controller to add public ingress to a demo app on a cluster managed in AKS without having to worry about complex Kubernetes networking configurations. Because ngrok abstracts ingress and middleware execution to its Cloud Edge, you can follow a similar process to route public traffic to your next production-ready app.
+
+You can also extend the integration with additional [route modules](https://github.com/ngrok/kubernetes-ingress-controller/blob/main/docs/user-guide/route-modules.md), like circuit breakers, compression, or edit headers before they are sent to your app. Additional deployment options include [name-based virtual hosting](https://github.com/ngrok/kubernetes-ingress-controller/blob/main/docs/user-guide/ingress-to-edge-relationship.md#name-based-virtual-hosting), which lets you deploy and manage any number of Kubernetes clusters and apps in AKS, then create unique ngrok edge domains, like `foo1.bar.com` and `foo2.bar.com`, to direct traffic to the respective services.
+
+Learn more about the ngrok Ingress Controller, or contribute to its ongoing development, by checking out the [GitHub repository](https://github.com/ngrok/kubernetes-ingress-controller) and the [project-specific documentation](https://github.com/ngrok/kubernetes-ingress-controller/tree/main/docs).
