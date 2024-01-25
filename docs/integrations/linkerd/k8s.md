@@ -157,6 +157,12 @@ Controller](https://github.com/ngrok/kubernetes-ingress-controller) to simplify 
 
 To demonstrate how Linkerd and the ngrok Ingress Controller integrate to add additional observability, security, and reliability into your cluster, you'll deploy the [Emojivoto](https://github.com/BuoyantIO/emojivoto) demo application, which was developed by Buoyant, the company that originally developed Linkerd.
 
+1. Create a ngrok static subdomain for ingress if you don't have one already. Navigate to the [**Domains**
+   section](https://dashboard.ngrok.com/cloud-edge/domains) of the ngrok dashboard and click **Create Domain** or **New
+   Domain**. This static subdomain will be your `NGROK_DOMAIN` for the remainder of this guide.
+
+   By creating a subdomain on the ngrok network, you provide a public route to accept HTTP, HTTPS, and TLS traffic.
+
 1. Deploy Emojivoto to the `emojivoto` namespace.
 
    ```bash
@@ -184,7 +190,7 @@ To demonstrate how Linkerd and the ngrok Ingress Controller integrate to add add
 
    :::tip
 
-   Make sure you edit line `9` of the manifest below, which contains the `NGROK_DOMAIN` variable, with the ngrok subdomain you created in the previous step. It should look something like `one-two-three.ngrok.app`.
+   Make sure you edit line `9` of the manifest below, which contains the `NGROK_DOMAIN` variable, with your ngrok subdomain. It should look something like `one-two-three.ngrok.app`.
 
    :::
 
