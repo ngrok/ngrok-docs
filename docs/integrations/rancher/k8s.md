@@ -90,6 +90,7 @@ docker logs [DOCKER_NAME] 2>&1 | grep "Bootstrap Password:"
 
 1. Copy the terminal output into the password input and click **Log in with Local User**. Next, choose between a
    randomly-generated password or one of your choosing to initialize the **admin** user.
+
 1. The **Server URL** field will default to `https://localhost:444`, but your worker nodes won't be able to connect to
    Rancher in this configuration. Find your local IP address—try `hostname -I` for Linux or `ipconfig getifaddr en0` on macOs—which will look similar to `192.168.1.123`, and
    replace `localhost` with it, similar to the following: `https://192.168.1.107:444`.
@@ -220,66 +221,66 @@ simplifying how you route external traffic through your Rancher-managed cluster.
    edge via your `NGROK_DOMAIN`.
 
    :::tip
-   Make sure you edit line 45 of the manifest below, which contains the `NGROK_DOMAIN` variable, with the ngrok subdomain you created in the previous step. It should look something like `one-two-three.ngrok-free.app`.
+   Make sure you edit line 45 of the manifest below, which contains the `NGROK_DOMAIN` variable, with the ngrok subdomain you just created. It should look something like `one-two-three.ngrok-free.app`.
    :::
 
    ```yaml showLineNumbers
    apiVersion: v1
    kind: Service
    metadata:
-   name: game-2048
-   namespace: ngrok-ingress-controller
+     name: game-2048
+     namespace: ngrok-ingress-controller
    spec:
-   ports:
-      - name: http
+     ports:
+       - name: http
          port: 80
          targetPort: 80
-   selector:
-      app: game-2048
+     selector:
+       app: game-2048
    ---
    apiVersion: apps/v1
    kind: Deployment
    metadata:
-   name: game-2048
-   namespace: ngrok-ingress-controller
+     name: game-2048
+     namespace: ngrok-ingress-controller
    spec:
-   replicas: 1
-   selector:
-      matchLabels:
+     replicas: 1
+     selector:
+       matchLabels:
          app: game-2048
-   template:
-      metadata:
+     template:
+       metadata:
          labels:
-         app: game-2048
-      spec:
+           app: game-2048
+       spec:
          containers:
-         - name: backend
-            image: alexwhen/docker-2048
-            ports:
+           - name: backend
+             image: alexwhen/docker-2048
+             ports:
                - name: http
-               containerPort: 80
+                 containerPort: 80
    ---
-   # ngrok Ingress Controller Configuration
+   # ngrok Kubernetes  Ingress Controller configuration
    apiVersion: networking.k8s.io/v1
    kind: Ingress
    metadata:
-   name: game-2048-ingress
-   namespace: ngrok-ingress-controller
+     name: game-2048-ingress
+     namespace: ngrok-ingress-controller
    spec:
-   ingressClassName: ngrok
-   rules:
-      # highlight-start
-      - host: NGROK_DOMAIN
+     ingressClassName: ngrok
+     rules:
+         # highlight-start
+         - host: NGROK_DOMAIN
          # highlight-end
-         http:
-         paths:
-            - path: /
-               pathType: Prefix
-               backend:
-               service:
-                  name: game-2048
-                  port:
-                     number: 80
+           http:
+             paths:
+               - path: /
+                 pathType: Prefix
+                 backend:
+                   service:
+                     name: game-2048
+                     port:
+                       number: 80
    ```
 
 1. Apply the `2048.yaml` manifest to your RKE2 cluster.
