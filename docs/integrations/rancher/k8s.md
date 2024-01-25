@@ -124,20 +124,20 @@ docker logs [DOCKER_NAME] 2>&1 | grep "Bootstrap Password:"
 1. Ensure your new RKE2 cluster is active by getting the namespaces for your instance. Your list of namespaces should
    look like the following:
 
-```bash
-kubectl get namespaces
-
-NAME                          STATUS   AGE
-calico-system                 Active   4m
-cattle-impersonation-system   Active   29s
-cattle-system                 Active   5m
-default                       Active   5m4s
-kube-node-lease               Active   5m6s
-kube-public                   Active   5m6s
-kube-system                   Active   5m6s
-local                         Active   23s
-tigera-operator               Active   4m10s
-```
+   ```bash
+   kubectl get namespaces
+   
+   NAME                          STATUS   AGE
+   calico-system                 Active   4m
+   cattle-impersonation-system   Active   29s
+   cattle-system                 Active   5m
+   default                       Active   5m4s
+   kube-node-lease               Active   5m6s
+   kube-public                   Active   5m6s
+   kube-system                   Active   5m6s
+   local                         Active   23s
+   tigera-operator               Active   4m10s
+   ```
 
 You have now installed Rancher in a Docker container, created a new Kubernetes cluster for your applications, and
 connected one or more Linux nodes to Rancher for handling future workloads.
