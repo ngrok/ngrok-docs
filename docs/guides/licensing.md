@@ -4,21 +4,21 @@ This guide will walk you through frequently asked questions about ngrok's licens
 
 # What resources in ngrok’s free plan are limited?
 
-| Resource              | Limit on Free          |
-| --------------------- | ---------------------- |
-| Data Transfer Out     | 1 GB                   |
-| Endpoints[^1]         | 1                      |
-| Requests              | 10,000                 |
-| TCP Connections       | 10,000                 |
-| TLS Connections       | 10,000                 |
-
+| Resource          | Limit on Free |
+| ----------------- | ------------- |
+| Data Transfer Out | 1 GB          |
+| Endpoints[^1]     | 1             |
+| Requests          | 10,000        |
+| TCP Connections   | 10,000        |
+| TLS Connections   | 10,000        |
 
 # How can I see how my account stacks up against my limits?
-The ngrok usage page at ngrok.dashboard.com/usage 
+
+The ngrok usage page at ngrok.dashboard.com/usage
 
 # How often do limits refresh?
-Your count of resources against a limit refreshes on the first day of each month. 
 
+Your count of resources against a limit refreshes on the first day of each month.
 
 ## How it works
 
