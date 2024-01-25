@@ -231,7 +231,7 @@ To demonstrate how Linkerd and the ngrok Ingress Controller integrate to add add
 
    :::
 
-1. Access your Emojivoto application by navigating to the your ngrok domain, e.g. `https://one-two-three.ngrok-free.app`, in your browser.
+1. Access your Emojivoto application by navigating to the your ngrok domain, e.g. `https://one-two-three.ngrok.app`, in your browser.
 
    ![Viewing the Emojivoto application](img/emojivoto.png)
 

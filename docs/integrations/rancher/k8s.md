@@ -221,7 +221,7 @@ simplifying how you route external traffic through your Rancher-managed cluster.
    edge via your `NGROK_DOMAIN`.
 
    :::tip
-   Make sure you edit line 45 of the manifest below, which contains the `NGROK_DOMAIN` variable, with the ngrok subdomain you just created. It should look something like `one-two-three.ngrok-free.app`.
+   Make sure you edit line 45 of the manifest below, which contains the `NGROK_DOMAIN` variable, with the ngrok subdomain you just created. It should look something like `one-two-three.ngrok.app`.
    :::
 
    ```yaml showLineNumbers
@@ -294,7 +294,7 @@ simplifying how you route external traffic through your Rancher-managed cluster.
    and try again.
    :::
 
-1. Access your 2048 demo app by navigating to your ngrok subdomain, e.g. `https://one-two-three.ngrok-free.app`.
+1. Access your 2048 demo app by navigating to your ngrok subdomain, e.g. `https://one-two-three.ngrok.app`.
    ngrok's edge and your Ingress Controller will route traffic to your app from any device or external network as long
    as your Rancher server and application cluster remain operational.
 

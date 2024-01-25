@@ -251,11 +251,11 @@ Ingress Controller.
 multiple tunnels for load balancing, enabling the [Mutual TLS module](/http/mutual-tls/), adding
 compression, and more. We'll use one of these options, OAuth, in the next step.
 
-1. Access your 2048 demo app by navigating to the your domain, e.g. `https://one-two-three.ngrok-free.app`. ngrok's edge
+1. Access your 2048 demo app by navigating to the your domain, e.g. `https://one-two-three.ngrok.app`. ngrok's edge
    and your Ingress Controller will route traffic to your app from any device or external network as long as your
    vcluster remains operational.
 
-   !["Navigating directly to the https://one-two-three.ngrok-free.app domain to see the 2048 application"](img/ngrok-k8s-vcluster_2048.png)
+   !["Navigating directly to the https://one-two-three.ngrok.app domain to see the 2048 application"](img/ngrok-k8s-vcluster_2048.png)
 
 ## **Step 4**: Add OAuth protection to your demo app {#add-oauth-protection}
 
@@ -364,7 +364,7 @@ allowing ingress and access to your endpoint.
 
    ![Verifying the OAuth module configuration in the ngrok dashboard](img/ngrok-k8s-vcluster_oauth-config.png)
 
-1. Access your 2048 app at your domain (e.g. `https://one-two-three.ngrok-free.app`) to verify that it requests
+1. Access your 2048 app at your domain (e.g. `https://one-two-three.ngrok.app`) to verify that it requests
    authentication via Google OAuth before allowing you to access the 2048 app.
 
 ## What's next?
