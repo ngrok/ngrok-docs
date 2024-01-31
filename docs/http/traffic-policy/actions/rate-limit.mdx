@@ -1,1 +1,28 @@
 # Rate Limit
+
+## Overview
+
+The Rate Limit policy action allows you to configure thresholds that restrict
+the throughput of traffic that successfully reaches your endpoint.
+
+## Behavior
+
+When this action is executed, it evaluates a configured key based off the incoming connection
+to determine if the specified threshold has been met in the current time window. If a threshold
+has been reached, the request is rejected with a `429 — Too Many Requests` status code. Otherwise,
+the request proceeds to your upstream server.
+
+### Configuration
+
+| Type         |
+| ------------ |
+| `rate-limit` |
+
+| Parameter    | &nbsp;             | Description                                                                                                                                                                                                                                                                                                          |
+| ------------ | ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `name`       | string             | A name for this rate limit configuration.                                                                                                                                                                                                                                                                            |
+| `algorithm`  | string             | The rate limit algorithm to be used. Supported options: `"sliding_window"`                                                                                                                                                                                                                                           |
+| `capacity`   | uint               | The maximum number of requests allowed to reach your upstream server. The minimum capacity is `1` and the maximum capacity is `1000`.                                                                                                                                                                                |
+| `rate`       | string             | The duration in which events may be limited based on the current capacity. This must be specified as a time duration (e.g. `"3s"`, `"10m"`). The minimum value is `"1s"` and the maximum value is `"24h"`.                                                                                                           |
+| `bucket_key` | List&lt;string&gt; | The elements of this collection define the unique key of a request to collect and track the rate at which the capacity is being met. Possible values are `"domain"`, which is the Host, `"client_ip"`, and `"getReqHeader('X-example-header-name')"`, which is the value for the specified header key, if it exists. |
+
