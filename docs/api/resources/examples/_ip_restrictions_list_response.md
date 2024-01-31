@@ -6,20 +6,20 @@
 {
 	"ip_restrictions": [
 		{
-			"id": "ipx_2bMmWc1wqpsOUVP4H6EgqdIA9oQ",
-			"uri": "https://api.ngrok.com/ip_restrictions/ipx_2bMmWc1wqpsOUVP4H6EgqdIA9oQ",
-			"created_at": "2024-01-23T18:09:14Z",
+			"created_at": "2024-01-31T05:23:16Z",
 			"enforced": false,
-			"type": "dashboard",
+			"id": "ipx_2bhsMQrUZZj5OoBdKchmGbvGYuc",
 			"ip_policies": [
 				{
-					"id": "ipp_2bMmWevCfjIjS5dolQMi5IS7JFg",
-					"uri": "https://api.ngrok.com/ip_policies/ipp_2bMmWevCfjIjS5dolQMi5IS7JFg"
+					"id": "ipp_2bhsMSDi526IWlNnnakcuJQsvmk",
+					"uri": "https://api.ngrok.com/ip_policies/ipp_2bhsMSDi526IWlNnnakcuJQsvmk"
 				}
-			]
+			],
+			"type": "dashboard",
+			"uri": "https://api.ngrok.com/ip_restrictions/ipx_2bhsMQrUZZj5OoBdKchmGbvGYuc"
 		}
 	],
-	"uri": "https://api.ngrok.com/ip_restrictions",
-	"next_page_uri": null
+	"next_page_uri": null,
+	"uri": "https://api.ngrok.com/ip_restrictions"
 }
 ```

@@ -5,10 +5,10 @@
 ```json
 {
 	"enabled": true,
-	"tripped_duration": 120,
-	"rolling_window": 300,
+	"error_threshold_percentage": 0.2,
 	"num_buckets": 5,
-	"volume_threshold": 20,
-	"error_threshold_percentage": 0.2
+	"rolling_window": 300,
+	"tripped_duration": 120,
+	"volume_threshold": 20
 }
 ```

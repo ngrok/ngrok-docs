@@ -4,20 +4,20 @@
 
 ```json
 {
+	"next_page_uri": null,
 	"tcp_edges": [
 		{
-			"id": "edgtcp_2bMmXM8nYzBUUlcHS6zbuPXBEnk",
-			"description": "acme tcp edge",
-			"metadata": "{\"environment\": \"staging\"}",
-			"created_at": "2024-01-23T18:09:20Z",
-			"uri": "https://api.ngrok.com/edges/tcp/edgtcp_2bMmXM8nYzBUUlcHS6zbuPXBEnk",
-			"hostports": null,
 			"backend": null,
+			"created_at": "2024-01-31T05:23:23Z",
+			"description": "acme tcp edge",
+			"hostports": null,
+			"id": "edgtcp_2bhsNN8jbuXE7E4nGAaSCG7zg4Q",
 			"ip_restriction": null,
-			"policies": null
+			"metadata": "{\"environment\": \"staging\"}",
+			"policy": null,
+			"uri": "https://api.ngrok.com/edges/tcp/edgtcp_2bhsNN8jbuXE7E4nGAaSCG7zg4Q"
 		}
 	],
-	"uri": "https://api.ngrok.com/edges/tcp",
-	"next_page_uri": null
+	"uri": "https://api.ngrok.com/edges/tcp"
 }
 ```

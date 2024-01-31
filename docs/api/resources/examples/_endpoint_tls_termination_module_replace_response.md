@@ -5,7 +5,7 @@
 ```json
 {
 	"enabled": true,
-	"terminate_at": "edge",
-	"min_version": "1.2"
+	"min_version": "1.2",
+	"terminate_at": "edge"
 }
 ```

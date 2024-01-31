@@ -30,6 +30,7 @@ POST /edges/tcp
 | `hostports`      | List&lt;string&gt;                                           | hostports served by this edge                                                           |
 | `backend`        | [EndpointBackendMutate](#endpointbackendmutate-parameters)   | edge modules                                                                            |
 | `ip_restriction` | [EndpointIPPolicyMutate](#endpointippolicymutate-parameters) |                                                                                         |
+| `policy`         | [EndpointPolicy](#endpointpolicy-parameters)                 | the traffic policy associated with this edge or null                                    |
 
 #### EndpointBackendMutate parameters
 
@@ -44,6 +45,29 @@ POST /edges/tcp
 | --------------- | ------------------ | --------------------------------------------------------------------------------------------------- |
 | `enabled`       | boolean            | `true` if the module will be applied to traffic, `false` to disable. default `true` if unspecified  |
 | `ip_policy_ids` | List&lt;string&gt; | list of all IP policies that will be used to check if a source IP is allowed access to the endpoint |
+
+#### EndpointPolicy parameters
+
+| Name       | Type                                     | Description                                                                                        |
+| ---------- | ---------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| `enabled`  | boolean                                  | `true` if the module will be applied to traffic, `false` to disable. default `true` if unspecified |
+| `inbound`  | [EndpointRule](#endpointrule-parameters) | the inbound rules of the traffic policy.                                                           |
+| `outbound` | [EndpointRule](#endpointrule-parameters) | the outbound rules on the traffic policy.                                                          |
+
+#### EndpointRule parameters
+
+| Name          | Type                                         | Description                                                     |
+| ------------- | -------------------------------------------- | --------------------------------------------------------------- |
+| `expressions` | List&lt;string&gt;                           | cel expressions that filter traffic the policy rule applies to. |
+| `actions`     | [EndpointAction](#endpointaction-parameters) | the set of actions on a policy rule.                            |
+| `name`        | string                                       | the name of the rule that is part of the traffic policy.        |
+
+#### EndpointAction parameters
+
+| Name     | Type   | Description                                          |
+| -------- | ------ | ---------------------------------------------------- |
+| `type`   | string | the type of action on the policy rule.               |
+| `config` | object | the configuration for the action on the policy rule. |
 
 ### Response
 
@@ -63,6 +87,7 @@ Returns a 201 response on success
 | `hostports`      | List&lt;string&gt;                           | hostports served by this edge                                                           |
 | `backend`        | [EndpointBackend](#endpointbackend-fields)   | edge modules                                                                            |
 | `ip_restriction` | [EndpointIPPolicy](#endpointippolicy-fields) |                                                                                         |
+| `policy`         | [EndpointPolicy](#endpointpolicy-fields)     | the traffic policy associated with this edge or null                                    |
 
 #### EndpointBackend fields
 
@@ -84,6 +109,29 @@ Returns a 201 response on success
 | ------------- | ------------------ | --------------------------------------------------------------------------------------------------- |
 | `enabled`     | boolean            | `true` if the module will be applied to traffic, `false` to disable. default `true` if unspecified  |
 | `ip_policies` | [Ref](#ref-fields) | list of all IP policies that will be used to check if a source IP is allowed access to the endpoint |
+
+#### EndpointPolicy fields
+
+| Name       | Type                                 | Description                                                                                        |
+| ---------- | ------------------------------------ | -------------------------------------------------------------------------------------------------- |
+| `enabled`  | boolean                              | `true` if the module will be applied to traffic, `false` to disable. default `true` if unspecified |
+| `inbound`  | [EndpointRule](#endpointrule-fields) | the inbound rules of the traffic policy.                                                           |
+| `outbound` | [EndpointRule](#endpointrule-fields) | the outbound rules on the traffic policy.                                                          |
+
+#### EndpointRule fields
+
+| Name          | Type                                     | Description                                                     |
+| ------------- | ---------------------------------------- | --------------------------------------------------------------- |
+| `expressions` | List&lt;string&gt;                       | cel expressions that filter traffic the policy rule applies to. |
+| `actions`     | [EndpointAction](#endpointaction-fields) | the set of actions on a policy rule.                            |
+| `name`        | string                                   | the name of the rule that is part of the traffic policy.        |
+
+#### EndpointAction fields
+
+| Name     | Type   | Description                                          |
+| -------- | ------ | ---------------------------------------------------- |
+| `type`   | string | the type of action on the policy rule.               |
+| `config` | object | the configuration for the action on the policy rule. |
 
 ## Get TCP Edge
 
@@ -113,6 +161,7 @@ Returns a 200 response on success
 | `hostports`      | List&lt;string&gt;                           | hostports served by this edge                                                           |
 | `backend`        | [EndpointBackend](#endpointbackend-fields)   | edge modules                                                                            |
 | `ip_restriction` | [EndpointIPPolicy](#endpointippolicy-fields) |                                                                                         |
+| `policy`         | [EndpointPolicy](#endpointpolicy-fields)     | the traffic policy associated with this edge or null                                    |
 
 #### EndpointBackend fields
 
@@ -134,6 +183,29 @@ Returns a 200 response on success
 | ------------- | ------------------ | --------------------------------------------------------------------------------------------------- |
 | `enabled`     | boolean            | `true` if the module will be applied to traffic, `false` to disable. default `true` if unspecified  |
 | `ip_policies` | [Ref](#ref-fields) | list of all IP policies that will be used to check if a source IP is allowed access to the endpoint |
+
+#### EndpointPolicy fields
+
+| Name       | Type                                 | Description                                                                                        |
+| ---------- | ------------------------------------ | -------------------------------------------------------------------------------------------------- |
+| `enabled`  | boolean                              | `true` if the module will be applied to traffic, `false` to disable. default `true` if unspecified |
+| `inbound`  | [EndpointRule](#endpointrule-fields) | the inbound rules of the traffic policy.                                                           |
+| `outbound` | [EndpointRule](#endpointrule-fields) | the outbound rules on the traffic policy.                                                          |
+
+#### EndpointRule fields
+
+| Name          | Type                                     | Description                                                     |
+| ------------- | ---------------------------------------- | --------------------------------------------------------------- |
+| `expressions` | List&lt;string&gt;                       | cel expressions that filter traffic the policy rule applies to. |
+| `actions`     | [EndpointAction](#endpointaction-fields) | the set of actions on a policy rule.                            |
+| `name`        | string                                   | the name of the rule that is part of the traffic policy.        |
+
+#### EndpointAction fields
+
+| Name     | Type   | Description                                          |
+| -------- | ------ | ---------------------------------------------------- |
+| `type`   | string | the type of action on the policy rule.               |
+| `config` | object | the configuration for the action on the policy rule. |
 
 ## List TCP Edges
 
@@ -171,6 +243,7 @@ Returns a 200 response on success
 | `hostports`      | List&lt;string&gt;                           | hostports served by this edge                                                           |
 | `backend`        | [EndpointBackend](#endpointbackend-fields)   | edge modules                                                                            |
 | `ip_restriction` | [EndpointIPPolicy](#endpointippolicy-fields) |                                                                                         |
+| `policy`         | [EndpointPolicy](#endpointpolicy-fields)     | the traffic policy associated with this edge or null                                    |
 
 #### EndpointBackend fields
 
@@ -192,6 +265,29 @@ Returns a 200 response on success
 | ------------- | ------------------ | --------------------------------------------------------------------------------------------------- |
 | `enabled`     | boolean            | `true` if the module will be applied to traffic, `false` to disable. default `true` if unspecified  |
 | `ip_policies` | [Ref](#ref-fields) | list of all IP policies that will be used to check if a source IP is allowed access to the endpoint |
+
+#### EndpointPolicy fields
+
+| Name       | Type                                 | Description                                                                                        |
+| ---------- | ------------------------------------ | -------------------------------------------------------------------------------------------------- |
+| `enabled`  | boolean                              | `true` if the module will be applied to traffic, `false` to disable. default `true` if unspecified |
+| `inbound`  | [EndpointRule](#endpointrule-fields) | the inbound rules of the traffic policy.                                                           |
+| `outbound` | [EndpointRule](#endpointrule-fields) | the outbound rules on the traffic policy.                                                          |
+
+#### EndpointRule fields
+
+| Name          | Type                                     | Description                                                     |
+| ------------- | ---------------------------------------- | --------------------------------------------------------------- |
+| `expressions` | List&lt;string&gt;                       | cel expressions that filter traffic the policy rule applies to. |
+| `actions`     | [EndpointAction](#endpointaction-fields) | the set of actions on a policy rule.                            |
+| `name`        | string                                   | the name of the rule that is part of the traffic policy.        |
+
+#### EndpointAction fields
+
+| Name     | Type   | Description                                          |
+| -------- | ------ | ---------------------------------------------------- |
+| `type`   | string | the type of action on the policy rule.               |
+| `config` | object | the configuration for the action on the policy rule. |
 
 ## Update TCP Edge
 
@@ -213,6 +309,7 @@ PATCH /edges/tcp/\{id\}
 | `hostports`      | List&lt;string&gt;                                           | hostports served by this edge                                                           |
 | `backend`        | [EndpointBackendMutate](#endpointbackendmutate-parameters)   | edge modules                                                                            |
 | `ip_restriction` | [EndpointIPPolicyMutate](#endpointippolicymutate-parameters) |                                                                                         |
+| `policy`         | [EndpointPolicy](#endpointpolicy-parameters)                 | the traffic policy associated with this edge or null                                    |
 
 #### EndpointBackendMutate parameters
 
@@ -227,6 +324,29 @@ PATCH /edges/tcp/\{id\}
 | --------------- | ------------------ | --------------------------------------------------------------------------------------------------- |
 | `enabled`       | boolean            | `true` if the module will be applied to traffic, `false` to disable. default `true` if unspecified  |
 | `ip_policy_ids` | List&lt;string&gt; | list of all IP policies that will be used to check if a source IP is allowed access to the endpoint |
+
+#### EndpointPolicy parameters
+
+| Name       | Type                                     | Description                                                                                        |
+| ---------- | ---------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| `enabled`  | boolean                                  | `true` if the module will be applied to traffic, `false` to disable. default `true` if unspecified |
+| `inbound`  | [EndpointRule](#endpointrule-parameters) | the inbound rules of the traffic policy.                                                           |
+| `outbound` | [EndpointRule](#endpointrule-parameters) | the outbound rules on the traffic policy.                                                          |
+
+#### EndpointRule parameters
+
+| Name          | Type                                         | Description                                                     |
+| ------------- | -------------------------------------------- | --------------------------------------------------------------- |
+| `expressions` | List&lt;string&gt;                           | cel expressions that filter traffic the policy rule applies to. |
+| `actions`     | [EndpointAction](#endpointaction-parameters) | the set of actions on a policy rule.                            |
+| `name`        | string                                       | the name of the rule that is part of the traffic policy.        |
+
+#### EndpointAction parameters
+
+| Name     | Type   | Description                                          |
+| -------- | ------ | ---------------------------------------------------- |
+| `type`   | string | the type of action on the policy rule.               |
+| `config` | object | the configuration for the action on the policy rule. |
 
 ### Response
 
@@ -246,6 +366,7 @@ Returns a 200 response on success
 | `hostports`      | List&lt;string&gt;                           | hostports served by this edge                                                           |
 | `backend`        | [EndpointBackend](#endpointbackend-fields)   | edge modules                                                                            |
 | `ip_restriction` | [EndpointIPPolicy](#endpointippolicy-fields) |                                                                                         |
+| `policy`         | [EndpointPolicy](#endpointpolicy-fields)     | the traffic policy associated with this edge or null                                    |
 
 #### EndpointBackend fields
 
@@ -267,6 +388,29 @@ Returns a 200 response on success
 | ------------- | ------------------ | --------------------------------------------------------------------------------------------------- |
 | `enabled`     | boolean            | `true` if the module will be applied to traffic, `false` to disable. default `true` if unspecified  |
 | `ip_policies` | [Ref](#ref-fields) | list of all IP policies that will be used to check if a source IP is allowed access to the endpoint |
+
+#### EndpointPolicy fields
+
+| Name       | Type                                 | Description                                                                                        |
+| ---------- | ------------------------------------ | -------------------------------------------------------------------------------------------------- |
+| `enabled`  | boolean                              | `true` if the module will be applied to traffic, `false` to disable. default `true` if unspecified |
+| `inbound`  | [EndpointRule](#endpointrule-fields) | the inbound rules of the traffic policy.                                                           |
+| `outbound` | [EndpointRule](#endpointrule-fields) | the outbound rules on the traffic policy.                                                          |
+
+#### EndpointRule fields
+
+| Name          | Type                                     | Description                                                     |
+| ------------- | ---------------------------------------- | --------------------------------------------------------------- |
+| `expressions` | List&lt;string&gt;                       | cel expressions that filter traffic the policy rule applies to. |
+| `actions`     | [EndpointAction](#endpointaction-fields) | the set of actions on a policy rule.                            |
+| `name`        | string                                   | the name of the rule that is part of the traffic policy.        |
+
+#### EndpointAction fields
+
+| Name     | Type   | Description                                          |
+| -------- | ------ | ---------------------------------------------------- |
+| `type`   | string | the type of action on the policy rule.               |
+| `config` | object | the configuration for the action on the policy rule. |
 
 ## Delete TCP Edge
 

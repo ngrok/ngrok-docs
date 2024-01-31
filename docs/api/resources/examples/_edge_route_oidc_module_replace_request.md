@@ -8,6 +8,6 @@ curl \
 -H "Authorization: Bearer {API_KEY}" \
 -H "Content-Type: application/json" \
 -H "Ngrok-Version: 2" \
--d '{"enabled":true,"issuer":"https://accounts.google.com","client_id":"some-client-id","client_secret":"some-client-secret","scopes":["profile"]}' \
-https://api.ngrok.com/edges/https/edghts_2bMmX6x3OpmLEFjYwd9aHdEE5Px/routes/edghtsrt_2bMmX7SA8z8ABb8CAxxv59vriqH/oidc
+-d '{"client_id":"some-client-id","client_secret":"some-client-secret","enabled":true,"issuer":"https://accounts.google.com","scopes":["profile"]}' \
+https://api.ngrok.com/edges/https/edghts_2bhsMzETa0RzR4YRGka46fSFjyA/routes/edghtsrt_2bhsN1ThsqqnQwiXWwbuW2kvnJk/oidc
 ```
