@@ -4,8 +4,8 @@
 
 ```json
 {
-	"enabled": true,
 	"allow": ["(Pingdom\\.com_bot_version_)(\\d+)\\.(\\d+)"],
-	"deny": ["(made_up_bot)/(\\d+)\\.(\\d+)"]
+	"deny": ["(made_up_bot)/(\\d+)\\.(\\d+)"],
+	"enabled": true
 }
 ```

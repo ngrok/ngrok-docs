@@ -4,14 +4,6 @@
 
 ```json
 {
-	"enabled": true,
-	"issuer": {
-		"allow_list": [
-			{
-				"value": "https://dev-72114178.okta.com/oauth2/default"
-			}
-		]
-	},
 	"audience": {
 		"allow_list": [
 			{
@@ -19,13 +11,21 @@
 			}
 		]
 	},
+	"enabled": true,
 	"http": {
 		"tokens": [
 			{
-				"type": "at+jwt",
 				"method": "header",
 				"name": "Authorization",
-				"prefix": "Bearer "
+				"prefix": "Bearer ",
+				"type": "at+jwt"
+			}
+		]
+	},
+	"issuer": {
+		"allow_list": [
+			{
+				"value": "https://dev-72114178.okta.com/oauth2/default"
 			}
 		]
 	},

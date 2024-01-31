@@ -9,3 +9,12 @@
 | backend_id    | string             | backend to be used to back this endpoint                                                            |
 | enabled       | boolean            | `true` if the module will be applied to traffic, `false` to disable. default `true` if unspecified  |
 | ip_policy_ids | List&lt;string&gt; | list of all IP policies that will be used to check if a source IP is allowed access to the endpoint |
+| enabled       | boolean            | `true` if the module will be applied to traffic, `false` to disable. default `true` if unspecified  |
+| expressions   | List&lt;string&gt; | cel expressions that filter traffic the policy rule applies to.                                     |
+| type          | string             | the type of action on the policy rule.                                                              |
+| config        | object             | the configuration for the action on the policy rule.                                                |
+| name          | string             | the name of the rule that is part of the traffic policy.                                            |
+| expressions   | List&lt;string&gt; | cel expressions that filter traffic the policy rule applies to.                                     |
+| type          | string             | the type of action on the policy rule.                                                              |
+| config        | object             | the configuration for the action on the policy rule.                                                |
+| name          | string             | the name of the rule that is part of the traffic policy.                                            |
