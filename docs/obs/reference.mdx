@@ -26,8 +26,10 @@ updating or deleting objects like Domains, API Keys and IP Policies.
 
 | Event                                                                          | Description                                            |
 | ------------------------------------------------------------------------------ | ------------------------------------------------------ |
-| [`api_key_created.v0`](#api_key_createdv0)                                     | Triggers when an API key is created                    |
-| [`api_key_deleted.v0`](#api_key_deletedv0)                                     | Triggers when an API key is deleted                    |
+| [`agent_session_start.v0`](#agent_session_startv0)                             | Triggers when an agent is started                      |
+| [`agent_session_stop.v0`](#agent_session_stopv0)                               | Triggers when an agent is stopped                      |
+| [`api_key_updated.v0`](#api_key_updatedv0)                                     | Triggers when an API key is updated                    |
+| [`api_key_updated.v0`](#api_key_updatedv0)                                     | Triggers when an API key is updated                    |
 | [`api_key_updated.v0`](#api_key_updatedv0)                                     | Triggers when an API key is updated                    |
 | [`certificate_authority_created.v0`](#certificate_authority_createdv0)         | Triggers when a certificate authority is created       |
 | [`certificate_authority_deleted.v0`](#certificate_authority_deletedv0)         | Triggers when a certificate authority is deleted       |
@@ -80,42 +82,42 @@ updating or deleting objects like Domains, API Keys and IP Policies.
 
 Triggers when an HTTP request completes.
 
-|                               |                                       |                                                                                                                                                                                                        |                                                          |
-| ----------------------------- | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------- |
-| backend.connection_reused     | bool                                  | True if ngrok reused a TCP connection to transmit the HTTP request to the upstream service.                                                                                                            |                                                          |
-| basic_auth.decision           | string                                | ‘allow’ if the Basic Auth module permitted the request to the upstream service, otherwise ‘block’                                                                                                      |                                                          |
-| basic_auth.username           | string                                | The username in the HTTP basic auth credentials                                                                                                                                                        |                                                          |
-| circuit_breaker.decision      | string                                | Whether the HTTP request was sent to the upstream service. ‘allow’ if the breaker was closed, ‘block’ if the breaker was open, ‘allow_while_open’ if the request was allowed while the breaker is open |                                                          |
-| compression.algorithm         | string                                | The compression algorithm used to encode responses from the endpoint. Either ‘gzip’, ‘deflate’, or ‘none’.                                                                                             |                                                          |
-| compression.bytes_saved       | int64                                 | The difference between the size of the raw response and the size of the response as compressed by the Compression Module                                                                               |                                                          |
-| conn.client_ip                | string                                | filterable                                                                                                                                                                                             | The source IP of the TCP connection to the ngrok edge    |
-| conn.server_ip                | string                                | filterable                                                                                                                                                                                             | The IP address of the server that received the request   |
-| conn.server_name              | string                                | filterable                                                                                                                                                                                             | The hostname associated with this connection.            |
-| conn.server_port              | int32                                 | filterable                                                                                                                                                                                             | The port that the connection for this request came in on |
-| conn.start_ts                 | timestamp                             | The timestamp when the TCP connection to the ngrok edge is established                                                                                                                                 |                                                          |
-| http.request.body_length      | int64                                 | The size of the request body in bytes                                                                                                                                                                  |                                                          |
-| http.request.headers          | Map&lt;string, List&lt;string&gt;&gt; | A map of normalized headers from the requesting client. Header keys are capitalized and header values are lowercased.                                                                                  |                                                          |
-| http.request.method           | string                                | The request method, normalized to lowercase                                                                                                                                                            |                                                          |
-| http.request.url.host         | string                                | The host component of the request URL                                                                                                                                                                  |                                                          |
-| http.request.url.path         | string                                | The path component of the request URL                                                                                                                                                                  |                                                          |
-| http.request.url.query        | string                                | The query string component of the request URL                                                                                                                                                          |                                                          |
-| http.request.url.raw          | string                                | The full URL of the request including scheme, host, path, and query string                                                                                                                             |                                                          |
-| http.request.url.scheme       | string                                | The scheme component of the request URL                                                                                                                                                                |                                                          |
-| http.request.user_agent       | string                                | The value of the User-Agent header in the request received by ngrok edge                                                                                                                               |                                                          |
-| http.response.body_length     | int64                                 | The size of the response body in bytes                                                                                                                                                                 |                                                          |
-| http.response.headers         | Map&lt;string, List&lt;string&gt;&gt; | A map of normalized response headers. Header keys are capitalized and header values are lowercased.                                                                                                    |                                                          |
-| http.response.status_code     | int32                                 | The status code of the response returned by the ngrok edge                                                                                                                                             |                                                          |
-| ip_policy.decision            | string                                | ‘allow’ if IP Policy module permitted the request to the upstream service, ‘block’ otherwise                                                                                                           |                                                          |
-| oauth.app_client_id           | string                                | The OAuth application client ID                                                                                                                                                                        |                                                          |
-| oauth.decision                | string                                | ‘allow’ if the OAuth module permitted the request to the upstream service, ‘block’ otherwise                                                                                                           |                                                          |
-| oauth.user.id                 | string                                | The authenticated user’s ID returned by the OAuth provider                                                                                                                                             |                                                          |
-| oauth.user.name               | string                                | The authenticated user’s name returned by the OAuth provider                                                                                                                                           |                                                          |
-| tls.cipher_suite              | string                                | The cipher suite selected during the TLS handshake                                                                                                                                                     |                                                          |
-| tls.client_cert.serial_number | string                                | The serial number of the client’s leaf TLS certificate in the Mutual TLS handshake                                                                                                                     |                                                          |
-| tls.client_cert.subject.cn    | string                                | The subject common name of the client’s leaf TLS certificate in the Mutual TLS handshake                                                                                                               |                                                          |
-| tls.version                   | string                                | The version of the TLS protocol used between the client and the ngrok edge                                                                                                                             |                                                          |
-| user_agent_filter.decision    | string                                | ‘allow’ if the User Agent Filter module permitted the request to the upstream service, ‘block’ otherwise                                                                                               |                                                          |
-| webhook_verification.decision | string                                | ‘allow’ if the Webhook Verification module permitted the request to the upstream service, ‘block’ otherwise                                                                                            |                                                          |
+| Field                         | Type                                  | Filterable? | Description                                                                                                                                                                                            |
+| ----------------------------- | ------------------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| backend.connection_reused     | bool                                  |             | True if ngrok reused a TCP connection to transmit the HTTP request to the upstream service.                                                                                                            |
+| basic_auth.decision           | string                                |             | ‘allow’ if the Basic Auth module permitted the request to the upstream service, otherwise ‘block’                                                                                                      |
+| basic_auth.username           | string                                |             | The username in the HTTP basic auth credentials                                                                                                                                                        |
+| circuit_breaker.decision      | string                                |             | Whether the HTTP request was sent to the upstream service. ‘allow’ if the breaker was closed, ‘block’ if the breaker was open, ‘allow_while_open’ if the request was allowed while the breaker is open |
+| compression.algorithm         | string                                |             | The compression algorithm used to encode responses from the endpoint. Either ‘gzip’, ‘deflate’, or ‘none’.                                                                                             |
+| compression.bytes_saved       | int64                                 |             | The difference between the size of the raw response and the size of the response as compressed by the Compression Module                                                                               |
+| conn.client_ip                | string                                | filterable  | The source IP of the TCP connection to the ngrok edge                                                                                                                                                  |
+| conn.server_ip                | string                                | filterable  | The IP address of the server that received the request                                                                                                                                                 |
+| conn.server_name              | string                                | filterable  | The hostname associated with this connection.                                                                                                                                                          |
+| conn.server_port              | int32                                 | filterable  | The port that the connection for this request came in on                                                                                                                                               |
+| conn.start_ts                 | timestamp                             |             | The timestamp when the TCP connection to the ngrok edge is established                                                                                                                                 |
+| http.request.body_length      | int64                                 |             | The size of the request body in bytes                                                                                                                                                                  |
+| http.request.headers          | Map&lt;string, List&lt;string&gt;&gt; |             | A map of normalized headers from the requesting client. Header keys are capitalized and header values are lowercased.                                                                                  |
+| http.request.method           | string                                |             | The request method, normalized to lowercase                                                                                                                                                            |
+| http.request.url.host         | string                                |             | The host component of the request URL                                                                                                                                                                  |
+| http.request.url.path         | string                                |             | The path component of the request URL                                                                                                                                                                  |
+| http.request.url.query        | string                                |             | The query string component of the request URL                                                                                                                                                          |
+| http.request.url.raw          | string                                |             | The full URL of the request including scheme, host, path, and query string                                                                                                                             |
+| http.request.url.scheme       | string                                |             | The scheme component of the request URL                                                                                                                                                                |
+| http.request.user_agent       | string                                |             | The value of the User-Agent header in the request received by ngrok edge                                                                                                                               |
+| http.response.body_length     | int64                                 |             | The size of the response body in bytes                                                                                                                                                                 |
+| http.response.headers         | Map&lt;string, List&lt;string&gt;&gt; |             | A map of normalized response headers. Header keys are capitalized and header values are lowercased.                                                                                                    |
+| http.response.status_code     | int32                                 |             | The status code of the response returned by the ngrok edge                                                                                                                                             |
+| ip_policy.decision            | string                                |             | ‘allow’ if IP Policy module permitted the request to the upstream service, ‘block’ otherwise                                                                                                           |
+| oauth.app_client_id           | string                                |             | The OAuth application client ID                                                                                                                                                                        |
+| oauth.decision                | string                                |             | ‘allow’ if the OAuth module permitted the request to the upstream service, ‘block’ otherwise                                                                                                           |
+| oauth.user.id                 | string                                |             | The authenticated user’s ID returned by the OAuth provider                                                                                                                                             |
+| oauth.user.name               | string                                |             | The authenticated user’s name returned by the OAuth provider                                                                                                                                           |
+| tls.cipher_suite              | string                                |             | The cipher suite selected during the TLS handshake                                                                                                                                                     |
+| tls.client_cert.serial_number | string                                |             | The serial number of the client’s leaf TLS certificate in the Mutual TLS handshake                                                                                                                     |
+| tls.client_cert.subject.cn    | string                                |             | The subject common name of the client’s leaf TLS certificate in the Mutual TLS handshake                                                                                                               |
+| tls.version                   | string                                |             | The version of the TLS protocol used between the client and the ngrok edge                                                                                                                             |
+| user_agent_filter.decision    | string                                |             | ‘allow’ if the User Agent Filter module permitted the request to the upstream service, ‘block’ otherwise                                                                                               |
+| webhook_verification.decision | string                                |             | ‘allow’ if the Webhook Verification module permitted the request to the upstream service, ‘block’ otherwise                                                                                            |
 
 ### TCP Connection Closed
 
@@ -123,19 +125,75 @@ Triggers when an HTTP request completes.
 
 Triggers when a TCP connection to an endpoint closes.
 
-| &nbsp;             | &nbsp;    | &nbsp;                                                                                       |                                                          |
-| ------------------ | --------- | -------------------------------------------------------------------------------------------- | -------------------------------------------------------- |
-| conn.bytes_in      | int64     | The number of bytes arriving at an endpoint from the frontend                                |                                                          |
-| conn.bytes_out     | int64     | The number of bytes leaving an endpoint to the frontend                                      |                                                          |
-| conn.client_ip     | string    | filterable                                                                                   | The source IP of the TCP connection to the ngrok edge    |
-| conn.end_ts        | timestamp | The timestamp when the TCP connection to the ngrok edge is closed                            |                                                          |
-| conn.server_ip     | string    | filterable                                                                                   | The IP address of the server that received the request   |
-| conn.server_name   | string    | filterable                                                                                   | The hostname associated with this connection.            |
-| conn.server_port   | int32     | filterable                                                                                   | The port that the connection for this request came in on |
-| conn.start_ts      | timestamp | The timestamp when the TCP connection to the ngrok edge is established                       |                                                          |
-| ip_policy.decision | string    | ‘allow’ if IP Policy module permitted the request to the upstream service, ‘block’ otherwise |                                                          |
+| Field              | Type      | Filterable? | Description                                                                                  |
+| ------------------ | --------- | ----------- | -------------------------------------------------------------------------------------------- |
+| conn.bytes_in      | int64     |             | The number of bytes arriving at an endpoint from the frontend                                |
+| conn.bytes_out     | int64     |             | The number of bytes leaving an endpoint to the frontend                                      |
+| conn.client_ip     | string    | filterable  | The source IP of the TCP connection to the ngrok edge                                        |
+| conn.end_ts        | timestamp |             | The timestamp when the TCP connection to the ngrok edge is closed                            |
+| conn.server_ip     | string    | filterable  | The IP address of the server that received the request                                       |
+| conn.server_name   | string    | filterable  | The hostname associated with this connection.                                                |
+| conn.server_port   | int32     | filterable  | The port that the connection for this request came in on                                     |
+| conn.start_ts      | timestamp |             | The timestamp when the TCP connection to the ngrok edge is established                       |
+| ip_policy.decision | string    |             | ‘allow’ if IP Policy module permitted the request to the upstream service, ‘block’ otherwise |
 
 ## Audit Events
+
+### Agent
+
+#### agent_session_start.v0
+
+Triggers when an agent is started
+
+| Field                                | Type   | Description                                                                                                                                                 |
+| ------------------------------------ | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| session.id                           | string | a resource identifier                                                                                                                                       |
+| session.uri                          | string | a uri for locating a resource                                                                                                                               |
+| credential.id                        | string | a resource identifier                                                                                                                                       |
+| credential.uri                       | string | a uri for locating a resource                                                                                                                               |
+| agent_ip                             | string | the ip address from which the agent is connecting                                                                                                           |
+| ingress_server_ip                    | string | the ip address of the ingress server to which the agent is connecting                                                                                       |
+| region                               | string | the region of the tunnel server                                                                                                                             |
+| ingress_hostname                     | string | the hostname of the tunnel server                                                                                                                           |
+| user_agent                           | string | the user agent provided to the tunnel server by the agent                                                                                                   |
+| metadata                             | string | the session metadata provided by the agent on connection                                                                                                    |
+| os                                   | string | the operating system of the machine on which the agent is running                                                                                           |
+| arch                                 | string | the CPU architecture of the machine on which the agent is running                                                                                           |
+| transport                            | string | the transport protocol used internally by the agent "muxado" for agents and agent libraries, "ssh" for reverse SSH tunnels                                  |
+| started_at                           | string | the time at which the session started                                                                                                                       |
+| expires_at                           | string | the time at which the session expires                                                                                                                       |
+| stopped_at                           | string | the time at which the session stopped                                                                                                                       |
+| deprecated.upcoming_minimum_version  | string | the upcoming minimum supported agent version                                                                                                                |
+| deprecated.upcoming_enforcement_date | string | the date by which the current agent must be upgraded to the upcoming minimum version                                                                        |
+| deprecated.message                   | string | additional information about the agent deprecation                                                                                                          |
+| error                                | string | on a failed session start, an explanation of the failure on a successful session start, the empty string on a session stop, the reason for the session stop |
+
+#### agent_session_stop.v0
+
+Triggers when an agent is stopped
+
+| Field                                | Type   | Description                                                                                                                                                 |
+| ------------------------------------ | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| session.id                           | string | a resource identifier                                                                                                                                       |
+| session.uri                          | string | a uri for locating a resource                                                                                                                               |
+| credential.id                        | string | a resource identifier                                                                                                                                       |
+| credential.uri                       | string | a uri for locating a resource                                                                                                                               |
+| agent_ip                             | string | the ip address from which the agent is connecting                                                                                                           |
+| ingress_server_ip                    | string | the ip address of the ingress server to which the agent is connecting                                                                                       |
+| region                               | string | the region of the tunnel server                                                                                                                             |
+| ingress_hostname                     | string | the hostname of the tunnel server                                                                                                                           |
+| user_agent                           | string | the user agent provided to the tunnel server by the agent                                                                                                   |
+| metadata                             | string | the session metadata provided by the agent on connection                                                                                                    |
+| os                                   | string | the operating system of the machine on which the agent is running                                                                                           |
+| arch                                 | string | the CPU architecture of the machine on which the agent is running                                                                                           |
+| transport                            | string | the transport protocol used internally by the agent "muxado" for agents and agent libraries, "ssh" for reverse SSH tunnels                                  |
+| started_at                           | string | the time at which the session started                                                                                                                       |
+| expires_at                           | string | the time at which the session expires                                                                                                                       |
+| stopped_at                           | string | the time at which the session stopped                                                                                                                       |
+| deprecated.upcoming_minimum_version  | string | the upcoming minimum supported agent version                                                                                                                |
+| deprecated.upcoming_enforcement_date | string | the date by which the current agent must be upgraded to the upcoming minimum version                                                                        |
+| deprecated.message                   | string | additional information about the agent deprecation                                                                                                          |
+| error                                | string | on a failed session start, an explanation of the failure on a successful session start, the empty string on a session stop, the reason for the session stop |
 
 ### API Key
 
@@ -143,7 +201,7 @@ Triggers when a TCP connection to an endpoint closes.
 
 Triggers when an API key is created
 
-| &nbsp;      | &nbsp; | &nbsp;                                                                                                                                                                                                              |
+| Field       | Type   | Description                                                                                                                                                                                                         |
 | ----------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | id          | string | unique API key resource identifier                                                                                                                                                                                  |
 | uri         | string | URI to the API resource of this API key                                                                                                                                                                             |
@@ -156,7 +214,7 @@ Triggers when an API key is created
 
 Triggers when an API key is deleted
 
-| &nbsp;      | &nbsp; | &nbsp;                                                                                                                                                                                                              |
+| Field       | Type   | Description                                                                                                                                                                                                         |
 | ----------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | id          | string | unique API key resource identifier                                                                                                                                                                                  |
 | uri         | string | URI to the API resource of this API key                                                                                                                                                                             |
@@ -169,7 +227,7 @@ Triggers when an API key is deleted
 
 Triggers when an API key is updated
 
-| &nbsp;      | &nbsp; | &nbsp;                                                                                                                                                                                                              |
+| Field       | Type   | Description                                                                                                                                                                                                         |
 | ----------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | id          | string | unique API key resource identifier                                                                                                                                                                                  |
 | uri         | string | URI to the API resource of this API key                                                                                                                                                                             |
@@ -184,7 +242,7 @@ Triggers when an API key is updated
 
 Triggers when a certificate authority is created
 
-| &nbsp;              | &nbsp;             | &nbsp;                                                                                                |
+| Field               | Type               | Description                                                                                           |
 | ------------------- | ------------------ | ----------------------------------------------------------------------------------------------------- |
 | id                  | string             | unique identifier for this Certificate Authority                                                      |
 | uri                 | string             | URI of the Certificate Authority API resource                                                         |
@@ -202,7 +260,7 @@ Triggers when a certificate authority is created
 
 Triggers when a certificate authority is deleted
 
-| &nbsp;              | &nbsp;             | &nbsp;                                                                                                |
+| Field               | Type               | Description                                                                                           |
 | ------------------- | ------------------ | ----------------------------------------------------------------------------------------------------- |
 | id                  | string             | unique identifier for this Certificate Authority                                                      |
 | uri                 | string             | URI of the Certificate Authority API resource                                                         |
@@ -220,7 +278,7 @@ Triggers when a certificate authority is deleted
 
 Triggers when a certificate authority is updated
 
-| &nbsp;              | &nbsp;             | &nbsp;                                                                                                |
+| Field               | Type               | Description                                                                                           |
 | ------------------- | ------------------ | ----------------------------------------------------------------------------------------------------- |
 | id                  | string             | unique identifier for this Certificate Authority                                                      |
 | uri                 | string             | URI of the Certificate Authority API resource                                                         |
@@ -240,7 +298,7 @@ Triggers when a certificate authority is updated
 
 Triggers when a domain is created
 
-| &nbsp;                                                    | &nbsp; | &nbsp;                                                                                                                                                                                                                                                           |
+| Field                                                     | Type   | Description                                                                                                                                                                                                                                                      |
 | --------------------------------------------------------- | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | id                                                        | string | unique reserved domain resource identifier                                                                                                                                                                                                                       |
 | uri                                                       | string | URI of the reserved domain API resource                                                                                                                                                                                                                          |
@@ -265,7 +323,7 @@ Triggers when a domain is created
 
 Triggers when a domain is deleted
 
-| &nbsp;                                                    | &nbsp; | &nbsp;                                                                                                                                                                                                                                                           |
+| Field                                                     | Type   | Description                                                                                                                                                                                                                                                      |
 | --------------------------------------------------------- | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | id                                                        | string | unique reserved domain resource identifier                                                                                                                                                                                                                       |
 | uri                                                       | string | URI of the reserved domain API resource                                                                                                                                                                                                                          |
@@ -290,7 +348,7 @@ Triggers when a domain is deleted
 
 Triggers when a domain is updated
 
-| &nbsp;                                                    | &nbsp; | &nbsp;                                                                                                                                                                                                                                                           |
+| Field                                                     | Type   | Description                                                                                                                                                                                                                                                      |
 | --------------------------------------------------------- | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | id                                                        | string | unique reserved domain resource identifier                                                                                                                                                                                                                       |
 | uri                                                       | string | URI of the reserved domain API resource                                                                                                                                                                                                                          |
@@ -317,7 +375,7 @@ Triggers when a domain is updated
 
 Triggers when an Event Destination is created
 
-| &nbsp;                                                  | &nbsp; | &nbsp;                                                                                                                               |
+| Field                                                   | Type   | Description                                                                                                                          |
 | ------------------------------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------ |
 | id                                                      | string | Unique identifier for this Event Destination.                                                                                        |
 | metadata                                                | string | Arbitrary user-defined machine-readable data of this Event Destination. Optional, max 4096 bytes.                                    |
@@ -342,7 +400,7 @@ Triggers when an Event Destination is created
 
 Triggers when an Event Destination is deleted
 
-| &nbsp;                                                  | &nbsp; | &nbsp;                                                                                                                               |
+| Field                                                   | Type   | Description                                                                                                                          |
 | ------------------------------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------ |
 | id                                                      | string | Unique identifier for this Event Destination.                                                                                        |
 | metadata                                                | string | Arbitrary user-defined machine-readable data of this Event Destination. Optional, max 4096 bytes.                                    |
@@ -367,7 +425,7 @@ Triggers when an Event Destination is deleted
 
 Triggers when an Event Destination is updated
 
-| &nbsp;                                                  | &nbsp; | &nbsp;                                                                                                                               |
+| Field                                                   | Type   | Description                                                                                                                          |
 | ------------------------------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------ |
 | id                                                      | string | Unique identifier for this Event Destination.                                                                                        |
 | metadata                                                | string | Arbitrary user-defined machine-readable data of this Event Destination. Optional, max 4096 bytes.                                    |
@@ -394,7 +452,7 @@ Triggers when an Event Destination is updated
 
 Triggers when an Event Subscription is created
 
-| &nbsp;           | &nbsp; | &nbsp;                                                                                             |
+| Field            | Type   | Description                                                                                        |
 | ---------------- | ------ | -------------------------------------------------------------------------------------------------- |
 | id               | string | Unique identifier for this Event Subscription.                                                     |
 | uri              | string | URI of the Event Subscription API resource.                                                        |
@@ -410,7 +468,7 @@ Triggers when an Event Subscription is created
 
 Triggers when an Event Subscription is deleted
 
-| &nbsp;           | &nbsp; | &nbsp;                                                                                             |
+| Field            | Type   | Description                                                                                        |
 | ---------------- | ------ | -------------------------------------------------------------------------------------------------- |
 | id               | string | Unique identifier for this Event Subscription.                                                     |
 | uri              | string | URI of the Event Subscription API resource.                                                        |
@@ -426,7 +484,7 @@ Triggers when an Event Subscription is deleted
 
 Triggers when an Event Subscription is updated
 
-| &nbsp;           | &nbsp; | &nbsp;                                                                                             |
+| Field            | Type   | Description                                                                                        |
 | ---------------- | ------ | -------------------------------------------------------------------------------------------------- |
 | id               | string | Unique identifier for this Event Subscription.                                                     |
 | uri              | string | URI of the Event Subscription API resource.                                                        |
@@ -444,7 +502,7 @@ Triggers when an Event Subscription is updated
 
 Triggers when an IP Policy is created
 
-| &nbsp;      | &nbsp; | &nbsp;                                                                                    |
+| Field       | Type   | Description                                                                               |
 | ----------- | ------ | ----------------------------------------------------------------------------------------- |
 | id          | string | unique identifier for this IP policy                                                      |
 | uri         | string | URI of the IP Policy API resource                                                         |
@@ -456,7 +514,7 @@ Triggers when an IP Policy is created
 
 Triggers when an IP Policy is updated
 
-| &nbsp;      | &nbsp; | &nbsp;                                                                                    |
+| Field       | Type   | Description                                                                               |
 | ----------- | ------ | ----------------------------------------------------------------------------------------- |
 | id          | string | unique identifier for this IP policy                                                      |
 | uri         | string | URI of the IP Policy API resource                                                         |
@@ -468,7 +526,7 @@ Triggers when an IP Policy is updated
 
 Triggers when an IP Policy is deleted
 
-| &nbsp;      | &nbsp; | &nbsp;                                                                                    |
+| Field       | Type   | Description                                                                               |
 | ----------- | ------ | ----------------------------------------------------------------------------------------- |
 | id          | string | unique identifier for this IP policy                                                      |
 | uri         | string | URI of the IP Policy API resource                                                         |
@@ -482,7 +540,7 @@ Triggers when an IP Policy is deleted
 
 Triggers when an IP Policy Rule is created
 
-| &nbsp;        | &nbsp; | &nbsp;                                                                                         |
+| Field         | Type   | Description                                                                                    |
 | ------------- | ------ | ---------------------------------------------------------------------------------------------- |
 | id            | string | unique identifier for this IP policy rule                                                      |
 | uri           | string | URI of the IP policy rule API resource                                                         |
@@ -498,7 +556,7 @@ Triggers when an IP Policy Rule is created
 
 Triggers when an IP Policy Rule is deleted
 
-| &nbsp;        | &nbsp; | &nbsp;                                                                                         |
+| Field         | Type   | Description                                                                                    |
 | ------------- | ------ | ---------------------------------------------------------------------------------------------- |
 | id            | string | unique identifier for this IP policy rule                                                      |
 | uri           | string | URI of the IP policy rule API resource                                                         |
@@ -514,7 +572,7 @@ Triggers when an IP Policy Rule is deleted
 
 Triggers when an IP Policy Rule is updated
 
-| &nbsp;        | &nbsp; | &nbsp;                                                                                         |
+| Field         | Type   | Description                                                                                    |
 | ------------- | ------ | ---------------------------------------------------------------------------------------------- |
 | id            | string | unique identifier for this IP policy rule                                                      |
 | uri           | string | URI of the IP policy rule API resource                                                         |
@@ -532,7 +590,7 @@ Triggers when an IP Policy Rule is updated
 
 Triggers when an IP Restriction is created
 
-| &nbsp;          | &nbsp;  | &nbsp;                                                                                                                                                                                 |
+| Field           | Type    | Description                                                                                                                                                                            |
 | --------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | id              | string  | unique identifier for this IP restriction                                                                                                                                              |
 | uri             | string  | URI of the IP restriction API resource                                                                                                                                                 |
@@ -548,7 +606,7 @@ Triggers when an IP Restriction is created
 
 Triggers when an IP Restriction is deleted
 
-| &nbsp;          | &nbsp;  | &nbsp;                                                                                                                                                                                 |
+| Field           | Type    | Description                                                                                                                                                                            |
 | --------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | id              | string  | unique identifier for this IP restriction                                                                                                                                              |
 | uri             | string  | URI of the IP restriction API resource                                                                                                                                                 |
@@ -564,7 +622,7 @@ Triggers when an IP Restriction is deleted
 
 Triggers when an IP Restriction is updated
 
-| &nbsp;          | &nbsp;  | &nbsp;                                                                                                                                                                                 |
+| Field           | Type    | Description                                                                                                                                                                            |
 | --------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | id              | string  | unique identifier for this IP restriction                                                                                                                                              |
 | uri             | string  | URI of the IP restriction API resource                                                                                                                                                 |
@@ -582,7 +640,7 @@ Triggers when an IP Restriction is updated
 
 Triggers when an SSH certificate authority is created
 
-| &nbsp;      | &nbsp; | &nbsp;                                                                                                    |
+| Field       | Type   | Description                                                                                               |
 | ----------- | ------ | --------------------------------------------------------------------------------------------------------- |
 | id          | string | unique identifier for this SSH Certificate Authority                                                      |
 | uri         | string | URI of the SSH Certificate Authority API resource                                                         |
@@ -596,7 +654,7 @@ Triggers when an SSH certificate authority is created
 
 Triggers when an SSH certificate authority is deleted
 
-| &nbsp;      | &nbsp; | &nbsp;                                                                                                    |
+| Field       | Type   | Description                                                                                               |
 | ----------- | ------ | --------------------------------------------------------------------------------------------------------- |
 | id          | string | unique identifier for this SSH Certificate Authority                                                      |
 | uri         | string | URI of the SSH Certificate Authority API resource                                                         |
@@ -610,7 +668,7 @@ Triggers when an SSH certificate authority is deleted
 
 Triggers when an SSH certificate authority is updated
 
-| &nbsp;      | &nbsp; | &nbsp;                                                                                                    |
+| Field       | Type   | Description                                                                                               |
 | ----------- | ------ | --------------------------------------------------------------------------------------------------------- |
 | id          | string | unique identifier for this SSH Certificate Authority                                                      |
 | uri         | string | URI of the SSH Certificate Authority API resource                                                         |
@@ -626,7 +684,7 @@ Triggers when an SSH certificate authority is updated
 
 Triggers when an SSH host certificate is created
 
-| &nbsp;                       | &nbsp;             | &nbsp;                                                                                                                                                                                                                                                                          |
+| Field                        | Type               | Description                                                                                                                                                                                                                                                                     |
 | ---------------------------- | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | id                           | string             | unique identifier for this SSH Host Certificate                                                                                                                                                                                                                                 |
 | uri                          | string             | URI of the SSH Host Certificate API resource                                                                                                                                                                                                                                    |
@@ -645,7 +703,7 @@ Triggers when an SSH host certificate is created
 
 Triggers when an SSH host certificate is deleted
 
-| &nbsp;                       | &nbsp;             | &nbsp;                                                                                                                                                                                                                                                                          |
+| Field                        | Type               | Description                                                                                                                                                                                                                                                                     |
 | ---------------------------- | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | id                           | string             | unique identifier for this SSH Host Certificate                                                                                                                                                                                                                                 |
 | uri                          | string             | URI of the SSH Host Certificate API resource                                                                                                                                                                                                                                    |
@@ -664,7 +722,7 @@ Triggers when an SSH host certificate is deleted
 
 Triggers when an SSH host certificate is updated
 
-| &nbsp;                       | &nbsp;             | &nbsp;                                                                                                                                                                                                                                                                          |
+| Field                        | Type               | Description                                                                                                                                                                                                                                                                     |
 | ---------------------------- | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | id                           | string             | unique identifier for this SSH Host Certificate                                                                                                                                                                                                                                 |
 | uri                          | string             | URI of the SSH Host Certificate API resource                                                                                                                                                                                                                                    |
@@ -685,7 +743,7 @@ Triggers when an SSH host certificate is updated
 
 Triggers when an SSH public key is created
 
-| &nbsp;      | &nbsp;             | &nbsp;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| Field       | Type               | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | ----------- | ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | id          | string             | unique ssh credential resource identifier                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | uri         | string             | URI of the ssh credential API resource                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
@@ -699,7 +757,7 @@ Triggers when an SSH public key is created
 
 Triggers when an SSH public key is deleted
 
-| &nbsp;      | &nbsp;             | &nbsp;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| Field       | Type               | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | ----------- | ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | id          | string             | unique ssh credential resource identifier                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | uri         | string             | URI of the ssh credential API resource                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
@@ -713,7 +771,7 @@ Triggers when an SSH public key is deleted
 
 Triggers when an SSH public key is updated
 
-| &nbsp;      | &nbsp;             | &nbsp;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| Field       | Type               | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | ----------- | ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | id          | string             | unique ssh credential resource identifier                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | uri         | string             | URI of the ssh credential API resource                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
@@ -729,7 +787,7 @@ Triggers when an SSH public key is updated
 
 Triggers when an SSH user certificate is created
 
-| &nbsp;                       | &nbsp;                    | &nbsp;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| Field                        | Type                      | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | ---------------------------- | ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | id                           | string                    | unique identifier for this SSH User Certificate                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | uri                          | string                    | URI of the SSH User Certificate API resource                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
@@ -750,7 +808,7 @@ Triggers when an SSH user certificate is created
 
 Triggers when an SSH user certificate is deleted
 
-| &nbsp;                       | &nbsp;                    | &nbsp;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| Field                        | Type                      | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | ---------------------------- | ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | id                           | string                    | unique identifier for this SSH User Certificate                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | uri                          | string                    | URI of the SSH User Certificate API resource                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
@@ -771,7 +829,7 @@ Triggers when an SSH user certificate is deleted
 
 Triggers when an SSH user certificate is updated
 
-| &nbsp;                       | &nbsp;                    | &nbsp;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| Field                        | Type                      | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | ---------------------------- | ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | id                           | string                    | unique identifier for this SSH User Certificate                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | uri                          | string                    | URI of the SSH User Certificate API resource                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
@@ -794,7 +852,7 @@ Triggers when an SSH user certificate is updated
 
 Triggers when a TCP address is created
 
-| &nbsp;      | &nbsp; | &nbsp;                                                                                                               |
+| Field       | Type   | Description                                                                                                          |
 | ----------- | ------ | -------------------------------------------------------------------------------------------------------------------- |
 | id          | string | unique reserved address resource identifier                                                                          |
 | uri         | string | URI of the reserved address API resource                                                                             |
@@ -808,7 +866,7 @@ Triggers when a TCP address is created
 
 Triggers when a TCP address is deleted
 
-| &nbsp;      | &nbsp; | &nbsp;                                                                                                               |
+| Field       | Type   | Description                                                                                                          |
 | ----------- | ------ | -------------------------------------------------------------------------------------------------------------------- |
 | id          | string | unique reserved address resource identifier                                                                          |
 | uri         | string | URI of the reserved address API resource                                                                             |
@@ -822,7 +880,7 @@ Triggers when a TCP address is deleted
 
 Triggers when a TCP address is updated
 
-| &nbsp;      | &nbsp; | &nbsp;                                                                                                               |
+| Field       | Type   | Description                                                                                                          |
 | ----------- | ------ | -------------------------------------------------------------------------------------------------------------------- |
 | id          | string | unique reserved address resource identifier                                                                          |
 | uri         | string | URI of the reserved address API resource                                                                             |
@@ -838,7 +896,7 @@ Triggers when a TCP address is updated
 
 Triggers when a TLS certificate is created
 
-| &nbsp;                              | &nbsp;             | &nbsp;                                                                                                                           |
+| Field                               | Type               | Description                                                                                                                      |
 | ----------------------------------- | ------------------ | -------------------------------------------------------------------------------------------------------------------------------- |
 | id                                  | string             | unique identifier for this TLS certificate                                                                                       |
 | uri                                 | string             | URI of the TLS certificate API resource                                                                                          |
@@ -867,7 +925,7 @@ Triggers when a TLS certificate is created
 
 Triggers when a TLS certificate is deleted
 
-| &nbsp;                              | &nbsp;             | &nbsp;                                                                                                                           |
+| Field                               | Type               | Description                                                                                                                      |
 | ----------------------------------- | ------------------ | -------------------------------------------------------------------------------------------------------------------------------- |
 | id                                  | string             | unique identifier for this TLS certificate                                                                                       |
 | uri                                 | string             | URI of the TLS certificate API resource                                                                                          |
@@ -896,7 +954,7 @@ Triggers when a TLS certificate is deleted
 
 Triggers when a TLS certificate is updated
 
-| &nbsp;                              | &nbsp;             | &nbsp;                                                                                                                           |
+| Field                               | Type               | Description                                                                                                                      |
 | ----------------------------------- | ------------------ | -------------------------------------------------------------------------------------------------------------------------------- |
 | id                                  | string             | unique identifier for this TLS certificate                                                                                       |
 | uri                                 | string             | URI of the TLS certificate API resource                                                                                          |
@@ -927,7 +985,7 @@ Triggers when a TLS certificate is updated
 
 Triggers when a tunnel credential is created
 
-| &nbsp;      | &nbsp;             | &nbsp;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| Field       | Type               | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | ----------- | ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | id          | string             | unique tunnel credential resource identifier                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | uri         | string             | URI of the tunnel credential API resource                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
@@ -941,7 +999,7 @@ Triggers when a tunnel credential is created
 
 Triggers when a tunnel credential is deleted
 
-| &nbsp;      | &nbsp;             | &nbsp;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| Field       | Type               | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | ----------- | ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | id          | string             | unique tunnel credential resource identifier                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | uri         | string             | URI of the tunnel credential API resource                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
@@ -955,7 +1013,7 @@ Triggers when a tunnel credential is deleted
 
 Triggers when a tunnel credential is updated
 
-| &nbsp;      | &nbsp;             | &nbsp;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| Field       | Type               | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | ----------- | ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | id          | string             | unique tunnel credential resource identifier                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | uri         | string             | URI of the tunnel credential API resource                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
