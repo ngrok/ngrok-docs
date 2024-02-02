@@ -1,8 +1,8 @@
 import React from "react";
-import CodeBlock from '@theme/CodeBlock';
+import CodeBlock from "@theme/CodeBlock";
 import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
-import YAML from 'yaml';
+import YAML from "yaml";
 
 export default function ConfigExample({ config }) {
 	return (

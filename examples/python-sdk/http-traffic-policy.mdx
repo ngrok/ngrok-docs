@@ -1,5 +1,56 @@
-:::info
+```python
+with open('/path/to/policy.json') as f:
+		policy = json.load(f)
+		listener = await session.http_endpoint().policy(policy).listen()
+```
 
-Traffic Policy is coming soon via python-sdk
+```yaml title="policy.json"
+{
+  "inbound":
+    [
+      {
+        "name": "FooBarParamNotFound",
+        "expressions": ["'bar' in getQueryParam('foo')"],
+        "actions":
+          [
+            {
+              "type": "custom-response",
+              "config":
+                {
+                  "status_code": 404,
+                  "content_type": "text/plain",
+                  "content": "not found",
+                },
+            },
+          ],
+      },
+      {
+        "name": "BazCookieForLargeRequests",
+        "expressions": ["!hasReqCookie('baz')", "req.ContentLength > 5000"],
+        "actions": [{ "type": "deny" }],
+      },
+    ],
+  "outbound":
+    [
+      {
+        "name": "LogUnsuccessfulRequests",
+        "expressions": ["res.StatusCode < '200' && res.StatusCode >= '300'"],
+        "actions":
+          [
+            {
+              "type": "log",
+              "config":
+                {
+                  "metadata":
+                    { "hostport": "example.com:443", "success": false },
+                },
+            },
+          ],
+      },
+    ],
+}
+```
 
-:::
+Python SDK Docs:
+
+- [https://ngrok.github.io/ngrok-python/http_listener_builder.html#ngrok.HttpListenerBuilder.policy](https://ngrok.github.io/ngrok-python/http_listener_builder.html#ngrok.HttpListenerBuilder.policy)
