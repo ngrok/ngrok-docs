@@ -1,5 +1,32 @@
-:::info
+```go
+import (
+	"context"
+	"net"
 
-Traffic Policy is coming soon via go-sdk
+	"golang.ngrok.com/ngrok"
+	"golang.ngrok.com/ngrok/config"
+)
 
-:::
+func ngrokListener(ctx context.Context) (net.Listener, error) {
+	return ngrok.Listen(ctx,
+		config.TCPEndpoint(
+			config.WithPolicy(
+                config.WithInboundRules(
+                    config.WithPolicyRule(
+                        config.WithPolicyName("LimitToKnownIPs"),
+                        config.WithPolicyExpression("conn.ClientIP != 8.8.8.8"),
+                        config.WithPolicyExpression("conn.ClientIP != 9.9.9.9"),
+                        config.WithPolicyAction(
+                            config.WithPolicyActionType("deny"),
+                        ),
+                    ),
+                ),
+            ),
+		),
+		ngrok.WithAuthtokenFromEnv(),
+	)
+}
+```
+Go Package Docs:
+
+- [https://pkg.go.dev/golang.ngrok.com/ngrok/config#WithPolicy](https://pkg.go.dev/golang.ngrok.com/ngrok/config#WithPolicy)
