@@ -19,6 +19,7 @@ const sidebars = {
 		"what-is-ngrok",
 		"how-ngrok-works",
 		"why-ngrok",
+		"whats-new",
 		// These aren't ready yet
 		// "install",
 		// "core-concepts",
