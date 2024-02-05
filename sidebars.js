@@ -46,7 +46,6 @@ const sidebars = {
 				"http/circuit-breaker",
 				"http/compression",
 				"http/ip-restrictions",
-				"http/jwt-validation",
 				"http/mutual-tls",
 				"http/oauth",
 				"http/openid-connect",
