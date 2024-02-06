@@ -8,8 +8,8 @@ title: Changelog
 
 ### ngrok Agent 3.6.0 - \[2024-02-06\]
 
-- Added `--policy-file` flag that accepts Traffic Policy configuration for [HTTP](/http/traffic-policy/), [TCP](/tcp/traffic-policy/), or [TLS](/tls/traffic-policy/) traffic.
-- Added support for `policy` field in [agent config](/http/traffic-policy/?cty=agent-config) for Traffic Policy configuration.
+- Added `--policy-file` flag that accepts Traffic Policy configuration for HTTP, TCP, or TLS traffic.
+- Added support for `policy` field in agent config for Traffic Policy configuration.
 - Added concise help text when `ngrok` is run without any args
 
 ### ngrok Agent 3.5.0 - \[2023-12-01\]
