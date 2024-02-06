@@ -353,22 +353,22 @@ The trailers of the response wherein a string key maps to a list of string value
 CEL provides a set of [predefined macros](https://github.com/google/cel-spec/blob/master/doc/langdef.md#macros) that can
 also be used in policy expressions. For convenience, the following custom macros are also supported:
 
-| Name                                          | Return Type | Description                                                                                                                   |
-| --------------------------------------------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| [`hasReqHeader(string)`](#hasreqheaderstring) | bool        | Returns true or false if the provided header key is present on the request. Header keys must be written in canonical format.  |
-| [`getReqHeader(string)`](#getreqheaderstring) | list        | Returns a list of header values for the provided key on the request. Header keys must be written in canonical format.         |
-| `hasQueryParam(string)`                       | bool        | Returns true or false if the specified query parameter key is part of the request URL.                                        |
-| `getQueryParam(string)`                       | list        | Returns a list of the query parameter values from the request URL for the specified key.                                      |
-| `hasReqCookie(string)`                        | bool        | Returns true or false if a cookie exists on the request with the specified name.                                              |
-| `getReqCookie(string)`                        | bool        | Returns the cookie struct for the specified cookie name, if it exists on the request.                                         |
-| `hasResHeader(string)`                        | bool        | Returns true or false if the provided header key is present on the response. Header keys must be written in canonical format. |
-| `getResHeader(string)`                        | list        | Returns a list of header values for the provided key on the response. Header keys must be written in canonical format.        |
-| `hasResCookie(string)`                        | bool        | Returns true or false if a cookie exists on the response with the specified name.                                             |
-| `getResCookie(string)`                        | bool        | Returns the cookie struct for the specified cookie name, if it exists on the response.                                        |
+| Name                                            | Return Type | Description                                                                                                                   |
+| ----------------------------------------------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| [`hasReqHeader(string)`](#hasreqheaderstring)   | bool        | Returns true or false if the provided header key is present on the request. Header keys must be written in canonical format.  |
+| [`getReqHeader(string)`](#getreqheaderstring)   | list        | Returns a list of header values for the provided key on the request. Header keys must be written in canonical format.         |
+| [`hasQueryParam(string)`](#hasqueryparamstring) | bool        | Returns true or false if the specified query parameter key is part of the request URL.                                        |
+| [`getQueryParam(string)`](#getqueryparamstring) | list        | Returns a list of the query parameter values from the request URL for the specified key.                                      |
+| [`hasReqCookie(string)`](#hasreqcookiestring)   | bool        | Returns true or false if a cookie exists on the request with the specified name.                                              |
+| [`getReqCookie(string)`](#getreqcookiestring)   | bool        | Returns the cookie struct for the specified cookie name, if it exists on the request.                                         |
+| [`hasResHeader(string)`](#hasresheaderstring)   | bool        | Returns true or false if the provided header key is present on the response. Header keys must be written in canonical format. |
+| [`getResHeader(string)`](#getresheaderstring)   | list        | Returns a list of header values for the provided key on the response. Header keys must be written in canonical format.        |
+| [`hasResCookie(string)`](#hasrescookiestring)   | bool        | Returns true or false if a cookie exists on the response with the specified name.                                             |
+| [`getResCookie(string)`](#getrescookiestring)   | bool        | Returns the cookie struct for the specified cookie name, if it exists on the response.                                        |
 
 ### `hasReqHeader(string)`
 
-Returns `true` or `false` if the provided header key is present on the request.
+Returns `true` or `false` if the provided header key is present on the request. Header keys must be written in canonical format.
 
 <ConfigExample
 	config={{
@@ -378,12 +378,94 @@ Returns `true` or `false` if the provided header key is present on the request.
 
 ### `getReqHeader(string)`
 
-Returns a list of header values for the provided key on the request.
+Returns a list of header values for the provided key on the request. Header keys must be written in canonical format.
 
 <ConfigExample
 	config={{
 		expressions: [
 			"getReqHeader('User-Agent').exists(v, v.matches('(?i)google-images'))",
 		],
+	}}
+/>
+
+### `hasQueryParam(string)`
+
+Returns true or false if the specified query parameter key is part of the request URL.
+
+<ConfigExample
+	config={{
+		expressions: ["hasQueryParam('q')"],
+	}}
+/>
+
+### `getQueryParam(string)`
+
+Returns a list of the query parameter values from the request URL for the specified key.
+
+<ConfigExample
+	config={{
+		expressions: ["size(getQueryParam('q')) == 0"],
+	}}
+/>
+
+### `hasReqCookie(string)`
+
+Returns true or false if a cookie exists on the request with the specified name.
+
+<ConfigExample
+	config={{
+		expressions: ["hasReqCookie('session')"],
+	}}
+/>
+
+### `getReqCookie(string)`
+
+Returns the cookie struct for the specified cookie name, if it exists on the request.
+
+<ConfigExample
+	config={{
+		expressions: ["getReqCookie('session').Secure"],
+	}}
+/>
+
+### `hasResHeader(string)`
+
+Returns true or false if the provided header key is present on the response. Header keys must be written in canonical format.
+
+<ConfigExample
+	config={{
+		expressions: ["hasResHeader('Content-Type')"],
+	}}
+/>
+
+### `getResHeader(string)`
+
+Returns a list of header values for the provided key on the response. Header keys must be written in canonical format.
+
+<ConfigExample
+	config={{
+		expressions: [
+			"size(getResHeader('Content-Type').filter(v, v.matches('application/json'))) > 0",
+		],
+	}}
+/>
+
+### `hasResCookie(string)`
+
+Returns true or false if a cookie exists on the response with the specified name.
+
+<ConfigExample
+	config={{
+		expressions: ["hasResCookie('_device_id')"],
+	}}
+/>
+
+### `getResCookie(string)`
+
+Returns the cookie struct for the specified cookie name, if it exists on the response.
+
+<ConfigExample
+	config={{
+		expressions: ["getResCookie('_device_id').Value == 'mobile-phone-14'"],
 	}}
 />
