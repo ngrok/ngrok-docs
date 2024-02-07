@@ -8,6 +8,6 @@ curl \
 -H "Authorization: Bearer {API_KEY}" \
 -H "Content-Type: application/json" \
 -H "Ngrok-Version: 2" \
--d '{"metadata":"{\"environment\": \"staging\"}","description":"ip policy creations","sources":[{"type":"ip_policy_created.v0"}],"destination_ids":["ed_2bMmWexxCLuwEg5JvtrPuHCm5l6"]}' \
+-d '{"description":"ip policy creations","destination_ids":["ed_2c35VAjpRW3DVWr7x1ozKtG4v8M"],"metadata":"{\"environment\": \"staging\"}","sources":[{"type":"ip_policy_created.v0"}]}' \
 https://api.ngrok.com/event_subscriptions
 ```
