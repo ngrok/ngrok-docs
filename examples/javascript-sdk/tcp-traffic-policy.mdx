@@ -1,5 +1,55 @@
-:::info
+```jsx
+const ngrok = require("@ngrok/ngrok");
+const fs = require("fs");
 
-Traffic Policy is coming soon via javascript-sdk
+(async function () {
+	const listener = await ngrok.forward({
+		addr: 8080,
+		proto: "tcp",
+		authtoken_from_env: true,
+		policy: fs.readFileSync("/path/to/policy.json", "utf8"),
+	});
 
-:::
+	console.log(`Ingress established at: ${listener.url()}`);
+})();
+```
+
+```yaml title="policy.json"
+{
+  "inbound":
+    [
+      {
+        "name": "DenyTrafficOutsideUS",
+        "expressions": ["conn.Geo.CountryCode != 'US'"],
+        "actions":
+          [
+            {
+              "type": "deny",
+              "config":
+                {
+                  "status_code": 404,
+                  "content_type": "text/plain",
+                  "content": "not found",
+                },
+            },
+          ],
+      },
+      {
+        "name": "LogRequestsFromKnownIP",
+        "expressions": ["conn.ClientIP == '110.0.0.1"],
+        "actions":
+          [
+            {
+              "type": "log",
+              "config":
+                { "metadata": { "event": "known-ip", "data": "110.0.0.1" } },
+            },
+          ],
+      },
+    ],
+}
+```
+
+Javascript SDK Docs:
+
+- [https://ngrok.github.io/ngrok-javascript/classes/TcpListenerBuilder.html#policy](https://ngrok.github.io/ngrok-javascript/classes/TcpListenerBuilder.html#policy)

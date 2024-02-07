@@ -9,18 +9,24 @@ import (
 
 func ngrokListener(ctx context.Context) (net.Listener, error) {
   return ngrok.Listen(ctx,
-    config.TCPEndpoint(
+    config.TLSEndpoint(
       config.WithPolicy(
-        config.WithInboundRules(
-          config.WithPolicyRule(
-            config.WithPolicyName("LimitToKnownIPs"),
-            config.WithPolicyExpression("conn.ClientIP != 8.8.8.8"),
-            config.WithPolicyExpression("conn.ClientIP != 9.9.9.9"),
-            config.WithPolicyAction(
-              config.WithPolicyActionType("deny"),
-            ),
-          ),
-        ),
+        policy.Policy{
+          Inbound: []policy.Rule{
+            {
+              Name: "LimitToKnownIPs",
+              Expressions: []string{
+                "conn.ClientIP != 8.8.8.8",
+                "conn.ClientIP != 9.9.9.9",
+              },
+              Actions: []policy.Action{
+                {
+                  Type: "deny",
+                },
+              },
+            },
+          },
+        },
       ),
     ),
     ngrok.WithAuthtokenFromEnv(),
