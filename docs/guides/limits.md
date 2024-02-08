@@ -9,19 +9,17 @@ Below are the limits enforced in the ngrok free plan. For more details on increa
 
 ## ​Endpoints
 
-As a free user of ngrok, you can only have one live endpoint at a time.
-
-That means you can’t simultaneously connect to a TCP address and host an app online at the same time in the free plan.
+As a free user of ngrok you can define up to 3 endpoints in a [configuration](https://ngrok.com/docs/agent/config/) served by the same agent at the same time.
 
 ### What is an endpoint?
 
-An endpoint is any device, app, or API that connects to a computer network. When you put an app online at foo.ngrok-free.app (using your free static domain), that’s one endpoint. If you put a device online using a TCP tunnel, that’s another endpoint.
+An endpoint is any device, app, or API that connects to a computer network. When you put an app online at foo.ngrok-free.app (using your free static domain), that’s one endpoint. If you connect to a device using a TCP protocol at 9.67. 1.100, that’s another endpoint.
 
 ### How does ngrok calculate endpoints for limits?
 
-ngrok uses a combination of unique host:port combinations to calculate endpoints. You cannot have one of more than one of these in use at a time. Unlike other limits, this limit does not refresh at the end of each calendar month, you must simply stop using one endpoint in order to get another. For example, you can not have an open connection to a TCP endpoint if you want to serve your app on foo.ngrok.com.
+ngrok uses a combination of unique host:port combinations to calculate endpoints. You cannot have one of more than one of these in use at a time. Unlike other limits, this limit does not refresh at the end of each calendar month, you must simply stop using one endpoint in order to get another. 
 
-## Data transfer out limits
+## Data transfer out 
 
 Inbound traffic: Unlimited
 Outbound traffic: 1gb per month for users on Free Tier
@@ -44,7 +42,7 @@ Free ngrok users get 10,000 requests per month.
 
 ### What are requests?
 
-A request is made by a client to one of your endpoints. Examples would include loading a webpage or calling an API hosted with ngrok. These are only counted for HTTP and HTTPS endpoints and do not include connections made to TLS and TCP endpoints.
+A request is made by a client, to a named host, which is located on a server. Requests are made to a HTTP and HTTPS endpoints. 
 
 ### Where can I view my requests usage?
 
