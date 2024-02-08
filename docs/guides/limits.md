@@ -17,9 +17,9 @@ An endpoint is any device, app, or API that connects to a computer network. When
 
 ### How does ngrok calculate endpoints for limits?
 
-ngrok uses a combination of unique host:port combinations to calculate endpoints. You cannot have one of more than one of these in use at a time. Unlike other limits, this limit does not refresh at the end of each calendar month, you must simply stop using one endpoint in order to get another. 
+ngrok uses a combination of unique host:port combinations to calculate endpoints. You cannot have one of more than one of these in use at a time. Unlike other limits, this limit does not refresh at the end of each calendar month, you must simply stop using one endpoint in order to get another.
 
-## Data transfer out 
+## Data transfer out
 
 Inbound traffic: Unlimited
 Outbound traffic: 1gb per month for users on Free Tier
@@ -42,7 +42,7 @@ Free ngrok users get 10,000 requests per month.
 
 ### What are requests?
 
-A request is made by a client, to a named host, which is located on a server. Requests are made to a HTTP and HTTPS endpoints. 
+A request is made by a client, to a named host, which is located on a server. Requests are made to a HTTP and HTTPS endpoints.
 
 ### Where can I view my requests usage?
 
