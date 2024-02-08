@@ -5,7 +5,7 @@ title: Free Plan Limits
 
 # Limits in ngrok's free plan
 
-Below are the limits enforced in the ngrok free plan. For more details on increasing or removing these limits, refer to the [ngrok paid plans](ngrok.com/pricing?ref=limits-docs).
+Below are the limits enforced in the ngrok free plan. For more details on increasing or removing these limits, refer to the [ngrok paid plans](https://ngrok.com/pricing?ref=limits-docs).
 
 ## ​Endpoints
 
