@@ -4,7 +4,7 @@ import { ExampleHTTP } from "/examples/actions/jwt-validation.mdx";
 
 ## Overview
 
-The JWT Validation action allows you to configure ngrok to validate JSON Web Tokens (JWT) in our cloud before routing the traffic to your origin service. You will need to tell ngrok where to find the token, as well as the claims and algorithms used to verify it's authenticity.
+The JWT Validation action allows you to configure ngrok to validate JSON Web Tokens (JWT) at our cloud edge before routing the traffic to your origin service. You will need to tell ngrok where to find the token, as well as the claims and algorithms used to verify it's authenticity. When configuring this action in a locally running agent, it is pushed to our global network which secures traffic before it hits your network.
 
 The request is allowed only if it has been correctly signed by the issuer and the defined claims
 match.
@@ -25,7 +25,7 @@ A useful tool for working with JWTs is provided at [jwt.io](https://jwt.io).
 
 You may specify multiple issuers to be used for JWT validation. A request is considered
 validated if it presents a JWT signed by any of the specified issuers. The issuer must match the one
-provided in the JWT exactly, including the trailing slash (`/`).
+provided in the JWT exactly, including the trailing slash (`/`) if present in the token's `iss` claim.
 
 ### Multiple Audience Claims
 
@@ -91,7 +91,7 @@ present in the request. If all tokens are not present a `401` status code will b
 
 | Parameter | Type     | Description                                                                                                                                                                                                                                                                                                                     |
 | --------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `type`    | `string` | The type of the JWT, which acts as a hint to ngrok about how ngrok should parse the token. Must be one of "access_token", "jwt", "at+jwt", or "it+jwt".                                                                                                                                                                         |
+| `type`    | `string` | The type of the JWT, which acts as a hint to ngrok about how ngrok should parse the token. Must be one of "access_token", "at+jwt", "id_token", "it+jwt", "plain", or "jwt".                                                                                                                                                    |
 | `method`  | `string` | The location in the request to expect the JWT. Must be one of "header" or "body". We do not support including a token as a URL query parameter. When choosing `body`, the method must be `POST`, `PUT`, or `PATCH` and the content type header must be set to either `application/json` or `application/x-www-form-urlencoded`. |
 | `name`    | `string` | The name of the header or body field where the JWT is expected (Example: `"Authorization"`). This is not case sensitive.                                                                                                                                                                                                        |
 | `prefix`  | `string` | Any prefix to strip from the header or body field before parsing the JWT (Example: `"Bearer "`).                                                                                                                                                                                                                                |
