@@ -252,7 +252,7 @@ const sidebars = {
 			label: "Observability",
 			type: "category",
 			link: { type: "doc", id: "obs/index" },
-			items: ["obs/index", "obs/reference"],
+			items: ["obs/index", "obs/traffic-inspection", "obs/reference"],
 		},
 		{
 			label: "IAM",
