@@ -4,13 +4,16 @@ import { ExampleHTTP } from "/examples/actions/jwt-validation.mdx";
 
 ## Overview
 
-The JWT Validation action allows or denies traffic based on validation of the JSON Web
-Token (JWT) provided within the request that was initiated to your ngrok endpoints. You
-will define the claims used to validate the token in conjunction with verifying it has
-been properly signed by the issuer.
+The JWT Validation action allows you to configure ngrok to validate JSON Web Tokens (JWT) in our cloud before routing the traffic to your origin service. You will need to tell ngrok where to find the token, as well as the claims and algorithms used to verify it's authenticity.
 
-A connection is allowed only if it has been signed by the issuer and the defined claims
+The request is allowed only if it has been correctly signed by the issuer and the defined claims
 match.
+
+We have created guides for configuring this action with the following providers:
+
+- [Auth0](/docs/integrations/auth0/jwt-action/)
+
+A useful tool for working with JWTs is provided at [jwt.io](https://jwt.io).
 
 ## Example
 
@@ -21,18 +24,20 @@ match.
 ### Multiple Issuers
 
 You may specify multiple issuers to be used for JWT validation. A request is considered
-validated if it presents a JWT signed by any of the specified issuers.
+validated if it presents a JWT signed by any of the specified issuers. The issuer must match the one
+provided in the JWT exactly, including the trailing slash (`/`).
 
 ### Multiple Audience Claims
 
 You may specify multiple audience claims to be used for JWT validation. JWT validation
-will require at least one of the audience claims to be present within the JWT.
+will require at least one of the audience claims to be present within the JWT. This is also
+an exact match.
 
 ### Multiple Signing Keys
 
 You have the ability to provide multiple JSON Web Key Set (JWKS) urls and signing algorithms. During JWT
 validation the list of JWKS and algorithms provided will be used in an attempt to validate
-the JWT. This list will be tried in order.
+the JWT. This list will be tried in order and is cached for performance. The cache is refreshed roughly every 15 minutes.
 
 ### Multiple Tokens
 
@@ -56,56 +61,56 @@ present in the request. If all tokens are not present a `401` status code will b
 
 | Parameter    | Type                               | Description                  |
 | ------------ | ---------------------------------- | ---------------------------- |
-| `allow_list` | [JWTIssuer](#jwtissuer-parameters) | the list of allowed issuers. |
+| `allow_list` | [JWTIssuer](#jwtissuer-parameters) | The list of allowed issuers. |
 
 #### JWTIssuer Parameters
 
-| Parameter | Type     | Description            |
-| --------- | -------- | ---------------------- |
-| `value`   | `string` | the URL of the issuer. |
+| Parameter | Type     | Description                                                                                                                                                            |
+| --------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `value`   | `string` | The URL of the issuer. This can be found in the `iss` claim after decoding the JWT or from the `/.well-known/openid-configuration` endpoint in your Identity Provider. |
 
 #### JWTAudienceConfig Parameters
 
 | Parameter    | Type                                   | Description                    |
 | ------------ | -------------------------------------- | ------------------------------ |
-| `allow_list` | [JWTAudience](#jwtaudience-parameters) | the list of allowed audiences. |
+| `allow_list` | [JWTAudience](#jwtaudience-parameters) | The list of allowed audiences. |
 
 #### JWTAudience Parameters
 
-| Parameter | Type     | Description                      |
-| --------- | -------- | -------------------------------- |
-| `value`   | `string` | the value of the audience claim. |
+| Parameter | Type     | Description                                                                                                                                                   |
+| --------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `value`   | `string` | The value of the audience claim. This can be found in the `aud` claim after decoding the JWT or from the request used to create the token in the first place. |
 
 #### JWTHTTPConfig Parameters
 
 | Parameter | Type                                     | Description                     |
 | --------- | ---------------------------------------- | ------------------------------- |
-| `tokens`  | [JWTHTTPToken](#jwthttptoken-parameters) | the list of tokens to validate. |
+| `tokens`  | [JWTHTTPToken](#jwthttptoken-parameters) | The list of tokens to validate. |
 
 #### JWTHTTPToken Parameters
 
-| Parameter | Type     | Description                                                                                                                             |
-| --------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| `type`    | `string` | the type of the JWT, which acts as a hint to ngrok about how ngrok should parse the token. Must be one of "jwt", "at+jwt", or "it+jwt". |
-| `method`  | `string` | the location in which to expect the JWT. Must be one of "header" or "body".                                                             |
-| `name`    | `string` | the name of the header or body field where the JWT is expected.                                                                         |
-| `prefix`  | `string` | any prefix to strip from the header or body field before parsing the JWT.                                                               |
+| Parameter | Type     | Description                                                                                                                                                                                                                                                                                                                     |
+| --------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `type`    | `string` | The type of the JWT, which acts as a hint to ngrok about how ngrok should parse the token. Must be one of "access_token", "jwt", "at+jwt", or "it+jwt".                                                                                                                                                                         |
+| `method`  | `string` | The location in the request to expect the JWT. Must be one of "header" or "body". We do not support including a token as a URL query parameter. When choosing `body`, the method must be `POST`, `PUT`, or `PATCH` and the content type header must be set to either `application/json` or `application/x-www-form-urlencoded`. |
+| `name`    | `string` | The name of the header or body field where the JWT is expected (Example: `"Authorization"`). This is not case sensitive.                                                                                                                                                                                                        |
+| `prefix`  | `string` | Any prefix to strip from the header or body field before parsing the JWT (Example: `"Bearer "`).                                                                                                                                                                                                                                |
 
 #### JWTSigningConfig Parameters
 
-| Parameter            | Type                                         | Description                                 |
-| -------------------- | -------------------------------------------- | ------------------------------------------- |
-| `allowed_algorithms` | `List<string>`                               | the list of allowed signing algorithms.     |
-| `keys`               | [JWTSigningKeys](#jwtsigningkeys-parameters) | the configuration for the JWT signing keys. |
+| Parameter            | Type                                         | Description                                                                                              |
+| -------------------- | -------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| `allowed_algorithms` | `List<string>`                               | The list of allowed signing algorithms. We do not support `none` as a value here because it is insecure. |
+| `keys`               | [JWTSigningKeys](#jwtsigningkeys-parameters) | The configuration for the JWT signing keys.                                                              |
 
 #### JWTSigningKeys Parameters
 
 | Parameter | Type                                                     | Description                                                            |
 | --------- | -------------------------------------------------------- | ---------------------------------------------------------------------- |
-| `sources` | [JWTSigningKeySources](#jwtsigningkeysources-parameters) | the configuration for the key material used to verify the signed JWTs. |
+| `sources` | [JWTSigningKeySources](#jwtsigningkeysources-parameters) | The configuration for the key material used to verify the signed JWTs. |
 
 #### JWTSigningKeySources Parameters
 
-| Parameter         | Type           | Description                                                          |
-| ----------------- | -------------- | -------------------------------------------------------------------- |
-| `additional_jkus` | `List<string>` | a list of URLs which serve the possible signing keys in JWKS format. |
+| Parameter         | Type           | Description                                                                                                                        |
+| ----------------- | -------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `additional_jkus` | `List<string>` | A list of URLs which serve the possible signing keys in JWKS format. These urls are cached and refreshed roughly every 15 minutes. |
