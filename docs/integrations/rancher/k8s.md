@@ -90,6 +90,7 @@ docker logs [DOCKER_NAME] 2>&1 | grep "Bootstrap Password:"
 
 1. Copy the terminal output into the password input and click **Log in with Local User**. Next, choose between a
    randomly-generated password or one of your choosing to initialize the **admin** user.
+
 1. The **Server URL** field will default to `https://localhost:444`, but your worker nodes won't be able to connect to
    Rancher in this configuration. Find your local IP address—try `hostname -I` for Linux or `ipconfig getifaddr en0` on macOs—which will look similar to `192.168.1.123`, and
    replace `localhost` with it, similar to the following: `https://192.168.1.107:444`.
@@ -123,20 +124,20 @@ docker logs [DOCKER_NAME] 2>&1 | grep "Bootstrap Password:"
 1. Ensure your new RKE2 cluster is active by getting the namespaces for your instance. Your list of namespaces should
    look like the following:
 
-```bash
-kubectl get namespaces
+   ```bash
+   kubectl get namespaces
 
-NAME                          STATUS   AGE
-calico-system                 Active   4m
-cattle-impersonation-system   Active   29s
-cattle-system                 Active   5m
-default                       Active   5m4s
-kube-node-lease               Active   5m6s
-kube-public                   Active   5m6s
-kube-system                   Active   5m6s
-local                         Active   23s
-tigera-operator               Active   4m10s
-```
+   NAME                          STATUS   AGE
+   calico-system                 Active   4m
+   cattle-impersonation-system   Active   29s
+   cattle-system                 Active   5m
+   default                       Active   5m4s
+   kube-node-lease               Active   5m6s
+   kube-public                   Active   5m6s
+   kube-system                   Active   5m6s
+   local                         Active   23s
+   tigera-operator               Active   4m10s
+   ```
 
 You have now installed Rancher in a Docker container, created a new Kubernetes cluster for your applications, and
 connected one or more Linux nodes to Rancher for handling future workloads.
@@ -220,65 +221,65 @@ simplifying how you route external traffic through your Rancher-managed cluster.
    edge via your `NGROK_DOMAIN`.
 
    :::tip
-   Make sure you edit line 45 of the manifest below, which contains the `NGROK_DOMAIN` variable, with the ngrok subdomain you created in the previous step. It should look something like `one-two-three.ngrok-free.app`.
+   Make sure you edit line 45 of the manifest below, which contains the `NGROK_DOMAIN` variable, with the ngrok subdomain you just created. It should look something like `one-two-three.ngrok.app`.
    :::
 
    ```yaml showLineNumbers
    apiVersion: v1
    kind: Service
    metadata:
-   name: game-2048
-   namespace: ngrok-ingress-controller
+     name: game-2048
+     namespace: ngrok-ingress-controller
    spec:
-   ports:
-      - name: http
+     ports:
+       - name: http
          port: 80
          targetPort: 80
-   selector:
-      app: game-2048
+     selector:
+       app: game-2048
    ---
    apiVersion: apps/v1
    kind: Deployment
    metadata:
-   name: game-2048
-   namespace: ngrok-ingress-controller
+     name: game-2048
+     namespace: ngrok-ingress-controller
    spec:
-   replicas: 1
-   selector:
-      matchLabels:
+     replicas: 1
+     selector:
+       matchLabels:
          app: game-2048
-   template:
-      metadata:
+     template:
+       metadata:
          labels:
-         app: game-2048
-      spec:
+           app: game-2048
+       spec:
          containers:
-         - name: backend
-            image: alexwhen/docker-2048
-            ports:
+           - name: backend
+             image: alexwhen/docker-2048
+             ports:
                - name: http
-               containerPort: 80
+                 containerPort: 80
    ---
-   # ngrok Ingress Controller Configuration
+   # ngrok Kubernetes  Ingress Controller configuration
    apiVersion: networking.k8s.io/v1
    kind: Ingress
    metadata:
-   name: game-2048-ingress
-   namespace: ngrok-ingress-controller
+     name: game-2048-ingress
+     namespace: ngrok-ingress-controller
    spec:
-   ingressClassName: ngrok
-   rules:
-      # highlight-start
-      - host: NGROK_DOMAIN
+     ingressClassName: ngrok
+     rules:
+       # highlight-start
+       - host: NGROK_DOMAIN
          # highlight-end
          http:
-         paths:
-            - path: /
+           paths:
+             - path: /
                pathType: Prefix
                backend:
-               service:
-                  name: game-2048
-                  port:
+                 service:
+                   name: game-2048
+                   port:
                      number: 80
    ```
 
@@ -293,7 +294,7 @@ simplifying how you route external traffic through your Rancher-managed cluster.
    and try again.
    :::
 
-1. Access your 2048 demo app by navigating to your ngrok subdomain, e.g. `https://one-two-three.ngrok-free.app`.
+1. Access your 2048 demo app by navigating to your ngrok subdomain, e.g. `https://one-two-three.ngrok.app`.
    ngrok's edge and your Ingress Controller will route traffic to your app from any device or external network as long
    as your Rancher server and application cluster remain operational.
 

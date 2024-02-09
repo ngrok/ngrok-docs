@@ -4,11 +4,11 @@
 
 ```json
 {
-	"id": "ec_2arwYdi4DJfzA25qUxH6SayrJIt",
+	"id": "ec_2bMmTq8fR6fMmuFWoaoKEFoGtme",
 	"type": "https",
 	"description": "app servers",
-	"created_at": "2024-01-12T20:07:34Z",
-	"uri": "https://api.ngrok.com/endpoint_configurations/ec_2arwYdi4DJfzA25qUxH6SayrJIt",
+	"created_at": "2024-01-23T18:08:52Z",
+	"uri": "https://api.ngrok.com/endpoint_configurations/ec_2bMmTq8fR6fMmuFWoaoKEFoGtme",
 	"basic_auth": null,
 	"circuit_breaker": null,
 	"compression": null,
@@ -24,8 +24,8 @@
 		"enabled": true,
 		"ip_policies": [
 			{
-				"id": "ipp_2arwYfAAi2RTt0zxovAIqrHqzUR",
-				"uri": "https://api.ngrok.com/ip_policies/ipp_2arwYfAAi2RTt0zxovAIqrHqzUR"
+				"id": "ipp_2bMmTodm6jRRNwVxsjyu2B2KsWp",
+				"uri": "https://api.ngrok.com/ip_policies/ipp_2bMmTodm6jRRNwVxsjyu2B2KsWp"
 			}
 		]
 	},
