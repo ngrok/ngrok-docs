@@ -38,7 +38,7 @@ Limits refresh every calendar month. This means you reset to zero on the first o
 
 ## Requests
 
-Free ngrok users get 10,000 requests per month.
+Free ngrok users get 20,000 requests per month.
 
 ### What are requests?
 
