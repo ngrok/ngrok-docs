@@ -71,6 +71,7 @@ const sidebars = {
 								},
 							],
 						},
+						"http/traffic-policy/gallery",
 					],
 				},
 				"http/user-agent-filter",
