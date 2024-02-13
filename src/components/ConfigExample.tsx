@@ -11,7 +11,7 @@ export default function ConfigExample({ config }) {
 				<CodeBlock language="yaml">{YAML.stringify(config)}</CodeBlock>
 			</TabItem>
 			<TabItem value="JSON" label="JSON">
-				<CodeBlock language="json">{JSON.stringify(config, null, 2)}</CodeBlock>
+				<CodeBlock language="yaml">{JSON.stringify(config, null, 2)}</CodeBlock>
 			</TabItem>
 		</Tabs>
 	);
