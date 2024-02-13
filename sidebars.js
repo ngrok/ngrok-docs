@@ -285,7 +285,6 @@ const sidebars = {
 								"api/resources/edge-route-circuit-breaker-module",
 								"api/resources/edge-route-compression-module",
 								"api/resources/edge-route-ip-restriction-module",
-								"api/resources/edge-route-jwt-validation-module",
 								"api/resources/edge-route-o-auth-module",
 								"api/resources/edge-route-oidc-module",
 								"api/resources/edge-route-policy-module",
