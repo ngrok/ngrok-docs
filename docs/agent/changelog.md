@@ -11,6 +11,7 @@ title: Changelog
 - Added `--policy-file` flag that accepts Traffic Policy configuration for HTTP, TCP, or TLS traffic.
 - Added support for `policy` field in agent config for Traffic Policy configuration.
 - Added concise help text when `ngrok` is run without any args
+- Removed support for Windows 7 and Windows 8 (support for Windows 7 and 8 was dropped in [Go 1.21](https://tip.golang.org/doc/go1.21#windows))
 
 ### ngrok Agent 3.5.0 - \[2023-12-01\]
 
