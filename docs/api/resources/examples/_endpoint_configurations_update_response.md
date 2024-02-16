@@ -4,37 +4,37 @@
 
 ```json
 {
-	"id": "ec_2bMmTq8fR6fMmuFWoaoKEFoGtme",
-	"type": "https",
-	"description": "app servers",
-	"created_at": "2024-01-23T18:08:52Z",
-	"uri": "https://api.ngrok.com/endpoint_configurations/ec_2bMmTq8fR6fMmuFWoaoKEFoGtme",
+	"backend": null,
 	"basic_auth": null,
 	"circuit_breaker": null,
 	"compression": null,
-	"request_headers": {
-		"enabled": true,
-		"add": {
-			"x-frontend": "ngrok"
-		},
-		"remove": ["cache-control"]
-	},
-	"response_headers": null,
+	"created_at": "2024-01-31T05:22:54Z",
+	"description": "app servers",
+	"id": "ec_2bhsJkgV9EWdP6THRk620fudGKB",
 	"ip_policy": {
 		"enabled": true,
 		"ip_policies": [
 			{
-				"id": "ipp_2bMmTodm6jRRNwVxsjyu2B2KsWp",
-				"uri": "https://api.ngrok.com/ip_policies/ipp_2bMmTodm6jRRNwVxsjyu2B2KsWp"
+				"id": "ipp_2bhsJgA8Ebw0wBylm5aysarWu9k",
+				"uri": "https://api.ngrok.com/ip_policies/ipp_2bhsJgA8Ebw0wBylm5aysarWu9k"
 			}
 		]
 	},
 	"mutual_tls": null,
-	"tls_termination": null,
-	"webhook_validation": null,
 	"oauth": null,
-	"saml": null,
 	"oidc": null,
-	"backend": null
+	"request_headers": {
+		"add": {
+			"x-frontend": "ngrok"
+		},
+		"enabled": true,
+		"remove": ["cache-control"]
+	},
+	"response_headers": null,
+	"saml": null,
+	"tls_termination": null,
+	"type": "https",
+	"uri": "https://api.ngrok.com/endpoint_configurations/ec_2bhsJkgV9EWdP6THRk620fudGKB",
+	"webhook_validation": null
 }
 ```

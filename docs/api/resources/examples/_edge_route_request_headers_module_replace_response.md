@@ -4,10 +4,10 @@
 
 ```json
 {
-	"enabled": true,
 	"add": {
 		"x-frontend": "ngrok"
 	},
+	"enabled": true,
 	"remove": ["cache-control"]
 }
 ```

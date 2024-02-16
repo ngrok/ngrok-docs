@@ -1,0 +1,499 @@
+---
+pagination_label: Expressions
+---
+
+import ConfigExample from "/src/components/ConfigExample.tsx";
+
+# Expressions
+
+Traffic Policy module enables you to filter inbound and outbound traffic with [Common Expression Language (CEL)](https://github.com/google/cel-spec) expressions. Each policy rule expression must evaluate to true in order for
+the rule's actions to take effect against traffic. In addition to CEL's [built-in functions and macros](https://github.com/google/cel-spec/blob/master/doc/langdef.md#macros) we provide additional variables for the [connection](#connection-variables), [request](#request-variables) and [response](#response-variables)
+along with [custom macros](#macros).
+
+## Connection Variables
+
+The following connection variables are available on the `conn` struct:
+
+| Name                                                  | Type   | Description                                                                                            |
+| ----------------------------------------------------- | ------ | ------------------------------------------------------------------------------------------------------ |
+| [`conn.ClientIP`](#connclientip)                      | string | The source IP of the HTTP connection to the ngrok endpoint.                                            |
+| [`conn.Geo.CountryCode`](#conngeocountrycode)         | string | The two-letter ISO country code based on the client IP.                                                |
+| [`conn.Geo.Latitude`](#conngeolatitude)               | string | The approximate latitude based on the client IP.                                                       |
+| [`conn.Geo.LatLongRadiusKm`](#conngeolatlongradiuskm) | string | The radius in kilometers around the latitude and longitude where the client IP is likely to originate. |
+| [`conn.Geo.Longitude`](#conngeolongitude)             | string | The approximate longitude based on the client IP.                                                      |
+
+### `conn.ClientIP`
+
+The source IP of the HTTP connection to the ngrok endpoint as a string.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.ClientIP in ['::1', '127.0.0.1']"],
+	}}
+/>
+
+### `conn.Geo.CountryCode`
+
+The two-letter ISO country code based on the client IP.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.Geo.CountryCode != 'US'"],
+	}}
+/>
+
+### `conn.Geo.Latitude`
+
+The approximate latitude based on the client IP.
+
+<ConfigExample
+	config={{
+		expressions: ["double(conn.Geo.Latitude) >= 45.0"],
+	}}
+/>
+
+### `conn.Geo.LatLongRadiusKm`
+
+The radius in kilometers around the latitude and longitude where the client IP is likely to originate.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.Geo.LatLongRadiusKm <= '20'"],
+	}}
+/>
+
+### `conn.Geo.Longitude`
+
+The approximate longitude based on the client IP.
+
+<ConfigExample
+	config={{
+		expressions: ["double(conn.Geo.Longitude) <= -93.0"],
+	}}
+/>
+
+## Request Variables
+
+The following request variables are available on the `req` struct:
+
+| Name                                                    | Type   | Description                                                                                                                         |
+| ------------------------------------------------------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------- |
+| [`req.ClientTLS.CertCN`](#reqclienttlscertcn)           | string | The subject common name of the client's leaf TLS certificate.                                                                       |
+| [`req.ClientTLS.CipherSuite`](#reqclienttlsciphersuite) | string | The cipher suite negotiated on the connection.                                                                                      |
+| [`req.ClientTLS.SNI`](#reqclienttlssni)                 | string | The Server Name Indication extension sent by the client.                                                                            |
+| [`req.ClientTLS.Version`](#reqclienttlsversion)         | string | The TLS Version used on the connection.                                                                                             |
+| [`req.ContentLength`](#reqcontentlength)                | int    | The length of the content associated with the request.                                                                              |
+| [`req.Cookies`](#reqcookies)                            | list   | The list of HTTP cookie objects provided in the request.                                                                            |
+| [`req.Method`](#reqmethod)                              | string | The request method.                                                                                                                 |
+| [`req.URL`](#requrl)                                    | string | The URL of the request.                                                                                                             |
+| [`req.Params`](#reqparams)                              | map    | The query parameters of the request URL wherein a string key maps to a list of string values.                                       |
+| [`req.Protocol`](#reqprotocol)                          | string | The protocol version of the request.                                                                                                |
+| [`req.Host`](#reqhost)                                  | string | The host of the request.                                                                                                            |
+| [`req.Location`](#reqlocation)                          | string | The 'Location' header of the request.                                                                                               |
+| [`req.Headers`](#reqheaders)                            | map    | The headers of the request wherein a string key maps to a list of string values. Header keys must be written in canonical format.   |
+| [`req.Trailers`](#reqtrailers)                          | map    | The trailers of the request wherein a string key maps to a list of string values. Trailer keys must be written in canonical format. |
+
+### `req.ClientTLS.CertCN`
+
+The subject common name of the client's leaf TLS certificate.
+
+<ConfigExample
+	config={{
+		expressions: ["req.ClientTLS.CertCN.startsWith('example')"],
+	}}
+/>
+
+### `req.ClientTLS.CipherSuite`
+
+The cipher suite negotiated on the connection.
+
+<ConfigExample
+	config={{
+		expressions: ["req.ClientTLS.CipherSuite.contains('SHA256')"],
+	}}
+/>
+
+### `req.ClientTLS.SNI`
+
+The Server Name Indication extension sent by the client.
+
+<ConfigExample
+	config={{
+		expressions: ["req.ClientTLS.SNI.startsWith('domain')"],
+	}}
+/>
+
+### `req.ClientTLS.Version`
+
+The TLS Version used on the connection.
+
+<ConfigExample
+	config={{
+		expressions: ["req.ClientTLS.Version.contains('1.3')"],
+	}}
+/>
+
+### `req.ContentLength`
+
+The length of the content associated with the request.
+
+<ConfigExample
+	config={{
+		expressions: ["req.ContentLength > 10000000"],
+	}}
+/>
+
+### `req.Method`
+
+The request method.
+
+<ConfigExample
+	config={{
+		expressions: ["req.Method == 'POST' || req.Method == 'PUT'"],
+	}}
+/>
+
+### `req.Cookies`
+
+The list of HTTP cookie objects provided in the request.
+
+<ConfigExample
+	config={{
+		expressions: ["size(req.Cookies) > 0"],
+	}}
+/>
+
+### `req.URL`
+
+The URL of the request.
+
+<ConfigExample
+	config={{
+		expressions: ["req.URL.contains('/admin')"],
+	}}
+/>
+
+### `req.Params`
+
+The query parameters of the request URL wherein a string key maps to a list of string values.
+
+<ConfigExample
+	config={{
+		expressions: ["'bar' in req.Params['foo']"],
+	}}
+/>
+
+### `req.Protocol`
+
+The protocol version of the request.
+
+<ConfigExample
+	config={{
+		expressions: ["`req.Protocol == 'HTTP/1.1'"],
+	}}
+/>
+
+### `req.Host`
+
+The host of the request.
+
+<ConfigExample
+	config={{
+		expressions: ["req.Host.contains(':8080')"],
+	}}
+/>
+
+### `req.Location`
+
+The 'Location' header of the request.
+
+<ConfigExample
+	config={{
+		expressions: ["req.Location == '/index.html'"],
+	}}
+/>
+
+### `req.Headers`
+
+The headers of the request wherein a string key maps to a list of string values.
+
+<ConfigExample
+	config={{
+		expressions: ["'Fizz' in req.Headers['Baz']"],
+	}}
+/>
+
+### `req.Trailers`
+
+The trailers of the request wherein a string key maps to a list of string values.
+
+<ConfigExample
+	config={{
+		expressions: ["'Fizz' in req.Trailers['Baz']"],
+	}}
+/>
+
+## Response Variables
+
+The following response variables are available on the `res` struct:
+
+| Name                                                    | Type   | Description                                                                                                                          |
+| ------------------------------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------ |
+| [`res.ContentLength`](#rescontentlength)                | int    | The length of the content associated with the response.                                                                              |
+| [`res.Cookies`](#rescookies)                            | list   | The list of HTTP cookie objects provided in the response.                                                                            |
+| [`res.Headers`](#resheaders)                            | map    | The headers of the response wherein a string key maps to a list of string values. Header keys must be written in canonical format.   |
+| [`res.Location`](#reslocation)                          | string | The 'Location' header of the response.                                                                                               |
+| [`res.ServerTLS.CertCN`](#resservertlscertcn)           | string | The subject common name of the leaf TLS certificate.                                                                                 |
+| [`res.ServerTLS.CipherSuite`](#resservertlsciphersuite) | string | The cipher suite negotiated on the connection.                                                                                       |
+| [`res.ServerTLS.SNI`](#resservertlssni)                 | string | The Server Name Indication extension sent by the client.                                                                             |
+| [`res.ServerTLS.Version`](#resservertlsversion)         | string | The TLS Version used on the connection.                                                                                              |
+| [`res.StatusCode`](#resstatuscode)                      | string | The status code of the response.                                                                                                     |
+| [`res.Trailers`](#restrailers)                          | map    | The trailers of the response wherein a string key maps to a list of string values. Trailer keys must be written in canonical format. |
+
+### `res.ContentLength`
+
+The length of the content associated with the response.
+
+<ConfigExample
+	config={{
+		expressions: ["res.ContentLength != 0"],
+	}}
+/>
+
+### `res.Cookies`
+
+The list of HTTP cookie objects provided in the response.
+
+<ConfigExample
+	config={{
+		expressions: ["size(req.Cookies) > 0"],
+	}}
+/>
+
+### `res.Headers`
+
+The headers of the response wherein a string key maps to a list of string values.
+
+<ConfigExample
+	config={{
+		expressions: ["'Fizz' in res.Headers['Baz']"],
+	}}
+/>
+
+### `res.Location`
+
+The 'Location' header of the response.
+
+<ConfigExample
+	config={{
+		expressions: ["res.Location == '/index.html'"],
+	}}
+/>
+
+### `res.ServerTLS.CertCN`
+
+The subject common name of the leaf TLS certificate.
+
+<ConfigExample
+	config={{
+		expressions: ["res.ClientTLS.CertCN.startsWith('example')"],
+	}}
+/>
+
+### `res.ServerTLS.CipherSuite`
+
+The cipher suite negotiated on the connection.
+
+<ConfigExample
+	config={{
+		expressions: ["res.ClientTLS.CipherSuite.contains('SHA256')"],
+	}}
+/>
+
+### `res.ServerTLS.SNI`
+
+The Server Name Indication extension sent by the client.
+
+<ConfigExample
+	config={{
+		expressions: ["res.ClientTLS.SNI.startsWith('domain')"],
+	}}
+/>
+
+### `res.ServerTLS.Version`
+
+The TLS Version used on the connection.
+
+<ConfigExample
+	config={{
+		expressions: ["res.ClientTLS.Version.contains('1.3')"],
+	}}
+/>
+
+### `res.StatusCode`
+
+The status code of the response.
+
+<ConfigExample
+	config={{
+		expressions: ["res.StatusCode >= '300'"],
+	}}
+/>
+
+### `res.Trailers`
+
+The trailers of the response wherein a string key maps to a list of string values.
+
+<ConfigExample
+	config={{
+		expressions: ["'fizz' in res.Trailers['baz']"],
+	}}
+/>
+
+---
+
+## Macros
+
+CEL provides a set of [predefined macros](https://github.com/google/cel-spec/blob/master/doc/langdef.md#macros) that can
+also be used in policy expressions. For convenience, the following custom macros are also supported:
+
+| Name                                                                       | Return Type | Description                                                                                                                                       |
+| -------------------------------------------------------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`hasReqHeader(string)`](#hasreqheaderstring)                              | bool        | Returns true or false if the provided header key is present on the request. Header keys must be written in canonical format.                      |
+| [`getReqHeader(string)`](#getreqheaderstring)                              | list        | Returns a list of header values for the provided key on the request. Header keys must be written in canonical format.                             |
+| [`hasQueryParam(string)`](#hasqueryparamstring)                            | bool        | Returns true or false if the specified query parameter key is part of the request URL.                                                            |
+| [`getQueryParam(string)`](#getqueryparamstring)                            | list        | Returns a list of the query parameter values from the request URL for the specified key.                                                          |
+| [`hasReqCookie(string)`](#hasreqcookiestring)                              | bool        | Returns true or false if a cookie exists on the request with the specified name.                                                                  |
+| [`getReqCookie(string)`](#getreqcookiestring)                              | bool        | Returns the cookie struct for the specified cookie name, if it exists on the request.                                                             |
+| [`hasResHeader(string)`](#hasresheaderstring)                              | bool        | Returns true or false if the provided header key is present on the response. Header keys must be written in canonical format.                     |
+| [`getResHeader(string)`](#getresheaderstring)                              | list        | Returns a list of header values for the provided key on the response. Header keys must be written in canonical format.                            |
+| [`hasResCookie(string)`](#hasrescookiestring)                              | bool        | Returns true or false if a cookie exists on the response with the specified name.                                                                 |
+| [`getResCookie(string)`](#getrescookiestring)                              | bool        | Returns the cookie struct for the specified cookie name, if it exists on the response.                                                            |
+| [`inCidrRange(ip string, cidr string)`](#incidrrangeip-string-cidr-string) | bool        | Returns true or false if the provided IP address falls within the provided CIDR range. Returns false if the provided CIDR range is invalid.       |
+| [`inCidrRanges(ip string, cidrs list)`](#incidrrangesip-string-cidrs-list) | bool        | Returns true or false if the provided IP address falls within any of the provided CIDR ranges. Ignores any provided CIDR ranges that are invalid. |
+
+### `hasReqHeader(string)`
+
+Returns `true` or `false` if the provided header key is present on the request. Header keys must be written in canonical format.
+
+<ConfigExample
+	config={{
+		expressions: ["hasReqHeader('X-Version-Id')"],
+	}}
+/>
+
+### `getReqHeader(string)`
+
+Returns a list of header values for the provided key on the request. Header keys must be written in canonical format.
+
+<ConfigExample
+	config={{
+		expressions: [
+			"getReqHeader('User-Agent').exists(v, v.matches('(?i)google-images'))",
+		],
+	}}
+/>
+
+### `hasQueryParam(string)`
+
+Returns true or false if the specified query parameter key is part of the request URL.
+
+<ConfigExample
+	config={{
+		expressions: ["hasQueryParam('q')"],
+	}}
+/>
+
+### `getQueryParam(string)`
+
+Returns a list of the query parameter values from the request URL for the specified key.
+
+<ConfigExample
+	config={{
+		expressions: ["size(getQueryParam('q')) == 0"],
+	}}
+/>
+
+### `hasReqCookie(string)`
+
+Returns true or false if a cookie exists on the request with the specified name.
+
+<ConfigExample
+	config={{
+		expressions: ["hasReqCookie('session')"],
+	}}
+/>
+
+### `getReqCookie(string)`
+
+Returns the cookie struct for the specified cookie name, if it exists on the request.
+
+<ConfigExample
+	config={{
+		expressions: ["getReqCookie('session').Secure"],
+	}}
+/>
+
+### `hasResHeader(string)`
+
+Returns true or false if the provided header key is present on the response. Header keys must be written in canonical format.
+
+<ConfigExample
+	config={{
+		expressions: ["hasResHeader('Content-Type')"],
+	}}
+/>
+
+### `getResHeader(string)`
+
+Returns a list of header values for the provided key on the response. Header keys must be written in canonical format.
+
+<ConfigExample
+	config={{
+		expressions: [
+			"size(getResHeader('Content-Type').filter(v, v.matches('application/json'))) > 0",
+		],
+	}}
+/>
+
+### `hasResCookie(string)`
+
+Returns true or false if a cookie exists on the response with the specified name.
+
+<ConfigExample
+	config={{
+		expressions: ["hasResCookie('_device_id')"],
+	}}
+/>
+
+### `getResCookie(string)`
+
+Returns the cookie struct for the specified cookie name, if it exists on the response.
+
+<ConfigExample
+	config={{
+		expressions: ["getResCookie('_device_id').Value == 'mobile-phone-14'"],
+	}}
+/>
+
+### `inCidrRange(ip string, cidr string)`
+
+Returns true or false if the provided IP address falls within the provided CIDR range. Returns false if the provided CIDR range is invalid.
+
+<ConfigExample
+	config={{
+		expressions: ["inCidrRange(conn.ClientIP, '66.249.66.1/24')"],
+	}}
+/>
+
+### `inCidrRanges(ip string, cidrs list)`
+
+Returns true or false if the provided IP address falls within any of the provided CIDR ranges. Ignores any provided CIDR ranges that are invalid.
+
+<ConfigExample
+	config={{
+		expressions: [
+			"inCidrRanges(conn.ClientIP, ['66.249.66.1/24', '2001:4860::/32'])",
+		],
+	}}
+/>

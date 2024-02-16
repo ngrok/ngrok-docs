@@ -4,9 +4,9 @@
 
 ```json
 {
-	"enabled": true,
+	"allow_options": true,
 	"auth_provider_id": "agent",
-	"realm": "",
-	"allow_options": true
+	"enabled": true,
+	"realm": ""
 }
 ```

@@ -14,5 +14,14 @@
 | enabled       | boolean            | `true` if the module will be applied to traffic, `false` to disable. default `true` if unspecified |
 | id            | string             | a resource identifier                                                                              |
 | uri           | string             | a uri for locating a resource                                                                      |
+| enabled       | boolean            | `true` if the module will be applied to traffic, `false` to disable. default `true` if unspecified |
+| expressions   | List&lt;string&gt; | cel expressions that filter traffic the policy rule applies to.                                    |
+| type          | string             | the type of action on the policy rule.                                                             |
+| config        | object             | the configuration for the action on the policy rule.                                               |
+| name          | string             | the name of the rule that is part of the traffic policy.                                           |
+| expressions   | List&lt;string&gt; | cel expressions that filter traffic the policy rule applies to.                                    |
+| type          | string             | the type of action on the policy rule.                                                             |
+| config        | object             | the configuration for the action on the policy rule.                                               |
+| name          | string             | the name of the rule that is part of the traffic policy.                                           |
 | uri           | string             | URI of the TCP Edge list API resource                                                              |
 | next_page_uri | string             | URI of the next page, or null if there is no next page                                             |

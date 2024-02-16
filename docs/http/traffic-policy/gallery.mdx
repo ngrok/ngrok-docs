@@ -1,0 +1,74 @@
+---
+title: Rule Gallery
+pagination_label: Rule Gallery
+---
+
+import ConfigExample from "/src/components/ConfigExample.tsx";
+
+# Rule Gallery
+
+Explore a curated collection of example configurations spanning from common to unconventional use-cases for the Traffic Policy module.
+
+## Deny non-GET requests:
+
+This rule denies all inbound traffic that is not a GET request.
+
+<ConfigExample
+	config={{
+		inbound: [
+			{
+				expressions: ["req.Method != GET"],
+				actions: [{ type: "deny" }],
+			},
+		],
+	}}
+/>
+
+## Custom response for unauthorized requests
+
+This rule sends a custom response with status code `401` and body `Unauthorized` for requests without an Authorization header.
+
+<ConfigExample
+	config={{
+		inbound: [
+			{
+				expressions: ["!('Authorization' in req.Headers)"],
+				actions: [
+					{
+						type: "custom-response",
+						config: {
+							status_code: 401,
+							content: "Unauthorized",
+						},
+					},
+				],
+			},
+		],
+	}}
+/>
+
+## Rate limiting for specific endpoint:
+
+This rule applies rate limiting of `30` requests per second to the endpoint `/api/videos`.
+
+<ConfigExample
+	config={{
+		inbound: [
+			{
+				expressions: ["req.URL.contains('/api/specific_endpoint')"],
+				actions: [
+					{
+						type: "rate-limit",
+						config: {
+							name: "Only allow 30 requests per second",
+							algorithm: "sliding_window",
+							capacity: 30,
+							rate: "1s",
+							bucket_key: ["conn.ClientIP"],
+						},
+					},
+				],
+			},
+		],
+	}}
+/>

@@ -8,6 +8,6 @@ curl \
 -H "Authorization: Bearer {API_KEY}" \
 -H "Content-Type: application/json" \
 -H "Ngrok-Version: 2" \
--d '{"enabled":true,"add":{"x-frontend":"ngrok"},"remove":["cache-control"]}' \
-https://api.ngrok.com/edges/https/edghts_2bMmXFvS6S1onvMJtmSu08uw6ov/routes/edghtsrt_2bMmXKRsCxPDluDlCbGP9vej8ir/request_headers
+-d '{"add":{"x-frontend":"ngrok"},"enabled":true,"remove":["cache-control"]}' \
+https://api.ngrok.com/edges/https/edghts_2bhsN4K9QM7c0sfylz1vfOrdlpj/routes/edghtsrt_2bhsN5nA1143myc5k52n3mxQYzY/request_headers
 ```
