@@ -8,6 +8,6 @@ curl \
 -H "Authorization: Bearer {API_KEY}" \
 -H "Content-Type: application/json" \
 -H "Ngrok-Version: 2" \
--d '{"backends":["bkdhr_2bhsMccgxHPaW792mwHqsPZvkmV"],"description":"acme failover","metadata":"{\"environment\": \"staging\"}"}' \
+-d '{"backends":["bkdhr_2cSjz67JbNuA48uDzbG11NmXf7K"],"description":"acme failover","metadata":"{\"environment\": \"staging\"}"}' \
 https://api.ngrok.com/backends/failover
 ```

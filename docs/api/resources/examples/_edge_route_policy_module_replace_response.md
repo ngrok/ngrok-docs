@@ -31,15 +31,17 @@
 				{
 					"config": {
 						"content": "access denied",
-						"content_type": "text/plain",
+						"headers": {
+							"content-type": "text/plain"
+						},
 						"status_code": 401
 					},
 					"type": "custom-response"
 				}
 			],
 			"expressions": [
-				"req.Method == \"POST\" && req.ContentLength > 10000",
-				"conn.Geo.CountryCode in [\"BR\", \"CN\", \"CU\", \"IR\", \"NG\", \"RO\", \"RU\", \"SD\", \"SY\", \"UA\"]"
+				"req.Method == 'POST' && req.ContentLength > 10000",
+				"conn.Geo.CountryCode in ['BR', 'CN', 'CU', 'IR', 'NG', 'RO', 'RU', 'SD', 'SY', 'UA']"
 			],
 			"name": "Block POST Requests With Large Content Length From Specific Countries"
 		},
@@ -53,9 +55,9 @@
 				}
 			],
 			"expressions": [
-				"\"RudeDudes\" in req.Headers[\"User-Agent\"] || \"Scalawags\" in req.Headers[\"User-Agent\"]"
+				"'ChatGPT' in req.Headers['User-Agent'] || 'GPTBot' in req.Headers['User-Agent']"
 			],
-			"name": "Block User Agents"
+			"name": "Block AI Crawler Bots"
 		}
 	],
 	"outbound": [
@@ -64,16 +66,16 @@
 				{
 					"config": {
 						"metadata": {
-							"edgeId": "edghts_2bhsN2VP8W4pTkaMSrhyj0SRf8J",
+							"edgeId": "edghts_2cSjzGIJqwwSDfDOKhRXHToV7Rv",
 							"message": "Unsuccessful response",
-							"routeId": "edghtsrt_2bhsN5u05QQ1MRrI3XbpDQMFSE7"
+							"routeId": "edghtsrt_2cSjzMefwVMUDcy95OaRhdhhGyF"
 						}
 					},
 					"type": "log"
 				}
 			],
-			"expressions": ["res.StatusCode < \"200\" || res.StatusCode > \"300\""],
-			"name": "Log Non Success"
+			"expressions": ["res.StatusCode < '200' || res.StatusCode > '300'"],
+			"name": "Log Unsuccessful Response"
 		}
 	]
 }
