@@ -169,7 +169,7 @@
         <a id="ERR_NGROK_121" href="/docs/errors/err_ngrok_121">ERR_NGROK_121</a>
       </td>
       <td class="pre-wrapped">
-        Your <code>&lt;PRODUCT&gt;</code> version "<code>&lt;VERSION&gt;</code>" is too old. The minimum supported agent version for your account is "<code>&lt;MINVERSION&gt;</code>". Please update to a newer version with `ngrok update`, by downloading from <a href="https://ngrok.com/download">https://ngrok.com/download</a>, or by updating your SDK version.
+        Your <code>&lt;PRODUCT&gt;</code> version "<code>&lt;VERSION&gt;</code>" is too old. The minimum supported agent version for your account is "<code>&lt;MINVERSION&gt;</code>". Please update to a newer version with `ngrok update`, by downloading from <a href="https://ngrok.com/download">https://ngrok.com/download</a>, or by updating your SDK version. Paid accounts are currently excluded from minimum agent version requirements. To begin handling traffic immediately without updating your agent, upgrade to a paid plan: <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a>.
       </td>
     </tr>
     <tr>
@@ -2327,7 +2327,39 @@
         <a id="ERR_NGROK_727" href="/docs/errors/err_ngrok_727">ERR_NGROK_727</a>
       </td>
       <td class="pre-wrapped">
-        This ngrok account has reached its http requests limit for the month. Please log into https://dashboard.ngrok.com to view your options.
+        This ngrok account has reached its HTTP requests limit for the month. Please log into https://dashboard.ngrok.com to view your options.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_728" href="/docs/errors/err_ngrok_728">ERR_NGROK_728</a>
+      </td>
+      <td class="pre-wrapped">
+        This ngrok account has reached its HTTP connections limit for the month. Please log into https://dashboard.ngrok.com to view your options.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_729" href="/docs/errors/err_ngrok_729">ERR_NGROK_729</a>
+      </td>
+      <td class="pre-wrapped">
+        This ngrok account has reached its TCP connections limit for the month. Please log into https://dashboard.ngrok.com to view your options.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_730" href="/docs/errors/err_ngrok_730">ERR_NGROK_730</a>
+      </td>
+      <td class="pre-wrapped">
+        This ngrok account has reached its TLS connections limit for the month. Please log into https://dashboard.ngrok.com to view your options.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_731" href="/docs/errors/err_ngrok_731">ERR_NGROK_731</a>
+      </td>
+      <td class="pre-wrapped">
+        This ngrok account has reached its HTTPS connections limit for the month. Please log into https://dashboard.ngrok.com to view your options.
       </td>
     </tr>
     <tr>
@@ -5525,7 +5557,7 @@
         <a id="ERR_NGROK_4301" href="/docs/errors/err_ngrok_4301">ERR_NGROK_4301</a>
       </td>
       <td class="pre-wrapped">
-        This account does not support a password reset.
+        You have not set a password for this account. Please login using Google or GitHub instead.
       </td>
     </tr>
     <tr>
@@ -9660,6 +9692,14 @@
       </td>
       <td class="pre-wrapped">
         Your account is on the <code>&lt;PLAN&gt;</code> plan, which requires you to register a Domain through the ngrok Dashboard before starting an Endpoint. Visit <a href="https://dashboard.ngrok.com/cloud-edge/domains">https://dashboard.ngrok.com/cloud-edge/domains</a> to register a domain and then use the `--domain` flag when starting your Agent.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_15003" href="/docs/errors/err_ngrok_15003">ERR_NGROK_15003</a>
+      </td>
+      <td class="pre-wrapped">
+        App protocol is invalid: <code>&lt;APPPROTOCOL&gt;</code>
       </td>
     </tr>
     <tr>
