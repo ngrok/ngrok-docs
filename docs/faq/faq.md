@@ -79,3 +79,12 @@ _en-grok_
 
 The first prototype for ngrok was committed on [March 20th,
 2013](https://github.com/inconshreveable/ngrok/commit/8f4795ecac7f92c6b5a8c8970c65f26e5315fe4e).
+
+## Why does port scanning my ngrok domain show other open ports {#open-ports-on-domain}
+
+ngrok uses a shared set of servers to service both HTTP(s)/TLS and TCP traffic. 
+All HTTP(s)/TLS traffic is serviced on ports 80 and 443. For TCP traffic each 
+customer is allocated one or more port(s) for their traffic. This means if you
+port scan a domain or ip address on the ngrok network you will potentially see 
+a number of open ports. Those ports are configured to only route traffic to the 
+customers who have allocated them. 
