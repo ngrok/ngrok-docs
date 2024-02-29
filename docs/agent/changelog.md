@@ -6,6 +6,12 @@ title: Changelog
 
 ## v3
 
+### ngrok Agent 3.7.0 - \[2024-03-04\]
+
+- Fixed an issue where `ngrok diagnose --region all` would return an error for `eu-lon-1`
+- Fixed a typo in default usage output
+- Moved to `ngrok-go` v1.9.0
+
 ### ngrok Agent 3.6.0 - \[2024-02-06\]
 
 - Added `--policy-file` flag that accepts Traffic Policy configuration for HTTP, TCP, or TLS traffic.
