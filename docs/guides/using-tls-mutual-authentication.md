@@ -9,9 +9,9 @@ tags:
   - security
 ---
 
-Mutual TLS Authentication (mTLS) is a method for providing security to sensitive applications in a zero trust security posture. This additional layer of security provides confidence by validating the identify of both the client and server before any transfer of data. In a majority of the TLS connections being made everyday, the client will verify the identify of server confirming that the correct server is being accessed. For example, when accessing https://ngrok.com/docs, you will receive a certificate correctly identifying the server as ngrok.com.
+Mutual TLS Authentication (mTLS) is a method for providing security to sensitive applications in a zero trust security posture. This additional layer of security provides confidence by validating the identify of both the client and server before any transfer of data. In a majority of the TLS connections being made everyday, the client will verify the identify of the server confirming that the correct server is being accessed. For example, when accessing https://ngrok.com/docs, you will receive a certificate correctly identifying the server as ngrok.com.
 
-mTLS adds an additional flow to the previous TLS server verification steps. The client will still verifiy the server's identity, but now the server will in turn also verify the identity of the client. By verifying the clients, the server owner is able to restrict access only to verified clients strengthening security.
+mTLS adds an additional flow to the previous TLS server verification steps. The client will still verify the server's identity, but now the server will in turn also verify the identity of the client. By verifying the clients, the server owner is able to restrict access only to verified clients strengthening security.
 ![](img/mtls-diag.png)
 
 This document will provide a quick start guide for how to enable mTLS on your ngrok hosted endpoints. For a deeper understanding for how mTLS is implemented within ngrok, reference the [Mutual TLS module page](https://ngrok.com/docs/cloud-edge/modules/mutual-tls/).
