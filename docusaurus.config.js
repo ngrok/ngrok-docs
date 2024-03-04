@@ -191,7 +191,7 @@ const config = {
 				appId: "8D7MHVMLBR",
 
 				// Public API key: it is safe to commit it
-				apiKey: "269bab201a436456bd9b0107bfdb7bfa",
+				apiKey: "d96d859b21bb7d3d9afe6349baedff3e",
 
 				indexName: "ngrok",
 
