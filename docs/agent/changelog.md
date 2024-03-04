@@ -6,7 +6,7 @@ title: Changelog
 
 ## v3
 
-### ngrok Agent 3.7.0 - \[2024-03-04\]
+### ngrok Agent 3.7.0 - \[2024-03-07\]
 
 - Fixed an issue where `ngrok diagnose --region all` would return an error for `eu-lon-1`
 - Fixed a typo in default usage output
