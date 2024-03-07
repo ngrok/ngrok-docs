@@ -14,7 +14,7 @@ This guide will walk you through frequently asked questions about ngrok's licens
 
 # How can I see how my account stacks up against my limits?
 
-The ngrok usage page at ngrok.dashboard.com/usage
+The ngrok usage page at dashboard.ngrok.com/usage
 
 # How often do limits refresh?
 
