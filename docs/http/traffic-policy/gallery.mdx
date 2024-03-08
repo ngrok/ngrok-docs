@@ -72,3 +72,55 @@ This rule applies rate limiting of `30` requests per second to the endpoint `/ap
 		],
 	}}
 />
+
+## Enforce Basic Auth
+
+This rule mimics the behavior of the [Basic Auth module](/http/basic-auth/). Requests that are missing the Authorization header or contain an invalid authorization value will receive an unauthorized response, prompting the requester to authorize themselves.
+
+<ConfigExample
+	config={{
+		inbound: [
+			{
+				expressions: [
+					"!('Authorization' in req.Headers) || !('Basic dXNlcm5hbWU6cGFzc3dvcmQ=' in req.Headers['Authorization'] || 'Basic dXNlcm5hbWU6aHVudGVyMg==' in req.Headers['Authorization'] || 'Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==' in req.Headers['Authorization'])",
+				],
+				actions: [
+					{
+						type: "custom-response",
+						config: {
+							status_code: 401,
+							content: "Authorization required.",
+							headers: {
+								"WWW-Authenticate": 'Basic realm="MySite", charset="UTF-8"',
+							},
+						},
+					},
+				],
+			},
+			{
+				actions: [
+					{
+						type: "custom-response",
+						config: {
+							status_code: 200,
+							content: "Hello World",
+						},
+					},
+				],
+			},
+		],
+	}}
+/>
+
+Authorization header values are Base64 encoded `username:password` combos. Accepted combinations are:
+
+- `username:password`
+- `username:hunter2`
+- `Aladdin:open sesame`
+
+Doing basic auth enforcement this way has some benefits and drawbacks:
+
+- You can choose the status code and content that ngrok responds with.
+- You can declare the accepted authentication charset.
+- You can enforce your own authentication realm.
+- This will store passwords in plaintext on our system, and you should only do this if you understand the security implications of doing this.
