@@ -72,3 +72,20 @@ This rule applies rate limiting of `30` requests per second to the endpoint `/ap
 		],
 	}}
 />
+
+## User agent filtering
+This rule denies user agents that either match our first pattern or dont match our second pattern. 
+<ConfigExample
+	config={{
+inbound:
+    - expressions: [
+           "getReqHeader('User-Agent').exists(ua, ua.matches('(BadBot/([0-9])+.([0-9])+)'))",
+           "getReqHeader('User-Agent').all(ua, !ua.matches('(GoodBot/([0-9])+.([0-9])+))",
+      ]
+    - actions : [
+         - "type": "deny"
+           "config":
+               - status_code: 401
+      ]
+	}}
+/>
