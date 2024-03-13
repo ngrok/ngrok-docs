@@ -1,0 +1,27 @@
+```yaml
+
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: redirect-route
+  namespace: ngrok-ingress-controller
+
+spec:
+  parentRefs:
+  - name: ngrok-gateway
+  hostnames: [<HOSTNAME>]
+  rules:
+  - filters:
+    - type: RequestRedirect
+      requestRedirect: # cannot be on the same rule as a backendRef
+        scheme: https
+        hostname: <hostname> # redirect to this host!
+        statusCode: 301
+        path:
+          type: ReplacePrefixMatch
+          replacePrefixMatch: /paprika
+    matches:
+    - path:
+        type: PathPrefix
+        value: /
+```
