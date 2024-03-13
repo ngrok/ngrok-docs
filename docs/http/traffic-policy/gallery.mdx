@@ -75,19 +75,26 @@ This rule applies rate limiting of `30` requests per second to the endpoint `/ap
 
 ## User agent filtering
 
-This rule denies user agents that either match our first pattern or dont match our second pattern.
+This rule sends a custom response with status code `200` and body `Hello Edge User!` for requests that have a `User-Agent` that matches our pattern.
 
 <ConfigExample
 	config={{
-inbound:
-    - expressions: [
-           "getReqHeader('User-Agent').exists(ua, ua.matches('(BadBot/([0-9])+.([0-9])+)'))",
-           "getReqHeader('User-Agent').all(ua, !ua.matches('(GoodBot/([0-9])+.([0-9])+))",
+	}  "inbound": [
+    {
+      "expressions": [
+        "'User-Agent' in req.Headers",
+        "size(req.Headers['User-Agent'].filter(x, x.matches('(?i).*Edg/\\\\d+.*'))) > 0"
+      ],
+      "name": "",
+      "actions": [
+        {
+          "type": "custom-response",
+          "config": {
+            "status_code": 200,
+            "content": "Hello Edge User!"
+          }
+        }
       ]
-    - actions : [
-         - "type": "deny"
-           "config":
-               - status_code: 401
-      ]
-	}}
+    }
+  ],}
 />
