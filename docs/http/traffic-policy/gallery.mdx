@@ -74,18 +74,29 @@ This rule applies rate limiting of `30` requests per second to the endpoint `/ap
 />
 
 ## User agent filtering
-This rule denies user agents that either match our first pattern or dont match our second pattern. 
+
+Here we are serving custom content to Microsoft Edge users by checking whether the `User-Agent` header has case insensitive `(?i)` string `edg/` followed by some digits `\d`. You can test this by viewing this [regex101 link](https://regex101.com/r/3NPVub/1).
+
+Additionally, we have to escape the `\d` properly so it can be decoded from YAML / JSON. In YAML when your string is not wrapped in quotes you single-escape: `\\d` when it is wrapped in quotes you must double-escape: `\\\\d` for it to properly decode.
+
 <ConfigExample
 	config={{
-inbound:
-    - expressions: [
-           "getReqHeader('User-Agent').exists(ua, ua.matches('(BadBot/([0-9])+.([0-9])+)'))",
-           "getReqHeader('User-Agent').all(ua, !ua.matches('(GoodBot/([0-9])+.([0-9])+))",
-      ]
-    - actions : [
-         - "type": "deny"
-           "config":
-               - status_code: 401
-      ]
+		inbound: [
+			{
+				expressions: [
+					"'User-Agent' in req.Headers",
+					"size(req.Headers['User-Agent'].filter(x, x.matches('(?i).*Edg/\\\\d+.*'))) > 0",
+				],
+				actions: [
+					{
+						type: "custom-response",
+						config: {
+							status_code: 200,
+							content: "Hello Edge User!",
+						},
+					},
+				],
+			},
+		],
 	}}
 />
