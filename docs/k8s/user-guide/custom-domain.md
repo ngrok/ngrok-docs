@@ -1,6 +1,6 @@
 # Custom domain
 
-In the Kubernetes Ingress spec, ingresses can have multiple rules with different hostnames. The full relationship of these rules' hostnames to ngrok reserved domains and edges can be found in the [ingress to edge relationship](./ingress-to-edge-relationship#name-based-virtual-hosting) documentation. While standard ngrok domains are available for use immediately after reservation, custom white label domains may require a couple extra steps to get working. The following outlines 2 options for getting custom white label domains working with the ngrok Kubernetes Ingress Controller.
+In the Kubernetes Ingress spec, ingresses can have multiple rules with different hostnames. The full relationship of these rules' hostnames to ngrok reserved domains and edges can be found in the [ingress to edge relationship](/docs/k8s/with-edges.mdx#name-based-virtual-hosting) documentation. While standard ngrok domains are available for use immediately after reservation, custom white label domains may require a couple extra steps to get working. The following outlines 2 options for getting custom white label domains working with the ngrok Kubernetes Ingress Controller.
 
 ## Managed by Kubernetes
 
@@ -42,8 +42,6 @@ Status:
     ingress:
       hostname: 12jkh25.cname.ngrok.app
 ```
-
-From here you can create the DNS record and everything should work as expected. To automate this fully though, see the [example on integrating with external-dns](../examples/external-dns).
 
 ## Externally managed
 
