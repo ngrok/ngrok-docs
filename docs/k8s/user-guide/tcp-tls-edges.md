@@ -4,14 +4,14 @@ ngrok offers [TCP](https://ngrok.com/docs/tcp/) and
 [TLS](https://ngrok.com/docs/tls/) Edges which can be used to
 provide ingress to TCP or TLS based services. Both are implemented as CRDs and
 function similarly in broad strokes, albeit with slightly different
-configuration options offered. [Their CRD reference](./crds#tcp-edges) is a
+configuration options offered. [Their CRD reference](/docs/k8s/user-guide/crds.md#tcp-edges) is a
 useful companion to this guide.
 
 ## (TLS Only) Get a Domain
 
 At least one `hostports` must be specified when creating a TLSEdge resource,
 which takes the form `<fqdn>:443`. The fully qualified domain name must first be
-reserved either via the ngrok dashboard or the [Domain](./crds#domains) CRD.
+reserved either via the ngrok dashboard or the [Domain](/docs/k8s/user-guide/crds.md#domains) CRD.
 
 Example:
 
@@ -27,8 +27,8 @@ spec:
 ## Create the Edge
 
 Create the edge CRD. These resources are fairly similar, and both require you to
-specify a [TunnelGroupBackend](./crds#tunnelgroupbackend). This consists of a
-list of labels that determine which specific [Tunnel](./crds#tunnels) should
+specify a [TunnelGroupBackend](/docs/k8s/user-guide/crds.md#tunnelgroupbackend). This consists of a
+list of labels that determine which specific [Tunnel](/docs/k8s/user-guide/crds.md#tunnels) should
 receive traffic from the edge. Both may also specify [IP
 Policies](https://ngrok.com/docs/tls/ip-restrictions/) for limiting access
 to the edge. At the time of writing, these policies must be provided as a
