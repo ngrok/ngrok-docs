@@ -12,7 +12,7 @@ Before we jump directly into ngrok controller's specific architecture, let's fir
 
 The word _controller_ can sometimes be used in ways that can be confusing. While we commonly refer to the whole thing as the ingress _controller_, in reality, many _controllers_ are actually a Controller Runtime Manager which runs multiple individual [Controllers](https://kubernetes.io/docs/concepts/architecture/controller/) and provides common things to them like shared Kubernetes client caches and leader election.
 
-![Kubebuilder Architecture Diagram](../assets/images/kubebuilder_architecture_diagram.svg)
+![Kubebuilder Architecture Diagram](/docs/k8s/assets/images/kubebuilder_architecture_diagram.svg)
 
 > From: https://book.kubebuilder.io/architecture.html
 
@@ -26,10 +26,10 @@ Each of these controllers uses the same basic workflow to manage its resources. 
 
 The following controllers for the most part manage a single resource and reflect those changes in the ngrok API.
 
-- [IP Policy Controller](../../internal/controllers/ippolicy_controller.go): It simply watches these CRDs and reflects the changes in the ngrok API.
-- [Domain Controller](../../internal/controllers/domain_controller.go): It will watch for domain CRDs and reflect those changes in the ngrok API. It will also update the domain CRD objects' status fields with the current state of the domain in the ngrok API, such as a CNAME target if it's a white label domain.
-- [HTTPS Edge Controller](../../internal/controllers/httpsedge_controller.go): This CRD contains all the data necessary to build not just the edge, but also all routes, backends, and route modules by calling various ngrok APIs to combine resources. The HTTPSEdge CRD is the common type other controllers can create based on different source inputs like Ingress objects or Gateway objects.
-- [TCP Edge Controller](../../internal/controllers/tcpedge_controller.go): This CRD contains all the data necessary to build the edge and any edge modules configured. It will likely be a first class CRD used by consumers of the controller to create TCP edges because Kubernetes Ingress does not support TCP.
+- [IP Policy Controller](https://github.com/ngrok/kubernetes-ingress-controller/tree/main/internal/controllers/ippolicy_controller.go): It simply watches these CRDs and reflects the changes in the ngrok API.
+- [Domain Controller](https://github.com/ngrok/kubernetes-ingress-controller/tree/main/internal/controllers/domain_controller.go): It will watch for domain CRDs and reflect those changes in the ngrok API. It will also update the domain CRD objects' status fields with the current state of the domain in the ngrok API, such as a CNAME target if it's a white label domain.
+- [HTTPS Edge Controller](https://github.com/ngrok/kubernetes-ingress-controller/tree/main/internal/controllers/httpsedge_controller.go): This CRD contains all the data necessary to build not just the edge, but also all routes, backends, and route modules by calling various ngrok APIs to combine resources. The HTTPSEdge CRD is the common type other controllers can create based on different source inputs like Ingress objects or Gateway objects.
+- [TCP Edge Controller](https://github.com/ngrok/kubernetes-ingress-controller/tree/main/internal/controllers/tcpedge_controller.go): This CRD contains all the data necessary to build the edge and any edge modules configured. It will likely be a first class CRD used by consumers of the controller to create TCP edges because Kubernetes Ingress does not support TCP.
 
 The following controllers are more complex and manage multiple resources and reflect those changes in the ngrok API.
 
@@ -42,5 +42,3 @@ All of the controllers except this tunnel controller use the controller-runtime'
 The ingress controller is the primary piece of functionality in the overall project right now. It is meant to watch Ingress objects and CRDs used by those objects like IPPolicies, NgrokModuleSets, or even secrets.
 
 TODO: Update more about the various pieces of the ingress controller portion such as the store, the driver, how annotations work, etc.
-
-<img src="../assets/images/Under-Construction-Sign.png" alt="Under Construction" width="350" />
