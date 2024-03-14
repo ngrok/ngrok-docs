@@ -12,11 +12,14 @@ In Short:
 - Rules spread across kubernetes objects with matching hosts get merged into the same ngrok Edge
 - Annotations on a Kubernetes object apply only to the routes in the rules in that object if possible
 
-## Types of Ingress
+## Ingress Controller
+The Ingress Controller within the ngrok Operator uses Kubernetes Ingress to connect your Kubernetes cluster and the ngrok service.
+
+### Types of Ingress
 
 [This Kubernetes "Types of Ingress" Doc](https://kubernetes.io/docs/concepts/services-networking/ingress/#types-of-ingress) breaks down a few common ingress examples. We'll use these examples to explain how the ingress controller will handle them and what the end result edge configurations are.
 
-### Single Service Ingress
+#### Single Service Ingress
 
 There are existing Kubernetes concepts that allow you to expose a single Service. You can also do this with an Ingress by specifying a default backend with no rules.
 
@@ -35,7 +38,7 @@ spec:
 
 While not implemented yet, when completed, this style of ingress should allow exposing a service across all edges configured by the controller. Without any other ingress objects with hosts configured though, this ingress would do nothing as there is no edge and host to attach to.
 
-### Simple Fanout
+#### Simple Fanout
 
 A fanout configuration routes traffic from a single IP address to more than one Service, based on the HTTP URI being requested. An Ingress allows you to keep the number of load balancers down to a minimum.
 
@@ -101,7 +104,7 @@ The edge would be updated to have three routes.
 
 Ingress rules with the same host are merged into the same edge.
 
-### Name-based Virtual Hosting
+#### Name-based Virtual Hosting
 
 Name-based virtual hosting is a common way to implement virtual hosting on a single IP address. Each host name is associated with a distinct IP address, and the DNS resolver associates a given host name with its corresponding IP address(es). The Ingress resource does not require any special support for name-based virtual hosting, but it does require that the DNS resolver be configured to return the correct IP address for a given host name.
 
@@ -149,7 +152,7 @@ If you create an Ingress resource without any hosts defined in the rules, then a
 
 This only can be applied to ingress controllers that create static IPs to route to. With ngrok, an Edge always has a hostname, otherwise it's not route-able. If a rule with no host is created, it will be dropped.
 
-## Annotations
+### Annotations
 
 The current annotations are being moved to a new Module CRD now. These docs will be updated when it's finished. The approach and structure will be the same, just showing how modules apply to routes.
 
@@ -223,15 +226,15 @@ This configuration would produce a single edge with two routes. Each route has a
   - route: `/bar` -> `service2:8080`
     - module: `response-headers-add` -> `{"X-SEND-TO-CLIENT": "Value2"}`
 
-## Collisions and Errors
+### Collisions and Errors
 
 Because the controller combines multiple ingress objects into a combined model that represents a set of edges, it is possible to have configurations collide and overwrite each other. When possible, the controller aims to drop the minimal amount of configuration rather than erroring to keep the majority of the edges and routes up and running when there is a configuration error. The controller will then emit logs and events warning of the bad configuration.
 
-### Rule Paths
+#### Rule Paths
 
 If multiple ingress objects have rules with the same host and path, the controller will drop whichever one it sees first because it will merge over the route path on that edge. Only 1 host and path combination can exist on an edge.
 
-### NgrokModuleSets
+#### NgrokModuleSets
 
 The [NgrokModuleSet CRD](./user-guide/crds.md#ngrok-module-sets) is a collection of route module configurations. When set on an ingress object, it applies to all routes on that ingress object, but not routes on other ingress objects that may be combined to form the same edge.
 You can set multiple module sets on an ingress object. The controller will merge the modules from all of the module sets together. If there are any collisions, the controller will drop the module from the first set.
