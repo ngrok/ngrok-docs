@@ -238,3 +238,14 @@ If multiple ingress objects have rules with the same host and path, the controll
 
 The [NgrokModuleSet CRD](./user-guide/crds.md#ngrok-module-sets) is a collection of route module configurations. When set on an ingress object, it applies to all routes on that ingress object, but not routes on other ingress objects that may be combined to form the same edge.
 You can set multiple module sets on an ingress object. The controller will merge the modules from all of the module sets together. If there are any collisions, the controller will drop the module from the first set.
+
+## Gateway API
+The Kubernetes Gateway API is a new solution by the Network SIG to solve some of the challenges with Kubernetes Ingress. Some of the notable challenges were:
+* Setting up Kubernetes Ingress requires significant access: the Gateway API implementation separates the objects needed based upon role (Gateways for Cluster Operators and Routes for Application Developers)
+* Kubernetes Ingress is simple, making annotations the only to add things like policies or modules: The Route objects have the capability to add additional rules to direct and modify traffic.
+
+### Route types
+The Gateway API supports 5 route types: HTTPRoute, TLSRoute, TCPRoute, UDPRoute, and GRPCRoute. Only HTTRoutes are stable, the others are in an experimental channel. ngrok supports edges for HTTP/S, TLS, and TCP. The ngrok Operator currently only supports the HTTPRoute. TLSRoute and TCPRoute will be added after they become stable. 
+
+### Rules
+The ngrok Operator currently supports matches and multiple filters for HTTPRoute. Some of these filters align with modules/policies that are supported by ngrok. These are implemented using ngrok policy and will generate a policy document that is uploaded to the ngrok service. 
