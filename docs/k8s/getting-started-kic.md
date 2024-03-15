@@ -35,7 +35,7 @@ If it's already installed and you are looking to configure ingress for an app or
 
 Installing the ngrok Operator is easy using Helm.
 
-		<K8sIngressInstallExample />
+    	<K8sIngressInstallExample />
 
 <br />
 
