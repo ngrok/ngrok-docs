@@ -1,14 +1,12 @@
-export const VariableInterpolation = () => (
+import React from "react";
+
+const VariableInterpolation = () => (
 	<>
 		<h3>Variable Interpolation</h3>
 		<p>
 			You may interpolate variables into header values. Variables are
-			interpolated into headers with JSONPath expressions surrounded by the{" "}
-			<code>
-				${"{"}
-				{"}"}
-			</code>{" "}
-			syntax.
+			interpolated into headers with JSONPath expressions surrounded by the `${}
+			` syntax.
 		</p>
 		<p>
 			For example, to include geographical data about the client IP that
@@ -16,3 +14,5 @@ export const VariableInterpolation = () => (
 		</p>
 	</>
 );
+
+export default VariableInterpolation;
