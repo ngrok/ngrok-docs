@@ -3,7 +3,12 @@ title: Rule Gallery
 pagination_label: Rule Gallery
 ---
 
-import ConfigExample from "/src/components/ConfigExample.tsx";
+import {
+	Deny,
+	CustomResponse,
+	RateLimit,
+	UserAgentFilter,
+} from "/examples/actions/gallery.mdx";
 
 # Rule Gallery
 
@@ -13,90 +18,21 @@ Explore a curated collection of example configurations spanning from common to u
 
 This rule denies all inbound traffic that is not a GET request.
 
-<ConfigExample
-	config={{
-		inbound: [
-			{
-				expressions: ["req.Method != 'GET'"],
-				actions: [{ type: "deny" }],
-			},
-		],
-	}}
-/>
-
+<Deny />
 ## Custom response for unauthorized requests
 
 This rule sends a custom response with status code `401` and body `Unauthorized` for requests without an Authorization header.
 
-<ConfigExample
-	config={{
-		inbound: [
-			{
-				expressions: ["!('Authorization' in req.Headers)"],
-				actions: [
-					{
-						type: "custom-response",
-						config: {
-							status_code: 401,
-							content: "Unauthorized",
-						},
-					},
-				],
-			},
-		],
-	}}
-/>
-
+<CustomResponse />
 ## Rate limiting for specific endpoint:
 
 This rule applies rate limiting of `30` requests per second to the endpoint `/api/videos`.
 
-<ConfigExample
-	config={{
-		inbound: [
-			{
-				expressions: ["req.URL.contains('/api/specific_endpoint')"],
-				actions: [
-					{
-						type: "rate-limit",
-						config: {
-							name: "Only allow 30 requests per minute",
-							algorithm: "sliding_window",
-							capacity: 30,
-							rate: "60s",
-							bucket_key: ["conn.ClientIP"],
-						},
-					},
-				],
-			},
-		],
-	}}
-/>
-
+<RateLimit />
 ## User agent filtering
 
 Here we are serving custom content to Microsoft Edge users by checking whether the `User-Agent` header has case insensitive `(?i)` string `edg/` followed by some digits `\d`. You can test this by viewing this [regex101 link](https://regex101.com/r/3NPVub/1).
 
 Additionally, we have to escape the `\d` properly so it can be decoded from YAML / JSON. In YAML when your string is not wrapped in quotes you single-escape: `\\d` when it is wrapped in quotes you must double-escape: `\\\\d` for it to properly decode.
 
-<ConfigExample
-	config={{
-		inbound: [
-			{
-				expressions: [
-					"'User-Agent' in req.Headers",
-					"size(req.Headers['User-Agent'].filter(x, x.matches('(?i).*Edg/\\\\d+.*'))) > 0",
-				],
-				actions: [
-					{
-						type: "custom-response",
-						config: {
-							status_code: 200,
-							content: "Hello Edge User!",
-						},
-					},
-				],
-			},
-		],
-	}}
-/>
+<UserAgentFilter />
