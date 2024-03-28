@@ -96,10 +96,20 @@ const redirects = [
     [ fromIncludes(`/docs/cloud-edge/pops/`), `/docs/network-edge/#points-of-presence` ],
     [ fromIncludes(`/docs/cloud-edge/zero-knowledge-tls/`), `/docs/tls/tls-termination/#zero-knowledge-tls` ],
     [ fromIncludes(`/docs/cloud-edge/`), `/docs/network-edge/` ],
+
+    // Redirects for Traffic Policy Expressions
+    [ fromIncludes(`/docs/http/traffic-policy/expressions/#connection-variables`), `/docs/http/traffic-policy/expressions/variables#connection-variables` ],
+    [ fromIncludes(`/docs/http/traffic-policy/expressions/#request-variables`), `/docs/http/traffic-policy/expressions/variables#request-variables` ],
+    [ fromIncludes(`/docs/http/traffic-policy/expressions/#response-variables`), `/docs/http/traffic-policy/expressions/variables#response-variables` ],
+    [ fromIncludes(`/docs/http/traffic-policy/expressions/#macros`), `/docs/http/traffic-policy/expressions/macros` ],
+    [ fromIncludes(`/docs/tls/traffic-policy/expressions/#connection-variables`), `/docs/tls/traffic-policy/expressions/variables#connection-variables` ],
+    [ fromIncludes(`/docs/tls/traffic-policy/expressions/#macros`), `/docs/tls/traffic-policy/expressions/macros` ],
+    [ fromIncludes(`/docs/tcp/traffic-policy/expressions/#connection-variables`), `/docs/tcp/traffic-policy/expressions/variables#connection-variables` ],
+    [ fromIncludes(`/docs/tcp/traffic-policy/expressions/#macros`), `/docs/tcp/traffic-policy/expressions/macros` ],
 ]
 
-// get current location from window
-const currentPath = window.location.pathname
+// get current href from window
+const currentPath = window.location.href
 
 // set new path to current path
 let newPath = currentPath
@@ -129,5 +139,5 @@ for (const redirect of redirects) {
 
 // redirect when the path has changed
 if (newPath != currentPath) {
-    window.location.href = `${window.location.origin}${newPath}`
+    window.location.href = newPath
 }
