@@ -1,12 +1,12 @@
 ---
-description: TK TK TK
+description:  Add ingress to any app running in a Kubernetes cluster managed by Canonical Microk8s using the ngrok Kubernetes Operator.
 ---
 
 # Ingress to Kubernetes apps on clusters managed by Canonical MicroK8s
 
 :::tip TL;DR
 
-To use the ngrok Kubernetes Operator with Canonical MicroK8s:
+To use the ngrok Kubernetes Operator and the new Kubernetes Gateway API with Canonical MicroK8s:
 
 1. [Deploy a Kubernetes cluster with MicroK8s](#deploy-a-kubernetes-cluster-with-microk8s)
 1. [Deploy the ngrok Kubernetes Operator](deploy-ngrok-kubernetes-operator)
@@ -15,13 +15,14 @@ To use the ngrok Kubernetes Operator with Canonical MicroK8s:
 
 :::
 
-Using this guide, you'll launch a new Kubernetes cluster with Canonical's open-source [MicroK8s](https://microk8s.io/) and use the [ngrok Kubernetes Operator](https://marketplace.digitalocean.com/apps/ngrok-ingress-controller) to securely ingress public traffic to an example app using the **new [Kubernetes Gateway API](https://gateway-api.sigs.k8s.io/)**.
+Using this guide, you'll launch a new Kubernetes cluster with Canonical's open-source [MicroK8s](https://microk8s.io/) and use the [ngrok Kubernetes Operator](https://marketplace.digitalocean.com/apps/ngrok-ingress-controller) to securely ingress public traffic to an example app using the **new [Kubernetes Gateway API](https://kubernetes.io/docs/concepts/services-networking/gateway/)**.
 
 Along the way, you'll learn enough to leverage MicroK8s in your next Kubernetes deployment—local development, embedded in a CI environment, and production workloads—with simple and secure traffic ingress.
 
 Here is what you'll be building with:
 
-- **The [ngrok Kubernetes Operator](https://ngrok.com/blog-post/ngrok-k8s)**: ngrok's official controller for adding secure public ingress and middleware execution to your Kubernetes apps with ngrok's Cloud Edge. With ngrok, you can manage and secure app traffic at every stage of the development lifecycle while benefiting from simpler configurations, security, and edge acceleration.
+- The **[ngrok Kubernetes Operator](https://ngrok.com/blog-post/ngrok-k8s)**: ngrok's official controller for adding secure public ingress and middleware execution to your Kubernetes apps with ngrok's Cloud Edge. With ngrok, you can manage and secure app traffic at every stage of the development lifecycle while benefiting from simpler configurations, security, and edge acceleration.
+- The **Kubernetes Gateway API**: This new API, which made generally available in [October 2023](https://kubernetes.io/blog/2023/10/31/gateway-api-ga/), is a role-oriented mechanism for provisioning load-balancing infrastructure and routing traffic. The Gateway API does not replace "traditional" [Ingress Controllers](https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/)—both are available for production usage, but the Gateway API may be better suited for large organizations with defined roles for managing Kubernetes services, cluster operators vs. application developers.
 - **Canonical MicroK8s**: An open-source system for low-ops, minimal, production-ready Kubernetes. MicroK8s' single-node configuration, small size, and customizeable footprint lets you use it for local development, in minimal environments like GitHub's CI/CD, or using Kubernetes on IoT hardware.
 
 :::caution This how-to guide requires:
@@ -35,7 +36,7 @@ Here is what you'll be building with:
 
 ## **Step 1**: Deploy a Kubernetes cluster with MicroK8s {#deploy-a-kubernetes-cluster-with-microk8s}
 
-First thing's first—you want to start by deploying a new single-node MicroK8s Kubernetes cluster in your chosen environment. That could be your local workstation, an IoT device, a virtual machine in the cloud, or any system running one of the [42 supported flavors of Linux](https://snapcraft.io/microk8s).
+Start by deploying a new single-node MicroK8s Kubernetes cluster in your chosen environment. That could be your local workstation, an IoT device, a virtual machine in the cloud, or any system running one of the [42 supported flavors of Linux](https://snapcraft.io/microk8s).
 
 1. Follow the [get started](https://microk8s.io/docs/getting-started) tutorial for MicroK8s to install the binary for your target system.
 
@@ -102,13 +103,13 @@ Now that you have a Kubernetes cluster integrated with vcluster, you can install
 
 ## **Step 3**: Install an example app {#install-example-app}
 
-Now you just need a domain and Kubernetes service to ingress traffic to!
+Now you need a domain and Kubernetes service to ingress traffic to!
 
-1. Create a ngrok static subdomain if you don't have one already. Navigate to the [**Domains** section](https://dashboard.ngrok.com/cloud-edge/domains) of the ngrok dashboard and click **Create Domain** or **New Domain**. This static domain, which will look like `example.ngrok.app`, will be your `NGROK_DOMAIN` for the remainder of this guide.
+1. If you don't have an ngrok static domain, create one. Navigate to the [**Domains** section](https://dashboard.ngrok.com/cloud-edge/domains) of the ngrok dashboard and click **Create Domain** or **New Domain**. This static domain, which will look like `example.ngrok.app`, will be your `NGROK_DOMAIN` for the remainder of this guide.
 
-   By creating a subdomain on the ngrok network, you provide a public route to accept HTTP, HTTPS, and TLS traffic.
+   Creating a subdomain on the ngrok network provides a public route to accept HTTP, HTTPS, and TLS traffic.
 
-1. Create a new Kubernetes manifest (`2048.yaml`) with the below contents. This manifest defines the 2048 application service and deployment, then configures the ngrok Kubernetes Operator to connect the `game-2048` service to the ngrok edge via your `NGROK_DOMAIN`.
+1. Create a new Kubernetes manifest (`2048.yaml`) with the YAML below. This manifest defines the 2048 application service and deployment, then configures the ngrok Kubernetes Operator to connect the `game-2048` service to the ngrok edge via your `NGROK_DOMAIN`.
 
    ```yaml showLineNumbers
    apiVersion: v1
@@ -246,14 +247,14 @@ You'll first create a [GatewayClass](https://gateway-api.sigs.k8s.io/api-types/g
 
    This YAML uses the [Gateway API](https://gateway-api.sigs.k8s.io/#introduction) to first define a [Gateway](https://gateway-api.sigs.k8s.io/api-types/gateway) that allows north/south traffic to enter the cluster from external requests, then uses an [HTTPRoute](https://gateway-api.sigs.k8s.io/concepts/api-overview/#httproute) to terminate the connection at the pod running the `game-2048` service.
 
-1. Access your 2048 demo app by navigating to the your domain, e.g. `https://NGROK_DOMAIN`. ngrok's Cloud Edge
+1. Access your 2048 demo app by navigating to your ngrok domain, e.g. `https://NGROK_DOMAIN`. ngrok's Cloud Edge
    and the ngrok Kubernetes Operator routes traffic to your app from any device or external network.
 
 ## What's next?
 
-Because the ngrok Kubernetes Operator's use of the Gateway API is still experimental, not all the same features are available compared to the traditional [Ingress CRD method](https://ngrok.com/docs/k8s/?k8s-install=ingress). However, the Kubernetes API is the new standard API for routing traffic, you'll definitely benefit from starting from a more recent foundation in favor of a later migration.
+Because the ngrok Kubernetes Operator's use of the Gateway API is still experimental, not all the same features are available compared to the traditional [Ingress CRD method](https://ngrok.com/docs/k8s/?k8s-install=ingress). However, the Kubernetes API is the new standard API for routing traffic, you'll benefit from starting from a more recent foundation in favor of a later migration.
 
-Certain modifications are still possible, like [changing headers](https://ngrok.com/docs/k8s/?k8s-basic-path=gatewayAPI#modify-headers) and [redirecting traffic](https://ngrok.com/docs/k8s/?k8s-basic-path=gatewayAPI#redirect-traffic) based on paths.
+Certain modifications, like [changing headers](https://ngrok.com/docs/k8s/?k8s-basic-path=gatewayAPI#modify-headers) and [redirecting traffic](https://ngrok.com/docs/k8s/?k8s-basic-path=gatewayAPI#redirect-traffic) based on paths, are currently supported.
 
 To track the development of the ngrok Kubernetes Operator and its use of the new Kubernetes Gateway API, check out the [GitHub
 repository](https://github.com/ngrok/kubernetes-ingress-controller) and give it a ⭐.
