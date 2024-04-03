@@ -31,6 +31,7 @@ const sidebars = {
 				"getting-started/index",
 				"getting-started/go",
 				"getting-started/rust",
+				"getting-started/kubernetes"
 			],
 		},
 		{
