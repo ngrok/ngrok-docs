@@ -21,6 +21,8 @@ const fontHrefs = [
 	"https://cdn.ngrok.com/static/fonts/ibm-plex-mono/IBMPlexMono-SemiBoldItalic.woff",
 ];
 
+const ketchTagId = isProduction ? "ngrok_ketch_tag" : "ngrok_ketch_tag_local";
+
 /** @type {import('@docusaurus/types').Config} */
 const config = {
 	title: "ngrok documentation",
@@ -52,13 +54,6 @@ const config = {
 		"./src/plugins/tailwindcss",
 	],
 	headTags: [
-		{
-			tagName: "meta",
-			attributes: {
-				name: "ketch-tag-id",
-				content: isProduction ? "ngrok_ketch_tag" : "ngrok_ketch_tag_local",
-			},
-		},
 		...fontHrefs.map((href) => ({
 			tagName: "link",
 			attributes: {
@@ -74,6 +69,11 @@ const config = {
 	scripts: [
 		{
 			src: "/docs/scripts/ketch.js",
+		},
+		{
+			src: `https://global.ketchcdn.com/web/v2/config/ngrok/${ketchTagId}/boot.js`,
+			async: true,
+			defer: true,
 		},
 		{
 			src: "/docs/scripts/fix-redirect.js",
@@ -191,7 +191,7 @@ const config = {
 				appId: "8D7MHVMLBR",
 
 				// Public API key: it is safe to commit it
-				apiKey: "269bab201a436456bd9b0107bfdb7bfa",
+				apiKey: "d96d859b21bb7d3d9afe6349baedff3e",
 
 				indexName: "ngrok",
 
