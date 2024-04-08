@@ -6,6 +6,11 @@ title: Changelog
 
 ## v3
 
+### ngrok Agent 3.8.0 - \[2024-03-14\]
+
+- Added `json` support to Traffic Policy configuration
+- Moved to ngrok-go v1.9.1
+
 ### ngrok Agent 3.7.0 - \[2024-03-07\]
 
 - Fixed an issue where `ngrok diagnose --region all` would return an error for `eu-lon-1`
