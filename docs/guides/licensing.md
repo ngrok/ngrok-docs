@@ -50,7 +50,7 @@ Resources included for free:
 | Edges                 | 1                      |
 | Logs/Events           | Up to 10,000 per month |
 | OAuth/OIDC MAU        | Up to 5 per month      |
-| HTTP Requests         | Up to 100,000/month    |
+| HTTP Requests         | Up to 20,000/month    |
 | Webhook verifications | Up to 500/month        |
 
 Features included for free on all plans
