@@ -9,8 +9,8 @@ This guide will walk you through frequently asked questions about ngrok's licens
 | Data Transfer Out | 1 GB          |
 | Endpoints[^1]     | 1             |
 | Requests          | 20,000        |
-| TCP Connections   | 5,000        |
-| TLS Connections   | 5,000        |
+| TCP Connections   | 5,000         |
+| TLS Connections   | 5,000         |
 
 # How can I see how my account stacks up against my limits?
 
