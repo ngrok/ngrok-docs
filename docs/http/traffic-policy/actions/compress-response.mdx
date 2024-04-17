@@ -1,0 +1,70 @@
+import { ExampleHTTP } from "/examples/actions/compress-response.mdx";
+
+# Compress Response
+
+## Overview
+
+The Compress Response policy action enables you to improve the performance of your web applications
+by compressing HTTP response bodies returned by your upstream service.
+
+If an HTTP request includes an `Accept-Encoding` header, HTTP responses will be
+automatically compressed and a `Content-Encoding` response header will be
+added. If the response was already compressed by your upstream service, ngrok
+takes no action.
+
+## Example
+
+<ExampleHTTP />
+
+## Behavior
+
+### Streaming Compression
+
+When ngrok performs compression, the response body is not buffered; the
+response body is compressed as it is streamed through the ngrok endpoint.
+
+### Algorithm Choice
+
+If a request specifies `Accept-Encoding` but no requested values are supported,
+ngrok takes no action and the upstream response is returned without
+modification.
+
+ngrok negotiates the encoding type as defined by the RFC for `Accept-Encoding`.
+It respects q-values and chooses the `Accept-Encoding` supported algorithm with
+the highest q-value.
+
+ngrok supports the following compression algorithms in the `Accept-Encoding`
+header by default, but this list may be restricted through policy action configuration.
+
+| Algorithm  |
+| ---------- |
+| `br`       |
+| `compress` |
+| `deflate`  |
+| `gzip`     |
+
+### Response Headers
+
+When ngrok performs compression, the following changes are made to
+the HTTP response header:
+
+- The `Content-Length` header is removed
+- A `Content-Encoding` header is added with the negotiated algorithm
+- A `Vary: Accept-Encoding` header is added
+
+## Reference
+
+### Supported Directions
+
+- Inbound
+- Outbound
+
+### Configuration
+
+| Type                |
+| ------------------- |
+| `compress-response` |
+
+| Parameter    | &nbsp;              | Description                                                                                                                                       |
+| ------------ | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `algorithms` | Array&lt;string&gt; | The compression algorithms that will be considered during encoding type negotiation. By default ngrok uses [`gzip`, `deflate`, `br`, `compress`]. |
