@@ -6,12 +6,12 @@ description: Add ingress to any app running in a Kubernetes cluster managed by C
 
 :::tip TL;DR
 
-To use the ngrok Kubernetes Operator and the new Kubernetes Gateway API with Canonical MicroK8s:
+To use the ngrok Kubernetes Operator, which now supports the Kubernetes Gateway API spec, with Canonical MicroK8s:
 
 1. [Deploy a Kubernetes cluster with MicroK8s](#deploy-a-kubernetes-cluster-with-microk8s)
 1. [Deploy the ngrok Kubernetes Operator](#deploy-ngrok-kubernetes-operator)
 1. [Install an example app](#install-example-app)
-1. [Configure the ngrok Operator with the Kubernetes Gateway API](#configure-ngrok-operator-kubernetes-gateway-api)
+1. [Configure the ngrok Operator](#configure-ngrok-operator-kubernetes-gateway-api)
 
 :::
 
@@ -58,7 +58,7 @@ Start by deploying a new single-node MicroK8s Kubernetes cluster in your chosen 
 
 ## **Step 2**: Deploy the ngrok Kubernetes Operator {#deploy-ngrok-kubernetes-operator}
 
-Now that you have a Kubernetes cluster integrated with vcluster, you can install the [ngrok Operator](https://github.com/ngrok/kubernetes-ingress-controller) for secure ingress.
+Now that you have a Kubernetes cluster deployed using MicroK8s, you can install the [ngrok Kubernetes Operator](https://github.com/ngrok/kubernetes-ingress-controller) for secure ingress.
 
 1. Add the Helm repository:
 
@@ -154,16 +154,9 @@ Now you need a domain and Kubernetes service to ingress traffic to!
    kubectl apply -f 2048.yaml
    ```
 
-   :::tip
+## **Step 4**: Configure the ngrok Kubernetes Operator {#configure-ngrok-operator-kubernetes-gateway-api}
 
-   **Note:** If you get an error when applying the manifest, double check that you've updated the `NGROK_DOMAIN` value
-   and try again.
-
-   :::
-
-## **Step 4**: Configure the ngrok Operator with the Kubernetes Gateway API {#configure-ngrok-operator-kubernetes-gateway-api}
-
-With your example app running alongside the Kubernetes Operator, you now need to configure the new [Kubernetes Gateway API](https://ngrok.com/docs/k8s/?k8s-install=gatewayAPI) to route traffic arriving from outside the cluster on `NGROK_DOMAIN` to the `game-2048` service.
+With your example app running alongside the ngrok Kubernetes Operator, you now need to configure the new [Kubernetes Gateway API](https://ngrok.com/docs/k8s/?k8s-install=gatewayAPI) to route traffic arriving from outside the cluster on `NGROK_DOMAIN` to the `game-2048` service.
 
 You'll first create a [GatewayClass](https://gateway-api.sigs.k8s.io/api-types/gatewayclass/), which represents a class of cluster-level [Gateways](https://gateway-api.sigs.k8s.io/api-types/gateway/). You'll then configure the Gateway with a listener, and an [HTTPRoute](https://gateway-api.sigs.k8s.io/api-types/httproute/) to specify how the Gateway should route requests.
 
@@ -244,6 +237,13 @@ You'll first create a [GatewayClass](https://gateway-api.sigs.k8s.io/api-types/g
              kind: Service
              port: 80
    ```
+
+   :::tip
+
+   **Note:** If you get an error when applying the manifest, double check that you've updated the `NGROK_DOMAIN` value
+   and try again.
+
+   :::
 
    This YAML uses the [Gateway API](https://gateway-api.sigs.k8s.io/#introduction) to first define a [Gateway](https://gateway-api.sigs.k8s.io/api-types/gateway) that allows north/south traffic to enter the cluster from external requests, then uses an [HTTPRoute](https://gateway-api.sigs.k8s.io/concepts/api-overview/#httproute) to terminate the connection at the pod running the `game-2048` service.
 
