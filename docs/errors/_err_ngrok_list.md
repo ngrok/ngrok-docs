@@ -76,10 +76,11 @@
         <a id="ERR_NGROK_108" href="/docs/errors/err_ngrok_108">ERR_NGROK_108</a>
       </td>
       <td class="pre-wrapped">
-        Your account is limited to <code>&lt;MAX&gt;</code> simultaneous ngrok agent session<code>&lt;PLURAL&gt;</code>.
+        Your account is limited to <code>&lt;MAX&gt;</code> simultaneous ngrok agent sessions.
         You can run multiple tunnels on a single agent session using a configuration file.
         To learn more, see <a href="https://ngrok.com/docs/secure-tunnels/ngrok-agent/reference/config">https://ngrok.com/docs/secure-tunnels/ngrok-agent/reference/config</a>/
-        <code>&lt;MSG&gt;</code>
+        You can view your current agent sessions in the dashboard:
+        <a href="https://dashboard.ngrok.com/tunnels/agents">https://dashboard.ngrok.com/tunnels/agents</a>
       </td>
     </tr>
     <tr>
@@ -1814,6 +1815,14 @@
     </tr>
     <tr>
       <td>
+        <a id="ERR_NGROK_455" href="/docs/errors/err_ngrok_455">ERR_NGROK_455</a>
+      </td>
+      <td class="pre-wrapped">
+        This subdomain is covered by <code>&lt;WILDCARD_DOMAIN&gt;</code> however the wildcard's CNAME record resolved to <code>&lt;HAVE&gt;</code>, should have been <code>&lt;WANT&gt;</code>.
+      </td>
+    </tr>
+    <tr>
+      <td>
         <a id="ERR_NGROK_500" href="/docs/errors/err_ngrok_500">ERR_NGROK_500</a>
       </td>
       <td class="pre-wrapped">
@@ -2364,6 +2373,78 @@
     </tr>
     <tr>
       <td>
+        <a id="ERR_NGROK_732" href="/docs/errors/err_ngrok_732">ERR_NGROK_732</a>
+      </td>
+      <td class="pre-wrapped">
+        This ngrok account has reached its traffic policy request limit for the month. Please log into https://dashboard.ngrok.com to view your options.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_733" href="/docs/errors/err_ngrok_733">ERR_NGROK_733</a>
+      </td>
+      <td class="pre-wrapped">
+        This ngrok account has reached its traffic policy connection limit for the month. Please log into https://dashboard.ngrok.com to view your options.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_734" href="/docs/errors/err_ngrok_734">ERR_NGROK_734</a>
+      </td>
+      <td class="pre-wrapped">
+        Your account is rate limited to <code>&lt;MAX&gt;</code> HTTP requests per <code>&lt;INTERVAL&gt;</code>.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_735" href="/docs/errors/err_ngrok_735">ERR_NGROK_735</a>
+      </td>
+      <td class="pre-wrapped">
+        This ngrok account has reached its Advanced traffic policy request limit for the month. Please log into https://dashboard.ngrok.com to view your options.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_736" href="/docs/errors/err_ngrok_736">ERR_NGROK_736</a>
+      </td>
+      <td class="pre-wrapped">
+        This ngrok account has reached its Basic traffic policy request limit for the month. Please log into https://dashboard.ngrok.com to view your options.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_737" href="/docs/errors/err_ngrok_737">ERR_NGROK_737</a>
+      </td>
+      <td class="pre-wrapped">
+        This ngrok account has reached its Enterprise traffic policy request limit for the month. Please log into https://dashboard.ngrok.com to view your options.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_738" href="/docs/errors/err_ngrok_738">ERR_NGROK_738</a>
+      </td>
+      <td class="pre-wrapped">
+        This ngrok account has reached its Advanced traffic policy request limit for the month. Please log into https://dashboard.ngrok.com to view your options.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_739" href="/docs/errors/err_ngrok_739">ERR_NGROK_739</a>
+      </td>
+      <td class="pre-wrapped">
+        This ngrok account has reached its Basic traffic policy connection limit for the month. Please log into https://dashboard.ngrok.com to view your options.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_740" href="/docs/errors/err_ngrok_740">ERR_NGROK_740</a>
+      </td>
+      <td class="pre-wrapped">
+        This ngrok account has reached its Enterprise traffic policy connection limit for the month. Please log into https://dashboard.ngrok.com to view your options.
+      </td>
+    </tr>
+    <tr>
+      <td>
         <a id="ERR_NGROK_800" href="/docs/errors/err_ngrok_800">ERR_NGROK_800</a>
       </td>
       <td class="pre-wrapped">
@@ -2620,6 +2701,22 @@
       </td>
       <td class="pre-wrapped">
         You may only purchase <code>&lt;COUNT&gt;</code> licenses at the <code>&lt;TIER&gt;</code> tier.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_1019" href="/docs/errors/err_ngrok_1019">ERR_NGROK_1019</a>
+      </td>
+      <td class="pre-wrapped">
+        The <code>&lt;ADDON&gt;</code> addon is not allowed for this plan.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_1020" href="/docs/errors/err_ngrok_1020">ERR_NGROK_1020</a>
+      </td>
+      <td class="pre-wrapped">
+        Addon selections for <code>&lt;LICENSE&gt;</code> are not valid.
       </td>
     </tr>
     <tr>
@@ -3051,6 +3148,14 @@
       </td>
       <td class="pre-wrapped">
         The resource you are attempting to access requires MFA, please authenticate via a second factor.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_1230" href="/docs/errors/err_ngrok_1230">ERR_NGROK_1230</a>
+      </td>
+      <td class="pre-wrapped">
+        We do not allow sign ups from your location. Your location was determined using your IP address.
       </td>
     </tr>
     <tr>
@@ -4657,6 +4762,102 @@
     </tr>
     <tr>
       <td>
+        <a id="ERR_NGROK_2208" href="/docs/errors/err_ngrok_2208">ERR_NGROK_2208</a>
+      </td>
+      <td class="pre-wrapped">
+        Failed to parse configuration for <code>&lt;DIRECTION&gt;</code> <code>&lt;TYPE&gt;</code>: exceeds maximum allowed name length of <code>&lt;MAX&gt;</code>, was <code>&lt;VAL&gt;</code>.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_2209" href="/docs/errors/err_ngrok_2209">ERR_NGROK_2209</a>
+      </td>
+      <td class="pre-wrapped">
+        Failed to parse configuration for <code>&lt;DIRECTION&gt;</code> <code>&lt;TYPE&gt;</code>: exceeds maximum allowed value length of <code>&lt;MAX&gt;</code>, was <code>&lt;VAL&gt;</code>.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_2210" href="/docs/errors/err_ngrok_2210">ERR_NGROK_2210</a>
+      </td>
+      <td class="pre-wrapped">
+        Failed to parse configuration for <code>&lt;DIRECTION&gt;</code> <code>&lt;TYPE&gt;</code>: name is invalid <code>&lt;NAME&gt;</code>.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_2211" href="/docs/errors/err_ngrok_2211">ERR_NGROK_2211</a>
+      </td>
+      <td class="pre-wrapped">
+        Failed to parse configuration for <code>&lt;DIRECTION&gt;</code> <code>&lt;TYPE&gt;</code>: value is invalid <code>&lt;NAME&gt;</code>.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_2212" href="/docs/errors/err_ngrok_2212">ERR_NGROK_2212</a>
+      </td>
+      <td class="pre-wrapped">
+        Failed to parse configuration for <code>&lt;DIRECTION&gt;</code> <code>&lt;TYPE&gt;</code>: can have at most <code>&lt;MAX&gt;</code> header values, but <code>&lt;VAL&gt;</code> were provided.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_2213" href="/docs/errors/err_ngrok_2213">ERR_NGROK_2213</a>
+      </td>
+      <td class="pre-wrapped">
+        Failed to parse configuration for <code>&lt;DIRECTION&gt;</code> add-headers: contained an invalid template: <code>&lt;TEMPLATE&gt;</code>: <code>&lt;ERR&gt;</code>.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_2214" href="/docs/errors/err_ngrok_2214">ERR_NGROK_2214</a>
+      </td>
+      <td class="pre-wrapped">
+        Failed to parse configuration for compress: contained an invalid algorithm: <code>&lt;ALGORITHM&gt;</code>.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_2215" href="/docs/errors/err_ngrok_2215">ERR_NGROK_2215</a>
+      </td>
+      <td class="pre-wrapped">
+        Failed to parse configuration for <code>&lt;ACTION&gt;</code>: <code>&lt;CONFIG&gt;</code> must be between <code>&lt;MIN&gt;</code> and <code>&lt;MAX&gt;</code> inclusive, was <code>&lt;ACTUAL&gt;</code>.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_2216" href="/docs/errors/err_ngrok_2216">ERR_NGROK_2216</a>
+      </td>
+      <td class="pre-wrapped">
+        Invalid IP Policy Reference(s): <code>&lt;REFERENCE&gt;</code>.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_2217" href="/docs/errors/err_ngrok_2217">ERR_NGROK_2217</a>
+      </td>
+      <td class="pre-wrapped">
+        Invalid CIDR(s): <code>&lt;CIDR&gt;</code>.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_2218" href="/docs/errors/err_ngrok_2218">ERR_NGROK_2218</a>
+      </td>
+      <td class="pre-wrapped">
+        Too many entries for <code>&lt;FIELD&gt;</code>. You provided <code>&lt;ENTRIES&gt;</code> entries, but the limit is <code>&lt;LIMIT&gt;</code>.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_2219" href="/docs/errors/err_ngrok_2219">ERR_NGROK_2219</a>
+      </td>
+      <td class="pre-wrapped">
+        <code>&lt;FIELD&gt;</code> cannot be user-configured.
+      </td>
+    </tr>
+    <tr>
+      <td>
         <a id="ERR_NGROK_3002" href="/docs/errors/err_ngrok_3002">ERR_NGROK_3002</a>
       </td>
       <td class="pre-wrapped">
@@ -5279,6 +5480,78 @@
     </tr>
     <tr>
       <td>
+        <a id="ERR_NGROK_3406" href="/docs/errors/err_ngrok_3406">ERR_NGROK_3406</a>
+      </td>
+      <td class="pre-wrapped">
+        Token could not be found in request.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_3408" href="/docs/errors/err_ngrok_3408">ERR_NGROK_3408</a>
+      </td>
+      <td class="pre-wrapped">
+        Configured HTTP Header `<code>&lt;TYP&gt;</code>` was not found in request.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_3411" href="/docs/errors/err_ngrok_3411">ERR_NGROK_3411</a>
+      </td>
+      <td class="pre-wrapped">
+        Failed to parse JSON body.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_3412" href="/docs/errors/err_ngrok_3412">ERR_NGROK_3412</a>
+      </td>
+      <td class="pre-wrapped">
+        Failed to parse form.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_3413" href="/docs/errors/err_ngrok_3413">ERR_NGROK_3413</a>
+      </td>
+      <td class="pre-wrapped">
+        Configured prefix `<code>&lt;TYP&gt;</code>` not found.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_3414" href="/docs/errors/err_ngrok_3414">ERR_NGROK_3414</a>
+      </td>
+      <td class="pre-wrapped">
+        Failed to read content-type header.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_3415" href="/docs/errors/err_ngrok_3415">ERR_NGROK_3415</a>
+      </td>
+      <td class="pre-wrapped">
+        Tokens in body not supported for HTTP method `<code>&lt;TYP&gt;</code>`.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_3416" href="/docs/errors/err_ngrok_3416">ERR_NGROK_3416</a>
+      </td>
+      <td class="pre-wrapped">
+        Token could not be parsed, possibly malformed.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_3422" href="/docs/errors/err_ngrok_3422">ERR_NGROK_3422</a>
+      </td>
+      <td class="pre-wrapped">
+        Failed to fetch JWKS.
+      </td>
+    </tr>
+    <tr>
+      <td>
         <a id="ERR_NGROK_4001" href="/docs/errors/err_ngrok_4001">ERR_NGROK_4001</a>
       </td>
       <td class="pre-wrapped">
@@ -5355,7 +5628,7 @@
         <a id="ERR_NGROK_4016" href="/docs/errors/err_ngrok_4016">ERR_NGROK_4016</a>
       </td>
       <td class="pre-wrapped">
-        You may not create a new account because another account you were the administator of was suspended. Contact support@ngrok.com if you believe this is an error.
+        You may not create a new account because another account you were the administrator of was suspended. Contact support@ngrok.com if you believe this is an error.
       </td>
     </tr>
     <tr>
@@ -5398,6 +5671,14 @@
       </td>
       <td class="pre-wrapped">
         This account cannot be deleted because it has an unpaid invoice. Please contact support@ngrok.com for help deleting this account.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_4022" href="/docs/errors/err_ngrok_4022">ERR_NGROK_4022</a>
+      </td>
+      <td class="pre-wrapped">
+        You do not have permission to change the observability capture settings for this account. Please contact an admin for this account to change these settings.
       </td>
     </tr>
     <tr>
@@ -6793,7 +7074,7 @@
         <a id="ERR_NGROK_6024" href="/docs/errors/err_ngrok_6024">ERR_NGROK_6024</a>
       </td>
       <td class="pre-wrapped">
-        You are about to visit <code>&lt;HOSTPORT&gt;</code>, served by <code>&lt;SERVINGIP&gt;</code>. This website is served for free through ngrok.com. You should only visit this website if you trust whoever sent the link to you.
+        You are about to visit <code>&lt;HOSTPORT&gt;</code><code>&lt;SERVEDBYSTR&gt;</code>. This website is served for free through ngrok.com. You should only visit this website if you trust whoever sent the link to you.
       </td>
     </tr>
     <tr>
@@ -8669,7 +8950,7 @@
         <a id="ERR_NGROK_7182" href="/docs/errors/err_ngrok_7182">ERR_NGROK_7182</a>
       </td>
       <td class="pre-wrapped">
-        The JWT Validation sigining key must have a way to be identified such as the 'kid' token claim.
+        The JWT Validation signing key must have a way to be identified such as the 'kid' token claim.
       </td>
     </tr>
     <tr>
@@ -8677,7 +8958,7 @@
         <a id="ERR_NGROK_7183" href="/docs/errors/err_ngrok_7183">ERR_NGROK_7183</a>
       </td>
       <td class="pre-wrapped">
-        The JWT Validation sigining key must have a valid identification mechanism such as the 'kid' token claim.
+        The JWT Validation signing key must have a valid identification mechanism such as the 'kid' token claim.
       </td>
     </tr>
     <tr>
@@ -8685,7 +8966,7 @@
         <a id="ERR_NGROK_7184" href="/docs/errors/err_ngrok_7184">ERR_NGROK_7184</a>
       </td>
       <td class="pre-wrapped">
-        The JWT Validation sigining key must have at least one source.
+        The JWT Validation signing key must have at least one source.
       </td>
     </tr>
     <tr>
@@ -8693,7 +8974,7 @@
         <a id="ERR_NGROK_7185" href="/docs/errors/err_ngrok_7185">ERR_NGROK_7185</a>
       </td>
       <td class="pre-wrapped">
-        The JWT Validation sigining key source has an invalid additional jku: <code>&lt;JKU&gt;</code> is not a valid URL.
+        The JWT Validation signing key source has an invalid additional jku: <code>&lt;JKU&gt;</code> is not a valid URL.
       </td>
     </tr>
     <tr>
@@ -8701,7 +8982,7 @@
         <a id="ERR_NGROK_7186" href="/docs/errors/err_ngrok_7186">ERR_NGROK_7186</a>
       </td>
       <td class="pre-wrapped">
-        The JWT Validation sigining key source has an invalid additional jku: <code>&lt;JKU&gt;</code> did not serve a JWKS.
+        The JWT Validation signing key source has an invalid additional jku: <code>&lt;JKU&gt;</code> did not serve a JWKS.
       </td>
     </tr>
     <tr>
@@ -8766,6 +9047,14 @@
       </td>
       <td class="pre-wrapped">
         Your account is not authorized to use policies.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_7195" href="/docs/errors/err_ngrok_7195">ERR_NGROK_7195</a>
+      </td>
+      <td class="pre-wrapped">
+        This edge module has exceeded its policy rule limit of <code>&lt;LIMIT&gt;</code>. Please log into https://dashboard.ngrok.com to view your options.
       </td>
     </tr>
     <tr>
@@ -9512,6 +9801,22 @@
     </tr>
     <tr>
       <td>
+        <a id="ERR_NGROK_10085" href="/docs/errors/err_ngrok_10085">ERR_NGROK_10085</a>
+      </td>
+      <td class="pre-wrapped">
+        The endpoint of the request you are trying to replay was not found.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_10086" href="/docs/errors/err_ngrok_10086">ERR_NGROK_10086</a>
+      </td>
+      <td class="pre-wrapped">
+        You have exceeded the rate limit of <code>&lt;MAX&gt;</code> replay requests per <code>&lt;INTERVAL&gt;</code>.
+      </td>
+    </tr>
+    <tr>
+      <td>
         <a id="ERR_NGROK_11000" href="/docs/errors/err_ngrok_11000">ERR_NGROK_11000</a>
       </td>
       <td class="pre-wrapped">
@@ -9691,7 +9996,7 @@
         <a id="ERR_NGROK_15002" href="/docs/errors/err_ngrok_15002">ERR_NGROK_15002</a>
       </td>
       <td class="pre-wrapped">
-        Your account is on the <code>&lt;PLAN&gt;</code> plan, which requires you to register a Domain through the ngrok Dashboard before starting an Endpoint. Visit <a href="https://dashboard.ngrok.com/cloud-edge/domains">https://dashboard.ngrok.com/cloud-edge/domains</a> to register a domain and then use the `--domain` flag when starting your Agent.
+        Your account is on the <code>&lt;PLAN&gt;</code> plan, which requires you to register a Domain or TCP Address through the ngrok Dashboard before starting an Endpoint. Visit <a href="https://dashboard.ngrok.com/cloud-edge/domains">https://dashboard.ngrok.com/cloud-edge/domains</a>, for HTTP and TLS endpoints, or <a href="https://dashboard.ngrok.com/cloud-edge/tcp-addresses">https://dashboard.ngrok.com/cloud-edge/tcp-addresses</a>, for TCP endpoints, to register a domain or address. Then use the `--domain` flag when starting an HTTP or TLS tunnel with your Agent. For TCP tunnels, use `--remote_addr`.
       </td>
     </tr>
     <tr>
@@ -9700,6 +10005,14 @@
       </td>
       <td class="pre-wrapped">
         App protocol is invalid: <code>&lt;APPPROTOCOL&gt;</code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_15004" href="/docs/errors/err_ngrok_15004">ERR_NGROK_15004</a>
+      </td>
+      <td class="pre-wrapped">
+        This agent has exceeded its policy rule limit of <code>&lt;LIMIT&gt;</code>. Please log into https://dashboard.ngrok.com to view your options.
       </td>
     </tr>
     <tr>
