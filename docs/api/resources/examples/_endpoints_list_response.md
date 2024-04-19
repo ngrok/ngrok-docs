@@ -6,34 +6,34 @@
 {
 	"endpoints": [
 		{
-			"created_at": "2024-02-16T19:35:30Z",
-			"hostport": "437e4162bd8e.ngrok.paid:443",
-			"id": "ep_2cSjylRoERIy4iWK6WvyM8iGBJI",
+			"created_at": "2024-04-19T20:23:40Z",
+			"hostport": "30691eefbbc5.ngrok.paid:443",
+			"id": "ep_2fKmcGyk4iUt7DtSWqR63Tie8Ou",
 			"proto": "https",
-			"public_url": "https://437e4162bd8e.ngrok.paid",
+			"public_url": "https://30691eefbbc5.ngrok.paid",
 			"tunnel": {
-				"id": "tn_2cSjylRoERIy4iWK6WvyM8iGBJI",
-				"uri": "https://api.ngrok.com/tunnels/tn_2cSjylRoERIy4iWK6WvyM8iGBJI"
+				"id": "tn_2fKmcGyk4iUt7DtSWqR63Tie8Ou",
+				"uri": "https://api.ngrok.com/tunnels/tn_2fKmcGyk4iUt7DtSWqR63Tie8Ou"
 			},
 			"type": "ephemeral",
-			"updated_at": "2024-02-16T19:35:30Z"
+			"updated_at": "2024-04-19T20:23:40Z"
 		},
 		{
-			"created_at": "2024-02-16T19:35:27Z",
+			"created_at": "2024-04-19T20:23:37Z",
 			"domain": {
-				"id": "rd_2cSjyFcMgouXhorVWV04TEc6ymx",
-				"uri": "https://api.ngrok.com/reserved_domains/rd_2cSjyFcMgouXhorVWV04TEc6ymx"
+				"id": "rd_2fKmbiyw7d7KklTqDz397R1ppTu",
+				"uri": "https://api.ngrok.com/reserved_domains/rd_2fKmbiyw7d7KklTqDz397R1ppTu"
 			},
 			"edge": {
-				"id": "edgtls_2cSjyGeNROACDCqWqgVKmVny8Qj",
-				"uri": "https://api.ngrok.com/edges/tls/edgtls_2cSjyGeNROACDCqWqgVKmVny8Qj"
+				"id": "edgtls_2fKmbgKxUc6U7I84WmiiE90wx0A",
+				"uri": "https://api.ngrok.com/edges/tls/edgtls_2fKmbgKxUc6U7I84WmiiE90wx0A"
 			},
 			"hostport": "endpoint-example2.com:443",
-			"id": "ep_2cSjyTNy61ZcuweildgxZyhgk9F",
+			"id": "ep_2fKmbsgUVE5AIshBnvCXtqNCBgp",
 			"proto": "tls",
 			"public_url": "tls://endpoint-example2.com",
 			"type": "edge",
-			"updated_at": "2024-02-16T19:35:27Z"
+			"updated_at": "2024-04-19T20:23:37Z"
 		}
 	],
 	"next_page_uri": null,
