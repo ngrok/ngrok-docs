@@ -8,6 +8,7 @@ tags:
   - mutual authentication
   - security
 ---
+
 This guide provides step-by-step instructions for using ngrok for site-to-site connectivity. 
 This example shows you how to securely run the ngrok agent at an external site to get access
 to locally running databases. The connection will be end-to-end encrypted using mutual TLS (mTLS).
@@ -183,8 +184,8 @@ validation. For the record, enter `acme_challenge_cname_target`, and use the val
 Use the ngrok dashboard to verify that you’ve configured DNS correctly. 
 1. Login to the [ngrok dashboard](https://dashboard.ngrok.com/).
 2. Click **Domains** in the left-hand navigation menu.
-3. Click on your wildcard domain under *Domain*.
-4. Click **2 targets** next to *DNS Targets* in the panel displayed on the right-hand side of the screen, 
+3. Click on your wildcard domain under _Domain_.
+4. Click **2 targets** next to _DNS Targets_ in the panel displayed on the right-hand side of the screen, 
 as denoted by the arrow in the screenshot below.
 
 ![alt-text](img/2tunnels.png)
@@ -203,7 +204,7 @@ It's useful to separate the authtokens running in production from any individual
 to reduce the risk of downtime if that team member leaves your organization and is deprovisioned.
 
 To [create a bot user](https://ngrok.com/docs/iam/bot-users/), log in to the ngrok 
-dashboard and click **Bot Users** under *Members*, then click [**Create a Bot User**](https://dashboard.ngrok.com/users/bots/new) 
+dashboard and click **Bot Users** under _Members_, then click [**Create a Bot User**](https://dashboard.ngrok.com/users/bots/new) 
 in the dialog that displays. Give the bot user a name and click **Save**.
 
 ![alt-text](img/bot-user.png)
@@ -213,7 +214,7 @@ in the dialog that displays. Give the bot user a name and click **Save**.
 You should start each agent using a separate authtoken, and that token should belong to a bot user. 
 
 To create an authtoken, login to the ngrok dashboard and click [**Authtokens**](https://dashboard.ngrok.com/tunnels/authtokens)
- under *Tunnels*, then click **Add a Tunnel Authtoken**. 
+ under _Tunnels_, then click **Add a Tunnel Authtoken**. 
 For **Owner**, select the bot user you use created, and select `bind:*.customer1.{YOUR_DOMAIN}` for the ACL Rules. 
 This ACL will allow an agent with the authtoken to create tunnels on any subdomain of `customer1.{YOUR_DOMAIN}`.
 
@@ -228,15 +229,15 @@ remotely.
 
 > **Please note that tunnels started with the agent API do not persist in the event of an agent restart or network outage.**  
 
-###  Update ngrok.yml
+### Update ngrok.yml
 
 Create a tunnel definition in the ngrok.yml config file. You can then run the ngrok agent and start and 
 stop tunnels as needed using the ngrok agent API. 
 
 You'll need to modify the `ngrok.yml` config file before running the agent. You can modify the file that resides in the default location:
-* **Linux:**  `~/.config/ngrok/ngrok.yml`
-* **MacOS (Darwin):**  `~/Library/Application Support/ngrok/ngrok.yml`
-* **Windows:**  `%HOMEPATH%\AppData\Local\ngrok\ngrok.yml`
+- **Linux:** `~/.config/ngrok/ngrok.yml`
+- **MacOS (Darwin):** `~/Library/Application Support/ngrok/ngrok.yml`
+- **Windows:** `%HOMEPATH%\AppData\Local\ngrok\ngrok.yml`
 
 Rather than edit the default `ngrok.yml` config file, you can provide your customer with a separate config file.
 This keeps your config separate from their existing `ngrok.yml` config file. You can then pass it as an argument when 
@@ -257,13 +258,13 @@ including a subdomain to connect to the agent api, such as `agent.customer1.conf
 #config.yml
 
 version: "2"
-authtoken: {YOUR_AUTHTOKEN_WITH_ACL}
-server_addr: {VALUE_FROM_REGION_DOMAINS}
+authtoken: { YOUR_AUTHTOKEN_WITH_ACL }
+server_addr: { VALUE_FROM_REGION_DOMAINS }
 
 tunnels:
   agent-api:
     proto: http
-    domain: agent.customer1.{YOUR_DOMAIN}
+    domain: agent.customer1.{ YOUR_DOMAIN }
     addr: 4040
     inspect: false
 ```
@@ -302,7 +303,7 @@ Because a previous step created the wildcard domain on `*.customer1.configurable
 
 ```curl
 curl -H "Content-Type: application/json" \
--X POST https://agent.configurable-domain.com/api/tunnels \
+-X POST https://agent.customer1.configurable-domain.com/api/tunnels \
 -d '{"name":"passthrough","proto":"tls","terminate_at": "agent", "addr":"3306", "domain":"db.customer1.configurable-domain.com",}'
 ```
 
