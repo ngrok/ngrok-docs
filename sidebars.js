@@ -208,7 +208,8 @@ const sidebars = {
 				"k8s/index",
 				"k8s/how-it-works",
 				"k8s/with-edges",
-				"k8s/getting-started",
+				"k8s/getting-started-kic",
+				"k8s/getting-started-gwapi",
 			],
 		},
 		{
