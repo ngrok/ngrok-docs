@@ -6,7 +6,7 @@ _**Warning:**_ There are other CRDs not documented here that are used internally
 
 ## Ngrok Module Sets
 
-`NgrokModuleSets` is a CRD that lets you define combinations of ngrok modules that can be set on your ingress objects and applied to all of their routes. For an in-depth guide on configuring `NgrokModuleSets` see the [Route Modules Guide](/docs/k8s/user-guide/route-modules).
+`NgrokModuleSets` is a CRD that lets you define combinations of ngrok modules that can be set on your ingress objects and applied to all of their routes. For an in-depth guide on configuring `NgrokModuleSets` see the [Route Modules Guide](/docs/k8s/user-guide/#modules).
 
 ### NgrokModuleSetModules
 
@@ -84,7 +84,7 @@ _**Warning:**_ There are other CRDs not documented here that are used internally
 
 The `IPPolicy` CRD manages the ngrok [API resource](https://ngrok.com/docs/api/resources/ip-policies) directly. It is a first class CRD that you can manage to control these policies in your account.
 
-It's optional to create IP Policies this way vs using the ngrok dashboard or [terraform provider](https://registry.terraform.io/providers/ngrok/ngrok/latest/docs/resources/ip_policy). Once created though, you can use it in your ingress objects using the [annotations](/docs/k8s/user-guide/ip-restrictions.md).
+It's optional to create IP Policies this way vs using the ngrok dashboard or [terraform provider](https://registry.terraform.io/providers/ngrok/ngrok/latest/docs/resources/ip_policy). Once created though, you can use it in your ingress objects using the [annotations](/docs/k8s/user-guide/#ip-restrictions).
 
 | Field               | Description                                | Required | Type                                                                                    | Example                                                  |
 | ------------------- | ------------------------------------------ | -------- | --------------------------------------------------------------------------------------- | -------------------------------------------------------- |
