@@ -109,7 +109,7 @@ It's optional to create IP Policies this way vs using the ngrok dashboard or [te
 | CIDR   | The CIDR block that the rule applies to                   | No       | `string` | `"1.2.3.4/24"` |
 | Action | The action to take for the rule, either "allow" or "deny" | No       | `string` | `"allow"`      |
 
-## TCP Edges
+## TCP Edges {#tcp-edges}
 
 The Kubernetes ingress spec does not directly support TCP traffic. The ngrok Kubernetes Ingress Controller supports TCP traffic via the [TCP Edge](https://ngrok.com/docs/api/resources/edges-tcp/) resource. This is a first class CRD that you can manage to control these edges in your account. See the [TCP and TLS Edges guide](/docs/k8s/user-guide/tcp-tls-edges.md) for more details.
 
