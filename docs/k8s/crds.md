@@ -185,7 +185,7 @@ ngrok's TLS Edges function similarly to TCP Edges in that they may contain arbit
 
 ## Domains
 
-Domains are automatically created by the controller based on the ingress objects host values. Standard ngrok subdomains will automatically be created and reserved for you. Custom domains will also be created and reserved, but will be up to you to configure the DNS records for them. See the [custom domain](/docs/k8s/user-guide/custom-domain.md) guide for more details.
+Domains are automatically created by the controller based on the ingress objects host values. Standard ngrok subdomains will automatically be created and reserved for you. Custom domains will also be created and reserved, but will be up to you to configure the DNS records for them. See the [custom domain](/docs/k8s/custom-domain) guide for more details.
 
 If you delete all the ingress objects for a particular host, as a safety precaution, the ingress controller does _NOT_ delete the domains and thus does not unregister them. This ensures you don't lose domains while modifying or recreating ingress objects. You can still manually delete a domain CRD via `kubectl delete domain <name>` if you want to unregister it.
 
