@@ -6,6 +6,12 @@ title: Changelog
 
 ## v3
 
+### ngrok Agent 3.9.0 - \[2024-04-24\]
+
+- Added a `/api/status` endpoint to the local agent API that returns the agent's current status
+- The agent will check the Certificate Revocation List (CRL) on Session initiation. If a custom agent ingress is being used that has an invalid CRL in the chain, the `crl_noverify: true` option can be used to override this check, if desired
+- Certificate Revocation List (CRL) checking for certain Let's Encrypt certificate chains has been fixed
+
 ### ngrok Agent 3.8.0 - \[2024-03-14\]
 
 - Added `json` support to Traffic Policy configuration
