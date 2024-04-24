@@ -411,3 +411,39 @@ GET/api/requests/http/:request_id
     }
 }
 ```
+
+## Agent Status
+
+Get status and metrics about the running agent
+
+### Request
+
+GET /api/status
+
+### Example Request
+
+```sh
+curl http://localhost:4040/api/status
+```
+
+### Response
+
+200 status code with a json response describing the status of the agent
+
+### Example Response
+
+```
+{
+    "status": "online",
+    "agent_version": "3.9.0",
+    "session": {
+        "legs": [
+            {
+                "region": "au",
+                "latency": "87ms"
+            }
+        ]
+    },
+    "uri": "/api/status"
+}
+```
