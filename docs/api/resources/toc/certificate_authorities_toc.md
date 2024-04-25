@@ -1,9 +1,9 @@
 <!-- Code generated for API Clients. DO NOT EDIT. -->
 
-[Certificate Authorities](#api-certificate-authorities)
+[Certificate Authorities](#certificate-authorities)
 
-- [Create](#api-certificate-authorities-create)
-- [Delete](#api-certificate-authorities-delete)
-- [Get](#api-certificate-authorities-get)
-- [List](#api-certificate-authorities-list)
-- [Update](#api-certificate-authorities-update)
+- [Create](#certificate-authorities/#create)
+- [Delete](#certificate-authorities/#delete)
+- [Get](#certificate-authorities/#get)
+- [List](#certificate-authorities/#list)
+- [Update](#certificate-authorities/#update)

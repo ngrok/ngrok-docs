@@ -1,9 +1,9 @@
 <!-- Code generated for API Clients. DO NOT EDIT. -->
 
-[HTTP Response Backends](#api-http-response-backends)
+[HTTP Response Backends](#http-response-backends)
 
-- [Create](#api-http-response-backends-create)
-- [Delete](#api-http-response-backends-delete)
-- [Get](#api-http-response-backends-get)
-- [List](#api-http-response-backends-list)
-- [Update](#api-http-response-backends-update)
+- [Create](#http-response-backends/#create)
+- [Delete](#http-response-backends/#delete)
+- [Get](#http-response-backends/#get)
+- [List](#http-response-backends/#list)
+- [Update](#http-response-backends/#update)

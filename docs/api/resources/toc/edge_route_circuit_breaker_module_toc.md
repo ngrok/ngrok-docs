@@ -1,7 +1,7 @@
 <!-- Code generated for API Clients. DO NOT EDIT. -->
 
-[HTTPS Edge Route Circuit Breaker Module](#api-edge-route-circuit-breaker-module)
+[HTTPS Edge Route Circuit Breaker Module](#edge-route-circuit-breaker-module)
 
-- [Replace](#api-edge-route-circuit-breaker-module-replace)
-- [Get](#api-edge-route-circuit-breaker-module-get)
-- [Delete](#api-edge-route-circuit-breaker-module-delete)
+- [Replace](#edge-route-circuit-breaker-module/#replace)
+- [Get](#edge-route-circuit-breaker-module/#get)
+- [Delete](#edge-route-circuit-breaker-module/#delete)

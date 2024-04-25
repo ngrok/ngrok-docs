@@ -1,9 +1,9 @@
 <!-- Code generated for API Clients. DO NOT EDIT. -->
 
-[Weighted Backends](#api-weighted-backends)
+[Weighted Backends](#weighted-backends)
 
-- [Create](#api-weighted-backends-create)
-- [Delete](#api-weighted-backends-delete)
-- [Get](#api-weighted-backends-get)
-- [List](#api-weighted-backends-list)
-- [Update](#api-weighted-backends-update)
+- [Create](#weighted-backends/#create)
+- [Delete](#weighted-backends/#delete)
+- [Get](#weighted-backends/#get)
+- [List](#weighted-backends/#list)
+- [Update](#weighted-backends/#update)

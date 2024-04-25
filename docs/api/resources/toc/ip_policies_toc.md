@@ -1,9 +1,9 @@
 <!-- Code generated for API Clients. DO NOT EDIT. -->
 
-[IP Policies](#api-ip-policies)
+[IP Policies](#ip-policies)
 
-- [Create](#api-ip-policies-create)
-- [Delete](#api-ip-policies-delete)
-- [Get](#api-ip-policies-get)
-- [List](#api-ip-policies-list)
-- [Update](#api-ip-policies-update)
+- [Create](#ip-policies/#create)
+- [Delete](#ip-policies/#delete)
+- [Get](#ip-policies/#get)
+- [List](#ip-policies/#list)
+- [Update](#ip-policies/#update)

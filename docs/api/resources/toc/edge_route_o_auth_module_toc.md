@@ -1,7 +1,7 @@
 <!-- Code generated for API Clients. DO NOT EDIT. -->
 
-[HTTPS Edge Route OAuth Module](#api-edge-route-o-auth-module)
+[HTTPS Edge Route OAuth Module](#edge-route-o-auth-module)
 
-- [Replace](#api-edge-route-o-auth-module-replace)
-- [Get](#api-edge-route-o-auth-module-get)
-- [Delete](#api-edge-route-o-auth-module-delete)
+- [Replace](#edge-route-o-auth-module/#replace)
+- [Get](#edge-route-o-auth-module/#get)
+- [Delete](#edge-route-o-auth-module/#delete)

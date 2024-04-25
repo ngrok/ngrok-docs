@@ -1,9 +1,9 @@
 <!-- Code generated for API Clients. DO NOT EDIT. -->
 
-[SSH User Certificates](#api-ssh-user-certificates)
+[SSH User Certificates](#ssh-user-certificates)
 
-- [Create](#api-ssh-user-certificates-create)
-- [Delete](#api-ssh-user-certificates-delete)
-- [Get](#api-ssh-user-certificates-get)
-- [List](#api-ssh-user-certificates-list)
-- [Update](#api-ssh-user-certificates-update)
+- [Create](#ssh-user-certificates/#create)
+- [Delete](#ssh-user-certificates/#delete)
+- [Get](#ssh-user-certificates/#get)
+- [List](#ssh-user-certificates/#list)
+- [Update](#ssh-user-certificates/#update)

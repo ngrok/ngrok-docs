@@ -1,9 +1,9 @@
 <!-- Code generated for API Clients. DO NOT EDIT. -->
 
-[Agent Ingresses](#api-agent-ingresses)
+[Agent Ingresses](#agent-ingresses)
 
-- [Create](#api-agent-ingresses-create)
-- [Delete](#api-agent-ingresses-delete)
-- [Get](#api-agent-ingresses-get)
-- [List](#api-agent-ingresses-list)
-- [Update](#api-agent-ingresses-update)
+- [Create](#agent-ingresses/#create)
+- [Delete](#agent-ingresses/#delete)
+- [Get](#agent-ingresses/#get)
+- [List](#agent-ingresses/#list)
+- [Update](#agent-ingresses/#update)

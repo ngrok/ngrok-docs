@@ -1,7 +1,7 @@
 <!-- Code generated for API Clients. DO NOT EDIT. -->
 
-[TLS Edge Policy Module](#api-tls-edge-policy-module)
+[TLS Edge Policy Module](#tls-edge-policy-module)
 
-- [Replace](#api-tls-edge-policy-module-replace)
-- [Get](#api-tls-edge-policy-module-get)
-- [Delete](#api-tls-edge-policy-module-delete)
+- [Replace](#tls-edge-policy-module/#replace)
+- [Get](#tls-edge-policy-module/#get)
+- [Delete](#tls-edge-policy-module/#delete)

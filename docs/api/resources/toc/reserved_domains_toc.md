@@ -1,11 +1,11 @@
 <!-- Code generated for API Clients. DO NOT EDIT. -->
 
-[Reserved Domains](#api-reserved-domains)
+[Reserved Domains](#reserved-domains)
 
-- [Create](#api-reserved-domains-create)
-- [Delete](#api-reserved-domains-delete)
-- [Get](#api-reserved-domains-get)
-- [List](#api-reserved-domains-list)
-- [Update](#api-reserved-domains-update)
-- [Detach Cert Policy](#api-reserved-domains-delete-certificate-management-policy)
-- [Detach Cert](#api-reserved-domains-delete-certificate)
+- [Create](#reserved-domains/#create)
+- [Delete](#reserved-domains/#delete)
+- [Get](#reserved-domains/#get)
+- [List](#reserved-domains/#list)
+- [Update](#reserved-domains/#update)
+- [Detach Cert Policy](#reserved-domains/#delete-certificate-management-policy)
+- [Detach Cert](#reserved-domains/#delete-certificate)

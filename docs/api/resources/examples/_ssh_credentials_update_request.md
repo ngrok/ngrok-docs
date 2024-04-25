@@ -9,5 +9,5 @@ curl \
 -H "Content-Type: application/json" \
 -H "Ngrok-Version: 2" \
 -d '{"description":"my dev machine","metadata":"{\"hostname\": \"macbook.local\"}"}' \
-https://api.ngrok.com/ssh_credentials/sshcr_2fKmcNFehUyqM6ARyHCiZxn7Pnb
+https://api.ngrok.com/ssh_credentials/sshcr_2fc1QR8lwK6lwg2cJrDnFpYFOkH
 ```

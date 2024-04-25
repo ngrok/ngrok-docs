@@ -1,9 +1,9 @@
 <!-- Code generated for API Clients. DO NOT EDIT. -->
 
-[SSH Certificate Authorities](#api-ssh-certificate-authorities)
+[SSH Certificate Authorities](#ssh-certificate-authorities)
 
-- [Create](#api-ssh-certificate-authorities-create)
-- [Delete](#api-ssh-certificate-authorities-delete)
-- [Get](#api-ssh-certificate-authorities-get)
-- [List](#api-ssh-certificate-authorities-list)
-- [Update](#api-ssh-certificate-authorities-update)
+- [Create](#ssh-certificate-authorities/#create)
+- [Delete](#ssh-certificate-authorities/#delete)
+- [Get](#ssh-certificate-authorities/#get)
+- [List](#ssh-certificate-authorities/#list)
+- [Update](#ssh-certificate-authorities/#update)

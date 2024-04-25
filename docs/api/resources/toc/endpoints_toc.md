@@ -1,6 +1,6 @@
 <!-- Code generated for API Clients. DO NOT EDIT. -->
 
-[Endpoints](#api-endpoints)
+[Endpoints](#endpoints)
 
-- [List](#api-endpoints-list)
-- [Get](#api-endpoints-get)
+- [List](#endpoints/#list)
+- [Get](#endpoints/#get)

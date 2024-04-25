@@ -1,9 +1,9 @@
 <!-- Code generated for API Clients. DO NOT EDIT. -->
 
-[TLS Certificates](#api-tls-certificates)
+[TLS Certificates](#tls-certificates)
 
-- [Create](#api-tls-certificates-create)
-- [Delete](#api-tls-certificates-delete)
-- [Get](#api-tls-certificates-get)
-- [List](#api-tls-certificates-list)
-- [Update](#api-tls-certificates-update)
+- [Create](#tls-certificates/#create)
+- [Delete](#tls-certificates/#delete)
+- [Get](#tls-certificates/#get)
+- [List](#tls-certificates/#list)
+- [Update](#tls-certificates/#update)

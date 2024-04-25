@@ -1,6 +1,6 @@
 <!-- Code generated for API Clients. DO NOT EDIT. -->
 
-[Tunnels](#api-tunnels)
+[Tunnels](#tunnels)
 
-- [List](#api-tunnels-list)
-- [Get](#api-tunnels-get)
+- [List](#tunnels/#list)
+- [Get](#tunnels/#get)

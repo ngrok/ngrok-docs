@@ -1,9 +1,9 @@
 <!-- Code generated for API Clients. DO NOT EDIT. -->
 
-[Tunnel Credentials](#api-credentials)
+[Tunnel Credentials](#credentials)
 
-- [Create](#api-credentials-create)
-- [Delete](#api-credentials-delete)
-- [Get](#api-credentials-get)
-- [List](#api-credentials-list)
-- [Update](#api-credentials-update)
+- [Create](#credentials/#create)
+- [Delete](#credentials/#delete)
+- [Get](#credentials/#get)
+- [List](#credentials/#list)
+- [Update](#credentials/#update)

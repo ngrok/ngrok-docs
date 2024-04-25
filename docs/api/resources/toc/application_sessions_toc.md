@@ -1,7 +1,7 @@
 <!-- Code generated for API Clients. DO NOT EDIT. -->
 
-[Application Sessions](#api-application-sessions)
+[Application Sessions](#application-sessions)
 
-- [Get](#api-application-sessions-get)
-- [Delete](#api-application-sessions-delete)
-- [List](#api-application-sessions-list)
+- [Get](#application-sessions/#get)
+- [Delete](#application-sessions/#delete)
+- [List](#application-sessions/#list)

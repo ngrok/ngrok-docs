@@ -4,12 +4,12 @@
 
 ```json
 {
-	"created_at": "2024-04-19T20:23:20Z",
+	"created_at": "2024-04-25T22:51:54Z",
 	"description": "ad-hoc dev testing",
-	"id": "ak_2fKmZhFCpUaFPsEz3PP32TQnUdF",
+	"id": "ak_2fc1NpH9fj3KrCfumuu1IpLxHve",
 	"metadata": "{\"environment\":\"dev\", \"owner_id\": 123}",
-	"owner_id": "usr_2fKmZkU58lDugKhiyPWLdXKQxFx",
+	"owner_id": "usr_2fc1Nhqt3n7GeJHmEWMNiS2inB1",
 	"token": null,
-	"uri": "https://api.ngrok.com/api_keys/ak_2fKmZhFCpUaFPsEz3PP32TQnUdF"
+	"uri": "https://api.ngrok.com/api_keys/ak_2fc1NpH9fj3KrCfumuu1IpLxHve"
 }
 ```

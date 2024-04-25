@@ -1,9 +1,9 @@
 <!-- Code generated for API Clients. DO NOT EDIT. -->
 
-[Reserved Addresses](#api-reserved-addrs)
+[Reserved Addresses](#reserved-addrs)
 
-- [Create](#api-reserved-addrs-create)
-- [Delete](#api-reserved-addrs-delete)
-- [Get](#api-reserved-addrs-get)
-- [List](#api-reserved-addrs-list)
-- [Update](#api-reserved-addrs-update)
+- [Create](#reserved-addrs/#create)
+- [Delete](#reserved-addrs/#delete)
+- [Get](#reserved-addrs/#get)
+- [List](#reserved-addrs/#list)
+- [Update](#reserved-addrs/#update)

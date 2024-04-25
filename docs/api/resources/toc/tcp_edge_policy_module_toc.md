@@ -1,7 +1,7 @@
 <!-- Code generated for API Clients. DO NOT EDIT. -->
 
-[TCP Edge Policy Module](#api-tcp-edge-policy-module)
+[TCP Edge Policy Module](#tcp-edge-policy-module)
 
-- [Replace](#api-tcp-edge-policy-module-replace)
-- [Get](#api-tcp-edge-policy-module-get)
-- [Delete](#api-tcp-edge-policy-module-delete)
+- [Replace](#tcp-edge-policy-module/#replace)
+- [Get](#tcp-edge-policy-module/#get)
+- [Delete](#tcp-edge-policy-module/#delete)

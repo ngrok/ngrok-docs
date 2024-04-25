@@ -1,9 +1,9 @@
 <!-- Code generated for API Clients. DO NOT EDIT. -->
 
-[TLS Edges](#api-edges-tls)
+[TLS Edges](#edges-tls)
 
-- [Create](#api-edges-tls-create)
-- [Get](#api-edges-tls-get)
-- [List](#api-edges-tls-list)
-- [Update](#api-edges-tls-update)
-- [Delete](#api-edges-tls-delete)
+- [Create](#edges-tls/#create)
+- [Get](#edges-tls/#get)
+- [List](#edges-tls/#list)
+- [Update](#edges-tls/#update)
+- [Delete](#edges-tls/#delete)

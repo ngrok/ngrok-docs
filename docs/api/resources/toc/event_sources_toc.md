@@ -1,9 +1,9 @@
 <!-- Code generated for API Clients. DO NOT EDIT. -->
 
-[Event Sources](#api-event-sources)
+[Event Sources](#event-sources)
 
-- [Create](#api-event-sources-create)
-- [Delete](#api-event-sources-delete)
-- [Get](#api-event-sources-get)
-- [List](#api-event-sources-list)
-- [Update](#api-event-sources-update)
+- [Create](#event-sources/#create)
+- [Delete](#event-sources/#delete)
+- [Get](#event-sources/#get)
+- [List](#event-sources/#list)
+- [Update](#event-sources/#update)
