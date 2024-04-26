@@ -11,7 +11,7 @@
 				{
 					"config": {
 						"metadata": {
-							"edgeId": "edgtls_2cSjzj7If5EJyPwSubcw5dx9t5J",
+							"edgeId": "edgtls_2fKmdItkUN3OyJKyACXlvmNAE1Y",
 							"message": "Invalid TLS Version"
 						}
 					},
