@@ -265,6 +265,12 @@ const sidebars = {
 								"api/resources/weighted-backends",
 							],
 						},
+						// Bot Users
+						{
+							type: "category",
+							label: "Bot Users",
+							items: ["api/resources/bot-users"],
+						},
 						// Certificates
 						{
 							type: "category",
