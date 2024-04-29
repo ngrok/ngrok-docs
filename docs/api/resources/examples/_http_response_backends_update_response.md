@@ -5,14 +5,14 @@
 ```json
 {
 	"body": "I'm a teapot",
-	"created_at": "2024-04-19T20:23:43Z",
+	"created_at": "2024-04-29T18:29:37Z",
 	"description": "acme http response",
 	"headers": {
 		"content-type": "text/plain"
 	},
-	"id": "bkdhr_2fKmcc1iaS4PnYQV1ff6iCLKI3N",
+	"id": "bkdhr_2fmnypnrR231A7CNE7nH6XvNgPQ",
 	"metadata": "{\"environment\": \"production\"}",
 	"status_code": 418,
-	"uri": "https://api.ngrok.com/backends/http_response/bkdhr_2fKmcc1iaS4PnYQV1ff6iCLKI3N"
+	"uri": "https://api.ngrok.com/backends/http_response/bkdhr_2fmnypnrR231A7CNE7nH6XvNgPQ"
 }
 ```
