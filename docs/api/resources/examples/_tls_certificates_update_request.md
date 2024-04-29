@@ -9,5 +9,5 @@ curl \
 -H "Content-Type: application/json" \
 -H "Ngrok-Version: 2" \
 -d '{"metadata":"{\"example\": true}"}' \
-https://api.ngrok.com/tls_certificates/cert_2fKmcTlli3kfxqj52qjhvErv5qF
+https://api.ngrok.com/tls_certificates/cert_2fmnyotUmQTNjo24AZ9StwrcU7Q
 ```
