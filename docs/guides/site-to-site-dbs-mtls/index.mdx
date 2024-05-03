@@ -1,20 +1,41 @@
 ---
-sidebar_position: 5
-title: Configure Site-to-Site Connectivity for APIs
-description: Configure site-to-site connectivity for APIs
+sidebar_position: 8
+title: Configure Site-to-Site Connectivity for Databases with mTLS
+description: Configure site-to-site connectivity with end-to-end mTLS encrption to access databases
 tags:
   - guides
-  - apis
+  - mtls
+  - tls
+  - mutual authentication
+  - security
+  - databases
 ---
 
 This guide provides step-by-step instructions for using ngrok for site-to-site connectivity.
-This example shows you how to run the ngrok agent at an external site to get access
-to locally running APIs.
+This example shows you how to securely run the ngrok agent at an external site to get access
+to a locally running database. The connection will be end-to-end encrypted using mutual TLS (mTLS).
+You'll use [stunnel](https://www.stunnel.org/) at the client site to intercept and encrypt requests
+from your local database client before they are transmitted to the ngrok agent running at the external
+site.
 
-The connection will be unencrypted. ngrok recommends [configuring end-to-end encryption with mTLS](/guides/site-to-site-apis-mtls/).
-However, we understand there are times when you may
-wish to configure an unencrypted connection such as during testing or proof of concept. Therefore, we provide the
-steps in this guide, but we recommend configuring mTLS before going to production.
+For a deeper understanding for how mTLS is implemented within ngrok, reference the [Mutual TLS module
+page](https://ngrok.com/docs/cloud-edge/modules/mutual-tls/).
+
+## **Prerequisites**
+
+A certificate authority (CA) is required for mTLS. The CA is responsible for issuing and digitally
+signing certificates (client certificates). The CA will also be used to verify the authenticity of the
+certificates.
+
+1. CA certificate to be used by ngrok to verify the clients.
+2. Client certificates signed by the CA used to access the endpoints.
+
+Users are responsible for providing the CA and client certificates. ngrok will not generate them.
+The CA certificate will be uploaded and hosted on the ngrok platform. The client certificates
+will need to be distributed to any client/device that will need to access the API endpoints.
+
+Most organizations will have their own certificate mangement infrastructure. You can
+[generate test certificates](#generate-test-certificates) for reference/demo purposes during implementation.
 
 ## Install the ngrok agent
 
@@ -192,7 +213,8 @@ Use the ngrok dashboard to verify that you’ve configured DNS correctly.
 
 ## Create a bot user
 
-Now, you’ll create a bot user so that in the next section, you can create an agent authtoken independent of any user account. Recall from Chapter 2 that a bot user does not belong to a particular user account. Run the following command to create a new bot user, providing your API key and a description:
+Now, you’ll create a bot user so that in the next section, you can create an agent authtoken independent of any user account.
+Run the following command to create a new bot user, providing your API key and a description:
 
 ```
 curl \
@@ -306,16 +328,160 @@ substituting the appropriate values for your environment:
 
 ```curl
 curl -H "Content-Type: application/json" \
--X POST https://agent.customer1.{YOUR_DOMAIN}/api/tunnels \
--d '{"name":"passthrough","proto":"tls","terminate_at": "agent", "addr":"{PORT}", "domain":"api.customer1.{YOUR_DOMAIN}"
+-X POST https://agent.{YOUR_DOMAIN}/api/tunnels \
+-d '{"name":"passthrough","proto":"tls","terminate_at": "agent", "addr":"{PORT}", "domain":"db.customer1.{YOUR_DOMAIN}"
 ```
 
-The example below creates a tunnel on port 3000 and serves it at `api.customer1.configurable-domain.com`.
+The example below creates a tunnel on port 3306 and serves it at `db.customer1.configurable-domain.com`.
 Because a previous step created the wildcard domain on `*.customer1.configurable-domain.com`, a tunnel can be started on
-`api.customer1.configurable-domain.com` without reserving that subdomain.
+`db.customer1.configurable-domain.com` without reserving that subdomain.
 
 ```curl
 curl -H "Content-Type: application/json" \
 -X POST https://agent.customer1.configurable-domain.com/api/tunnels \
--d '{"name":"passthrough","proto":"tls","terminate_at": "agent", "addr":"3000", "domain":"api.customer1.configurable-domain.com",}'
+-d '{"name":"passthrough","proto":"tls","terminate_at": "agent", "addr":"3306", "domain":"db.customer1.configurable-domain.com",}'
 ```
+
+## Add mutual TLS (mTLS)
+
+At this point, you can access APIs running at the external site, but the connection is
+unencrypted. Next you'll add mutual TLS (mTLS) authentication to the tunnel to allow ngrok to verify
+the identity of the client and server.
+
+When you start the tunnel, you can send additional properties in the payload to provide
+the certificate authority (CA) private key, the signed server certificate, and the server’s
+private key.
+
+If you previously started a tunnel, stop it now. Then, to start a fully encrypted tunnel
+with mTLS, run the following command, replacing the variables with the appropriate values
+for your environment:
+
+```curl
+curl \
+-H "Content-Type: application/json" -X  \
+POST https://agent.customer1.{YOUR_DOMAIN}/api/tunnels \
+-d '{"name":"passthrough","proto":"tls","terminate_at": "agent", "addr":"{PORT}", "domain":"db.customer1.{YOUR_DOMAIN}","mutual_tls_cas":"{PATH_TO_CA_PRIVATE_KEY}", "crt":"{PATH_TO_SIGNED_SERVER_CERT}", "key":"{PATH_TO_SERVER_PRIVATE_KEY}"
+```
+
+### Generate test certificates
+
+The script below generates tests certificates, which may be useful during implementation or proof of concept.
+You should provide certificates signed by an official Certificate Authority when running tunnels in production.
+
+To generate certificates for testing, run the script below, substituting your wildcard domain for `{YOUR_WILDCARD_DOMAIN}`.
+For the example above, you'd use `*.customer1.configurable-domain.com`.
+
+```bash
+#!/bin/sh
+
+# Configure the common names for the CA, Server, and Client
+CA_COMMON_NAME="{YOUR_WILDCARD_DOMAIN}"
+SERVER_COMMON_NAME="{YOUR_WILDCARD_DOMAIN}"
+CLIENT_COMMON_NAME="{YOUR_WILDCARD_DOMAIN}"
+
+# Generate a Certificate Authority (CA)
+echo "Generating keys for Certificate Authority (CA)..."
+echo "You will be prompted for a pass phrase 4 times. Enter the same password each time. "
+openssl req -new -x509 -days 9999 -keyout ca-key.pem -out ca-crt.pem -subj "/CN=$CA_COMMON_NAME"
+
+# Generate a Server Certificate
+echo "Generating a key for the server..."
+openssl genrsa -out server-key.pem 4096
+
+echo "Generating a Server Certificate Signing Request..."
+openssl req -new -key server-key.pem -out server-csr.pem -subj "/CN=$SERVER_COMMON_NAME"
+
+echo "Signing the server certificate with the CA..."
+echo "You will be prompted for a pass phrase 4 times. Enter the same password each time. "
+openssl x509 -req -days 9999 -in server-csr.pem -CA ca-crt.pem -CAkey ca-key.pem -CAcreateserial -out server-crt.pem
+
+echo "Verifying the server certificate..."
+openssl verify -CAfile ca-crt.pem server-crt.pem
+
+# Generate a Client Certificate
+echo "Generating a key for the client..."
+openssl genrsa -out client-key.pem 4096
+
+echo "Generating a Client Certificate Signing Request..."
+openssl req -new -key client-key.pem -out client-csr.pem -subj "/CN=$CLIENT_COMMON_NAME"
+
+echo "Signing the client certificate with the CA..."
+echo "You will be prompted for a pass phrase 4 times. Enter the same password each time. "
+openssl x509 -req -days 9999 -in client-csr.pem -CA ca-crt.pem -CAkey ca-key.pem -CAcreateserial -out client-crt.pem
+
+echo "Verifying the client certificate..."
+openssl verify -CAfile ca-crt.pem client-crt.pem
+
+echo "mTLS certificate generation complete."
+```
+
+When the script completes, you should have the following new files:
+
+- ca-crt.pem
+- ca-crt.srl
+- ca-key.pem
+- client-crt.pem
+- client-csr.pem
+- client-key.pem
+- server-crt.pem
+- server-csr.pem
+- server-key.pem
+
+Some of these are intermediary files you can ignore.
+
+Run the command below from the same directory where you generated the certificate files to
+start a fully encrypted tunnel, substituting your domain for `{YOUR_DOMAIN}` and supplying a value
+for `{PORT}`:
+
+```curl
+curl \
+-H "Content-Type: application/json" -X  \
+POST https://agent.customer1.{YOUR_DOMAIN}/api/tunnels \
+-d '{"name":"passthrough","proto":"tls","terminate_at": "agent", "addr":"{PORT}", "domain":"db.customer1.{YOUR_DOMAIN}","mutual_tls_cas":"ca-crt.pem", "crt":"client-crt.pem", "key":"server-key.pem"'
+```
+
+Please note that these certificates should be used for testing purposes only. You should
+obtain certificates signed by a Certificate Authority for use in production.
+
+## Add stunnel
+
+Now you're ready to make requests from your local database client, such as `mysql`, to the database running in the external site.
+You have a secure connection that is TLS-encrypted, but your local database client only knows how to transmit unencrypted TCP
+requests. This is where stunnel comes into the picture.
+
+You'll run stunnel on the same system as the database client. Then stunnel will intercept all requests from the database client
+and wrap them in TLS encryption before sending them to the database via the TLS endpoint you've created. When the
+request reaches the ngrok service, the service forwards the request to the agent running in the external site,
+which then decrypts the request and forwards it on to the backend database.
+
+### Install stunnel
+
+First, [install stunnel](https://www.stunnel.org/howto.html#installation) using your favorite package manager,
+like `homebrew`.
+
+### Configure stunnel
+
+Next, create an `stunnel.conf` configuration file with the contents below, substituting your domain for `{YOUR_DOMAIN}`
+and adding valid paths to the client certificate and key and the path to the certificate authority key.
+
+```
+; Service-level options
+[mysql-tls]
+client = yes
+accept = 127.0.0.1:8080
+connect = {YOUR_DOMAIN}:443
+sni = {YOUR_DOMAIN}
+cert = /path/to/client-crt.pem
+key = /path/to/client-key.pem
+CAfile = /path/to/ca.crt
+verify = 0
+```
+
+### Start stunnel
+
+Finally, start stunnel by runnning the command `stunnel` from the same directory as the `stunnel.conf` file.
+
+## Connect to the database
+
+You can now make end-to-end encrypted requests to the database at the external site using the database client running on the
+same system as `stunnel`.
