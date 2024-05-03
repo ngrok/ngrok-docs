@@ -10,6 +10,8 @@ Here you will find a set of guides to help you with common (and not so common) t
 
 | Name                                                                                                                                     | Description                                                                                    |
 | ---------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| [Configure Site-to-Site Connectivity for APIs](/guides/site-to-site-apis)                                                                | Learn how to access APIs at external sites with mTLS encryption                                |
+| [Configure Site-to-Site Connectivity for Databases](/guides/site-to-site-dbs)                                                            | Learn how to access databases at external sites with mTLS encryption                           |
 | [Upgrading to ngrok Agent v3](/guides/upgrade-v2-v3)                                                                                     | Learn about the key differences between the v2 and v3 ngrok agent                              |
 | [ngrok Platform Licensing FAQ](/guides/licensing)                                                                                        | Answers to commonly asked questions related to signing up for paid ngrok services              |
 | [ngrok Free Plan Limits](/guides/limits)                                                                                                 | Learn more about what you can do with an ngrok Free plan                                       |
