@@ -111,6 +111,7 @@ const redirects = [
     [ fromIncludes(`/docs/user-management/#bot-users`), `/docs/iam/bot-users/` ],
     [ fromIncludes(`/docs/user-management/#sso`), `/docs/iam/users/#dashboard-access` ],
     [ fromIncludes(`/docs/user-management/#rbac`), `/docs/iam/rbac/` ],
+    [ fromIncludes(`/docs/user-management`), `/docs/iam/` ],
 ]
 
 // get current href from window
