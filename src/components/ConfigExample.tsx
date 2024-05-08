@@ -8,10 +8,14 @@ export default function ConfigExample({ config }) {
 	return (
 		<Tabs groupId="config_example" queryString="config">
 			<TabItem value="YAML" label="YAML">
-				<CodeBlock language="yaml">{"...\n"+YAML.stringify(config)+"\n..."}</CodeBlock>
+				<CodeBlock language="yaml">
+					{"...\n" + YAML.stringify(config) + "\n..."}
+				</CodeBlock>
 			</TabItem>
 			<TabItem value="JSON" label="JSON">
-				<CodeBlock language="yaml">{"...\n"+JSON.stringify(config, null, 2)+"\n..."}</CodeBlock>
+				<CodeBlock language="yaml">
+					{"...\n" + JSON.stringify(config, null, 2) + "\n..."}
+				</CodeBlock>
 			</TabItem>
 		</Tabs>
 	);
