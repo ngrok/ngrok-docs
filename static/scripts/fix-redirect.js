@@ -106,6 +106,11 @@ const redirects = [
     [ fromIncludes(`/docs/tls/traffic-policy/expressions/#macros`), `/docs/tls/traffic-policy/expressions/macros` ],
     [ fromIncludes(`/docs/tcp/traffic-policy/expressions/#connection-variables`), `/docs/tcp/traffic-policy/expressions/variables#connection-variables` ],
     [ fromIncludes(`/docs/tcp/traffic-policy/expressions/#macros`), `/docs/tcp/traffic-policy/expressions/macros` ],
+
+    // /docs/user-management/* -> /docs/iam/*
+    [ fromIncludes(`/docs/user-management/#bot-users`), `/docs/iam/bot-users/` ],
+    [ fromIncludes(`/docs/user-management/#sso`), `/docs/iam/users/#dashboard-access` ],
+    [ fromIncludes(`/docs/user-management/#rbac`), `/docs/iam/rbac/` ],
 ]
 
 // get current href from window
