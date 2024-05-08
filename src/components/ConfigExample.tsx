@@ -13,18 +13,14 @@ export default function ConfigExample({ config }) {
 	});
 
 	const jsonConfig = JSON.stringify(config, null, 2);
-	
+
 	return (
 		<Tabs groupId="config_example" queryString="config">
 			<TabItem value="YAML" label="YAML">
-				<CodeBlock language="yaml">
-					{"# snippet\n" + yamlConfig}
-				</CodeBlock>
+				<CodeBlock language="yaml">{"# snippet\n" + yamlConfig}</CodeBlock>
 			</TabItem>
 			<TabItem value="JSON" label="JSON">
-				<CodeBlock language="yaml">
-					{"// snippet\n" + jsonConfig}
-				</CodeBlock>
+				<CodeBlock language="yaml">{"// snippet\n" + jsonConfig}</CodeBlock>
 			</TabItem>
 		</Tabs>
 	);
