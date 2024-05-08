@@ -5,16 +5,20 @@ import TabItem from "@theme/TabItem";
 import YAML from "yaml";
 
 export default function ConfigExample({ config }) {
+	const jsonExample = {
+	    ...config,
+	    "//": "...snippet...",
+	};
 	return (
 		<Tabs groupId="config_example" queryString="config">
 			<TabItem value="YAML" label="YAML">
 				<CodeBlock language="yaml">
-					{"...\n" + YAML.stringify(config) + "\n..."}
+					{"---\n# example\n" + YAML.stringify(config)}
 				</CodeBlock>
 			</TabItem>
 			<TabItem value="JSON" label="JSON">
 				<CodeBlock language="yaml">
-					{"...\n" + JSON.stringify(config, null, 2) + "\n..."}
+					{JSON.stringify(jsonExample, null, 2)}
 				</CodeBlock>
 			</TabItem>
 		</Tabs>
