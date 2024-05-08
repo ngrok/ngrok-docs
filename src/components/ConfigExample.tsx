@@ -6,9 +6,9 @@ import YAML from "yaml";
 
 export default function ConfigExample({ config }) {
 	const jsonExample = {
-	    // key ordering
-	    "//": "...snippet...",
-	    ...config,
+		// key ordering
+		"//": "...snippet...",
+		...config,
 	};
 	return (
 		<Tabs groupId="config_example" queryString="config">
@@ -19,7 +19,7 @@ export default function ConfigExample({ config }) {
 			</TabItem>
 			<TabItem value="JSON" label="JSON">
 				<CodeBlock language="yaml">
-					{"// snippet\n"+JSON.stringify(jsonExample, null, 2)}
+					{"// snippet\n" + JSON.stringify(jsonExample, null, 2)}
 				</CodeBlock>
 			</TabItem>
 		</Tabs>
