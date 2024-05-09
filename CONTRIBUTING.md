@@ -4,13 +4,18 @@ Thank you for your interest in contributing to the ngrok documentation! We welco
 
 # Getting Started
 
-To get started, fork the ngrok documentation repository on GitHub and clone your fork locally. ngrok docs is built using Docusaurus. Use the instructions on README.md to set up your local environment. The documentation is written in Markdown and organized into directories by topic.
+To get started, fork the ngrok documentation repository on GitHub and clone your fork locally. ngrok docs is built using Docusaurus. Use the instructions on [README.md](https://github.com/ngrok/ngrok-docs/blob/main/README.md) to set up your local environment. The documentation is written in Markdown and organized into directories by topic.
 
 # Making Changes
 
 To make changes to the documentation, edit the relevant Markdown files in your local clone of the repository. If you're unsure which files to edit, you can use the GitHub search functionality to find the relevant files.
 
 When making changes, please follow the Markdown style guide and try to keep your changes concise and to the point. If you're making significant changes or adding new content, please consider including examples or other resources to help readers understand the topic better.
+
+Once you have finished making your changes, we recommend you run a local build with docusaurus (command pnpm run build) to ensure your contribution will not present errors with links or build. After a successful build, push them to your fork on GitHub and create a pull request to submit your changes for review.
+
+# Code of conduct
+We ask that all contributors follow our [code of conduct](https://github.com/ngrok/ngrok-docs/blob/main/CODE_OF_CONDUCT.md) when contributing to the documentation. This code of conduct outlines our expectations for behavior and helps ensure that the ngrok community is a welcoming and inclusive place for everyone.
 
 # Understanding the Repository Structure
 
@@ -54,10 +59,10 @@ Modifying Error Pages
 
 * Error pages for the website are typically managed within the src directory using React components. Modifying these directly for documentation changes is not recommended. If you encounter an error page issue, report it as a separate issue.
 
-# Contributing to Sidebars
+# Review process
+Once you have submitted your pull request, the ngrok documentation team will review your changes and provide feedback or suggestions for improvement. We may also make additional changes to your pull request to ensure that it meets the standards of the ngrok documentation.
 
-The navigation sidebar for the documentation website is defined in the sidebars.js file. You can add new entries to this file to include your newly added content in the sidebar. Refer to existing entries for guidance on the format.
+Once your pull request has been reviewed and any necessary changes have been made, it will be merged into the main ngrok documentation repository.
 
-# Building Locally and Testing Changes
-
-Once you've finished making your changes, we recommend running a local build with Docusaurus using the command pnpm run build. This checks for any errors with links or the build process, ensuring your contribution functions correctly.
+# Thank you!
+Thank you for contributing to the ngrok documentation! Your help is greatly appreciated and will make our documentation better for everyone.
