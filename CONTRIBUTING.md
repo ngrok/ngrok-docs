@@ -14,7 +14,7 @@ When making changes, please follow the Markdown style guide and try to keep your
 
 Once you have finished making your changes, we recommend you run a local build with docusaurus (command pnpm run build) to ensure your contribution will not present errors with links or build. After a successful build, push them to your fork on GitHub and create a pull request to submit your changes for review.
 
-# Code of conduct
+# Code of Conduct
 We ask that all contributors follow our [code of conduct](https://github.com/ngrok/ngrok-docs/blob/main/CODE_OF_CONDUCT.md) when contributing to the documentation. This code of conduct outlines our expectations for behavior and helps ensure that the ngrok community is a welcoming and inclusive place for everyone.
 
 # Understanding the Repository Structure
