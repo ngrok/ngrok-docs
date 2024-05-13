@@ -208,6 +208,7 @@ const sidebars = {
 				"k8s/how-it-works",
 				"k8s/with-edges",
 				"k8s/deployment-guide",
+				"k8s/advanced-deployments",
 				"k8s/user-guide",
 				"k8s/crds",
 				"k8s/custom-domain",
