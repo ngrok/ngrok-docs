@@ -203,7 +203,14 @@ const sidebars = {
 			label: "Kubernetes",
 			type: "category",
 			link: { type: "doc", id: "k8s/index" },
-			items: ["k8s/index", "k8s/how-it-works", "k8s/with-edges"],
+			items: [
+				"k8s/index",
+				"k8s/how-it-works",
+				"k8s/with-edges",
+				"k8s/user-guide",
+				"k8s/crds",
+				"k8s/custom-domain",
+			],
 		},
 		{
 			type: "html",
