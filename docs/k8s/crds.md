@@ -6,7 +6,7 @@ _**Warning:**_ There are other CRDs not documented here that are used internally
 
 ## Ngrok Module Sets
 
-`NgrokModuleSets` is a CRD that lets you define combinations of ngrok modules that can be set on your ingress objects and applied to all of their routes. For an in-depth guide on configuring `NgrokModuleSets` see the [Route Modules Guide](/docs/k8s/user-guide/route-modules).
+`NgrokModuleSets` is a CRD that lets you define combinations of ngrok modules that can be set on your ingress objects and applied to all of their routes. For an in-depth guide on configuring `NgrokModuleSets` see the [Route Modules Guide](/docs/k8s/user-guide#modules).
 
 ### NgrokModuleSetModules
 
@@ -84,7 +84,7 @@ _**Warning:**_ There are other CRDs not documented here that are used internally
 
 The `IPPolicy` CRD manages the ngrok [API resource](https://ngrok.com/docs/api/resources/ip-policies) directly. It is a first class CRD that you can manage to control these policies in your account.
 
-It's optional to create IP Policies this way vs using the ngrok dashboard or [terraform provider](https://registry.terraform.io/providers/ngrok/ngrok/latest/docs/resources/ip_policy). Once created though, you can use it in your ingress objects using the [annotations](/docs/k8s/user-guide/ip-restrictions.md).
+It's optional to create IP Policies this way vs using the ngrok dashboard or [terraform provider](https://registry.terraform.io/providers/ngrok/ngrok/latest/docs/resources/ip_policy). Once created though, you can use it in your ingress objects using the [annotations](/docs/k8s/user-guide#ip-restrictions).
 
 | Field               | Description                                | Required | Type                                                                                    | Example                                                  |
 | ------------------- | ------------------------------------------ | -------- | --------------------------------------------------------------------------------------- | -------------------------------------------------------- |
@@ -109,9 +109,9 @@ It's optional to create IP Policies this way vs using the ngrok dashboard or [te
 | CIDR   | The CIDR block that the rule applies to                   | No       | `string` | `"1.2.3.4/24"` |
 | Action | The action to take for the rule, either "allow" or "deny" | No       | `string` | `"allow"`      |
 
-## TCP Edges
+## TCP Edges {#tcp-edges}
 
-The Kubernetes ingress spec does not directly support TCP traffic. The ngrok Kubernetes Ingress Controller supports TCP traffic via the [TCP Edge](https://ngrok.com/docs/api/resources/edges-tcp/) resource. This is a first class CRD that you can manage to control these edges in your account. See the [TCP and TLS Edges guide](/docs/k8s/user-guide/tcp-tls-edges.md) for more details.
+The Kubernetes ingress spec does not directly support TCP traffic. The ngrok Kubernetes Ingress Controller supports TCP traffic via the [TCP Edge](https://ngrok.com/docs/api/resources/edges-tcp/) resource. This is a first class CRD that you can manage to control these edges in your account. See the [TCP and TLS Edges guide](/docs/k8s/user-guide#tcp-tls-edges) for more details.
 
 | Field      | Type                                                                                    | Required | Description                                                                                                                                                                                                                   |
 | ---------- | --------------------------------------------------------------------------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -153,7 +153,7 @@ The Kubernetes ingress spec does not directly support TCP traffic. The ngrok Kub
 
 ## TLS Edges
 
-ngrok's TLS Edges function similarly to TCP Edges in that they may contain arbitrary application data, not just HTTP. As such, the Kubernetes Ingress spec isn't a perfect fit for them either. The ngrok Kubernetes Ingress Controller supports arbitrary TLS endpoints via the [TLS Edge](https://ngrok.com/docs/api/resources/edges-tls/) resource. This is a first class CRD that you can manage to control these edges in your account. See the [TCP and TLS Edges guide](/docs/k8s/user-guide/tcp-tls-edges.md) for more details.
+ngrok's TLS Edges function similarly to TCP Edges in that they may contain arbitrary application data, not just HTTP. As such, the Kubernetes Ingress spec isn't a perfect fit for them either. The ngrok Kubernetes Ingress Controller supports arbitrary TLS endpoints via the [TLS Edge](https://ngrok.com/docs/api/resources/edges-tls/) resource. This is a first class CRD that you can manage to control these edges in your account. See the [TCP and TLS Edges guide](/docs/k8s/user-guide#tcp-tls-edges) for more details.
 
 | Field      | Type                                                                                    | Required | Description                                                                                                                                                                                                                   |
 | ---------- | --------------------------------------------------------------------------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -185,11 +185,11 @@ ngrok's TLS Edges function similarly to TCP Edges in that they may contain arbit
 
 ## Domains
 
-Domains are automatically created by the controller based on the ingress objects host values. Standard ngrok subdomains will automatically be created and reserved for you. Custom domains will also be created and reserved, but will be up to you to configure the DNS records for them. See the [custom domain](/docs/k8s/user-guide/custom-domain.md) guide for more details.
+Domains are automatically created by the controller based on the ingress objects host values. Standard ngrok subdomains will automatically be created and reserved for you. Custom domains will also be created and reserved, but will be up to you to configure the DNS records for them. See the [custom domain](/docs/k8s/custom-domain) guide for more details.
 
 If you delete all the ingress objects for a particular host, as a safety precaution, the ingress controller does _NOT_ delete the domains and thus does not unregister them. This ensures you don't lose domains while modifying or recreating ingress objects. You can still manually delete a domain CRD via `kubectl delete domain <name>` if you want to unregister it.
 
-If using a [TCP](#tcp-edges) or [TLS](#tls-edges) CRD directly, a Domain will not be created for you automatically, so you will need to create and manage it yourself. See the [TCP and TLS Edges](/docs/k8s/user-guide/tcp-tls-edges.md) guide for details.
+If using a [TCP](#tcp-edges) or [TLS](#tls-edges) CRD directly, a Domain will not be created for you automatically, so you will need to create and manage it yourself. See the [TCP and TLS Edges](/docs/k8s/user-guide#tcp-tls-edges) guide for details.
 
 | Field      | Type                                                                                    | Required | Description                                                                                                                                                                                                                   |
 | ---------- | --------------------------------------------------------------------------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -221,7 +221,7 @@ If using a [TCP](#tcp-edges) or [TLS](#tls-edges) CRD directly, a Domain will no
 
 Tunnels are automatically created by the controller based on the ingress objects' rules' backends. A tunnel will be created for each backend service name and port combination. This results in tunnels being created with those labels which can be matched by various edge backends. Automatically-created are useful to inspect but are fully managed by the controller and should not be edited directly.
 
-If using a [TCP](#tcp-edges) or [TLS](#tls-edges) CRD, you may need to create and manage a Tunnel yourself. See the [TCP and TLS Edges](/docs/k8s/user-guide/tcp-tls-edges.md) guide for details.
+If using a [TCP](#tcp-edges) or [TLS](#tls-edges) CRD, you may need to create and manage a Tunnel yourself. See the [TCP and TLS Edges](/docs/k8s/user-guide#tcp-tls-edges) guide for details.
 
 | Field      | Type                                                                                    | Required | Description                                                                                                                                                                                                                   |
 | ---------- | --------------------------------------------------------------------------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

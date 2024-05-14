@@ -210,6 +210,9 @@ const sidebars = {
 				"k8s/with-edges",
 				"k8s/getting-started-kic",
 				"k8s/getting-started-gwapi",
+				"k8s/user-guide",
+				"k8s/crds",
+				"k8s/custom-domain",
 			],
 		},
 		{
@@ -271,6 +274,12 @@ const sidebars = {
 								"api/resources/tunnel-group-backends",
 								"api/resources/weighted-backends",
 							],
+						},
+						// Bot Users
+						{
+							type: "category",
+							label: "Bot Users",
+							items: ["api/resources/bot-users"],
 						},
 						// Certificates
 						{

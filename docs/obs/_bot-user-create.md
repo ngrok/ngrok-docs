@@ -3,4 +3,4 @@
 | &nbsp; | &nbsp;  | &nbsp;                                       |
 | ------ | ------- | -------------------------------------------- |
 | name   | string  | human-readable name used to identify the bot |
-| active | boolean | if the bot is active                         |
+| active | boolean | whether or not the bot is active             |
