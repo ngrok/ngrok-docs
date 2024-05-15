@@ -1,20 +1,38 @@
 ---
-sidebar_position: 5
-title: Configure Site-to-Site Connectivity for APIs
-description: Configure site-to-site connectivity for APIs
+sidebar_position: 6
+title: Configure Site-to-Site Connectivity for APIs with mTLS
+description: Configure site-to-site connectivity with end-to-end mTLS encryption to access APIs
 tags:
   - guides
+  - mtls
+  - tls
+  - mutual authentication
+  - security
   - apis
 ---
 
 This guide provides step-by-step instructions for using ngrok for site-to-site connectivity.
-This example shows you how to run the ngrok agent at an external site to get access
-to locally running APIs.
+This example shows you how to securely run the ngrok agent at an external site to get access
+to locally running APIs. The connection will be end-to-end encrypted using mutual TLS (mTLS).
 
-The connection will be unencrypted. ngrok recommends [configuring end-to-end encryption with mTLS](/guides/site-to-site-apis-mtls/).
-However, we understand there are times when you may
-wish to configure an unencrypted connection such as during testing or proof of concept. Therefore, we provide the
-steps in this guide, but we recommend configuring mTLS before going to production.
+For a deeper understanding for how mTLS is implemented within ngrok, reference the [Mutual TLS module
+page](/http/mutual-tls/).
+
+## **Prerequisites**
+
+A certificate authority (CA) is required for mTLS. The CA is responsible for issuing and digitally
+signing certificates (client certificates). The CA will also be used to verify the authenticity of the
+certificates.
+
+1. CA certificate to be used by ngrok to verify the clients.
+2. Client certificates signed by the CA used to access the endpoints.
+
+Users are responsible for providing the CA and client certificates. ngrok will not generate them.
+The CA certificate will be uploaded and hosted on the ngrok platform. The client certificates
+will need to be distributed to any client/device that will need to access the API endpoints.
+
+Most organizations will have their own certificate mangement infrastructure. You can
+[generate test certificates](#generate-test-certificates) for reference/demo purposes during implementation.
 
 ## Install the ngrok agent
 
@@ -307,7 +325,7 @@ substituting the appropriate values for your environment:
 ```curl
 curl -H "Content-Type: application/json" \
 -X POST https://agent.customer1.{YOUR_DOMAIN}/api/tunnels \
--d '{"name":"EXAMPLE","proto":"http", "addr":"{PORT}", "domain":"api.customer1.{YOUR_DOMAIN}"
+-d '{"name":"passthrough","proto":"tls","terminate_at": "agent", "addr":"{PORT}", "domain":"api.customer1.{YOUR_DOMAIN}"
 ```
 
 The example below creates a tunnel on port 3000 and serves it at `api.customer1.configurable-domain.com`.
@@ -317,5 +335,145 @@ Because a previous step created the wildcard domain on `*.customer1.configurable
 ```curl
 curl -H "Content-Type: application/json" \
 -X POST https://agent.customer1.configurable-domain.com/api/tunnels \
--d '{"name":"EXAMPLE","proto":"http", "addr":"3000", "domain":"api.customer1.configurable-domain.com",}'
+-d '{"name":"passthrough","proto":"tls","terminate_at": "agent", "addr":"3000", "domain":"api.customer1.configurable-domain.com",}'
 ```
+
+## Add mutual TLS (mTLS)
+
+At this point, you can access APIs running at the external site, but the connection is
+unencrypted. Next you'll add mutual TLS (mTLS) authentication to the tunnel to allow ngrok to verify
+the identity of the client and server.
+
+When you start the tunnel, you can send additional properties in the payload to provide
+the certificate authority (CA) private key, the signed server certificate, and the server’s
+private key.
+
+If you previously started a tunnel, stop it now. Then, to start a fully encrypted tunnel
+with mTLS, run the following command, replacing the variables with the appropriate values
+for your environment:
+
+```curl
+curl \
+-H "Content-Type: application/json" -X  \
+POST https://agent.customer1.{YOUR_DOMAIN}/api/tunnels \
+-d '{"name":"passthrough","proto":"tls","terminate_at": "agent", "addr":"{PORT}", "domain":"api.customer1.{YOUR_DOMAIN}","mutual_tls_cas":"{PATH_TO_CA_PRIVATE_KEY}", "crt":"{PATH_TO_SIGNED_SERVER_CERT}", "key":"{PATH_TO_SERVER_PRIVATE_KEY}"
+```
+
+### Generate test certificates
+
+The script below generates tests certificates, which may be useful during implementation or proof of concept.
+You should provide certificates signed by an official Certificate Authority when running tunnels in production.
+
+To generate certificates for testing, run the script below, substituting your wildcard domain for `{YOUR_WILDCARD_DOMAIN}`.
+For the example above, you'd use `*.customer1.configurable-domain.com`.
+
+```bash
+#!/bin/sh
+
+# Configure the common names for the CA, Server, and Client
+CA_COMMON_NAME="{YOUR_WILDCARD_DOMAIN}"
+SERVER_COMMON_NAME="{YOUR_WILDCARD_DOMAIN}"
+CLIENT_COMMON_NAME="{YOUR_WILDCARD_DOMAIN}"
+
+# Generate a Certificate Authority (CA)
+echo "Generating keys for Certificate Authority (CA)..."
+echo "You will be prompted for a pass phrase 4 times. Enter the same password each time. "
+openssl req -new -x509 -days 9999 -keyout ca-key.pem -out ca-crt.pem -subj "/CN=$CA_COMMON_NAME"
+
+# Generate a Server Certificate
+echo "Generating a key for the server..."
+openssl genrsa -out server-key.pem 4096
+
+echo "Generating a Server Certificate Signing Request..."
+openssl req -new -key server-key.pem -out server-csr.pem -subj "/CN=$SERVER_COMMON_NAME"
+
+echo "Signing the server certificate with the CA..."
+echo "You will be prompted for a pass phrase 4 times. Enter the same password each time. "
+openssl x509 -req -days 9999 -in server-csr.pem -CA ca-crt.pem -CAkey ca-key.pem -CAcreateserial -out server-crt.pem
+
+echo "Verifying the server certificate..."
+openssl verify -CAfile ca-crt.pem server-crt.pem
+
+# Generate a Client Certificate
+echo "Generating a key for the client..."
+openssl genrsa -out client-key.pem 4096
+
+echo "Generating a Client Certificate Signing Request..."
+openssl req -new -key client-key.pem -out client-csr.pem -subj "/CN=$CLIENT_COMMON_NAME"
+
+echo "Signing the client certificate with the CA..."
+echo "You will be prompted for a pass phrase 4 times. Enter the same password each time. "
+openssl x509 -req -days 9999 -in client-csr.pem -CA ca-crt.pem -CAkey ca-key.pem -CAcreateserial -out client-crt.pem
+
+echo "Verifying the client certificate..."
+openssl verify -CAfile ca-crt.pem client-crt.pem
+
+echo "mTLS certificate generation complete."
+```
+
+When the script completes, you should have the following new files:
+
+- ca-crt.pem
+- ca-crt.srl
+- ca-key.pem
+- client-crt.pem
+- client-csr.pem
+- client-key.pem
+- server-crt.pem
+- server-csr.pem
+- server-key.pem
+
+Some of these are intermediary files you can ignore.
+
+Run the command below from the same directory where you generated the certificate files to
+start a fully encrypted tunnel, substituting your domain for `{YOUR_DOMAIN}` and supplying a value
+for `{PORT}`:
+
+```curl
+curl \
+-H "Content-Type: application/json" -X  \
+POST https://agent.customer1.{YOUR_DOMAIN}/api/tunnels \
+-d '{"name":"passthrough","proto":"tls","terminate_at": "agent", "addr":"{PORT}", "domain":"api.customer1.{YOUR_DOMAIN}","mutual_tls_cas":"ca-crt.pem", "crt":"client-crt.pem", "key":"server-key.pem"'
+```
+
+Please note that these certificates should be used for testing purposes only. You should
+obtain certificates signed by a Certificate Authority for use in production.
+
+## Access APIs in external site
+
+You now have connectivity to your customer’s external site and can access any endpoint of the API
+running on the port you provided in the previous step. You’ll pass the client certificate
+in each request to the API, and ngrok will terminate TLS in our global network. ngrok will
+only forward the request to your customer’s network if it includes a valid client certificate
+signed by a Certificate Authority that you’ve added to your ngrok account.
+
+You can access your customer’s API using curl, passing the certificates:
+
+```curl
+curl \
+--cacert {PATH/TO/CA/CERTIFICATE} \
+--cert {PATH/TO/CLIENT/CERTIFICATE} \
+--key {PATH/TO/CLIENT/KEY} \
+https://{YOUR_SUBDOMAIN}/{API_ENDPOINT}
+```
+
+Note that curl will return an error if you pass a self-signed certificate.
+If you’re using self-signed certificates during implementation, you can use
+[Postman](https://www.postman.com/downloads/) to
+connect to your customer’s API.
+
+To add a certificate to Postman:
+
+1. Select **Settings** under Postman in the top menu.
+2. Click **Certificates** in the left-hand navigation bar.
+3. Click **Add Certificate**.
+4. Enter the subdomain you configured to access your customer’s API, but do not include an endpoint, for **Host**. For example, `api.customer1.configurable-domain.com` for the previous example.
+5. Add the client certificate for **CRT file**.
+6. Add the client key for **Key file**.
+7. Enter a **Passphrase** if you set one when you created the client certificate.
+8. Click **Add** to save the files to your account.
+
+![alt-text](img/postman.png)
+
+You can now use Postman to make requests to your customer’s API, and Postman will automatically
+send the certificates you added whenever you access a URL on the domain. Both the request and the response will be encrypted with TLS, so there’s no need to add any additional security policies.
