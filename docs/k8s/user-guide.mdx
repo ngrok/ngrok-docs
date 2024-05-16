@@ -465,6 +465,92 @@ spec:
                   number: <service-port>
 ```
 
+## Traffic Policy
+
+Desigining and applying just traffic policies to inbound and outbound traffic is a simplified best practice for handling edge management. 
+
+### Design
+
+Defining a traffic policy resource with rules composed of expressions and actions allows you to influence and control traffic via the policy engine.
+
+```yaml
+kind: NgrokTrafficPolicy
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+metadata:
+  name: traffic-policy-example
+spec:
+    policy:
+      inbound:
+        - name: "greetings"
+          expressions:
+            - "req.Method == 'GET'"
+            - "req.Path.startsWith('/greetings')"
+          actions:
+            - type: "custom_response"
+              config:
+                status_code: 200
+                content: Hello
+                headers:
+                  content-type: text/plain
+```
+
+Learn more about the policy expressions and actions here:
+
+- [Policy Expressions](https://ngrok.com/docs/http/traffic-policy/expressions/)
+- [Policy Actions](https://ngrok.com/docs/http/traffic-policy/actions/)
+
+
+
+### Composition
+
+With a traffic policy designed for your production ingress use case you can easily add the policy and deploy with annnotation.
+
+```yaml
+---
+kind: NgrokTrafficPolicy
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+metadata:
+  name: traffic-policy-test
+spec:
+    policy:
+      inbound:
+        - name: "deny_patch"
+          expressions:
+            - "req.Method == 'PATCH'"
+          actions:
+            - type: "deny"
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: example
+  annotations:
+    k8s.ngrok.com/traffic-policy: traffic-policy-test
+spec:
+  ingressClassName: ngrok
+  rules:
+    - host: <my-host>.ngrok.app
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: <service-name>
+                port:
+                  number: <service-port>
+```
+
+With just the `k8s.ngrok.com/traffic-policy` annotation we've applied our policy to ingress.
+
+:::note
+Utilize either the module set or the traffic policy annotations on an ingress. Trying to utilize both features will result in an error.
+:::
+
+:::note
+Ingress is currently limited to a max of one traffic policy in your traffic policy annotation list.
+:::
+
 ## TCP and TLS Edges {#tcp-tls-edges}
 
 ngrok offers [TCP](https://ngrok.com/docs/tcp/) and
