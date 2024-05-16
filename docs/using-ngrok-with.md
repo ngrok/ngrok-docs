@@ -22,7 +22,7 @@ Here you will find notes on using ngrok with particular technologies. Think we'r
 | [Node (npm, node.js)](/using-ngrok-with/node-js)                   | Work with the ngrok agent from your Node application                                                        |
 | [OpenVPN Connect](/using-ngrok-with/openvpn)                       | Use ngrok to connect to an OpenVPN server running behind CGNAT                                              |
 | [Outbound proxy](/using-ngrok-with/outboundProxy)                  | Use ngrok through an HTTP or SOCKS5 proxy                                                                   |
-| [PosgreSQL](/using-ngrok-with/postgresql)                          | Connect to a local PostgreSQL server using ngrok                                                            |
+| [PostgreSQL](/using-ngrok-with/postgresql)                         | Connect to a local PostgreSQL server using ngrok                                                            |
 | [Puppet](/using-ngrok-with/puppet)                                 | Manage the ngrok Agent using Puppet                                                                         |
 | [Python](/using-ngrok-with/python)                                 | Learn how to integrate with your Python application                                                         |
 | [RDP](/using-ngrok-with/rdp)                                       | Use ngrok with Windows Remote Desktop Protocol (RDP)                                                        |

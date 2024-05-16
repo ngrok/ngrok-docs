@@ -38,3 +38,13 @@ This is using the the last hop in the `X-Forwarded-For` header to set `REMOTE_AD
 If you are using a different header for the original client IP, or multiple forwarding proxies,
 you will need to adjust this code accordingly.
 :::
+
+# Troubleshooting
+
+If you are seeing an error about too many redirects (`TOO_MANY_REDIRECTS`), you may also need to add the following to your `wp-config` file as noted in [this issue](https://github.com/ngrok/ngrok/issues/3#issuecomment-2115490539):
+
+```php
+if (strpos($_SERVER['HTTP_X_FORWARDED_PROTO'], 'https') !== false) {
+    $_SERVER['HTTPS'] = 'on';
+}
+```
