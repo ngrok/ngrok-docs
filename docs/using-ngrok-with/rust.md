@@ -12,6 +12,6 @@ you’ve used the ngrok agent before, you can think of ngrok-rust as the agent
 packaged as a Rust crate.
 
 - [Quickstart Guide](/getting-started/rust/)
-- [API Reference Documentation](https://pkg.go.dev/golang.ngrok.com/ngrok)
-- [Open-Source GitHub Repository](https://docs.rs/ngrok)
+- [API Reference Documentation](https://docs.rs/ngrok)
+- [Open-Source GitHub Repository](https://github.com/ngrok/ngrok-rust)
 - [HTTP Examples](/http/?cty=rust-sdk)
