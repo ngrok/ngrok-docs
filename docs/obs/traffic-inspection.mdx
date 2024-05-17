@@ -50,9 +50,21 @@ Data that is truncated will be indicated in the Traffic Inspector through the nu
 
 This data is stored for your retention period of your account, currently set at 3 days from the time a request is received.
 
-## Replay (Coming Soon)
+## Replay
 
-Replay of requests allows the user to re-send a request to their backend without accessing the endpoint.
+Replaying requests allows users to re-send an HTTP request upstream without directly accessing the endpoint. To use replay, you must activate Full Capture mode in your account.
+
+Once Full Capture is enabled, a replay button will appear for fully captured requests in the traffic event details pane of the dashboard. If this button is unavailable, it likely indicates that the request occurred before Full Capture was fully activated, or the request was too large and has been truncated.
+
+When replaying a request to your service, we aim to make minimal changes. However, some alterations are inevitable. Here's a list of changes we make to replayed requests:
+
+- The replayed request will originate from a different IP address, so any IP restrictions may prevent the replay from reaching your upstream.
+- We remove any `Connection: Keep-Alive` headers as replay does not support them.
+- Some request bodies might not be captured, even if they were replayed successfully. This is particularly true for traffic events with an error status code.
+- We add a custom ngrok header `Ngrok-Replay-Original-Request-ID` that contains the ID of the original request. This allows you to trace back to the original request if needed.
+- If the request has been truncated, we can't replay it.
+- We can't replay the request if the HTTP method is unknown or undefined.
+- The `X-forwarded` header values are substituted with accurate values for the replay, not the original request.
 
 ## Replay with Changes (Coming Soon)
 
