@@ -12,7 +12,7 @@ ngrok is built using [Docusaurus 3](https://docusaurus.io/).
 
 Prerequisites required:
 
-- [Node 18+](https://nodejs.org/en/download)
+- [Node 20+](https://nodejs.org/en/download)
 - [pnpm 8+](https://pnpm.io/installation#using-npm)
 
 Both of these can be obtained via [nix-direnv](https://github.com/nix-community/nix-direnv), which will automatically configure your shell for you.
