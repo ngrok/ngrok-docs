@@ -34,6 +34,8 @@ For a tunnel to be eligible for tunnel group membership, the following criteria 
 
 - Tunnels can be members of multiple tunnel group backends or none at all
 
+- Edges automatically create an `edge` label, for example: `edge=edghts_2gYaK9XAVa3ANouaDEPrkeaxkYT`
+
 In the example below, the configured tunnel group has a single label defined: `application=web`.
 
 ```json
