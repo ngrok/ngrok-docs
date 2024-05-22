@@ -31,7 +31,8 @@ ngrok's GSLB even works on top of Linode's internal load balancing mechanism, No
 1. Three Ubuntu 24.04 virtual machines (VMs) in three globally-distributed regions (e.g. Atlanta, Osaka, and Frankfurt):
    - Hostnames should be unique, ideally using the location of the datacenter (e.g. `atlanta`, `osaka`, and `frankfurt`).
    - [Docker](https://docs.docker.com/engine/install/) and [Docker Compose](https://docs.docker.com/compose/install/) installed on each VM.
-     :::
+
+:::
 
 ## **Step 1**: Reserve your ngrok domain {#reserve-domain}
 
@@ -55,12 +56,11 @@ Create your domain on the [`/reserved_domains` endpoint](https://ngrok.com/docs/
 
 ```bash
 curl \
-  -X POST \
+  -X POST https://api.ngrok.com/reserved_domains \
   -H "Authorization: Bearer ${NGROK_API_KEY}" \
   -H "Content-Type: application/json" \
   -H "Ngrok-Version: 2" \
-  -d '{"description":"Linode Load Balancing","domain":"'${NGROK_DOMAIN}'"}' \
-  https://api.ngrok.com/reserved_domains
+  -d '{"description":"Linode Load Balancing","domain":"'${NGROK_DOMAIN}'"}'
 ```
 
 :::tip Custom domains within ngrok
@@ -77,12 +77,11 @@ Send a `POST` request to the [`/edges/https` endpoint](https://ngrok.com/docs/ap
 
 ```bash
 curl \
-  -X POST \
+  -X POST https://api.ngrok.com/edges/https \
   -H "Authorization: Bearer ${NGROK_API_KEY}" \
   -H "Content-Type: application/json" \
   -H "Ngrok-Version: 2" \
-  -d '{"description":"Linode HTTPS Edge","hostports":["'${NGROK_DOMAIN}':443"]}' \
-  https://api.ngrok.com/edges/https
+  -d '{"description":"Linode HTTPS Edge","hostports":["'${NGROK_DOMAIN}':443"]}'
 ```
 
 A successful `201` response from the ngrok API looks like the following:
@@ -114,12 +113,11 @@ You'll need to run the API request to the [`/backends/tunnel_group` endpoint](ht
 
 ```bash
 curl \
-  -X POST \
+  -X POST https://api.ngrok.com/backends/tunnel_group \
   -H "Authorization: Bearer ${NGROK_API_KEY}" \
   -H "Content-Type: application/json" \
   -H "Ngrok-Version: 2" \
-  -d '{"labels":{"dc":"<LOCATION_NAME>"}}' \
-  https://api.ngrok.com/backends/tunnel_group
+  -d '{"labels":{"dc":"<LOCATION_NAME>"}}'
 ```
 
 Export the `id`, beginning with `bkdtg_...`, returned from the ngrok API for each Tunnel Group you create.
@@ -155,12 +153,11 @@ You can now create an catch-all Edge Route at `/` using your Weighted Backend us
 
 ```bash
 curl \
-  -X POST \
+  -X POST "https://api.ngrok.com/edges/https/${EDGE_ID}/routes" \
   -H "Authorization: Bearer ${NGROK_API_KEY}" \
   -H "Content-Type: application/json" \
   -H "Ngrok-Version: 2" \
   -d '{"match":"/","match_type":"path_prefix","backend":{"enabled":true,"backend_id":"'${WEIGHTED_BACKEND_ID}'"}}' \
-  "https://api.ngrok.com/edges/https/${EDGE_ID}/routes"
 ```
 
 You now have an active domain, Edge, Tunnel Group backends, a Weighted Backend, and a route. If you open a new tab and navigate to `https://<YOUR_NGROK_DOMAIN>` right now, you'll see an error message about having established an ngrok domain and Edge, but no ngrok agents or active tunnels.
