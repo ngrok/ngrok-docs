@@ -499,7 +499,7 @@ Learn more about the policy expressions and actions here:
 - [Policy Expressions](https://ngrok.com/docs/http/traffic-policy/expressions/)
 - [Policy Actions](https://ngrok.com/docs/http/traffic-policy/actions/)
 
-### Composition
+### Ingress Composition
 
 Traffic policies can be added to Ingress objects using annotations.
 
@@ -546,6 +546,52 @@ Using both an `NgrokModuleSet` and an `NgrokTrafficPolicy` will result in an err
 :::note
 Ingress is currently limited to a max of one traffic policy in your traffic policy annotation list.
 :::
+
+### Gateway Composition
+
+Traffic policies can be added to Gateway `HTTPRoute` objects using an `ExtensionRef` filter.
+
+```yaml
+---
+kind: NgrokTrafficPolicy
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+metadata:
+  name: traffic-policy-test
+spec:
+  policy:
+    inbound:
+      - name: "deny_patch"
+        expressions:
+          - "req.Method == 'PATCH'"
+        actions:
+          - type: "deny"
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: example-route
+spec:
+  parentRefs:
+    - kind: Gateway
+      name: ngrok-gateway
+  hostnames:
+    - "<my-host>.ngrok.app"
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      filters:
+        - type: ExtensionRef
+          extensionRef:
+            group: ngrok.k8s.ngrok.com
+            kind: NgrokTrafficPolicy
+            name: traffic-policy-test
+      backendRefs:
+        - name: <service-name>
+          kind: Service
+          port: <service-port>
+```
 
 ## TCP and TLS Edges {#tcp-tls-edges}
 
