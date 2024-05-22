@@ -31,7 +31,7 @@ ngrok's GSLB even works on top of Linode's internal load balancing mechanism, No
 1. Three Ubuntu 24.04 virtual machines (VMs) in three globally-distributed regions (e.g. Atlanta, Osaka, and Frankfurt):
    - Hostnames should be unique, ideally using the location of the datacenter (e.g. `atlanta`, `osaka`, and `frankfurt`).
    - [Docker](https://docs.docker.com/engine/install/) and [Docker Compose](https://docs.docker.com/compose/install/) installed on each VM.
-:::
+     :::
 
 ## **Step 1**: Reserve your ngrok domain {#reserve-domain}
 
@@ -71,7 +71,7 @@ Using CNAMEs, ngrok can host an endpoint on a domain name you own while also man
 
 ## **Step 2**: Create your ngrok Edge {#create-edge}
 
-With your domain reserved, you can create an [ngrok Edge](https://ngrok.com/docs/network-edge/edges/) to manage all your endpoints and tunnels with a single configuration. 
+With your domain reserved, you can create an [ngrok Edge](https://ngrok.com/docs/network-edge/edges/) to manage all your endpoints and tunnels with a single configuration.
 
 Send a `POST` request to the [`/edges/https` endpoint](https://ngrok.com/docs/api/resources/edges-https/), replacing the `description` field below as needed.
 
@@ -88,7 +88,16 @@ curl \
 A successful `201` response from the ngrok API looks like the following:
 
 ```json
-{"id":"edghts_2gp3pEq55Gk1XBln8Hp9EZzRvkn","description":"Linode HTTPS Edge","created_at":"2024-05-22T12:27:52Z","uri":"https://api.ngrok.com/edges/https/edghts_2gp3pEq55Gk1XBln8Hp9EZzRvkn","hostports":["linode-vps-gslb.ngrok.app:443"],"mutual_tls":null,"tls_termination":null,"routes":[]}
+{
+	"id": "edghts_2gp3pEq55Gk1XBln8Hp9EZzRvkn",
+	"description": "Linode HTTPS Edge",
+	"created_at": "2024-05-22T12:27:52Z",
+	"uri": "https://api.ngrok.com/edges/https/edghts_2gp3pEq55Gk1XBln8Hp9EZzRvkn",
+	"hostports": ["linode-vps-gslb.ngrok.app:443"],
+	"mutual_tls": null,
+	"tls_termination": null,
+	"routes": []
+}
 ```
 
 Export the `id` in this response, which begins with `edghts_...`, for future use.
@@ -270,25 +279,25 @@ You have two options:
 
 - In the Traffic Policy module section of your [Edge](https://dashboard.ngrok.com/cloud-edge/edges) in the ngrok dashboard, where you can click the **Edit Traffic Policy** button and add the YAML below.
 
-   ```yaml
-   inbound: []
-   outbound:
-     - expressions: []
-       name: Add ngrok headers
-       actions:
-         - type: add-headers
-           config:
-             headers:
-               country: ${.ngrok.geo.country_code}
-               is-ngrok: "1"
-   ```
+  ```yaml
+  inbound: []
+  outbound:
+    - expressions: []
+      name: Add ngrok headers
+      actions:
+        - type: add-headers
+          config:
+            headers:
+              country: ${.ngrok.geo.country_code}
+              is-ngrok: "1"
+  ```
 
 When you request your API again, the response includes the `country` (with the appropriate code for where you're generating said request) and `is-ngrok` headers.
 
 ```bash
-curl -s -I -X GET https://<YOUR_NGROK_DOMAIN>/api 
+curl -s -I -X GET https://<YOUR_NGROK_DOMAIN>/api
 
-HTTP/2 200 
+HTTP/2 200
 content-type: application/json
 country: US
 date: Wed, 22 May 2024 14:53:42 GMT
@@ -303,8 +312,8 @@ You now have a globally load-balanced API deployment using 3 Linode VMs, 3 ngrok
 From here, you have many options for extending your use of ngrok's GSLB:
 
 - Create additional deployments in more regions, adding a new Tunnel Group backend for each and updating your Weighted Tunnel configuration, to spread the load even further.
-- Add more VMs to a region with existing deployments and add them to the relevant Tunnel Group backend. Ngrok will then load-balance between those specific VMs equally *after* weighting requests on the Backend level.
-  - Alternatively, use [NodeBalancers](https://www.linode.com/docs/products/networking/nodebalancers/) for 
+- Add more VMs to a region with existing deployments and add them to the relevant Tunnel Group backend. Ngrok will then load-balance between those specific VMs equally _after_ weighting requests on the Backend level.
+  - Alternatively, use [NodeBalancers](https://www.linode.com/docs/products/networking/nodebalancers/) for
 - Provision a Kubernetes cluster with the same workload and the ngrok [Kubernetes Operator](/docs/k8s/index.mdx) to load-balance between VM- and Kubernetes-based deployments of the same API or application.
 - Use your Weighted Backend for A/B tests by changing your deployments between different regions and VMs.
 
