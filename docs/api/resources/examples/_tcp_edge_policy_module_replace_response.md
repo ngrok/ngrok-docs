@@ -13,7 +13,7 @@
 					"type": "deny"
 				}
 			],
-			"expressions": ["conn.ClientIP == '192.0.2.0'"],
+			"expressions": ["conn.client_ip == '192.0.2.0'"],
 			"name": "Block IP"
 		}
 	],
