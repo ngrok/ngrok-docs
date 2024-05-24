@@ -33,7 +33,7 @@ module.exports = function (context, options) {
 					docs: [],
 				};
 
-				fs.readdirSync(integrationDir).flatMap((x) => {
+				fs.readdirSync(integrationDir).flatMap(async (x) => {
 					const filePath = path.join(integrationDir, x);
 
 					// Ignore index files, folders and non-markdown files
@@ -43,8 +43,12 @@ module.exports = function (context, options) {
 					}
 
 					// Parse markdown
-					const fileContents = fs.readFileSync(filePath).toString();
-					const fileMarkdown = utils.parseMarkdownString(fileContents);
+					const fileContent = fs.readFileSync(filePath).toString();
+					const fileMarkdown = await utils.parseMarkdownFile({
+						filePath,
+						fileContent,
+						parseFrontMatter: utils.DEFAULT_PARSE_FRONT_MATTER,
+					});
 
 					// Add file details as metadata information on integration
 					if (x === "index.mdx") {

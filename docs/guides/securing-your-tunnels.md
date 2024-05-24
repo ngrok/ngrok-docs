@@ -79,7 +79,7 @@ Consider restricting the IPs permitted to access the API. You can do so in the n
 
 ### Dashboard authentication
 
-For authenticating access to the dashboard, ngrok has features for role based access control (RBAC), IP Policy, and [Single Sign-On](/iam#dashboard-sso).
+For authenticating access to the dashboard, ngrok has features for role based access control (RBAC), IP Policy, and [Single Sign-On](/iam/sso/).
 
 With RBAC, you can configure permissions for groups of users within your team (for example admins and developers).
 
