@@ -2,7 +2,7 @@ import ConfigExample from "/src/components/ConfigExample.tsx";
 
 # HTTP Variables
 
-## Connection variables
+## Connection Variables
 
 The following variables are available under the `conn` namespace:
 
@@ -41,9 +41,7 @@ The number of bytes leaving an endpoint to the client.
 Source IP of the connection to the ngrok endpoint.
 
 <ConfigExample
-	config={{
-		expressions: ["conn.client_ip in ['::1', '127.0.0.1']"],
-	}}
+	config={{ expressions: ["conn.client_ip in ['::1', '127.0.0.1']"] }}
 />
 
 ### `conn.end_ts`
@@ -52,7 +50,7 @@ Timestamp when the connection to ngrok was closed.
 
 <ConfigExample
 	config={{
-		expressions: ["conn.end_ts > timestamp('2024-01-01'"],
+		expressions: ["conn.end_ts > timestamp('2024-01-01')"],
 	}}
 />
 
@@ -86,7 +84,7 @@ Timestamp when the connection to ngrok was started.
 	}}
 />
 
-## Connection Geo variables
+## Connection Geo Variables
 
 The following variables are available under the `conn.geo` namespace:
 
@@ -170,7 +168,7 @@ The name of the subdivision, in EN, where the `conn.client_ip` is likely to orig
 	}}
 />
 
-## Connection TLS variables
+## Connection TLS Variables
 
 The following variables are available under the `conn.tls` namespace:
 
@@ -210,7 +208,7 @@ The version of the TLS protocol used between the client and the ngrok edge.
 	}}
 />
 
-## Connection TLS Client variables
+## Connection TLS Client Variables
 
 The following variables are available under the `conn.tls.client` namespace:
 
@@ -547,7 +545,7 @@ Start date and time when the certificate becomes valid.
 	}}
 />
 
-## Connection TLS Server variables
+## Connection TLS Server Variables
 
 The following variables are available under the `conn.tls.server` namespace:
 
@@ -888,13 +886,14 @@ Start date and time when the certificate becomes valid.
 
 ## Request Variables
 
-The following request variables are available under the `req` namepsace:
+The following variables are available under the `req` namespace:
 
 | Name                                          | Type                     | Description                                                                                                                                                                                     |
 | --------------------------------------------- | ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | [`req.content_length`](#reqcontentlength)     | int64                    | The content length of the body in bytes. This may not be present if the request does not contain a body or if the client does not specify a content length because they are streaming the body. |
 | [`req.cookies`](#reqcookies)                  | map[string]\*http.Cookie | The key value map of HTTP cookie objects provided in the request.                                                                                                                               |
 | [`req.headers`](#reqheaders)                  | map[string][]string      | The request headers parsed as a map of lower-case names to values.                                                                                                                              |
+| [`req.host`](#reqhost)                        | string                   | The host header field value for this request.                                                                                                                                                   |
 | [`req.location`](#reqlocation)                | string                   | The location header value of the request.                                                                                                                                                       |
 | [`req.method`](#reqmethod)                    | string                   | The request method.                                                                                                                                                                             |
 | [`req.trailers`](#reqtrailers)                | map[string][]string      | The request trailers parsed as a map of lower-case names to values.                                                                                                                             |
@@ -938,6 +937,16 @@ The request headers parsed as a map of lower-case names to values.
 <ConfigExample
 	config={{
 		expressions: ["'Fizz' in req.headers['baz']"],
+	}}
+/>
+
+### `req.host`
+
+The host header field value for this request.
+
+<ConfigExample
+	config={{
+		expressions: ["req.host == 'nba.com'"],
 	}}
 />
 
@@ -1071,18 +1080,38 @@ The user:password portion of the URL.
 	}}
 />
 
+### `req.user_agent`
+
+The user-agent header value for this request.
+
+<ConfigExample
+	config={{
+		expressions: ["req.user_agent.contains('curl')"],
+	}}
+/>
+
+### `req.version`
+
+The HTTP version for this request.
+
+<ConfigExample
+	config={{
+		expressions: ["req.version == 'HTTP/2"],
+	}}
+/>
+
 ## Response Variables
 
-The following response variables are available under the `res` namespace:
+The following variables are available under the `res` namespace:
 
-| Name                                      | Type                     | Description                                                                                                                          |
-| ----------------------------------------- | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------ |
-| [`res.content_length`](#rescontentlength) | int64                    | The length of the content associated with the response.                                                                              |
-| [`res.cookies`](#rescookies)              | map[string]\*http.Cookie | The key value map of HTTP cookie objects provided in the response.                                                                   |
-| [`res.headers`](#resheaders)              | map[string][]string      | The headers of the response wherein a string key maps to a list of string values. Header keys must be written in canonical format.   |
-| [`res.location`](#reslocation)            | string                   | The location header value of this response.                                                                                          |
-| [`res.status_code`](#resstatuscode)       | int32                    | The status code of this response.                                                                                                    |
-| [`res.trailers`](#restrailers)            | map[string][]string      | The trailers of the response wherein a string key maps to a list of string values. Trailer keys must be written in canonical format. |
+| Name                                      | Type                     | Description                                                          |
+| ----------------------------------------- | ------------------------ | -------------------------------------------------------------------- |
+| [`res.content_length`](#rescontentlength) | int64                    | The length of the content associated with the response.              |
+| [`res.cookies`](#rescookies)              | map[string]\*http.Cookie | The key value map of HTTP cookie objects provided in the response.   |
+| [`res.headers`](#resheaders)              | map[string][]string      | The response headers parsed as a map of lower-case names to values.  |
+| [`res.location`](#reslocation)            | string                   | The location header value of this response.                          |
+| [`res.status_code`](#resstatuscode)       | int32                    | The status code of this response.                                    |
+| [`res.trailers`](#restrailers)            | map[string][]string      | The response trailers parsed as a map of lower-case names to values. |
 
 ### `res.content_length`
 
@@ -1158,6 +1187,6 @@ The current UTC time in RFC3339 format.
 
 <ConfigExample
 	config={{
-		expressions: ["conn.tls.server.validity.not_before > timestamp(time.now)"],
+		expressions: ["conn.end_ts < timestamp(time.now)"],
 	}}
 />
