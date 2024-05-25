@@ -4,62 +4,186 @@ import ConfigExample from "/src/components/ConfigExample.tsx";
 
 ## Connection Variables
 
-The following connection variables are available on the `conn` struct:
+The following variables are available under the `conn` namespace:
 
-| Name                                                  | Type   | Description                                                                                            |
-| ----------------------------------------------------- | ------ | ------------------------------------------------------------------------------------------------------ |
-| [`conn.ClientIP`](#connclientip)                      | string | The source IP of the TCP connection to the ngrok endpoint.                                             |
-| [`conn.Geo.CountryCode`](#conngeocountrycode)         | string | The two-letter ISO country code based on the client IP.                                                |
-| [`conn.Geo.Latitude`](#conngeolatitude)               | string | The approximate latitude based on the client IP.                                                       |
-| [`conn.Geo.LatLongRadiusKm`](#conngeolatlongradiuskm) | string | The radius in kilometers around the latitude and longitude where the client IP is likely to originate. |
-| [`conn.Geo.Longitude`](#conngeolongitude)             | string | The approximate longitude based on the client IP.                                                      |
+| Name                                   | Type      | Description                                                |
+| -------------------------------------- | --------- | ---------------------------------------------------------- |
+| [`conn.bytes_in`](#connbytes_in)       | int64     | The number of bytes entering the endpoint from the client. |
+| [`conn.bytes_out`](#connbytes_out)     | int64     | The number of bytes leaving an endpoint to the client.     |
+| [`conn.client_ip`](#connclient_ip)     | string    | Source IP of the connection to the ngrok endpoint.         |
+| [`conn.end_ts`](#connend_ts)           | timestamp | Timestamp when the connection to ngrok was closed.         |
+| [`conn.server_ip`](#connserver_ip)     | string    | The IP that this connection was established on.            |
+| [`conn.server_port`](#connserver_port) | int32     | The port that this connection was established on.          |
+| [`conn.start_ts`](#connstart_ts)       | timestamp | Timestamp when the connection to ngrok was started.        |
 
-### `conn.ClientIP`
+### `conn.bytes_in`
 
-The source IP of the TCP connection to the ngrok endpoint as a string.
+The number of bytes entering the endpoint from the client.
 
 <ConfigExample
 	config={{
-		expressions: ["conn.ClientIP in ['::1', '127.0.0.1']"],
+		expressions: ["conn.bytes_in > 1000"],
 	}}
 />
 
-### `conn.Geo.CountryCode`
+### `conn.bytes_out`
 
-The two-letter ISO country code based on the client IP.
+The number of bytes leaving an endpoint to the client.
 
 <ConfigExample
 	config={{
-		expressions: ["conn.Geo.CountryCode != 'US'"],
+		expressions: ["conn.bytes_out > 1000"],
 	}}
 />
 
-### `conn.Geo.Latitude`
+### `conn.client_ip`
 
-The approximate latitude based on the client IP.
+Source IP of the connection to the ngrok endpoint.
 
 <ConfigExample
 	config={{
-		expressions: ["double(conn.Geo.Latitude) >= 45.0"],
+		expressions: ["conn.client_ip in ['::1', '127.0.0.1']"],
 	}}
 />
 
-### `conn.Geo.LatLongRadiusKm`
+### `conn.end_ts`
 
-The radius in kilometers around the latitude and longitude where the client IP is likely to originate.
+Timestamp when the connection to ngrok was closed.
 
 <ConfigExample
 	config={{
-		expressions: ["conn.Geo.LatLongRadiusKm <= '20'"],
+		expressions: ["conn.end_ts > timestamp('2024-01-01')"],
 	}}
 />
 
-### `conn.Geo.Longitude`
+### `conn.server_ip`
 
-The approximate longitude based on the client IP.
+The IP that this connection was established on.
 
 <ConfigExample
 	config={{
-		expressions: ["double(conn.Geo.Longitude) <= -93.0"],
+		expressions: ["conn.server_ip == '192.168.1.1'"],
+	}}
+/>
+
+### `conn.server_port`
+
+The port that this connection was established on.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.server_port == 80"],
+	}}
+/>
+
+### `conn.start_ts`
+
+Timestamp when the connection to ngrok was started.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.start_ts > timestamp('2023-12-31')"],
+	}}
+/>
+
+## Connection Geo Variables
+
+The following variables are available under the `conn.geo` namespace:
+
+| Name                                             | Type   | Description                                                                                                   |
+| ------------------------------------------------ | ------ | ------------------------------------------------------------------------------------------------------------- |
+| [`conn.geo.city`](#conngeo_city)                 | string | The name of the city, in EN, where the `conn.client_ip` is likely to originate.                               |
+| [`conn.geo.country`](#conngeo_country)           | string | The name of the country, in EN, where the `conn.client_ip` is likely to originate.                            |
+| [`conn.geo.country_code`](#conngeo_country_code) | string | The two-letter ISO country code where the `conn.client_ip` is likely to originate.                            |
+| [`conn.geo.latitude`](#conngeo_latitude)         | string | The approximate latitude where the `conn.client_ip` is likely to originate.                                   |
+| [`conn.geo.longitude`](#conngeo_longitude)       | string | The approximate longitude where the `conn.client_ip` is likely to originate.                                  |
+| [`conn.geo.radius`](#conngeo_radius)             | string | The radius in kilometers around the latitude and longitude where the `conn.client_ip` is likely to originate. |
+| [`conn.geo.subdivision`](#conngeo_subdivision)   | string | The name of the subdivision, in EN, where the `conn.client_ip` is likely to originate.                        |
+
+### `conn.geo.city`
+
+The name of the city, in EN, where the `conn.client_ip` is likely to originate.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.geo.city == 'Strongsville'"],
+	}}
+/>
+
+### `conn.geo.country`
+
+The name of the country, in EN, where the `conn.client_ip` is likely to originate.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.geo.country == 'United States'"],
+	}}
+/>
+
+### `conn.geo.country_code`
+
+The two-letter ISO country code where the `conn.client_ip` is likely to originate.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.geo.country_code != 'US'"],
+	}}
+/>
+
+### `conn.geo.latitude`
+
+The approximate latitude where the `conn.client_ip` is likely to originate.
+
+<ConfigExample
+	config={{
+		expressions: ["double(conn.geo.latitude) >= 45.0"],
+	}}
+/>
+
+### `conn.geo.longitude`
+
+The approximate longitude where the `conn.client_ip` is likely to originate.
+
+<ConfigExample
+	config={{
+		expressions: ["double(conn.geo.longitude) <= -93.0"],
+	}}
+/>
+
+### `conn.geo.radius`
+
+The radius in kilometers around the latitude and longitude where the `conn.client_ip` is likely to originate.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.geo.radius <= '5'"],
+	}}
+/>
+
+### `conn.geo.subdivision`
+
+The name of the subdivision, in EN, where the `conn.client_ip` is likely to originate.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.geo.subdivision == 'California'"],
+	}}
+/>
+
+## Time variables
+
+The following variables are available under the `time` namespace:
+
+| Name                   | Type   | Description                             |
+| ---------------------- | ------ | --------------------------------------- |
+| [`time.now`](#timenow) | string | The current UTC time in RFC3339 format. |
+
+### `time.now`
+
+The current UTC time in RFC3339 format.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.end_ts < timestamp(time.now)"],
 	}}
 />

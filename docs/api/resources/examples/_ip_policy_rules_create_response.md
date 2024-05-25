@@ -6,13 +6,13 @@
 {
 	"action": "allow",
 	"cidr": "212.3.14.0/24",
-	"created_at": "2024-04-29T18:29:36Z",
+	"created_at": "2024-05-23T20:36:21Z",
 	"description": "nyc office",
-	"id": "ipr_2fmnyfCgJDSbEExjFqfkbT5VSQT",
+	"id": "ipr_2gsqM7Edewb0nGtEKhSrYDOeXc3",
 	"ip_policy": {
-		"id": "ipp_2fmnygGTPshvOaAUv2rKCt9k9qH",
-		"uri": "https://api.ngrok.com/ip_policies/ipp_2fmnygGTPshvOaAUv2rKCt9k9qH"
+		"id": "ipp_2gsqM7JbZDBNsppXeR60IRtfdcZ",
+		"uri": "https://api.ngrok.com/ip_policies/ipp_2gsqM7JbZDBNsppXeR60IRtfdcZ"
 	},
-	"uri": "https://api.ngrok.com/ip_policy_rules/ipr_2fmnyfCgJDSbEExjFqfkbT5VSQT"
+	"uri": "https://api.ngrok.com/ip_policy_rules/ipr_2gsqM7Edewb0nGtEKhSrYDOeXc3"
 }
 ```
