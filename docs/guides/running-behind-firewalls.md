@@ -43,3 +43,10 @@ Setting up a custom ingress domain can be useful because it ensures that no one 
 
 - Set up a [custom ingress domain in your ngrok Dashboard](https://dashboard.ngrok.com/tunnels/ingress)
 - Edit your ngrok agent configuration file with a [`server_addr`](/agent/config/#server_addr) parameter, set to the custom ingress domain of your choosing
+
+## Addresses Used
+ngrok connects to different addresses as part of its operation. These addresses, their purpose, and what will happen if they cannot connect are listed below:
+
+| Address             | Purpose                     | Behavior if unreachable                                                       |
+|---------------------|-----------------------------|-------------------------------------------------------------------------------|
+| crl.ngrok-agent.com | Certificate Revocation List | Agent will fail to start unless `crl_noverify` configuration is set to `true` |
