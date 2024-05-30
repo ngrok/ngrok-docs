@@ -3,7 +3,7 @@ import ConfigExample from "../../src/components/ConfigExample.tsx";
 
 export const config = {
 	headers: {
-		country: "${.ngrok.geo.country_code}",
+		country: "${conn.geo.country_code}",
 	},
 };
 
