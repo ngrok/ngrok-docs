@@ -4,13 +4,15 @@ This guide will walk you through frequently asked questions about ngrok's licens
 
 # What resources in ngrok’s free plan are limited?
 
-| Resource          | Limit on Free |
-| ----------------- | ------------- |
-| Data Transfer Out | 1 GB          |
-| Endpoints[^1]     | 1             |
-| Requests          | 20,000        |
-| TCP Connections   | 5,000         |
-| TLS Connections   | 5,000         |
+| Resource          | Limit on Free | Limit on Development Plans | Limit on Production Plans |
+| ----------------- | ------------- | -------------------------- | ------------------------- |
+| Data Transfer Out | 1 GB          | See pricing                | See pricing               |
+| Endpoints[^1]     | 1             | See pricing                | See pricing               |
+| Requests          | 20,000        | No limit                   | 100,000 then usage-based  |
+| TCP Connections   | 5,000         | No limit                   | 10,000 then usage-based   |
+| TLS Connections   | 5,000         | No limit                   | 10,000 then usage-based   |
+
+To see current pricing, click here [ngrok pricing](https://ngrok.com/pricing?ref=docs)
 
 # How can I see how my account stacks up against my limits?
 
@@ -81,20 +83,17 @@ If you run into a limit, you have two options:
 
 On ngrok’s pay-as-you-go plan, you get more features and fewer limits (with the option to pay more for resources) than you would on free or the user-based plans. Please note: Our pay-as-you-go plan does have a minimum of $15 per month, invoiced monthly.
 
-| Resource              | Limit on Free          | Advanced Usage-Based plan                               |
-| --------------------- | ---------------------- | ------------------------------------------------------- |
-| Users                 | 1                      | Unlimited at $0                                         |
-| Active Endpoints[^1]  | 1                      | $15 per active endpoint per month                       |
-| Custom Domains        | None                   | Unlimited at $0, pay per active endpoint                |
-| Tunnels per agent     | up to 3                | Up to 20                                                |
-| Bandwidth             | 1 GB/month             | Up to 1GB per month at $0<br /> $0.10 per additional GB |
-| TCP Connection Rate   | 120/min                | 120/min                                                 |
-| Agents                | 1                      | Unlimited at $0, pay per active endpoint                |
-| Edges                 | 1                      | Unlimited at $0, pay per active endpoint                |
-| Logs/Events           | Up to 10,000 per month | Up to 10,000/m <br /> $1 per additional 10,000          |
-| OAuth/OIDC MAU        | Up to 5 per month      | Up to 5/month <br /> $0.07 per additional MAU           |
-| SAML MAU              | None                   | Up to 5/month <br /> $5 per additional MAU              |
-| HTTP Requests         | Up to 100,000/month    | Up to 100,000/m <br /> $0.01 per additional 100,000     |
-| Webhook verifications | Up to 500/month        | Up to 2,500/m <br /> $0.10 per additional 10,000        |
+| Resource             | Limit on Free          | Production Pay-as-you-go plan                            |
+| -------------------- | ---------------------- | -------------------------------------------------------- |
+| Users                | 1                      | Unlimited at $0                                          |
+| Active Endpoints[^1] | 1                      | $15 per active endpoint per month                        |
+| Custom Domains       | None                   | Unlimited at $0, pay per active endpoint                 |
+| Tunnels per agent    | up to 3                | Up to 20                                                 |
+| Bandwidth            | 1 GB/month             | Up to 10GB per month at $0<br /> $0.10 per additional GB |
+| Agents               | 1                      | Unlimited at $0, pay per active endpoint                 |
+| Edges                | 1                      | Unlimited at $0, pay per active endpoint                 |
+| Logs/Events          | Up to 10,000 per month | Up to 10,000/m <br /> $1 per additional 10,000           |
+| OAuth/OIDC/SAML MAU  | Up to 5 per month      | Up to 5/month <br /> $5 per additional MAU               |
+| HTTP Requests        | Up to 100,000/month    | Up to 100,000/m <br /> $0.01 per additional 100,000      |
 
 [^1]: Active Endpoints: a domain that sends or receives data through ngrok in a given month

@@ -1,0 +1,41 @@
+import { ExampleTCP } from "/examples/actions/restrict-ips.mdx";
+
+# Restrict IPs
+
+## Overview
+
+The Restrict IPs policy action enables you to allow or deny traffic based on the source IP
+of the connection that was initiated to your ngrok endpoints. You can define rules in two ways, with CIDR blocks and with identifiers to existing ngrok IP Policies.
+
+## Example
+
+<ExampleTCP />
+
+## Behavior
+
+This action evaluates the configured rules against the layer 4 source IP (`conn.client_ip`) of a connection. HTTP headers like `X-Forwarded-For` are never used.
+
+A connection is allowed only if its source IP matches at least one of the allowed CIDRs and does not match any of the denied CIDRs.
+
+The set of allowed and denied CIDRs are built from the CIDRs specified in the `allow` and `deny` fields as well as the CIDRs belonging to the ngrok IP Policies specified in the `ip_policies` field.
+
+If this action denies the connection, the connection is immediately closed. The upstream server is never reached. No further actions or policy rules in the policy configuration will be executed.
+
+## Reference
+
+### Supported Directions
+
+- Inbound
+
+### Configuration
+
+| Type           |
+| -------------- |
+| `restrict-ips` |
+
+| Parameter     | &nbsp;              | Description                                                                                   |
+| ------------- | ------------------- | --------------------------------------------------------------------------------------------- |
+| `enforce`     | bool                | Default true. If false, continue to the next action even if the IP is not permitted.          |
+| `allow`       | Array&lt;string&gt; | A list of of CIDRs that are allowed.                                                          |
+| `deny`        | Array&lt;string&gt; | A list of of CIDRs that are denied.                                                           |
+| `ip_policies` | Array&lt;ID&gt;     | A set of IP policies identifiers that will be used to check if a source IP is allowed access. |

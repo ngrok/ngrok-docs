@@ -15,25 +15,30 @@ tags:
 
 To send ngrok events to Kinesis:
 
-1. [Obtain Kinesis Data Stream ARN.](#obtain-kinesis-arn)
-1. [Create Event Subscription.](#create-event-subscription)
-1. [Create Event Destination.](#create-destination)
+1. [Obtain Kinesis Data Stream ARN](#obtain-kinesis-arn)
+1. [Create Event Subscription](#create-event-subscription)
+1. [Create Event Destination](#create-destination)
 
 :::
 
 This guide covers how to send ngrok events including network traffic logs into AWS Kinesis.
-Some essential use-cases for ngrok events include providing a history of changes within an account, per request visibility for active monitoring/troubleshooting and security traffic inspection or SIEM usage.
+You may want to keep an audit log of configuration changes within your ngrok
+account, record all traffic to your endpoints for active monitoring/troubleshooting, or
+you may use AWS Kinesis as a SIEM and want to use it for security inspections.
 
 By integrating ngrok with Kinesis, you can:
 
 - **Quickly identify application issues** in real-time using ngrok request events using Kinesis data processing.
 - **Historically audit changes occurring within an account**. Be able to historically audit changes within an account.
 - **Profile usage of your service** by using Kinesis queries and real-time data analytics.
-- **Identify security issues** by using ngrok request events.
+- **Identify security issues** by using ngrok events.
 
 ## **Step 1**: Obtain Kinesis Data Stream ARN {#obtain-kinesis-arn}
 
-For ngrok to successfully send events into Kinesis we'll require a data stream ARN. To either create or retrieve the ARN, reference the following link [AWS Kinesis Data Stream documentation](https://docs.aws.amazon.com/streams/latest/dev/tutorial-stock-data-kplkcl-create-stream.html).
+For ngrok to successfully send events into Kinesis we'll require a data stream ARN. To
+create the AWS Kinesis Data Stream and retrieve the ARN, reference the AWS documentation
+for [Creating a Kinesis Data
+Stream](https://docs.aws.amazon.com/streams/latest/dev/how-do-i-create-a-stream.html).
 
 ## **Step 2**: Create an Event Subscription {#create-event-subscription}
 
@@ -58,7 +63,19 @@ To send the events to Kinesis we'll need to assign an Event Destination to the E
    - **Stream ARN**
    - **Description** - Optional
 
-1. **Create IAM Role** - An IAM role is required to allow ngrok to stream logs into Kinesis. Using the information provided by your preferred method of creation, either **API** or **CLI Script**, create the IAM role and provide the role ARN.
+1. **Create IAM Role** - An IAM role is required to allow ngrok to stream logs into
+   Kinesis. Using the information provided by your preferred method of creation, either
+   **API** or **CLI Script**, create the IAM role and provide the role ARN. For the
+   fastest integration or proof of concept, we recommend using the **CLI Script**.
+
+:::note SECURITY BEST PRACTICE
+
+If configuring your IAM role manually, ensure that you configure the Trust Policy with a
+condition that includes the ExternalId. This will ensure that the only data allowed to
+ingested by AWS will be from your ngrok account. If you configure the IAM role with the
+CLI script, this will be done automatically.
+
+:::
 
 ![ngrok event destination](img/event_destination.png)
 

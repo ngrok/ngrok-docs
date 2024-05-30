@@ -211,6 +211,8 @@ const sidebars = {
 				"k8s/getting-started-kic",
 				"k8s/getting-started-gwapi",
 				"k8s/user-guide",
+				"k8s/deployment-guide",
+				"k8s/advanced-deployments",
 				"k8s/crds",
 				"k8s/custom-domain",
 			],
