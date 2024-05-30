@@ -31,6 +31,7 @@ const sidebars = {
 				"getting-started/index",
 				"getting-started/go",
 				"getting-started/rust",
+				"getting-started/kubernetes",
 			],
 		},
 		{
@@ -207,6 +208,8 @@ const sidebars = {
 				"k8s/index",
 				"k8s/how-it-works",
 				"k8s/with-edges",
+				"k8s/getting-started-kic",
+				"k8s/getting-started-gwapi",
 				"k8s/user-guide",
 				"k8s/deployment-guide",
 				"k8s/advanced-deployments",
