@@ -36,8 +36,6 @@ ngrok's GSLB even works on top of Linode's internal load balancing mechanism, No
 
 ## **Step 1**: Reserve your ngrok domain {#reserve-domain}
 
-Throughout this guide, you'll use the [ngrok API](https://ngrok.com/docs/api/) to configure your GSLB. For a more visual experience, you can accomplish most of the same steps directly through the [ngrok dashboard](https://dashboard.ngrok.com/).
-
 Your first task is to [generate a new API key](https://dashboard.ngrok.com/api) in the ngrok dashboard. Make sure you save the API key before you close the modal, because it won't be displayed again.
 
 To simplify authenticating your account with the ngrok API, export the API key on your local workstation.
@@ -46,15 +44,11 @@ To simplify authenticating your account with the ngrok API, export the API key o
 export NGROK_API_KEY=<YOUR-API-KEY>
 ```
 
-Export a variable for your new domain, which will be used a few API calls below. With ngrok, you can reserve any subdomain that ends in an [ngrok-managed domain](https://ngrok.com/docs/network-edge/domains-and-tcp-addresses/) like `.ngrok.app`, `.ngrok.dev`, `.ngrok.pro`, or even `.ngrok.pizza`&mdash;for example, `linode-gslb-test.ngrok.app` might be an appropriate domain to reserve.
+Next, you need to reserve your subdomain with an [ngrok-managed domain](https://ngrok.com/docs/network-edge/domains-and-tcp-addresses/) like `.ngrok.app`, `.ngrok.dev`, `.ngrok.pro`, or even `.ngrok.pizza`. For an example deployment like this, `YOUR_COMPANY-linode-gslb.ngrok.app` would work great. 
 
-Export a new variable for the domain of your choosing.
+You can reserve your domain in one of two ways: with the [ngrok API](https://ngrok.com/docs/api/), or in the [ngrok dashboard](https://dashboard.ngrok.com/cloud-edge/domains).
 
-```bash
-export NGROK_DOMAIN=<YOUR-NGROK-DOMAIN>
-```
-
-Create your domain on the [`/reserved_domains` endpoint](https://ngrok.com/docs/api/resources/reserved-domains/) using the `NGROK_API_KEY` and `NGROK_DOMAIN` variables you exported.
+With the ngrok API, reserve your domain on the [`/reserved_domains` endpoint](https://ngrok.com/docs/api/resources/reserved-domains/) using the `NGROK_API_KEY` and `NGROK_DOMAIN` variables you exported.
 
 ```bash
 curl \
@@ -63,6 +57,12 @@ curl \
   -H "Content-Type: application/json" \
   -H "Ngrok-Version: 2" \
   -d '{"description":"Linode Load Balancing","domain":"'${NGROK_DOMAIN}'"}'
+```
+
+Export a variable for your new domain, which will be used in following API calls. 
+
+```bash
+export NGROK_DOMAIN=<YOUR-NGROK-DOMAIN>
 ```
 
 :::tip Custom domains within ngrok
@@ -84,21 +84,6 @@ curl \
   -H "Content-Type: application/json" \
   -H "Ngrok-Version: 2" \
   -d '{"description":"Linode HTTPS Edge","hostports":["'${NGROK_DOMAIN}':443"]}'
-```
-
-A successful `201` response from the ngrok API looks like the following:
-
-```json
-{
-	"id": "edghts_2gp3pEq55Gk1XBln8Hp9EZzRvkn",
-	"description": "Linode HTTPS Edge",
-	"created_at": "2024-05-22T12:27:52Z",
-	"uri": "https://api.ngrok.com/edges/https/edghts_2gp3pEq55Gk1XBln8Hp9EZzRvkn",
-	"hostports": ["linode-vps-gslb.ngrok.app:443"],
-	"mutual_tls": null,
-	"tls_termination": null,
-	"routes": []
-}
 ```
 
 Export the `id` in this response, which begins with `edghts_...`, for future use.
@@ -125,7 +110,7 @@ curl \
 Export the `id`, beginning with `bkdtg_...`, returned from the ngrok API for each Tunnel Group you create.
 
 ```bash
-export BACKEND_ID_O1=bkdtg_...
+export BACKEND_ID_01=bkdtg_...
 export BACKEND_ID_02=bkdtg_...
 export BACKEND_ID_03=bkdtg_...
 ```
@@ -134,7 +119,7 @@ export BACKEND_ID_03=bkdtg_...
 
 With a [Weighted Backend](/docs/network-edge/edges.mdx#weighted), you can specify custom weights for Tunnel Group backends, shaping precisely how to load-balance traffic across the infrastructure you've distributed around the globe. Without a Weighted Backend, the ngrok Edge and [GSLB](https://ngrok.com/docs/network-edge/gslb/) will always favor the Point of Presence (PoP) and VM nearest the user making requests.
 
-Create a Weighted Backend at the [`/backends/weighted` endpoint](https://ngrok.com/docs/api/resources/weighted-backends/) using your Tunnel Group backend `id`s exported from the previous step. The `curl` command below creates equal weigting for your backends, but you can use integers between `0-10000` to configure precise proportional weights.
+Create a Weighted Backend at the [`/backends/weighted` endpoint](https://ngrok.com/docs/api/resources/weighted-backends/) using your Tunnel Group backend `id`s exported from the previous step. The `curl` command below creates equal weighting for your backends, but you can use integers between `0-10000` to configure precise proportional weights.
 
 ```bash
 curl \
@@ -188,11 +173,11 @@ Repeat the following steps on **each** VM:
    cd ngrok-vps-gslb-demo
    ```
 
-2. Edit the `ngrok.yml` [ngrok agent configuration file](https://ngrok.com/docs/agent/config/) with your `<YOUR_NGROK_AUTHTOKEN>` and the `<LOCATION_NAME>` for that VM, matching the labels you created in [step 3](#create-tunnel-group-backends) (e.g. `atlanta`, `osaka`, and `frankfurt`).
+2. Edit the `ngrok.yml` [ngrok agent configuration file](https://ngrok.com/docs/agent/config/) with your `<YOUR_NGROK_AUTHTOKEN>`, which you can in the [ngrok dashboard](https://dashboard.ngrok.com/get-started/your-authtoken)&mdash;note that it's different from the API key you created in the first step. Next, edit the `<LOCATION_NAME>` for that VM, matching the labels you created in [step 3](#create-tunnel-group-backends) (e.g. `atlanta`, `osaka`, and `frankfurt`).
 
    ```yaml
    version: 2
-   authtoken: <YOUR-NGROK-AUTHTOKEN>
+   authtoken: <YOUR_NGROK_AUTHTOKEN>
    log_level: debug
    log: stdout
    tunnels:
@@ -215,16 +200,16 @@ ngrk is now load-balancing your single API endpoint across all three distributed
 You can now ping your demo API at `<YOUR_NGROK_DOMAIN>/api` to see which backend responds.
 
 ```bash
-curl <YOUR_NGROK_DOMAIN>/api
+curl ${NGROK_DOMAIN}/api
 [{"id":"1cf26269-ce8b-4f16-91f1-fdf7bc6d9e80","dc":"atlanta"}]
 ```
 
 To see the weighting in action, try a batch of `curl` requests.
 
-```
+```bash
 for i in `seq 1 20`; do \
   curl  \
-    -X GET https://<YOUR_NGROK_DOMAIN>/api ; \
+    -X GET "${NGROK_DOMAIN}/api" ; \
   done
 ```
 
