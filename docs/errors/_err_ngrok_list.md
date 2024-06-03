@@ -2721,6 +2721,14 @@
     </tr>
     <tr>
       <td>
+        <a id="ERR_NGROK_1021" href="/docs/errors/err_ngrok_1021">ERR_NGROK_1021</a>
+      </td>
+      <td class="pre-wrapped">
+        The billing email address <code>&lt;EMAIL&gt;</code> is already added
+      </td>
+    </tr>
+    <tr>
+      <td>
         <a id="ERR_NGROK_1100" href="/docs/errors/err_ngrok_1100">ERR_NGROK_1100</a>
       </td>
       <td class="pre-wrapped">
@@ -4858,6 +4866,30 @@
     </tr>
     <tr>
       <td>
+        <a id="ERR_NGROK_2221" href="/docs/errors/err_ngrok_2221">ERR_NGROK_2221</a>
+      </td>
+      <td class="pre-wrapped">
+        Invalid configuration for <code>&lt;ACTION&gt;</code>: <code>&lt;CONFIG&gt;</code> length of <code>&lt;ACTUAL&gt;</code> exceeded limit of <code>&lt;MAX&gt;</code>.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_2222" href="/docs/errors/err_ngrok_2222">ERR_NGROK_2222</a>
+      </td>
+      <td class="pre-wrapped">
+        Invalid configuration for <code>&lt;ACTION&gt;</code>: <code>&lt;CONFIG&gt;</code> must be <code>&lt;VALID&gt;</code>, was <code>&lt;ACTUAL&gt;</code>.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_2223" href="/docs/errors/err_ngrok_2223">ERR_NGROK_2223</a>
+      </td>
+      <td class="pre-wrapped">
+        Invalid configuration for <code>&lt;ACTION&gt;</code>: <code>&lt;CONFIG&gt;</code> cannot be empty.
+      </td>
+    </tr>
+    <tr>
+      <td>
         <a id="ERR_NGROK_3002" href="/docs/errors/err_ngrok_3002">ERR_NGROK_3002</a>
       </td>
       <td class="pre-wrapped">
@@ -6286,7 +6318,7 @@
         <a id="ERR_NGROK_5134" href="/docs/errors/err_ngrok_5134">ERR_NGROK_5134</a>
       </td>
       <td class="pre-wrapped">
-        The Datadog site provided (<code>&lt;DDSITE&gt;</code>) is not valid, please see the "SITE" column from <a href="https://docs.datadoghq.com/getting_started/site">https://docs.datadoghq.com/getting_started/site</a>/.
+        The Datadog site provided (<code>&lt;DDSITE&gt;</code>) is not valid, please see the "SITE" column from <a href="https://docs.datadoghq.com/getting_started/site">https://docs.datadoghq.com/getting_started/site</a>/#access-the-datadog-site
       </td>
     </tr>
     <tr>
@@ -9813,6 +9845,22 @@
       </td>
       <td class="pre-wrapped">
         You have exceeded the rate limit of <code>&lt;MAX&gt;</code> replay requests per <code>&lt;INTERVAL&gt;</code>.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_10087" href="/docs/errors/err_ngrok_10087">ERR_NGROK_10087</a>
+      </td>
+      <td class="pre-wrapped">
+        Request header "<code>&lt;HEADER_NAME&gt;</code>" value too large.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_10088" href="/docs/errors/err_ngrok_10088">ERR_NGROK_10088</a>
+      </td>
+      <td class="pre-wrapped">
+        Request body size too large.
       </td>
     </tr>
     <tr>

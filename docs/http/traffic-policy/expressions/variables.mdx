@@ -4,351 +4,1255 @@ import ConfigExample from "/src/components/ConfigExample.tsx";
 
 ## Connection Variables
 
-The following connection variables are available on the `conn` struct:
+The following variables are available under the `conn` namespace:
 
-| Name                                                  | Type   | Description                                                                                            |
-| ----------------------------------------------------- | ------ | ------------------------------------------------------------------------------------------------------ |
-| [`conn.ClientIP`](#connclientip)                      | string | The source IP of the HTTP connection to the ngrok endpoint.                                            |
-| [`conn.Geo.CountryCode`](#conngeocountrycode)         | string | The two-letter ISO country code based on the client IP.                                                |
-| [`conn.Geo.Latitude`](#conngeolatitude)               | string | The approximate latitude based on the client IP.                                                       |
-| [`conn.Geo.LatLongRadiusKm`](#conngeolatlongradiuskm) | string | The radius in kilometers around the latitude and longitude where the client IP is likely to originate. |
-| [`conn.Geo.Longitude`](#conngeolongitude)             | string | The approximate longitude based on the client IP.                                                      |
+| Name                                   | Type      | Description                                                |
+| -------------------------------------- | --------- | ---------------------------------------------------------- |
+| [`conn.bytes_in`](#connbytes_in)       | int64     | The number of bytes entering the endpoint from the client. |
+| [`conn.bytes_out`](#connbytes_out)     | int64     | The number of bytes leaving an endpoint to the client.     |
+| [`conn.client_ip`](#connclient_ip)     | string    | Source IP of the connection to the ngrok endpoint.         |
+| [`conn.end_ts`](#connend_ts)           | timestamp | Timestamp when the connection to ngrok was closed.         |
+| [`conn.server_ip`](#connserver_ip)     | string    | The IP that this connection was established on.            |
+| [`conn.server_port`](#connserver_port) | int32     | The port that this connection was established on.          |
+| [`conn.start_ts`](#connstart_ts)       | timestamp | Timestamp when the connection to ngrok was started.        |
 
-### `conn.ClientIP`
+### `conn.bytes_in`
 
-The source IP of the HTTP connection to the ngrok endpoint as a string.
+The number of bytes entering the endpoint from the client.
 
 <ConfigExample
 	config={{
-		expressions: ["conn.ClientIP in ['::1', '127.0.0.1']"],
+		expressions: ["conn.bytes_in > 1000"],
 	}}
 />
 
-### `conn.Geo.CountryCode`
+### `conn.bytes_out`
 
-The two-letter ISO country code based on the client IP.
+The number of bytes leaving an endpoint to the client.
 
 <ConfigExample
 	config={{
-		expressions: ["conn.Geo.CountryCode != 'US'"],
+		expressions: ["conn.bytes_out > 1000"],
 	}}
 />
 
-### `conn.Geo.Latitude`
+### `conn.client_ip`
 
-The approximate latitude based on the client IP.
+Source IP of the connection to the ngrok endpoint.
+
+<ConfigExample
+	config={{ expressions: ["conn.client_ip in ['::1', '127.0.0.1']"] }}
+/>
+
+### `conn.end_ts`
+
+Timestamp when the connection to ngrok was closed.
 
 <ConfigExample
 	config={{
-		expressions: ["double(conn.Geo.Latitude) >= 45.0"],
+		expressions: ["conn.end_ts > timestamp('2024-01-01')"],
 	}}
 />
 
-### `conn.Geo.LatLongRadiusKm`
+### `conn.server_ip`
 
-The radius in kilometers around the latitude and longitude where the client IP is likely to originate.
+The IP that this connection was established on.
 
 <ConfigExample
 	config={{
-		expressions: ["conn.Geo.LatLongRadiusKm <= '20'"],
+		expressions: ["conn.server_ip == '192.168.1.1'"],
 	}}
 />
 
-### `conn.Geo.Longitude`
+### `conn.server_port`
 
-The approximate longitude based on the client IP.
+The port that this connection was established on.
 
 <ConfigExample
 	config={{
-		expressions: ["double(conn.Geo.Longitude) <= -93.0"],
+		expressions: ["conn.server_port == 80"],
+	}}
+/>
+
+### `conn.start_ts`
+
+Timestamp when the connection to ngrok was started.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.start_ts > timestamp('2023-12-31')"],
+	}}
+/>
+
+## Connection Geo Variables
+
+The following variables are available under the `conn.geo` namespace:
+
+| Name                                            | Type   | Description                                                                                                   |
+| ----------------------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------- |
+| [`conn.geo.city`](#conngeocity)                 | string | The name of the city, in EN, where the `conn.client_ip` is likely to originate.                               |
+| [`conn.geo.country`](#conngeocountry)           | string | The name of the country, in EN, where the `conn.client_ip` is likely to originate.                            |
+| [`conn.geo.country_code`](#conngeocountry_code) | string | The two-letter ISO country code where the `conn.client_ip` is likely to originate.                            |
+| [`conn.geo.latitude`](#conngeolatitude)         | string | The approximate latitude where the `conn.client_ip` is likely to originate.                                   |
+| [`conn.geo.longitude`](#conngeolongitude)       | string | The approximate longitude where the `conn.client_ip` is likely to originate.                                  |
+| [`conn.geo.radius`](#conngeoradius)             | string | The radius in kilometers around the latitude and longitude where the `conn.client_ip` is likely to originate. |
+| [`conn.geo.subdivision`](#conngeosubdivision)   | string | The name of the subdivision, in EN, where the `conn.client_ip` is likely to originate.                        |
+
+### `conn.geo.city`
+
+The name of the city, in EN, where the `conn.client_ip` is likely to originate.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.geo.city == 'Strongsville'"],
+	}}
+/>
+
+### `conn.geo.country`
+
+The name of the country, in EN, where the `conn.client_ip` is likely to originate.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.geo.country == 'United States'"],
+	}}
+/>
+
+### `conn.geo.country_code`
+
+The two-letter ISO country code where the `conn.client_ip` is likely to originate.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.geo.country_code != 'US'"],
+	}}
+/>
+
+### `conn.geo.latitude`
+
+The approximate latitude where the `conn.client_ip` is likely to originate.
+
+<ConfigExample
+	config={{
+		expressions: ["double(conn.geo.latitude) >= 45.0"],
+	}}
+/>
+
+### `conn.geo.longitude`
+
+The approximate longitude where the `conn.client_ip` is likely to originate.
+
+<ConfigExample
+	config={{
+		expressions: ["double(conn.geo.longitude) <= -93.0"],
+	}}
+/>
+
+### `conn.geo.radius`
+
+The radius in kilometers around the latitude and longitude where the `conn.client_ip` is likely to originate.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.geo.radius <= '5'"],
+	}}
+/>
+
+### `conn.geo.subdivision`
+
+The name of the subdivision, in EN, where the `conn.client_ip` is likely to originate.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.geo.subdivision == 'California'"],
+	}}
+/>
+
+## Connection TLS Variables
+
+The following variables are available under the `conn.tls` namespace:
+
+| Name                                            | Type   | Description                                                                 |
+| ----------------------------------------------- | ------ | --------------------------------------------------------------------------- |
+| [`conn.tls.cipher_suite`](#conntlscipher_suite) | string | The cipher suite selected during the TLS handshake.                         |
+| [`conn.tls.sni`](#conntlssni)                   | string | The hostname included in the ClientHello message via the SNI extension.     |
+| [`conn.tls.version`](#conntlsversion)           | string | The version of the TLS protocol used between the client and the ngrok edge. |
+
+### `conn.tls.cipher_suite`
+
+The cipher suite selected during the TLS handshake.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.tls.cipher_suite == 'TLS_AES_128_GCM_SHA256'"],
+	}}
+/>
+
+### `conn.tls.sni`
+
+The hostname included in the ClientHello message via the SNI extension.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.tls.sni == 'client.example.com'"],
+	}}
+/>
+
+### `conn.tls.version`
+
+The version of the TLS protocol used between the client and the ngrok edge.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.tls.version == '1.3'"],
+	}}
+/>
+
+## Connection TLS Client Variables
+
+The following variables are available under the `conn.tls.client` namespace:
+
+| Name                                                                                      | Type        | Description                                                                                                         |
+| ----------------------------------------------------------------------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------- |
+| [`conn.tls.client.extensions`](#conntlsclientextensions)                                  | []Extension | Additional information added to the certificate.                                                                    |
+| [`conn.tls.client.issuer`](#conntlsclientissuer)                                          | string      | The issuing authority of the certificate as a string roughly following the RFC 2253 Distinguished Names syntax.     |
+| [`conn.tls.client.issuer.common_name`](#conntlsclientissuercommon_name)                   | string      | Common name of the issuing authority, usually the domain name.                                                      |
+| [`conn.tls.client.issuer.country`](#conntlsclientissuercountry)                           | []string    | Country name(s) where the issuing authority is located.                                                             |
+| [`conn.tls.client.issuer.locality`](#conntlsclientissuerlocality)                         | []string    | Locality or city of the issuing authority.                                                                          |
+| [`conn.tls.client.issuer.organization`](#conntlsclientissuerorganization)                 | []string    | Name(s) of the organization that issued the certificate.                                                            |
+| [`conn.tls.client.issuer.organizational_unit`](#conntlsclientissuerorganizational_unit)   | []string    | Division of the organization responsible for the certificate.                                                       |
+| [`conn.tls.client.issuer.postal_code`](#conntlsclientissuerpostal_code)                   | []string    | Postal code of the issuing authority.                                                                               |
+| [`conn.tls.client.issuer.province`](#conntlsclientissuerprovince)                         | []string    | Province or state of the issuing authority.                                                                         |
+| [`conn.tls.client.issuer.street_address`](#conntlsclientissuerstreet_address)             | []string    | Street address of the issuing authority.                                                                            |
+| [`conn.tls.client.san`](#conntlsclientsan)                                                | string      | Subject alternative names of the client certificate.                                                                |
+| [`conn.tls.client.san.dns_names`](#conntlsclientsandns_names)                             | []string    | DNS names in the subject alternative names.                                                                         |
+| [`conn.tls.client.san.email_addresses`](#conntlsclientsanemail_addresses)                 | []string    | Email addresses in the subject alternative names.                                                                   |
+| [`conn.tls.client.san.ip_addresses`](#conntlsclientsanip_addresses)                       | []string    | IP addresses in the subject alternative names.                                                                      |
+| [`conn.tls.client.san.uris`](#conntlsclientsanuris)                                       | []string    | URIs in the subject alternative names.                                                                              |
+| [`conn.tls.client.serial_number`](#conntlsclientserial_number)                            | string      | Unique identifier for the certificate.                                                                              |
+| [`conn.tls.client.signature_algorithm`](#conntlsclientsignature_algorithm)                | string      | Algorithm used to sign the certificate.                                                                             |
+| [`conn.tls.client.subject`](#conntlsclientsubject)                                        | string      | The entity to whom the certificate is issued as a string roughly following the RFC 2253 Distinguished Names syntax. |
+| [`conn.tls.client.subject.common_name`](#conntlsclientsubjectcommon_name)                 | string      | Common name of the subject, usually the domain name.                                                                |
+| [`conn.tls.client.subject.country`](#conntlsclientsubjectcountry)                         | []string    | Country name(s) where the subject of the certificate is located.                                                    |
+| [`conn.tls.client.subject.locality`](#conntlsclientsubjectlocality)                       | []string    | Locality or city where the subject is located.                                                                      |
+| [`conn.tls.client.subject.organization`](#conntlsclientsubjectorganization)               | []string    | Name(s) of the organization to which the subject belongs.                                                           |
+| [`conn.tls.client.subject.organizational_unit`](#conntlsclientsubjectorganizational_unit) | []string    | Division of the organization to which the subject belongs.                                                          |
+| [`conn.tls.client.subject.postal_code`](#conntlsclientsubjectpostal_code)                 | []string    | Postal code where the subject is located.                                                                           |
+| [`conn.tls.client.subject.province`](#conntlsclientsubjectprovince)                       | []string    | Province or state where the subject is located.                                                                     |
+| [`conn.tls.client.subject.street_address`](#conntlsclientsubjectstreet_address)           | []string    | Street address where the subject is located.                                                                        |
+| [`conn.tls.client.validity.not_after`](#conntlsclientvaliditynot_after)                   | timestamp   | Expiration date and time when the certificate is no longer valid.                                                   |
+| [`conn.tls.client.validity.not_before`](#conntlsclientvaliditynot_before)                 | timestamp   | Start date and time when the certificate becomes valid.                                                             |
+
+### `conn.tls.client.extensions`
+
+Additional information added to the certificate.
+
+<ConfigExample
+	config={{
+		expressions: ["size(conn.tls.client.extensions) > 0"],
+	}}
+/>
+
+### `conn.tls.client.issuer`
+
+The issuing authority of the certificate as a string roughly following the RFC 2253 Distinguished Names syntax.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.tls.client.issuer == 'CN=E1,O=Let's Encrypt,C=US'"],
+	}}
+/>
+
+### `conn.tls.client.issuer.common_name`
+
+Common name of the issuing authority, usually the domain name.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.tls.client.issuer.common_name == 'exampleca.com'"],
+	}}
+/>
+
+### `conn.tls.client.issuer.country`
+
+Country name(s) where the issuing authority is located.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.tls.client.issuer.country == ['US']"],
+	}}
+/>
+
+### `conn.tls.client.issuer.locality`
+
+Locality or city of the issuing authority.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.tls.client.issuer.locality == ['Mountain View']"],
+	}}
+/>
+
+### `conn.tls.client.issuer.organization`
+
+Name(s) of the organization that issued the certificate.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.tls.client.issuer.organization == ['Example CA']"],
+	}}
+/>
+
+### `conn.tls.client.issuer.organizational_unit`
+
+Division of the organization responsible for the certificate.
+
+<ConfigExample
+	config={{
+		expressions: [
+			"conn.tls.client.issuer.organizational_unit == ['Certification Authority Division']",
+		],
+	}}
+/>
+
+### `conn.tls.client.issuer.postal_code`
+
+Postal code of the issuing authority.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.tls.client.issuer.postal_code == ['94043']"],
+	}}
+/>
+
+### `conn.tls.client.issuer.province`
+
+Province or state of the issuing authority.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.tls.client.issuer.province == ['California']"],
+	}}
+/>
+
+### `conn.tls.client.issuer.street_address`
+
+Street address of the issuing authority.
+
+<ConfigExample
+	config={{
+		expressions: [
+			"conn.tls.client.issuer.street_address == ['1234 Encryption Way']",
+		],
+	}}
+/>
+
+### `conn.tls.client.san`
+
+Subject alternative names of the client certificate.
+
+<ConfigExample
+	config={{
+		expressions: [
+			"conn.tls.client.san == 'DNS:www.example.com, DNS:example.com, IP Address:192.168.1.1'",
+		],
+	}}
+/>
+
+### `conn.tls.client.san.dns_names`
+
+DNS names in the subject alternative names.
+
+<ConfigExample
+	config={{
+		expressions: [
+			"conn.tls.client.san.dns_names == ['www.example.com', 'example.com']",
+		],
+	}}
+/>
+
+### `conn.tls.client.san.email_addresses`
+
+Email addresses in the subject alternative names.
+
+<ConfigExample
+	config={{
+		expressions: [
+			"conn.tls.client.san.email_addresses == ['ngrok-email1@example.com', 'ngrok-email2@example.com']",
+		],
+	}}
+/>
+
+### `conn.tls.client.san.ip_addresses`
+
+IP addresses in the subject alternative names.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.tls.client.san.ip_addresses == ['192.168.1.1']"],
+	}}
+/>
+
+### `conn.tls.client.san.uris`
+
+URIs in the subject alternative names.
+
+<ConfigExample
+	config={{
+		expressions: [
+			"conn.tls.client.san.uris == ['https://example.com/example']",
+		],
+	}}
+/>
+
+### `conn.tls.client.serial_number`
+
+Unique identifier for the certificate.
+
+<ConfigExample
+	config={{
+		expressions: [
+			"conn.tls.client.serial_number == 'b53017e79d4a5208b314a55d3574e0a8'",
+		],
+	}}
+/>
+
+### `conn.tls.client.signature_algorithm`
+
+Algorithm used to sign the certificate.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.tls.client.signature_algorithm == 'SHA256-RSA'"],
+	}}
+/>
+
+### `conn.tls.client.subject`
+
+The entity to whom the certificate is issued as a string roughly following the RFC 2253 Distinguished Names syntax.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.tls.client.subject == 'CN=www.example.com'"],
+	}}
+/>
+
+### `conn.tls.client.subject.common_name`
+
+Common name of the subject, usually the domain name.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.tls.client.subject.common_name == 'www.example.com'"],
+	}}
+/>
+
+### `conn.tls.client.subject.country`
+
+Country name(s) where the subject of the certificate is located.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.tls.client.subject.country == ['US']"],
+	}}
+/>
+
+### `conn.tls.client.subject.locality`
+
+Locality or city where the subject is located.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.tls.client.subject.locality == ['Mountain View']"],
+	}}
+/>
+
+### `conn.tls.client.subject.organization`
+
+Name(s) of the organization to which the subject belongs.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.tls.client.subject.organization == ['Example Corp']"],
+	}}
+/>
+
+### `conn.tls.client.subject.organizational_unit`
+
+Division of the organization to which the subject belongs.
+
+<ConfigExample
+	config={{
+		expressions: [
+			"conn.tls.client.subject.organizational_unit == ['Web Services']",
+		],
+	}}
+/>
+
+### `conn.tls.client.subject.postal_code`
+
+Postal code where the subject is located.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.tls.client.subject.postal_code == ['94043']"],
+	}}
+/>
+
+### `conn.tls.client.subject.province`
+
+Province or state where the subject is located.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.tls.client.subject.province == ['California']"],
+	}}
+/>
+
+### `conn.tls.client.subject.street_address`
+
+Street address where the subject is located.
+
+<ConfigExample
+	config={{
+		expressions: [
+			"conn.tls.client.subject.street_address == ['1234 Secure Blvd']",
+		],
+	}}
+/>
+
+### `conn.tls.client.validity.not_after`
+
+Expiration date and time when the certificate is no longer valid.
+
+<ConfigExample
+	config={{
+		expressions: [
+			"conn.tls.client.validity.not_after == timestamp('2023-01-01T00:00:00Z')",
+		],
+	}}
+/>
+
+### `conn.tls.client.validity.not_before`
+
+Start date and time when the certificate becomes valid.
+
+<ConfigExample
+	config={{
+		expressions: [
+			"conn.tls.client.validity.not_before == timestamp('2020-01-01T00:00:00Z')",
+		],
+	}}
+/>
+
+## Connection TLS Server Variables
+
+The following variables are available under the `conn.tls.server` namespace:
+
+| Name                                                                                      | Type        | Description                                                                                                         |
+| ----------------------------------------------------------------------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------- |
+| [`conn.tls.server.extensions`](#conntlsserverextensions)                                  | []Extension | Additional information added to the certificate.                                                                    |
+| [`conn.tls.server.issuer`](#conntlsserverissuer)                                          | string      | The issuing authority of the certificate as a string roughly following the RFC 2253 Distinguished Names syntax.     |
+| [`conn.tls.server.issuer.common_name`](#conntlsserverissuercommon_name)                   | string      | Common name of the issuing authority, usually the domain name.                                                      |
+| [`conn.tls.server.issuer.country`](#conntlsserverissuercountry)                           | []string    | Country name(s) where the issuing authority is located.                                                             |
+| [`conn.tls.server.issuer.locality`](#conntlsserverissuerlocality)                         | []string    | Locality or city of the issuing authority.                                                                          |
+| [`conn.tls.server.issuer.organization`](#conntlsserverissuerorganization)                 | []string    | Name(s) of the organization that issued the certificate.                                                            |
+| [`conn.tls.server.issuer.organizational_unit`](#conntlsserverissuerorganizational_unit)   | []string    | Division of the organization responsible for the certificate.                                                       |
+| [`conn.tls.server.issuer.postal_code`](#conntlsserverissuerpostal_code)                   | []string    | Postal code of the issuing authority.                                                                               |
+| [`conn.tls.server.issuer.province`](#conntlsserverissuerprovince)                         | []string    | Province or state of the issuing authority.                                                                         |
+| [`conn.tls.server.issuer.street_address`](#conntlsserverissuerstreet_address)             | []string    | Street address of the issuing authority.                                                                            |
+| [`conn.tls.server.san`](#conntlsserversan)                                                | string      | Subject alternative names of the ngrok server's leaf TLS certificate.                                               |
+| [`conn.tls.server.san.dns_names`](#conntlsserversandns_names)                             | []string    | DNS names in the subject alternative names of the ngrok server's leaf TLS certificate.                              |
+| [`conn.tls.server.san.email_addresses`](#conntlsserversanemail_addresses)                 | []string    | Email addresses in the subject alternative names of the ngrok server's leaf TLS certificate.                        |
+| [`conn.tls.server.san.ip_addresses`](#conntlsserversanip_addresses)                       | []string    | IP addresses in the subject alternative names of the ngrok server's leaf TLS certificate.                           |
+| [`conn.tls.server.san.uris`](#conntlsserversanuris)                                       | []string    | URIs in the subject alternative names of the ngrok server's leaf TLS certificate.                                   |
+| [`conn.tls.server.serial_number`](#conntlsserverserial_number)                            | string      | Unique identifier for the certificate.                                                                              |
+| [`conn.tls.server.signature_algorithm`](#conntlsserversignature_algorithm)                | string      | Algorithm used to sign the certificate.                                                                             |
+| [`conn.tls.server.subject`](#conntlsserversubject)                                        | string      | The entity to whom the certificate is issued as a string roughly following the RFC 2253 Distinguished Names syntax. |
+| [`conn.tls.server.subject.common_name`](#conntlsserversubjectcommon_name)                 | string      | Common name of the subject, usually the domain name.                                                                |
+| [`conn.tls.server.subject.country`](#conntlsserversubjectcountry)                         | []string    | Country name(s) where the subject of the certificate is located.                                                    |
+| [`conn.tls.server.subject.locality`](#conntlsserversubjectlocality)                       | []string    | Locality or city where the subject is located.                                                                      |
+| [`conn.tls.server.subject.organization`](#conntlsserversubjectorganization)               | []string    | Name(s) of the organization to which the subject belongs.                                                           |
+| [`conn.tls.server.subject.organizational_unit`](#conntlsserversubjectorganizational_unit) | []string    | Division of the organization to which the subject belongs.                                                          |
+| [`conn.tls.server.subject.postal_code`](#conntlsserversubjectpostal_code)                 | []string    | Postal code where the subject is located.                                                                           |
+| [`conn.tls.server.subject.province`](#conntlsserversubjectprovince)                       | []string    | Province or state where the subject is located.                                                                     |
+| [`conn.tls.server.subject.street_address`](#conntlsserversubjectstreet_address)           | []string    | Street address where the subject is located.                                                                        |
+| [`conn.tls.server.validity.not_after`](#conntlsservervaliditynot_after)                   | timestamp   | Expiration date and time when the certificate is no longer valid.                                                   |
+| [`conn.tls.server.validity.not_before`](#conntlsservervaliditynot_before)                 | timestamp   | Start date and time when the certificate becomes valid.                                                             |
+
+### `conn.tls.server.extensions`
+
+Additional information added to the certificate.
+
+<ConfigExample
+	config={{
+		expressions: ["size(conn.tls.server.extensions) > 0"],
+	}}
+/>
+
+### `conn.tls.server.issuer`
+
+The issuing authority of the certificate as a string roughly following the RFC 2253 Distinguished Names syntax.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.tls.server.issuer == 'CN=E1,O=Let's Encrypt,C=US'"],
+	}}
+/>
+
+### `conn.tls.server.issuer.common_name`
+
+Common name of the issuing authority, usually the domain name.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.tls.server.issuer.common_name == 'exampleca.com'"],
+	}}
+/>
+
+### `conn.tls.server.issuer.country`
+
+Country name(s) where the issuing authority is located.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.tls.server.issuer.country == ['US']"],
+	}}
+/>
+
+### `conn.tls.server.issuer.locality`
+
+Locality or city of the issuing authority.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.tls.server.issuer.locality == ['Mountain View']"],
+	}}
+/>
+
+### `conn.tls.server.issuer.organization`
+
+Name(s) of the organization that issued the certificate.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.tls.server.issuer.organization == ['Example CA']"],
+	}}
+/>
+
+### `conn.tls.server.issuer.organizational_unit`
+
+Division of the organization responsible for the certificate.
+
+<ConfigExample
+	config={{
+		expressions: [
+			"conn.tls.server.issuer.organizational_unit == ['Certification Authority Division']",
+		],
+	}}
+/>
+
+### `conn.tls.server.issuer.postal_code`
+
+Postal code of the issuing authority.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.tls.server.issuer.postal_code == ['94043']"],
+	}}
+/>
+
+### `conn.tls.server.issuer.province`
+
+Province or state of the issuing authority.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.tls.server.issuer.province == ['California']"],
+	}}
+/>
+
+### `conn.tls.server.issuer.street_address`
+
+Street address of the issuing authority.
+
+<ConfigExample
+	config={{
+		expressions: [
+			"conn.tls.server.issuer.street_address == ['1234 Encryption Way']",
+		],
+	}}
+/>
+
+### `conn.tls.server.san`
+
+Subject alternative names of the server certificate of the ngrok server's leaf TLS certificate.
+
+<ConfigExample
+	config={{
+		expressions: [
+			"conn.tls.server.san == 'DNS:www.example.com, DNS:example.com, IP Address:192.168.1.1'",
+		],
+	}}
+/>
+
+### `conn.tls.server.san.dns_names`
+
+DNS names in the subject alternative names of the ngrok server's leaf TLS certificate.
+
+<ConfigExample
+	config={{
+		expressions: [
+			"conn.tls.server.san.dns_names == ['ngrok-dns.com', 'ngrok-dns2.com']",
+		],
+	}}
+/>
+
+### `conn.tls.server.san.email_addresses`
+
+Email addresses in the subject alternative names of the ngrok server's leaf TLS certificate.
+
+<ConfigExample
+	config={{
+		expressions: [
+			"conn.tls.server.san.email_addresses == ['ngrok-email1@example.com', 'ngrok-email2@example.com']",
+		],
+	}}
+/>
+
+### `conn.tls.server.san.ip_addresses`
+
+IP addresses in the subject alternative names of the ngrok server's leaf TLS certificate.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.tls.server.san.ip_addresses == ['192.168.1.1']"],
+	}}
+/>
+
+### `conn.tls.server.san.uris`
+
+URIs in the subject alternative names of the ngrok server's leaf TLS certificate.
+
+<ConfigExample
+	config={{
+		expressions: [
+			"conn.tls.server.san.uris == ['https://example.com/example']",
+		],
+	}}
+/>
+
+### `conn.tls.server.serial_number`
+
+Unique identifier for the certificate.
+
+<ConfigExample
+	config={{
+		expressions: [
+			"conn.tls.server.serial_number == 'b53017e79d4a5208b314a55d3574e0a8'",
+		],
+	}}
+/>
+
+### `conn.tls.server.signature_algorithm`
+
+Algorithm used to sign the certificate.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.tls.server.signature_algorithm == 'SHA256-RSA'"],
+	}}
+/>
+
+### `conn.tls.server.subject`
+
+The entity to whom the certificate is issued as a string roughly following the RFC 2253 Distinguished Names syntax.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.tls.server.subject == 'CN=www.example.com'"],
+	}}
+/>
+
+### `conn.tls.server.subject.common_name`
+
+Common name of the subject, usually the domain name.
+
+<ConfigExample
+	config={{
+		expressions: [
+			"conn.tls.server.subject.common_name == 'ngrok-server.example.com'",
+		],
+	}}
+/>
+
+### `conn.tls.server.subject.country`
+
+Country name(s) where the subject of the certificate is located.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.tls.server.subject.country == ['US']"],
+	}}
+/>
+
+### `conn.tls.server.subject.locality`
+
+Locality or city where the subject is located.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.tls.server.subject.locality == ['Mountain View']"],
+	}}
+/>
+
+### `conn.tls.server.subject.organization`
+
+Name(s) of the organization to which the subject belongs.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.tls.server.subject.organization == ['Example Corp']"],
+	}}
+/>
+
+### `conn.tls.server.subject.organizational_unit`
+
+Division of the organization to which the subject belongs.
+
+<ConfigExample
+	config={{
+		expressions: [
+			"conn.tls.server.subject.organizational_unit == ['Web Services']",
+		],
+	}}
+/>
+
+### `conn.tls.server.subject.postal_code`
+
+Postal code where the subject is located.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.tls.server.subject.postal_code == ['94043']"],
+	}}
+/>
+
+### `conn.tls.server.subject.province`
+
+Province or state where the subject is located.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.tls.server.subject.province == ['California']"],
+	}}
+/>
+
+### `conn.tls.server.subject.street_address`
+
+Street address where the subject is located.
+
+<ConfigExample
+	config={{
+		expressions: [
+			"conn.tls.server.subject.street_address == ['1234 Secure Blvd']",
+		],
+	}}
+/>
+
+### `conn.tls.server.validity.not_after`
+
+Expiration date and time when the certificate is no longer valid.
+
+<ConfigExample
+	config={{
+		expressions: [
+			"conn.tls.server.validity.not_after > timestamp('2023-01-01T00:00:00Z')",
+		],
+	}}
+/>
+
+### `conn.tls.server.validity.not_before`
+
+Start date and time when the certificate becomes valid.
+
+<ConfigExample
+	config={{
+		expressions: [
+			"conn.tls.server.validity.not_before < timestamp('2020-01-01T00:00:00Z')",
+		],
 	}}
 />
 
 ## Request Variables
 
-The following request variables are available on the `req` struct:
+The following variables are available under the `req` namespace:
 
-| Name                                                    | Type   | Description                                                                                                                         |
-| ------------------------------------------------------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------- |
-| [`req.ClientTLS.CertCN`](#reqclienttlscertcn)           | string | The subject common name of the client's leaf TLS certificate.                                                                       |
-| [`req.ClientTLS.CipherSuite`](#reqclienttlsciphersuite) | string | The cipher suite negotiated on the connection.                                                                                      |
-| [`req.ClientTLS.SNI`](#reqclienttlssni)                 | string | The Server Name Indication extension sent by the client.                                                                            |
-| [`req.ClientTLS.Version`](#reqclienttlsversion)         | string | The TLS Version used on the connection.                                                                                             |
-| [`req.ContentLength`](#reqcontentlength)                | int    | The length of the content associated with the request.                                                                              |
-| [`req.Cookies`](#reqcookies)                            | list   | The list of HTTP cookie objects provided in the request.                                                                            |
-| [`req.Method`](#reqmethod)                              | string | The request method.                                                                                                                 |
-| [`req.URL`](#requrl)                                    | string | The URL of the request.                                                                                                             |
-| [`req.Path`](#reqpath)                                  | string | The Path part of the request URL with a leading slash.                                                                              |
-| [`req.Params`](#reqparams)                              | map    | The query parameters of the request URL wherein a string key maps to a list of string values.                                       |
-| [`req.Protocol`](#reqprotocol)                          | string | The protocol version of the request.                                                                                                |
-| [`req.Host`](#reqhost)                                  | string | The host of the request.                                                                                                            |
-| [`req.Location`](#reqlocation)                          | string | The 'Location' header of the request.                                                                                               |
-| [`req.Headers`](#reqheaders)                            | map    | The headers of the request wherein a string key maps to a list of string values. Header keys must be written in canonical format.   |
-| [`req.Trailers`](#reqtrailers)                          | map    | The trailers of the request wherein a string key maps to a list of string values. Trailer keys must be written in canonical format. |
+| Name                                                        | Type                     | Description                                                                                                                                                                                     |
+| ----------------------------------------------------------- | ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`req.content_length`](#reqcontent_length)                  | int64                    | The content length of the body in bytes. This may not be present if the request does not contain a body or if the client does not specify a content length because they are streaming the body. |
+| [`req.content_type`](#reqcontent_type)                      | string                   | The media type set in the Content-Type header for this request as a string.                                                                                                                     |
+| [`req.content_type.parameters`](#reqcontent_typeparameters) | map[string]string        | The parameters set in the Content-Type header as a key value map.                                                                                                                               |
+| [`req.content_type.raw`](#reqcontent_typeraw)               | string                   | The Content-Type header for this request as a string.                                                                                                                                           |
+| [`req.cookies`](#reqcookies)                                | map[string]\*http.Cookie | The key value map of HTTP cookie objects provided in the request.                                                                                                                               |
+| [`req.headers`](#reqheaders)                                | map[string][]string      | The request headers parsed as a map of lower-case names to values.                                                                                                                              |
+| [`req.host`](#reqhost)                                      | string                   | The host header field value for this request.                                                                                                                                                   |
+| [`req.location`](#reqlocation)                              | string                   | The location header value of the request.                                                                                                                                                       |
+| [`req.method`](#reqmethod)                                  | string                   | The request method.                                                                                                                                                                             |
+| [`req.trailers`](#reqtrailers)                              | map[string][]string      | The request trailers parsed as a map of lower-case names to values.                                                                                                                             |
+| [`req.url`](#requrl)                                        | string                   | The normalized full URL for this request.                                                                                                                                                       |
+| [`req.url.authority`](#requrlauthority)                     | string                   | The authority portion of the URL.                                                                                                                                                               |
+| [`req.url.host`](#requrlhost)                               | string                   | The host for this request.                                                                                                                                                                      |
+| [`req.url.path`](#requrlpath)                               | string                   | The path for this request including the leading forward slash.                                                                                                                                  |
+| [`req.url.query`](#requrlquery)                             | string                   | The full query string for this request excluding the leading question mark.                                                                                                                     |
+| [`req.url.query_params`](#requrlquery_params)               | map[string][]string      | The request query string parsed as a map of names to values.                                                                                                                                    |
+| [`req.url.raw_path`](#requrlraw_path)                       | string                   | The un-normalized path including the leading slash for this request.                                                                                                                            |
+| [`req.url.scheme`](#requrlscheme)                           | string                   | The scheme for this request.                                                                                                                                                                    |
+| [`req.url.uri`](#requrluri)                                 | string                   | The URI (path and query) portion of the URL.                                                                                                                                                    |
+| [`req.url.user_password`](#requrluser_password)             | string                   | The user:password portion of the URL.                                                                                                                                                           |
+| [`req.user_agent`](#requser_agent)                          | string                   | The user-agent header value for this request.                                                                                                                                                   |
+| [`req.version`](#reqversion)                                | string                   | The HTTP version for this request.                                                                                                                                                              |
 
-### `req.ClientTLS.CertCN`
+### `req.content_length`
 
-The subject common name of the client's leaf TLS certificate.
-
-<ConfigExample
-	config={{
-		expressions: ["req.ClientTLS.CertCN.startsWith('example')"],
-	}}
-/>
-
-### `req.ClientTLS.CipherSuite`
-
-The cipher suite negotiated on the connection.
+The content length of the body in bytes. This may not be present if the request does not contain a body or if the client does not specify a content length because they are streaming the body.
 
 <ConfigExample
 	config={{
-		expressions: ["req.ClientTLS.CipherSuite.contains('SHA256')"],
+		expressions: ["req.content_length > 10000000"],
 	}}
 />
 
-### `req.ClientTLS.SNI`
+### `req.content_type`
 
-The Server Name Indication extension sent by the client.
+The media type set in the Content-Type header for this request as a string.
 
 <ConfigExample
 	config={{
-		expressions: ["req.ClientTLS.SNI.startsWith('domain')"],
+		expressions: ["req.content_type == 'application/json'"],
 	}}
 />
 
-### `req.ClientTLS.Version`
+### `req.content_type.parameters`
 
-The TLS Version used on the connection.
+The parameters set in the Content-Type header for this request as a key value map.
 
 <ConfigExample
 	config={{
-		expressions: ["req.ClientTLS.Version.contains('1.3')"],
+		expressions: ["req.content_type.parameters['charset'] == 'utf-8'"],
 	}}
 />
 
-### `req.ContentLength`
+### `req.content_type.raw`
 
-The length of the content associated with the request.
+The Content-Type header for this request as a string.
 
 <ConfigExample
 	config={{
-		expressions: ["req.ContentLength > 10000000"],
+		expressions: ["req.content_type.raw == 'application/json; charset=utf-8'"],
 	}}
 />
 
-### `req.Method`
+### `req.cookies`
+
+The key value map of HTTP cookie objects provided in the request.
+
+<ConfigExample
+	config={{
+		expressions: ["size(req.cookies) > 0"],
+	}}
+/>
+
+### `req.headers`
+
+The request headers parsed as a map of lower-case names to values.
+
+<ConfigExample
+	config={{
+		expressions: ["'Fizz' in req.headers['baz']"],
+	}}
+/>
+
+### `req.host`
+
+The host header field value for this request.
+
+<ConfigExample
+	config={{
+		expressions: ["req.host == 'nba.com'"],
+	}}
+/>
+
+### `req.location`
+
+The location header value of the request.
+
+<ConfigExample
+	config={{
+		expressions: ["req.location == '/index.html'"],
+	}}
+/>
+
+### `req.method`
 
 The request method.
 
 <ConfigExample
 	config={{
-		expressions: ["req.Method == 'POST' || req.Method == 'PUT'"],
+		expressions: ["req.method == 'POST' || req.method == 'PUT'"],
 	}}
 />
 
-### `req.Cookies`
+### `req.trailers`
 
-The list of HTTP cookie objects provided in the request.
+The request trailers parsed as a map of lower-case names to values.
 
 <ConfigExample
 	config={{
-		expressions: ["size(req.Cookies) > 0"],
+		expressions: ["'Fizz' in req.trailers['baz']"],
 	}}
 />
 
-### `req.URL`
+### `req.url`
 
-The URL of the request.
+The normalized full URL for this request.
 
 <ConfigExample
 	config={{
-		expressions: ["req.URL.contains('/admin')"],
+		expressions: ["req.url.contains('/admin')"],
 	}}
 />
 
-### `req.Path`
+### `req.url.authority`
 
-The Path part of the request URL with a leading slash.
+The authority portion of the URL.
 
 <ConfigExample
 	config={{
-		expressions: ["req.Path.startsWith('/foo')"],
+		expressions: ["req.url.authority == 'user:password@nba.com'"],
 	}}
 />
 
-### `req.Params`
+### `req.url.host`
 
-The query parameters of the request URL wherein a string key maps to a list of string values.
+The host for this request.
 
 <ConfigExample
 	config={{
-		expressions: ["'bar' in req.Params['foo']"],
+		expressions: ["req.url.host.contains(':8080')"],
 	}}
 />
 
-### `req.Protocol`
+### `req.url.path`
 
-The protocol version of the request.
+The path part of this request including the leading forward slash.
 
 <ConfigExample
 	config={{
-		expressions: ["`req.Protocol == 'HTTP/1.1'"],
+		expressions: ["req.url.path.startsWith('/foo')"],
 	}}
 />
 
-### `req.Host`
+### `req.url.query`
 
-The host of the request.
+The full query string for this request excluding the leading question mark.
 
 <ConfigExample
 	config={{
-		expressions: ["req.Host.contains(':8080')"],
+		expressions: ["req.url.query == 'number=23&name=jordan'"],
 	}}
 />
 
-### `req.Location`
+### `req.url.query_params`
 
-The 'Location' header of the request.
+The request query string parsed as a map of names to values.
 
 <ConfigExample
 	config={{
-		expressions: ["req.Location == '/index.html'"],
+		expressions: ["'bar' in req.url.query_params['foo']"],
 	}}
 />
 
-### `req.Headers`
+### `req.url.raw_path`
 
-The headers of the request wherein a string key maps to a list of string values.
+The un-normalized path including the leading slash for this request.
 
 <ConfigExample
 	config={{
-		expressions: ["'Fizz' in req.Headers['Baz']"],
+		expressions: ["`req.url.raw_path.startsWith('/foo')"],
 	}}
 />
 
-### `req.Trailers`
+### `req.url.scheme`
 
-The trailers of the request wherein a string key maps to a list of string values.
+The scheme for this request.
 
 <ConfigExample
 	config={{
-		expressions: ["'Fizz' in req.Trailers['Baz']"],
+		expressions: ["req.url.scheme == 'https'"],
+	}}
+/>
+
+### `req.url.uri`
+
+The URI (path and query) portion of the URL.
+
+<ConfigExample
+	config={{
+		expressions: ["req.url.uri.contains('/api/players?number=23&name=jordan')"],
+	}}
+/>
+
+### `req.url.user_password`
+
+The user:password portion of the URL.
+
+<ConfigExample
+	config={{
+		expressions: ["req.url.user_password == 'user:password'"],
+	}}
+/>
+
+### `req.user_agent`
+
+The user-agent header value for this request.
+
+<ConfigExample
+	config={{
+		expressions: ["req.user_agent.contains('curl')"],
+	}}
+/>
+
+### `req.version`
+
+The HTTP version for this request.
+
+<ConfigExample
+	config={{
+		expressions: ["req.version == 'HTTP/2"],
 	}}
 />
 
 ## Response Variables
 
-The following response variables are available on the `res` struct:
+The following variables are available under the `res` namespace:
 
-| Name                                                    | Type   | Description                                                                                                                          |
-| ------------------------------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------ |
-| [`res.ContentLength`](#rescontentlength)                | int    | The length of the content associated with the response.                                                                              |
-| [`res.Cookies`](#rescookies)                            | list   | The list of HTTP cookie objects provided in the response.                                                                            |
-| [`res.Headers`](#resheaders)                            | map    | The headers of the response wherein a string key maps to a list of string values. Header keys must be written in canonical format.   |
-| [`res.Location`](#reslocation)                          | string | The 'Location' header of the response.                                                                                               |
-| [`res.ServerTLS.CertCN`](#resservertlscertcn)           | string | The subject common name of the leaf TLS certificate.                                                                                 |
-| [`res.ServerTLS.CipherSuite`](#resservertlsciphersuite) | string | The cipher suite negotiated on the connection.                                                                                       |
-| [`res.ServerTLS.SNI`](#resservertlssni)                 | string | The Server Name Indication extension sent by the client.                                                                             |
-| [`res.ServerTLS.Version`](#resservertlsversion)         | string | The TLS Version used on the connection.                                                                                              |
-| [`res.StatusCode`](#resstatuscode)                      | string | The status code of the response.                                                                                                     |
-| [`res.Trailers`](#restrailers)                          | map    | The trailers of the response wherein a string key maps to a list of string values. Trailer keys must be written in canonical format. |
+| Name                                                        | Type                     | Description                                                                         |
+| ----------------------------------------------------------- | ------------------------ | ----------------------------------------------------------------------------------- |
+| [`res.content_length`](#rescontent_length)                  | int64                    | The length of the content associated with the response.                             |
+| [`res.content_type`](#rescontent_type)                      | string                   | The media type set in the Content-Type header for this response as a string.        |
+| [`res.content_type.parameters`](#rescontent_typeparameters) | map[string]string        | The parameters set in the Content-Type header for this response as a key value map. |
+| [`res.content_type.raw`](#rescontent_typeraw)               | string                   | The Content-Type header for this response as a string.                              |
+| [`res.cookies`](#rescookies)                                | map[string]\*http.Cookie | The key value map of HTTP cookie objects provided in the response.                  |
+| [`res.headers`](#resheaders)                                | map[string][]string      | The response headers parsed as a map of lower-case names to values.                 |
+| [`res.location`](#reslocation)                              | string                   | The location header value of this response.                                         |
+| [`res.status_code`](#resstatus_code)                        | int32                    | The status code of this response.                                                   |
+| [`res.trailers`](#restrailers)                              | map[string][]string      | The response trailers parsed as a map of lower-case names to values.                |
 
-### `res.ContentLength`
+### `res.content_length`
 
 The length of the content associated with the response.
 
 <ConfigExample
 	config={{
-		expressions: ["res.ContentLength != 0"],
+		expressions: ["res.content_length != 0"],
 	}}
 />
 
-### `res.Cookies`
+### `res.content_type`
 
-The list of HTTP cookie objects provided in the response.
+The media type set in the Content-Type header for this response as a string.
 
 <ConfigExample
 	config={{
-		expressions: ["size(req.Cookies) > 0"],
+		expressions: ["res.content_type == 'application/json'"],
 	}}
 />
 
-### `res.Headers`
+### `res.content_type.parameters`
 
-The headers of the response wherein a string key maps to a list of string values.
+The parameters set in the Content-Type header for this response as a key value map.
 
 <ConfigExample
 	config={{
-		expressions: ["'Fizz' in res.Headers['Baz']"],
+		expressions: ["res.content_type.parameters['charset'] == 'utf-8'"],
 	}}
 />
 
-### `res.Location`
+### `res.content_type.raw`
 
-The 'Location' header of the response.
+The Content-Type header for this response as a string.
 
 <ConfigExample
 	config={{
-		expressions: ["res.Location == '/index.html'"],
+		expressions: ["res.content_type.raw == 'application/json; charset=utf-8'"],
 	}}
 />
 
-### `res.ServerTLS.CertCN`
+### `res.cookies`
 
-The subject common name of the leaf TLS certificate.
+The key value map of HTTP cookie objects provided in the response.
 
 <ConfigExample
 	config={{
-		expressions: ["res.ClientTLS.CertCN.startsWith('example')"],
+		expressions: ["size(req.cookies) > 0"],
 	}}
 />
 
-### `res.ServerTLS.CipherSuite`
+### `res.headers`
 
-The cipher suite negotiated on the connection.
+The headers of the response parsed as key maps to a list of values. Header keys must be written in canonical format.
 
 <ConfigExample
 	config={{
-		expressions: ["res.ClientTLS.CipherSuite.contains('SHA256')"],
+		expressions: ["'Fizz' in res.headers['baz']"],
 	}}
 />
 
-### `res.ServerTLS.SNI`
+### `res.location`
 
-The Server Name Indication extension sent by the client.
+The location header value of the response.
 
 <ConfigExample
 	config={{
-		expressions: ["res.ClientTLS.SNI.startsWith('domain')"],
+		expressions: ["res.location == '/index.html'"],
 	}}
 />
 
-### `res.ServerTLS.Version`
+### `res.status_code`
 
-The TLS Version used on the connection.
+The status code of this response.
 
 <ConfigExample
 	config={{
-		expressions: ["res.ClientTLS.Version.contains('1.3')"],
+		expressions: ["res.status_code >= 300"],
 	}}
 />
 
-### `res.StatusCode`
+### `res.trailers`
 
-The status code of the response.
+The trailers of the response parsed as key maps to a list of values. Trailer keys must be written in canonical format.
 
 <ConfigExample
 	config={{
-		expressions: ["res.StatusCode >= '300'"],
+		expressions: ["'fizz' in res.trailers['baz']"],
 	}}
 />
 
-### `res.Trailers`
+## Time variables
 
-The trailers of the response wherein a string key maps to a list of string values.
+The following variables are available under the `time` namespace:
+
+| Name                   | Type   | Description                             |
+| ---------------------- | ------ | --------------------------------------- |
+| [`time.now`](#timenow) | string | The current UTC time in RFC3339 format. |
+
+### `time.now`
+
+The current UTC time in RFC3339 format.
 
 <ConfigExample
 	config={{
-		expressions: ["'fizz' in res.Trailers['baz']"],
+		expressions: ["conn.end_ts < timestamp(time.now)"],
 	}}
 />

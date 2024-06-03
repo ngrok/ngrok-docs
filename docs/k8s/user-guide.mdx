@@ -465,6 +465,134 @@ spec:
                   number: <service-port>
 ```
 
+## Traffic Policy
+
+Traffic policies for inbound and outbound traffic can simplifify edge management.
+
+### Design
+
+`NgrokTrafficPolicy` objects can be defined with rules composed of expressions and actions that validate and filter traffic via the policy engine.
+
+```yaml
+kind: NgrokTrafficPolicy
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+metadata:
+  name: traffic-policy-example
+spec:
+  policy:
+    inbound:
+      - name: "greetings"
+        expressions:
+          - "req.method == 'GET'"
+          - "req.path.startsWith('/greetings')"
+        actions:
+          - type: "custom_response"
+            config:
+              status_code: 200
+              content: Hello
+              headers:
+                content-type: text/plain
+```
+
+Learn more about the policy expressions and actions here:
+
+- [Policy Expressions](https://ngrok.com/docs/http/traffic-policy/expressions/)
+- [Policy Actions](https://ngrok.com/docs/http/traffic-policy/actions/)
+
+### Ingress Composition
+
+Traffic policies can be added to Ingress objects using annotations.
+
+```yaml
+---
+kind: NgrokTrafficPolicy
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+metadata:
+  name: traffic-policy-test
+spec:
+  policy:
+    inbound:
+      - name: "deny_patch"
+        expressions:
+          - "req.method == 'PATCH'"
+        actions:
+          - type: "deny"
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: example
+  annotations:
+    k8s.ngrok.com/traffic-policy: traffic-policy-test
+spec:
+  ingressClassName: ngrok
+  rules:
+    - host: <my-host>.ngrok.app
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: <service-name>
+                port:
+                  number: <service-port>
+```
+
+:::note
+Using both an `NgrokModuleSet` and an `NgrokTrafficPolicy` will result in an error.
+:::
+
+:::note
+Ingress is currently limited to a max of one traffic policy in your traffic policy annotation list.
+:::
+
+### Gateway Composition
+
+Traffic policies can be added to Gateway `HTTPRoute` objects using an `ExtensionRef` filter.
+
+```yaml
+---
+kind: NgrokTrafficPolicy
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+metadata:
+  name: traffic-policy-test
+spec:
+  policy:
+    inbound:
+      - name: "deny_patch"
+        expressions:
+          - "req.Method == 'PATCH'"
+        actions:
+          - type: "deny"
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: example-route
+spec:
+  parentRefs:
+    - kind: Gateway
+      name: ngrok-gateway
+  hostnames:
+    - "<my-host>.ngrok.app"
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      filters:
+        - type: ExtensionRef
+          extensionRef:
+            group: ngrok.k8s.ngrok.com
+            kind: NgrokTrafficPolicy
+            name: traffic-policy-test
+      backendRefs:
+        - name: <service-name>
+          kind: Service
+          port: <service-port>
+```
+
 ## TCP and TLS Edges {#tcp-tls-edges}
 
 ngrok offers [TCP](https://ngrok.com/docs/tcp/) and
@@ -474,7 +602,87 @@ function similarly in broad strokes, albeit with slightly different
 configuration options offered. [Their CRD reference](/docs/k8s/crds#tcp-edges) is a
 useful companion to this guide.
 
-### (TLS Only) Get a Domain
+While these edges and tunnels can be managed via the CRDs, the operator is capable of exposing kubernetes `Service` resources to the internet. This is done by creating a ngrok tunnel and edge for the service. The controller will automatically create a ngrok tunnel and edge for the service when the service is created or updated. The controller will also automatically delete the ngrok tunnel and edge when the service is deleted.
+
+### TCP LoadBalancer
+
+By default, services of type `LoadBalancer` are exposed using a ngrok [TCP Edge](https://ngrok.com/docs/tcp/#edges). A reserved address is automatically created for the service and the service's status will be updated with the reserved address. Other projects like [external-dns](https://github.com/ngrok/kubernetes-ingress-controller/docs/examples/external-dns/README.md) can be used to create a CNAME record for the reserved address automatically.
+
+#### Example
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysite
+  annotations:
+    k8s.ngrok.com/modules: only-trusted-ips # Optional. The ngrok modules used for this Service
+spec:
+  allocateLoadBalancerNodePorts: false # ngrok's tunneling technology does not require NodePorts to be allocated.
+  loadBalancerClass: ngrok
+  type: LoadBalancer
+  selector:
+    app: mysite
+  ports:
+    - name: traffic
+      port: 9000
+      protocol: TCP
+      targetPort: 9000
+```
+
+#### Modules
+
+The `k8s.ngrok.com/modules` annotation can be used to specify the ngrok modules to use for the service. The following modules are available for TCP
+services:
+
+- [IP Restrictions](./#ip-restrictions)
+
+If other modules are supplied that are not supported by the TCP edge, the controller will ignore them.
+
+### TLS LoadBalancer
+
+#### Example
+
+**Note**: the `k8s.ngrok.com/domain` annotation is required to use TLS and will expose the service as a [TLS Edge](https://ngrok.com/docs/tls/).
+Once the reserved domain is ready and the `TLSEdge` is created, the service's status will be updated with the ngrok address. Other projects like [external-dns](https://github.com/ngrok/kubernetes-ingress-controller/docs/examples/external-dns/README.md) can be used to create a CNAME record for the reserved domain automatically.
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysite
+  annotations:
+    k8s.ngrok.com/modules: only-trusted-ips # Optional. The ngrok modules used for this Service
+    k8s.ngrok.com/domain: mysite.mydomain.com # Required to use TLS
+    external-dns.alpha.kubernetes.io/hostname: "mysite.mydomain.com"
+spec:
+  allocateLoadBalancerNodePorts: false # ngrok's tunneling technology does not require NodePorts to be allocated.
+  loadBalancerClass: ngrok
+  type: LoadBalancer
+  selector:
+    app: mysite
+  ports:
+    - name: traffic
+      port: 9000
+      protocol: TCP
+      targetPort: 9000
+```
+
+#### Modules
+
+The `k8s.ngrok.com/modules` annotation can be used to specify the ngrok modules to use for the service. The following modules are available for TLS
+services:
+
+- [IP Restrictions](./#ip-restrictions)
+- [Mutual TLS](./#mutual-tls)
+
+If other modules are supplied that are not supported by the TLS edge, the controller will ignore them.
+
+### Manual management via CRDs
+
+While using services is recommended for simplicity, TCP and TLS edges and tunnels can be managed manually via the operator.
+
+#### (TLS Only) Get a Domain
 
 At least one `hostports` must be specified when creating a TLSEdge resource,
 which takes the form `<fqdn>:443`. The fully qualified domain name must first be
@@ -491,7 +699,7 @@ spec:
   domain: tlsedgetest.ngrok.app
 ```
 
-### Create the Edge
+#### Create the Edge
 
 Create the edge CRD. These resources are fairly similar, and both require you to
 specify a [TunnelGroupBackend](/docs/k8s/crds#tunnelgroupbackend). This consists of a
@@ -546,7 +754,7 @@ spec:
     terminateAt: upstream
 ```
 
-### Start the Tunnel
+#### Start the Tunnel
 
 Finally, create a Tunnel to receive and forward traffic for your edge.
 
@@ -576,7 +784,7 @@ spec:
     app: tlsedgetest
 ```
 
-### Full Example
+#### Full Example
 
 This is an example of using a TLS Edge to expose the kubernetes control plane via ngrok.
 

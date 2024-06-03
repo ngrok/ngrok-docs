@@ -18,7 +18,7 @@ The requirements for completing this guide are:
    ![](/img/howto/dash-sso/okta-name-app.png)
 1. Enter in temporary values for "Single sign on URL" and "Audience URI" and select "EmailAddress" for "Name ID format" and then click "Next". ngrok requires the username to be in email format.
    ![](/img/howto/dash-sso/okta-nameid-format.png)
-1. Select "I’m an Okta customer adding an internal app" and click "Finish".
+1. Select "This is an internal app that we have created" and click "Finish".
 
 ## Download your SAML App metadata XML
 
@@ -36,7 +36,6 @@ The requirements for completing this guide are:
 1. Add a helpful description, and then upload the metadata.xml file from Okta into the ngrok dashboard.
    ![](/img/howto/dash-sso/okta-ngrok-config-options.png)
 1. In the Options section, select whether you'd like to allow users to log into the dashboard directly from their Okta dashboard
-1. Determine if you'd like to enable Just in Time (JiT) provisioning or require invites in order to be added to the account. With JiT provisioning enabled, users that log into ngrok directly from their Okta dashboard will automatically be prompted to join the new account.
 1. Click "Save". Clicking Save will create the integration and generate the required URLs for your Okta Application.
    ![](/img/howto/dash-sso/okta-ngrok-required-urls.png)
 
@@ -44,10 +43,10 @@ The requirements for completing this guide are:
 
 1. Back in your Okta account, on the "General" tab of your Okta app, click on "Edit" under "SAML Settings"
    ![](/img/howto/dash-sso/okta-edit-app.png)
-1. Ensure the values are correct, and click "Next"
-1. Replace the values ngrok provided you. The ACS goes in "Single sign on URL" field and the EntityID in the "Audience URI (SP Entity ID)" field. Then click "Next".
+1. Click 'Next' on the 'General Settings' tab to get to the 'Configure SAML' tab.
+1. Replace the values ngrok provided you. Put the ngrok 'ACS URL' value into Okta's "Single sign on URL" field. Put the ngrok 'SP Entity ID' value into Okta's "Audience URI (SP Entity ID)" field.
    ![](/img/howto/dash-sso/okta-temp-urls.png)
-1. Click "Finish"
+1. Click "Next". Click "Finish".
 
 Congratulations, you should now be configured property to log into your ngrok account using Okta!
 

@@ -6,6 +6,11 @@ title: Changelog
 
 ## v3
 
+### ngrok Agent 3.10.0 - \[2024-05-23\]
+
+- **ACTION MAY BE REQUIRED**: The domain used for Certificate Revocation List (CRL) checks is now `crl.ngrok-agent.com` to align it with the domain used for session connections. This may require changes to your firewall or proxy settings to allow this outbound connection.
+- Added CLI API support for [Bot Users](/docs/iam/bot-users/).
+
 ### ngrok Agent 3.9.0 - \[2024-04-24\]
 
 - Added a `/api/status` endpoint to the local agent API that returns the agent's current status
