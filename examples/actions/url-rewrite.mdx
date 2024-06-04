@@ -2,11 +2,41 @@ import ConfigExample from "../../src/components/ConfigExample.tsx";
 
 export const type = "url-rewrite";
 export const config = {
-	from: "v0/user/([0-9]+).*",
-	to: "v1/user?id=$1&$args",
+	format: "ngrok",
+	from: "v0/user/([0-9]+).*&filter=(.*)",
+	to: "v1/user?id=$1&filter=${req.query_params['filter'][0]}",
 };
 
 export const ExampleHTTP = () => (
-  <ConfigExample config={{ actions: [{ type, config }] }} />
+	<ConfigExample config={{ actions: [{ type, config }] }} />
+);
 
-)
+export const CelSingleVariable = () => (
+	<ConfigExample
+		config={{
+			format: "ngrok",
+			to: "/v0/api/carmen/sandiego?city=${conn.geo.city}",
+			from: "/v1/api/carmen/sandiego?found=${conn.geo.city}",
+		}}
+	/>
+);
+
+export const CelWithCastingExample = () => (
+	<ConfigExample
+		config={{
+			format: "ngrok",
+			to: "/v0/api/when-will-then-be-now?time=${string(conn.start_ts)}",
+			from: "/v1/api/soon?time=${string(conn.start_ts)}",
+		}}
+	/>
+);
+
+export const CelWithCaptureGroups = () => (
+	<ConfigExample
+		config={{
+			format: "ngrok",
+			to: "/v0/api?lat=(${conn.geo.latitude})",
+			from: "/v1/api?lat=$1&long=${conn.geo.longitude}",
+		}}
+	/>
+);
