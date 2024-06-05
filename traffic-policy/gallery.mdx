@@ -106,68 +106,64 @@ export const AddRobotsTxt = () => (
 export const JWTsRateLimiting = () => (
 	<ConfigExample
 		config={{
-			"inbound": [
+			inbound: [
 				{
-					"expressions": [],
-					"name": "Add JWT authentication and rate limiting",
-					"actions": [
+					expressions: [],
+					name: "Add JWT authentication and rate limiting",
+					actions: [
 						{
-							"type": "rate-limit",
-							"config": {
-								"name": "Only allow 30 requests per minute",
-								"algorithm": "sliding_window",
-								"capacity": 30,
-								"rate": "60s",
-								"bucket_key": [
-									"req.Headers['x-api-key']"
-								]
-							}
+							type: "rate-limit",
+							config: {
+								name: "Only allow 30 requests per minute",
+								algorithm: "sliding_window",
+								capacity: 30,
+								rate: "60s",
+								bucket_key: ["req.Headers['x-api-key']"],
+							},
 						},
 						{
-							"type": "jwt-validation",
-							"config": {
-								"issuer": {
-									"allow_list": [
+							type: "jwt-validation",
+							config: {
+								issuer: {
+									allow_list: [
 										{
-											"value": "https://<YOUR-AUTH-PROVIDER>"
-										}
-									]
-								},
-								"audience": {
-									"allow_list": [
-										{
-											"value": "<YOUR-NGROK-DOMAIN>"
-										}
-									]
-								},
-								"http": {
-									"tokens": [
-										{
-											"type": "jwt",
-											"method": "header",
-											"name": "Authorization",
-											"prefix": "Bearer "
-										}
-									]
-								},
-								"jws": {
-									"allowed_algorithms": [
-										"RS256"
+											value: "https://<YOUR-AUTH-PROVIDER>",
+										},
 									],
-									"keys": {
-										"sources": {
-											"additional_jkus": [
-												"https://<YOUR-AUTH-PROVIDER>/.well-known/jwks.json"
-											]
-										}
-									}
-								}
-							}
-						}
-					]
-				}
+								},
+								audience: {
+									allow_list: [
+										{
+											value: "<YOUR-NGROK-DOMAIN>",
+										},
+									],
+								},
+								http: {
+									tokens: [
+										{
+											type: "jwt",
+											method: "header",
+											name: "Authorization",
+											prefix: "Bearer ",
+										},
+									],
+								},
+								jws: {
+									allowed_algorithms: ["RS256"],
+									keys: {
+										sources: {
+											additional_jkus: [
+												"https://<YOUR-AUTH-PROVIDER>/.well-known/jwks.json",
+											],
+										},
+									},
+								},
+							},
+						},
+					],
+				},
 			],
-			"outbound": []
+			outbound: [],
 		}}
 	/>
 );
@@ -175,49 +171,41 @@ export const JWTsRateLimiting = () => (
 export const RateLimitAuthentication = () => (
 	<ConfigExample
 		config={{
-			"inbound": [
+			inbound: [
 				{
-					"expressions": [
-						"!('Authorization' in req.Headers)"
-					],
-					"name": "Unauthorized rate limiting tier",
-					"actions": [
+					expressions: ["!('Authorization' in req.Headers)"],
+					name: "Unauthorized rate limiting tier",
+					actions: [
 						{
-							"type": "rate-limit",
-							"config": {
-								"name": "Allow 10 requests per minute",
-								"algorithm": "sliding_window",
-								"capacity": 10,
-								"rate": "60s",
-								"bucket_key": [
-									"conn.ClientIP"
-								]
-							}
-						}
-					]
+							type: "rate-limit",
+							config: {
+								name: "Allow 10 requests per minute",
+								algorithm: "sliding_window",
+								capacity: 10,
+								rate: "60s",
+								bucket_key: ["conn.ClientIP"],
+							},
+						},
+					],
 				},
 				{
-					"expressions": [
-						"('Authorization' in req.Headers)"
-					],
-					"name": "Authorized rate limiting tier",
-					"actions": [
+					expressions: ["('Authorization' in req.Headers)"],
+					name: "Authorized rate limiting tier",
+					actions: [
 						{
-							"type": "rate-limit",
-							"config": {
-								"name": "Allow 100 requests per minute",
-								"algorithm": "sliding_window",
-								"capacity": 100,
-								"rate": "60s",
-								"bucket_key": [
-									"conn.ClientIP"
-								]
-							}
-						}
-					]
-				}
+							type: "rate-limit",
+							config: {
+								name: "Allow 100 requests per minute",
+								algorithm: "sliding_window",
+								capacity: 100,
+								rate: "60s",
+								bucket_key: ["conn.ClientIP"],
+							},
+						},
+					],
+				},
 			],
-			"outbound": []
+			outbound: [],
 		}}
 	/>
 );
@@ -225,24 +213,24 @@ export const RateLimitAuthentication = () => (
 export const BlockCountries = () => (
 	<ConfigExample
 		config={{
-			"inbound": [
+			inbound: [
 				{
-					"expressions": [
-						"conn.Geo.CountryCode in ['<COUNTRY-01>', '<COUNTRY-02>']"
+					expressions: [
+						"conn.Geo.CountryCode in ['<COUNTRY-01>', '<COUNTRY-02>']",
 					],
-					"name": "Block traffic from unwanted countries",
-					"actions": [
+					name: "Block traffic from unwanted countries",
+					actions: [
 						{
-							"type": "custom-response",
-							"config": {
-								"status_code": 401,
-								"content": "Unauthorized request due to country of origin"
-							}
-						}
-					]
-				}
+							type: "custom-response",
+							config: {
+								status_code: 401,
+								content: "Unauthorized request due to country of origin",
+							},
+						},
+					],
+				},
 			],
-			"outbound": []
+			outbound: [],
 		}}
 	/>
 );
@@ -250,89 +238,79 @@ export const BlockCountries = () => (
 export const RateLimitPricing = () => (
 	<ConfigExample
 		config={{
-			"inbound": [
+			inbound: [
 				{
-					"expressions": [
-						"!('Tier' in req.Headers)"
-					],
-					"name": "Free rate limiting tier",
-					"actions": [
+					expressions: ["!('Tier' in req.Headers)"],
+					name: "Free rate limiting tier",
+					actions: [
 						{
-							"type": "rate-limit",
-							"config": {
-								"name": "Allow 10 requests per minute",
-								"algorithm": "sliding_window",
-								"capacity": 10,
-								"rate": "60s",
-								"bucket_key": [
-									"conn.ClientIP"
-								]
-							}
-						}
-					]
+							type: "rate-limit",
+							config: {
+								name: "Allow 10 requests per minute",
+								algorithm: "sliding_window",
+								capacity: 10,
+								rate: "60s",
+								bucket_key: ["conn.ClientIP"],
+							},
+						},
+					],
 				},
 				{
-					"expressions": [
-						"getReqHeader('tier').exists(v, v.matches('(?i)bronze'))"
+					expressions: [
+						"getReqHeader('tier').exists(v, v.matches('(?i)bronze'))",
 					],
-					"name": "Bronze rate limiting tier",
-					"actions": [
+					name: "Bronze rate limiting tier",
+					actions: [
 						{
-							"type": "rate-limit",
-							"config": {
-								"name": "Allow 100 requests per minute",
-								"algorithm": "sliding_window",
-								"capacity": 100,
-								"rate": "60s",
-								"bucket_key": [
-									"conn.ClientIP"
-								]
-							}
-						}
-					]
+							type: "rate-limit",
+							config: {
+								name: "Allow 100 requests per minute",
+								algorithm: "sliding_window",
+								capacity: 100,
+								rate: "60s",
+								bucket_key: ["conn.ClientIP"],
+							},
+						},
+					],
 				},
 				{
-					"expressions": [
-						"getReqHeader('tier').exists(v, v.matches('(?i)silver'))"
+					expressions: [
+						"getReqHeader('tier').exists(v, v.matches('(?i)silver'))",
 					],
-					"name": "Bronze rate limiting tier",
-					"actions": [
+					name: "Bronze rate limiting tier",
+					actions: [
 						{
-							"type": "rate-limit",
-							"config": {
-								"name": "Allow 1000 requests per minute",
-								"algorithm": "sliding_window",
-								"capacity": 1000,
-								"rate": "60s",
-								"bucket_key": [
-									"conn.ClientIP"
-								]
-							}
-						}
-					]
+							type: "rate-limit",
+							config: {
+								name: "Allow 1000 requests per minute",
+								algorithm: "sliding_window",
+								capacity: 1000,
+								rate: "60s",
+								bucket_key: ["conn.ClientIP"],
+							},
+						},
+					],
 				},
 				{
-					"expressions": [
-						"getReqHeader('tier').exists(v, v.matches('(?i)gold'))"
+					expressions: [
+						"getReqHeader('tier').exists(v, v.matches('(?i)gold'))",
 					],
-					"name": "Gold rate limiting tier",
-					"actions": [
+					name: "Gold rate limiting tier",
+					actions: [
 						{
-							"type": "rate-limit",
-							"config": {
-								"name": "Allow 10000 requests per minute",
-								"algorithm": "sliding_window",
-								"capacity": 10000,
-								"rate": "60s",
-								"bucket_key": [
-									"conn.ClientIP"
-								]
-							}
-						}
-					]
-				}
+							type: "rate-limit",
+							config: {
+								name: "Allow 10000 requests per minute",
+								algorithm: "sliding_window",
+								capacity: 10000,
+								rate: "60s",
+								bucket_key: ["conn.ClientIP"],
+							},
+						},
+					],
+				},
 			],
-			"outbound": []
+			outbound: [],
 		}}
 	/>
 );
@@ -340,24 +318,23 @@ export const RateLimitPricing = () => (
 export const DeprecateVersion = () => (
 	<ConfigExample
 		config={{
-			"inbound": [
+			inbound: [
 				{
-					"expressions": [
-						"'2' in req.Headers['X-Api-Version']"
-					],
-					"name": "Deprecate API v2",
-					"actions": [
+					expressions: ["'2' in req.Headers['X-Api-Version']"],
+					name: "Deprecate API v2",
+					actions: [
 						{
-							"type": "custom-response",
-							"config": {
-								"status_code": 400,
-								"content": "{\"error\":{\"message\":\"Version 2 of the API is no longer supported. Use Version 3 instead.\"}}",
-							}
-						}
-					]
-				}
+							type: "custom-response",
+							config: {
+								status_code: 400,
+								content:
+									'{"error":{"message":"Version 2 of the API is no longer supported. Use Version 3 instead."}}',
+							},
+						},
+					],
+				},
 			],
-			"outbound": []
+			outbound: [],
 		}}
 	/>
 );
@@ -365,24 +342,24 @@ export const DeprecateVersion = () => (
 export const ManipulateHeaders = () => (
 	<ConfigExample
 		config={{
-			"inbound": [
+			inbound: [
 				{
-					"expressions": [],
-					"name": "Add headers to requests",
-					"actions": [
+					expressions: [],
+					name: "Add headers to requests",
+					actions: [
 						{
-							"type": "add-headers",
-							"config": {
-								"headers": {
+							type: "add-headers",
+							config: {
+								headers: {
 									"is-ngrok": "1",
-									"country": "${.ngrok.geo.country_code}"
-								}
-							}
-						}
-					]
-				}
+									country: "${.ngrok.geo.country_code}",
+								},
+							},
+						},
+					],
+				},
 			],
-			"outbound": []
+			outbound: [],
 		}}
 	/>
 );
@@ -390,26 +367,21 @@ export const ManipulateHeaders = () => (
 export const AddCompression = () => (
 	<ConfigExample
 		config={{
-			"inbound": [],
-			"outbound": [
+			inbound: [],
+			outbound: [
 				{
-					"expressions": [],
-					"name": "Add compression",
-					"actions": [
+					expressions: [],
+					name: "Add compression",
+					actions: [
 						{
-							"type": "compress-response",
-							"config": {
-								"algorithms": [
-									"gzip",
-									"br",
-									"deflate",
-									"compress"
-								]
-							}
-						}
-					]
-				}
-			]
+							type: "compress-response",
+							config: {
+								algorithms: ["gzip", "br", "deflate", "compress"],
+							},
+						},
+					],
+				},
+			],
 		}}
 	/>
 );
@@ -417,24 +389,22 @@ export const AddCompression = () => (
 export const EnforceTLS = () => (
 	<ConfigExample
 		config={{
-			"inbound": [
+			inbound: [
 				{
-					"expressions": [
-						"req.ClientTLS.Version > '1.3'"
-					],
-					"name": "Reject requests using old TLS versions",
-					"actions": [
+					expressions: ["req.ClientTLS.Version > '1.3'"],
+					name: "Reject requests using old TLS versions",
+					actions: [
 						{
-							"type": "custom-response",
-							"config": {
-								"status_code": 401,
-								"content": "Unauthorized: bad TLS version"
-							}
-						}
-					]
-				}
+							type: "custom-response",
+							config: {
+								status_code: 401,
+								content: "Unauthorized: bad TLS version",
+							},
+						},
+					],
+				},
 			],
-			"outbound": []
+			outbound: [],
 		}}
 	/>
 );
@@ -442,27 +412,25 @@ export const EnforceTLS = () => (
 export const LogUnsuccessful = () => (
 	<ConfigExample
 		config={{
-			"inbound": [],
-			"outbound": [
+			inbound: [],
+			outbound: [
 				{
-					"expressions": [
-						"res.StatusCode < '200' && res.StatusCode >= '300'"
-					],
-					"name": "Log unsuccessful requests",
-					"actions": [
+					expressions: ["res.StatusCode < '200' && res.StatusCode >= '300'"],
+					name: "Log unsuccessful requests",
+					actions: [
 						{
-							"type": "log",
-							"config": {
-								"metadata": {
-									"message": "Unsuccessful request",
-									"edge_id": "<YOUR-NGROK-DOMAIN>",
-									"success": false
-								}
-							}
-						}
-					]
-				}
-			]
+							type: "log",
+							config: {
+								metadata: {
+									message: "Unsuccessful request",
+									edge_id: "<YOUR-NGROK-DOMAIN>",
+									success: false,
+								},
+							},
+						},
+					],
+				},
+			],
 		}}
 	/>
 );
@@ -470,25 +438,25 @@ export const LogUnsuccessful = () => (
 export const LimitSize = () => (
 	<ConfigExample
 		config={{
-			"inbound": [
+			inbound: [
 				{
-					"expressions": [
+					expressions: [
 						"req.Method == 'POST' || req.Method == 'PUT'",
-						"req.ContentLength >= 1000"
+						"req.ContentLength >= 1000",
 					],
-					"name": "Block POST/PUT requests of excessive length",
-					"actions": [
+					name: "Block POST/PUT requests of excessive length",
+					actions: [
 						{
-							"type": "custom-response",
-							"config": {
-								"status_code": 400,
-								"content": "Error: content length"
-							}
-						}
-					]
-				}
+							type: "custom-response",
+							config: {
+								status_code: 400,
+								content: "Error: content length",
+							},
+						},
+					],
+				},
 			],
-			"outbound": []
+			outbound: [],
 		}}
 	/>
 );
