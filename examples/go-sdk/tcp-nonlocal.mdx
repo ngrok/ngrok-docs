@@ -1,5 +1,26 @@
-:::info
+```go
+import (
+	"context"
+	"net/url"
 
-Forwarding to a non-local address is not supported by the Go SDK
+	"golang.ngrok.com/ngrok"
+	"golang.ngrok.com/ngrok/config"
+)
 
-:::
+func ngrokForwarder(ctx context.Context) (ngrok.Forwarder, error) {
+	backendUrl, err := url.Parse("tcp://192.168.1.2:80")
+	if err != nil {
+		return nil, err
+	}
+
+	return ngrok.ListenAndForward(ctx,
+		backendUrl,
+		config.TCPEndpoint(),
+		ngrok.WithAuthtokenFromEnv(),
+	)
+}
+```
+
+Go Package Docs:
+
+- [https://pkg.go.dev/golang.ngrok.com/ngrok#ListenAndForward](https://pkg.go.dev/golang.ngrok.com/ngrok#ListenAndForward)

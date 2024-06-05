@@ -1,5 +1,22 @@
-:::info
+```rust
+use ngrok::prelude::*;
+use ngrok::tunnel;
+use ngrok::forwarder::Forwarder;
+use url::Url;
 
-Forwarding to a non-local address is not supported by the Rust SDK
+async fn forward_ngrok() -> Result<Forwarder<tunnel::TcpTunnel>, Error> {
+    let sess = ngrok::Session::builder()
+        .authtoken_from_env()
+        .connect()
+        .await?;
+    sess
+        .tcp_endpoint()
+        .listen_and_forward(Url::parse("tcp://127.0.0.1:8090")?)
+        .await
+        .map_err(Into::into)
+}
+```
 
-:::
+Rust Crate Docs:
+
+- [https://docs.rs/ngrok/0.14.0-pre.13/ngrok/config/struct.TcpTunnelBuilder.html#method.listen_and_forward](https://docs.rs/ngrok/0.14.0-pre.13/ngrok/config/struct.TcpTunnelBuilder.html#method.listen_and_forward)
