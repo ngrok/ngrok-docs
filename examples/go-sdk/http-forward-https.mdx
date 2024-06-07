@@ -1,5 +1,28 @@
-:::info
+```go
+import (
+	"context"
+	"net/url"
 
-Forwarding to an upstream service is not supported by the Go SDK
+	"golang.ngrok.com/ngrok"
+	"golang.ngrok.com/ngrok/config"
+)
 
-:::
+func ngrokForwarder(ctx context.Context) (ngrok.Forwarder, error) {
+	backendUrl, err := url.Parse("https://localhost:8443")
+	if err != nil {
+		return nil, err
+	}
+
+	return ngrok.ListenAndForward(ctx,
+		backendUrl,
+		config.HTTPEndpoint(),
+		ngrok.WithAuthtokenFromEnv(),
+	)
+}
+```
+
+For HTTP/2 Use: `config.HTTPEndpoint(config.WithAppProtocol("http2"))`
+
+Go Package Docs:
+
+- [https://pkg.go.dev/golang.ngrok.com/ngrok#ListenAndForward](https://pkg.go.dev/golang.ngrok.com/ngrok#ListenAndForward)
