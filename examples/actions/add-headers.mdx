@@ -1,13 +1,74 @@
 import ConfigExample from "../../src/components/ConfigExample.tsx";
+import CelTemplateSyntaxExplanation from "/src/components/CelTemplateSyntaxExplanation";
 
 export const type = "add-headers";
-export const config = {
-	headers: {
-		"is-ngrok": "1",
-		country: "${conn.geo.country_code}",
-	},
-};
 
 export const ExampleHTTP = () => (
-	<ConfigExample config={{ actions: [{ type, config }] }} />
+	<ConfigExample
+		config={{
+			actions: [
+				{
+					type,
+					config: {
+						headers: {
+							"is-ngrok": "1",
+							country: "${conn.geo.country_code}",
+						},
+					},
+				},
+			],
+		}}
+	/>
 );
+
+export const TemplatingExamples = () => (
+	<>
+		<ConfigExample
+			snippetText={"simple variable replacement"}
+			config={{
+				actions: [
+					{
+						type,
+						config: {
+							headers: {
+								time: "${time.now}",
+							},
+						},
+					},
+				],
+			}}
+		/>
+		<ConfigExample
+			snippetText={"using a macro"}
+			config={{
+				actions: [
+					{
+						type,
+						config: {
+							headers: {
+								"x-has-foobar": "${hasReqHeader('foobar')}",
+							},
+						},
+					},
+				],
+			}}
+		/>
+		<ConfigExample
+			snippetText={"complex expression"}
+			config={{
+				actions: [
+					{
+						type,
+						config: {
+							headers: {
+								complex: "${size(getReqHeader('Content-Type')) > 0}",
+							},
+						},
+					},
+				],
+			}}
+		/>
+	</>
+);
+
+;
