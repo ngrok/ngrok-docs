@@ -45,7 +45,10 @@ ngrok authtoken NGROK_AUTHTOKEN
 To enable remote SSH access to your device via ngrok:
 
 1. Test that the ngrok agent is configured correctly by starting a TCP tunnel on your remote device.
-   **Note**: If you get an error, ensure your authtoken is configured correctly.
+
+::::warning
+TCP endpoints are only available on a free plan after [adding a valid payment method](https://dashboard.ngrok.com/settings#id-verification) to your account. If you get a different error, ensure your authtoken is configured correctly.
+::::
 
 ```bash
 ngrok tcp 22

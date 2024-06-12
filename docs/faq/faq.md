@@ -8,6 +8,12 @@ title: FAQ
 
 Yes. The official ngrok status page is [status.ngrok.com](https://status.ngrok.com).
 
+## Why am I required to add a payment method to use TCP endpoints on the free tier? Will I be charged?
+
+In an effort to combat abuse on the platform, we now require a valid payment method be [added to your account](https://dashboard.ngrok.com/settings#id-verification) before you can use TCP endpoints on the free tier. This card will not be charged. If you remove this card from your account, you will lose access to TCP endpoints until you add another payment method.
+
+Valid payment methods include credit or debit cards. Prepaid cards may not be used to enable TCP endpoints.
+
 ## Why is my antivirus software reporting the ngrok agent as a virus / malware / or potentially unwanted application (PAU)?
 
 ngrok is beloved for our ease of use and powerful capability. Unfortunately, those same
