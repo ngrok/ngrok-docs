@@ -12,4 +12,8 @@ There are a lot more details in the linked post, but the summary of how to do it
 ngrok tcp 443
 ```
 
+::::warning
+TCP endpoints are only available on a free plan after [adding a valid payment method](https://dashboard.ngrok.com/settings#id-verification) to your account.
+::::
+
 From there, you will need to use a text editor to manually edit the downloaded `.opvn` file to change the port from 443 to the random TCP address port provided by ngrok. Then follow the standard steps to import the profile to your OpenVPN Connect software and you should be able to connect to your VPN as normal.

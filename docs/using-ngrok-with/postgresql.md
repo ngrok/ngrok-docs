@@ -10,6 +10,10 @@ Here's a quick [guide on running a local postgresql instance](https://docs.merox
 ngrok tcp 5432
 ```
 
+::::warning
+TCP endpoints are only available on a free plan after [adding a valid payment method](https://dashboard.ngrok.com/settings#id-verification) to your account.
+::::
+
 Once ngrok is forwarding traffic to your PostgreSQL service, you can use the TCP address provided to connect to it remotely.
 
 ```bash

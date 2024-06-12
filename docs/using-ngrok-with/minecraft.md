@@ -8,6 +8,8 @@ Minecraft requires the use of an ngrok TCP tunnel to share your server with othe
 
 The free version of ngrok has the following restrictions:
 
+- **A valid credit or debit card is required**
+  - In an effort to combat abuse on our platform, we now require users to [add a valid credit or debit card to their account](https://dashboard.ngrok.com/settings#id-verification) before using TCP endpoints in the free tier. This card will not be charged.
 - **No permanent TCP address**
   - When you restart the agent, you will need to send a new TCP address to your players. Our paid accounts allow you to reserve a TCP Address for reuse. In this case, you would start the TCP tunnel using `ngrok tcp --remote-addr TCP_ADDRESS 25565`.
 - **Bandwidth Limits**
