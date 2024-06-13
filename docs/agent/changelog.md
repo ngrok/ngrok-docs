@@ -6,6 +6,10 @@ title: Changelog
 
 ## v3
 
+### ngrok Agent 3.11.0 - \[2024-06-13\]
+
+- `ngrok http` now has timestamps for incoming requests.
+
 ### ngrok Agent 3.10.1 - \[2024-06-06\]
 
 - Requests to TLS endpoints using `proto: tls` and `terminate_at: agent` succeed after the agent session goes through a reconnection.
