@@ -1,6 +1,6 @@
 import React from "react";
-import NgrokCard from "./NgrokCard";
 import { useIntegrations } from "./integrations/use-integrations";
+import NgrokCard from "./NgrokCard";
 
 export default function IntegrationsList() {
 	const integrations = useIntegrations();

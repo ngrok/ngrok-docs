@@ -1,13 +1,13 @@
-import React from "react";
 import CodeBlock from "@theme/CodeBlock";
-import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
+import Tabs from "@theme/Tabs";
+import React from "react";
 import YAML from "yaml";
 
 type Props = {
 	config: Record<string, any>;
 	snippetText?: string;
-}
+};
 
 export default function ConfigExample({
 	config,
