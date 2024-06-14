@@ -10,6 +10,7 @@
 			"actions": [
 				{
 					"config": {
+						"format": "nginx",
 						"from": "v0/user/([0-9]+).*",
 						"to": "v1/user?id=$1&$args"
 					},
@@ -17,6 +18,7 @@
 				},
 				{
 					"config": {
+						"format": "nginx",
 						"from": "v0/super/secret/path/to/admin.*",
 						"to": "v1/admin?$is_args$args"
 					},
@@ -66,9 +68,9 @@
 				{
 					"config": {
 						"metadata": {
-							"edgeId": "edghts_2gsqMYVELQPRqeftCFD90tFDmmr",
+							"edgeId": "edghts_2hrGzFXBFh5GMlgGeqQ6Ms1xzv2",
 							"message": "Unsuccessful response",
-							"routeId": "edghtsrt_2gsqMdo9SaEpqd9ly017PecEZIY"
+							"routeId": "edghtsrt_2hrGzDNSmgxEDJSKMPaKYauSUMa"
 						}
 					},
 					"type": "log"
