@@ -4,7 +4,7 @@ import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
 import YAML from "yaml";
 
-interface Props {
+type Props = {
 	config: Record<string, any>;
 	snippetText?: string;
 }

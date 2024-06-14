@@ -1,9 +1,12 @@
-// @ts-check
-// Note: type annotations allow type checking and IDEs autocompletion
-require("dotenv").config();
+import type { Config } from "@docusaurus/types";
 
-const lightCodeTheme = require("prism-react-renderer").themes.github;
-const darkCodeTheme = require("prism-react-renderer").themes.dracula;
+import dotenv from "dotenv";
+
+dotenv.config();
+
+import * as prismReactRenderer from "prism-react-renderer";
+const lightCodeTheme = prismReactRenderer.themes.github;
+const darkCodeTheme = prismReactRenderer.themes.dracula;
 
 const docsRepo = "https://github.com/ngrok/ngrok-docs";
 
@@ -19,11 +22,10 @@ const fontHrefs = [
 	"https://cdn.ngrok.com/static/fonts/ibm-plex-mono/IBMPlexMono-TextItalic.woff",
 	"https://cdn.ngrok.com/static/fonts/ibm-plex-mono/IBMPlexMono-SemiBold.woff",
 	"https://cdn.ngrok.com/static/fonts/ibm-plex-mono/IBMPlexMono-SemiBoldItalic.woff",
-];
+] as const;
 
 const ketchTagId = isProduction ? "ngrok_ketch_tag" : "ngrok_ketch_tag_local";
 
-/** @type {import('@docusaurus/types').Config} */
 const config = {
 	title: "ngrok documentation",
 	tagline: "online in one line",
@@ -93,7 +95,7 @@ const config = {
 		[
 			"classic",
 			/** @type {import('@docusaurus/preset-classic').Options} */
-			({
+			{
 				docs: {
 					sidebarPath: require.resolve("./sidebars.js"),
 					routeBasePath: "/",
@@ -114,13 +116,13 @@ const config = {
 					ignorePatterns: ["/docs/tags/**", "/docs/**/toc/**"],
 					filename: "sitemap.xml",
 				},
-			}),
+			},
 		],
 	],
 
 	themeConfig:
 		/** @type {import('@docusaurus/preset-classic').ThemeConfig} */
-		({
+		{
 			metadata: [
 				{
 					name: "keywords",
@@ -338,7 +340,7 @@ const config = {
 					autoCollapseCategories: true,
 				},
 			},
-		}),
-};
+		},
+} satisfies Config;
 
-module.exports = config;
+export default config;
