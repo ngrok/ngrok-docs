@@ -5,13 +5,13 @@
 ```json
 {
 	"backend": null,
-	"created_at": "2024-05-23T20:36:26Z",
+	"created_at": "2024-06-14T06:04:03Z",
 	"description": "acme tcp edge",
 	"hostports": null,
-	"id": "edgtcp_2gsqMlMqxCWrr4fb2sVjGuahNmA",
+	"id": "edgtcp_2hrGzHzWpzrSkPjQwsypvElLQlq",
 	"ip_restriction": null,
 	"metadata": "{\"environment\": \"production\"}",
 	"policy": null,
-	"uri": "https://api.ngrok.com/edges/tcp/edgtcp_2gsqMlMqxCWrr4fb2sVjGuahNmA"
+	"uri": "https://api.ngrok.com/edges/tcp/edgtcp_2hrGzHzWpzrSkPjQwsypvElLQlq"
 }
 ```

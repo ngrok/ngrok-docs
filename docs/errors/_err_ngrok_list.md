@@ -1823,6 +1823,14 @@
     </tr>
     <tr>
       <td>
+        <a id="ERR_NGROK_456" href="/docs/errors/err_ngrok_456">ERR_NGROK_456</a>
+      </td>
+      <td class="pre-wrapped">
+        You are not allowed to specify duplicate regions. Region <code>&lt;DUPLICATE&gt;</code> was specified multiple times.
+      </td>
+    </tr>
+    <tr>
+      <td>
         <a id="ERR_NGROK_500" href="/docs/errors/err_ngrok_500">ERR_NGROK_500</a>
       </td>
       <td class="pre-wrapped">
@@ -2248,7 +2256,7 @@
         <a id="ERR_NGROK_715" href="/docs/errors/err_ngrok_715">ERR_NGROK_715</a>
       </td>
       <td class="pre-wrapped">
-        This ngrok account has reached its connection rate limit. Please log into https://dashboard.ngrok.com to view your options.
+        You have exceeded your limit on connections per minute. This limit will reset within 1 minute. If you expect to continually exceed these limits, please reach out to support (support@ngrok.com)
       </td>
     </tr>
     <tr>
@@ -2392,7 +2400,7 @@
         <a id="ERR_NGROK_734" href="/docs/errors/err_ngrok_734">ERR_NGROK_734</a>
       </td>
       <td class="pre-wrapped">
-        Your account is rate limited to <code>&lt;MAX&gt;</code> HTTP requests per <code>&lt;INTERVAL&gt;</code>.
+        You have exceeded your limit of <code>&lt;MAX&gt;</code> requests per <code>&lt;INTERVAL&gt;</code>. This limit will reset within 1 minute. If you expect to continually exceed these limits, please reach out to support (support@ngrok.com)
       </td>
     </tr>
     <tr>
@@ -6323,6 +6331,14 @@
     </tr>
     <tr>
       <td>
+        <a id="ERR_NGROK_5135" href="/docs/errors/err_ngrok_5135">ERR_NGROK_5135</a>
+      </td>
+      <td class="pre-wrapped">
+        Your account can't use the event source filter feature.
+      </td>
+    </tr>
+    <tr>
+      <td>
         <a id="ERR_NGROK_5200" href="/docs/errors/err_ngrok_5200">ERR_NGROK_5200</a>
       </td>
       <td class="pre-wrapped">
@@ -9195,6 +9211,15 @@
     </tr>
     <tr>
       <td>
+        <a id="ERR_NGROK_8013" href="/docs/errors/err_ngrok_8013">ERR_NGROK_8013</a>
+      </td>
+      <td class="pre-wrapped">
+        You must add a credit or debit card before you can use TCP endpoints on a free account. We require a valid card as a way to combat abuse and keep the internet a safe place. This card will NOT  be charged.
+        Add a card to your account here: <a href="https://dashboard.ngrok.com/settings">https://dashboard.ngrok.com/settings</a>#id-verification
+      </td>
+    </tr>
+    <tr>
+      <td>
         <a id="ERR_NGROK_9000" href="/docs/errors/err_ngrok_9000">ERR_NGROK_9000</a>
       </td>
       <td class="pre-wrapped">
@@ -9861,6 +9886,14 @@
       </td>
       <td class="pre-wrapped">
         Request body size too large.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_10089" href="/docs/errors/err_ngrok_10089">ERR_NGROK_10089</a>
+      </td>
+      <td class="pre-wrapped">
+        Failed to replay the request.
       </td>
     </tr>
     <tr>
