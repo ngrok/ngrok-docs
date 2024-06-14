@@ -16,3 +16,17 @@ export function useIntegration(name: string) {
 		(item) => item.name.toLowerCase() === name.toLowerCase(),
 	);
 }
+
+export function returnPathFromIntegration(integration){
+    var returnValue = integration.path;
+	if(integration.docs.length==1){
+		returnValue = integration.docs[0].path
+	}
+    return returnValue;
+
+}
+
+export function returnPathFromDoc(doc){
+	var returnValue = doc.path;
+    return returnValue;
+}

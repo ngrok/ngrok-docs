@@ -1,6 +1,6 @@
 import React from "react";
 import NgrokCard from "./NgrokCard";
-import { useIntegrations } from "./integrations/use-integrations";
+import { useIntegrations, returnPathFromIntegration } from "./integrations/use-integrations";
 
 export default function IntegrationsList() {
 	const integrations = useIntegrations();
@@ -10,7 +10,7 @@ export default function IntegrationsList() {
 			{integrations.map((integration) => (
 				<li className="last-of-type:col-span-full" key={integration.name}>
 					<NgrokCard
-						to={integration.path}
+						to={returnPathFromIntegration(integration)}
 						size="sm"
 						img={integration.metadata?.logo}
 						title={integration.metadata?.sidebar_label || integration.name}
@@ -21,3 +21,4 @@ export default function IntegrationsList() {
 		</ul>
 	);
 }
+
