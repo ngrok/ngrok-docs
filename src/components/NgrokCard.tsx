@@ -1,15 +1,15 @@
+import Link from "@docusaurus/Link";
+import { clsx } from "clsx";
 import React from "react";
 import type { ReactNode } from "react";
-import { clsx } from "clsx";
-import Link from "@docusaurus/Link";
 
 const cardSizes = ["xs", "sm", "md", "lg", "xl"] as const;
 type CardSize = (typeof cardSizes)[number];
 
 type CardHeaderProps = {
 	size?: CardSize;
-	title: ReactNode
-}
+	title: ReactNode;
+};
 
 function CardHeader({ size, title }: CardHeaderProps) {
 	switch (size) {

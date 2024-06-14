@@ -1,10 +1,9 @@
 import type { Config } from "@docusaurus/types";
-
 import dotenv from "dotenv";
+import * as prismReactRenderer from "prism-react-renderer";
 
 dotenv.config();
 
-import * as prismReactRenderer from "prism-react-renderer";
 const lightCodeTheme = prismReactRenderer.themes.github;
 const darkCodeTheme = prismReactRenderer.themes.dracula;
 
