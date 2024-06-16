@@ -1,12 +1,18 @@
+<!-- Code generated for API Clients. DO NOT EDIT. -->
 
 #### Example Response
+
 ```json
 {
-  "id": "bkdtg_2NTVHWU05lVKLHPIooJ2aX4qvKT",
-  "uri": "https://api.ngrok.com/backends/tunnel_group/bkdtg_2NTVHWU05lVKLHPIooJ2aX4qvKT",
-  "created_at": "2023-03-24T19:59:31Z",
-  "description": "acme tunnel group",
-  "metadata": "{\"environment\": \"production\"}",
-  "labels": null,
-  "tunnels": []
+	"created_at": "2024-06-14T06:03:59Z",
+	"description": "acme tunnel group",
+	"id": "bkdtg_2hrGymfNbDCLBC1paOAVK1JSFUM",
+	"labels": {
+		"baz": "qux",
+		"foo": "bar"
+	},
+	"metadata": "{\"environment\": \"production\"}",
+	"tunnels": [],
+	"uri": "https://api.ngrok.com/backends/tunnel_group/bkdtg_2hrGymfNbDCLBC1paOAVK1JSFUM"
 }
+```

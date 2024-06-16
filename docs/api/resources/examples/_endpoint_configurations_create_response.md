@@ -1,31 +1,32 @@
+<!-- Code generated for API Clients. DO NOT EDIT. -->
 
 #### Example Response
+
 ```json
 {
-  "id": "ec_2NTVGZPJYevUXrQf3NWongxLIVQ",
-  "type": "https",
-  "description": "app servers",
-  "created_at": "2023-03-24T19:59:23Z",
-  "uri": "https://api.ngrok.com/endpoint_configurations/ec_2NTVGZPJYevUXrQf3NWongxLIVQ",
-  "basic_auth": null,
-  "circuit_breaker": null,
-  "compression": null,
-  "request_headers": {
-    "enabled": true,
-    "add": {
-      "x-frontend": "ngrok"
-    },
-    "remove": [
-      "cache-control"
-    ]
-  },
-  "response_headers": null,
-  "ip_policy": null,
-  "mutual_tls": null,
-  "tls_termination": null,
-  "webhook_validation": null,
-  "oauth": null,
-  "saml": null,
-  "oidc": null,
-  "backend": null
+	"backend": null,
+	"basic_auth": null,
+	"circuit_breaker": null,
+	"compression": null,
+	"created_at": "2024-06-14T06:03:37Z",
+	"description": "app servers",
+	"id": "ec_2hrGw0gwazU2K9lsPqzUPWGiDwh",
+	"ip_policy": null,
+	"mutual_tls": null,
+	"oauth": null,
+	"oidc": null,
+	"request_headers": {
+		"add": {
+			"x-frontend": "ngrok"
+		},
+		"enabled": true,
+		"remove": ["cache-control"]
+	},
+	"response_headers": null,
+	"saml": null,
+	"tls_termination": null,
+	"type": "https",
+	"uri": "https://api.ngrok.com/endpoint_configurations/ec_2hrGw0gwazU2K9lsPqzUPWGiDwh",
+	"webhook_validation": null
 }
+```

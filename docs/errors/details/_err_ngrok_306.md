@@ -1,4 +1,3 @@
-
 ### Additional Information
 
 Using a custom domain such as app.example.com requires a paid ngrok plan. You can upgrade to a paid plan under the [Billing](https://dashboard.ngrok.com/billing) section in the ngrok Dashboard. Once you upgrade, you will be able to [register and use a custom domain](/docs/guides/how-to-set-up-a-custom-domain/) immediately.

@@ -1,12 +1,15 @@
+<!-- Code generated for API Clients. DO NOT EDIT. -->
 
 #### Example Response
+
 ```json
 {
-  "enabled": true,
-  "certificate_authorities": [
-    {
-      "id": "ca_2NTVHNFub76GPUMlEMkyuVmzSdy",
-      "uri": "https://api.ngrok.com/certificate_authorities/ca_2NTVHNFub76GPUMlEMkyuVmzSdy"
-    }
-  ]
+	"certificate_authorities": [
+		{
+			"id": "ca_2hrGykqsRAa3ok0TVID8v9O0JNa",
+			"uri": "https://api.ngrok.com/certificate_authorities/ca_2hrGykqsRAa3ok0TVID8v9O0JNa"
+		}
+	],
+	"enabled": true
 }
+```

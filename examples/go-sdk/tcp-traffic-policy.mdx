@@ -1,0 +1,39 @@
+```go
+import (
+  "context"
+  "net"
+
+  "golang.ngrok.com/ngrok"
+  "golang.ngrok.com/ngrok/config"
+)
+
+func ngrokListener(ctx context.Context) (net.Listener, error) {
+  return ngrok.Listen(ctx,
+    config.TCPEndpoint(
+      config.WithPolicy(
+        policy.Policy{
+          Inbound: []policy.Rule{
+            {
+              Name: "LimitToKnownIPs",
+              Expressions: []string{
+                "conn.client_ip != 8.8.8.8",
+                "conn.client_ip != 9.9.9.9",
+              },
+              Actions: []policy.Action{
+                {
+                  Type: "deny",
+                },
+              },
+            },
+          },
+        },
+      ),
+    ),
+    ngrok.WithAuthtokenFromEnv(),
+  )
+}
+```
+
+Go Package Docs:
+
+- [https://pkg.go.dev/golang.ngrok.com/ngrok/config#WithPolicy](https://pkg.go.dev/golang.ngrok.com/ngrok/config#WithPolicy)

@@ -1,39 +1,39 @@
+<!-- Code generated for API Clients. DO NOT EDIT. -->
 
 #### Example Response
+
 ```json
 {
-  "credentials": [
-    {
-      "id": "cr_2NTVGZeGZQUd899hZf1BAxoYt3t",
-      "uri": "https://api.ngrok.com/credentials/cr_2NTVGZeGZQUd899hZf1BAxoYt3t",
-      "created_at": "2023-03-24T19:59:23Z",
-      "description": "credential for \"api-examples-9c8a7645992372ee@example.com\"",
-      "token": null,
-      "acl": [],
-      "owner_id": "usr_2NTVGatoJrQx1JKgLBw1aQOXaPY"
-    },
-    {
-      "id": "cr_2NTVGjDZOT1vqeAgcs3VCe6KO9J",
-      "uri": "https://api.ngrok.com/credentials/cr_2NTVGjDZOT1vqeAgcs3VCe6KO9J",
-      "created_at": "2023-03-24T19:59:24Z",
-      "description": "development cred for alan@example.com",
-      "token": null,
-      "acl": [],
-      "owner_id": "usr_2NTVGatoJrQx1JKgLBw1aQOXaPY"
-    },
-    {
-      "id": "cr_2NTVGiZPEhtblrIa0tIzOOV7yQO",
-      "uri": "https://api.ngrok.com/credentials/cr_2NTVGiZPEhtblrIa0tIzOOV7yQO",
-      "created_at": "2023-03-24T19:59:24Z",
-      "description": "for device #132",
-      "token": null,
-      "acl": [
-        "bind:1.tcp.ngrok.io:20002",
-        "bind:132.devices.company.com"
-      ],
-      "owner_id": "usr_2NTVGatoJrQx1JKgLBw1aQOXaPY"
-    }
-  ],
-  "uri": "https://api.ngrok.com/credentials",
-  "next_page_uri": null
+	"credentials": [
+		{
+			"acl": ["bind:1.tcp.ngrok.io:20002", "bind:132.devices.company.com"],
+			"created_at": "2024-06-14T06:03:38Z",
+			"description": "for device #132",
+			"id": "cr_2hrGwFK6RSuMgANNszuqtWzcnLW",
+			"owner_id": "usr_2hrGw33K0y2LziI8zHGX8ilMTYX",
+			"token": null,
+			"uri": "https://api.ngrok.com/credentials/cr_2hrGwFK6RSuMgANNszuqtWzcnLW"
+		},
+		{
+			"acl": [],
+			"created_at": "2024-06-14T06:03:38Z",
+			"description": "development cred for alan@example.com",
+			"id": "cr_2hrGwAroBEwsLaXzI6JBVVvlYuN",
+			"owner_id": "usr_2hrGw33K0y2LziI8zHGX8ilMTYX",
+			"token": null,
+			"uri": "https://api.ngrok.com/credentials/cr_2hrGwAroBEwsLaXzI6JBVVvlYuN"
+		},
+		{
+			"acl": [],
+			"created_at": "2024-06-14T06:03:37Z",
+			"description": "credential for \"api-examples-64ef17c5948e54c8@example.com\"",
+			"id": "cr_2hrGw15vrV0qmjMrb5gkS17dTtL",
+			"owner_id": "usr_2hrGw33K0y2LziI8zHGX8ilMTYX",
+			"token": null,
+			"uri": "https://api.ngrok.com/credentials/cr_2hrGw15vrV0qmjMrb5gkS17dTtL"
+		}
+	],
+	"next_page_uri": null,
+	"uri": "https://api.ngrok.com/credentials"
 }
+```

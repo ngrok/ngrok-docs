@@ -1,0 +1,34 @@
+```python
+with open('/path/to/policy.json') as f:
+        policy = json.load(f)
+        listener = await session.http_endpoint().policy(policy).listen()
+```
+
+```yaml title="policy.json"
+{
+  "inbound":
+    [
+      {
+        "name": "DenyTrafficOutsideUS",
+        "expressions": ["conn.Geo.CountryCode != 'US'"],
+        "actions": [{ "type": "deny" }],
+      },
+      {
+        "name": "LogRequestsFromKnownIP",
+        "expressions": ["conn.ClientIP == '110.0.0.1"],
+        "actions":
+          [
+            {
+              "type": "log",
+              "config":
+                { "metadata": { "event": "known-ip", "data": "110.0.0.1" } },
+            },
+          ],
+      },
+    ],
+}
+```
+
+Python SDK Docs:
+
+- [https://ngrok.github.io/ngrok-python/http_listener_builder.html#ngrok.HttpListenerBuilder.policy](https://ngrok.github.io/ngrok-python/http_listener_builder.html#ngrok.HttpListenerBuilder.policy)

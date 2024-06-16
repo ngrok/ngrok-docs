@@ -1,45 +1,48 @@
+<!-- Code generated for API Clients. DO NOT EDIT. -->
 
 #### Example Response
+
 ```json
 {
-  "ip_policy_rules": [
-    {
-      "id": "ipr_2NTVHTjYlcsH1CWAPSZZ6VNyIrs",
-      "uri": "https://api.ngrok.com/ip_policy_rules/ipr_2NTVHTjYlcsH1CWAPSZZ6VNyIrs",
-      "created_at": "2023-03-24T19:59:30Z",
-      "description": "sf office",
-      "cidr": "132.2.19.0/24",
-      "ip_policy": {
-        "id": "ipp_2NTVHO7WnQtkGuRQR2cHQl9Fw0m",
-        "uri": "https://api.ngrok.com/ip_policies/ipp_2NTVHO7WnQtkGuRQR2cHQl9Fw0m"
-      },
-      "action": "allow"
-    },
-    {
-      "id": "ipr_2NTVHRbeSkInmt6O9Ejox3vQaao",
-      "uri": "https://api.ngrok.com/ip_policy_rules/ipr_2NTVHRbeSkInmt6O9Ejox3vQaao",
-      "created_at": "2023-03-24T19:59:30Z",
-      "description": "alan laptop",
-      "cidr": "2.2.2.2/32",
-      "ip_policy": {
-        "id": "ipp_2NTVHO7WnQtkGuRQR2cHQl9Fw0m",
-        "uri": "https://api.ngrok.com/ip_policies/ipp_2NTVHO7WnQtkGuRQR2cHQl9Fw0m"
-      },
-      "action": "allow"
-    },
-    {
-      "id": "ipr_2NTVHQK0hhWUVWvcyHjyOKMVYP6",
-      "uri": "https://api.ngrok.com/ip_policy_rules/ipr_2NTVHQK0hhWUVWvcyHjyOKMVYP6",
-      "created_at": "2023-03-24T19:59:30Z",
-      "description": "nyc office",
-      "cidr": "212.3.14.0/24",
-      "ip_policy": {
-        "id": "ipp_2NTVHO7WnQtkGuRQR2cHQl9Fw0m",
-        "uri": "https://api.ngrok.com/ip_policies/ipp_2NTVHO7WnQtkGuRQR2cHQl9Fw0m"
-      },
-      "action": "allow"
-    }
-  ],
-  "uri": "https://api.ngrok.com/ip_policy_rules",
-  "next_page_uri": null
+	"ip_policy_rules": [
+		{
+			"action": "allow",
+			"cidr": "132.2.19.0/24",
+			"created_at": "2024-06-14T06:03:58Z",
+			"description": "sf office",
+			"id": "ipr_2hrGyjMI4ICfYyt8lnSBlhGEJvM",
+			"ip_policy": {
+				"id": "ipp_2hrGygu4PRJLl0rrFEGQPXt4sRW",
+				"uri": "https://api.ngrok.com/ip_policies/ipp_2hrGygu4PRJLl0rrFEGQPXt4sRW"
+			},
+			"uri": "https://api.ngrok.com/ip_policy_rules/ipr_2hrGyjMI4ICfYyt8lnSBlhGEJvM"
+		},
+		{
+			"action": "allow",
+			"cidr": "2.2.2.2/32",
+			"created_at": "2024-06-14T06:03:58Z",
+			"description": "alan laptop",
+			"id": "ipr_2hrGyhshmiJuKkpwKDXBedg9BfR",
+			"ip_policy": {
+				"id": "ipp_2hrGygu4PRJLl0rrFEGQPXt4sRW",
+				"uri": "https://api.ngrok.com/ip_policies/ipp_2hrGygu4PRJLl0rrFEGQPXt4sRW"
+			},
+			"uri": "https://api.ngrok.com/ip_policy_rules/ipr_2hrGyhshmiJuKkpwKDXBedg9BfR"
+		},
+		{
+			"action": "allow",
+			"cidr": "212.3.14.0/24",
+			"created_at": "2024-06-14T06:03:58Z",
+			"description": "nyc office",
+			"id": "ipr_2hrGyewiWimU9cpFWbSjpfLG7eR",
+			"ip_policy": {
+				"id": "ipp_2hrGygu4PRJLl0rrFEGQPXt4sRW",
+				"uri": "https://api.ngrok.com/ip_policies/ipp_2hrGygu4PRJLl0rrFEGQPXt4sRW"
+			},
+			"uri": "https://api.ngrok.com/ip_policy_rules/ipr_2hrGyewiWimU9cpFWbSjpfLG7eR"
+		}
+	],
+	"next_page_uri": null,
+	"uri": "https://api.ngrok.com/ip_policy_rules"
 }
+```

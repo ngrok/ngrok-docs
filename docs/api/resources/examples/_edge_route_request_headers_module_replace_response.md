@@ -1,12 +1,13 @@
+<!-- Code generated for API Clients. DO NOT EDIT. -->
 
 #### Example Response
+
 ```json
 {
-  "enabled": true,
-  "add": {
-    "x-frontend": "ngrok"
-  },
-  "remove": [
-    "cache-control"
-  ]
+	"add": {
+		"x-frontend": "ngrok"
+	},
+	"enabled": true,
+	"remove": ["cache-control"]
 }
+```

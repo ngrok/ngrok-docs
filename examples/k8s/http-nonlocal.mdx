@@ -1,0 +1,55 @@
+The Kubernetes Ingress controller always forwards its traffic. All of our other
+examples show the most common forwarding case: a `Service` object that defines
+a label selector of matching pods to forward traffic to.
+
+But you can also [forward to an explicit set of IP
+addresses](https://kubernetes.io/docs/concepts/services-networking/service/#services-without-selectors)
+on the same network using `Service` and `EndpointSlice` objects.
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: example-service
+spec:
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+---
+apiVersion: discovery.k8s.io/v1
+kind: EndpointSlice
+metadata:
+  name: example-service-1
+  labels:
+    kubernetes.io/service-name: example-service
+addressType: IPv4
+ports:
+  - name: "http"
+    appProtocol: http
+    protocol: TCP
+    port: 80
+endpoints:
+  - addresses:
+      - "192.168.1.2"
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: example-ingress
+  annotations:
+    k8s.ngrok.com/modules: ngrok-module-set
+spec:
+  ingressClassName: ngrok
+  rules:
+    - host: app.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: example-service
+                port:
+                  number: 80
+```

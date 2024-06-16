@@ -1,0 +1,44 @@
+```jsx
+const ngrok = require("@ngrok/ngrok");
+const fs = require("fs");
+
+(async function () {
+	const listener = await ngrok.forward({
+		addr: 8080,
+		proto: "tcp",
+		authtoken_from_env: true,
+		policy: fs.readFileSync("/path/to/policy.json", "utf8"),
+	});
+
+	console.log(`Ingress established at: ${listener.url()}`);
+})();
+```
+
+```yaml title="policy.json"
+{
+  "inbound":
+    [
+      {
+        "name": "DenyTrafficOutsideUS",
+        "expressions": ["conn.geo.country_code != 'US'"],
+        "actions": [{ "type": "deny" }],
+      },
+      {
+        "name": "LogRequestsFromKnownIP",
+        "expressions": ["conn.client_ip == '110.0.0.1"],
+        "actions":
+          [
+            {
+              "type": "log",
+              "config":
+                { "metadata": { "event": "known-ip", "data": "110.0.0.1" } },
+            },
+          ],
+      },
+    ],
+}
+```
+
+Javascript SDK Docs:
+
+- [https://ngrok.github.io/ngrok-javascript/classes/TcpListenerBuilder.html#policy](https://ngrok.github.io/ngrok-javascript/classes/TcpListenerBuilder.html#policy)

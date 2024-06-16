@@ -1,22 +1,42 @@
+<!-- Code generated for API Clients. DO NOT EDIT. -->
 
 #### Example Response
+
 ```json
 {
-  "endpoints": [
-    {
-      "id": "ep_2NTVHMMspa5ifAw3LUGRqCFrlJL",
-      "created_at": "2023-03-24T19:59:29Z",
-      "updated_at": "2023-03-24T19:59:29Z",
-      "public_url": "https://fd80433faa73.ngrok.paid",
-      "proto": "https",
-      "hostport": "fd80433faa73.ngrok.paid:443",
-      "type": "ephemeral",
-      "tunnel": {
-        "id": "tn_2NTVHMMspa5ifAw3LUGRqCFrlJL",
-        "uri": "https://api.ngrok.com/tunnels/tn_2NTVHMMspa5ifAw3LUGRqCFrlJL"
-      }
-    }
-  ],
-  "uri": "https://api.ngrok.com/endpoints",
-  "next_page_uri": null
+	"endpoints": [
+		{
+			"created_at": "2024-06-14T06:03:56Z",
+			"hostport": "16dfebcd71b5.ngrok.paid:443",
+			"id": "ep_2hrGyRv9vQIaXfsk6uLtuDjOpdj",
+			"proto": "https",
+			"public_url": "https://16dfebcd71b5.ngrok.paid",
+			"tunnel": {
+				"id": "tn_2hrGyRv9vQIaXfsk6uLtuDjOpdj",
+				"uri": "https://api.ngrok.com/tunnels/tn_2hrGyRv9vQIaXfsk6uLtuDjOpdj"
+			},
+			"type": "ephemeral",
+			"updated_at": "2024-06-14T06:03:56Z"
+		},
+		{
+			"created_at": "2024-06-14T06:03:54Z",
+			"domain": {
+				"id": "rd_2hrGy2CPGaFF8YUiydCyaHayKfY",
+				"uri": "https://api.ngrok.com/reserved_domains/rd_2hrGy2CPGaFF8YUiydCyaHayKfY"
+			},
+			"edge": {
+				"id": "edgtls_2hrGy7Nc38eVlDViZ7IMsyDNUNa",
+				"uri": "https://api.ngrok.com/edges/tls/edgtls_2hrGy7Nc38eVlDViZ7IMsyDNUNa"
+			},
+			"hostport": "endpoint-example2.com:443",
+			"id": "ep_2hrGyAZ41ykmEdd9w1F2Rs1Lbzz",
+			"proto": "tls",
+			"public_url": "tls://endpoint-example2.com",
+			"type": "edge",
+			"updated_at": "2024-06-14T06:03:54Z"
+		}
+	],
+	"next_page_uri": null,
+	"uri": "https://api.ngrok.com/endpoints"
 }
+```

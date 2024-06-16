@@ -1,0 +1,49 @@
+```yaml
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: example-gateway
+  namespace: default
+spec:
+  gatewayClassName: ngrok
+  listeners:
+    - name: example-web
+      hostname: "example.ngrok.app"
+      port: 443
+      protocol: HTTPS
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: ngrokcert #ngrok will generate the cert so this cert does not be defined and will be ignored if defined
+      allowedRoutes:
+        kinds:
+          - kind: HTTPRoute
+        namespaces:
+          from: Selector
+          selector:
+            matchLabels:
+              expose-apps: "true"
+
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: my-route
+  namespace: ngrok-gateway
+spec:
+  parentRefs:
+    - kind: Gateway
+      name: example-gateway
+      namespace: default
+  hostnames:
+    - "example.ngrok.app"
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: example-service
+          kind: Service
+          port: 80
+```

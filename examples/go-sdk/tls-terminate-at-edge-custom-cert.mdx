@@ -1,0 +1,28 @@
+```go
+import (
+        "context"
+        "net"
+
+        "golang.ngrok.com/ngrok"
+        "golang.ngrok.com/ngrok/config"
+)
+
+func ngrokListener(ctx context.Context) (net.Listener, error) {
+	crtBytes := os.ReadFile("/path/to/app-example-com-crt.pem")
+	keyBytes := os.ReadFile("/path/to/app-example-com-key.pem")
+        return ngrok.Listen(ctx,
+                config.TLSEndpoint(
+                        config.WithDomain("example.ngrok.app"),
+                        config.WithTLSTermination(
+                                config.WithTLSTerminationAt(config.TLSAtEdge),
+                                config.WithTLSTerminationKeyPair(certBytes, keyBytes),
+                        ),
+                ),
+                ngrok.WithAuthtokenFromEnv(),
+        )
+}
+```
+
+Go Package Docs:
+
+- [https://pkg.go.dev/golang.ngrok.com/ngrok/config#WithTLSTerminationKeyPair](https://pkg.go.dev/golang.ngrok.com/ngrok/config#WithTLSTerminationKeyPair)

@@ -1,11 +1,14 @@
+<!-- Code generated for API Clients. DO NOT EDIT. -->
 
 #### Example Response
+
 ```json
 {
-  "id": "bkdwd_2NTVHYmERUarME0k5SF0rp7zdgt",
-  "uri": "https://api.ngrok.com/backends/weighted/bkdwd_2NTVHYmERUarME0k5SF0rp7zdgt",
-  "created_at": "2023-03-24T19:59:31Z",
-  "description": "acme weighted",
-  "metadata": "{\"environment\": \"production\"}",
-  "backends": {}
+	"backends": {},
+	"created_at": "2024-06-14T06:03:59Z",
+	"description": "acme weighted",
+	"id": "bkdwd_2hrGypdBIjDZ0g5Fl38STlGRZwg",
+	"metadata": "{\"environment\": \"production\"}",
+	"uri": "https://api.ngrok.com/backends/weighted/bkdwd_2hrGypdBIjDZ0g5Fl38STlGRZwg"
 }
+```

@@ -1,4 +1,3 @@
-
 ### Additional Information
 
 Your password is unable to be redeemed because it has expired.

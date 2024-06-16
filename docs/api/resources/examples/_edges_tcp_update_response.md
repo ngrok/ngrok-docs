@@ -1,13 +1,17 @@
+<!-- Code generated for API Clients. DO NOT EDIT. -->
 
 #### Example Response
+
 ```json
 {
-  "id": "edgtcp_2NTVHu2fkFe7UfKgVL0vFuBW4KS",
-  "description": "acme tcp edge",
-  "metadata": "{\"environment\": \"production\"}",
-  "created_at": "2023-03-24T19:59:34Z",
-  "uri": "https://api.ngrok.com/edges/tcp/edgtcp_2NTVHu2fkFe7UfKgVL0vFuBW4KS",
-  "hostports": null,
-  "backend": null,
-  "ip_restriction": null
+	"backend": null,
+	"created_at": "2024-06-14T06:04:03Z",
+	"description": "acme tcp edge",
+	"hostports": null,
+	"id": "edgtcp_2hrGzHzWpzrSkPjQwsypvElLQlq",
+	"ip_restriction": null,
+	"metadata": "{\"environment\": \"production\"}",
+	"policy": null,
+	"uri": "https://api.ngrok.com/edges/tcp/edgtcp_2hrGzHzWpzrSkPjQwsypvElLQlq"
 }
+```

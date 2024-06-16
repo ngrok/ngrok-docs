@@ -1,10 +1,13 @@
+<!-- Code generated for API Clients. DO NOT EDIT. -->
 
 #### Example Response
+
 ```json
 {
-  "status_code": 404,
-  "msg": "Resource not found",
-  "details": {
-    "operation_id": "op_2NTVHD3C93tThCZ38rsLLwxXqs3"
-  }
+	"details": {
+		"operation_id": "op_2hrGy7UzWH6kcxDYhSwtp7YWzv8"
+	},
+	"msg": "Resource not found",
+	"status_code": 404
 }
+```

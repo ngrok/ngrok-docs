@@ -1,0 +1,73 @@
+```go
+import (
+  "context"
+  "net"
+
+  "golang.ngrok.com/ngrok"
+  "golang.ngrok.com/ngrok/config"
+  "golang.ngrok.com/ngrok/policy"
+)
+
+func ngrokListener(ctx context.Context) (net.Listener, error) {
+  return ngrok.Listen(ctx,
+    config.HTTPEndpoint(
+      config.WithPolicy(
+        policy.Policy{
+          Inbound: []policy.Rule{
+            {
+              Name: "FooBarParamNotFound",
+              Expressions: []string{"'bar' in getQueryParam('foo')"},
+              Actions: []policy.Action{
+                {
+                  Type: "custom-response",
+                  Config: map[string]any{
+                    "status_code": 400,
+                    "content": "not found",
+                    "headers": {
+                      "content-type": "text/plain"
+                    }
+                  },
+                },
+              },
+            },
+            {
+              Name: "BazCookieForLargeRequests",
+              Expressions: []string{
+                "!hasReqCookie('baz')",
+                "req.content_length > 5000",
+              },
+              Actions: []policy.Action{
+                {
+                  Type: "deny",
+                },
+              },
+            },
+          },
+          Outbound: []policy.Rule{
+             {
+              Name: "LogUnsuccessfulRequests",
+              Expressions: []string{"res.status_code < 200 && res.status_code >= 300"},
+              Actions: []policy.Action{
+                {
+                  Type: "log",
+                  Config: map[string]any{
+                    "metadata": map[string]any{
+                      "hostport": "example.com:443",
+                      "success": false,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      ),
+    ),
+    ngrok.WithAuthtokenFromEnv(),
+  )
+}
+```
+
+Go Package Docs:
+
+- [https://pkg.go.dev/golang.ngrok.com/ngrok/config#WithPolicy](https://pkg.go.dev/golang.ngrok.com/ngrok/config#WithPolicy)

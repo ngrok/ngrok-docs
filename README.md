@@ -8,12 +8,14 @@ See our [Contribution Guidelines](CONTRIBUTING.md) for detailed instructions on 
 
 ## Setup
 
-ngrok is built using [Docusaurus 2](https://docusaurus.io/).
+ngrok is built using [Docusaurus 3](https://docusaurus.io/).
 
 Prerequisites required:
 
-- [Node 18+](https://nodejs.org/en/download)
+- [Node 20+](https://nodejs.org/en/download)
 - [pnpm 8+](https://pnpm.io/installation#using-npm)
+
+Both of these can be obtained via [nix-direnv](https://github.com/nix-community/nix-direnv), which will automatically configure your shell for you.
 
 Once you have the pre-requisites installed run the following commands:
 
@@ -38,4 +40,3 @@ pnpm run build
 
 For questions and support on contributing please join our [Slack community](https://ngrok.com/slack), channel `#support`.
 To file an issue within our doc, use our [github issues](https://github.com/ngrok/ngrok-docs/issues)
-

@@ -1,0 +1,43 @@
+```python
+import ngrok
+
+listener = ngrok.forward("localhost:8080", authtoken_from_env=True,
+    oauth_provider="microsoft",
+    oauth_client_id="{client id}",
+    oauth_client_secret="{client secret}")
+
+print(f"Ingress established at: {listener.url()}");
+```
+
+Python SDK Docs:
+
+- [https://ngrok.github.io/ngrok-python/http_listener_builder.html#ngrok.HttpListenerBuilder.oauth](https://ngrok.github.io/ngrok-python/http_listener_builder.html#ngrok.HttpListenerBuilder.oauth)
+- [https://ngrok.github.io/ngrok-python/index.html#full-configuration](https://ngrok.github.io/ngrok-python/index.html#full-configuration)
+
+```java
+import com.ngrok.Session;
+import com.ngrok.Http;
+
+import java.io.IOException;
+import java.nio.ByteBuffer;
+
+public class Quickstart {
+
+    private String clientId; // Value for Client ID
+    private String clientSecret; // Value for Client Secret
+    public static void main(String[] args) throws IOException {
+        var sessionBuilder = Session.withAuthtokenFromEnv().metadata("my session");
+        try (var session = sessionBuilder.connect()) {
+            var listenerBuilder = session.httpEndpoint().metadata("my listener")
+                    .oauthOptions(new Http.OAuth("microsoft").client(clientId,clientSecret));
+            try (var listener = listenerBuilder.listen()) {
+                System.out.println("ngrok url: " + listener.getUrl());
+
+            }
+        }
+    }
+}
+
+```
+
+Java SDK Docs:

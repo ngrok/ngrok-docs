@@ -13,27 +13,19 @@ jobs:
       - uses: pnpm/action-setup@v2
         with:
           version: 8
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: "20.x"
+          registry-url: "https://registry.npmjs.org"
           cache: 'pnpm'
       - name: 'Create env file'
         run: |
           echo DEPLOY_ENV=dev > .env
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+      - name: Check formatting
+        run: pnpm run fmt:check
+      - name: Typecheck
+        run: pnpm run typecheck
       - name: Build website
         run: pnpm run build
-  search-index-dev:
-    needs: deploy
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Run algolia/docsearch-scraper
-        run: |
-          docker pull algolia/docsearch-scraper
-          docker run \
-            -e ALGOLIA_APP_ID=${{ secrets.DEV_ALGOLIA_APPLICATION_ID }} \
-            -e API_KEY=${{ secrets.DEV_ALGOLIA_API_KEY }} \
-            -e "CONFIG=$(cat ./algolia_dev.config.json | jq -r tostring)" \
-            algolia/docsearch-scraper

@@ -1,23 +1,28 @@
+<!-- Code generated for API Clients. DO NOT EDIT. -->
 
 #### Example Response
+
 ```json
 {
-  "edge_id": "edghts_2NTVHVP15KjqmYQ9zneCgN1g6jt",
-  "id": "edghtsrt_2NTVHZDzqhegMQLdvEDJgDTvuiG",
-  "created_at": "2023-03-24T19:59:31Z",
-  "match_type": "path_prefix",
-  "match": "/",
-  "uri": "https://api.ngrok.com/edges/https/edghts_2NTVHVP15KjqmYQ9zneCgN1g6jt/routes/edghtsrt_2NTVHZDzqhegMQLdvEDJgDTvuiG",
-  "metadata": "{\"environment\": \"production\"}",
-  "backend": null,
-  "ip_restriction": null,
-  "circuit_breaker": null,
-  "compression": null,
-  "request_headers": null,
-  "response_headers": null,
-  "webhook_verification": null,
-  "oauth": null,
-  "saml": null,
-  "oidc": null,
-  "websocket_tcp_converter": null
+	"backend": null,
+	"circuit_breaker": null,
+	"compression": null,
+	"created_at": "2024-06-14T06:04:00Z",
+	"edge_id": "edghts_2hrGytDIqv11D4DmGnfhKhkNTmz",
+	"id": "edghtsrt_2hrGyuaMZrLot9vztTMWFhXHRoF",
+	"ip_restriction": null,
+	"match": "/",
+	"match_type": "path_prefix",
+	"metadata": "{\"environment\": \"production\"}",
+	"oauth": null,
+	"oidc": null,
+	"policy": null,
+	"request_headers": null,
+	"response_headers": null,
+	"saml": null,
+	"uri": "https://api.ngrok.com/edges/https/edghts_2hrGytDIqv11D4DmGnfhKhkNTmz/routes/edghtsrt_2hrGyuaMZrLot9vztTMWFhXHRoF",
+	"user_agent_filter": null,
+	"webhook_verification": null,
+	"websocket_tcp_converter": null
 }
+```
