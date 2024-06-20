@@ -33,6 +33,7 @@ To ensure your changes work before submitting a pr, please run the following bef
 
 ```
 cd ngrok-docs
+pnpm run fmt
 pnpm run build
 ```
 
