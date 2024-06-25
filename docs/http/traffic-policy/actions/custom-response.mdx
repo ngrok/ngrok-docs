@@ -1,8 +1,6 @@
-import {
-	ExampleHTTP,
-	TemplatingExamples,
-} from "/examples/actions/custom-response.mdx";
+import { ExampleHTTP } from "/examples/actions/custom-response.mdx";
 import CelTemplateSyntaxExplanation from "/src/components/CelTemplateSyntaxExplanation.tsx";
+import ConfigExample from "/src/components/ConfigExample.tsx";
 import HttpHeaderTemplates from "./../../_http_header_templates.mdx";
 
 # Custom Response
@@ -13,9 +11,31 @@ The Custom Response policy action returns a hard-coded response back to the clie
 
 ## Example
 
-Use this action config in your [Traffic Policy](/docs/http/traffic-policy/index.mdx)
+[Traffic Policy](/docs/http/traffic-policy/index.mdx) for returning an _inbound_ json error message with custom headers.
 
 <ExampleHTTP />
+
+_Request:_
+
+```shell
+curl https://example.ngrok.app/api/example
+```
+
+_Result:_
+
+```shell
+< HTTP/2 400
+< content-type: application/json
+< x-custom-header: custom-value
+< x-template-example: started at 2024-06-24T15:30:00Z
+
+{
+  error: {
+  message: "Bad Request",
+    time: "2024-06-24T15:30:00Z"
+  }
+}
+```
 
 ## Behavior
 
@@ -48,6 +68,77 @@ If this action is executed, no further actions in the traffic policy will be exe
 
 <CelTemplateSyntaxExplanation />
 
-### Templating Examples
+### More Examples
 
-<TemplatingExamples />
+##### Json response body with cel expressions
+
+<ConfigExample
+	config={{
+		actions: [
+			{
+				type: "custom-response",
+				config: {
+					status_code: 200,
+					content: '{"connection-start":"${conn.ts.start}"}',
+					headers: {
+						"content-type": "application/json",
+					},
+				},
+			},
+		],
+	}}
+/>
+
+_Request:_
+
+```shell
+curl https://example.ngrok.app/api/example
+```
+
+_Result:_
+
+```shell
+< HTTP/2 200
+< content-type: application/json
+
+{
+  "connection-start": "2024-06-24T15:30:00Z"
+}
+```
+
+<hr />
+
+##### Multiple inline expressions with a plain text response body
+
+<ConfigExample
+	config={{
+		actions: [
+			{
+				type: "custom-response",
+				config: {
+					status_code: 418,
+					content:
+						"connection began at ${conn.ts.start}, now ${timestamp(time.now)}",
+					headers: {
+						"content-type": "text/plain",
+					},
+				},
+			},
+		],
+	}}
+/>
+
+_Request:_
+
+```shell
+curl https://example.ngrok.app/api/example
+```
+
+_Result:_
+
+```shell
+< HTTP/2 200
+< content-type: text/plain
+
+"connection began at 2024-06-24T15:30:00Z, now 2024-06-24T16:30:00Z"
+```
