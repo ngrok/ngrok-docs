@@ -1,13 +1,11 @@
-name: Demo ngrok docs
+name: Prettier Check
 
 on:
   pull_request:
-    branches:
-      - main
+    types: [opened, synchronize, reopened]
 
 jobs:
-  deploy:
-    name: Demo ngrok docs
+  prettier-check:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -18,14 +16,15 @@ jobs:
           node-version: "20.x"
           registry-url: "https://registry.npmjs.org"
           cache: 'pnpm'
-      - name: 'Create env file'
-        run: |
-          echo DEPLOY_ENV=dev > .env
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       - name: Check formatting
         run: pnpm run fmt:check
-      - name: Typecheck
-        run: pnpm run typecheck
-      - name: Build website
-        run: pnpm run build
+      - name: Run the formatter if there were issues
+        if: failure()
+        run: pnpm run fmt
+      - name: Push changes
+        uses: stefanzweifel/git-auto-commit-action@v4
+        if: failure()
+        with:
+          commit_message: Format code with prettier
