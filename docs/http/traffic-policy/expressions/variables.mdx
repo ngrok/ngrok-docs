@@ -11,11 +11,11 @@ The following variables are available under the `conn` namespace:
 | [`conn.bytes_in`](#connbytes_in)       | int64     | The number of bytes entering the endpoint from the client. |
 | [`conn.bytes_out`](#connbytes_out)     | int64     | The number of bytes leaving an endpoint to the client.     |
 | [`conn.client_ip`](#connclient_ip)     | string    | Source IP of the connection to the ngrok endpoint.         |
-| [`conn.client_port`](#connclient_port) | string    | Source port of the connection to the ngrok endpoint.       |
-| [`conn.end_ts`](#connend_ts)           | timestamp | Timestamp when the connection to ngrok was closed.         |
+| [`conn.client_port`](#connclient_port) | int32     | Source port of the connection to the ngrok endpoint.       |
 | [`conn.server_ip`](#connserver_ip)     | string    | The IP that this connection was established on.            |
 | [`conn.server_port`](#connserver_port) | int32     | The port that this connection was established on.          |
-| [`conn.start_ts`](#connstart_ts)       | timestamp | Timestamp when the connection to ngrok was started.        |
+| [`conn.ts.end`](#conntsend)            | timestamp | Timestamp when the connection to ngrok was closed.         |
+| [`conn.ts.start`](#conntsstart)        | timestamp | Timestamp when the connection to ngrok was started.        |
 
 ### `conn.bytes_in`
 
@@ -49,15 +49,15 @@ Source IP of the connection to the ngrok endpoint.
 
 Source port of the connection to the ngrok endpoint.
 
-<ConfigExample config={{ expressions: ["conn.client_port == 80 "] }} />
+<ConfigExample config={{ expressions: ["conn.client_port == 80"] }} />
 
-### `conn.end_ts`
+### `conn.ts.end`
 
 Timestamp when the connection to ngrok was closed.
 
 <ConfigExample
 	config={{
-		expressions: ["conn.end_ts > timestamp('2024-01-01')"],
+		expressions: ["conn.ts.end > timestamp('2024-01-01')"],
 	}}
 />
 
@@ -81,13 +81,13 @@ The port that this connection was established on.
 	}}
 />
 
-### `conn.start_ts`
+### `conn.ts.start`
 
 Timestamp when the connection to ngrok was started.
 
 <ConfigExample
 	config={{
-		expressions: ["conn.start_ts > timestamp('2023-12-31')"],
+		expressions: ["conn.ts.start > timestamp('2023-12-31')"],
 	}}
 />
 
@@ -891,6 +891,78 @@ Start date and time when the certificate becomes valid.
 	}}
 />
 
+## Endpoint Variables
+
+The following variables are available under the `endpoint` namespace:
+
+| Name                                     | Type   | Description                                                                                     |
+| ---------------------------------------- | ------ | ----------------------------------------------------------------------------------------------- |
+| [`endpoint.addr`](#endpointaddr)         | string | The address for this endpoint.                                                                  |
+| [`endpoint.host`](#endpointhost)         | string | The hostname for this endpoint.                                                                 |
+| [`endpoint.id`](#endpointid)             | string | The endpoint that serviced this connection.                                                     |
+| [`endpoint.port`](#endpointport)         | int32  | The port for this endpoint.                                                                     |
+| [`endpoint.protocol`](#endpointprotocol) | string | The protocol for this endpoint. Current supported values are `http`, `https`, `tcp`, and `tls`. |
+| [`endpoint.url`](#endpointurl)           | string | The url for this endpoint.                                                                      |
+
+### `endpoint.addr`
+
+The address for this endpoint.
+
+<ConfigExample
+	config={{
+		expressions: ["endpoint.addr == 'my-subdomain.ngrok.app:443'"],
+	}}
+/>
+### `endpoint.host`
+
+The hostname for this endpoint.
+
+<ConfigExample
+	config={{
+		expressions: ["endpoint.host == 'my-subdomain.ngrok.app'"],
+	}}
+/>
+
+### `endpoint.id`
+
+The id for this endpoint.
+
+<ConfigExample
+	config={{
+		expressions: ["endpoint.id == 'ep_2iL8LRbQilSCKYjaslRoqBwJcfT'"],
+	}}
+/>
+
+### `endpoint.port`
+
+The port for this endpoint.
+
+<ConfigExample
+	config={{
+		expressions: ["endpoint.port == 443"],
+	}}
+/>
+
+### `endpoint.protocol`
+
+The protocol for this endpoint. Current supported values are `http`, `https`, `tcp`, and `tls`.
+
+<ConfigExample
+	config={{
+		expressions: ["endpoint.protocol == 'https'"],
+	}}
+/>
+
+### `endpoint.url`
+
+The url for this endpoint.
+
+<ConfigExample
+	config={{
+		expressions: ["endpoint.url == 'https://my-subdomain.ngrok.app'"],
+	}}
+/>
+
 ## Request Variables
 
 The following variables are available under the `req` namespace:
@@ -908,12 +980,16 @@ The following variables are available under the `req` namespace:
 | [`req.location`](#reqlocation)                              | string                   | The location header value of the request.                                                                                                                                                       |
 | [`req.method`](#reqmethod)                                  | string                   | The request method.                                                                                                                                                                             |
 | [`req.trailers`](#reqtrailers)                              | map[string][]string      | The request trailers parsed as a map of lower-case names to values.                                                                                                                             |
+| [`req.ts.body_received`](#reqtsbody_received)               | timestamp                | The timestamp when ngrok received the body of the request. This may not be present if the request does not contain a body.                                                                      |
+| [`req.ts.header_received`](#reqtsheader_received)           | timestamp                | The timestamp when ngrok received the header of the request.                                                                                                                                    |
 | [`req.url`](#requrl)                                        | string                   | The normalized full URL for this request.                                                                                                                                                       |
 | [`req.url.authority`](#requrlauthority)                     | string                   | The authority portion of the URL.                                                                                                                                                               |
-| [`req.url.host`](#requrlhost)                               | string                   | The host for this request.                                                                                                                                                                      |
+| [`req.url.host`](#requrlhost)                               | string                   | The hostname portion of the host for this request.                                                                                                                                              |
 | [`req.url.path`](#requrlpath)                               | string                   | The path for this request including the leading forward slash.                                                                                                                                  |
+| [`req.url.port`](#requrlport)                               | int32                    | The port portion of the host for this request.                                                                                                                                                  |
 | [`req.url.query`](#requrlquery)                             | string                   | The full query string for this request excluding the leading question mark.                                                                                                                     |
 | [`req.url.query_params`](#requrlquery_params)               | map[string][]string      | The request query string parsed as a map of names to values.                                                                                                                                    |
+| [`req.url.raw`](#requrlraw)                                 | string                   | The un-normalized full URL for this request.                                                                                                                                                    |
 | [`req.url.raw_path`](#requrlraw_path)                       | string                   | The un-normalized path including the leading slash for this request.                                                                                                                            |
 | [`req.url.scheme`](#requrlscheme)                           | string                   | The scheme for this request.                                                                                                                                                                    |
 | [`req.url.uri`](#requrluri)                                 | string                   | The URI (path and query) portion of the URL.                                                                                                                                                    |
@@ -1031,6 +1107,26 @@ The request trailers parsed as a map of lower-case names to values.
 	}}
 />
 
+### `req.ts.body_received`
+
+The timestamp when ngrok received the body of the request. This may not be present if the request does not contain a body.
+
+<ConfigExample
+	config={{
+		expressions: ["req.ts.body_received > timestamp('2023-12-31')"],
+	}}
+/>
+
+### `req.ts.header_received`
+
+The timestamp when ngrok received the header of the request.
+
+<ConfigExample
+	config={{
+		expressions: ["req.ts.header_received > timestamp('2023-12-31')"],
+	}}
+/>
+
 ### `req.url`
 
 The normalized full URL for this request.
@@ -1053,11 +1149,11 @@ The authority portion of the URL.
 
 ### `req.url.host`
 
-The host for this request.
+The hostname portion of the host for this request.
 
 <ConfigExample
 	config={{
-		expressions: ["req.url.host.contains(':8080')"],
+		expressions: ["req.url.host == 'nba.com'"],
 	}}
 />
 
@@ -1068,6 +1164,16 @@ The path part of this request including the leading forward slash.
 <ConfigExample
 	config={{
 		expressions: ["req.url.path.startsWith('/foo')"],
+	}}
+/>
+
+### `req.url.port`
+
+The port portion of the host for this request.
+
+<ConfigExample
+	config={{
+		expressions: ["req.url.port == 443"],
 	}}
 />
 
@@ -1091,13 +1197,23 @@ The request query string parsed as a map of names to values.
 	}}
 />
 
+### `req.url.raw`
+
+The un-normalized full URL for this request.
+
+<ConfigExample
+	config={{
+		expressions: ["req.url.raw.includes('/foo')"],
+	}}
+/>
+
 ### `req.url.raw_path`
 
 The un-normalized path including the leading slash for this request.
 
 <ConfigExample
 	config={{
-		expressions: ["`req.url.raw_path.startsWith('/foo')"],
+		expressions: ["req.url.raw_path.startsWith('/foo')"],
 	}}
 />
 
@@ -1155,18 +1271,20 @@ The HTTP version for this request.
 
 The following variables are available under the `res` namespace:
 
-| Name                                                        | Type                     | Description                                                                         |
-| ----------------------------------------------------------- | ------------------------ | ----------------------------------------------------------------------------------- |
-| [`res.content_encoding`](#rescontent_encoding)              | list[string]             | The encoding set in the Content-Encoding header for this response as a list.        |
-| [`res.content_length`](#rescontent_length)                  | int64                    | The length of the content associated with the response.                             |
-| [`res.content_type`](#rescontent_type)                      | string                   | The media type set in the Content-Type header for this response as a string.        |
-| [`res.content_type.parameters`](#rescontent_typeparameters) | map[string]string        | The parameters set in the Content-Type header for this response as a key value map. |
-| [`res.content_type.raw`](#rescontent_typeraw)               | string                   | The Content-Type header for this response as a string.                              |
-| [`res.cookies`](#rescookies)                                | map[string]\*http.Cookie | The key value map of HTTP cookie objects provided in the response.                  |
-| [`res.headers`](#resheaders)                                | map[string][]string      | The response headers parsed as a map of lower-case names to values.                 |
-| [`res.location`](#reslocation)                              | string                   | The location header value of this response.                                         |
-| [`res.status_code`](#resstatus_code)                        | int32                    | The status code of this response.                                                   |
-| [`res.trailers`](#restrailers)                              | map[string][]string      | The response trailers parsed as a map of lower-case names to values.                |
+| Name                                                        | Type                     | Description                                                                                                              |
+| ----------------------------------------------------------- | ------------------------ | ------------------------------------------------------------------------------------------------------------------------ |
+| [`res.content_encoding`](#rescontent_encoding)              | list[string]             | The encoding set in the Content-Encoding header for this response as a list.                                             |
+| [`res.content_length`](#rescontent_length)                  | int64                    | The length of the content associated with the response.                                                                  |
+| [`res.content_type`](#rescontent_type)                      | string                   | The media type set in the Content-Type header for this response as a string.                                             |
+| [`res.content_type.parameters`](#rescontent_typeparameters) | map[string]string        | The parameters set in the Content-Type header for this response as a key value map.                                      |
+| [`res.content_type.raw`](#rescontent_typeraw)               | string                   | The Content-Type header for this response as a string.                                                                   |
+| [`res.cookies`](#rescookies)                                | map[string]\*http.Cookie | The key value map of HTTP cookie objects provided in the response.                                                       |
+| [`res.headers`](#resheaders)                                | map[string][]string      | The response headers parsed as a map of lower-case names to values.                                                      |
+| [`res.location`](#reslocation)                              | string                   | The location header value of this response.                                                                              |
+| [`res.status_code`](#resstatus_code)                        | int32                    | The status code of this response.                                                                                        |
+| [`res.trailers`](#restrailers)                              | map[string][]string      | The response trailers parsed as a map of lower-case names to values.                                                     |
+| [`res.ts.body_sent`](#restsbody_sent)                       | timestamp                | The timestamp when ngrok sent the body of the response. This may not be present if the response does not contain a body. |
+| [`res.ts.header_sent`](#restsheader_sent)                   | timestamp                | The timestamp when ngrok sent the header of the response.                                                                |
 
 ### `res.content_encoding`
 
@@ -1268,6 +1386,26 @@ The trailers of the response parsed as key maps to a list of values. Trailer key
 	}}
 />
 
+### `res.ts.body_sent`
+
+The timestamp when ngrok sent the body of the response. This may not be present if the response does not contain a body.
+
+<ConfigExample
+	config={{
+		expressions: ["res.ts.body_sent > timestamp('2023-12-31')"],
+	}}
+/>
+
+### `res.ts.header_sent`
+
+The timestamp when ngrok sent the header of the request.
+
+<ConfigExample
+	config={{
+		expressions: ["res.ts.header_sent > timestamp('2023-12-31')"],
+	}}
+/>
+
 ## Time variables
 
 The following variables are available under the `time` namespace:
@@ -1282,6 +1420,6 @@ The current UTC time in RFC3339 format.
 
 <ConfigExample
 	config={{
-		expressions: ["conn.end_ts < timestamp(time.now)"],
+		expressions: ["conn.ts.end < timestamp(time.now)"],
 	}}
 />
