@@ -4,18 +4,18 @@ on:
   pull_request:
     branches:
       - main
+
 jobs:
   deploy:
     name: Demo ngrok docs
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: pnpm/action-setup@v2
-        with:
-          version: 8
+      - uses: actions/checkout@v4
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: "20.x"
+          node-version-file: ".nvmrc"
           registry-url: "https://registry.npmjs.org"
           cache: 'pnpm'
       - name: 'Create env file'
@@ -23,8 +23,6 @@ jobs:
           echo DEPLOY_ENV=dev > .env
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      - name: Check formatting
-        run: pnpm run fmt:check
       - name: Typecheck
         run: pnpm run typecheck
       - name: Build website

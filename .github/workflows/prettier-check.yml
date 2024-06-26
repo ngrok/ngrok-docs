@@ -1,0 +1,30 @@
+name: Prettier Check
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  prettier-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+          registry-url: "https://registry.npmjs.org"
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Check formatting
+        run: pnpm run fmt:check
+      - name: Run the formatter if there were issues
+        if: failure()
+        run: pnpm run fmt
+      - name: Push changes
+        uses: stefanzweifel/git-auto-commit-action@v4
+        if: failure()
+        with:
+          commit_message: Format code with prettier
