@@ -6,11 +6,11 @@ import ConfigExample from "/src/components/ConfigExample.tsx";
 
 ## Overview
 
-The URL Rewrite action allows you to transform the URL path and query parameters of the incoming request to your [upstream](/docs/how-ngrok-works/#ngrok-vs-traditional-reverse-proxies)
+The URL Rewrite action allows you to transform the URL path and query parameters of the incoming request to your [upstream](/docs/how-ngrok-works/#ngrok-vs-traditional-reverse-proxies).
 
 ## Example
 
-[Traffic Policy](/docs/http/traffic-policy/index.mdx) for rewriting an incoming url's `version` and `id` path params.
+[Traffic Policy](/docs/http/traffic-policy/index.mdx) for rewriting an incoming URL's `version` and `id` path params.
 
 <ExampleHTTP />
 
@@ -21,8 +21,6 @@ curl https://example.ngrok.app/api/v1/users/42
 ```
 
 _Result:_
-
-- Url rewritten on _incoming_ request
 
 ```shell
 > GET https://example.ngrok.app/api/v2/users?id=42 HTTP/1.1
@@ -66,8 +64,8 @@ When executed, this action will replace all regex matches with the configured re
 				type: "url-rewrite",
 				config: {
 					format: "ngrok",
-					from: "/api/v1/api?lat=(${conn.geo.latitude})",
-					to: "/api/v2/api?lat=$1&long=${conn.geo.longitude}",
+					from: "/api/v1/api?lat=(\d+)",
+					to: "/api/v2/api?lat=$1&long=86.75309",
 				},
 			},
 		],
@@ -77,16 +75,16 @@ When executed, this action will replace all regex matches with the configured re
 _Request:_
 
 ```shell
-curl https://example.ngrok.app/api/v1/users/42
+curl https://example.ngrok.app/api/v1?lat=42.42
 ```
 
 _Result:_
 
-- Url Rewritten* on incoming \_request*
+- Path and params rewritten on incoming _request_
 
 ```shell
 # Url on incoming request to upstream
-> GET https://example.ngrok.app/api/v2/users?id=42 HTTP/1.1
+> GET https://example.ngrok.app/api/v2?lat=42&long=86.75309 HTTP/2
 ```
 
 <hr />
@@ -99,8 +97,8 @@ _Result:_
 				type: "url-rewrite",
 				config: {
 					format: "ngrok",
-					from: "/api/v1/api/(carmen)/sandiego?city=${conn.geo.city}",
-					to: "/api/v2/api/$1/sandiego?found=${conn.geo.city}",
+					from: "/api/v1/(carmen)/sandiego?city=${conn.geo.city}",
+					to: "/api/v2/$1/sandiego?found=${conn.geo.city}",
 				},
 			},
 		],
@@ -110,7 +108,7 @@ _Result:_
 _Request:_
 
 ```shell
-curl https://example.ngrok.app/api/v1/users/42
+curl https://example.ngrok.app/api/v1/api/carmen/sandiego?city=salt-lake-city
 ```
 
 _Result:_
@@ -119,7 +117,7 @@ _Result:_
 
 ```shell
 # New Url on incoming request to upstream
-> GET https://example.ngrok.app/api/v2/users?id=42 HTTP/1.1
+> GET https://example.ngrok.app/api/v2/carmen/sandiego?found=boulder HTTP/2
 ```
 
 <hr />
@@ -143,7 +141,7 @@ _Result:_
 _Request:_
 
 ```shell
-curl https://example.ngrok.app/api/v1/users/42
+curl https://example.ngrok.app/api/v1?not-now=false
 ```
 
 _Result:_
@@ -151,7 +149,7 @@ _Result:_
 - Url Rewritten on incoming _request_
 
 ```shell
-> GET https://example.ngrok.app/api/v2/users?id=42 HTTP/1.1
+> GET https://example.ngrok.app/api/v2?now=true HTTP/2
 ```
 
 <hr />
