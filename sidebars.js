@@ -232,6 +232,7 @@ const sidebars = {
 				"network-edge/gslb",
 				"network-edge/tls-certificates",
 				"network-edge/app-users",
+				"network-edge/bindings",
 			],
 		},
 		{
