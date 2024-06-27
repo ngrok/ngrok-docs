@@ -43,3 +43,7 @@ Setting up a custom ingress domain can be useful because it ensures that no one 
 
 - Set up a [custom ingress domain in your ngrok Dashboard](https://dashboard.ngrok.com/tunnels/ingress)
 - Edit your ngrok agent configuration file with a [`server_addr`](/agent/config/#server_addr) parameter, set to the custom ingress domain of your choosing
+
+
+### Certificate Revocation List
+One of the steps in agent connection is [checking the certificate revocation list](/agent/#tls-verification). This requires an outbound connection on port 80 to the CRL URL (`crl.ngrok.com` for agent versions 3.9.0 and before, `crl.ngrok-agent.com` for agent version 3.10.0 and after).If you are unable to connect to this URL, it is possible to skip the CRL check by setting `crl_noverify: true` in your configuration file. However, disabling the CRL check does expose you to the possibility of using a certificate that has been revoked which could mean that a third party could intercept and view your traffic.
