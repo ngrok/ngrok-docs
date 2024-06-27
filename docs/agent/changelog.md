@@ -6,6 +6,10 @@ title: Changelog
 
 ## v3
 
+### ngrok Agent 3.12.0 - \[2024-06-27\]
+
+- Errors now have links to ngrok error page.
+
 ### ngrok Agent 3.11.0 - \[2024-06-13\]
 
 - `ngrok http` now has timestamps for incoming requests.
