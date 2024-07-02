@@ -1,6 +1,6 @@
 ---
 sidebar_position: 9
-title: Configure site-to-site connectivity to APIs on devices 
+title: Configure site-to-site connectivity to APIs on devices
 description: Connect to APIs on devices.
 tags:
   - guides
@@ -10,7 +10,8 @@ tags:
   - fleet
   - iot
 ---
-This guide provides step-by-step instructions for using ngrok as a device gateway. 
+
+This guide provides step-by-step instructions for using ngrok as a device gateway.
 This example shows you how to securely run the ngrok agent at an external site to get access
 to an API running on an IoT device. The connection will be end-to-end encrypted using mutual TLS (mTLS).
 
@@ -440,7 +441,7 @@ obtain certificates signed by a Certificate Authority for use in production.
 
 You now have connectivity to your device's API and can access any endpoint of the API
 running on the port you provided in the previous step. You’ll pass the client certificate
-in each request to the API, and ngrok will terminate TLS once the request reaches the agent on the device. 
+in each request to the API, and ngrok will terminate TLS once the request reaches the agent on the device.
 ngrok will only forward the request to your customer’s network if it includes a valid client certificate
 signed by a Certificate Authority that you’ve added to your ngrok account.
 
@@ -473,15 +474,5 @@ To add a certificate to Postman:
 ![alt-text](img/postman.png)
 
 You can now use Postman to make requests to your device’s API, and Postman will automatically
-send the certificates you added whenever you access a URL on the domain. 
+send the certificates you added whenever you access a URL on the domain.
 Both the request and the response will be encrypted with TLS, so there’s no need to add any additional security policies.
-
-
-
-
-
-
-
-
-
-
