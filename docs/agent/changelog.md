@@ -6,6 +6,10 @@ title: Changelog
 
 ## v3
 
+### ngrok Agent 3.12.0 - \[2024-06-27\]
+
+- Errors now have links to ngrok error page.
+
 ### ngrok Agent 3.11.0 - \[2024-06-13\]
 
 - `ngrok http` now has timestamps for incoming requests.
@@ -16,7 +20,7 @@ title: Changelog
 
 ### ngrok Agent 3.10.0 - \[2024-05-23\]
 
-- **ACTION MAY BE REQUIRED**: The domain used for Certificate Revocation List (CRL) checks is now `crl.ngrok-agent.com` to align it with the domain used for session connections. This may require changes to your firewall or proxy settings to allow this outbound connection, or setting `crl_noverify: true` in the agent config file.
+- **ACTION MAY BE REQUIRED**: The domain used for Certificate Revocation List (CRL) checks is now `crl.ngrok-agent.com` to align it with the domain used for session connections. This may require changes to your firewall or proxy settings to allow this outbound connection on port 80, or setting `crl_noverify: true` in the agent config file.
 - Added CLI API support for [Bot Users](/docs/iam/bot-users/).
 
 ### ngrok Agent 3.9.0 - \[2024-04-24\]
