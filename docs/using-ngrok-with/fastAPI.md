@@ -45,7 +45,7 @@ async def lifespan(app: FastAPI):
         addr=APPLICATION_PORT,
         labels=NGROK_EDGE,
         proto="labeled",
-   )
+    )
     yield
     logger.info("Tearing Down Ngrok Tunnel")
     ngrok.disconnect()
