@@ -50,6 +50,7 @@ services:
         image: ngrok/ngrok:latest
         restart: unless-stopped
         command:
+          - "ngrok"
           - "start"
           - "--all"
           - "--config"
