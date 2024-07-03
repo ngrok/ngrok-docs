@@ -1,3 +1,5 @@
+import ActionDescription from "/docs/traffic-policy/variables/actions/action_description.mdx";
+import ActionResultVariables from "/docs/traffic-policy/variables/actions/rate_limit.mdx";
 import { ExampleHTTP } from "/examples/actions/rate-limit.mdx";
 
 # Rate Limit
@@ -10,9 +12,22 @@ be limited overall or by attributes of the incoming requests.
 
 ## Example
 
-Use this action config in your [Traffic Policy](/docs/http/traffic-policy/index.mdx)
+[Traffic Policy](/docs/http/traffic-policy/index.mdx) rate limit based on incoming `Host`.
 
 <ExampleHTTP />
+
+_Request:_
+
+```shell
+curl https://example.ngrok.app/api/v1
+```
+
+_Result: (when limiting)_
+
+```shell
+< HTTP/2 429
+< retry-after: 86
+```
 
 ## Behavior
 
@@ -45,3 +60,8 @@ Currently, the `capacity` for each bucket is applied per ingress server.
 | `capacity`   | uint              | The maximum number of requests allowed to reach your upstream server. The minimum capacity is `1` and the maximum capacity is `2,000,000,000`.                                                                                                                                                                                                                                                                                  |
 | `rate`       | string            | The duration in which events may be limited based on the current capacity. This must be specified as a time duration that is a multiple of ten seconds (e.g. `"90s"`, `"10m"`). The minimum value is `"60s"` and the maximum value is `"24h"`.                                                                                                                                                                                  |
 | `bucket_key` | Set&lt;string&gt; | The elements of this collection define the unique key of a request to collect and track the rate at which the capacity is being met. Possible values are `"req.host"`, which is the Host, `"conn.client_ip"`, and `"req.headers['x-example-header-name']"` or the related macro `getReqHeader('X-Example-Header-Name')`, which is the value for the specified header key, if it exists. Up to ten bucket keys can be specified. |
+
+### Action Result Variables
+
+<ActionDescription />
+<ActionResultVariables />

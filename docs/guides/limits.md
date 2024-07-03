@@ -7,6 +7,10 @@ title: Free Plan Limits
 
 Below are the limits enforced in the ngrok free plan. For more details on increasing or removing these limits, refer to the [ngrok paid plans](https://ngrok.com/pricing?ref=limits-docs).
 
+## TCP Endpoints
+
+In an effort to reduce abuse on the ngrok platform, we now require a valid payment method be [added to your account](https://dashboard.ngrok.com/settings#id-verification) before you can start TCP endpoints. This card will not be charged as long as you remain on the free plan.
+
 ## ​Endpoints
 
 As a free user of ngrok you can define up to 3 endpoints in a [configuration](https://ngrok.com/docs/agent/config/) served by the same agent at the same time.
