@@ -11,20 +11,20 @@ const toReplace = (to) => (path, from) => path.replace(from, to)            // a
 //  [0 - from]: (path) => [matchStr, boolean (true for match, false for do not match)]
 //  [1 - to]:  (path, from) => string (returned value becomes the new path)
 const redirects = [
-    [ fromIncludes(`/docs/ngrok-link`), `/docs/cloud-edge` ],
+    [ fromIncludes(`/docs/ngrok-link`), `/docs/network-edge/` ],
     [ fromIncludes(`/docs/api/api-clients`), `/docs/api/#client-libraries` ],
     [ fromIncludes(`/docs/api/client-libraries`), `/docs/api/#client-libraries` ],
     [ fromIncludes(`/docs/api/terraform`), `/docs/api/#terraform-provider` ],
     [ fromIncludes(`/docs/platform/api`), `/docs/api/` ],
     [ fromIncludes(`/docs/platform/events`), `/docs/events/` ],
     [ fromIncludes(`/docs/events/filtering`), `/docs/events/#filters` ],
-    [ fromIncludes(`/docs/http-header-templates/`), `/docs/cloud-edge/http-header-templates/` ],
-    [ fromIncludes(`/docs/platform/pops/`), `/docs/cloud-edge/pops/` ],
+    [ fromIncludes(`/docs/http-header-templates/`), `/docs/network-edge/http-header-templates/` ],
+    [ fromIncludes(`/docs/platform/pops/`), `/docs/network-edge/pops/` ],
     [ fromIncludes(`/docs/best-practices/security-dev-productivity/`), `/docs/guides/security-dev-productivity/` ],
-    [ fromIncludes(`/docs/platform/ip-policies/`), `/docs/cloud-edge/ip-policies/` ],
+    [ fromIncludes(`/docs/platform/ip-policies/`), `/docs/network-edge/ip-policies/` ],
     [ fromIncludes(`/docs/platform/botusers/`), `/docs/user-management/#bot-users` ],
     [ fromIncludes(`/docs/platform/dashboard/`), `/docs/user-management/#sso` ],
-    [ fromIncludes(`/docs/cloud-edge/modules/webhook/`), `/docs/cloud-edge/modules/webhook-verification/` ],
+    [ fromIncludes(`/docs/cloud-edge/modules/webhook/`), `/docs/network-edge/modules/webhook-verification/` ],
     [ fromIncludes(`/docs/cloud-edge/modules/oauth/amazon/`), `/docs/integrations/amazon/oauth/` ],
     [ fromIncludes(`/docs/cloud-edge/modules/oauth/facebook/`), `/docs/integrations/facebook/oauth/` ],
     [ fromIncludes(`/docs/cloud-edge/modules/oauth/github/`), `/docs/integrations/github/oauth/` ],
@@ -33,7 +33,7 @@ const redirects = [
     [ fromIncludes(`/docs/cloud-edge/modules/oauth/linkedin/`), `/docs/integrations/linkedin/oauth/` ],
     [ fromIncludes(`/docs/cloud-edge/modules/oauth/microsoft/`), `/docs/integrations/microsoft/oauth/` ],
     [ fromIncludes(`/docs/cloud-edge/modules/oauth/twitch/`), `/docs/integrations/twitch/oauth/` ],
-    [ fromIncludes(`/docs/cloud-edge/http-header-templates/`), `/docs/cloud-edge/modules/request-headers/#variables` ],
+    [ fromIncludes(`/docs/cloud-edge/http-header-templates/`), `/docs/network-edge/modules/request-headers/#variables` ],
     [ fromIncludes(`/docs/integrations/awscloudwatch`), `/docs/integrations/amazon-cloudwatch/` ],
     [ fromIncludes(`/docs/integrations/awsfirehose`), `/docs/integrations/amazon-firehose/` ],
     [ fromIncludes(`/docs/integrations/awskinesis`), `/docs/integrations/amazon-kinesis/` ],
@@ -74,7 +74,7 @@ const redirects = [
 
     // redirects for cloud edges
     [ fromIncludes(`/docs/cloud-edge/app-users/`), `/docs/network-edge/app-users/` ],
-    [ fromIncludes(`/docs/cloud-edge/edges/`), `/docs/cloud-edge/edges/` ],
+    [ fromIncludes(`/docs/cloud-edge/edges/`), `/docs/network-edge/edges/` ],
     [ fromIncludes(`/docs/cloud-edge/edges/https/`), `/docs/http/` ],
     [ fromIncludes(`/docs/cloud-edge/edges/tcp/`), `/docs/tcp/` ],
     [ fromIncludes(`/docs/cloud-edge/edges/tls/`), `/docs/tls/` ],
