@@ -74,7 +74,7 @@ const redirects = [
 
     // redirects for cloud edges
     [ fromIncludes(`/docs/cloud-edge/app-users/`), `/docs/network-edge/app-users/` ],
-    [ fromIncludes(`/docs/cloud-edge/edges/`), `/docs/network-edge/edges/` ],
+    [ fromIncludes(`/docs/cloud-edge/edges/`), `/docs/cloud-edge/edges/` ],
     [ fromIncludes(`/docs/cloud-edge/edges/https/`), `/docs/http/` ],
     [ fromIncludes(`/docs/cloud-edge/edges/tcp/`), `/docs/tcp/` ],
     [ fromIncludes(`/docs/cloud-edge/edges/tls/`), `/docs/tls/` ],
