@@ -8,6 +8,12 @@ title: FAQ
 
 Yes. The official ngrok status page is [status.ngrok.com](https://status.ngrok.com).
 
+## Why am I required to add a payment method to use TCP endpoints on the free tier? Will I be charged?
+
+In an effort to combat abuse on the platform, we now require a valid payment method be [added to your account](https://dashboard.ngrok.com/settings#id-verification) before you can use TCP endpoints on the free tier. This card will not be charged. If you remove this card from your account, you will lose access to TCP endpoints until you add another payment method.
+
+Valid payment methods include credit or debit cards. Prepaid cards may not be used to enable TCP endpoints.
+
 ## Why is my antivirus software reporting the ngrok agent as a virus / malware / or potentially unwanted application (PAU)?
 
 ngrok is beloved for our ease of use and powerful capability. Unfortunately, those same
@@ -22,7 +28,7 @@ If you receive a notice from your antivirus software when installing ngrok softw
 
 - Our official binaries can be downloaded from our [ngrok Downloads](https://ngrok.com/download) page, and the binaries themselves are hosted at `bin.equinox.io`. If you installed ngrok from another source, you should be careful.
 - There are no open source versions of our ngrok Agent and the source code is not available. If you have downloaded anything claiming to be ngrok agent source code or built our agent from source, it is most likely malicious.
-- All of our binaries are signed using ngrok certificates. You can verify the integrity of the application by checking that the binary is signed by an `ngrok LLC` authority. See [these instructions from Microsoft](https://support.microsoft.com/en-us/office/view-digital-signature-and-certificate-details-76ba00cb-1e58-42aa-8717-0caee76bb3cf) for verifying the digital signatures in Windows binaries.
+- All of our binaries are signed using ngrok certificates. You can verify the integrity of the application by checking that the binary is signed by an `ngrok LLC` or `ngrok, Inc.` authority. See [these instructions from Microsoft](https://support.microsoft.com/en-us/office/view-digital-signature-and-certificate-details-76ba00cb-1e58-42aa-8717-0caee76bb3cf) for verifying the digital signatures in Windows binaries.
 
 Here is an example for macOS using our 3.8.0 binary
 

@@ -16,6 +16,10 @@ You can use ngrok for SFTP communication by opening up a TCP tunnel on the port 
 ngrok tcp 22
 ```
 
+::::warning
+TCP endpoints are only available on a free plan after [adding a valid payment method](https://dashboard.ngrok.com/settings#id-verification) to your account.
+::::
+
 From there, you can use the resulting TCP address in your preferred SFTP client to connect to your local server.
 
 ## Alternatives to FTP for sharing files

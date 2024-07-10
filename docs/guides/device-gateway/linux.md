@@ -45,7 +45,10 @@ ngrok authtoken NGROK_AUTHTOKEN
 To enable remote SSH access to your device via ngrok:
 
 1. Test that the ngrok agent is configured correctly by starting a TCP tunnel on your remote device.
-   **Note**: If you get an error, ensure your authtoken is configured correctly.
+
+::::warning
+TCP endpoints are only available on a free plan after [adding a valid payment method](https://dashboard.ngrok.com/settings#id-verification) to your account. If you get a different error, ensure your authtoken is configured correctly.
+::::
 
 ```bash
 ngrok tcp 22
@@ -150,7 +153,7 @@ Each action that happens in ngrok is published as an event, and [Event Subscript
 
 An Event Subscription is made up of a set of event sources (some of which can be filtered), and event destinations. Each subscription can send the events to one or more destinations, such as Amazon CloudWatch Logs, Amazon Kinesis (as a data stream), or Amazon Kinesis Firehose (as a delivery stream).
 
-Event subscriptions can be configured through the [ngrok Dashboard](https://dashboard.ngrok.com/obs/subscriptions) or the [ngrok API](/docs/api/resources/event-destinations/).
+Event subscriptions can be configured through the [ngrok Dashboard](https://dashboard.ngrok.com/observability/event-subscriptions) or the [ngrok API](/docs/api/resources/event-destinations/).
 
 You can also forward all or some of your traffic events from [ngrok to your preferred logging tool](/docs/obs/).
 
