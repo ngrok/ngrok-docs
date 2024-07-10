@@ -115,6 +115,14 @@ true.
 Basic Auth (`--basic-auth`) does not yet support configuring options
 passthrough.
 
+## What is the full list of ngrok IP addresses?
+
+The IPs that ngrok controls is dynamic and the current list can be found in our [ngrok ips.json file](https://s3.amazonaws.com/dns.ngrok.com/ips.json).
+
+::::warning
+These IP addresses can and do change, so we recommend using our DNS names instead of hardcoding IP addresses.
+::::
+
 ## What's the status of ngrok v1? {#v1}
 
 The original open source ngrok agent 1.x is [available on
