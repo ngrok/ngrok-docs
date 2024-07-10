@@ -88,7 +88,7 @@ Alternatively, you can create an IP policy in the ngrok dashboard (under [Securi
 
 ## Step 4: Run ngrok as a service so you don't need to manually restart
 
-Read more about the `ngrok service`command which allows you to run and control an ngrok service on the operating system. [Run ngrok as a service.](<[https://dashboard.ngrok.com/cloud-edge/tcp-addresses](https://ngrok.com/docs/agent/cli/#ngrok-service)>).
+Read more about the `ngrok service`command which allows you to run and control an ngrok service on the operating system. [Run ngrok as a service.](/agent/cli/#ngrok-service)).
 
 The ngrok agent works with native OS services like `systemd`. This helps you ensure that the ngrok service is available even after the machine restarts. Before we do this though, it's useful to reserve a TCP address in the ngrok dashboard which allows you to reuse the same address each time the device is restarted.
 
