@@ -8,27 +8,42 @@ import {
 	Deny,
 	RateLimit,
 	UserAgentFilter,
+	JWTsRateLimiting,
+	RateLimitAuthentication,
+	RateLimitPricing,
+	BlockCountries,
+	DeprecateVersion,
+	ManipulateHeaders,
+	AddCompression,
+	EnforceTLS,
+	LogUnsuccessful,
+	LimitSize,
 } from "/examples/actions/gallery.mdx";
 
 # Rule Gallery
 
 Explore a curated collection of example configurations spanning from common to unconventional use-cases for the Traffic Policy module.
 
+A number of these examples come from a longer article about how ngrok [makes policy management accessible](https://ngrok.com/blog-post/api-gateway-policy-management-examples#template-8-enforce-the-tls-version-of-requests) to developers, including a simple Go-based application for testing these and other configurations.
+
 ## Deny non-GET requests:
 
 This rule denies all inbound traffic that is not a GET request.
 
 <Deny />
+
 ## Custom response for unauthorized requests
 
 This rule sends a custom response with status code `401` and body `Unauthorized` for requests without an Authorization header.
 
 <CustomResponse />
-## Rate limiting for specific endpoint:
+
+## Rate limit for specific endpoint
 
 This rule applies rate limiting of `30` requests per second to the endpoint `/api/videos`.
 
 <RateLimit />
+
 ## User agent filtering
 
 We deliver tailored content to Microsoft Edge users by examining the `User-Agent` header for the case-insensitive string `(?i)edg/` succeeded by digits `\d`. To see how this works in practice, explore the following [regex101 demonstration](https://regex101.com/r/3NPVub/1).
@@ -36,3 +51,63 @@ We deliver tailored content to Microsoft Edge users by examining the `User-Agent
 To ensure correct decoding from YAML/JSON, it's necessary to properly escape the `\d` sequence. In YAML, if your string is not enclosed in quotes, use a single escape: `\\d`. However, when your string is wrapped in quotes, either in YAML or JSON, you need to double-escape: `\\\\d` for accurate decoding.
 
 <UserAgentFilter />
+
+## Add JWT authentication and key-based rate limiting
+
+Building from our [Auth0 guide](https://ngrok.com/docs/integrations/auth0/jwt-action/), these rules also add rate limiting based on your consumers' JWTs.
+
+<JWTsRateLimiting />
+
+## Rate limit API consumers based on authentication status
+
+Create a low rate limit for unauthenticated (likely free) users, while allowing authenticated users a higher level of capacity.
+
+<RateLimitAuthentication />
+
+## Rate limit API consumers based on pricing tiers
+
+Using a naming scheme in your upstream servers, and API calls using a `tier` header, you can quickly customize access to your API based on any number of pricing tiers.
+
+<RateLimitPricing />
+
+## Block traffic from specific countries
+
+Remain compliant with data regulations or sanctions by blocking requests originating from one or more countries using their respective [ISO country codes](https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes).
+
+<BlockCountries />
+
+## Deprecate an API version
+
+By include a `X-Api-Version` header in your API reference or developer documentation, you can quickly return a helpful error message, which encourages them to explore usage of the new version.
+
+<DeprecateVersion />
+
+## Manipulate request headers
+
+Add new headers to requests to give your upstream service more context about the consumer, which in turn allows for richer functionality, such as localized languages and pricing.
+
+<ManipulateHeaders />
+
+## Add compression
+
+Quickly ensure all JSON responses are [compressed](/docs/http/traffic-policy/actions/compress-response.mdx) en route to your API consumer. If your upstream service already handles compression, ngrok skips this step.
+
+<AddCompression />
+
+## Enforce TLS version
+
+Prevent obsolete and potentially vulnerable browsers, SDKs, or CLI tools like `curl` from attempting to access your API.
+
+<EnforceTLS />
+
+## Log unsuccessful events
+
+Connect your API to ngrok's [event logging system](/docs/obs/index.mdx) for smarter troubleshooting of your API gateway and upstream services.
+
+<LogUnsuccessful />
+
+## Limit request sizes
+
+Prevent excessively large user uploads, like text or images, that might cause performance or availability issues for your upstream service.
+
+<LimitSize />
