@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type { CSSProperties } from "react";
 
 const fonts = [
@@ -18,13 +18,36 @@ type Props = {
 	style?: CSSProperties;
 };
 
-const FontSwitcher = ({ className, style }: Props) => {
-	const [currentFont, setCurrentFont] = useState<Font>(fonts[0]);
+const readDefaultFont = (): Font => {
+	// Get the computed styles of the html element
+	const computedStyles = getComputedStyle(document.documentElement);
 
-	useEffect(() => {
-		const newVar = `--ifm-font-family-serif: ${fonts[0]}`;
-		document.documentElement.setAttribute("style", newVar);
-	}, []);
+	// Get the value of the CSS variable
+	const fontFamily = computedStyles
+		.getPropertyValue("--ifm-font-family-serif")
+		.trim();
+
+	// grab the first font from the list
+	const font = fontFamily.split(",")[0]?.trim();
+
+	if (isFont(font)) {
+		return font;
+	}
+
+	return fonts[0];
+};
+
+const writeFontToHtmlStyle = (font: Font) => {
+	const newVar = `--ifm-font-family-serif: ${font}`;
+	document.documentElement.setAttribute("style", newVar);
+};
+
+const FontSwitcher = ({ className, style }: Props) => {
+	const [currentFont, setCurrentFont] = useState<Font>(() => {
+		const defaultFont = readDefaultFont();
+		writeFontToHtmlStyle(defaultFont);
+		return defaultFont;
+	});
 
 	return (
 		<select
@@ -35,8 +58,7 @@ const FontSwitcher = ({ className, style }: Props) => {
 				const newFont = event.target.value;
 				if (isFont(newFont)) {
 					setCurrentFont(newFont);
-					const newVar = `--ifm-font-family-serif: ${newFont}`;
-					document.documentElement.setAttribute("style", newVar);
+					writeFontToHtmlStyle(newFont);
 				}
 			}}
 		>
