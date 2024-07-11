@@ -50,7 +50,7 @@ Start by deploying the [ngrok Kubernetes Operator](https://github.com/ngrok/kube
 1. Install the latest Gateway API CRDs to your cluster:
 
    ```bash
-   kubectl apply -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.0.0/standard-install.yaml
+   kubectl apply -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.1.0/standard-install.yaml
    ```
 
 1. Set up the `AUTHTOKEN` and `API_KEY` exports, which allows Helm to install the Ingress Controller using your ngrok credentials. Find your `AUTHTOKEN` under [**Your Authtoken**](https://dashboard.ngrok.com/get-started/your-authtoken) in the ngrok dashboard.
@@ -138,6 +138,12 @@ Next, set up Argo CD on your cluster to enable GitOps.
 ## **Step 3**: Set up the demo API {#set-up-demo-api}
 
 Next, you need to set up the Git repository for the API you'll deploy behind your ngrok API gateway. GitOps (and thus APIOps) requires declarative and version-controlled configuration, and that includes the hostname for your deployment. You can't simply clone the demo API repository and apply it to your cluster, as the ngrok-supplied hostname will already be in use.
+
+:::note
+
+If you're curious about the fundamentals of using the ngrok Kubernetes Operator with the Kubernetes Gateway API, such as how to set up your `GatewayClass`, `Gateway`, and `HTTPRoute`, check out our [getting started guide](/docs/k8s/getting-started-gwapi.mdx).
+
+:::
 
 If you have an existing API and GitOps configuration, you're more than welcome to [skip to step 4](#deploy-demo-api) while adopting the Argo CD CLI commands to your Git repository.
 
@@ -259,19 +265,60 @@ The project comes with a basic example of such a Traffic Policy—[see `traffic-
 
    This example policy includes a low limit for demonstration purposes, but you can change the `capacity` value to your needs in production.
 
-1. Add, commit, and push this change to your Git repository. Argo CD will pick up the changes from your repository with its next auto sync reconcile state with the `NgrokTrafficPolicy` CRD.
+1. Next, insert the highlight YAML below into the `HTTPRoute` in your `deployment.yaml`. 
 
-1. Test your new rate limiting policy by `curl`-ing your API in a quick loop.
+   This defines a [filter](https://gateway-api.sigs.k8s.io/api-types/httproute/#filters-optional), which must be processes during the request or response lifecycle, allowing you to inject policy into all traffic arriving to your API through your ngrok API gateway.
+
+   ```yaml
+   ---
+   apiVersion: gateway.networking.k8s.io/v1
+   kind: HTTPRoute
+   metadata:
+     name: ngrok-apiops-demo-route
+     namespace: ngrok-apiops-demo
+   spec:
+     parentRefs:
+       - kind: Gateway
+         name: ngrok-apiops-demo-gateway
+         namespace: ngrok-apiops-demo
+     hostnames:
+       - "ngrok-apiops-demo.ngrok.app"
+     rules:
+       - matches:
+           - path:
+               type: PathPrefix
+               value: /
+         #highlight-start
+         filters:
+           - type: ExtensionRef
+             extensionRef:
+               group: ngrok.k8s.ngrok.com
+               kind: NgrokTrafficPolicy
+               name: "traffic-policy-rate-limiting"
+         #highlight-end
+         backendRefs:
+           - name: ngrok-apiops-demo-service
+             port: 80
+             kind: Service
+   ```
+
+1. Add, commit, and push this change to your Git repository. Argo CD will auto sync this latest commit then reconcile the deployed state with those changes to the `NgrokTrafficPolicy` CRD and `HTTPRoute`. 
+
+   Once the Kubernetes Operator picks up those changes, it will push definitions to your ngrok Edge—you can verify those changes directly in your [ngrok dashboard](https://dashboard.ngrok.com/cloud-edge/edges/):
+
+   ![Validate successful Traffic Policy upload](img/ngrok-traffic-policy.png)
+
+1. Optionally, test your new rate limiting policy by `curl`-ing your API in a quick loop.
 
    ```bash
-   for i in `seq 1 20`; do \
+   for i in `seq 1 50`; do \
      curl -s -o /dev/null \                                                   
        -w "\n%{http_code}" \
        -X GET https://ngrok-apiops-demo.ngrok.app/legend ; \
    done
    ```
 
-   You should see [`429` response codes](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/429), as your ngrok API gateway begins to rate limit your IP address.
+   You should see [`429` response codes](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/429) as your ngrok API gateway rate-limits your IP address.
 
 ## What's next?
 
