@@ -19,8 +19,12 @@ type Props = {
 };
 
 const readDefaultFont = (): Font => {
+	if (typeof window === "undefined" || typeof document === "undefined") {
+		return fonts[0];
+	}
+
 	// Get the computed styles of the html element
-	const computedStyles = getComputedStyle(document.documentElement);
+	const computedStyles = window.getComputedStyle(document.documentElement);
 
 	// Get the value of the CSS variable
 	const fontFamily = computedStyles
@@ -38,6 +42,9 @@ const readDefaultFont = (): Font => {
 };
 
 const writeFontToHtmlStyle = (font: Font) => {
+	if (typeof window === "undefined" || typeof document === "undefined") {
+		return;
+	}
 	const newVar = `--ifm-font-family-serif: ${font}`;
 	document.documentElement.setAttribute("style", newVar);
 };
