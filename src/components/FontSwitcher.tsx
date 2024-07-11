@@ -45,7 +45,7 @@ const writeFontToHtmlStyle = (font: Font) => {
 	if (typeof window === "undefined" || typeof document === "undefined") {
 		return;
 	}
-	const newVar = `--ifm-font-family-serif: ${font}`;
+	const newVar = `--ifm-font-family-serif: "${font}";`;
 	document.documentElement.setAttribute("style", newVar);
 };
 
