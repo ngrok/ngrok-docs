@@ -1,8 +1,11 @@
+import ActionDescription from "/docs/traffic-policy/variables/actions/action_description.mdx";
+import ActionResultVariables from "/docs/traffic-policy/variables/actions/add_headers.mdx";
 import {
 	ExampleHTTP,
 	TemplatingExamples,
 } from "/examples/actions/add-headers.mdx";
 import CelTemplateSyntaxExplanation from "/src/components/CelTemplateSyntaxExplanation";
+import ConfigExample from "/src/components/ConfigExample.tsx";
 import HttpHeaderTemplates from "./../../_http_header_templates.mdx";
 
 # Add Headers
@@ -13,9 +16,23 @@ The Add Headers policy action enables the addition of headers to both inbound re
 
 ## Example
 
-Use this action config in your [Traffic Policy](/docs/http/traffic-policy/index.mdx)
+[Traffic Policy](/docs/http/traffic-policy/index.mdx) for adding headers to an `outbound` response.
 
 <ExampleHTTP />
+
+_Request:_
+
+```shell
+curl https://example.ngrok.app/api/v1
+```
+
+_Result:_
+
+```shell
+< HTTP/2 200
+< x-custom-header: custom-value
+< x-template-example: started at 2024-06-24T15:30:00Z
+```
 
 ## Behavior
 
@@ -43,6 +60,74 @@ the configured headers. When executed as an outbound policy, the configured head
 
 <CelTemplateSyntaxExplanation />
 
-### Templating Examples
+### More Examples
 
-<TemplatingExamples />
+##### Simple cel expression
+
+<ConfigExample
+	config={{
+		actions: [
+			{
+				type: "add-headers",
+				config: {
+					headers: {
+						"x-time": "${time.now}",
+					},
+				},
+			},
+		],
+	}}
+/>
+
+_Request:_
+
+```shell
+curl https://example.ngrok.app/api/v1
+```
+
+_Result:_
+
+```shell
+< HTTP/2 200
+< x-time: 2024-06-24T15:30:00Z
+```
+
+<hr />
+
+##### Complex cel expression
+
+<ConfigExample
+	snippetText={"complex expression"}
+	config={{
+		actions: [
+			{
+				type: "add-headers",
+				config: {
+					headers: {
+						"x-complex": "${size(getReqHeader('Content-Type')) > 0}",
+					},
+				},
+			},
+		],
+	}}
+/>
+
+_Request:_
+
+```shell
+curl https://example.ngrok.app/api/v1
+```
+
+_Result:_
+
+```shell
+< HTTP/2 200
+< x-complex: true
+```
+
+<hr />
+
+### Action Result Variables
+
+<ActionDescription />
+<ActionResultVariables />
