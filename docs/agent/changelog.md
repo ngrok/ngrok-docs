@@ -8,7 +8,7 @@ title: Changelog
 
 ### ngrok Agent 3.12.1 - \[2024-07-11\]
 
-- Fixed a bug in `ngrok diagnose` that would casue a panic if a server IP and the agent had TLS connectivity issues.
+- Fixed a bug in `ngrok diagnose` that would cause a panic if a server IP and the agent had TLS connectivity issues.
 
 ### ngrok Agent 3.12.0 - \[2024-06-27\]
 
