@@ -7,6 +7,8 @@ const fonts = [
 	"Lora",
 	"Karla",
 	"Inter",
+	"Nunito Sans",
+	"IBM Plex Sans",
 ] as const;
 
 type Font = (typeof fonts)[number];
