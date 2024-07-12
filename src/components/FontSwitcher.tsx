@@ -3,10 +3,10 @@ import type { CSSProperties } from "react";
 
 const fonts = [
 	// add your font names here
-	"Roboto Serif",
+	"Noticia Text",
 	"Lora",
-	"Source Serif 4",
-	"Cormorant",
+	"Karla",
+	"Inter",
 ] as const;
 
 type Font = (typeof fonts)[number];
