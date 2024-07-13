@@ -1,0 +1,36 @@
+## Behavior
+
+When executed as an inbound policy, this action will add headers on an incoming http request before reaching the upstream server with
+the configured headers. When executed as an outbound policy, the configured headers are added to the response from the upstream server.
+
+### Addition Only
+
+This action will only add headers to the request. If the header already exists 
+it will append another header with the same key unless it is the `host` header, 
+see [Special Cases](#special-cases). 
+
+To replace or remove headers use the [`remove-headers`](/docs/http/traffic-policy/actions/remove-headers) action then 
+add the header with the desired value.
+
+### Case Sensitivity
+
+Header keys added through this action are normalized to lowercase per the [HTTP/2 specification](https://datatracker.ietf.org/doc/html/rfc7540#section-8.1.2).
+
+### Ordering
+
+Since actions are run in the order they are specified, to modify headers that have been added by other actions you must place this action 
+after them in your traffic policy document.
+
+### String interpolation
+
+You can access Traffic Policy variables and embed CEL expression results with 
+this action using string interpolation templates in the form of `${expression}`.
+
+For a complete list of variables and example of usage see [Variables](/http/traffic-policy/expressions/variables/).
+
+
+### Special Cases
+
+- Adding the `host` header override the existing value instead of appending another header.
+- You may not add or remove the `user-agent` header.
+- You may not use this action to add the `ngrok-skip-browser-warning` header to skip the ngrok browser warning on free accounts. For more information, check out the [free plan limits guide](http://localhost:3000/docs/guides/limits/#why-is-there-an-interstitial-in-front-of-my-html-content).
