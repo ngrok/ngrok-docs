@@ -6,6 +6,10 @@ title: Changelog
 
 ## v3
 
+### ngrok Agent 3.13.0 - \[2024-07-15\]
+
+- Internal support for future feature release.
+
 ### ngrok Agent 3.12.1 - \[2024-07-11\]
 
 - Fixed a bug in `ngrok diagnose` that would cause a panic if a server IP and the agent had TLS connectivity issues.
