@@ -16,10 +16,10 @@
         pkgs = import nixpkgs {
           inherit system;
         };
-        node-toolchain = with pkgs; [
-          nodejs
-          nodePackages.pnpm
-        ];
+        pnpm-shim = pkgs.writeShellScriptBin "pnpm" ''
+          #!${pkgs.bash}/bin/bash
+          exec ${pkgs.lib.getBin pkgs.nodejs_20}/bin/node ${pkgs.lib.getBin pkgs.nodejs_20}/bin/corepack pnpm "$@"
+        '';
       in
       {
         devShell = pkgs.mkShell {
@@ -27,7 +27,9 @@
             export PATH="$PATH:$(git rev-parse --show-toplevel)/node_modules/.bin"
           '';
           buildInputs = with pkgs; [
-            node-toolchain
+            nodejs_20
+            corepack_20
+            pnpm-shim
           ];
         };
       });
