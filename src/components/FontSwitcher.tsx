@@ -9,7 +9,6 @@ const fonts = [
 	"Inter",
 	"Nunito Sans",
 	"IBM Plex Sans",
-	"Fast Sans",
 ] as const;
 
 type Font = (typeof fonts)[number];
