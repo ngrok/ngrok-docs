@@ -11,6 +11,7 @@ const toReplace = (to) => (path, from) => path.replace(from, to)            // a
 //  [0 - from]: (path) => [matchStr, boolean (true for match, false for do not match)]
 //  [1 - to]:  (path, from) => string (returned value becomes the new path)
 const redirects = [
+    [ fromIncludes(`/docs/1`), `/docs/` ],
     [ fromIncludes(`/docs/2`), `/docs/` ],
     [ fromIncludes(`/docs/ngrok-link`), `/docs/network-edge/` ],
     [ fromIncludes(`/docs/api/api-clients`), `/docs/api/#client-libraries` ],
