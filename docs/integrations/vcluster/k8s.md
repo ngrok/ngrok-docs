@@ -37,7 +37,7 @@ demo application to the ngrok platform to route traffic to your vcluster.
 :::caution This tutorial requires:
 
 1. An [ngrok account](https://ngrok.com/signup).
-2. The [vcluster CLI](https://www.vcluster.com/docs/quickstart) installed locally.
+2. The [vcluster CLI](https://www.vcluster.com/docs/get-started/#deploy-vcluster) installed locally.
 3. [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) installed locally.
 4. [Helm 3.0.0+](https://helm.sh/docs/intro/install/) installed locally.
 5. An existing remote or local Kubernetes cluster _OR_ [minikube](https://minikube.sigs.k8s.io/docs/start/) to create a
