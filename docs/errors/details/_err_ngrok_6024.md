@@ -2,7 +2,7 @@
 
 ## Are you the developer?
 
-We display this page to prevent abuse. Visitors to your site will only see it once. 
+We display this page to prevent abuse. Visitors to your site will only see it once.
 If you are attempting to access an endpoint programmatically and are still encountering this error, the interstitial page can be bypassed.
 
 ## To remove this page:
