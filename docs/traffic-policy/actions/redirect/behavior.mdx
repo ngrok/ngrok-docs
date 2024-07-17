@@ -1,26 +1,24 @@
 ## Behavior
 
-### Determining the Rate Limit Bucket
+If the specified `from` regular expression matches the request URL, the URL will 
+be modified according to the `to` field. If no `from` field is specified, the 
+entire URL will be treated as a match.
 
-When this action is executed, information from the incoming HTTP request is
-used to determine which rate limit bucket the request falls into. Each bucket
-is defined by specific criteria through the `bucket_key` configuration field 
-such as client IP, request host, or a header value.
+When a match is found and the request URL is modified by the `to` field, the 
+action will return a temporary `302` redirect by default, unless specified 
+otherwise through the `status_code` field.
 
-If the bucket has not exceeded its capacity, the request proceeds to the next
-action in your policy configuration.
+If the request URL is not changed, the action will take no further action.
 
-### Rate Limit Exceeded
+### String interpolation
 
-If the identified bucket has received more events than its capacity over the
-specified duration:
+You can access Traffic Policy variables and embed CEL expressions in this
+actions configuration values using string interpolation templates in the form of 
+`${expression}`. Refer to [the examples](#examples) below for demonstrations.
 
-1. The request is rejected with an `HTTP 429 — Too Many Requests` status code.
-2. The `retry-after` header is included in the response, indicating the number 
-of seconds after which the request may be retried.
+**Note:** All string interpolation will occur **before** the regular expressions
+are evaluated.
 
-### Capacity per Ingress Server
-
-Currently, the `capacity` for each rate limit bucket is applied per ingress
-server. This means that each server independently tracks the number of requests
-and enforces the rate limits accordingly.
+For a complete list of variables and how to write expressions, see 
+[Expressions](/http/traffic-policy/expressions/variables/) and 
+[Variables](/http/traffic-policy/expressions/) documentation.
