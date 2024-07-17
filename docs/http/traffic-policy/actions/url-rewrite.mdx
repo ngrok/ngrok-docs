@@ -1,162 +1,18 @@
-import ActionDescription from "/docs/traffic-policy/variables/actions/action_description.mdx";
-import ActionResultVariables from "/docs/traffic-policy/variables/actions/url_rewrite.mdx";
-import { ExampleHTTP } from "/examples/actions/url-rewrite.mdx";
-import CelTemplateSyntaxExplanation from "/src/components/CelTemplateSyntaxExplanation.tsx";
-import ConfigExample from "/src/components/ConfigExample.tsx";
+import ActionOverview from "/docs/traffic-policy/actions/url-rewrite/index.mdx";
+import ActionConfig from "/docs/traffic-policy/actions/url-rewrite/config.mdx";
+import ActionBehavior from "/docs/traffic-policy/actions/url-rewrite/behavior.mdx";
+import ActionExamples from "/docs/traffic-policy/actions/url-rewrite/examples/index.mdx";
+import ActionVariables from "/docs/traffic-policy/actions/url-rewrite/variables.mdx";
+import ActionVariablesDescription from "/docs/traffic-policy/common/action-variables-description.mdx";
 
 # URL Rewrite
 
-## Overview
+<ActionOverview />
+<ActionConfig />
+<ActionBehavior />
+<ActionExamples />
 
-The URL Rewrite action allows you to transform the URL path and query parameters of the incoming request to your [upstream](/docs/how-ngrok-works/#ngrok-vs-traditional-reverse-proxies).
+## Result Action Variables
 
-## Example
-
-[Traffic Policy](/docs/http/traffic-policy/index.mdx) for rewriting an incoming URL's `version` and `id` path params.
-
-<ExampleHTTP />
-
-_Request:_
-
-```shell
-curl https://example.ngrok.app/api/v1/users/42
-```
-
-_Result:_
-
-```shell
-> GET https://example.ngrok.app/api/v2/users?id=42 HTTP/1.1
-```
-
-## Behavior
-
-When executed, this action will replace all regex matches with the configured replacement. Before regex replacement, all [cel expressions](/docs/http/traffic-policy/expressions/writing-guide/) will be interpolated and replaced with their corresponding values.
-
-## Reference
-
-### Supported Directions
-
-- Inbound
-
-### Configuration
-
-| Type          |
-| ------------- |
-| `url-rewrite` |
-
-| Parameter | &nbsp; | Description                                                                                                                                                 |
-| --------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `from`    | string | A regular expression string to match inside of the URL. Supports interpolating the results of [cel expressions](#templating-syntax) outside of regex.       |
-| `to`      | string | A regular expression string to replace the `from` match with. Supports interpolating the results of [cel expressions](#templating-syntax) outside of regex. |
-| `format`  | string | (default: `ngrok`) Determines interpolation format in `to`/`from` fields.                                                                                   |
-
-### Templating Syntax
-
-<CelTemplateSyntaxExplanation />
-
-### More Examples
-
-##### Simple variable replacement
-
-<ConfigExample
-	snippetText={"simple variable replacement"}
-	config={{
-		actions: [
-			{
-				type: "url-rewrite",
-				config: {
-					format: "ngrok",
-					from: "/api/v1/api?lat=(d+)",
-					to: "/api/v2/api?lat=$1&long=86.75309",
-				},
-			},
-		],
-	}}
-/>
-
-_Request:_
-
-```shell
-curl https://example.ngrok.app/api/v1?lat=42.42
-```
-
-_Result:_
-
-- Path and params rewritten on incoming _request_
-
-```shell
-# Url on incoming request to upstream
-> GET https://example.ngrok.app/api/v2?lat=42&long=86.75309 HTTP/2
-```
-
-<hr />
-
-<ConfigExample
-	snippetText={"regex and cel expressions"}
-	config={{
-		actions: [
-			{
-				type: "url-rewrite",
-				config: {
-					format: "ngrok",
-					from: "/api/v1/(carmen)/sandiego?city=${conn.geo.city}",
-					to: "/api/v2/$1/sandiego?found=${conn.geo.city}",
-				},
-			},
-		],
-	}}
-/>
-
-_Request:_
-
-```shell
-curl https://example.ngrok.app/api/v1/api/carmen/sandiego?city=salt-lake-city
-```
-
-_Result:_
-
-- Url rewritten on incoming _request_
-
-```shell
-# New Url on incoming request to upstream
-> GET https://example.ngrok.app/api/v2/carmen/sandiego?found=boulder HTTP/2
-```
-
-<hr />
-
-<ConfigExample
-	snippetText={"variable replacement on path params"}
-	config={{
-		actions: [
-			{
-				type: "url-rewrite",
-				config: {
-					format: "ngrok",
-					from: "?now=false",
-					to: "?now=${conn.ts.start < time.now}",
-				},
-			},
-		],
-	}}
-/>
-
-_Request:_
-
-```shell
-curl https://example.ngrok.app/api/v1?now=false
-```
-
-_Result:_
-
-- Url Rewritten on incoming _request_
-
-```shell
-> GET https://example.ngrok.app/api/v2?now=true HTTP/2
-```
-
-<hr />
-
-### Action Result Variables
-
-<ActionDescription />
-<ActionResultVariables />
+<ActionVariablesDescription />
+<ActionVariables />

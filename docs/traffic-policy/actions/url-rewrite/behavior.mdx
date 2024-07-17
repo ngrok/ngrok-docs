@@ -1,26 +1,27 @@
 ## Behavior
 
-### Determining the Rate Limit Bucket
+This action replaces all matches of the`from` regular expression in the request 
+URL with the`to` replacement value.
 
-When this action is executed, information from the incoming HTTP request is
-used to determine which rate limit bucket the request falls into. Each bucket
-is defined by specific criteria through the `bucket_key` configuration field 
-such as client IP, request host, or a header value.
+### Matching
 
-If the bucket has not exceeded its capacity, the request proceeds to the next
-action in your policy configuration.
+Matching is done against the full URL, including the scheme, userinfo, host, and 
+port, not just the path.
 
-### Rate Limit Exceeded
+To match requests that start with `/products` you must use 
+[String Interpolation](#string-interpolation) and write 
+`^${req.url.authority}/products` or use an expression like 
+`req.url.path.startsWith('/products')` in the policy rule `expressions` field.
 
-If the identified bucket has received more events than its capacity over the
-specified duration:
+### String interpolation
 
-1. The request is rejected with an `HTTP 429 — Too Many Requests` status code.
-2. The `retry-after` header is included in the response, indicating the number 
-of seconds after which the request may be retried.
+You can access Traffic Policy variables and embed CEL expressions in this
+actions configuration values using string interpolation templates in the form of 
+`${expression}`. Refer to [the examples](#examples) below for demonstrations.
 
-### Capacity per Ingress Server
+**Note:** All string interpolation will occur **before** regular expressions
+are evaluated.
 
-Currently, the `capacity` for each rate limit bucket is applied per ingress
-server. This means that each server independently tracks the number of requests
-and enforces the rate limits accordingly.
+For a complete list of variables and how to write expressions, see 
+[Expressions](/http/traffic-policy/expressions/variables/) and 
+[Variables](/http/traffic-policy/expressions/) documentation.
