@@ -8,7 +8,7 @@ title: Changelog
 
 ### ngrok Agent 3.13.0 - \[2024-07-15\]
 
-- Internal support for future feature release.
+- In some cases, adds additional headers on error responses to ngrok that can be used to customize the content.
 
 ### ngrok Agent 3.12.1 - \[2024-07-11\]
 
