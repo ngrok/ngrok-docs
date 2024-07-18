@@ -2,12 +2,12 @@
 title: FastAPI
 ---
 
-# Option 1: Using ngrok-python
+# Using ngrok with FastAPI
 
-You can leverage the [ngork-python](https://github.com/ngrok/ngrok-python) library to embed the ngrok agent in to FastAPI Applications. 
+You can leverage the [ngrok-python](https://github.com/ngrok/ngrok-python) library to embed the ngrok agent in to FastAPI Applications.
 
 :::warning
-  ngork-python, Pydantic and FastAPI libraries used in this example are sensitive to versions.  Use of Virtual Environments is highly recommended 
+  ngrok-python and FastAPI libraries used in this example are sensitive to versions.  Use of Virtual Environments is highly recommended 
 :::
 
 ```sh
@@ -18,7 +18,7 @@ fastapi==0.111.0
 loguru==0.7.2
 ```
 
-```
+```sh
 pip install -r requirements.txt
 ```
 
@@ -60,7 +60,3 @@ async def root():
 if __name__ == "__main__":
     uvicorn.run("main:app", host="127.0.0.1", port=APPLICATION_PORT, reload=True)
 ```
-
-# Option 2: Using pyngrok
-
-If you're looking to natively embed the ngrok agent into your FastAPI application, you can leverage the [pyngrok project](https://pyngrok.readthedocs.io/en/latest/integrations.html#fastapi) to start a tunnel anytime you start the FastAPI Server via uvicorn.
