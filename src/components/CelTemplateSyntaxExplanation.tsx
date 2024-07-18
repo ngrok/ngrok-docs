@@ -1,10 +1,10 @@
-import React from 'react';
+import React from "react";
 
 const CelTemplateSyntaxExplanation = () => {
-	const templateSyntax = '${}';
+	const templateSyntax = "${}";
 
 	return (
-	<>
+		<>
 			<p>
 				The results of CEL expressions can be interpolated into your policy's{" "}
 				<code>config</code> using ngrok's <code>{templateSyntax}</code>{" "}
