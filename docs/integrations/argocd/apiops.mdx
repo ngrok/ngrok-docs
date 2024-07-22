@@ -1,5 +1,5 @@
 ---
-description: TK
+description: Deploy an API using a APIOps-based deployment and lifecycle management process with Argo CD, ngrok's API gateway, the ngrok Kubernetes Operator, and the Kubernetes Gateway API.
 ---
 
 # Deploy a production API and gateway with APIOps using Argo CD and ngrok
@@ -66,7 +66,7 @@ Start by deploying the [ngrok Kubernetes Operator](https://github.com/ngrok/kube
 
    ```bash
    helm install ngrok-ingress-controller ngrok/kubernetes-ingress-controller \
-     --namespace ngrok-apiops-demo \
+     --namespace apiops-demo \
      --create-namespace \
      --set credentials.apiKey=$NGROK_API_KEY \
      --set credentials.authtoken=$NGROK_AUTHTOKEN \
@@ -76,7 +76,7 @@ Start by deploying the [ngrok Kubernetes Operator](https://github.com/ngrok/kube
 1. Verify you have deployed the ngrok Kubernetes Operator successfully via a single running pod.
 
    ```bash
-   kubectl get pods --namespace ngrok-apiops-demo
+   kubectl get pods --namespace apiops-demo
 
    NAME                                                              READY   STATUS    RESTARTS   AGE
    ngrok-ingress-controller-kubernetes-ingress-controller-man2fg5p   1/1     Running   0          2m23s
@@ -149,7 +149,7 @@ If you have an existing API and GitOps configuration, you're more than welcome t
 
 1. Create a new ngrok static domain. Navigate to the [**Domains** section](https://dashboard.ngrok.com/cloud-edge/domains) of the ngrok dashboard and click **Create Domain** or **New Domain**. This static domain, which will look like `example.ngrok.app`, will be your `NGROK_DOMAIN` for the remainder of this guide.
 
-1. Fork the repository for the demo API at [joelhans/ngrok-apiops-demo](https://github.com/joelhans/ngrok-apiops-demo).
+1. Fork the repository for the demo API at [ngrok-samples/apiops-demo](https://github.com/ngrok-samples/apiops-demo).
 
 1. In your fork, open `gateway.yaml` and replace the values of lines 18 and 37 with the ngrok domain you just created (e.g. `one-two-three.ngrok.app`).
 
@@ -162,11 +162,11 @@ Now that your demo API is forked and properly configured on GitHub, you can conn
 1. Register the demo app with Argo CD, replacing `[YOUR-GITHUB-USERNAME]` to point to your fork of the demo API repository.
 
    ```bash
-   argocd app create ngrok-apiops-demo \
-     --repo https://github.com/[YOUR-GITHUB-USERNAME]/ngrok-apiops-demo.git \
+   argocd app create apiops-demo \
+     --repo https://github.com/[YOUR-GITHUB-USERNAME]/apiops-demo.git \
      --path . \
      --dest-server https://kubernetes.default.svc \
-     --dest-namespace ngrok-apiops-demo
+     --dest-namespace apiops-demo
    ```
 
    Refresh the Argo CD UI to see your app. Take note of the **Missing** and **OutOfSync** status report—they are not errors, but rather reflect the fact that Argo CD doesn't automatically sync and deploy a newly registered app.
@@ -178,7 +178,7 @@ Now that your demo API is forked and properly configured on GitHub, you can conn
 1. Use the Argo CD CLI to perform a manual first sync of your registered app against your Git repository.
 
    ```bash
-   argocd app sync ngrok-apiops-demo
+   argocd app sync apiops-demo
    ```
 
    Refresh the UI to see that your demo API is properly synced and deployed.
@@ -205,7 +205,7 @@ A fundamental component of GitOps, and thus APIOps, is that because your Git rep
 1. Enable [auto sync](https://argo-cd.readthedocs.io/en/stable/user-guide/auto_sync/) of your app the Git repository that stores your desired state.
 
    ```
-   argocd app set ngrok-apiops-demo --sync-policy automated
+   argocd app set apiops-demo --sync-policy automated
    ```
 
    You can confirm this change in the Argo CD UI:
@@ -239,7 +239,7 @@ A fundamental component of GitOps, and thus APIOps, is that because your Git rep
 
 The ngrok team [recently rolled out support](https://ngrok.com/blog-post/policy-support-in-gateway-api) for using the [Traffic Policy module](/docs/http/traffic-policy/index.mdx) alongside the Kubernetes Gateway API. This allows you to place all your Traffic Policy actions into a single `NgrokTrafficPolicy` CRD, controlling your ngrok-powered API gateway with an APIOps workflow with version-controlled and declarative manifests.
 
-The project comes with a basic example of such a Traffic Policy—[see `traffic-policy.yaml` for details](https://github.com/joelhans/ngrok-apiops-demo/blob/main/traffic-policy.yaml)—but because rate limiting is typically the first order of business in protecing any API from abuse, let's walk through that process.
+The project comes with a basic example of such a Traffic Policy—[see `traffic-policy.yaml` for details](https://github.com/ngrok-samples/apiops-demo/blob/main/traffic-policy.yaml)—but because rate limiting is typically the first order of business in protecing any API from abuse, let's walk through that process.
 
 1. In your fork of the demo API project, create a new file called `rate-limiting.yaml`. Open the file and add the following YAML:
 
@@ -274,15 +274,15 @@ The project comes with a basic example of such a Traffic Policy—[see `traffic-
    apiVersion: gateway.networking.k8s.io/v1
    kind: HTTPRoute
    metadata:
-     name: ngrok-apiops-demo-route
-     namespace: ngrok-apiops-demo
+     name: apiops-demo-route
+     namespace: apiops-demo
    spec:
      parentRefs:
        - kind: Gateway
-         name: ngrok-apiops-demo-gateway
-         namespace: ngrok-apiops-demo
+         name: apiops-demo-gateway
+         namespace: apiops-demo
      hostnames:
-       - "ngrok-apiops-demo.ngrok.app"
+       - "apiops-demo.ngrok.app"
      rules:
        - matches:
            - path:
@@ -297,7 +297,7 @@ The project comes with a basic example of such a Traffic Policy—[see `traffic-
                name: "traffic-policy-rate-limiting"
          #highlight-end
          backendRefs:
-           - name: ngrok-apiops-demo-service
+           - name: apiops-demo-service
              port: 80
              kind: Service
    ```
@@ -314,7 +314,7 @@ The project comes with a basic example of such a Traffic Policy—[see `traffic-
    for i in `seq 1 50`; do \
      curl -s -o /dev/null \
        -w "\n%{http_code}" \
-       -X GET https://ngrok-apiops-demo.ngrok.app/legend ; \
+       -X GET https://apiops-demo.ngrok.app/legend ; \
    done
    ```
 
