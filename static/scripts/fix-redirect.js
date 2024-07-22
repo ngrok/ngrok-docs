@@ -11,6 +11,8 @@ const toReplace = (to) => (path, from) => path.replace(from, to)            // a
 //  [0 - from]: (path) => [matchStr, boolean (true for match, false for do not match)]
 //  [1 - to]:  (path, from) => string (returned value becomes the new path)
 const redirects = [
+    [ fromIncludes(`/docs/1`), `/docs/` ],
+    [ fromIncludes(`/docs/2`), `/docs/` ],
     [ fromIncludes(`/docs/ngrok-link`), `/docs/network-edge/` ],
     [ fromIncludes(`/docs/api/api-clients`), `/docs/api/#client-libraries` ],
     [ fromIncludes(`/docs/api/client-libraries`), `/docs/api/#client-libraries` ],
@@ -19,7 +21,8 @@ const redirects = [
     [ fromIncludes(`/docs/platform/events`), `/docs/events/` ],
     [ fromIncludes(`/docs/events/filtering`), `/docs/events/#filters` ],
     [ fromIncludes(`/docs/http-header-templates/`), `/docs/network-edge/http-header-templates/` ],
-    [ fromIncludes(`/docs/platform/pops/`), `/docs/network-edge/pops/` ],
+    [ fromIncludes(`/docs/network-edge/pops`), `/docs/network-edge/pops/` ],
+    [ fromIncludes(`/docs/platform/pops`), `/docs/network-edge/pops/` ],
     [ fromIncludes(`/docs/best-practices/security-dev-productivity/`), `/docs/guides/security-dev-productivity/` ],
     [ fromIncludes(`/docs/platform/ip-policies/`), `/docs/network-edge/ip-policies/` ],
     [ fromIncludes(`/docs/platform/botusers/`), `/docs/user-management/#bot-users` ],

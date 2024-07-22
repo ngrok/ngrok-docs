@@ -6,9 +6,13 @@ title: Changelog
 
 ## v3
 
+### ngrok Agent 3.13.0 - \[2024-07-15\]
+
+- In some cases, adds additional headers on error responses to ngrok that can be used to customize the content.
+
 ### ngrok Agent 3.12.1 - \[2024-07-11\]
 
-- Fixed a bug in `ngrok diagnose` that would casue a panic if a server IP and the agent had TLS connectivity issues.
+- Fixed a bug in `ngrok diagnose` that would cause a panic if a server IP and the agent had TLS connectivity issues.
 
 ### ngrok Agent 3.12.0 - \[2024-06-27\]
 
