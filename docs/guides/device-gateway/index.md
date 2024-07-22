@@ -11,8 +11,8 @@ This section provides getting started guides for adding ngrok to the most popula
 
 | Name                                                | Description                                                                                       |
 | --------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
-| [APIs on Devices](/guides/device-gateway/agent)     | Configure site-to-site connectivity to APIs on devices using the ngrok agent with mTLS encryption |
-| [Linux](/guides/device-gateway/linux)               | Configure ssh access to remotely manage Linux devices using ngrok                                 |
+| [APIs on Devices with the ngrok agent](/guides/device-gateway/agent)     | Connect to APIs on devices using the ngrok agent with mTLS encryption |
+| [ Linux ](/guides/device-gateway/linux)               | Configure ssh access to remotely manage Linux devices using ngrok                                 |
 | [Raspberry Pi](/guides/device-gateway/raspberry-pi) | Configure ssh access to remotely manage Raspberry Pi devices using ngrok                          |
 | [Raspberry Pi OS](/guides/device-gateway/raspbian)  | Configure ssh access to remotely manage Raspberry Pi OS (formerly Raspbian) devices using ngrok   |
 | [Windows](/guides/device-gateway/windows)           | Configure ssh access to remotely manage Windows devices using ngrok                               |
