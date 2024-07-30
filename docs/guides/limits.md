@@ -78,7 +78,9 @@ If the interstitial interferes with your project, you can bypass it in a few way
 - Upgrading to any of our paid plans will also bypass the warning.
 
 ### Code Examples
+
 Axios
+
 ```
 axios.get(url, { 'headers': { 'ngrok-skip-browser-warning': '1' } })
   .then((response => {
@@ -90,6 +92,7 @@ axios.get(url, { 'headers': { 'ngrok-skip-browser-warning': '1' } })
 ```
 
 Fetch
+
 ```
 const response = await fetch(URL, {
   headers: {
@@ -100,6 +103,7 @@ const response = await fetch(URL, {
 ```
 
 SuperAgent
+
 ```
  request
        .get('/endpoint')
@@ -108,6 +112,7 @@ SuperAgent
 ```
 
 JQuery
+
 ```
  request
        .get('/endpoint')
