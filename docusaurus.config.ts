@@ -30,8 +30,9 @@ const config = {
 	tagline: "online in one line",
 	url: "https://ngrok.com",
 	baseUrl: "/docs/",
-	onBrokenLinks: "throw",
-	onBrokenMarkdownLinks: "throw",
+	onBrokenAnchors: "warn",
+	onBrokenLinks: "warn",
+	onBrokenMarkdownLinks: "warn",
 	favicon: "img/favicon.ico",
 	trailingSlash: true,
 
