@@ -1,10 +1,24 @@
-import React from "react";
 import CodeBlock from "@theme/CodeBlock";
-import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
+import Tabs from "@theme/Tabs";
+import React from "react";
 import YAML from "yaml";
 
-export default function ConfigExample({ config }) {
+type Props = {
+	config: Record<string, any>;
+	snippetText?: string;
+	showLineNumbers?: boolean;
+	yamlMetastring?: string;
+	jsonMetastring?: string;
+};
+
+export default function ConfigExample({
+	config,
+	snippetText = "snippet",
+	showLineNumbers = false,
+	yamlMetastring = "",
+	jsonMetastring = "",
+}: Props) {
 	const yamlConfig = YAML.stringify(config, {
 		indent: 2,
 		directives: true,
@@ -17,10 +31,22 @@ export default function ConfigExample({ config }) {
 	return (
 		<Tabs groupId="config_example" queryString="config">
 			<TabItem value="YAML" label="YAML">
-				<CodeBlock language="yaml">{"# snippet\n" + yamlConfig}</CodeBlock>
+				<CodeBlock
+					language="yaml"
+					showLineNumbers={showLineNumbers}
+					metastring={yamlMetastring}
+				>
+					{snippetText ? `# ${snippetText}\n` + yamlConfig : yamlConfig}
+				</CodeBlock>
 			</TabItem>
 			<TabItem value="JSON" label="JSON">
-				<CodeBlock language="yaml">{"// snippet\n" + jsonConfig}</CodeBlock>
+				<CodeBlock
+					language="yaml"
+					showLineNumbers={showLineNumbers}
+					metastring={jsonMetastring}
+				>
+					{snippetText ? `// ${snippetText}\n` + jsonConfig : jsonConfig}
+				</CodeBlock>
 			</TabItem>
 		</Tabs>
 	);

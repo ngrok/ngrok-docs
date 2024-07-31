@@ -9,3 +9,7 @@ As noted in this [StackOverflow post](https://stackoverflow.com/a/59716766/17282
 ```bash
 ngrok tcp 27017
 ```
+
+::::warning
+TCP endpoints are only available on a free plan after [adding a valid payment method](https://dashboard.ngrok.com/settings#id-verification) to your account.
+::::

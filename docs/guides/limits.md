@@ -7,6 +7,10 @@ title: Free Plan Limits
 
 Below are the limits enforced in the ngrok free plan. For more details on increasing or removing these limits, refer to the [ngrok paid plans](https://ngrok.com/pricing?ref=limits-docs).
 
+## TCP Endpoints
+
+In an effort to reduce abuse on the ngrok platform, we now require a valid payment method be [added to your account](https://dashboard.ngrok.com/settings#id-verification) before you can start TCP endpoints. This card will not be charged as long as you remain on the free plan.
+
 ## ​Endpoints
 
 As a free user of ngrok you can define up to 3 endpoints in a [configuration](https://ngrok.com/docs/agent/config/) served by the same agent at the same time.
@@ -72,5 +76,48 @@ If the interstitial interferes with your project, you can bypass it in a few way
 - From the client accessing the ngrok endpoint, add a header value of `ngrok-skip-browser-warning` and set it to any value. These requests will bypass the interstitial.
 - Change your user agent by setting the `User-Agent` header to something non-standard, such as `MyApp/0.0.1`, to bypass the warning.
 - Upgrading to any of our paid plans will also bypass the warning.
+
+### Code Examples
+
+Axios
+
+```
+axios.get(url, { 'headers': { 'ngrok-skip-browser-warning': '1' } })
+  .then((response => {
+    console.log(response.data);
+  })
+  .catch((error) => {
+    console.log(error);
+  });
+```
+
+Fetch
+
+```
+const response = await fetch(URL, {
+  headers: {
+    "ngrok-skip-browser-warning": "1",
+  },
+  // ...
+});
+```
+
+SuperAgent
+
+```
+ request
+       .get('/endpoint')
+       .set('ngrok-skip-browser-warning', '1')
+       .then(callback);
+```
+
+JQuery
+
+```
+ request
+       .get('/endpoint')
+       .set('ngrok-skip-browser-warning', '1')
+       .then(callback);
+```
 
 If you are a developer trying to access your own endpoint, you can use a browser extension to customize your browser's user agent value. Here is an [example for Chrome](https://chromewebstore.google.com/detail/requestly-intercept-modif/mdnleldcmiljblolnjhpnblkcekpdkpa?hl=en-US).

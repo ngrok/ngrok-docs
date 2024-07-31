@@ -1,8 +1,17 @@
-import React from "react";
-import { clsx } from "clsx";
 import Link from "@docusaurus/Link";
+import { clsx } from "clsx";
+import React from "react";
+import type { ReactNode } from "react";
 
-function CardHeader({ size, title }) {
+const cardSizes = ["xs", "sm", "md", "lg", "xl"] as const;
+type CardSize = (typeof cardSizes)[number];
+
+type CardHeaderProps = {
+	size?: CardSize;
+	title: ReactNode;
+};
+
+function CardHeader({ size, title }: CardHeaderProps) {
 	switch (size) {
 		case "xs":
 		case "sm":
@@ -16,7 +25,13 @@ function CardHeader({ size, title }) {
 	}
 }
 
-function CardHeading({ size, title, icon }) {
+type CardHeadingProps = {
+	icon: ReactNode;
+	size?: CardSize;
+	title: ReactNode;
+};
+
+function CardHeading({ icon, size, title }: CardHeadingProps) {
 	if (icon) {
 		return (
 			<div className="ngrok--card-heading jc-space-between">
@@ -37,16 +52,13 @@ function CardHeading({ size, title, icon }) {
 	return null;
 }
 
-const sizes = ["sm", "lg", "xl"] as const;
-type Size = (typeof sizes)[number];
-
 type Props = {
 	description?: string | undefined;
 	descriptionLink?: string | undefined;
 	icon?: React.ReactNode;
 	img?: string;
 	note?: boolean;
-	size?: Size;
+	size?: CardSize;
 	title: string;
 	to: string;
 };
