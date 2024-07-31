@@ -77,4 +77,47 @@ If the interstitial interferes with your project, you can bypass it in a few way
 - Change your user agent by setting the `User-Agent` header to something non-standard, such as `MyApp/0.0.1`, to bypass the warning.
 - Upgrading to any of our paid plans will also bypass the warning.
 
+### Code Examples
+
+Axios
+
+```
+axios.get(url, { 'headers': { 'ngrok-skip-browser-warning': '1' } })
+  .then((response => {
+    console.log(response.data);
+  })
+  .catch((error) => {
+    console.log(error);
+  });
+```
+
+Fetch
+
+```
+const response = await fetch(URL, {
+  headers: {
+    "ngrok-skip-browser-warning": "1",
+  },
+  // ...
+});
+```
+
+SuperAgent
+
+```
+ request
+       .get('/endpoint')
+       .set('ngrok-skip-browser-warning', '1')
+       .then(callback);
+```
+
+JQuery
+
+```
+ request
+       .get('/endpoint')
+       .set('ngrok-skip-browser-warning', '1')
+       .then(callback);
+```
+
 If you are a developer trying to access your own endpoint, you can use a browser extension to customize your browser's user agent value. Here is an [example for Chrome](https://chromewebstore.google.com/detail/requestly-intercept-modif/mdnleldcmiljblolnjhpnblkcekpdkpa?hl=en-US).

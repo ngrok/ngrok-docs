@@ -1,95 +1,18 @@
-import ActionDescription from "/docs/traffic-policy/variables/actions/action_description.mdx";
-import ActionResultVariables from "/docs/traffic-policy/variables/actions/compress.mdx";
-import { ExampleHTTP } from "/examples/actions/compress-response.mdx";
+import ActionBehavior from "/traffic-policy/actions/compress-response/behavior.mdx";
+import ActionConfig from "/traffic-policy/actions/compress-response/config.mdx";
+import ActionExamples from "/traffic-policy/actions/compress-response/examples/index.mdx";
+import ActionOverview from "/traffic-policy/actions/compress-response/index.mdx";
+import ActionVariables from "/traffic-policy/actions/compress-response/variables.mdx";
+import ActionVariablesDescription from "/traffic-policy/common/action-variables-description.mdx";
 
 # Compress Response
 
-## Overview
+<ActionOverview />
+<ActionConfig />
+<ActionBehavior />
+<ActionExamples />
 
-The Compress Response policy action enables you to improve the performance of your web applications
-by compressing HTTP response bodies returned by your upstream service.
+## Action Result Variables
 
-If an HTTP request includes an `Accept-Encoding` header, HTTP responses will be
-automatically compressed and a `Content-Encoding` response header will be
-added. If the response was already compressed by your upstream service, ngrok
-takes no action.
-
-## Example
-
-Use this action config in your [Traffic Policy](/docs/http/traffic-policy/index.mdx)
-
-<ExampleHTTP />
-
-_Request:_
-
-```shell
-curl https://example.ngrok.app/api/v1
-```
-
-_Result:_
-
-```shell
-< HTTP/2 200
-< content-encoding: gzip
-< content-type: application/json; charset=utf-8
-
-<compressed-body-here>
-```
-
-## Behavior
-
-### Streaming Compression
-
-When ngrok performs compression, the response body is not buffered; the
-response body is compressed as it is streamed through the ngrok endpoint.
-
-### Algorithm Choice
-
-If a request specifies `Accept-Encoding` but no requested values are supported,
-ngrok takes no action and the upstream response is returned without
-modification.
-
-ngrok negotiates the encoding type as defined by the RFC for `Accept-Encoding`.
-It respects q-values and chooses the `Accept-Encoding` supported algorithm with
-the highest q-value.
-
-ngrok supports the following compression algorithms in the `Accept-Encoding`
-header by default, but this list may be restricted through policy action configuration.
-
-| Algorithm  |
-| ---------- |
-| `br`       |
-| `compress` |
-| `deflate`  |
-| `gzip`     |
-
-### Response Headers
-
-When ngrok performs compression, the following changes are made to
-the HTTP response header:
-
-- The `Content-Length` header is removed
-- A `Content-Encoding` header is added with the negotiated algorithm
-- A `Vary: Accept-Encoding` header is added
-
-## Reference
-
-### Supported Directions
-
-- Inbound
-- Outbound
-
-### Configuration
-
-| Type                |
-| ------------------- |
-| `compress-response` |
-
-| Parameter    | &nbsp;              | Description                                                                                                                                       |
-| ------------ | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `algorithms` | Array&lt;string&gt; | The compression algorithms that will be considered during encoding type negotiation. By default ngrok uses [`gzip`, `deflate`, `br`, `compress`]. |
-
-### Action Result Variables
-
-<ActionDescription />
-<ActionResultVariables />
+<ActionVariablesDescription />
+<ActionVariables />

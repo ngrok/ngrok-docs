@@ -1,0 +1,783 @@
+import ConfigExample from "/src/components/ConfigExample.tsx";
+
+## Connection TLS Variables
+
+The following variables are available under the `conn.tls` namespace:
+
+| Name                                            | Type     | Description                                                                 |
+| ----------------------------------------------- | -------- | --------------------------------------------------------------------------- |
+| [`conn.tls.cipher_suite`](#conntlscipher_suite) | `string` | The cipher suite selected during the TLS handshake.                         |
+| [`conn.tls.sni`](#conntlssni)                   | `string` | The hostname included in the `ClientHello` message via the SNI extension.   |
+| [`conn.tls.version`](#conntlsversion)           | `string` | The version of the TLS protocol used between the client and the ngrok edge. |
+
+### `conn.tls.cipher_suite`
+
+The cipher suite selected during the TLS handshake.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.tls.cipher_suite == 'TLS_AES_128_GCM_SHA256'"],
+	}}
+/>
+
+### `conn.tls.sni`
+
+The hostname included in the `ClientHello` message via the SNI extension.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.tls.sni == 'client.example.com'"],
+	}}
+/>
+
+### `conn.tls.version`
+
+The version of the TLS protocol used between the client and the ngrok edge.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.tls.version == '1.3'"],
+	}}
+/>
+
+## Connection TLS Client Variables
+
+The following variables are available under the `conn.tls.client` namespace:
+
+| Name                                                                                      | Type          | Description                                                                                                         |
+| ----------------------------------------------------------------------------------------- | ------------- | ------------------------------------------------------------------------------------------------------------------- |
+| [`conn.tls.client.extensions`](#conntlsclientextensions)                                  | `[]Extension` | Additional information added to the certificate.                                                                    |
+| [`conn.tls.client.extensions[i].id`](#conntlsclientextensionsiid)                         | `string`      | The identifier (OID) that specifies the type of extension.                                                          |
+| [`conn.tls.client.extensions[i].critical`](#conntlsclientextensionsicritical)             | `bool`        | True if the extension is critical.                                                                                  |
+| [`conn.tls.client.extensions[i].value`](#conntlsclientextensionsivalue)                   | `[]byte`      | The data for the extension.                                                                                         |
+| [`conn.tls.client.issuer`](#conntlsclientissuer)                                          | `string`      | The issuing authority of the certificate as a string roughly following the RFC 2253 Distinguished Names syntax.     |
+| [`conn.tls.client.issuer.common_name`](#conntlsclientissuercommon_name)                   | `string`      | Common name of the issuing authority, usually the domain name.                                                      |
+| [`conn.tls.client.issuer.country`](#conntlsclientissuercountry)                           | `[]string`    | Country name(s) where the issuing authority is located.                                                             |
+| [`conn.tls.client.issuer.locality`](#conntlsclientissuerlocality)                         | `[]string`    | Locality or city of the issuing authority.                                                                          |
+| [`conn.tls.client.issuer.organization`](#conntlsclientissuerorganization)                 | `[]string`    | Name(s) of the organization that issued the certificate.                                                            |
+| [`conn.tls.client.issuer.organizational_unit`](#conntlsclientissuerorganizational_unit)   | `[]string`    | Division of the organization responsible for the certificate.                                                       |
+| [`conn.tls.client.issuer.postal_code`](#conntlsclientissuerpostal_code)                   | `[]string`    | Postal code of the issuing authority.                                                                               |
+| [`conn.tls.client.issuer.province`](#conntlsclientissuerprovince)                         | `[]string`    | Province or state of the issuing authority.                                                                         |
+| [`conn.tls.client.issuer.street_address`](#conntlsclientissuerstreet_address)             | `[]string`    | Street address of the issuing authority.                                                                            |
+| [`conn.tls.client.san`](#conntlsclientsan)                                                | `string`      | Subject alternative names of the client certificate.                                                                |
+| [`conn.tls.client.san.dns_names`](#conntlsclientsandns_names)                             | `[]string`    | DNS names in the subject alternative names.                                                                         |
+| [`conn.tls.client.san.email_addresses`](#conntlsclientsanemail_addresses)                 | `[]string`    | Email addresses in the subject alternative names.                                                                   |
+| [`conn.tls.client.san.ip_addresses`](#conntlsclientsanip_addresses)                       | `[]string`    | IP addresses in the subject alternative names.                                                                      |
+| [`conn.tls.client.san.uris`](#conntlsclientsanuris)                                       | `[]string`    | URIs in the subject alternative names.                                                                              |
+| [`conn.tls.client.serial_number`](#conntlsclientserial_number)                            | `string`      | Unique identifier for the certificate.                                                                              |
+| [`conn.tls.client.signature_algorithm`](#conntlsclientsignature_algorithm)                | `string`      | Algorithm used to sign the certificate.                                                                             |
+| [`conn.tls.client.subject`](#conntlsclientsubject)                                        | `string`      | The entity to whom the certificate is issued as a string roughly following the RFC 2253 Distinguished Names syntax. |
+| [`conn.tls.client.subject.common_name`](#conntlsclientsubjectcommon_name)                 | `string`      | Common name of the subject, usually the domain name.                                                                |
+| [`conn.tls.client.subject.country`](#conntlsclientsubjectcountry)                         | `[]string`    | Country name(s) where the subject of the certificate is located.                                                    |
+| [`conn.tls.client.subject.locality`](#conntlsclientsubjectlocality)                       | `[]string`    | Locality or city where the subject is located.                                                                      |
+| [`conn.tls.client.subject.organization`](#conntlsclientsubjectorganization)               | `[]string`    | Name(s) of the organization to which the subject belongs.                                                           |
+| [`conn.tls.client.subject.organizational_unit`](#conntlsclientsubjectorganizational_unit) | `[]string`    | Division of the organization to which the subject belongs.                                                          |
+| [`conn.tls.client.subject.postal_code`](#conntlsclientsubjectpostal_code)                 | `[]string`    | Postal code where the subject is located.                                                                           |
+| [`conn.tls.client.subject.province`](#conntlsclientsubjectprovince)                       | `[]string`    | Province or state where the subject is located.                                                                     |
+| [`conn.tls.client.subject.street_address`](#conntlsclientsubjectstreet_address)           | `[]string`    | Street address where the subject is located.                                                                        |
+| [`conn.tls.client.validity.not_after`](#conntlsclientvaliditynot_after)                   | `timestamp`   | Expiration date and time when the certificate is no longer valid.                                                   |
+| [`conn.tls.client.validity.not_before`](#conntlsclientvaliditynot_before)                 | `timestamp`   | Start date and time when the certificate becomes valid.                                                             |
+
+### `conn.tls.client.extensions`
+
+Additional information added to the certificate.
+
+<ConfigExample
+	config={{
+		expressions: ["size(conn.tls.client.extensions) > 0"],
+	}}
+/>
+
+### `conn.tls.client.extensions[i].id`
+
+The identifier (OID) that specifies the type of extension.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.tls.client.extensions[0].id == '2.5.29.15'"],
+	}}
+/>
+
+### `conn.tls.client.extensions[i].critical`
+
+True if the extension is critical.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.tls.client.extensions[0].critical"],
+	}}
+/>
+
+### `conn.tls.client.extensions[i].value`
+
+The data for the extension.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.tls.client.extensions[0].value == b'\x03\x02\x05\xA0'"],
+	}}
+/>
+
+### `conn.tls.client.issuer`
+
+The issuing authority of the certificate as a string roughly following the RFC 2253 Distinguished Names syntax.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.tls.client.issuer == 'CN=E1,O=Let's Encrypt,C=US'"],
+	}}
+/>
+
+### `conn.tls.client.issuer.common_name`
+
+Common name of the issuing authority, usually the domain name.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.tls.client.issuer.common_name == 'exampleca.com'"],
+	}}
+/>
+
+### `conn.tls.client.issuer.country`
+
+Country name(s) where the issuing authority is located.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.tls.client.issuer.country == ['US']"],
+	}}
+/>
+
+### `conn.tls.client.issuer.locality`
+
+Locality or city of the issuing authority.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.tls.client.issuer.locality == ['Mountain View']"],
+	}}
+/>
+
+### `conn.tls.client.issuer.organization`
+
+Name(s) of the organization that issued the certificate.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.tls.client.issuer.organization == ['Example CA']"],
+	}}
+/>
+
+### `conn.tls.client.issuer.organizational_unit`
+
+Division of the organization responsible for the certificate.
+
+<ConfigExample
+	config={{
+		expressions: [
+			"conn.tls.client.issuer.organizational_unit == ['Certification Authority Division']",
+		],
+	}}
+/>
+
+### `conn.tls.client.issuer.postal_code`
+
+Postal code of the issuing authority.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.tls.client.issuer.postal_code == ['94043']"],
+	}}
+/>
+
+### `conn.tls.client.issuer.province`
+
+Province or state of the issuing authority.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.tls.client.issuer.province == ['California']"],
+	}}
+/>
+
+### `conn.tls.client.issuer.street_address`
+
+Street address of the issuing authority.
+
+<ConfigExample
+	config={{
+		expressions: [
+			"conn.tls.client.issuer.street_address == ['1234 Encryption Way']",
+		],
+	}}
+/>
+
+### `conn.tls.client.san`
+
+Subject alternative names of the client certificate.
+
+<ConfigExample
+	config={{
+		expressions: [
+			"conn.tls.client.san == 'DNS:www.example.com, DNS:example.com, IP Address:192.168.1.1'",
+		],
+	}}
+/>
+
+### `conn.tls.client.san.dns_names`
+
+DNS names in the subject alternative names.
+
+<ConfigExample
+	config={{
+		expressions: [
+			"conn.tls.client.san.dns_names == ['www.example.com', 'example.com']",
+		],
+	}}
+/>
+
+### `conn.tls.client.san.email_addresses`
+
+Email addresses in the subject alternative names.
+
+<ConfigExample
+	config={{
+		expressions: [
+			"conn.tls.client.san.email_addresses == ['ngrok-email1@example.com', 'ngrok-email2@example.com']",
+		],
+	}}
+/>
+
+### `conn.tls.client.san.ip_addresses`
+
+IP addresses in the subject alternative names.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.tls.client.san.ip_addresses == ['192.168.1.1']"],
+	}}
+/>
+
+### `conn.tls.client.san.uris`
+
+URIs in the subject alternative names.
+
+<ConfigExample
+	config={{
+		expressions: [
+			"conn.tls.client.san.uris == ['https://example.com/example']",
+		],
+	}}
+/>
+
+### `conn.tls.client.serial_number`
+
+Unique identifier for the certificate.
+
+<ConfigExample
+	config={{
+		expressions: [
+			"conn.tls.client.serial_number == 'b53017e79d4a5208b314a55d3574e0a8'",
+		],
+	}}
+/>
+
+### `conn.tls.client.signature_algorithm`
+
+Algorithm used to sign the certificate.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.tls.client.signature_algorithm == 'SHA256-RSA'"],
+	}}
+/>
+
+### `conn.tls.client.subject`
+
+The entity to whom the certificate is issued as a string roughly following the RFC 2253 Distinguished Names syntax.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.tls.client.subject == 'CN=www.example.com'"],
+	}}
+/>
+
+### `conn.tls.client.subject.common_name`
+
+Common name of the subject, usually the domain name.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.tls.client.subject.common_name == 'www.example.com'"],
+	}}
+/>
+
+### `conn.tls.client.subject.country`
+
+Country name(s) where the subject of the certificate is located.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.tls.client.subject.country == ['US']"],
+	}}
+/>
+
+### `conn.tls.client.subject.locality`
+
+Locality or city where the subject is located.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.tls.client.subject.locality == ['Mountain View']"],
+	}}
+/>
+
+### `conn.tls.client.subject.organization`
+
+Name(s) of the organization to which the subject belongs.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.tls.client.subject.organization == ['Example Corp']"],
+	}}
+/>
+
+### `conn.tls.client.subject.organizational_unit`
+
+Division of the organization to which the subject belongs.
+
+<ConfigExample
+	config={{
+		expressions: [
+			"conn.tls.client.subject.organizational_unit == ['Web Services']",
+		],
+	}}
+/>
+
+### `conn.tls.client.subject.postal_code`
+
+Postal code where the subject is located.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.tls.client.subject.postal_code == ['94043']"],
+	}}
+/>
+
+### `conn.tls.client.subject.province`
+
+Province or state where the subject is located.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.tls.client.subject.province == ['California']"],
+	}}
+/>
+
+### `conn.tls.client.subject.street_address`
+
+Street address where the subject is located.
+
+<ConfigExample
+	config={{
+		expressions: [
+			"conn.tls.client.subject.street_address == ['1234 Secure Blvd']",
+		],
+	}}
+/>
+
+### `conn.tls.client.validity.not_after`
+
+Expiration date and time when the certificate is no longer valid.
+
+<ConfigExample
+	config={{
+		expressions: [
+			"conn.tls.client.validity.not_after == timestamp('2023-01-01T00:00:00Z')",
+		],
+	}}
+/>
+
+### `conn.tls.client.validity.not_before`
+
+Start date and time when the certificate becomes valid.
+
+<ConfigExample
+	config={{
+		expressions: [
+			"conn.tls.client.validity.not_before == timestamp('2020-01-01T00:00:00Z')",
+		],
+	}}
+/>
+
+## Connection TLS Server Variables
+
+The following variables are available under the `conn.tls.server` namespace:
+
+| Name                                                                                      | Type          | Description                                                                                                         |
+| ----------------------------------------------------------------------------------------- | ------------- | ------------------------------------------------------------------------------------------------------------------- |
+| [`conn.tls.server.extensions`](#conntlsserverextensions)                                  | `[]Extension` | Additional information added to the certificate.                                                                    |
+| [`conn.tls.server.extensions[i].id`](#conntlsserverextensionsiid)                         | `string`      | The identifier that specifies the type of extension.                                                                |
+| [`conn.tls.server.extensions[i].critical`](#conntlsserverextensionsicritical)             | `bool`        | True if the extension is critical.                                                                                  |
+| [`conn.tls.server.extensions[i].value`](#conntlsserverextensionsivalue)                   | `[]byte`      | The data for the extension.                                                                                         |
+| [`conn.tls.server.issuer`](#conntlsserverissuer)                                          | `string`      | The issuing authority of the certificate as a string roughly following the RFC 2253 Distinguished Names syntax.     |
+| [`conn.tls.server.issuer.common_name`](#conntlsserverissuercommon_name)                   | `string`      | Common name of the issuing authority, usually the domain name.                                                      |
+| [`conn.tls.server.issuer.country`](#conntlsserverissuercountry)                           | `[]string`    | Country name(s) where the issuing authority is located.                                                             |
+| [`conn.tls.server.issuer.locality`](#conntlsserverissuerlocality)                         | `[]string`    | Locality or city of the issuing authority.                                                                          |
+| [`conn.tls.server.issuer.organization`](#conntlsserverissuerorganization)                 | `[]string`    | Name(s) of the organization that issued the certificate.                                                            |
+| [`conn.tls.server.issuer.organizational_unit`](#conntlsserverissuerorganizational_unit)   | `[]string`    | Division of the organization responsible for the certificate.                                                       |
+| [`conn.tls.server.issuer.postal_code`](#conntlsserverissuerpostal_code)                   | `[]string`    | Postal code of the issuing authority.                                                                               |
+| [`conn.tls.server.issuer.province`](#conntlsserverissuerprovince)                         | `[]string`    | Province or state of the issuing authority.                                                                         |
+| [`conn.tls.server.issuer.street_address`](#conntlsserverissuerstreet_address)             | `[]string`    | Street address of the issuing authority.                                                                            |
+| [`conn.tls.server.san`](#conntlsserversan)                                                | `string`      | Subject alternative names of the ngrok server's leaf TLS certificate.                                               |
+| [`conn.tls.server.san.dns_names`](#conntlsserversandns_names)                             | `[]string`    | DNS names in the subject alternative names of the ngrok server's leaf TLS certificate.                              |
+| [`conn.tls.server.san.email_addresses`](#conntlsserversanemail_addresses)                 | `[]string`    | Email addresses in the subject alternative names of the ngrok server's leaf TLS certificate.                        |
+| [`conn.tls.server.san.ip_addresses`](#conntlsserversanip_addresses)                       | `[]string`    | IP addresses in the subject alternative names of the ngrok server's leaf TLS certificate.                           |
+| [`conn.tls.server.san.uris`](#conntlsserversanuris)                                       | `[]string`    | URIs in the subject alternative names of the ngrok server's leaf TLS certificate.                                   |
+| [`conn.tls.server.serial_number`](#conntlsserverserial_number)                            | `string`      | Unique identifier for the certificate.                                                                              |
+| [`conn.tls.server.signature_algorithm`](#conntlsserversignature_algorithm)                | `string`      | Algorithm used to sign the certificate.                                                                             |
+| [`conn.tls.server.subject`](#conntlsserversubject)                                        | `string`      | The entity to whom the certificate is issued as a string roughly following the RFC 2253 Distinguished Names syntax. |
+| [`conn.tls.server.subject.common_name`](#conntlsserversubjectcommon_name)                 | `string`      | Common name of the subject, usually the domain name.                                                                |
+| [`conn.tls.server.subject.country`](#conntlsserversubjectcountry)                         | `[]string`    | Country name(s) where the subject of the certificate is located.                                                    |
+| [`conn.tls.server.subject.locality`](#conntlsserversubjectlocality)                       | `[]string`    | Locality or city where the subject is located.                                                                      |
+| [`conn.tls.server.subject.organization`](#conntlsserversubjectorganization)               | `[]string`    | Name(s) of the organization to which the subject belongs.                                                           |
+| [`conn.tls.server.subject.organizational_unit`](#conntlsserversubjectorganizational_unit) | `[]string`    | Division of the organization to which the subject belongs.                                                          |
+| [`conn.tls.server.subject.postal_code`](#conntlsserversubjectpostal_code)                 | `[]string`    | Postal code where the subject is located.                                                                           |
+| [`conn.tls.server.subject.province`](#conntlsserversubjectprovince)                       | `[]string`    | Province or state where the subject is located.                                                                     |
+| [`conn.tls.server.subject.street_address`](#conntlsserversubjectstreet_address)           | `[]string`    | Street address where the subject is located.                                                                        |
+| [`conn.tls.server.validity.not_after`](#conntlsservervaliditynot_after)                   | `timestamp`   | Expiration date and time when the certificate is no longer valid.                                                   |
+| [`conn.tls.server.validity.not_before`](#conntlsservervaliditynot_before)                 | `timestamp`   | Start date and time when the certificate becomes valid.                                                             |
+
+### `conn.tls.server.extensions`
+
+Additional information added to the certificate.
+
+<ConfigExample
+	config={{
+		expressions: ["size(conn.tls.server.extensions) > 0"],
+	}}
+/>
+
+### `conn.tls.server.extensions[i].id`
+
+The identifier that specifies the type of extension.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.tls.server.extensions[0].id == '2.5.29.15'"],
+	}}
+/>
+
+### `conn.tls.server.extensions[i].critical`
+
+True if the extension is critical.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.tls.server.extensions[0].critical"],
+	}}
+/>
+
+### `conn.tls.server.extensions[i].value`
+
+The data for the extension.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.tls.server.extensions[0].value == b'\x03\x02\x05\xA0'"],
+	}}
+/>
+
+### `conn.tls.server.issuer`
+
+The issuing authority of the certificate as a string roughly following the RFC 2253 Distinguished Names syntax.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.tls.server.issuer == 'CN=E1,O=Let's Encrypt,C=US'"],
+	}}
+/>
+
+### `conn.tls.server.issuer.common_name`
+
+Common name of the issuing authority, usually the domain name.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.tls.server.issuer.common_name == 'exampleca.com'"],
+	}}
+/>
+
+### `conn.tls.server.issuer.country`
+
+Country name(s) where the issuing authority is located.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.tls.server.issuer.country == ['US']"],
+	}}
+/>
+
+### `conn.tls.server.issuer.locality`
+
+Locality or city of the issuing authority.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.tls.server.issuer.locality == ['Mountain View']"],
+	}}
+/>
+
+### `conn.tls.server.issuer.organization`
+
+Name(s) of the organization that issued the certificate.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.tls.server.issuer.organization == ['Example CA']"],
+	}}
+/>
+
+### `conn.tls.server.issuer.organizational_unit`
+
+Division of the organization responsible for the certificate.
+
+<ConfigExample
+	config={{
+		expressions: [
+			"conn.tls.server.issuer.organizational_unit == ['Certification Authority Division']",
+		],
+	}}
+/>
+
+### `conn.tls.server.issuer.postal_code`
+
+Postal code of the issuing authority.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.tls.server.issuer.postal_code == ['94043']"],
+	}}
+/>
+
+### `conn.tls.server.issuer.province`
+
+Province or state of the issuing authority.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.tls.server.issuer.province == ['California']"],
+	}}
+/>
+
+### `conn.tls.server.issuer.street_address`
+
+Street address of the issuing authority.
+
+<ConfigExample
+	config={{
+		expressions: [
+			"conn.tls.server.issuer.street_address == ['1234 Encryption Way']",
+		],
+	}}
+/>
+
+### `conn.tls.server.san`
+
+Subject alternative names of the server certificate of the ngrok server's leaf TLS certificate.
+
+<ConfigExample
+	config={{
+		expressions: [
+			"conn.tls.server.san == 'DNS:www.example.com, DNS:example.com, IP Address:192.168.1.1'",
+		],
+	}}
+/>
+
+### `conn.tls.server.san.dns_names`
+
+DNS names in the subject alternative names of the ngrok server's leaf TLS certificate.
+
+<ConfigExample
+	config={{
+		expressions: [
+			"conn.tls.server.san.dns_names == ['ngrok-dns.com', 'ngrok-dns2.com']",
+		],
+	}}
+/>
+
+### `conn.tls.server.san.email_addresses`
+
+Email addresses in the subject alternative names of the ngrok server's leaf TLS certificate.
+
+<ConfigExample
+	config={{
+		expressions: [
+			"conn.tls.server.san.email_addresses == ['ngrok-email1@example.com', 'ngrok-email2@example.com']",
+		],
+	}}
+/>
+
+### `conn.tls.server.san.ip_addresses`
+
+IP addresses in the subject alternative names of the ngrok server's leaf TLS certificate.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.tls.server.san.ip_addresses == ['192.168.1.1']"],
+	}}
+/>
+
+### `conn.tls.server.san.uris`
+
+URIs in the subject alternative names of the ngrok server's leaf TLS certificate.
+
+<ConfigExample
+	config={{
+		expressions: [
+			"conn.tls.server.san.uris == ['https://example.com/example']",
+		],
+	}}
+/>
+
+### `conn.tls.server.serial_number`
+
+Unique identifier for the certificate.
+
+<ConfigExample
+	config={{
+		expressions: [
+			"conn.tls.server.serial_number == 'b53017e79d4a5208b314a55d3574e0a8'",
+		],
+	}}
+/>
+
+### `conn.tls.server.signature_algorithm`
+
+Algorithm used to sign the certificate.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.tls.server.signature_algorithm == 'SHA256-RSA'"],
+	}}
+/>
+
+### `conn.tls.server.subject`
+
+The entity to whom the certificate is issued as a string roughly following the RFC 2253 Distinguished Names syntax.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.tls.server.subject == 'CN=www.example.com'"],
+	}}
+/>
+
+### `conn.tls.server.subject.common_name`
+
+Common name of the subject, usually the domain name.
+
+<ConfigExample
+	config={{
+		expressions: [
+			"conn.tls.server.subject.common_name == 'ngrok-server.example.com'",
+		],
+	}}
+/>
+
+### `conn.tls.server.subject.country`
+
+Country name(s) where the subject of the certificate is located.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.tls.server.subject.country == ['US']"],
+	}}
+/>
+
+### `conn.tls.server.subject.locality`
+
+Locality or city where the subject is located.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.tls.server.subject.locality == ['Mountain View']"],
+	}}
+/>
+
+### `conn.tls.server.subject.organization`
+
+Name(s) of the organization to which the subject belongs.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.tls.server.subject.organization == ['Example Corp']"],
+	}}
+/>
+
+### `conn.tls.server.subject.organizational_unit`
+
+Division of the organization to which the subject belongs.
+
+<ConfigExample
+	config={{
+		expressions: [
+			"conn.tls.server.subject.organizational_unit == ['Web Services']",
+		],
+	}}
+/>
+
+### `conn.tls.server.subject.postal_code`
+
+Postal code where the subject is located.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.tls.server.subject.postal_code == ['94043']"],
+	}}
+/>
+
+### `conn.tls.server.subject.province`
+
+Province or state where the subject is located.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.tls.server.subject.province == ['California']"],
+	}}
+/>
+
+### `conn.tls.server.subject.street_address`
+
+Street address where the subject is located.
+
+<ConfigExample
+	config={{
+		expressions: [
+			"conn.tls.server.subject.street_address == ['1234 Secure Blvd']",
+		],
+	}}
+/>
+
+### `conn.tls.server.validity.not_after`
+
+Expiration date and time when the certificate is no longer valid.
+
+<ConfigExample
+	config={{
+		expressions: [
+			"conn.tls.server.validity.not_after > timestamp('2023-01-01T00:00:00Z')",
+		],
+	}}
+/>
+
+### `conn.tls.server.validity.not_before`
+
+Start date and time when the certificate becomes valid.
+
+<ConfigExample
+	config={{
+		expressions: [
+			"conn.tls.server.validity.not_before < timestamp('2020-01-01T00:00:00Z')",
+		],
+	}}
+/>

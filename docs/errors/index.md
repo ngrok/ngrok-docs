@@ -56,3 +56,7 @@ listed here to help make your troubleshooting easier.
 
 Consult the [Errors Reference Documentation](/docs/errors/reference) for a
 complete list of all of ngrok's error codes.
+
+## Customize Error Pages for your Traffic
+
+To access and provide feedback on a development preview of custom error pages [Fill out the form](https://ngrok.com/new-features/custom-error-pages?ref=errordoc).

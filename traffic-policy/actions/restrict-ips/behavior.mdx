@@ -1,0 +1,36 @@
+## Behavior
+
+### Evaluation of Rules
+
+This action evaluates the configured rules against the layer 4 source IP
+(`conn.client_ip`) of a connection. HTTP headers like `X-Forwarded-For` are
+never used.
+
+### Allow and Deny Conditions
+
+A connection is allowed only if its source IP matches at least one of the
+allowed CIDRs and does not match any of the denied CIDRs.
+
+### Building CIDR Sets
+
+The set of allowed and denied CIDRs are built from:
+
+- The CIDRs specified in the `allow` and `deny` fields.
+- The CIDRs belonging to the ngrok [IP Policies](/docs/api/resources/ip-policies/)
+  specified in the `ip_policies` field.
+
+### Denied Connection Handling
+
+If this action denies the connection:
+
+- An `HTTP 403` response is returned.
+- The upstream server is never reached.
+- No further actions or policy rules in the policy configuration will be executed.
+
+### IPv6 Support
+
+This action supports IPv6 addresses for all IP rules. You may use standard
+abbreviated notations such as `"::/0"`.
+
+Don't forget to create IPv6 rules. It is easy to test with only IPv4 and then
+suddenly things don't work as expected because you forgot to create IPv6 rules.
