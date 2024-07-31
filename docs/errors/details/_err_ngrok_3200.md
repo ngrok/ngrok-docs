@@ -5,7 +5,7 @@ This error occurs when there is no active tunnel using the hostname you are tryi
 If you are the ngrok Administrator for this account, please verify that the ngrok Agent is running and that the subdomain/hostname is correct.
 
 If you are not the ngrok Administrator and are a visitor to the ngrok URL, you may need to contact the endpoint owner through other means.
-ngrok is unable to assist withe end user content as all conent is neither hosted or maintained by ngrok. ngrok is uanble to provide user details per the ngrok privacy policy.
+ngrok is unable to assist with end user content as all content is neither hosted or maintained by ngrok. ngrok is unable to provide user details per the ngrok privacy policy.
 
 ### The most common causes of this error are:
 
