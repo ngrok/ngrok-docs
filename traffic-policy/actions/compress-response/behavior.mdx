@@ -1,0 +1,44 @@
+## Behavior
+
+When an HTTP request includes an `Accept-Encoding` header, HTTP responses are
+automatically compressed, and a Content-Encoding header is added to the
+response.
+
+If the response is already compressed by your upstream service,
+no additional compression will be applied.
+
+### Streaming Compression
+
+When compression is applied, the response body is not buffered; it is
+compressed in real-time as it streams through the ngrok endpoint.
+
+### Algorithm Choice
+
+If a request specifies `Accept-Encoding` but none of the requested algorithms
+are supported, no compression is applied, and the upstream response is returned
+unmodified.
+
+### Quality Values
+
+Compression is negotiated based on the `Accept-Encoding` header as defined by
+the [RFC](https://datatracker.ietf.org/doc/html/rfc9110#name-accept-encoding),
+respecting q-values and selecting the supported algorithm with the highest
+q-value.
+
+For example:
+
+```shell
+Accept-Encoding: gzip;q=1.0, br; q=0.5, *;q=0
+```
+
+The algorithm `gzip` would be selected because it has the highest q-value of `1.0`.
+
+### Response Headers
+
+When this action performs compression, the following changes are made to the
+HTTP response headers:
+
+- The `Content-Length` header is removed.
+- A `Content-Encoding` header is added, specifying the negotiated algorithm.
+- A `Vary: Accept-Encoding` header is added to indicate that the response varies
+  based on the `Accept-Encoding` request header.

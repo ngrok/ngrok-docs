@@ -1,0 +1,327 @@
+import ConfigExample from "/src/components/ConfigExample.tsx";
+
+## Request Variables
+
+The following variables are available under the `req` namespace:
+
+| Name                                                        | Type                  | Description                                                                                                                                                                                     |
+| ----------------------------------------------------------- | --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`req.content_encoding`](#reqcontent_encoding)              | `list[string]`        | The encodings set in the `Content-Encoding` header for this request.                                                                                                                            |
+| [`req.content_length`](#reqcontent_length)                  | `int64`               | The content length of the body in bytes. This may not be present if the request does not contain a body or if the client does not specify a content length because they are streaming the body. |
+| [`req.content_type`](#reqcontent_type)                      | `string`              | The media type set in the `Content-Type` header for this request.                                                                                                                               |
+| [`req.content_type.parameters`](#reqcontent_typeparameters) | `map[string]string`   | The parameters set in the `Content-Type` header for this request.                                                                                                                               |
+| [`req.content_type.raw`](#reqcontent_typeraw)               | `string`              | The value of the `Content-Type` header for this request.                                                                                                                                        |
+| [`req.cookies`](#reqcookies)                                | `map[string][]cookie` | The HTTP cookie objects included in this request. If there are multiple cookies with the same name, they will be ordered as specified in the `Cookie` header.                                   |
+| [`req.cookies[k][i].name`](#reqcookieskiname)               | `string`              | The name of the cookie.                                                                                                                                                                         |
+| [`req.cookies[k][i].value`](#reqcookieskivalue)             | `string`              | The value of the cookie.                                                                                                                                                                        |
+| [`req.headers`](#reqheaders)                                | `map[string][]string` | The request headers parsed as a map of lower-case names to values.                                                                                                                              |
+| [`req.host`](#reqhost)                                      | `string`              | The value of the host header field for this request.                                                                                                                                            |
+| [`req.location`](#reqlocation)                              | `string`              | The value of the Location header for this request.                                                                                                                                              |
+| [`req.method`](#reqmethod)                                  | `string`              | The method for this request.                                                                                                                                                                    |
+| [`req.trailers`](#reqtrailers)                              | `map[string][]string` | The request trailers parsed as a map of lower-case names to values.                                                                                                                             |
+| [`req.ts.body_received`](#reqtsbody_received)               | `timestamp`           | The timestamp when ngrok received the body of the request. This may not be present if the request does not contain a body.                                                                      |
+| [`req.ts.header_received`](#reqtsheader_received)           | `timestamp`           | The timestamp when ngrok received the header of the request.                                                                                                                                    |
+| [`req.url`](#requrl)                                        | `string`              | The normalized full URL for this request.                                                                                                                                                       |
+| [`req.url.authority`](#requrlauthority)                     | `string`              | The authority portion of the URL.                                                                                                                                                               |
+| [`req.url.host`](#requrlhost)                               | `string`              | The hostname portion of the host for this request.                                                                                                                                              |
+| [`req.url.path`](#requrlpath)                               | `string`              | The path for this request including the leading forward slash.                                                                                                                                  |
+| [`req.url.port`](#requrlport)                               | `int32`               | The port portion of the URL. This may not be present if the URL does not explicitly specify a port.                                                                                             |
+| [`req.url.query`](#requrlquery)                             | `string`              | The full query string for this request excluding the leading question mark.                                                                                                                     |
+| [`req.url.query_params`](#requrlquery_params)               | `map[string][]string` | The request query string parsed as a map of names to values.                                                                                                                                    |
+| [`req.url.raw`](#requrlraw)                                 | `string`              | The un-normalized full URL for this request.                                                                                                                                                    |
+| [`req.url.raw_path`](#requrlraw_path)                       | `string`              | The un-normalized path including the leading slash for this request.                                                                                                                            |
+| [`req.url.scheme`](#requrlscheme)                           | `string`              | The scheme for this request.                                                                                                                                                                    |
+| [`req.url.uri`](#requrluri)                                 | `string`              | The URI (path and query) portion of the URL.                                                                                                                                                    |
+| [`req.url.user_password`](#requrluser_password)             | `string`              | The `user:password` portion of the URL.                                                                                                                                                         |
+| [`req.user_agent`](#requser_agent)                          | `string`              | The value of the `User-Agent` header for this request.                                                                                                                                          |
+| [`req.version`](#reqversion)                                | `string`              | The HTTP version for this request.                                                                                                                                                              |
+
+### `req.content_encoding`
+
+The encoding set in the `Content-Encoding` header for this request.
+
+<ConfigExample
+	config={{
+		expressions: ["req.content_encoding[0] == 'br'"],
+	}}
+/>
+
+### `req.content_length`
+
+The content length of the body in bytes. This may not be present if the request does not contain a body or if the client does not specify a content length because they are streaming the body.
+
+<ConfigExample
+	config={{
+		expressions: ["req.content_length > 10000000"],
+	}}
+/>
+
+### `req.content_type`
+
+The media type set in the `Content-Type` header for this request.
+
+<ConfigExample
+	config={{
+		expressions: ["req.content_type == 'application/json'"],
+	}}
+/>
+
+### `req.content_type.parameters`
+
+The parameters set in the `Content-Type` header for this request.
+
+<ConfigExample
+	config={{
+		expressions: ["req.content_type.parameters['charset'] == 'utf-8'"],
+	}}
+/>
+
+### `req.content_type.raw`
+
+The value of the `Content-Type` header for this request.
+
+<ConfigExample
+	config={{
+		expressions: ["req.content_type.raw == 'application/json; charset=utf-8'"],
+	}}
+/>
+
+### `req.cookies`
+
+The HTTP cookie objects included in this request. If there are multiple cookies with the same name, they will be ordered as specified in the `Cookie` header.
+
+<ConfigExample
+	config={{
+		expressions: ["size(req.cookies) > 0"],
+	}}
+/>
+
+### `req.cookies[k][i].name`
+
+The name of the cookie.
+
+<ConfigExample
+	config={{
+		expressions: ["req.cookies['sessionId'][0].name == 'sessionId'"],
+	}}
+/>
+
+### `req.cookies[k][i].value`
+
+The value of the cookie.
+
+<ConfigExample
+	config={{
+		expressions: ["req.cookies['sessionId'][0].value > 'value'"],
+	}}
+/>
+
+### `req.headers`
+
+The request headers parsed as a map of lower-case names to values.
+
+<ConfigExample
+	config={{
+		expressions: ["'Fizz' in req.headers['baz']"],
+	}}
+/>
+
+### `req.host`
+
+The value of the host header field value for this request.
+
+<ConfigExample
+	config={{
+		expressions: ["req.host == 'nba.com'"],
+	}}
+/>
+
+### `req.location`
+
+The value of the Location header for this request.
+
+<ConfigExample
+	config={{
+		expressions: ["req.location == '/index.html'"],
+	}}
+/>
+
+### `req.method`
+
+The method for this request.
+
+<ConfigExample
+	config={{
+		expressions: ["req.method == 'POST' || req.method == 'PUT'"],
+	}}
+/>
+
+### `req.trailers`
+
+The request trailers parsed as a map of lower-case names to values.
+
+<ConfigExample
+	config={{
+		expressions: ["'Fizz' in req.trailers['baz']"],
+	}}
+/>
+
+### `req.ts.body_received`
+
+The timestamp when ngrok received the body of the request. This may not be present if the request does not contain a body.
+
+<ConfigExample
+	config={{
+		expressions: ["req.ts.body_received > timestamp('2023-12-31T00:00:00Z')"],
+	}}
+/>
+
+### `req.ts.header_received`
+
+The timestamp when ngrok received the header of the request.
+
+<ConfigExample
+	config={{
+		expressions: ["req.ts.header_received > timestamp('2023-12-31T00:00:00Z')"],
+	}}
+/>
+
+### `req.url`
+
+The normalized full URL for this request.
+
+<ConfigExample
+	config={{
+		expressions: ["req.url == 'https://nba.com/')"],
+	}}
+/>
+
+### `req.url.authority`
+
+The authority portion of the URL.
+
+<ConfigExample
+	config={{
+		expressions: ["req.url.authority == 'user:password@nba.com'"],
+	}}
+/>
+
+### `req.url.host`
+
+The hostname portion of the host for this request.
+
+<ConfigExample
+	config={{
+		expressions: ["req.url.host == 'nba.com'"],
+	}}
+/>
+
+### `req.url.path`
+
+The path for this request including the leading forward slash.
+
+<ConfigExample
+	config={{
+		expressions: ["req.url.path.startsWith('/foo')"],
+	}}
+/>
+
+### `req.url.port`
+
+The port portion of the URL. This may not be present if the URL does not explicitly specify a port.
+
+<ConfigExample
+	config={{
+		expressions: ["req.url.port == 443"],
+	}}
+/>
+
+### `req.url.query`
+
+The full query string for this request excluding the leading question mark.
+
+<ConfigExample
+	config={{
+		expressions: ["req.url.query == 'number=23&name=jordan'"],
+	}}
+/>
+
+### `req.url.query_params`
+
+The request query string parsed as a map of names to values.
+
+<ConfigExample
+	config={{
+		expressions: ["'bar' in req.url.query_params['foo']"],
+	}}
+/>
+
+### `req.url.raw`
+
+The un-normalized full URL for this request.
+
+<ConfigExample
+	config={{
+		expressions: ["req.url.raw.includes('/foo')"],
+	}}
+/>
+
+### `req.url.raw_path`
+
+The un-normalized path including the leading slash for this request.
+
+<ConfigExample
+	config={{
+		expressions: ["req.url.raw_path.startsWith('/foo')"],
+	}}
+/>
+
+### `req.url.scheme`
+
+The scheme for this request.
+
+<ConfigExample
+	config={{
+		expressions: ["req.url.scheme == 'https'"],
+	}}
+/>
+
+### `req.url.uri`
+
+The URI (path and query) portion of the URL.
+
+<ConfigExample
+	config={{
+		expressions: ["req.url.uri.contains('/api/players?number=23&name=jordan')"],
+	}}
+/>
+
+### `req.url.user_password`
+
+The `user:password` portion of the URL.
+
+<ConfigExample
+	config={{
+		expressions: ["req.url.user_password == 'user:password'"],
+	}}
+/>
+
+### `req.user_agent`
+
+The value of the `User-Agent` header for this request.
+
+<ConfigExample
+	config={{
+		expressions: ["req.user_agent.contains('curl')"],
+	}}
+/>
+
+### `req.version`
+
+The HTTP version for this request.
+
+<ConfigExample
+	config={{
+		expressions: ["req.version == 'HTTP/2.0"],
+	}}
+/>

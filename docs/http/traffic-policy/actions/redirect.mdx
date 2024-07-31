@@ -1,136 +1,18 @@
-import ActionDescription from "/docs/traffic-policy/variables/actions/action_description.mdx";
-import ActionResultVariables from "/docs/traffic-policy/variables/actions/redirect.mdx";
-import { ExampleHTTP } from "/examples/actions/redirect.mdx";
-import CelTemplateSyntaxExplanation from "/src/components/CelTemplateSyntaxExplanation.tsx";
-import ConfigExample from "/src/components/ConfigExample.tsx";
+import ActionBehavior from "/traffic-policy/actions/redirect/behavior.mdx";
+import ActionConfig from "/traffic-policy/actions/redirect/config.mdx";
+import ActionExamples from "/traffic-policy/actions/redirect/examples/index.mdx";
+import ActionOverview from "/traffic-policy/actions/redirect/index.mdx";
+import ActionVariables from "/traffic-policy/actions/redirect/variables.mdx";
+import ActionVariablesDescription from "/traffic-policy/common/action-variables-description.mdx";
 
 # Redirect
 
-## Overview
+<ActionOverview />
+<ActionConfig />
+<ActionBehavior />
+<ActionExamples />
 
-The Redirect policy action enables transforming your URL using regular expressions and redirect through the "location" header.
+## Action Result Variables
 
-## Example
-
-[Traffic Policy](/docs/http/traffic-policy/index.mdx) for redirecting to a url with a different `version` and `id` param.
-
-<ExampleHTTP />
-
-_Request:_
-
-```shell
-curl https://example.ngrok.app/api/v1/users/42
-```
-
-_Result:_
-
-```shell
-< HTTP/2 301
-< location: https://example.ngrok.app/api/v2/users?id=42
-< x-custom-header: custom-value
-```
-
-## Behavior
-
-When executed this action will abort the request and replace all matches on the inbound URL with the configured replacements. Before regex replacement, all variables or expressions will be replaced with their corresponding values using [cel expressions](https://ngrok.com/docs/http/traffic-policy/expressions) templating syntax.
-
-## Reference
-
-### Supported Directions
-
-- Inbound
-
-### Configuration
-
-| Type       |
-| ---------- |
-| `redirect` |
-
-| Parameter     | &nbsp;                    | Description                                                                                                                                                         |
-| ------------- | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `from`        | string                    | A regular expression string to match inside of the URL. Supports interpolating the results of [cel expressions](#templating-syntax) outside of regular regex.       |
-| `to`          | string                    | A regular expression string to replace the `from` match with. Supports interpolating the results of [cel expressions](#templating-syntax) outside of regular regex. |
-| `status_code` | int                       | 3xx status code used for redirecting, 302 by default.                                                                                                               |
-| `headers`     | Map&lt;string, string&gt; | Headers to be added to the response.                                                                                                                                |
-| `format`      | string                    | (default: `ngrok`) Determines interpolation format in `to`/`from` fields.                                                                                           |
-
-### Templating Syntax
-
-<CelTemplateSyntaxExplanation />
-
-### More Examples
-
-##### Using "to" field with templating syntax
-
-<ConfigExample
-	config={{
-		actions: [
-			{
-				type: "redirect",
-				config: {
-					format: "ngrok",
-					to: "/api/v1/carmen/sandiego/${conn.geo.city}",
-					status_code: 301,
-				},
-			},
-		],
-	}}
-/>
-
-_Request:_
-
-```shell
-curl https://example.ngrok.app/api/v1
-```
-
-_Result:_
-
-```shell
-< HTTP/2 301
-< location: https://example.ngrok.app/api/v1/carmen/sandiego/seattle
-```
-
-<hr />
-
-##### Using cel expressions in headers
-
-<ConfigExample
-	config={{
-		actions: [
-			{
-				type: "redirect",
-				config: {
-					format: "ngrok",
-					to: "/api/v1/soon?time=${string(conn.ts.start)}",
-					status_code: 308,
-					headers: {
-						"x-custom-header": "custom-value",
-						"x-template-example": "started at ${conn.ts.start}",
-					},
-				},
-			},
-		],
-	}}
-/>
-
-_Request:_
-
-```shell
-curl https://example.ngrok.app/api/v1/foobar
-```
-
-_Result:_
-
-```shell
-< HTTP/2 308
-< location: https://example.ngrok.app/api/v1/soon?time=2024-06-24T15:30:00Z
-< x-custom-header: 2024-06-24T15:30:00Z
-< x-template-example: started at 2024-06-24T15:30:00Z
-```
-
-<hr />
-
-### Action Result Variables
-
-<ActionDescription />
-<ActionResultVariables />
+<ActionVariablesDescription />
+<ActionVariables />
