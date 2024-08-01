@@ -9,6 +9,7 @@ title: Changelog
 ### ngrok Agent 3.14.0 - \[2024-08-01\]
 
 - Added support for `traffic_policy` field in agent config for Traffic Policy configuration.
+- Deprecated `policy`
 - Added `EndpointTrafficPolicy` module to Edge API.
 
 ### ngrok Agent 3.13.0 - \[2024-07-15\]
@@ -19,6 +20,7 @@ title: Changelog
 
 - Fixed a bug in `ngrok diagnose` that would cause a panic if a server IP and the agent had TLS connectivity issues.
 - Added `--traffic-policy-file` flag that accepts Traffic Policy configuration for HTTP, TCP, or TLS traffic.
+- Deprecated `--policy-file` flag
 
 ### ngrok Agent 3.12.0 - \[2024-06-27\]
 

@@ -7,7 +7,7 @@ title: FastAPI
 You can leverage the [ngrok-python](https://github.com/ngrok/ngrok-python) library to embed the ngrok agent in to FastAPI Applications.
 
 :::warning
-  ngrok-python and FastAPI libraries used in this example are sensitive to versions.  Use of Virtual Environments is highly recommended 
+ngrok-python and FastAPI libraries used in this example are sensitive to versions. Use of Virtual Environments is highly recommended
 :::
 
 ```sh
