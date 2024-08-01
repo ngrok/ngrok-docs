@@ -123,12 +123,16 @@ https://api.ngrok.com/agent_ingresses
 
 ## Create a custom wildcard domain
 
-Next, create a custom [wildcard domain](/docs/network-edge/domains-and-tcp-addresses/#wildcard-domains), which will allow you to
-create endpoints and receive traffic on any subdomain of your domain.
+Next, create a custom [wildcard domain](/docs/network-edge/domains-and-tcp-addresses/#wildcard-domains), which will allow you to create endpoints and receive traffic on any subdomain of your domain.
+
+:::note
+This step is optional. Alternatively, you can create a separate domain for each of the 
+devices you wish to connect to.
+:::
 
 For example, you might create `*.customer1.{YOUR_DOMAIN}`. You would then be able to create endpoints
 on `app.customer1.{YOUR_DOMAIN}` and `dev.customer1.{YOUR_DOMAIN}`. It can be helpful to create
-a separate subdomain for each site you wish to connect to.
+a separate subdomain for each site you wish to connect to. 
 
 Run the following command, substituting your API key for `{API_KEY}` and your domain for `{YOUR_DOMAIN}`:
 
