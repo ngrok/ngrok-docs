@@ -36,13 +36,13 @@ Make sure you save the API key before you leave the screen because it won't be d
 Next, create a custom [wildcard domain](/docs/api/resources/reserved-domains/), which will allow you to create endpoints and receive traffic on any subdomain of your domain.
 
 :::note
-This step is optional. Alternatively, you can create a separate domain for each of the 
+This step is optional. Alternatively, you can create a separate domain for each of the
 devices you wish to connect to.
-::: 
+:::
 
 For example, you might create `*.sitea.{YOUR_DOMAIN}`. You would then be able to create endpoints
-on `device342.sitea.{YOUR_DOMAIN}` and `device896.sitea.{YOUR_DOMAIN}` without having to reserve them individually. 
-It can be helpful to create a separate subdomain for each site you wish to connect to. 
+on `device342.sitea.{YOUR_DOMAIN}` and `device896.sitea.{YOUR_DOMAIN}` without having to reserve them individually.
+It can be helpful to create a separate subdomain for each site you wish to connect to.
 
 Run the following command, substituting your API key for `{API_KEY}` and your domain for `{YOUR_DOMAIN}`:
 
