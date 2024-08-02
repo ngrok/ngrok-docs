@@ -16,4 +16,4 @@ ngrok is unable to assist with end user content as all content is neither hosted
 - **Network Issues** A network issue exists between the device the Agent is running on and ngrok. Your ngrok agent might have trouble reaching the ngrok service. Try running the [`ngrok diagnose`](/docs/agent/cli/#ngrok-diagnose) command to check for connectivity issues.
 - **Incorrect Scheme** You are attempting to run `--scheme http` on your agent using a domain that only supports https. All of the `.app` and `.dev` domains are HSTS or "HTTP Strict Transport Security" domains. Paid plan accounts are able to start http scheme tunnels on the `ngrok.io` domain, which is not HSTS enforced.
 
-If you are the Administrator for this ngrok account, and none of these steps work for you or you have additional questions, drop us a note at at [support@ngrok.com](mailto:support@ngrok.com?subject=Help%20with%20ngrok%203200%20error).
+If you are the Administrator for this ngrok account, and none of these steps work for you or you have additional questions, drop us a note at [support@ngrok.com](mailto:support@ngrok.com?subject=Help%20with%20ngrok%203200%20error).
