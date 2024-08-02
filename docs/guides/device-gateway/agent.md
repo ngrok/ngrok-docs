@@ -256,7 +256,7 @@ For **Owner**, select the bot user you use created, and select `bind:*.customer1
 This ACL will allow an agent with the authtoken to create tunnels on any subdomain of `customer1.{YOUR_DOMAIN}`.
 
 :::note
-If you did not create a [custom wildcard domain](#create-a-custom-wildcard-domain-optional), select your domain from the ACL rules drop-down box to bind to this authtoken. 
+If you did not create a [custom wildcard domain](#create-a-custom-wildcard-domain-optional), select your domain from the ACL rules drop-down box to bind to this authtoken.
 :::
 
 ![alt-text](img/authtoken.png)
@@ -320,6 +320,7 @@ tunnels:
     addr: 4040
     inspect: false
 ```
+
 ### Start the agent to access the agent API
 
 Now that you’ve updated the `ngrok.yml` config file, start the tunnel for the agent API by running the following
