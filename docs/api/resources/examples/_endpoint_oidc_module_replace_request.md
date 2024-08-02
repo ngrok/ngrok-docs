@@ -9,5 +9,5 @@ curl \
 -H "Content-Type: application/json" \
 -H "Ngrok-Version: 2" \
 -d '{"client_id":"some-client-id","client_secret":"some-client-secret","enabled":true,"issuer":"https://accounts.google.com","scopes":["profile"]}' \
-https://api.ngrok.com/endpoint_configurations/ec_2hrGykAolXQqdXLqz7q3AkH6LJt/oidc
+https://api.ngrok.com/endpoint_configurations/ec_2k5ok9VGRiYDND4SamKTIcCgWck/oidc
 ```
