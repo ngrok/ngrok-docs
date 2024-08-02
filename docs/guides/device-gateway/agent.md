@@ -43,13 +43,15 @@ Most organizations will have their own certificate mangement infrastructure. You
 [Create an ngrok API key](https://dashboard.ngrok.com/api/new) using the ngrok dashboard.
 Make sure you save the API key before you leave the screen because it won't be displayed again.
 
-## Configure a custom agent ingress address
+## Configure a custom agent ingress address (optional)
 
 Configuring a [custom agent ingress address](/agent/ingress/) allows you to provide your customers with a dedicated URL to connect to the ngrok platform. Since your customers will connect using your subdomain, they can safely block other ngrok domains to control the tunnels started in their network. You'll provide a subdomain you own, such as `connect.{YOUR_DOMAIN}`, and delegate DNS (Domain Name Service) control of
 that subdomain to ngrok.
 
+:::note
 This step is optional. If you create a custom ingress address, you'll [provide it in the agent
 config](/docs/guides/device-gateway/agent#update-ngrokyml) using the `server_addr` property.
+:::
 
 If you don't provide a custom agent ingress address in the `server_addr` property, the agent will
 connect to one of the [default ingress addresses](/docs/guides/securing-your-tunnels/#blocking-non-corporate-accounts) and you can take advantage of
@@ -127,18 +129,19 @@ You can run the following command to get the values you need if you didn't save 
 https://api.ngrok.com/agent_ingresses
 ```
 
-## Create a custom wildcard domain
+## Create a custom wildcard domain (optional)
 
 Next, create a custom [wildcard domain](/docs/network-edge/domains-and-tcp-addresses/#wildcard-domains), which will allow you to create endpoints and receive traffic on any subdomain of your domain.
-
-:::note
-This step is optional. Alternatively, you can create a separate domain for each of the
-devices you wish to connect to.
-:::
 
 For example, you might create `*.customer1.{YOUR_DOMAIN}`. You would then be able to create endpoints
 on `app.customer1.{YOUR_DOMAIN}` and `dev.customer1.{YOUR_DOMAIN}`. It can be helpful to create
 a separate subdomain for each site you wish to connect to.
+
+:::note
+This step is optional. If you don't create a custom wildcard domain, you'll need to reserve a domain for each device
+you want to connect to. You can add a [custom domain](/docs/guides/how-to-set-up-a-custom-domain/) or a
+use an ngrok-managed domain.
+:::
 
 Run the following command, substituting your API key for `{API_KEY}` and your domain for `{YOUR_DOMAIN}`:
 
@@ -252,6 +255,10 @@ under _Tunnels_, then click **Add a Tunnel Authtoken**.
 For **Owner**, select the bot user you use created, and select `bind:*.customer1.{YOUR_DOMAIN}` for the ACL Rules.
 This ACL will allow an agent with the authtoken to create tunnels on any subdomain of `customer1.{YOUR_DOMAIN}`.
 
+:::note
+If you did not create a [custom wildcard domain](#create-a-custom-wildcard-domain-optional), select your domain from the ACL rules drop-down box to bind to this authtoken. 
+:::
+
 ![alt-text](img/authtoken.png)
 
 ## Configure the ngrok agent API
@@ -262,7 +269,9 @@ and collect stats and metrics.
 The API runs on `localhost:4040` wherever the agent runs, but you can start an ngrok tunnel to make the API available
 remotely.
 
-> **Please note that tunnels started with the agent API do not persist in the event of an agent restart or network outage.**
+:::warning
+Please note that tunnels started with the agent API do not persist in the event of an agent restart or network outage.
+:::
 
 ### Update ngrok.yml
 
@@ -287,6 +296,13 @@ Support for [Global Server Load Balancing (GSLB)](https://ngrok.com/blog-post/gs
 is not yet available when using a custom agent ingress address, so you’ll
 need to specify the POP this agent should use to connect to the ngrok platform.
 
+:::note
+If you aren't using a [custom agent ingress](#configure-a-custom-agent-ingress-address), you do not
+need to specify the `server_addr` property in your config file.
+
+If you aren't using a [custom wildcard domain](#create-a-custom-wildcard-domain-optional), add your reserved domain for the `domain` property.
+:::
+
 Add the following sections to the `ngrok.yml` config file, substituting the appropriate values for your environment,
 including a subdomain to connect to the agent api, such as `agent.customer1.configurable-domain.com`:
 
@@ -304,12 +320,6 @@ tunnels:
     addr: 4040
     inspect: false
 ```
-
-:::note
-If you aren't using a [custom agent ingress](#configure-a-custom-agent-ingress-address), you do not
-need to specify the `server_addr` property in your config file.
-:::
-
 ### Start the agent to access the agent API
 
 Now that you’ve updated the `ngrok.yml` config file, start the tunnel for the agent API by running the following
@@ -331,6 +341,9 @@ You can pass multiple paths to config files, and ngrok will merge them before st
 
 You now have the ngrok agent running on a device in an external environment and can
 use the agent API to start and stop the tunnels necessary to access the device's APIs.
+
+:::note
+If you did not create a [custom wildcard domain](#create-a-custom-wildcard-domain-optional), ensure you reserve an individual domain for each tunnel you wish to start.
 
 To start a tunnel to connect to the device's API, run the following command,
 substituting the appropriate values for your environment:
