@@ -83,7 +83,7 @@ configuration file:
 	</TabItem>
 	<TabItem value="go-sdk" label="Go">
 		<CustomIngressGoSdkExample />
-	</TabItem>
+	</TabItCheem>
 	<TabItem value="javascript-sdk" label="Javascript">
 		<CustomIngressJavascriptSdkExample />
 	</TabItem>
@@ -119,6 +119,44 @@ all custom branded but your address will still resolve to ngrok's shared set of
 IP addresses. Dedicated IPs that are unique for your account are also available
 at additional cost. [Contact us](mailto:support@ngrok.com?subject=Dedicated+Ingress+IPs) to get in touch for
 additional details.
+
+## Certificate Issuer
+
+While you create a custom agent ingress you'll get the option to chose between
+two certificate issuer options, ngrok's internal CA and
+[Let's Encrypt](https://letsencrypt.org/). During creation of an agent ingress
+select the desired certificate provider:
+
+![](/img/docs/new-ingress.png)
+
+### ngrok Cert Issuer
+
+The ngrok cert issuer is the default option which the agent trusts
+automatically. It provisions immediately, but may require additional
+configuration if an outbound proxy sits between the agent and ngrok for deep
+traffic inspection, since the proxy won't automaticallly trust the ngrok-issued
+certificate.
+
+### Let's Encrypt Cert Issuer
+
+The Let's Encrypt cert issuer is not automatically trusted by the agent,
+requires the `root_cas` option to be set to `host` (or the Let's Encrupt root
+cert) in the configuration file (assuming the host trusts the standard set of
+public CAs). Same goes for any other ngrok SDK, package, or agent.
+
+It is not immediatly provisioned - blocked on DNS delection and the propagation
+therof. The provisioning process could take up to 48 hours if propagation is
+slow. An ngrok certificate is provisioned and used in the meantime. Note that
+even if the DNS "Check Status" succeeds in the ngrok dashboard, it may not have
+propagated to Let's Encrypt yet.
+
+This option is useful if getting an outbound proxy to trust `ngrok` CA is
+challangeing due to either technical or organizational constraints.
+
+If Let's Encrypt is selected, the agent ingress drawer will show the follwing
+card while the certificate is provisioning:
+
+![](/img/docs/certificate-provisioning-delayed.png)
 
 ## Why customize the ingress address?
 
