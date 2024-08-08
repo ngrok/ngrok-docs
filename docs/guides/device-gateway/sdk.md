@@ -16,7 +16,7 @@ tags:
 This guide provides step-by-step instructions for using ngrok as a device gateway.
 This example shows you how to embed connectivity into an application using ngrok's Python SDK to access
 an API running on an IoT device. All the Python code in this example is available in 
-[this repo](https://github.com/ngrok-samples/ngrok-iot-agent).
+[this repo](https://github.com/ngrok-samples/ngrok-python-iot-agent).
 
 ## Prerequisites
 To use the sample application, you need the following prerequisites on the device or device 
