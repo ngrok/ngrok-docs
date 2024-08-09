@@ -71,12 +71,12 @@ services:
       - "80:80"
     restart: always
   ngrok:
-      image: ngrok/ngrok:latest
-      command: 
-        - "http"
-        - "http://host.docker.internal:80"
-      environment:
-        NGROK_AUTHTOKEN: ${NGROK_AUTHTOKEN}
-      ports:
-        - 4040:4040 
+    image: ngrok/ngrok:latest
+    command:
+      - "http"
+      - "http://host.docker.internal:80"
+    environment:
+      NGROK_AUTHTOKEN: ${NGROK_AUTHTOKEN}
+    ports:
+      - 4040:4040
 ```
