@@ -44,7 +44,7 @@ tunnels:
 
 If you're more comfortable using Docker Compose, you can use the following as a starting point. Copy the contents below into a new file named `docker-compose.yaml`, then run `docker compose up` in that directory. This Docker compose file assumes that you have an `ngrok.yml` file in the same directory with at least one tunnel defined. Check out the [ngrok agent config file documentation](/docs/agent/config/) for help creating a configuration file with a tunnel definition. If you want to use the same configuration file as your local ngrok agent, you can view the location of the default config file using `ngrok config check`.
 
-```bash
+```yaml
 services:
     ngrok:
         image: ngrok/ngrok:latest
@@ -58,4 +58,25 @@ services:
           - ./ngrok.yml:/etc/ngrok.yml
         ports:
           - 4040:4040
+```
+
+If you're defining your tunnels directly in `docker-compose.yaml` rather than using an `ngrok.yml` file the configuration will look a little different. Your command will be running an `ngrok http` command and you'll be using the special url `host.docker.internal` as mentioned in the note above. The following is an example of using the ngrok along with the `dockersamples/static-site` image.
+
+```yaml
+services:
+  static-site:
+    image: dockersamples/static-site
+    build: .
+    ports:
+      - "80:80"
+    restart: always
+  ngrok:
+      image: ngrok/ngrok:latest
+      command: 
+        - "http"
+        - "http://host.docker.internal:80"
+      environment:
+        NGROK_AUTHTOKEN: ${NGROK_AUTHTOKEN}
+      ports:
+        - "5141:5140" 
 ```
