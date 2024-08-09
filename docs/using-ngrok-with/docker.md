@@ -46,18 +46,18 @@ If you're more comfortable using Docker Compose, you can use the following as a 
 
 ```yaml
 services:
-    ngrok:
-        image: ngrok/ngrok:latest
-        restart: unless-stopped
-        command:
-          - "start"
-          - "--all"
-          - "--config"
-          - "/etc/ngrok.yml"
-        volumes:
-          - ./ngrok.yml:/etc/ngrok.yml
-        ports:
-          - 4040:4040
+  ngrok:
+    image: ngrok/ngrok:latest
+    restart: unless-stopped
+    command:
+      - "start"
+      - "--all"
+      - "--config"
+      - "/etc/ngrok.yml"
+    volumes:
+      - ./ngrok.yml:/etc/ngrok.yml
+    ports:
+      - 4040:4040
 ```
 
 If you're defining your tunnels directly in `docker-compose.yaml` rather than using an `ngrok.yml` file the configuration will look a little different. Your command will be running an `ngrok http` command and you'll be using the special url `host.docker.internal` as mentioned in the note above. The following is an example of using the ngrok along with the `dockersamples/static-site` image.
