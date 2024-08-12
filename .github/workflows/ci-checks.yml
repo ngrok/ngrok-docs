@@ -1,0 +1,25 @@
+name: CI Checks
+
+on: push
+
+jobs:
+  ci-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+          registry-url: "https://registry.npmjs.org"
+          cache: 'pnpm'
+      - name: 'Create env file'
+        run: |
+          echo DEPLOY_ENV=dev > .env
+      - name: Install Dependencies 📥
+        run: pnpm install --frozen-lockfile
+      - name: Type Check 🧹
+        run: pnpm run typecheck
+      - name: Build website 📦
+        run: pnpm run build
