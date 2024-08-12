@@ -195,7 +195,7 @@ This sample application is designed to read your ngrok credentials from the envi
 following command, replacing `{YOUR_AUTHTOKEN}` with the authtoken you created in the previous
 step:
 
-```bash 
+```bash
 export NGROK_AUTHTOKEN={YOUR_AUTHTOKEN}
 ```
 
@@ -301,29 +301,29 @@ You should receive a `200` response similar to the following:
 
 ```json
 {
-  "url": "https://device123.sitea.configurable-domain.com",
-  "protocol": "http",
-  "forwards_to": "localhost:8001",
-  "domain": "device123.sitea.configurable-domain.com",
-  "policy": {
-    "inbound": [],
-    "outbound": [
-      {
-        "expressions": [],
-        "name": "Add headers to requests",
-        "actions": [
-          {
-            "type": "add-headers",
-            "config": {
-              "headers": {
-                "is-ngrok": "444"
-              }
-            }
-          }
-        ]
-      }
-    ]
-  }
+	"url": "https://device123.sitea.configurable-domain.com",
+	"protocol": "http",
+	"forwards_to": "localhost:8001",
+	"domain": "device123.sitea.configurable-domain.com",
+	"policy": {
+		"inbound": [],
+		"outbound": [
+			{
+				"expressions": [],
+				"name": "Add headers to requests",
+				"actions": [
+					{
+						"type": "add-headers",
+						"config": {
+							"headers": {
+								"is-ngrok": "444"
+							}
+						}
+					}
+				]
+			}
+		]
+	}
 }
 ```
 
