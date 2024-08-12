@@ -173,11 +173,11 @@ Run the following to create a virtual environment, providing a directory for `{P
 
 Run the appropriate command for your O/S to activate the virtual environment:
 
-- In cmd.exe
+- In cmd.exe: 
   `{PATH_TO_VENV}\Scripts\activate.bat`
-- In PowerShell
+- In PowerShell: 
   `{PATH_TO_VENV}\Scripts\Activate.ps1`
-- Linux and MacOS
+- Linux and macOS: 
   `source {PATH_TO_VENV}/bin/activate`
 
 ### Install dependencies
