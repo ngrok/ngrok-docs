@@ -16,7 +16,7 @@ tags:
 This guide provides step-by-step instructions for using ngrok as a device gateway.
 This example shows you how to embed connectivity into an application using ngrok's Python SDK to access
 an API running on an IoT device. All the Python code in this example is available in
-[this repo](https://github.com/ngrok-samples/ngrok-python-iot-agent).
+[the ngrok-samples/ngrok-python-iot-agent repo](https://github.com/ngrok-samples/ngrok-python-iot-agent).
 
 ## Prerequisites
 
@@ -33,7 +33,7 @@ Make sure you save the API key before you leave the screen because it won't be d
 
 ## Create a custom wildcard domain
 
-Next, create a custom [wildcard domain](/docs/api/resources/reserved-domains/), which will allow you to
+Create a custom [wildcard domain](/docs/api/resources/reserved-domains/), which will allow you to
 create endpoints and receive traffic on any subdomain of your domain.
 
 For example, you might create `*.sitea.{YOUR_DOMAIN}`. You would then be able to create endpoints
@@ -88,7 +88,7 @@ You'll need values from the response in the next section.
 
 Next, add two `CNAME` records to your DNS provider's registry, providing values from the previous response.
 
-First add a CNAME record for the wildcard subdomain you just created.
+Add a CNAME record for the wildcard subdomain you just created.
 
 ![alt-text](img/CNAME-device-gw.png)
 
@@ -119,7 +119,7 @@ Use the ngrok dashboard to verify that you’ve configured DNS correctly.
 
 ## Create a bot user
 
-First, you’ll create a bot user so that in the next section, you can create an agent authtoken independent of any user account.
+You’ll create a bot user so that in the next section, you can create an agent authtoken independent of any user account.
 A bot user does not belong to a particular user account. Run the following command to create a new bot user, providing your API key and a description:
 
 ```
@@ -132,7 +132,7 @@ curl \
 https://api.ngrok.com/bot_users
 ```
 
-You should receive a 201 response similar to the following:
+You should receive a `201` response similar to the following:
 
 ```json
 {
@@ -158,12 +158,12 @@ This ACL will allow an agent with the authtoken to create tunnels on any subdoma
 ## Configure the sample agent
 
 The sample application uses the ngrok Python SDK to embed connectivity directly into the application
-rather than using the standalone ngrok agent, the CLI, or the ngrok Operator. It serves a local REST
+rather than using the standalone ngrok agent, the CLI, or the ngrok Kubernetes Operator. It serves a local REST
 API you can use to create, delete, and list tunnels.
 
 ### Clone the repo
 
-Clone [this sample application](https://github.com/ngrok-samples/ngrok-iot-agent) on the device or device gateway you wish to connect to.
+Clone [the ngrok-samples/ngrok-python-iot-agent repo](https://github.com/ngrok-samples/ngrok-python-iot-agent) on the device or device gateway you wish to connect to.
 
 ### Create and activate a virtual environment
 
@@ -195,7 +195,9 @@ This sample application is designed to read your ngrok credentials from the envi
 following command, replacing `{YOUR_AUTHTOKEN}` with the authtoken you created in the previous
 step:
 
-`export NGROK_AUTHTOKEN={YOUR_AUTHTOKEN}`
+```bash 
+export NGROK_AUTHTOKEN={YOUR_AUTHTOKEN}
+```
 
 ## Use the sample app
 
@@ -225,8 +227,8 @@ substituting the domain you set on line `109` for `{YOUR_AGENT_DOMAIN}`:
 
 ```curl
 curl -k \
--X GET \
-https://{YOUR_AGENT_DOMAIN}/tunnels
+ -X GET \
+ https://{YOUR_AGENT_DOMAIN}/tunnels
 ```
 
 Initially, you should receive a `200` response with an empty array.
@@ -237,15 +239,15 @@ Run the following command to start a tunnel to the device or device gateway wher
 
 - `{HOST}` - the host where the API is running, leave blank and remove the colon for `localhost`
 - `{PORT}` - the port where the API is running
-- `{TUNNEL_DOMAIN}`- the domain you want to serve the API on the device or device gateway
+- `{TUNNEL_DOMAIN}` - the domain you want to serve the API on the device or device gateway
 - `{YOUR_AGENT_DOMAIN}` - the domain you set on line `109` of the code
 
 ```curl
 curl -k \
--X POST \
--H "Content-Type: application/json" \
--d '{"protocol": "http", "forwards_to": "{HOST}:{PORT}", "domain": "{TUNNEL_DOMAIN}"}' \
-https://{YOUR_AGENT_DOMAIN}/tunnels
+ -X POST \
+ -H "Content-Type: application/json" \
+ -d '{"protocol": "http", "forwards_to": "{HOST}:{PORT}", "domain": "{TUNNEL_DOMAIN}"}' \
+ https://{YOUR_AGENT_DOMAIN}/tunnels
 ```
 
 You should receive a `200` response similar to the following:
@@ -288,40 +290,40 @@ Run the following command, substituting the appropriate values for the variables
 
 ```curl
 curl -k \
--X POST \
--H "Content-Type: application/json" \
--d '{"protocol": "http", "forwards_to": "{HOST}:{PORT}","domain":"{YOUR_DOMAIN}", "policy": \
-{"inbound":[],"outbound":[{"expressions":[],"name":"Add headers to requests","actions":[{"type":"add-headers","config":{"headers":{"is-ngrok":"444"}}}]}]}}' \
-https://{YOUR_AGENT_DOMAIN}/tunnels
+ -X POST \
+ -H "Content-Type: application/json" \
+ -d '{"protocol": "http", "forwards_to": "{HOST}:{PORT}","domain":"{YOUR_DOMAIN}", "policy": \
+ {"inbound":[],"outbound":[{"expressions":[],"name":"Add headers to requests","actions":[{"type":"add-headers","config":{"headers":{"is-ngrok":"444"}}}]}]}}' \
+ https://{YOUR_AGENT_DOMAIN}/tunnels
 ```
 
 You should receive a `200` response similar to the following:
 
 ```json
 {
-	"url": "https://device123.sitea.configurable-domain.com",
-	"protocol": "http",
-	"forwards_to": "localhost:8001",
-	"domain": "device123.sitea.configurable-domain.com",
-	"policy": {
-		"inbound": [],
-		"outbound": [
-			{
-				"expressions": [],
-				"name": "Add headers to requests",
-				"actions": [
-					{
-						"type": "add-headers",
-						"config": {
-							"headers": {
-								"is-ngrok": "444"
-							}
-						}
-					}
-				]
-			}
-		]
-	}
+  "url": "https://device123.sitea.configurable-domain.com",
+  "protocol": "http",
+  "forwards_to": "localhost:8001",
+  "domain": "device123.sitea.configurable-domain.com",
+  "policy": {
+    "inbound": [],
+    "outbound": [
+      {
+        "expressions": [],
+        "name": "Add headers to requests",
+        "actions": [
+          {
+            "type": "add-headers",
+            "config": {
+              "headers": {
+                "is-ngrok": "444"
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
 }
 ```
 
@@ -333,9 +335,9 @@ with the value you set on line `109` of the code and `{URL_PART}` with the value
 
 ```curl
 curl \
--X \
-DELETE \
-https://{YOUR_AGENT_DOMAIN}/tunnels/{URL_PART}
+ -X \
+ DELETE \
+ https://{YOUR_AGENT_DOMAIN}/tunnels/{URL_PART}
 ```
 
 ## Access the API running on the device or device gateway
