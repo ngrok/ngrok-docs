@@ -31,6 +31,7 @@ const sidebars = {
 				"getting-started/index",
 				"getting-started/go",
 				"getting-started/rust",
+				"getting-started/kubernetes",
 			],
 		},
 		{
@@ -203,7 +204,18 @@ const sidebars = {
 			label: "Kubernetes",
 			type: "category",
 			link: { type: "doc", id: "k8s/index" },
-			items: ["k8s/index", "k8s/how-it-works", "k8s/with-edges"],
+			items: [
+				"k8s/index",
+				"k8s/how-it-works",
+				"k8s/with-edges",
+				"k8s/getting-started-kic",
+				"k8s/getting-started-gwapi",
+				"k8s/user-guide",
+				"k8s/deployment-guide",
+				"k8s/advanced-deployments",
+				"k8s/crds",
+				"k8s/custom-domain",
+			],
 		},
 		{
 			type: "html",
@@ -265,6 +277,12 @@ const sidebars = {
 								"api/resources/weighted-backends",
 							],
 						},
+						// Bot Users
+						{
+							type: "category",
+							label: "Bot Users",
+							items: ["api/resources/bot-users"],
+						},
 						// Certificates
 						{
 							type: "category",
@@ -321,10 +339,10 @@ const sidebars = {
 								"api/resources/edge-route-ip-restriction-module",
 								"api/resources/edge-route-o-auth-module",
 								"api/resources/edge-route-oidc-module",
-								"api/resources/edge-route-policy-module",
 								"api/resources/edge-route-request-headers-module",
 								"api/resources/edge-route-response-headers-module",
 								"api/resources/edge-route-saml-module",
+								"api/resources/edge-route-traffic-policy-module",
 								"api/resources/edge-route-user-agent-filter-module",
 								"api/resources/edge-route-webhook-verification-module",
 								"api/resources/edge-route-websocket-tcp-converter-module",
@@ -349,7 +367,7 @@ const sidebars = {
 								"api/resources/edges-tcp",
 								"api/resources/tcp-edge-backend-module",
 								"api/resources/tcp-edge-ip-restriction-module",
-								"api/resources/tcp-edge-policy-module",
+								"api/resources/tcp-edge-traffic-policy-module",
 							],
 						},
 						// TLS Edges
@@ -361,8 +379,8 @@ const sidebars = {
 								"api/resources/tls-edge-backend-module",
 								"api/resources/tls-edge-ip-restriction-module",
 								"api/resources/tls-edge-mutual-tls-module",
-								"api/resources/tls-edge-policy-module",
 								"api/resources/tls-edge-tls-termination-module",
+								"api/resources/tls-edge-traffic-policy-module",
 							],
 						},
 					],

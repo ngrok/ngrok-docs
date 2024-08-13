@@ -8,21 +8,29 @@ pagination_next: obs/reference
 ## Overview
 
 Whenever changes occur in your ngrok account or when traffic transits through
-your endpoints, an event is fired. You may subscribe to these events, filter
+your endpoints, an event is fired. You may subscribe to these events and in some cases, filter
 them to those relevant to you and publish them to any number of destinations.
 
 ngrok's event system was designed for three primary use cases:
 
-- Sending logs of your ngrok traffic to logging services like Datadog and
-  CloudWatch Logs
-- Sending audit logs of ngrok configurations changes to your SIEM
+- Sending logs of your ngrok traffic to external services such as Datadog and
+  Amazon CloudWatch Logs
+- Sending audit logs of ngrok configuration changes to your SIEM
 - Enabling you to programmatically respond to events on your ngrok account
 
 There are [over 40 event types published](/docs/obs/reference) via ngrok at the time of writing.
 They break down into two important classes of event:
 
-- **[Audit Events](/docs/obs/reference/#audit-events)**: Changes to your account like create/update/delete of Domains, API Keys, IP Policies, etc.
 - **[Traffic Events](/docs/obs/reference/#traffic-events)**: When traffic transits through your endpoints like processing an HTTP request or TCP connection
+- **[Audit Events](/docs/obs/reference/#audit-events)**: Changes to your account like create/update/delete of Domains, API Keys, IP Policies, etc.
+
+:::info Traffic Inspector
+
+Traffic Events are also captured in ngrok's [Traffic
+Inspector](/docs/obs/traffic-inspection), which provides an easy, built-in way to debug
+and test traffic flowing through your ngrok account.
+
+:::
 
 ## Concepts
 
@@ -32,27 +40,28 @@ _publish_ those events to one or more **Event Destinations**.
 
 - **[Event Subscriptions](#subscriptions)**: Define which Event
   Sources to capture and which Event Destinations to publish to.
-- **[Event Sources](#sources)**: The event types a subscription captures and
-  optionally a set of fields to record and a boolean filter expression
+- **[Event Sources](#sources)**: The ngrok event types to capture and
+  optionally a set of fields to record and a boolean filter expression.
 - **[Event Destinations](#destinations)**: Where events are sent, e.g.
   Datadog, CloudWatch, Kinesis.
 
 ## Quickstart
 
 You can create your first Event Subscription on the [Events page of your ngrok
-Dashboard](https://dashboard.ngrok.com/events/subscriptions) to being capturing
+Dashboard](https://dashboard.ngrok.com/observability/event-subscriptions) to begin capturing
 and publishing events.
 
 We also publish guides to get started with each of ngrok's Event Destinations:
 
-- **[Datadog Logs](/docs/integrations/datadog/event-destination/)**
 - **[AWS CloudWatch Logs](/docs/integrations/amazon-cloudwatch/event-destination/)**
 - **[AWS Firehose](/docs/integrations/amazon-firehose/event-destination/)**
 - **[AWS Kinesis](/docs/integrations/amazon-kinesis/event-destination/)**
+- **[Azure Logs Ingestion](/integrations/azure-logs-ingestion/event-destination/)**
+- **[Datadog Logs](/docs/integrations/datadog/event-destination/)**
 
 ## Event Subscriptions {#subscriptions}
 
-Event subscriptions define which Event Sources to capture and which
+Event subscriptions define which [Event Sources](/obs/reference/) to capture and which
 destinations to publish to. If you're familiar with other event systems, they may
 call this a _listener_, a _hook_, a _probe_ or a _tap_.
 
@@ -70,24 +79,6 @@ Event Subscription API Resource](/api/resources/event-subscriptions/#create-even
 Event Sources choose which events an Event Subscription captures. Other event
 systems may call this a _selector_.
 
-There are two categories of event sources.
-
-- **[Audit Events](/docs/obs/reference/#audit-events)**:
-  Changes to your account like create/update/delete of Domains, API Keys, IP
-  Policies, etc.
-- **[Traffic Events](/docs/obs/reference/#traffic-events)**:
-  When traffic transits through your endpoints like processing an HTTP request or
-  TCP connection
-
-Traffic Events support the ability to select exactly which fields you'd like to
-include in the captured event. This provides you with control over how much
-data is logged to the destinations.
-
-Traffic Events also support the ability to be **filtered**. As part of the Event Source
-definition you specify a CEL expression which is evaluated against each event
-to determine if it should be captured. See the [Filters](#filters) section
-for further detail.
-
 The [ngrok Event Sources reference](/obs/reference) documents the full list
 of Event Sources and their fields.
 
@@ -100,10 +91,30 @@ New fields may be added to the payloads of an Event Source without a version
 change. Any other change to the event representation will lead to the
 introduction of a new version of the Event Source.
 
-### Filters {#filters}
+### Audit Events
 
-You may specify a filter on the Event Sources of **[Traffic
-Events](/docs/obs/reference/#traffic-events)**. Filters are a boolean
+ngrok emits [Audit Events](/docs/obs/reference/#audit-events) when changes are made to
+your account like create/update/delete of Domains, API Keys, IP Policies, etc.
+
+### Traffic Events
+
+When traffic transits through your endpoints, ngrok emits [Traffic
+Events](/docs/obs/reference/#traffic-events) like processing an HTTP request or TCP
+connection.
+
+Traffic Events support the ability to select exactly which fields you'd like to
+include in the captured event. This provides you with control over how much
+data is sent to the destinations.
+
+Traffic Events also support the ability to be **filtered**. As part of the Event Source
+definition you can specify a CEL expression which is evaluated against each event
+to determine if it should be captured. See the [Filters](#filters) section
+for further detail.
+
+#### Filters {#filters}
+
+You may specify a filter on [Traffic
+Events](/docs/obs/reference/#traffic-events) since the velocity of these events can be quite high. Filters are a boolean
 expression defined in [Google's Common Expression Language
 (CEL)](https://github.com/google/cel-spec/blob/master/doc/langdef.md#standard).
 Filters are evaluated on each event as it is published to determine whether it
@@ -151,35 +162,38 @@ ev.conn.server_name == "ngrok-docs-examples.ngrok.dev"
 ## Event Destinations {#destinations}
 
 An Event Destination encapsulates the configuration to publish events to other
-systems. Other event systems may call this a _sink_.
+systems. Other event systems may call this a _sink_ or _output_.
 
 Event Destinations are typically third-party logging aggregators. The following
 destinations are currently supported:
 
 - [Amazon CloudWatch](/docs/integrations/amazon-cloudwatch/event-destination/)
-- [Amazon Kinesis Data Firehose](/docs/integrations/amazon-firehose/event-destination/)
+- [Amazon Firehose](/docs/integrations/amazon-firehose/event-destination/)
 - [Amazon Kinesis](/docs/integrations/amazon-kinesis/event-destination/)
 - AWS S3 (via Kinesis Firehose)
+- [Azure Logs Ingestion](/docs/integrations/azure-logs-ingestion/event-destination/)
 - [Datadog Logs](/docs/integrations/datadog/event-destination/)
 
 Each destination requires provider-specific configuration. If you create a
 destination in the ngrok dashboard, you'll be prompted to send a test event to
 verify the integration.
 
+::::note
 When configuring AWS destinations you'll be prompted to optionally download a
 small helper script which will automatically configure the appropriate IAM
 objects necessary for integration. You may also set these values up via the AWS
 Console or tools like Terraform or Pulumi.
+::::
 
-Amazon S3 is not a directly supported destination. Instead, configure Amazon Kinesis
-Data Firehose to [deliver events into an S3
+Amazon S3 is not a directly supported destination. Instead, configure Amazon Firehose to
+[deliver events into an S3
 bucket](https://docs.aws.amazon.com/firehose/latest/dev/create-destination.html#create-destination-s3).
 
 ## Event Payloads
 
 Events are serialized as JSON when they are published to a destination.
 
-Events include the following fields:
+All events include the following fields:
 
 | Name              | Description                                                                 | Example                          |
 | ----------------- | --------------------------------------------------------------------------- | -------------------------------- |
@@ -190,7 +204,7 @@ Events include the following fields:
 | `object`          | the event object                                                            | See examples below               |
 | `principal`       | an object of the principal who actioned this event, null for traffic events | See example below                |
 
-The `object` property of the event is distinct for each Event Source.
+The `object` property of the event is distinct for each Event Source and contain a JSON object with additional information about the event.
 
 For [Audit Events](/obs/reference#audit-events), the `object`
 representation is identical to its API resource at the time of capture.
@@ -202,7 +216,7 @@ representation because they have no corresponding API resource definition.
 
 The `principal` object in every event describe the user or bot user responsible
 for initiating the event. Principal is defined for all Audit Events
-and it is `null` for Traffic Events.
+and it is `null` for Traffic Events (since they do not include a credential).
 
 | Name       | Description                                                                                       | Example                                                                                                           |
 | ---------- | ------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
@@ -213,7 +227,7 @@ and it is `null` for Traffic Events.
 
 ### Example Payloads
 
-#### ip_policy_created.v0 event
+#### [ip_policy_created.v0](/docs/obs/reference/#ip-policy) event
 
 ```json
 {
@@ -302,3 +316,7 @@ and it is `null` for Traffic Events.
 
 Events are available to all ngrok users with a free tier that
 includes the transmission of up to 10,000 events per month.
+
+The Traffic Inspector is included with all ngrok accounts with a
+retention period of 3 days. An additional 90 days can be purchased as
+an add-on to any production plan.

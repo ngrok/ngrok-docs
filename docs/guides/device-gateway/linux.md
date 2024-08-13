@@ -45,7 +45,10 @@ ngrok authtoken NGROK_AUTHTOKEN
 To enable remote SSH access to your device via ngrok:
 
 1. Test that the ngrok agent is configured correctly by starting a TCP tunnel on your remote device.
-   **Note**: If you get an error, ensure your authtoken is configured correctly.
+
+::::warning
+TCP endpoints are only available on a free plan after [adding a valid payment method](https://dashboard.ngrok.com/settings#id-verification) to your account. If you get a different error, ensure your authtoken is configured correctly.
+::::
 
 ```bash
 ngrok tcp 22
@@ -83,7 +86,9 @@ ngrok tcp 22 --cidr-allow ALLOWED_IP_ADDRESS_CIDR
 Alternatively, you can create an IP policy in the ngrok dashboard (under [Security > IP Restrictions](https://dashboard.ngrok.com/security/ip-restrictions)), and leverage the same policy to control access to your entire device fleet.
 :::
 
-## Step 4: Configure ngrok to recover on outages
+## Step 4: Run ngrok as a service so you don't need to manually restart
+
+Read more about the `ngrok service`command which allows you to run and control an ngrok service on the operating system. [Run ngrok as a service.](/agent/cli/#ngrok-service)).
 
 The ngrok agent works with native OS services like `systemd`. This helps you ensure that the ngrok service is available even after the machine restarts. Before we do this though, it's useful to reserve a TCP address in the ngrok dashboard which allows you to reuse the same address each time the device is restarted.
 
@@ -150,7 +155,7 @@ Each action that happens in ngrok is published as an event, and [Event Subscript
 
 An Event Subscription is made up of a set of event sources (some of which can be filtered), and event destinations. Each subscription can send the events to one or more destinations, such as Amazon CloudWatch Logs, Amazon Kinesis (as a data stream), or Amazon Kinesis Firehose (as a delivery stream).
 
-Event subscriptions can be configured through the [ngrok Dashboard](https://dashboard.ngrok.com/obs/subscriptions) or the [ngrok API](/docs/api/resources/event-destinations/).
+Event subscriptions can be configured through the [ngrok Dashboard](https://dashboard.ngrok.com/observability/event-subscriptions) or the [ngrok API](/docs/api/resources/event-destinations/).
 
 You can also forward all or some of your traffic events from [ngrok to your preferred logging tool](/docs/obs/).
 

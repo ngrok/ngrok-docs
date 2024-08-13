@@ -1,14 +1,14 @@
-import HttpHeaderTemplates from "./_http_header_templates.mdx";
-import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
-import KubernetesExample from "/examples/k8s/http-request-headers.mdx";
+import Tabs from "@theme/Tabs";
 import AgentCliExample from "/examples/agent-cli/http-request-headers.mdx";
 import AgentConfigExample from "/examples/agent-config/http-request-headers.mdx";
-import SshExample from "/examples/ssh/http-request-headers.mdx";
 import GoSdkExample from "/examples/go-sdk/http-request-headers.mdx";
 import JavascriptSdkExample from "/examples/javascript-sdk/http-request-headers.mdx";
+import KubernetesExample from "/examples/k8s/http-request-headers.mdx";
 import PythonSdkExample from "/examples/python-sdk/http-request-headers.mdx";
 import RustSdkExample from "/examples/rust-sdk/http-request-headers.mdx";
+import SshExample from "/examples/ssh/http-request-headers.mdx";
+import HttpHeaderTemplates from "./_http_header_templates.mdx";
 
 # Request Headers
 
@@ -64,7 +64,7 @@ For example to include geographical data about the client IP that initiated the
 request, you may construct a header value like so.
 
 ```bash
-ngrok http 80 --request-header-add 'country: ${.ngrok.geo.country_code}'
+ngrok http 80 --request-header-add 'country: ${conn.geo.country_code}'
 ```
 
 If you are specifying variable interpolation from the command line, make sure
@@ -78,7 +78,11 @@ Consult the [Variables Reference](#variables) for the available variables.
 Regardless of whether you enable the request headers module or not, [ngrok adds
 default headers to every HTTP request](/http/#upstream-headers).
 
-You may remove these default headers with the request headers module.
+You may remove these default headers with the request headers module. For example:
+
+```bash
+ngrok http 80 --request-header-remove "X-Forwarded-For,X-Forwarded-Host,X-Forwarded-Proto"
+```
 
 ### Multiple Header Values
 
@@ -170,7 +174,7 @@ transmitted to the upstream service.
 - You may not add or remove the `user-agent` header.
 - You may not remove the `host` header without adding it with a different value.
 - Adding a `host` header will replace the existing value instead of adding a second value.
-- You may not use this module to add the `ngrok-skip-browser-warning` header to skip the ngrok browser warning on free accounts.
+- You may not use this module to add the `ngrok-skip-browser-warning` header to skip the ngrok browser warning on free accounts. For more information about the abuse interstitial, please check out the [free plan limits guide](/docs/guides/limits/#why-is-there-an-interstitial-in-front-of-my-html-content).
 
 ## Reference
 
@@ -241,7 +245,7 @@ with `Ctrl+C` and then restart ngrok with a new command.
 ngrok http https://httpbin.org \
   --domain your-domain.ngrok.app \
   --request-header-remove='user-agent' \
-  --request-header-add='country: ${.ngrok.geo.country_code}'
+  --request-header-add='country: ${conn.geo.country_code}'
 ```
 
 Then curl your endpoint again to see how the request headers have been updated:

@@ -8,6 +8,6 @@ curl \
 -H "Authorization: Bearer {API_KEY}" \
 -H "Content-Type: application/json" \
 -H "Ngrok-Version: 2" \
--d '{"endpoint_configuration_id":"ec_2cSjwEk8HryU6IBAFMd8NRXqRRR","metadata":"{\"proto\": \"ssh\"}"}' \
-https://api.ngrok.com/reserved_addrs/ra_2cSjPkrBxe3CQj8OaNF2Hv9lEtP
+-d '{"endpoint_configuration_id":"ec_2k5ohWgRIz0NJXWgRY8PmCgW3Qw","metadata":"{\"proto\": \"ssh\"}"}' \
+https://api.ngrok.com/reserved_addrs/ra_2k5ohSKOO5dZdoSTnFLGt0w98cJ
 ```

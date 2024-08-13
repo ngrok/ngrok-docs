@@ -1,6 +1,6 @@
 import React from "react";
-import NgrokCard from "./NgrokCard";
 import { useIntegration } from "./integrations/use-integrations";
+import NgrokCard from "./NgrokCard";
 
 type Props = {
 	name: string;

@@ -1,0 +1,26 @@
+## Behavior
+
+### Determining the Rate Limit Bucket
+
+When this action is executed, information from the incoming HTTP request is
+used to determine which rate limit bucket the request falls into. Each bucket
+is defined by specific criteria through the `bucket_key` configuration field
+such as client IP, request host, or a header value.
+
+If the bucket has not exceeded its capacity, the request proceeds to the next
+action in your policy configuration.
+
+### Rate Limit Exceeded
+
+If the identified bucket has received more events than its capacity over the
+specified duration:
+
+1. The request is rejected with an `HTTP 429 — Too Many Requests` status code.
+2. The `retry-after` header is included in the response, indicating the number
+   of seconds after which the request may be retried.
+
+### Capacity per Ingress Server
+
+Currently, the `capacity` for each rate limit bucket is applied per ingress
+server. This means that each server independently tracks the number of requests
+and enforces the rate limits accordingly.

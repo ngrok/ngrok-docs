@@ -1,45 +1,18 @@
-import { ExampleHTTP } from "/examples/actions/rate-limit.mdx";
+import ActionBehavior from "/traffic-policy/actions/rate-limit/behavior.mdx";
+import ActionConfig from "/traffic-policy/actions/rate-limit/config.mdx";
+import ActionExamples from "/traffic-policy/actions/rate-limit/examples/index.mdx";
+import ActionOverview from "/traffic-policy/actions/rate-limit/index.mdx";
+import ActionVariables from "/traffic-policy/actions/rate-limit/variables.mdx";
+import ActionVariablesDescription from "/traffic-policy/common/action-variables-description.mdx";
 
 # Rate Limit
 
-## Overview
+<ActionOverview />
+<ActionConfig />
+<ActionBehavior />
+<ActionExamples />
 
-The Rate Limit policy action allows you to configure thresholds that restrict
-the throughput of traffic that successfully reaches your endpoint. Traffic may
-be limited overall or by attributes of the incoming requests.
+## Action Result Variables
 
-## Example
-
-<ExampleHTTP />
-
-## Behavior
-
-When this action is executed, information from the incoming HTTP request is
-used to determine which rate limit bucket the request falls into. If that
-bucket has received more events than its capacity over the specified duration,
-the request is rejected with an `HTTP 429 — Too Many Requests` status code. The
-`retry-after` header is set to a value in seconds after which the request may
-be retried. Otherwise, the request proceeds to the next action in your policy
-configuration.
-
-Currently, the `capacity` for each bucket is applied per ingress server.
-
-## Reference
-
-### Supported Directions
-
-- Inbound
-
-### Configuration
-
-| Type         |
-| ------------ |
-| `rate-limit` |
-
-| Parameter    | &nbsp;            | Description                                                                                                                                                                                                                                                                                                                                                                                                                    |
-| ------------ | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `name`       | string            | A name for this rate limit configuration.                                                                                                                                                                                                                                                                                                                                                                                      |
-| `algorithm`  | string            | The rate limit algorithm to be used. Supported options: `"sliding_window"`                                                                                                                                                                                                                                                                                                                                                     |
-| `capacity`   | uint              | The maximum number of requests allowed to reach your upstream server. The minimum capacity is `1` and the maximum capacity is `2,000,000,000`.                                                                                                                                                                                                                                                                                 |
-| `rate`       | string            | The duration in which events may be limited based on the current capacity. This must be specified as a time duration that is a multiple of ten seconds (e.g. `"90s"`, `"10m"`). The minimum value is `"60s"` and the maximum value is `"24h"`.                                                                                                                                                                                 |
-| `bucket_key` | Set&lt;string&gt; | The elements of this collection define the unique key of a request to collect and track the rate at which the capacity is being met. Possible values are `"req.Host"`, which is the Host, `"conn.ClientIP"`, and `"req.Headers['x-example-header-name']"` or the related macro `getReqHeader('x-example-header-name')`, which is the value for the specified header key, if it exists. Up to ten bucket keys can be specified. |
+<ActionVariablesDescription />
+<ActionVariables />

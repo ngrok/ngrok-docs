@@ -1,5 +1,5 @@
-ngrok makes variables available for [interpolation into
-headers](#variable-interpolation).
+ngrok makes variables available for interpolation into
+headers.
 
 Some variables will only be populated with values if you have configured the
 corresponding module for your endpoint, otherwise they will be empty. For
@@ -42,44 +42,80 @@ These variables are only populated when using the Compression module.
 
 #### Connection Variables {#conn}
 
-|                        |                                                                                                 |
-| ---------------------- | ----------------------------------------------------------------------------------------------- |
-| `${.conn.bytes_in}`    | The number of bytes arriving at an endpoint from the frontend.                                  |
-| `${.conn.bytes_out}`   | The number of bytes leaving an endpoint to the frontend.                                        |
-| `${.conn.client_ip}`   | The source IP of the TCP connection to the ngrok edge.                                          |
-| `${.conn.duration}`    | The total duration (in seconds) of the TCP connection between the ngrok endpoint and the agent. |
-| `${.conn.end_ts}`      | The timestamp when the TCP connection to the ngrok edge is closed.                              |
-| `${.conn.id}`          | The ngrok ID for this TCP connection.                                                           |
-| `${.conn.server_ip}`   | The IP address of the server that received the request.                                         |
-| `${.conn.server_name}` | The hostname associated with this connection.                                                   |
-| `${.conn.server_port}` | The port that the connection for this request came in on.                                       |
-| `${.conn.start_ts}`    | The timestamp when the TCP connection to the ngrok edge is established.                         |
+|                       |                                                            |
+| --------------------- | ---------------------------------------------------------- |
+| `${conn.bytes_in}`    | The number of bytes entering the endpoint from the client. |
+| `${conn.bytes_out}`   | The number of bytes leaving an endpoint to the client.     |
+| `${conn.client_ip}`   | Source IP of the connection to the ngrok endpoint.         |
+| `${conn.client_port}` | Source port of the connection to the ngrok endpoint.       |
+| `${conn.server_ip}`   | The IP that this connection was established on.            |
+| `${conn.server_port}` | The port that this connection was established on.          |
+| `${conn.ts.start}`    | Timestamp when the connection to ngrok was started.        |
 
 #### Geo IP Variables {#ngrok-geo}
 
 The source of this data is subject to change. It is currently provided by [MaxMind GeoIP](https://www.maxmind.com/en/home).
 
-|                                    |                                                                                                                |
-| ---------------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| `${.ngrok.geo.country_code}`       | This is the two-letter ISO country code based on the client IP.                                                |
-| `${.ngrok.geo.lat_long_radius_km}` | This is the radius in kilometers around the latitude and longitude where the client IP is likely to originate. |
-| `${.ngrok.geo.latitude}`           | This is the approximate latitude based on the client IP.                                                       |
-| `${.ngrok.geo.longitude}`          | This is the approximate longitude based on the client IP.                                                      |
+|                            |                                                                                                               |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `${conn.geo.city}`         | The name of the city, in EN, where the `conn.client_ip` is likely to originate.                               |
+| `${conn.geo.country}`      | The name of the country, in EN, where the `conn.client_ip` is likely to originate.                            |
+| `${conn.geo.country_code}` | The two-letter ISO country code where the `conn.client_ip` is likely to originate.                            |
+| `${conn.geo.latitude}`     | The approximate latitude where the `conn.client_ip` is likely to originate.                                   |
+| `${conn.geo.longitude}`    | The approximate longitude where the `conn.client_ip` is likely to originate.                                  |
+| `${conn.geo.radius}`       | The radius in kilometers around the latitude and longitude where the `conn.client_ip` is likely to originate. |
+| `${conn.geo.subdivision}`  | The name of the subdivision, in EN, where the `conn.client_ip` is likely to originate.                        |
 
-#### HTTP Variables {#http}
+#### Endpoint Variables {#endpoint}
 
-|                                 |                                                                             |
-| ------------------------------- | --------------------------------------------------------------------------- |
-| `${.http.request_id}`           | The unique ngrok-assigned ID of this request.                               |
-| `${.http.request.method}`       | The request method, normalized to uppercase.                                |
-| `${.http.request.url.host}`     | The host component of the request URL.                                      |
-| `${.http.request.url.path}`     | The path component of the request URL                                       |
-| `${.http.request.url.query}`    | The query string component of the request URL                               |
-| `${.http.request.url.raw}`      | The full URL of the request including scheme, host, path, and query string. |
-| `${.http.request.url.scheme}`   | The scheme component of the request URL.                                    |
-| `${.http.request.user_agent}`   | The value of the User-Agent header in the request received by ngrok edge.   |
-| `${.http.request.version}`      | The HTTP version used in the request.                                       |
-| `${.http.response.status_code}` | The status code of the response returned by the ngrok edge.                 |
+|                        |                                                                                                 |
+| ---------------------- | ----------------------------------------------------------------------------------------------- |
+| `${endpoint.addr}`     | The address for this endpoint.                                                                  |
+| `${endpoint.host}`     | The hostname for this endpoint.                                                                 |
+| `${endpoint.id}`       | The endpoint that serviced this connection.                                                     |
+| `${endpoint.port}`     | The port for this endpoint.                                                                     |
+| `${endpoint.protocol}` | The protocol for this endpoint. Current supported values are `http`, `https`, `tcp`, and `tls`. |
+| `${endpoint.url}`      | The address for this endpoint.                                                                  |
+
+#### HTTP Request and Response Variables {#http}
+
+|                                  |                                                                                                                                                                                                 |
+| -------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `${req.content_length}`          | The content length of the body in bytes. This may not be present if the request does not contain a body or if the client does not specify a content length because they are streaming the body. |
+| `${req.content_type}`            | The media type set in the Content-Type header for this request as a string.                                                                                                                     |
+| `${req.content_type.parameters}` | The parameters set in the Content-Type header as a key value map.                                                                                                                               |
+| `${req.content_type.raw}`        | The Content-Type header for this request as a string.                                                                                                                                           |
+| `${req.cookies}`                 | The key value map of HTTP cookie objects included in this request. If there are multiple cookies with the same name, they will be ordered as specified in the Cookie header.                    |
+| `${req.headers}`                 | The request headers parsed as a map of lower-case names to values.                                                                                                                              |
+| `${req.host}`                    | The host header field value for this request.                                                                                                                                                   |
+| `${req.location}`                | The location header value of the request.                                                                                                                                                       |
+| `${req.method}`                  | The request method.                                                                                                                                                                             |
+| `${req.trailers}`                | The request trailers parsed as a map of lower-case names to values.                                                                                                                             |
+| `${req.url}`                     | The normalized full URL for this request.                                                                                                                                                       |
+| `${req.url.authority}`           | The authority portion of the URL.                                                                                                                                                               |
+| `${req.url.host}`                | The hostname portion of the host for this request.                                                                                                                                              |
+| `${req.url.path}`                | The path for this request including the leading forward slash.                                                                                                                                  |
+| `${req.url.port}`                | The port portion of the host for this request. This may not be present if the URL does not explicitly specify a port.                                                                           |
+| `${req.url.query}`               | The full query string for this request excluding the leading question mark.                                                                                                                     |
+| `${req.url.query_params}`        | The request query string parsed as a map of names to values.                                                                                                                                    |
+| `${req.url.raw}`                 | The un-normalized full URL for this request.                                                                                                                                                    |
+| `${req.url.raw_path}`            | The un-normalized path including the leading slash for this request.                                                                                                                            |
+| `${req.url.scheme}`              | The scheme for this request.                                                                                                                                                                    |
+| `${req.url.uri}`                 | The URI (path and query) portion of the URL.                                                                                                                                                    |
+| `${req.url.user}`                | The user:password portion of the URL.                                                                                                                                                           |
+| `${req.user_agent}`              | The user-agent header value for this request.                                                                                                                                                   |
+| `${req.version}`                 | The HTTP version for this request.                                                                                                                                                              |
+| `${req.ts.body_received}`        | The timestamp when ngrok received the body of the request. This may not be present if the request does not contain a body.                                                                      |
+| `${res.ts.header_received}`      | The timestamp when ngrok received the header of the request.                                                                                                                                    |
+| `${res.content_length}`          | The length of the content associated with the response.                                                                                                                                         |
+| `${res.content_type}`            | The media type set in the Content-Type header for this response as a string.                                                                                                                    |
+| `${res.content_type.parameters}` | The parameters set in the Content-Type header for this response as a key value map.                                                                                                             |
+| `${res.content_type.raw}`        | The Content-Type header for this response as a string.                                                                                                                                          |
+| `${res.cookies}`                 | The key value map of HTTP cookie objects included in this response. If there are multiple cookies with the same name, they will be ordered by path length, with longest path first.             |
+| `${res.headers}`                 | The response headers parsed as a map of lower-case names to values.                                                                                                                             |
+| `${res.location}`                | The location header value of this response.                                                                                                                                                     |
+| `${res.status_code}`             | The status code of this response.                                                                                                                                                               |
+| `${res.trailers}`                | The response trailers parsed as a map of lower-case names to values.                                                                                                                            |
 
 #### IP Restrictions Variables {#ip-restrictions}
 
@@ -94,11 +130,36 @@ These variables are only populated when using the IP Restrictions module.
 
 These variables are only populated when using the Mutual TLS module.
 
-|                                     |                                                                                           |
-| ----------------------------------- | ----------------------------------------------------------------------------------------- |
-| `${.tls.client_cert.serial_number}` | The serial number of the client's leaf TLS certificate in the Mutual TLS handshake.       |
-| `${.tls.client_cert.subject.cn}`    | The subject common name of the client's leaf TLS certificate in the Mutual TLS handshake. |
-| `${.tls.client_cert.subject}`       | The subject of the client's leaf TLS certificate in the Mutual TLS handshake              |
+|                                                  |                                                                                                                     |
+| ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------- |
+| `${conn.tls.client.extensions}`                  | Additional information added to the certificate.                                                                    |
+| `${conn.tls.client.issuer}`                      | The issuing authority of the certificate as a string roughly following the RFC 2253 Distinguished Names syntax.     |
+| `${conn.tls.client.issuer.common_name}`          | Common name of the issuing authority, usually the domain name.                                                      |
+| `${conn.tls.client.issuer.country}`              | Country name(s) where the issuing authority is located.                                                             |
+| `${conn.tls.client.issuer.locality}`             | Locality or city of the issuing authority.                                                                          |
+| `${conn.tls.client.issuer.organization}`         | Name(s) of the organization that issued the certificate.                                                            |
+| `${conn.tls.client.issuer.organizational_unit}`  | Division of the organization responsible for the certificate.                                                       |
+| `${conn.tls.client.issuer.postal_code}`          | Postal code of the issuing authority.                                                                               |
+| `${conn.tls.client.issuer.province}`             | Province or state of the issuing authority.                                                                         |
+| `${conn.tls.client.issuer.street_address}`       | Street address of the issuing authority.                                                                            |
+| `${conn.tls.client.san}`                         | Subject alternative names of the client certificate.                                                                |
+| `${conn.tls.client.san.dns_names}`               | DNS names in the subject alternative names.                                                                         |
+| `${conn.tls.client.san.email_addresses}`         | Email addresses in the subject alternative names.                                                                   |
+| `${conn.tls.client.san.ip_addresses}`            | IP addresses in the subject alternative names.                                                                      |
+| `${conn.tls.client.san.uris}`                    | URIs in the subject alternative names.                                                                              |
+| `${conn.tls.client.serial_number}`               | Unique identifier for the certificate.                                                                              |
+| `${conn.tls.client.signature_algorithm}`         | Algorithm used to sign the certificate.                                                                             |
+| `${conn.tls.client.subject}`                     | The entity to whom the certificate is issued as a string roughly following the RFC 2253 Distinguished Names syntax. |
+| `${conn.tls.client.subject.common_name}`         | Common name of the subject, usually the domain name.                                                                |
+| `${conn.tls.client.subject.country}`             | Country name(s) where the subject of the certificate is located.                                                    |
+| `${conn.tls.client.subject.locality}`            | Locality or city where the subject is located.                                                                      |
+| `${conn.tls.client.subject.organization}`        | Name(s) of the organization to which the subject belongs.                                                           |
+| `${conn.tls.client.subject.organizational_unit}` | Division of the organization to which the subject belongs.                                                          |
+| `${conn.tls.client.subject.postal_code}`         | Postal code where the subject is located.                                                                           |
+| `${conn.tls.client.subject.province}`            | Province or state where the subject is located.                                                                     |
+| `${conn.tls.client.subject.street_address}`      | Street address where the subject is located.                                                                        |
+| `${conn.tls.client.validity.not_after}`          | Expiration date and time when the certificate is no longer valid.                                                   |
+| `${conn.tls.client.validity.not_before}`         | Start date and time when the certificate becomes valid.                                                             |
 
 #### ngrok Variables {#ngrok-variables}
 
@@ -144,10 +205,39 @@ These variables are only populated when using the SAML module.
 
 These variables are only populated on requests to HTTPS endpoints.
 
-|                        |                                                                             |
-| ---------------------- | --------------------------------------------------------------------------- |
-| `${.tls.cipher_suite}` | The cipher suite selected during the TLS handshake.                         |
-| `${.tls.version}`      | The version of the TLS protocol used between the client and the ngrok edge. |
+|                                                  |                                                                                                                     |
+| ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------- |
+| `${conn.tls.cipher_suite}`                       | The cipher suite selected during the TLS handshake.                                                                 |
+| `${conn.tls.server.extensions}`                  | Additional information added to the certificate.                                                                    |
+| `${conn.tls.server.issuer}`                      | The issuing authority of the certificate as a string roughly following the RFC 2253 Distinguished Names syntax.     |
+| `${conn.tls.server.issuer.common_name}`          | Common name of the issuing authority, usually the domain name.                                                      |
+| `${conn.tls.server.issuer.country}`              | Country name(s) where the issuing authority is located.                                                             |
+| `${conn.tls.server.issuer.locality}`             | Locality or city of the issuing authority.                                                                          |
+| `${conn.tls.server.issuer.organization}`         | Name(s) of the organization that issued the certificate.                                                            |
+| `${conn.tls.server.issuer.organizational_unit}`  | Division of the organization responsible for the certificate.                                                       |
+| `${conn.tls.server.issuer.postal_code}`          | Postal code of the issuing authority.                                                                               |
+| `${conn.tls.server.issuer.province}`             | Province or state of the issuing authority.                                                                         |
+| `${conn.tls.server.issuer.street_address}`       | Street address of the issuing authority.                                                                            |
+| `${conn.tls.server.san}`                         | Subject alternative names of the ngrok server's leaf TLS certificate.                                               |
+| `${conn.tls.server.san.dns_names}`               | DNS names in the subject alternative names of the ngrok server's leaf TLS certificate.                              |
+| `${conn.tls.server.san.email_addresses}`         | Email addresses in the subject alternative names of the ngrok server's leaf TLS certificate.                        |
+| `${conn.tls.server.san.ip_addresses}`            | IP addresses in the subject alternative names of the ngrok server's leaf TLS certificate.                           |
+| `${conn.tls.server.san.uris}`                    | URIs in the subject alternative names of the ngrok server's leaf TLS certificate.                                   |
+| `${conn.tls.server.serial_number}`               | Unique identifier for the certificate.                                                                              |
+| `${conn.tls.server.signature_algorithm}`         | Algorithm used to sign the certificate.                                                                             |
+| `${conn.tls.server.subject}`                     | The entity to whom the certificate is issued as a string roughly following the RFC 2253 Distinguished Names syntax. |
+| `${conn.tls.server.subject.common_name}`         | Common name of the subject, usually the domain name.                                                                |
+| `${conn.tls.server.subject.country}`             | Country name(s) where the subject of the certificate is located.                                                    |
+| `${conn.tls.server.subject.locality}`            | Locality or city where the subject is located.                                                                      |
+| `${conn.tls.server.subject.organization}`        | Name(s) of the organization to which the subject belongs.                                                           |
+| `${conn.tls.server.subject.organizational_unit}` | Division of the organization to which the subject belongs.                                                          |
+| `${conn.tls.server.subject.postal_code}`         | Postal code where the subject is located.                                                                           |
+| `${conn.tls.server.subject.province}`            | Province or state where the subject is located.                                                                     |
+| `${conn.tls.server.subject.street_address}`      | Street address where the subject is located.                                                                        |
+| `${conn.tls.server.validity.not_after}`          | Expiration date and time when the certificate is no longer valid.                                                   |
+| `${conn.tls.server.validity.not_before}`         | Start date and time when the certificate becomes valid.                                                             |
+| `${conn.tls.sni}`                                | The hostname included in the ClientHello message via the SNI extension.                                             |
+| `${conn.tls.version}`                            | The version of the TLS protocol used between the client and the ngrok edge.                                         |
 
 #### Webhook Verification Variables {#webhook-verification}
 

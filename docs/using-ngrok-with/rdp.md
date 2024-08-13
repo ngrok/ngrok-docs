@@ -10,4 +10,8 @@ ngrok's TCP tunnels can be used for RDP traffic but we recommend they only be us
 ngrok tcp 3389 --cidr-allow 0.0.0.0/32
 ```
 
+::::warning
+TCP endpoints are only available on a free plan after [adding a valid payment method](https://dashboard.ngrok.com/settings#id-verification) to your account.
+::::
+
 To learn more about the RDP protocol and security best practices, see the [Understanding the Remote Desktop Protocol (RDP) documentation](https://docs.microsoft.com/en-us/troubleshoot/windows-server/remote/understanding-remote-desktop-protocol) from Microsoft.

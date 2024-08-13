@@ -1,11 +1,15 @@
 ---
-sidebar_position: 3
+sidebar_position: 4
 title: Free Plan Limits
 ---
 
 # Limits in ngrok's free plan
 
 Below are the limits enforced in the ngrok free plan. For more details on increasing or removing these limits, refer to the [ngrok paid plans](https://ngrok.com/pricing?ref=limits-docs).
+
+## TCP Endpoints
+
+In an effort to reduce abuse on the ngrok platform, we now require a valid payment method be [added to your account](https://dashboard.ngrok.com/settings#id-verification) before you can start TCP endpoints. This card will not be charged as long as you remain on the free plan.
 
 ## ​Endpoints
 
@@ -62,3 +66,58 @@ For unlimited users, upgrade to the [pay-as-you go plan](https://ngrok.com/prici
 ## Need to Increase your ngrok limits?
 
 Request adjustments to limits that conflict with your project by contacting ngrok. To request an increase to a limit, complete the [Limit Increase Request Form](https://tally.so/r/mKlYOK) and we will reach out with next steps.
+
+## Why is there an interstitial in front of my HTML content?
+
+ngrok is committed to combating internet abuse. One common abuse of tools like ngrok is the hosting of phishing pages to steal user credentials. To counteract phishing on the platform, we inject an interstitial page in front of all HTML browser traffic on the free tier. Once a user agrees to the page, we set a cookie valid for 7 days for that domain.
+
+If the interstitial interferes with your project, you can bypass it in a few ways.
+
+- From the client accessing the ngrok endpoint, add a header value of `ngrok-skip-browser-warning` and set it to any value. These requests will bypass the interstitial.
+- Change your user agent by setting the `User-Agent` header to something non-standard, such as `MyApp/0.0.1`, to bypass the warning.
+- Upgrading to any of our paid plans will also bypass the warning.
+
+### Code Examples
+
+Axios
+
+```
+axios.get(url, { 'headers': { 'ngrok-skip-browser-warning': '1' } })
+  .then((response => {
+    console.log(response.data);
+  })
+  .catch((error) => {
+    console.log(error);
+  });
+```
+
+Fetch
+
+```
+const response = await fetch(URL, {
+  headers: {
+    "ngrok-skip-browser-warning": "1",
+  },
+  // ...
+});
+```
+
+SuperAgent
+
+```
+ request
+       .get('/endpoint')
+       .set('ngrok-skip-browser-warning', '1')
+       .then(callback);
+```
+
+JQuery
+
+```
+ request
+       .get('/endpoint')
+       .set('ngrok-skip-browser-warning', '1')
+       .then(callback);
+```
+
+If you are a developer trying to access your own endpoint, you can use a browser extension to customize your browser's user agent value. Here is an [example for Chrome](https://chromewebstore.google.com/detail/requestly-intercept-modif/mdnleldcmiljblolnjhpnblkcekpdkpa?hl=en-US).

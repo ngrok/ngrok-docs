@@ -6,6 +6,45 @@ title: Changelog
 
 ## v3
 
+### ngrok Agent 3.14.0 - \[2024-08-01\]
+
+- Added support for `traffic_policy` field in agent config for Traffic Policy configuration.
+- Deprecated `policy`
+- Added `EndpointTrafficPolicy` module to Edge API.
+
+### ngrok Agent 3.13.0 - \[2024-07-15\]
+
+- In some cases, adds additional headers on error responses to ngrok that can be used to customize the content.
+
+### ngrok Agent 3.12.1 - \[2024-07-11\]
+
+- Fixed a bug in `ngrok diagnose` that would cause a panic if a server IP and the agent had TLS connectivity issues.
+- Added `--traffic-policy-file` flag that accepts Traffic Policy configuration for HTTP, TCP, or TLS traffic.
+- Deprecated `--policy-file` flag
+
+### ngrok Agent 3.12.0 - \[2024-06-27\]
+
+- Errors now have links to ngrok error page.
+
+### ngrok Agent 3.11.0 - \[2024-06-13\]
+
+- `ngrok http` now has timestamps for incoming requests.
+
+### ngrok Agent 3.10.1 - \[2024-06-06\]
+
+- Requests to TLS endpoints using `proto: tls` and `terminate_at: agent` succeed after the agent session goes through a reconnection.
+
+### ngrok Agent 3.10.0 - \[2024-05-23\]
+
+- **ACTION MAY BE REQUIRED**: The domain used for Certificate Revocation List (CRL) checks is now `crl.ngrok-agent.com` to align it with the domain used for session connections. This may require changes to your firewall or proxy settings to allow this outbound connection on port 80, or setting `crl_noverify: true` in the agent config file.
+- Added CLI API support for [Bot Users](/docs/iam/bot-users/).
+
+### ngrok Agent 3.9.0 - \[2024-04-24\]
+
+- Added a `/api/status` endpoint to the local agent API that returns the agent's current status
+- The agent will check the Certificate Revocation List (CRL) on Session initiation. If a custom agent ingress is being used that has an invalid CRL in the chain, the `crl_noverify: true` option can be used to override this check, if desired
+- Certificate Revocation List (CRL) checking for certain Let's Encrypt certificate chains has been fixed
+
 ### ngrok Agent 3.8.0 - \[2024-03-14\]
 
 - Added `json` support to Traffic Policy configuration
