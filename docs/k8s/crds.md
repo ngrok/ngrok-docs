@@ -95,28 +95,29 @@ The `IPPolicy` CRD manages the ngrok [API resource](https://ngrok.com/docs/api/r
 
 It's optional to create IP Policies this way vs using the ngrok dashboard or [terraform provider](https://registry.terraform.io/providers/ngrok/ngrok/latest/docs/resources/ip_policy). Once created though, you can use it in your ingress objects using the [annotations](/docs/k8s/user-guide#ip-restrictions).
 
-| Field               | Description                                | Required | Type                                                                                    | Example                                                  |
-| ------------------- | ------------------------------------------ | -------- | --------------------------------------------------------------------------------------- | -------------------------------------------------------- |
-| metadata            | Standard object metadata                   | No       | [metav1.ObjectMeta](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#ObjectMeta) | `name: my-ip-policy`                                     |
-| spec.ngrokAPICommon | Fields shared across all ngrok resources   | Yes      | [ngrokAPICommon](#ngrokapicommon)                                                       | `{}`                                                     |
-| spec.rules          | A list of rules that belong to the policy  | No       | `[]IPPolicyRule`                                                                        | `[{CIDR: "1.2.3.4", Action: "allow"}]`                   |
-| status.ID           | The unique identifier for this policy      | No       | `string`                                                                                | `"my-ip-policy-id"`                                      |
-| status.Rules        | A list of IP policy rules and their status | No       | `[]IPPolicyRuleStatus`                                                                  | `[{ID: "my-rule-id", CIDR: "1.2.3.4", Action: "allow"}]` |
+| Field            | Description                                | Required | Type                                                                                    | Example                                                  |
+| ---------------- | ------------------------------------------ | -------- | --------------------------------------------------------------------------------------- | -------------------------------------------------------- |
+| metadata         | Standard object metadata                   | No       | [metav1.ObjectMeta](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#ObjectMeta) | `name: my-ip-policy`                                     |
+| spec.description | Description for the IP policy              | No       | `string`                                                                                | `{}`                                                     |
+| spec.metadata    | Metadata for the IP Policy                 | No       | `string`                                                                                | `{}`                                                     |
+| spec.rules       | A list of rules that belong to the policy  | No       | `[]IPPolicyRule`                                                                        | `[{cidr: "1.2.3.4", action: "allow"}]`                   |
+| status.id        | The unique identifier for this policy      | No       | `string`                                                                                | `"my-ip-policy-id"`                                      |
+| status.rules     | A list of IP policy rules and their status | No       | `[]IPPolicyRuleStatus`                                                                  | `[{id: "my-rule-id", cidr: "1.2.3.4", action: "allow"}]` |
 
-### `IPPolicyRule`
-
-| Field  | Description                                               | Required | Type     | Example        |
-| ------ | --------------------------------------------------------- | -------- | -------- | -------------- |
-| CIDR   | The CIDR block that the rule applies to                   | Yes      | `string` | `"1.2.3.4/24"` |
-| Action | The action to take for the rule, either "allow" or "deny" | Yes      | `string` | `"allow"`      |
-
-### `IPPolicyRuleStatus`
+### IPPolicyRule
 
 | Field  | Description                                               | Required | Type     | Example        |
 | ------ | --------------------------------------------------------- | -------- | -------- | -------------- |
-| ID     | The unique identifier for this rule                       | No       | `string` | `"my-rule-id"` |
-| CIDR   | The CIDR block that the rule applies to                   | No       | `string` | `"1.2.3.4/24"` |
-| Action | The action to take for the rule, either "allow" or "deny" | No       | `string` | `"allow"`      |
+| cidr   | The CIDR block that the rule applies to                   | Yes      | `string` | `"1.2.3.4/24"` |
+| action | The action to take for the rule, either "allow" or "deny" | Yes      | `string` | `"allow"`      |
+
+### IPPolicyRuleStatus
+
+| Field  | Description                                               | Required | Type     | Example        |
+| ------ | --------------------------------------------------------- | -------- | -------- | -------------- |
+| id     | The unique identifier for this rule                       | No       | `string` | `"my-rule-id"` |
+| cidr   | The CIDR block that the rule applies to                   | No       | `string` | `"1.2.3.4/24"` |
+| action | The action to take for the rule, either "allow" or "deny" | No       | `string` | `"allow"`      |
 
 ## TCP Edges {#tcp-edges}
 
@@ -132,18 +133,20 @@ The Kubernetes ingress spec does not directly support TCP traffic. The ngrok Kub
 
 ### TCPEdgeSpec
 
-| Field          | Type                                                                                     | Required | Description                                                                    |
-| -------------- | ---------------------------------------------------------------------------------------- | -------- | ------------------------------------------------------------------------------ |
-| ngrokAPICommon | [ngrokAPICommon](#ngrokapicommon)                                                        | No       | Common fields shared by all ngrok resources.                                   |
-| backend        | [TunnelGroupBackend](#tunnelgroupbackend)                                                | Yes      | The definition for the tunnel group backend that serves traffic for this edge. |
-| ipRestriction  | [EndpointIPPolicy](https://ngrok.com/docs/api/resources/tcp-edge-ip-restriction-module/) | No       | An IPRestriction to apply to this route.                                       |
+| Field         | Type                                                                                     | Required | Description                                                                    |
+| ------------- | ---------------------------------------------------------------------------------------- | -------- | ------------------------------------------------------------------------------ |
+| description   | string                                                                                   | No       | A human-readable description of the edge.                                      |
+| metadata      | string                                                                                   | No       | Metadata for the edge.                                                         |
+| backend       | [TunnelGroupBackend](#tunnelgroupbackend)                                                | Yes      | The definition for the tunnel group backend that serves traffic for this edge. |
+| ipRestriction | [EndpointIPPolicy](https://ngrok.com/docs/api/resources/tcp-edge-ip-restriction-module/) | No       | An IPRestriction to apply to this route.                                       |
 
 ### TunnelGroupBackend
 
-| Field          | Type                              | Required | Description                                  |
-| -------------- | --------------------------------- | -------- | -------------------------------------------- |
-| ngrokAPICommon | [ngrokAPICommon](#ngrokapicommon) | No       | Common fields shared by all ngrok resources. |
-| labels         | map[string]string                 | No       | Labels to watch for tunnels on this backend. |
+| Field       | Type              | Required | Description                                  |
+| ----------- | ----------------- | -------- | -------------------------------------------- |
+| description | string            | No       | A human-readable description of the backend. |
+| metadata    | string            | No       | Metadata for the backend.                    |
+| labels      | map[string]string | No       | Labels to watch for tunnels on this backend. |
 
 ### TCPEdgeStatus
 
@@ -176,7 +179,8 @@ ngrok's TLS Edges function similarly to TCP Edges in that they may contain arbit
 
 | Field          | Type                                                                                                | Required | Description                                                                    |
 | -------------- | --------------------------------------------------------------------------------------------------- | -------- | ------------------------------------------------------------------------------ |
-| ngrokAPICommon | [ngrokAPICommon](#ngrokapicommon)                                                                   | No       | Common fields shared by all ngrok resources.                                   |
+| description    | string                                                                                              | No       | A human-readable description of the edge.                                      |
+| metadata       | string                                                                                              | No       | Metadata for the edge.                                                         |
 | backend        | [TunnelGroupBackend](#tunnelgroupbackend)                                                           | Yes      | The definition for the tunnel group backend that serves traffic for this edge. |
 | hostports      | []string                                                                                            | Yes      | A list of hostports served by this edge.                                       |
 | ipRestriction  | [EndpointIPPolicy](https://ngrok.com/docs/api/resources/tls-edge-ip-restriction-module/)            | No       | An IPRestriction to apply to this edge.                                        |
@@ -210,11 +214,12 @@ If using a [TCP](#tcp-edges) or [TLS](#tls-edges) CRD directly, a Domain will no
 
 ### DomainSpec
 
-| Field          | Type                              | Required | Description                                  |
-| -------------- | --------------------------------- | -------- | -------------------------------------------- |
-| ngrokAPICommon | [ngrokAPICommon](#ngrokapicommon) | No       | Common fields shared by all ngrok resources. |
-| domain         | string                            | Yes      | The domain name to reserve.                  |
-| region         | string                            | Yes      | The region in which to reserve the domain.   |
+| Field       | Type   | Required | Description                                 |
+| ----------- | ------ | -------- | ------------------------------------------- |
+| description | string | No       | A human-readable description of the domain. |
+| metadata    | string | No       | Metadata for the domain.                    |
+| domain      | string | Yes      | The domain name to reserve.                 |
+| region      | string | Yes      | The region in which to reserve the domain.  |
 
 ### DomainStatus
 
