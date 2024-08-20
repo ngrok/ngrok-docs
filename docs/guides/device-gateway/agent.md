@@ -1,5 +1,5 @@
 ---
-sidebar_position: 9
+sidebar_position: 6
 title: Connect to APIs on devices
 description: Connect to APIs on devices.
 tags:
