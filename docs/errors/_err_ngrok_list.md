@@ -10207,7 +10207,7 @@
         <a id="ERR_NGROK_15002" href="/docs/errors/err_ngrok_15002">ERR_NGROK_15002</a>
       </td>
       <td class="pre-wrapped">
-        Your account is on the <code>&lt;PLAN&gt;</code> plan, which requires you to register a Domain or TCP Address through the ngrok Dashboard before starting an Endpoint. Visit <a href="https://dashboard.ngrok.com/cloud-edge/domains">https://dashboard.ngrok.com/cloud-edge/domains</a>, for HTTP and TLS endpoints, or <a href="https://dashboard.ngrok.com/cloud-edge/tcp-addresses">https://dashboard.ngrok.com/cloud-edge/tcp-addresses</a>, for TCP endpoints, to register a domain or address. Then use the `--domain` flag when starting an HTTP or TLS tunnel with your Agent. For TCP tunnels, use `--remote_addr`.
+        Your account is on the <code>&lt;PLAN&gt;</code> plan, which requires you to register a Domain or TCP Address through the ngrok Dashboard before starting an Endpoint. Visit <a href="https://dashboard.ngrok.com/cloud-edge/domains">https://dashboard.ngrok.com/cloud-edge/domains</a>, for HTTP and TLS endpoints, or <a href="https://dashboard.ngrok.com/cloud-edge/tcp-addresses">https://dashboard.ngrok.com/cloud-edge/tcp-addresses</a>, for TCP endpoints, to register a domain or address. Then use the `--url` flag when starting an HTTP or TLS tunnel with your Agent. For TCP tunnels, use `--remote_addr`.
       </td>
     </tr>
     <tr>

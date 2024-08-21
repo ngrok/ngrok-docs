@@ -96,7 +96,7 @@ ngrok can leverage Frontegg SSO in two ways:
    - FRONTEGG_CLIENT_ID: The client id you copied from Frontegg.
    - FRONTEGG_CLIENT_SECRET: The API key you copied from Frontegg.
 
-   Alternatively, add the `--domain YOUR_DOMAIN` argument to get your custom URL, replacing `YOUR_DOMAIN` with your URL of preference.
+   Alternatively, add the `--url YOUR_DOMAIN` argument to get your custom URL, replacing `YOUR_DOMAIN` with your URL of preference.
 
 1. Copy the URL available next to **Forwarding** (for example, `https://frontegg-sso-test.ngrok.app`).
 
