@@ -72,10 +72,11 @@ If you want to perform remote administration on your ARM64 device using a reserv
 
 1. On your local workstation, SSH into your ARM64 device with the command below, replacing the variables with the following:
 
-   - `{NGROK_PORT}`: The port number assigned to your ngrok agent (e.g. if the agent shows `tcp://4.tcp.us-cal-1.ngrok.io:12345`, your port number is `12345`).
-   - `{USER}`: An existing user on your remote device.
-   - `{NGROK_TCP_ADDRESS}` | The address of the ngrok agent (e.g. if the agent shows `tcp://4.tcp.us-cal-1.ngrok.io:12345`, your TCP address is `4.tcp.us-cal-1.ngrok.io`).
-   <br />
+   | | |
+   | - | - |
+   | `{NGROK_PORT}` | The port number assigned to your ngrok agent (e.g. if the agent shows `tcp://4.tcp.us-cal-1.ngrok.io:12345`, your port number is `12345`). |
+   | `{USER}` | An existing user on your remote device. |
+   | `{NGROK_TCP_ADDRESS}` | The address of the ngrok agent (e.g. if the agent shows `tcp://4.tcp.us-cal-1.ngrok.io:12345`, your TCP address is `4.tcp.us-cal-1.ngrok.io`). |
 
    ```bash
    ssh -p {NGROK_PORT} {USER}@{NGROK_TCP_ADDRESS}
@@ -111,7 +112,7 @@ If you already established a TCP tunnel for SSH access, you'll either need to cr
 
 ## Step 4: Add a Traffic Policy to restrict IPs
 
-Now that you have SSH tunneling and service ingress handled via ngrok, you may also want to protect those services from unknown and untrusted users. You'll use the Traffic Policy module, which works with both [TCP](/docs/tcp/traffic-policy/index.mdx) and [HTTP](/docs/http/traffic-policy/index.mdx) tunnels, along with the [Restrict IPs](/docs/http/traffic-policy/actions/restrict-ips.mdx) action.
+Now that you have SSH tunneling and service ingress handled via ngrok, you may also want to protect those services from unknown and untrusted users. You'll use the Traffic Policy module and the Restrict IPs action, which works with both [HTTPS](/docs/http/traffic-policy/actions/restrict-ips.mdx) and [TCP](/docs/tcp/traffic-policy/actions/restrict-ips.mdx) tunnels.
 
 1. Create a new file on your ARM64 device, where you create ngrok tunnels, named `policy.yml`.
 
