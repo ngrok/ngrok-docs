@@ -72,10 +72,10 @@ If you want to perform remote administration on your ARM64 device using a reserv
 
 1. On your local workstation, SSH into your ARM64 device with the command below, replacing the variables with the following:
 
-   | | |
-   | - | - |
-   | `{NGROK_PORT}` | The port number assigned to your ngrok agent (e.g. if the agent shows `tcp://4.tcp.us-cal-1.ngrok.io:12345`, your port number is `12345`). |
-   | `{USER}` | An existing user on your remote device. |
+   |                       |                                                                                                                                                |
+   | --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+   | `{NGROK_PORT}`        | The port number assigned to your ngrok agent (e.g. if the agent shows `tcp://4.tcp.us-cal-1.ngrok.io:12345`, your port number is `12345`).     |
+   | `{USER}`              | An existing user on your remote device.                                                                                                        |
    | `{NGROK_TCP_ADDRESS}` | The address of the ngrok agent (e.g. if the agent shows `tcp://4.tcp.us-cal-1.ngrok.io:12345`, your TCP address is `4.tcp.us-cal-1.ngrok.io`). |
 
    ```bash
