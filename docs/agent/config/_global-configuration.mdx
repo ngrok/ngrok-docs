@@ -1,0 +1,234 @@
+## Global Configuration
+
+The following is a list of options that can be configured at the root of your configuration file and specify the behavior of the agent.
+
+| Name                                        | Description                                                                                                                                                                                        |
+| ------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [api_key](#api_key)                         | Specifies the ngrok API key used to connect to the ngrok API. This is only needed when using the `ngrok api` command and should not be confused with the authtoken.                                |
+| [authtoken](#authtoken)                     | Specifies the authentication token (authtoken) used to connect to the ngrok service.                                                                                                               |
+| [connect_interface](#connect_interface)     | Set the specific network interface for ngrok to use. This is only supported on Linux platforms.                                                                                                    |
+| [connect_timeout](#connect_timeout)         | How long to wait when establishing an agent session connection to the ngrok service. The default is 10s.                                                                                           |
+| [console_ui](#console_ui)                   | Enable/disable the console UI                                                                                                                                                                      |
+| [console_ui_color](#console_ui_color)       | Set the background color of the console UI                                                                                                                                                         |
+| [crl_noverify](#crl_noverify)               | Disables verifying Certificate Revocation List                                                                                                                                                     |
+| [dns_resolver_ips](#dns_resolver_ips)       | Consult these DNS servers for tunnel session DNS resolution.                                                                                                                                       |
+| [heartbeat_interval](#heartbeat_interval)   | How often the ngrok agent should heartbeat to the ngrok servers defined as a duration. Default is 10s.                                                                                             |
+| [heartbeat_tolerance](#heartbeat_tolerance) | Reconnect the agent tunnel session if the server does not respond to a heartbeat within this tolerance defined as a duration. Default is 15s.                                                      |
+| [inspect_db_size](#inspect_db_size)         | The size in bytes of the upper limit on memory to allocate to save requests over HTTP tunnels for inspection and replay.                                                                           |
+| [log_level](#log_level)                     | Logging level of detail. In increasing order of verbosity, possible values are:                                                                                                                    |
+| [log_format](#log_format)                   | Format of written log records.                                                                                                                                                                     |
+| [log](#log)                                 | Write logs to this target destination.                                                                                                                                                             |
+| [metadata](#metadata)                       | Opaque, user-supplied string that will be returned as part of the ngrok API response to the [list online sessions](/api/resources/tunnel-sessions) resource for all tunnels started by this agent. |
+| [proxy_url](#proxy_url)                     | URL of an HTTP or SOCKS5 proxy to use for establishing the tunnel connection.                                                                                                                      |
+| [region](#region) _(Deprecated)_            | Choose the region where the ngrok agent will connect to host its tunnels.                                                                                                                          |
+| [remote_management](#remote_management)     | Set this to `true` to allow the ngrok agent to be remotely managed (stop, restart, update). Defaults to `true`.                                                                                    |
+| [root_cas](#root_cas)                       | The root certificate authorities used to validate the TLS connection to the ngrok server.                                                                                                          |
+| [server_addr](#server_addr)                 | This is the URL of the ngrok server to connect to. You should only set this if you are using a custom ingress URL.                                                                                 |
+| [tunnels](#tunnels)                         | A map of names to tunnel definitions. See [tunnel definitions](/docs/agent/config/v2/#tunnel-configurations) for more details.                                                                     |
+| [update_channel](#update_channel)           | The update channel determines the stability of released builds to update to. Use `stable` for all production deployments.                                                                          |
+| [update_check](#update_check)               | This tells the ngrok agent if it should check for updates. Defaults to `true`.                                                                                                                     |
+| [version](#version)                         | Specifies the version of the config file to use.                                                                                                                                                   |
+| [web_addr](#web_addr)                       | Network address to bind on for serving the local web interface and api.                                                                                                                            |
+| [web_allow_hosts](#web_allow_hosts)         | Host headers to allow access for on the local web interface and api, can be a combination of IP's, CIDR ranges, and/or hostname suffixes.                                                          |
+
+### `api_key`
+
+This option specifies the API key used to access the ngrok API through the [`ngrok api`](/agent/cli#ngrok-api) command. This is only needed when using the [ngrok API](/api) and not the local ngrok agent API (available at `localhost:4040/api`). You can generate an API Key in the [ngrok Dashboard](https://dashboard.ngrok.com/api) and install it using the `ngrok config add-api-key` command.
+
+##### ngrok.yml specifying an API key
+
+```yaml
+api_key: 24yRd5U3DestCQapJrrVHLOqiAC_7RviwRqpd3wc9dKLujQZN
+```
+
+### `authtoken`
+
+This option specifies the authentication token (sometimes called tunnel credential) used to authenticate this agent when it connects to the ngrok service. After you've created an ngrok account, your dashboard will display the authtoken assigned to your account.
+
+Your authtoken will work on multiple machines if you are just developing. When you want to deploy many agents on many devices, you can generate a unique authtoken for each device in the ngrok Dashboard or via the `ngrok api credentials` command.
+
+##### ngrok.yml specifying an authtoken
+
+```yaml
+authtoken: 4nq9771bPxe8ctg7LKr_2ClH7Y15Zqe4bWLWF9p
+```
+
+### `connect_interface`
+
+Sets the specific network interface that the ngrok agent should use. This is only supported on Linux platforms.
+
+### `connect_timeout`
+
+How long to wait when establishing an agent session connection to the ngrok service. This is specified as a duration, with the default being 10s.
+
+### `console_ui`
+
+This option allows you to enable or disable the console UI that is displayed in your terminal window after starting ngrok.
+
+|         |         |                                                                  |
+| ------- | ------- | ---------------------------------------------------------------- |
+| `true`  |         | Enable the console UI                                            |
+| `false` |         | Disable the console UI                                           |
+| `iftty` | default | Enable the UI only if standard out is a TTY (not a file or pipe) |
+
+### `console_ui_color`
+
+The command sets the background color when displaying the console UI in the terminal. To choose a color other than black, set the value to transparent and change the background of your terminal window.
+
+|               |         |                                                             |
+| ------------- | ------- | ----------------------------------------------------------- |
+| `transparent` |         | Don't set a background color when displaying the console UI |
+| `black`       | default | Set the console UI's background to black                    |
+
+### `crl_noverify`
+
+This option will skip verifying with the Certificate Revocation List if set to `true`. This defaults to `false`.
+
+### `dns_resolver_ips`
+
+Consult these DNS servers for tunnel session DNS resolution. By default, the ngrok agent will use the local system DNS servers to resolve.
+
+### `heartbeat_interval`
+
+How often the ngrok agent should heartbeat to the ngrok servers defined as a duration. The default is 10s.
+
+### `heartbeat_tolerance`
+
+Reconnect the agent tunnel session if the server does not respond to a heartbeat within this tolerance defined as a duration. The default is 15s.
+
+### `inspect_db_size`
+
+This is the upper limit in bytes on memory to allocate when saving requests over HTTP tunnels for inspection and reply. The default is 0, which means 50MB.
+
+|                   |         |                                                                                                                      |
+| ----------------- | ------- | -------------------------------------------------------------------------------------------------------------------- |
+| positive integers |         | size in bytes of the upper limit on memory to allocate to save requests over HTTP tunnels for inspection and replay. |
+| `0`               | default | use the default allocation limit, 50MB                                                                               |
+| `-1`              |         | disable the inspection database; this has the effective behavior of disabling inspection for all tunnels             |
+
+### `log_level`
+
+This is the logging level of detail. In increasing order of verbosity, possible values are: `crit`, `warn`, `error`, `info`, and `debug`.
+
+### `log_format`
+
+This is the format of written log records.
+
+|          |         |                                                                                  |
+| -------- | ------- | -------------------------------------------------------------------------------- |
+| `logfmt` |         | human and machine friendly key/value pairs                                       |
+| `json`   |         | newline-separated JSON objects                                                   |
+| `term`   | default | custom colored human format if standard out is a TTY, otherwise same as `logfmt` |
+
+### `log`
+
+This is the destination where ngrok should write the logs.
+
+|              |         |                                        |
+| ------------ | ------- | -------------------------------------- |
+| `stdout`     |         | write to standard out                  |
+| `stderr`     |         | write to standard error                |
+| `false`      | default | disable logging                        |
+| other values |         | write log records to file path on disk |
+
+```yaml
+log: /var/log/ngrok.log
+```
+
+### `metadata`
+
+This is a user-supplied custom string that will be returned as part of the ngrok API response to the [list online sessions resource](/api/resources/tunnel-sessions) for all tunnels started by this agent. This is a useful mechanism to identify tunnels by your own device or customer identifier. Maximum 4096 characters.
+
+```yaml
+metadata: bad8c1c0-8fce-11e4-b4a9-0800200c9a66
+```
+
+### `proxy_url`
+
+This is the URL of an HTTP or SOCKS5 proxy to use for establishing the tunnel connection. Many HTTP proxies have connection size and duration limits that will cause ngrok to fail. Like many other networking tools, ngrok will also respect the environment variable `http_proxy` and `http_proxy_env` if it is set.
+
+### `region`
+
+_Deprecated_ This is the region where the ngrok agent will connect to. You can only choose one region per agent session. Choosing the region closest to you usually improves latency and performance. By default, the ngrok agent attempts to choose the best region for you.
+
+| Region Code | Region Name                |
+| ----------- | -------------------------- |
+| `ap`        | Asia/Pacific (Singapore)   |
+| `au`        | Australia (Sydney)         |
+| `eu`        | Europe (Frankfurt)         |
+| `in`        | India (Mumbai)             |
+| `jp`        | Japan (Tokyo)              |
+| `sa`        | South America (São Paulo)  |
+| `us`        | United States (Ohio)       |
+| `us-cal-1`  | United States (California) |
+
+### `remote_management`
+
+Set this to `true` to allow the ngrok agent to be remotely managed (stop, restart, update) via the [ngrok API](/api/resources/tunnel-sessions#restart-tunnel-agent) or the [ngrok Dashboard](https://dashboard.ngrok.com/tunnels/agents). Defaults to `true`.
+
+### `root_cas`
+
+This is the root certificate authorities used to validate the TLS connection to the ngrok server.
+
+|              |         |                                                                                                                                                                             |
+| ------------ | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `trusted`    | default | use only the trusted certificate root for the ngrok.com tunnel service                                                                                                      |
+| `host`       |         | use the root certificates trusted by the host's operating system. This is helpful for working with machine-in-the-middle (MITM) proxies doing deep packet inspection (DPI). |
+| other values |         | path to a certificate PEM file on disk with certificate authorities to trust                                                                                                |
+
+### `server_addr`
+
+This is the URL of the ngrok server to connect to. You should set this if you are using a custom ingress URL.
+
+### `tunnels`
+
+This is a map of names to tunnel definitions. See [tunnel definitions](#tunnel-configurations) for more details.
+
+### `update_channel`
+
+The update channel determines the stability of released builds to update to. Use 'stable' for all production deployments.
+
+|            |         |                                                                                                           |
+| ---------- | ------- | --------------------------------------------------------------------------------------------------------- |
+| `stable`   | default | These are builds that are ready to be used in production.                                                 |
+| `unstable` |         | update to new nightly builds when available which could be broken. This should not be used in production. |
+| `beta`     |         | update to new beta builds when available which could be broken. This should not be used in production.    |
+
+### `update_check`
+
+This tells the ngrok agent if it should check for updates. Defaults to `true`.
+
+### `version`
+
+Specifies the version of the config file to use.
+
+### `web_addr`
+
+This is the network address to bind on for serving the local agent web interface and API.
+
+| Network address  |         | Bind to this network address |
+| ---------------- | ------- | ---------------------------- |
+| `127.0.0.1:4040` | default | default network address      |
+| `false`          |         | disable the web UI           |
+
+### `web_allow_hosts`
+
+These are a list of specifiers for what Host headers will be allowed to make requests agains the local agent web interface and API. Any port is stripped off the Host header before matching is performed.
+
+| Allow string       |         | Example Host headers that would match                                                                                                  |
+| ------------------ | ------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+|                    | default | requests to localhost-bound web interface or API endpoints are checked to have a localhost-like Host (localhost, 127.0.0.1, ::1, etc.) |
+| 8.8.8.8            |         | an IP matches Host header (8.8.8.8)                                                                                                    |
+| 1:2:3:4:5:6:7:8    |         | an IPv6 matches Host header (1:2:3:4:5:6:7:8)                                                                                          |
+| 10.0.0.0/8         |         | a CIDR range matches a Host header that is an IP address in that range (10.0.0.1 or 10.1.2.3)                                          |
+| 1:2:3:4:5:6:7:8/16 |         | a CIDR range matches a Host header that is an IPv6 address in that range (1:2:3:4:5:6:7:0)                                             |
+| example.com        |         | a hostname without preceding period will match Host header exactly (example.com)                                                       |
+| .example.com       |         | a hostname with a preceding period Host header suffix (sub.example.com or foo.example.com)                                             |
+
+##### Allow an IP address and a Domain as Host headers
+
+```yaml
+web_allow_hosts:
+  - 8.8.8.8
+  - example.com
+```
