@@ -44,7 +44,7 @@ To follow this guide, you need:
    sudo tar xvzf ./ngrok-v3-stable-linux-amd64.tgz -C /usr/local/bin
    ```
 
-1. Link the ngrok agent to your ngrok account with your authtoken, replacing `{NGROK_AUTHOKEN}` with the value found in your [ngrok dashboard](https://dashboard.ngrok.com/get-started/your-authtoken).
+4. Link the ngrok agent to your ngrok account with your authtoken, replacing `{NGROK_AUTHOKEN}` with the value found in your [ngrok dashboard](https://dashboard.ngrok.com/get-started/your-authtoken).
 
    ```bash
    ngrok authtoken {NGROK_AUTHTOKEN}
@@ -62,7 +62,7 @@ If you want to perform remote administration on your ARM64 device using a reserv
 
    ```bash
    ngrok tcp 22
-   ``` 
+   ```
 
    When the ngrok agent starts, you'll see a `Forwarding` line with similar information about the public endpoint for the TCP tunnel to your device:
 
@@ -114,46 +114,46 @@ If you already established a TCP tunnel for SSH access, you'll either need to cr
 
 Now that you have SSH tunneling and service ingress handled via ngrok, you may also want to protect those services from unknown and untrusted users. You'll use the Traffic Policy module and the Restrict IPs action, which works with both [HTTPS](/docs/http/traffic-policy/actions/restrict-ips.mdx) and [TCP](/docs/tcp/traffic-policy/actions/restrict-ips.mdx) tunnels.
 
-1. Create a new file on your ARM64 device, where you create ngrok tunnels, named `policy.yml`.
+1.  Create a new file on your ARM64 device, where you create ngrok tunnels, named `policy.yml`.
 
-1. Open the file for editing and paste in the following contents, replacing `1.1.1.1` with the public IP of the workstation you use to access your ARM64 device:
+1.  Open the file for editing and paste in the following contents, replacing `1.1.1.1` with the public IP of the workstation you use to access your ARM64 device:
 
-   ```yaml
-   ---
-   inbound:
-     - actions:
-       - name: "Restrict all IPs except trusted CIDRs"
-         type: "restrict-ips"
-           config:
-            enforce: true
-            allow:
-               - "1.1.1.1/32"
-   ```
+    ```yaml
+    ---
+    inbound:
+      - actions:
+        - name: "Restrict all IPs except trusted CIDRs"
+          type: "restrict-ips"
+            config:
+             enforce: true
+             allow:
+                - "1.1.1.1/32"
+    ```
 
-   :::note
-   ngrok's IP Restriction action uses [CIDRs](https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing) to specific IPs or IP ranges. The `/32` notation refers to a single IPv4 address, like `
-   :::
+    :::note
+    ngrok's IP Restriction action uses [CIDRs](https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing) to specific IPs or IP ranges. The `/32` notation refers to a single IPv4 address, like `
+    :::
 
-1. Restart any existing tunnels, or create new ones, referencing the `policy.yml` file you just created, choosing between a TLS and HTTP tunnel below.
+1.  Restart any existing tunnels, or create new ones, referencing the `policy.yml` file you just created, choosing between a TLS and HTTP tunnel below.
 
-   <Tabs groupId="connectivity" queryString="cty">
-	  <TabItem value="tls-tunnel" label="TLS tunnel">
-       
-       ```bash
-       ngrok tcp 22  --traffic-policy-file /path/to/policy.yml
-       ```
+    <Tabs groupId="connectivity" queryString="cty">
+      <TabItem value="tls-tunnel" label="TLS tunnel">
+        
+        ```bash
+        ngrok tcp 22  --traffic-policy-file /path/to/policy.yml
+        ```
 
-     </TabItem>
-     <TabItem value="http-tunnel" label="HTTP tunnel">
+      </TabItem>
+      <TabItem value="http-tunnel" label="HTTP tunnel">
 
-       ```bash
-       ngrok http 8080 --traffic-policy-file /path/to/policy.yml
-       ```
+        ```bash
+        ngrok http 8080 --traffic-policy-file /path/to/policy.yml
+        ```
 
-     </TabItem>
-   </Tabs>
+      </TabItem>
+    </Tabs>
 
-1. When you re-establish your TLS or HTTP tunnels, ngrok will proxy requests from your allowed IP/CIDR through to your ARM64 device and reject all others _at its network edge_, preventing your device from being constantly bombarded with automated and malicious attacks.
+1.  When you re-establish your TLS or HTTP tunnels, ngrok will proxy requests from your allowed IP/CIDR through to your ARM64 device and reject all others _at its network edge_, preventing your device from being constantly bombarded with automated and malicious attacks.
 
 ## What's next?
 
