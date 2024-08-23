@@ -2,6 +2,36 @@
 
 This guide will walk you through frequently asked questions about ngrok's licensing model.
 
+# What are ngrok's limits? 
+This table shows ngrok's plan and overall platform limits. For pricing for on-demand resources or specific development plan features, check out our [pricing].(https://ngrok.com/pricing?ref=docs) 
+
+| Feature                                      | Free Users                                | Development Plans (Personal, Pro, Enterprise)         | Production Pay-as-You-Go Plans                                   |
+|----------------------------------------------|-------------------------------------------|-------------------------------------------------------|------------------------------------------------------------------|
+| **Domains**                                  | 1 static domain                           | 1 per license                                         | No limit, priced on-demand                                       |
+| **Endpoints**                                | 3                                         | 3 per license                                         | No limit, priced on-demand                                       |
+| **TCP Addresses**                            | 1 with verification                       | 1 per license                                         | Priced on-demand, platform limit of 100. Contact us to increase. |
+| **Endpoint Hours**                           | No limit                                  | No limit                                              | No limit, can be priced on-demand, contact us                    |
+| **HTTP Requests**                            | 20,000                                    | Count of requests used (no limits)                    | 100,000 and then on-demand pricing                               |
+| **TCP Connections**                          | 2,000 connections                         | No limit                                              | 10,000 and then on-demand pricing                                |
+| **TLS Connections**                          | Not Available                             | Count of conns used (no limit)                        | 10,000 and then on-demand pricing                                |
+| **Data Transfer In**                         | No limit                                  | No limit                                              | No limit                                                         |
+| **Data Transfer Out**                        | 1 GB                                      | Refer to our pricing page for limits by plan          | 10 GB and then on-demand pricing                                 |
+| **Request Rate limit HTTP**                  | 4k per min                                | 20k per min                                           | 20k per Min. Contact us to increase.                             |
+| **TCP Connection Rate Limit**                | 120 per min                               | 20k per min                                           | 20k per Min. Contact us to increase.                             |
+| **Requests with basic policy actions**       | 2,000                                     | 2,000                                                 | 2,000 then an add-on is required                                 |
+| **TCP Connections with basic policy actions**| 500                                       | 500                                                   | 500 then an add-on is required                                   |
+| **TLS Connections with basic policy actions**| Not Available                             | 500                                                   | 500 then an add-on is required                                   |
+| **Requests with advanced policy actions**    | 2,000                                     | 2,000                                                 | 2,000 then an add-on is required                                 |
+| **TCP Connections with adv policy actions**  | 500                                       | 500                                                   | 500 then an add-on is required                                   |
+| **TLS Connections with adv policy actions**  | Not Available                             | 500                                                   | 500 then an add-on is required                                   |
+| **Requests with ent policy actions**         | 2,000                                     | 2,000                                                 | 2,000 then an add-on is required                                 |
+| **TCP Connections with ent policy actions**  | 500                                       | 500                                                   | 500 then an add-on is required                                   |
+| **TLS Connections with ent policy actions**  | Not Available                             | 500                                                   | 500 then an add-on is required                                   |
+| **Agents**                                   | 1                                         | 1 per license                                         | Platform limit of 1000. Contact us to increase.                  |
+| **Users**                                    | 1                                         | 1 per license                                         | Platform limit of 100. Contact us to increase.                   |
+
+
+
 # What resources in ngrok’s free plan are limited?
 
 | Resource          | Limit on Free | Limit on Development Plans | Limit on Production Plans |
@@ -79,21 +109,5 @@ If you run into a limit, you have two options:
 - You can wait for your cycle to refresh (limits refresh every 30 days per account)
 - Upgrade to a plan with higher limits. If you're using ngrok for testing webhooks, the Pro plan is probably the best fit. If you're using ngrok for production, try the Pay-as-you-go plan.
 
-## What do I pay for in ngrok’s Pay-as-you-go pricing?
 
-On ngrok’s pay-as-you-go plan, you get more features and fewer limits (with the option to pay more for resources) than you would on free or the user-based plans. Please note: Our pay-as-you-go plan does have a minimum of $15 per month, invoiced monthly.
 
-| Resource             | Limit on Free          | Production Pay-as-you-go plan                            |
-| -------------------- | ---------------------- | -------------------------------------------------------- |
-| Users                | 1                      | Unlimited at $0                                          |
-| Active Endpoints[^1] | 1                      | $15 per active endpoint per month                        |
-| Custom Domains       | None                   | Unlimited at $0, pay per active endpoint                 |
-| Tunnels per agent    | up to 3                | Up to 20                                                 |
-| Bandwidth            | 1 GB/month             | Up to 10GB per month at $0<br /> $0.10 per additional GB |
-| Agents               | 1                      | Unlimited at $0, pay per active endpoint                 |
-| Edges                | 1                      | Unlimited at $0, pay per active endpoint                 |
-| Logs/Events          | Up to 10,000 per month | Up to 10,000/m <br /> $1 per additional 10,000           |
-| OAuth/OIDC/SAML MAU  | Up to 5 per month      | Up to 5/month <br /> $5 per additional MAU               |
-| HTTP Requests        | Up to 100,000/month    | Up to 100,000/m <br /> $0.01 per additional 100,000      |
-
-[^1]: Active Endpoints: a domain that sends or receives data through ngrok in a given month
