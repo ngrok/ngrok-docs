@@ -4,7 +4,7 @@ This guide will walk you through frequently asked questions about ngrok's licens
 
 # What are ngrok's limits?
 
-This table shows ngrok's plan and overall platform limits. For pricing for on-demand resources or specific development plan features, check out our [pricing].(https://ngrok.com/pricing?ref=docs)
+This table shows ngrok's plan and overall platform limits. For pricing for on-demand resources or specific development plan features, check out our [pricing](https://ngrok.com/pricing?ref=docs).
 
 | Feature                                       | Free Users          | Development Plans (Personal, Pro, Enterprise) | Production Pay-as-You-Go Plans                                   |
 | --------------------------------------------- | ------------------- | --------------------------------------------- | ---------------------------------------------------------------- |
