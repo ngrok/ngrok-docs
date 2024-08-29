@@ -186,7 +186,12 @@ const sidebars = {
 				"agent/index",
 				"agent/web-inspection-interface",
 				"agent/cli",
-				"agent/config",
+				{
+					label: "Configuration file",
+					type: "category",
+					link: { type: "doc", id: "agent/config/index" },
+					items: ["agent/config/v2", "agent/config/v3"],
+				},
 				"agent/api",
 				"agent/ssh-reverse-tunnel-agent",
 				"agent/ingress",
