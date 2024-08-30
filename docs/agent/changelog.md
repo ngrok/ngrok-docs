@@ -6,6 +6,10 @@ title: Changelog
 
 ## v3
 
+### ngrok Agent 3.15.1 - \[2024-08-29\]
+
+- Patch
+
 ### ngrok Agent 3.15.0 - \[2024-08-29\]
 
 - Added `--url` agent CLI flag for creation of HTTP(S), TLS, and TCP protocol endpoints.
