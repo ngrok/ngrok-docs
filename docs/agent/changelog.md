@@ -8,9 +8,9 @@ title: Changelog
 
 ### ngrok Agent 3.15.1 - \[2024-08-29\]
 
-- Patch
+- Restores the functionality and compatibility for version 3.14.0 due to bugs in the previous release. An updated version with the changes from 3.15.0 will be released early next week.
 
-### ngrok Agent 3.15.0 - \[2024-08-29\]
+### \[UNSTABLE\] ngrok Agent 3.15.0 - \[2024-08-29\]
 
 - Added `--url` agent CLI flag for creation of HTTP(S), TLS, and TCP protocol endpoints.
 - Deprecated `--domain`, `--scheme`, and `--remote-addr` agent CLI flags, which have been replaced by `--url`.
