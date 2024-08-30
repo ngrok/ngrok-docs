@@ -6,6 +6,11 @@ title: Changelog
 
 ## v3
 
+### ngrok Agent 3.15.1 - \[2024-08-29\]
+
+- Fixed a regression with `ngrok config` commands breaking as a result of `3.15.0` agent format changes.
+- Updated [documentation](/docs/agent/config/v3/) to reduce confusion around new agent config format changes.
+
 ### ngrok Agent 3.15.0 - \[2024-08-29\]
 
 - Added `--url` agent CLI flag for creation of HTTP(S), TLS, and TCP protocol endpoints.
