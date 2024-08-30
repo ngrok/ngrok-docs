@@ -6,7 +6,9 @@ pagination_label: Rule Gallery
 import {
 	AddCompression,
 	AddRobotsTxt,
+	AddRobotsTxtSpecific,
 	BlockCountries,
+	BlockSpecificBots,
 	CustomResponse,
 	Deny,
 	DeprecateVersion,
@@ -24,31 +26,94 @@ import {
 # Rule Gallery
 
 Explore a curated collection of example configurations spanning from common to
-unconventional use-cases for the Traffic Policy module.
+unconventional use cases for the Traffic Policy module.
 
 A number of these examples come from a longer article about how ngrok [makes policy management accessible](https://ngrok.com/blog-post/api-gateway-policy-management-examples) to developers, including a simple Go-based application for testing these and other configurations.
 
-## Deny non-GET requests:
+See the following categories for specific expressions and actions:
 
-This rule denies all inbound traffic that is not a GET request.
+- [Authentication](#authentication)
+- [Rate limiting](#rate-limiting)
+- [Block unwanted requests](#block-unwanted-requests)
+- [Other](#other)
 
-<Deny />
+## Authentication
 
-## Custom response for unauthorized requests
+### Add JWT authentication and key-based rate limiting
 
-This rule sends a custom response with status code `401` and body `Unauthorized`
-for requests without an Authorization header.
+Building from our [Auth0 guide](https://ngrok.com/docs/integrations/auth0/jwt-action/), these rules also add rate limiting based on your consumers' JWTs.
 
-<CustomResponse />
+<JWTsRateLimiting />
 
-## Rate limit for specific endpoint
+## Rate limiting
+
+### Rate limit for specific endpoint
 
 This rule applies rate limiting of `30` requests per second to the endpoint
 `/api/videos`.
 
 <RateLimit />
 
-## User agent filtering
+### Rate limit API consumers based on authentication status
+
+Create a low rate limit for unauthenticated (likely free) users, while allowing authenticated users a higher level of capacity.
+
+<RateLimitAuthentication />
+
+### Rate limit API consumers based on pricing tiers
+
+Using a naming scheme in your upstream servers, and API calls using a `tier` header, you can quickly customize access to your API based on any number of pricing tiers.
+
+<RateLimitPricing />
+
+## Block unwanted requests
+
+### Disallow bots and crawlers with a `robots.txt`
+
+This rule returns a custom response with a [`robots.txt` file](https://developers.google.com/search/docs/crawling-indexing/robots/intro) to deny search engine or AI crawlers on all paths.
+
+<AddRobotsTxt />
+
+You can also extend the expression above to create specific rules for crawlers based on their user agent strings, like `ChatGPT-User` and `GPTBot`.
+
+<AddRobotsTxtSpecific />
+
+### Block bots and crawlers by user agent
+
+In addition to, or instead of, denying bots and crawlers with a `robots.txt` file, you can also take action on only incoming requests that contain specific strings in the [`req.user_agent` request variable](/docs/http/traffic-policy/expressions/variables.mdx#requser_agent).
+
+You can extend the expression to include additional user agents by extending `(chatgpt-user|gptbot)` like so: `(chatgpt-user|gptbot|anthropic|claude|any|other|user-agent|goes|here)`.
+
+<BlockSpecificBots />
+
+### Deny non-GET requests
+
+This rule denies all inbound traffic that is not a GET request.
+
+<Deny />
+
+### Custom response for unauthorized requests
+
+This rule sends a custom response with status code `401` and body `Unauthorized`
+for requests without an Authorization header.
+
+<CustomResponse />
+
+### Block traffic from specific countries
+
+Remain compliant with data regulations or sanctions by blocking requests originating from one or more countries using their respective [ISO country codes](https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes).
+
+<BlockCountries />
+
+### Limit request sizes
+
+Prevent excessively large user uploads, like text or images, that might cause performance or availability issues for your upstream service.
+
+<LimitSize />
+
+## Other
+
+### User agent filtering
 
 We deliver tailored content to Microsoft Edge users by examining the
 `User-Agent` header for the case-insensitive string `(?i)edg/` succeeded by
@@ -62,69 +127,32 @@ JSON, you need to double-escape: `\\\\d` for accurate decoding.
 
 <UserAgentFilter />
 
-## Add custom response for robots.txt
-
-This rule returns a custom response for robots.txt, denying search engine crawlers on all paths.
-[What is robots.txt?](https://developers.google.com/search/docs/crawling-indexing/robots/intro)
-
-<AddRobotsTxt />
-
-## Add JWT authentication and key-based rate limiting
-
-Building from our [Auth0 guide](https://ngrok.com/docs/integrations/auth0/jwt-action/), these rules also add rate limiting based on your consumers' JWTs.
-
-<JWTsRateLimiting />
-
-## Rate limit API consumers based on authentication status
-
-Create a low rate limit for unauthenticated (likely free) users, while allowing authenticated users a higher level of capacity.
-
-<RateLimitAuthentication />
-
-## Rate limit API consumers based on pricing tiers
-
-Using a naming scheme in your upstream servers, and API calls using a `tier` header, you can quickly customize access to your API based on any number of pricing tiers.
-
-<RateLimitPricing />
-
-## Block traffic from specific countries
-
-Remain compliant with data regulations or sanctions by blocking requests originating from one or more countries using their respective [ISO country codes](https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes).
-
-<BlockCountries />
-
-## Deprecate an API version
+### Deprecate an API version
 
 By include a `X-Api-Version` header in your API reference or developer documentation, you can quickly return a helpful error message, which encourages them to explore usage of the new version.
 
 <DeprecateVersion />
 
-## Manipulate request headers
+### Manipulate request headers
 
 Add new headers to requests to give your upstream service more context about the consumer, which in turn allows for richer functionality, such as localized languages and pricing.
 
 <ManipulateHeaders />
 
-## Add compression
+### Add compression
 
 Quickly ensure all JSON responses are [compressed](/docs/http/traffic-policy/actions/compress-response.mdx) en route to your API consumer. If your upstream service already handles compression, ngrok skips this step.
 
 <AddCompression />
 
-## Enforce TLS version
+### Enforce TLS version
 
 Prevent obsolete and potentially vulnerable browsers, SDKs, or CLI tools like `curl` from attempting to access your API.
 
 <EnforceTLS />
 
-## Log unsuccessful events
+### Log unsuccessful events
 
 Connect your API to ngrok's [event logging system](/docs/obs/index.mdx) for smarter troubleshooting of your API gateway and upstream services.
 
 <LogUnsuccessful />
-
-## Limit request sizes
-
-Prevent excessively large user uploads, like text or images, that might cause performance or availability issues for your upstream service.
-
-<LimitSize />
