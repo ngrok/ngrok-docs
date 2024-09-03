@@ -87,6 +87,7 @@ export const AddRobotsTxt = () => (
 		config={{
 			inbound: [
 				{
+					name: "Add `robots.txt` to deny all bots and crawlers",
 					expressions: ["req.url.contains('/robots.txt')"],
 					actions: [
 						{
@@ -97,6 +98,54 @@ export const AddRobotsTxt = () => (
 								headers: {
 									"content-type": "text/plain",
 								},
+							},
+						},
+					],
+				},
+			],
+		}}
+	/>
+);
+
+export const AddRobotsTxtSpecific = () => (
+	<ConfigExample
+		config={{
+			inbound: [
+				{
+					name: "Add `robots.txt` to deny specific bots and crawlers",
+					expressions: ["req.url.contains('/robots.txt')"],
+					actions: [
+						{
+							type: "custom-response",
+							config: {
+								status_code: 200,
+								content: "User-agent: ChatGPT-User\\r\\nDisallow: /",
+								headers: {
+									"content-type": "text/plain",
+								},
+							},
+						},
+					],
+				},
+			],
+		}}
+	/>
+);
+
+export const BlockSpecificBots = () => (
+	<ConfigExample
+		config={{
+			inbound: [
+				{
+					name: "Block specific bots by user agent",
+					expressions: [
+						"req.user_agent.matches('(?i).*(chatgpt-user|gptbot)/\\\\d+.*')",
+					],
+					actions: [
+						{
+							type: "deny",
+							config: {
+								status_code: 404,
 							},
 						},
 					],
