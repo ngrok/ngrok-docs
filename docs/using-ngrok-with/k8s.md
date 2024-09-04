@@ -47,7 +47,7 @@ To started with the ngrok Ingress Controller for Kubernetes:
 1. Using `helm`, add the ngrok repo:
 
    ```bash
-   helm repo add ngrok https://ngrok.github.io/kubernetes-ingress-controller
+   helm repo add ngrok https://charts.ngrok.com
    ```
 
 1. Set your environment variables with your ngrok credentials. Replace `[AUTHTOKEN]` and `[API_KEY]` with your Authtoken and API key from above.
