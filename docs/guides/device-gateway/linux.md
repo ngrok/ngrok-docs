@@ -1,4 +1,5 @@
 ---
+sidebar_position: 8
 title: Linux
 description: Learn how to install ngrok on a remote Linux device to provide secure access and management.
 tags:

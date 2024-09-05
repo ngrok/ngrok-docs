@@ -1,5 +1,5 @@
 ---
-sidebar_position: 9
+sidebar_position: 7
 title: Connect to Devices Using the Python SDK
 description: Connect to devices or your device gateway by embedding connectivity directly into your application with the Python SDK.
 tags:
