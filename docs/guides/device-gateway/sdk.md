@@ -343,4 +343,4 @@ curl \
 ## Access the API running on the device or device gateway
 
 You should now be able to access the API on the device or device gateway using the value from
-`{YOUR_DOMAIN}` in the request to remote manage your device fleet.
+`{TUNNEL_DOMAIN}` in the request to remote manage your device fleet.
