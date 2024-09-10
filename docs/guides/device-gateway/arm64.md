@@ -87,7 +87,7 @@ If you want to perform remote administration on your ARM64 device using a reserv
 Separately from SSH access, you can also use ngrok to create an [HTTP tunnel](/docs/http/index.mdx) to route traffic to specific applications or services running on your ARM64 device's `localhost` network.
 
 :::note
-If you already established a TCP tunnel for SSH access, you'll either need to create a second tunnel for the HTTP tunnel, or use the [agent configuration file](/docs/agent/config.mdx) to define multiple tunnels.
+If you already established a TCP tunnel for SSH access, you'll either need to create a second tunnel for the HTTP tunnel, or use the [agent configuration file](/docs/agent/config/v3/) to define multiple tunnels.
 :::
 
 1. Use ngrok to create an HTTP tunnel at the port on which your service operates, e.g. port `8080`.
@@ -160,5 +160,5 @@ Now that you have SSH tunneling and service ingress handled via ngrok, you may a
 Now that you can create ngrok tunnels on your Linux ARM64 device and understand the fundamentals of managing traffic with policies, you can extend your usage to make your device—or even a fleet of them—ready for production usage.
 
 - Bring a [custom domain](/docs/guides/how-to-set-up-a-custom-domain.md) to ngrok to create static endpoints.
-- Learn how to write an [agent configuration file](/docs/agent/config.mdx) to define and create multiple tunnels from a single command line.
+- Learn how to write an [agent configuration file](/docs/agent/config/v3/) to define and create multiple tunnels from a single command line.
 - Install [ngrok as a service](/docs/agent/index.mdx#background-service) to start after your ARM64 device boots and automatically restart after crashes.
