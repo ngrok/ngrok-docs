@@ -122,7 +122,7 @@ Controller](https://github.com/ngrok/kubernetes-ingress-controller) to simplify 
 1. Add the ngrok Helm repository if you haven't already.
 
    ```bash
-   helm repo add ngrok https://ngrok.github.io/kubernetes-ingress-controller
+   helm repo add ngrok https://charts.ngrok.com
    ```
 
 1. Set up the `AUTHTOKEN` and `API_KEY` exports, which allows Helm to install the Ingress Controller using your ngrok credentials. Find your `AUTHTOKEN` under [**Your Authtoken**](https://dashboard.ngrok.com/get-started/your-authtoken) in the ngrok dashboard.

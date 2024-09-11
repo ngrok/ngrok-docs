@@ -1,5 +1,5 @@
 ---
-sidebar_position: 9
+sidebar_position: 6
 title: Connect to APIs on devices
 description: Connect to APIs on devices.
 tags:
@@ -221,7 +221,7 @@ curl \
 https://api.ngrok.com/bot_users
 ```
 
-You should receive a 201 response similar to the following:
+You should receive a `201` response similar to the following:
 
 ```json
 {
@@ -431,7 +431,7 @@ for `{PORT}`:
 curl \
 -H "Content-Type: application/json" -X  \
 POST https://agent.customer1.{YOUR_DOMAIN}/api/tunnels \
--d '{"name":"passthrough","proto":"tls","terminate_at": "agent", "addr":"{PORT}", "domain":"api.customer1.{YOUR_DOMAIN}","mutual_tls_cas":"ca-crt.pem", "crt":"client-crt.pem", "key":"server-key.pem"'
+-d '{"name":"passthrough","proto":"tls","terminate_at": "agent", "addr":"{PORT}", "domain":"api.customer1.{YOUR_DOMAIN}","mutual_tls_cas":"ca-crt.pem", "crt":"server-crt.pem", "key":"server-key.pem"}'
 ```
 
 Please note that these certificates should be used for testing purposes only. You should

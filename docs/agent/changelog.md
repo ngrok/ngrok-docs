@@ -6,6 +6,36 @@ title: Changelog
 
 ## v3
 
+### ngrok Agent 3.16.0 - \[2024-09-09\]
+
+- Releasing the features originally released by 3.15.0
+  - Added `--url` agent CLI flag for creation of HTTP(S), TLS, and TCP protocol endpoints.
+  - Deprecated `--domain`, `--scheme`, and `--remote-addr` agent CLI flags, which have been replaced by `--url`.
+  - Added `--metadata` and `--description` agent CLI flags when using `--url`.
+  - Added `endpoints:` as a new field used for [endpoint creation](/docs/agent/config/v3/#full-example).
+  - A new `agent:` field has been added to the agent configuration format for V3.
+    - v3 supports _both_ tunnels and endpoints. Tunnels are now considered deprecated when using config v3.
+    - Some agent configuration fields have been renamed in v3.
+    - v2 is still supported, but does not support the new `endpoints:` , or `agent:` fields.
+  - Added support for [endpoint fields](/docs/api/resources/endpoints/#list-endpoints) in ngrok's `api`.
+- Update `config` commands to support new configuration version 3, including `upgrade`, `add-authtoken`, and `add-api-key`
+
+### ngrok Agent 3.15.1 - \[2024-08-29\]
+
+- Restores the functionality and compatibility for version 3.14.0 due to bugs in the previous release. An updated version with the changes from 3.15.0 will be released early next week.
+
+### \[UNSTABLE\] ngrok Agent 3.15.0 - \[2024-08-29\]
+
+- Added `--url` agent CLI flag for creation of HTTP(S), TLS, and TCP protocol endpoints.
+- Deprecated `--domain`, `--scheme`, and `--remote-addr` agent CLI flags, which have been replaced by `--url`.
+- Added `--metadata` and `--description` agent CLI flags when using `--url`.
+- Added `endpoints:` as a new field used for [endpoint creation](/docs/agent/config/v3/#full-example).
+- A new `agent:` field has been added to the agent configuration format for V3.
+  - v3 supports _both_ tunnels and endpoints. Tunnels are now considered deprecated when using config v3.
+  - Some agent configuration fields have been renamed in v3.
+  - v2 is still supported, but does not support the new `endpoints:` , or `agent:` fields.
+- Added support for [endpoint fields](/docs/api/resources/endpoints/#list-endpoints) in ngrok's `api`.
+
 ### ngrok Agent 3.14.0 - \[2024-08-01\]
 
 - Added support for `traffic_policy` field in agent config for Traffic Policy configuration.
