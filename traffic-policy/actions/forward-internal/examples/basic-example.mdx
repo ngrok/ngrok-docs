@@ -1,0 +1,48 @@
+import ConfigExample from "/src/components/ConfigExample.tsx";
+
+### Basic Example
+
+The following [Traffic Policy](/docs/http/traffic-policy/) configuration is an example configuration of the `forward-internal` action.
+
+#### Example Traffic Policy Document
+
+<ConfigExample
+	snippetText={null}
+	showLineNumbers={true}
+	jsonMetastring="{5-51}"
+	yamlMetastring="{4-28}"
+	config={{
+		inbound: [
+			{
+				actions: [
+					{
+						type: "forward-internal",
+						config: {
+							url: "https://example.private",
+						},
+					},
+				],
+			},
+		],
+	}}
+/>
+
+#### Start Private Endpoint
+
+```shell
+ngrok http 80 --url example.private --binding private
+```
+
+#### Start Public Endpoint with Traffic Policy
+
+```shell
+ngrok http 80 --url forward-internal-example.ngrok.io --traffic-policy-file /path/to/policy.yml
+```
+
+### Example Request
+
+```shell
+curl https://forward-internal-example.ngrok.io
+```
+
+This request will be forwarded to the private endpoint `https://example.private` which will then forward the request to port `80` on your local machine.
