@@ -7,11 +7,17 @@ import YAML from "yaml";
 type Props = {
 	config: Record<string, any>;
 	snippetText?: string;
+	showLineNumbers?: boolean;
+	yamlMetastring?: string;
+	jsonMetastring?: string;
 };
 
 export default function ConfigExample({
 	config,
 	snippetText = "snippet",
+	showLineNumbers = false,
+	yamlMetastring = "",
+	jsonMetastring = "",
 }: Props) {
 	const yamlConfig = YAML.stringify(config, {
 		indent: 2,
@@ -25,13 +31,21 @@ export default function ConfigExample({
 	return (
 		<Tabs groupId="config_example" queryString="config">
 			<TabItem value="YAML" label="YAML">
-				<CodeBlock language="yaml">
-					{`# ${snippetText}\n` + yamlConfig}
+				<CodeBlock
+					language="yaml"
+					showLineNumbers={showLineNumbers}
+					metastring={yamlMetastring}
+				>
+					{snippetText ? `# ${snippetText}\n` + yamlConfig : yamlConfig}
 				</CodeBlock>
 			</TabItem>
 			<TabItem value="JSON" label="JSON">
-				<CodeBlock language="yaml">
-					{`// ${snippetText}\n` + jsonConfig}
+				<CodeBlock
+					language="yaml"
+					showLineNumbers={showLineNumbers}
+					metastring={jsonMetastring}
+				>
+					{snippetText ? `// ${snippetText}\n` + jsonConfig : jsonConfig}
 				</CodeBlock>
 			</TabItem>
 		</Tabs>

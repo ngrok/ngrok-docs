@@ -371,8 +371,8 @@ ngrok http [address:port | port] [flags]
 ```sh
 ngrok http 8080                             # forwards provided ngrok URL to port 80
 ngrok http example.com:9000                 # forward traffic to example.com:9000
-ngrok http --domain=bar.ngrok.dev 80        # request subdomain name: 'bar.ngrok.dev'
-ngrok http --domain=www.ex.com 1234         # request tunnel 'www.ex.com' (DNS CNAME)
+ngrok http --url=bar.ngrok.dev 80        # request subdomain name: 'bar.ngrok.dev'
+ngrok http --url=www.ex.com 1234         # request tunnel 'www.ex.com' (DNS CNAME)
 ngrok http --basic-auth='falken:joshua' 80  # enforce basic auth on tunnel endpoint
 ngrok http --host-header=ex.com 80          # rewrite the Host header to 'ex.com'
 ngrok http file:///var/log                  # serve local files in /var/log
@@ -381,43 +381,44 @@ ngrok http https://localhost:8443           # forward to a local https server
 
 ### Flags
 
-| Flag                               | Description                                                                                                        |
-| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| `--authtoken string`               | ngrok authtoken                                                                                                    |
-| `--app-protocol string`            | specify the application protocol to be used: `http1`, `http2` (default `http1`)                                    |
-| `--basic-auth strings`             | enforce basic auth on tunnel endpoint, `user:password`                                                             |
-| `--cidr-allow strings`             | reject connections that do not match the given CIDRs                                                               |
-| `--cidr-deny strings`              | reject connections that match the given CIDRs                                                                      |
-| `--circuit-breaker float`          | reject requests when 5XX responses exceed this ratio                                                               |
-| `--compression`                    | gzip compress http responses from your web service                                                                 |
-| `--config strings`                 | path to config files; they are merged if multiple                                                                  |
-| `--domain string`                  | host tunnel on a custom domain                                                                                     |
-| `-h`, `--help`                     | help for this command                                                                                              |
-| `--host-header string`             | set Host header; if `rewrite` use local address hostname                                                           |
-| `--inspect`                        | enable/disable http introspection (default true)                                                                   |
-| `--log string`                     | path to log file, `stdout`, `stderr` or `false` (default `false`)                                                  |
-| `--log-format string`              | log record format: `term`, `logfmt`, `json` (default `term`)                                                       |
-| `--log-level string`               | logging level: `debug`, `info`, `warn`, `error`, `crit` (default `info`)                                           |
-| `--mutual-tls-cas string`          | path to TLS certificate authority to verify client certs in mutual TLS.                                            |
-| `--oauth string`                   | enforce authentication OAuth2 provider on tunnel endpoint, e.g. `google`                                           |
-| `--oauth-allow-domain strings`     | allow only OAuth2 users with these email domains                                                                   |
-| `--oauth-allow-email strings`      | allow only OAuth2 users with these emails                                                                          |
-| `--oauth-client-id string`         | oauth app client id, optional                                                                                      |
-| `--oauth-client-secret string`     | oauth app client id, optional                                                                                      |
-| `--oauth-scope strings`            | request these OAuth2 scopes when users authenticate                                                                |
-| `--policy-file string`             | path to traffic policy configuration YAML or JSON file (See [Traffic Policy](/http/traffic-policy/?cty=agent-cli)) |
-| `--proxy-proto string`             | version of PROXY protocol to use with this tunnel, empty if not using. Example values are 1 or 2.                  |
-| `--region string` (Deprecated)     | ngrok server region `us`, `us-cal-1`, `eu`, `au`, `ap`, `sa`, `jp`, `in` (defaults to closest)                     |
-| `--request-header-add strings`     | header key:value to add to request                                                                                 |
-| `--request-header-remove strings`  | header field to remove from request if present                                                                     |
-| `--response-header-add strings`    | header key:value to add to response                                                                                |
-| `--response-header-remove strings` | header field to remove from response if present                                                                    |
-| `--scheme strings`                 | which scheme to listen on (default `https`)                                                                        |
-| `--ua-filter-allow strings`        | a list of regular expressions for user-agents to allow                                                             |
-| `--ua-filter-deny strings`         | a list of regular expressions for user-agents to deny                                                              |
-| `--verify-webhook string`          | validate webhooks are signed by this provider, e.g. `slack`                                                        |
-| `--verify-webhook-secret string`   | secret used by provider to sign webhooks, if any                                                                   |
-| `--websocket-tcp-converter`        | convert ingress websocket connections to TCP upstream                                                              |
+| Flag                                 | Description                                                                                                        |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------ |
+| `--authtoken string`                 | ngrok authtoken                                                                                                    |
+| `--app-protocol string` (Deprecated) | use '--upstream-protocol' instead                                                                                  |
+| `--basic-auth strings`               | enforce basic auth on tunnel endpoint, `user:password`                                                             |
+| `--cidr-allow strings`               | reject connections that do not match the given CIDRs                                                               |
+| `--cidr-deny strings`                | reject connections that match the given CIDRs                                                                      |
+| `--circuit-breaker float`            | reject requests when 5XX responses exceed this ratio                                                               |
+| `--compression`                      | gzip compress http responses from your web service                                                                 |
+| `--config strings`                   | path to config files; they are merged if multiple                                                                  |
+| `--url string`                       | host tunnel on a custom domain                                                                                     |
+| `-h`, `--help`                       | help for this command                                                                                              |
+| `--host-header string`               | set Host header; if `rewrite` use local address hostname                                                           |
+| `--inspect`                          | enable/disable http introspection (default true)                                                                   |
+| `--log string`                       | path to log file, `stdout`, `stderr` or `false` (default `false`)                                                  |
+| `--log-format string`                | log record format: `term`, `logfmt`, `json` (default `term`)                                                       |
+| `--log-level string`                 | logging level: `debug`, `info`, `warn`, `error`, `crit` (default `info`)                                           |
+| `--mutual-tls-cas string`            | path to TLS certificate authority to verify client certs in mutual TLS.                                            |
+| `--oauth string`                     | enforce authentication OAuth2 provider on tunnel endpoint, e.g. `google`                                           |
+| `--oauth-allow-domain strings`       | allow only OAuth2 users with these email domains                                                                   |
+| `--oauth-allow-email strings`        | allow only OAuth2 users with these emails                                                                          |
+| `--oauth-client-id string`           | oauth app client id, optional                                                                                      |
+| `--oauth-client-secret string`       | oauth app client id, optional                                                                                      |
+| `--oauth-scope strings`              | request these OAuth2 scopes when users authenticate                                                                |
+| `--policy-file string` (Deprecated)  | use `--traffic-policy-file` instead                                                                                |
+| `--proxy-proto string`               | version of PROXY protocol to use with this tunnel, empty if not using. Example values are 1 or 2.                  |
+| `--region string` (Deprecated)       | ngrok server region `us`, `us-cal-1`, `eu`, `au`, `ap`, `sa`, `jp`, `in` (defaults to closest)                     |
+| `--request-header-add strings`       | header key:value to add to request                                                                                 |
+| `--request-header-remove strings`    | header field to remove from request if present                                                                     |
+| `--response-header-add strings`      | header key:value to add to response                                                                                |
+| `--response-header-remove strings`   | header field to remove from response if present                                                                    |
+| `--traffic-policy-file string`       | path to traffic policy configuration YAML or JSON file (See [Traffic Policy](/http/traffic-policy/?cty=agent-cli)) |
+| `--ua-filter-allow strings`          | a list of regular expressions for user-agents to allow                                                             |
+| `--ua-filter-deny strings`           | a list of regular expressions for user-agents to deny                                                              |
+| `--upstream-protocol string`         | specify the upstream protocol to be used: `http1`, `http2` (default `http1`)                                       |
+| `--verify-webhook string`            | validate webhooks are signed by this provider, e.g. `slack`                                                        |
+| `--verify-webhook-secret string`     | secret used by provider to sign webhooks, if any                                                                   |
+| `--websocket-tcp-converter`          | convert ingress websocket connections to TCP upstream                                                              |
 
 ## ngrok service
 
@@ -512,20 +513,21 @@ ngrok tcp --remote-addr=1.tcp.ngrok.io:27210 3389
 
 ### Flags
 
-| Flag                   | Description                                                                                                       |
-| ---------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| `--authtoken string`   | ngrok authtoken                                                                                                   |
-| `--cidr-allow strings` | reject connections that do not match the given CIDRs                                                              |
-| `--cidr-deny strings`  | reject connections that match the given CIDRs                                                                     |
-| `--config strings`     | path to config files; they are merged if multiple                                                                 |
-| `-h`, `--help`         | help for this command                                                                                             |
-| `--log string`         | path to log file, `stdout`, `stderr` or `false` (default `false`)                                                 |
-| `--log-format string`  | log record format: `term`, `logfmt`, `json` (default `term`)                                                      |
-| `--log-level string`   | `debug`, `info`, `warn`, `error`, `crit` (default `info`)                                                         |
-| `--policy-file string` | path to traffic policy configuration YAML or JSON file (See [Traffic Policy](/tcp/traffic-policy/?cty=agent-cli)) |
-| `--proxy-proto string` | version of proxy proto to use with this tunnel, empty if not using                                                |
-| `--region string`      | ngrok server region `us`, `us-cal-1`, `eu`, `au`, `ap`, `sa`, `jp`, `in` (default to closest)                     |
-| `--remote-addr string` | bind remote address (requires you reserve a TCP Address)                                                          |
+| Flag                                | Description                                                                                                       |
+| ----------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| `--authtoken string`                | ngrok authtoken                                                                                                   |
+| `--cidr-allow strings`              | reject connections that do not match the given CIDRs                                                              |
+| `--cidr-deny strings`               | reject connections that match the given CIDRs                                                                     |
+| `--config strings`                  | path to config files; they are merged if multiple                                                                 |
+| `-h`, `--help`                      | help for this command                                                                                             |
+| `--log string`                      | path to log file, `stdout`, `stderr` or `false` (default `false`)                                                 |
+| `--log-format string`               | log record format: `term`, `logfmt`, `json` (default `term`)                                                      |
+| `--log-level string`                | `debug`, `info`, `warn`, `error`, `crit` (default `info`)                                                         |
+| `--traffic-policy-file string`      | path to traffic policy configuration YAML or JSON file (See [Traffic Policy](/tcp/traffic-policy/?cty=agent-cli)) |
+| `--proxy-proto string`              | version of proxy proto to use with this tunnel, empty if not using                                                |
+| `--policy-file string` (Deprecated) | use `--traffic-policy-file` instead                                                                               |
+| `--region string`                   | ngrok server region `us`, `us-cal-1`, `eu`, `au`, `ap`, `sa`, `jp`, `in` (default to closest)                     |
+| `--remote-addr string`              | bind remote address (requires you reserve a TCP Address)                                                          |
 
 ## ngrok tls
 
@@ -533,7 +535,7 @@ The `ngrok tls` command starts a TLS tunnel listening for traffic on port 443 wi
 
 The ngrok server does not terminate TLS connections forwarded with this command. Any underlying protocol may be used. You may optionally specify a TLS key/cert pair which will be used to terminate the traffic at the ngrok agent before it is forwarded. If not specified, the traffic will be forwarded still encrypted.
 
-Using this command is only recommended with the `--domain` option. Other uses will work, but will always result in certificate mismatch warnings.
+Using this command is only recommended with the `--url` option. Other uses will work, but will always result in certificate mismatch warnings.
 
 ### Usage
 
@@ -545,7 +547,7 @@ ngrok tls [address:port | port] [flags]
 
 ```sh
 # forward TLS traffic for www.example.com to port 443 (requires CNAME)
-ngrok tls --domain=www.example.com 443
+ngrok tls --url=www.example.com 443
 ```
 
 ```sh
@@ -555,29 +557,30 @@ ngrok tls 1234
 
 ```sh
 # terminate TLS traffic for t.co before forwarding
-ngrok tls --domain=t.co --crt=/path/to/t.co.crt --key=/path/to/t.co.key 443
+ngrok tls --url=t.co --crt=/path/to/t.co.crt --key=/path/to/t.co.key 443
 ```
 
 ### Flags
 
-| Flag                      | Description                                                                                                             |
-| ------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
-| `--authtoken string`      | ngrok authtoken                                                                                                         |
-| `--cidr-allow strings`    | reject connections that do not match the given CIDRs                                                                    |
-| `--cidr-deny strings`     | reject connections that match the given CIDRs                                                                           |
-| `--config strings`        | path to config files; they are merged if multiple                                                                       |
-| `--crt string`            | path to a TLS certificate for TLS termination                                                                           |
-| `--domain string`         | host tunnel on a custom domain                                                                                          |
-| `-h`, `--help`            | help for this command                                                                                                   |
-| `--key string`            | path to a TLS key for TLS termination                                                                                   |
-| `--log string`            | path to log file, `stdout`, `stderr` or `false` (default `false`)                                                       |
-| `--log-format string`     | log record format: `term`, `logfmt`, `json` (default `term`)                                                            |
-| `--log-level string`      | `debug`, `info`, `warn`, `error`, `crit` (default `info`)                                                               |
-| `--mutual-tls-cas string` | path to TLS certificate authority to verify client certs in mutual TLS                                                  |
-| `--policy-file string`    | path to traffic policy configuration YAML or JSON file (See [Traffic Policy](/tls/traffic-policy/?cty=agent-cli))       |
-| `--proxy-proto string`    | version of proxy proto to use with this tunnel, empty if not using                                                      |
-| `--region string`         | ngrok server region `us`, `us-cal-1`, `eu`, `au`, `ap`, `sa`, `jp`, `in` (defaults to closest)                          |
-| `--terminate-at string`   | terminate at ngrok "edge", "agent" or "upstream. Defaults to no termination or "edge" if `--crt` or `--key` are present |
+| Flag                                | Description                                                                                                             |
+| ----------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `--authtoken string`                | ngrok authtoken                                                                                                         |
+| `--cidr-allow strings`              | reject connections that do not match the given CIDRs                                                                    |
+| `--cidr-deny strings`               | reject connections that match the given CIDRs                                                                           |
+| `--config strings`                  | path to config files; they are merged if multiple                                                                       |
+| `--crt string`                      | path to a TLS certificate for TLS termination                                                                           |
+| `--url string`                      | host tunnel on a custom domain                                                                                          |
+| `-h`, `--help`                      | help for this command                                                                                                   |
+| `--key string`                      | path to a TLS key for TLS termination                                                                                   |
+| `--log string`                      | path to log file, `stdout`, `stderr` or `false` (default `false`)                                                       |
+| `--log-format string`               | log record format: `term`, `logfmt`, `json` (default `term`)                                                            |
+| `--log-level string`                | `debug`, `info`, `warn`, `error`, `crit` (default `info`)                                                               |
+| `--mutual-tls-cas string`           | path to TLS certificate authority to verify client certs in mutual TLS                                                  |
+| `--traffic-policy-file string`      | path to traffic policy configuration YAML or JSON file (See [Traffic Policy](/tls/traffic-policy/?cty=agent-cli))       |
+| `--proxy-proto string`              | version of proxy proto to use with this tunnel, empty if not using                                                      |
+| `--policy-file string` (Deprecated) | use `--traffic-policy-file` instead                                                                                     |
+| `--region string`                   | ngrok server region `us`, `us-cal-1`, `eu`, `au`, `ap`, `sa`, `jp`, `in` (defaults to closest)                          |
+| `--terminate-at string`             | terminate at ngrok "edge", "agent" or "upstream. Defaults to no termination or "edge" if `--crt` or `--key` are present |
 
 ## ngrok tunnel
 

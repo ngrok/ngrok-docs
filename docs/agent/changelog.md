@@ -6,6 +6,56 @@ title: Changelog
 
 ## v3
 
+### ngrok Agent 3.16.0 - \[2024-09-09\]
+
+- Releasing the features originally released by 3.15.0
+  - Added `--url` agent CLI flag for creation of HTTP(S), TLS, and TCP protocol endpoints.
+  - Deprecated `--domain`, `--scheme`, and `--remote-addr` agent CLI flags, which have been replaced by `--url`.
+  - Added `--metadata` and `--description` agent CLI flags when using `--url`.
+  - Added `endpoints:` as a new field used for [endpoint creation](/docs/agent/config/v3/#full-example).
+  - A new `agent:` field has been added to the agent configuration format for V3.
+    - v3 supports _both_ tunnels and endpoints. Tunnels are now considered deprecated when using config v3.
+    - Some agent configuration fields have been renamed in v3.
+    - v2 is still supported, but does not support the new `endpoints:` , or `agent:` fields.
+  - Added support for [endpoint fields](/docs/api/resources/endpoints/#list-endpoints) in ngrok's `api`.
+- Update `config` commands to support new configuration version 3, including `upgrade`, `add-authtoken`, and `add-api-key`
+
+### ngrok Agent 3.15.1 - \[2024-08-29\]
+
+- Restores the functionality and compatibility for version 3.14.0 due to bugs in the previous release. An updated version with the changes from 3.15.0 will be released early next week.
+
+### \[UNSTABLE\] ngrok Agent 3.15.0 - \[2024-08-29\]
+
+- Added `--url` agent CLI flag for creation of HTTP(S), TLS, and TCP protocol endpoints.
+- Deprecated `--domain`, `--scheme`, and `--remote-addr` agent CLI flags, which have been replaced by `--url`.
+- Added `--metadata` and `--description` agent CLI flags when using `--url`.
+- Added `endpoints:` as a new field used for [endpoint creation](/docs/agent/config/v3/#full-example).
+- A new `agent:` field has been added to the agent configuration format for V3.
+  - v3 supports _both_ tunnels and endpoints. Tunnels are now considered deprecated when using config v3.
+  - Some agent configuration fields have been renamed in v3.
+  - v2 is still supported, but does not support the new `endpoints:` , or `agent:` fields.
+- Added support for [endpoint fields](/docs/api/resources/endpoints/#list-endpoints) in ngrok's `api`.
+
+### ngrok Agent 3.14.0 - \[2024-08-01\]
+
+- Added support for `traffic_policy` field in agent config for Traffic Policy configuration.
+- Deprecated `policy`
+- Added `EndpointTrafficPolicy` module to Edge API.
+
+### ngrok Agent 3.13.0 - \[2024-07-15\]
+
+- In some cases, adds additional headers on error responses to ngrok that can be used to customize the content.
+
+### ngrok Agent 3.12.1 - \[2024-07-11\]
+
+- Fixed a bug in `ngrok diagnose` that would cause a panic if a server IP and the agent had TLS connectivity issues.
+- Added `--traffic-policy-file` flag that accepts Traffic Policy configuration for HTTP, TCP, or TLS traffic.
+- Deprecated `--policy-file` flag
+
+### ngrok Agent 3.12.0 - \[2024-06-27\]
+
+- Errors now have links to ngrok error page.
+
 ### ngrok Agent 3.11.0 - \[2024-06-13\]
 
 - `ngrok http` now has timestamps for incoming requests.
@@ -16,7 +66,7 @@ title: Changelog
 
 ### ngrok Agent 3.10.0 - \[2024-05-23\]
 
-- **ACTION MAY BE REQUIRED**: The domain used for Certificate Revocation List (CRL) checks is now `crl.ngrok-agent.com` to align it with the domain used for session connections. This may require changes to your firewall or proxy settings to allow this outbound connection, or setting `crl_noverify: true` in the agent config file.
+- **ACTION MAY BE REQUIRED**: The domain used for Certificate Revocation List (CRL) checks is now `crl.ngrok-agent.com` to align it with the domain used for session connections. This may require changes to your firewall or proxy settings to allow this outbound connection on port 80, or setting `crl_noverify: true` in the agent config file.
 - Added CLI API support for [Bot Users](/docs/iam/bot-users/).
 
 ### ngrok Agent 3.9.0 - \[2024-04-24\]

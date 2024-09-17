@@ -37,7 +37,7 @@ demo application to the ngrok platform to route traffic to your vcluster.
 :::caution This tutorial requires:
 
 1. An [ngrok account](https://ngrok.com/signup).
-2. The [vcluster CLI](https://www.vcluster.com/docs/quickstart) installed locally.
+2. The [vcluster CLI](https://www.vcluster.com/docs/get-started/#deploy-vcluster) installed locally.
 3. [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) installed locally.
 4. [Helm 3.0.0+](https://helm.sh/docs/intro/install/) installed locally.
 5. An existing remote or local Kubernetes cluster _OR_ [minikube](https://minikube.sigs.k8s.io/docs/start/) to create a
@@ -109,7 +109,7 @@ on your virtual cluster.
 1. Add the ngrok Helm repository if you haven't already.
 
    ```bash
-   helm repo add ngrok https://ngrok.github.io/kubernetes-ingress-controller
+   helm repo add ngrok https://charts.ngrok.com
    ```
 
 1. Set up the `AUTHTOKEN` and `API_KEY` exports, which allows Helm to install the Ingress Controller using your ngrok credentials. Find your `AUTHTOKEN` under [**Your Authtoken**](https://dashboard.ngrok.com/get-started/your-authtoken) in the ngrok dashboard.

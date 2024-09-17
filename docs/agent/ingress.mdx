@@ -120,6 +120,41 @@ IP addresses. Dedicated IPs that are unique for your account are also available
 at additional cost. [Contact us](mailto:support@ngrok.com?subject=Dedicated+Ingress+IPs) to get in touch for
 additional details.
 
+## Certificate Issuer
+
+When you create a custom agent ingress, you have the option to choose between
+two certificate issuer options: ngrok's internal CA and a public one from
+[Let's Encrypt](https://letsencrypt.org/).
+
+![](/img/docs/new-ingress.png)
+
+### ngrok's Internal CA
+
+With this option, the agent uses a private cert minted from ngrok. This is the default option and the agent trusts
+automatically. This cert is provisioned immediately, but may require additional
+configuration if you are using 3rd party security tools as they most likely won't trust the ngrok-issued
+certificate.
+
+### Let's Encrypt Cert Issuer
+
+This option will request a certificate from Let's Encrypt. This is not automatically trusted by the agent and
+requires the `root_cas` option to be set to `host`, or the Let's Encrypt root
+cert. In most cases, the host that runs the agent will trust a standard set of
+public CAs. You will also need this when using any ngrok agent SDK or SSH Reverse Tunnel agent.
+
+This certificate is not immediately provisioned and after provision, could take up to 48 hours if propagation is
+slow. An ngrok certificate is provisioned and used in the meantime to secure any communication. Note that
+even if the DNS "Check Status" succeeds in the ngrok dashboard, it may not have
+propagated to Let's Encrypt yet.
+
+This option is useful if getting an outbound proxy to trust `ngrok` CA is
+challenging due to either technical or organizational constraints.
+
+If Let's Encrypt is selected, the agent ingress drawer will show the following
+card while the certificate is provisioning:
+
+![](/img/docs/certificate-provisioning-delayed.png)
+
 ## Why customize the ingress address?
 
 ### Branded Connectivity

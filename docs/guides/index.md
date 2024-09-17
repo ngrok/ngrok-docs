@@ -10,6 +10,7 @@ Here you will find a set of guides to help you with common (and not so common) t
 
 | Name                                                                                                                                     | Description                                                                                    |
 | ---------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| [Device Gateway](/guides/device-gateway)                                                                                                 | Learn how to use ngrok as a device gateway                                                     |
 | [Configure Site-to-Site Connectivity for APIs](/guides/site-to-site-apis)                                                                | Learn how to access APIs at external sites                                                     |
 | [Configure Site-to-Site Connectivity for APIs with mTLS](/guides/site-to-site-apis-mtls)                                                 | Learn how to access APIs at external sites with mTLS encryption                                |
 | [Configure Site-to-Site Connectivity for Databases](/guides/site-to-site-dbs)                                                            | Learn how to access databases at external sites                                                |
@@ -37,3 +38,4 @@ Here you will find a set of guides to help you with common (and not so common) t
 | [Using Labels with ngrok Edges](/guides/using-labels-within-ngrok)                                                                       | Learn how to use labels and tunnel groups with ngrok Cloud Edges                               |
 | [Using ngrok with IoT devices](/guides/device-gateway)                                                                                   | Learn how to remotely manage IoT devices using ngrok                                           |
 | [Using Mutual TLS Authentication](/guides/using-tls-mutual-authentication)                                                               | Learn how to protect your endpoints with mutual TLS authentication (mTLS) using ngrok          |
+| [Configuring GoDaddy DNS for ngrok Reserved Domains](/guides/godaddy)                                                                    | Learn how to configure GoDaddy DNS for ngrok Reserved Domains                                  |

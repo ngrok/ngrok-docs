@@ -185,8 +185,8 @@ First add a CNAME record for the wildcard subdomain you just created.
 
 Then add another record for the
 [ACME (Automated Certificate Management Environment)](https://venafi.com/blog/what-acme-protocol-and-how-has-it-changed-pki/)
-validation. For the record, enter `acme_challenge_cname_target`, and use the value of the  
-`acme_challenge_cname_target` property from from previous response for the value.
+validation. For the record, enter `_acme-challenge.{SUBDOMAIN}`, and use the value of the `acme_challenge_cname_target` property from from previous response for the value. For the example above, the record name would be
+`_acme-challenge.customer1`.
 
 ### Verify DNS
 
@@ -210,7 +210,7 @@ Use the ngrok dashboard to verify that you’ve configured DNS correctly.
 
 ## Create a bot user
 
-Now, you’ll create a bot user so that in the next section, you can create an agent authtoken independent of any user account. Recall from Chapter 2 that a bot user does not belong to a particular user account. Run the following command to create a new bot user, providing your API key and a description:
+Now, you’ll create a bot user so that in the next section, you can create an agent authtoken independent of any user account. A bot user does not belong to a particular user account. Run the following command to create a new bot user, providing your API key and a description:
 
 ```
 curl \
@@ -218,11 +218,11 @@ curl \
 -H "Authorization: Bearer {API_KEY}" \
 -H "Content-Type: application/json" \
 -H "Ngrok-Version: 2" \
--d '{DESCRIPTION}' \
+-d '{"name":"new bot user from API"}' \
 https://api.ngrok.com/bot_users
 ```
 
-You should receive a 201 response similar to the following:
+You should receive a `201` response similar to the following:
 
 ```json
 {
@@ -433,7 +433,7 @@ for `{PORT}`:
 curl \
 -H "Content-Type: application/json" -X  \
 POST https://agent.customer1.{YOUR_DOMAIN}/api/tunnels \
--d '{"name":"passthrough","proto":"tls","terminate_at": "agent", "addr":"{PORT}", "domain":"api.customer1.{YOUR_DOMAIN}","mutual_tls_cas":"ca-crt.pem", "crt":"client-crt.pem", "key":"server-key.pem"'
+-d '{"name":"passthrough","proto":"tls","terminate_at": "agent", "addr":"{PORT}", "domain":"api.customer1.{YOUR_DOMAIN}","mutual_tls_cas":"ca-crt.pem", "crt":"server-crt.pem", "key":"server-key.pem"}'
 ```
 
 Please note that these certificates should be used for testing purposes only. You should

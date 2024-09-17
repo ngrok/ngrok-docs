@@ -1,0 +1,472 @@
+---
+title: "Version 3"
+---
+
+## Breaking Changes
+
+- [Agent specific fields](/docs/agent/config/v3/#agent-configuration) are no longer top level-keys, but instead nested under the **required** `agent` field.
+- There are now four top-level keys: `version`, `agent`, `endpoints`, and `tunnels`.
+- `tunnels` are deprecated in favor of `endpoints`.
+
+```yaml
+version: 3
+agent:
+  authtoken: 4nq9771bPxe8ctg7LKr_2ClH7Y15Zqe4bWLWF9p
+  # add nested "Agent Configuration" fields here
+  # ...
+endpoints: ...
+tunnels: # deprecated
+```
+
+For a complete list of nested `agent` fields, check out [agent configuration](/docs/agent/config/v3/#agent-configuration).
+
+## Example Configuration Files
+
+Below are a collection of different agent configurations to serve as examples for your `ngrok.yml` file. The [next section](/docs/agent/config/v3/#endpoint-configurations) explains how to start some or all of your configured endpoints from the CLI.
+
+### Basic
+
+```yaml
+version: 3
+agent:
+  authtoken: 4nq9771bPxe8ctg7LKr_2ClH7Y15Zqe4bWLWF9p
+endpoints:
+  - name: basic
+    url: basic.ngrok.app
+    upstream:
+      url: 8080
+```
+
+### Multiple endpoints
+
+```yaml
+version: 3
+agent:
+  authtoken: 4nq9771bPxe8ctg7LKr_2ClH7Y15Zqe4bWLWF9p
+endpoints:
+  - name: foo
+    description: foo123
+    metadata: foo123
+    url: foo.ngrok.io
+    upstream:
+      url: 8080
+      protocol: http1
+  - name: bar
+    url: bar.ngrok.io
+    upstream:
+      url: 8080
+```
+
+### Endpoint with an traffic policy (inline)
+
+```yaml
+version: 3
+agent:
+  authtoken: 4nq9771bPxe8ctg7LKr_2ClH7Y15Zqe4bWLWF9p
+endpoints:
+  - name: foo
+    description: foo123
+    metadata: foo123
+    url: foo.ngrok.io
+    traffic_policy:
+      inbound:
+        - actions:
+            - type: custom-response
+              config:
+                status_code: 200
+                content: hello, traffic policy!
+                headers:
+                  content-type: text/plain
+    upstream:
+      url: 8080
+      protocol: http1
+```
+
+### Endpoint with a traffic policy (file path)
+
+```yaml
+version: 3
+agent:
+  authtoken: 4nq9771bPxe8ctg7LKr_2ClH7Y15Zqe4bWLWF9p
+endpoints:
+  - name: bar
+    url: bar.ngrok.io
+    traffic_policy_file: /path/to/your/traffic-policy.yml
+    upstream:
+      url: 8080
+      protocol: http2
+```
+
+## Endpoint configurations
+
+> **Looking for _Tunnel_ configurations?**
+>
+> Tunnel configurations are still supported in the new `Version 3` configuration file format. However, they're being _deprecated_ in favor of endpoints, which provide a simpler and more powerful way of managing ingress. If you wish to see documentation on how to enable and configure tunnels, refer to the [version 2 tunnel configuration](/docs/agent/config/v2#tunnel-configurations) section.
+
+The most common use of the configuration file is to define endpoint
+configurations. Defining endpoint configurations is useful because you may then
+start pre-configured endpoints by name from your command line without remembering
+all of the right arguments every time. You may also use this method to start as
+many endpoints as you like from a single ngrok agent.
+
+Endpoints are defined as mapping of name -> configuration under the `endpoints`
+property in your configuration file.
+
+##### Define two endpoints named 'httpbin' and 'demo'
+
+```yaml
+endpoints:
+  - name: httpbin
+    url: https://alan-httpbin.ngrok.dev
+    upstream:
+      url: 8080
+  - name: demo
+    url: https://demo.inconshreveable.com
+    upstream:
+      url: 8181
+```
+
+##### Start the endpoint named 'httpbin'
+
+```sh
+ngrok start httpbin
+```
+
+Each endpoint you define is a map of configuration option names to values. The name of a configuration option is usually the same as its corresponding command line switch with hyphens.
+
+_eg:_
+
+- `--description` becomes `description`
+- `--url` becomes `url`
+
+All endpoints must define a specific `url` that tells the agent where to send the traffic. Other properties are available and many are protocol-specific.
+
+##### Start all endpoints defined in the configuration file
+
+```sh
+ngrok start --all
+```
+
+You can configure a single ngrok agent to start multiple endpoints to different services within a single agent session.
+
+##### Common Endpoint Configuration Properties
+
+| Name          | Required | Description                                                                                                                                                      |
+| ------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `url`         | required | forward traffic to this network address. This can be a _domain_ `example.ngrok.app`, an _origin_ `https://example.ngrok.app`, or a _scheme_ shorthand `https://` |
+| `metadata`    | Optional | arbitrary user-defined metadata that will appear in the ngrok service API when listing endpoint sessions                                                         |
+| `description` | Optional | arbitrary user-defined description about this endpoint that will appear in the ngrok service API when listing endpoint sessions                                  |
+
+### HTTP Configuration
+
+| Name                                                                                     | Type                                                                         | Description                                                                                                                                                                                                                                                                                       |
+| ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `circuit_breaker`                                                                        | Float                                                                        | Reject requests when 5XX responses exceed this ratio                                                                                                                                                                                                                                              |
+| `compression`                                                                            | `true`, `false`                                                              | gzip compress HTTP responses from your web service                                                                                                                                                                                                                                                |
+| `url`                                                                                    | Any valid domain or hostname that you have previously registered with ngrok. | The domain to request. If using a custom domain, this requires registering in the [ngrok dashboard](https://dashboard.ngrok.com/cloud-edge/domains) and setting a DNS CNAME value. When using wildcard domains you will need to surround the value with single quotes (domain: '\*.example.com'). |
+| `inspect`                                                                                | `true`, `false`                                                              | enable/disable the http request inspection in the web and agent API (default: true)                                                                                                                                                                                                               |
+| `ip_restriction.allow_cidrs`                                                             | Array of CIDRs                                                               | Rejects connections that do not match the given CIDRs                                                                                                                                                                                                                                             |
+| `ip_restriction.deny_cidrs`                                                              | Array of CIDRs                                                               | Rejects connections that match the given CIDRs and allows all other CIDRs.                                                                                                                                                                                                                        |
+| `mutual_tls_cas`                                                                         | Valid system path                                                            | The path to the TLS certificate authority to verify client certs in mutual TLS                                                                                                                                                                                                                    |
+| `oauth.allow_domains`                                                                    | Array of Strings                                                             | Allow only OAuth2 users with these email domains                                                                                                                                                                                                                                                  |
+| `oauth.allow_emails`                                                                     | Array of Strings                                                             | Allow only OAuth users with these emails                                                                                                                                                                                                                                                          |
+| `oauth.oauth_scopes`                                                                     | Array of Strings                                                             | Request these OAuth2 scopes when a user authenticates                                                                                                                                                                                                                                             |
+| `oauth.provider`                                                                         | String                                                                       | enforce authentication OAuth2 provider on the endpoint, e.g. 'google'. For a lit of available providers, see [OAuth2 providers](/http/oauth/#supported-providers).                                                                                                                                |
+| [`policy.inbound.name`](/docs/http/traffic-policy/index.mdx)                             | String                                                                       | `policy` has been renamed to `traffic_policy` in agent version 3.14.0.                                                                                                                                                                                                                            |
+| [`policy.inbound.expressions`](/docs/http/traffic-policy/expressions/index.mdx)          | Array of Strings                                                             | `policy` has been renamed to `traffic_policy` in agent version 3.14.0.                                                                                                                                                                                                                            |
+| [`policy.inbound.actions.type`](/docs/http/traffic-policy/actions/index.mdx)             | String                                                                       | `policy` has been renamed to `traffic_policy` in agent version 3.14.0.                                                                                                                                                                                                                            |
+| [`policy.inbound.actions.config`](/docs/http/traffic-policy/actions/index.mdx)           | custom                                                                       | `policy` has been renamed to `traffic_policy` in agent version 3.14.0.                                                                                                                                                                                                                            |
+| [`policy.outbound.name`](/docs/http/traffic-policy/index.mdx)                            | String                                                                       | `policy` has been renamed to `traffic_policy` in agent version 3.14.0.                                                                                                                                                                                                                            |
+| [`policy.outbound.expressions`](/docs/http/traffic-policy/expressions/index.mdx)         | Array of Strings                                                             | `policy` has been renamed to `traffic_policy` in agent version 3.14.0.                                                                                                                                                                                                                            |
+| [`policy.outbound.actions.type`](/docs/http/traffic-policy/actions/index.mdx)            | String                                                                       | `policy` has been renamed to `traffic_policy` in agent version 3.14.0.                                                                                                                                                                                                                            |
+| [`policy.outbound.actions.config`](/docs/http/traffic-policy/actions/index.mdx)          | custom                                                                       | `policy` has been renamed to `traffic_policy` in agent version 3.14.0.                                                                                                                                                                                                                            |
+| `proto`                                                                                  | `http`                                                                       | The endpoint protocol name. This defines the type of endpoint you would like to start.                                                                                                                                                                                                            |
+| `proxy_protocol`                                                                         | String                                                                       | The version of [PROXY protocol](https://www.haproxy.org/download/1.8/doc/proxy-protocol.txt) to use with this endpoint, empty if not using. Example values are 1 or 2.                                                                                                                            |
+| `request_header.add`                                                                     | Array of `key:value` Strings                                                 | The headers to add to the request in the key:value format.                                                                                                                                                                                                                                        |
+| `request_header.remove`                                                                  | Array of Strings                                                             | The header keys to remove from the request.                                                                                                                                                                                                                                                       |
+| `response_header.add`                                                                    | Array of Strings                                                             | The headers to add to the response in the key:value format.                                                                                                                                                                                                                                       |
+| `response_header.remove`                                                                 | Array of Strings                                                             | The header keys to remove from the response.                                                                                                                                                                                                                                                      |
+| [`traffic_policy.inbound.name`](/docs/http/traffic-policy/index.mdx)                     | String                                                                       | The name of an inbound rule that is part of a traffic policy                                                                                                                                                                                                                                      |
+| [`traffic_policy.inbound.expressions`](/docs/http/traffic-policy/expressions/index.mdx)  | Array of Strings                                                             | Expressions written using [CEL](https://github.com/google/cel-spec) that filter traffic the inbound policy rule applies to                                                                                                                                                                        |
+| [`traffic_policy.inbound.actions.type`](/docs/http/traffic-policy/actions/index.mdx)     | String                                                                       | The type of action that should be executed when this inbound policy rule is activated                                                                                                                                                                                                             |
+| [`traffic_policy.inbound.actions.config`](/docs/http/traffic-policy/actions/index.mdx)   | custom                                                                       | The configuration required for the specific type of action specified                                                                                                                                                                                                                              |
+| [`traffic_policy.outbound.name`](/docs/http/traffic-policy/index.mdx)                    | String                                                                       | The name of an outbound rule that is part of a traffic policy                                                                                                                                                                                                                                     |
+| [`traffic_policy.outbound.expressions`](/docs/http/traffic-policy/expressions/index.mdx) | Array of Strings                                                             | Expressions written using [CEL](https://github.com/google/cel-spec) that filter traffic the outbound policy rule applies to                                                                                                                                                                       |
+| [`traffic_policy.outbound.actions.type`](/docs/http/traffic-policy/actions/index.mdx)    | String                                                                       | The type of action that should be executed when this outbound policy rule is activated                                                                                                                                                                                                            |
+| [`traffic_policy.outbound.actions.config`](/docs/http/traffic-policy/actions/index.mdx)  | custom                                                                       | The configuration required for the specific type of action specified                                                                                                                                                                                                                              |
+| `user_agent_filter.allow`                                                                | Array of Strings                                                             | Allows User-Agents that match against these RE2 Regular Expressions                                                                                                                                                                                                                               |
+| `user_agent_filter.deny`                                                                 | Array of Strings                                                             | Denies User-Agents that match against these RE2 Regular Expressions                                                                                                                                                                                                                               |
+| `verify_webhook.provider`                                                                | String                                                                       | Verify webhooks are signed by this provider, e.g. 'slack'. For a full list of providers, see [Webhook Verification Providers](/http/webhook-verification/#supported-providers).                                                                                                                   |
+| `verify_webhook.secret`                                                                  | String                                                                       | The secret used by provider to sign webhooks, if there is one                                                                                                                                                                                                                                     |
+| `websocket_tcp_converter`                                                                | `true`, `false`                                                              | Convert ingress websocket connections to TCP upstream                                                                                                                                                                                                                                             |
+
+### TCP Configuration
+
+| Name                                                                                     | Type                           | Description                                                                                                                                                                                                                   |
+| ---------------------------------------------------------------------------------------- | ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ip_restriction.allow_cidrs`                                                             | Array of CIDRs                 | Rejects connections that do not match the given CIDRs                                                                                                                                                                         |
+| `ip_restriction.deny_cidrs`                                                              | Array of CIDRs                 | Rejects connections that match the given CIDRs and allows all other CIDRs.                                                                                                                                                    |
+| [`policy.inbound.name`](/docs/http/traffic-policy/index.mdx)                             | String                         | `policy` has been renamed to `traffic_policy` in agent version 3.14.0.                                                                                                                                                        |
+| [`policy.inbound.expressions`](/docs/http/traffic-policy/expressions/index.mdx)          | Array of Strings               | `policy` has been renamed to `traffic_policy` in agent version 3.14.0.                                                                                                                                                        |
+| [`policy.inbound.actions.type`](/docs/http/traffic-policy/actions/index.mdx)             | String                         | `policy` has been renamed to `traffic_policy` in agent version 3.14.0.                                                                                                                                                        |
+| [`policy.inbound.actions.config`](/docs/http/traffic-policy/actions/index.mdx)           | custom                         | `policy` has been renamed to `traffic_policy` in agent version 3.14.0.                                                                                                                                                        |
+| [`policy.outbound.name`](/docs/http/traffic-policy/index.mdx)                            | String                         | `policy` has been renamed to `traffic_policy` in agent version 3.14.0.                                                                                                                                                        |
+| [`policy.outbound.expressions`](/docs/http/traffic-policy/expressions/index.mdx)         | Array of Strings               | `policy` has been renamed to `traffic_policy` in agent version 3.14.0.                                                                                                                                                        |
+| [`policy.outbound.actions.type`](/docs/http/traffic-policy/actions/index.mdx)            | String                         | `policy` has been renamed to `traffic_policy` in agent version 3.14.0.                                                                                                                                                        |
+| [`policy.outbound.actions.config`](/docs/http/traffic-policy/actions/index.mdx)          | custom                         | `policy` has been renamed to `traffic_policy` in agent version 3.14.0.                                                                                                                                                        |
+| `proto`                                                                                  | `tcp`                          | The endpoint protocol name. This defines the type of endpoint you would like to start.                                                                                                                                        |
+| `proxy_proto`                                                                            | String                         | The version of [PROXY protocol](https://www.haproxy.org/download/1.8/doc/proxy-protocol.txt) to use with this endpoint, empty if not using. Example values are 1 or 2.                                                        |
+| `url`                                                                                    | A valid TCP address from ngrok | bind the remote TCP address and port. These addresses can be reserved in the [ngrok dashboard](https://dashboard.ngrok.com/cloud-edge/tcp-addresses) to use across sessions. For example: `remote_addr: 2.tcp.ngrok.io:21746` |
+| [`traffic_policy.inbound.name`](/docs/http/traffic-policy/index.mdx)                     | String                         | The name of an inbound rule that is part of a traffic policy                                                                                                                                                                  |
+| [`traffic_policy.inbound.expressions`](/docs/http/traffic-policy/expressions/index.mdx)  | Array of Strings               | Expressions written using [CEL](https://github.com/google/cel-spec) that filter traffic the inbound policy rule applies to                                                                                                    |
+| [`traffic_policy.inbound.actions.type`](/docs/http/traffic-policy/actions/index.mdx)     | String                         | The type of action that should be executed when this inbound policy rule is activated                                                                                                                                         |
+| [`traffic_policy.inbound.actions.config`](/docs/http/traffic-policy/actions/index.mdx)   | custom                         | The configuration required for the specific type of action specified                                                                                                                                                          |
+| [`traffic_policy.outbound.name`](/docs/http/traffic-policy/index.mdx)                    | String                         | The name of an outbound rule that is part of a traffic policy                                                                                                                                                                 |
+| [`traffic_policy.outbound.expressions`](/docs/http/traffic-policy/expressions/index.mdx) | Array of Strings               | Expressions written using [CEL](https://github.com/google/cel-spec) that filter traffic the outbound policy rule applies to                                                                                                   |
+| [`traffic_policy.outbound.actions.type`](/docs/http/traffic-policy/actions/index.mdx)    | String                         | The type of action that should be executed when this outbound policy rule is activated                                                                                                                                        |
+| [`traffic_policy.outbound.actions.config`](/docs/http/traffic-policy/actions/index.mdx)  | custom                         | The configuration required for the specific type of action specified                                                                                                                                                          |
+
+### TLS Configuration
+
+| Name                                                                                     | Type                                                                         | Description                                                                                                                                                                                                                                     |
+| ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `mutual_tls_cas`                                                                         | Valid system path                                                            | The path to the TLS certificate authority to verify client certs for mutual TLS. You will also need to specify `key` and `crt` to enable mutual TLS.                                                                                            |
+| `crt`                                                                                    | Valid system path                                                            | PEM TLS certificate at this path to terminate TLS traffic before forwarding locally. Requires `--key` to also be specified.                                                                                                                     |
+| `url`                                                                                    | Any valid domain or hostname that you have previously registered with ngrok. | The domain to request. If using a custom domain, this requires registering in the ngrok Dashboard and setting a DNS CNAME value. When using wildcard domains you will need to surround the value with single quotes (domain: '\*.example.com'). |
+| `ip_restriction.allow_cidrs`                                                             | Array of CIDRs                                                               | Rejects connections that do not match the given CIDRs                                                                                                                                                                                           |
+| `ip_restriction.deny_cidrs`                                                              | Array of CIDRs                                                               | Rejects connections that match the given CIDRs and allows all other CIDRs.                                                                                                                                                                      |
+| `key`                                                                                    | Valid system path                                                            | PEM TLS private key at this path to terminate TLS traffic before forwarding locally. Requires `--crt` to also be specified.                                                                                                                     |
+| [`policy.inbound.name`](/docs/http/traffic-policy/index.mdx)                             | String                                                                       | `policy` has been renamed to `traffic_policy` in agent version 3.14.0.                                                                                                                                                                          |
+| [`policy.inbound.expressions`](/docs/http/traffic-policy/expressions/index.mdx)          | Array of Strings                                                             | `policy` has been renamed to `traffic_policy` in agent version 3.14.0.                                                                                                                                                                          |
+| [`policy.inbound.actions.type`](/docs/http/traffic-policy/actions/index.mdx)             | String                                                                       | `policy` has been renamed to `traffic_policy` in agent version 3.14.0.                                                                                                                                                                          |
+| [`policy.inbound.actions.config`](/docs/http/traffic-policy/actions/index.mdx)           | custom                                                                       | `policy` has been renamed to `traffic_policy` in agent version 3.14.0.                                                                                                                                                                          |
+| [`policy.outbound.name`](/docs/http/traffic-policy/index.mdx)                            | String                                                                       | `policy` has been renamed to `traffic_policy` in agent version 3.14.0.                                                                                                                                                                          |
+| [`policy.outbound.expressions`](/docs/http/traffic-policy/expressions/index.mdx)         | Array of Strings                                                             | `policy` has been renamed to `traffic_policy` in agent version 3.14.0.                                                                                                                                                                          |
+| [`policy.outbound.actions.type`](/docs/http/traffic-policy/actions/index.mdx)            | String                                                                       | `policy` has been renamed to `traffic_policy` in agent version 3.14.0.                                                                                                                                                                          |
+| [`policy.outbound.actions.config`](/docs/http/traffic-policy/actions/index.mdx)          | custom                                                                       | `policy` has been renamed to `traffic_policy` in agent version 3.14.0.                                                                                                                                                                          |
+| `proto`                                                                                  | `tls`                                                                        | The endpoint protocol name. This defines the type of endpoint you would like to start.                                                                                                                                                          |
+| `proxy_proto`                                                                            | String                                                                       | The version of [PROXY protocol](https://www.haproxy.org/download/1.8/doc/proxy-protocol.txt) to use with this endpoint, empty if not using. Example values are 1 or 2.                                                                          |
+| `terminate_at`                                                                           | `edge`, `agent`, or `upstream`                                               | Terminate at ngrok `edge`, `agent`, or `upstream`. Defaults to `upstream` unless `--crt` or `--key` are present, in which case `edge` is the default.                                                                                           |
+| [`traffic_policy.inbound.name`](/docs/http/traffic-policy/index.mdx)                     | String                                                                       | The name of an inbound rule that is part of a traffic policy                                                                                                                                                                                    |
+| [`traffic_policy.inbound.expressions`](/docs/http/traffic-policy/expressions/index.mdx)  | Array of Strings                                                             | Expressions written using [CEL](https://github.com/google/cel-spec) that filter traffic the inbound policy rule applies to                                                                                                                      |
+| [`traffic_policy.inbound.actions.type`](/docs/http/traffic-policy/actions/index.mdx)     | String                                                                       | The type of action that should be executed when this inbound policy rule is activated                                                                                                                                                           |
+| [`traffic_policy.inbound.actions.config`](/docs/http/traffic-policy/actions/index.mdx)   | custom                                                                       | The configuration required for the specific type of action specified                                                                                                                                                                            |
+| [`traffic_policy.outbound.name`](/docs/http/traffic-policy/index.mdx)                    | String                                                                       | The name of an outbound rule that is part of a traffic policy                                                                                                                                                                                   |
+| [`traffic_policy.outbound.expressions`](/docs/http/traffic-policy/expressions/index.mdx) | Array of Strings                                                             | Expressions written using [CEL](https://github.com/google/cel-spec) that filter traffic the outbound policy rule applies to                                                                                                                     |
+| [`traffic_policy.outbound.actions.type`](/docs/http/traffic-policy/actions/index.mdx)    | String                                                                       | The type of action that should be executed when this outbound policy rule is activated                                                                                                                                                          |
+| [`traffic_policy.outbound.actions.config`](/docs/http/traffic-policy/actions/index.mdx)  | custom                                                                       | The configuration required for the specific type of action specified                                                                                                                                                                            |
+
+## Agent Configuration
+
+The following is a list of fields nested under `agent` in your configuration file which customize the agent behavior.
+
+| Name                                        | Description                                                                                                                                                                                          |
+| ------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [api_key](#api_key)                         | Specifies the ngrok API key used to connect to the ngrok API. This is only needed when using the `ngrok api` command and should not be confused with the authtoken.                                  |
+| [authtoken](#authtoken)                     | Specifies the authentication token (authtoken) used to connect to the ngrok service.                                                                                                                 |
+| [connect_interface](#connect_interface)     | Set the specific network interface for ngrok to use. This is only supported on Linux platforms.                                                                                                      |
+| [connect_timeout](#connect_timeout)         | How long to wait when establishing an agent session connection to the ngrok service. The default is 10s.                                                                                             |
+| [console_ui](#console_ui)                   | Enable/disable the console UI                                                                                                                                                                        |
+| [console_ui_color](#console_ui_color)       | Set the background color of the console UI                                                                                                                                                           |
+| [crl_noverify](#crl_noverify)               | Disables verifying Certificate Revocation List                                                                                                                                                       |
+| [dns_resolver_ips](#dns_resolver_ips)       | Consult these DNS servers for tunnel session DNS resolution.                                                                                                                                         |
+| [heartbeat_interval](#heartbeat_interval)   | How often the ngrok agent should heartbeat to the ngrok servers defined as a duration. Default is 10s.                                                                                               |
+| [heartbeat_tolerance](#heartbeat_tolerance) | Reconnect the agent tunnel session if the server does not respond to a heartbeat within this tolerance defined as a duration. Default is 15s.                                                        |
+| [inspect_db_size](#inspect_db_size)         | The size in bytes of the upper limit on memory to allocate to save requests over HTTP tunnels for inspection and replay.                                                                             |
+| [log_level](#log_level)                     | Logging level of detail. In increasing order of verbosity, possible values are: `crit`, `warn`, `error`, `info`, and `debug`.                                                                        |
+| [log_format](#log_format)                   | Format of written log records.                                                                                                                                                                       |
+| [log](#log)                                 | Write logs to this target destination.                                                                                                                                                               |
+| [metadata](#metadata)                       | Opaque, user-supplied string that will be returned as part of the ngrok API response to the [list online sessions](/api/resources/tunnel-sessions) resource for all endpoints started by this agent. |
+| [proxy_url](#proxy_url)                     | URL of an HTTP or SOCKS5 proxy to use for establishing the tunnel connection.                                                                                                                        |
+| [remote_management](#remote_management)     | Set this to `true` to allow the ngrok agent to be remotely managed (stop, restart, update). Defaults to `true`.                                                                                      |
+| [root_cas](#root_cas)                       | The root certificate authorities used to validate the TLS connection to the ngrok server.                                                                                                            |
+| [connect_url](#connect_url)                 | This is the URL of the ngrok server to connect to. You should only set this if you are using a custom ingress URL.                                                                                   |
+| [endpoints](#endpoint-configurations)       | A map of names to endpoint definitions. See [endpoint configurations](/docs/agent/config/v3/#endpoint-configurations) for more details.                                                              |
+| [update_channel](#update_channel)           | The update channel determines the stability of released builds to update to. Use `stable` for all production deployments.                                                                            |
+| [update_check](#update_check)               | This tells the ngrok agent if it should check for updates. Defaults to `true`.                                                                                                                       |
+| [web_addr](#web_addr)                       | Network address to bind on for serving the local web interface and api.                                                                                                                              |
+| [web_allow_hosts](#web_allow_hosts)         | `Host` headers to allow access for on the local web interface and api, can be a combination of IP's, CIDR ranges, and/or hostname suffixes.                                                          |
+
+### `api_key`
+
+This option specifies the API key used to access the ngrok API through the [`ngrok api`](/agent/cli#ngrok-api) command. This is only needed when using the [ngrok API](/api) and not the local ngrok agent API (available at `localhost:4040/api`). You can generate an API Key in the [ngrok Dashboard](https://dashboard.ngrok.com/api) and install it using the `ngrok config add-api-key` command.
+
+##### ngrok.yml specifying an API key
+
+```yaml
+agent:
+  api_key: 24yRd5U3DestCQapJrrVHLOqiAC_7RviwRqpd3wc9dKLujQZN
+```
+
+### `authtoken`
+
+This option specifies the authentication token (sometimes called tunnel credential) used to authenticate this agent when it connects to the ngrok service. After you've created an ngrok account, your dashboard will display the authtoken assigned to your account.
+
+Your authtoken will work on multiple machines if you are just developing. When you want to deploy many agents on many devices, you can generate a unique authtoken for each device in the ngrok Dashboard or via the `ngrok api credentials` command.
+
+##### ngrok.yml specifying an authtoken
+
+```yaml
+agent:
+  authtoken: 4nq9771bPxe8ctg7LKr_2ClH7Y15Zqe4bWLWF9p
+```
+
+### `connect_interface`
+
+Sets the specific network interface that the ngrok agent should use. This is only supported on Linux platforms.
+
+### `connect_timeout`
+
+How long to wait when establishing an agent session connection to the ngrok service. This is specified as a duration, with the default being 10s.
+
+### `console_ui`
+
+This option allows you to enable or disable the console UI that is displayed in your terminal window after starting ngrok.
+
+| Parameter | Default | Description                                                      |
+| --------- | ------- | ---------------------------------------------------------------- |
+| `true`    |         | Enable the console UI                                            |
+| `false`   |         | Disable the console UI                                           |
+| `iftty`   | default | Enable the UI only if standard out is a TTY (not a file or pipe) |
+
+### `console_ui_color`
+
+The command sets the background color when displaying the console UI in the terminal. To choose a color other than black, set the value to transparent and change the background of your terminal window.
+
+| Parameter     | Default | Description                                                 |
+| ------------- | ------- | ----------------------------------------------------------- |
+| `transparent` |         | Don't set a background color when displaying the console UI |
+| `black`       | default | Set the console UI's background to black                    |
+
+### `crl_noverify`
+
+This option will skip verifying with the Certificate Revocation List if set to `true`. This defaults to `false`.
+
+### `dns_resolver_ips`
+
+Consult these DNS servers for tunnel session DNS resolution. By default, the ngrok agent will use the local system DNS servers to resolve.
+
+### `heartbeat_interval`
+
+How often the ngrok agent should heartbeat to the ngrok servers defined as a duration. The default is 10s.
+
+### `heartbeat_tolerance`
+
+Reconnect the agent tunnel session if the server does not respond to a heartbeat within this tolerance defined as a duration. The default is 15s.
+
+### `inspect_db_size`
+
+This is the upper limit in bytes on memory to allocate when saving requests over HTTP endpoints for inspection and reply. The default is 0, which means 50MB.
+
+| Parameter         | Default | Description                                                                                                            |
+| ----------------- | ------- | ---------------------------------------------------------------------------------------------------------------------- |
+| positive integers |         | size in bytes of the upper limit on memory to allocate to save requests over HTTP endpoints for inspection and replay. |
+| `0`               | default | use the default allocation limit, 50MB                                                                                 |
+| `-1`              |         | disable the inspection database; this has the effective behavior of disabling inspection for all tunnels               |
+
+### `log_level`
+
+This is the logging level of detail. In increasing order of verbosity, possible values are: `crit`, `warn`, `error`, `info`, and `debug`.
+
+### `log_format`
+
+This is the format of written log records.
+
+| Parameter | Default | Description                                                                      |
+| --------- | ------- | -------------------------------------------------------------------------------- |
+| `logfmt`  |         | human and machine friendly key/value pairs                                       |
+| `json`    |         | newline-separated JSON objects                                                   |
+| `term`    | default | custom colored human format if standard out is a TTY, otherwise same as `logfmt` |
+
+### `log`
+
+This is the destination where ngrok should write the logs.
+
+| Parameter    | Default | Description                            |
+| ------------ | ------- | -------------------------------------- |
+| `stdout`     |         | write to standard out                  |
+| `stderr`     |         | write to standard error                |
+| `false`      | default | disable logging                        |
+| other values |         | write log records to file path on disk |
+
+```yaml
+agent:
+  log: /var/log/ngrok.log
+```
+
+### `metadata`
+
+This is a user-supplied custom string that will be returned as part of the ngrok API response to the [list online sessions resource](/api/resources/tunnel-sessions) for all endpoints started by this agent. This is a useful mechanism to identify endpoints by your own device or customer identifier. Maximum 4096 characters.
+
+```yaml
+agent:
+  metadata: bad8c1c0-8fce-11e4-b4a9-0800200c9a66
+```
+
+### `proxy_url`
+
+This is the URL of an HTTP or SOCKS5 proxy to use for establishing the tunnel connection. Many HTTP proxies have connection size and duration limits that will cause ngrok to fail. Like many other networking tools, ngrok will also respect the environment variable `http_proxy` and `http_proxy_env` if it is set.
+
+### `remote_management`
+
+Set this to `true` to allow the ngrok agent to be remotely managed (stop, restart, update) via the [ngrok API](/api/resources/tunnel-sessions#restart-tunnel-agent) or the [ngrok Dashboard](https://dashboard.ngrok.com/tunnels/agents). Defaults to `true`.
+
+### `root_cas`
+
+This is the root certificate authorities used to validate the TLS connection to the ngrok server.
+
+| Parameter    | Default | Description                                                                                                                                                                 |
+| ------------ | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `trusted`    | default | use only the trusted certificate root for the ngrok.com tunnel service                                                                                                      |
+| `host`       |         | use the root certificates trusted by the host's operating system. This is helpful for working with machine-in-the-middle (MITM) proxies doing deep packet inspection (DPI). |
+| other values |         | path to a certificate PEM file on disk with certificate authorities to trust                                                                                                |
+
+### `connect_url`
+
+This is the URL of the ngrok server to connect to. You should set this if you are using a custom ingress URL.
+
+### `update_channel`
+
+The update channel determines the stability of released builds to update to. Use 'stable' for all production deployments.
+
+| Parameter  | Default | Description                                                                                               |
+| ---------- | ------- | --------------------------------------------------------------------------------------------------------- |
+| `stable`   | default | These are builds that are ready to be used in production.                                                 |
+| `unstable` |         | update to new nightly builds when available which could be broken. This should not be used in production. |
+| `beta`     |         | update to new beta builds when available which could be broken. This should not be used in production.    |
+
+### `update_check`
+
+This tells the ngrok agent if it should check for updates. Defaults to `true`.
+
+### `web_addr`
+
+This is the network address to bind on for serving the local agent web interface and API.
+
+| Network address  |         | Bind to this network address |
+| ---------------- | ------- | ---------------------------- |
+| `127.0.0.1:4040` | default | default network address      |
+| `false`          |         | disable the web UI           |
+
+### `web_allow_hosts`
+
+These are a list of specifiers for what `Host` headers will be allowed to make requests agains the local agent web interface and API. Any port is stripped off the `Host` header before matching is performed.
+
+| Allow string         |         | Example `Host` headers that would match                                                                                                  |
+| -------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+|                      | default | requests to localhost-bound web interface or API endpoints are checked to have a localhost-like `Host` (localhost, 127.0.0.1, ::1, etc.) |
+| `8.8.8.8`            |         | an IP matches `Host` header (`8.8.8.8`)                                                                                                  |
+| `1:2:3:4:5:6:7:8`    |         | an IPv6 matches `Host` header (`1:2:3:4:5:6:7:8`)                                                                                        |
+| `10.0.0.0/8`         |         | a CIDR range matches a `Host` header that is an IP address in that range (`10.0.0.1 or 10.1.2.3`)                                        |
+| `1:2:3:4:5:6:7:8/16` |         | a CIDR range matches a `Host` header that is an IPv6 address in that range (`1:2:3:4:5:6:7:0`)                                           |
+| `example.com`        |         | a hostname without preceding period will match `Host` header exactly (`example.com`)                                                     |
+| `.example.com`       |         | a hostname with a preceding period `Host` header suffix (`sub.example.com` or `foo.example.com`)                                         |
+
+##### Allow an IP address and a domain as `Host` headers
+
+```yaml
+agent:
+  web_allow_hosts:
+    - 8.8.8.8
+    - example.com
+```

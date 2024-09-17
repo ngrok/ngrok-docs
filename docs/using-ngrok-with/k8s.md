@@ -47,7 +47,7 @@ To started with the ngrok Ingress Controller for Kubernetes:
 1. Using `helm`, add the ngrok repo:
 
    ```bash
-   helm repo add ngrok https://ngrok.github.io/kubernetes-ingress-controller
+   helm repo add ngrok https://charts.ngrok.com
    ```
 
 1. Set your environment variables with your ngrok credentials. Replace `[AUTHTOKEN]` and `[API_KEY]` with your Authtoken and API key from above.
@@ -145,7 +145,7 @@ spec:
 
    **Note:** If you get an error when applying the manifest, double check that you've updated the `NGROK_DOMAIN` value and try again.
 
-1. To confirm the manifest is successfully applied, go to the [ngrok Dashboard](https://dashboard.ngrok.com) and click [Edge Configurations](https://dashboard.ngrok.com/edge-configurations). You should see a new Edge Configuration for your cluster with the name matching your URL (1) — for example: `my-awesome-k8s-cluster.ngrok.app`. Also note that your some of your cluster configurations are presented int the dashboard as annotations (2).
+1. To confirm the manifest is successfully applied, go to the [ngrok Dashboard](https://dashboard.ngrok.com) and click [Edge Configurations](https://dashboard.ngrok.com/cloud-edge/edges). You should see a new Edge Configuration for your cluster with the name matching your URL (1) — for example: `my-awesome-k8s-cluster.ngrok.app`. Also note that your some of your cluster configurations are presented int the dashboard as annotations (2).
 
    ![ingress created](/img/howto/ingress-controller/k8s-ingress-app-1.png)
 
@@ -261,7 +261,7 @@ modules:
 
 1. To confirm the circuit breaking configuration is successfully applied:
 
-   1. Go to [ngrok Dashboard](https://dashboard.ngrok.com) > [Edge Configurations](https://dashboard.ngrok.com/edge-configurations).
+   1. Go to [ngrok Dashboard](https://dashboard.ngrok.com) > [Edge Configurations](https://dashboard.ngrok.com/cloud-edge/edges).
    1. Click the edge configuration that matches your URL.
    1. On the left hand side, click Circuit Breaker.
    1. Notice how the circuit breaker configuration matches your manifest file.
