@@ -57,7 +57,7 @@ Address: 203.0.113.94
 Once your DNS record is in place you can create a tunnel using your new domain. Try running:
 
 ```bash
-ngrok http --url=foo.example.com 8080
+ngrok http --domain=foo.example.com 8080
 ```
 
 and presuming you're actually running an application on port 8080 then making an HTTP request to `https://foo.example.com` should return a response from your app.
