@@ -1,8 +1,9 @@
 ---
-title: Securing your applications with OAuth 2.0
+title: Secure your applications with OAuth 2.0
 ---
 
-# Overview
+
+# Secure your applications with OAuth 2.0
 
 Ngrok simplifies networking by creating secure ingress to any app, device, or service with a single command or line of code. It's an ingress-as-a-service platform that decouples ingress from infrastructure, removing the hassle of getting code online without provisioning proxies or VPNs.
 
