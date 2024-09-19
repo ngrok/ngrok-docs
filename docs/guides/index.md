@@ -27,11 +27,12 @@ Here you will find a set of guides to help you with common (and not so common) t
 | [Webhook Testing](webhook-testing)     | Learn how to use ngrok for webhook testing                                                  |
 
 ## Other Guides
+
 | Name                                                                                                            | Description                                                                                 |
-|-----------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------|
+| --------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
 | [Free Plan Limits](other-guides/limits.md)                                                                      | Learn about the resources available on our free seat-based plan                             |
 | [Licensing](other-guides/licensing.md)                                                                          | Explore frequently asked questions about ngrok licensing and plan limits                    |
-| [Upgrading to Agent v3](other-guides/upgrade-v2-v3.md)                                                          | Learn about new features and breaking changes when upgrading from ngrok Agent v2 to v3 |
+| [Upgrading to Agent v3](other-guides/upgrade-v2-v3.md)                                                          | Learn about new features and breaking changes when upgrading from ngrok Agent v2 to v3      |
 | [Secure Developer Productivity](other-guides/security-dev-productivity)                                         | Learn best security practices securing your ngrok account to enhance developer productivity |
 | [Securing ngrok](other-guides/securing-your-tunnels.md)                                                         | Explore best practices for securing your ngrok tunnels                                      |
 | [Corporate Firewall](other-guides/running-behind-firewalls.md)                                                  | Run ngrok behing your corporate firewall                                                    |
@@ -40,5 +41,4 @@ Here you will find a set of guides to help you with common (and not so common) t
 | [Load Balancing with ngrok Cloud Edges](other-guides/load-balancing-with-cloud-edges.md)                        | Configure load balancing with ngrok cloud Edges                                             |
 | [Round Robin Load Balancing](other-guides/hot-to-round-robin-load-balance-with-ngrok-cloud-edges.mdx)           | Configure round robin load balancing with ngrok cloud Edges                                 |
 | [Weighted Round Robin Load Balancing](other-guides/how-to-do-weighted-load-balancing-with-ngrok-cloud-edges.md) | Configure weighted load balancing with ngrok cloud Edges                                    |
-| [Using Labels with ngrok](other-guides/using-labels-within-ngrok.md)                                            | Learn how to ngrok Labels |
-
+| [Using Labels with ngrok](other-guides/using-labels-within-ngrok.md)                                            | Learn how to ngrok Labels                                                                   |
