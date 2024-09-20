@@ -11,16 +11,16 @@ Here you will find a set of guides to help you with common (and not so common) t
 ## Production Use Cases
 
 | Name                                                   | Description                                        |
-|:-------------------------------------------------------|:---------------------------------------------------|
+| :----------------------------------------------------- | :------------------------------------------------- |
 | [Device Gateway](/guides/device-gateway)               | Use ngrok as a device gateway                      |
 | [Identity-Aware Proxy](identity-aware-proxy)           | Configure ngrok for use as an identity-aware proxy |
 | [Site-to-Site Connectivity](site-to-site-connectivity) | Connect to remote sites with ngrok                 |
 
 ## Development Use Cases
 
-| Name                                    | Description                                                                     |
-|:----------------------------------------|:--------------------------------------------------------------------------------|
-| [Developer Preview](developer-preview)  | Use ngrok to preview apps and services running in your development environment  |
+| Name                                   | Description                                                                    |
+| :------------------------------------- | :----------------------------------------------------------------------------- |
+| [Developer Preview](developer-preview) | Use ngrok to preview apps and services running in your development environment |
 
 ## Other Guides
 
@@ -38,4 +38,3 @@ Here you will find a set of guides to help you with common (and not so common) t
 | [Round Robin Load Balancing](other-guides/how-to-round-robin-load-balance-with-ngrok-cloud-edges.mdx)            | Round robin load balance with ngrok cloud Edges                                                  |
 | [Weighted Round Robin Load Balancing](other-guides/how-to-do-weighted-load-balancing-with-ngrok-cloud-edges.mdx) | Perform weighted load balancing with ngrok cloud Edges                                           |
 | [Using Labels with ngrok](other-guides/using-labels-within-ngrok.md)                                             | Utilize to ngrok Labels                                                                          |
-
