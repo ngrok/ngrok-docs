@@ -53,7 +53,7 @@ Your count of resources against a limit refreshes on the first day of each month
 
 ## How it works
 
-ngrok’s plans are designed to suit the use cases of individuals, teams, and organizations using ngrok to create secure ingress for development and production workloads. Each license at ngrok roughly represents a developer using an ngrok agent for building an application. It includes the ability to run an ngrok agent (or use the agent SDKs or Kubernetes Ingress Controller) with a custom domain or TCP Address.
+ngrok’s plans are designed to suit the use cases of individuals, teams, and organizations using ngrok to create secure ingress for development and production workloads. Each license at ngrok roughly represents a developer using an ngrok agent for building an application. It includes the ability to run an ngrok agent (or use the agent SDKs or ngrok Kubernetes Operator) with a custom domain or TCP Address.
 
 ## What's the difference between the usage-based and seat-based plans?
 
@@ -93,7 +93,7 @@ Features included for free on all plans
 - Web Inspection Agent
 - Replay Requests
 - ngrok SDKs
-- ngrok Kubernetes Ingress Controller
+- ngrok Kubernetes Operator
 - Remote Agent Management
 - Circuit Breaking
 - Automatic Certificates and Encryption

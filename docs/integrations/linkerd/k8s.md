@@ -1,5 +1,5 @@
 ---
-description: Set up a local cluster to demonstrate how to use the ngrok Ingress Controller with Linkerd.
+description: Set up a local cluster to demonstrate how to use the ngrok Kubernetes Operator with Linkerd.
 ---
 
 # Ingress to a microservices-based application connected via Linkerd's service mesh
@@ -8,21 +8,21 @@ description: Set up a local cluster to demonstrate how to use the ngrok Ingress 
 
 :::tip TL;DR
 
-To use the ngrok Ingress Controller for Kubernetes with Linkerd in a local cluster:
+To use the ngrok Kubernetes Operator with Linkerd in a local cluster:
 
 1. [Set up a local testing cluster](#set-up-a-local-development-cluster)
 1. [Deploy Linkerd's service mesh to your cluster](#deploy-linkerds-service-mesh)
-1. [Install the ngrok Ingress Controller](#install-the-ngrok-ingress-controller)
+1. [Install the ngrok Kubernetes Operator](#install-the-ngrok-ingress-controller)
 1. [Deploy an example microservices-based application](#deploy-an-example-microservices-based-application)
 1. [Add Linkerd's dashboard and verify mTLS](#add-linkerds-dashboard-and-verify-mtls)
 
 :::
 
-The ngrok Ingress Controller for Kubernetes is the official controller for adding secure public ingress and middleware execution to your Kubernetes applications with ngrok's Cloud Edge. With ngrok, you can manage and secure traffic to your applications at every stage of the development lifecycle while also benefiting from simpler configurations, security, and edge acceleration.
+The ngrok Kubernetes Operator is the official controller for adding secure public ingress and middleware execution to your Kubernetes applications with ngrok's Cloud Edge. With ngrok, you can manage and secure traffic to your applications at every stage of the development lifecycle while also benefiting from simpler configurations, security, and edge acceleration.
 
 Linkerd is an open source [service mesh](https://linkerd.io/what-is-a-service-mesh/#), which is a set of network proxies that handle communications between microservices to add in observability, security, and reliability at the platform level, rather than the application level, of your cloud native infrastructure. For example, Linkerd enables mutual TLS (mTLS) between microservices, which ensures confidentiality (encryption) and authenticity (identity validation) on both sides of the connection. After you deploy Linkerd's control plane, you can then install extensions for additional functionality, like a dashboard for debugging errors, exploring workloads, and more.
 
-When integrated, the ngrok Ingress Controller and Linkerd abstract complexity away from your entire networking stack (both internal and external traffic), while giving you access to additional monitoring features and more resiliency.
+When integrated, the ngrok Kubernetes Operator and Linkerd abstract complexity away from your entire networking stack (both internal and external traffic), while giving you access to additional monitoring features and more resiliency.
 
 Using this guide, you will launch a local cluster (or use an existing local/remote cluster) to mesh a microservices-based application with Linkerd, and leverage ngrok to route public traffic through an encrypted tunnel to your cluster.
 
@@ -114,10 +114,10 @@ Using this guide, you will launch a local cluster (or use an existing local/remo
 
    :::
 
-## **Step 3**: Install the ngrok Ingress Controller {#install-the-ngrok-ingress-controller}
+## **Step 3**: Install the ngrok Kubernetes Operator {#install-the-ngrok-ingress-controller}
 
 Even though you have no applications currently running on your local cluster, you can configure and deploy the [ngrok Kubernetes Ingress
-Controller](https://github.com/ngrok/kubernetes-ingress-controller) to simplify how you'll enable ingress in the future.
+Controller](https://github.com/ngrok/ngrok-operator) to simplify how you'll enable ingress in the future.
 
 1. Add the ngrok Helm repository if you haven't already.
 
@@ -125,7 +125,7 @@ Controller](https://github.com/ngrok/kubernetes-ingress-controller) to simplify 
    helm repo add ngrok https://charts.ngrok.com
    ```
 
-1. Set up the `AUTHTOKEN` and `API_KEY` exports, which allows Helm to install the Ingress Controller using your ngrok credentials. Find your `AUTHTOKEN` under [**Your Authtoken**](https://dashboard.ngrok.com/get-started/your-authtoken) in the ngrok dashboard.
+1. Set up the `AUTHTOKEN` and `API_KEY` exports, which allows Helm to install the Operator using your ngrok credentials. Find your `AUTHTOKEN` under [**Your Authtoken**](https://dashboard.ngrok.com/get-started/your-authtoken) in the ngrok dashboard.
 
    To create a new API key, navigate to the [**API** section](https://dashboard.ngrok.com/api) of the ngrok dashboard, click the **New API Key** button, change the description or owner, and click the **Add API Key** button. Copy the API key token shown in the modal window before closing it, as the ngrok dashboard will not show you the token again.
 
@@ -134,7 +134,7 @@ Controller](https://github.com/ngrok/kubernetes-ingress-controller) to simplify 
    export NGROK_API_KEY=[YOUR-API-KEY]
    ```
 
-1. Install the ngrok Ingress Controller with Helm under a new `ngrok-ingress-controller` namespace.
+1. Install the ngrok Kubernetes Operator with Helm under a new `ngrok-ingress-controller` namespace.
 
    ```bash
    helm install ngrok-ingress-controller ngrok/kubernetes-ingress-controller \
@@ -144,7 +144,7 @@ Controller](https://github.com/ngrok/kubernetes-ingress-controller) to simplify 
      --set credentials.authtoken=$NGROK_AUTHTOKEN
    ```
 
-1. Verify you have installed the ngrok Ingress Controller successfully and that pods are healthy.
+1. Verify you have installed the ngrok Kubernetes Operator successfully and that pods are healthy.
 
    ```bash
    kubectl get pods -l 'app.kubernetes.io/name=kubernetes-ingress-controller' --namespace ngrok-ingress-controller
@@ -155,7 +155,7 @@ Controller](https://github.com/ngrok/kubernetes-ingress-controller) to simplify 
 
 ## **Step 4**: Deploy an example microservices-based application {#deploy-an-example-microservices-based-application}
 
-To demonstrate how Linkerd and the ngrok Ingress Controller integrate to add additional observability, security, and reliability into your cluster, you'll deploy the [Emojivoto](https://github.com/BuoyantIO/emojivoto) demo application, which was developed by Buoyant, the company that originally developed Linkerd.
+To demonstrate how Linkerd and the ngrok Kubernetes Operator integrate to add additional observability, security, and reliability into your cluster, you'll deploy the [Emojivoto](https://github.com/BuoyantIO/emojivoto) demo application, which was developed by Buoyant, the company that originally developed Linkerd.
 
 1. Create an ngrok static subdomain for ingress if you don't have one already. Navigate to the [**Domains**
    section](https://dashboard.ngrok.com/cloud-edge/domains) of the ngrok dashboard and click **Create Domain** or **New
@@ -186,7 +186,7 @@ To demonstrate how Linkerd and the ngrok Ingress Controller integrate to add add
    Status check results are √
    ```
 
-1. Create a new `emojivoto-ingress.yml` file and add the [following YAML content](https://linkerd.io/2.14/tasks/using-ingress/#ngrok), which defines the ngrok Ingress Controller for routing traffic arriving on your `NGROK_DOMAIN` to the `web-svc` deployment, which you created when deploying Emojivoto.
+1. Create a new `emojivoto-ingress.yml` file and add the [following YAML content](https://linkerd.io/2.14/tasks/using-ingress/#ngrok), which defines the ngrok Kubernetes Operator for routing traffic arriving on your `NGROK_DOMAIN` to the `web-svc` deployment, which you created when deploying Emojivoto.
 
    :::tip
 
@@ -223,7 +223,7 @@ To demonstrate how Linkerd and the ngrok Ingress Controller integrate to add add
    kubectl apply -f emojivoto-ingress.yaml
    ```
 
-   Give your cluster a few moments to launch the necessary resources and for ngrok's Cloud Edge to pick up the new tunnel created by the ngrok Ingress Controller.
+   Give your cluster a few moments to launch the necessary resources and for ngrok's Cloud Edge to pick up the new tunnel created by the ngrok Kubernetes Operator.
 
    :::tip
 
@@ -269,7 +269,7 @@ Given that one of the key benefits of a service mesh is increased observability,
 
 ## What's next?
 
-You've now integrated a demo microservices application with Linkerd's service mesh and ngrok's Kubernetes Ingress Controller to add multiple new layers of security and reliability without having to worry about configuring middleware, network interfaces, [mTLS](https://linkerd.io/2.14/features/automatic-mtls/), or deploying new [monitoring services](https://linkerd.io/2.14/features/telemetry/) for observing the external behavior of your code.
+You've now integrated a demo microservices application with Linkerd's service mesh and ngrok's Kubernetes Operator to add multiple new layers of security and reliability without having to worry about configuring middleware, network interfaces, [mTLS](https://linkerd.io/2.14/features/automatic-mtls/), or deploying new [monitoring services](https://linkerd.io/2.14/features/telemetry/) for observing the external behavior of your code.
 
 After deploying this local demo, you have a few options for moving forward.
 
@@ -288,10 +288,10 @@ Then remove the Linkerd CLI from your local workstation:
 rm -rf $HOME/.linkerd2
 ```
 
-### Extend your ngrok Ingress Controller and Linkerd integration
+### Extend your ngrok Kubernetes Operator and Linkerd integration
 
 To bring this integration to a production-grade Kubernetes environment and a real-world application, you will want to explore [installing Linkerd with Helm](https://linkerd.io/2.14/tasks/install-helm/) and Buoyant's official [Linkerd Production Handbook](https://docs.buoyant.io/runbook/getting-started/).
 
-Even in more complex scenarios, you can follow the same procedures listed above to install the ngrok Ingress Controller and configure an Ingress service, letting ngrok's Cloud Edge handle routing and middleware execution for simplicity, global load balancing, and automatic encryption.
+Even in more complex scenarios, you can follow the same procedures listed above to install the ngrok Kubernetes Operator and configure an Ingress service, letting ngrok's Cloud Edge handle routing and middleware execution for simplicity, global load balancing, and automatic encryption.
 
-Learn more about the ngrok Ingress Controller, or contribute to its ongoing development, by checking out the [GitHub repository](https://github.com/ngrok/kubernetes-ingress-controller) and the [project-specific documentation](https://github.com/ngrok/kubernetes-ingress-controller/tree/main/docs).
+Learn more about the ngrok Kubernetes Operator, or contribute to its ongoing development, by checking out the [GitHub repository](https://github.com/ngrok/ngrok-operator) and the [project-specific documentation](https://github.com/ngrok/ngrok-operator/tree/main/docs).
