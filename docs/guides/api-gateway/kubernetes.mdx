@@ -15,9 +15,9 @@ With this guide, you'll learn:
 - How to install the [ngrok Kubernetes Operator](/docs/k8s/index.mdx) as an API
   gateway, connecting your API service to the global, DDoS-protected [ngrok network](/docs/network-edge/index.mdx).
 - The fundamentals of configuring your `GatewayClass`, `Gateway`, and
-`HTTPRoute`.
+  `HTTPRoute`.
 - How to configure rate limiting as an example of ngrok's powerful Traffic
-Policy engine.
+  Policy engine.
 
 :::note
 This guide leverages our [demo CI/CD
@@ -38,7 +38,7 @@ the required changes.
 - [kubectl](https://kubernetes.io/docs/tasks/tools/) installed locally.
 - [Helm 3.0.0+](https://helm.sh/docs/intro/install/) installed locally.
 
-## Why use the K8s Gateway API for your API gateway? 
+## Why use the K8s Gateway API for your API gateway?
 
 As of writing, Kubernetes has two APIs for handling ingress from external
 traffic into your cluster's internal network: the original [Ingress
@@ -51,17 +51,17 @@ supports both mechanisms. While we encourage you to explore both, we recommend
 the Gateway API based on the following:
 
 - The [Ingress
-API](https://kubernetes.io/docs/concepts/services-networking/ingress/), which
-Ingress Controllers utilize, is frozen in new versions of K8s and no longer
-receives updates. Only the Gateway API is being actively improved.
+  API](https://kubernetes.io/docs/concepts/services-networking/ingress/), which
+  Ingress Controllers utilize, is frozen in new versions of K8s and no longer
+  receives updates. Only the Gateway API is being actively improved.
 - While Ingress Controller is designed purely for ingress, the Gateway API is
-also designed for dynamic infrastructure provisioning and advanced traffic routing.
+  also designed for dynamic infrastructure provisioning and advanced traffic routing.
 - The Gateway API is role-oriented, allowing DevOps/platform/infrastructure
-engineering teams to control clusters, policies, and permissions centrally,
-while still allowing API developers to self-service endpoints to their services
-with route objects.
+  engineering teams to control clusters, policies, and permissions centrally,
+  while still allowing API developers to self-service endpoints to their services
+  with route objects.
 - The Gateway API provides a common interface to K8s networking, removing
-reliance on vendor-specific configurations.
+  reliance on vendor-specific configurations.
 - Many developers can integrate their APIs or apps onto a single `GatewayClass`
   or `Gateway`, using `HTTPRoute`s, without affecting others.
 
@@ -85,7 +85,7 @@ branded domain](/docs/guides/how-to-set-up-a-custom-domain.md).
 If you have an API service you'd like to deploy using this guide, you should be
 able to follow the steps below to configure ngrok as an API gateway&mdash;just
 be aware you'll need to edit the example configurations given below for the
-ngrok Kubernetes Operator. 
+ngrok Kubernetes Operator.
 :::
 
 If you're just exploring ngrok as an API gateway for your Kubernetes-hosted
@@ -139,12 +139,12 @@ kubectl apply -f https://github.com/kubernetes-sigs/gateway-api/releases/downloa
 Set up a few variables to simplify applying the ngrok Kubernetes Operator.
 
 - `{K8S_NAMESPACE}`: The namespace where you would like to apply the Operator.
-This can be any namespace you like, but if you're following along with the demo
-API, you can set this to `default`.
+  This can be any namespace you like, but if you're following along with the demo
+  API, you can set this to `default`.
 - `{AUTHTOKEN}`: Your ngrok authtoken, which you can find in your [ngrok
-dashboard](https://dashboard.ngrok.com/get-started/your-authtoken).
+  dashboard](https://dashboard.ngrok.com/get-started/your-authtoken).
 - `{API_KEY}`: An API key to associate with your deployment. You can [create an
-API key](https://dashboard.ngrok.com/api-keys) in your ngrok dashboard.
+  API key](https://dashboard.ngrok.com/api-keys) in your ngrok dashboard.
 
 ```bash
 export NAMESPACE={K8S_NAMESPACE}
@@ -173,13 +173,13 @@ For ngrok to operate as your API gateway, using the native Gateway API, you need
 to configure the following:
 
 - A `GatewayClass` that uses the controller from the ngrok Kubernetes Operator
-project.
+  project.
 - A `Gateway` with at least one `listener` attached to your [reserved domain in
   ngrok](#reserve-domain).
 - At least one `HTTPRoute`, with your `Gateway` as its parent, that matches
-paths to existing services and their `port`. If you're using the demo CI/CD
-deployment, this equates to matching the `/build` path with the `build-service`
-service you created before, which runs on port `80`.
+  paths to existing services and their `port`. If you're using the demo CI/CD
+  deployment, this equates to matching the `/build` path with the `build-service`
+  service you created before, which runs on port `80`.
 
 ### Create and customize the Kubernetes configuration
 
@@ -270,7 +270,7 @@ The configuration can be broken up into three parts: configuration of the
 one by one.
 
 The `GatewayClass` defines a common configuration for gateways and manages them
-with a controller. In the above configuration, you specify *which* controller
+with a controller. In the above configuration, you specify _which_ controller
 you want to manage the gateways&mdash;`ngrok.com/gateway-controller`&mdash;which
 is part of the ngrok Kubernetes Operator.
 
@@ -426,7 +426,7 @@ ngrok's [Traffic Policy](/docs/http/traffic-policy/index.mdx) engine allows you
 to conditionally act upon traffic as it arrives and departs your API gateway. In
 a Kubernetes context, Traffic Policy
 builds on top of the existing YAML manifests you already use to declare your
-deployments and services. 
+deployments and services.
 
 When the ngrok Kubernetes Operator initiates in your cluster, and your
 `HTTPRoute` configuration contains one or more `filter`
@@ -467,12 +467,12 @@ spec:
 This CRD instantiates a rate limiting rule with the following properties:
 
 - Via the `expression`, it only applies to requests with the `POST` or `PUT`
-HTTP method&mdash;all others, like `GET`, are unaffected.
+  HTTP method&mdash;all others, like `GET`, are unaffected.
 - Allows for a maximum of `10` requests in a given `60s` window, both of which
-are configurable to your needs.
+  are configurable to your needs.
 - Uses the client's IP address (via the [`conn.client_ip`
-variable](/docs/http/traffic-policy/expressions/variables.mdx#connclient_ip))
-to track usage against your capacity limit.
+  variable](/docs/http/traffic-policy/expressions/variables.mdx#connclient_ip))
+  to track usage against your capacity limit.
 
 Check out the [Traffic Policy (for HTTP tunnels)
 documentation](/docs/http/traffic-policy/index.mdx) for a complete view
@@ -573,14 +573,13 @@ internet, backed by the power of ngrok operating as an API gateway.
 For additional details about configuring the ngrok Kubernetes Operator:
 
 - Read the [getting started with the Gateway
-API](/docs/k8s/getting-started-gwapi.mdx) guide.
+  API](/docs/k8s/getting-started-gwapi.mdx) guide.
 
 To expand your usage of Traffic Policy rules:
 
 - Learn about other ways to configure [Traffic Policy with the Gateway
-API](/docs/k8s/user-guide.mdx#gateway-composition).
+  API](/docs/k8s/user-guide.mdx#gateway-composition).
 - Explore other [Traffic Policy actions](/docs/http/traffic-policy/actions/index.mdx)
-  you can enable on your API gateway, like [adding headers](/docs/http/traffic-policy/actions/add-headers.mdx), [URL rewrites](/docs/http/traffic-policy/actions/url-rewrite.mdx), [logging](/docs/http/traffic-policy/actions/log.mdx), and more. 
+  you can enable on your API gateway, like [adding headers](/docs/http/traffic-policy/actions/add-headers.mdx), [URL rewrites](/docs/http/traffic-policy/actions/url-rewrite.mdx), [logging](/docs/http/traffic-policy/actions/log.mdx), and more.
 
 Finally, you can expand your usage of ngrok as an API gateway to better match your Git-based workflows and using version-controlled, declarative, and repeatable configurations with a [continuous deployment mechanism like Argo CD](/docs/integrations/argocd/apiops.mdx).
-
