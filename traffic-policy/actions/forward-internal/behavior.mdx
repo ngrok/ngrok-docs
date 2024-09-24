@@ -1,6 +1,22 @@
 ## Behavior
 
-### Managing Fallback Behavior (`on_error`)
+When the Forward Internal action executes, it will look up the specified endpoint and relay any incoming traffic. The endpoint being forwarded to will behave as if the traffic was sent directly to it and execute all of the actions in its associated Traffic Policy.
+
+If the forwarding is successful, any response will be returned to the forwarding endpoint, no further actions in the Traffic Policy will be executed, and no traffic will be sent to the upstream.
+
+If the forwarding is unsuccessful because the specified endpoint doesn't exist, is offline, or encounters another error the action will return an error and follow the behavior that is specified by `on_error` (see [Managing Fallback Behavior](#on-error)).
+
+:::note
+Even if you do not plan to send traffic to a local service when creating a forwarding endpoint, you will still need to specify a local port. This port will traffic if an expression causes only a subset of traffic to be forwarded or if there is an error forwarding traffic and `on_error` is set to `continue` without a subsequent terminating action.
+:::
+
+### HTTP Headers
+
+When forwarding HTTP requests to another endpoint, the `Host` header will be set to the hostname of the forwarding endpoint. For example, if `example.ngrok.io` is forwarding HTTP requests to `example.private`, the `Host` header received by the upstream will be `example.ngrok.io`.
+
+The action will also set the `X-Forwarded-For`, `X-Forwarded-Host`, and `X-Forwarded-Proto` headers when making the upstream request. See [Upstream Headers](/docs/http#upstream-headers) for more information.
+
+### Managing Fallback Behavior (`on_error`) {#on-error}
 
 If `on_error` is set to `halt` (default) and the action encounters an error when forwarding traffic the Traffic Policy chain will halt and no further actions will be executed. For example, if you have a `log` action after the `forward-internal` action and the `url` specified isn't an online endpoint, the `log` action will not be run and the error will be returned.
 
