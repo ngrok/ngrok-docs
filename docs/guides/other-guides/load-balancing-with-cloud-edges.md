@@ -41,4 +41,4 @@ That's all there is to it. You now have multiple ngrok agents load balancing tra
 - [HTTPS Edges](/http/#edges)
 - [HTTPS Edge Routes](/http/#routes)
 - [HTTPS Edge Modules](/http/#modules)
-- [Securing your ngrok Tunnels](/guides/securing-your-tunnels)
+- [Securing your ngrok Tunnels](/guides/other-guides/securing-your-tunnels)
