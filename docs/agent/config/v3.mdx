@@ -40,6 +40,33 @@ The top-level `agent` field is **required**. The agent field allows you to modif
 
 ### Agent Configuration Options
 
+| Name                                        | Description                                                                                                                                                                                          |
+| ------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [api_key](#api_key)                         | The API key to be used when making requests through the `ngrok api` command.                                                                                                                         |
+| [authtoken](#authtoken)                     | The authentication token used to authenticate this agent when it connects to the ngrok service.                                                                                                      |
+| [connect_interface](#connect_interface)     | Set the specific network interface for ngrok to use. This is only supported on Linux platforms.                                                                                                      |
+| [connect_timeout](#connect_timeout)         | How long to wait when establishing an agent session connection to the ngrok service. The default is 10s.                                                                                             |
+| [console_ui](#console_ui)                   | Enable/disable the console UI                                                                                                                                                                        |
+| [console_ui_color](#console_ui_color)       | Set the background color of the console UI                                                                                                                                                           |
+| [crl_noverify](#crl_noverify)               | Disables verifying Certificate Revocation List                                                                                                                                                       |
+| [dns_resolver_ips](#dns_resolver_ips)       | Consult these DNS servers for tunnel session DNS resolution.                                                                                                                                         |
+| [heartbeat_interval](#heartbeat_interval)   | How often the ngrok agent should heartbeat to the ngrok servers defined as a duration. Default is 10s.                                                                                               |
+| [heartbeat_tolerance](#heartbeat_tolerance) | Reconnect the agent tunnel session if the server does not respond to a heartbeat within this tolerance defined as a duration. Default is 15s.                                                        |
+| [inspect_db_size](#inspect_db_size)         | The size in bytes of the upper limit on memory to allocate to save requests over HTTP tunnels for inspection and replay.                                                                             |
+| [log_level](#log_level)                     | Logging level of detail. In increasing order of verbosity, possible values are: `crit`, `warn`, `error`, `info`, and `debug`.                                                                        |
+| [log_format](#log_format)                   | Format of written log records.                                                                                                                                                                       |
+| [log](#log)                                 | Write logs to this target destination.                                                                                                                                                               |
+| [metadata](#metadata)                       | Opaque, user-supplied string that will be returned as part of the ngrok API response to the [list online sessions](/api/resources/tunnel-sessions) resource for all endpoints started by this agent. |
+| [proxy_url](#proxy_url)                     | URL of an HTTP or SOCKS5 proxy to use for establishing the tunnel connection.                                                                                                                        |
+| [remote_management](#remote_management)     | Set this to `true` to allow the ngrok agent to be remotely managed (stop, restart, update). Defaults to `true`.                                                                                      |
+| [root_cas](#root_cas)                       | The root certificate authorities used to validate the TLS connection to the ngrok server.                                                                                                            |
+| [connect_url](#connect_url)                 | This is the URL of the ngrok server to connect to. You should only set this if you are using a custom ingress URL.                                                                                   |
+| [endpoints](#endpoint-configurations)       | A map of names to endpoint definitions. See [endpoint configurations](/docs/agent/config/v3/#endpoint-configurations) for more details.                                                              |
+| [update_channel](#update_channel)           | The update channel determines the stability of released builds to update to. Use `stable` for all production deployments.                                                                            |
+| [update_check](#update_check)               | This tells the ngrok agent if it should check for updates. Defaults to `true`.                                                                                                                       |
+| [web_addr](#web_addr)                       | Network address to bind on for serving the local web interface and api.                                                                                                                              |
+| [web_allow_hosts](#web_allow_hosts)         | `Host` headers to allow access for on the local web interface and api, can be a combination of IP's, CIDR ranges, and/or hostname suffixes.                                                          |
+
 #### `authtoken`
 
 The authentication token used to authenticate this agent when it connects to the ngrok service. You can obtain your default authtoken through the [ngrok Dashboard](https://dashboard.ngrok.com/get-started/your-authtoken).
@@ -275,6 +302,89 @@ ngrok start --all
 ```
 
 ### Endpoint Configuration Options
+
+| Name                                | Required | Protocols | Description                                                                    |
+| ----------------------------------- | -------- | --------- | ------------------------------------------------------------------------------ |
+| [`name`](#name)                     | Required |           | A unique name for this endpoint's configuration.                               |
+| [`url`](#url)                       | Required |           | The address you would like to use to forward traffic to your upstream service. |
+| [`metadata`](#metadata-1)           |          |           | An arbitrary string of user-defined metadata for this endpoint.                |
+| [`description`](#description)       |          |           | An arbitrary user-defined description about this endpoint.                     |
+| [`traffic_policy`](#traffic-policy) |          |           |
+
+| []
+
+#### `name`
+
+**Required.** String. A unique name for this endpoint's configuration.
+
+This is the value you use when running the `ngrok start <name>` command.
+
+##### Example
+
+```yaml {3}
+# ...
+endpoints:
+  - name: example
+# ...
+```
+
+#### `url`
+
+String. The address you would like to use to forward traffic to your upstream service.
+
+##### Accepted formats:
+
+- **Domain** - `example.org`
+  - When using the _domain_ format you are only defining the domain. The scheme and port will be inferred.
+- **Origin** - `https://example.ngrok.app` _or_ `https://example.ngrok.app:443`
+  - When using the _origin_ format you are defining the protocol, domain and port.
+- **Scheme (shorthand)** - `https://`
+  - When using _scheme_ you are defining the protocol and will receive back a randomly generated ngrok domain.
+
+##### Example
+
+```yaml {4}
+# ...
+endpoints:
+  - name: example
+    url: https://example.ngrok.app
+# ...
+```
+
+#### `metadata`
+
+String. An arbitrary string of user-defined metadata for this endpoint. This value will appear on the endpoint object in the ngrok API.
+
+##### Example
+
+```yaml {5}
+# ...
+endpoints:
+  - name: example
+    url: https://example.ngrok.app
+    metadata: '{ "id": "example-app" }'
+# ...
+```
+
+#### `description`
+
+String. An arbitrary user-defined description about this endpoint. This value will appear on the endpoint object in the ngrok API.
+
+##### Example
+
+```yaml {6}
+# ...
+endpoints:
+  - name: example
+    url: https://example.ngrok.app
+    metadata: '{ "id": "example-app" }'
+    description: "our example application"
+# ...
+```
+
+#### `traffic_policy`
+
+Object. A traffic policy configuration in YAML format.
 
 ## Example Configuration Files
 
