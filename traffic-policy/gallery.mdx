@@ -3,7 +3,7 @@ import ConfigExample from "/src/components/ConfigExample.tsx";
 export const Deny = () => (
 	<ConfigExample
 		config={{
-			inbound: [
+			on_http_connect: [
 				{
 					expressions: ["req.method != 'GET'"],
 					actions: [{ type: "deny" }],
@@ -16,7 +16,7 @@ export const Deny = () => (
 export const CustomResponse = () => (
 	<ConfigExample
 		config={{
-			inbound: [
+			on_http_connect: [
 				{
 					expressions: ["!('authorization' in req.headers)"],
 					actions: [
@@ -37,7 +37,7 @@ export const CustomResponse = () => (
 export const RateLimit = () => (
 	<ConfigExample
 		config={{
-			inbound: [
+			on_http_connect: [
 				{
 					expressions: ["req.url.contains('/api/specific_endpoint')"],
 					actions: [
@@ -61,7 +61,7 @@ export const RateLimit = () => (
 export const UserAgentFilter = () => (
 	<ConfigExample
 		config={{
-			inbound: [
+			on_http_connect: [
 				{
 					expressions: [
 						"'user-agent' in req.headers",
@@ -85,7 +85,7 @@ export const UserAgentFilter = () => (
 export const AddRobotsTxt = () => (
 	<ConfigExample
 		config={{
-			inbound: [
+			on_http_connect: [
 				{
 					name: "Add `robots.txt` to deny all bots and crawlers",
 					expressions: ["req.url.contains('/robots.txt')"],
@@ -110,7 +110,7 @@ export const AddRobotsTxt = () => (
 export const AddRobotsTxtSpecific = () => (
 	<ConfigExample
 		config={{
-			inbound: [
+			on_http_request: [
 				{
 					name: "Add `robots.txt` to deny specific bots and crawlers",
 					expressions: ["req.url.contains('/robots.txt')"],
@@ -135,7 +135,7 @@ export const AddRobotsTxtSpecific = () => (
 export const BlockSpecificBots = () => (
 	<ConfigExample
 		config={{
-			inbound: [
+			on_http_request: [
 				{
 					name: "Block specific bots by user agent",
 					expressions: [
@@ -158,7 +158,7 @@ export const BlockSpecificBots = () => (
 export const JWTsRateLimiting = () => (
 	<ConfigExample
 		config={{
-			inbound: [
+			on_http_request: [
 				{
 					expressions: [],
 					name: "Add JWT authentication and rate limiting",
@@ -215,7 +215,7 @@ export const JWTsRateLimiting = () => (
 					],
 				},
 			],
-			outbound: [],
+			on_http_response: [],
 		}}
 	/>
 );
@@ -223,7 +223,7 @@ export const JWTsRateLimiting = () => (
 export const RateLimitAuthentication = () => (
 	<ConfigExample
 		config={{
-			inbound: [
+			on_http_request: [
 				{
 					expressions: ["!('Authorization' in req.Headers)"],
 					name: "Unauthorized rate limiting tier",
@@ -257,7 +257,7 @@ export const RateLimitAuthentication = () => (
 					],
 				},
 			],
-			outbound: [],
+			on_http_response: [],
 		}}
 	/>
 );
@@ -265,7 +265,7 @@ export const RateLimitAuthentication = () => (
 export const BlockCountries = () => (
 	<ConfigExample
 		config={{
-			inbound: [
+			on_http_request: [
 				{
 					expressions: [
 						"conn.Geo.CountryCode in ['<COUNTRY-01>', '<COUNTRY-02>']",
@@ -282,7 +282,7 @@ export const BlockCountries = () => (
 					],
 				},
 			],
-			outbound: [],
+			on_http_response: [],
 		}}
 	/>
 );
@@ -290,7 +290,7 @@ export const BlockCountries = () => (
 export const RateLimitPricing = () => (
 	<ConfigExample
 		config={{
-			inbound: [
+			on_http_request: [
 				{
 					expressions: ["!('Tier' in req.Headers)"],
 					name: "Free rate limiting tier",
@@ -362,7 +362,7 @@ export const RateLimitPricing = () => (
 					],
 				},
 			],
-			outbound: [],
+			on_http_response: [],
 		}}
 	/>
 );
@@ -370,7 +370,7 @@ export const RateLimitPricing = () => (
 export const DeprecateVersion = () => (
 	<ConfigExample
 		config={{
-			inbound: [
+			on_http_request: [
 				{
 					expressions: ["'2' in req.Headers['X-Api-Version']"],
 					name: "Deprecate API v2",
@@ -386,7 +386,7 @@ export const DeprecateVersion = () => (
 					],
 				},
 			],
-			outbound: [],
+			on_http_response: [],
 		}}
 	/>
 );
@@ -394,7 +394,7 @@ export const DeprecateVersion = () => (
 export const ManipulateHeaders = () => (
 	<ConfigExample
 		config={{
-			inbound: [
+			on_http_request: [
 				{
 					expressions: [],
 					name: "Add headers to requests",
@@ -411,7 +411,7 @@ export const ManipulateHeaders = () => (
 					],
 				},
 			],
-			outbound: [],
+			on_http_response: [],
 		}}
 	/>
 );
@@ -419,8 +419,8 @@ export const ManipulateHeaders = () => (
 export const AddCompression = () => (
 	<ConfigExample
 		config={{
-			inbound: [],
-			outbound: [
+			on_http_request: [],
+			on_http_response: [
 				{
 					expressions: [],
 					name: "Add compression",
@@ -441,7 +441,7 @@ export const AddCompression = () => (
 export const EnforceTLS = () => (
 	<ConfigExample
 		config={{
-			inbound: [
+			on_http_request: [
 				{
 					expressions: ["req.ClientTLS.Version > '1.3'"],
 					name: "Reject requests using old TLS versions",
@@ -456,7 +456,7 @@ export const EnforceTLS = () => (
 					],
 				},
 			],
-			outbound: [],
+			on_http_response: [],
 		}}
 	/>
 );
@@ -464,8 +464,8 @@ export const EnforceTLS = () => (
 export const LogUnsuccessful = () => (
 	<ConfigExample
 		config={{
-			inbound: [],
-			outbound: [
+			on_http_request: [],
+			on_http_response: [
 				{
 					expressions: ["res.StatusCode < '200' && res.StatusCode >= '300'"],
 					name: "Log unsuccessful requests",
@@ -490,7 +490,7 @@ export const LogUnsuccessful = () => (
 export const LimitSize = () => (
 	<ConfigExample
 		config={{
-			inbound: [
+			on_http_request: [
 				{
 					expressions: [
 						"req.Method == 'POST' || req.Method == 'PUT'",
@@ -508,7 +508,7 @@ export const LimitSize = () => (
 					],
 				},
 			],
-			outbound: [],
+			on_http_response: [],
 		}}
 	/>
 );

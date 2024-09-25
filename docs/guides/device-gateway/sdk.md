@@ -279,7 +279,7 @@ the request:
 		"protocol": "http",
 		"forwards_to": "localhost:8001",
 		"domain": "device123.sitea.configurable-domain.com",
-		"policy": "{\"inbound\": [], \"outbound\": [{\"expressions\": [], \"name\": \"Add headers to requests\", \"actions\": [{\"type\": \"add-headers\", \"config\": {\"headers\": {\"is-ngrok\": \"0000000000\"}}}]}]}"
+		"policy": "{\"on_http_request\": [], \"on_http_response\": [{\"expressions\": [], \"name\": \"Add headers to requests\", \"actions\": [{\"type\": \"add-headers\", \"config\": {\"headers\": {\"is-ngrok\": \"0000000000\"}}}]}]}"
 	}
 ]
 ```
@@ -293,7 +293,7 @@ curl -k \
  -X POST \
  -H "Content-Type: application/json" \
  -d '{"protocol": "http", "forwards_to": "{HOST}:{PORT}","domain":"{YOUR_DOMAIN}", "policy": \
- {"inbound":[],"outbound":[{"expressions":[],"name":"Add headers to requests","actions":[{"type":"add-headers","config":{"headers":{"is-ngrok":"444"}}}]}]}}' \
+ {"on_http_request":[],"on_http_response":[{"expressions":[],"name":"Add headers to requests","actions":[{"type":"add-headers","config":{"headers":{"is-ngrok":"444"}}}]}]}}' \
  https://{YOUR_AGENT_DOMAIN}/tunnels
 ```
 
@@ -306,8 +306,8 @@ You should receive a `200` response similar to the following:
 	"forwards_to": "localhost:8001",
 	"domain": "device123.sitea.configurable-domain.com",
 	"policy": {
-		"inbound": [],
-		"outbound": [
+		"on_http_request": [],
+		"on_http_response": [
 			{
 				"expressions": [],
 				"name": "Add headers to requests",

@@ -10,28 +10,72 @@ import (
 func ngrokListener(ctx context.Context) (net.Listener, error) {
   return ngrok.Listen(ctx,
     config.TLSEndpoint(
-      config.WithPolicy(
-        policy.Policy{
-          Inbound: []policy.Rule{
-            {
-              Name: "LimitToKnownIPs",
-              Expressions: []string{
-                "conn.ClientIP != '8.8.8.8'",
-                "conn.ClientIP != '9.9.9.9'",
-              },
-              Actions: []policy.Action{
-                {
-                  Type: "deny",
-                },
-              },
-            },
-          },
-        },
-      ),
+      config.WithPolicyString(getPolicyFromFile()),
     ),
     ngrok.WithAuthtokenFromEnv(),
   )
 }
+
+func getPolicyFromFile() string {
+	b, _ := os.ReadFile("./policy.yaml")
+	return string(b)
+}
+```
+
+:::info
+
+Traffic Policies can be defined in `json` or `yaml`!
+
+:::
+
+```json title="policy.json"
+{
+	"on_tcp_connect": [
+		{
+			"name": "DenyTrafficOutsideUS",
+			"expressions": ["conn.Geo.CountryCode != 'US'"],
+			"actions": [
+				{
+					"type": "deny"
+				}
+			]
+		},
+		{
+			"name": "LogRequestsFromKnownIP",
+			"expressions": ["conn.ClientIP == '110.0.0.1"],
+			"actions": [
+				{
+					"type": "log",
+					"config": {
+						"metadata": {
+							"event": "known-ip",
+							"data": "110.0.0.1"
+						}
+					}
+				}
+			]
+		}
+	]
+}
+```
+
+```yaml title="policy.yaml"
+---
+on_tcp_connect:
+  - name: DenyTrafficOutsideUS
+    expressions:
+      - conn.Geo.CountryCode != 'US'
+    actions:
+      - type: deny
+  - name: LogRequestsFromKnownIP
+    expressions:
+      - conn.ClientIP == '110.0.0.1
+    actions:
+      - type: log
+        config:
+          metadata:
+            event: known-ip
+            data: 110.0.0.1
 ```
 
 Go Package Docs:

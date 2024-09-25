@@ -120,7 +120,7 @@ Now that you have SSH tunneling and service ingress handled via ngrok, you may a
 
     ```yaml
     ---
-    inbound:
+    on_tcp_connect:
       - actions:
         - name: "Restrict all IPs except trusted CIDRs"
           type: "restrict-ips"
