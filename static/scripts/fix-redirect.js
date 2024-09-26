@@ -115,6 +115,9 @@ const redirects = [
     [ fromIncludes(`/docs/user-management/#sso`), `/docs/iam/users/#dashboard-access` ],
     [ fromIncludes(`/docs/user-management/#rbac`), `/docs/iam/rbac/` ],
     [ fromIncludes(`/docs/user-management`), `/docs/iam/` ],
+
+    // /docs/guides/how-to-set-up-a-custom-domain/ -> /docs/guides/other-guides/how-to-set-up-a-custom-domain
+    [ fromIncludes(`docs/guides/how-to-set-up-a-custom-domain/`), `docs/guides/other-guides/how-to-set-up-a-custom-domain/` ],
 ]
 
 // get current href from window
