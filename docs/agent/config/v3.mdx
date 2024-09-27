@@ -13,12 +13,16 @@ The agent configuration file location depends on your system. You can check the 
 There are important differences between the v3 ngrok Agent Configuration file and v2:
 
 - Agent configuration options are no longer top-level, they are now nested under the `agent` field.
-- Endpoints are now configured through the `endpoints` field and the previous configuration field `tunnels` has been deprecated.
+- Endpoints are now configured through the `endpoints` field.
+- Deprecated the `tunnels` field in favor of `endpoints`.
+- Changed `server_addr` agent configuration field to `connect_url`.
+- Changed `root_cas` agent configuration field to `connect_cas`.
 
 ## Migrating from v2
 
 Migrating from v2 to v3 requires you to update to the latest agent, nest your agent configuration
-options under the `agent` field and change the `version` field to `3`.
+options under the `agent` field and change the `version` field to `3` as well as modify any [agent 
+configuration fields that have changed](#breaking-changes).
 
 For example, here is an example v2 configuration file:
 
@@ -47,6 +51,11 @@ tunnels:
     proto: http
     addr: 80
 ```
+
+You will also need to adjust the following fields if you are using them:
+
+- Change `root_cas` to `connect_cas`
+- Change `server_addr` to `connect_url`
 
 ## Supported Fields
 
@@ -77,8 +86,10 @@ The top-level `agent` field is **required**. The agent field allows you to modif
 | --------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | [`api_key`](#api_key)                         | The API key to be used when making requests through the `ngrok api` command.                                                                                                                         |
 | [`authtoken`](#authtoken)                     | The authentication token used to authenticate this agent when it connects to the ngrok service.                                                                                                      |
+| [`connect_cas`](#connect_cas)                 | The root certificate authorities used to validate the TLS connection to the ngrok server.                                                                                                            |
 | [`connect_interface`](#connect_interface)     | Set the specific network interface for ngrok to use. This is only supported on Linux platforms.                                                                                                      |
 | [`connect_timeout`](#connect_timeout)         | How long to wait when establishing an agent session connection to the ngrok service. The default is 10s.                                                                                             |
+| [`connect_url`](#connect_url)                 | This is the URL of the ngrok server to connect to. You should only set this if you are using a custom ingress URL.                                                                                   |
 | [`console_ui`](#console_ui)                   | Enable/disable the console UI                                                                                                                                                                        |
 | [`console_ui_color`](#console_ui_color)       | Set the background color of the console UI                                                                                                                                                           |
 | [`crl_noverify`](#crl_noverify)               | Disables verifying Certificate Revocation List                                                                                                                                                       |
@@ -92,8 +103,6 @@ The top-level `agent` field is **required**. The agent field allows you to modif
 | [`metadata`](#metadata)                       | Opaque, user-supplied string that will be returned as part of the ngrok API response to the [list online sessions](/api/resources/tunnel-sessions) resource for all endpoints started by this agent. |
 | [`proxy_url`](#proxy_url)                     | URL of an HTTP or SOCKS5 proxy to use for establishing the tunnel connection.                                                                                                                        |
 | [`remote_management`](#remote_management)     | Set this to `true` to allow the ngrok agent to be remotely managed (stop, restart, update). Defaults to `true`.                                                                                      |
-| [`root_cas`](#root_cas)                       | The root certificate authorities used to validate the TLS connection to the ngrok server.                                                                                                            |
-| [`connect_url`](#connect_url)                 | This is the URL of the ngrok server to connect to. You should only set this if you are using a custom ingress URL.                                                                                   |
 | [`update_channel`](#update_channel)           | The update channel determines the stability of released builds to update to. Use `stable` for all production deployments.                                                                            |
 | [`update_check`](#update_check)               | This tells the ngrok agent if it should check for updates. Defaults to `true`.                                                                                                                       |
 | [`web_addr`](#web_addr)                       | Network address to bind on for serving the local web interface and api.                                                                                                                              |
@@ -131,6 +140,16 @@ agent:
   api_key: 24yRd5U3DestCQapJrrVHLOqiAC_7RviwRqpd3wc9dKLujQZN
 ```
 
+#### `connect_cas`
+
+This is the root certificate authorities used to validate the TLS connection to the ngrok server.
+
+| Parameter    | Default | Description                                                                                                                                                                 |
+| ------------ | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `trusted`    | default | use only the trusted certificate root for the ngrok.com tunnel service                                                                                                      |
+| `host`       |         | use the root certificates trusted by the host's operating system. This is helpful for working with machine-in-the-middle (MITM) proxies doing deep packet inspection (DPI). |
+| other values |         | path to a certificate PEM file on disk with certificate authorities to trust                                                                                                |
+
 #### `connect_interface`
 
 Sets the specific network interface that the ngrok agent should use. This is only supported on Linux platforms.
@@ -138,6 +157,10 @@ Sets the specific network interface that the ngrok agent should use. This is onl
 #### `connect_timeout`
 
 How long to wait when establishing an agent session connection to the ngrok service. This is specified as a duration, with the default being 10s.
+
+#### `connect_url`
+
+This is the URL of the ngrok server to connect to. You should set this if you are using a custom ingress URL.
 
 #### `console_ui`
 
@@ -230,20 +253,6 @@ This is the URL of an HTTP or SOCKS5 proxy to use for establishing the tunnel co
 #### `remote_management`
 
 Set this to `true` to allow the ngrok agent to be remotely managed (stop, restart, update) via the [ngrok API](/api/resources/tunnel-sessions#restart-tunnel-agent) or the [ngrok Dashboard](https://dashboard.ngrok.com/tunnels/agents). Defaults to `true`.
-
-#### `root_cas`
-
-This is the root certificate authorities used to validate the TLS connection to the ngrok server.
-
-| Parameter    | Default | Description                                                                                                                                                                 |
-| ------------ | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `trusted`    | default | use only the trusted certificate root for the ngrok.com tunnel service                                                                                                      |
-| `host`       |         | use the root certificates trusted by the host's operating system. This is helpful for working with machine-in-the-middle (MITM) proxies doing deep packet inspection (DPI). |
-| other values |         | path to a certificate PEM file on disk with certificate authorities to trust                                                                                                |
-
-#### `connect_url`
-
-This is the URL of the ngrok server to connect to. You should set this if you are using a custom ingress URL.
 
 #### `update_channel`
 
