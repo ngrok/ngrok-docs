@@ -1,0 +1,65 @@
+import ConfigExample from "/src/components/ConfigExample.tsx";
+
+### Basic Example
+
+This example configuration will set up a public endpoint (`forward-internal-example.ngrok.io`) forwarding all traffic it receives to a private endpoint (`example.private`) that forwards the request to port `80` on your local machine. Since it is forwarding all traffic to the private endpoint, no traffic will be sent to `8080` which is the upstream port for the public endpoint.
+
+#### Example Traffic Policy Document
+
+<ConfigExample
+	snippetText={null}
+	showLineNumbers={true}
+	jsonMetastring="{5-51}"
+	yamlMetastring="{4-28}"
+	config={{
+		inbound: [
+			{
+				actions: [
+					{
+						type: "forward-internal",
+						config: {
+							url: "https://example.private",
+						},
+					},
+				],
+			},
+		],
+	}}
+/>
+
+#### Start Private Endpoint
+
+```shell
+ngrok http 80 --url example.private --binding private
+```
+
+#### Start Public Endpoint with Traffic Policy
+
+```shell
+ngrok http 8080 --url forward-internal-example.ngrok.io --traffic-policy-file /path/to/policy.yml
+```
+
+### Example Request
+
+```shell
+$ curl https://forward-internal-example.ngrok.io -v
+ ...
+> GET / HTTP/2
+> Host: forward-internal-example.ngrok.io
+> User-Agent: curl/[version]
+> Accept: */*
+...
+```
+
+This request will be forwarded to the private endpoint `https://example.private` which will then forward the request to port `80` on your local machine.
+
+```
+GET / HTTP/1.1
+Host: forward-internal-example.ngrok.io
+User-Agent: curl/[version]
+Accept: */*
+X-Forwarded-For: [ngrok IP]
+X-Forwarded-Host: forward-internal-example.ngrok.io
+X-Forwarded-Proto: https
+Accept-Encoding: gzip
+```
