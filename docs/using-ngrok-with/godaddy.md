@@ -1,3 +1,7 @@
+---
+title: GoDaddy
+---
+
 # Configuring GoDaddy DNS for ngrok Reserved Domains
 
 This guide explains how to configure a custom domain in GoDaddy to work with ngrok.
