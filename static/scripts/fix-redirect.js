@@ -44,7 +44,7 @@ const redirects = [
     [ fromIncludes(`/docs/secure-tunnels/tunnels/ssh-reverse-tunnel-agent`), `/docs/agent/ssh-reverse-tunnel-agent` ],
 
     // /docs/guides/how-to-set-up-a-custom-domain/ -> /docs/guides/other-guides/how-to-set-up-a-custom-domain
-    [ fromIncludes(`/docs/guides/how-to-set-up-a-custom-domain/`), `docs/guides/other-guides/how-to-set-up-a-custom-domain/` ],
+    [ fromIncludes(`/docs/guides/how-to-set-up-a-custom-domain/`), `/docs/guides/other-guides/how-to-set-up-a-custom-domain/` ],
 
     // /docs/events/* -> /docs/obs/*
     [ fromIncludes(`/docs/events/`), toReplace(`/docs/obs/`) ],
