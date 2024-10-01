@@ -75,4 +75,4 @@ pnpm run build
 ## Looking for support?
 
 For bug reports, feature request, questions and community support please ooen an issue or discussion in our [ngrok Community](https://github.com/ngrok/ngrok).
-To file an issue within our doc, use our [github issues](https://github.com/ngrok/ngrok-docs/issues)
+To report a problem with our documentation, please open a new [Github issue](https://github.com/ngrok/ngrok-docs/issues).
