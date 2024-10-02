@@ -17,5 +17,5 @@ rtmp://your-ngrok-tcp-address:ngrok-port/live/<some stream name>
 ```
 
 ::::note
-Streaming data can eat up a lot of bandwidth quickly. If you are on a free plan, you may run into the [data transfer limits](/guides/limits/#data-transfer-out) and need to upgrade to a paid plan.
+Streaming data can eat up a lot of bandwidth quickly. If you are on a free plan, you may run into the [data transfer limits](/guides/other-guides/limits.md#data-transfer-out) and need to upgrade to a paid plan.
 ::::

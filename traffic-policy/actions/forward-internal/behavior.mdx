@@ -1,0 +1,23 @@
+## Behavior
+
+When the Forward Internal action executes, it will look up the specified endpoint and relay any incoming traffic. The endpoint being forwarded to will behave as if the traffic was sent directly to it and execute all of the actions in its associated Traffic Policy. The endpoint being forwarded to must exist in the same ngrok account and be the same protocol as the forwarding endpoint (e.g. an HTTP public endpoint can only forward to an HTTP private endpoint). You also may not forward traffic to a second private endpoint or back to the original endpoint in a loop.
+
+If the forwarding is successful, the response from the upstream for the private endpoint will be sent back to the client making the original request. No further actions in the `inbound` phase will be executed and no traffic will be sent to the upstream for the public endpoint.
+
+If the forwarding is unsuccessful because the specified endpoint doesn't exist, is offline, or encounters another error, the action will return an error and follow the behavior that is specified by `on_error` (see [Managing Fallback Behavior](#on-error)).
+
+:::note
+Even if you do not plan to send traffic to a local service when creating a forwarding endpoint, you will still need to specify a local port. This port will receive traffic if an expression causes only a subset of traffic to be forwarded or if there is an error forwarding traffic and `on_error` is set to `continue` without a subsequent terminating action.
+:::
+
+### HTTP Headers
+
+When forwarding HTTP requests to another endpoint, the `Host` header will be set to the hostname of the forwarding endpoint. For example, if `example.ngrok.io` is forwarding HTTP requests to `example.private`, the `Host` header received by the upstream will be `example.ngrok.io`.
+
+The action will also set the `X-Forwarded-For`, `X-Forwarded-Host`, and `X-Forwarded-Proto` headers when making the upstream request. See [Upstream Headers](/docs/http#upstream-headers) for more information.
+
+### Managing Fallback Behavior (`on_error`) {#on-error}
+
+If `on_error` is set to `halt` (default) and the action encounters an error when forwarding traffic, the Traffic Policy chain will halt and no further actions will be executed. For example, if you have a `log` action after the `forward-internal` action and the `url` specified isn't an online endpoint, the `log` action will not be run and the error will be returned.
+
+However, if `on_error` is set to `continue`, actions that appear after the `forward-internal` action will still be executed even if the `forward-internal` action encounters an error. This can be used as a fallback to forward traffic to one of many endpoints depending which are online.

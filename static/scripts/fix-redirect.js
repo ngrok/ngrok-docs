@@ -6,7 +6,7 @@ const toReplace = (to) => (path, from) => path.replace(from, to)            // a
 // List of redirects
 //  String values are treated as exacts by default.
 //  Exact matches should be listed first as redirects are stacked
-// 
+//
 // To change behavior you can use the following method structures:
 //  [0 - from]: (path) => [matchStr, boolean (true for match, false for do not match)]
 //  [1 - to]:  (path, from) => string (returned value becomes the new path)
@@ -21,8 +21,8 @@ const redirects = [
     [ fromIncludes(`/docs/platform/events`), `/docs/events/` ],
     [ fromIncludes(`/docs/events/filtering`), `/docs/events/#filters` ],
     [ fromIncludes(`/docs/http-header-templates/`), `/docs/network-edge/http-header-templates/` ],
-    [ fromIncludes(`/docs/network-edge/pops`), `/docs/network-edge/pops/` ],
-    [ fromIncludes(`/docs/platform/pops`), `/docs/network-edge/pops/` ],
+    [ fromIncludes(`/docs/network-edge/pops`), `/docs/network-edge/#points-of-presence` ],
+    [ fromIncludes(`/docs/platform/pops`), `/docs/network-edge/#points-of-presence` ],
     [ fromIncludes(`/docs/best-practices/security-dev-productivity/`), `/docs/guides/security-dev-productivity/` ],
     [ fromIncludes(`/docs/platform/ip-policies/`), `/docs/network-edge/ip-policies/` ],
     [ fromIncludes(`/docs/platform/botusers/`), `/docs/user-management/#bot-users` ],
@@ -42,6 +42,9 @@ const redirects = [
     [ fromIncludes(`/docs/integrations/awskinesis`), `/docs/integrations/amazon-kinesis/` ],
     [ fromIncludes(`/docs/secure-tunnels/tunnels/tcp-tunnels`), `/docs/tcp/` ],
     [ fromIncludes(`/docs/secure-tunnels/tunnels/ssh-reverse-tunnel-agent`), `/docs/agent/ssh-reverse-tunnel-agent` ],
+
+    // /docs/guides/how-to-set-up-a-custom-domain/ -> /docs/guides/other-guides/how-to-set-up-a-custom-domain
+    [ fromIncludes(`/docs/guides/how-to-set-up-a-custom-domain/`), `/docs/guides/other-guides/how-to-set-up-a-custom-domain/` ],
 
     // /docs/events/* -> /docs/obs/*
     [ fromIncludes(`/docs/events/`), toReplace(`/docs/obs/`) ],
@@ -115,6 +118,7 @@ const redirects = [
     [ fromIncludes(`/docs/user-management/#sso`), `/docs/iam/users/#dashboard-access` ],
     [ fromIncludes(`/docs/user-management/#rbac`), `/docs/iam/rbac/` ],
     [ fromIncludes(`/docs/user-management`), `/docs/iam/` ],
+
 ]
 
 // get current href from window
@@ -147,6 +151,8 @@ for (const redirect of redirects) {
 }
 
 // redirect when the path has changed
-if (newPath != currentPath) {
+if (newPath != currentPath && newPath != window.location.pathname) {
     window.location.href = newPath
+} else {
+    console.error(`ignoring redirect from ${window.location.href} to ${newPath}; looks loopy`)
 }
