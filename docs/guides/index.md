@@ -25,7 +25,8 @@ Here you will find a set of guides to help you with common (and not so common) t
 ## Other Guides
 
 | Name                                                                                                             | Description                                                                                      |
-| ---------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| ---------------------------------------------------------------------------------------------------------------- |--------------------------------------------------------------------------------------------------|
+| [How to Set Up a Custom Domain](other-guides/how-to-set-up-a-custom-domain.md)                                   | Set up a custom domain to use with ngrok endpoints                         |
 | [Free Plan Limits](other-guides/limits.md)                                                                       | Learn about the resources available on our free seat-based plan                                  |
 | [Licensing](other-guides/licensing.md)                                                                           | Explore frequently asked questions about ngrok licensing and plan limits                         |
 | [Upgrading to Agent v3](other-guides/upgrade-v2-v3.mdx)                                                          | Discover new features and breaking changes when upgrading from ngrok Agent v2 to v3              |
