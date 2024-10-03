@@ -1,0 +1,101 @@
+## Configuration Reference
+
+This is the [Traffic Policy](/docs/http/traffic-policy/) configuration
+reference for this action.
+
+### Action Type
+
+`oauth`
+
+### Configuration Fields
+
+| Parameter                   | Type       | Required  | Description                                                                                                              |
+| --------------------------- | ---------- | --------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `auth_id`                   | `string`   | -         | Unique authentication identifier for this provider.                                                                      |
+| `provider`                  | `string`   | Required  | The name of the *OAuth* identity provider to be used for authentication.                                                 |
+| `client_id`                 | `string`   | -         | Your OAuth app's Client ID.                                                                                              |
+| `client_secret`             | `string`   | -         | Your OAuth app's Client Secret.                                                                                          |
+| `scope`                     | `[]string` | -         | A list of additional scopes to request when users authenticate with the identity provider.                               |
+| `max_session_duration`      | `duration` | -         | Defines the maximum lifetime of a session regardless of activity.                                                        |
+| `idle_session_duration`     | `duration` | -         | Defines the period of inactivity after which a user's session is automatically ended, requiring re-authentication.       |
+| `userinfo_refresh_interval` | `duration` | -         | How often should ngrok refresh data about the authenticated user from the identity provider.                             |
+| `allow_cors_preflight`      | `boolean`  | -         | Allow CORES preflight requests to bypass authentication checks. Enable if the endpoint needs to be accessible via CORES. |
+| `inject_headers`            | `boolean`  | -         | If false, we don't inject any headers.                                                                                   |
+
+### Supported Directions
+
+- `inbound`
+
+### Upstream Headers {#upstream-headers}
+
+This module adds headers to the HTTP request sent to your upstream service with
+details about the OAuth user who has authenticated. These headers will not be
+set for `OPTIONS` requests if you enable options passthrough.
+
+| Header                                 | Description                                                                 |
+| -------------------------------------- | --------------------------------------------------------------------------- |
+| `ngrok-auth-identity-provider-user-id` | Provider-defined identifier of the authorized user.                         |
+| `ngrok-auth-identity-name`             | Full name of the authorized user.                                           |
+| `ngrok-auth-identity-email`            | Authorized user's primary email address.                                    |
+| `ngrok-auth-access-token`              | The user's OAuth access token. Undefined when using a managed application.  |
+| `ngrok-auth-refresh-token`             | The user's OAuth refresh token. Undefined when using a managed application. |
+
+### Special Paths
+
+Upstream applications behind endpoints with this module enabled do not receive
+any requests to paths beginning with `/auth/`. Your application may redirect
+clients to the following paths to invoke different behaviors.
+
+| Path           | Description                                                                                                                                                                                                                                                                                                                    |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `/auth/login`  | Redirect users to this path to explicitly begin an authentication flow. After authentication, users will be redirected to `/`. If the IdP supports it, ngrok will attempt to instruct the IdP to force re-authentication which will force users to re-enter their credentials with the IdP even if they were already logged in. |
+| `/auth/logout` | Logs the user out by clearing their session cookie. Redirect users to this path to log them out.                                                                                                                                                                                                                               |
+
+### Events
+
+When this module is enabled, it populates the following fields in the
+[http_request_complete.v0](/obs/reference/#http-request-complete) event:
+
+| Fields                |
+| --------------------- |
+| `oauth.app_client_id` |
+| `oauth.decision`      |
+| `oauth.user.id`       |
+| `oauth.user.name`     |
+
+### Errors
+
+:::note Coming Soon
+
+This documentation is incomplete. Please check back later, we appreciate your
+patience.
+
+:::
+
+### Edges
+
+OAuth is an HTTPS Edge module which can be applied to Routes.
+
+- [OAuth Edge Module API Resource](/api/resources/edge-route-o-auth-module/)
+
+### Pricing
+
+### Supported Providers {#supported-providers}
+
+ngrok currently supports the following OAuth providers (see the Integration Guides for more details):
+
+| Provider  | Provider Identifier | Managed App Available | Integration Guide                                    |
+| --------- | ------------------- | --------------------- | ---------------------------------------------------- |
+| Amazon    | `amazon`            | no                    | [Documentation](/docs/integrations/amazon/oauth/)    |
+| Facebook  | `facebook`          | no                    | [Documentation](/docs/integrations/facebook/oauth/)  |
+| GitHub    | `github`            | yes                   | [Documentation](/docs/integrations/github/oauth/)    |
+| GitLab    | `gitlab`            | yes                   | [Documentation](/docs/integrations/gitlab/oauth/)    |
+| Google    | `google`            | yes                   | [Documentation](/docs/integrations/google/oauth/)    |
+| LinkedIn  | `linkedin`          | yes                   | [Documentation](/docs/integrations/linkedin/oauth/)  |
+| Microsoft | `microsoft`         | yes                   | [Documentation](/docs/integrations/microsoft/oauth/) |
+| Twitch    | `twitch`            | yes                   | [Documentation](/docs/integrations/twitch/oauth/)    |
+
+## Try it out
+
+Consult the list of [supported providers](#supported-providers) for
+step-by-step integration guides.
