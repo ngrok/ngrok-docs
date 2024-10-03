@@ -6,6 +6,10 @@ title: Changelog
 
 ## v3
 
+### ngrok Agent 3.16.1 - \[2024-10-03\]
+
+- Added windows arm64 agent binary.
+
 ### ngrok Agent 3.16.0 - \[2024-09-09\]
 
 - Releasing the features originally released by 3.15.0
