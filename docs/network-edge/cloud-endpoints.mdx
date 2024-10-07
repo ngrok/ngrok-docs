@@ -1,0 +1,114 @@
+# Cloud Endpoints
+
+## Overview
+
+Cloud endpoints enable you to centrally manage your endpoints' traffic policy 
+configurations [LINK TO ] in the cloud instead of defining them via an [Agent](/agent/) 
+or [Agent SDK](/agent-sdks/). With Cloud Endpoints, you can update those 
+configurations without taking your endpoints offline.
+
+Cloud endpoints can be created, updated, or deleted via the ngrok dashboard[LINK TBD] 
+or API[LINK TBD]. Unlike agent endpoints which are only online for as long as an
+agent is connected, cloud endpoints are persistent and will remain online until they 
+are explicitly deleted. You never have to restart the agent to pick up new traffic 
+policy configurations. Cloud endpoints can be created for any one of the following
+schemes: HTTP, HTTPS, TCP, TLS.
+
+Cloud Endpoints enable you to:
+
+- Enhance your endpoints with Traffic policies using the dashboard or API without restarting the Agent
+- Centrally manage your module configurations in ngrok's cloud service. This
+  decouples the configuration of module behavior on your endpoint from the agents
+  where traffic is routed to.
+- Load balance traffic to different ngrok agents
+- Apply different configurations for each path in your application. For
+  example, you may apply OAuth on `/app` and Compression on `/static/css`.
+- Use the [Kubernetes Ingress Controller](/k8s/). The Ingress Controller is
+  powered by Edges.
+
+When you create an Edge, you must select the protocol corresponding to the
+endpoints you would like it to create: one of HTTPS, TLS or TCP.
+
+For additional detail on per-protocol Edge behavior, see:
+
+- [HTTPS Edges](/http/#edges)
+- [TLS Edges](/tls/#edges)
+- [TCP Edges](/tcp/#edges)
+
+## Modules
+
+Modules are a type of middleware that enable you to manipulate traffic to your applications.
+Modules can provide authentication, resiliency, acceleration, transformation,
+security and observability to the traffic that transits through ngrok to your upstream
+applications.
+
+## Backends
+
+After traffic to an Edge has been processed by the Modules, it is sent to a
+Backend. A Backend is the last middleware to be applied to your traffic
+and it determines where the traffic is sent. There are multiple types of
+Backends, each with different behaviors.
+
+### Tunnel Group
+
+Tunnel Group backends allow you to load balance traffic equally among multiple
+ngrok agents. Tunnel Group backends define a _label selector_. A Tunnel Group
+backend will balance traffic among all ngrok tunnels whose labels match its
+label selector.
+
+For example, if your Tunnel Group has a label selector of `app=dashboard, version=1`:
+
+- A tunnel with the labels `app=dashboard, version=1` will match
+- A tunnel with the labels `app=dashboard, version=1, color=blue` will match.
+- A tunnel with the labels `app=api, version=1` will not match.
+
+Agents and Agent SDKs can start labeled tunnels. Using our previous example of
+a tunnel group with the label selector of `app=dashboard, version=1`, you can
+start a matching tunnel with:
+
+```bash
+ngrok tunnel 80 --label="app=dashboard,version=1"
+```
+
+Consult the documentation of the [`ngrok tunnel` command in the ngrok
+agent](/agent/cli#ngrok-tunnel) for additional details.
+
+When used with HTTPS edges, balancing among tunnels is distributed on a
+per-request basis.
+
+When used with TLS or TCP edges, balancing among tunnels is distributed on a
+per-connection basis.
+
+### HTTP Response
+
+HTTP Response backends return a fixed HTTP response with a status code, header
+and body text that you configure. HTTP Response backends are useful to:
+
+- Render customized error pages like 503 when used as part of a failover
+  backend
+- Redirect traffic with a 30X redirect response for a Route that it is set on
+
+### Failover
+
+Failover backends define multiple other backends to try in order. The first
+backend that succeeds will be used. A backend 'fails' only if it cannot be
+dialed. If a connection is established or an HTTP request is sent to a backend,
+no failover will occur, even if the backend fails to respond or responds with
+an error.
+
+### Weighted
+
+Weighted backends will distribute traffic to one or more backends proportional
+to the `weight` for each of its backends. Weighted backends are useful for:
+
+- Canary deploys where you want to distribute a small percentage of traffic to
+  new backends
+- Gradual rollout deployments where traffic is slowly migrated from the
+  previous version of an upstream service to a newer version
+- A/B testing different versions of the same service
+
+When used with HTTPS edges, balancing among child backends is distributed on a
+per-request basis.
+
+When used with TLS or TCP edges, balancing among child backends is distributed
+on a per-connection basis.
