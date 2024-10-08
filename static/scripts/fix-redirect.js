@@ -57,7 +57,7 @@ const redirects = [
     [ fromIncludes(`/docs/guides/upgrade-v2-v3`), `/docs/guides/other-guides/upgrade-v2-v3`],
 
     // /docs/guides/security-dev-productivity -> /docs/guides/other-guides/security-dev-productivity
-    [ fromIncludes(`/docs/guides/security-dev-productivity `), `/docs/guides/other-guides/security-dev-productivity`],
+    [ fromIncludes(`/docs/guides/security-dev-productivity`), `/docs/guides/other-guides/security-dev-productivity`],
 
     // /docs/guides/securing-your-tunnels -> /docs/guides/other-guides/securing-your-tunnels
     [ fromIncludes(`/docs/guides/securing-your-tunnels`), `/docs/guides/other-guides/securing-your-tunnels`],
