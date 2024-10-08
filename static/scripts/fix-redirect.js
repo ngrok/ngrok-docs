@@ -43,8 +43,66 @@ const redirects = [
     [ fromIncludes(`/docs/secure-tunnels/tunnels/tcp-tunnels`), `/docs/tcp/` ],
     [ fromIncludes(`/docs/secure-tunnels/tunnels/ssh-reverse-tunnel-agent`), `/docs/agent/ssh-reverse-tunnel-agent` ],
 
-    // /docs/guides/how-to-set-up-a-custom-domain/ -> /docs/guides/other-guides/how-to-set-up-a-custom-domain
-    [ fromIncludes(`/docs/guides/how-to-set-up-a-custom-domain/`), `/docs/guides/other-guides/how-to-set-up-a-custom-domain/` ],
+    // /docs/guides -> /docs/guides/other-guides
+    // /docs/guides/how-to-set-up-a-custom-domain -> /docs/guides/other-guides/how-to-set-up-a-custom-domain
+    [ fromIncludes(`/docs/guides/how-to-set-up-a-custom-domain`), `/docs/guides/other-guides/how-to-set-up-a-custom-domain` ],
+
+    // /docs/guides/limits -> /docs/guides/other-guides/limits
+    [ fromIncludes(`/docs/guides/limits`), `/docs/guides/other-guides/limits` ],
+
+    // /docs/guides/licensing -> /docs/guides/other-guides/licensing
+    [ fromIncludes(`/docs/guides/licensing`), `/docs/guides/other-guides/licensing`],
+
+    // /docs/guides/upgrade-v2-v3 -> /docs/guides/other-guides/upgrade-v2-v3
+    [ fromIncludes(`/docs/guides/upgrade-v2-v3`), `/docs/guides/other-guides/upgrade-v2-v3`],
+
+    // /docs/guides/security-dev-productivity -> /docs/guides/other-guides/security-dev-productivity
+    [ fromIncludes(`/docs/guides/security-dev-productivity `), `/docs/guides/other-guides/security-dev-productivity`],
+
+    // /docs/guides/securing-your-tunnels -> /docs/guides/other-guides/securing-your-tunnels
+    [ fromIncludes(`/docs/guides/securing-your-tunnels`), `/docs/guides/other-guides/securing-your-tunnels`],
+
+    // /docs/guides/running-behind-firewalls -> /docs/guides/other-guides/running-behind-firewalls
+    [ fromIncludes(`/docs/guides/running-behind-firewalls`), `/docs/guides/other-guides/running-behind-firewalls`],
+
+    // /docs/guides/using-tls-mutual-authentication -> /docs/guides/other-guides/using-tls-mutual-authentication
+    [ fromIncludes(`/docs/guides/using-tls-mutual-authentication`), `/docs/guides/other-guides/using-tls-mutual-authentication`],
+
+    // /docs/guides/dashboard-sso-okta-setup -> /docs/guides/other-guides/dashboard-sso-okta-setup
+    [ fromIncludes(`/docs/guides/dashboard-sso-okta-setup`), `/docs/guides/other-guides/dashboard-sso-okta-setup`],
+
+    // /docs/guides/load-balancing-with-cloud-edges -> /docs/guides/other-guides/load-balancing-with-cloud-edges
+    [ fromIncludes(`/docs/guides/load-balancing-with-cloud-edges`), `/docs/guides/other-guides/load-balancing-with-cloud-edges`],
+
+    // /docs/guides/how-to-round-robin-load-balance-with-ngrok-cloud-edges -> /docs/guides/other-guides/how-to-round-robin-load-balance-with-ngrok-cloud-edges
+    [ fromIncludes(`/docs/guides/how-to-round-robin-load-balance-with-ngrok-cloud-edges`), `/docs/guides/other-guides/how-to-round-robin-load-balance-with-ngrok-cloud-edges`],
+
+    // /docs/guides/how-to-do-weighted-load-balancing-with-ngrok-cloud-edges -> /docs/guides/other-guides/how-to-do-weighted-load-balancing-with-ngrok-cloud-edges
+    [ fromIncludes(`/docs/guides/how-to-do-weighted-load-balancing-with-ngrok-cloud-edges`), `/docs/guides/other-guides/how-to-do-weighted-load-balancing-with-ngrok-cloud-edges`],
+
+     // /docs/guides/using-labels-within-ngrok -> /docs/guides/other-guides/using-labels-within-ngrok
+    [ fromIncludes(`/docs/guides/using-labels-within-ngrok`), `/docs/guides/other-guides/using-labels-within-ngrok`],
+
+    // /docs/guides -> /docs/guides/site-to-site-connectivity
+    // /docs/guides/site-to-site-dbs -> /docs/guides/site-to-site-connectivity/dbs
+    [ fromIncludes(`/docs/guides/site-to-site-dbs`), `/docs/guides/site-to-site-connectivity/dbs`],
+
+    // /docs/guides/site-to-site-apis -> /docs/guides/site-to-site-connectivity/apis
+    [ fromIncludes(`/docs/guides/site-to-site-apis`), `/docs/guides/site-to-site-connectivity/apis`],
+
+    // /docs/guides/site-to-site-apis-mtls -> /docs/guides/site-to-site-connectivity/apis-mtls
+    [ fromIncludes(`/docs/guides/site-to-site-apis-mtls`), `/docs/guides/site-to-site-connectivity/apis-mtls`],
+
+    // docs/guides/site-to-site-dbs-mtls -> /docs/guides/site-to-site-connectivity/dbs-mtls
+    [ fromIncludes(`/docs/guides/site-to-site-dbs-mtls`), `/docs/guides/site-to-site-connectivity/dbs-mtls`],
+
+    // /docs/guides -> /docs/guides/identity-aware-proxy
+    // /docs/guides/securing-with-oauth-> /docs/guides/identity-aware-proxy/securing-with-oauth
+    [ fromIncludes(`/docs/guides/securing-with-oauth`), `/docs/guides/identity-aware-proxy/securing-with-oauth`],
+
+    // /docs/guides -> /docs/guides/developer-preview
+    // /docs/guides/getting-started-> /docs/guides/developer-preview/getting-started
+    [ fromIncludes(`/docs/guides/getting-started`), `/docs/guides/developer-preview/getting-started`],
 
     // /docs/events/* -> /docs/obs/*
     [ fromIncludes(`/docs/events/`), toReplace(`/docs/obs/`) ],
