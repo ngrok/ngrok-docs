@@ -232,6 +232,7 @@ const sidebars = {
 			link: { type: "doc", id: "network-edge/index" },
 			items: [
 				"network-edge/index",
+				"network-edge/cloud-endpoints",
 				"network-edge/domains-and-tcp-addresses",
 				"network-edge/internal-endpoints",
 				"network-edge/edges",
