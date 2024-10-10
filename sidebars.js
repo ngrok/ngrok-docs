@@ -233,6 +233,7 @@ const sidebars = {
 			items: [
 				"network-edge/index",
 				"network-edge/domains-and-tcp-addresses",
+				"network-edge/internal-endpoints",
 				"network-edge/edges",
 				"network-edge/gslb",
 				"network-edge/tls-certificates",

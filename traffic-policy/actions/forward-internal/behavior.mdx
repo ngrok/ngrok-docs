@@ -1,6 +1,8 @@
 ## Behavior
 
-When the Forward Internal action executes, it will look up the specified endpoint and relay any incoming traffic. The endpoint being forwarded to will behave as if the traffic was sent directly to it and execute all of the actions in its associated Traffic Policy. The endpoint being forwarded to must exist in the same ngrok account and be the same protocol as the forwarding endpoint (e.g. an HTTP public endpoint can only forward to an HTTP internal endpoint). You also may not forward traffic to a second internal endpoint or back to the original endpoint in a loop.
+This action forwards a request to an internal endpoint.
+
+Any traffic policy associated with the internal endpoint will also be applied to the request when it's forwarded.
 
 If the forwarding is successful, the response from the upstream for the internal endpoint will be sent back to the client making the original request. No further actions in the `inbound` phase will be executed and no traffic will be sent to the upstream for the public endpoint.
 
@@ -21,3 +23,11 @@ The action will also set the `X-Forwarded-For`, `X-Forwarded-Host`, and `X-Forwa
 If `on_error` is set to `halt` (default) and the action encounters an error when forwarding traffic, the Traffic Policy chain will halt and no further actions will be executed. For example, if you have a `log` action after the `forward-internal` action and the `url` specified isn't an online endpoint, the `log` action will not be run and the error will be returned.
 
 However, if `on_error` is set to `continue`, actions that appear after the `forward-internal` action will still be executed even if the `forward-internal` action encounters an error. This can be used as a fallback to forward traffic to one of many endpoints depending which are online.
+
+### Valid forward targets
+
+A request may only be forwarded to a internal endpoint on the same account as this endpoint.
+
+The target must be of the same protocol (i.e. an HTTP Endpoint may only forward to an HTTP Internal Endpoint).
+
+In addition, the target's traffic policy may only specify policy for the current protocol, for example if `forward-internal` is used in the `on_http_request` phase, the internal endpoint may only have `on_http_request` and `on_http_response` sections.
