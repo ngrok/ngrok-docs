@@ -50,9 +50,9 @@ One of the steps in agent connection is [checking the certificate revocation lis
 
 # Testing in a Kubernetes Cluster
 
-If you are using ngrok from within a Kubernetes Cluster, you may need to diagnose the network connectivity from the cluster to the ngrok cloud. To do this, you can run the previously mentioned `ngrok diagnose` command using the [pre-built docker images](https://hub.docker.com/r/ngrok/ngrok) for the agent as a `Job` in Kubernetes. 
+If you are using ngrok from within a Kubernetes Cluster, you may need to diagnose the network connectivity from the cluster to the ngrok cloud. To do this, you can run the previously mentioned `ngrok diagnose` command using the [pre-built docker images](https://hub.docker.com/r/ngrok/ngrok) for the agent as a `Job` in Kubernetes.
 
-Create a manifest yaml file 
+Create a manifest yaml file
 
 ```yaml
 apiVersion: batch/v1
@@ -70,7 +70,7 @@ spec:
       restartPolicy: Never
 ```
 
-Apply this manifest to your cluster, wait a few seconds, and check its logs to see the `diagnose` command's output. 
+Apply this manifest to your cluster, wait a few seconds, and check its logs to see the `diagnose` command's output.
 
 ```sh
 kubectl logs -l "job-name=ngrok-diagnose"
@@ -84,4 +84,3 @@ Ngrok Connectivity - Region: Auto (lowest latency)
   Tunnel Protocol                           [ OK ]
 Successfully established ngrok connection! (region: 'auto', latency: unknown)
 ```
-
