@@ -1,6 +1,6 @@
 # CRDs
 
-Kubernetes has the concept of [Custom Resource Definitions](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/) (CRDs) which allow you to define your own custom resources. This document will cover the CRDs you might use to achieve your goals with the ngrok Kubernetes Ingress Controller.
+Kubernetes has the concept of [Custom Resource Definitions](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/) (CRDs) which allow you to define your own custom resources. This document will cover the CRDs you might use to achieve your goals with the ngrok Kubernetes Operator.
 
 _**Warning:**_ There are other CRDs not documented here that are used internally by the controller. It is not recommended to edit these, but inspecting them to query the state of the system could be useful at times. See the [internal CRDs](/docs/k8s/developer-guide/internal-crds) document for more details.
 
@@ -121,7 +121,7 @@ It's optional to create IP Policies this way vs using the ngrok dashboard or [te
 
 ## TCP Edges {#tcp-edges}
 
-The Kubernetes ingress spec does not directly support TCP traffic. The ngrok Kubernetes Ingress Controller supports TCP traffic via the [TCP Edge](https://ngrok.com/docs/api/resources/edges-tcp/) resource. This is a first class CRD that you can manage to control these edges in your account. See the [TCP and TLS Edges guide](/docs/k8s/user-guide#tcp-tls-edges) for more details.
+The Kubernetes ingress spec does not directly support TCP traffic. The ngrok Kubernetes Operator supports TCP traffic via the [TCP Edge](https://ngrok.com/docs/api/resources/edges-tcp/) resource. This is a first class CRD that you can manage to control these edges in your account. See the [TCP and TLS Edges guide](/docs/k8s/user-guide#tcp-tls-edges) for more details.
 
 | Field      | Type                                                                                    | Required | Description                                                                                                                                                                                                                   |
 | ---------- | --------------------------------------------------------------------------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -165,7 +165,7 @@ The Kubernetes ingress spec does not directly support TCP traffic. The ngrok Kub
 
 ## TLS Edges
 
-ngrok's TLS Edges function similarly to TCP Edges in that they may contain arbitrary application data, not just HTTP. As such, the Kubernetes Ingress spec isn't a perfect fit for them either. The ngrok Kubernetes Ingress Controller supports arbitrary TLS endpoints via the [TLS Edge](https://ngrok.com/docs/api/resources/edges-tls/) resource. This is a first class CRD that you can manage to control these edges in your account. See the [TCP and TLS Edges guide](/docs/k8s/user-guide#tcp-tls-edges) for more details.
+ngrok's TLS Edges function similarly to TCP Edges in that they may contain arbitrary application data, not just HTTP. As such, the Kubernetes Ingress spec isn't a perfect fit for them either. The ngrok Kubernetes Operator supports arbitrary TLS endpoints via the [TLS Edge](https://ngrok.com/docs/api/resources/edges-tls/) resource. This is a first class CRD that you can manage to control these edges in your account. See the [TCP and TLS Edges guide](/docs/k8s/user-guide#tcp-tls-edges) for more details.
 
 | Field      | Type                                                                                    | Required | Description                                                                                                                                                                                                                   |
 | ---------- | --------------------------------------------------------------------------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -200,7 +200,7 @@ ngrok's TLS Edges function similarly to TCP Edges in that they may contain arbit
 
 Domains are automatically created by the controller based on the ingress objects host values. Standard ngrok subdomains will automatically be created and reserved for you. Custom domains will also be created and reserved, but will be up to you to configure the DNS records for them. See the [custom domain](/docs/k8s/custom-domain) guide for more details.
 
-If you delete all the ingress objects for a particular host, as a safety precaution, the ingress controller does _NOT_ delete the domains and thus does not unregister them. This ensures you don't lose domains while modifying or recreating ingress objects. You can still manually delete a domain CRD via `kubectl delete domain <name>` if you want to unregister it.
+If you delete all the ingress objects for a particular host, as a safety precaution, the Operator does _NOT_ delete the domains and thus does not unregister them. This ensures you don't lose domains while modifying or recreating ingress objects. You can still manually delete a domain CRD via `kubectl delete domain <name>` if you want to unregister it.
 
 If using a [TCP](#tcp-edges) or [TLS](#tls-edges) CRD directly, a Domain will not be created for you automatically, so you will need to create and manage it yourself. See the [TCP and TLS Edges](/docs/k8s/user-guide#tcp-tls-edges) guide for details.
 

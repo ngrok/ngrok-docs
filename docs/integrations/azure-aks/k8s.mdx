@@ -1,28 +1,28 @@
 ---
-description: Learn how to deploy a new Kubernetes cluster and demo app via AKS, then add ingress to applications with ngrok's Kubernetes Ingress Controller.
+description: Learn how to deploy a new Kubernetes cluster and demo app via AKS, then add ingress to applications with ngrok's Kubernetes Operator.
 ---
 
 # Ingress to apps deployed on Azure Kubernetes Service (AKS)
 
 :::tip TL;DR
 
-To use the ngrok Kubernetes Ingress Controller with Azure Kubernetes Service (AKS):
+To use the ngrok Kubernetes Operator with Azure Kubernetes Service (AKS):
 
 1. [Create your cluster in AKS](#create-your-cluster-in-AKS)
-2. [Install the ngrok Ingress Controller](#install-the-ngrok-kubernetes-ingress-controller)
+2. [Install the ngrok Kubernetes Operator](#install-the-ngrok-kubernetes-ingress-controller)
 3. [Deploy a demo microservices app](#deploy-a-demo-microservices-app)
 4. [Add ngrok-based ingress to your demo app](#add-ngrok-based-ingress-to-your-demo-app)
 5. [Add OAuth authentication to your demo app](#add-oauth-authentication-to-your-demo-app)
 
 :::
 
-In this guide, you'll launch a new cluster with [Azure Kubernetes Service (AKS)](https://azure.microsoft.com/en-us/products/kubernetes-service) and a demo app. You'll then add the ngrok Kubernetes Ingress Controller to route public traffic directly to your demo app through an encrypted, feature-rich tunnel for a complete proof of concept.
+In this guide, you'll launch a new cluster with [Azure Kubernetes Service (AKS)](https://azure.microsoft.com/en-us/products/kubernetes-service) and a demo app. You'll then add the ngrok Kubernetes Operator to route public traffic directly to your demo app through an encrypted, feature-rich tunnel for a complete proof of concept.
 
-In the end, you'll have learned enough to deploy your next production-ready Kubernetes app with AKS, with the ngrok Kubernetes Ingress Controller giving you access to additional features, like observability and resiliency, with no extra configuration complexity.
+In the end, you'll have learned enough to deploy your next production-ready Kubernetes app with AKS, with the ngrok Kubernetes Operator giving you access to additional features, like observability and resiliency, with no extra configuration complexity.
 
 Here is what you'll be building with:
 
-- The [ngrok Kubernetes Ingress Controller](https://ngrok.com/blog-post/ngrok-k8s): ngrok's official controller for adding secure public ingress and middleware execution to your Kubernetes apps with ngrok's Cloud Edge. With ngrok, you can manage and secure traffic to your apps at every stage of the development lifecycle while also benefitting from simpler configurations, security, and edge acceleration.
+- The [ngrok Kubernetes Operator](https://ngrok.com/blog-post/ngrok-k8s): ngrok's official controller for adding secure public ingress and middleware execution to your Kubernetes apps with ngrok's Cloud Edge. With ngrok, you can manage and secure traffic to your apps at every stage of the development lifecycle while also benefitting from simpler configurations, security, and edge acceleration.
 - Azure Kubernetes Service (AKS): A managed Kubernetes environment from Microsoft. AKS simplifies the deployment, health monitoring, and maintenance of cloud native applications, whether you deploy them in Azure, in on-premises data centers, or at the edge. With [40 regions](https://azure.microsoft.com/en-us/explore/global-infrastructure/products-by-region/?products=kubernetes-service), you should be able to deploy a cluster close to your customers.
 
 :::caution This how-to requires:
@@ -36,7 +36,7 @@ Here is what you'll be building with:
 
 ## **Step 1**: Create your cluster in AKS {#create-your-cluster-in-AKS}
 
-Start by creating a new managed Kubernetes cluster in AKS. If you already have one, you can skip to [Step 2: Install the ngrok Ingress Controller](#install-the-ngrok-kubernetes-ingress-controller).
+Start by creating a new managed Kubernetes cluster in AKS. If you already have one, you can skip to [Step 2: Install the ngrok Kubernetes Operator](#install-the-ngrok-kubernetes-ingress-controller).
 
 1. Go to the [Kubernetes services](https://portal.azure.com/#view/HubsExtension/BrowseResource/resourceType/Microsoft.ContainerService%2FmanagedClusters) section in your Azure console and click **Create**&rarr;**Create a Kubernetes cluster**.
 
@@ -64,10 +64,10 @@ Start by creating a new managed Kubernetes cluster in AKS. If you already have o
    tigera-operator   tigera-operator           1/1     1            1           5m
    ```
 
-## **Step 2**: Install the ngrok Kubernetes Ingress Controller {#install-the-ngrok-kubernetes-ingress-controller}
+## **Step 2**: Install the ngrok Kubernetes Operator {#install-the-ngrok-kubernetes-ingress-controller}
 
 We recommend installing the [ngrok Kubernetes Ingress
-Controller](https://github.com/ngrok/kubernetes-ingress-controller) before your end-user apps to separate the steps around infrastructure vs. app configuration.
+Controller](https://github.com/ngrok/ngrok-operator) before your end-user apps to separate the steps around infrastructure vs. app configuration.
 
 1. Create an ngrok static subdomain for ingress if you don't have one already. Navigate to the [**Domains**
    section](https://dashboard.ngrok.com/cloud-edge/domains) of the ngrok dashboard and click **Create Domain** or **New
@@ -79,7 +79,7 @@ Controller](https://github.com/ngrok/kubernetes-ingress-controller) before your 
    helm repo add ngrok https://charts.ngrok.com
    ```
 
-1. Set up the `AUTHTOKEN` and `API_KEY` exports, which allows Helm to install the Ingress Controller using your ngrok credentials. Find your `AUTHTOKEN` under [**Your Authtoken**](https://dashboard.ngrok.com/get-started/your-authtoken) in the ngrok dashboard.
+1. Set up the `AUTHTOKEN` and `API_KEY` exports, which allows Helm to install the Operator using your ngrok credentials. Find your `AUTHTOKEN` under [**Your Authtoken**](https://dashboard.ngrok.com/get-started/your-authtoken) in the ngrok dashboard.
 
    To create a new API key, navigate to the [**API** section](https://dashboard.ngrok.com/api) of the ngrok dashboard, click the **New API Key** button, change the description or owner, and click the **Add API Key** button. Copy the API key token shown in the modal window before closing, as the ngrok dashboard will not show you the token again.
 
@@ -88,7 +88,7 @@ Controller](https://github.com/ngrok/kubernetes-ingress-controller) before your 
    export NGROK_API_KEY=[YOUR-API-KEY]
    ```
 
-1. Install the ngrok Ingress Controller with Helm under a new `ngrok-ingress-controller` namespace.
+1. Install the ngrok Kubernetes Operator with Helm under a new `ngrok-ingress-controller` namespace.
 
    ```bash
    helm install ngrok-ingress-controller ngrok/kubernetes-ingress-controller \
@@ -98,7 +98,7 @@ Controller](https://github.com/ngrok/kubernetes-ingress-controller) before your 
      --set credentials.authtoken=$NGROK_AUTHTOKEN
    ```
 
-1. Verify you have successfully installed the ngrok Ingress Controller and that pods are healthy.
+1. Verify you have successfully installed the ngrok Kubernetes Operator and that pods are healthy.
 
    ```bash
    kubectl get pods -l 'app.kubernetes.io/name=kubernetes-ingress-controller' --namespace ngrok-ingress-controller
@@ -359,11 +359,11 @@ If you prefer the CLI, save the YAML below to a `.yaml` file on your local works
 
 ## **Step 4**: Add ngrok-based ingress to your demo app {#add-ngrok-based-ingress-to-your-demo-app}
 
-Next, you'll configure and deploy the [ngrok Kubernetes Ingress Controller](https://github.com/ngrok/kubernetes-ingress-controller) to expose your demo app to the public internet through the ngrok Cloud Edge.
+Next, you'll configure and deploy the [ngrok Kubernetes Operator](https://github.com/ngrok/ngrok-operator) to expose your demo app to the public internet through the ngrok Cloud Edge.
 
 1. In the Azure Portal, click **Create&rarr;Apply a YAML**.
 
-1. Copy and paste the YAML below into the editor. This manifest defines how the ngrok Kubernetes Ingress Controller should route traffic arriving on `NGROK_DOMAIN` to the `store-front` service on port `80`, which you deployed in the previous step.
+1. Copy and paste the YAML below into the editor. This manifest defines how the ngrok Kubernetes Operator should route traffic arriving on `NGROK_DOMAIN` to the `store-front` service on port `80`, which you deployed in the previous step.
 
    :::tip
 
@@ -397,7 +397,7 @@ Next, you'll configure and deploy the [ngrok Kubernetes Ingress Controller](http
 
    You can check on the status of the ingress deployment in the Azure Portal at **Services and ingresses**&rarr;**Ingresses**. You should see the `store-ingress` name and your ngrok subdomain. If you need to edit your ingress configuration in the future, click on the ingress item and then the **YAML** tab.
 
-1. Navigate to your ngrok subdomain, e.g. `https://NGROK_DOMAIN.ngrok.app`, in your browser to see the demo app in action. Behind the scenes, ngrok's Cloud Edge routed your request into the ngrok Kubernetes Ingress Controller, which then passed it to the `store-front` service.
+1. Navigate to your ngrok subdomain, e.g. `https://NGROK_DOMAIN.ngrok.app`, in your browser to see the demo app in action. Behind the scenes, ngrok's Cloud Edge routed your request into the ngrok Kubernetes Operator, which then passed it to the `store-front` service.
 
    ![The AKS Store demo app accessible from the public internet](img/store-front.png)
 
@@ -420,7 +420,7 @@ Now that your demo app is publicly accessible through the ngrok Cloud Edge, you 
            - YOUR_DOMAIN.TLD
    ```
 
-1. Edit your ingress definition to connect your ngrok Kubernetes Ingress Controller with the `NgrokModuleSet` configuration you just deployed for OAuth.
+1. Edit your ingress definition to connect your ngrok Kubernetes Operator with the `NgrokModuleSet` configuration you just deployed for OAuth.
 
    In the Azure Portal, click **Services and ingresses**&rarr;**Ingresses**, then `store-ingress`, then the **YAML** tab. Add the highlighted YAML below, then validate and save your changes.
 
@@ -453,8 +453,8 @@ Now that your demo app is publicly accessible through the ngrok Cloud Edge, you 
 
 ## What's next?
 
-You've now used the open source ngrok Kubernetes Ingress Controller to add public ingress to a demo app on a cluster managed in AKS without having to worry about complex Kubernetes networking configurations. Because ngrok abstracts ingress and middleware execution to its Cloud Edge, you can follow a similar process to route public traffic to your next production-ready app.
+You've now used the open source ngrok Kubernetes Operator to add public ingress to a demo app on a cluster managed in AKS without having to worry about complex Kubernetes networking configurations. Because ngrok abstracts ingress and middleware execution to its Cloud Edge, you can follow a similar process to route public traffic to your next production-ready app.
 
-You can also extend the integration with additional [route modules](https://github.com/ngrok/kubernetes-ingress-controller/blob/main/docs/user-guide/route-modules.md), like circuit breakers, compression, or edit headers before they are sent to your app. Additional deployment options include [name-based virtual hosting](https://github.com/ngrok/kubernetes-ingress-controller/blob/main/docs/user-guide/ingress-to-edge-relationship.md#name-based-virtual-hosting), which lets you deploy and manage any number of Kubernetes clusters and apps in AKS, then create unique ngrok edge domains, like `foo1.bar.com` and `foo2.bar.com`, to direct traffic to the respective services.
+You can also extend the integration with additional [route modules](https://github.com/ngrok/ngrok-operator/blob/main/docs/user-guide/route-modules.md), like circuit breakers, compression, or edit headers before they are sent to your app. Additional deployment options include [name-based virtual hosting](https://github.com/ngrok/ngrok-operator/blob/main/docs/user-guide/ingress-to-edge-relationship.md#name-based-virtual-hosting), which lets you deploy and manage any number of Kubernetes clusters and apps in AKS, then create unique ngrok edge domains, like `foo1.bar.com` and `foo2.bar.com`, to direct traffic to the respective services.
 
-Learn more about the ngrok Ingress Controller, or contribute to its ongoing development, by checking out the [GitHub repository](https://github.com/ngrok/kubernetes-ingress-controller) and the [project-specific documentation](https://github.com/ngrok/kubernetes-ingress-controller/tree/main/docs).
+Learn more about the ngrok Kubernetes Operator, or contribute to its ongoing development, by checking out the [GitHub repository](https://github.com/ngrok/ngrok-operator) and the [project-specific documentation](https://github.com/ngrok/ngrok-operator/tree/main/docs).

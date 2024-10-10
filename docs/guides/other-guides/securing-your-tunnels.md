@@ -28,7 +28,7 @@ For custom domains, use ngrok's [Automated TLS certificates](/network-edge/tls-c
 
 ### Using a custom ingress domain
 
-If your organization uses a custom ingress domain, your default ngrok configuration will not work. Edit your ngrok agent configuration to add a [`server_addr`](/agent/config#server_addr) parameter to use the custom ingress domain of your organization.
+If your organization uses a custom ingress domain, your default ngrok configuration will not work. Edit your ngrok agent configuration to add a [`connect_url`](/agent/config/v3/#connect_url) parameter to use the custom ingress domain of your organization.
 
 ## Tunnel Configuration
 

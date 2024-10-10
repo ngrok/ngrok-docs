@@ -4,7 +4,7 @@ While this project is new and we don't have full contribution guidelines yet, we
 
 ## In the weeds architecture
 
-Have a look at the architecture guide on the internal workings of the ingress controller [here](./architecture)
+Have a look at the architecture guide on the internal workings of the Operator [here](./architecture)
 
 ## Local Development
 
@@ -30,7 +30,7 @@ make deploy
 
 ### Using the E2E Fixtures
 
-Several examples are provided in the [`e2e-fixtures` folder](https://github.com/ngrok/kubernetes-ingress-controller/tree/main/e2e-fixtures). To use an example, make a copy of the included `EXAMPLE*config.yaml` in the same directory, like this:
+Several examples are provided in the [`e2e-fixtures` folder](https://github.com/ngrok/ngrok-operator/tree/main/e2e-fixtures). To use an example, make a copy of the included `EXAMPLE*config.yaml` in the same directory, like this:
 
 - `cp e2e-fixtures/hello-world-ingress/EXAMPLE-config.yaml e2e-fixtures/hello-world-ingress/config.yaml`
 - `cp e2e-fixtures/ingress-class/EXAMPLE-config-different.yaml e2e-fixtures/ingress-class/config-different.yaml`
@@ -42,8 +42,8 @@ You can then apply the given example via `kubectl apply -k e2e-fixtures/<example
 
 ### E2E Tests
 
-If you run the script `./scripts/e2e.sh` it will run the e2e tests against your current kubectl context. These tests tear down any existing ingress controller and examples, re-installs them, and then runs the tests. It creates a set of different ingresses and verifies that they all behave as expected
+If you run the script `./scripts/e2e.sh` it will run the e2e tests against your current kubectl context. These tests tear down any existing Operator and examples, re-installs them, and then runs the tests. It creates a set of different ingresses and verifies that they all behave as expected
 
 ## Releasing
 
-Please see the [release guide](./releasing) for more information on how to release a new version of the ingress controller.
+Please see the [release guide](./releasing) for more information on how to release a new version of the Operator.
