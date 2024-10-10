@@ -10,7 +10,7 @@ title: Changelog
 
 - Added endpoint create/update/delete subcommands to the ngrok api command
 - Added support for policy phases like `on_tcp_connect`, `on_http_request` and `on_http_response`
-- Fix to support correct configuration for HTTP policies
+- Fixed a bug where we were incorrectly passing TLS as the endpoint proto rather than HTTP(S).
 
 ### ngrok Agent 3.16.1 - \[2024-10-03\]
 
