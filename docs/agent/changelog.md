@@ -6,6 +6,12 @@ title: Changelog
 
 ## v3
 
+### ngrok Agent 3.17.0 - \[2024-10-10\]
+
+- Added endpoint create/update/delete subcommands to the ngrok api command
+- Added support for policy phases like `on_tcp_connect`, `on_http_request` and `on_http_response`
+- Fixed a bug where we were incorrectly passing TLS as the endpoint proto rather than HTTP(S).
+
 ### ngrok Agent 3.16.1 - \[2024-10-03\]
 
 - Added windows arm64 agent binary.
