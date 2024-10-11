@@ -9,5 +9,5 @@ curl \
 -H "Content-Type: application/json" \
 -H "Ngrok-Version: 2" \
 -d '{"cidr":"212.3.15.0/24"}' \
-https://api.ngrok.com/ip_policy_rules/ipr_2k5ok7w8MvXlRYlfXgGYXJisvRK
+https://api.ngrok.com/ip_policy_rules/ipr_2nJI3HimJY0wQEsAcQrYjHfFIaY
 ```

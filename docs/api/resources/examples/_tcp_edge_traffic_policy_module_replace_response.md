@@ -5,6 +5,6 @@
 ```json
 {
 	"enabled": true,
-	"value": "{\"inbound\":[{\"expressions\":[\"conn.client_ip == '192.0.2.0'\"],\"name\":\"Block IP\",\"actions\":[{\"type\":\"deny\"}]}]}"
+	"value": "{\"inbound\":[{\"name\":\"Block IP\",\"expressions\":[\"conn.client_ip == '192.0.2.0'\"],\"actions\":[{\"type\":\"deny\"}]}]}"
 }
 ```
