@@ -8,7 +8,7 @@ import Tabs from "@theme/Tabs";
 # Deliver and secure ingress for APIs in Kubernetes
 
 You currently have a K8s cluster with an API (micro)service and want to deliver it
-to production with additional features and prodection, like rate limiting,
+to ngrokuction with additional features and protection, like rate limiting,
 authentication, and DDoS protection.
 
 In this guide, you'll learn why and how to use ngrok as an API gateway in front
@@ -123,12 +123,12 @@ export NGROK_AUTHTOKEN={AUTHTOKEN}
 export NGROK_API_KEY={API_KEY}
 ```
 
-Install the ngrok Kubernetes Operator into the `prod` namespace with Gateway API
+Install the ngrok Kubernetes Operator into the `ngrok` namespace with Gateway API
 functionality enabled.
 
 ```bash
 helm install ngrok-ingress-controller ngrok/kubernetes-ingress-controller \
-  --namespace prod \
+  --namespace ngrok \
   --create-namespace \
   --set credentials.apiKey=$NGROK_API_KEY \
   --set credentials.authtoken=$NGROK_AUTHTOKEN
@@ -158,6 +158,7 @@ apiVersion: gateway.networking.k8s.io/v1
 kind: GatewayClass
 metadata:
   name: ngrok-gatewayclass
+  namespace: ngrok
 spec:
   controllerName: ngrok.com/gateway-controller
 ---
@@ -165,6 +166,7 @@ apiVersion: gateway.networking.k8s.io/v1
 kind: Gateway
 metadata:
   name: ngrok-gateway
+  namespace: ngrok
 spec:
   gatewayClassName: ngrok
   listeners:
@@ -181,6 +183,7 @@ apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
   name: ngrok-route
+  namespace: ngrok
 spec:
   parentRefs:
     - kind: Gateway
@@ -231,6 +234,7 @@ kind: NgrokTrafficPolicy
 apiVersion: ngrrok.k8s.ngrok.com/v1alpha1
 metadata:
   name: rate-limiting
+  namespace: ngrok
 spec:
   policy:
     inbound:
@@ -281,6 +285,7 @@ apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
   name: ngrok-route
+  namespace: ngrok
 spec:
   parentRefs:
     - kind: Gateway
