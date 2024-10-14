@@ -1,5 +1,6 @@
 ---
-sidebar_position: 9
+pagination_next: guides/identity-aware-proxy/index
+sidebar_position: 5
 title: Device Gateway
 ---
 

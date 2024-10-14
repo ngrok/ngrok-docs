@@ -1,20 +1,20 @@
 ---
-description: Set up a local installation of Rancher to deploy a new RKE2 cluster and add ingress to applications with ngrok's Kubernetes Ingress Controller.
+description: Set up a local installation of Rancher to deploy a new RKE2 cluster and add ingress to applications with ngrok's Kubernetes Operator.
 ---
 
 # Ingress to applications managed by Rancher in Kubernetes
 
 :::tip TL;DR
 
-To use the ngrok Ingress Controller for Kubernetes with Rancher in a local cluster:
+To use the ngrok Kubernetes Operator with Rancher in a local cluster:
 
 1. [Install Rancher via Docker](#install-rancher-via-docker)
-2. [Install the ngrok Ingress Controller](#install-the-ngrok-ingress-controller)
+2. [Install the ngrok Kubernetes Operator](#install-the-ngrok-ingress-controller)
 3. [Install a sample application](#install-a-sample-application)
 
 :::
 
-The ngrok [Ingress Controller for Kubernetes](https://ngrok.com/blog-post/ngrok-k8s) is the official controller for
+The ngrok [Operator for Kubernetes](https://ngrok.com/blog-post/ngrok-k8s) is the official controller for
 adding secure public ingress and middleware execution to your Kubernetes applications with ngrok's Cloud Edge. With
 ngrok, you can manage and secure traffic to your applications at every stage of the development lifecycle while also
 benefitting from simpler configurations, security, and edge acceleration.
@@ -24,7 +24,7 @@ developed by [SUSE](https://www.suse.com). DevOps teams use Rancher to make thei
 more efficient, secure, and resilient, which in turn provides a better developer experience for developers building and
 deploying cloud native applications.
 
-The ngrok Ingress Controller and Rancher integrate to [overcome Kubernetes complexity and improve
+The ngrok Kubernetes Operator and Rancher integrate to [overcome Kubernetes complexity and improve
 collaboration](https://www.suse.com/c/overcoming-kubernetes-complexity-and-improving-collaboration/) through the
 creation of an internal developer platform (IDP) or enabling developers to focus on building, not configuring, their
 applications.
@@ -142,15 +142,15 @@ docker logs [DOCKER_NAME] 2>&1 | grep "Bootstrap Password:"
 You have now installed Rancher in a Docker container, created a new Kubernetes cluster for your applications, and
 connected one or more Linux nodes to Rancher for handling future workloads.
 
-## **Step 2**: Install the ngrok Ingress Controller using Rancher {#install-the-ngrok-ingress-controller}
+## **Step 2**: Install the ngrok Kubernetes Operator using Rancher {#install-the-ngrok-ingress-controller}
 
-Next, install the [ngrok Kubernetes Ingress Controller](https://github.com/ngrok/kubernetes-ingress-controller), which
+Next, install the [ngrok Kubernetes Operator](https://github.com/ngrok/ngrok-operator), which
 will then automatically handle public ingress to any properly configured application you add to your cluster. Because
 this guide focuses on integrating Rancher's management tool with Kubernetes ingress, the following steps will show how
-to add the ngrok Ingress Controller via the Rancher dashboard.
+to add the ngrok Kubernetes Operator via the Rancher dashboard.
 
 :::note
-You can also install the ngrok Ingress Controller with Helm instead of via Rancher's management platform. See our [Using ngrok with Kubernetes](/docs/using-ngrok-with/k8s/#step-2-setup-your-kubernetes-cluster-and-install-the-ngrok-ingress-controller) guide for details.
+You can also install the ngrok Kubernetes Operator with Helm instead of via Rancher's management platform. See our [Using ngrok with Kubernetes](/docs/using-ngrok-with/k8s/#step-2-setup-your-kubernetes-cluster-and-install-the-ngrok-ingress-controller) guide for details.
 :::
 
 1. Create an `ngrok-ingress-controller` namespace.
@@ -170,7 +170,7 @@ You can also install the ngrok Ingress Controller with Helm instead of via Ranch
 
 1. Create a Kubernetes Secret named `ngrok-ingress-controller-credentials`, replacing `[YOUR-AUTHTOKEN]` and
    `[YOUR_API_KEY]` in the command below with your ngrok credentials. Rancher will use this secret to authenticate the
-   ngrok Ingress Controller with your account.
+   ngrok Kubernetes Operator with your account.
 
    ```bash
    kubectl create secret generic --namespace ngrok-ingress-controller ngrok-ingress-controller-credentials \
@@ -178,11 +178,11 @@ You can also install the ngrok Ingress Controller with Helm instead of via Ranch
     --from-literal=API_KEY=[YOUR-API-KEY]
    ```
 
-1. Add the Helm Chart for the ngrok Ingress Controller via Rancher. From the **Cluster Dashboard** for your RKE2
-   cluster, click on **Apps** in the sidebar, then **Charts**. Search for `ngrok Ingress Controller` and click through
+1. Add the Helm Chart for the ngrok Kubernetes Operator via Rancher. From the **Cluster Dashboard** for your RKE2
+   cluster, click on **Apps** in the sidebar, then **Charts**. Search for `ngrok Kubernetes Operator` and click through
    to the README. Click **Install** to begin configuration.
 
-   ![Find the ngrok Ingress Controller Helm Chart and begin installation](img/rancher_ngrok-chart.png)
+   ![Find the ngrok Kubernetes Operator Helm Chart and begin installation](img/rancher_ngrok-chart.png)
 
    In the **Metadata** step, choose `ngrok-ingress-controller` as the namespace, then click **Next**.
 
@@ -200,14 +200,14 @@ You can also install the ngrok Ingress Controller with Helm instead of via Ranch
    ```
 
    Click **Install**. Rancher will take a few moments to initialize the necessary resources, then show that the ngrok
-   Ingress Controller deployed successfully.
+   Operator deployed successfully.
 
-   ![Successful deployment of the ngrok Ingress Controller](img/rancher_ngrok-deployed.png)
+   ![Successful deployment of the ngrok Kubernetes Operator](img/rancher_ngrok-deployed.png)
 
 ## **Step 3**: Install a sample application {#install-a-sample-application}
 
-Now that you have the ngrok Ingress Controller running and authenticated with your credentials, you're ready to add a
-sample application to your cluster. The ngrok Ingress Controller will connect this application to the ngrok cloud edge,
+Now that you have the ngrok Kubernetes Operator running and authenticated with your credentials, you're ready to add a
+sample application to your cluster. The ngrok Kubernetes Operator will connect this application to the ngrok cloud edge,
 simplifying how you route external traffic through your Rancher-managed cluster.
 
 1. Create a ngrok static subdomain for ingress if you don't have one already. Navigate to the [**Domains**
@@ -217,7 +217,7 @@ simplifying how you route external traffic through your Rancher-managed cluster.
    Creating a subdomain on the ngrok network provides a public route to accept HTTP, HTTPS, and TLS traffic.
 
 1. Create a new Kubernetes manifest (`2048.yaml`) with the below contents. This manifest defines the 2048 application
-   service and deployment, then configures the ngrok Ingress Controller to connect the `game-2048` service to the ngrok
+   service and deployment, then configures the ngrok Kubernetes Operator to connect the `game-2048` service to the ngrok
    edge via your `NGROK_DOMAIN`.
 
    :::tip
@@ -260,7 +260,7 @@ simplifying how you route external traffic through your Rancher-managed cluster.
                - name: http
                  containerPort: 80
    ---
-   # ngrok Kubernetes  Ingress Controller configuration
+   # ngrok Kubernetes  Operator configuration
    apiVersion: networking.k8s.io/v1
    kind: Ingress
    metadata:
@@ -295,12 +295,12 @@ simplifying how you route external traffic through your Rancher-managed cluster.
    :::
 
 1. Access your 2048 demo app by navigating to your ngrok subdomain, e.g. `https://one-two-three.ngrok.app`.
-   ngrok's edge and your Ingress Controller will route traffic to your app from any device or external network as long
+   ngrok's edge and your Operator will route traffic to your app from any device or external network as long
    as your Rancher server and application cluster remain operational.
 
 ## What's next?
 
-You've now used the open source ngrok Ingress Controller for Kubernetes to add public ingress to your Rancher-managed
+You've now used the open source ngrok Kubernetes Operator to add public ingress to your Rancher-managed
 cluster and sample application without worrying about IPs, network interfaces, or VPC routing. Because ngrok offloads
 ingress and middleware execution to its global edge, you can follow a similar procedure for Rancher-managed clusters in
 any on-prem or cloud Kubernetes environment, like EKS, GKE, and more.
@@ -333,22 +333,22 @@ You can also now clean up your Linux host, either by following the [Rancher node
 doc](https://ranchermanager.docs.rancher.com/how-to-guides/new-user-guides/manage-clusters/clean-cluster-nodes#cleaning-up-nodes)
 or, in the case of a disposable VM, deleting it entirely.
 
-### Extend your Rancher and ngrok Ingress Controller integration
+### Extend your Rancher and ngrok Kubernetes Operator integration
 
 This combination of cluster management and secure, cloud-based public ingress can become a robust development
 environment for those still onboarding into the cloud native ecosystem or scale up to a multi-cluster production
 system&mdash;all with simpler and more secure ingress from ngrok.
 
 [Name-based virtual
-hosting](https://github.com/ngrok/kubernetes-ingress-controller/blob/main/docs/user-guide/ingress-to-edge-relationship.md#name-based-virtual-hosting),
+hosting](https://github.com/ngrok/ngrok-operator/blob/main/docs/user-guide/ingress-to-edge-relationship.md#name-based-virtual-hosting),
 for example, allows you to deploy and manage any number of Kubernetes clusters and applications with Rancher and create
 unique ngrok edge domains, like `foo1.bar.com` and `foo2.bar.com`, pointing to their respective services.
 
-You can also configure the ngrok Ingress controller with [route
-modules](https://github.com/ngrok/kubernetes-ingress-controller/blob/main/docs/user-guide/route-modules.md), [custom
-domains](https://github.com/ngrok/kubernetes-ingress-controller/blob/main/docs/user-guide/custom-domain.md), or [add
+You can also configure the ngrok Kubernetes Operator with [route
+modules](https://github.com/ngrok/ngrok-operator/blob/main/docs/user-guide/route-modules.md), [custom
+domains](https://github.com/ngrok/ngrok-operator/blob/main/docs/user-guide/custom-domain.md), or [add
 edge security with OAuth](/docs/using-ngrok-with/k8s/#step-3-add-edge-security-to-your-app), and more.
 
-Learn more about the ngrok Ingress Controller, or contribute, by checking out the [GitHub
-repository](https://github.com/ngrok/kubernetes-ingress-controller) and the [project-specific
-documentation](https://github.com/ngrok/kubernetes-ingress-controller/tree/main/docs).
+Learn more about the ngrok Kubernetes Operator, or contribute, by checking out the [GitHub
+repository](https://github.com/ngrok/ngrok-operator) and the [project-specific
+documentation](https://github.com/ngrok/ngrok-operator/tree/main/docs).
