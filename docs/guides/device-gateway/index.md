@@ -1,4 +1,5 @@
 ---
+pagination_prev: guides/api-gateway/index
 pagination_next: guides/identity-aware-proxy/index
 sidebar_position: 5
 title: Device Gateway
