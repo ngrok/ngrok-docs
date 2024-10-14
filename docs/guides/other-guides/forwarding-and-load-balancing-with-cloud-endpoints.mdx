@@ -8,6 +8,8 @@ tags:
   - load-balancing
 ---
 
+import ConfigExample from "/src/components/ConfigExample.tsx";
+
 <!-- prettier-ignore -->
 <!-- Imports -->
 
@@ -15,6 +17,12 @@ import TabItem from "@theme/TabItem";
 import Tabs from "@theme/Tabs";
 
 <!-- Guide -->
+
+:::warning
+
+Cloud endpoints are currently in private beta. The functionality listed below is not yet publicly available.
+
+:::
 
 This guide provides a real example on how to forward traffic to and load balance internal endpoints using ngrok Cloud Endpoints.  
 
@@ -25,10 +33,7 @@ This guide provides a real example on how to forward traffic to and load balance
 
 ## Prerequisites
 
-To follow this guide, you will need:
-
-1. An [ngrok Pro or Enterprise account](https://ngrok.com/pricing).
-1. A local computer with `ngrok` installed [by following our installation guides](https://ngrok.com/download).
+To follow this guide, you will need a local computer with `ngrok` installed [by following our installation guides](https://ngrok.com/download).
 
 If you are going to be following along using **ngrok CLI**, you will need:
 
@@ -38,19 +43,19 @@ If you are going to be following along using **CURL**, you will need:
 
 - An [ngrok API key](https://dashboard.ngrok.com/api) as an environment variable named `NGROK_API_KEY`.
 
-## **Step 1** — Create a Internal Endpoint
+## **Step 1** — Create an Internal Endpoint
 
 Let's start by creating a internal endpoint, initiated from the agent. 
 The endpoints will be in HTTP for this guide, but you can also use TCP or TLS.
 
 ```bash
 ngrok http 80 \
-	--url https://${YOUR_DOMAIN_NAME}.internal
+    --url https://${YOUR_DOMAIN_NAME}.internal
 ```
 
 - Replace or set `YOUR_DOMAIN_NAME` as the domain you'd like to use for this guide. You can set it to anything you want, so long as it isn't taken already!
 
-After running, you should see the endpoint with an "online" status at your domain.
+After running, you should see the endpoint with an "online" status at your domain. It will route traffic to the app running at your local port 80, which you can setup to have any HTTP server running.
 
 ## **Step 2** - Create a Domain or TCP Address
 Next, let's create the domain or TCP address that the cloud endpoint will reside on.
@@ -61,7 +66,7 @@ For the purpose of this guide, we will create a ngrok HTTP domain.
 
 ```bash
 ngrok api reserved-domains create \
-	--url ${NGROK_SUBDOMAIN}.ngrok.app
+    --url ${NGROK_SUBDOMAIN}.ngrok.app
 ```
 
 - Replace or set `NGROK_SUBDOMAIN` as the subdomain you'd like to use for this guide.
@@ -81,14 +86,14 @@ After running, you should see the following:
 
 ```bash
 curl \
-	-X POST https://api.ngrok.com/reserved_domains \
-	-H "Authorization: Bearer ${NGROK_API_KEY}" \
-	-H "Content-Type: application/json" \
-	-H "Ngrok-Version: 2" \
-	-d @- <<BODY
-	{
-		"name":"${NGROK_SUBDOMAIN}.ngrok.app",
-	}
+    -X POST https://api.ngrok.com/reserved_domains \
+    -H "Authorization: Bearer ${NGROK_API_KEY}" \
+    -H "Content-Type: application/json" \
+    -H "Ngrok-Version: 2" \
+    -d @- <<BODY
+    {
+        "name":"${NGROK_SUBDOMAIN}.ngrok.app",
+    }
 BODY
 ```
 
@@ -106,7 +111,7 @@ After running, you should see the following:
 ```
 
 </TabItem>
-<TabItem>
+<TabItem value="dash" label="ngrok Dashboard">
 You can reserve a subdomain via [ngrok dashboard](https://dashboard.ngrok.com/domains/new). 
 After successfully reserving a domain, you should see it listed in the domains table.
 </TabItem>
@@ -122,23 +127,23 @@ and most common use cases: forwarding traffic to other endpoints
 (the internal endpoint we created in Step 1) via the forward action.
 
 <ConfigExample
-	snippetText={null}
-	showLineNumbers={true}
-	config={{
-		on_http_request: [
-			{
-				actions: [
-					{
-						type: "forward-internal",
-						config: {
-							url: "https://${YOUR_DOMAIN_NAME}.internal",
+    snippetText={null}
+    showLineNumbers={true}
+    config={{
+        on_http_request: [
+            {
+                actions: [
+                    {
+                        type: "forward-internal",
+                        config: {
+                            url: "https://${YOUR_DOMAIN_NAME}.internal",
                             binding: "internal",
-						},
-					},
-				],
-			},
-		],
-	}}
+                        },
+                    },
+                ],
+            },
+        ],
+    }}
 />
 
 
@@ -157,9 +162,9 @@ The binding is set to public so anyone can access our cloud endpoint.
 ngrok api endpoints create \
     --api-key YOUR_NGROK_API_KEY \
     --bindings public \
-	--description "sample description" \
+    --description "sample description" \
     --metadata sample-metadata \
-	--url ${NGROK_SUBDOMAIN}.ngrok.app
+    --url https://${NGROK_SUBDOMAIN}.ngrok.app
     --traffic-policy '{"on_http_request":[{"actions":[{"type":"forward-internal","config":{"url":"https://clep.internal","binding":"internal"}}]}]}' 
 ```
 
