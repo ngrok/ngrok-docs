@@ -28,7 +28,7 @@
 | client_secret               | string | Client Secret for the application client                                                                                             |
 | logs_ingestion_uri          | string | Data collection endpoint logs ingestion URI                                                                                          |
 | data_collection_rule_id     | string | Data collection rule immutable ID                                                                                                    |
-| data_collection_stream_name | string | Data collection stream name to use as destination, located instide the DCR                                                           |
+| data_collection_stream_name | string | Data collection stream name to use as destination, located inside the DCR                                                            |
 | uri                         | string | URI of the Event Destination API resource.                                                                                           |
 | uri                         | string | URI of the Event Destinations list API resource.                                                                                     |
 | next_page_uri               | string | URI of the next page, or null if there is no next page.                                                                              |

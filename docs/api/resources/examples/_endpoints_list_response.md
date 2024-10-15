@@ -6,34 +6,46 @@
 {
 	"endpoints": [
 		{
-			"created_at": "2024-08-02T07:15:36Z",
-			"hostport": "f0083d6cb15e.ngrok.paid:443",
-			"id": "ep_2k5ojuJ8pGlbsVlOQ2lPe65SDs8",
+			"bindings": ["public"],
+			"created_at": "2024-10-11T22:09:08Z",
+			"hostport": "3d5e5d803427.ngrok.paid:443",
+			"id": "ep_2nJI2v7A6jaLudwJZ4CQLjcWPSy",
+			"principal_id": {
+				"id": "usr_2nJI0WC6s8dj8zCdge8PUeQW4yy",
+				"uri": ""
+			},
 			"proto": "https",
-			"public_url": "https://f0083d6cb15e.ngrok.paid",
+			"public_url": "https://3d5e5d803427.ngrok.paid",
 			"tunnel": {
-				"id": "tn_2k5ojuJ8pGlbsVlOQ2lPe65SDs8",
-				"uri": "https://api.ngrok.com/tunnels/tn_2k5ojuJ8pGlbsVlOQ2lPe65SDs8"
+				"id": "tn_2nJI2v7A6jaLudwJZ4CQLjcWPSy",
+				"uri": "https://api.ngrok.com/tunnels/tn_2nJI2v7A6jaLudwJZ4CQLjcWPSy"
+			},
+			"tunnel_session": {
+				"id": "ts_2nJI2wuJL6ZdChQ6edwt2lkE97B",
+				"uri": "https://api.ngrok.com/tunnel_sessions/ts_2nJI2wuJL6ZdChQ6edwt2lkE97B"
 			},
 			"type": "ephemeral",
-			"updated_at": "2024-08-02T07:15:36Z"
+			"updated_at": "2024-10-11T22:09:08Z",
+			"upstream_url": "http://localhost:80",
+			"url": "https://3d5e5d803427.ngrok.paid"
 		},
 		{
-			"created_at": "2024-08-02T07:15:33Z",
+			"bindings": ["public"],
+			"created_at": "2024-10-11T22:09:05Z",
 			"domain": {
-				"id": "rd_2k5ojOs6CTPouBB8JIi7D1rmwyD",
-				"uri": "https://api.ngrok.com/reserved_domains/rd_2k5ojOs6CTPouBB8JIi7D1rmwyD"
+				"id": "rd_2nJI2Vc4v6vcdB4eIUU3yWtGfYS",
+				"uri": "https://api.ngrok.com/reserved_domains/rd_2nJI2Vc4v6vcdB4eIUU3yWtGfYS"
 			},
 			"edge": {
-				"id": "edgtls_2k5ojMmZRNYMInd6d6ZxOFrymH0",
-				"uri": "https://api.ngrok.com/edges/tls/edgtls_2k5ojMmZRNYMInd6d6ZxOFrymH0"
+				"id": "edgtls_2nJI2VTDvZFOSIbSef0LuaXIc8p",
+				"uri": "https://api.ngrok.com/edges/tls/edgtls_2nJI2VTDvZFOSIbSef0LuaXIc8p"
 			},
 			"hostport": "endpoint-example2.com:443",
-			"id": "ep_2k5ojYt5TK0EigEk2OqH1sjHaJb",
+			"id": "ep_2nJI2bMqZCNYApwPCtD0kxFhlC4",
 			"proto": "tls",
 			"public_url": "tls://endpoint-example2.com",
 			"type": "edge",
-			"updated_at": "2024-08-02T07:15:33Z"
+			"updated_at": "2024-10-11T22:09:05Z"
 		}
 	],
 	"next_page_uri": null,
