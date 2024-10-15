@@ -20,19 +20,19 @@ of your API service by deploying our Kubernetes Operator in these steps:
 
 <Tabs groupId="config_example" queryString="config">
 	<TabItem value="step-00" label="Current state">
-		<img src={require("./img/k8s-step0.png").default} className="border-1" />
+		<img src={require("./img/api-g-k8s_step0.png").default} className="border-1" />
 	</TabItem>
 	<TabItem value="step-01" label="Step 1">
-		<p>hi!</p>
+		<img src={require("./img/api-g-k8s_step1.png").default} className="border-1" />
 	</TabItem>
 	<TabItem value="step-02" label="Step 2">
-		<p>hello!</p>
-	</TabItem>
+		<img src={require("./img/api-g-k8s_step2.png").default} className="border-1" />
+  </TabItem>
 	<TabItem value="step-03" label="Step 3">
-		<p>bye!</p>
+		<img src={require("./img/api-g-k8s_step3.png").default} className="border-1" />
 	</TabItem>
 	<TabItem value="step-result" label="Result">
-		<p>Result. Good result.</p>
+		<img src={require("./img/api-g-k8s_result.png").default} className="border-1" />
 	</TabItem>
 </Tabs>
 
@@ -129,16 +129,16 @@ export NGROK_AUTHTOKEN={AUTHTOKEN}
 export NGROK_API_KEY={API_KEY}
 ```
 
-Install the ngrok Kubernetes Operator into the `ngrok` namespace with Gateway API
-functionality enabled.
+Install the ngrok Kubernetes Operator into the `ngrok-operator` namespace with
+Gateway API functionality enabled.
 
 ```bash
 helm install ngrok-ingress-controller ngrok/kubernetes-ingress-controller \
-  --namespace ngrok \
+  --namespace ngrok-operator \
   --create-namespace \
   --set credentials.apiKey=$NGROK_API_KEY \
   --set credentials.authtoken=$NGROK_AUTHTOKEN
-  --set useExperimentalGatewayApi=true  # gateway preview
+  --set useExperimentalGatewayApi=true  # Enable the Gateway API preview
 ```
 
 ## **Step 2**. Configure your cluster to use ngrok as an API gateway {#configure-cluster-api-gateway}
@@ -151,7 +151,7 @@ to configure the following:
 - A `Gateway` with at least one `listener` attached to your [reserved domain in
   ngrok](#reserve-domain).
 - At least one `HTTPRoute`, with your `Gateway` as its parent, that matches
-  paths to existing services and their `port`.
+  paths to existing services (in any namespace) and their `port`.
 
 ### Create and customize the Kubernetes configuration
 
@@ -164,7 +164,7 @@ apiVersion: gateway.networking.k8s.io/v1
 kind: GatewayClass
 metadata:
   name: ngrok-gatewayclass
-  namespace: ngrok
+  namespace: ngrok-operator
 spec:
   controllerName: ngrok.com/gateway-controller
 ---
@@ -172,7 +172,7 @@ apiVersion: gateway.networking.k8s.io/v1
 kind: Gateway
 metadata:
   name: ngrok-gateway
-  namespace: ngrok
+  namespace: ngrok-operator
 spec:
   gatewayClassName: ngrok
   listeners:
@@ -189,7 +189,7 @@ apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
   name: ngrok-route
-  namespace: ngrok
+  namespace: ngrok-operator
 spec:
   parentRefs:
     - kind: Gateway
@@ -240,7 +240,7 @@ kind: NgrokTrafficPolicy
 apiVersion: ngrrok.k8s.ngrok.com/v1alpha1
 metadata:
   name: rate-limiting
-  namespace: ngrok
+  namespace: ngrok-operator
 spec:
   policy:
     inbound:
@@ -291,7 +291,7 @@ apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
   name: ngrok-route
-  namespace: ngrok
+  namespace: ngrok-operator
 spec:
   parentRefs:
     - kind: Gateway
