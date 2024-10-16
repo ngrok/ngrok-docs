@@ -10,11 +10,12 @@ Here you will find a set of guides to help you with common (and not so common) t
 
 ## Production Use Cases
 
-| Name                                                   | Description                                        |
-| :----------------------------------------------------- | :------------------------------------------------- |
-| [Device Gateway](/guides/device-gateway)               | Use ngrok as a device gateway                      |
-| [Identity-Aware Proxy](identity-aware-proxy)           | Configure ngrok for use as an identity-aware proxy |
-| [Site-to-Site Connectivity](site-to-site-connectivity) | Connect to remote sites with ngrok                 |
+| Name                                                   | Description                                         |
+| :----------------------------------------------------- | :-------------------------------------------------- |
+| [API gateway](/guides/api-gateway)                     | Deploy ngrok as an API gateway to upstream services |
+| [Device Gateway](/guides/device-gateway)               | Use ngrok as a device gateway                       |
+| [Identity-Aware Proxy](identity-aware-proxy)           | Configure ngrok for use as an identity-aware proxy  |
+| [Site-to-Site Connectivity](site-to-site-connectivity) | Connect to remote sites with ngrok                  |
 
 ## Development Use Cases
 
