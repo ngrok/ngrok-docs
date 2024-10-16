@@ -36,7 +36,7 @@ ngrok Kubernetes Operator, in these steps:
 		</div>
 		<p>
 			Grab yours in the{" "}
-			<a href="https://dashboard.ngrok.com/">ngrok dashboard</a>.
+			<a href="https://dashboard.ngrok.com/domains">ngrok dashboard</a>.
 		</p>
 	</div>
 </div>
@@ -47,7 +47,7 @@ ngrok Kubernetes Operator, in these steps:
 		</div>
 		<p>
 			... and optionally, a functioning API service. If you don't yet have one,
-			you can install our demo service.{" "}
+			you can install our <a href="https://github.com/ngrok-samples/ngrok-api-service">demo service</a>.
 		</p>
 	</div>
 	<div className="ngrok--card ngrok--card-sm">
@@ -76,7 +76,7 @@ the Gateway API based on the following:
   API](https://kubernetes.io/docs/concepts/services-networking/ingress/), which
   Ingress Controllers utilize, is frozen in new versions of K8s and no longer
   receives updates.
-- While Ingress Controller is designed purely for ingress, the Gateway API is
+- While the Ingress Controller is designed purely for ingress, the Gateway API is
   also designed for dynamic infrastructure provisioning and advanced traffic routing.
 - The Gateway API is role-oriented, allowing DevOps/platform/infrastructure
   engineering teams to control clusters, policies, and permissions centrally,
@@ -128,10 +128,11 @@ Apply the latest Gateway API CRDs to your cluster.
 kubectl apply -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.0.0/standard-install.yaml
 ```
 
-Set up a few variables to help apply the ngrok Kubernetes Operator.
+Set up a few environment variables to help apply the ngrok Kubernetes Operator.
 
-- `{AUTHTOKEN}`: Your ngrok authtoken, which you can find in your [ngrok
-  dashboard](https://dashboard.ngrok.com/get-started/your-authtoken).
+- `{AUTHTOKEN}`: An ngrok authtoken&mdash;you can use either your [default
+authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) or [create a
+new authtoken](https://dashboard.ngrok.com/authtokens) for this deployment.
 - `{API_KEY}`: An API key, created in the [ngrok
   dashboard](https://dashboard.ngrok.com/api-keys) to associate with your
   deployment.
@@ -174,8 +175,8 @@ content.
 If you're using the ngrok API service from **Step 0**, all you need to do is
 replace `{YOUR_NGROK_DOMAIN}` with the domain you reserved.
 
-If you're using the example API service, substitute `{SERVICE_NAME}` with
-`ngrok-api-service` and `{PORT}` with `80`. If you're deploying your own API
+If you're using the example API service, substitute `{YOUR_SERVICE_NAME}` with
+`ngrok-api-service` and `{SERVICE-PORT}` with `80`. If you're deploying your own API
 service, change those variables accordingly. If you have multiple API services
 in different containers, you'll need to create multiple rules to
 match paths to services.
@@ -199,7 +200,7 @@ spec:
   listeners:
     - name: ngrok-listener
       #highlight-start
-      hostname: "{YOUR_NGROK_DOMAIN}"
+      hostname: {YOUR_NGROK_DOMAIN}
       #highlight-end
       port: 443
       protocol: HTTPS
@@ -219,7 +220,7 @@ spec:
       name: ngrok-gateway
   hostnames:
     #highlight-start
-    - "{YOUR_NGROK_DOMAIN}"
+    - {YOUR_NGROK_DOMAIN}
     #highlight-end
   rules:
     - matches:
@@ -228,8 +229,8 @@ spec:
             value: /
       backendRefs:
         #highlight-start
-        - name: { SERVICE_NAME }
-          port: { PORT }
+        - name: {YOUR_SERVICE_NAME}
+          port: {SERVICE_PORT}
           #highlight-end
           kind: Service
 ```
@@ -246,7 +247,11 @@ test your API gateway and service.
 
 ```bash
 curl https://{YOUR_NGROK_DOMAIN}
+```
 
+You'll see a response like the following:
+
+```bash
 {"message":"Pong from ngrok!","host":"{YOUR_NGROK_DOMAIN}","client_ip":"{YOUR_IP_ADDRESS}","method":"GET","url":"/","time":"2024-10-16T13:51:37.836Z","status":200}
 ```
 
@@ -298,8 +303,8 @@ This CRD instantiates a rate limiting rule with the following properties:
 
 - Via the `expression`, it only applies to requests with the `POST` or `PUT`
   HTTP method&mdash;all others, like `GET`, are unaffected.
-- Allows for a maximum of `10` requests in a given `60s` window, both of which
-  are configurable to your needs.
+- Allows for a maximum of `10` requests within the last `60s`&mdash;both values
+are configurable to your needs.
 - Uses the client's IP address (via the [`conn.client_ip`
   variable](/docs/http/traffic-policy/expressions/variables.mdx#connclient_ip))
   to track usage against your capacity limit.
@@ -342,15 +347,15 @@ spec:
     - kind: Gateway
       name: ngrok-gateway
   hostnames:
-    - "{YOUR_NGROK_DOMAIN}"
+    - {YOUR_NGROK_DOMAIN}
   rules:
     - matches:
         - path:
             type: PathPrefix
             value: /
       backendRefs:
-        - name: { SERVICE_NAME }
-          port: { PORT }
+        - name: {YOUR_SERVICE_NAME}
+          port: {SERVICE_PORT}
           kind: Service
       #highlight-start
       filters:
