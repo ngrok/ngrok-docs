@@ -11,8 +11,8 @@ You currently have a K8s cluster with an API (micro)service and want to deliver 
 to production with additional features and protection, like rate limiting,
 authentication, and DDoS protection.
 
-In this guide, you'll learn why and how to use ngrok as an API gateway in front
-of your API service by deploying our Kubernetes Operator in these steps:
+In this guide, you'll learn how to implement ngrok as an API gateway, using the
+ngrok Kubernetes Operator, in these steps:
 
 1. [Apply the ngrok Kubernetes Operator to your cluster](#apply-kubernetes-operator)
 2. [Configure your cluster to use ngrok as an API gateway](#configure-cluster-api-gateway)
@@ -130,19 +130,22 @@ to configure the following:
 
 - A `GatewayClass` that uses the controller from the ngrok Kubernetes Operator
   project.
-- A `Gateway` with at least one `listener` attached to your [reserved domain in
-  ngrok](#reserve-domain).
+- A `Gateway` with at least one `listener` attached to the ngrok domain you
+already reserved.
 - At least one `HTTPRoute`, with your `Gateway` as its parent, that matches
-  paths to existing services (in any namespace) and their `port`.
+  paths to one or more existing API services (in any namespace) based on their
+`name` and `port`.
 
-### Create and customize the Kubernetes configuration
+### Create the API gateway configuration
 
 Create a new YAML file named `ngrok-api-gateway.yaml` and paste in the following
-content, replacing `{YOUR_NGROK_DOMAIN}` with the domain you reserved as a
-prerequisite in two places.
+content.
 
-You'll also need to replace `{YOUR_SERVICE}` and `{SERVICE_PORT}` based on the
-API service you've already deployed to your Kubernetes cluster.
+You'll need to replace `{YOUR_NGROK_DOMAIN}` with the domain you reserved, along
+with `{YOUR_SERVICE}` and `{SERVICE_PORT}` based on the API service you've
+already deployed to your Kubernetes cluster. If you have multiple API services
+in different containers, you'll need to create multiple rules to match paths to
+services.
 
 ```yaml
 apiVersion: gateway.networking.k8s.io/v1
@@ -198,13 +201,17 @@ Write the manifest to disk and apply to your cluster.
 kubectl apply -f ngrok-api-gateway.yaml
 ```
 
+With the ngrok Kubernetes Operator deployed and configured as an API gateway,
+your API service is now publicly available at `{YOUR_NGROK_DOMAIN}`. That's a
+start, but you likely want to also add in common features for API gateways, like
+rate limiting or authentication.
+
 ## **Step 3**. Set up Traffic Policy to shape traffic into/out of your API service {#set-up-traffic-policy}
 
-ngrok's [Traffic Policy](/docs/http/traffic-policy/index.mdx) engine allows you
+ngrok's [Traffic Policy](/docs/http/traffic-policy/index.mdx) module allows you
 to conditionally act upon traffic as it arrives and departs your API gateway. In
 a Kubernetes context, Traffic Policy builds on top of the existing YAML
-manifests you already use to declare your
-deployments and services.
+manifests you already use to declare your deployments and services.
 
 When the ngrok Kubernetes Operator initiates in your cluster, and your
 `HTTPRoute` configuration contains one or more `filter`
@@ -259,6 +266,15 @@ of how to combine variables, expressions, and actions to create rules that
 beneficially shape the traffic on your API gateway and lessen the operational
 burden on your API service.
 
+### Apply the Traffic Policy rule to your cluster
+
+You must make instantiate the `NgrokTrafficPolicy` CRD in your cluster before
+you can reference it in your API gateway configuration.
+
+```bash
+kubectl apply -f ngrok-rate-limit.yaml
+```
+
 ### Update your API gateway configuration to include the Traffic Policy rule
 
 With the CRD applied, you need to update your existing configuration
@@ -267,8 +283,8 @@ With the CRD applied, you need to update your existing configuration
 which is a process that must be completed during the request or response
 lifecycle.
 
-Edit your existing `ngrok-api-gateway.yaml` `HTTPRoute` to include the reference
-to the rate limiting policy.
+Edit your existing `ngrok-api-gateway.yaml` file&mdash;specifically the
+`HTTPRoute` section&mdash;to add a reference to the rate limiting policy.
 
 ```yaml
 ...
@@ -303,7 +319,7 @@ spec:
       #highlight-end
 ```
 
-Re-apply your manifest to update your API gateway.
+Re-apply your manifest to update your API gateway with the new Traffic Policy rule.
 
 ```
 kubectl apply -f ngrok-api-gateway.yaml
@@ -311,31 +327,31 @@ kubectl apply -f ngrok-api-gateway.yaml
 
 ## What do you need to take this to production?
 
-TK
+So far, our steps have been pretty generic, asking you to fill in variables like
+`{YOUR_SERVICE}` to match an API service you've already deployed to your cluster.
 
-1.  
+If you're still wondering how to adopt this implementation process 
+
+1. 
 
 ## What's next?
 
 Congratulations&mdash;you've now made your API service available to the public
 internet, backed by the power of ngrok operating as an API gateway.
 
-For additional details about configuring the ngrok Kubernetes Operator:
-
-- Read the [getting started with the Gateway
-  API](/docs/k8s/getting-started-gwapi.mdx) guide.
-
-To expand your usage of Traffic Policy rules:
+Your next best step is to expand your usage of Traffic Policy actions to handle
+more advanced API gateway requirements:
 
 - Learn about other ways to configure [Traffic Policy with the Gateway
   API](/docs/k8s/user-guide.mdx#gateway-composition).
 - Explore other [Traffic Policy actions](/docs/http/traffic-policy/actions/index.mdx)
-  you can enable on your API gateway, like [adding
-  headers](/docs/http/traffic-policy/actions/add-headers.mdx), [URL
+  you can enable on your API gateway, like [JWT
+authentication](/docs/http/traffic-policy/actions/jwt-validation.mdx), [adding
+headers](/docs/http/traffic-policy/actions/add-headers.mdx), [URL
   rewrites](/docs/http/traffic-policy/actions/url-rewrite.mdx),
   [logging](/docs/http/traffic-policy/actions/log.mdx), and more.
 
-Finally, you can expand your usage of ngrok as an API gateway to better match
+Finally, you can extend how you use ngrok as an API gateway to better match
 your Git-based workflows and using version-controlled, declarative, and
 repeatable configurations with a [continuous deployment mechanism like Argo
 CD](/docs/integrations/argocd/apiops.mdx).
