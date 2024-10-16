@@ -9,5 +9,5 @@ curl \
 -H "Content-Type: application/json" \
 -H "Ngrok-Version: 2" \
 -d '{"description":"temporary access to staging machine for alan","metadata":"{\"user_email\": \"alan@example.com\"}"}' \
-https://api.ngrok.com/ssh_user_certificates/sucrt_2k5okE6aY56iCKcIu87g0urXHr1
+https://api.ngrok.com/ssh_user_certificates/sucrt_2nJI3NYtsn23W7f2mPSVj1mR1bg
 ```

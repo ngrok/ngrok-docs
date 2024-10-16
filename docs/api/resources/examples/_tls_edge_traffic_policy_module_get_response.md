@@ -5,6 +5,6 @@
 ```json
 {
 	"enabled": true,
-	"value": "{\"inbound\":[{\"expressions\":[\"conn.tls.version.contains('1.3')\"],\"name\":\"AllowTLS1.3\",\"actions\":[{\"type\":\"log\",\"config\":{\"metadata\":{\"message\":\"Invalid TLS Version\",\"edgeId\":\"edgtls_2k5okwZ6bY5Y0fdpt0fXOBv0ugH\"}}},{\"type\":\"deny\"}]}]}"
+	"value": "{\n\t\"inbound\": [\n\t\t{\n\t\t\t\"name\": \"AllowTLS1.3\",\n\t\t\t\"expressions\":[\"conn.tls.version.contains('1.3')\"],\n\t\t\t\"actions\":[\n\t\t\t\t{\n\t\t\t\t\t\"type\":\"log\",\n\t\t\t\t\t\"config\":{\n\t\t\t\t\t\t\"metadata\":{\n\t\t\t\t\t\t\t\"message\":\"Invalid TLS Version\",\n\t\t\t\t\t\t\t\"edgeId\": \"edgtls_2nJI42aYMJWsdvKcXaOaUHMTBZZ\"\n\t\t\t\t\t\t}\n\t\t\t\t\t}\n\t\t\t\t},\n\t\t\t\t{\n\t\t\t\t\t\"type\":\"deny\"\n\t\t\t\t}\n\t\t\t]\n\t\t}\n\t]\n}"
 }
 ```

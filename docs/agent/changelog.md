@@ -6,6 +6,12 @@ title: Changelog
 
 ## v3
 
+### ngrok Agent 3.17.0 - \[2024-10-10\]
+
+- Added endpoint create/update/delete subcommands to the ngrok api command
+- Added support for policy phases like `on_tcp_connect`, `on_http_request` and `on_http_response`
+- Fixed a bug where we were incorrectly passing TLS as the endpoint proto rather than HTTP(S).
+
 ### ngrok Agent 3.16.1 - \[2024-10-03\]
 
 - Added windows arm64 agent binary.
@@ -16,7 +22,7 @@ title: Changelog
   - Added `--url` agent CLI flag for creation of HTTP(S), TLS, and TCP protocol endpoints.
   - Deprecated `--domain`, `--scheme`, and `--remote-addr` agent CLI flags, which have been replaced by `--url`.
   - Added `--metadata` and `--description` agent CLI flags when using `--url`.
-  - Added `endpoints:` as a new field used for [endpoint creation](/docs/agent/config/v3/#full-example).
+  - Added `endpoints:` as a new field used for [endpoint creation](/docs/agent/config/v3/).
   - A new `agent:` field has been added to the agent configuration format for V3.
     - v3 supports _both_ tunnels and endpoints. Tunnels are now considered deprecated when using config v3.
     - Some agent configuration fields have been renamed in v3.
@@ -33,7 +39,7 @@ title: Changelog
 - Added `--url` agent CLI flag for creation of HTTP(S), TLS, and TCP protocol endpoints.
 - Deprecated `--domain`, `--scheme`, and `--remote-addr` agent CLI flags, which have been replaced by `--url`.
 - Added `--metadata` and `--description` agent CLI flags when using `--url`.
-- Added `endpoints:` as a new field used for [endpoint creation](/docs/agent/config/v3/#full-example).
+- Added `endpoints:` as a new field used for [endpoint creation](/docs/agent/config/v3/).
 - A new `agent:` field has been added to the agent configuration format for V3.
   - v3 supports _both_ tunnels and endpoints. Tunnels are now considered deprecated when using config v3.
   - Some agent configuration fields have been renamed in v3.
@@ -161,7 +167,7 @@ title: Changelog
 - Updated `--config` option to be accepted in any position with cli command.
 - Fixed `ngrok config add-authtoken <AUTHTOKEN>` to also save the default version if it does not exist in the config file.
 - Fixed rare race condition where agent would crash unexpectedly.
-- Added DNS rebinding protection which includes [`web_allow_hosts`](/agent/config#web_allow_hosts) configuration.
+- Added DNS rebinding protection which includes [`web_allow_hosts`](/agent/config/v3/#web_allow_hosts) configuration.
 
 ### ngrok Agent 3.1.0 - \[2022-09-14\]
 

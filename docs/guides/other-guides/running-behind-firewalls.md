@@ -42,7 +42,7 @@ When working with the network team, you'll want to set up the following exceptio
 Setting up a custom ingress domain can be useful because it ensures that no one can bring their own ngrok account. In this case, the network admins could continue to block traffic to our normal ingress domains and only allow the custom branded ingress domains. For this, you'll need to:
 
 - Set up a [custom ingress domain in your ngrok Dashboard](https://dashboard.ngrok.com/tunnels/ingress)
-- Edit your ngrok agent configuration file with a [`server_addr`](/agent/config/#server_addr) parameter, set to the custom ingress domain of your choosing
+- Edit your ngrok agent configuration file with a [`connect_url`](/agent/config/v3/#connect_url) parameter, set to the custom ingress domain of your choosing
 
 ### Certificate Revocation List
 

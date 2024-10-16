@@ -15,7 +15,7 @@ import Tabs from "@theme/Tabs";
 
 In this guide, you'll learn how to install ngrok on any Linux ARM64 device to forward traffic from public endpoints to your upstream services or for remote management. You'll also create some a traffic policy to protect your device from unauthorized traffic.
 
-This guide is specific to ARM64 devices on Linux—if you're using a different device or CPU architecture, first check whether your platform meets the ngrok agent's [system and resource requirements](/docs/agent/index.mdx##system-requirements). We also have other guides that may fit your use case more precisely:
+This guide is specific to ARM64 devices on Linux—if you're using a different device or CPU architecture, first check whether your platform meets the ngrok agent's [system and resource requirements](/docs/agent/#system-requirements). We also have other guides that may fit your use case more precisely:
 
 - [Linux AMD64 devices](/docs/guides/device-gateway/linux.md)
 - [Raspberry Pi](/docs/guides/device-gateway/raspberry-pi.md)
@@ -26,7 +26,7 @@ This guide is specific to ARM64 devices on Linux—if you're using a different d
 To follow this guide, you need:
 
 - An [ngrok account](https://dashboard.ngrok.com/signup) (some features require a [pay-as-you-go plan](https://ngrok.com/pricing))
-- Any ARM64 device running Linux (see our [system requirements](/docs/agent/index.mdx##system-requirements) for all supported architectures)
+- Any ARM64 device running Linux (see our [system requirements](/docs/agent/#system-requirements) for all supported architectures)
 
 ## Step 1: Install the ngrok Agent
 

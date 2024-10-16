@@ -118,7 +118,7 @@ POST/api/tunnels
 
 ### Parameters
 
-Parameter names and behaviors are identical to those those defined in the configuration file. Use the [tunnel definitions](/agent/config#tunnel-configurations) section as a reference for configuration parameters and their behaviors.
+Parameter names and behaviors are identical to those those defined in the configuration file. Use the [tunnel definitions](/agent/config/v2/#tunnel-configurations) section as a reference for configuration parameters and their behaviors.
 
 ### Example request body
 

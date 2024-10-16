@@ -1,9 +1,79 @@
+import EndpointsCreateRequest from "./examples/_endpoints_create_request.md";
+import EndpointsCreateResponse from "./examples/_endpoints_create_response.md";
+import EndpointsDeleteRequest from "./examples/_endpoints_delete_request.md";
+import EndpointsDeleteResponse from "./examples/_endpoints_delete_response.md";
 import EndpointsGetRequest from "./examples/_endpoints_get_request.md";
 import EndpointsGetResponse from "./examples/_endpoints_get_response.md";
 import EndpointsListRequest from "./examples/_endpoints_list_request.md";
 import EndpointsListResponse from "./examples/_endpoints_list_response.md";
+import EndpointsUpdateRequest from "./examples/_endpoints_update_request.md";
+import EndpointsUpdateResponse from "./examples/_endpoints_update_response.md";
 
 # Endpoints
+
+## Create Endpoint
+
+Create an endpoint, currently available only for cloud endpoints
+
+### Request
+
+POST /endpoints
+
+<EndpointsCreateRequest />
+
+#### Parameters
+
+| Name             | Type               | Description                                                                                                                                               |
+| ---------------- | ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `url`            | string             | the url of the endpoint                                                                                                                                   |
+| `type`           | string             | whether the endpoint is `ephemeral` (served directly by an agent-initiated tunnel) or `edge` (served by an edge) or `cloud (represents a cloud endpoint)` |
+| `traffic_policy` | string             | The traffic policy attached to this endpoint                                                                                                              |
+| `description`    | string             | user-supplied description of the associated tunnel                                                                                                        |
+| `metadata`       | string             | user-supplied metadata of the associated tunnel or edge object                                                                                            |
+| `bindings`       | List&lt;string&gt; | the bindings associated with this endpoint                                                                                                                |
+
+### Response
+
+Returns a 201 response on success
+
+<EndpointsCreateResponse />
+
+#### Fields
+
+| Name             | Type               | Description                                                                                                                                               |
+| ---------------- | ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`             | string             | unique endpoint resource identifier                                                                                                                       |
+| `region`         | string             | identifier of the region this endpoint belongs to                                                                                                         |
+| `created_at`     | string             | timestamp when the endpoint was created in RFC 3339 format                                                                                                |
+| `updated_at`     | string             | timestamp when the endpoint was updated in RFC 3339 format                                                                                                |
+| `public_url`     | string             | URL of the hostport served by this endpoint                                                                                                               |
+| `proto`          | string             | protocol served by this endpoint. one of `http`, `https`, `tcp`, or `tls`                                                                                 |
+| `scheme`         | string             |                                                                                                                                                           |
+| `hostport`       | string             | hostport served by this endpoint (hostname:port) -> soon to be deprecated                                                                                 |
+| `host`           | string             |                                                                                                                                                           |
+| `port`           | int64              |                                                                                                                                                           |
+| `type`           | string             | whether the endpoint is `ephemeral` (served directly by an agent-initiated tunnel) or `edge` (served by an edge) or `cloud (represents a cloud endpoint)` |
+| `metadata`       | string             | user-supplied metadata of the associated tunnel or edge object                                                                                            |
+| `description`    | string             | user-supplied description of the associated tunnel                                                                                                        |
+| `domain`         | [Ref](#ref-fields) | the domain reserved for this endpoint                                                                                                                     |
+| `tcp_addr`       | [Ref](#ref-fields) | the address reserved for this endpoint                                                                                                                    |
+| `tunnel`         | [Ref](#ref-fields) | the tunnel serving requests to this endpoint, if this is an ephemeral endpoint                                                                            |
+| `edge`           | [Ref](#ref-fields) | the edge serving requests to this endpoint, if this is an edge endpoint                                                                                   |
+| `upstream_url`   | string             | the local address the tunnel forwards to                                                                                                                  |
+| `upstream_proto` | string             | the protocol the agent uses to forward with                                                                                                               |
+| `url`            | string             | the url of the endpoint                                                                                                                                   |
+| `principal_id`   | [Ref](#ref-fields) | The ID of the owner (bot or user) that owns this endpoint                                                                                                 |
+| `traffic_policy` | string             | The traffic policy attached to this endpoint                                                                                                              |
+| `bindings`       | List&lt;string&gt; | the bindings associated with this endpoint                                                                                                                |
+| `tunnel_session` | [Ref](#ref-fields) | The tunnel session of the agent for this endpoint                                                                                                         |
+| `uri`            | string             | URI of the clep API resource                                                                                                                              |
+
+#### Ref fields
+
+| Name  | Type   | Description                   |
+| ----- | ------ | ----------------------------- |
+| `id`  | string | a resource identifier         |
+| `uri` | string | a uri for locating a resource |
 
 ## List Endpoints
 
@@ -31,21 +101,33 @@ Returns a 200 response on success
 
 #### Endpoint fields
 
-| Name         | Type               | Description                                                                                                      |
-| ------------ | ------------------ | ---------------------------------------------------------------------------------------------------------------- |
-| `id`         | string             | unique endpoint resource identifier                                                                              |
-| `region`     | string             | identifier of the region this endpoint belongs to                                                                |
-| `created_at` | string             | timestamp when the endpoint was created in RFC 3339 format                                                       |
-| `updated_at` | string             | timestamp when the endpoint was updated in RFC 3339 format                                                       |
-| `public_url` | string             | URL of the hostport served by this endpoint                                                                      |
-| `proto`      | string             | protocol served by this endpoint. one of `http`, `https`, `tcp`, or `tls`                                        |
-| `hostport`   | string             | hostport served by this endpoint (hostname:port)                                                                 |
-| `type`       | string             | whether the endpoint is `ephemeral` (served directly by an agent-initiated tunnel) or `edge` (served by an edge) |
-| `metadata`   | string             | user-supplied metadata of the associated tunnel or edge object                                                   |
-| `domain`     | [Ref](#ref-fields) | the domain reserved for this endpoint                                                                            |
-| `tcp_addr`   | [Ref](#ref-fields) | the address reserved for this endpoint                                                                           |
-| `tunnel`     | [Ref](#ref-fields) | the tunnel serving requests to this endpoint, if this is an ephemeral endpoint                                   |
-| `edge`       | [Ref](#ref-fields) | the edge serving requests to this endpoint, if this is an edge endpoint                                          |
+| Name             | Type               | Description                                                                                                                                               |
+| ---------------- | ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`             | string             | unique endpoint resource identifier                                                                                                                       |
+| `region`         | string             | identifier of the region this endpoint belongs to                                                                                                         |
+| `created_at`     | string             | timestamp when the endpoint was created in RFC 3339 format                                                                                                |
+| `updated_at`     | string             | timestamp when the endpoint was updated in RFC 3339 format                                                                                                |
+| `public_url`     | string             | URL of the hostport served by this endpoint                                                                                                               |
+| `proto`          | string             | protocol served by this endpoint. one of `http`, `https`, `tcp`, or `tls`                                                                                 |
+| `scheme`         | string             |                                                                                                                                                           |
+| `hostport`       | string             | hostport served by this endpoint (hostname:port) -> soon to be deprecated                                                                                 |
+| `host`           | string             |                                                                                                                                                           |
+| `port`           | int64              |                                                                                                                                                           |
+| `type`           | string             | whether the endpoint is `ephemeral` (served directly by an agent-initiated tunnel) or `edge` (served by an edge) or `cloud (represents a cloud endpoint)` |
+| `metadata`       | string             | user-supplied metadata of the associated tunnel or edge object                                                                                            |
+| `description`    | string             | user-supplied description of the associated tunnel                                                                                                        |
+| `domain`         | [Ref](#ref-fields) | the domain reserved for this endpoint                                                                                                                     |
+| `tcp_addr`       | [Ref](#ref-fields) | the address reserved for this endpoint                                                                                                                    |
+| `tunnel`         | [Ref](#ref-fields) | the tunnel serving requests to this endpoint, if this is an ephemeral endpoint                                                                            |
+| `edge`           | [Ref](#ref-fields) | the edge serving requests to this endpoint, if this is an edge endpoint                                                                                   |
+| `upstream_url`   | string             | the local address the tunnel forwards to                                                                                                                  |
+| `upstream_proto` | string             | the protocol the agent uses to forward with                                                                                                               |
+| `url`            | string             | the url of the endpoint                                                                                                                                   |
+| `principal_id`   | [Ref](#ref-fields) | The ID of the owner (bot or user) that owns this endpoint                                                                                                 |
+| `traffic_policy` | string             | The traffic policy attached to this endpoint                                                                                                              |
+| `bindings`       | List&lt;string&gt; | the bindings associated with this endpoint                                                                                                                |
+| `tunnel_session` | [Ref](#ref-fields) | The tunnel session of the agent for this endpoint                                                                                                         |
+| `uri`            | string             | URI of the clep API resource                                                                                                                              |
 
 #### Ref fields
 
@@ -72,21 +154,33 @@ Returns a 200 response on success
 
 #### Fields
 
-| Name         | Type               | Description                                                                                                      |
-| ------------ | ------------------ | ---------------------------------------------------------------------------------------------------------------- |
-| `id`         | string             | unique endpoint resource identifier                                                                              |
-| `region`     | string             | identifier of the region this endpoint belongs to                                                                |
-| `created_at` | string             | timestamp when the endpoint was created in RFC 3339 format                                                       |
-| `updated_at` | string             | timestamp when the endpoint was updated in RFC 3339 format                                                       |
-| `public_url` | string             | URL of the hostport served by this endpoint                                                                      |
-| `proto`      | string             | protocol served by this endpoint. one of `http`, `https`, `tcp`, or `tls`                                        |
-| `hostport`   | string             | hostport served by this endpoint (hostname:port)                                                                 |
-| `type`       | string             | whether the endpoint is `ephemeral` (served directly by an agent-initiated tunnel) or `edge` (served by an edge) |
-| `metadata`   | string             | user-supplied metadata of the associated tunnel or edge object                                                   |
-| `domain`     | [Ref](#ref-fields) | the domain reserved for this endpoint                                                                            |
-| `tcp_addr`   | [Ref](#ref-fields) | the address reserved for this endpoint                                                                           |
-| `tunnel`     | [Ref](#ref-fields) | the tunnel serving requests to this endpoint, if this is an ephemeral endpoint                                   |
-| `edge`       | [Ref](#ref-fields) | the edge serving requests to this endpoint, if this is an edge endpoint                                          |
+| Name             | Type               | Description                                                                                                                                               |
+| ---------------- | ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`             | string             | unique endpoint resource identifier                                                                                                                       |
+| `region`         | string             | identifier of the region this endpoint belongs to                                                                                                         |
+| `created_at`     | string             | timestamp when the endpoint was created in RFC 3339 format                                                                                                |
+| `updated_at`     | string             | timestamp when the endpoint was updated in RFC 3339 format                                                                                                |
+| `public_url`     | string             | URL of the hostport served by this endpoint                                                                                                               |
+| `proto`          | string             | protocol served by this endpoint. one of `http`, `https`, `tcp`, or `tls`                                                                                 |
+| `scheme`         | string             |                                                                                                                                                           |
+| `hostport`       | string             | hostport served by this endpoint (hostname:port) -> soon to be deprecated                                                                                 |
+| `host`           | string             |                                                                                                                                                           |
+| `port`           | int64              |                                                                                                                                                           |
+| `type`           | string             | whether the endpoint is `ephemeral` (served directly by an agent-initiated tunnel) or `edge` (served by an edge) or `cloud (represents a cloud endpoint)` |
+| `metadata`       | string             | user-supplied metadata of the associated tunnel or edge object                                                                                            |
+| `description`    | string             | user-supplied description of the associated tunnel                                                                                                        |
+| `domain`         | [Ref](#ref-fields) | the domain reserved for this endpoint                                                                                                                     |
+| `tcp_addr`       | [Ref](#ref-fields) | the address reserved for this endpoint                                                                                                                    |
+| `tunnel`         | [Ref](#ref-fields) | the tunnel serving requests to this endpoint, if this is an ephemeral endpoint                                                                            |
+| `edge`           | [Ref](#ref-fields) | the edge serving requests to this endpoint, if this is an edge endpoint                                                                                   |
+| `upstream_url`   | string             | the local address the tunnel forwards to                                                                                                                  |
+| `upstream_proto` | string             | the protocol the agent uses to forward with                                                                                                               |
+| `url`            | string             | the url of the endpoint                                                                                                                                   |
+| `principal_id`   | [Ref](#ref-fields) | The ID of the owner (bot or user) that owns this endpoint                                                                                                 |
+| `traffic_policy` | string             | The traffic policy attached to this endpoint                                                                                                              |
+| `bindings`       | List&lt;string&gt; | the bindings associated with this endpoint                                                                                                                |
+| `tunnel_session` | [Ref](#ref-fields) | The tunnel session of the agent for this endpoint                                                                                                         |
+| `uri`            | string             | URI of the clep API resource                                                                                                                              |
 
 #### Ref fields
 
@@ -94,3 +188,81 @@ Returns a 200 response on success
 | ----- | ------ | ----------------------------- |
 | `id`  | string | a resource identifier         |
 | `uri` | string | a uri for locating a resource |
+
+## Update Endpoint
+
+Update an Endpoint by ID, currently available only for cloud endpoints
+
+### Request
+
+PATCH /endpoints/\{id\}
+
+<EndpointsUpdateRequest />
+
+#### Parameters
+
+| Name             | Type               | Description                                                    |
+| ---------------- | ------------------ | -------------------------------------------------------------- |
+| `id`             | string             | unique endpoint resource identifier                            |
+| `url`            | string             | the url of the endpoint                                        |
+| `traffic_policy` | string             | The traffic policy attached to this endpoint                   |
+| `description`    | string             | user-supplied description of the associated tunnel             |
+| `metadata`       | string             | user-supplied metadata of the associated tunnel or edge object |
+| `bindings`       | List&lt;string&gt; | the bindings associated with this endpoint                     |
+
+### Response
+
+Returns a 200 response on success
+
+<EndpointsUpdateResponse />
+
+#### Fields
+
+| Name             | Type               | Description                                                                                                                                               |
+| ---------------- | ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`             | string             | unique endpoint resource identifier                                                                                                                       |
+| `region`         | string             | identifier of the region this endpoint belongs to                                                                                                         |
+| `created_at`     | string             | timestamp when the endpoint was created in RFC 3339 format                                                                                                |
+| `updated_at`     | string             | timestamp when the endpoint was updated in RFC 3339 format                                                                                                |
+| `public_url`     | string             | URL of the hostport served by this endpoint                                                                                                               |
+| `proto`          | string             | protocol served by this endpoint. one of `http`, `https`, `tcp`, or `tls`                                                                                 |
+| `scheme`         | string             |                                                                                                                                                           |
+| `hostport`       | string             | hostport served by this endpoint (hostname:port) -> soon to be deprecated                                                                                 |
+| `host`           | string             |                                                                                                                                                           |
+| `port`           | int64              |                                                                                                                                                           |
+| `type`           | string             | whether the endpoint is `ephemeral` (served directly by an agent-initiated tunnel) or `edge` (served by an edge) or `cloud (represents a cloud endpoint)` |
+| `metadata`       | string             | user-supplied metadata of the associated tunnel or edge object                                                                                            |
+| `description`    | string             | user-supplied description of the associated tunnel                                                                                                        |
+| `domain`         | [Ref](#ref-fields) | the domain reserved for this endpoint                                                                                                                     |
+| `tcp_addr`       | [Ref](#ref-fields) | the address reserved for this endpoint                                                                                                                    |
+| `tunnel`         | [Ref](#ref-fields) | the tunnel serving requests to this endpoint, if this is an ephemeral endpoint                                                                            |
+| `edge`           | [Ref](#ref-fields) | the edge serving requests to this endpoint, if this is an edge endpoint                                                                                   |
+| `upstream_url`   | string             | the local address the tunnel forwards to                                                                                                                  |
+| `upstream_proto` | string             | the protocol the agent uses to forward with                                                                                                               |
+| `url`            | string             | the url of the endpoint                                                                                                                                   |
+| `principal_id`   | [Ref](#ref-fields) | The ID of the owner (bot or user) that owns this endpoint                                                                                                 |
+| `traffic_policy` | string             | The traffic policy attached to this endpoint                                                                                                              |
+| `bindings`       | List&lt;string&gt; | the bindings associated with this endpoint                                                                                                                |
+| `tunnel_session` | [Ref](#ref-fields) | The tunnel session of the agent for this endpoint                                                                                                         |
+| `uri`            | string             | URI of the clep API resource                                                                                                                              |
+
+#### Ref fields
+
+| Name  | Type   | Description                   |
+| ----- | ------ | ----------------------------- |
+| `id`  | string | a resource identifier         |
+| `uri` | string | a uri for locating a resource |
+
+## Delete Endpoint
+
+Delete an Endpoint by ID, currently available only for cloud endpoints
+
+### Request
+
+DELETE /endpoints/\{id\}
+
+<EndpointsDeleteRequest />
+
+### Response
+
+Returns a 204 response with no body on success

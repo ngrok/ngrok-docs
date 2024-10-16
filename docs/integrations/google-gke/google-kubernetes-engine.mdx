@@ -1,7 +1,7 @@
 ---
 sidebar_label: Getting Started
-title: ngrok Kubernetes Ingress Controller on GKE
-description: ngrok Kubernetes Ingress Controller on Google Kubernetes Engine (GKE)
+title: ngrok Kubernetes Operator on GKE
+description: ngrok Kubernetes Operator on Google Kubernetes Engine (GKE)
 tags:
   - kubernetes
   - k8s
@@ -15,10 +15,10 @@ tags:
 
 :::tip TL;DR
 
-To use the ngrok Ingress Controller with Google Kubernetes Engine:
+To use the ngrok Kubernetes Operator with Google Kubernetes Engine:
 
 1. [Ensure `kubectl` can speak with your cluster](#prereqs)
-1. [Install the ngrok Ingress Controller](#install-the-ngrok-ingress-controller)
+1. [Install the ngrok Kubernetes Operator](#install-the-ngrok-ingress-controller)
 1. [Install a sample application](#install-a-sample-application)
 1. [Add edge security to your app](#add-edge-security)
 
@@ -26,7 +26,7 @@ To use the ngrok Ingress Controller with Google Kubernetes Engine:
 
 ## Introduction
 
-The [ngrok Ingress Controller for Kubernetes](https://github.com/ngrok/kubernetes-ingress-controller) is our official open-source controller for adding public and secure ingress traffic to your k8s services. It works out of the box with Google Kubernetes Engine cluster to provide ingress to your services no matter the network configuration, as long as it has outbound access to the ngrok service. This allows ngrok to be portable and work seamlessly across any type of infrastructure.
+The [ngrok Kubernetes Operator](https://github.com/ngrok/ngrok-operator) is our official open-source controller for adding public and secure ingress traffic to your k8s services. It works out of the box with Google Kubernetes Engine cluster to provide ingress to your services no matter the network configuration, as long as it has outbound access to the ngrok service. This allows ngrok to be portable and work seamlessly across any type of infrastructure.
 
 :::caution This tutorial requires:
 
@@ -39,7 +39,7 @@ The [ngrok Ingress Controller for Kubernetes](https://github.com/ngrok/kubernete
 
 ## **Step 1**: Ensure `kubectl` can speak with your cluster {#prereqs}
 
-With a Google Kubernetes Engine (GKE) cluster, authentication for `kubectl` happens with a credential helper. So in-order to deploy the ngrok Ingress Controller to your cluster, you'll need to ensure that you can use the `gcloud` CLI and that the credential helper is available.
+With a Google Kubernetes Engine (GKE) cluster, authentication for `kubectl` happens with a credential helper. So in-order to deploy the ngrok Kubernetes Operator to your cluster, you'll need to ensure that you can use the `gcloud` CLI and that the credential helper is available.
 
 Let's ensure that you have the `gcloud` CLI installed and configured with your Google Cloud credentials. You can confirm this works and you're authenticated correctly by running the following command:
 
@@ -61,11 +61,11 @@ Finally, we can add the cluster to our KUBECONFIG:
 gcloud container clusters get-credentials --region <cluster-region> --project <cluster-project> <cluster-name>
 ```
 
-## **Step 2**: Install the ngrok Ingress Controller {#install-the-ngrok-ingress-controller}
+## **Step 2**: Install the ngrok Kubernetes Operator {#install-the-ngrok-ingress-controller}
 
-Now we can install the ngrok Ingress Controller to provide ingress to our services. We'll use Helm to install the ngrok Ingress Controller into our cluster.
+Now we can install the ngrok Kubernetes Operator to provide ingress to our services. We'll use Helm to install the ngrok Kubernetes Operator into our cluster.
 
-1. Add the ngrok Ingress Controller Helm repo
+1. Add the ngrok Kubernetes Operator Helm repo
    ```shell
    helm repo add ngrok https://charts.ngrok.com
    ```
@@ -74,7 +74,7 @@ Now we can install the ngrok Ingress Controller to provide ingress to our servic
    export NGROK_AUTHTOKEN=[AUTHTOKEN]
    export NGROK_API_KEY=[API_KEY]
    ```
-3. Next, we'll install the ngrok Ingress Controller into our cluster.
+3. Next, we'll install the ngrok Kubernetes Operator into our cluster.
 
    ```shell
    helm install ngrok-ingress-controller ngrok/kubernetes-ingress-controller \
@@ -84,7 +84,7 @@ Now we can install the ngrok Ingress Controller to provide ingress to our servic
      --set credentials.authtoken=$NGROK_AUTHTOKEN
    ```
 
-4. Verify the ngrok Ingress Controller is installed and all its pods are healthy
+4. Verify the ngrok Kubernetes Operator is installed and all its pods are healthy
 
    ```shell
    kubectl get pods -l 'app.kubernetes.io/name=kubernetes-ingress-controller' -n ngrok
@@ -99,7 +99,7 @@ Create a manifest file (for example `ngrok-manifest.yaml`) with the following co
 :::tip Notes:
 
 - Lines 1-34: Create the 2048 app service and deployment
-- Lines 35-54 (highlighted): Create the ngrok Ingress Controller. Line 45 determines the ingress URL for public requests.
+- Lines 35-54 (highlighted): Create the ngrok Kubernetes Operator. Line 45 determines the ingress URL for public requests.
 
 :::
 
@@ -140,7 +140,7 @@ spec:
               containerPort: 80
 ---
 # highlight-start
-# ngrok Ingress Controller Configuration
+# ngrok Kubernetes Operator Configuration
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -172,15 +172,15 @@ spec:
 
 1. To confirm the manifest is successfully applied, go to the [ngrok Dashboard](https://dashboard.ngrok.com) and click [Edge Configurations](https://dashboard.ngrok.com/cloud-edge/edges). You should see a new Edge Configuration for your cluster with the name matching your URL (1) — for example: `my-awesome-k8s-cluster.ngrok.app`. Also note that your some of your cluster configurations are presented int the dashboard as annotations (2).
 
-   ![ingress created](/img/howto/ingress-controller/k8s-ingress-app-1.png)
+   ![ingress created](/img/howto/kubernetes-operator/k8s-ingress-app-1.png)
 
 1. Access your ingress URL using the subdomain you chose in the manifest file above (i.e. `https://my-awesome-k8s-cluster.ngrok.app`) to confirm the 2048 app is accessible from the internet. If you forgot what url you chose, you can always run `kubectl get ingresses --namespace=ngrok-ingress-controller` to see what it is.
 
-   ![application public](/img/howto/ingress-controller/k8s-ingress-app-2.png)
+   ![application public](/img/howto/kubernetes-operator/k8s-ingress-app-2.png)
 
 ## Step 4: Add edge security to your app {#add-edge-security}
 
-The ngrok Ingress Controller for Kubernetes provides custom resource definitions (CRDs) for additional edge features available in ngrok. In this example, we're expanding the Ingress Controller with Google OAuth to allow access only from users with the email domains `@acme.com` or `@ngrok.com` and to apply a circuit breaker to your app at 80% (requires a paid account). These features are enforced at the ngrok edge, ensuring only authorized users can access your app.
+The ngrok Kubernetes Operator provides custom resource definitions (CRDs) for additional edge features available in ngrok. In this example, we're expanding the Operator with Google OAuth to allow access only from users with the email domains `@acme.com` or `@ngrok.com` and to apply a circuit breaker to your app at 80% (requires a paid account). These features are enforced at the ngrok edge, ensuring only authorized users can access your app.
 
 As before, you will need to update line 46 of this manifest with your `NGROK_DOMAIN` in the Ingress object.
 
@@ -188,7 +188,7 @@ As before, you will need to update line 46 of this manifest with your `NGROK_DOM
 
 This example is very similar to the previous version, with the following changes:
 
-- Lines 41-42: Associates your Ingress Controller with the configuration `oauth-and-circuit-breaking` via annotation
+- Lines 41-42: Associates your Operator with the configuration `oauth-and-circuit-breaking` via annotation
 - Lines 57-75: Sets the edge configuration as a custom CRD (NgrokModuleSet).
 - Lines 64-69: Sets the circuit breaker module over 50% threshold.
 - Lines 70-74: Sets the OAuth module to allow access only for users with the email domains `@acme.com` or `@ngrok.com`.
@@ -292,12 +292,12 @@ modules:
    1. On the left hand side, click Circuit Breaker.
    1. Notice how the circuit breaker configuration matches your manifest file.
 
-      ![circuit breaker](/img/howto/ingress-controller/k8s-ingress-app-3.png)
+      ![circuit breaker](/img/howto/kubernetes-operator/k8s-ingress-app-3.png)
 
    1. Click OAuth and confirm how the oauth configuration matches your manifest file.
 
-      ![circuit breaker](/img/howto/ingress-controller/k8s-ingress-app-4.png)
+      ![circuit breaker](/img/howto/kubernetes-operator/k8s-ingress-app-4.png)
 
 1. Access your App and confirm that you got the expect authentication behavior:
 
-   ![ingress controller in action](/img/howto/ingress-controller/ingress-controller-in-action-2.gif)
+   ![Operator in action](/img/howto/kubernetes-operator/ingress-controller-in-action-2.gif)

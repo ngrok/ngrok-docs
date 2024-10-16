@@ -1,22 +1,22 @@
 ---
-description: Setup a local virtual cluster to demonstrate how to use the ngrok Ingress Controller with vcluster.
+description: Setup a local virtual cluster to demonstrate how to use the ngrok Kubernetes Operator with vcluster.
 ---
 
 # Ingress to services in a vcluster on Kubernetes
 
 :::tip TL;DR
 
-To use the ngrok Ingress Controller for Kubernetes with vcluster in a local cluster:
+To use the ngrok Kubernetes Operator with vcluster in a local cluster:
 
 1. [Set up a local virtual cluster](#set-up-a-consul-service-mesh-on-kubernetes)
-2. [Install the ngrok Ingress Controller](#install-the-ngrok-ingress-controller)
+2. [Install the ngrok Kubernetes Operator](#install-the-ngrok-ingress-controller)
 3. [Install a sample application](#install-a-sample-application)
 4. [Add OAuth protection to your demo app](#add-oauth-protection)
 
 :::
 
-The ngrok [Ingress Controller for Kubernetes](https://ngrok.com/blog-post/ngrok-k8s) is the official controller for
-adding public and secure ingress traffic to your k8s services. This open source Ingress Controller works with any cloud,
+The ngrok [Operator for Kubernetes](https://ngrok.com/blog-post/ngrok-k8s) is the official controller for
+adding public and secure ingress traffic to your k8s services. This open source Operator works with any cloud,
 locally-hosted, or on-premises Kubernetes cluster to provide ingress to your applications, APIs, or other services while
 also offloading network ingress and middleware execution to ngrok's platform.
 
@@ -25,13 +25,13 @@ namespaces, which provides strong isolation and easy access for multiple tenants
 you deploy on a vcluster are scheduled inside of the underlying cluster, while other resources, like deployments and
 CRDs, exist only inside the virtual cluster.
 
-Together, the ngrok Ingress Controller and vcluster work to provide secure and load-balanced ingress for services
+Together, the ngrok Kubernetes Operator and vcluster work to provide secure and load-balanced ingress for services
 running on a virtual cluster, which lets you isolate development environments, create an internal developer platform
 (IDP) in cloud native environments, and run experiments or simulations virtually while properly routing external
 traffic.
 
 With this guide, you'll use an existing Kubernetes cluster, or set up a local development cluster with minikube, to
-launch a virtual cluster, and deploy a demo application. You'll then deploy the ngrok Ingress Controller to connect your
+launch a virtual cluster, and deploy a demo application. You'll then deploy the ngrok Kubernetes Operator to connect your
 demo application to the ngrok platform to route traffic to your vcluster.
 
 :::caution This tutorial requires:
@@ -96,14 +96,14 @@ If you don't have a cluster already, create one locally with minikube and instal
 
    :::note
 
-   These steps are partially based the guide [Using the ngrok Ingress Controller to create Preview Environments with vcluster](https://loft.sh/blog/using-the-ngrok-ingress-controller-to-create-preview-environments-with-vcluster/) from [Loft](https://loft.sh/), the maintainers of vcluster.
+   These steps are partially based the guide [Using the ngrok Kubernetes Operator to create Preview Environments with vcluster](https://loft.sh/blog/using-the-ngrok-ingress-controller-to-create-preview-environments-with-vcluster/) from [Loft](https://loft.sh/), the maintainers of vcluster.
 
    :::
 
-## **Step 2**: Install the ngrok Ingress Controller {#install-the-ngrok-ingress-controller}
+## **Step 2**: Install the ngrok Kubernetes Operator {#install-the-ngrok-ingress-controller}
 
 Now that you have a Kubernetes cluster integrated with vcluster, you can install the [ngrok Kubernetes Ingress
-Controller](https://github.com/ngrok/kubernetes-ingress-controller) to provide ingress to any services you want to run
+Controller](https://github.com/ngrok/ngrok-operator) to provide ingress to any services you want to run
 on your virtual cluster.
 
 1. Add the ngrok Helm repository if you haven't already.
@@ -112,7 +112,7 @@ on your virtual cluster.
    helm repo add ngrok https://charts.ngrok.com
    ```
 
-1. Set up the `AUTHTOKEN` and `API_KEY` exports, which allows Helm to install the Ingress Controller using your ngrok credentials. Find your `AUTHTOKEN` under [**Your Authtoken**](https://dashboard.ngrok.com/get-started/your-authtoken) in the ngrok dashboard.
+1. Set up the `AUTHTOKEN` and `API_KEY` exports, which allows Helm to install the Operator using your ngrok credentials. Find your `AUTHTOKEN` under [**Your Authtoken**](https://dashboard.ngrok.com/get-started/your-authtoken) in the ngrok dashboard.
 
    To create a new API key, navigate to the [**API** section](https://dashboard.ngrok.com/api) of the ngrok dashboard, click the **New API Key** button, change the description or owner, and click the **Add API Key** button. Copy the API key token shown in the modal window before closing it, as the ngrok dashboard will not show you the token again.
 
@@ -121,7 +121,7 @@ on your virtual cluster.
    export NGROK_API_KEY=[YOUR-API-KEY]
    ```
 
-1. Install the ngrok Ingress Controller with Helm under a new `ngrok-ingress-controller` namespace.
+1. Install the ngrok Kubernetes Operator with Helm under a new `ngrok-ingress-controller` namespace.
 
    ```bash
    helm install ngrok-ingress-controller ngrok/kubernetes-ingress-controller \
@@ -131,7 +131,7 @@ on your virtual cluster.
      --set credentials.authtoken=$NGROK_AUTHTOKEN
    ```
 
-1. Verify you have installed the ngrok Ingress Controller successfully and that pods are healthy.
+1. Verify you have installed the ngrok Kubernetes Operator successfully and that pods are healthy.
 
    ```bash
    kubectl get pods -l 'app.kubernetes.io/name=kubernetes-ingress-controller' --namespace ngrok-ingress-controller
@@ -142,8 +142,8 @@ on your virtual cluster.
 
 ## **Step 3**: Install a sample application {#install-a-sample-application}
 
-At this point, you have a functional vcluster with the ngrok Ingress Controller running and authenticated with your
-ngrok credentials. To demonstrate how the Ingress Controller simplifies routing external traffic to your primary
+At this point, you have a functional vcluster with the ngrok Kubernetes Operator running and authenticated with your
+ngrok credentials. To demonstrate how the Operator simplifies routing external traffic to your primary
 cluster, virtual cluster, and ultimately an exposed service or endpoint, you can install a sample application.
 
 1. Create a ngrok static subdomain for ingress if you don't have one already. Navigate to the [**Domains**
@@ -153,7 +153,7 @@ cluster, virtual cluster, and ultimately an exposed service or endpoint, you can
    By creating a subdomain on the ngrok network, you provide a public route to accept HTTP, HTTPS, and TLS traffic.
 
 1. Create a new Kubernetes manifest (`2048.yaml`) with the below contents. This manifest defines the 2048 application
-   service and deployment, then configures the ngrok Ingress Controller to connect the `game-2048` service to the ngrok
+   service and deployment, then configures the ngrok Kubernetes Operator to connect the `game-2048` service to the ngrok
    edge via your `NGROK_DOMAIN`.
 
    :::tip
@@ -198,7 +198,7 @@ cluster, virtual cluster, and ultimately an exposed service or endpoint, you can
                - name: http
                  containerPort: 80
    ---
-   # ngrok Ingress Controller Configuration
+   # ngrok Kubernetes Operator Configuration
    apiVersion: networking.k8s.io/v1
    kind: Ingress
    metadata:
@@ -243,7 +243,7 @@ cluster, virtual cluster, and ultimately an exposed service or endpoint, you can
 
    Under the **Backend** section of your edge configuration, you can also see cluster details as annotations, like the
    namespace and connected service, to validate that your demo application is accessible to external traffic via the
-   Ingress Controller.
+   Operator.
 
    !["Looking at existing Edge configurations in the ngrok dashboard"](img/ngrok-k8s-vcluster_edges.png)
 
@@ -252,7 +252,7 @@ cluster, virtual cluster, and ultimately an exposed service or endpoint, you can
    compression, and more. We'll use one of these options, OAuth, in the next step.
 
 1. Access your 2048 demo app by navigating to the your domain, e.g. `https://one-two-three.ngrok.app`. ngrok's edge
-   and your Ingress Controller will route traffic to your app from any device or external network as long as your
+   and your Operator will route traffic to your app from any device or external network as long as your
    vcluster remains operational.
 
    !["Navigating directly to the https://one-two-three.ngrok.app domain to see the 2048 application"](img/ngrok-k8s-vcluster_2048.png)
@@ -271,7 +271,7 @@ allowing ingress and access to your endpoint.
    :::tip
 
    - See L42-43 for the additional annotation that this OAuth setup requires.
-   - See L58-69 for the newly added configuration for ngrok's OAuth module, replacing `acme.com` or `ngrok.com` with the domain name for your email address. You can also [configure the OAuth module](https://github.com/ngrok/kubernetes-ingress-controller/blob/main/docs/user-guide/route-modules.md#ngrok-managed-oauth-application) to authenticate individual email addresses.
+   - See L58-69 for the newly added configuration for ngrok's OAuth module, replacing `acme.com` or `ngrok.com` with the domain name for your email address. You can also [configure the OAuth module](https://github.com/ngrok/ngrok-operator/blob/main/docs/user-guide/route-modules.md#ngrok-managed-oauth-application) to authenticate individual email addresses.
 
    :::
 
@@ -312,7 +312,7 @@ allowing ingress and access to your endpoint.
                - name: http
                  containerPort: 80
    ---
-   # Configuration for ngrok's Kubernetes Ingress Controller
+   # Configuration for ngrok's Kubernetes Operator
    apiVersion: networking.k8s.io/v1
    kind: Ingress
    metadata:
@@ -369,7 +369,7 @@ allowing ingress and access to your endpoint.
 
 ## What's next?
 
-You've now used the open source ngrok Ingress Controller for Kubernetes to add secure access to your endpoint without
+You've now used the open source ngrok Kubernetes Operator to add secure access to your endpoint without
 worrying about IPs, network interfaces, or VPC routing. Because ngrok offloads ingress and middleware execution to its
 global edge, you can follow the same procedure listed above for any Kubernetes environment, like EKS, GKE, and
 OpenShift, with similar results.
@@ -382,13 +382,13 @@ vcluster disconnect
 vcluster delete my-vcluster
 ```
 
-You can also extend your new vcluster and ngrok Ingress Controller with [additional
-modules](https://github.com/ngrok/kubernetes-ingress-controller/blob/main/docs/user-guide/route-modules.md), a [fanout
-configuration](https://github.com/ngrok/kubernetes-ingress-controller/blob/main/docs/user-guide/ingress-to-edge-relationship.md#simple-fanout)
+You can also extend your new vcluster and ngrok Kubernetes Operator with [additional
+modules](https://github.com/ngrok/ngrok-operator/blob/main/docs/user-guide/route-modules.md), a [fanout
+configuration](https://github.com/ngrok/ngrok-operator/blob/main/docs/user-guide/ingress-to-edge-relationship.md#simple-fanout)
 to route traffic to multiple services from a single domain or IP address, or even [multiple Ingress
-Controller](https://github.com/ngrok/kubernetes-ingress-controller/blob/main/docs/deployment-guide/multiple-installations.md)
+Controller](https://github.com/ngrok/ngrok-operator/blob/main/docs/deployment-guide/multiple-installations.md)
 installations running alongside one another.
 
-Learn more about the ngrok Ingress Controller, or contribute, by checking out the [GitHub
-repository](https://github.com/ngrok/kubernetes-ingress-controller) and the [project-specific
-documentation](https://github.com/ngrok/kubernetes-ingress-controller/tree/main/docs).
+Learn more about the ngrok Kubernetes Operator, or contribute, by checking out the [GitHub
+repository](https://github.com/ngrok/ngrok-operator) and the [project-specific
+documentation](https://github.com/ngrok/ngrok-operator/tree/main/docs).

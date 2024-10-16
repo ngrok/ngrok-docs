@@ -1,22 +1,22 @@
 ---
-description: Add ingress to any app running in Kubernetes, then restrict access to only users authorized through Microsoft Entra ID, using the ngrok Kubernetes Ingress Controller.
+description: Add ingress to any app running in Kubernetes, then restrict access to only users authorized through Microsoft Entra ID, using the ngrok Kubernetes Operator.
 ---
 
 # Ingress to apps secured by Azure AD (Microsoft Entra ID) in Kubernetes
 
 :::tip TL;DR
 
-To use the ngrok Kubernetes Ingress Controller with Azure AD (Microsoft Entra ID):
+To use the ngrok Kubernetes Operator with Azure AD (Microsoft Entra ID):
 
 1. [Create a cluster and deploy an example app](#create-cluster-deploy-example-app)
-2. [Add the ngrok Kubernetes ingress controller](#add-the-ngrok-kubernetes-ingress-controller)
+2. [Add the ngrok Kubernetes Operator](#add-the-ngrok-kubernetes-operator)
 3. [Update your ngrok Edge to enable SAML](#update-your-ngrok-edge-to-enable-SAML)
 4. [Create an enterprise app in Microsoft Entra ID](#create-an-enterprise-app)
 5. [Finish adding Microsoft Entra ID authorization to your ngrok Edge](#finish-adding-entra-ID-authorization-ngrok-edge)
 6. [Test authorization to your app using Microsoft Entra ID](#test-authorization-using-microsoft-entra-id)
    :::
 
-The [ngrok Kubernetes Ingress Controller](https://ngrok.com/blog-post/ngrok-k8s) is ngrok's official controller for adding secure public ingress and middleware execution to your Kubernetes apps with ngrok's Cloud Edge. With ngrok, you can manage and secure traffic to your apps at every stage of the development lifecycle while also benefitting from simpler configurations, security, and edge acceleration.
+The [ngrok Kubernetes Operator](https://ngrok.com/blog-post/ngrok-k8s) is ngrok's official controller for adding secure public ingress and middleware execution to your Kubernetes apps with ngrok's Cloud Edge. With ngrok, you can manage and secure traffic to your apps at every stage of the development lifecycle while also benefitting from simpler configurations, security, and edge acceleration.
 
 Microsoft Azure Active Directory (AD)—now known as [Microsoft Entra ID](https://www.microsoft.com/en-us/security/business/identity-access/microsoft-entra-id) (see the tip below)—is an identity and access management platform that helps administrators and DevOps engineers safeguard their organization's multicloud environment with strong authentication and unified identity management, whether they operate in Azure cloud or on-premises.
 
@@ -26,9 +26,9 @@ In October 2023, Microsoft Azure Active Directory (AD) was [renamed Microsoft En
 
 :::
 
-The ngrok Kubernetes Ingress Controller and Entra ID integrate by letting you not only route public traffic to an app deployed on a Kubernetes cluster, but also restrict access only to users who you have authorized through Entra ID.
+The ngrok Kubernetes Operator and Entra ID integrate by letting you not only route public traffic to an app deployed on a Kubernetes cluster, but also restrict access only to users who you have authorized through Entra ID.
 
-With this guide, you'll (optionally) create a new Kubernetes cluster and example deployment and install the ngrok Kubernetes Ingress Controller to securely route traffic through the [ngrok Cloud Edge](https://ngrok.com/product/cloud-edge). You'll then use the ngrok dashboard to enable Security Assertion Markup Language (SAML), using Entra ID as your identity provider, to authorize specific users with a single sign-on experience.
+With this guide, you'll (optionally) create a new Kubernetes cluster and example deployment and install the ngrok Kubernetes Operator to securely route traffic through the [ngrok Cloud Edge](https://ngrok.com/product/cloud-edge). You'll then use the ngrok dashboard to enable Security Assertion Markup Language (SAML), using Entra ID as your identity provider, to authorize specific users with a single sign-on experience.
 
 :::caution This tutorial requires:
 
@@ -42,7 +42,7 @@ With this guide, you'll (optionally) create a new Kubernetes cluster and example
 
 This guide requires you to deploy _some_ app on _any_ Kubernetes cluster, either locally or in a public cloud, to provide an endpoint for ngrok's secure tunnel. You can use any cluster and any app, but for demonstration, we'll create a local Kubernetes cluster with [minikube](https://minikube.sigs.k8s.io/docs/) and deploy the [Online Boutique](https://github.com/GoogleCloudPlatform/microservices-demo) example.
 
-If you already have a cluster and app, skip to [Step 2: Add the ngrok Kubernetes ingress controller](#add-the-ngrok-kubernetes-ingress-controller).
+If you already have a cluster and app, skip to [Step 2: Add the ngrok Kubernetes Operator](#add-the-ngrok-kubernetes-operator).
 
 1. Download the `GoogleCloudPlatform/microservices-demo` project to your local workstation and navigate into the new directory.
 
@@ -63,9 +63,9 @@ If you already have a cluster and app, skip to [Step 2: Add the ngrok Kubernetes
    kubectl apply -f ./release/kubernetes-manifests.yaml
    ```
 
-## **Step 2**: Add the ngrok Kubernetes ingress controller {#add-the-ngrok-kubernetes-ingress-controller}
+## **Step 2**: Add the ngrok Kubernetes Operator {#add-the-ngrok-kubernetes-operator}
 
-Next, you'll configure and deploy the [ngrok Kubernetes Ingress Controller](https://github.com/ngrok/kubernetes-ingress-controller) to expose your app to the public internet through the ngrok Cloud Edge.
+Next, you'll configure and deploy the [ngrok Kubernetes Operator](https://github.com/ngrok/ngrok-operator) to expose your app to the public internet through the ngrok Cloud Edge.
 
 1. Add the ngrok Helm repository if you haven't already.
 
@@ -77,7 +77,7 @@ Next, you'll configure and deploy the [ngrok Kubernetes Ingress Controller](http
 
    Creating a subdomain on the ngrok network provides a public route to accept HTTP, HTTPS, and TLS traffic.
 
-1. Set up the `AUTHTOKEN` and `API_KEY` exports, which allows Helm to install the Ingress Controller using your ngrok credentials. Find your `AUTHTOKEN` under [**Your Authtoken**](https://dashboard.ngrok.com/get-started/your-authtoken) in the ngrok dashboard.
+1. Set up the `AUTHTOKEN` and `API_KEY` exports, which allows Helm to install the Operator using your ngrok credentials. Find your `AUTHTOKEN` under [**Your Authtoken**](https://dashboard.ngrok.com/get-started/your-authtoken) in the ngrok dashboard.
 
    To create a new API key, navigate to the [**API** section](https://dashboard.ngrok.com/api) of the ngrok dashboard, click the **New API Key** button, change the description or owner, and click the **Add API Key** button. Copy the API key token shown in the modal window before closing it, as the ngrok dashboard will not show you the token again.
 
@@ -86,7 +86,7 @@ Next, you'll configure and deploy the [ngrok Kubernetes Ingress Controller](http
    export NGROK_API_KEY=[YOUR-API-KEY]
    ```
 
-1. Install the ngrok Kubernetes Ingress Controller with Helm.
+1. Install the ngrok Kubernetes Operator with Helm.
 
    ```bash
    helm install ngrok-ingress-controller ngrok/kubernetes-ingress-controller \
@@ -96,7 +96,7 @@ Next, you'll configure and deploy the [ngrok Kubernetes Ingress Controller](http
      --set credentials.authtoken=$NGROK_AUTHTOKEN
    ```
 
-1. Verify the health of your new Ingress Controller pod.
+1. Verify the health of your new Operator pod.
 
    ```bash
    kubectl get pods -l 'app.kubernetes.io/name=kubernetes-ingress-controller'
@@ -105,13 +105,13 @@ Next, you'll configure and deploy the [ngrok Kubernetes Ingress Controller](http
    ngrok-ingress-controller-kubernetes-ingress-controller-man2fg5p   1/1     Running   0          2m23s
    ```
 
-1. Create a new `boutique-ingress.yml` file, which defines how the ngrok Kubernetes Ingress Controller should route traffic on your `NGROK_DOMAIN` to your Online Boutique app.
+1. Create a new `boutique-ingress.yml` file, which defines how the ngrok Kubernetes Operator should route traffic on your `NGROK_DOMAIN` to your Online Boutique app.
 
    :::tip
 
    Make sure you edit line `9` of the manifest below, which contains the `NGROK_DOMAIN` variable, with the ngrok subdomain you already created. It should look something like `one-two-three.ngrok.app`.
 
-   If you are adding the ngrok Kubernetes Ingress Controller to a different deployment, you will need also change the `metadata.name`, `service.name`, and `service.port.number` values to match your app's configuration. See the [controller docs](https://github.com/ngrok/kubernetes-ingress-controller/tree/main/docs) for additional details on `spec` settings and common overrides.
+   If you are adding the ngrok Kubernetes Operator to a different deployment, you will need also change the `metadata.name`, `service.name`, and `service.port.number` values to match your app's configuration. See the [controller docs](https://github.com/ngrok/ngrok-operator/tree/main/docs) for additional details on `spec` settings and common overrides.
 
    :::
 
@@ -156,7 +156,7 @@ Next, you'll configure and deploy the [ngrok Kubernetes Ingress Controller](http
 
 Your Kubernetes-based app is now publicly accessible through the ngrok Cloud Edge—to restrict access to only authorized users with proper Entra ID credentials, you first need to enable SAML on your Edge.
 
-1. Navigate to the [**Edges** section](https://dashboard.ngrok.com/cloud-edge/edges) of the ngrok dashboard and click on the Edge created by the ngrok Kubernetes Ingress Controller. The domain name should match your `NGROK_DOMAIN`, and you should see **Created by kubernetes-ingress-controller** in the edge's description.
+1. Navigate to the [**Edges** section](https://dashboard.ngrok.com/cloud-edge/edges) of the ngrok dashboard and click on the Edge created by the ngrok Kubernetes Operator. The domain name should match your `NGROK_DOMAIN`, and you should see **Created by kubernetes-ingress-controller** in the edge's description.
 
    ![Finding your edge in the ngrok dashboard](img/k8s_edge-dashboard.png)
 
@@ -208,7 +208,7 @@ Time to head back to your ngrok dashboard to finish the SAML configuration.
 
 ## **Step 6**: Test authorization to your app using Microsoft Entra ID {#test-authorization-using-microsoft-entra-id}
 
-You've finished integrating the ngrok Kubernetes Ingress Controller and Microsoft Entra ID! Your app, whether the Online Boutique used throughout this guide or a custom deployment, is now publicly accessible only to those authorized with their Entra ID credentials. Time to test how it works:
+You've finished integrating the ngrok Kubernetes Operator and Microsoft Entra ID! Your app, whether the Online Boutique used throughout this guide or a custom deployment, is now publicly accessible only to those authorized with their Entra ID credentials. Time to test how it works:
 
 1. Open an incognito/private window in your browser, or a different browser than you've used so far, and navigate again to your `NGROK_DOMAIN`. You should see a single sign-on screen from Microsoft.
 
@@ -222,7 +222,7 @@ You've finished integrating the ngrok Kubernetes Ingress Controller and Microsof
 
 ## What's next?
 
-You've now integrated the ngrok Kubernetes Ingress Controller with Microsoft Entra ID to restrict access to your app to only authenticated users. With ngrok operating as middleware, handling both ingress to your Kubernetes cluster and the handshake with an Entra ID as an identity provider, you can deploy and secure new apps in a multi-cloud environment using your existing Microsoft/Azure identity and access management settings.
+You've now integrated the ngrok Kubernetes Operator with Microsoft Entra ID to restrict access to your app to only authenticated users. With ngrok operating as middleware, handling both ingress to your Kubernetes cluster and the handshake with an Entra ID as an identity provider, you can deploy and secure new apps in a multi-cloud environment using your existing Microsoft/Azure identity and access management settings.
 
 From an end user perspective, they only need to sign in once, using their Microsoft credentials, to authenticate themselves and access any number of applications you manage using Entra ID.
 
@@ -238,13 +238,13 @@ minikube delete -p online-boutique
 
 ngrok will delete your Edge automatically. To restore your previous authorization settings, head back to [Microsoft Entra ID](https://portal.azure.com/#view/Microsoft_AAD_IAM/ActiveDirectoryMenuBlade/~/Overview) to delete your enterprise application.
 
-### Extend your ngrok Kubernetes Ingress Controller and Microsoft Entra ID integration
+### Extend your ngrok Kubernetes Operator and Microsoft Entra ID integration
 
-ngrok can manage multiple routes on a single Edge, allowing you to configure [name-based virtual hosting](https://github.com/ngrok/kubernetes-ingress-controller/blob/main/docs/user-guide/ingress-to-edge-relationship.md#name-based-virtual-hosting) or [route
-modules](https://github.com/ngrok/kubernetes-ingress-controller/blob/main/docs/user-guide/route-modules.md) to secure multiple apps with a single sign-on experience.
+ngrok can manage multiple routes on a single Edge, allowing you to configure [name-based virtual hosting](https://github.com/ngrok/ngrok-operator/blob/main/docs/user-guide/ingress-to-edge-relationship.md#name-based-virtual-hosting) or [route
+modules](https://github.com/ngrok/ngrok-operator/blob/main/docs/user-guide/route-modules.md) to secure multiple apps with a single sign-on experience.
 
-[Custom domains](https://github.com/ngrok/kubernetes-ingress-controller/blob/main/docs/user-guide/custom-domain.md) and a [circuit breaker](/docs/http/circuit-breaker/) are also good next steps to make your integration production-ready.
+[Custom domains](https://github.com/ngrok/ngrok-operator/blob/main/docs/user-guide/custom-domain.md) and a [circuit breaker](/docs/http/circuit-breaker/) are also good next steps to make your integration production-ready.
 
-Learn more about the ngrok Ingress Controller, or contribute, by checking out the [GitHub
-repository](https://github.com/ngrok/kubernetes-ingress-controller) and the [project-specific
-documentation](https://github.com/ngrok/kubernetes-ingress-controller/tree/main/docs).
+Learn more about the ngrok Kubernetes Operator, or contribute, by checking out the [GitHub
+repository](https://github.com/ngrok/ngrok-operator) and the [project-specific
+documentation](https://github.com/ngrok/ngrok-operator/tree/main/docs).
