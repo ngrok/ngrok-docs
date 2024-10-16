@@ -5,8 +5,8 @@ const utils = require("@docusaurus/utils");
 module.exports = function (context, options) {
 	return {
 		name: "ngrok-parse-integrations",
-		async contentLoaded({ actions }) {
-			const { setGlobalData } = actions;
+		async contentLoaded({actions}) {
+			const {setGlobalData} = actions;
 			const integrationsDir = path.join(
 				context.siteDir,
 				"docs",
