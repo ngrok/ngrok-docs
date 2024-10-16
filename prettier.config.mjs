@@ -11,6 +11,7 @@ const config = {
 	tabWidth: 2,
 	trailingComma: "all",
 	useTabs: true,
+  bracketSpacing: false,
 };
 
 export default config;
