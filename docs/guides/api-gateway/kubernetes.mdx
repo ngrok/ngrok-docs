@@ -8,7 +8,7 @@ import Tabs from "@theme/Tabs";
 # Deliver and secure ingress for APIs in Kubernetes
 
 You currently have a K8s cluster with an API (micro)service and want to deliver it
-to ngrokuction with additional features and protection, like rate limiting,
+to production with additional features and protection, like rate limiting,
 authentication, and DDoS protection.
 
 In this guide, you'll learn why and how to use ngrok as an API gateway in front
@@ -18,24 +18,6 @@ of your API service by deploying our Kubernetes Operator in these steps:
 2. [Configure your cluster to use ngrok as an API gateway](#configure-cluster-api-gateway)
 3. [Set up Traffic Policy to shape traffic into/out of your API service](#set-up-traffic-policy)
 
-<Tabs groupId="config_example" queryString="config">
-	<TabItem value="step-00" label="Current state">
-		<img src={require("./img/api-g-k8s_step0.png").default} className="border-1" />
-	</TabItem>
-	<TabItem value="step-01" label="Step 1">
-		<img src={require("./img/api-g-k8s_step1.png").default} className="border-1" />
-	</TabItem>
-	<TabItem value="step-02" label="Step 2">
-		<img src={require("./img/api-g-k8s_step2.png").default} className="border-1" />
-  </TabItem>
-	<TabItem value="step-03" label="Step 3">
-		<img src={require("./img/api-g-k8s_step3.png").default} className="border-1" />
-	</TabItem>
-	<TabItem value="step-result" label="Result">
-		<img src={require("./img/api-g-k8s_result.png").default} className="border-1" />
-	</TabItem>
-</Tabs>
-
 ## What you'll need
 
 <div className="ngrok--cards ngrok--cards-row">
@@ -44,7 +26,7 @@ of your API service by deploying our Kubernetes Operator in these steps:
 			<h3 className="fw-600">ngrok account</h3>
 		</div>
 		<p>
-			Any tier will do&mdash;<a href="">register now</a>.
+			Any tier will do&mdash;<a href="https://dashboard.ngrok.com/signup">register now</a>.
 		</p>
 	</div>
 	<div className="ngrok--card ngrok--card-sm">
@@ -52,7 +34,7 @@ of your API service by deploying our Kubernetes Operator in these steps:
 			<h3 className="fw-600">A reserved domain</h3>
 		</div>
 		<p>
-			Grab yours in the <a href="">ngrok dashboard</a>.
+			Grab yours in the <a href="https://dashboard.ngrok.com/">ngrok dashboard</a>.
 		</p>
 	</div>
 </div>
@@ -157,7 +139,10 @@ to configure the following:
 
 Create a new YAML file named `ngrok-api-gateway.yaml` and paste in the following
 content, replacing `{YOUR_NGROK_DOMAIN}` with the domain you reserved as a
-prerequisite.
+prerequisite in two places.
+
+You'll also need to replace `{YOUR_SERVICE}` and `{SERVICE_PORT}` based on the
+API service you've already deployed to your Kubernetes cluster.
 
 ```yaml
 apiVersion: gateway.networking.k8s.io/v1
@@ -202,8 +187,8 @@ spec:
             type: PathPrefix
             value: /
       backendRefs:
-        - name: service-foo
-          port: 80
+        - name: {YOUR_SERVICE}
+          port: {SERVICE_PORT}
           kind: Service
 ```
 
@@ -217,8 +202,8 @@ kubectl apply -f ngrok-api-gateway.yaml
 
 ngrok's [Traffic Policy](/docs/http/traffic-policy/index.mdx) engine allows you
 to conditionally act upon traffic as it arrives and departs your API gateway. In
-a Kubernetes context, Traffic Policy
-builds on top of the existing YAML manifests you already use to declare your
+a Kubernetes context, Traffic Policy builds on top of the existing YAML
+manifests you already use to declare your
 deployments and services.
 
 When the ngrok Kubernetes Operator initiates in your cluster, and your
@@ -282,7 +267,8 @@ With the CRD applied, you need to update your existing configuration
 which is a process that must be completed during the request or response
 lifecycle.
 
-Edit your existing `ngrok-api-gateway.yaml` `HTTPRoute` to include the reference to the rate limiting policy.
+Edit your existing `ngrok-api-gateway.yaml` `HTTPRoute` to include the reference
+to the rate limiting policy.
 
 ```yaml
 ...
@@ -297,15 +283,15 @@ spec:
     - kind: Gateway
       name: ngrok-gateway
   hostnames:
-    - "{YOUR_NGROK_DOMAIN}
+    - "{YOUR_NGROK_DOMAIN}"
   rules:
     - matches:
         - path:
             type: PathPrefix
             value: /
       backendRefs:
-        - name: service-foo
-          port: 80
+        - name: {YOUR_SERVICE}
+          port: {SERVICE_PORT}
           kind: Service
       #highlight-start
       filters:
@@ -322,6 +308,12 @@ Re-apply your manifest to update your API gateway.
 ```
 kubectl apply -f ngrok-api-gateway.yaml
 ```
+
+## What do you need to take this to production?
+
+TK
+
+1.  
 
 ## What's next?
 
