@@ -11,7 +11,6 @@ const config = {
 	tabWidth: 2,
 	trailingComma: "all",
 	useTabs: true,
-  bracketSpacing: false,
   overrides: [
     {
       files: "docs/**/*.md*",
