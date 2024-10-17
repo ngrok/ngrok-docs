@@ -12,6 +12,14 @@ const config = {
 	trailingComma: "all",
 	useTabs: true,
   bracketSpacing: false,
+  overrides: [
+    {
+      files: "docs/**/*.md*",
+      options: {
+        bracketSpacing: false,
+      }
+    }
+  ],
 };
 
 export default config;
