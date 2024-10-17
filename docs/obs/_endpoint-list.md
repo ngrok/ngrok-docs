@@ -33,5 +33,6 @@
 | id             | string             | a resource identifier                                                                                                                                     |
 | uri            | string             | a uri for locating a resource                                                                                                                             |
 | uri            | string             | URI of the clep API resource                                                                                                                              |
+| name           | string             | user supplied name for the endpoint                                                                                                                       |
 | uri            | string             | URI of the endpoints list API resource                                                                                                                    |
 | next_page_uri  | string             | URI of the next page, or null if there is no next page                                                                                                    |
