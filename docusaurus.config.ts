@@ -1,4 +1,4 @@
-import type {Config} from "@docusaurus/types";
+import type { Config } from "@docusaurus/types";
 import dotenv from "dotenv";
 import * as prismReactRenderer from "prism-react-renderer";
 

@@ -1,12 +1,12 @@
 import React from "react";
-import {useIntegration} from "./integrations/use-integrations";
+import { useIntegration } from "./integrations/use-integrations";
 import NgrokCard from "./NgrokCard";
 
 type Props = {
 	name: string;
 };
 
-export default function IntegrationPageList({name}: Props) {
+export default function IntegrationPageList({ name }: Props) {
 	const integration = useIntegration(name);
 
 	if (!integration) {
