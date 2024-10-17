@@ -27,6 +27,7 @@ Cloud endpoints are currently in private beta. The functionality listed below is
 This guide provides an example of using an ngrok Cloud Endpoint to route traffic between multiple internal endpoints.
 
 ## Core Concepts
+
 - [Cloud endpoints](/network-edge/cloud-endpoints) are centrally managed endpoints in the cloud that can be used to route traffic to agent endpoints.
 - [Internal endpoints](/network-edge/internal-endpoints) are endpoints that are not publicly accessible and are only reachable from within your network by cloud endpoints via the forward action.
 - **Load balancing** improves application performance and reduces load by distributing incoming traffic across servers. This leads to faster response times for user-facing applications.
@@ -45,7 +46,7 @@ If you are going to be following along using **CURL**, you will need:
 
 ## **Step 1** — Create an Internal Endpoint
 
-Let's start by creating a internal endpoint, initiated from the agent. 
+Let's start by creating a internal endpoint, initiated from the agent.
 The endpoints will be in HTTP for this guide, but you can also use TCP or TLS.
 
 ```bash
@@ -57,6 +58,7 @@ After running the above command, you should see an internal endpoint with an "on
 You can set up any HTTP server to run on this port locally, and it the endpoint will internally route traffic to that server.
 
 ## **Step 2** - Create a Domain
+
 Next, let's create the domain that the cloud endpoint will reside on.
 For the purpose of this guide, we will create a ngrok HTTP domain.
 
@@ -119,32 +121,32 @@ After successfully reserving a domain, you should see it listed in the domains t
 When you have completed this step, you can move on to the next step.
 
 ## **Step 3** — Create a Traffic Policy for your Cloud Endpoint
-Unlike agent endpoints in which traffic policies are optional, 
-cloud endpoints require a traffic policy so they know how to 
-handle incoming traffic. This guide will showcase one of the simplest 
-and most common use cases: forwarding traffic to other endpoints 
+
+Unlike agent endpoints in which traffic policies are optional,
+cloud endpoints require a traffic policy so they know how to
+handle incoming traffic. This guide will showcase one of the simplest
+and most common use cases: forwarding traffic to other endpoints
 (the internal endpoint we created in Step 1) via the forward action.
 
 <ConfigExample
-    snippetText={null}
-    showLineNumbers={true}
-    config={{
-        on_http_request: [
-            {
-                actions: [
-                    {
-                        type: "forward-internal",
-                        config: {
-                            url: "https://your-domain-name.internal",
-                            binding: "internal",
-                        },
-                    },
-                ],
-            },
-        ],
-    }}
+	snippetText={null}
+	showLineNumbers={true}
+	config={{
+		on_http_request: [
+			{
+				actions: [
+					{
+						type: "forward-internal",
+						config: {
+							url: "https://your-domain-name.internal",
+							binding: "internal",
+						},
+					},
+				],
+			},
+		],
+	}}
 />
-
 
 ## **Step 4** — Create a ngrok Cloud Endpoint
 
@@ -164,11 +166,10 @@ ngrok api endpoints create \
     --description "sample description" \
     --metadata sample-metadata \
     --url https://${NGROK_SUBDOMAIN}.ngrok.app
-    --traffic-policy '{"on_http_request":[{"actions":[{"type":"forward-internal","config":{"url":"https://clep.internal","binding":"internal"}}]}]}' 
+    --traffic-policy '{"on_http_request":[{"actions":[{"type":"forward-internal","config":{"url":"https://clep.internal","binding":"internal"}}]}]}'
 ```
 
 - Replace NGROK_SUBDOMAIN with the value used in step 2.
-
 
 </TabItem>
 <TabItem value="dash" label="ngrok Dashboard">
