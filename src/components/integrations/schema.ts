@@ -1,4 +1,4 @@
-import { z } from "zod";
+import {z} from "zod";
 
 const docFrontMatterSchema = z.object({
 	description: z.string().optional(),
