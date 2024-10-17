@@ -11,6 +11,14 @@ const config = {
 	tabWidth: 2,
 	trailingComma: "all",
 	useTabs: true,
+	overrides: [
+		{
+			files: ["docs/guides/**/*.md", "docs/guides/**/*.mdx"],
+			options: {
+				bracketSpacing: false,
+			},
+		},
+	],
 };
 
 export default config;
