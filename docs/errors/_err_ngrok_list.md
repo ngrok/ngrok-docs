@@ -9785,6 +9785,14 @@
     </tr>
     <tr>
       <td>
+        <a id="ERR_NGROK_9039" href="/docs/errors/err_ngrok_9039">ERR_NGROK_9039</a>
+      </td>
+      <td class="pre-wrapped">
+        You must specify a domain name for a kubernetes operator bound endpoint.
+      </td>
+    </tr>
+    <tr>
+      <td>
         <a id="ERR_NGROK_10000" href="/docs/errors/err_ngrok_10000">ERR_NGROK_10000</a>
       </td>
       <td class="pre-wrapped">
@@ -10548,7 +10556,7 @@
         <a id="ERR_NGROK_18002" href="/docs/errors/err_ngrok_18002">ERR_NGROK_18002</a>
       </td>
       <td class="pre-wrapped">
-        The provided cloud endpoint configuration is invalid: traffic policy is invalid
+        The provided cloud endpoint configuration is invalid: <code>&lt;MESSAGE&gt;</code>
       </td>
     </tr>
     <tr>
