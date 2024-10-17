@@ -13,7 +13,7 @@ const config = {
 	useTabs: true,
 	overrides: [
 		{
-			files: "docs/**/*.md*",
+			files: "docs/guides/**/*.md, docs/guides/**/*.mdx",
 			options: {
 				bracketSpacing: false,
 			},
