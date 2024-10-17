@@ -6,6 +6,10 @@ title: Changelog
 
 ## v3
 
+### ngrok Agent 3.18.0 - \[2024-10-17\]
+
+- Added `--name` field for endpoints and tunnels when created from the agent config or CLI
+
 ### ngrok Agent 3.17.0 - \[2024-10-10\]
 
 - Added endpoint create/update/delete subcommands to the ngrok api command
