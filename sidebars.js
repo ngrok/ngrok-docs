@@ -197,6 +197,7 @@ const sidebars = {
 				"agent/ingress",
 				"agent/changelog",
 				"agent/version-support-policy",
+				"agent/diagnose",
 			],
 		},
 		{

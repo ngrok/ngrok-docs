@@ -56,7 +56,8 @@ Several configuration files control various aspects of the documentation build p
 
 - If you're adding new content (e.g. , a guide, example), consider creating a new Markdown file within the appropriate subdirectory of the docs directory.
   Update the sidebars.js file to add the new content to the navigation sidebar if applicable.
-  Modifying Error Pages
+
+# Modifying Error Pages
 
 - Error pages for the website are typically managed within the src directory using React components. Modifying these directly for documentation changes is not recommended. If you encounter an error page issue, report it as a separate issue.
 
