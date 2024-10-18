@@ -1,0 +1,84 @@
+---
+title: Diagnose
+---
+
+import TabItem from "@theme/TabItem";
+import Tabs from "@theme/Tabs";
+
+import BasicAuthSshExample from "/examples/ssh/http-basic-auth.mdx";
+
+# Diagnose
+
+## Overview
+
+The `ngrok diagnose` command runs a series of tests to diagnose potential connectivity issues between the ngrok agent and the remote ngrok service. See available flags [here](/agent/cli/#ngrok-diagnose).
+
+## Diagnostics
+
+The diagnose command gathers your environment information, including your sanitized configuration file. It then tests:
+
+- proxy connectivity, if `proxy_url` is configured
+- name resolution
+- general internet connectivity
+
+By default, `ngrok diagnose` tests IPv4 connectivity between the ngrok agent and the closest ngrok point of presence. To test IPv6 connectivity, add `--ipv6 true` to the command. To test connectivity between the ngrok agent and all ngrok points of presence, add `--region all`.
+
+### Basic Output
+
+The diagnose command prints a connectivity summary in your terminal. If you have full connectivity, your report will look like this:
+
+```bash
+Testing ngrok connectivity...
+
+Internet Connectivity
+  Name Resolution                           [ OK ]
+  TCP                                       [ OK ]
+  TLS                                       [ OK ]
+Localhost Connectivity
+  Name Resolution                           [ OK ]
+Ngrok Connectivity - Region: Auto (lowest latency)
+  Name Resolution                           [ OK ]
+  TCP                                       [ OK ]
+  TLS                                       [ OK ]
+  Tunnel Protocol                           [ OK ]
+Successfully established ngrok connection! (region: 'auto', latency: 29ms)
+```
+
+If there's a connectivity problem, your report will show warnings and errors that need to resolved before ngrok can work correctly:
+
+```
+Testing ngrok connectivity...
+
+Internet Connectivity
+  Name Resolution                         [ WARN ]
+  TCP                                       [ OK ]
+  TLS                                       [ OK ]
+
+Errors and warnings encountered during diagnostics:
+
+* Diagnostics
+  * Name Resolution
+    * Resolver: system
+      * Hostname: google.com
+        - Err: Failed to resolve host google.com: lookup google.com on
+               [::1]:53: read udp [::1]:48848->[::1]:53: read: connection
+               refused
+               (NGROK_ERR_8000)
+
+Error establishing ngrok connection:
+Failed to establish internet connectivity: resolver returned no IPs.
+```
+
+### Verbose Output
+
+For more detailed output, you can use the `--write-report`/`-w` flag to generate a verbose report:
+
+```bash
+ngrok diagnose -w out.txt
+```
+
+By default, `ngrok diagnose --region all` will generate a report. The `diagnose` output will print the report location:
+
+```
+Report written to /var/folders/yg/yzt44t813/T/ngrok-diagnose1080549118/diagnose.json
+```
