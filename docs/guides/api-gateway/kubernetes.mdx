@@ -47,11 +47,7 @@ ngrok Kubernetes Operator, in these steps:
 		</div>
 		<p>
 			... and optionally, a functioning API service. If you don't yet have one,
-			you can install our{" "}
-			<a href="https://github.com/ngrok-samples/ngrok-api-service">
-				demo service
-			</a>
-			.
+			you can install our <a href="https://github.com/ngrok-samples/ngrok-api-service">demo service</a>.
 		</p>
 	</div>
 	<div className="ngrok--card ngrok--card-sm">
@@ -176,14 +172,15 @@ to configure the following:
 Create a new YAML file named `ngrok-api-gateway.yaml` and paste in the following
 content.
 
-If you're using the ngrok API service from **Step 0**, all you need to do is
-replace `{YOUR_NGROK_DOMAIN}` with the domain you reserved.
+First, replace `{YOUR_NGROK_DOMAIN}` with the domain you reserved.
 
-If you're using the example API service, substitute `{YOUR_SERVICE_NAME}` with
-`ngrok-api-service` and `{SERVICE-PORT}` with `80`. If you're deploying your own API
-service, change those variables accordingly. If you have multiple API services
-in different containers, you'll need to create multiple rules to
-match paths to services.
+If you're using the example API service from **Step 0**, substitute
+`{YOUR_SERVICE_NAME}` with `ngrok-api-service` and `{SERVICE-PORT}` with `80`.
+
+If you're deploying your own API service, change those variables accordingly, and
+edit the `prod` namespace to match the namespace where your service is already
+running. If you have multiple API services in different containers, you'll need
+to create multiple rules to match paths to services.
 
 ```yaml
 apiVersion: gateway.networking.k8s.io/v1
@@ -288,7 +285,7 @@ metadata:
   namespace: prod
 spec:
   policy:
-    inbound:
+    on_http_request:
       - name: "Rate limit POST requests"
         expressions:
           - "req.method == 'POST' || req.method == 'PUT'"
