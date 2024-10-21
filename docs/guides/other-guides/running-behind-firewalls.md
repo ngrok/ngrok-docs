@@ -47,3 +47,40 @@ Setting up a custom ingress domain can be useful because it ensures that no one 
 ### Certificate Revocation List
 
 One of the steps in agent connection is [checking the certificate revocation list](/agent/#tls-verification). This requires an outbound connection on port 80 to the CRL URL (`crl.ngrok.com` for agent versions 3.9.0 and before, `crl.ngrok-agent.com` for agent version 3.10.0 and after).If you are unable to connect to this URL, it is possible to skip the CRL check by setting `crl_noverify: true` in your configuration file. However, disabling the CRL check does expose you to the possibility of using a certificate that has been revoked which could mean that a third party could intercept and view your traffic.
+
+# Testing in a Kubernetes Cluster
+
+If you are using ngrok from within a Kubernetes Cluster, you may need to diagnose the network connectivity from the cluster to the ngrok cloud. To do this, you can run the previously mentioned `ngrok diagnose` command using the [pre-built docker images](https://hub.docker.com/r/ngrok/ngrok) for the agent as a `Job` in Kubernetes.
+
+Create a manifest yaml file
+
+```yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: ngrok-diagnose
+spec:
+  template:
+    spec:
+      containers:
+        - name: ngrok-diagnose
+          image: ngrok/ngrok:latest
+          command: ["/bin/sh", "-c"]
+          args: ["ngrok diagnose"]
+      restartPolicy: Never
+```
+
+Apply this manifest to your cluster, wait a few seconds, and check its logs to see the `diagnose` command's output.
+
+```sh
+kubectl logs -l "job-name=ngrok-diagnose"
+  TLS                                       [ OK ]
+Localhost Connectivity
+  Name Resolution                           [ OK ]
+Ngrok Connectivity - Region: Auto (lowest latency)
+  Name Resolution                           [ OK ]
+  TCP                                       [ OK ]
+  TLS                                       [ OK ]
+  Tunnel Protocol                           [ OK ]
+Successfully established ngrok connection! (region: 'auto', latency: unknown)
+```
