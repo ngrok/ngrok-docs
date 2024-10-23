@@ -178,13 +178,13 @@ const redirects = [
     [ fromIncludes(`/docs/user-management`), `/docs/iam/` ],
 
     // BL misc SEO fixes
-    [ fromIncludes(`/docs/api/resources/edge-route-policy-module/`), `/docs/api/resources/edge-route-traffic-policy-module/` ],
-    [ fromIncludes(`/docs/api/resources/tcp-edge-policy-module/`), `/docs/api/resources/tcp-edge-traffic-policy-module/` ],
-    [ fromIncludes(`/docs/api/resources/tls-edge-policy-module/`), `/docs/api/resources/tls-edge-traffic-policy-module/` ],
-    [ fromIncludes(`/docs/ngrok-agent/ngrok/`), `/docs/agent/` ],
-    [ fromIncludes(`/docs/network-edge/modules/webhook-verification/`), `/docs/api/resources/edge-route-webhook-verification-module/` ],
-    [ fromIncludes(`/docs/platform/ip-policies/`), `/docs/api/resources/ip-policies/` ],
-    [ fromIncludes(`/docs/http-header-templates/`), `/docs/http/request-headers/` ],
+    [ fromIncludes(`/docs/api/resources/edge-route-policy-module`), `/docs/api/resources/edge-route-traffic-policy-module/` ],
+    [ fromIncludes(`/docs/api/resources/tcp-edge-policy-module`), `/docs/api/resources/tcp-edge-traffic-policy-module/` ],
+    [ fromIncludes(`/docs/api/resources/tls-edge-policy-module`), `/docs/api/resources/tls-edge-traffic-policy-module/` ],
+    [ fromIncludes(`/docs/ngrok-agent/ngrok`), `/docs/agent/` ],
+    [ fromIncludes(`/docs/network-edge/modules/webhook-verification`), `/docs/api/resources/edge-route-webhook-verification-module/` ],
+    [ fromIncludes(`/docs/platform/ip-policies`), `/docs/api/resources/ip-policies/` ],
+    [ fromIncludes(`/docs/http-header-templates`), `/docs/http/request-headers/` ],
 
 ]
 
