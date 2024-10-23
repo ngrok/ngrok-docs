@@ -10,7 +10,7 @@ As background, this is usually not an issue. Firewalls usually allow outbound co
 
 However, certain corporate firewalls have more restrictions around outbound connections. For example, we've seen that ngrok may be blocked on Fortinet firewalls.
 
-If you're having trouble using the ngrok agent to start a tunnel, the first step is to run `ngrok diagnose` which will produce a report that will help you identify connection issues.
+If you're having trouble using the ngrok agent to start a tunnel, the first step is to run [`ngrok diagnose`](/agent/diagnose) which will produce a report that will help you identify connection issues.
 
 ```sh
 $ ngrok diagnose
@@ -48,11 +48,11 @@ Setting up a custom ingress domain can be useful because it ensures that no one 
 
 One of the steps in agent connection is [checking the certificate revocation list](/agent/#tls-verification). This requires an outbound connection on port 80 to the CRL URL (`crl.ngrok.com` for agent versions 3.9.0 and before, `crl.ngrok-agent.com` for agent version 3.10.0 and after).If you are unable to connect to this URL, it is possible to skip the CRL check by setting `crl_noverify: true` in your configuration file. However, disabling the CRL check does expose you to the possibility of using a certificate that has been revoked which could mean that a third party could intercept and view your traffic.
 
-# Testing in a Kubernetes Cluster
+## Testing in a Kubernetes Cluster
 
 If you are using ngrok from within a Kubernetes Cluster, you may need to diagnose the network connectivity from the cluster to the ngrok cloud. To do this, you can run the previously mentioned `ngrok diagnose` command using the [pre-built docker images](https://hub.docker.com/r/ngrok/ngrok) for the agent as a `Job` in Kubernetes.
 
-Create a manifest yaml file
+Create a manifest file (for example `ngrok-manifest.yaml`):
 
 ```yaml
 apiVersion: batch/v1
@@ -70,10 +70,19 @@ spec:
       restartPolicy: Never
 ```
 
-Apply this manifest to your cluster, wait a few seconds, and check its logs to see the `diagnose` command's output.
+Apply this manifest to your cluster:
+
+```sh
+kubectl apply -f ngrok-manifest.yaml
+```
+
+Wait a few seconds and check its logs to see the `diagnose` command's output:
 
 ```sh
 kubectl logs -l "job-name=ngrok-diagnose"
+```
+
+```sh
   TLS                                       [ OK ]
 Localhost Connectivity
   Name Resolution                           [ OK ]
@@ -82,5 +91,26 @@ Ngrok Connectivity - Region: Auto (lowest latency)
   TCP                                       [ OK ]
   TLS                                       [ OK ]
   Tunnel Protocol                           [ OK ]
-Successfully established ngrok connection! (region: 'auto', latency: unknown)
+Successfully established ngrok connection! (region: 'auto', latency: 54.895145ms)
+```
+
+To generate the [more verbose diagnostic report](/agent/cli/#flags-11), update your job's `args` with the `-w` flag and file location:
+
+```yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: ngrok-diagnose
+spec:
+  template:
+    spec:
+      containers:
+        - name: ngrok-diagnose
+          image: ngrok/ngrok:latest
+          command: ["/bin/sh", "-c"]
+          args:
+            [
+              "ngrok diagnose -w /tmp/diagnose_output.txt && cat /tmp/diagnose_output.txt",
+            ]
+      restartPolicy: Never
 ```
