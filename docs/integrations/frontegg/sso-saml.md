@@ -89,7 +89,7 @@ To configure an edge with Frontegg:
 
 1. Access the [ngrok Dashboard](https://dashboard.ngrok.com/) and sign in using your ngrok account.
 
-1. On the left menu, click **Cloud Edge** and then click **Edges**.
+1. On the left menu, click **Universal Gateway** and then click **Edges**.
 
 1. If you don't have an edge already set to add Frontegg SSO, create a test edge:
 
