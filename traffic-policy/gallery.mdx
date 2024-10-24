@@ -170,7 +170,7 @@ export const JWTsRateLimiting = () => (
 								algorithm: "sliding_window",
 								capacity: 30,
 								rate: "60s",
-								bucket_key: ["req.Headers['x-api-key']"],
+								bucket_key: ["req.headers['x-api-key']"],
 							},
 						},
 						{
@@ -225,7 +225,7 @@ export const RateLimitAuthentication = () => (
 		config={{
 			on_http_request: [
 				{
-					expressions: ["!('Authorization' in req.Headers)"],
+					expressions: ["!('Authorization' in req.headers)"],
 					name: "Unauthorized rate limiting tier",
 					actions: [
 						{
@@ -235,13 +235,13 @@ export const RateLimitAuthentication = () => (
 								algorithm: "sliding_window",
 								capacity: 10,
 								rate: "60s",
-								bucket_key: ["conn.ClientIP"],
+								bucket_key: ["conn.client_ip"],
 							},
 						},
 					],
 				},
 				{
-					expressions: ["('Authorization' in req.Headers)"],
+					expressions: ["('Authorization' in req.headers)"],
 					name: "Authorized rate limiting tier",
 					actions: [
 						{
@@ -251,7 +251,7 @@ export const RateLimitAuthentication = () => (
 								algorithm: "sliding_window",
 								capacity: 100,
 								rate: "60s",
-								bucket_key: ["conn.ClientIP"],
+								bucket_key: ["conn.client_ip"],
 							},
 						},
 					],
@@ -268,7 +268,7 @@ export const BlockCountries = () => (
 			on_http_request: [
 				{
 					expressions: [
-						"conn.Geo.CountryCode in ['<COUNTRY-01>', '<COUNTRY-02>']",
+						"conn.geo.country_code in ['<COUNTRY-01>', '<COUNTRY-02>']",
 					],
 					name: "Block traffic from unwanted countries",
 					actions: [
@@ -292,7 +292,7 @@ export const RateLimitPricing = () => (
 		config={{
 			on_http_request: [
 				{
-					expressions: ["!('Tier' in req.Headers)"],
+					expressions: ["!('Tier' in req.headers)"],
 					name: "Free rate limiting tier",
 					actions: [
 						{
@@ -302,7 +302,7 @@ export const RateLimitPricing = () => (
 								algorithm: "sliding_window",
 								capacity: 10,
 								rate: "60s",
-								bucket_key: ["conn.ClientIP"],
+								bucket_key: ["conn.client_ip"],
 							},
 						},
 					],
@@ -320,7 +320,7 @@ export const RateLimitPricing = () => (
 								algorithm: "sliding_window",
 								capacity: 100,
 								rate: "60s",
-								bucket_key: ["conn.ClientIP"],
+								bucket_key: ["conn.client_ip"],
 							},
 						},
 					],
@@ -338,7 +338,7 @@ export const RateLimitPricing = () => (
 								algorithm: "sliding_window",
 								capacity: 1000,
 								rate: "60s",
-								bucket_key: ["conn.ClientIP"],
+								bucket_key: ["conn.client_ip"],
 							},
 						},
 					],
@@ -356,7 +356,7 @@ export const RateLimitPricing = () => (
 								algorithm: "sliding_window",
 								capacity: 10000,
 								rate: "60s",
-								bucket_key: ["conn.ClientIP"],
+								bucket_key: ["conn.client_ip"],
 							},
 						},
 					],
@@ -372,7 +372,7 @@ export const DeprecateVersion = () => (
 		config={{
 			on_http_request: [
 				{
-					expressions: ["'2' in req.Headers['X-Api-Version']"],
+					expressions: ["'2' in req.headers['X-Api-Version']"],
 					name: "Deprecate API v2",
 					actions: [
 						{
@@ -443,14 +443,14 @@ export const EnforceTLS = () => (
 		config={{
 			on_http_request: [
 				{
-					expressions: ["req.ClientTLS.Version > '1.3'"],
+					expressions: ["conn.tls.version < '1.3'"],
 					name: "Reject requests using old TLS versions",
 					actions: [
 						{
 							type: "custom-response",
 							config: {
 								status_code: 401,
-								content: "Unauthorized: bad TLS version",
+								content: "Unauthorized: TLS version too old",
 							},
 						},
 					],
@@ -467,7 +467,7 @@ export const LogUnsuccessful = () => (
 			on_http_request: [],
 			on_http_response: [
 				{
-					expressions: ["res.StatusCode < '200' && res.StatusCode >= '300'"],
+					expressions: ["res.status_code < '200' && res.status_code >= '300'"],
 					name: "Log unsuccessful requests",
 					actions: [
 						{
@@ -493,8 +493,8 @@ export const LimitSize = () => (
 			on_http_request: [
 				{
 					expressions: [
-						"req.Method == 'POST' || req.Method == 'PUT'",
-						"req.ContentLength >= 1000",
+						"req.method == 'POST' || req.method == 'PUT'",
+						"req.content_length >= 1000",
 					],
 					name: "Block POST/PUT requests of excessive length",
 					actions: [
