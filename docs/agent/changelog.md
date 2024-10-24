@@ -6,6 +6,11 @@ title: Changelog
 
 ## v3
 
+### ngrok Agent 3.18.1 - \[2024-10-24\]
+
+* Add’s binary execution path to the host system metrics collected
+* Fix a bug in the formatting of timezones in the TUI
+
 ### ngrok Agent 3.18.0 - \[2024-10-17\]
 
 - Added `--name` field for endpoints and tunnels when created from the agent config or CLI
