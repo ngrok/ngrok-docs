@@ -8,7 +8,7 @@ title: Changelog
 
 ### ngrok Agent 3.18.1 - \[2024-10-24\]
 
-- Add’s binary execution path to the host system metrics collected
+- Adds binary execution path to the host system metrics collected
 - Fix a bug in the formatting of timezones in the TUI
 
 ### ngrok Agent 3.18.0 - \[2024-10-17\]
