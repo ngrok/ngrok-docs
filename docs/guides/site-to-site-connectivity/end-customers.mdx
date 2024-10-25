@@ -37,7 +37,9 @@ ngrok was first released in 2013 as an open-source project by Alan Shreve, who f
 
 In December 2022, ngrok [closed $50 million in Series A funding](https://techcrunch.com/2022/12/13/ngrok-a-service-to-help-devs-deploy-sites-services-and-apps-raises-50m/) with [Lightspeed Venture Partners](https://lsvp.com/) and [Coatue](https://www.coatue.com/).
 
-ngrok is headquartered in San Francisco, and a remote workforce primarily located in the U.S.
+ngrok is headquartered in San Francisco, and has a remote workforce primarily
+located in the U.S.
+
 
 ### Can I trust ngrok as a company?
 
@@ -76,9 +78,15 @@ There are many possible architectures for setting up a site-to-site network base
 
 ngrok is user-configurable to match your data residency needs.
 
-First, [configure the agent](/docs/guides/upgrade-v2-v3/#changes-to-choosing-a-region) to use a PoP in one of our [supported regions](/docs/network-edge/#points-of-presence). Next, work with your vendor to set up appropriate DNS to route all connections through the same data plane.
+First, [configure the
+agent](/docs/guides/other-guides/upgrade-v2-v3/#changes-to-choosing-a-region) to
+use a PoP in one of our [supported
+regions](/docs/network-edge/#points-of-presence). Next, work with your vendor to
+set up appropriate DNS to route all connections through the same data plane.
 
-Our regional data planes are located in Australia (Sydney), Europe (Frankfurt), India (Mumbai), Japan (Tokyo), South America (São Paulo), United States (California and Ohio).
+Our regional data planes are located in Australia (Sydney), Europe (Frankfurt),
+India (Mumbai), Japan (Tokyo), South America (São Paulo), United States
+(California and Ohio).
 
 ### Is ngrok a dedicated instance or multi-tenant?
 
@@ -92,11 +100,25 @@ We recommend you begin by exploring our [Security, Privacy, and Compliance](http
 
 ngrok is deeply configurable to enforce your established security policies, including:
 
-- [Prevent unauthorized usage of ngrok](#how-can-i-prevent-ngrok-from-being-used-for-any-purpose-other-than-in-site-to-site-connectivity-with-my-vendor?) not outside of the site-to-site connectivity with your vendor.
-- Create a single account tenant, enforce [Account Domain Controls](https://ngrok.com/blog-post/account-domain-controls) to route all ngrok users with an email address `@your-company.com` into it, and enable role-based access controls to limit those accounts.
-- Apply [Access Control Lists](/docs/iam/rbac/#additional-restrictions-with-acls) (ACLs) to determine where ngrok agents can be created within your network.
-- Enable the [IP restrictions](/docs/http/traffic-policy/actions/restrict-ips/) action on your endpoint(s) to allow only trusted connections from your vendor.
-- Enforce basic, OAuth, OpenID, SAML, JWT, or mTLS authentication on your endpoint(s).
+- [Prevent unauthorized usage of
+ngrok](#how-can-i-prevent-ngrok-from-being-used-for-any-purpose-other-than-in-site-to-site-connectivity-with-my-vendor?)
+outside of the site-to-site connectivity with your vendor.
+- Create a single account tenant, enforce [Account Domain
+Controls](https://ngrok.com/blog-post/account-domain-controls) to route all
+ngrok users with an email address `@your-company.com` into it, and enable
+role-based access controls to limit those accounts.
+- Create [bot users](/docs/iam/bot-users/) to create authtokens not tied
+to any individual user, and use a different, scoped authtoken for each agent.
+- Apply [Access Control
+Lists](/docs/iam/rbac/#additional-restrictions-with-acls) (ACLs) to authtokens
+to control where ngrok agents can be created within your network.
+- Enable the [IP restrictions](/docs/http/traffic-policy/actions/restrict-ips/)
+action on your endpoint(s) to allow only trusted connections from your vendor.
+- Enforce [basic auth](/docs/http/basic-auth/), [OAuth](/docs/http/oauth/),
+[OpenID](/docs/http/openid-connect/), [SAML](/docs/http/saml/),
+[JWT](/docs/http/traffic-policy/actions/jwt-validation/), or
+[mTLS](/docs/guides/other-guides/using-tls-mutual-authentication/)
+authentication on your endpoint(s).
 
 ### How does ngrok’s traffic encryption work? {#how-does-ngrok’s-traffic-encryption-work?}
 
@@ -116,15 +138,23 @@ Contact your vendor if you’re unsure how TLS termination is managed in your si
 
 No—if you terminate TLS at the agent or your upstream service.
 
-In all encryption models, the ngrok agent cannot see the traffic it forwards only to your upstream service.
+In all encryption models, the ngrok agent cannot see the traffic it forwards on to your upstream service.
 
-If your vendor requests HTTP tunnels for your site-to-site connectivity use case, and also uses the [Traffic Inspector](/docs/obs/traffic-inspection/#ngrok-traffic-inspector) feature, then ngrok can [see and will store](https://ngrok.com/blog-post/data-at-ngrok#traffic-inspector-provides-network-traffic-observability-throughout-the-ngrok-platform) up to 90 days of metadata about each request and response. If your vendor enables [Full Capture mode](/docs/obs/traffic-inspection/#full-capture-mode), ngrok also stores the full request and response parameters, headers, and bodies for each traffic event.
+If your vendor requests HTTP tunnels for your site-to-site connectivity use case
+and also uses the [Traffic
+Inspector](/docs/obs/traffic-inspection/#ngrok-traffic-inspector) feature, then
+ngrok can [see and will
+store](https://ngrok.com/blog-post/data-at-ngrok#traffic-inspector-provides-network-traffic-observability-throughout-the-ngrok-platform)
+up to 90 days of metadata about each request and response. If your vendor
+enables [Full Capture mode](/docs/obs/traffic-inspection/#full-capture-mode),
+ngrok also stores the full request and response parameters, headers, and bodies
+for each traffic event.
 
 ### Can I set up deep packet inspection or observe what data transmits through ngrok?
 
 Yes.
 
-You can configure the ngrok agent to trust a specific root certificate you own on the host’s OS or a specific PEM file on disk instead of the trusted certificate root for the ngrok network. You can then use a proxy for deep packet inspection. Read our [root certificate authority](/docs/agent/config/v3/#root_cas) documentation for details.
+You can configure the ngrok agent to trust a specific root certificate you own on the host’s OS or a specific PEM file on disk instead of the trusted certificate root for the ngrok network. You can then use a proxy for deep packet inspection. Read our [root certificate authority](/docs/agent/config/v3/#connect-cas) documentation for details.
 
 Alternatively, you can set up a bypass rule for `connect.ngrok-agent.com` (or a custom agent ingress address) to not perform TLS inspection.
 
@@ -170,7 +200,7 @@ You can request our SOC 2 report and view other documents about ngrok’s securi
 
 ### What data does ngrok have access to, and how long is it stored?
 
-ngrok’s access to your data depends on which [encryption model](#how-does-ngrok’s-traffic-encryption-work?) specified by your site-to-site connectivity architecture—reach out to your vendor for more details.
+ngrok’s access to your data depends on the [encryption model](#how-does-ngrok’s-traffic-encryption-work?) specified by your site-to-site connectivity architecture—reach out to your vendor for more details.
 
 In all cases, ngrok stores information about the machine where you run your agent, such as its IP address, operating system, CPU architecture, and anonymized details about the environment.
 
@@ -182,7 +212,7 @@ Read our [primer on data at ngrok](https://ngrok.com/blog-post/data-at-ngrok) fo
 
 ### What security practices does ngrok follow?
 
-ngrok uses the shared security responsibility model, where we are responsible for the security of our network and deliver features you can configure to secure your services. You and your vendor are responsible for securing your site-to-site connectivity architecture.
+ngrok uses the shared security responsibility model where we are responsible for the security of our network, and we deliver features you can configure to secure your services. You and your vendor are responsible for securing your site-to-site connectivity architecture.
 
 Our fundamental security practices include access control via an identity provider, change management, full encryption at rest, and much more.
 
@@ -202,7 +232,7 @@ See our [supported platforms documentation](/docs/agent/#system-requirements) fo
 
 First, we recommend configuring your ngrok agent to [run in the background](/docs/agent/#background-service) as a native operating system service. This functionality works on all Linux, Windows, and macOS systems, and once installed, the ngrok service starts at boot-time, automatically restarts after crashes, and sends logs to your system’s native logging service.
 
-If you deploy the ngrok agent with Docker, you can utilize Docker’s [restart policies](https://docs.docker.com/engine/reference/run/#restart-policies-restart) or [systemd integration](https://docs.docker.com/engine/install/linux-postinstall/#configure-docker-to-start-on-boot-with-systemd); with our [Kubernetes Operator](/docs/k8s/ngrok-operator), ensure the [container restart policy](https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#restart-policy) is set to `Always`.
+If you deploy the ngrok agent with Docker, you can utilize Docker’s [restart policies](https://docs.docker.com/engine/reference/run/#restart-policies-restart) or [systemd integration](https://docs.docker.com/engine/install/linux-postinstall/#configure-docker-to-start-on-boot-with-systemd); with our [Kubernetes Operator](/docs/k8s/), ensure the [container restart policy](https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#restart-policy) is set to `Always`.
 
 ngrok releases security and feature updates through all our installation channels and package managers. The process for updating your ngrok agent(s) depends on how you installed them.
 
