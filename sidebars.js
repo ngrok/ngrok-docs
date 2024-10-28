@@ -184,44 +184,38 @@ const sidebars = {
 			label: "Concepts",
 			type: "category",
 			link: { type: "doc", id: "traffic-policy/concepts/index" },
-			items: [
-			],
+			items: [],
 		},
 		{
 			label: "Actions",
 			type: "category",
 			link: { type: "doc", id: "traffic-policy/actions/index" },
-			items: [
-			],
+			items: [],
 		},
 		{
 			label: "Macros",
 			type: "category",
 			link: { type: "doc", id: "traffic-policy/macros/index" },
-			items: [
-			],
+			items: [],
 		},
 		{
 			label: "Variables",
 			type: "category",
 			link: { type: "doc", id: "traffic-policy/variables/index" },
-			items: [
-			],
+			items: [],
 		},
 		"traffic-policy/identities/index",
 		{
 			label: "Traffic Management Gallery",
 			type: "category",
 			link: { type: "doc", id: "traffic-policy/gallery/index" },
-			items: [
-			],
+			items: [],
 		},
 		{
 			label: "API Resources",
 			type: "category",
 			link: { type: "doc", id: "traffic-policy/resources/index" },
-			items: [
-			],
+			items: [],
 		},
 		"traffic-policy/pricing-limits",
 		{
