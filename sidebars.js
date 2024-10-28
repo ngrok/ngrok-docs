@@ -176,6 +176,56 @@ const sidebars = {
 		},
 		{
 			type: "html",
+			value: "<div class='menu__section'>Traffic Policy</div>",
+		},
+		"traffic-policy/overview",
+		"traffic-policy/getting-started",
+		{
+			label: "Concepts",
+			type: "category",
+			link: { type: "doc", id: "traffic-policy/concepts/index" },
+			items: [
+			],
+		},
+		{
+			label: "Actions",
+			type: "category",
+			link: { type: "doc", id: "traffic-policy/actions/index" },
+			items: [
+			],
+		},
+		{
+			label: "Macros",
+			type: "category",
+			link: { type: "doc", id: "traffic-policy/macros/index" },
+			items: [
+			],
+		},
+		{
+			label: "Variables",
+			type: "category",
+			link: { type: "doc", id: "traffic-policy/variables/index" },
+			items: [
+			],
+		},
+		"traffic-policy/identities/index",
+		{
+			label: "Traffic Management Gallery",
+			type: "category",
+			link: { type: "doc", id: "traffic-policy/gallery/index" },
+			items: [
+			],
+		},
+		{
+			label: "API Resources",
+			type: "category",
+			link: { type: "doc", id: "traffic-policy/resources/index" },
+			items: [
+			],
+		},
+		"traffic-policy/pricing-limits",
+		{
+			type: "html",
 			value: "<div class='menu__section'>Connectivity</div>",
 		},
 		{
