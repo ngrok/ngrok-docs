@@ -139,7 +139,7 @@ _en-grok_
 The first prototype for ngrok was committed on [March 20th,
 2013](https://github.com/inconshreveable/ngrok/commit/8f4795ecac7f92c6b5a8c8970c65f26e5315fe4e).
 
-## Why does port scanning my ngrok domain show other open ports {#open-ports-on-domain}
+## Why does port scanning my ngrok domain show other open ports? {#open-ports-on-domain}
 
 ngrok uses a shared set of servers to service both HTTP(s)/TLS and TCP traffic.
 All HTTP(s)/TLS traffic is serviced on ports 80 and 443. For TCP traffic each
@@ -155,3 +155,13 @@ IP and port to indicate which customer to route traffic to.
 As with all publicly accessible IPs and ports on the internet anyone can send
 traffic to those endpoints, but ngrok provides a [number of mechanisms](https://ngrok.com/docs/guides/security-dev-productivity/) to control
 what traffic actually gets routed to you ngrok agent or sdk.
+
+
+## Why is my vendor asking me to install ngrok for 'site-to-site connectivity'? {#site-to-site-end-customer}
+
+Your vendor wants to create a secure persistent connection between your network
+and theirs, which allows them to access and take action on your services and
+data.
+
+For details about what ngrok is, how to install the ngrok agent, and how to work
+with your vendor to implement adequate security practices, see our [end customer installation guide](end-customers.mdx).
