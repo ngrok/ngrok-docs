@@ -406,7 +406,7 @@
         <a id="ERR_NGROK_224" href="/docs/errors/err_ngrok_224">ERR_NGROK_224</a>
       </td>
       <td class="pre-wrapped">
-        The value <code>&lt;VAL&gt;</code> is not valid for the terminate_at property of the TLS Termination endpoint configuration module. Must be either 'edge' or 'upstream'.
+        The value <code>&lt;VAL&gt;</code> is not valid for the terminate_at property of the TLS Termination endpoint configuration module. Must be either 'edge', 'agent' or 'upstream'.
       </td>
     </tr>
     <tr>
@@ -5041,6 +5041,14 @@
       </td>
       <td class="pre-wrapped">
         The traffic policy provided is not guaranteed to handle traffic. Ensure traffic always results in an action, e.g. custom response or forward action.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_2236" href="/docs/errors/err_ngrok_2236">ERR_NGROK_2236</a>
+      </td>
+      <td class="pre-wrapped">
+        Failed to parse the supplied traffic policy; please verify it is not malformed.
       </td>
     </tr>
     <tr>
@@ -10556,7 +10564,7 @@
         <a id="ERR_NGROK_18002" href="/docs/errors/err_ngrok_18002">ERR_NGROK_18002</a>
       </td>
       <td class="pre-wrapped">
-        The provided cloud endpoint configuration is invalid: <code>&lt;MESSAGE&gt;</code>
+        The provided cloud endpoint traffic policy configuration is invalid: <code>&lt;MESSAGE&gt;</code>
       </td>
     </tr>
     <tr>
@@ -10613,6 +10621,22 @@
       </td>
       <td class="pre-wrapped">
         This account already has a cloud endpoint on this URL.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_18010" href="/docs/errors/err_ngrok_18010">ERR_NGROK_18010</a>
+      </td>
+      <td class="pre-wrapped">
+        You have exceeded the maximum number of cloud endpoints allowed for this account. Please log into <a href="https://dashboard.ngrok.com/usage">https://dashboard.ngrok.com/usage</a> to review your historic usage and <a href="https://dashboard.ngrok.com/billing/subscription/select">https://dashboard.ngrok.com/billing/subscription/select</a> to view your subscription options.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_18011" href="/docs/errors/err_ngrok_18011">ERR_NGROK_18011</a>
+      </td>
+      <td class="pre-wrapped">
+        Traffic policy configuration is required: <code>&lt;MESSAGE&gt;</code>
       </td>
     </tr>
   </tbody>
