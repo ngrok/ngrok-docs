@@ -156,7 +156,6 @@ As with all publicly accessible IPs and ports on the internet anyone can send
 traffic to those endpoints, but ngrok provides a [number of mechanisms](https://ngrok.com/docs/guides/security-dev-productivity/) to control
 what traffic actually gets routed to you ngrok agent or sdk.
 
-
 ## Why is my vendor asking me to install ngrok for 'site-to-site connectivity'? {#site-to-site-end-customer}
 
 Your vendor wants to create a secure persistent connection between your network
