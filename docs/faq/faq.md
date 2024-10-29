@@ -153,7 +153,8 @@ traffic to be routed to the correct customer. For TCP traffic ngrok uses the
 IP and port to indicate which customer to route traffic to.
 
 As with all publicly accessible IPs and ports on the internet anyone can send
-traffic to those endpoints, but ngrok provides a [number of mechanisms](https://ngrok.com/docs/guides/security-dev-productivity/) to control
+traffic to those endpoints, but ngrok provides a [number of
+mechanisms](/docs/guides/other-guides/security-dev-productivity/) to control
 what traffic actually gets routed to you ngrok agent or sdk.
 
 ## Why is my vendor asking me to install ngrok for 'site-to-site connectivity'? {#site-to-site-end-customer}
@@ -163,4 +164,4 @@ and theirs, which allows them to access and take action on your services and
 data.
 
 For details about what ngrok is, how to install the ngrok agent, and how to work
-with your vendor to implement adequate security practices, see our [end customer installation guide](end-customers.mdx).
+with your vendor to implement adequate security practices, see our [end customer installation guide](/docs/guides/site-to-site-connectivity/end-customers/).
