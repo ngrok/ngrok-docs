@@ -6,6 +6,12 @@ title: Changelog
 
 ## v3
 
+### ngrok Agent 3.18.2 - \[2024-10-31\]
+
+- Fixed ngrok diagnose --region all report
+- Fixed scheme proto defaulting
+- Added 128 character limit to usernames for agent basic auth
+
 ### ngrok Agent 3.18.1 - \[2024-10-24\]
 
 - Adds binary execution path to the host system metrics collected
