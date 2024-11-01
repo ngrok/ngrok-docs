@@ -1,5 +1,5 @@
 ---
-pagination_next: guides/device-gateway/index
+pagination_next: guides/api-gateway/index
 sidebar_position: 1
 title: All Guides
 ---
