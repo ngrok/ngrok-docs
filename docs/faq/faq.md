@@ -26,7 +26,7 @@ We actively monitor and reach out to these companies and attempt to obtain the c
 
 If you receive a notice from your antivirus software when installing ngrok software, be sure to verify the following:
 
-- Our official binaries can be downloaded from our [ngrok Downloads](https://ngrok.com/download) page, and the binaries themselves are hosted at `bin.equinox.io`. If you installed ngrok from another source, you should be careful.
+- Our official binaries can be downloaded from our [ngrok Downloads](https://download.ngrok.com) page, and the binaries themselves are hosted at `bin.equinox.io`. If you installed ngrok from another source, you should be careful.
 - There are no open source versions of our ngrok Agent and the source code is not available. If you have downloaded anything claiming to be ngrok agent source code or built our agent from source, it is most likely malicious.
 - All of our binaries are signed using ngrok certificates. You can verify the integrity of the application by checking that the binary is signed by an `ngrok LLC` or `ngrok, Inc.` authority. See [these instructions from Microsoft](https://support.microsoft.com/en-us/office/view-digital-signature-and-certificate-details-76ba00cb-1e58-42aa-8717-0caee76bb3cf) for verifying the digital signatures in Windows binaries.
 
@@ -128,7 +128,7 @@ These IP addresses can and do change, so we recommend using our DNS names instea
 The original open source ngrok agent 1.x is [available on
 GitHub](https://github.com/inconshreveable/ngrok) but is no longer developed,
 supported or maintained. The latest ngrok agent is available on our [ngrok
-downloads page](https://ngrok.com/download).
+downloads page](https://download.ngrok.com).
 
 ## How do I pronounce ngrok? {#pronunciation}
 
