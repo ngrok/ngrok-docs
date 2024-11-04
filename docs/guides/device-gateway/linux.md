@@ -21,7 +21,7 @@ To download and install the ngrok agent on your remote Linux device, follow thes
 
 1. Open a terminal into your remote Linux device.
 
-1. Download the latest ngrok binary for your Linux distribution. You can find the correct binary on our [ngrok download page](https://ngrok.com/download): Select your operating system, select the version, and copy the link that appears in the **Download** button. Below is an example for x86-64:
+1. Download the latest ngrok binary for your Linux distribution. You can find the correct binary on our [ngrok download page](https://download.ngrok.com): Select your operating system, select the version, and copy the link that appears in the **Download** button. Below is an example for x86-64:
 
 ```bash
 wget https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz
