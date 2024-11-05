@@ -161,7 +161,7 @@
       </td>
       <td class="pre-wrapped">
         Your <code>&lt;PRODUCT&gt;</code> version "<code>&lt;VERSION&gt;</code>" is no longer supported. Only the most recent version of the ngrok agent is supported without an account.
-        Update to a newer version with `ngrok update`, by downloading from <a href="https://ngrok.com/download">https://ngrok.com/download</a>, or by updating your SDK version.
+        Update to a newer version with `ngrok update`, by downloading from <a href="https://download.ngrok.com">https://download.ngrok.com</a>, or by updating your SDK version.
         Sign up for an account to avoid forced version upgrades: <a href="https://ngrok.com/signup">https://ngrok.com/signup</a>.
       </td>
     </tr>
@@ -170,7 +170,7 @@
         <a id="ERR_NGROK_121" href="/docs/errors/err_ngrok_121">ERR_NGROK_121</a>
       </td>
       <td class="pre-wrapped">
-        Your <code>&lt;PRODUCT&gt;</code> version "<code>&lt;VERSION&gt;</code>" is too old. The minimum supported agent version for your account is "<code>&lt;MINVERSION&gt;</code>". Please update to a newer version with `ngrok update`, by downloading from <a href="https://ngrok.com/download">https://ngrok.com/download</a>, or by updating your SDK version. Paid accounts are currently excluded from minimum agent version requirements. To begin handling traffic immediately without updating your agent, upgrade to a paid plan: <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a>.
+        Your <code>&lt;PRODUCT&gt;</code> version "<code>&lt;VERSION&gt;</code>" is too old. The minimum supported agent version for your account is "<code>&lt;MINVERSION&gt;</code>". Please update to a newer version with `ngrok update`, by downloading from <a href="https://download.ngrok.com">https://download.ngrok.com</a>, or by updating your SDK version. Paid accounts are currently excluded from minimum agent version requirements. To begin handling traffic immediately without updating your agent, upgrade to a paid plan: <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a>.
       </td>
     </tr>
     <tr>
