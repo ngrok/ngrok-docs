@@ -21,7 +21,7 @@ To download and install the ngrok agent on your remote Raspberry Pi device, foll
 
 1. Open a terminal into your remote Raspberry Pi device.
 
-2. Download the latest ngrok binary for your Linux distribution. You can find the correct binary on our [ngrok download page](https://ngrok.com/download): Select your operating system, select the version, and copy the link that appears in the **Download** button. Below is an example for ARM64:
+2. Download the latest ngrok binary for your Linux distribution. You can find the correct binary on our [ngrok download page](https://download.ngrok.com): Select your operating system, select the version, and copy the link that appears in the **Download** button. Below is an example for ARM64:
 
 ```bash
 wget https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-arm64.tgz

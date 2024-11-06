@@ -171,7 +171,7 @@ const config = {
 					},
 					{
 						label: "Get ngrok",
-						to: "https://ngrok.com/download",
+						to: "https://download.ngrok.com",
 						position: "left",
 					},
 					{
@@ -228,7 +228,7 @@ const config = {
 							},
 							{
 								label: "Download",
-								to: "https://ngrok.com/download",
+								to: "https://download.ngrok.com",
 							},
 							{
 								label: "Docs",
