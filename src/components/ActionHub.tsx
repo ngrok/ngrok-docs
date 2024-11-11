@@ -3,7 +3,6 @@ import { Badge } from "@ngrok/mantle/badge";
 import { Button } from "@ngrok/mantle/button";
 import { Card, CardBody, CardFooter } from "@ngrok/mantle/card";
 import { Input, InputCapture } from "@ngrok/mantle/input";
-import { Label } from "@ngrok/mantle/label";
 import {
 	Select,
 	SelectContent,
@@ -11,7 +10,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@ngrok/mantle/select";
-import { Info, MagnifyingGlass } from "@phosphor-icons/react";
+import { MagnifyingGlass } from "@phosphor-icons/react";
 import React, { useState } from "react";
 
 const DefaultPhaseValue = "any";
@@ -38,7 +37,7 @@ type Props = {
 	categories: Category[];
 };
 
-export default function ActionHub({ actions, categories }: Props) {
+export default function ActionHub({ actions }: Props) {
 	const [phaseFilter, setPhaseFilter] = useState(DefaultPhaseValue);
 	const [actionSearch, setActionSearch] = useState("");
 
