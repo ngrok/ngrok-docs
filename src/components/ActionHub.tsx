@@ -148,7 +148,9 @@ export default function ActionHub({ actions }: Props) {
 						<b>{phaseFilter}</b> phase.
 					</p>
 					<div>
-						<Button type="button" onClick={clearFilters}>Clear Filters</Button>
+						<Button type="button" onClick={clearFilters}>
+							Clear Filters
+						</Button>
 					</div>
 				</div>
 			)}
