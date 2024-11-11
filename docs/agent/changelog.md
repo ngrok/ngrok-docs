@@ -6,6 +6,10 @@ title: Changelog
 
 ## v3
 
+### ngrok Agent 3.18.4 - \[2024-11-11\]
+
+- Fixed a bug causing the `--url` flag require an explicit scheme
+
 ### ngrok Agent 3.18.3 - \[2024-11-07\]
 
 - Fixed agent diagnose return codes.
