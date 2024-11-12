@@ -92,7 +92,7 @@ export default function ActionHub({ actions }: Props) {
 		<>
 			<div className="mb-4 flex flex-wrap justify-between gap-4">
 				<Input
-					className="max-w-64"
+					className="max-w-64 font-sans"
 					placeholder="Filter..."
 					value={actionSearch}
 					onChange={(e) => setActionSearch(e.target.value)}
