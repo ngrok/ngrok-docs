@@ -16,16 +16,12 @@ import React, { useState } from "react";
 const DefaultPhaseValue = "any";
 const DefaultProtocolValue = "any";
 
-const Phases = [
-    "on_tcp_connect", 
-    "on_http_request", 
-    "on_http_response"
-];
+const Phases = ["on_tcp_connect", "on_http_request", "on_http_response"];
 
 const Protocols = {
-    "TCP": ["on_tcp_connect"],
-    "HTTP": ["on_http_request", "on_http_response"]
-}
+	TCP: ["on_tcp_connect"],
+	HTTP: ["on_http_request", "on_http_response"],
+};
 
 type Action = {
 	id?: string;
@@ -63,16 +59,16 @@ export default function ActionHub({ actions }: Props) {
 
 	if (protocolFilter != DefaultProtocolValue) {
 		filteredActions = filteredActions.filter((action) => {
-            const protocols = Protocols[protocolFilter];
-            let exists = 0;
-            for (let index = 0; index < protocols.length; index++) {
-                const protocol = protocols[index];
-                if (action.phases.includes(protocol)) {
-                    exists++;
-                }
-            }
-            return exists;
-        })
+			const protocols = Protocols[protocolFilter];
+			let exists = 0;
+			for (let index = 0; index < protocols.length; index++) {
+				const protocol = protocols[index];
+				if (action.phases.includes(protocol)) {
+					exists++;
+				}
+			}
+			return exists;
+		});
 	}
 
 	if (phaseFilter != DefaultPhaseValue) {
@@ -105,31 +101,33 @@ export default function ActionHub({ actions }: Props) {
 					<InputCapture />
 				</Input>
 
-                <div className="flex gap-2">
-				<Select value={protocolFilter} onChange={setProtocolFilter}>
-					<SelectTrigger className="w-[180px]">
-						<SelectValue placeholder="Filter by Phase" />
-					</SelectTrigger>
-					<SelectContent width="trigger">
-						<SelectItem value={DefaultProtocolValue}>All Protocols</SelectItem>
-						{Object.keys(Protocols).map((protocol) => (
-							<SelectItem value={protocol}>{protocol}</SelectItem>
-						))}
-					</SelectContent>
-				</Select>
+				<div className="flex gap-2">
+					<Select value={protocolFilter} onChange={setProtocolFilter}>
+						<SelectTrigger className="w-[180px]">
+							<SelectValue placeholder="Filter by Phase" />
+						</SelectTrigger>
+						<SelectContent width="trigger">
+							<SelectItem value={DefaultProtocolValue}>
+								All Protocols
+							</SelectItem>
+							{Object.keys(Protocols).map((protocol) => (
+								<SelectItem value={protocol}>{protocol}</SelectItem>
+							))}
+						</SelectContent>
+					</Select>
 
-				<Select value={phaseFilter} onChange={setPhaseFilter}>
-					<SelectTrigger className="w-[180px]">
-						<SelectValue placeholder="Filter by Phase" />
-					</SelectTrigger>
-					<SelectContent width="trigger">
-						<SelectItem value={DefaultPhaseValue}>All Phases</SelectItem>
-						{Phases.map((phase) => (
-							<SelectItem value={phase}>{phase}</SelectItem>
-						))}
-					</SelectContent>
-				</Select>
-                </div>
+					<Select value={phaseFilter} onChange={setPhaseFilter}>
+						<SelectTrigger className="w-[180px]">
+							<SelectValue placeholder="Filter by Phase" />
+						</SelectTrigger>
+						<SelectContent width="trigger">
+							<SelectItem value={DefaultPhaseValue}>All Phases</SelectItem>
+							{Phases.map((phase) => (
+								<SelectItem value={phase}>{phase}</SelectItem>
+							))}
+						</SelectContent>
+					</Select>
+				</div>
 			</div>
 
 			{!!filteredActions.length && (
@@ -140,41 +138,41 @@ export default function ActionHub({ actions }: Props) {
 							to={`/traffic-policy/actions/${action.type}`}
 							className="col-span-1"
 						>
-							<Card className="h-full divide-y-0 hover:bg-card-hover flex flex-col">
-								<h3 className="m-0 items-baseline flex px-4 pt-4 pb-2 gap-2">
+							<Card className="flex h-full flex-col divide-y-0 hover:bg-card-hover">
+								<h3 className="m-0 flex items-baseline gap-2 px-4 pb-2 pt-4">
 									{action.type}
 								</h3>
-								<CardBody className="p-0 px-4 flex-grow">
+								<CardBody className="flex-grow p-0 px-4">
 									<p className="m-0 p-0">{action.description}</p>
-                                </CardBody>
-                                <CardFooter className="px-4 pb-4">
-                                    <div className="flex flex-wrap gap-2">
-									{action.phases
-										.sort((a, b) => a.localeCompare(b))
-										.map((phase) => {
-											switch (phase) {
-												case "on_tcp_connect":
-													return (
-														<Badge appearance="muted" color="blue">
-															{phase}
-														</Badge>
-													);
-												case "on_http_request":
-													return (
-														<Badge appearance="muted" color="pink">
-															{phase}
-														</Badge>
-													);
-												case "on_http_response":
-													return (
-														<Badge appearance="muted" color="pink">
-															{phase}
-														</Badge>
-													);
-											}
-										})}
-                                    </div>
-                                </CardFooter>
+								</CardBody>
+								<CardFooter className="px-4 pb-4">
+									<div className="flex flex-wrap gap-2">
+										{action.phases
+											.sort((a, b) => a.localeCompare(b))
+											.map((phase) => {
+												switch (phase) {
+													case "on_tcp_connect":
+														return (
+															<Badge appearance="muted" color="blue">
+																{phase}
+															</Badge>
+														);
+													case "on_http_request":
+														return (
+															<Badge appearance="muted" color="pink">
+																{phase}
+															</Badge>
+														);
+													case "on_http_response":
+														return (
+															<Badge appearance="muted" color="pink">
+																{phase}
+															</Badge>
+														);
+												}
+											})}
+									</div>
+								</CardFooter>
 							</Card>
 						</Link>
 					))}
