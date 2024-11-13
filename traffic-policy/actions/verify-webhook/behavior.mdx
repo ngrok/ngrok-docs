@@ -1,0 +1,28 @@
+### Behavior
+
+The **Verify Webhook** action ensures that incoming webhook requests are genuinely sent by the specified webhook provider and are intended for your application. When a webhook request is received, the action verifies the authenticity of the request by validating its signature against a known secret or other security mechanisms provided by the provider. If the verification is successful, the action allows the request to continue through the request chain; if verification fails, the request will be terminated with a `403 Forbidden` response.
+
+#### Verification Process
+- **Signature Validation**: The action validates the incoming webhook signature to confirm that the request originates from the configured provider and that the payload has not been tampered with.
+- **Request Handling**: If the webhook verification is successful, the request is forwarded to the next handler. If the verification fails, the request chain is terminated with a `403` response.
+- **Configurable Enforcement**: By default, verification failures result in termination. However, setting `enforce: false` in the configuration allows unverified requests to proceed, while logging the verification result. This option provides flexibility for debugging or testing scenarios.
+
+#### Supported Protocols and Phases
+- **Protocols**: Only HTTP is supported.
+- **Phases**: This action runs in the `on_http_request` phase, processing incoming HTTP requests.
+
+#### Endpoint Verification
+Some webhook providers require an initial endpoint verification challenge to validate that your application is legitimate before sending webhook events. The ngrok **Verify Webhook Action** automatically handles endpoint verification challenges from supported providers, ensuring compliance with provider-specific requirements.
+
+- Supported providers for endpoint verification:
+  - Twitter
+  - Worldline
+  - Xero
+  - Zoom
+
+#### Replay Prevention with Timestamp Tolerance
+To prevent replay attacks, ngrok verifies that the webhook’s timestamp falls within an acceptable range, based on either the provider's recommended tolerance or a default of **180 seconds** if unspecified. This helps ensure that requests are timely and reduces vulnerability to replayed payloads.
+
+#### Secret Handling and Encryption
+All secrets used for webhook verification are encrypted at the time of configuration submission. When ngrok processes requests or returns the action configuration via the API or dashboard, the secret is decrypted securely. To protect sensitive information, the secret appears as a redacted value in logs, ensuring confidentiality.
+
