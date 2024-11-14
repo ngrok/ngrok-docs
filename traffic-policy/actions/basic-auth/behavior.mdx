@@ -3,25 +3,24 @@
 The **basic-auth** action requires incoming HTTP requests to successfully authenticate
 with HTTP Basic Authentication as per RFC 7235. When a request is received, the action verifies 
 the request by validating against a known set of `user:password` credentials. If the verification 
-is successful, the action allows the request to continue through the action chain and to finally 
+is successful, the action allows the request to continue through the action chain and finally 
 to your application; if verification fails, the request will be terminated with a 
 `401 Unauthorized` response.
 
 #### Additional Restrictions
 
 You can specify only a limited number of `username:password` pairs. The password must be at least
-8 characters and no more than 128 characters. The username can neither be be empty, nor can it exceed 
+8 characters and no more than 128 characters. The username can neither be empty nor can it exceed 
 128 characters. Including multiple colons in the `username:password` pair will result in the first 
 colon being treated as the delimiter between the username and password. Realm cannot exceed 128 
 characters, and cannot contain non-ASCII characters.
 
 #### Verification Process
 
-- **HTTP Authentication**: The action validates incoming HTTP requests to confirm they contain the required `Authorization` header, in the form of `Authorization: Basic <credentials>`, where `<credentials>` is the Base64 encoding of ID and password joined by a single colon `:`.
-- **Request Handling**: If the webhook authentication is successful, the request is forwarded to the next action. If the authentication fails, it will return to user a `401` response, which will prompt the user to provide a correct set of credentials.
+- **HTTP Authentication**: The action validates incoming HTTP requests to confirm they contain the required `Authorization` header, in the form of `Authorization: Basic <credentials>`, where `<credentials>` is the Base64 encoding of username and password joined by a single colon `:`.
+- **Request Handling**: If the authentication is successful, the request is forwarded to the next action. If the authentication fails, it will return to user a `401` response, which will prompt the user to provide a correct set of credentials.
 - **Configurable Enforcement**: By default, authentication failures result in 401s. However, setting `enforce: false` allows unauthenticated requests to proceed, while logging the authentication result. This option is for debugging and testing.
 
 #### Secret Handling and Encryption
 
-All secrets used for webhook verification are encrypted at config validation. When ngrok processes a request, the secret is decrypted.
-    
+All secrets used for basic authentication are encrypted at config validation. When ngrok processes a request, the secret is decrypted.
