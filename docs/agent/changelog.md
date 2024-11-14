@@ -6,25 +6,33 @@ title: Changelog
 
 ## v3
 
+### ngrok Agent 3.18.4 - \[2024-11-11\]
+
+- Fixed a bug causing the `--url` flag require an explicit scheme
+
+### ngrok Agent 3.18.3 - \[2024-11-07\]
+
+- Fixed agent diagnose return codes.
+
 ### ngrok Agent 3.18.2 - \[2024-10-31\]
 
-- Fixed ngrok diagnose --region all report
-- Fixed scheme proto defaulting
-- Added 128 character limit to usernames for agent basic auth
+- Fixed ngrok diagnose --region all report.
+- Fixed scheme proto defaulting.
+- Added 128 character limit to usernames for agent basic auth.
 
 ### ngrok Agent 3.18.1 - \[2024-10-24\]
 
-- Adds binary execution path to the host system metrics collected
-- Fixed a bug where 4 character time zones were not handled properly in the console UI
+- Adds binary execution path to the host system metrics collected.
+- Fixed a bug where 4 character time zones were not handled properly in the console UI.
 
 ### ngrok Agent 3.18.0 - \[2024-10-17\]
 
-- Added `--name` field for endpoints and tunnels when created from the agent config or CLI
+- Added `--name` field for endpoints and tunnels when created from the agent config or CLI.
 
 ### ngrok Agent 3.17.0 - \[2024-10-10\]
 
-- Added endpoint create/update/delete subcommands to the ngrok api command
-- Added support for policy phases like `on_tcp_connect`, `on_http_request` and `on_http_response`
+- Added endpoint create/update/delete subcommands to the ngrok api command.
+- Added support for policy phases like `on_tcp_connect`, `on_http_request` and `on_http_response`.
 - Fixed a bug where we were incorrectly passing TLS as the endpoint proto rather than HTTP(S).
 
 ### ngrok Agent 3.16.1 - \[2024-10-03\]
