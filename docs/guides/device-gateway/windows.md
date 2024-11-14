@@ -20,7 +20,7 @@ To download and install the ngrok agent on your remote Windows device, follow th
 
 1. Open a terminal into your remote Windows device.
 
-1. Download the latest ngrok binary for your Windows distribution. You can find the correct binary on our [ngrok download page](https://ngrok.com/download): Select your operating system, select the version, and copy the link that appears in the **Download** button. Below is an example using PowerShell:
+1. Download the latest ngrok binary for your Windows distribution. You can find the correct binary on our [ngrok download page](https://download.ngrok.com): Select your operating system, select the version, and copy the link that appears in the **Download** button. Below is an example using PowerShell:
 
 ```bash
 Invoke-WebRequest -Uri https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-windows-amd64.zip -OutFile ngrok-v3-stable-windows-amd64.zip
@@ -119,7 +119,7 @@ tunnels:
 1. Enable ngrok in service mode:
 
 ```bash
-ngrok service install --config %HOMEPATH%\AppData\Local\ngrok\ngrok.yml"
+ngrok service install --config "%HOMEPATH%\AppData\Local\ngrok\ngrok.yml"
 ```
 
 :::note

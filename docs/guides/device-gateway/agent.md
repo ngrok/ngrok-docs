@@ -36,7 +36,7 @@ Most organizations will have their own certificate mangement infrastructure. You
 
 ## Install the ngrok agent
 
-[Download](https://ngrok.com/download) the appropriate version and install it on your device.
+[Download](https://download.ngrok.com) the appropriate version and install it on your device.
 
 ## Get an ngrok API Key
 

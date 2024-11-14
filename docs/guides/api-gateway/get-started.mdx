@@ -1,0 +1,641 @@
+---
+title: Get started - Deliver and secure APIs in production
+tags:
+  - guides
+  - API
+  - gateway
+  - security
+  - microservices
+---
+
+import Auth0 from "./img/auth0-create-api.png";
+
+# Get started - Deliver and secure APIs in production
+
+You've developed a world-class API, and now you want to make it available for clients to access. This guide takes you from
+bringing your API online in one line to configuring an API gateway that simplifies routing, security, contract management,
+protocol translation, and more, providing a single point of entry for clients and services accessing your APIs.
+
+## Prerequisites
+
+- [Sign up](https://dashboard.ngrok.com/signup) for an ngrok account if you don't already have one.
+- Deploy our [sample REST API](https://github.com/ngrok-samples/ngrok-rest-api) for testing purposes.
+- [Download](https://download.ngrok.com) the appropriate version of the ngrok agent, and install it on the same subnet as the API you wish to manage.
+- [Create an ngrok API key](https://dashboard.ngrok.com/api-keys/new) using the ngrok dashboard, and [add it to your agent](/docs/agent/#api-keys).
+
+## Set up sample API
+
+To test the Traffic Policy rules in this guide, you can use [the sample API](https://github.com/ngrok-samples/ngrok-rest-api) to simulate an environment with multiple APIs deployed and managed
+independently.
+
+Clone the repo:
+
+```bash
+git clone git@github.com:ngrok-samples/ngrok-rest-api.git
+```
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Start the application on the default port (`8001`):
+
+```bash
+npm run start
+```
+
+Locate `src/index.js`, and modify the `PORT` value to `8002`:
+
+```js
+const PORT = 8001; // Change to 8002
+app.listen(PORT, () => {
+	console.log(`Server running on port ${PORT}`);
+});
+```
+
+Start a second instance:
+
+```bash
+npm run start
+```
+
+### Create an internal endpoint
+
+Create an internal endpoint for one of the instances of the API by running the following command:
+
+```bash
+ngrok http 8001 --url=https://api.internal
+```
+
+## Reserve a domain
+
+Run the following command to reserve an ngrok domain, such as `mydomain.ngrok.app`:
+
+```bash
+ngrok api reserved-domains create --domain {YOUR_NGROK_DOMAIN}
+```
+
+This example uses an
+[ngrok-managed domain](/docs/network-edge/domains-and-tcp-addresses/#ngrok-managed-domains), but you can use
+your own [branded domain](/docs/network-edge/domains-and-tcp-addresses/#branded-domains) when you're ready for production.
+In that case, substitute your branded domain for `{YOUR_NGROK_DOMAIN}` in the command above, and
+[follow the steps](/docs/guides/other-guides/how-to-set-up-a-custom-domain/#create-cname-record-in-domain-dns)
+to configure DNS.
+
+If the domain you chose is already in use, you'll get a `400` error with a message to that effect. In that case, run the
+command again with a different domain. Alternatively, you can reserve the domain through [the dashboard](https://dashboard.ngrok.com/domains/new),
+which will show you which domains are available as you type.
+
+## Bring your API online
+
+You've created an internal endpoint to one of the instances of your API, but you need a cloud endpoint to receive traffic and apply policies before
+forwarding requests to your backend service via the internal endpoints. You'll start by bringing one of the instances online.
+
+### Create a Traffic Policy file
+
+Unlike other endpoint types, cloud endpoints _must_ contain at least one traffic policy rule which specifies a `forward-internal` action
+and the URL to an internal endpoint where traffic should be forwarded.
+
+Create a file called `policies.yaml` and paste the following contents:
+
+```bash
+---
+on_http_request:
+  - actions:
+      - type: forward-internal
+        config:
+          url: https://api.internal
+          binding: internal
+```
+
+### Create a cloud endpoint
+
+Run the following command from the same directory where you created `policies.yaml` to create a cloud endpoint, substituting the
+domain (i.e. `mydomain.ngrok.app`) you reserved in the previous step for `{YOUR_NGROK_DOMAIN}`:
+
+```bash
+ngrok api endpoints create \
+    --bindings public \
+    --url https://{YOUR_NGROK_DOMAIN} \
+    --traffic-policy "$(cat policies.yaml)"
+```
+
+You'll receive a `201` response similar to the following:
+
+```bash
+{
+  "bindings": [
+    "public"
+  ],
+  "created_at": "2024-10-25T14:35:28Z",
+  "description": "",
+  "domain": {
+    "id": "rd_2nvupgtpY4RuEPITujbfHpkhxmO",
+    "uri": "https://api.ngrok.com/reserved_domains/rd_2nvupgtpY4RuEPITujbfHpkhxmO"
+  },
+  "hostport": "mydomain.ngrok.app:443",
+  "id": "ep_2nvwbSCefcZv0At2ewhzMHPBT3V",
+  "metadata": "",
+  "proto": "https",
+  "public_url": "https://mydomain.ngrok.app",
+  "traffic_policy": "{\"on_http_request\":[{\"actions\":[{\"type\":\"forward-internal\",\"config\":{\"url\":\"https://mandy.ngrok.internal\",\"binding\":\"internal\"}}]}]}",
+  "type": "cloud",
+  "updated_at": "2024-10-25T14:35:28Z",
+  "uri": "https://api.ngrok.com/endpoints/ep_2nvwbSCefcZv0At2ewhzMHPBT3V",
+  "url": "https://mydomain.ngrok.app"
+}
+```
+
+Save the value of `id` because you'll need it in a later step.
+
+### Access your API
+
+You can now access the sample API via the domain you reserved above. For example,
+you can run the following command to access the `/cards` route:
+
+```bash
+curl -X GET https://{YOUR_NGROK_DOMAIN}/cards
+```
+
+You'll receive a `200` response similar to to the following:
+
+```bash
+{
+  "cards": [
+    {
+      "id": "ccof:uIbfJXhXETSP197M3GB",
+      "billing_address": {
+        "address_line_1": "500 Electric Ave",
+        "address_line_2": "Suite 600",
+        "locality": "New York",
+        "administrative_district_level_1": "NY",
+        "postal_code": "10003",
+        "country": "US"
+      },
+      "bin": "411111",
+      "card_brand": "VISA",
+      "card_type": "CREDIT",
+      "cardholder_name": "Amelia Earhart",
+      "customer_id": "VDKXEEKPJN48QDG3BGGFAK05P8",
+      "enabled": true,
+      "exp_month": 11,
+      "exp_year": 2018,
+      "last_4": "1111",
+      "prepaid_type": "NOT_PREPAID",
+      "reference_id": "user-id-1",
+      "version": 1
+    }
+  ]
+}
+```
+
+Stop the agent to remove the internal endpoint you just created.
+
+## Manage APIs with Traffic Policy rules
+
+Your API is now online, but it is completely exposed to the outside world. Next, add some traffic policy rules to authenticate
+requests and shape the traffic that reaches your backend service. You'll do this by running a command to update the configuration
+of your existing cloud endpoint, so you'll need the `id` from the previous step.
+
+If you didn't save the id when you created
+the cloud endpoint, run the following command, locate your endpoint, and grab its `id`:
+
+```
+ngrok api endpoints list
+```
+
+### Route by headers
+
+You can configure traffic policy rules to direct traffic based on HTTP header values.
+
+#### Start internal endpoints
+
+To implement this example, run each of the following commands in a separate terminal to start internal endpoints to the two instances of the sample API:
+
+```bash
+ngrok http 8001 --url=https://v1.api.internal
+ngrok http 8002 --url=https://v2.api.internal
+```
+
+While these endpoints point to two separate instances of the same backend API, they simulate the scenario where you need to direct traffic to two
+separate API services depending on the version.
+
+#### Update your policy rules
+
+This example looks for a header named `X-Api-Version` and routes traffic to different instances of the `/cards` route of the sample API.
+Feel free to modify it for your own API if you're not using the sample app. Update your `policies.yaml` file with the contents below,
+overwriting all previous contents:
+
+```yaml
+---
+on_http_request:
+  - name: "Route traffic to API v1"
+    expressions:
+      - "'1' in req.headers['x-api-version']"
+    actions:
+      - type: forward-internal
+        config:
+          url: https://v1.api.internal
+          binding: internal
+  - name: "Route traffic to API v2"
+    expressions:
+      - "'2' in req.headers['x-api-version']"
+    actions:
+      - type: forward-internal
+        config:
+          url: https://v2.api.internal
+          binding: internal
+  - actions:
+      - type: forward-internal
+        config:
+          url: https://v2.api.internal
+          binding: internal
+```
+
+:::note
+You must always include the `forward-internal` action as the final step in your policy file since once it executes,
+no subsequent policy rules will be executed. Additionally, you always need a terminating policy rule.
+In this case, the traffic forwards to `https://v2.api.internal` if the header is set to a value other than `1` or `2` or
+if the header isn't present in the request.
+:::
+
+Run the following command, substituting your `{ENDPOINT_ID}`, to update the cloud endpoint with the new policy actions:
+
+```bash
+ ngrok api endpoints update {ENDPOINT_ID} --traffic-policy "$(cat policies.yaml)"
+```
+
+#### Test traffic policies
+
+You can test this by passing a header value when you send a request to this API. Try it with version 1.
+
+```bash
+curl -X GET https://{YOUR_NGROK_DOMAIN}/cards --header "X-Api-Version: 1"
+```
+
+You'll receive a `200` response similar to to the following:
+
+```json
+{
+	"cards": [
+		{
+			"id": "ccof:uIbfJXhXETSP197M3GB",
+			"billing_address": {
+				"address_line_1": "500 Electric Ave",
+				"address_line_2": "Suite 600",
+				"locality": "New York",
+				"administrative_district_level_1": "NY",
+				"postal_code": "10003",
+				"country": "US"
+			},
+			"bin": "411111",
+			"card_brand": "VISA",
+			"card_type": "CREDIT",
+			"cardholder_name": "Amelia Earhart",
+			"customer_id": "VDKXEEKPJN48QDG3BGGFAK05P8",
+			"enabled": true,
+			"exp_month": 11,
+			"exp_year": 2018,
+			"last_4": "1111",
+			"prepaid_type": "NOT_PREPAID",
+			"reference_id": "user-id-1",
+			"version": 1
+		}
+	]
+}
+```
+
+Go to the terminal where you started the internal endpoint `https://v1.api.internal` on port `8001`, and you'll see the request hit
+the correct endpoint.
+
+```bash
+ngrok                                                                                                                                                                                                                                               (Ctrl+C to quit)
+
+Found a bug? Let us know: https://github.com/ngrok/ngrok
+
+Session Status                online
+Account                       ngrok Marketing Team (Plan: All)
+Version                       3.18.1
+Region                        United States (us)
+Latency                       97ms
+Web Interface                 http://127.0.0.1:4040
+Forwarding                    https://v1.api.internal -> http://localhost:8001
+
+Connections                   ttl     opn     rt1     rt5     p50     p90
+                              0       1       0.00    0.00    0.00    0.00
+
+HTTP Requests
+-------------
+
+15:00:14.035 CDT GET /cards                     200 OK
+
+```
+
+Change the header value to `2` and run the command again. You'll get the same response, but you should see this request hit the `https://v2.api.internal`
+endpoint on port `8002`.
+
+Stop both agent instances to remove the internal endpoints you just created.
+
+### Route by path
+
+Path-based routing enables you to direct traffic to different backend services based on the value of the path.
+
+#### Start internal endpoints
+
+To implement this example, run the following commands in separate terminals to start internal endpoints to the two instances of the sample API:
+
+```bash
+ngrok http 8001 --url=https://hostA.api.internal
+ngrok http 8002 --url=https://hostB.api.internal
+```
+
+While these endpoints point to two separate instances of the same backend API, they simulate the scenario where you need to direct
+traffic to two separate API services depending on the path.
+
+#### Update your policy rules
+
+This example routes traffic to two different backends depending on the path. Copy the following contents into your `policy.yaml`
+file, overwriting all previous contents:
+
+```yaml
+---
+on_http_request:
+  - name: "Route the /cards/* path to host A"
+    expressions:
+      - req.url.path.startsWith('/cards')
+    actions:
+      - type: forward-internal
+        config:
+          url: https://hostA.api.internal
+  - name: "Route the /payouts/* path to host B"
+    expressions:
+      - req.url.path.startsWith('/payouts')
+    actions:
+      - type: forward-internal
+        config:
+          url: https://hostB.api.internal
+  - actions:
+      - type: forward-internal
+        config:
+          url: https://hostB.api.internal
+          binding: internal
+```
+
+:::note
+You must always include the `forward-internal` action as the final step in your policy file since once it executes,
+no subsequent policy rules will be executed. Additionally, you always need a terminating policy rule.
+In this case, the traffic forwards to https://hostB.api.internal if the path begins with a value other than `/cards` or `/payments`.
+
+:::
+Now, run the following command to apply the new policies to your cloud endpoint.
+
+```bash
+ ngrok api endpoints update {ENDPOINT_ID} --traffic-policy "$(cat policies.yaml)"
+```
+
+#### Test traffic policies
+
+Run the following command to hit the `/cards` route:
+
+```bash
+curl -X GET https://{YOUR_NGROK_DOMAIN}/cards
+```
+
+Examine the terminal where you started the `https://hostA.api.internal` endpoint on port `8001`, and you can
+see that the request hit the correct endpoint. Repeat the steps for the `/payments` endpoint and confirm the request
+was sent to the `https://hostB.api.internal` endpoint on port `8002`.
+
+Stop both agent instances to remove the internal endpoints you just created.
+
+### Configure URL rewrites
+
+The URL Rewrite traffic policy action allows you to modify the incoming request URL using regular expressions before it
+reaches the upstream service, without changing the URL seen by the client. This action allows you to route user requests
+without exposing internal system details.
+
+#### Start an internal endpoint
+
+Run the following command to start an internal endpoint:
+
+```bash
+ngrok http 8001 --url=https://api.internal
+```
+
+#### Update your policy rules
+
+These traffic policies allow you to redirect requests sent to the `/credit-cards` route to the `/cards` route
+without the client seeing the backend URL. Copy the following contents into your `policy.yaml` file, overwriting all previous contents:
+
+```yaml
+---
+on_http_request:
+  - name: "Route traffic sent to /credit-cards to /cards"
+    expressions:
+      - "req.url.path == '/credit-cards'"
+    actions:
+      - type: url-rewrite
+        config:
+          from: credit-cards
+          to: cards
+  - actions:
+      - type: forward-internal
+        config:
+          url: https://api.internal
+          binding: internal
+```
+
+:::note
+You must always include the `forward-internal` action as the final step in your policy file since once it executes,
+no subsequent policy rules will be executed. Additionally, you always need a terminating policy rule.
+In this case, the traffic forwards to `https://api.internal` if a path other than `/credit-cards` is encountered.
+:::
+
+#### Test traffic policies
+
+Run the following command to hit the `/credit-cards` route, which doesn't exist, and confirm that you are redirected
+to the `/cards` route instead:
+
+```bash
+curl -X GET https://{YOUR_NGROK_DOMAIN}/credit-cards
+```
+
+Stop the agent to remove the internal endpoint you just created.
+
+### Enable rate limiting
+
+Add rate limiting to your API gateway to ensure your service does not become overwhelmed by too many requests and
+that each of your clients has fair access to your API.
+
+#### Start an internal endpoint
+
+Run the following command to start an internal endpoint:
+
+```bash
+ngrok http 8001 --url=https://api.internal
+```
+
+#### Update your policy rules
+
+This traffic policy rule allows 10 requests over a 60 second window
+based on the API key of the client as determined by the value of the HTTP header. You can also limit by
+[endpoint](/docs/http/traffic-policy/gallery/#rate-limit-for-specific-endpoint),
+[authentication status](/docs/http/traffic-policy/gallery/#rate-limit-api-consumers-based-on-authentication-status),
+or [pricing tier](/docs/http/traffic-policy/gallery/#rate-limit-api-consumers-based-on-pricing-tiers).
+
+Copy the following contents into your `policy.yaml` file, overwriting all previous contents:
+
+```yaml
+---
+on_http_request:
+  - name: Add rate limiting
+    expressions: []
+    actions:
+      - type: rate-limit
+        config:
+          name: Only allow 30 requests per minute
+          algorithm: sliding_window
+          capacity: 3
+          rate: 60s
+          bucket_key:
+            - req.Headers['x-api-key']
+  - actions:
+      - type: forward-internal
+        config:
+          url: https://api.internal
+          binding: internal
+```
+
+:::note
+You must always include the `forward-internal` action as the final step in your policy file since once it executes,
+no subsequent policy rules will be executed.
+:::
+
+Run the following command, substituting your `{ENDPOINT_ID}`, to update the cloud endpoint with the new policy actions:
+
+```bash
+ ngrok api endpoints update {ENDPOINT_ID} --traffic-policy "$(cat policies.yaml)"
+```
+
+#### Test traffic policies
+
+You can test the rate limiting action by running the following command, substituting the appropriate value for `{YOUR_NGROK_DOMAIN}`:
+
+```bash
+for i in `seq 1 50`; do curl -X GET -w '%{http_code}' https://{YOUR_NGROK_DOMAIN}/cards ; done
+```
+
+You'll see a response similar to [the first example](/docs/guides/api-gateway/get-started/#test-traffic-policies) until you
+hit the rate limit, and then you'll see `429` errors returned.
+
+Stop the agent to remove the internal endpoint you just created.
+
+### Add JWT validation
+
+The JWT validation policy action allows you to integrate your ngrok endpoints with your existing authentication provider. This example provides
+step-by-step instructions for integrating with Auth0, but you can configure JWT validation for any OAuth provider. Check
+out our [integrations guides](/docs/integrations/) for specific examples.
+
+#### Define your API in Auth0
+
+1. Log in to your [Auth0 Tenant Dashboard](https://manage.auth0.com/dashboard).
+1. Select **Applications > APIs**.
+1. Click **+ Create API**.
+1. Name your API whatever you'd like.
+1. Replace `{YOUR_NGROK_DOMAIN}` with your ngrok domain for the identifier.
+1. Leave the default values for **JSON Web Token (JWT) Profile \*** and **JSON Web Token Signing Algorithm \***.
+1. Click **Create**.
+
+<img src={Auth0} alt="Auth0 Create API" style={{width: 600}} />
+
+#### Access your JWT
+
+Upon creating your new API, Auth0 will create an associated application under
+**Applications > APIs** in the left navigation bar.
+
+Navigate to your application, and click on the `Test` tab. Here, you will
+find a signed, fully functional JWT, as well as examples of how to programmatically
+generate one.
+
+![Auth0 Test JWT](img/auth0-test.png)
+
+#### Start an internal endpoint
+
+Run the following command to start an internal endpoint:
+
+```bash
+ngrok http 8001 --url=https://api.internal
+```
+
+#### Update your policy rules
+
+This traffic policy integrates ngrok with your authentication provider so ngrok can validate JWTs passed in requests to your API.
+
+:::note
+You must always include the `forward-internal` action as the final step in your policy file since once it executes,
+no subsequent policy rules will be executed.
+:::
+
+Copy the following contents into your `policy.yaml` file, overwriting all previous contents:
+
+```yaml
+---
+on_http_request:
+  - actions:
+      - type: "jwt-validation"
+        config:
+          issuer:
+            allow_list:
+              - value: "https://{YOUR_AUTH0_TENANT_ID}.us.auth0.com/"
+          audience:
+            allow_list:
+              - value: "https://{YOUR_NGROK_DOMAIN}"
+          http:
+            tokens:
+              - type: "jwt"
+                method: "header"
+                name: "Authorization"
+                prefix: "Bearer "
+          jws:
+            allowed_algorithms:
+              - "RS256"
+            keys:
+              sources:
+                additional_jkus:
+                  - "https://{YOUR_AUTH0_TENANT_ID}.us.auth0.com/.well-known/jwks.json"
+  - name: "Forward internal"
+    actions:
+      - type: "forward-internal"
+        config:
+          url: "https://api.internal"
+          binding: internal
+```
+
+#### Test traffic policies
+
+You can test the JWT validation policy by running the following command, substituting your domain for `{YOUR_NGROK_DOMAIN}` and
+the JWT obtained from the Auth0 dashboard for `{YOUR_JWT}`:
+
+```bash
+curl -X GET https://{YOUR_NGROK_DOMAIN}/cards \
+ --header "Authorization: Bearer {YOUR_JWT}"
+```
+
+You'll receive a `200` response with [the same contents as before](/docs/guides/api-gateway/get-started/#test-traffic-policies).
+
+Run the same command, switching out one character of your JWT, and you'll get a `403 Forbidden` error.
+
+Run the command with no `Authorization` header, substituting your domain for `{YOUR_NGROK_DOMAIN}`:
+
+```bash
+curl -X GET https://{YOUR_NGROK_DOMAIN}/cards
+```
+
+You'll receive a `201 Unauthorized` error. Your API is now protected from unauthorized requests.
+
+## What's next?
+
+You've successfully brought your API online and protected it with ngrok's API gateway, allowing you to offload non-functional
+requirements like rate limiting, authentication, routing, and global load balancing to ngrok. Check out our
+[rules gallery](/docs/http/traffic-policy/gallery/) to learn how to extend your traffic policy rules.
