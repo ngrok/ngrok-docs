@@ -21,7 +21,7 @@ To download and install the ngrok agent on your remote LinuxRaspberry Pi OS devi
 
 1. Open a terminal into your remote Raspberry Pi OS device.
 
-2. Download the latest ngrok binary for your Linux distribution. You can find the correct binary on our [ngrok download page](https://ngrok.com/download): Select your operating system, select the version, and copy the link that appears in the **Download** button.:
+2. Download the latest ngrok binary for your Linux distribution. You can find the correct binary on our [ngrok download page](https://download.ngrok.com): Select your operating system, select the version, and copy the link that appears in the **Download** button.:
 
 ```bash
 wget https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-arm.tgz
@@ -91,7 +91,7 @@ Alternatively, you can create an IP policy in the ngrok dashboard (under [Securi
 
 The ngrok agent works with native OS services like `systemd`. This helps you ensure that the ngrok service is available even after the machine restarts. Before we do this though, it's useful to reserve a TCP address in the ngrok dashboard which allows you to reuse the same address each time the device is restarted.
 
-1. Navigate to the ngrok Dashboard and access [Cloud Edge > TCP Addresses](https://dashboard.ngrok.com/cloud-edge/tcp-addresses). Create a new TCP address with a description and click **Save**. Your new TCP address will look something like `1.tcp.ngrok.io:12345`.
+1. Navigate to the ngrok Dashboard and access [Universal Gateway > TCP Addresses](https://dashboard.ngrok.com/cloud-edge/tcp-addresses). Create a new TCP address with a description and click **Save**. Your new TCP address will look something like `1.tcp.ngrok.io:12345`.
 
 Update the ngrok config file in your LinuxRaspberry Pi OS device to start the ngrok agent using this TCP address.
 

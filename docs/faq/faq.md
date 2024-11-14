@@ -26,7 +26,7 @@ We actively monitor and reach out to these companies and attempt to obtain the c
 
 If you receive a notice from your antivirus software when installing ngrok software, be sure to verify the following:
 
-- Our official binaries can be downloaded from our [ngrok Downloads](https://ngrok.com/download) page, and the binaries themselves are hosted at `bin.equinox.io`. If you installed ngrok from another source, you should be careful.
+- Our official binaries can be downloaded from our [ngrok Downloads](https://download.ngrok.com) page, and the binaries themselves are hosted at `bin.equinox.io`. If you installed ngrok from another source, you should be careful.
 - There are no open source versions of our ngrok Agent and the source code is not available. If you have downloaded anything claiming to be ngrok agent source code or built our agent from source, it is most likely malicious.
 - All of our binaries are signed using ngrok certificates. You can verify the integrity of the application by checking that the binary is signed by an `ngrok LLC` or `ngrok, Inc.` authority. See [these instructions from Microsoft](https://support.microsoft.com/en-us/office/view-digital-signature-and-certificate-details-76ba00cb-1e58-42aa-8717-0caee76bb3cf) for verifying the digital signatures in Windows binaries.
 
@@ -128,7 +128,7 @@ These IP addresses can and do change, so we recommend using our DNS names instea
 The original open source ngrok agent 1.x is [available on
 GitHub](https://github.com/inconshreveable/ngrok) but is no longer developed,
 supported or maintained. The latest ngrok agent is available on our [ngrok
-downloads page](https://ngrok.com/download).
+downloads page](https://download.ngrok.com).
 
 ## How do I pronounce ngrok? {#pronunciation}
 
@@ -139,7 +139,7 @@ _en-grok_
 The first prototype for ngrok was committed on [March 20th,
 2013](https://github.com/inconshreveable/ngrok/commit/8f4795ecac7f92c6b5a8c8970c65f26e5315fe4e).
 
-## Why does port scanning my ngrok domain show other open ports {#open-ports-on-domain}
+## Why does port scanning my ngrok domain show other open ports? {#open-ports-on-domain}
 
 ngrok uses a shared set of servers to service both HTTP(s)/TLS and TCP traffic.
 All HTTP(s)/TLS traffic is serviced on ports 80 and 443. For TCP traffic each
@@ -153,5 +153,15 @@ traffic to be routed to the correct customer. For TCP traffic ngrok uses the
 IP and port to indicate which customer to route traffic to.
 
 As with all publicly accessible IPs and ports on the internet anyone can send
-traffic to those endpoints, but ngrok provides a [number of mechanisms](https://ngrok.com/docs/guides/security-dev-productivity/) to control
+traffic to those endpoints, but ngrok provides a [number of
+mechanisms](/docs/guides/other-guides/security-dev-productivity/) to control
 what traffic actually gets routed to you ngrok agent or sdk.
+
+## Why is my vendor asking me to install ngrok for 'site-to-site connectivity'? {#site-to-site-end-customer}
+
+Your vendor wants to create a secure persistent connection between your network
+and theirs, which allows them to access and take action on your services and
+data.
+
+For details about what ngrok is, how to install the ngrok agent, and how to work
+with your vendor to implement adequate security practices, see our [end customer installation guide](/docs/guides/site-to-site-connectivity/end-customers/).

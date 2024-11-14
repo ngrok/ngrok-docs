@@ -34,7 +34,7 @@ To started with the ngrok Kubernetes Operator:
 1. Access the [ngrok Dashboard](https://dashboard.ngrok.com)
 1. Click [Your Authtoken](https://dashboard.ngrok.com/get-started/your-authtoken). Copy the Authtoken to a text editor.
 1. Click [API](https://dashboard.ngrok.com/api) and follow the instructions to create a new API key. Copy the API key to a text editor.
-1. Click [Cloud Edge > Domains](https://dashboard.ngrok.com/cloud-edge/domains) and register or claim a domain. Save this value, you will need it later. This is the URL you will use to access your service from anywhere.
+1. Click [Universal Gateway > Domains](https://dashboard.ngrok.com/cloud-edge/domains) and register or claim a domain. Save this value, you will need it later. This is the URL you will use to access your service from anywhere.
 
 ## Step 2: Setup your Kubernetes cluster and install the ngrok Kubernetes Operator
 
