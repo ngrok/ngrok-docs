@@ -1,0 +1,64 @@
+import ConfigExample from "/src/components/ConfigExample.tsx";
+
+### Basic Example
+
+The following [Traffic Policy](/docs/http/traffic-policy/)
+configuration is an example configuration of the `basic-auth` action. 
+
+#### Example Traffic Policy Document
+
+<ConfigExample
+	snippetText={null}
+	showLineNumbers={true}
+	jsonMetastring="{5-51}"
+	yamlMetastring="{4-28}"
+	config={{
+		on_http_request: [
+			{
+				actions: [
+					{
+						type: "basic-auth",
+						config: {
+							realm: "sample-realm",
+							credentials: ["user:password1", "admin:password2"],
+                            enforced: true,
+						},
+					},
+					{
+						type: "custom-response",
+						config: {
+							status_code: 200,
+							headers: { "content-type": "text/plain" },
+							content: "Successfully Authenticated!",
+						},
+					},
+				],
+			},
+		],
+	}}
+/>
+
+#### Example Request
+
+First, base64 encode the `username:password` pair. 
+`user:password1` becomes `dXNlcjpwYXNzd29yZDE=`
+
+```shell
+$ curl --request GET \
+  --url http://example-api.ngrok.app/ \
+  --header 'Authorization: Basic dXNlcjpwYXNzd29yZDE=`'
+```
+
+```http
+HTTP/2 200 OK
+content-type: text/html
+Successfully Authenticated!
+...
+```
+
+In this example, we are sending a request to our API with a valid JWT token in
+the `Authorization` header with the `Basic` prefix and getting back a `200 OK`
+response.
+
+You can try it without the header, and you will receive a 401 Unauthorized prompt
+instead.
