@@ -12,6 +12,11 @@ tags:
 
 Your vendor wants to create a secure persistent connection between your network and theirs, which allows them to access and take action on your services and data. We call this [**site-to-site connectivity**](https://ngrok.com/use-cases/site-to-site-connectivity).
 
+Your vendor will create the required configuration files and deployment strategy
+and share them with you directly. You must contact with your vendor to request
+changes to that configuration, including those based on the content of this
+document.
+
 ### What is ngrok?
 
 ngrok is a universal gateway—an all-in-one reverse proxy, API gateway, Kubernetes ingress, firewall, and global load balancer to deliver apps and APIs.
@@ -25,9 +30,13 @@ ngrok is simpler and more secure than these other solutions for a few reasons:
 - The agent is simpler to configure, deploy, and maintain than VPNs or VPC peering by collapsing many networking components, like load balancing, encryption, certificate management, and authentication into a unified platform.
 - ngrok’s network includes DDoS protection and global acceleration for all connections through the [Global Server Load Balancer](https://ngrok.com/blog-post/gslb-global-server-load-balancing) (GSLB).
 
+ngrok's solution supports multiple models for TLS encryption, including end-to-end encryption. Learn more about how your vendor can configure ngrok's encryption: [How does ngrok’s traffic encryption work?](#ngrok-traffic-encryption)
+
 ### Who else uses ngrok to provide access to private services?
 
-Organizations worldwide trust ngrok for site-to-site connectivity, unified ingress, device gateways, and developer productivity. Our customers include Twilio, Databricks, Okta, Zoom, Microsoft, Zendesk, Cyera and many more.
+Organizations worldwide trust ngrok for site-to-site connectivity, unified ingress, device gateways, and developer productivity. Our customers include Twilio, Okta, Zoom, Microsoft, Zendesk, Cyera and many more.
+
+[Databricks](https://ngrok.com/customers/databricks), the leading unified lakehouse platform for data, analytics, and AI, uses ngrok for its site-to-site connectivity across all of its customers.
 
 You can learn more about our customers and read case studies about their successes on our [customers page](https://ngrok.com/customers).
 
@@ -44,7 +53,9 @@ located in the U.S.
 
 More than 7 million developers use ngrok. We’re recommended by category leaders including Twilio, GitHub, Okta, Microsoft, Zoom, and Shopify. We operate a global network and we have handled over 100 trillion total requests.
 
-[Databricks](https://ngrok.com/customers/databricks), the leading unified lakehouse platform for data, analytics, and AI, uses ngrok for its site-to-site connectivity across all of its customers.
+ngrok is SOC 2 Type 2 compliant, which certifies that our security processes and
+operations meet AICPA's criteria for security. We are also CCPA, EU-US DPF, and
+GDPR compliant.
 
 ## How ngrok works
 
@@ -75,13 +86,13 @@ There are many possible architectures for setting up a site-to-site network base
 
 ### How does ngrok handle data residency requests?
 
-ngrok is user-configurable to match your data residency needs.
+Your vendor can configure your site-to-site architecture to match your data residency needs.
 
-First, [configure the
+They will first [configure the
 agent](/docs/guides/other-guides/upgrade-v2-v3/#changes-to-choosing-a-region) to
 use a PoP in one of our [supported
-regions](/docs/network-edge/#points-of-presence). Next, work with your vendor to
-set up appropriate DNS to route all connections through the same data plane.
+regions](/docs/network-edge/#points-of-presence), then work with you to set up
+appropriate DNS to route all connections through the same data plane.
 
 Our regional data planes are located in Australia (Sydney), Europe (Frankfurt),
 India (Mumbai), Japan (Tokyo), South America (São Paulo), United States
@@ -97,7 +108,7 @@ ngrok is a multi-tenant application with services shared across our customer bas
 
 We recommend you begin by exploring our [Security, Privacy, and Compliance](https://ngrok.com/security) page, followed by our [Trust Center](https://trust.ngrok.com/).
 
-ngrok is deeply configurable to enforce your established security policies, including:
+Your vendor can implement multiple security practices, including:
 
 - [Prevent unauthorized usage of
   ngrok](#how-can-i-prevent-ngrok-from-being-used-for-any-purpose-other-than-in-site-to-site-connectivity-with-my-vendor?)
@@ -119,7 +130,10 @@ ngrok is deeply configurable to enforce your established security policies, incl
   [mTLS](/docs/guides/other-guides/using-tls-mutual-authentication/)
   authentication on your endpoint(s).
 
-### How does ngrok’s traffic encryption work? {#how-does-ngrok’s-traffic-encryption-work?}
+The configuration and operation of these security practices will be handled by
+your vendor.
+
+### How does ngrok’s traffic encryption work? {#ngrok-traffic-encryption}
 
 The agent always connects to the ngrok network via TLS. We support three encryption models based on where TLS is _terminated_:
 
@@ -129,13 +143,14 @@ The agent always connects to the ngrok network via TLS. We support three encrypt
 
 ### Is my data end-to-end encrypted?
 
-Yes—if you terminate TLS at the ngrok agent or your upstream service using the second or third models listed above.
+Yes—if you vendor configures ngrok to terminate TLS at the agent or your
+upstream service using the second or third models listed above.
 
 Contact your vendor if you’re unsure how TLS termination is managed in your site-to-site connectivity architecture.
 
-### Can ngrok see my traffic?
+### Can ngrok see my traffic? {#can-ngrok-see-my-traffic}
 
-No—if you terminate TLS at the agent or your upstream service.
+No—if your vendor configures ngrok to terminate TLS at the agent or your upstream service.
 
 In all encryption models, the ngrok agent cannot see the traffic it forwards on to your upstream service.
 
@@ -153,9 +168,13 @@ for each traffic event.
 
 Yes.
 
-You can configure the ngrok agent to trust a specific root certificate you own on the host’s OS or a specific PEM file on disk instead of the trusted certificate root for the ngrok network. You can then use a proxy for deep packet inspection. Read our [root certificate authority](/docs/agent/config/v3/#connect-cas) documentation for details.
+Work with your vendor to configure the ngrok agent to trust a [specific
+root certificate](/docs/agent/config/v3/#connect_cas) you own on the host’s OS or a specific PEM file on disk instead
+of the trusted certificate root for the ngrok network. You can then use a proxy
+for deep packet inspection.
 
-Alternatively, you can set up a bypass rule for `connect.ngrok-agent.com` (or a custom agent ingress address) to not perform TLS inspection.
+Alternatively, your vendor set up a bypass rule for `connect.ngrok-agent.com`
+(or a custom agent ingress address) to not perform TLS inspection.
 
 You can also set up software between the ngrok agent and your upstream service, or the ngrok agent and the ngrok network, to see what’s transmitted through ngrok.
 
@@ -167,7 +186,7 @@ The best way to disallow other uses of ngrok on your network is working with you
 
 Your vendor will configure their DNS to issue certificates for the custom address, such as `your-company.us.connect.your-vendor.com:443`. Then they’ll work with you to [reconfigure your ngrok agents](/docs/agent/ingress/) to utilize the custom ingress address.
 
-We can also provision dedicated IPs for your custom agent ingress address, allowing you to whitelist addresses unique to your site-to-site configuration. Please reach out to your vendor if you’re interested in dedicated IPs.
+Your vendor can also work with ngrok to provision dedicated IPs for their custom ingress address.
 
 At this point, you can block the default agent ingress address at `connect.ngrok-agent.com:443`, which all agents use by default to connect outbound to ngrok’s network. This address resolves to a dynamic set of IP addresses, and blocking it at your network prevents any usage outside of this site-to-site connectivity use case in partnership with your vendor, such as developers utilizing ngrok to tunnel local development environments to the public internet.
 
@@ -185,7 +204,7 @@ You should also block the ngrok-managed public domains:
 
 ngrok has a multi-pronged strategy for combating malicious use of our network, including automated systems that flag suspicious activity. We also disincentivize abuse through product restrictions on free and unverified ngrok accounts.
 
-Work with your vendor to design an architecture that [prevents unauthorized use](#how-can-i-prevent-ngrok-from-being-used-for-any-purpose-other-than-in-site-to-site-connectivity-with-my-vendor?) and uses the appropriate [encryption model](#how-does-ngrok’s-traffic-encryption-work?) between your services.
+Work with your vendor to design an architecture that [prevents unauthorized use](#how-can-i-prevent-ngrok-from-being-used-for-any-purpose-other-than-in-site-to-site-connectivity-with-my-vendor?) and uses the appropriate [encryption model](#ngrok-traffic-encryption) between your services.
 
 See our [abuse page](https://ngrok.com/abuse) for details.
 
@@ -195,11 +214,13 @@ See our [abuse page](https://ngrok.com/abuse) for details.
 
 ngrok complies with SOC 2, GDPR, EU-US DPF, and CCPA.
 
-You can request our SOC 2 report and view other documents about ngrok’s security measures, like annual penetration testing, on our [Trust Center](https://trust.ngrok.com/).
+You can request our SOC 2 report and view other documents about ngrok’s security
+measures, like annual penetration testing, on our [Trust
+Center](https://trust.ngrok.com/).
 
 ### What data does ngrok have access to, and how long is it stored?
 
-ngrok’s access to your data depends on the [encryption model](#how-does-ngrok’s-traffic-encryption-work?) specified by your site-to-site connectivity architecture—reach out to your vendor for more details.
+ngrok’s access to your data depends on the [encryption model](#ngrok-traffic-encryption) specified by your site-to-site connectivity architecture—reach out to your vendor for more details.
 
 In all cases, ngrok stores information about the machine where you run your agent, such as its IP address, operating system, CPU architecture, and anonymized details about the environment.
 
@@ -211,7 +232,7 @@ Read our [primer on data at ngrok](https://ngrok.com/blog-post/data-at-ngrok) fo
 
 ### What security practices does ngrok follow?
 
-ngrok uses the shared security responsibility model where we are responsible for the security of our network, and we deliver features you can configure to secure your services. You and your vendor are responsible for securing your site-to-site connectivity architecture.
+ngrok uses the shared security responsibility model where we are responsible for the security of our network, and we deliver features your vendor can use to configure and secure your site-to-site connectivity architecture.
 
 Our fundamental security practices include access control via an identity provider, change management, full encryption at rest, and much more.
 
@@ -221,19 +242,38 @@ See our [Security, Privacy, and Compliance](https://ngrok.com/security) and [Tru
 
 ### Where can I run the ngrok agent and what are the ngrok agent’s system requirements? {#where-can-i-run-the-ngrok-agent-and-what-are-the-ngrok-agent’s-system-requirements?}
 
-The ngrok agent runs on Linux, Windows, and macOS systems and most CPU architectures, which you can get from our [agent downloads page](https://download.ngrok.com).
+The ngrok agent runs on Linux, Windows, and macOS systems and most CPU
+architectures. See our [supported platforms
+documentation](/docs/agent/#system-requirements) for details about supported CPU
+architectures and resource requirements.
 
-We also distribute the agent as [SDKs](/docs/agent-sdks/), a [Docker container](https://hub.docker.com/r/ngrok/ngrok), and a [Kubernetes Operator](/docs/k8s/).
+We also distribute the agent as [SDKs](/docs/agent-sdks/), a
+[Docker container](https://hub.docker.com/r/ngrok/ngrok), and a [Kubernetes
+Operator](/docs/k8s/).
 
-See our [supported platforms documentation](/docs/agent/#system-requirements) for details about supported CPU architectures and resource requirements.
+Your vendor will work with you to find the right form factor for your
+site-to-site connectivity architecture.
 
-### How do we manage the lifecycle and maintenance of the agent?
+### How do I manage the lifecycle and maintenance of the agent?
 
-First, we recommend configuring your ngrok agent to [run in the background](/docs/agent/#background-service) as a native operating system service. This functionality works on all Linux, Windows, and macOS systems, and once installed, the ngrok service starts at boot-time, automatically restarts after crashes, and sends logs to your system’s native logging service.
+Your vendor is responsible for helping you configure and maintain your agent(s).
 
-If you deploy the ngrok agent with Docker, you can utilize Docker’s [restart policies](https://docs.docker.com/engine/reference/run/#restart-policies-restart) or [systemd integration](https://docs.docker.com/engine/install/linux-postinstall/#configure-docker-to-start-on-boot-with-systemd); with our [Kubernetes Operator](/docs/k8s/), ensure the [container restart policy](https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#restart-policy) is set to `Always`.
+They might configure your ngrok agent to [run in the background](/docs/agent/#background-service) as a native operating system service. This functionality works on all Linux, Windows, and macOS systems, and once installed, the ngrok service starts at boot-time, automatically restarts after crashes, and sends logs to your system’s native logging service.
 
-ngrok releases security and feature updates through all our installation channels and package managers. The process for updating your ngrok agent(s) depends on how you installed them.
+If they suggest deploying with Docker, they will likely recommend Docker’s
+[restart
+policies](https://docs.docker.com/engine/reference/run/#restart-policies-restart)
+or [systemd
+integration](https://docs.docker.com/engine/install/linux-postinstall/#configure-docker-to-start-on-boot-with-systemd);
+with our [Kubernetes Operator](/docs/k8s/), they will recommend the [container
+restart
+policy](https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#restart-policy)
+is set to `Always`.
+
+ngrok releases security and feature updates through all our installation
+channels and package managers. Your vendor will work with you on when and how to
+update your ngrok agent(s) because the process depends on how they asked you to
+install them.
 
 - Package manager (`brew` or `apt`): Get updated agent versions through the same channel (e.g. `brew update && brew upgrade package_name` or `apt update && apt install ngrok`).
 - Binary from our [downloads page](https://download.ngrok.com): Follow the same process again or [update directly from your CLI](/docs/agent/#updates) with `ngrok update`.
@@ -265,10 +305,9 @@ The ngrok agent utilizes a [heartbeat](/docs/agent/#heartbeats) that attempts to
 
 This mechanism allows your site-to-site connectivity to automatically reestablish after packet loss, dynamic IP changes, or complete network outages.
 
-You can [configure](/docs/agent/config/v3/#heartbeat_interval) both the heartbeat interval and tolerance per agent.
+Your vendor can [configure](/docs/agent/config/v3/#heartbeat_interval) both the
+heartbeat interval and tolerance per agent.
 
 ### Who should we contact for support?
 
-If you have trouble installing, updating, or otherwise maintaining the agent process in your network, email our customer success team at [support@ngrok.com](mailto:support@ngrok.com).
-
-For other issues or concerns around configuring and securing your site-to-site architecture, please contact your vendor.
+For issues or concerns around configuring and securing your site-to-site architecture, please contact your vendor.
