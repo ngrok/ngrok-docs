@@ -21,6 +21,7 @@ import {
 	RateLimitAuthentication,
 	RateLimitPricing,
 	UserAgentFilter,
+	ForwardInternalFull,
 } from "/traffic-policy/gallery.mdx";
 
 # Rule Gallery
@@ -156,3 +157,18 @@ Prevent obsolete and potentially vulnerable browsers, SDKs, or CLI tools like `c
 Connect your API to ngrok's [event logging system](/docs/obs/index.mdx) for smarter troubleshooting of your API gateway and upstream services.
 
 <LogUnsuccessful />
+
+### Using forwardInternal and URL Rewrite Actions to route requests to different ports based on the request path
+
+This example provides a full Agent [configuration file](/docs/agent/config/) that uses [Internal Endpoints](/docs/network-edge/internal-endpoints/) plus the [forwardInternal](/docs/http/traffic-policy/actions/forward-internal/) and 
+[URL Rewrite](/docs/http/traffic-policy/actions/url-rewrite/) Traffic Policy Actions to route requests to differnt upstream ports based on the URL path of the request.
+This allows us to use one domain to route to multiple services (ports) based on the request path sent in each request.
+
+https://mypublic.ngrok.app/... --> http://localhost:80/...
+https://mypublic.ngrok.app/service1/... --> http://localhost:81/...
+
+In this example, we are creating a "public" endpoint using an ngrok reserved domain "mypublic.ngrok.app", an "internal" endpoint (only accessible inside your acccount) "service1.internal", 
+then using the forwardInternal action to forward requests that have "/service1" in the path to a different port. 
+Finally, we remove the added path from the request before sending it to the upstream service using the URL Rewrite action. This path then does not have to exist on the upstream service, creating a "virtual" "service1" path on the public ngrok endpoint.
+
+<ForwardInternalFull />

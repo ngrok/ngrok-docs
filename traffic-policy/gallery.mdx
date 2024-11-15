@@ -513,4 +513,65 @@ export const LimitSize = () => (
 	/>
 );
 
+export const ForwardInternalFull = () => (
+	<ConfigExample
+		config={{
+            version: "3",
+	        agent: {
+                authtoken: <hidden>,
+			},
+            endpoints: [
+				{
+                    name: httpexample, 
+                    url: https://mypublic.ngrok.app,
+                    upstream: {
+                        url: localhost:80
+				    },
+                    traffic_policy: {
+                        on_http_request: [
+					        {
+                                expressions: [
+                                    "req.url.path.startsWith('/service1')",
+								],
+                                actions: [
+									{
+                                        type: forward-internal,
+                                        config: {
+                                            url: https://service1.internal:443,
+									    },
+									},
+								],
+							},
+						],
+					},
+				{
+                    name: example-internal-1,
+                    url: service1.internal,
+                    upstream: {
+                        url: localhost:81,
+					}
+                    traffic_policy: {
+                        on_http_request: [
+							{
+                                expressions: [
+                                    "req.url.path.startsWith('/service1')",
+								],
+                                actions: [
+									{
+                                        type: "url-rewrite",
+                                        config: {
+                                            from: "/service1/?([.*]+)?",
+                                            to: "/$1",
+										},
+									},
+								],
+							},
+						],
+					},
+				},
+			],		
+		}}
+	/>
+);
+
 ;
