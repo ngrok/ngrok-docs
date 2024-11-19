@@ -119,7 +119,7 @@ tunnels:
 1. Enable ngrok in service mode:
 
 ```bash
-ngrok service install --config %HOMEPATH%\AppData\Local\ngrok\ngrok.yml"
+ngrok service install --config "%HOMEPATH%\AppData\Local\ngrok\ngrok.yml"
 ```
 
 :::note
