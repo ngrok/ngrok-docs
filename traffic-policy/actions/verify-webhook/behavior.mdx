@@ -1,0 +1,27 @@
+### Behavior
+
+The **verify-webhook** action ensures the authenticity of incoming webhook requests by validating their signatures against a known secret. Upon receiving a request, the action performs the signature verification. If verification succeeds, the request proceeds through the action chain. If it fails, the request is terminated with a `403 Forbidden` response, unless `enforce` is set to `false`, in which case the request proceeds without termination.
+
+#### Verification Process
+
+- **Signature Validation**: The action validates incoming webhook signature to confirm the request originates from the configured provider and that the payload has not been tampered with.
+- **Request Handling**: If the webhook verification is successful, the request is forwarded to the next action. If the verification fails, the request chain is terminated with a `403` response.
+- **Configurable Enforcement**: By default, verification failures result in termination. However, setting `enforce: false` allows unverified requests to proceed, while logging the verification result. This option is useful for debugging, testing, and crafting your own custom responses with action result variables.
+
+#### Endpoint Verification
+
+Some webhook providers require an initial endpoint verification challenge to validate that your application is legitimate before sending webhook events. The **verify-webhook** action automatically handles endpoint verification challenges for supported providers.
+
+- Supported providers:
+  - Twitter
+  - Worldline
+  - Xero
+  - Zoom
+
+#### Replay Prevention with Timestamp Tolerance
+
+To prevent replay attacks, ngrok verifies that the webhook’s timestamp falls within an acceptable range.
+
+#### Secret Handling and Encryption
+
+All secrets used for webhook verification are encrypted at config validation. When ngrok processes a requests the secret is decrypted.
