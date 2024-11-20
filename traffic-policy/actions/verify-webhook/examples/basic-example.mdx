@@ -1,0 +1,62 @@
+import ConfigExample from "/src/components/ConfigExample.tsx";
+
+### Basic Example
+
+This example configuration sets up an endpoint (`gitlab-webhook-example.ngrok.io`) that receives webhook requests from GitLab. The **Verify Webhook** action checks the authenticity of the request using a shared secret. If the request is verified, a custom response is sent back with a status `200 OK` and a plain text confirmation message.
+
+#### Example Traffic Policy Document
+
+<ConfigExample
+	snippetText={null}
+	showLineNumbers={true}
+	jsonMetastring="{5-51}"
+	yamlMetastring="{4-28}"
+	config={{
+		on_http_request: [
+			{
+				actions: [
+					{
+						type: "verify-webhook",
+						config: {
+							provider: "gitlab",
+							secret: "secret!",
+						},
+					},
+					{
+						type: "custom-response",
+						config: {
+							status_code: 200,
+							headers: { "content-type": "text/plain" },
+							content: "GitLab webhook verified",
+						},
+					},
+				],
+			},
+		],
+	}}
+/>
+
+#### Start Endpoint with Traffic Policy
+
+```shell
+ngrok http 8080 --url gitlab-webhook-example.ngrok.io --traffic-policy-file /path/to/policy.yml
+```
+
+```shell
+$ curl --location --request POST 'https://gitlab-webhook-example.ngrok.io/' \
+--header 'X-Gitlab-Token: secret!'
+> POST / HTTP/2
+> Host: gitlab-webhook-example.ngrok.io
+> User-Agent: curl/[version]
+> Accept: */*
+> X-Gitlab-Token: secret!
+...
+```
+
+This request will first be processed by the Verify Webhook action. If the GitLab webhook verification is successful, ngrok will return a `200 OK` response with the message GitLab webhook verified.
+
+```shell
+HTTP/2 200 OK
+content-type: text/plain
+GitLab webhook verified
+```
