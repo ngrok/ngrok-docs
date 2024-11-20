@@ -105,11 +105,12 @@ that you'll need to edit the example configurations below to properly configure
 the ngrok Kubernetes Operator.
 :::
 
-To deploy the ngrok API service to your cluster, create the `prod` namespace and
-apply its `deployment.yaml` file.
+To deploy the ngrok API service to your cluster, apply the [`deployment.yaml`
+file](https://github.com/ngrok-samples/ngrok-api-service/blob/main/kubernetes/deployment.yaml)
+to your cluster, which first creates a new `prod` namespace if one doesn't
+already exist.
 
 ```bash
-kubectl create namespace prod
 kubectl apply -f https://raw.githubusercontent.com/ngrok-samples/ngrok-api-service/refs/heads/main/kubernetes/deployment.yaml
 ```
 
@@ -143,12 +144,12 @@ export NGROK_AUTHTOKEN={AUTHTOKEN}
 export NGROK_API_KEY={API_KEY}
 ```
 
-Install the ngrok Kubernetes Operator into the previously-created `prod` namespace with
+Install the ngrok Kubernetes Operator into a new `ngrok-operator` namespace with
 Gateway API functionality enabled.
 
 ```bash
-helm install ngrok-ingress-controller ngrok/kubernetes-ingress-controller \
-  --namespace prod \
+helm install ngrok-operator ngrok/ngrok-operator \
+  --namespace ngrok-operator \
   --create-namespace \
   --set credentials.apiKey=$NGROK_API_KEY \
   --set credentials.authtoken=$NGROK_AUTHTOKEN \
@@ -164,9 +165,8 @@ to configure the following:
   project.
 - A `Gateway` with at least one `listener` attached to the ngrok domain you
   already reserved.
-- At least one `HTTPRoute`, with your `Gateway` as its parent, that matches
-  paths to one or more existing API services (in any namespace) based on their
-  `name` and `port`.
+- At least one `HTTPRoute` in the same namespace as your API service (`prod` in
+  our example) that matches specific paths to its `name` and `port`.
 
 ### Create the API gateway configuration
 
@@ -188,7 +188,7 @@ apiVersion: gateway.networking.k8s.io/v1
 kind: GatewayClass
 metadata:
   name: ngrok-gatewayclass
-  namespace: prod
+  namespace: ngrok-operator
 spec:
   controllerName: ngrok.com/gateway-controller
 ---
@@ -196,7 +196,7 @@ apiVersion: gateway.networking.k8s.io/v1
 kind: Gateway
 metadata:
   name: ngrok-gateway
-  namespace: prod
+  namespace: ngrok-operator
 spec:
   gatewayClassName: ngrok-gatewayclass
   listeners:
@@ -206,6 +206,11 @@ spec:
       #highlight-end
       port: 443
       protocol: HTTPS
+      allowedRoutes:
+        kinds:
+          - kind: HTTPRoute
+        namespaces:
+          from: All
       tls:
         mode: Terminate
         certificateRefs:
@@ -286,7 +291,7 @@ metadata:
   namespace: prod
 spec:
   policy:
-    inbound:
+    on_http_request:
       - name: "Rate limit POST requests"
         expressions:
           - "req.method == 'POST' || req.method == 'PUT'"
@@ -383,7 +388,7 @@ quick succession.
 Run the following on your local workstation, replacing `{YOUR_NGROK_DOMAIN}`.
 
 ```bash
-for i in `seq 1 50`; do curl -X GET -w '%{http_code}' https://{YOUR_NGROK_DOMAIN}/ ; done
+for i in `seq 1 50`; do curl -X POST -w '%{http_code}' https://{YOUR_NGROK_DOMAIN}/ ; done
 ```
 
 Depending on the `capacity` value you configured in the `NgrokTrafficPolicy`
