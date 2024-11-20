@@ -28,6 +28,8 @@
 | url            | string             | the url of the endpoint                                                                                                                                   |
 | id             | string             | a resource identifier                                                                                                                                     |
 | uri            | string             | a uri for locating a resource                                                                                                                             |
+| id             | string             | a resource identifier                                                                                                                                     |
+| uri            | string             | a uri for locating a resource                                                                                                                             |
 | traffic_policy | string             | The traffic policy attached to this endpoint                                                                                                              |
 | bindings       | List&lt;string&gt; | the bindings associated with this endpoint                                                                                                                |
 | id             | string             | a resource identifier                                                                                                                                     |
