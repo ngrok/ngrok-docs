@@ -161,7 +161,7 @@
       </td>
       <td class="pre-wrapped">
         Your <code>&lt;PRODUCT&gt;</code> version "<code>&lt;VERSION&gt;</code>" is no longer supported. Only the most recent version of the ngrok agent is supported without an account.
-        Update to a newer version with `ngrok update`, by downloading from <a href="https://download.ngrok.com">https://download.ngrok.com</a>, or by updating your SDK version.
+        Update to a newer version with `ngrok update`, by downloading from <a href="https://ngrok.com/download">https://ngrok.com/download</a>, or by updating your SDK version.
         Sign up for an account to avoid forced version upgrades: <a href="https://ngrok.com/signup">https://ngrok.com/signup</a>.
       </td>
     </tr>
@@ -170,7 +170,7 @@
         <a id="ERR_NGROK_121" href="/docs/errors/err_ngrok_121">ERR_NGROK_121</a>
       </td>
       <td class="pre-wrapped">
-        Your <code>&lt;PRODUCT&gt;</code> version "<code>&lt;VERSION&gt;</code>" is too old. The minimum supported agent version for your account is "<code>&lt;MINVERSION&gt;</code>". Please update to a newer version with `ngrok update`, by downloading from <a href="https://download.ngrok.com">https://download.ngrok.com</a>, or by updating your SDK version. Paid accounts are currently excluded from minimum agent version requirements. To begin handling traffic immediately without updating your agent, upgrade to a paid plan: <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a>.
+        Your <code>&lt;PRODUCT&gt;</code> version "<code>&lt;VERSION&gt;</code>" is too old. The minimum supported agent version for your account is "<code>&lt;MINVERSION&gt;</code>". Please update to a newer version with `ngrok update`, by downloading from <a href="https://ngrok.com/download">https://ngrok.com/download</a>, or by updating your SDK version. Paid accounts are currently excluded from minimum agent version requirements. To begin handling traffic immediately without updating your agent, upgrade to a paid plan: <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a>.
       </td>
     </tr>
     <tr>
@@ -406,7 +406,7 @@
         <a id="ERR_NGROK_224" href="/docs/errors/err_ngrok_224">ERR_NGROK_224</a>
       </td>
       <td class="pre-wrapped">
-        The value <code>&lt;VAL&gt;</code> is not valid for the terminate_at property of the TLS Termination endpoint configuration module. Must be either 'edge' or 'upstream'.
+        The value <code>&lt;VAL&gt;</code> is not valid for the terminate_at property of the TLS Termination endpoint configuration module. Must be either 'edge', 'agent' or 'upstream'.
       </td>
     </tr>
     <tr>
@@ -1808,7 +1808,7 @@
         <a id="ERR_NGROK_446" href="/docs/errors/err_ngrok_446">ERR_NGROK_446</a>
       </td>
       <td class="pre-wrapped">
-        The domain <code>&lt;DOMAIN&gt;</code> could not be deleted because it is still referenced by an edge.
+        The domain <code>&lt;DOMAIN&gt;</code> could not be deleted because it is still referenced by an edge or cloud endpoint.
       </td>
     </tr>
     <tr>
@@ -2775,6 +2775,94 @@
       </td>
       <td class="pre-wrapped">
         The billing email address <code>&lt;EMAIL&gt;</code> is already added
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_1022" href="/docs/errors/err_ngrok_1022">ERR_NGROK_1022</a>
+      </td>
+      <td class="pre-wrapped">
+        Your invoice tax ID type <code>&lt;INPUT&gt;</code> is not a valid option.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_1023" href="/docs/errors/err_ngrok_1023">ERR_NGROK_1023</a>
+      </td>
+      <td class="pre-wrapped">
+        Your invoice tax ID country <code>&lt;INPUT&gt;</code> is not a valid option.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_1024" href="/docs/errors/err_ngrok_1024">ERR_NGROK_1024</a>
+      </td>
+      <td class="pre-wrapped">
+        Your invoice billing address country is too long: <code>&lt;VAL&gt;</code> bytes. Max: <code>&lt;MAX&gt;</code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_1025" href="/docs/errors/err_ngrok_1025">ERR_NGROK_1025</a>
+      </td>
+      <td class="pre-wrapped">
+        Your invoice billing address state is too long: <code>&lt;VAL&gt;</code> bytes. Max: <code>&lt;MAX&gt;</code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_1026" href="/docs/errors/err_ngrok_1026">ERR_NGROK_1026</a>
+      </td>
+      <td class="pre-wrapped">
+        Your invoice billing address city is too long: <code>&lt;VAL&gt;</code> bytes. Max: <code>&lt;MAX&gt;</code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_1027" href="/docs/errors/err_ngrok_1027">ERR_NGROK_1027</a>
+      </td>
+      <td class="pre-wrapped">
+        Your invoice billing address line1 is too long: <code>&lt;VAL&gt;</code> bytes. Max: <code>&lt;MAX&gt;</code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_1028" href="/docs/errors/err_ngrok_1028">ERR_NGROK_1028</a>
+      </td>
+      <td class="pre-wrapped">
+        Your invoice billing address line2 is too long: <code>&lt;VAL&gt;</code> bytes. Max: <code>&lt;MAX&gt;</code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_1029" href="/docs/errors/err_ngrok_1029">ERR_NGROK_1029</a>
+      </td>
+      <td class="pre-wrapped">
+        Your invoice billing address postal code is too long: <code>&lt;VAL&gt;</code> bytes. Max: <code>&lt;MAX&gt;</code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_1030" href="/docs/errors/err_ngrok_1030">ERR_NGROK_1030</a>
+      </td>
+      <td class="pre-wrapped">
+        Your invoice billing address name is too long: <code>&lt;VAL&gt;</code> bytes. Max: <code>&lt;MAX&gt;</code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_1031" href="/docs/errors/err_ngrok_1031">ERR_NGROK_1031</a>
+      </td>
+      <td class="pre-wrapped">
+        Missing Type for Tax ID. You must supply both the Tax ID and its Type or remove both
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_1032" href="/docs/errors/err_ngrok_1032">ERR_NGROK_1032</a>
+      </td>
+      <td class="pre-wrapped">
+        Missing Tax ID for Type. You must supply both the Tax ID and its Type or remove both
       </td>
     </tr>
     <tr>
@@ -4744,6 +4832,14 @@
     </tr>
     <tr>
       <td>
+        <a id="ERR_NGROK_2087" href="/docs/errors/err_ngrok_2087">ERR_NGROK_2087</a>
+      </td>
+      <td class="pre-wrapped">
+        The sendgrid verification key is not a base64 encoded ecdsa public key. The following error was encountered while trying to parse it: "<code>&lt;ERROR&gt;</code>"
+      </td>
+    </tr>
+    <tr>
+      <td>
         <a id="ERR_NGROK_2089" href="/docs/errors/err_ngrok_2089">ERR_NGROK_2089</a>
       </td>
       <td class="pre-wrapped">
@@ -4797,7 +4893,7 @@
         <a id="ERR_NGROK_2204" href="/docs/errors/err_ngrok_2204">ERR_NGROK_2204</a>
       </td>
       <td class="pre-wrapped">
-        Configuration for policy action type <code>&lt;TYP&gt;</code> has invalid <code>&lt;FIELD&gt;</code> value.
+        Configuration for policy action type <code>&lt;TYP&gt;</code> has invalid value: <code>&lt;FIELD&gt;</code>.
       </td>
     </tr>
     <tr>
@@ -5041,6 +5137,22 @@
       </td>
       <td class="pre-wrapped">
         The traffic policy provided is not guaranteed to handle traffic. Ensure traffic always results in an action, e.g. custom response or forward action.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_2236" href="/docs/errors/err_ngrok_2236">ERR_NGROK_2236</a>
+      </td>
+      <td class="pre-wrapped">
+        Failed to parse the supplied traffic policy; please verify it is not malformed.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_2237" href="/docs/errors/err_ngrok_2237">ERR_NGROK_2237</a>
+      </td>
+      <td class="pre-wrapped">
+        Invalid configuration for <code>&lt;ACTION&gt;</code>: <code>&lt;CONFIG&gt;</code> length of <code>&lt;ACTUAL&gt;</code> does not satisfy minimum length of <code>&lt;MIN&gt;</code>.
       </td>
     </tr>
     <tr>
@@ -5750,7 +5862,7 @@
         <a id="ERR_NGROK_3501" href="/docs/errors/err_ngrok_3501">ERR_NGROK_3501</a>
       </td>
       <td class="pre-wrapped">
-        Traffic can only be forwarded through one Forward Internal action, disallowing further forwarding.
+        ForwardInternal may only forward through <code>&lt;MAX&gt;</code> endpoints.
       </td>
     </tr>
     <tr>
@@ -10489,6 +10601,22 @@
     </tr>
     <tr>
       <td>
+        <a id="ERR_NGROK_15008" href="/docs/errors/err_ngrok_15008">ERR_NGROK_15008</a>
+      </td>
+      <td class="pre-wrapped">
+        Invalid basic auth credential. Username must be at most <code>&lt;MAXLENGTH&gt;</code> characters, got <code>&lt;GOTLENGTH&gt;</code>.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_15009" href="/docs/errors/err_ngrok_15009">ERR_NGROK_15009</a>
+      </td>
+      <td class="pre-wrapped">
+        Invalid basic auth credentials list. Your plan is limited to <code>&lt;MAXLENGTH&gt;</code> sets of credentials, got <code>&lt;GOTLENGTH&gt;</code>.
+      </td>
+    </tr>
+    <tr>
+      <td>
         <a id="ERR_NGROK_16000" href="/docs/errors/err_ngrok_16000">ERR_NGROK_16000</a>
       </td>
       <td class="pre-wrapped">
@@ -10556,7 +10684,7 @@
         <a id="ERR_NGROK_18002" href="/docs/errors/err_ngrok_18002">ERR_NGROK_18002</a>
       </td>
       <td class="pre-wrapped">
-        The provided cloud endpoint configuration is invalid: <code>&lt;MESSAGE&gt;</code>
+        The provided cloud endpoint traffic policy configuration is invalid: <code>&lt;MESSAGE&gt;</code>
       </td>
     </tr>
     <tr>
@@ -10613,6 +10741,38 @@
       </td>
       <td class="pre-wrapped">
         This account already has a cloud endpoint on this URL.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_18010" href="/docs/errors/err_ngrok_18010">ERR_NGROK_18010</a>
+      </td>
+      <td class="pre-wrapped">
+        You have exceeded the maximum number of cloud endpoints allowed for this account. Please log into <a href="https://dashboard.ngrok.com/usage">https://dashboard.ngrok.com/usage</a> to review your historic usage and <a href="https://dashboard.ngrok.com/billing/subscription/select">https://dashboard.ngrok.com/billing/subscription/select</a> to view your subscription options.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_18011" href="/docs/errors/err_ngrok_18011">ERR_NGROK_18011</a>
+      </td>
+      <td class="pre-wrapped">
+        Traffic policy configuration is required: <code>&lt;MESSAGE&gt;</code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_18012" href="/docs/errors/err_ngrok_18012">ERR_NGROK_18012</a>
+      </td>
+      <td class="pre-wrapped">
+        The description field cannot be longer than 255 characters.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_18013" href="/docs/errors/err_ngrok_18013">ERR_NGROK_18013</a>
+      </td>
+      <td class="pre-wrapped">
+        The metadata field cannot be longer than 4096 characters.
       </td>
     </tr>
   </tbody>
