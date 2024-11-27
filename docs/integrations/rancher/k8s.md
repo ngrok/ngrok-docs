@@ -9,7 +9,7 @@ description: Set up a local installation of Rancher to deploy a new RKE2 cluster
 To use the ngrok Kubernetes Operator with Rancher in a local cluster:
 
 1. [Install Rancher via Docker](#install-rancher-via-docker)
-2. [Install the ngrok Kubernetes Operator](#install-the-ngrok-ingress-controller)
+2. [Install the ngrok Kubernetes Operator](#install-the-ngrok-kubernetes-operator)
 3. [Install a sample application](#install-a-sample-application)
 
 :::
@@ -48,7 +48,7 @@ to ngrok using Rancher's Chart repository, and deploy a demo application, which 
 
 To follow along with this guide, you need Rancher installed on a local or remote Kubernetes cluster. If you already have
 an existing cluster running Rancher, you can skip this step and proceed to [Step 2: Install the ngrok Ingress
-Controller](#install-the-ngrok-ingress-controller).
+Controller](#install-the-ngrok-kubernetes-operator).
 
 In the following steps, you'll run Rancher, and create the Kubernetes cluster it runs on, within a Docker container.
 This simple, local-only installation option should be used only for [test and demonstration
@@ -62,7 +62,7 @@ new Kubernetes cluster managed by Rancher.
 
 :::note
 Another viable option is to launch a single Linux virtual machine on your local workstation or with a cloud provider to host a K3s cluster for [installing Rancher with Helm](https://ranchermanager.docs.rancher.com/getting-started/quick-start-guides/deploy-rancher-manager/helm-cli). If you choose that option, you can skip ahead to [Step 2: Install the ngrok Ingress
-Controller](#install-the-ngrok-ingress-controller) once you’ve finalized your K3s cluster.
+Controller](#install-the-ngrok-kubernetes-operator) once you’ve finalized your K3s cluster.
 :::
 
 1. Launch the Rancher server in a detached, privileged Docker container. With this configuration, you'll access Rancher on `localhost` using a specific port.
@@ -142,7 +142,7 @@ docker logs [DOCKER_NAME] 2>&1 | grep "Bootstrap Password:"
 You have now installed Rancher in a Docker container, created a new Kubernetes cluster for your applications, and
 connected one or more Linux nodes to Rancher for handling future workloads.
 
-## **Step 2**: Install the ngrok Kubernetes Operator using Rancher {#install-the-ngrok-ingress-controller}
+## **Step 2**: Install the ngrok Kubernetes Operator using Rancher {#install-the-ngrok-kubernetes-operator}
 
 Next, install the [ngrok Kubernetes Operator](https://github.com/ngrok/ngrok-operator), which
 will then automatically handle public ingress to any properly configured application you add to your cluster. Because
@@ -153,10 +153,10 @@ to add the ngrok Kubernetes Operator via the Rancher dashboard.
 You can also install the ngrok Kubernetes Operator with Helm instead of via Rancher's management platform. See our [Using ngrok with Kubernetes](/docs/using-ngrok-with/k8s/#step-2-setup-your-kubernetes-cluster-and-install-the-ngrok-ingress-controller) guide for details.
 :::
 
-1. Create an `ngrok-ingress-controller` namespace.
+1. Create an `ngrok-operator` namespace.
 
    ```bash
-   kubectl create namespace ngrok-ingress-controller
+   kubectl create namespace ngrok-operator
    ```
 
 1. Get your ngrok `AUTHTOKEN` and `API_KEY` credentials.
@@ -168,12 +168,12 @@ You can also install the ngrok Kubernetes Operator with Helm instead of via Ranc
    click the **New API Key** button, change the description or owner, and click the **Add API Key** button. Don't close
    the modal window yet, as you'll need this API key for the next step.
 
-1. Create a Kubernetes Secret named `ngrok-ingress-controller-credentials`, replacing `[YOUR-AUTHTOKEN]` and
+1. Create a Kubernetes Secret named `ngrok-operator-credentials`, replacing `[YOUR-AUTHTOKEN]` and
    `[YOUR_API_KEY]` in the command below with your ngrok credentials. Rancher will use this secret to authenticate the
    ngrok Kubernetes Operator with your account.
 
    ```bash
-   kubectl create secret generic --namespace ngrok-ingress-controller ngrok-ingress-controller-credentials \
+   kubectl create secret generic --namespace ngrok-operator ngrok-operator-credentials \
     --from-literal=AUTHTOKEN=[YOUR-AUTHTOKEN] \
     --from-literal=API_KEY=[YOUR-API-KEY]
    ```
@@ -184,19 +184,19 @@ You can also install the ngrok Kubernetes Operator with Helm instead of via Ranc
 
    ![Find the ngrok Kubernetes Operator Helm Chart and begin installation](img/rancher_ngrok-chart.png)
 
-   In the **Metadata** step, choose `ngrok-ingress-controller` as the namespace, then click **Next**.
+   In the **Metadata** step, choose `ngrok-operator` as the namespace, then click **Next**.
 
-   ![Add the Helm chart to the ngrok-ingress-controller namespace](img/rancher_ngrok-namespace.png)
+   ![Add the Helm chart to the ngrok-operator namespace](img/rancher_ngrok-namespace.png)
 
    In the **Values** step, update the `credentials` portion of the default YAML to include the
-   `ngrok-ingress-controller-credentials` secret you created previously.
+   `ngrok-operator-credentials` secret you created previously.
 
    ```yaml
    credentials:
      apiKey: ""
      authtoken: ""
      secret:
-       name: "ngrok-ingress-controller-credentials"
+       name: "ngrok-operator-credentials"
    ```
 
    Click **Install**. Rancher will take a few moments to initialize the necessary resources, then show that the ngrok
@@ -229,7 +229,7 @@ simplifying how you route external traffic through your Rancher-managed cluster.
    kind: Service
    metadata:
      name: game-2048
-     namespace: ngrok-ingress-controller
+     namespace: ngrok-operator
    spec:
      ports:
        - name: http
@@ -242,7 +242,7 @@ simplifying how you route external traffic through your Rancher-managed cluster.
    kind: Deployment
    metadata:
      name: game-2048
-     namespace: ngrok-ingress-controller
+     namespace: ngrok-operator
    spec:
      replicas: 1
      selector:
@@ -265,7 +265,7 @@ simplifying how you route external traffic through your Rancher-managed cluster.
    kind: Ingress
    metadata:
      name: game-2048-ingress
-     namespace: ngrok-ingress-controller
+     namespace: ngrok-operator
    spec:
      ingressClassName: ngrok
      rules:

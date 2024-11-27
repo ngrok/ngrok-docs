@@ -22,8 +22,8 @@ Both of these can be obtained via [nix-direnv](https://github.com/nix-community/
 export NGROK_API_KEY=<YOUR Secret API KEY>
 export NGROK_AUTHTOKEN=<YOUR Secret Auth Token>
 # kubectl can connect to your cluster and images built locally are available to the cluster
-kubectl create namespace ngrok-ingress-controller
-kubectl config set-context --current --namespace=ngrok-ingress-controller
+kubectl create namespace ngrok-operator
+kubectl config set-context --current --namespace=ngrok-ngrok-operator
 
 make deploy
 ```

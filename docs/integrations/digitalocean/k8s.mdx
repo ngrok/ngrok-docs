@@ -10,12 +10,12 @@ To use the ngrok Kubernetes Operator with DigitalOcean:
 
 1. [Provision a new cluster on DigitalOcean with `doctl`](#provision-a-new-cluster)
 2. [Deploy an example app on your DigitalOcean-managed cluster](#deploy-an-example-app)
-3. [Configure the ngrok Kubernetes Operator](#configure-the-ngrok-kubernetes-ingress-controller)
+3. [Configure the ngrok Kubernetes Operator](#configure-the-ngrok-kubernetes-kubernetes-operator)
 4. [Enable extra features of ngrok's Cloud Edge](#enable-extra-features-of-ngrok)
 
 :::
 
-Using this guide, you'll launch a new cluster on [DigitalOcean](https://digitalocean.com) and use the DigitalOcean Marketplace to provision the [ngrok Kubernetes Operator](https://marketplace.digitalocean.com/apps/ngrok-ingress-controller) to securely ingress public traffic to a demo app.
+Using this guide, you'll launch a new cluster on [DigitalOcean](https://digitalocean.com) and use the DigitalOcean Marketplace to provision the [ngrok Kubernetes Operator](https://marketplace.digitalocean.com/apps/ngrok-kubernetes-operator) to securely ingress public traffic to a demo app.
 
 In the end, you'll have learned enough to deploy your next production-ready Kubernetes app with Rafay, with the ngrok Kubernetes Operator giving you access to additional features, like observability and resiliency, with no extra configuration complexity.
 
@@ -46,7 +46,7 @@ In this guide, we'll stick with the CLI as much as possible to showcase how tigh
 1. Provision your cluster with the command below, replacing `NODE_SIZE` and `CLUSTER_NAME` with your chosen size and a relevant name.
 
    ```bash
-   doctl kubernetes clusters create --size NODE_SIZE CLUSTER_NAME --1-clicks ngrok-ingress-controller
+   doctl kubernetes clusters create --size NODE_SIZE CLUSTER_NAME --1-clicks ngrok-operator
    ```
 
    This command not only provisions your cluster, but also installs the [ngrok Kubernetes Operator](https://github.com/ngrok/ngrok-operator) from their [1-Click catalog](https://marketplace.digitalocean.com/apps/ngrok-ingress-controller).
@@ -60,16 +60,17 @@ In this guide, we'll stick with the CLI as much as possible to showcase how tigh
    d62a17ca-32e0-4d8b-9260-2d0d1c582939    ngrokker    nyc1      1.29.1-do.0    false           running    ngrokker-default-pool
    ```
 
-1. You can now verify that the cluster is running successfully by looking at the pods in the new `ngrok-ingress-controller` namespace.
+1. You can now verify that the cluster is running successfully by looking at the pods in the new `ngrok-operator` namespace.
 
    ```bash
-   kubectl get pods -n ngrok-ingress-controller
+   kubectl get pods -n ngrok-operator
 
-   NAME                                                              READY   STATUS                       RESTARTS   AGE
-   ngrok-ingress-controller-kubernetes-ingress-controller-mannvs9b   0/1     CreateContainerConfigError   0          6m30s
+   NAME                                                 READY   STATUS    RESTARTS   AGE
+   ngrok-operator-agent-74b65b9-cg4zs                   1/1     Running   1          4d21h
+   ngrok-operator-manager-6fd57968f4-kcfxj              1/1     Running   2          4d21h
    ```
 
-   The `CreateContainerConfigError` is to be expected at this point. If you run `kubectl describe pods -n ngrok-ingress-controller YOUR_NGROK_INGRESS_CONTAINER`, you'd see the following error: `kubelet            Error: secret "ngrok-auth" not found`.
+   The `CreateContainerConfigError` is to be expected at this point. If you run `kubectl describe pods -n ngrok-operator YOUR_NGROK_INGRESS_CONTAINER`, you'd see the following error: `kubelet            Error: secret "ngrok-auth" not found`.
 
 1. To remedy that, get your `AUTHTOKEN` and `API_KEY`, which the ngrok Kubernetes Operator will use to authenticate against your existing ngrok account.
 
@@ -88,7 +89,7 @@ In this guide, we'll stick with the CLI as much as possible to showcase how tigh
    kind: Secret
    metadata:
      name: ngrok-auth
-     namespace: ngrok-ingress-controller
+     namespace: ngrok-operator
    stringData:
      API_KEY: "NGROK_API_KEY"
      AUTHTOKEN: "NGROK_AUTHTOKEN"
@@ -117,7 +118,7 @@ Let's explore how you can add apps or services to your DigitalOcean-managed Kube
 
    You should see your cluster create a handful of new services, then verify everything is running correctly with `kubectl get all -n bookinfo`.
 
-## **Step 3**: Configure the ngrok Kubernetes Operator {#configure-the-ngrok-kubernetes-ingress-controller}
+## **Step 3**: Configure the ngrok Kubernetes Operator {#configure-the-ngrok-kubernetes-operator}
 
 Your Bookinfo app is running, but you have no means of accessing it from your local workstation—or anywhere else, for that matter. You _could_ use `kubectl port-forward...`, but that's a fragile method of accessing your new app, and isn't appropriate for production use.
 
