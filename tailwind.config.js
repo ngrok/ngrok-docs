@@ -12,7 +12,8 @@ module.exports = {
 	content: [
 		resolveMantleContentGlob(require),
 		"./src/**/*.{js,jsx,ts,tsx}",
-		"docs/**/*.{md,mdx}",
+		"./docs/**/*.{md,mdx}",
+		"./traffic-policy/**/*.{md,mdx}",
 	],
 	corePlugins: {
 		preflight: false,

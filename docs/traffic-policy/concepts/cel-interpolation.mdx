@@ -1,0 +1,90 @@
+# CEL Interpolation
+
+**CEL Interpolation** allows you to write dynamic configurations for traffic policy actions. It enables expressions to be embedded within string fields of a configuration object, making the traffic policy system more flexible and powerful.
+
+When an action in a traffic policy requires a configuration object, some fields allow CEL expressions to be interpolated directly into strings. This means that you can define dynamic values that are computed based on traffic, connection, or previously executed action variables.
+
+For example, when using the `add-headers` action, the `headers` field is a key-value map, where the header values can contain CEL expressions. This allows you to use real-time traffic data, such as the client's IP address, to populate header values dynamically.
+
+## How CEL Interpolation Works
+
+In the context of traffic policy actions, CEL expressions can be written within strings using a special syntax: `${expression}`. This tells the system to evaluate the expression at runtime and replace the placeholder with the resulting value.
+
+For example, consider the following configuration for the `add-headers` action:
+
+```yaml
+on_http_request:
+  - name: CEL Interpolation Example
+    actions:
+      - type: add-headers
+        config:
+          headers:
+            X-Client-IP: "${conn.client_ip}"
+            X-Request-Path: "${req.url.path}"
+```
+
+In this example:
+
+- The header `X-Client-IP` is set to the value of the client's IP address (`conn.client_ip`).
+- The header `X-Request-Path` dynamically reflects the path of the incoming request (`req.url.path`).
+
+When the rule is executed, the system evaluates the CEL expressions and substitutes the results into the configuration. This allows for highly customizable behavior based on real-time data.
+
+## What Can Be Interpolated?
+
+You can use the following inside of CEL interpolated expressions:
+
+- [Variables](/traffic-policy/variables/) (including action variables)
+- [Macros](/traffic-policy/macros/)
+
+This dynamic configuration enables traffic policies to be tailored based on specific conditions at runtime.
+
+## Why Use CEL Interpolation?
+
+- **Flexibility**: Dynamically adjust action configurations based on traffic, headers, and more.
+- **Power**: Create complex, context-aware behaviors by utilizing real-time data and previous actions.
+- **Efficiency**: Avoid having to manually hard-code values or create separate policies for different traffic scenarios.
+
+## Example Use Cases
+
+### Custom Header Values
+
+Set headers dynamically based on incoming traffic, such as client IP, request path, or even specific action results.
+
+```yaml
+on_http_request:
+  - name: CEL Interpolation Example
+    actions:
+      - type: add-headers
+        config:
+          headers:
+            X-Country-Code: "${conn.geo.country_code}"
+            X-User-Agent: "${req.headers['User-Agent'][0]}"
+```
+
+### Debugging
+
+Take the result of an action and set it as metadata on the event stream log for the request or output the response as a custom response to see the result immediately, kind of like `console.log`.
+
+```yaml
+on_http_request:
+  - actions:
+      - type: "restrict-ips"
+        config:
+          enforce: false
+          ip_policies:
+            - "ipp_2p2q5Yt85IKQQ7zbpR4XmUpyVIN"
+      - type: "log"
+        config:
+          metadata:
+            message: "Restrict IPs action would be ${actions.ngrok.restrict_ips.action} for ${conn.client_ip}."
+            matched_cidr: "${actions.ngrok.restrict_ips.matched_cidr}"
+            error_code: "${actions.ngrok.restrict_ips.error.code}"
+            error_message: "${actions.ngrok.restrict_ips.error.message}"
+      - type: "custom-response"
+        config:
+          status_code: 403
+          content: "Restrict IPs action would be ${actions.ngrok.restrict_ips.action} for ${conn.client_ip}. The matched CIDR is ${actions.ngrok.restrict_ips.matched_cidr}. Your error code is ${actions.ngrok.restrict_ips.error.code} and the error message is the following: ${actions.ngrok.restrict_ips.error.message}"
+          headers:
+            content-type: "text/html"
+```

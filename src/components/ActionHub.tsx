@@ -18,7 +18,7 @@ const DefaultProtocolValue = "any";
 
 const Phases = ["on_tcp_connect", "on_http_request", "on_http_response"];
 
-const Protocols = {
+const Protocols: Record<string, string[]> = {
 	TCP: ["on_tcp_connect"],
 	HTTP: ["on_http_request", "on_http_response"],
 };
@@ -61,10 +61,12 @@ export default function ActionHub({ actions }: Props) {
 		filteredActions = filteredActions.filter((action) => {
 			const protocols = Protocols[protocolFilter];
 			let exists = 0;
-			for (let index = 0; index < protocols.length; index++) {
-				const protocol = protocols[index];
-				if (action.phases.includes(protocol)) {
-					exists++;
+			if (protocols) {
+				for (let index = 0; index < protocols.length; index++) {
+					const protocol = protocols[index];
+					if (protocol && action.phases.includes(protocol)) {
+						exists++;
+					}
 				}
 			}
 			return exists;
