@@ -1,5 +1,87 @@
 import ConfigExample from "/src/components/ConfigExample.tsx";
 
-### Custom Certificate
+### Using a Custom Certificate
 
-TODO
+If you want to specify a custom certificate for your endpoints instead of having ngrok manage the certificate for you, you can use the `server_private_key` and `server_certificate` fields in the configuration. This will allow you to have full control over which certificate is used for your endpoint.
+
+#### Generate a Custom Certificate
+
+A CA is required for issuing and digitally signing certificates (server certificates). The CA will also be used to verify the authenticity of the certificates.
+
+Users are responsible for providing the CA and server certificates, ngrok will not generate them. The private key and certificate will be uploaded and hosted on the ngrok SaaS platform. The CA will need to be distributed to any client/device that will need to access the endpoint.
+
+Most organizations will have their own certificate mangement infrastructure, examples are provided below for creating the CA and client certificates. These examples of certificate creation are optional, and provided for reference/demo purposes.
+
+##### Create the CA
+
+Generate the CA private key, providing a strong passphrase is desirable.
+
+```bash
+openssl genrsa -aes256 -out ca.key 4096
+```
+
+Now we'll generate the CA certificate. Feel free to leave attribute fields blank by entering a period `.`. It's recommended to specify the CommonName, this will be used to identify the certificate authority.
+
+```bash
+openssl req -new -x509 -sha256 -days 365 -key ca.key -out ca.crt
+```
+
+##### Create a Server Certificate
+
+Generate the server private key.
+
+```bash
+openssl genrsa -out server.key 2048
+```
+
+Create a signing request for the server private key. Feel free to leave attribute fields blank by entering a period `.`. It's recommended to specify the CommonName, this will be used to identify the server certificate.
+
+```bash
+openssl req -new -key server.key -out server.csr
+```
+
+Use the CA certificate to sign the request and generate the server certificate.
+
+```bash
+openssl \
+   x509 -req -days 365 -sha256 -in  server.csr \
+   -CA ca.crt -CAkey ca.key -set_serial 0x"$(openssl rand -hex 16)" -out server.crt
+```
+
+#### Example Traffic Policy Document
+
+<ConfigExample
+	snippetText={null}
+	showLineNumbers={true}
+	jsonMetastring="{5-11}"
+	yamlMetastring="{4-7}"
+	config={{
+		inbound: [
+			{
+				actions: [
+					{
+						type: "terminate-tls",
+						config: {
+							server_private_key: "[contents of server.key]",
+							server_certificate: "[contents of server.crt]",
+						},
+					},
+				],
+			},
+		],
+	}}
+/>
+
+#### Start an Endpoint with the Traffic Policy
+
+```shell
+ngrok http 8080 --url terminate-tls-example.ngrok.io --traffic-policy-file /path/to/policy.yml
+```
+
+#### Make a Request
+
+Now you can make a request to the endpoint with the `--cacert` flag to specify the CA.
+
+```shell
+curl --certca ca.crt https://terminate-tls-example.ngrok.io
+```
