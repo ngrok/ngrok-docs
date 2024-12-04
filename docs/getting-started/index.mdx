@@ -8,8 +8,10 @@ import Tabs from "@theme/Tabs";
 
 # Quickstart
 
-This quickstart will use the [ngrok agent](/agent/) to put your application on
-the internet and secure it so that only you can access it. You'll need a few things to get started.
+<p className="text-lg">This quickstart uses the [ngrok agent](/agent/) to put
+  your application on the internet with an agent endpoint, then secure it so
+  that only you or others you trust can access it. You'll need a few things to
+  get started:</p>
 
 <div className="ngrok--cards ngrok--cards-row">
 	<div className="ngrok--card ngrok--card-sm">
@@ -34,9 +36,8 @@ the internet and secure it so that only you can access it. You'll need a few thi
 			<h3 className="fw-600">3. A local application or API</h3>
 		</div>
 		<p>
-			Accessible on a URL like
-			<br />
-			`http://localhost:8080`.
+			Accessible on a hostname and port like
+      <code className="whitespace-nowrap">localhost:8000</code>.
 		</p>
 	</div>
 </div>
@@ -71,7 +72,7 @@ configuration command specific to your account.
 ## Step 2: Put your app or API online
 
 Start the ngrok agent with the following command, replacing `8080` with a
-different port based on where your service lists for traffic.
+different port based on where your service listens for traffic.
 
 ```bash
 ngrok http 8080
@@ -120,7 +121,49 @@ you've made it publicly available. With ngrok, you can add authentication and
 other traffic management rules, without making any changes to your service,
 using our [Traffic Policy](/docs/http/traffic-policy/index.mdx) engine.
 
-**_TK TK TK_**
+Traffic Policy is a powerful configuration language for your endpoints, letting
+you flexibly filter, match, manage, and orchestrate traffic exactly as you need.
+
+Let's look at a basic Traffic Policy rule to illustate the key concepts:
+
+```yaml
+on_http_request:
+  - expressions:
+      - ""conn.ts.start < timestamp('2999-12-31T00:00:00Z')""
+    actions:
+      - type: custom-response
+        config:
+          content: "Hello, world!"
+```
+
+<p className="text-xl">`on_http_request`</p>
+
+A phase, which is a distinct point in the lifecycle of a request, where you can
+inspect and manage traffic.
+
+In this case, we're acting on the moment a request reaches the ngrok network.
+
+<p className="text-xl">`expressions`</p>
+
+One or more conditions, written in Common Expression Language (CEL) that must
+evaluate to `true` to trigger the corresponding action. You can use
+[variables](/docs/http/traffic-policy/expressions/variables.mdx) and
+[macros](/docs/http/traffic-policy/expressions/macros.mdx) to define your
+expressions.
+
+This particular expression checks whether the time a request reaches ngrok is
+before the moment we all roll into year 3000, so it'll evaluate as `true` for
+the time being.
+
+<p className="text-xl">`actions`</p>
+
+Operations that take specific action on your traffic during the corresponding
+phase of the request lifecycle, if all expressions evaluate as `true`. If there
+are no expressions, then Traffic Policy will always run the action(s).
+
+Here we use the [custom response
+action](/docs/http/traffic-policy/actions/custom-response.mdx) to return `Hello,
+world!`.
 
 ### Add authentication with OAuth or basic auth
 
@@ -149,12 +192,15 @@ on_http_request:
 
 This Traffic Policy rule:
 
-1. Uses the [OAuth action](#) to require you to log in with a Google email.
-2. Checks whether the Google email used to log in _does not_ match your domain name.
-3. Denies all requests that do not match.
-4. Allows all requests that have authenticated with a trusted Google email account.
+1. Always triggers the [OAuth action](#) to require you to log in with a Google
+email because it lacks an expression. 2. Checks whether the Google email used
+_does not_ match your domain
+name with a logical `NOT` operator `!`.
+3. Denies all requests that do not match your domain name.
+4. Allows all requests that have authenticated with a Google account associated
+with your domain.
 
-Now you can run ngrok again using the `--traffic-policy-file` flag and your file.
+Now you can run ngrok again using the `--traffic-policy-file` flag.
 
 ```
 ngrok http 8080 --url <YOUR_NGROK_DOMAIN> --traffic-policy-file auth.yaml
@@ -163,8 +209,8 @@ ngrok http 8080 --url <YOUR_NGROK_DOMAIN> --traffic-policy-file auth.yaml
 Anyone accessing your public endpoint will be prompted to log in with Google and
 only your account will be allowed to access it.
 
-If you don't have a Google account or you want a simpler form of authentication, you can
-protect your app with the [basic authentication
+If you don't have a Google account or you want a simpler form of authentication,
+you can protect your app with the [basic authentication
 action](/docs/http/traffic-policy/actions/basic-auth.mdx) using a username and
 password.
 
@@ -184,7 +230,10 @@ Run your ngrok agent again:
 ngrok http 8080 --url <YOUR_NGROK_DOMAIN> --traffic-policy-file auth.yaml
 ```
 
-If you access your endpoint with a browser, it'll prompt you for the username and password. If you're putting an API service online and try to access it with `curl`, you'll get a `401 Unauthorized` response unless you base64 encode `user:password1` and add the result as a header:
+If you access your endpoint with a browser, it'll prompt you for the username
+and password. If you're putting an API service online and try to access it with
+`curl`, you'll get a `401 Unauthorized` response unless you base64 encode
+`user:password1` and add the result as a header:
 
 ```bash
 curl --request GET \
@@ -204,12 +253,15 @@ ngrok supports many forms of authentication, including:
 
 ## Step 5: Run ngrok persistently
 
-While this guide gets you started with ngrok, you might want your tunnel to keep running even after you close your terminal window. Here are a few options to achieve this:
+While this guide gets you started with ngrok, you might want your agent endpoint
+to keep running even after you close your terminal window. Here are a few
+options:
 
 - Using Docker: Docker allows you to containerize ngrok for easy deployment and management. See the documentation for [Docker configuration](/using-ngrok-with/docker/).
-- Systemd service (Linux): For systemd-based systems, you can create a systemd service to automatically start and manage ngrok. Refer to the documentation for [Systemd service creation](/agent/#background-service).
+- systemd service (Linux): For systemd-based systems, you can create a systemd service to automatically start and manage ngrok. Refer to the documentation for [Systemd service creation](/agent/#background-service).
 - Windows service (Windows): For Windows systems, you can create a Windows service to automatically start and manage ngrok. Refer to the documentation for [Background Service](/agent/#background-service).
-- Detaching a Tmux session (optional): If you're familiar with Tmux, you can detach your ngrok session from your terminal window. (Note: This is an advanced option). Refer to a guide on using [Tmux](https://www.digitalocean.com/community/tutorials/how-to-configure-tmux-on-a-cloud-server) for more information:
+- Detaching a Tmux session (optional): If you're familiar with Tmux, you can
+detach your ngrok session from your terminal window. (Note: This is an advanced option). Refer to a guide on using [Tmux](https://www.digitalocean.com/community/tutorials/how-to-configure-tmux-on-a-cloud-server) for more information.
 
 ## What's next?
 
