@@ -1,0 +1,142 @@
+---
+title: Ext Macros
+---
+
+# Ext Macros
+
+Ext macros are a related set of functions, macros, or other features which may not be covered by the core CEL spec from the [cel-go/ext](https://pkg.go.dev/github.com/google/cel-go/ext) package.
+
+## Encoders
+
+### `base64.decode() -> bytes`
+
+Decodes base64-encoded string to bytes.
+
+This function will return an error if the string input is not base64-encoded.
+
+#### Signatures
+
+- `base64.decode(<string>) -> <bytes>`
+
+#### Example
+
+```go
+base64.decode('aGVsbG8=')  // return b'hello'
+base64.decode('aGVsbG8')   // error
+```
+
+### `base64.encode()  -> string`
+
+Encodes bytes to a base64-encoded string.
+
+#### Signatures
+
+- `base64.encode(<bytes>) -> <string>`
+
+#### Example
+
+```go
+base64.encode(b'hello') // return 'aGVsbG8='
+```
+
+## Lists
+
+### `list.join() -> string`
+
+Returns a new string with the elements of the list concatenated. Optionally, a separator can be specified to insert between elements.
+
+#### Signatures
+
+- `<list<string>>.join(<string?>) -> <string>`
+
+#### Example
+
+```go
+['hello', 'mellow'].join()        // returns 'hellomellow'
+['hello', 'mellow'].join(' ')     // returns 'hello mellow'
+[].join()                         // returns ''
+[].join('/')                      // returns ''
+```
+
+### `list.filter() -> list`
+
+Returns a new list containing elements that satisfy a provided condition.
+
+#### Signatures
+
+- `<list<T>>.filter(<function(T) -> bool>) -> <list<T>>`
+
+#### Example
+
+```go
+[1, 2, 3, 4].filter(x => x % 2 == 0)    // returns [2, 4]
+['apple', 'pear'].filter(x => x.includes('a')) // returns ['apple']
+```
+
+### `list.slice() -> list`
+
+Returns a new sub-list using the indexes provided.
+
+#### Signatures
+
+- `<list>.slice(<int>, <int>) -> <list>`
+
+#### Example
+
+```go
+[1,2,3,4].slice(1, 3) // return [2, 3]
+[1,2,3,4].slice(2, 4) // return [3 ,4]
+```
+
+## Strings
+
+### `string.indexOf() -> int`
+
+Returns the index of the first occurrence of a substring within the string. The function also accepts an optional position argument to start the search.
+
+#### Signatures
+
+- `<string>.indexOf(<string>, <int?>) -> <int>`
+
+#### Example
+
+```go
+'hello mellow'.indexOf('')         // returns 0
+'hello mellow'.indexOf('ello')     // returns 1
+'hello mellow'.indexOf('jello')    // returns -1
+'hello mellow'.indexOf('', 2)      // returns 2
+'hello mellow'.indexOf('ello', 2)  // returns 7
+```
+
+### `string.split() -> list`
+
+Splits a string into a list of substrings using a specified separator. Optionally, a maximum number of splits can be defined.
+
+#### Signatures
+
+- `<string>.split(<string?>, <int?>) -> list<string>`
+
+#### Example
+
+```go
+'hello mellow'.split()             // returns ['hello', 'mellow']
+'hello mellow'.split(' ', 1)       // returns ['hello']
+'hello,mellow,hi'.split(',')       // returns ['hello', 'mellow', 'hi']
+'hello,mellow,hi'.split(',', 2)    // returns ['hello', 'mellow']
+```
+
+### `string.replace() -> string`
+
+Replaces occurrences of a substring with another string. Optionally, limits the number of replacements.
+
+#### Signatures
+
+- `<string>.replace(<string>, <string>, <int?>) -> <string>`
+
+#### Example
+
+```go
+'hello mellow'.replace('l', 'L')        // returns 'heLLo meLLo'
+'hello mellow'.replace('l', 'L', 2)     // returns 'heLLo mellow'
+'hello mellow'.replace('x', 'X')        // returns 'hello mellow' (no changes)
+```
