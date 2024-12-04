@@ -82,6 +82,7 @@ const sidebars = {
 			type: "category",
 			collapsible: false,
 			className: "menu__list-item--category",
+			link: { type: "doc", id: "traffic-policy/index" },
 			items: [
 				"traffic-policy/index",
 				"traffic-policy/getting-started",
