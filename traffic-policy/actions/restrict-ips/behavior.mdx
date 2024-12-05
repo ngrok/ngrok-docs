@@ -3,8 +3,9 @@
 ### Evaluation of Rules
 
 This action evaluates the configured rules against the layer 4 source IP
-(`conn.client_ip`) of a connection. HTTP headers like `X-Forwarded-For` are
-never used.
+(`conn.client_ip`) of a connection.
+
+HTTP headers like `X-Forwarded-For` are never used.
 
 ### Allow and Deny Conditions
 
@@ -23,9 +24,12 @@ The set of allowed and denied CIDRs are built from:
 
 If this action denies the connection:
 
-- An `HTTP 403` response is returned.
+- When used on the `on_tcp_connect` phase:
+  - The connection is closed.
+- When used on the `on_http_request` or `on_http_response` phase:
+  - An `HTTP 403` response is returned.
 - The upstream server is never reached.
-- No further actions or policy rules in the policy configuration will be executed.
+- No further rules or actions in the traffic policy will be executed.
 
 ### IPv6 Support
 
