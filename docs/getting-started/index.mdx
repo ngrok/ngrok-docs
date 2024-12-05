@@ -6,6 +6,8 @@ pagination_next: http/index
 import TabItem from "@theme/TabItem";
 import Tabs from "@theme/Tabs";
 
+import Link from "@docusaurus/Link";
+
 # Quickstart
 
 <p className="text-lg">
@@ -130,7 +132,7 @@ Let's look at a basic Traffic Policy rule to illustate the key concepts:
 ```yaml
 on_http_request:
   - expressions:
-      - ""conn.ts.start < timestamp('2999-12-31T00:00:00Z')""
+      - ""conn.ts.start < timestamp('2999-12-31T23:59:59Z')""
     actions:
       - type: custom-response
         config:
@@ -166,7 +168,7 @@ Here we use the [custom response
 action](/docs/http/traffic-policy/actions/custom-response.mdx) to return `Hello,
 world!`.
 
-### Add authentication with OAuth or basic auth
+### Secure your service with OAuth or basic auth
 
 Let's say you want to restrict access only to you and your coworkers by
 requiring a successful OAuth log-in with Google, denying anyone who tries to
@@ -242,27 +244,134 @@ curl --request GET \
   --header 'Authorization: Basic ...`'
 ```
 
-ngrok supports many forms of authentication, including:
+ngrok supports many forms of authentication:
 
-- [OAuth](#) (what we just used)
-- [Basic authentication](/docs/http/traffic-policy/actions/basic-auth.mdx) (what we just used)
-- [IP restrictions](/docs/http/traffic-policy/actions/restrict-ips.mdx)
-- [Webhook verification](/docs/http/traffic-policy/actions/verify-webhook.mdx)
-- [Mutual TLS](/http/mutual-tls/)
-- [OpenID Connect](/http/openid-connect/)
-- [SAML](/http/saml/)
+<div className="ngrok--cards ngrok--cards-row">
+	<Link to={`/docs/http/traffic-policy/actions/oauth/`}>
+    <div className="ngrok--card ngrok--card-sm">
+      <div className="ngrok--card-heading jc-space-between">
+        <h3 className="fw-600">OAuth</h3>
+      </div>
+      <p>
+        Enforce an OAuth log-in flow on your endpoints with well-known identity providers like Google and GitHub.
+      </p>
+			<a>Read more →</a>
+    </div>
+  </Link>
+	<Link to={`/docs/http/traffic-policy/actions/basic-auth/`}>
+    <div className="ngrok--card ngrok--card-sm">
+      <div className="ngrok--card-heading jc-space-between">
+        <h3 className="fw-600">Basic authentication</h3>
+      </div>
+      <p>
+        Require a username and password for traffic on your agent endpoints.
+      </p>
+			<a>Read more →</a>
+    </div>
+  </Link>
+</div>
+<div className="ngrok--cards ngrok--cards-row">
+	<Link to={`/docs/http/traffic-policy/actions/restrict-ips/`}>
+    <div className="ngrok--card ngrok--card-sm">
+      <div className="ngrok--card-heading jc-space-between">
+        <h3 className="fw-600">IP restrictions</h3>
+      </div>
+      <p>
+        Allow or deny traffic based on the source IP address or CIDR range.
+      </p>
+			<a>Read more →</a>
+    </div>
+  </Link>
+	<Link to={`/docs/http/traffic-policy/actions/verify-webhook/`}>
+    <div className="ngrok--card">
+      <div className="ngrok--card-heading jc-space-between">
+        <h3 className="fw-600">Webhook verification</h3>
+      </div>
+      <p>
+        Verify that HTTP requests from webhook providers are signed with a known secret.
+      </p>
+			<a>Read more →</a>
+    </div>
+  </Link>
+</div>
 
 ## Step 5: Run ngrok persistently
 
 While this guide gets you started with ngrok, you might want your agent endpoint
-to keep running even after you close your terminal window. Here are a few
-options:
+to keep running even after you close your terminal window, or to automatically
+start when your system boots up.
 
-- Using Docker: Docker allows you to containerize ngrok for easy deployment and management. See the documentation for [Docker configuration](/using-ngrok-with/docker/).
-- systemd service (Linux): For systemd-based systems, you can create a systemd service to automatically start and manage ngrok. Refer to the documentation for [Systemd service creation](/agent/#background-service).
-- Windows service (Windows): For Windows systems, you can create a Windows service to automatically start and manage ngrok. Refer to the documentation for [Background Service](/agent/#background-service).
-- Detaching a Tmux session (optional): If you're familiar with Tmux, you can
-  detach your ngrok session from your terminal window. (Note: This is an advanced option). Refer to a guide on using [Tmux](https://www.digitalocean.com/community/tutorials/how-to-configure-tmux-on-a-cloud-server) for more information.
+<Tabs groupId="agent" queryString="agent-persistence">
+	<TabItem value="linux" label="Linux (systemd)" default>
+    
+    On Linux systems, you can create a `systemd` unit file that starts on boot,
+    restarts automatically, and logs to `syslog`.
+
+    You'll need to [create a configuration file](/docs/agent/config/), or [modify
+    the default](/docs/agent/config/index.mdx#default-locations), to contain
+    your authtoken and definitions of all the agent endpoints you want to
+    create. Then you can install the service with the CLI:
+
+    ```shell
+    ngrok service install --config "~/path/to/ngrok.yml"
+    ```
+
+    And start it:
+
+    ```shell
+    ngrok service start
+    ```
+
+    See our [background service docs](/docs/agent/index.mdx#background-service) for details.
+
+	</TabItem>
+	<TabItem value="windows" label="Windows">
+		
+    On Windows, you can create a Windows service, with errors and warnings
+    logged to the Windows event log.
+
+    You'll need to [create a configuration file](/docs/agent/config/), or [modify
+    the default](/docs/agent/config/index.mdx#default-locations), to contain
+    your authtoken and definitions of all the agent endpoints you want to
+    create. Then you can install the service with the CLI:
+
+    ```shell
+    ngrok service install --config "C:\path\to\ngrok.yml"
+    ```
+
+    And start it:
+
+    ```shell
+    ngrok service start
+    ```
+
+    See our [background service docs](/docs/agent/index.mdx#background-service) for details.
+
+	</TabItem>
+  <TabItem value="docker" label="Docker">
+
+    Use our pre-built Docker images to containerize ngrok for easy deployment
+    and management. To create an agent endpoint for the same service used above
+    on `localhost:8080`, use the following:
+    
+    ```shell
+      docker run --net=host -it -e NGROK_AUTHTOKEN=xyz ngrok/ngrok:latest http 8080
+    ```
+
+    See our [Docker docs](/docs/using-ngrok-with/docker/) for more details.
+  
+  </TabItem>
+  <TabItem value="detach" label="Tmux/Screen/Zellij">
+    
+    If you start the ngrok agent using a terminal multiplexer like
+    [Tmux](https://github.com/tmux/tmux/wiki),
+    [Screen](https://www.gnu.org/software/screen/), or
+    [Zellij](https://zellij.dev/), you can also detach from your session and
+    leave the agent running. You can then reattach if need to stop the agent or
+    change its configuration.
+
+  </TabItem>
+</Tabs>
 
 ## What's next?
 
