@@ -153,7 +153,8 @@ const sidebars = {
 						},
 					],
 				},
-				"traffic-policy/pricing-limits",
+				// For later.
+				// "traffic-policy/pricing-limits",
 			],
 		},
 		{
