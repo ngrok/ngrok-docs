@@ -9,5 +9,5 @@ curl \
 -H "Content-Type: application/json" \
 -H "Ngrok-Version: 2" \
 -d '{"enabled":true,"min_version":"1.3","terminate_at":"edge"}' \
-https://api.ngrok.com/edges/tls/edgtls_2p88rxCyuo4iiEzpCIpYv7a0MVo/tls_termination
+https://api.ngrok.com/edges/tls/edgtls_2pkP6QUZ3sdFAbI3h9UbbqTSwaT/tls_termination
 ```
