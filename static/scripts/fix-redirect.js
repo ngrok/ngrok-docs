@@ -187,6 +187,10 @@ const redirects = [
     [ fromIncludes(`/docs/http-header-templates`), `/docs/http/request-headers/` ],
 
     // (DEC 2024) New Traffic Policy
+    [ fromIncludes(`/docs/traffic-policy/gallery/`), `/docs/traffic-policy/templates/` ],
+    [ fromIncludes(`/docs/http/traffic-policy/gallery/`), `/docs/traffic-policy/templates/` ],
+    [ fromIncludes(`/docs/tls/traffic-policy/gallery/`), `/docs/traffic-policy/templates/` ],
+    [ fromIncludes(`/docs/tcp/traffic-policy/gallery/`), `/docs/traffic-policy/templates/` ],
     [ fromIncludes(`/docs/http/traffic-policy/expressions/writing-guide/`), `/docs/traffic-policy/concepts/expressions/#writing-expressions` ],
     [ fromIncludes(`/docs/tls/traffic-policy/expressions/writing-guide/`), `/docs/traffic-policy/concepts/expressions/#writing-expressions` ],
     [ fromIncludes(`/docs/tcp/traffic-policy/expressions/writing-guide/`), `/docs/traffic-policy/concepts/expressions/#writing-expressions` ],
