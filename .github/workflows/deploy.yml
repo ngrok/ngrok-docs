@@ -27,6 +27,12 @@ jobs:
       - name: Build website
         run: pnpm run build
 
+      - name: Fetch and Modify RSS Feed
+        run: |
+          curl -s https://webflow.dev-ngrok.com/blog-post/rss.xml | sed 's/webflow.dev-ngrok.com/dev-ngrok.com/g' > dev-rss.xml
+          curl -s https://webflow.stage-ngrok.com/blog-post/rss.xml | sed 's/webflow.stage-ngrok.com/stage-ngrok.com/g' > stage-rss.xml
+          curl -s https://webflow.ngrok.com/blog-post/rss.xml | sed 's/webflow.ngrok.com/ngrok.com/g' > rss.xml
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
@@ -36,6 +42,11 @@ jobs:
 
       - name: Deploy
         run: |
+          mv dev-rss.xml ./build/blog-post/rss.xml
           aws s3 sync ./build s3://docs-s3.dev-ngrok.com/docs --delete --acl public-read
+
+          mv stage-rss.xml ./build/blog-post/rss.xml
           aws s3 sync ./build s3://docs-s3.stage-ngrok.com/docs --delete --acl public-read
+
+          mv rss.xml ./build/blog-post/rss.xml
           aws s3 sync ./build s3://docs-s3.ngrok.com/docs --delete --acl public-read
