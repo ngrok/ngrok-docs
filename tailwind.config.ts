@@ -3,11 +3,11 @@ import {
 	mantlePreset,
 	resolveMantleContentGlob,
 } from "@ngrok/mantle/tailwind-preset";
+import type { Config } from "tailwindcss";
 
 const require = createRequire(import.meta.url);
 
-/** @type {import('tailwindcss').Config} */
-module.exports = {
+export default {
 	presets: [mantlePreset],
 	content: [
 		resolveMantleContentGlob(require),
@@ -18,4 +18,4 @@ module.exports = {
 	corePlugins: {
 		preflight: false,
 	},
-};
+} satisfies Config;
