@@ -12,7 +12,7 @@ To use the ngrok Kubernetes Operator with Linkerd in a local cluster:
 
 1. [Set up a local testing cluster](#set-up-a-local-development-cluster)
 1. [Deploy Linkerd's service mesh to your cluster](#deploy-linkerds-service-mesh)
-1. [Install the ngrok Kubernetes Operator](#install-the-ngrok-ingress-controller)
+1. [Install the ngrok Kubernetes Operator](#install-the-ngrok-kubernetes-operator)
 1. [Deploy an example microservices-based application](#deploy-an-example-microservices-based-application)
 1. [Add Linkerd's dashboard and verify mTLS](#add-linkerds-dashboard-and-verify-mtls)
 
@@ -114,7 +114,7 @@ Using this guide, you will launch a local cluster (or use an existing local/remo
 
    :::
 
-## **Step 3**: Install the ngrok Kubernetes Operator {#install-the-ngrok-ingress-controller}
+## **Step 3**: Install the ngrok Kubernetes Operator {#install-the-ngrok-kubernetes-operator}
 
 Even though you have no applications currently running on your local cluster, you can configure and deploy the [ngrok Kubernetes Ingress
 Controller](https://github.com/ngrok/ngrok-operator) to simplify how you'll enable ingress in the future.
@@ -134,12 +134,13 @@ Controller](https://github.com/ngrok/ngrok-operator) to simplify how you'll enab
    export NGROK_API_KEY=[YOUR-API-KEY]
    ```
 
-1. Install the ngrok Kubernetes Operator with Helm under a new `ngrok-ingress-controller` namespace.
+1. Install the ngrok Kubernetes Operator with Helm under a new `ngrok-operator` namespace.
 
    ```bash
-   helm install ngrok-ingress-controller ngrok/kubernetes-ingress-controller \
-     --namespace ngrok-ingress-controller \
+   helm install ngrok-operator ngrok/ngrok-operator \
+     --namespace ngrok-operator \
      --create-namespace \
+     --set clusterName=my-k8s-cluster \
      --set credentials.apiKey=$NGROK_API_KEY \
      --set credentials.authtoken=$NGROK_AUTHTOKEN
    ```
@@ -147,10 +148,11 @@ Controller](https://github.com/ngrok/ngrok-operator) to simplify how you'll enab
 1. Verify you have installed the ngrok Kubernetes Operator successfully and that pods are healthy.
 
    ```bash
-   kubectl get pods -l 'app.kubernetes.io/name=kubernetes-ingress-controller' --namespace ngrok-ingress-controller
+   kubectl get pods -l 'app.kubernetes.io/name=ngrok-operator' --namespace ngrok-operator
 
-   NAME                                                              READY   STATUS    RESTARTS   AGE
-   ngrok-ingress-controller-kubernetes-ingress-controller-man2fg5p   1/1     Running   0          2m23s
+   NAME                                                 READY   STATUS    RESTARTS   AGE
+   ngrok-operator-agent-74b65b9-cg4zs                   1/1     Running   1          4d21h
+   ngrok-operator-manager-6fd57968f4-kcfxj              1/1     Running   2          4d21h
    ```
 
 ## **Step 4**: Deploy an example microservices-based application {#deploy-an-example-microservices-based-application}

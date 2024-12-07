@@ -59,12 +59,13 @@ To started with the ngrok Kubernetes Operator:
 
 1. Install the ngrok Kubernetes Operator in your cluster, replacing `[AUTHTOKEN]` and `[API_KEY]` with your Authtoken and API key from above:
 
-   **Note:** For this tutorial, we're creating and using the namespace `ngrok-ingress-controller`.
+   **Note:** For this tutorial, we're creating and using the namespace `ngrok-operator`.
 
    ```bash
-   helm install ngrok-ingress-controller ngrok/kubernetes-ingress-controller \
-     --namespace ngrok-ingress-controller \
+   helm install ngrok-operator ngrok/ngrok-operator \
+     --namespace ngrok-operator \
      --create-namespace \
+     --set clusterName=my-k8s-cluster \
      --set credentials.apiKey=$NGROK_API_KEY \
      --set credentials.authtoken=$NGROK_AUTHTOKEN
    ```
@@ -83,7 +84,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: game-2048
-  namespace: ngrok-ingress-controller
+  namespace: ngrok-operator
 spec:
   ports:
     - name: http
@@ -96,7 +97,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: game-2048
-  namespace: ngrok-ingress-controller
+  namespace: ngrok-operator
 spec:
   replicas: 1
   selector:
@@ -120,7 +121,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: game-2048-ingress
-  namespace: ngrok-ingress-controller
+  namespace: ngrok-operator
 spec:
   ingressClassName: ngrok
   rules:
@@ -174,7 +175,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: game-2048
-  namespace: ngrok-ingress-controller
+  namespace: ngrok-operator
 spec:
   ports:
     - name: http
@@ -187,7 +188,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: game-2048
-  namespace: ngrok-ingress-controller
+  namespace: ngrok-operator
 spec:
   replicas: 1
   selector:
@@ -209,7 +210,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: game-2048-ingress
-  namespace: ngrok-ingress-controller
+  namespace: ngrok-operator
   # highlight-start
   annotations:
     k8s.ngrok.com/modules: oauth-and-circuit-breaking
@@ -234,7 +235,7 @@ kind: NgrokModuleSet
 apiVersion: ingress.k8s.ngrok.com/v1alpha1
 metadata:
   name: oauth-and-circuit-breaking
-  namespace: ngrok-ingress-controller
+  namespace: ngrok-operator
 modules:
   circuitBreaker:
     trippedDuration: 10s
