@@ -1,7 +1,6 @@
 import CodeBlock from "@theme/CodeBlock";
 import TabItem from "@theme/TabItem";
 import Tabs from "@theme/Tabs";
-import React from "react";
 import YAML from "yaml";
 
 type Props = {
@@ -23,7 +22,6 @@ export default function ConfigExample({
 		indent: 2,
 		directives: true,
 		defaultKeyType: "PLAIN",
-		defaultStringType: "QUOTE_DOUBLE",
 	});
 
 	const jsonConfig = JSON.stringify(config, null, 2);
