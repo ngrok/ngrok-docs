@@ -1,0 +1,107 @@
+---
+title: Utility Macros
+---
+
+import ConfigExample from "/src/components/ConfigExample.tsx";
+
+# Utility Macros
+
+In addition to the core and HTTP macros, ngrok provides a set of utility macros within the Traffic Policy engine. These macros are typically available across all phases, unless otherwise specified.
+
+| Name                                                   | Return Type | Description                                                                                                                                                                                      |
+| ------------------------------------------------------ | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| [`inCidrRange(ip,cidr)`](#incidrrangeipcidr--bool)     | `bool`      | Returns `true` or `false` if the provided IP address falls within the provided CIDR range. Returns `false` if the provided CIDR range is invalid.                                                |
+| [`inCidrRanges(ip,cidrs)`](#incidrrangesipcidrs--bool) | `bool`      | Returns `true` or `false` if the provided IP address falls within any of the provided CIDR ranges. Ignores any provided CIDR ranges that are invalid.                                            |
+| [`rand.double()`](#randdouble--double)                 | `double`    | Returns a random `double` between `0` and `1`.                                                                                                                                                   |
+| [`rand.int(min,max)`](#randintminmax--int)             | `int`       | Returns a random `int` between the provided `min` and `max` values. Only supports positive integers and `min` must be larger than the provided `max`. By default, `min` is `0` and `max` is `1`. |
+
+### `inCidrRange(ip,cidr)` → `bool`
+
+Evaluates whether the given IP address falls within the specified CIDR range.
+
+Returns `true` if the IP is within the range, and `false` if it is outside the range or if the provided CIDR is invalid.
+
+#### Example
+
+```go
+inCidrRange('192.168.1.100', '192.168.1.0/24')  // true
+```
+
+#### Example (in expression)
+
+<ConfigExample
+	config={{
+		expressions: ["inCidrRange(conn.client_ip, '66.249.66.1/24')"],
+	}}
+/>
+
+### `inCidrRanges(ip,cidrs)` → `bool`
+
+Checks if the given IP address falls within any of the specified CIDR ranges.
+
+Returns `true` if the IP is within at least one valid CIDR range, and `false` if it is not within any valid range. Invalid CIDR ranges are ignored.
+
+#### Example
+
+```go
+inCidrRanges('192.168.1.100', ['192.168.1.0/24', '10.0.0.0/8']) // true
+```
+
+#### Example (in expression)
+
+<ConfigExample
+	config={{
+		expressions: [
+			"inCidrRanges(conn.client_ip, ['66.249.66.1/24', '2001:4860::/32'])",
+		],
+	}}
+/>
+
+### `rand.double()` → `double`
+
+Returns a random `double` between `0` and `1`.
+
+#### Example
+
+```go
+rand.double() >= 0.5
+```
+
+#### Example (in expression)
+
+<ConfigExample
+	config={{
+		expressions: ["rand.double() >= 0.5"],
+	}}
+/>
+
+### `rand.int(min,max)` → `int`
+
+Returns a random `int` between the provided `min` and `max` values. Only
+supports positive integers and `min` must be larger than the provided
+`max`. By default, `min` is `0` and `max` is `1`.
+
+#### Example
+
+```go
+rand.int() == 1
+rand.int(0, 10) >= 5
+```
+
+#### Examples (in expression)
+
+The following is an example of using `rand.int` with the default values:
+
+<ConfigExample
+	config={{
+		expressions: ["rand.int() == 1"],
+	}}
+/>
+
+The following is an example of using `rand.int` with custom values:
+
+<ConfigExample
+	config={{
+		expressions: ["rand.int(0, 10) >= 5"],
+	}}
+/>

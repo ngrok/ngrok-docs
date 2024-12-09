@@ -1,0 +1,53 @@
+---
+sidebar_position: 2
+title: Phase Rules
+pagination_previous: traffic-policy/concepts/phases
+pagination_next: traffic-policy/concepts/expressions
+---
+
+# Phase Rules
+
+Each Phase is made up of Phase Rules. Phase Rules allow you to define how traffic is filtered and processed within a phase. To do this each rule consists of two key parts: **expressions** and **actions**.
+
+Here is an example:
+
+```yaml
+on_tcp_connect:
+  - expressions:
+      - conn.client_ip == '192.168.1.200'
+    actions:
+      - type: deny
+```
+
+## Expressions
+
+Expressions are conditions written in [Common Expression Language (CEL)](https://github.com/google/cel-spec) that can be used to evaluate specific traffic attributes, such as the client IP, request URL, or HTTP method. These conditions determine whether a rule applies to a given traffic flow. For instance, an expression like `conn.client_ip == '192.168.1.200'` targets requests from a specific IP address.
+
+You can define multiple expressions, which are automatically combined using the `&&` operator. This means all expressions in the list must evaluate to `true` for the associated rules to run. If no expressions are provided, the system defaults to `true`, ensuring the rule matches all traffic, and the specified actions are executed in sequence.
+
+By combining multiple conditions, you can craft highly specific and flexible rules to manage traffic effectively.
+
+## Actions
+
+Actions define the behavior that is applied when the expressions evaluate to true. Each action specifies a particular operation to be applied, such as denying traffic, modifying headers, or redirecting requests. Actions are executed sequentially as defined in the policy, but note that some actions can short-circuit the request and return without executing subsequent actions.
+
+For example, the following action denies traffic and returns a `404` HTTP status code:
+
+```yaml
+on_http_request:
+  - actions:
+      - type: "deny"
+        config:
+          status_code: 404
+```
+
+For a full list of actions, check out our [Action Hub](../actions).
+
+## Chaining Rules and Priority
+
+Multiple rules can be defined within a single phase. Rules are evaluated in the order they are defined, and their execution depends on the type of actions taken. For example:
+
+- Some actions (e.g., `deny`) immediately stop further rule evaluation.
+- Others (e.g., `url-rewrite`) allow subsequent rules to apply.
+
+This flexibility enables layered and powerful traffic policies.
