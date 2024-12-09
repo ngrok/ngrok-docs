@@ -1,0 +1,71 @@
+import ConfigExample from "/src/components/ConfigExample.tsx";
+
+### Enabling Mutual TLS
+
+This example demonstrates how to use mutual TLS (mTLS) with this action. mTLS requires both the client and server to present certificates to each other to establish a secure connection. This example will show you how to generate a custom Certificate Authority (CA) and client certificate to use.
+
+#### Generate Certificates
+
+We will create a new CA that will be used to sign the client certificate. This allows you to generate multiple client certificates that are trusted by the CA if needed.
+
+```bash
+# 1. Generate CA private key (ca.key)
+openssl genpkey -algorithm RSA -out ca.key -pkeyopt rsa_keygen_bits:2048
+
+# 2. Generate CA certificate (ca.crt)
+openssl req -x509 -new -nodes -key ca.key -sha256 -days 365 -out ca.crt -subj "/CN=ExampleCA"
+
+# 3. Generate client private key (client.key)
+openssl genpkey -algorithm RSA -out client.key -pkeyopt rsa_keygen_bits:2048
+
+# 4. Generate client certificate signing request (CSR) (client.csr)
+openssl req -new -key client.key -out client.csr -subj "/CN=ExampleClient"
+
+# 5. Generate client certificate (client.crt)
+openssl x509 -req -in client.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out client.crt -days 365 -sha256
+```
+
+These commands will result in five new files: `ca.key`, `ca.crt`, `client.key`, `client.csr`, and `client.key`. You will use the contents of `ca.crt` in your traffic policy to validate requests via `curl` which will use `client.key` and `client.crt`.
+
+#### Example Traffic Policy Document
+
+Using the CA certificate generated above, you can specify the `mutual_tls_certificate_authorities` field in the traffic policy to trust the CA that issued the client certificate.
+
+<ConfigExample
+	snippetText={null}
+	showLineNumbers={true}
+	jsonMetastring="{5-12}"
+	yamlMetastring="{4-10}"
+	config={{
+		on_tcp_connect: [
+			{
+				actions: [
+					{
+						type: "terminate-tls",
+						config: {
+							mutual_tls_certificate_authorities: [
+								"-----BEGIN CERTIFICATE-----\n... certificate ...\n-----END CERTIFICATE-----",
+							],
+						},
+					},
+				],
+			},
+		],
+	}}
+/>
+
+You may also optionally [upload the CA certificate](https://dashboard.ngrok.com/tls-cert-authorities) in the ngrok dashboard and use its ID the `mutual_tls_certificate_authorities` array.
+
+#### Start an Endpoint with the Traffic Policy
+
+```shell
+ngrok http 8080 --url terminate-tls-example.ngrok.io --traffic-policy-file /path/to/policy.yml
+```
+
+#### Make a Request
+
+Now you can make a request to the endpoint with the `--cert` and `--key` flags to specify the client certificate and private key.
+
+```shell
+curl --cert client.crt --key client.key https://terminate-tls-example.ngrok.io
+```
