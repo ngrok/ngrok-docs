@@ -292,16 +292,24 @@ See the [ngrok agent CLI configuration page](https://ngrok.com/docs/agent/config
 
 #### `url` notes
 
-The following formats are accepted
+The following formats are accepted:
+
 **Domain** - `example.org`
-When using the domain format you are only defining the domain. The scheme and port will be inferred.
+
+- When using the domain format you are only defining the domain. The scheme and port will be inferred.
+
 **Origin** - `https://example.ngrok.app` or `https://example.ngrok.app:443` or `tcp://1.tcp.ngrok.io:12345` or `tls://example.ngrok.app`
-When using the origin format you are defining the protocol, domain and port. HTTP endpoints accept ports 80 or 443 with respective protocol.
+
+- When using the origin format you are defining the protocol, domain and port. HTTP endpoints accept ports 80 or 443 with respective protocol.
+
 **Scheme** (shorthand) - `https://` or `tcp://` or `tls://` or `http://`
-When using scheme you are defining the protocol and will receive back a randomly assigned ngrok address.
+
+- When using scheme you are defining the protocol and will receive back a randomly assigned ngrok address.
+
 **Internal** - `some.domain.internal`
-When ending your url with .internal, an internal endpoint will be created. nternal Endpoints cannot be accessed directly, but rather
-can only be accessed using the forward-internal traffic policy action.
+
+- When ending your url with .internal, an internal endpoint will be created.
+- Internal Endpoints cannot be accessed directly, but rather can only be accessed using the forward-internal traffic policy action.
 
 ### EndpointUpstream
 
@@ -313,28 +321,36 @@ can only be accessed using the forward-internal traffic policy action.
 
 #### `upstream.url` notes
 
+The following formats are supported:
+
 **Origin** - `https://example.org` or `http://example.org:80` or `tcp://127.0.0.1:80`
-When using the origin format you are defining the protocol, domain and port.
-When no port is present and scheme is https or http the port will be inferred.
-For `https` port will be `443`.
-For `http` port will be `80`.
+
+- When using the origin format you are defining the protocol, domain and port.
+- When no port is present and scheme is https or http the port will be inferred.
+  - For `https` port will be `443`.
+  - For `http` port will be `80`.
+
 **Domain** - `example.org`
-This is only allowed for https and http endpoints.
-For tcp and tls endpoints host and port is required.
-When using the domain format you are only defining the host.
-Scheme will default to `http`.
-Port will default to `80`.
+
+- This is only allowed for https and http endpoints. For tcp and tls endpoints host and port is required.
+- When using the domain format you are only defining the host.
+- Scheme will default to `http`.
+- Port will default to `80`.
+
 **Scheme** (shorthand) - `https://`
-This only works for `https` and `http`.
-For `tcp` and `tls` host and port is required.
-When using scheme you are defining the protocol and the port will be inferred on the local host.
-For `https` port will be `443`.
-For `http` port will be `80`.
-Host will be localhost.
+
+- This only works for `https` and `http`.
+- For `tcp` and `tls` host and port is required.
+- When using scheme you are defining the protocol and the port will be inferred on the local host.
+  - For `https` port will be `443`.
+  - For `http` port will be `80`.
+  - Host will be localhost.
+
 **Port** (shorthand) - `8080`
-When using port you are defining the port on the local host that will receive traffic.
-Scheme will default to `http`.
-Host will default to `localhost`.
+
+- When using port you are defining the port on the local host that will receive traffic.
+- Scheme will default to `http`.
+- Host will default to `localhost`.
 
 ### TrafficPolicyCfg
 
