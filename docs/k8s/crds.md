@@ -273,6 +273,10 @@ the IDs of Agent Endpoints managed by the operator change if the operator pods r
 
 See the [ngrok agent CLI configuration page](https://ngrok.com/docs/agent/config/v3/#endpoint-definitions), for more information about using the CLI to start agent endpoints outside of Kubernetes.
 
+**Note:** Agent Endpoints are currently in feature-preview for the ngrok Kubernetes operator. You will need to use `--version 0.17.0-rc.1` (or newer) when using
+`helm` to install or update the operator. See [the deployment guide](https://ngrok-docs-git-alicewasko-agent-endpoint-k8s-ngrok-dev.vercel.app/docs/k8s/deployment-guide/) for information about installing
+the ngrok Kubernetes operator.
+
 | Field      | Type                                                                                    | Required | Description                                                                                                                                                                                                                   |
 | ---------- | --------------------------------------------------------------------------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | apiVersion | string                                                                                  | Yes      | The API version for this custom resource.                                                                                                                                                                                     |
