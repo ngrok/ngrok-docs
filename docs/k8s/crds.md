@@ -365,6 +365,6 @@ Kubernetes cluster. See [policy configuration](https://ngrok.com/docs/traffic-po
 
 ### K8sObjectRef
 
-| Field | Type   | Required | Description                                                                                                                                         |
-| ----- | ------ | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Field | Type   | Required | Description                                                                                                        |
+| ----- | ------ | -------- | ------------------------------------------------------------------------------------------------------------------ |
 | name  | string | Yes      | Identifies a kubernetes resource by name. This resource and the referenced resource must be in the same namespace. |
