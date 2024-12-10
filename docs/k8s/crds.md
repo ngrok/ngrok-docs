@@ -267,8 +267,9 @@ If using a [TCP](#tcp-edges) or [TLS](#tls-edges) CRD, you may need to create an
 
 ## Agent Endpoints
 
-Agent endpoints are ephemeral endpoints tied to the lifetime of the agent. When used with the ngrok Kubernetes operator, the operator will manage, create, and delete
-agent endpoints for you according to the configuration of the `AgentEndpoint` custom resources you create.
+Agent endpoints are ephemeral endpoints tied to the lifetime of the agent. When used with the ngrok Kubernetes operator, this means that the Agent Endpoints are tied to the operator's `operator-agent` pod (which is deployed by default when installing the operator). The operator will manage, create, and delete
+agent endpoints for you according to the configuration of the `AgentEndpoint` custom resources you create. So long as at least one instance of the `operator-agent` pod is running, your agent endpoints will be available. You may occasionally notice
+the IDs of Agent Endpoints managed by the operator change if the operator pods restart, this will not halt traffic through your agent endpoints unless all of the operator pods have stopped.
 
 See the [ngrok agent CLI configuration page](https://ngrok.com/docs/agent/config/v3/#endpoint-definitions), for more information about using the CLI to start agent endpoints outside of Kubernetes.
 
@@ -325,36 +326,37 @@ The following formats are supported:
 
 **Origin** - `https://example.org` or `http://example.org:80` or `tcp://127.0.0.1:80`
 
-- When using the origin format you are defining the protocol, domain and port.
-- When no port is present and scheme is https or http the port will be inferred.
-  - For `https` port will be `443`.
-  - For `http` port will be `80`.
+- When using the origin format you are defining the protocol, domain and port
+- When no port is present and scheme is https or http the port will be inferred
+  - For `https` port will be `443`
+  - For `http` port will be `80`
 
 **Domain** - `example.org`
 
-- This is only allowed for https and http endpoints. For tcp and tls endpoints host and port is required.
-- When using the domain format you are only defining the host.
-- Scheme will default to `http`.
-- Port will default to `80`.
+- This is only allowed for https and http endpoints. For tcp and tls endpoints host and port is required
+- When using the domain format you are only defining the host
+- Scheme will default to `http`
+- Port will default to `80`
 
 **Scheme** (shorthand) - `https://`
 
-- This only works for `https` and `http`.
-- For `tcp` and `tls` host and port is required.
-- When using scheme you are defining the protocol and the port will be inferred on the local host.
-  - For `https` port will be `443`.
-  - For `http` port will be `80`.
-  - Host will be localhost.
+- This only works for `https` and `http`
+- For `tcp` and `tls` host and port is required
+- When using scheme you are defining the protocol and the port will be inferred on the local host
+  - For `https` port will be `443`
+  - For `http` port will be `80`
+  - Host will be localhost
 
 **Port** (shorthand) - `8080`
 
-- When using port you are defining the port on the local host that will receive traffic.
-- Scheme will default to `http`.
-- Host will default to `localhost`.
+- When using port you are defining the port on the local host that will receive traffic
+- Scheme will default to `http`
+- Host will default to `localhost`
 
 ### TrafficPolicyCfg
 
-See [policy configuration](https://ngrok.com/docs/traffic-policy/) for traffic policy configuration options
+Configuration for a traffic policy that may be provided inline or via a reference to an `NgrokTrafficPolicy` resource in the
+Kubernetes cluster. See [policy configuration](https://ngrok.com/docs/traffic-policy/) for traffic policy configuration options
 
 | Field     | Type                          | Required | Description                                                                                                         |
 | --------- | ----------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------- |
@@ -365,4 +367,4 @@ See [policy configuration](https://ngrok.com/docs/traffic-policy/) for traffic p
 
 | Field | Type   | Required | Description                                                                                                                                         |
 | ----- | ------ | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
-| name  | string | Yes      | Identifies a kubernetes resource by name. This resource and the referenced resource must be in the same namespace. The type of the expected/allowed |
+| name  | string | Yes      | Identifies a kubernetes resource by name. This resource and the referenced resource must be in the same namespace. |
