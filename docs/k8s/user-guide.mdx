@@ -895,6 +895,9 @@ within the ngrok dashboard change over time if they are managed by the operator 
 
 See the [ngrok agent CLI configuration page](https://ngrok.com/docs/agent/config/v3/#endpoint-definitions), for more information about using the CLI to start agent endpoints outside of Kubernetes.
 
+**Note:** Agent Endpoints are currently in feature-preview for the ngrok Kubernetes operator. You will need to use `--version 0.17.0-rc.1` (or newer) when using
+`helm` to install or update the operator.
+
 ### HTTP Endpoints
 
 This Agent Endpoint accepts cleartext HTTP connections at `http://example-http-domain.ngrok.io`, and forwards to the kubernetes service `test-service.default` on port 8080 over cleartext HTTP.
@@ -955,6 +958,36 @@ spec:
   url: https://example-https-domain-external-upstream.ngrok.io
 ```
 
+The following example showcases how a traffic policy with the [terminate-tls action](https://ngrok.com/docs/traffic-policy/actions/terminate-tls/) can be used to control TLS termination options.
+More information and examples about configuring traffic policies on Agent Endpoints can be found in [the traffic policy section below](#traffic-policies-with-agent-endpoints).
+
+For HTTPS endpoints, ngrok will already terminate TLS connections for you even if you do not explicitly use this action in your Traffic Policy. If you specify this action in your Traffic 
+Policy without any configuration, you will see no change in behavior for your endpoints.
+
+```yaml
+---
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: AgentEndpoint
+metadata:
+  name: https-k8s
+  namespace: default
+spec:
+  description: example HTTPS agent endpoint
+  metadata: '{"owned-by":"ngrok-operator"}'
+  trafficPolicy:
+    inline:
+      on_tcp_connect:
+      - actions:
+        - type: terminate-tls
+          config:
+            min_version: 1.2
+            max_version: 1.3
+  upstream:
+    protocol: http2
+    url: https://test-service.default:8443
+  url: https://example-https-domain.ngrok.io
+```
+
 ### TCP Endpoints
 
 TCP Agent Endpoints can be used to forward raw TCP traffic. In order to create a TCP Agent Endpoint, you must first [reserve a TCP address through the ngrok dashboard](https://dashboard.ngrok.com/tcp-addresses).
@@ -978,7 +1011,6 @@ spec:
 
 [TLS endpoints](https://ngrok.com/docs/tls/) enable you to deliver any network service that runs over a TLS-based protocol. TLS endpoints make no assumptions about the wrapped protocol being transported.
 
-TODO: more info about TLS termination when we have that config in place
 
 ```yaml
 ---
@@ -990,6 +1022,34 @@ metadata:
 spec:
   description: test tls agent endpoint
   metadata: '{"owned-by":"ngrok-operator"}'
+  upstream:
+    url: tls://test-service.default:9000
+  url: https://example-tls-domain.ngrok.io
+```
+
+The following example showcases how a traffic policy with the [terminate-tls action](https://ngrok.com/docs/traffic-policy/actions/terminate-tls/) can be used to control TLS termination options.
+More information and examples about configuring traffic policies on Agent Endpoints can be found in [the traffic policy section below](#traffic-policies-with-agent-endpoints).
+
+For TLS endpoints, ngrok will not terminate the TLS connection by default and it is up to you to handle TLS termination in your upstream service.
+
+```yaml
+---
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: AgentEndpoint
+metadata:
+  name: tls-k8s
+  namespace: default
+spec:
+  description: test tls agent endpoint
+  metadata: '{"owned-by":"ngrok-operator"}'
+  trafficPolicy:
+    inline:
+      on_tcp_connect:
+      - actions:
+        - type: terminate-tls
+          config:
+            min_version: 1.2
+            max_version: 1.3
   upstream:
     url: tls://test-service.default:9000
   url: https://example-tls-domain.ngrok.io
