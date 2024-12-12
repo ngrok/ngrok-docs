@@ -231,10 +231,13 @@ const redirects = [
     [ fromIncludes(`/docs/http/traffic-policy/`), `/docs/traffic-policy/` ],
     [ fromIncludes(`/docs/tls/traffic-policy/`), `/docs/traffic-policy/` ],
     [ fromIncludes(`/docs/tcp/traffic-policy/`), `/docs/traffic-policy/` ],
+
+    // DEC 2024 - New TP Getting Started
+    [ fromExact(`/docs/traffic-policy/getting-started/`), `/docs/traffic-policy/getting-started/agent-endpoints/cli` ],
 ]
 
 // get current href from window
-const currentPath = window.location.href
+const currentPath = window.location.pathname
 
 // set new path to current path
 let newPath = currentPath
@@ -257,6 +260,7 @@ for (const redirect of redirects) {
     }
 
     const [from, fromResult] = fromFn(newPath)
+    console.log(from, fromResult, fromFn, newPath)
     if (fromResult) {
         newPath = toFn(newPath, from)
     }
