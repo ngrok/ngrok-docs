@@ -5182,6 +5182,30 @@
     </tr>
     <tr>
       <td>
+        <a id="ERR_NGROK_2241" href="/docs/errors/err_ngrok_2241">ERR_NGROK_2241</a>
+      </td>
+      <td class="pre-wrapped">
+        Invalid configuration for <code>&lt;ACTION&gt;</code>: The domain <code>&lt;DOMAIN&gt;</code> cannot be used as it doesn't belong to the endpoint.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_2242" href="/docs/errors/err_ngrok_2242">ERR_NGROK_2242</a>
+      </td>
+      <td class="pre-wrapped">
+        Invalid configuration for <code>&lt;ACTION&gt;</code>: <code>&lt;CONFIG&gt;</code> <code>&lt;DOMAIN&gt;</code> contains invalid puny code.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_2243" href="/docs/errors/err_ngrok_2243">ERR_NGROK_2243</a>
+      </td>
+      <td class="pre-wrapped">
+        Invalid configuration for <code>&lt;ACTION&gt;</code>: <code>&lt;CONFIG&gt;</code> <code>&lt;DOMAIN&gt;</code> is not a valid domain.
+      </td>
+    </tr>
+    <tr>
+      <td>
         <a id="ERR_NGROK_3002" href="/docs/errors/err_ngrok_3002">ERR_NGROK_3002</a>
       </td>
       <td class="pre-wrapped">
@@ -5792,6 +5816,14 @@
       </td>
       <td class="pre-wrapped">
         URL "state" parameter is invalid.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_3313" href="/docs/errors/err_ngrok_3313">ERR_NGROK_3313</a>
+      </td>
+      <td class="pre-wrapped">
+        Invalid Auth Cookie Domain: <code>&lt;DOMAIN&gt;</code>
       </td>
     </tr>
     <tr>
