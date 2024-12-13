@@ -14,6 +14,8 @@ In addition to the core and HTTP macros, ngrok provides a set of utility macros 
 | [`inCidrRanges(ip,cidrs)`](#incidrrangesipcidrs--bool) | `bool`      | Returns `true` or `false` if the provided IP address falls within any of the provided CIDR ranges. Ignores any provided CIDR ranges that are invalid.                                            |
 | [`rand.double()`](#randdouble--double)                 | `double`    | Returns a random `double` between `0` and `1`.                                                                                                                                                   |
 | [`rand.int(min,max)`](#randintminmax--int)             | `int`       | Returns a random `int` between the provided `min` and `max` values. Only supports positive integers and `min` must be larger than the provided `max`. By default, `min` is `0` and `max` is `1`. |
+| [`url.escape(string)`](#urlescapestring--string)       | `string`    | Returns the string with percent encoding applied.                                                                                                                                                |
+| [`url.unescape(string)`](#urlunescapestring--string)   | `string`    | Decodes a percent-encoded string back to its original form.                                                                                                                                      |
 
 ### `inCidrRange(ip,cidr)` → `bool`
 
@@ -103,5 +105,47 @@ The following is an example of using `rand.int` with custom values:
 <ConfigExample
 	config={{
 		expressions: ["rand.int(0, 10) >= 5"],
+	}}
+/>
+
+### `url.escape(string)` → `string`
+
+Returns the string with percent encoding applied.
+
+#### Example
+
+```go
+url.escape("i;md/r/$y")
+// returns i%3Bmd%2Fr%2F%24y
+```
+
+#### Examples (in expression)
+
+The following is an example of using `url.escape`:
+
+<ConfigExample
+	config={{
+		expressions: ["url.escape(req.raw) == '%2Ffoo'"],
+	}}
+/>
+
+### `url.unescape(string)` → `string`
+
+Decodes a percent-encoded string back to its original form.
+
+#### Example
+
+```go
+url.unescape("i%3Bmd%2Fr%2F%24y")
+// returns i;md/r/$y
+```
+
+#### Examples (in expression)
+
+The following is an example of using `url.unescape`:
+
+<ConfigExample
+	config={{
+		expressions: ["url.escape('%2Ffoo') == '/foo'"],
 	}}
 />
