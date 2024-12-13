@@ -8,14 +8,37 @@ import ConfigExample from "/src/components/ConfigExample.tsx";
 
 In addition to the core and HTTP macros, ngrok provides a set of utility macros within the Traffic Policy engine. These macros are typically available across all phases, unless otherwise specified.
 
-| Name                                                   | Return Type | Description                                                                                                                                                                                      |
-| ------------------------------------------------------ | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| [`inCidrRange(ip,cidr)`](#incidrrangeipcidr--bool)     | `bool`      | Returns `true` or `false` if the provided IP address falls within the provided CIDR range. Returns `false` if the provided CIDR range is invalid.                                                |
-| [`inCidrRanges(ip,cidrs)`](#incidrrangesipcidrs--bool) | `bool`      | Returns `true` or `false` if the provided IP address falls within any of the provided CIDR ranges. Ignores any provided CIDR ranges that are invalid.                                            |
-| [`rand.double()`](#randdouble--double)                 | `double`    | Returns a random `double` between `0` and `1`.                                                                                                                                                   |
-| [`rand.int(min,max)`](#randintminmax--int)             | `int`       | Returns a random `int` between the provided `min` and `max` values. Only supports positive integers and `min` must be larger than the provided `max`. By default, `min` is `0` and `max` is `1`. |
-| [`url.escape(string)`](#urlescapestring--string)       | `string`    | Returns the string with percent encoding applied.                                                                                                                                                |
-| [`url.unescape(string)`](#urlunescapestring--string)   | `string`    | Decodes a percent-encoded string back to its original form.                                                                                                                                      |
+| Name                                                       | Return Type | Description                                                                                                                                                                                      |
+| ---------------------------------------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| [`b64.encode(string)`](#b64encodestring--string)           | `string`    | Encodes the passed string into a Base64 string.                                                                                                                                                  |
+| [`inCidrRange(ip,cidr)`](#incidrrangeipcidr--bool)         | `bool`      | Returns `true` or `false` if the provided IP address falls within the provided CIDR range. Returns `false` if the provided CIDR range is invalid.                                                |
+| [`inCidrRanges(ip,cidrs)`](#incidrrangesipcidrs--bool)     | `bool`      | Returns `true` or `false` if the provided IP address falls within any of the provided CIDR ranges. Ignores any provided CIDR ranges that are invalid.                                            |
+| [`json.encode(list \| map)`](#jsonencodelistmap--string)   | `string`    | Encodes the passed map or list into a JSON string.                                                                                                                                               |
+| [`queryString.encode(map)`](#querystringencodemap--string) | `string`    | Encodes the passed map into a query string.                                                                                                                                                      |
+| [`rand.double()`](#randdouble--double)                     | `double`    | Returns a random `double` between `0` and `1`.                                                                                                                                                   |
+| [`rand.int(min,max)`](#randintminmax--int)                 | `int`       | Returns a random `int` between the provided `min` and `max` values. Only supports positive integers and `min` must be larger than the provided `max`. By default, `min` is `0` and `max` is `1`. |
+| [`url.escape(string)`](#urlescapestring--string)           | `string`    | Returns the string with percent encoding applied.                                                                                                                                                |
+| [`url.unescape(string)`](#urlunescapestring--string)       | `string`    | Decodes a percent-encoded string back to its original form.                                                                                                                                      |
+
+### `b64.encode(string)` → `string`
+
+Encodes the passed string into a Base64 string.
+
+#### Example
+
+```go
+b64.encode('some:thing')  // c29tZTp0aGluZw==
+```
+
+#### Example (in expression)
+
+<ConfigExample
+	config={{
+		expressions: [
+			"'basic '+b64.encode('john:supersecretpass') == getReqHeader('Authorization')[0]",
+		],
+	}}
+/>
 
 ### `inCidrRange(ip,cidr)` → `bool`
 
@@ -56,6 +79,45 @@ inCidrRanges('192.168.1.100', ['192.168.1.0/24', '10.0.0.0/8']) // true
 		expressions: [
 			"inCidrRanges(conn.client_ip, ['66.249.66.1/24', '2001:4860::/32'])",
 		],
+	}}
+/>
+
+### `json.encode(list | map)` → `string`
+
+Encodes the passed string into a JSON string.
+
+#### Example
+
+```go
+json.encode({a:b})  // {"a":"b"}
+json.encode(["a","b","c"])  // ["a","b","c"]
+```
+
+#### Example (in expression)
+
+<ConfigExample
+	config={{
+		expressions: [
+			'json.encode(req.content_type.parameters) == \'{"charset":"UTF-8"}\'',
+		],
+	}}
+/>
+
+### `queryString.encode(map)` → `string`
+
+Encodes the passed map into a query string.
+
+#### Example
+
+```go
+queryString.encode({a:b,c:d})  // {a=b&c=d}
+```
+
+#### Example (in expression)
+
+<ConfigExample
+	config={{
+		expressions: ['queryString.encode({"q":"policy"}) == req.url.query'],
 	}}
 />
 
