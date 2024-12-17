@@ -4,11 +4,11 @@
 
 ```json
 {
-	"created_at": "2024-12-12T17:31:33Z",
+	"created_at": "2024-12-17T10:07:07Z",
 	"description": "Staging Environment Hosts",
-	"id": "sshca_2q7rwbdFg8ZtvDMAUbCzRz5e04X",
+	"id": "sshca_2qL7VnCxdARr5wCEmVuNMybnUyI",
 	"key_type": "ed25519",
-	"public_key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMC/coXFHVEOLjam8bDNHmEncxZvHlLBfM71yaEI1DIR",
-	"uri": "https://api.ngrok.com/ssh_certificate_authorities/sshca_2q7rwbdFg8ZtvDMAUbCzRz5e04X"
+	"public_key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJtBQzP/Rzy8H93VM/D4Wv92nSqChEdQDoZ/KlBqH71g",
+	"uri": "https://api.ngrok.com/ssh_certificate_authorities/sshca_2qL7VnCxdARr5wCEmVuNMybnUyI"
 }
 ```
