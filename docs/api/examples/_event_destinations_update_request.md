@@ -9,5 +9,5 @@ curl \
 -H "Content-Type: application/json" \
 -H "Ngrok-Version: 2" \
 -d '{"description":"kinesis dev stream 1 of 3","metadata":"{\"environment\":\"dev\", \"stream\":1}"}' \
-https://api.ngrok.com/event_destinations/ed_2q7rwXpsOQgT7Q8mCsBCcBRcqSO
+https://api.ngrok.com/event_destinations/ed_2qL7VnETw7IjPCk5aQqUEimIvrZ
 ```
