@@ -1,0 +1,456 @@
+import ConfigExample from "/src/components/ConfigExample.tsx";
+
+## IP Categories
+
+The following categories are available to use with the IP Intelligence `.categories` list.
+
+Here's an example of how to block Tor exit node IPs from accessing your endpoint.
+
+<ConfigExample
+	config={{
+		expressions: ["!('proxy.anonymous.tor' in conn.client_ip.categories)"],
+	}}
+/>
+
+## Blocklists
+
+| Name                                                                              | Description                                                                                                                                                                                                                                                                                                                                                                                           | Sources                                                                |
+| --------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| [`blocklist.blocklist_de`](#blocklistblocklist_de)                                | From [BlockList.de](https://www.blocklist.de/en/index.html): All IP addresses that have attacked one of our customers/servers in the last 48 hours.                                                                                                                                                                                                                                                   | [Source](https://lists.blocklist.de/lists/all.txt)                     |
+| [`blocklist.blocklist_de.ssh`](#blocklistblocklist_dessh)                         | From [BlockList.de](https://www.blocklist.de/en/index.html): All IP addresses which have been reported within the last 48 hours as having run attacks on the service SSH.                                                                                                                                                                                                                             | [Source](https://lists.blocklist.de/lists/ssh.txt)                     |
+| [`blocklist.blocklist_de.mail`](#blocklistblocklist_demail)                       | From [BlockList.de](https://www.blocklist.de/en/index.html): All IP addresses which have been reported within the last 48 hours as having run attacks on the service Mail, Postfix.                                                                                                                                                                                                                   | [Source](https://lists.blocklist.de/lists/mail.txt)                    |
+| [`blocklist.blocklist_de.apache`](#blocklistblocklist_deapache)                   | From [BlockList.de](https://www.blocklist.de/en/index.html): All IP addresses which have been reported within the last 48 hours as having run attacks on the service Apache, Apache-DDOS, RFI-Attacks.                                                                                                                                                                                                | [Source](https://lists.blocklist.de/lists/apache.txt)                  |
+| [`blocklist.blocklist_de.imap`](#blocklistblocklist_deimap)                       | From [BlockList.de](https://www.blocklist.de/en/index.html): All IP addresses which have been reported within the last 48 hours for attacks on the Service imap, sasl, pop3.                                                                                                                                                                                                                          | [Source](https://lists.blocklist.de/lists/imap.txt)                    |
+| [`blocklist.blocklist_de.ftp`](#blocklistblocklist_deftp)                         | From [BlockList.de](https://www.blocklist.de/en/index.html): All IP addresses which have been reported within the last 48 hours for attacks on the Service FTP.                                                                                                                                                                                                                                       | [Source](https://lists.blocklist.de/lists/ftp.txt)                     |
+| [`blocklist.blocklist_de.sip`](#blocklistblocklist_desip)                         | From [BlockList.de](https://www.blocklist.de/en/index.html): All IP addresses that tried to login in a SIP-, VOIP- or Asterisk-Server and are included in the IPs-List from http://www.infiltrated.net/ (Twitter).                                                                                                                                                                                    | [Source](https://lists.blocklist.de/lists/sip.txt)                     |
+| [`blocklist.blocklist_de.bots`](#blocklistblocklist_debots)                       | From [BlockList.de](https://www.blocklist.de/en/index.html): All IP addresses which have been reported within the last 48 hours as having run attacks attacks on the RFI-Attacks, REG-Bots, IRC-Bots or BadBots (BadBots = he has posted a Spam-Comment on a open Forum or Wiki).                                                                                                                     | [Source](https://lists.blocklist.de/lists/bots.txt)                    |
+| [`blocklist.blocklist_de.strongips`](#blocklistblocklist_destrongips)             | From [BlockList.de](https://www.blocklist.de/en/index.html): All IPs which are older then 2 month and have more then 5.000 attacks.                                                                                                                                                                                                                                                                   | [Source](https://lists.blocklist.de/lists/strongips.txt)               |
+| [`blocklist.blocklist_de.bruteforcelogin`](#blocklistblocklist_debruteforcelogin) | From [BlockList.de](https://www.blocklist.de/en/index.html): All IPs which attacks Joomlas, Wordpress and other Web-Logins with Brute-Force Logins.                                                                                                                                                                                                                                                   | [Source](https://lists.blocklist.de/lists/bruteforcelogin.txt)         |
+| [`blocklist.greensnow_co`](#blocklistgreensnow_co)                                | From [greensnow.co](https://greensnow.co/): GreenSnow is a team consisting of the best specialists in computer security, we harvest a large number of IPs from different computers located around the world. GreenSnow is comparable with Spamhaus for attacks of any kind except for spam. Our list is updated automatically and you can withdraw at any time your IP address if it has been listed. | [Source](https://blocklist.greensnow.co/greensnow.txt)                 |
+| [`blocklist.spamhaus`](#blocklistspamhaus)                                        | From [spamhaus.org](https://www.spamhaus.org/blocklists/do-not-route-or-peer/): Don't Route Or Peer (DROP) lists the worst of the worst IP traffic. It is an advisory “drop all traffic”, containing IP ranges which are so dangerous to internet users that Spamhaus provides access to anyone who wants to add this layer of protection, free of charge.                                            | [Source](https://www.spamhaus.org/drop/drop.txt)                       |
+| [`blocklist.stopforumspam`](#blockliststopforumspam)                              | From [stopforumspam.com](https://www.stopforumspam.com/downloads): The data provided here represents what we believe will only ever ben used to abuse. IP Addresses listed here will be returned in API results as "blacklisted". You would be very unlikely to see valid content from either the IP addresses listed.                                                                                | [Source](https://www.stopforumspam.com/downloads/toxic_ip_cidr.txt)    |
+| [`blocklist.firehol_org.level_1`](#blocklistfirehol_orglevel_1)                   | From [firehol.org](https://iplists.firehol.org/?ipset=firehol_level1): The objective is to create a blacklist that can be safe enough to be used on all systems, with a firewall, to block access entirely, from and to its listed IPs. The key prerequisite for this cause, is to have no false positives. All IPs listed should be bad and should be blocked, without exceptions.                   | [Source](https://iplists.firehol.org/files/firehol_level1.netset)      |
+| [`blocklist.firehol_org.level_2`](#blocklistfirehol_orglevel_2)                   | From [firehol.org](https://iplists.firehol.org/?ipset=firehol_level2): An ipset made from blocklists that track attacks, during about the last 48 hours.                                                                                                                                                                                                                                              | [Source](https://iplists.firehol.org/files/firehol_level2.netset)      |
+| [`blocklist.firehol_org.level_3`](#blocklistfirehol_orglevel_3)                   | From [firehol.org](https://iplists.firehol.org/?ipset=firehol_level3): An ipset made from blocklists that track attacks, spyware, viruses. It includes IPs than have been reported or detected in the last 30 days.                                                                                                                                                                                   | [Source](https://iplists.firehol.org/files/firehol_level3.netset)      |
+| [`blocklist.firehol_org.abusers_1d`](#blocklistfirehol_orgabusers_1d)             | From [firehol.org](https://iplists.firehol.org/?ipset=firehol_abusers_1d): An ipset made from blocklists that track abusers in the last 24 hours.                                                                                                                                                                                                                                                     | [Source](https://iplists.firehol.org/files/firehol_abusers_1d.netset)  |
+| [`blocklist.firehol_org.abusers_30d`](#blocklistfirehol_orgabusers_30d)           | From [firehol.org](https://iplists.firehol.org/?ipset=firehol_abusers_30d): An ipset made from blocklists that track abusers in the last 30 days.                                                                                                                                                                                                                                                     | [Source](https://iplists.firehol.org/files/firehol_abusers_30d.netset) |
+
+### `blocklist.blocklist_de`
+
+From [BlockList.de](https://www.blocklist.de/en/index.html): All IP addresses that have attacked one of our customers/servers in the last 48 hours.
+
+<ConfigExample
+	config={{
+		expressions: ["!('blocklist.blocklist_de' in conn.client_ip.categories)"],
+	}}
+/>
+
+### `blocklist.blocklist_de.ssh`
+
+From [BlockList.de](https://www.blocklist.de/en/index.html): All IP addresses which have been reported within the last 48 hours as having run attacks on the service SSH.
+
+<ConfigExample
+	config={{
+		expressions: [
+			"!('blocklist.blocklist_de.ssh' in conn.client_ip.categories)",
+		],
+	}}
+/>
+
+### `blocklist.blocklist_de.mail`
+
+From [BlockList.de](https://www.blocklist.de/en/index.html): All IP addresses which have been reported within the last 48 hours as having run attacks on the service Mail, Postfix.
+
+<ConfigExample
+	config={{
+		expressions: [
+			"!('blocklist.blocklist_de.mail' in conn.client_ip.categories)",
+		],
+	}}
+/>
+
+### `blocklist.blocklist_de.apache`
+
+From [BlockList.de](https://www.blocklist.de/en/index.html): All IP addresses which have been reported within the last 48 hours as having run attacks on the service Apache, Apache-DDOS, RFI-Attacks.
+
+<ConfigExample
+	config={{
+		expressions: [
+			"!('blocklist.blocklist_de.apache' in conn.client_ip.categories)",
+		],
+	}}
+/>
+
+### `blocklist.blocklist_de.imap`
+
+From [BlockList.de](https://www.blocklist.de/en/index.html): All IP addresses which have been reported within the last 48 hours for attacks on the Service imap, sasl, pop3.
+
+<ConfigExample
+	config={{
+		expressions: [
+			"!('blocklist.blocklist_de.imap' in conn.client_ip.categories)",
+		],
+	}}
+/>
+
+### `blocklist.blocklist_de.ftp`
+
+From [BlockList.de](https://www.blocklist.de/en/index.html): All IP addresses which have been reported within the last 48 hours for attacks on the Service FTP.
+
+<ConfigExample
+	config={{
+		expressions: [
+			"!('blocklist.blocklist_de.ftp' in conn.client_ip.categories)",
+		],
+	}}
+/>
+
+### `blocklist.blocklist_de.sip`
+
+From [BlockList.de](https://www.blocklist.de/en/index.html): All IP addresses that tried to login in a SIP-, VOIP- or Asterisk-Server and are included in the IPs-List from http://www.infiltrated.net/ (Twitter).
+
+<ConfigExample
+	config={{
+		expressions: [
+			"!('blocklist.blocklist_de.sip' in conn.client_ip.categories)",
+		],
+	}}
+/>
+
+### `blocklist.blocklist_de.bots`
+
+From [BlockList.de](https://www.blocklist.de/en/index.html): All IP addresses which have been reported within the last 48 hours as having run attacks attacks on the RFI-Attacks, REG-Bots, IRC-Bots or BadBots (BadBots = he has posted a Spam-Comment on a open Forum or Wiki).
+
+<ConfigExample
+	config={{
+		expressions: [
+			"!('blocklist.blocklist_de.bots' in conn.client_ip.categories)",
+		],
+	}}
+/>
+
+### `blocklist.blocklist_de.strongips`
+
+From [BlockList.de](https://www.blocklist.de/en/index.html): All IPs which are older then 2 month and have more then 5.000 attacks.
+
+<ConfigExample
+	config={{
+		expressions: [
+			"!('blocklist.blocklist_de.strongips' in conn.client_ip.categories)",
+		],
+	}}
+/>
+
+### `blocklist.blocklist_de.bruteforcelogin`
+
+From [BlockList.de](https://www.blocklist.de/en/index.html): All IPs which attacks Joomlas, Wordpress and other Web-Logins with Brute-Force Logins.
+
+<ConfigExample
+	config={{
+		expressions: [
+			"!('blocklist.blocklist_de.bruteforcelogin' in conn.client_ip.categories)",
+		],
+	}}
+/>
+
+### `blocklist.greensnow_co`
+
+From [greensnow.co](https://greensnow.co/): GreenSnow is a team consisting of the best specialists in computer security, we harvest a large number of IPs from different computers located around the world. GreenSnow is comparable with SpamHaus.org for attacks of any kind except for spam. Our list is updated automatically and you can withdraw at any time your IP address if it has been listed.
+
+<ConfigExample
+	config={{
+		expressions: ["!('blocklist.greensnow_co' in conn.client_ip.categories)"],
+	}}
+/>
+
+### `blocklist.spamhaus`
+
+From [spamhaus.org](https://www.spamhaus.org/blocklists/do-not-route-or-peer/): Don't Route Or Peer (DROP) lists the worst of the worst IP traffic. It is an advisory “drop all traffic”, containing IP ranges which are so dangerous to internet users that Spamhaus provides access to anyone who wants to add this layer of protection, free of charge.
+
+<ConfigExample
+	config={{
+		expressions: ["!('blocklist.spamhaus' in conn.client_ip.categories)"],
+	}}
+/>
+
+### `blocklist.stopforumspam`
+
+From [stopforumspam.com](https://www.stopforumspam.com/downloads): The data provided here represents what we believe will only ever ben used to abuse. IP Addresses listed here will be returned in API results as "blacklisted". You would be very unlikely to see valid content from the IP addresses listed.
+
+<ConfigExample
+	config={{
+		expressions: ["!('blocklist.stopforumspam' in conn.client_ip.categories)"],
+	}}
+/>
+
+### `blocklist.firehol_org.level_1`
+
+From [firehol.org](https://iplists.firehol.org/?ipset=firehol_level1): The objective is to create a blacklist that can be safe enough to be used on all systems, with a firewall, to block access entirely, from and to its listed IPs. The key prerequisite for this cause, is to have no false positives. All IPs listed should be bad and should be blocked, without exceptions.
+
+<ConfigExample
+	config={{
+		expressions: [
+			"!('blocklist.firehol_org.level_1' in conn.client_ip.categories)",
+		],
+	}}
+/>
+
+### `blocklist.firehol_org.level_2`
+
+From [firehol.org](https://iplists.firehol.org/?ipset=firehol_level2): An ipset made from blocklists that track attacks, during about the last 48 hours.
+
+<ConfigExample
+	config={{
+		expressions: [
+			"!('blocklist.firehol_org.level_2' in conn.client_ip.categories)",
+		],
+	}}
+/>
+
+### `blocklist.firehol_org.level_3`
+
+From [firehol.org](https://iplists.firehol.org/?ipset=firehol_level3): An ipset made from blocklists that track attacks, spyware, viruses. It includes IPs than have been reported or detected in the last 30 days.
+
+<ConfigExample
+	config={{
+		expressions: [
+			"!('blocklist.firehol_org.level_3' in conn.client_ip.categories)",
+		],
+	}}
+/>
+
+### `blocklist.firehol_org.abusers_1d`
+
+From [firehol.org](https://iplists.firehol.org/?ipset=firehol_abusers_1d): An ipset made from blocklists that track abusers in the last 24 hours.
+
+<ConfigExample
+	config={{
+		expressions: [
+			"!('blocklist.firehol_org.abusers_1d' in conn.client_ip.categories)",
+		],
+	}}
+/>
+
+### `blocklist.firehol_org.abusers_30d`
+
+From [firehol.org](https://iplists.firehol.org/?ipset=firehol_abusers_30d): An ipset made from blocklists that track abusers in the last 30 days.
+
+<ConfigExample
+	config={{
+		expressions: [
+			"!('blocklist.firehol_org.abusers_30d' in conn.client_ip.categories)",
+		],
+	}}
+/>
+
+## Proxies / VPNs
+
+| Name                                                        | Description                                                                                                                                                                                   | Sources                                                              |
+| ----------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| [`proxy.anonymous.tor`](#proxyanonymoustor)                 | These IPs are actively serving as Tor Exit nodes.                                                                                                                                             | [Source](https://www.dan.me.uk/torlist/?exit)                        |
+| [`proxy.anonymous.firehol_org`](#proxyanonymousfirehol_org) | From [firehol.org](https://iplists.firehol.org/?ipset=firehol_anonymous): An ipset that includes all the anonymizing IPs of the world. (includes: anonymous dm_tor firehol_proxies tor_exits) | [Source](https://iplists.firehol.org/files/firehol_anonymous.netset) |
+| [`proxy.open.firehol_org`](#proxyopenfirehol_org)           | From [firehol.org](https://iplists.firehol.org/?ipset=firehol_proxies): An ipset made from all sources that track open proxies. It includes IPs reported or detected in the last 30 days.     | [Source](https://iplists.firehol.org/files/firehol_proxies.netset)   |
+
+### `proxy.anonymous.tor`
+
+These IPs are actively serving as Tor Exit nodes.
+
+<ConfigExample
+	config={{
+		expressions: ["!('proxy.anonymous.tor' in conn.client_ip.categories)"],
+	}}
+/>
+
+### `proxy.anonymous.firehol_org`
+
+From [firehol.org](https://iplists.firehol.org/?ipset=firehol_anonymous): An ipset that includes all the anonymizing IPs of the world. (includes: anonymous dm_tor firehol_proxies tor_exits)
+
+<ConfigExample
+	config={{
+		expressions: [
+			"!('proxy.anonymous.firehol_org' in conn.client_ip.categories)",
+		],
+	}}
+/>
+
+### `proxy.open.firehol_org`
+
+From [firehol.org](https://iplists.firehol.org/?ipset=firehol_proxies): An ipset made from all sources that track open proxies. It includes IPs reported or detected in the last 30 days.
+
+<ConfigExample
+	config={{
+		expressions: ["!('proxy.open.firehol_org' in conn.client_ip.categories)"],
+	}}
+/>
+
+## Organizations
+
+| Name                                                | Description                                                                                                                                                                                                                                                                                       | Sources                                                                                  |
+| --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| [`com.cloudflare`](#comcloudflare)                  | IPs from Cloudflare                                                                                                                                                                                                                                                                               | [IPv4](https://www.cloudflare.com/ips-v4/#), [IPv6](https://www.cloudflare.com/ips-v6/#) |
+| [`com.aws`](#comaws)                                | IPs from AWS                                                                                                                                                                                                                                                                                      | [Source](https://ip-ranges.amazonaws.com/ip-ranges.json)                                 |
+| [`com.aws.sns`](#comawssns)                         | IPs from AWS SNS service                                                                                                                                                                                                                                                                          | [Source](https://ip-ranges.amazonaws.com/ip-ranges.json)                                 |
+| [`com.aws.us-east-1.sns`](#comawsus-east-1sns)      | IPs from AWS SNS service for the `us-east-1` region                                                                                                                                                                                                                                               | [Source](https://ip-ranges.amazonaws.com/ip-ranges.json)                                 |
+| [`com.aws.us-east-2.sns`](#comawsus-east-2sns)      | IPs from AWS SNS service for the `us-east-2` region                                                                                                                                                                                                                                               | [Source](https://ip-ranges.amazonaws.com/ip-ranges.json)                                 |
+| [`com.aws.us-west-1.sns`](#comawsus-west-1sns)      | IPs from AWS SNS service for the `us-west-1` region                                                                                                                                                                                                                                               | [Source](https://ip-ranges.amazonaws.com/ip-ranges.json)                                 |
+| [`com.aws.us-west-2.sns`](#comawsus-west-2sns)      | IPs from AWS SNS service for the `us-west-2` region                                                                                                                                                                                                                                               | [Source](https://ip-ranges.amazonaws.com/ip-ranges.json)                                 |
+| [`com.stripe.api`](#comstripeapi)                   | The full list of IP addresses that api.stripe.com may resolve to                                                                                                                                                                                                                                  | [Source](https://stripe.com/files/ips/ips_api.txt)                                       |
+| [`com.stripe.armada_gator`](#comstripearmada_gator) | The full list of IP addresses that files.stripe.com, armada.stripe.com, and gator.stripe.com may resolve to                                                                                                                                                                                       | [Source](https://stripe.com/files/ips/ips_armada_gator.txt)                              |
+| [`com.stripe.webhooks`](#comstripewebhooks)         | The full list of IP addresses that webhook notifications may come from                                                                                                                                                                                                                            | [Source](https://stripe.com/files/ips/ips_webhooks.txt)                                  |
+| [`com.censys.scanners`](#comcensysscanners)         | The IPs that Censys bots use to continually scans the entire public IPv4 address space across all possible IP and port combinations using automatic protocol detection.                                                                                                                           | [Source](https://support.censys.io/hc/en-us/article_attachments/25644686434196)          |
+| [`com.vultr`](#comvultr)                            | IPs for Vultr                                                                                                                                                                                                                                                                                     | [Source](https://geofeed.constant.com/)                                                  |
+| [`org.telegram.core`](#orgtelegramcore)             | IPs for Telegram Bots                                                                                                                                                                                                                                                                             | [Source](https://core.telegram.org/resources/cidr.txt)                                   |
+| [`org.firehol.level_4`](#orgfirehollevel_4)         | From [firehol.org](https://iplists.firehol.org/?ipset=firehol_level4): An ipset made from blocklists that track attacks, but may include a large number of false positives.                                                                                                                       | [Source](https://iplists.firehol.org/files/firehol_level4.netset)                        |
+| [`org.firehol.webserver`](#orgfireholwebserver)     | From [firehol.org](https://iplists.firehol.org/?ipset=firehol_webserver): A web server IP blacklist made from blocklists that track IPs that should never be used by your web users. (This list includes IPs that are servers hosting malware, bots, etc or users having a long criminal history. | [Source](https://iplists.firehol.org/files/firehol_webserver.netset)                     |
+
+### `com.cloudflare`
+
+IPs from Cloudflare.
+
+<ConfigExample
+	config={{
+		expressions: ["'com.cloudflare' in conn.client_ip.categories"],
+	}}
+/>
+
+### `com.aws`
+
+IPs from AWS.
+
+<ConfigExample
+	config={{
+		expressions: ["'com.aws' in conn.client_ip.categories"],
+	}}
+/>
+
+### `com.aws.sns`
+
+IPs from AWS SNS service.
+
+<ConfigExample
+	config={{
+		expressions: ["'com.aws.sns' in conn.client_ip.categories"],
+	}}
+/>
+
+### `com.aws.us-east-1.sns`
+
+IPs from AWS SNS service for the `us-east-1` region.
+
+<ConfigExample
+	config={{
+		expressions: ["'com.aws.us-east-1.sns' in conn.client_ip.categories"],
+	}}
+/>
+
+### `com.aws.us-east-2.sns`
+
+IPs from AWS SNS service for the `us-east-2` region.
+
+<ConfigExample
+	config={{
+		expressions: ["'com.aws.us-east-2.sns' in conn.client_ip.categories"],
+	}}
+/>
+
+### `com.aws.us-west-1.sns`
+
+IPs from AWS SNS service for the `us-west-1` region.
+
+<ConfigExample
+	config={{
+		expressions: ["'com.aws.us-west-1.sns' in conn.client_ip.categories"],
+	}}
+/>
+
+### `com.aws.us-west-2.sns`
+
+IPs from AWS SNS service for the `us-west-2` region.
+
+<ConfigExample
+	config={{
+		expressions: ["'com.aws.us-west-2.sns' in conn.client_ip.categories"],
+	}}
+/>
+
+### `com.stripe.api`
+
+The full list of IP addresses that api.stripe.com may resolve to.
+
+<ConfigExample
+	config={{
+		expressions: ["'com.stripe.api' in conn.client_ip.categories"],
+	}}
+/>
+
+### `com.stripe.armada_gator`
+
+The full list of IP addresses that files.stripe.com, armada.stripe.com, and gator.stripe.com may resolve to.
+
+<ConfigExample
+	config={{
+		expressions: ["'com.stripe.armada_gator' in conn.client_ip.categories"],
+	}}
+/>
+
+### `com.stripe.webhooks`
+
+The full list of IP addresses that webhook notifications may come from.
+
+<ConfigExample
+	config={{
+		expressions: ["'com.stripe.webhooks' in conn.client_ip.categories"],
+	}}
+/>
+
+### `com.censys.scanners`
+
+The IPs that Censys bots use to continually scans the entire public IPv4 address space across all possible IP and port combinations using automatic protocol detection.
+
+<ConfigExample
+	config={{
+		expressions: ["!('com.censys.scanners' in conn.client_ip.categories)"],
+	}}
+/>
+
+### `com.vultr`
+
+IPs from Vultr.com
+
+<ConfigExample
+	config={{
+		expressions: ["'com.vultr' in conn.client_ip.categories"],
+	}}
+/>
+
+### `org.telegram.core`
+
+IPs for Telegram.org bots
+
+<ConfigExample
+	config={{
+		expressions: ["'org.telegram.core' in conn.client_ip.categories"],
+	}}
+/>
+
+### `org.firehol.level_4`
+
+From [firehol.org](https://iplists.firehol.org/?ipset=firehol_level4): An ipset made from blocklists that track attacks, but may include a **large number of false positives**.
+
+<ConfigExample
+	config={{
+		expressions: ["!('org.firehol.level_4' in conn.client_ip.categories)"],
+	}}
+/>
+
+### `org.firehol.webserver`
+
+From [firehol.org](https://iplists.firehol.org/?ipset=firehol_webserver): A web server IP blacklist made from blocklists that track IPs that should never be used by your web users. (This list includes IPs that are servers hosting malware, bots, etc or users having a long criminal history.
+
+<ConfigExample
+	config={{
+		expressions: [
+			"!('blocklist.firehol_org.webserver' in conn.client_ip.categories)",
+		],
+	}}
+/>

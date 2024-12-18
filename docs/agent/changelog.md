@@ -69,6 +69,10 @@ title: Changelog
   - v2 is still supported, but does not support the new `endpoints:` , or `agent:` fields.
 - Added support for [endpoint fields](/docs/api/resources/endpoints/#list-endpoints) in ngrok's `api`.
 
+### ngrok Agent 3.14.1 - \[2024-08-22\]
+
+- Resolved an issue with mTLS detection.
+
 ### ngrok Agent 3.14.0 - \[2024-08-01\]
 
 - Added support for `traffic_policy` field in agent config for Traffic Policy configuration.
