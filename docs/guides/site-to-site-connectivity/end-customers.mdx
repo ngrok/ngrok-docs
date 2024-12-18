@@ -167,19 +167,23 @@ for each traffic event.
 
 ### Can I set up deep packet inspection or observe what data transmits through ngrok?
 
-Yes.
+Yes. Your vendor can configure your site-to-site connectivity architecture in a
+few ways to enable this functionality. They can:
 
-Work with your vendor to configure the ngrok agent to trust a [specific
-root certificate](/docs/agent/config/v3/#connect_cas) you own on the host’s OS or a specific PEM file on disk instead
-of the trusted certificate root for the ngrok network. You can then use a proxy
-for deep packet inspection.
+1. Configure your ngrok agent to trust a [specific
+root certificate](/docs/agent/config/v3/#connect_cas) you own on the host’s OS
+or a specific PEM file on disk instead of the trusted certificate root for the
+ngrok network. You can then use a proxy for deep packet inspection.
+2. Require the outbound connection to `connect.ngrok-agent.com:443` go through a
+proxy capable of inspection. 
+3. Set up a bypass rule for `connect.ngrok-agent.com:443` (or a custom agent ingress
+address) to not perform TLS inspection.
+4. Help you set up software between the ngrok agent and your upstream service,
+or the ngrok agent and the ngrok network, to see what’s transmitted through
+ngrok.
 
-Alternatively, your vendor set up a bypass rule for `connect.ngrok-agent.com`
-(or a custom agent ingress address) to not perform TLS inspection.
-
-You can also set up software between the ngrok agent and your upstream service, or the ngrok agent and the ngrok network, to see what’s transmitted through ngrok.
-
-Work with your vendor to ensure these inspection and observability strategies work within your site-to-site architecture.
+In any case, your vendor is responsible for configuring these inspection
+strategies for your site-to-site architecture.
 
 ### How can I prevent ngrok from being used for any purpose other than in site-to-site connectivity with my vendor? {#how-can-i-prevent-ngrok-from-being-used-for-any-purpose-other-than-in-site-to-site-connectivity-with-my-vendor?}
 
@@ -201,13 +205,31 @@ You should also block the ngrok-managed public domains:
 - ngrok.pizza
 - ngrok.pro
 
-### How can we mitigate the risk of abuse?
+Work with your vendor to design an architecture that [prevents unauthorized
+use](#how-can-i-prevent-ngrok-from-being-used-for-any-purpose-other-than-in-site-to-site-connectivity-with-my-vendor?)
+and uses the appropriate [encryption model](#ngrok-traffic-encryption) between
+your services.
 
-ngrok has a multi-pronged strategy for combating malicious use of our network, including automated systems that flag suspicious activity. We also disincentivize abuse through product restrictions on free and unverified ngrok accounts.
+### How does ngrok mitigate abuse of its platform?
 
-Work with your vendor to design an architecture that [prevents unauthorized use](#how-can-i-prevent-ngrok-from-being-used-for-any-purpose-other-than-in-site-to-site-connectivity-with-my-vendor?) and uses the appropriate [encryption model](#ngrok-traffic-encryption) between your services.
+ngrok has a multi-pronged strategy for combating malicious use of our network,
+including automated systems that flag suspicious activity in combination with
+human moderation. 
 
-See our [abuse page](https://ngrok.com/abuse) for details.
+We work with authorized third-party security vendors, who report suspected
+abuse to [abuse@ngrok.com](mailto:abuse@ngrok.com) or our [abuse
+API](/docs/api/resources/abuse-reports/). Our abuse response team investigates
+these reports, collaborates with these third parties, and proactively shuts down
+attacks.
+
+We employ various passive abuse prevention techniques, such as restricting
+product usage for free and unverified ngrok accounts. We also use our [IP
+Intelligence](/docs/traffic-policy/variables/ip-intel/) system to prevent
+signups from IPs on trusted blocklists, from specific regions, and those using
+anonymous proxies. Finally, our global firewalls protect against unauthorized
+access and DDoS attacks.
+
+See our [abuse page](https://ngrok.com/abuse) for more details.
 
 ## Privacy and compliance
 
