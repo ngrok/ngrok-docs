@@ -89,9 +89,10 @@ Next, you'll configure and deploy the [ngrok Kubernetes Operator](https://github
 1. Install the ngrok Kubernetes Operator with Helm.
 
    ```bash
-   helm install ngrok-ingress-controller ngrok/kubernetes-ingress-controller \
-     --namespace ngrok-ingress-controller \
+   helm install ngrok-operator ngrok/ngrok-operator \
+     --namespace ngrok-operator \
      --create-namespace \
+     --set clusterName=my-k8s-cluster \
      --set credentials.apiKey=$NGROK_API_KEY \
      --set credentials.authtoken=$NGROK_AUTHTOKEN
    ```
@@ -99,10 +100,11 @@ Next, you'll configure and deploy the [ngrok Kubernetes Operator](https://github
 1. Verify the health of your new Operator pod.
 
    ```bash
-   kubectl get pods -l 'app.kubernetes.io/name=kubernetes-ingress-controller'
+   kubectl get pods -l 'app.kubernetes.io/name=ngrok-operator'
 
-   NAME                                                              READY   STATUS    RESTARTS   AGE
-   ngrok-ingress-controller-kubernetes-ingress-controller-man2fg5p   1/1     Running   0          2m23s
+   NAME                                                 READY   STATUS    RESTARTS   AGE
+   ngrok-operator-agent-74b65b9-cg4zs                   1/1     Running   1          4d21h
+   ngrok-operator-manager-6fd57968f4-kcfxj              1/1     Running   2          4d21h
    ```
 
 1. Create a new `boutique-ingress.yml` file, which defines how the ngrok Kubernetes Operator should route traffic on your `NGROK_DOMAIN` to your Online Boutique app.
@@ -156,7 +158,7 @@ Next, you'll configure and deploy the [ngrok Kubernetes Operator](https://github
 
 Your Kubernetes-based app is now publicly accessible through the ngrok Cloud Edge—to restrict access to only authorized users with proper Entra ID credentials, you first need to enable SAML on your Edge.
 
-1. Navigate to the [**Edges** section](https://dashboard.ngrok.com/cloud-edge/edges) of the ngrok dashboard and click on the Edge created by the ngrok Kubernetes Operator. The domain name should match your `NGROK_DOMAIN`, and you should see **Created by kubernetes-ingress-controller** in the edge's description.
+1. Navigate to the [**Edges** section](https://dashboard.ngrok.com/cloud-edge/edges) of the ngrok dashboard and click on the Edge created by the ngrok Kubernetes Operator. The domain name should match your `NGROK_DOMAIN`, and you should see **Created by ngrok-operator** in the edge's description.
 
    ![Finding your edge in the ngrok dashboard](img/k8s_edge-dashboard.png)
 
