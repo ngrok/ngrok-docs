@@ -9962,6 +9962,14 @@
     </tr>
     <tr>
       <td>
+        <a id="ERR_NGROK_9040" href="/docs/errors/err_ngrok_9040">ERR_NGROK_9040</a>
+      </td>
+      <td class="pre-wrapped">
+        We do not allow agents to connect to ngrok from your IP address. If you believe this to be in error, please contact support: support@ngrok.com
+      </td>
+    </tr>
+    <tr>
+      <td>
         <a id="ERR_NGROK_10000" href="/docs/errors/err_ngrok_10000">ERR_NGROK_10000</a>
       </td>
       <td class="pre-wrapped">
