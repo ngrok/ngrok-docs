@@ -18,6 +18,7 @@ Here you will find notes on using ngrok with particular technologies. Think we'r
 | [Laravel](/using-ngrok-with/laravel)                               | ngrok is built into Laravel Valet                                                             |
 | [Minecraft](/using-ngrok-with/minecraft)                           | ngrok can help you and your friends connect for online gaming                                 |
 | [MongoDB](/using-ngrok-with/mongodb)                               | Connect to local MongoDB servers with ngrok                                                   |
+| [MQTT Explorer](/integrations/mqtt-explorer/mqtt)                  | Connect to MQTT Explorer with ngrok                                                           |
 | [MySQL](/using-ngrok-with/mysql)                                   | Connect to local MySQL database with ngrok                                                    |
 | [NGINX](/using-ngrok-with/nginx)                                   | Learn how to configure ngrok when using it with NGINX                                         |
 | [Node (npm, node.js)](/using-ngrok-with/node-js)                   | Work with the ngrok agent from your Node application                                          |
