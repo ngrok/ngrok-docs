@@ -2,9 +2,6 @@
 description: Deploy ngrok's Kubernetes Operator onto your cluster for unified ingress and advanced traffic shaping with K8s-native interfaces.
 ---
 
-import TabItem from "@theme/TabItem";
-import Tabs from "@theme/Tabs";
-
 # Deliver and secure ingress for APIs in Kubernetes
 
 You currently have a K8s cluster with an API (micro)service and want to deliver it
@@ -12,89 +9,20 @@ to production with additional features and protection, like rate limiting,
 authentication, and DDoS protection.
 
 In this guide, you'll learn how to implement ngrok as an API gateway, using the
-ngrok Kubernetes Operator, in these steps:
+ngrok Kubernetes Operator with the [Kubernetes Gateway API](https://ngrok.com/docs/k8s/getting-started-gwapi/).
 
-1. [Apply the ngrok Kubernetes Operator to your cluster](#apply-kubernetes-operator)
-2. [Configure your cluster to use ngrok as an API gateway](#configure-cluster-api-gateway)
-3. [Set up Traffic Policy to shape traffic into/out of your API service](#set-up-traffic-policy)
+## Prerequisites
 
-## What you'll need
+- ngrok account - [Sign up](https://dashboard.ngrok.com/signup) for for free if you don't already have one.
+- API key - [Create an ngrok API key](https://dashboard.ngrok.com/api-keys/new) using the ngrok dashboard.
+- Authtoken - [Create an authtoken](https://dashboard.ngrok.com/authtokens) using the ngrok dashboard.
+- Reserved domain - [Reserve a domain](https://dashboard.ngrok.com/domains) in the ngrok dashboard or using the [ngrok API](/docs/api/resources/reserved-domains/#create-reserved-domain).
+- Kubernetes cluster and tools - You'll need access to a Kubernetes cluster, and you'll need `kubectl` and `helm` installed locally.
 
-<div className="ngrok--cards ngrok--cards-row">
-	<div className="ngrok--card ngrok--card-sm">
-		<div className="ngrok--card-heading jc-space-between">
-			<h3 className="fw-600">ngrok account</h3>
-		</div>
-		<p>
-			Any tier will do&mdash;
-			<a href="https://dashboard.ngrok.com/signup">register now</a>.
-		</p>
-	</div>
-	<div className="ngrok--card ngrok--card-sm">
-		<div className="ngrok--card-heading jc-space-between">
-			<h3 className="fw-600">A reserved domain</h3>
-		</div>
-		<p>
-			Grab yours in the{" "}
-			<a href="https://dashboard.ngrok.com/domains">ngrok dashboard</a>.
-		</p>
-	</div>
-</div>
-<div className="ngrok--cards ngrok--cards-row">
-	<div className="ngrok--card ngrok--card-sm">
-		<div className="ngrok--card-heading jc-space-between">
-			<h3 className="fw-600">A Kubernetes cluster</h3>
-		</div>
-		<!-- prettier-ignore -->
-		<p>
-			... and optionally, a functioning API service. If you don't yet have one,
-			you can install our <a href="https://github.com/ngrok-samples/ngrok-api-service">demo service</a>.
-		</p>
-	</div>
-	<div className="ngrok--card ngrok--card-sm">
-		<div className="ngrok--card-heading jc-space-between">
-			<h3 className="fw-600">
-				<code>kubectl</code> and Helm
-			</h3>
-		</div>
-		<p>Both installed locally on your workstation.</p>
-	</div>
-</div>
-
-## Why use the K8s Gateway API for your API gateway?
-
-Kubernetes has two APIs for handling ingress from external
-traffic into your cluster's internal network: the original [Ingress
-Controller](https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/)
-or the [Gateway
-API](https://kubernetes.io/docs/concepts/services-networking/gateway/).
-
-The [ngrok Kubernetes Operator](https://github.com/ngrok/ngrok-operator)
-supports both mechanisms. While we encourage you to explore both, we recommend
-the Gateway API based on the following:
-
-- The [Ingress
-  API](https://kubernetes.io/docs/concepts/services-networking/ingress/), which
-  Ingress Controllers utilize, is frozen in new versions of K8s and no longer
-  receives updates.
-- While the Ingress Controller is designed purely for ingress, the Gateway API is
-  also designed for dynamic infrastructure provisioning and advanced traffic routing.
-- The Gateway API is role-oriented, allowing DevOps/platform/infrastructure
-  engineering teams to control clusters, policies, and permissions centrally,
-  while still allowing API developers to self-service endpoints to their services
-  with route objects.
-- The Gateway API provides a common interface to K8s networking, removing
-  reliance on vendor-specific configurations.
-- Many developers can integrate their APIs or apps onto a single `GatewayClass`
-  or `Gateway`, using `HTTPRoute`s, without affecting others.
-
-For the scope of this guide, and based on this recommendation, we'll focus on
-Gateway API.
-
-## **Step 0**. Deploy the example ngrok API service
+## Deploy the example API
 
 If you're building a proof of concept with ngrok as the API gateway for your
-APIs in Kubernetes, you can use our [example ngrok API
+APIs in Kubernetes, you can use our [example API
 service](https://github.com/ngrok-samples/ngrok-api-service). This service
 responds to all routes with information about the connection&mdash;think of it
 as the `pong` to your `curl`.
@@ -114,8 +42,11 @@ already exist.
 kubectl apply -f https://raw.githubusercontent.com/ngrok-samples/ngrok-api-service/refs/heads/main/kubernetes/deployment.yaml
 ```
 
-## **Step 1**. Apply the ngrok Kubernetes Operator {#apply-kubernetes-operator}
+## Bring your API online
+Now that you've deployed the example API service, you'll use the ngrok Kubernetes Operator to apply some initial ingress
+rules to bring your API online.
 
+### Install the Kubernetes Operator
 Add the [ngrok Kubernetes Operator](https://github.com/ngrok/ngrok-operator)
 repo to Helm.
 
@@ -155,8 +86,7 @@ helm install ngrok-operator ngrok/ngrok-operator \
   --set credentials.authtoken=$NGROK_AUTHTOKEN \
   --set useExperimentalGatewayApi=true
 ```
-
-## **Step 2**. Configure your cluster to use ngrok as an API gateway {#configure-cluster-api-gateway}
+### Create the API gateway manifest
 
 For ngrok to operate as your API gateway, using the native Gateway API, you need
 to configure the following:
@@ -168,14 +98,12 @@ to configure the following:
 - At least one `HTTPRoute` in the same namespace as your API service (`prod` in
   our example) that matches specific paths to its `name` and `port`.
 
-### Create the API gateway configuration
-
 Create a new YAML file named `ngrok-api-gateway.yaml` and paste in the following
 content.
 
 First, replace `{YOUR_NGROK_DOMAIN}` with the domain you reserved.
 
-If you're using the example API service from **Step 0**, substitute
+If you're using the example API service, substitute
 `{YOUR_SERVICE_NAME}` with `ngrok-api-service` and `{SERVICE-PORT}` with `80`.
 
 If you're deploying your own API service, change those variables accordingly, and
@@ -248,6 +176,7 @@ Write the manifest to disk and apply to your cluster.
 kubectl apply -f ngrok-api-gateway.yaml
 ```
 
+### Access your API
 With the ngrok Kubernetes Operator deployed and configured as an API gateway,
 your API service is now publicly available at `{YOUR_NGROK_DOMAIN}`. You can now
 test your API gateway and service.
@@ -262,7 +191,7 @@ You'll see a response like the following:
 {"message":"Pong from ngrok!","host":"{YOUR_NGROK_DOMAIN}","client_ip":"{YOUR_IP_ADDRESS}","method":"GET","url":"/","time":"2024-10-16T13:51:37.836Z","status":200}
 ```
 
-## **Step 3**. Set up Traffic Policy to shape traffic into/out of your API service {#set-up-traffic-policy}
+## Manage APIs with Traffic Policy rules
 
 ngrok's [Traffic Policy](/docs/http/traffic-policy/index.mdx) module allows you
 to conditionally act upon traffic as it arrives and departs your API gateway. In
@@ -278,7 +207,9 @@ and outgoing traffic.
 Rate limiting&mdash;one of the most in-demand API gateway features&mdash;
 is both quick to implement and highly flexible based on your use case.
 
-### Define a rate limiting rule
+### Route by headers
+
+### Enable rate limiting
 
 Create a new YAML file named `ngrok-rate-limit.yaml` with the following content:
 
@@ -322,7 +253,7 @@ of how to combine variables, expressions, and actions to create rules that
 beneficially shape the traffic on your API gateway and lessen the operational
 burden on your API service.
 
-### Apply the Traffic Policy rule to your cluster
+#### Apply the Traffic Policy rule to your cluster
 
 You must instantiate the `NgrokTrafficPolicy` CRD in your cluster before
 you can reference it in your API gateway configuration.
@@ -331,7 +262,7 @@ you can reference it in your API gateway configuration.
 kubectl apply -f ngrok-rate-limit.yaml
 ```
 
-### Update your API gateway configuration to include the Traffic Policy rule
+#### Update your API gateway configuration to include the Traffic Policy rule
 
 With the CRD applied, you need to update your existing configuration
 `ngrok-api-gateway.yaml` with a
@@ -380,7 +311,7 @@ Re-apply your manifest to update your API gateway with the new Traffic Policy ru
 kubectl apply -f ngrok-api-gateway.yaml
 ```
 
-### Test the rate limiting rule
+#### Test the rate limiting rule
 
 Finally, you can validate that your new rate limiting rule was deployed
 successfully at the ngrok network by creating a large number of requests in
