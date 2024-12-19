@@ -4,20 +4,20 @@
 
 ```json
 {
-	"created_at": "2024-12-17T10:07:06Z",
+	"created_at": "2024-12-19T20:27:11Z",
 	"enforced": false,
-	"id": "ipx_2qL7VdRrBN4dtqjzYgcO55wPdaA",
+	"id": "ipx_2qRzAQ9oLqAxf0hgSpGFaHtXlHT",
 	"ip_policies": [
 		{
-			"id": "ipp_2qL7VejkTnSQaJolWVkouJIGdZP",
-			"uri": "https://api.ngrok.com/ip_policies/ipp_2qL7VejkTnSQaJolWVkouJIGdZP"
+			"id": "ipp_2qRzAQ8YwDlrMNJnHwKjihFiNny",
+			"uri": "https://api.ngrok.com/ip_policies/ipp_2qRzAQ8YwDlrMNJnHwKjihFiNny"
 		},
 		{
-			"id": "ipp_2qL7VhIYfgspyvwqqAfBBnnJvn1",
-			"uri": "https://api.ngrok.com/ip_policies/ipp_2qL7VhIYfgspyvwqqAfBBnnJvn1"
+			"id": "ipp_2qRzASnqUVprnpSINoZFFWnfu7x",
+			"uri": "https://api.ngrok.com/ip_policies/ipp_2qRzASnqUVprnpSINoZFFWnfu7x"
 		}
 	],
 	"type": "dashboard",
-	"uri": "https://api.ngrok.com/ip_restrictions/ipx_2qL7VdRrBN4dtqjzYgcO55wPdaA"
+	"uri": "https://api.ngrok.com/ip_restrictions/ipx_2qRzAQ9oLqAxf0hgSpGFaHtXlHT"
 }
 ```

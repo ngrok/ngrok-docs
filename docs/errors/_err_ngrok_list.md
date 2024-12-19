@@ -3312,6 +3312,14 @@
     </tr>
     <tr>
       <td>
+        <a id="ERR_NGROK_1232" href="/docs/errors/err_ngrok_1232">ERR_NGROK_1232</a>
+      </td>
+      <td class="pre-wrapped">
+        We do not allow sign ups from anonymous proxies such as Tor.
+      </td>
+    </tr>
+    <tr>
+      <td>
         <a id="ERR_NGROK_1400" href="/docs/errors/err_ngrok_1400">ERR_NGROK_1400</a>
       </td>
       <td class="pre-wrapped">
@@ -5086,7 +5094,7 @@
         <a id="ERR_NGROK_2229" href="/docs/errors/err_ngrok_2229">ERR_NGROK_2229</a>
       </td>
       <td class="pre-wrapped">
-        Failed to validate Traffic Policy for unknown protocol <code>&lt;PROTO&gt;</code>.
+        Failed to validate Traffic Policy for unknown protocol <code>&lt;PROTO&gt;</code>.'
       </td>
     </tr>
     <tr>
@@ -5144,7 +5152,8 @@
         <a id="ERR_NGROK_2236" href="/docs/errors/err_ngrok_2236">ERR_NGROK_2236</a>
       </td>
       <td class="pre-wrapped">
-        Failed to parse the supplied traffic policy; please verify it is not malformed.
+        The traffic policy was not able to be parsed:
+        <code>&lt;ERROR&gt;</code>
       </td>
     </tr>
     <tr>
@@ -6188,6 +6197,14 @@
       </td>
       <td class="pre-wrapped">
         The email address <code>&lt;EMAIL&gt;</code> already exists under a similar alias. Please use that email address to login.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_4118" href="/docs/errors/err_ngrok_4118">ERR_NGROK_4118</a>
+      </td>
+      <td class="pre-wrapped">
+        Sign ups are disallowed for the email provided "<code>&lt;EMAIL&gt;</code>". Please sign up with a different email address.
       </td>
     </tr>
     <tr>
@@ -10794,14 +10811,6 @@
     </tr>
     <tr>
       <td>
-        <a id="ERR_NGROK_18007" href="/docs/errors/err_ngrok_18007">ERR_NGROK_18007</a>
-      </td>
-      <td class="pre-wrapped">
-        This provided cloud endpoint configuration is invalid: binding.
-      </td>
-    </tr>
-    <tr>
-      <td>
         <a id="ERR_NGROK_18008" href="/docs/errors/err_ngrok_18008">ERR_NGROK_18008</a>
       </td>
       <td class="pre-wrapped">
@@ -10826,14 +10835,6 @@
     </tr>
     <tr>
       <td>
-        <a id="ERR_NGROK_18011" href="/docs/errors/err_ngrok_18011">ERR_NGROK_18011</a>
-      </td>
-      <td class="pre-wrapped">
-        Traffic policy configuration is required: <code>&lt;MESSAGE&gt;</code>
-      </td>
-    </tr>
-    <tr>
-      <td>
         <a id="ERR_NGROK_18012" href="/docs/errors/err_ngrok_18012">ERR_NGROK_18012</a>
       </td>
       <td class="pre-wrapped">
@@ -10853,7 +10854,16 @@
         <a id="ERR_NGROK_18014" href="/docs/errors/err_ngrok_18014">ERR_NGROK_18014</a>
       </td>
       <td class="pre-wrapped">
-        The provided cloud endpoint configuration is invalid. The <code>&lt;FIELD&gt;</code> field is not properly formed. Reason: <code>&lt;ERROR&gt;</code>.
+        The provided cloud endpoint has invalid value for field `<code>&lt;FIELD&gt;</code>`. Reason:
+        <code>&lt;ERROR&gt;</code>.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_18015" href="/docs/errors/err_ngrok_18015">ERR_NGROK_18015</a>
+      </td>
+      <td class="pre-wrapped">
+        The provided cloud endpoint is missing the required field `<code>&lt;FIELD&gt;</code>.`
       </td>
     </tr>
     <tr>

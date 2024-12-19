@@ -6,15 +6,15 @@
 {
 	"agent_version": "3.1000.0-development",
 	"credential": {
-		"id": "cr_2qL7U9clYCdVeluYfybbLiubnoT",
-		"uri": "https://api.ngrok.com/credentials/cr_2qL7U9clYCdVeluYfybbLiubnoT"
+		"id": "cr_2qRz8xyyqKDy0p2HkgE6l0SgPyI",
+		"uri": "https://api.ngrok.com/credentials/cr_2qRz8xyyqKDy0p2HkgE6l0SgPyI"
 	},
-	"id": "ts_2qL7Uaibr5hcWsG2wjDLmfutlH4",
+	"id": "ts_2qRz9FkipHMLuIqztT14wmVf7IL",
 	"ip": "10.110.2.2",
 	"os": "linux",
 	"region": "us",
-	"started_at": "2024-12-17T10:06:57Z",
+	"started_at": "2024-12-19T20:27:02Z",
 	"transport": "ngrok/2",
-	"uri": "https://api.ngrok.com/tunnel_sessions/ts_2qL7Uaibr5hcWsG2wjDLmfutlH4"
+	"uri": "https://api.ngrok.com/tunnel_sessions/ts_2qRz9FkipHMLuIqztT14wmVf7IL"
 }
 ```
