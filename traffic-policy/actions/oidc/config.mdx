@@ -16,55 +16,30 @@ reference for this action.
 ### Configuration Fields
 
 <Config>
+	<ConfigItem title="auth_id" type="string" required={false}>
+		<p>Unique authentication identifier for this provider.</p>
+	</ConfigItem>
 	<ConfigItem title="provider" type="string" required={true}>
 		<p>
 			The name of the _OAuth_ identity provider to be used for authentication.
 		</p>
 	</ConfigItem>
-	<ConfigItem title="auth_id" type="string" required={false}>
-		<p>
-			Unique authentication identifier for this provider. This value will be
-			used for the cookie, redirect, authentication and logout purposes.
-		</p>
-		<p>
-			To login a user you must use `/ngrok/login?auth_id={auth_id}`. If you are
-			using path based auth you must include the path to be redirected back to:
-			`?redirect_path=/foo`
-		</p>
-		<p>To log a user out you must use `/ngrok/logout?auth_id={auth_id}`</p>
-		<p>
-			You additionally can provide a path to redirect the user to on logout:
-			`?redirect_path=/`
-		</p>
-	</ConfigItem>
 	<ConfigItem title="client_id" type="string" required={false}>
 		<p>Your OAuth app's client ID.</p>
-		<p>Leave this empty if you want to use ngrok’s managed application.</p>
 	</ConfigItem>
 	<ConfigItem title="client_secret" type="string" required={false}>
 		<p>Your OAuth app's client secret.</p>
-		<p>Leave this empty if you want to use a managed application.</p>
 	</ConfigItem>
-	<ConfigItem title="scopes" type="array of strings" required={false}>
+	<ConfigItem title="scope" type="array of strings" required={false}>
 		<p>
 			A list of additional scopes to request when users authenticate with the
 			identity provider.
 		</p>
 	</ConfigItem>
-	<ConfigItem
-		title="authz_url_params"
-		type="map of string to string"
-		required={false}
-	>
-		<p>
-			A list of additional URL parameters to apply to the authorization endpoint
-			URL.
-		</p>
-	</ConfigItem>
 	<ConfigItem title="max_session_duration" type="duration" required={false}>
 		<p>Defines the maximum lifetime of a session regardless of activity.</p>
 	</ConfigItem>
-	<ConfigItem title="idle_session_timeout" type="duration" required={false}>
+	<ConfigItem title="idle_session_duration" type="duration" required={false}>
 		<p>
 			Defines the period of inactivity after which a user's session is
 			automatically ended, requiring re-authentication.
@@ -82,12 +57,28 @@ reference for this action.
 	</ConfigItem>
 	<ConfigItem title="allow_cors_preflight" type="boolean" required={false}>
 		<p>
-			Allow CORS preflight requests to bypass authentication checks. Enable if
-			the endpoint needs to be accessible via CORS.
+			Allow CORES preflight requests to bypass authentication checks. Enable if
+			the endpoint needs to be accessible via CORES.
 		</p>
-		<p>Default: `false`</p>
+	</ConfigItem>
+	<ConfigItem title="inject_headers" type="boolean" required={false}>
+		<p>If false, we don't inject any headers.</p>
 	</ConfigItem>
 </Config>
+
+### Upstream Headers {#upstream-headers}
+
+This module adds headers to the HTTP request sent to your upstream service with
+details about the OAuth user who has authenticated. These headers will not be
+set for `OPTIONS` requests if you enable options passthrough.
+
+| Header                                 | Description                                                                 |
+| -------------------------------------- | --------------------------------------------------------------------------- |
+| `ngrok-auth-identity-provider-user-id` | Provider-defined identifier of the authorized user.                         |
+| `ngrok-auth-identity-name`             | Full name of the authorized user.                                           |
+| `ngrok-auth-identity-email`            | Authorized user's primary email address.                                    |
+| `ngrok-auth-access-token`              | The user's OAuth access token. Undefined when using a managed application.  |
+| `ngrok-auth-refresh-token`             | The user's OAuth refresh token. Undefined when using a managed application. |
 
 ### Special Paths
 
@@ -112,6 +103,23 @@ When this module is enabled, it populates the following fields in the
 | `oauth.user.id`       |
 | `oauth.user.name`     |
 
+### Errors
+
+:::note Coming Soon
+
+This documentation is incomplete. Please check back later, we appreciate your
+patience.
+
+:::
+
+### Edges
+
+OAuth is an HTTPS Edge module which can be applied to Routes.
+
+- [OAuth Edge Module API Resource](/api/resources/edge-route-o-auth-module/)
+
+### Pricing
+
 ### Supported Providers {#supported-providers}
 
 ngrok currently supports the following OAuth providers (see the Integration Guides for more details):
@@ -126,21 +134,6 @@ ngrok currently supports the following OAuth providers (see the Integration Guid
 | LinkedIn  | `linkedin`          | yes                   | [Documentation](/docs/integrations/linkedin/oauth/)  |
 | Microsoft | `microsoft`         | yes                   | [Documentation](/docs/integrations/microsoft/oauth/) |
 | Twitch    | `twitch`            | yes                   | [Documentation](/docs/integrations/twitch/oauth/)    |
-
-### Required Scopes
-
-This is a list of the minimum required scopes for each provider. You can use this when configuring up your identity provider:
-
-| Provider  | Scopes                                                                                               |
-| --------- | ---------------------------------------------------------------------------------------------------- |
-| Amazon    | `profile`                                                                                            |
-| Facebook  | `email`                                                                                              |
-| Github    | `read:org`, `read:user`                                                                              |
-| Gitlab    | `email`, `openid`, `profile`                                                                         |
-| Google    | `https://www.googleapis.com/auth/userinfo.email`, `https://www.googleapis.com/auth/userinfo.profile` |
-| LinkedIn  | `r_emailaddress`, `r_liteprofile`                                                                    |
-| Microsoft | `User.Read`                                                                                          |
-| Twitch    | `user:read:email`                                                                                    |
 
 ## Try it out
 
