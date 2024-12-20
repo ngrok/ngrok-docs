@@ -9,5 +9,5 @@ curl \
 -H "Content-Type: application/json" \
 -H "Ngrok-Version: 2" \
 -d '{"description":"Internal Corporate Services Authority (Legacy)"}' \
-https://api.ngrok.com/certificate_authorities/ca_2qL7VgPsTY5c1Cgj5tTJpiK0yfs
+https://api.ngrok.com/certificate_authorities/ca_2qRzAS1LKnghepQRUWoKTuM7k9U
 ```
