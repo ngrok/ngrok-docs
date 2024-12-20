@@ -264,3 +264,111 @@ If using a [TCP](#tcp-edges) or [TLS](#tls-edges) CRD, you may need to create an
 | Field              | Type | Required | Description |
 | ------------------ | ---- | -------- | ----------- |
 | No fields defined. |      |          |             |
+
+## Agent Endpoints
+
+Agent endpoints are ephemeral endpoints tied to the lifetime of the agent. When used with the ngrok Kubernetes operator, this means that the Agent Endpoints are tied to the operator's `operator-agent` pod (which is deployed by default when installing the operator). The operator will manage, create, and delete
+agent endpoints for you according to the configuration of the `AgentEndpoint` custom resources you create. So long as at least one instance of the `operator-agent` pod is running, your agent endpoints will be available. You may occasionally notice
+the IDs of Agent Endpoints managed by the operator change if the operator pods restart, this will not halt traffic through your agent endpoints unless all of the operator pods have stopped.
+
+See the [ngrok agent CLI configuration page](https://ngrok.com/docs/agent/config/v3/#endpoint-definitions), for more information about using the CLI to start agent endpoints outside of Kubernetes.
+
+**Note:** Agent Endpoints are currently in feature-preview for the ngrok Kubernetes operator. You will need to use `--version 0.17.0-rc.1` (or newer) when using
+`helm` to install or update the operator. See [the deployment guide](https://ngrok-docs-git-alicewasko-agent-endpoint-k8s-ngrok-dev.vercel.app/docs/k8s/deployment-guide/) for information about installing
+the ngrok Kubernetes operator.
+
+| Field      | Type                                                                                    | Required | Description                                                                                                                                                                                                                   |
+| ---------- | --------------------------------------------------------------------------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| apiVersion | string                                                                                  | Yes      | The API version for this custom resource.                                                                                                                                                                                     |
+| kind       | string                                                                                  | Yes      | The kind of the custom resource.                                                                                                                                                                                              |
+| metadata   | [metav1.ObjectMeta](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#ObjectMeta) | No       | Standard object's metadata. More info: [https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions#metadata](https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions#metadata) |
+| spec       | [AgentEndpointSpec](#agentendpointspec)                                                 | Yes      | Specification of the agent endpoint.                                                                                                                                                                                          |
+
+### AgentEndpointSpec
+
+| Field         | Type                                  | Required | Description                                                                                                                                                                       |
+| ------------- | ------------------------------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| url           | string                                | Yes      | The unique URL for this agent endpoint. This URL is the public address                                                                                                            |
+| upstream      | [EndpointUpstream](#endpointupstream) | Yes      | Defines the destination for traffic to this agent endpoint                                                                                                                        |
+| trafficPolicy | [TrafficPolicyCfg](#trafficpolicycfg) | No       | Allows configuring a TrafficPolicy to be used with this AgentEndpoint. When configured, the traffic policy is provided inline or as a reference to an NgrokTrafficPolicy resource |
+| description   | string                                | No       | Human-readable description of this agent endpoint                                                                                                                                 |
+| metadata      | string                                | No       | String of arbitrary data associated with the object in the ngrok API/Dashboard                                                                                                    |
+| bindings      | []string                              | No       | List of Binding IDs to associate with the endpoint. Accepted values are `"public"`, `"internal"`, or strings matching the pattern `"k8s/*"`                                       |
+
+#### `url` notes
+
+The following formats are accepted:
+
+**Domain** - `example.org`
+
+- When using the domain format you are only defining the domain. The scheme and port will be inferred.
+
+**Origin** - `https://example.ngrok.app` or `https://example.ngrok.app:443` or `tcp://1.tcp.ngrok.io:12345` or `tls://example.ngrok.app`
+
+- When using the origin format you are defining the protocol, domain and port. HTTP endpoints accept ports 80 or 443 with respective protocol.
+
+**Scheme** (shorthand) - `https://` or `tcp://` or `tls://` or `http://`
+
+- When using scheme you are defining the protocol and will receive back a randomly assigned ngrok address.
+
+**Internal** - `some.domain.internal`
+
+- When ending your url with .internal, an internal endpoint will be created.
+- Internal Endpoints cannot be accessed directly, but rather can only be accessed using the forward-internal traffic policy action.
+
+### EndpointUpstream
+
+| Field                | Type         | Required | Description                                                                                                                                            |
+| -------------------- | ------------ | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| url                  | string       | Yes      | The local or remote address you would like to incoming traffic to be forwarded to                                                                      |
+| protocol             | enum(string) | No       | Specifies the protocol to use when connecting to the upstream. Currently only http1 and http2 are supported with prior knowledge (defaulting to http1) |
+| proxyProtocolVersion | enum(string) | No       | Optionally specify the version of proxy protocol to use if the upstream requires it                                                                    |
+
+#### `upstream.url` notes
+
+The following formats are supported:
+
+**Origin** - `https://example.org` or `http://example.org:80` or `tcp://127.0.0.1:80`
+
+- When using the origin format you are defining the protocol, domain and port
+- When no port is present and scheme is https or http the port will be inferred
+  - For `https` port will be `443`
+  - For `http` port will be `80`
+
+**Domain** - `example.org`
+
+- This is only allowed for https and http endpoints. For tcp and tls endpoints host and port is required
+- When using the domain format you are only defining the host
+- Scheme will default to `http`
+- Port will default to `80`
+
+**Scheme** (shorthand) - `https://`
+
+- This only works for `https` and `http`
+- For `tcp` and `tls` host and port is required
+- When using scheme you are defining the protocol and the port will be inferred on the local host
+  - For `https` port will be `443`
+  - For `http` port will be `80`
+  - Host will be localhost
+
+**Port** (shorthand) - `8080`
+
+- When using port you are defining the port on the local host that will receive traffic
+- Scheme will default to `http`
+- Host will default to `localhost`
+
+### TrafficPolicyCfg
+
+Configuration for a traffic policy that may be provided inline or via a reference to an `NgrokTrafficPolicy` resource in the
+Kubernetes cluster. See [policy configuration](https://ngrok.com/docs/traffic-policy/) for traffic policy configuration options
+
+| Field     | Type                          | Required | Description                                                                                                         |
+| --------- | ----------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------- |
+| inline    | json.RawMessage               | No       | Provides an inline traffic policy for the agent endpoint                                                            |
+| targetRef | [K8sObjectRef](#k8sobjectref) | No       | Identifies an NgrokTrafficPolicy custom resource by name to use as the traffic policy config for the agent endpoint |
+
+### K8sObjectRef
+
+| Field | Type   | Required | Description                                                                                                        |
+| ----- | ------ | -------- | ------------------------------------------------------------------------------------------------------------------ |
+| name  | string | Yes      | Identifies a kubernetes resource by name. This resource and the referenced resource must be in the same namespace. |

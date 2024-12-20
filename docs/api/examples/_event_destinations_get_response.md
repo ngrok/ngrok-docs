@@ -4,10 +4,10 @@
 
 ```json
 {
-	"created_at": "2024-12-04T10:08:38Z",
+	"created_at": "2024-12-19T20:27:11Z",
 	"description": "kinesis dev stream 1 of 3",
 	"format": "json",
-	"id": "ed_2pkP5heOzfzK4SdbJjShzc95wat",
+	"id": "ed_2qRzANGTyEbPB4hsTAoclGtip5X",
 	"metadata": "{\"environment\":\"dev\", \"stream\":1}",
 	"target": {
 		"azure_logs_ingestion": null,
@@ -24,6 +24,6 @@
 			"stream_arn": "arn:ngrok-local:kinesis:us-east-2:123456789012:stream/mystream2"
 		}
 	},
-	"uri": "https://api.ngrok.com/event_destinations/ed_2pkP5heOzfzK4SdbJjShzc95wat"
+	"uri": "https://api.ngrok.com/event_destinations/ed_2qRzANGTyEbPB4hsTAoclGtip5X"
 }
 ```

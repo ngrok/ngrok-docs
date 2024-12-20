@@ -9,5 +9,5 @@ curl \
 -H "Content-Type: application/json" \
 -H "Ngrok-Version: 2" \
 -d '{"metadata":"{\"region\": \"us-east-1\"}"}' \
-https://api.ngrok.com/ssh_certificate_authorities/sshca_2pkP5nBwv4uYei8kghkc1lFpsV3
+https://api.ngrok.com/ssh_certificate_authorities/sshca_2qRzAQq2XBB46q251B9ZbOA11f2
 ```

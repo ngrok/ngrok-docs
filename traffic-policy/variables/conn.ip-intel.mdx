@@ -1,0 +1,635 @@
+import ConfigExample from "/src/components/ConfigExample.tsx";
+
+IP Intelligence provides you with additional information about any IP address you see in ngrok. It includes Autonomous System information, Geolocation data, as well as information fetched from 3rd parties that list IP address for blocklists or allowlists.
+
+See the full list of [IP Categories available here](#ip-categories).
+
+These variables can be used in Traffic Policy expressions, or they can be used to enrich your traffic via dynamic injection into headers or responses.
+
+## Client IP Intelligence
+
+The following variables are available under the `conn.client_ip` namespace:
+
+| Name                                                              | Type      | Description                                                                                                                                                                              |
+| ----------------------------------------------------------------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`conn.client_ip.categories`](#connclient_ipcategories)           | `list`    | The list of categories that classify the `conn.client_ip`. Check out our [full list of categories](#ip-categories).                                                                      |
+| [`conn.client_ip.is_on_blocklist`](#connclient_ipis_on_blocklist) | `boolean` | This is true if the `conn.client_ip` is listed on a blocklist. For more information about which blocklists are included here, please check out our list of [categories](#ip-categories). |
+| [`conn.client_ip.is_tor_node`](#connclient_ipis_tor_node)         | `boolean` | This is true if the `conn.client_ip` is listed as a Tor exit node.                                                                                                                       |
+
+### `conn.client_ip.categories`
+
+The list of categories that classify the `conn.client_ip`. Check out our [full list of categories](#ip-categories).
+
+<ConfigExample
+	config={{
+		expressions: ["!('proxy.anonymous.tor' in conn.client_ip.categories)"],
+	}}
+/>
+
+### `conn.client_ip.is_on_blocklist`
+
+This is true if the `conn.client_ip` is listed on a blocklist. For more information about which blocklists are included here, please check out our list of [categories](##ip-categories).
+
+<ConfigExample
+	config={{
+		expressions: ["conn.client_ip.is_on_blocklist == true"],
+	}}
+/>
+
+### `conn.client_ip.is_tor_node`
+
+This is true if the `conn.client_ip` is listed as a Tor exit node.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.client_ip.is_tor_node == true"],
+	}}
+/>
+
+## Client IP Autonomous System
+
+The following variables are available under the `conn.client_ip` namespace:
+
+| Name                                                             | Type      | Description                                                                                        |
+| ---------------------------------------------------------------- | --------- | -------------------------------------------------------------------------------------------------- |
+| [`conn.client_ip.as.number`](#connclient_ipasnumber)             | `integer` | The [Autonomous System Number](https://www.arin.net/resources/guide/asn/) of the `conn.client_ip`. |
+| [`conn.client_ip.as.organization`](#connclient_ipasorganization) | `string`  | The Autonomous System Organization name of the `conn.client_ip`.                                   |
+
+### `conn.client_ip.as.number`
+
+The [Autonomous System Number](https://www.arin.net/resources/guide/asn/) of the `conn.client_ip`.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.client_ip.as.number == 12345"],
+	}}
+/>
+
+### `conn.client_ip.as.organization`
+
+The Autonomous System Organization name of the `conn.client_ip`.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.client_ip.as.organization == 'COMCAST-7922'"],
+	}}
+/>
+
+## Client IP Geo Location
+
+This is the location where the IP address is located, which may be different from where the IP address is registered. For more details, see the [MaxMind documentation](https://support.maxmind.com/hc/en-us/articles/4414762983195-Country-level-and-City-level-Geolocation).
+
+| Name                                                                                | Type      | Description                                                                                                   |
+| ----------------------------------------------------------------------------------- | --------- | ------------------------------------------------------------------------------------------------------------- |
+| [`conn.client_ip.geo.location.city`](#connclient_ipgeolocationcity)                 | `string`  | The name of the city, in EN, where the `conn.client_ip` is likely to originate.                               |
+| [`conn.client_ip.geo.location.continent`](#connclient_ipgeolocationcontinent)       | `string`  | The name of the continent, in EN, where the `conn.client_ip` is likely to originate.                          |
+| [`conn.client_ip.geo.location.country`](#connclient_ipgeolocationcountry)           | `string`  | The name of the country, in EN, where the `conn.client_ip` is likely to originate.                            |
+| [`conn.client_ip.geo.location.country_code`](#connclient_ipgeolocationcountry_code) | `string`  | The two-letter ISO country code where the `conn.client_ip` is likely to originate.                            |
+| [`conn.client_ip.geo.location.is_eu`](#connclient_ipgeolocationis_eu)               | `boolean` | Determines if the `conn.client_ip` is located in the EU. Helpful for GDPR compliance.                         |
+| [`conn.client_ip.geo.location.latitude`](#connclient_ipgeolocationlatitude)         | `string`  | The approximate latitude where the `conn.client_ip` is likely to originate.                                   |
+| [`conn.client_ip.geo.location.longitude`](#connclient_ipgeolocationlongitude)       | `string`  | The approximate longitude where the `conn.client_ip` is likely to originate.                                  |
+| [`conn.client_ip.geo.location.metro_code`](#connclient_ipgeolocationmetro_code)     | `string`  | The metro code where the `conn.client_ip` is likely to originate.                                             |
+| [`conn.client_ip.geo.location.postal_code`](#connclient_ipgeolocationpostal_code)   | `string`  | The postal code where the `conn.client_ip` is likely to originate.                                            |
+| [`conn.client_ip.geo.location.radius`](#connclient_ipgeolocationredius)             | `string`  | The radius in kilometers around the latitude and longitude where the `conn.client_ip` is likely to originate. |
+| [`conn.client_ip.geo.location.subdivision`](#connclient_ipgeolocationsubdivision)   | `string`  | The name of the subdivision, in EN, where the `conn.client_ip` is likely to originate.                        |
+| [`conn.client_ip.geo.location.timezone`](#connclient_ipgeolocationtimezone)         | `string`  | The name of the timezone where the `conn.client_ip` is likely to originate.                                   |
+
+### `conn.client_ip.geo.location.city`
+
+The name of the city, in EN, where the `conn.client_ip` is likely to originate.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.client_ip.geo.location.city == 'Strongsville'"],
+	}}
+/>
+
+### `conn.client_ip.geo.location.continent`
+
+The name of the continent, in EN, where the `conn.client_ip` is likely to originate.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.client_ip.geo.location.continent == 'North America'"],
+	}}
+/>
+
+### `conn.client_ip.geo.location.country`
+
+The name of the country, in EN, where the `conn.client_ip` is likely to originate.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.client_ip.geo.location.country == 'United States'"],
+	}}
+/>
+
+### `conn.client_ip.geo.location.country_code`
+
+The two-letter ISO country code where the `conn.client_ip` is likely to originate.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.client_ip.geo.location.country_code != 'US'"],
+	}}
+/>
+
+### `conn.client_ip.geo.location.is_eu`
+
+Determines if the `conn.client_ip` is in the EU. Helpful for GDPR compliance.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.client_ip.geo.location.is_eu == true"],
+	}}
+/>
+
+### `conn.client_ip.geo.location.latitude`
+
+The approximate latitude where the `conn.client_ip` is likely to originate.
+
+<ConfigExample
+	config={{
+		expressions: ["double(conn.client_ip.geo.location.latitude) >= 45.0"],
+	}}
+/>
+
+### `conn.client_ip.geo.location.longitude`
+
+The approximate longitude where the `conn.client_ip` is likely to originate.
+
+<ConfigExample
+	config={{
+		expressions: ["double(conn.client_ip.geo.location.longitude) <= -93.0"],
+	}}
+/>
+
+### `conn.client_ip.geo.location.metro_code`
+
+The metro code where the `conn.client_ip` is likely to originate.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.client_ip.geo.location.metro_code != ''"],
+	}}
+/>
+
+### `conn.client_ip.geo.location.postal_code`
+
+The postal code where the `conn.client_ip` is likely to originate.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.client_ip.geo.location.postal_code == '94324'"],
+	}}
+/>
+
+### `conn.client_ip.geo.location.radius`
+
+The radius in kilometers around the latitude and longitude where the `conn.client_ip` is likely to originate.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.client_ip.geo.location.radius <= '5'"],
+	}}
+/>
+
+### `conn.client_ip.geo.location.subdivision`
+
+The name of the subdivision, in EN, where the `conn.client_ip` is likely to originate.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.client_ip.geo.location.subdivision == 'California'"],
+	}}
+/>
+
+### `conn.client_ip.geo.location.timezone`
+
+The name of the timezone where the `conn.client_ip` is likely to originate.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.client_ip.geo.location.timezone == 'America/New_York'"],
+	}}
+/>
+
+## Client IP Registered Geo Location
+
+This is the location where the IP address is registered, which may be different from where the IP address is located. For more details, see the [MaxMind documentation](https://support.maxmind.com/hc/en-us/articles/4414762983195-Country-level-and-City-level-Geolocation).
+
+| Name                                                                                                      | Type      | Description                                                                              |
+| --------------------------------------------------------------------------------------------------------- | --------- | ---------------------------------------------------------------------------------------- |
+| [`conn.client_ip.geo.registered_location.city`](#connclient_ipgeoregistered_locationcity)                 | `string`  | The name of the city, in EN, where the `conn.client_ip` is registered.                   |
+| [`conn.client_ip.geo.registered_location.continent`](#connclient_ipgeoregistered_locationcontinent)       | `string`  | The name of the continent, in EN, where the `conn.client_ip` is registered.              |
+| [`conn.client_ip.geo.registered_location.country`](#connclient_ipgeoregistered_locationcountry)           | `string`  | The name of the country, in EN, where the `conn.client_ip` is registered.                |
+| [`conn.client_ip.geo.registered_location.country_code`](#connclient_ipgeoregistered_locationcountry_code) | `string`  | The two-letter ISO country code where the `conn.client_ip` is registered.                |
+| [`conn.client_ip.geo.registered_location.is_eu`](#connclient_ipgeoregistered_locationiseu)                | `boolean` | Determines if the `conn.client_ip` is registered in the EU. Helpful for GDPR compliance. |
+| [`conn.client_ip.geo.registered_location.metro_code`](#connclient_ipgeoregistered_locationmetro_code)     | `string`  | The metro code where the `conn.client_ip` is registered.                                 |
+| [`conn.client_ip.geo.registered_location.subdivision`](#connclient_ipgeoregistered_locationsubdivition)   | `string`  | The name of the subdivision, in EN, where the `conn.client_ip` is registered.            |
+| [`conn.client_ip.geo.registered_location.timezone`](#connclient_ipgeoregistered_locationtimezone)         | `string`  | The name of the timezone where the `conn.client_ip` is registered.                       |
+
+### `conn.client_ip.geo.registered_location.city`
+
+The name of the city, in EN, where the `conn.client_ip` is registered.
+
+<ConfigExample
+	config={{
+		expressions: [
+			"conn.client_ip.geo.registered_location.city == 'Strongsville'",
+		],
+	}}
+/>
+
+### `conn.client_ip.geo.registered_location.continent`
+
+The name of the continent, in EN, where the `conn.client_ip` is registered.
+
+<ConfigExample
+	config={{
+		expressions: [
+			"conn.client_ip.geo.registered_location.continent == 'North America'",
+		],
+	}}
+/>
+
+### `conn.client_ip.geo.registered_location.country`
+
+The name of the country, in EN, where the `conn.client_ip` is registered.
+
+<ConfigExample
+	config={{
+		expressions: [
+			"conn.client_ip.geo.registered_location.country == 'United States'",
+		],
+	}}
+/>
+
+### `conn.client_ip.geo.registered_location.country_code`
+
+The two-letter ISO country code where the `conn.client_ip` is registered.
+
+<ConfigExample
+	config={{
+		expressions: [
+			"conn.client_ip.geo.registered_location.country_code != 'US'",
+		],
+	}}
+/>
+
+### `conn.client_ip.geo.registered_location.is_eu`
+
+Determines if the `conn.client_ip` is in the EU. Helpful for GDPR compliance.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.client_ip.geo.registered_location.is_eu == true"],
+	}}
+/>
+
+### `conn.client_ip.geo.registered_location.subdivision`
+
+The name of the subdivision, in EN, where the `conn.client_ip` is registered.
+
+<ConfigExample
+	config={{
+		expressions: [
+			"conn.client_ip.geo.registered_location.subdivision == 'California'",
+		],
+	}}
+/>
+
+### `conn.client_ip.geo.registered_location.metro_code`
+
+The metro code where the `conn.client_ip` is registered.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.client_ip.geo.registered_location.metro_code != ''"],
+	}}
+/>
+
+### `conn.client_ip.geo.registered_location.timezone`
+
+The name of the timezone where the `conn.client_ip` is registered.
+
+<ConfigExample
+	config={{
+		expressions: [
+			"conn.client_ip.geo.registered_location.timezone == 'America/New_York'",
+		],
+	}}
+/>
+
+## Server IP Intelligence
+
+The following variables are available under the `conn.server_ip` namespace:
+
+| Name                                                              | Type      | Description                                                                                                                                                                               |
+| ----------------------------------------------------------------- | --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`conn.server_ip.categories`](#connserver_ipcategories)           | `list`    | The list of categories that classify the `conn.server_ip`. Check out our [full list of categories](#ip-categories).                                                                       |
+| [`conn.server_ip.is_on_blocklist`](#connserver_ipis_on_blocklist) | `boolean` | This is true if the `conn.server_ip` is listed on a blocklist. For more information about which blocklists are included here, please check out our list of [categories](##ip-categories). |
+| [`conn.server_ip.is_tor_node`](#connserver_ipis_tor_node)         | `boolean` | This is true if the `conn.server_ip` is listed as a Tor exit node.                                                                                                                        |
+
+### `conn.server_ip.categories`
+
+The list of categories that classify the `conn.server_ip`. Check out our [full list of categories](#ip-categories).
+
+<ConfigExample
+	config={{
+		expressions: ["!('proxy.anonymous.tor' in conn.server_ip.categories)"],
+	}}
+/>
+
+### `conn.server_ip.is_on_blocklist`
+
+This is true if the `conn.server_ip` is listed on a blocklist. For more information about which blocklists are included here, please check out our list of [categories](#ip-categories).
+
+<ConfigExample
+	config={{
+		expressions: ["conn.server_ip.is_on_blocklist == true"],
+	}}
+/>
+
+### `conn.server_ip.is_tor_node`
+
+This is true if the `conn.server_ip` is listed as a Tor exit node.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.server_ip.is_tor_node == true"],
+	}}
+/>
+
+## Server IP Autonomous System
+
+| Name                                                             | Type      | Description                                                                                        |
+| ---------------------------------------------------------------- | --------- | -------------------------------------------------------------------------------------------------- |
+| [`conn.server_ip.as.number`](#connserver_ipasnumber)             | `integer` | The [Autonomous System Number](https://www.arin.net/resources/guide/asn/) of the `conn.server_ip`. |
+| [`conn.server_ip.as.organization`](#connserver_ipasorganization) | `string`  | The Autonomous System Organization name of the `conn.server_ip`.                                   |
+
+### `conn.server_ip.as.number`
+
+The [Autonomous System Number](https://www.arin.net/resources/guide/asn/) of the `conn.server_ip`.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.server_ip.as.number == 12345"],
+	}}
+/>
+
+### `conn.server_ip.as.organization`
+
+The Autonomous System Organization name of the `conn.server_ip`.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.server_ip.as.organization == 'COMCAST-7922'"],
+	}}
+/>
+
+## Server IP Location Geo
+
+This is the location where the server IP address is located, which may be different from where the IP address is registered. For more details, see the [MaxMind documentation](https://support.maxmind.com/hc/en-us/articles/4414762983195-Country-level-and-City-level-Geolocation).
+
+| Name                                                                                | Type      | Description                                                                                                   |
+| ----------------------------------------------------------------------------------- | --------- | ------------------------------------------------------------------------------------------------------------- |
+| [`conn.server_ip.geo.location.city`](#connserver_ipgeolocationcity)                 | `string`  | The name of the city, in EN, where the `conn.server_ip` is likely to originate.                               |
+| [`conn.server_ip.geo.location.continent`](#connserver_ipgeolocationcontinent)       | `string`  | The name of the continent, in EN, where the `conn.server_ip` is likely to originate.                          |
+| [`conn.server_ip.geo.location.country`](#connserver_ipgeolocationcountry)           | `string`  | The name of the country, in EN, where the `conn.server_ip` is likely to originate.                            |
+| [`conn.server_ip.geo.location.country_code`](#connserver_ipgeolocationcountry_code) | `string`  | The two-letter ISO country code where the `conn.server_ip` is likely to originate.                            |
+| [`conn.server_ip.geo.location.is_eu`](#connserver_ipgeolocationis_eu)               | `boolean` | Determines if the `conn.server_ip` is located in the EU. Helpful for GDPR compliance.                         |
+| [`conn.server_ip.geo.location.latitude`](#connserver_ipgeolocationlatitude)         | `string`  | The approximate latitude where the `conn.server_ip` is likely to originate.                                   |
+| [`conn.server_ip.geo.location.longitude`](#connserver_ipgeolocationlongitude)       | `string`  | The approximate longitude where the `conn.server_ip` is likely to originate.                                  |
+| [`conn.server_ip.geo.location.metro_code`](#connserver_ipgeolocationmetro_code)     | `string`  | The metro code where the `conn.server_ip` is likely to originate.                                             |
+| [`conn.server_ip.geo.location.postal_code`](#connserver_ipgeolocationpostal_code)   | `string`  | The postal code where the `conn.server_ip` is likely to originate.                                            |
+| [`conn.server_ip.geo.location.radius`](#connserver_ipgeolocationredius)             | `string`  | The radius in kilometers around the latitude and longitude where the `conn.server_ip` is likely to originate. |
+| [`conn.server_ip.geo.location.subdivision`](#connserver_ipgeolocationsubdivision)   | `string`  | The name of the subdivision, in EN, where the `conn.server_ip` is likely to originate.                        |
+| [`conn.server_ip.geo.location.timezone`](#connserver_ipgeolocationtimezone)         | `string`  | The name of the timezone where the `conn.server_ip` is likely to originate.                                   |
+
+### `conn.server_ip.geo.location.city`
+
+The name of the city, in EN, where the `conn.server_ip` is likely to originate.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.server_ip.geo.location.city == 'Strongsville'"],
+	}}
+/>
+
+### `conn.server_ip.geo.location.continent`
+
+The name of the continent, in EN, where the `conn.server_ip` is likely to originate.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.server_ip.geo.location.continent == 'North America'"],
+	}}
+/>
+
+### `conn.server_ip.geo.location.country`
+
+The name of the country, in EN, where the `conn.server_ip` is likely to originate.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.server_ip.geo.location.country == 'United States'"],
+	}}
+/>
+
+### `conn.server_ip.geo.location.country_code`
+
+The two-letter ISO country code where the `conn.server_ip` is likely to originate.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.server_ip.geo.location.country_code != 'US'"],
+	}}
+/>
+
+### `conn.server_ip.geo.location.is_eu`
+
+Determines if the `conn.server_ip` location is in the EU. Helpful for GDPR compliance.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.server_ip.geo.location.is_eu == true"],
+	}}
+/>
+
+### `conn.server_ip.geo.location.latitude`
+
+The approximate latitude where the `conn.server_ip` is likely to originate.
+
+<ConfigExample
+	config={{
+		expressions: ["double(conn.server_ip.geo.location.latitude) >= 45.0"],
+	}}
+/>
+
+### `conn.server_ip.geo.location.longitude`
+
+The approximate longitude where the `conn.server_ip` is likely to originate.
+
+<ConfigExample
+	config={{
+		expressions: ["double(conn.server_ip.geo.location.longitude) <= -93.0"],
+	}}
+/>
+
+### `conn.server_ip.geo.location.metro_code`
+
+The metro code where the `conn.server_ip` is likely to originate.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.server_ip.geo.location.metro_code != ''"],
+	}}
+/>
+
+### `conn.server_ip.geo.location.postal_code`
+
+The postal code where the `conn.server_ip` is likely to originate.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.server_ip.geo.location.postal_code == '94324'"],
+	}}
+/>
+
+### `conn.server_ip.geo.location.radius`
+
+The radius in kilometers around the latitude and longitude where the `conn.server_ip` is likely to originate.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.server_ip.geo.location.radius <= '5'"],
+	}}
+/>
+
+### `conn.server_ip.geo.location.subdivision`
+
+The name of the subdivision, in EN, where the `conn.server_ip` is likely to originate.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.server_ip.geo.location.subdivision == 'California'"],
+	}}
+/>
+
+### `conn.server_ip.geo.location.timezone`
+
+The name of the timezone where the `conn.server_ip` is likely to originate.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.server_ip.geo.location.timezone == 'America/New_York'"],
+	}}
+/>
+
+## Server IP Registered Location Geo
+
+This is the location where the server IP address is registered, which may be different from where the IP address is located. For more details, see the [MaxMind documentation](https://support.maxmind.com/hc/en-us/articles/4414762983195-Country-level-and-City-level-Geolocation).
+
+| Name                                                                                                      | Type      | Description                                                                              |
+| --------------------------------------------------------------------------------------------------------- | --------- | ---------------------------------------------------------------------------------------- |
+| [`conn.server_ip.geo.registered_location.city`](#connserver_ipgeoregistered_locationcity)                 | `string`  | The name of the city, in EN, where the `conn.server_ip` is registered.                   |
+| [`conn.server_ip.geo.registered_location.continent`](#connserver_ipgeoregistered_locationcontinent)       | `string`  | The name of the continent, in EN, where the `conn.server_ip` is registered.              |
+| [`conn.server_ip.geo.registered_location.country`](#connserver_ipgeoregistered_locationcountry)           | `string`  | The name of the country, in EN, where the `conn.server_ip` is registered.                |
+| [`conn.server_ip.geo.registered_location.country_code`](#connserver_ipgeoregistered_locationcountry_code) | `string`  | The two-letter ISO country code where the `conn.server_ip` is registered.                |
+| [`conn.server_ip.geo.registered_location.is_eu`](#connserver_ipgeoregistered_locationiseu)                | `boolean` | Determines if the `conn.server_ip` is registered in the EU. Helpful for GDPR compliance. |
+| [`conn.server_ip.geo.registered_location.metro_code`](#connserver_ipgeoregistered_locationmetro_code)     | `string`  | The metro code where the `conn.server_ip` is registered.                                 |
+| [`conn.server_ip.geo.registered_location.subdivision`](#connserver_ipgeoregistered_locationsubdivition)   | `string`  | The name of the subdivision, in EN, where the `conn.server_ip` is registered.            |
+| [`conn.server_ip.geo.registered_location.timezone`](#connserver_ipgeoregistered_locationtimezone)         | `string`  | The name of the timezone where the `conn.server_ip` is registered.                       |
+
+### `conn.server_ip.geo.registered_location.city`
+
+The name of the city, in EN, where the `conn.server_ip` is registered.
+
+<ConfigExample
+	config={{
+		expressions: [
+			"conn.server_ip.geo.registered_location.city == 'Strongsville'",
+		],
+	}}
+/>
+
+### `conn.server_ip.geo.registered_location.continent`
+
+The name of the continent, in EN, where the `conn.server_ip` is registered.
+
+<ConfigExample
+	config={{
+		expressions: [
+			"conn.server_ip.geo.registered_location.continent == 'North America'",
+		],
+	}}
+/>
+
+### `conn.server_ip.geo.registered_location.country`
+
+The name of the country, in EN, where the `conn.server_ip` is registered.
+
+<ConfigExample
+	config={{
+		expressions: [
+			"conn.server_ip.geo.registered_location.country == 'United States'",
+		],
+	}}
+/>
+
+### `conn.server_ip.geo.registered_location.country_code`
+
+The two-letter ISO country code where the `conn.server_ip` is registered.
+
+<ConfigExample
+	config={{
+		expressions: [
+			"conn.server_ip.geo.registered_location.country_code != 'US'",
+		],
+	}}
+/>
+
+### `conn.server_ip.geo.registered_location.is_eu`
+
+Determines if the `conn.server_ip` is in the EU. Helpful for GDPR compliance.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.server_ip.geo.registered_location.is_eu == true"],
+	}}
+/>
+
+### `conn.server_ip.geo.registered_location.subdivision`
+
+The name of the subdivision, in EN, where the `conn.server_ip` is registered.
+
+<ConfigExample
+	config={{
+		expressions: [
+			"conn.server_ip.geo.registered_location.subdivision == 'California'",
+		],
+	}}
+/>
+
+### `conn.server_ip.geo.registered_location.metro_code`
+
+The metro code where the `conn.server_ip` is registered.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.server_ip.geo.registered_location.metro_code != ''"],
+	}}
+/>
+
+### `conn.server_ip.geo.registered_location.timezone`
+
+The name of the timezone where the `conn.server_ip` is registered.
+
+<ConfigExample
+	config={{
+		expressions: [
+			"conn.server_ip.geo.registered_location.timezone == 'America/New_York'",
+		],
+	}}
+/>
