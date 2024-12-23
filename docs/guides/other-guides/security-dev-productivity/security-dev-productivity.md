@@ -31,11 +31,11 @@ This guide describes the best practices and features organizations can apply to 
 Developers use ngrok to increase their productivity while building and validating software in a few ways:
 
 - **Delivering APIs and applications to production**: With a [self-service
-platform](https://ngrok.com/blog-post/developer-self-service-composability),
-created by a DevOps or platform engineering team, developers can create [internal
-endpoints](/docs/network-edge/internal-endpoints.mdx) for their upstream
-services and make them publicly available using an environment-agnostic
-configuration&mdash;and without needing to wire-up complex networks.
+  platform](https://ngrok.com/blog-post/developer-self-service-composability),
+  created by a DevOps or platform engineering team, developers can create [internal
+  endpoints](/docs/network-edge/internal-endpoints.mdx) for their upstream
+  services and make them publicly available using an environment-agnostic
+  configuration&mdash;and without needing to wire-up complex networks.
 - **Exposing localhost apps to the internet for user access and collaboration**: In this use-case, developers expose localhost apps for public access so other peers — i.e., product designers, product managers, contractors, and users — can review and validate their work.
 - **Exposing local environments, APIs, and webhooks for SaaS services and API clients**: In this use-case, developers expose webhooks and APIs running on localhost for integration tests with SaaS services — i.e., Slack & MS Team bots, Twilio webhook listeners, Zoom apps — and APIs clients — i.e., mobile apps, desktop apps, B2B services.
 
@@ -119,7 +119,7 @@ on_http_request:
           provider: github
 ```
 
-To ensure only specific individuals or organizations can access your endpoints, restrict the social authentication based on the user email address or email domain. For example, the following rule enforces an OAuth login with GitHub, and then validates the email used. If the email *does not* end in `example.com` or *is not exactly* `john@external.com`, then ngrok denies the request.
+To ensure only specific individuals or organizations can access your endpoints, restrict the social authentication based on the user email address or email domain. For example, the following rule enforces an OAuth login with GitHub, and then validates the email used. If the email _does not_ end in `example.com` or _is not exactly_ `john@external.com`, then ngrok denies the request.
 
 ```yaml
 on_http_request:
@@ -161,9 +161,9 @@ With webhook verification, ngrok authenticates webhook request authenticity and 
 An ngrok tenant can have multiple policies set for different communications. Each policy may contain multiple deny and allow rules to specific IPv4 and IPv6 addresses:
 
 <img
-  src={require('./img/ip-policies.png').default}
-  alt="Restrict access to approved IPs"
-  className="border rounded"
+src={require('./img/ip-policies.png').default}
+alt="Restrict access to approved IPs"
+className="border rounded"
 />
 
 #### Combining IP Policies and other security controls
@@ -180,9 +180,9 @@ After implementing access control, webhook security, and IP restrictions, compan
 Tunnel authtokens are the secret key used by ngrok agents to connect to the edge and enable remote access. By using ACLs at the authtoken level, security administrators can make sure endpoints are launched only if bound to specific policies, delivering consistent security:
 
 <img
-  src={require('./img/acls.png').default}
-  alt="Use ACLs to restrict access to specific configurations and domains"
-  className="border rounded"
+src={require('./img/acls.png').default}
+alt="Use ACLs to restrict access to specific configurations and domains"
+className="border rounded"
 />
 
 ### 6. Track and block unauthorized activity
@@ -192,14 +192,14 @@ To ensure ngrok endpoints leverage right security policies, many organizations w
 With custom ingress domains, ngrok customers can define their own URLs for ngrok traffic within their networks — i.e., `tunnels.example.com`. This definition ensures that sanctioned ngrok traffic uses a dedicated URL, known and approved by IT. Any non-sanctioned traffic on `tunnel.ngrok.com` or `connect.ngrok-agent.com` can be blocked by the firewall at the URL level, without causing outages on approved endpoints:
 
 <img
-  src={require('./img/tunnel-create.png').default}
-  alt="Define a custom ingress by picking an address"
-  className="border rounded"
+src={require('./img/tunnel-create.png').default}
+alt="Define a custom ingress by picking an address"
+className="border rounded"
 />
 <img
-  src={require('./img/tunnel-dns.png').default}
-  alt="Define a custom ingress with records for your DNS server"
-  className="border rounded"
+src={require('./img/tunnel-dns.png').default}
+alt="Define a custom ingress with records for your DNS server"
+className="border rounded"
 />
 
 ### 7. Add SSO and MFA to the admin UI
@@ -207,9 +207,9 @@ With custom ingress domains, ngrok customers can define their own URLs for ngrok
 With Dashboard SSO, you can restrict access to the ngrok administrative interface only for users authenticated in your identity providers — such as Okta, Azure AD, Ping, AD FS, and Auth0. The ngrok dashboard SSO works with any SAML provider, and can be used with your identity provider MFA — i.e., Windows Hello, Okta Verify, FIDO, and PingID — to ensure two-factor authentication (2FA) in compliance with your security requirements.
 
 <img
-  src={require('./img/mfa-sso.png').default}
-  alt="Enable both MFA for all accounts and SSO for new developer accounts"
-  className="border rounded"
+src={require('./img/mfa-sso.png').default}
+alt="Enable both MFA for all accounts and SSO for new developer accounts"
+className="border rounded"
 />
 
 ## Conclusion
