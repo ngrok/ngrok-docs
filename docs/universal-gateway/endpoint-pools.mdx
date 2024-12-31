@@ -1,0 +1,136 @@
+---
+title: Endpoint Pools
+description: Endpoint Pools
+---
+
+# Endpoint Pools
+
+:::note Coming Soon
+
+Endpoint pools are not available yet. [Contact us](mailto:support@ngrok.com) to
+request access to the developer preview.
+
+:::
+
+## Overview
+
+Endpoints Pools make load balancing dead simple. When your create two endpoints
+with the same URL (and binding), those endpoints automatically "pool" together
+and traffic to their URL is balanced among them.
+
+Endpoint pools are enabled by default for new accounts. You may disable pooling
+when creating basis. Endpoints can be configured to disallow pooling if you
+want exclusive ownership of a URL.
+
+## Quickstart
+
+### Agent Endpoints
+
+First, create an endpoint forwarding to a local service:
+
+```
+ngrok http 8080 --url https://foo.ngrok.app
+```
+
+```
+ngrok http 9090 --url https://foo.ngrok.app
+```
+
+### Cloud Endpoints
+
+TODO
+
+## When should I use Endpoint Pools?
+
+Endpoint pools are good choice for:
+
+- Load balancing between multiple replicas of the same application
+- Load balancing to apps running in different cloud providers or even on-prem datacenters
+- Switching between cloud endpoints and agent endpoints with zero downtime
+- Blue-green deployment strategies of new software
+- A/B testing different applications
+- Balancing against a new endpoint policy
+- Canary deployments
+
+## Lifecycle
+
+Endpoint pools are never explicitly created or destroyed. Whenever you create
+two endpoints with the same URL and binding, an Endpoint Pool is automatically
+created for you (unless one of those Endpoints [disables
+pooling](#disabling-pooling)).
+
+- Endpoint pools are never explicitly created or destroyed.
+- Endpoint pools are automatically created when two endpoints are created with the same URL and binding.
+- Endpoint pools are automatically deleted when endpoints are deleted such that a pool would only contain a single endpoint.
+
+## Disabling Pooling
+
+Endpoint pooling is enabled by default on Agent Endpoints and Cloud Endpoints.
+
+- Endpoint pools can be disabled (https://www.notion.so/ngrok/Endpoint-Pools-10f1586b81cf4a6389f9f61a26afc6ac?pvs=4#d448fc3fda9b4e5294abeba550ef3e89)
+- Endpoints will add a new boolean `allows_pooling` field.
+  - The value of this field defines whether the endpoint may join pools with other endpoints.
+  - The default value of `allows_pooling`
+    - For Cloud Endpoints is `true`.
+    - For Edge Endpoint is `false`.
+    - For Agent Endpoints is `false` then update to `true` when we do version `4` release.
+      - We’d like it to be `true` but that will create backwards compatibility problems.
+      - We could maybe make it `true` with a new major version release of the Agent and SDKs.
+      - Older Agent Endpoints should always be `false` unless we add a new account flag `OldAgentsAllowsPoolingBehavior` and it is enabled.
+      - The default for `allow_pooling` is fixed and does not depend on whether an existing endpoint in the pool has `allows_pooling` set to `true` or `false`.When you attempt to start an endpoint on a pool that has `allows_pooling` set to `true` and do not pass the flag it should error out.
+- Can you go from `true` to `false`?
+  - Not allowed when other endpoints are in the pool
+- If an endpoint with `allows_pooling=false` is created such that it would join any Endpoint Pools because other Endpoints already exist with those URLs/bindings, the Endpoint must fail to create.
+  ```bash
+  ngrok http 80 --url https://foo.ngrok.app --allows-pooling=true
+  ngrok http 80 --url https://foo.ngrok.app --allows-pooling=false # this fails
+  ```
+- If an endpoint with `allows_pooling=true` is created such that it would join any Endpoint Pool with an existing Endpoint that has `allows_pooling=false` , the Endpoint must fail to create.
+  ```bash
+  ngrok http 80 --url https://foo.ngrok.app --allows-pooling=false
+  ngrok http 80 --url https://foo.ngrok.app --allows-pooling=true # this fails
+  ```
+- If a conflict is detected because two endpoints started “simultaneously” join the same Endpoint Pool, we will kick the most recent Endpoint by timestamp (same heuristic but different metric) offline.
+
+## Load Balancing
+
+### Strategy
+
+### Layer 4 vs Layer 7
+
+### Endpoints with different Traffic Policies
+
+## Stuff
+
+- Endpoint pools are global and regionally aware (global load balancer)
+- Endpoints with the same host port binding but different protocol will conflict, not pool
+- Endpoint pooling with different traffic policies
+- Traffic Policy fields
+
+## Wildcard Endpoints
+
+Wildcard endpoints do not pool with non-wildcard URLs. For example, if you have
+two endpoints online, `https://foo.example.com` and `https://*.example.com`,
+they will not pool together and traffic to `https://foo.example.com` will not
+be load balanced. Consult the documentation for [wildcard
+endpoints](/universal-gateway/endpoints/http/#wildcard-endpoints) to understand
+the rules for matching and precedence.
+
+## Protocol, Binding and Type
+
+- Endpoint pools support all endpoint protocols
+- Endpoint pools support all endpoint bindings
+- Endpoint pools support all endpoint types (and you can mix types in an endpoint pool)
+
+## API
+
+Because endpoint pools are created on-demand when two endpoints share the same
+URL and binding, there is no API resource for endpoint pools. Instead, each
+[Endpoint API Resource](/api/resources/endpoints/) has a read-only `pools`
+field which lists the other endpoints in the same pool as the requested
+endpoint.
+
+## Pricing
+
+Endpoint pools are available in all plans. Each endpoint in a pool is billed
+separately.

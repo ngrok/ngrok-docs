@@ -1,0 +1,186 @@
+# TLS Certificates
+
+ngrok automatically handles TLS (SSL) certificate management and termination
+for you. There is typically nothing to setup, configure or manage.
+
+You can manage TLS Certificates on your [ngrok
+Dashboard](https://dashboard.ngrok.com/tls-certs) or via the [ngrok API](#api).
+
+## Overview
+
+TLS Certificates are a tuple of a private key and certificate that are
+presented by the ngrok cloud service during a TLS handshakes to terminate TLS
+connections to [HTTPS Endpoints](/universal-gateway/endpoints/http) and [TLS
+Endpoints](/universal-gateway/endpoints/tls). TLS Certificates are attached to
+[Domains](/universal-gateway/domains/) for termination of TLS connections to
+Endpoints whose URLs match that domain. ngrok can automatically provision
+certificates for you or you can upload your own.
+
+See the [TLS Termination](/universal-gateway/network/tls-termination/)
+documentation for details on how and when ngrok terminates TLS connections.
+
+## Certificate Selection
+
+When TLS connections to an Endpoint are terminated, ngrok uses the TLS
+Certificate attached to the [Domain](/universal-gateway/domains) matching the
+Endpoint's URL for termination.
+
+Each [Domain](/universal-gateway/domains/) has an attached TLS Certificate that
+is referenced by its [`certificate_id` field](/api/resources/reserved-domains).
+If the Domain object does reference any certificate, or if there is no matching
+Domain object for an Endpoint's URL, ngrok selects its own TLS certificate for
+termination.
+
+You may override the certificate used for TLS termination by explicitly
+terminating TLS yourself with the [`terminate-tls` Traffic Policy
+Action](/traffic-policy/actions/terminate-tls/).
+
+## Certificate Provisioning
+
+Whenever you create a [Domain](/universal-gateway/domains/) you choose how
+a TLS Certificate will be provisioned. Either:
+
+- [Automatic TLS Certificates](#automated) (default) - ngrok automatically
+  provisions a TLS Certificate from an ACME provider like Let's Encrypt.
+- [Bring your own TLS Certificates](#custom) - Upload your own TLS Certificate
+
+It is recommended that you choose Automated TLS Certificates unless you have
+special requirements.
+
+## Automatic Provisioning {#automated}
+
+When you choose Automatic TLS Certificate management for a Domain (this is the
+default), ngrok automatically provisions **and renews** TLS certificates from
+an ACME-compliant certificate authority like Let's Encrypt.
+
+ngrok uses an HTTP01 challenge for TLS Certificate provisioning of most
+domains. When you create a [wildcard domain](#wildcard-domains) ngrok uses a
+DNS01 challenge instead.
+
+ngrok is a [Let's Encrypt sponsor](https://letsencrypt.org/sponsors/).
+
+### Status
+
+TLS Certificates are provisioned asynchronously. Depending on the speed of the
+ACME certificate authority, it can take anywhere between a few seconds to 10
+minutes for your certificate to be provisioned. The Domain's
+`certificate_management_status` field on the [TLS Certificate API
+Resource](/api/resources/tls-certificates/) contains the status of the
+provisioning job.
+
+### Bring your own domain
+
+When you [bring your own domain](/universal-gateway/domains/#branded-domains)
+(e.g. `api.your-domain.com`) you must create a CNAME DNS record in your DNS
+provider. Certificate provisioning will not begin until your create this CNAME
+DNS record.
+
+### Wildcard Domains
+
+When you bring your own wildcard domain (e.g. `*.app.example.com`), ngrok uses
+a DNS01 challenge for TLS Certificate provisioning which means that you must
+create two CNAME records when creating branded wildcard domains instead of just
+one.
+
+For example, If your domain is `*.app.example.com` you will be required to create the
+following two CNAME records:
+
+- `*.app.example.com`
+- `_acme-challenge.app.example.com`
+
+Certificate provisioning will not begin until you have created both DNS
+records.
+
+### Private Keys
+
+When using Automated TLS Certificates, ngrok generates a private key for your
+domain and encrypts it at rest with with [NaCL](https://nacl.cr.yp.to/).
+
+When you configure a Domain to use automated certificates, you may electively
+choose whether ngrok will create an ECDSA private key (the default) or RSA
+private key.If you choose an RSA private key, it is created with a size of 4096
+bits.
+
+## Bring your own certificates {#custom}
+
+You may upload your own TLS Certificates if you don't want to use the TLS
+certificates that ngrok automatically provisions for you. Uploading your own
+certificates may be the right choice if you are issuing certificates from your
+own certificate authority or if you are using an EV certificate.
+
+To bring your own TLS certificate, upload a [Certificate
+Bundle](#certificate-bundles) and a [Private Key](#private-keys). Keep in mind
+that after you create your TLS Certificate, you must attach it to one or more
+Domains before it will be used for termination. When working with the API, this
+is done by updating the `certificate_id` property of the [Domain API
+Resource](/api/resources/reserved-domains).
+
+Unlike Automated TLS Certificates, when you are using custom TLS Certificates,
+you are responsible for managing the renewal and rotation of new certificates.
+
+### Certificate Bundles {#certificate-bundles}
+
+When uploading your own TLS certificates to ngrok, you are expected to provide
+a certificate bundle of all certificates necessary to establish a chain of
+trust to a trusted root certificate authority. Many TLS certificate vendors
+will provide you with a constructed certificate bundle, but some will return
+the leaf certificate and the intermediate certificates separately and you must
+concatenate them to construct the bundle yourself. This is the
+`certificate_pem` field in the [TLS Certificate Create
+API](/api/resources/tls-certificates/).
+
+Certificate bundles are a series of PEM-encoded X.509 certificates that have
+been concatenated together. **The order of this bundle is significant.**
+
+The first certificate in the bundle must be the leaf certificate. The leaf
+certificate is the one which is signed for your domain and [the private
+key](#private-keys) you will upload.
+
+After the leaf certificate are the intermediates certificates, if any. Each
+intermediate certificate signs the certificate preceding it in the bundle. As
+an example, the first intermediate will sign the leaf, and that signature is
+part of the leaf certificate itself. The final certificate will be signed by
+the root certificate authority. You may also included the root certificate in
+the bundle as well, but it is not necessary or common practice to do so.
+
+A certificate bundle will look like the following:
+
+```pem
+-----BEGIN CERTIFICATE-----
+...
+-----END CERTIFICATE-----
+-----BEGIN CERTIFICATE-----
+...
+-----END CERTIFICATE-----
+-----BEGIN CERTIFICATE-----
+...
+-----END CERTIFICATE-----
+```
+
+### Private Keys {#private-keys}
+
+ngrok accepts the following formats for the private key of an uploaded TLS
+certificate. This is the `private_key_pem` field in the [TLS Certificate Create
+API](/api/resources/tls-certificates/).
+
+- RSA, in either PKCS#1 or PKCS#8 form.
+- ECDSA, in either SEC 1 or PKCS#8 form.
+- Ed25519, in PKCS#8 form.
+
+Regardless of the format you choose, the private key must be formatted as ASN.1
+DER, encoded as PEM. ngrok will not accept any private keys that are encrypted
+(e.g. with DES).
+
+ngrok encrypts your uploaded private keys at rest with
+[NaCL](https://nacl.cr.yp.to/).
+
+## API
+
+TLS Certificates are managed programatically via:
+
+- [`/tls_certificates` API Resource](/api/resources/tls-certificates/)
+
+## Pricing
+
+TLS Certificates are available on all plans. Bringing your own certificates is
+available on the Enterprise plan.

@@ -81,18 +81,6 @@ action to restart or reconfigure the agent.
 Please see our [Terms of Service](https://ngrok.com/tos) and [Data Processing
 Agreement](https://ngrok.com/dpa) for more information.
 
-## Can I forward to upstream services on different machines? {#non-local}
-
-Yes, specify the full network address. For example:
-
-```bash
-ngrok http 192.168.1.1:8080
-```
-
-```bash
-ngrok tcp my-db.my-network:3306
-```
-
 ## Does ngrok support CORS? {#cors}
 
 Yes, applications exposed via ngrok's HTTP endpoints will work with CORS.
@@ -115,14 +103,6 @@ true.
 Basic Auth (`--basic-auth`) does not yet support configuring options
 passthrough.
 
-## What is the full list of ngrok IP addresses?
-
-The IPs that ngrok controls is dynamic and the current list can be found in our [ngrok ips.json file](https://s3.amazonaws.com/dns.ngrok.com/ips.json).
-
-::::warning
-These IP addresses can and do change, so we recommend using our DNS names instead of hardcoding IP addresses.
-::::
-
 ## What's the status of ngrok v1? {#v1}
 
 The original open source ngrok agent 1.x is [available on
@@ -138,24 +118,6 @@ _en-grok_
 
 The first prototype for ngrok was committed on [March 20th,
 2013](https://github.com/inconshreveable/ngrok/commit/8f4795ecac7f92c6b5a8c8970c65f26e5315fe4e).
-
-## Why does port scanning my ngrok domain show other open ports? {#open-ports-on-domain}
-
-ngrok uses a shared set of servers to service both HTTP(s)/TLS and TCP traffic.
-All HTTP(s)/TLS traffic is serviced on ports 80 and 443. For TCP traffic each
-customer is allocated one or more port(s) for their traffic. This means if you
-port scan a domain or ip address on the ngrok network you will potentially see
-a number of open ports. Those ports are configured to only route traffic to the
-customers who have allocated them.
-
-For HTTPS and TLS traffic ngrok uses [TLS SNI](https://en.wikipedia.org/wiki/Server_Name_Indication) to indicate which domain is being requested. This enables
-traffic to be routed to the correct customer. For TCP traffic ngrok uses the
-IP and port to indicate which customer to route traffic to.
-
-As with all publicly accessible IPs and ports on the internet anyone can send
-traffic to those endpoints, but ngrok provides a [number of
-mechanisms](/docs/guides/other-guides/security-dev-productivity/) to control
-what traffic actually gets routed to you ngrok agent or sdk.
 
 ## Why is my vendor asking me to install ngrok for 'site-to-site connectivity'? {#site-to-site-end-customer}
 

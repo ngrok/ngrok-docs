@@ -1,0 +1,199 @@
+---
+title: Domains
+---
+
+# Domains
+
+## Overview
+
+Domains enable you to create public endpoints with hostnames matching the
+domain. For example, after you create the domain `your-name.ngrok.app`, you may
+create the Endpoint `https://your-name.ngrok.app`
+
+Domain names may be a subdomain of an [ngrok-managed
+domain](#ngrok-managed-domains) like `foo.ngrok.app` or you can [bring your own
+domain](#branded-domains) like `example.your-domain.com` by creating a CNAME
+DNS record with your domain's DNS provider.
+
+Domains also enable you configure other domain-level behaviors including:
+
+- [**Global Load Balancer configuration**](#global-load-balancer) - Choose which points of presence handle traffic to a Domain's matching endpoints.
+- [**TLS Certificate management**](#tls-certificates) - Configure automatic certificate provisioning or select a certificate you uploaded yourself.
+- [**Dedicated IP address configuration**](#dedicated-ips) - Attach static, dedicated IPs for a Domain's matching endpoints receive traffic on.
+
+You can manage Domains on your [ngrok Dashboard](https://dashboard.ngrok.com/domains)
+or via the [ngrok API](#api).
+
+## Public endpoints
+
+A Domain's primary responsibility is to enable you to create [public
+endpoints](/universal-gateway/public-endpoints/) with a hostname matching the
+domain. These are called "matching endpoints". For example, after you create
+the Domain `app.example.com`, you can create the Endpoint
+`https://app.example.com`.
+
+When you create a Domain, you may create matching public endpoints with the
+following constraints:
+
+| Endpoint Protocol | Allowed Endpoints                                                                                 |
+| ----------------- | ------------------------------------------------------------------------------------------------- |
+| `http`            | Matching endpoints on port `80` of the Domain.                                                    |
+| `https`           | Matching endpoints on port `443` of the Domain.                                                   |
+| `tls`             | Matching endpoints on port `443` of the Domain.                                                   |
+| `tcp`             | Not allowed. Public TCP endpoints must match a [TCP Address](/univserval-gateway/tcp-addresses/). |
+
+If you configure your Domain to use [dedicated IPs](#dedicated-ips), these
+restrictions are removed and you may create matching endpoints on any ports.
+
+### Wildcard Domains
+
+You may create a Domain with a wildcard name, e.g. `*.example.com`. A wildcard
+domain enables you to:
+
+- Create an endpoint which receives traffic for all of its subdomains, e.g.
+  `https://*.example.com`. Consult the documentation for [wildcard
+  endpoints](/universal-gateway/endpoints/http/#wildcard-endpoints) to understand
+  the rules for matching and precedence.
+
+- Create an endpoint on any subdomain which matches the wildcard, e.g.
+  `https://foo.example.com` or `https://foo.bar.baz.example.com`
+
+The wildcard `*` character may only be used as the first part of a
+domain, you may not create domains like `app.*.example.com` or
+`*-app.example.com`.
+
+### Ownership
+
+Your account exclusively owns its Domains and all of their nested subdomains
+within ngrok. That means:
+
+- No account may create a Domain with a name that is a subdomain of your Domains.
+- No other account may create endpoints with a hostname matching your Domain or
+  any of its nested subdomains.
+
+For example, if you create a Domain with the name `foo.ngrok.app`:
+
+- No other account create the Domains `foo.ngrok.app` or `bar.foo.ngrok.app`.
+- No other account may create the endpoints `https://foo.ngrok.app` or `https://bar.foo.ngrok.app`.
+
+## Bring your own domain {#branded-domains}
+
+You can use any domain name that you already own with ngrok, e.g.
+`app.your-domain.com`. To do so, you will create a CNAME record for that domain
+to point traffic from the domain to ngrok's cloud service. When you create a
+Domain, you will be presented with a target value for the CNAME record you need
+to create. If you [create the Domain via
+API](/api/resources/reserved-domains/), this value is the `cname_target` field.
+
+If you bring your own [wildcard domain](#wildcard-domains), you will need to
+create a second DNS CNAME record for [wildcard TLS Certificate
+provisioning](/universal-gateway/tls-certificates/#wildcard-domains).
+
+ngrok is not a domain registrar; you must already own a domain name to use it
+with ngrok.
+
+### Apex domains
+
+If you want to use an apex domain (e.g. `example.com`) with ngrok, you must use
+a DNS provider that supports an ALIAS record or CNAME flattening because the
+DNS RFC does not permit CNAME records for apex domains. Because of how
+ALIAS/CNAME flattening is implemented, apex domains will not take advantage of
+the [Global Load Balancer](#global-load-balancer). If you are trying to create
+your apex domain because you need to create endpoints for multiple subdomains,
+use a [wildcard domain](#wildcard-domains) instead.
+
+## Global Load Balancer
+
+The [Global Load Balancer](/universal-gateway/network/global-load-balancer)
+uses latency-aware DNS records to direct clients to the IPs of the nearest
+[points of presence](/universal-gateway/network/points-of-presence/).
+
+Domains allow you to configure which points of presence the Global Load
+Balancer may resolve clients to. This allows you to select which points of
+presence will receive traffic for the Domain's matching endpoints. To disable
+the Global Load Balancer, you may configure a domain to only resolve a single
+point of presence.
+
+[Contact us](mailto:support@ngrok.com) if you need to configure global load balancing
+on your domain.
+
+## TLS Certificates
+
+Domains manage the [TLS Certificate](/universal-gateway/tls-certificates/) used
+to terminate TLS connections to the Domain's matching endpoints. When you
+create a Domain, you may choose to allow ngrok to automatically provision TLS
+certificates for you or to upload your own TLS certificate.
+
+Consult the documentation on [TLS
+Certificates](/universal-gateway/tls-certificates/) for additional details on
+certificate provisioning and management.
+
+## Dedicated IPs
+
+By default, a Domain's matching Endpoints receive traffic on a set of
+multi-tenant [IP addresses](/universal-gateway/network/ip-addresses) that are
+shared among all ngrok accounts. You may instead configure a Domain's matching
+endpoints to receive traffic on IP addresses that are dedicated to your
+account.
+
+If your Domain uses dedicated IPs, you may create public endpoints on _any_
+port numbers, not just 80 and 443.
+
+[Contact us](mailto:support@ngrok.com) if you need to configure dedicated IPs for your
+domains.
+
+## ngrok Managed Domains
+
+If you don't own a domain that you want to use with ngrok, you can create a
+Domain that is a subdomain of an ngrok-managed base domain. The ngrok-managed
+base domains are:
+
+| Domain             | Availability                                      | HSTS Global Preload |
+| ------------------ | ------------------------------------------------- | ------------------- |
+| `ngrok.app`        | Available to paying accounts                      | Yes                 |
+| `ngrok.dev`        | Available to paying accounts                      | Yes                 |
+| `ngrok.pizza`      | Available to paying accounts                      | No                  |
+| `ngrok-free.app`   | Used by free accounts                             | Yes                 |
+| `ngrok-free.dev`   | Used by free accounts                             | Yes                 |
+| `ngrok-free.pizza` | Used by free accounts (coming soon)               | No                  |
+| `ngrok.io`         | Discontinued and only available to older accounts | No                  |
+
+### Public Suffix List
+
+The ngrok-managed base domains are on the [Public Suffix
+List](https://publicsuffix.org/). Browsers use the Public Suffix List to
+guarantee that cookies from one subdomain cannot be accessed by other
+subdomains.
+
+### HSTS Preload
+
+Some of the ngrok-managed base domains are on the global
+[HSTS](https://en.wikipedia.org/wiki/HTTP_Strict_Transport_Security) preload
+list. If the domain of the URL is on the [global HSTS preload
+list](https://hstspreload.org/), modern browsers automatically convert requests
+with an `http` scheme to `https`.
+
+If you need to create unencrypted `http` endpoints, you should create them with
+hostnames that are not on the HSTS Global Preload like `ngrok.io` and
+`ngrok.pizza`.
+
+ngrok does not prohibit you from creating `http` endpoints with hostnames whose
+base domain is on the global HSTS preload list because non-browser clients
+(like `curl`) can still be used to make unencrypted HTTP requests to them.
+
+## API
+
+Domains are programatically managed via:
+
+- [`/reserved_domains` API Resource](/api/resources/reserved-domains/)
+
+## Pricing
+
+Domains are available on all plans. Some Domain features require upgrades. See
+the [Pricing page](https://ngrok.com/pricing) for details.
+
+| Feature                | Plans                                                                             |
+| ---------------------- | --------------------------------------------------------------------------------- |
+| Domains                | All plans. The Domain name is assigned on Free, you may choose it on other plans. |
+| Bring-your-own domains | Personal, Pro, Enterprise, Pay-as-you-go                                          |
+| Wildcard Domains       | Enterprise                                                                        |

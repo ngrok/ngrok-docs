@@ -1,0 +1,158 @@
+---
+sidebar_position: 0
+title: Endpoints
+---
+
+# Endpoints
+
+Endpoints are at the center of everything in ngrok; they are how you receive,
+route, transform and forward traffic. Endpoints are how you put your apps and
+APIs online.
+
+## What is an endpoint?
+
+TODO
+
+## Quickstart
+
+### Agent Endpoint
+
+TODO
+
+### Cloud Endpoint
+
+TODO
+
+## URL
+
+TODO
+An endpoint's URL is how you connect to it.
+
+## Protocol
+
+Endpoints have one of four supported **protocols**:
+
+- [HTTP/S Endpoints](/universal-gateway/endpoints/http) - `http`, `https`
+- [TCP Endpoints](/universal-gateway/endpoints/tcp) - `tcp`
+- [TLS Endpoints](/universal-gateway/endpoints/tls) - `tls`
+
+An Endpoint's protocol is specified in the scheme of its [URL](#url), e.g.
+`https://app.example.com`, `tcp://db.internal:3306`
+
+An Endpoint's protocol determines:
+
+1. how it processes connections that it receives
+1. the phases, variables, and actions that may be defined on its [Traffic
+   Policy](#traffic-policy).
+1. what hostnames and ports may be specified in its URL
+
+## Type
+
+Endpoints have a **type**, either `agent` or `cloud`. An Endpoint's `type`
+determines its lifecycle, where its configuration is defined, and how it
+handles connections.
+
+**Agent Endpoints** (`agent`) are for creating connectivity to upstream
+applications. They are created and configured by Secure Tunnel agent processes
+and live for the lifetime of that agent process. They forward connections they
+receive to the agent that started them.
+
+**Cloud Endpoints** (`cloud`) are persistent endpoints whose creation, deletion
+and configuration is managed centrally via the Dashboard or API. They use
+Traffic Policy to handle traffic, usually routing to Agent Endpoints.
+
+##### Lifecycle
+
+- **Agent Endpoints** are created by Secure Tunnel agents. They live for the
+  lifetime of the agent process that started them. When the agent process
+  terminates, the endpoint is removed.
+- **Cloud Endpoints** are persistent endpoints created via the API or Dashboard.
+  They exist permanently until they are explicitly deleted.
+
+##### Connection Handling
+
+- **Agent Endpoints** forward their traffic to the agent that created them.
+- **Cloud Endpoints** handle traffic they receive via their Traffic Policy.
+
+##### Configuration
+
+- **Agent Endpoints** configuration is defined by the agent which initiated them.
+  The API and Dashboard provide a read-only view of their configuration.
+- **Cloud Endpoints** configuration is managed centrally via the API or Dashboard.
+
+## Binding
+
+Endpoints have a **binding** which is one: `public`, `internal` or
+`kubernetes`. An Endpoint's binding determines where it is available to receive
+traffic. Said another way, the binding defines where an endpoint 'listens'.
+
+- **Public Endpoints** (`public`) - Endpoints with a `public` binding have a
+  publicly addressable URL that receives traffic from the internet via the
+  ngrok cloud service's global points of presence. e.g.
+  `https://inconshreveable.ngrok.app`, `https://blog.inconshreveable.com`.
+
+- **Internal Endpoints** (`internal`) - Endpoints with an `internal` binding
+  can only receive traffic forwarded to them from other Endpoints in your ngrok
+  account via the `forward-internal`. Internal endpoints have URLs that end in
+  `.internal`. Example URLs: `https://example.internal`, `tcp://ssh.internal:22`
+
+- **Kubernetes Endpoints** (`kubernetes`) - Endpoints with a `kubernetes`
+  binding are private endpoints that are only available inside of Kubernetes
+  clusters where you installed the ngrok [Kubernetes Operator](/k8s). Example
+  URLs: `http://service.namespace`, `tcp://db.controlplane:5432`
+
+## Traffic Policy
+
+Every endpoint may specify a [Traffic Policy](/traffic-policy) to handle the
+traffic it receives with actions to route, transform, authenticate or reject
+the traffic it receives.
+
+TODO Example
+
+## Pooling
+
+[Endpoint Pooling](/universal-gateway/endpoints/pooling) allows you to create
+multiple endpoints with the same URL. Traffic sent to a URL with an Endpoint
+Pool is load balanced among the Endpoints in the pool.
+
+You may set `allow_pooling: false` on an Endpoint to disallow Endpoint Pooling
+on its URL.
+
+:::info Coming Soon
+
+This feature is not yet generally available. [Contact us](mailto:support@ngrok.com) to
+request access.
+
+:::
+
+## API
+
+[Cloud Endpoints](/universal-gateway/endpoints/cloud-endpoints) are
+programatically managed via:
+
+- [`/endpoints` API Resource](/api/resources/endpoints/) of the [API](/api/)
+- [`CloudEndpoint` CRD](/k8s/crds/) of the [Kubernetes Operator](/k8s/)
+
+[Agent Endpoints](/universal-gateway/endpoints/agent-endpoints), by contrast,
+are programtically managed via:
+
+- [Agent SDKs](/agent-sdks/)
+- [Agent API](/agent/api/)
+- [Kubernetes Operator](/k8s/getting-started-kic/)
+
+Agent Endpoints are also included in a read-only capacity via:
+
+- [`/endpoints` API Resource](/api/resources/endpoints/#list-endpoints) of the [API](/api)
+
+## Pricing
+
+Seat-based plans (Personal, Pro and Enterprise) include a fixed number of
+endpoints that you may create based on the number of licenses you have
+purchased.
+
+On the Pay-as-you-go plan, there is no limit on the number of endpoints you
+create. An endpoint that transmits data in a billing period is counted as an
+active endpoint for billing purposes.
+
+See [Pricing](https://ngrok.com/pricing)
+for additional details on endpoint billing and pricing.
