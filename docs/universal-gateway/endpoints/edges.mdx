@@ -1,0 +1,257 @@
+# Edges
+
+## Deprecation
+
+::::warning
+Edges, Routes, Modules, Backends and Labeled Tunnels are deprecated. See the [Migration Guide](#migration-guide).
+::::
+
+### Sunset Date
+
+There is no planned date when Edges will be sunset and turned off.
+
+Edges are still supported and continue to work as-is. When a date is chosen, it
+will be communicated to all Edges users.
+
+### Migration Guide
+
+We've replaced Edges with new features which are both simpler and more powerful
+than their Edges counterparts. Use the following replacement guide to migrate
+off of Edges:
+
+| Feature                    | Replacement                                                                                                                   |
+| -------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| **Edges**                  | [Cloud Endpoints](/universal-gateway/cloud-endpoints/)                                                                        |
+| **Modules**                | [Traffic Policy Actions](/traffic-policy/actions/)                                                                            |
+| **Routes**                 | [Traffic Policy Expressions](/traffic-policy/concepts/expressions/)                                                           |
+| **Labeled Tunnels**        | [Internal Endpoints](/universal-gateway/internal-endpoints/)                                                                  |
+| **Tunnel Group Backend**   | [Forward Internal Action](/traffic-policy/actions/forward-internal/) and [Endpoint Pools](/universal-gateway/endpoint-pools/) |
+| **HTTP Response Backends** | [Custom Response Traffic Policy Action](/traffic-policy/actions/custom-response)                                              |
+| **Failover Backends**      | [Forward Interal Action](/traffic-policy/actions/forward-internal/#on-error)'s `on_error` property                            |
+| **Weighted Backends**      | [`rand.double()` Traffic Policy Macro](/traffic-policy/macros/utility/#randdouble--double)                                    |
+| **Load Balancing**         | [Endpoint Pools](/universal-gateway/endpoint-pools/)                                                                          |
+
+## Overview
+
+Edges are a way to create persistent, centrally managed endpoints via the ngrok
+dashboard or API. Edges enable you to centrally manage your endpoints in the
+ngrok dashboard or API instead of defining behaviors at the [Agent](/agent/) or
+[Agent SDK](/agent-sdks).
+
+With Edges, you start your agent once with labeled tunnels and then configure
+the Edge via the dashboard or API. When you make changes to your Edge's
+configuration by adding or updating modules, your app doesn’t go offline. You
+never have to restart the agent to pick up new command line flags or
+configuration files.
+
+Edges enable you to:
+
+- Enhance your endpoints with [Modules](#modules) using the dashboard or API
+  without restarting the Agent.
+- Centrally manage your module configurations in ngrok's cloud service. This
+  decouples the configuration of module behavior on your endpoint from the agents
+  where traffic is routed to.
+- Load balance traffic to different ngrok agents
+- Apply different configurations for each path in your application. For
+  example, you may apply OAuth on `/app` and Compression on `/static/css`.
+
+### Concepts
+
+The Edges system includes the following concepts:
+
+- **Edges** - there are separate Edge types for each protocol: HTTPS, TCP, and TLS.
+- **Routes** - HTTPS Edges have one or more Routes which receive traffic based on a URL path prefix selector.
+- **Modules** - Edges and Routes have zero or more Modules which transform and authenticate traffic on that Edge/Route.
+- **Backends** - Routes and Edges send traffic to a Backend to be handled after it has been processed by the Modules. Backends send traffic to Labeled Tunnels or other Backends.
+- **Labeled Tunnels** - Tunnel Group Backends send traffic to labeled tunnels that have been started by agents.
+
+## Modules
+
+Modules are a type of middleware that enable you to manipulate traffic to your applications.
+Modules can provide authentication, resiliency, acceleration, transformation,
+security and observability to the traffic that transits through ngrok to your upstream
+applications.
+
+## Backends
+
+After traffic to an Edge has been processed by the Modules, it is sent to a
+Backend. A Backend is the last middleware to be applied to your traffic
+and it determines where the traffic is sent. There are multiple types of
+Backends, each with different behaviors.
+
+### Tunnel Group
+
+Tunnel Group backends allow you to load balance traffic equally among multiple
+ngrok agents. Tunnel Group backends define a _label selector_. A Tunnel Group
+backend will balance traffic among all ngrok tunnels whose labels match its
+label selector.
+
+For example, if your Tunnel Group has a label selector of `app=dashboard, version=1`:
+
+- A tunnel with the labels `app=dashboard, version=1` will match
+- A tunnel with the labels `app=dashboard, version=1, color=blue` will match.
+- A tunnel with the labels `app=api, version=1` will not match.
+
+Agents and Agent SDKs can start labeled tunnels. Using our previous example of
+a tunnel group with the label selector of `app=dashboard, version=1`, you can
+start a matching tunnel with:
+
+```bash
+ngrok tunnel 80 --label="app=dashboard,version=1"
+```
+
+Consult the documentation of the [`ngrok tunnel` command in the ngrok
+agent](/agent/cli#ngrok-tunnel) for additional details.
+
+When used with HTTPS edges, balancing among tunnels is distributed on a
+per-request basis.
+
+When used with TLS or TCP edges, balancing among tunnels is distributed on a
+per-connection basis.
+
+### HTTP Response
+
+HTTP Response backends return a fixed HTTP response with a status code, header
+and body text that you configure. HTTP Response backends are useful to:
+
+- Render customized error pages like 503 when used as part of a failover
+  backend
+- Redirect traffic with a 30X redirect response for a Route that it is set on
+
+### Failover
+
+Failover backends define multiple other backends to try in order. The first
+backend that succeeds will be used. A backend 'fails' only if it cannot be
+dialed. If a connection is established or an HTTP request is sent to a backend,
+no failover will occur, even if the backend fails to respond or responds with
+an error.
+
+### Weighted
+
+Weighted backends will distribute traffic to one or more backends proportional
+to the `weight` for each of its backends. Weighted backends are useful for:
+
+- Canary deploys where you want to distribute a small percentage of traffic to
+  new backends
+- Gradual rollout deployments where traffic is slowly migrated from the
+  previous version of an upstream service to a newer version
+- A/B testing different versions of the same service
+
+When used with HTTPS edges, balancing among child backends is distributed on a
+per-request basis.
+
+When used with TLS or TCP edges, balancing among child backends is distributed
+on a per-connection basis.
+
+## HTTPS
+
+### HTTPS Edges
+
+- An HTTPS Edge is attached to one or more Domains. For each Domain, it creates
+  an [Endpoint](/universal-gateway/endpoints/) that it listens for traffic on.
+- When a Domain is associated with an HTTPS edge, agents may no longer start
+  endpoints on that Domain. You can always detach a Domain from your Edge if you want
+  to create Endpoints on it from an Agent or Agent SDK.
+- An HTTPS Edge has one or more Routes. Routes have selectors which enable you
+  to process traffic for paths like `/app` or `/static` differently.
+- Each Route can apply different Modules. Routes can also even send traffic to
+  different Backends.
+- HTTPS Edges do not create a corresponding HTTP endpoint. Instead, all HTTP
+  traffic to domains associated with your HTTPS edges is automatically redirected
+  to HTTPS.
+- When you create an HTTPS Edge via the dashboard, it will automatically create
+  a new Domain with a random name and assign it to your Edge. If you are on the
+  free plan and have created your free domain, it will adopt that domain.
+- When you create an HTTPS Edge via the dashboard, it will automatically create
+  a Failover Backend with two entries. First, a tunnel group backend with a
+  unique label and second an HTTP Response backend which renders an error if
+  there are no tunnels online in the tunnel group.
+
+### HTTPS Modules
+
+Use modules to modify the behavior of traffic flowing through your endpoints.
+
+| Module                                                                               | Description                                                                                                    |
+| ------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------- |
+| [Circuit Breaker](/api/resources/edge-route-circuit-breaker-module/)                 | Protect upstream services by rejecting traffic when they become overwhelmed.                                   |
+| [Compression](/api/resources/edge-route-compression-module/)                         | Accelerate upstream services by compressing HTTP response bodies with gzip or deflate.                         |
+| [IP Restrictions](/api/resources/edge-route-ip-restriction-module/)                  | Allow or deny traffic based on the source IP of connections.                                                   |
+| [Mutual TLS](/api/resources/https-edge-mutual-tls-module/)                           | Enforce mutual TLS auth with a configured set of CAs.                                                          |
+| [OAuth](/api/resources/edge-route-o-auth-module/)                                    | Enforce an OAuth flow to well-known IdPs like Google, optionally authorizing users by domain or email address. |
+| [OpenID Connect](/api/resources/edge-route-oidc-module/)                             | Enforce an OpenID Connect flow to a federated IdP.                                                             |
+| [Request Headers](/api/resources/edge-route-request-headers-module/)                 | Add or remove headers from HTTP requests before they are sent to your upstream service.                        |
+| [Response Headers](/api/resources/edge-route-response-headers-module/)               | Add or remove headers from HTTP responses before they are returned to the client.                              |
+| [SAML](/api/resources/edge-route-saml-module/)                                       | Enforce a SAML flow to a federated IdP, optionally authorizing users by group.                                 |
+| [TLS Termination](/api/resources/https-edge-tls-termination-module/)                 | Customize TLS termination behavior, like the minimum supported version of TLS.                                 |
+| [Traffic Policy](/api/resources/edge-route-traffic-policy-module/)                   | Influence and control traffic to and from your upstream service by configuring a powerful policy engine.       |
+| [User Agent Filter](/docs/api/resources/edge-route-user-agent-filter-module/)        | Block bots or browsers with rules that allow or deny HTTP requests based on `User-Agent` header.               |
+| [Webhook Verification](/api/resources/edge-route-webhook-verification-module/)       | Restrict access by verifying HTTP requests are signed by a webhook provider like Slack or GitHub.              |
+| [Websocket TCP Converter](/api/resources/edge-route-websocket-tcp-converter-module/) | Convert binary websocket connections to backend TCP connections.                                               |
+
+### HTTPS Routes
+
+When you use [Edges](#edges) to manage your endpoints, you can apply different
+modules on a per-path basis. For example, you could apply auth to `/dashboard`
+and compression to `/static`.
+
+We call this primitive a Route. Each Route is defined using a path selector,
+which will match a path on the request to that endpoint. This can be useful for
+adding OAuth to specific areas of your website, or stitching multiple services
+together into a single website. Routes can share the same backend, or you can
+use a different backend for each route.
+
+## TLS
+
+### TLS Edges
+
+- A TLS Edge is attached to one or more Domains. For each Domain, it creates
+  a TLS Endpoint that it listens for traffic on.
+- When a Domain is associated with a TLS Edge, agents may no longer start
+  endpoints on that Domain. You can always detach a Domain from your Edge if you
+  want to create Endpoints on it from an Agent or Agent SDK.
+- Modules on a TLS Edge are attached directly to the edge itself. There are no
+  Routes.
+- When you create a TLS Edge via the dashboard, it will automatically create a
+  new Domain with a random name and assign it to your Edge.
+- When you create an TLS Edge via the dashboard, it will automatically create
+  a [Tunnel Group Backend](/universal-gateway/edges/#tunnel-group) with a unique label.
+
+### TLS Modules
+
+Use modules to modify the behavior of traffic flowing through your endpoints.
+
+| Module                                                            | Description                                                                                                          |
+| ----------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| [Mutual TLS](/api/resources/tls-edge-mutual-tls-module/)          | Perform mutual TLS authentication when terminating TLS connections with a configured set of certificate authorities. |
+| [TLS](/api/resources/tls-edge-tls-termination-module/)            | Configure whether ngrok terminates TLS traffic at its edge or forwards the TLS traffic through unterminated.         |
+| [IP Restrictions](/api/resources/tls-edge-traffic-policy-module/) | Allow or deny traffic based on the source IP of connections                                                          |
+| [Traffic Policy](/api/resources/tls-edge-traffic-policy-module/)  | Influence and control traffic to and from your upstream service by configuring a powerful policy engine.             |
+
+## TCP
+
+### TCP Edges
+
+[Edges](/universal-gateway/edges) enable you to centrally manage your endpoints'
+Module configurations in the ngrok dashboard or API instead of defining them
+via an Agent or Agent SDK.
+
+- A TCP Edge is attached to one or more TCP Addresses. For each TCP Address, it creates
+  a TCP Endpoint that it listens for traffic on.
+- When a TCP Address is associated with a TCP Edge, agents may no longer start
+  endpoints on that TCP Address. You can always detach a TCP Address from your
+  Edge if you want to create Endpoints on it from an Agent or Agent SDK.
+- Modules on a TCP Edge are attached directly to the edge itself. There are no
+  Routes.
+- When you create a TCP Edge via the dashboard, it will automatically create a
+  new TCP Address assign it to your Edge.
+- When you create a TCP Edge via the dashboard, it will automatically create a
+  tunnel group backend with a unique label.
+
+### TCP Modules
+
+Use modules to modify the behavior of traffic flowing through your endpoints.
+
+| Module                                                            | Description                                                                                              |
+| ----------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| [IP Restrictions](/api/resources/tcp-edge-ip-restriction-module/) | Allow or deny traffic based on the source IP of connections                                              |
+| [Traffic Policy](/api/resources/tcp-edge-traffic-policy-module/)  | Influence and control traffic to and from your upstream service by configuring a powerful policy engine. |

@@ -1,0 +1,145 @@
+# Internal Endpoints
+
+## Overview
+
+Internal endpoints are secure, non-public endpoints. They enable you to connect
+an app to ngrok without making it addressable on the public internet. They only
+receive traffic that is forwarded to them via the [`forward-internal` traffic
+policy action](/traffic-policy/actions/forward-internal).
+
+Internal endpoints are what you route traffic to. It is a common pattern to
+create a public [cloud endpoint](/universal-gateway/endpoints/cloud) where you
+manage centralized policy before routing its traffic with [traffic policy
+expressions](/traffic-policy/concepts/expressions/) and the `forward-internal`
+action to one or more internal [agent
+endpoints](/universal-gateway/endpoints/agent).
+
+Internal Endpoints have a
+[binding](/universal-gateway/endpoints/overview/#binding) of `internal` and
+their URL hostnames must end with `.internal`.
+
+## Quickstart
+
+### Agent Endpoint
+
+Create an internal agent endpoint by specifying a binding of `internal` when
+you create an endpoint.
+
+```bash
+ngrok http 8080 --url "https://example.internal" --binding internal
+```
+
+### Cloud Endpoint
+
+Create an internal agent endpoint by specifying a binding of `internal` when
+you create an endpoint.
+
+```bash
+ngrok api create \
+  --type cloud \
+  --binding internal \
+  --url "https://example.internal" \
+  --traffic-policy "$(cat traffic-policy.yml)"
+```
+
+#### `traffic-policy.yml`
+
+```yaml
+on_http_request:
+  - actions:
+      - type: custom-response
+        config:
+          status_code: 200
+          headers:
+            content-type: text/plain
+          content: "Hello world!"
+```
+
+### Forwarding
+
+Internal endpoints aren't useful unless create another endpoint forwards to
+them. To complete our above examples, create another **public** endpoint which
+forwards to your internal endpoint, `https://example.internal`.
+
+```bash
+ngrok api create \
+  --type cloud \
+  --url "https://your-name.ngrok.app" \
+  --traffic-policy "$(cat traffic-policy.yml)"
+```
+
+#### `traffic-policy.yml`
+
+```yaml
+on_http_request:
+  - actions:
+      - type: forward-internal
+        config:
+          url: https://example.internal
+```
+
+Now, you can make a request to `https://your-name.ngrok.app` and see that it is
+forwarded to `https://example.internal`.
+
+## Inferred Binding
+
+ngrok infers an `internal` binding for any endpoint created with a `.internal`
+hostname, so you may omit the `binding` property in most cases. For example,
+the following command creates an endpoint with an internal binding.
+
+```bash
+ngrok http 8080 --url "https://example.internal"
+```
+
+## URLs
+
+- **Scheme** - Internal endpoints support all [Endpoint
+  Protocols](/universal-gateway/endpoints/#protocol) (`http`, `https`, `tcp`
+  and `tls`).
+- **Hostname** - Hostnames must end with `.internal`. They may contain up to 5
+  subdomains. You must specify a URL with a hostname, randomly-assigned
+  hostnames are not supported. You may specify wildcard hostnames.
+- **Port** - All port numbers [1-65535] are valid. Port must be specified for
+  `tcp` endpoints.
+- **Namespacing** - Internal endpoints are namespaced on a per-account basis.
+  Two accounts may have internal endpoints with the same URL (e.g.
+  https://api.internal) but those endpoints will not conflict or
+  [pool](/universal-gateway/endpoint-pools).
+
+#### Examples
+
+- `https://example.internal`
+- `https://example.foo.bar.internal`
+- `https://example.internal:12345`
+- `tls://example.internal`
+- `tls://example.internal:12345`
+- `tcp://example.internal:12345`
+
+## Type and Pooling
+
+- Internal endpoints support all [Endpoint
+  Types](/universal-gateway/endpoints/#type) (`agent` and `cloud`).
+- Internal endpoints support [Endpoint
+  Pooling](/universal-gateway/endpoint/pools).
+
+## HTTP/S `on_tcp_connect` phase
+
+The `on_tcp_connect` Traffic Policy phase is invalid and never triggers for
+internal `http` and `https` endpoints.
+
+This is because when you use the `forward-internal` action to forward traffic
+to an `http` or `https` endpoint, a new TCP connection **is not** established
+between the two endpoints. See the [`forward-internal`
+documentation](/traffic-policy/actions/forward-internal/) for additional
+details.
+
+## API
+
+Internal endpoints can be managed programatically. Consult the documentation on
+[Endpoint APIs](/universal-gateway/endpoints/overview/#api).
+
+## Pricing
+
+Internal endpoints are available on the Pay-as-you-go plan. Consult the
+[Endpoints Pricing](/universal-gateway/endpoints/overview/#pricing)
+documentation for billing details.

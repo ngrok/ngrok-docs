@@ -1,0 +1,82 @@
+# Cloud Endpoints
+
+## Overview
+
+Cloud Endpoints are persistent, always-on endpoints whose creation, deletion
+and configuration is managed centrally via the Dashboard or API. They exist
+pemanently until they are explicitly deleted. Cloud Endpoints do not forward
+their traffic to an agent by default and instead only use their attached
+Traffic Policy to handle connections.
+
+## Quickstart
+
+TODO: dashboard and API
+
+## Use cases
+
+Cloud endpoints are a good choice when you want to:
+
+- Centrally manage an endpoint's traffic policy configuration
+- Create always-on endpoints that aren't tied to the lifetime of an agent
+  process
+- Route incoming traffic to multiple other endpoints based on path, IP, header,
+  etc.
+- Create a loose coupling between the traffic-receiving endpoint and the
+  traffic-servicing endpoint.
+- Update an endpoint's traffic policy without taking it offline.
+
+It is a common pattern to create public cloud endpoints that route traffic to
+internal agent endpoints via the [forward
+action](/http/traffic-policy/actions/forward-internal/). The traffic policy of
+a Cloud Endpoint must terminate traffic via actions such as `deny`, `redirect`,
+`custom-response`, or `forward-internal`.
+
+## Differences from Agent Endpoints
+
+- **Always-on** - Unlike Agent Endpoints, Cloud Endpoints are always-on and
+  persistent. They exist permanently until they are explicitly deleted.
+- **Centralized Management** - Cloud Endpoints are created, managed and
+  configured centrally via the API or Dashboard. You can update their Traffic
+  Policy and other properties at any time via the API or Dashboard. Agent
+  Endpoints, by contrast, can only be created and configured by the agent that
+  initiated them. They are read-only in the API and Dashboard.
+- **URLs** - Cloud Endpoints must specify a fully qualified URL when created.
+  You cannot ask for a URL to be randomly chosen for you.
+- **Traffic Policy** - Cloud Endpoints handle traffic they receive via their
+  Traffic Policy. Unlike Agent Endpoints, they do not implicitly forward their traffic
+  to an agent. You must specify a non-empty Traffic Policy when creating a
+  Cloud Endpoint.
+- **API** - Cloud Endpoints API representation specifies `type: cloud` and its
+  `tunnel_session` reference is `null`.
+
+## Protocols, Binding and Pooling
+
+- **Protocols** - Cloud endpoints support all [Endpoint
+  Protocols](/universal-gateway/endpoints/#protocol) (`http`, `https`, `tcp`
+  and `tls`).
+- **Bindings** - Cloud endpoints support all [Endpoint
+  Bindings](/universal-gateway/endpoints/overview/#bindings) (`public`,
+  `internal` and `kubernetes`).
+- **Pooling** - Cloud endpoints support [Endpoint
+  Pooling](/universal-gateway/endpoints/pools/). They may also pool with
+  themselves and with agent endpoints.
+
+## Guides
+
+For examples of cloud endpoint usage, check out the following guides:
+
+- [Forwarding Traffic to and Load Balancing Internal Endpoints with Cloud Endpoints](/guides/other-guides/forwarding-and-load-balancing-with-cloud-endpoints/)
+- [Path-based Routing and Policy Decentralization with Cloud Endpoints](/guides/other-guides/path-based-routing-and-policy-decentralization-with-cloud-endpoints/)
+
+## API
+
+Cloud Endpoints can be managed programatically via:
+
+- [`/endpoints` API Resource](/api/resources/endpoints/) of the [API](/api/)
+- [`CloudEndpoint` CRD](/k8s/crds/) of the [Kubernetes Operator](/k8s/)
+
+## Pricing
+
+Cloud endpoints are available on the pay-as-you-go plan. Consult the [Endpoints
+Pricing](/universal-gateway/endpoints/overview/#pricing) documentation for
+billing details.

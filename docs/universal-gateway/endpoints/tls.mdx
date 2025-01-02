@@ -1,6 +1,6 @@
 ---
 sidebar_position: 1
-title: Overview
+title: TLS Endpoints
 pagination_next: tls/ip-restrictions
 ---
 
@@ -60,24 +60,99 @@ TLS endpoints enable you to deliver any network service that runs over a
 TLS-based protocol. TLS endpoints make no assumptions about the wrapped
 protocol being transported.
 
-TLS endpoints use the [Server Name Information (SNI)](#compatible-clients) data
-on incoming TLS connections to route connections to the appropriate endpoint.
+TLS endpoints inspect the [Server Name Indication (SNI)](#sni)
+data on incoming TLS connections to route connections to the appropriate
+endpoint.
 
-Because the TLS protocol has limited application-level semantics, ngrok can
-only offer a [limited set of modules](#modules) to handle TLS traffic.
-
-You may choose where to terminate TLS, including at your upstream service or at
-the ngrok agent to achieve end-to-end encryption (E2EE). We call this [Zero
-Knowledge TLS](/tls/tls-termination#zero-knowledge-tls). When your TLS
-endpoints operate in this mode, the ngrok edge can not see the payloads that
-transfer through your endpoints.
+Because the TLS protocol describes no application-level semantics, ngrok can
+only offer a [limited set of traffic policy actions](/traffic-policy/actions/)
+to handle TLS traffic.
 
 If you are delivering an HTTPS application, prefer to create an [HTTP
 Endpoint](/http/).
 
-## Example Usage
+## Quickstart
 
-### Terminate at Edge
+### Agent Endpoint
+
+<Tabs groupId="connectivity" queryString="cty">
+	<TabItem value="agent-cli" label="Agent CLI" default>
+		<CustomDomainAgentCliExample />
+	</TabItem>
+	<TabItem value="agent-config" label="Agent Config">
+		<CustomDomainAgentConfigExample />
+	</TabItem>
+	<TabItem value="ssh" label="SSH">
+		<CustomDomainSshExample />
+	</TabItem>
+	<TabItem value="go-sdk" label="Go">
+		<CustomDomainGoSdkExample />
+	</TabItem>
+	<TabItem value="javascript-sdk" label="Javascript">
+		<CustomDomainJavascriptSdkExample />
+	</TabItem>
+	<TabItem value="python-sdk" label="Python">
+		<CustomDomainPythonSdkExample />
+	</TabItem>
+	<TabItem value="rust-sdk" label="Rust">
+		<CustomDomainRustSdkExample />
+	</TabItem>
+	<TabItem value="k8s" label="Kubernetes Controller">
+		<CustomDomainKubernetesExample />
+	</TabItem>
+</Tabs>
+
+### Cloud Endpoint
+
+TODO
+
+## URLs
+
+URLs are validated differently depending on their
+[binding](/universal-gateway/endpoints/overview/#binding). Consult the following documentation for details on valid URLs for TLS endpoints:
+
+- [Public Endpoint URLs](/docs/universal-gateway/endpoints/public/#https-tls)
+- [Internal Endpoint URLs](/docs/universal-gateway/endpoints/internal/#urls)
+
+There is no standard scheme for TLS URLs so ngrok renders them as `tls://`.
+
+## Bindings
+
+TLS endpoints support `public` and `internal` bindings. `kubernetes` binding is
+not supported.
+
+## Traffic Policy
+
+Attach [Traffic Policy](/traffic-policy/) to endpoints to route, authenticate
+and transform the traffic through your TLS endpoints.
+
+### Authentication
+
+When you create public TLS endpoints, you often want to secure them with
+authentication. You can secure your TLS endpoints with the following [Traffic
+Policy](/traffic-policy/) actions. There is a limited set of actions available
+to authenticate TLS traffic because the TLS protocol is low-level.
+
+- [IP Restriction](/traffic-policy/actions/restrict-ips/)
+- [Mutual TLS](/traffic-policy/actions/terminate-tls/)
+
+## TLS
+
+### Termination
+
+TLS Endpoints provide you with the flexibility to define where TLS termination
+occurs. You may configure your endpoint to terminate TLS at the ngrok cloud
+service or you can achieve [end-to-end
+encryption](/universal-gateway/network/tls-termination/#end-to-end-encryption)
+by terminating at the agent or your upstream service. When you use end-to-end
+encryption, the ngrok cloud service can not see payload that transit through
+your endpoints.
+
+Consult the documentation on [TLS Termination
+Locations](/universal-gatway/network/tls-termination/#termination-location) for
+additional details.
+
+#### Cloud Service
 
 <Tabs groupId="connectivity" queryString="cty">
 	<TabItem value="agent-cli" label="Agent CLI" default>
@@ -108,40 +183,7 @@ Endpoint](/http/).
 
 <br />
 
-### Terminate at Upstream
-
-See [Zero-Knowledge TLS](/tls/tls-termination#zero-knowledge-tls) for additional details.
-
-<Tabs groupId="connectivity" queryString="cty">
-	<TabItem value="agent-cli" label="Agent CLI" default>
-		<AtUpstreamAgentCliExample />
-	</TabItem>
-	<TabItem value="agent-config" label="Agent Config">
-		<AtUpstreamAgentConfigExample />
-	</TabItem>
-	<TabItem value="ssh" label="SSH">
-		<AtUpstreamSshExample />
-	</TabItem>
-	<TabItem value="go-sdk" label="Go">
-		<AtUpstreamGoSdkExample />
-	</TabItem>
-	<TabItem value="javascript-sdk" label="Javascript">
-		<AtUpstreamJavascriptSdkExample />
-	</TabItem>
-	<TabItem value="python-sdk" label="Python">
-		<AtUpstreamPythonSdkExample />
-	</TabItem>
-	<TabItem value="rust-sdk" label="Rust">
-		<AtUpstreamRustSdkExample />
-	</TabItem>
-	<TabItem value="k8s" label="Kubernetes Controller">
-		<AtUpstreamKubernetesExample />
-	</TabItem>
-</Tabs>
-
-<br />
-
-### Terminate at Agent
+#### Terminate at Agent
 
 See [Zero-Knowledge TLS at the Agent](/tls/tls-termination#zero-knowledge-tls-at-the-agent) for additional details.
 
@@ -172,11 +214,58 @@ See [Zero-Knowledge TLS at the Agent](/tls/tls-termination#zero-knowledge-tls-at
 	</TabItem>
 </Tabs>
 
+<br />
+
+#### Terminate at Upstream
+
+<Tabs groupId="connectivity" queryString="cty">
+	<TabItem value="agent-cli" label="Agent CLI" default>
+		<AtUpstreamAgentCliExample />
+	</TabItem>
+	<TabItem value="agent-config" label="Agent Config">
+		<AtUpstreamAgentConfigExample />
+	</TabItem>
+	<TabItem value="ssh" label="SSH">
+		<AtUpstreamSshExample />
+	</TabItem>
+	<TabItem value="go-sdk" label="Go">
+		<AtUpstreamGoSdkExample />
+	</TabItem>
+	<TabItem value="javascript-sdk" label="Javascript">
+		<AtUpstreamJavascriptSdkExample />
+	</TabItem>
+	<TabItem value="python-sdk" label="Python">
+		<AtUpstreamPythonSdkExample />
+	</TabItem>
+	<TabItem value="rust-sdk" label="Rust">
+		<AtUpstreamRustSdkExample />
+	</TabItem>
+	<TabItem value="k8s" label="Kubernetes Controller">
+		<AtUpstreamKubernetesExample />
+	</TabItem>
+</Tabs>
+
+### Certificates
+
+It is very common to encounter certificate errors when working with TLS
+endpoints. When terminating TLS at ngrok's cloud service, ngrok will
+automatically select, provision and manage certs for you. When performing
+[end-to-end
+encryption](/universal-gateway/network/tls-termination/#end-to-end-encryption)
+by terminating at the agent or upstream service, you become responsible for
+provisioning, managing and distributing certificates.
+
+Consult the documentation on [TLS
+Certificates](/universal-gateway/tls-certificates/) for details about
+certificate selection, provisioning and management.
+
+## Agent Forwarding
+
 ### Re-encrypt to Upstream
 
-If you terminate at the ngrok edge or ngrok agent, you may want to re-encrypt
-the connection from the agent to your upstream service. The ngrok agent
-supports this behavior by using the non-standard `tls://` scheme syntax.
+If you terminate TLS at the ngrok cloud service or ngrok agent, you may want to
+re-encrypt the connection from the agent to your upstream service. The ngrok
+agent supports this behavior by using the non-standard `tls://` scheme syntax.
 
 <Tabs groupId="connectivity" queryString="cty">
 <TabItem value="agent-cli" label="Agent CLI" default>
@@ -243,103 +332,63 @@ the original client IP address to your upstream service.
 	</TabItem>
 </Tabs>
 
-## Behavior
+## Compatible Clients
 
-TLS endpoints allow you to deliver any application that uses TLS as its
-encryption transport. They provide you with complete flexibility to define
-where TLS termination occurs. You may ask ngrok to terminate TLS at the ngrok
-edge, the agent or at your upstream service. Consult the [TLS
-Termination](tls-termination) module documentation for additional detail.
+### SNI
 
-It is very common to encounter certificate errors when working with TLS
-endpoints because the behavior changes depending on where you terminate TLS.
-The [Certificates](tls-termination#certificates) documentation contains details
-about what certificates are used under which circumstances.
+TLS endpoints only work with modern TLS clients that populate the SNI
+extension. See the documentation on [TLS
+Termination](/universal-gateway/network/tls-termination#sni) for additional
+details on compatible clients.
 
-TLS endpoints always use 443 as the port on their domain. TLS endpoints use
-the [Server Name Information (SNI)](#compatible-clients) data on incoming TLS
-connections to route connections to the appropriate endpoint.
+### STARTTLS
 
 Protocols that begin in plain text and upgrade to TLS via a mechanism like
-STARTTLS in SMTP, IMAP, etc are not supported.
+STARTTLS in SMTP, IMAP, etc are not supported. If you need to support
+connections which upgrade to TLS, use a [TCP
+Endpoint](/universal-gateway/endpoints/tcp).
 
-### Endpoints
+## Observability
 
-When your TLS endpoint is online, it will be available as an [Endpoint
-resource](/api/resources/endpoints/). Endpoints have URLs, but there is no
-standard scheme for TLS URLs so ngrok renders them as `tls://`.
+### Traffic Inspector
 
-### Compatible Clients
+[Traffic Inspector](/obs/traffic-inspection) does not support TLS endpoints.
 
-All modern TLS clients populate the SNI extension. Some older clients do not.
-These clients will not work properly with ngrok's TLS endpoints. The following
-list of clients do not support SNI and will not work with TLS endpoints:
+### Log Export Events
 
-- Microsoft Internet Explorer 6.0
-- Microsoft Internet Explorer 7 & 8 on Windows XP or earlier
-- Native browser on Android 2.X
-- Java &lt;=1.6
-- [Python 2.X, 3.0, 3.1 if required modules are not installed](https://stackoverflow.com/questions/18578439/using-requests-with-tls-doesnt-give-sni-support/18579484#18579484)
+You can export logs of traffic to TLS endpoints with [ngrok's events
+system](/obs/). The following events are published for log exporting:
 
-A more complete list can be found on [the Server Name Indication page on
-Wikipedia](https://en.wikipedia.org/wiki/Server_Name_Indication#No_support)
+| Event                                                             | When                                                         |
+| ----------------------------------------------------------------- | ------------------------------------------------------------ |
+| [tcp_connection_closed.v0](/obs/reference/#tcp-connection-closed) | Published when a TCP connection to a TCP endpoint completes. |
 
-## Reference
+## API
 
-### Edges
+TLS Endpoints can be created programatically. Consult the documentation on
+[Endpoint APIs](/endpoints/overview/#api).
 
-[Edges](/network-edge/edges) enable you to centrally manage your endpoints'
-Module configurations in the ngrok dashboard or API instead of defining them
-via an Agent or Agent SDK.
+## Errors
 
-- A TLS Edge is attached to one or more Domains. For each Domain, it creates
-  a TLS Endpoint that it listens for traffic on.
-- When a Domain is associated with a TLS Edge, agents may no longer start
-  endpoints on that Domain. You can always detach a Domain from your Edge if you
-  want to create Endpoints on it from an Agent or Agent SDK.
-- Modules on a TLS Edge are attached directly to the edge itself. There are no
-  Routes.
-- When you create a TLS Edge via the dashboard, it will automatically create a
-  new Domain with a random name and assign it to your Edge.
-- When you create an TLS Edge via the dashboard, it will automatically create
-  a [Tunnel Group Backend](/network-edge/edges/#tunnel-group) with a unique label.
-
-### Modules
-
-Use modules to modify the behavior of traffic flowing through your endpoints.
-
-| Module                             | Description                                                                                                          |
-| ---------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| [Mutual TLS](mutual-tls)           | Perform mutual TLS authentication when terminating TLS connections with a configured set of certificate authorities. |
-| [TLS](tls-termination)             | Configure whether ngrok terminates TLS traffic at its edge or forwards the TLS traffic through unterminated.         |
-| [IP Restrictions](ip-restrictions) | Allow or deny traffic based on the source IP of connections                                                          |
-
-### Observability
-
-Use [ngrok's events system](/obs/) to capture logs of TLS connections to
-your endpoints.
-
-When TLS connections to your endpoints are closed,
-[tcp_connection_closed.v0](/obs/reference/#tcp-connection-closed) events are
-published.
-
-### Errors
-
-If the TLS handshake fails, a TLS abort code will be sent to the client.
+If a TLS handshake fails, an appropriate TLS abort code will be sent to the
+client.
 
 In all other cases, if an error is encountered while handling TLS connections
 to your endpoints (e.g. no available backends or internal server error), the
-connection will simply be closed. The TLS protocol and its implementations are
-not sufficiently flexible enough to deliver additional rich error information
-when failures are encountered.
+connection will be closed. The TLS protocol and its implementations are not
+sufficiently flexible enough to deliver additional rich error information when
+failures are encountered.
 
-You can use the [observability](#observability) primitives to understand the
-error handling behavior of a connection.
+Use the [observability](#observability) features to understand connection
+handling errors.
 
-### Pricing
+## Pricing
 
-[Current plans and price points can be found on our website](https://ngrok.com/pricing).
+TLS endpoints are available on Pay-as-you-go, Pro, and Enterprise plans. Consult the [Endpoints
+Pricing](/universal-gateway/endpoints/overview/#pricing) documentation for
+billing details.
 
-TLS endpoints are available on the Pay-as-you-go, Pro, and Enterprise plans.
+See [Domains pricing](/universal-gateway/domains/#pricing) for details on
+pricing for custom domains, wildcard domains and more.
 
 Zero-knowledge TLS is available on the Enterprise plan.

@@ -6,7 +6,7 @@ description: In this guide, you'll learn how to layer load balancing between thr
 
 :::tip TL;DR
 
-To use ngrok's [Global Server Load Balancing](https://ngrok.com/docs/network-edge/gslb/) with Linode:
+To use ngrok's [Global Server Load Balancing](https://ngrok.com/docs/universal-gateway/gslb/) with Linode:
 
 1. [Reserve your ngrok domain](#reserve-domain)
 2. [Create your ngrok Edge](#create-edge)
@@ -18,7 +18,7 @@ To use ngrok's [Global Server Load Balancing](https://ngrok.com/docs/network-edg
 
 :::
 
-In this guide, you'll learn how to layer ngrok's [Global Server Load Balancing](https://ngrok.com/docs/network-edge/gslb/) (GSLB) on top of a VM-based deployment on Linode.
+In this guide, you'll learn how to layer ngrok's [Global Server Load Balancing](https://ngrok.com/docs/universal-gateway/gslb/) (GSLB) on top of a VM-based deployment on Linode.
 
 GLSB improves the performance and resiliency for your apps by distributing traffic to the nearest Point of Prescence (PoP) and the upstream service. Unlike a traditional GSLB deployment, ngrok automatically routes traffic without requiring you to deploy new infrastructure, provision IPs, or change DNS records. All you have to do is configure your ngrok agents for a simple path to high availability, horizontal scaling, A/B testing, and more.
 
@@ -44,7 +44,7 @@ To simplify authenticating your account with the ngrok API, export the API key o
 export NGROK_API_KEY=<YOUR-API-KEY>
 ```
 
-Next, you need to reserve your subdomain with an [ngrok-managed domain](https://ngrok.com/docs/network-edge/domains-and-tcp-addresses/) like `.ngrok.app`, `.ngrok.dev`, `.ngrok.pro`, or even `.ngrok.pizza`. For an example deployment like this, `YOUR_COMPANY-linode-gslb.ngrok.app` would work great.
+Next, you need to reserve your subdomain with an [ngrok-managed domain](https://ngrok.com/docs/universal-gateway/domains-and-tcp-addresses/) like `.ngrok.app`, `.ngrok.dev`, `.ngrok.pro`, or even `.ngrok.pizza`. For an example deployment like this, `YOUR_COMPANY-linode-gslb.ngrok.app` would work great.
 
 You can reserve your domain in one of two ways: with the [ngrok API](https://ngrok.com/docs/api/), or in the [ngrok dashboard](https://dashboard.ngrok.com/cloud-edge/domains).
 
@@ -73,7 +73,7 @@ Using CNAMEs, ngrok can host an endpoint on your dowmain while also managing the
 
 ## **Step 2**: Create your ngrok Edge {#create-edge}
 
-With ngrok, you can manage multiple endpoints, such as domains or routes, using a single [Edge](https://ngrok.com/docs/network-edge/edges/) configuration in the cloud. Edges let you update endpoints without taking them offline, connect multiple ngrok agents to a single endpoint, apply modules like [OAuth](https://ngrok.com/docs/http/oauth/) or [IP restrictions](https://ngrok.com/docs/http/ip-restrictions/), and balance the load between your upstream services.
+With ngrok, you can manage multiple endpoints, such as domains or routes, using a single [Edge](https://ngrok.com/docs/universal-gateway/edges/) configuration in the cloud. Edges let you update endpoints without taking them offline, connect multiple ngrok agents to a single endpoint, apply modules like [OAuth](https://ngrok.com/docs/http/oauth/) or [IP restrictions](https://ngrok.com/docs/http/ip-restrictions/), and balance the load between your upstream services.
 
 Send a `POST` request to the [`/edges/https` endpoint](https://ngrok.com/docs/api/resources/edges-https/), replacing the `description` field below as needed.
 
@@ -117,7 +117,7 @@ export BACKEND_ID_03=bkdtg_...
 
 ## **Step 4**: Create a Weighted Backend and Route on your Edge {#create-weighted-backend}
 
-With a [Weighted Backend](/docs/network-edge/edges#weighted), you can specify custom weights for Tunnel Group backends, shaping precisely how to load-balance traffic across the infrastructure you've distributed around the globe. Without a Weighted Backend, the ngrok Edge and [GSLB](https://ngrok.com/docs/network-edge/gslb/) will always favor the Point of Presence (PoP) and VM nearest the user making requests.
+With a [Weighted Backend](/docs/universal-gateway/edges#weighted), you can specify custom weights for Tunnel Group backends, shaping precisely how to load-balance traffic across the infrastructure you've distributed around the globe. Without a Weighted Backend, the ngrok Edge and [GSLB](https://ngrok.com/docs/universal-gateway/gslb/) will always favor the Point of Presence (PoP) and VM nearest the user making requests.
 
 Create a Weighted Backend at the [`/backends/weighted` endpoint](https://ngrok.com/docs/api/resources/weighted-backends/) using your Tunnel Group backend `id`s exported from the previous step. The `curl` command below creates equal weighting for your backends, but you can use integers between `0-10000` to configure precise proportional weights.
 

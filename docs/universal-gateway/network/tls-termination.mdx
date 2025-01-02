@@ -1,0 +1,281 @@
+---
+title: TLS Termination
+---
+
+import TabItem from "@theme/TabItem";
+import Tabs from "@theme/Tabs";
+
+import AtAgentAgentCliExample from "/examples/agent-cli/tls-terminate-at-agent.mdx";
+import AtAgentAgentConfigExample from "/examples/agent-config/tls-terminate-at-agent.mdx";
+import AtAgentGoSdkExample from "/examples/go-sdk/tls-terminate-at-agent.mdx";
+import AtAgentJavascriptSdkExample from "/examples/javascript-sdk/tls-terminate-at-agent.mdx";
+import AtAgentKubernetesExample from "/examples/k8s/tls-terminate-at-agent.mdx";
+import AtAgentPythonSdkExample from "/examples/python-sdk/tls-terminate-at-agent.mdx";
+import AtAgentRustSdkExample from "/examples/rust-sdk/tls-terminate-at-agent.mdx";
+import AtAgentSshExample from "/examples/ssh/tls-terminate-at-agent.mdx";
+
+import AtUpstreamAgentCliExample from "/examples/agent-cli/tls-terminate-at-upstream.mdx";
+import AtUpstreamAgentConfigExample from "/examples/agent-config/tls-terminate-at-upstream.mdx";
+import AtUpstreamGoSdkExample from "/examples/go-sdk/tls-terminate-at-upstream.mdx";
+import AtUpstreamJavascriptSdkExample from "/examples/javascript-sdk/tls-terminate-at-upstream.mdx";
+import AtUpstreamKubernetesExample from "/examples/k8s/tls-terminate-at-upstream.mdx";
+import AtUpstreamPythonSdkExample from "/examples/python-sdk/tls-terminate-at-upstream.mdx";
+import AtUpstreamRustSdkExample from "/examples/rust-sdk/tls-terminate-at-upstream.mdx";
+import AtUpstreamSshExample from "/examples/ssh/tls-terminate-at-upstream.mdx";
+
+import CustomDomainAgentCliExample from "/examples/agent-cli/tls-terminate-at-edge-custom-domain.mdx";
+import CustomDomainAgentConfigExample from "/examples/agent-config/tls-terminate-at-edge-custom-domain.mdx";
+import CustomDomainGoSdkExample from "/examples/go-sdk/tls-terminate-at-edge-custom-domain.mdx";
+import CustomDomainJavascriptSdkExample from "/examples/javascript-sdk/tls-terminate-at-edge-custom-domain.mdx";
+import CustomDomainKubernetesExample from "/examples/k8s/tls-terminate-at-edge-custom-domain.mdx";
+import CustomDomainPythonSdkExample from "/examples/python-sdk/tls-terminate-at-edge-custom-domain.mdx";
+import CustomDomainRustSdkExample from "/examples/rust-sdk/tls-terminate-at-edge-custom-domain.mdx";
+import CustomDomainSshExample from "/examples/ssh/tls-terminate-at-edge-custom-domain.mdx";
+
+# TLS Termination
+
+ngrok automatically handles TLS (SSL) termination and certificate management
+for you. There is typically nothing to setup, configure or manage.
+
+## Overview
+
+ngrok's TLS termination behavior is determined by an endpoint's protocol and
+traffic policy. You may customize each endpoint to choose where TLS is
+terminated, how it is terminated and even whether it is terminated at all. When
+ngrok's cloud service terminates TLS, it:
+
+- Uses latest and most secure version of TLS
+- Uses the [TLS
+  Certificate](/universal-gateway/tls-certificates/) attached to the
+  [Domain](/universal-gateway/domains/) which matches the Endpoint URL's
+  hostname
+- Accelerates your traffic by using the global load balancer to terminate at its
+  closest point of presence
+
+ngrok supports [end-to-end encryption](#end-to-end-encryption) where the ngrok
+cloud service does not terminate TLS connections and only sees enciphered
+traffic. When configured this way, you are responsible for configuring TLS
+termination in your upstream service or at the ngrok agent.
+
+## Termination Location
+
+TLS connections to your ngrok endpoints are terminated at one of three
+locations.
+
+- **ngrok's cloud service**: This is the easiest and most common. All HTTPS
+  endpoints terminate TLS at ngrok's cloud service. When connections are
+  terminated by ngrok's cloud service, they are re-encrypted before they are
+  transmitted over a Secure Tunnel to an agent.
+- **ngrok agent**: This is a form of [end-to-end
+  encryption](#end-to-end-encryption) where the ngrok cloud service does not
+  terminate TLS and you instead configure the ngrok agent to terminate TLS
+  connections for you.
+- **your upstream service**: This is another form of [end-to-end
+  encryption](#end-to-end-encryption) where neither the cloud service nor an
+  agent terminates TLS connections. Instead, your upstream application service is
+  responsible for TLS termination.
+
+An endpoint's protocol determines the ngrok cloud service's default TLS
+termination behavior.
+
+| Endpoint Protocol         | TLS Termination                                           |
+| ------------------------- | --------------------------------------------------------- |
+| [HTTP](/endpoints/http/)  | None                                                      |
+| [HTTPS](/endpoints/http/) | Always at ngrok's cloud service.                          |
+| [TLS](/endpoints/tls/)    | Default no termination, configurable with `terminate-tls` |
+| [TCP](/endpoints/tcp/)    | Default no termination, configurable with `terminate-tls` |
+
+### Examples
+
+#### Cloud Service
+
+<Tabs groupId="connectivity" queryString="cty">
+	<TabItem value="agent-cli" label="Agent CLI" default>
+		<CustomDomainAgentCliExample />
+	</TabItem>
+	<TabItem value="agent-config" label="Agent Config">
+		<CustomDomainAgentConfigExample />
+	</TabItem>
+	<TabItem value="ssh" label="SSH">
+		<CustomDomainSshExample />
+	</TabItem>
+	<TabItem value="go-sdk" label="Go">
+		<CustomDomainGoSdkExample />
+	</TabItem>
+	<TabItem value="javascript-sdk" label="Javascript">
+		<CustomDomainJavascriptSdkExample />
+	</TabItem>
+	<TabItem value="python-sdk" label="Python">
+		<CustomDomainPythonSdkExample />
+	</TabItem>
+	<TabItem value="rust-sdk" label="Rust">
+		<CustomDomainRustSdkExample />
+	</TabItem>
+	<TabItem value="k8s" label="Kubernetes Controller">
+		<CustomDomainKubernetesExample />
+	</TabItem>
+</Tabs>
+
+<br />
+
+#### Terminate at Agent
+
+See [Zero-Knowledge TLS at the Agent](/tls/tls-termination#zero-knowledge-tls-at-the-agent) for additional details.
+
+<Tabs groupId="connectivity" queryString="cty">
+	<TabItem value="agent-cli" label="Agent CLI" default>
+		<AtAgentAgentCliExample />
+	</TabItem>
+	<TabItem value="agent-config" label="Agent Config">
+		<AtAgentAgentConfigExample />
+	</TabItem>
+	<TabItem value="ssh" label="SSH">
+		<AtAgentSshExample />
+	</TabItem>
+	<TabItem value="go-sdk" label="Go">
+		<AtAgentGoSdkExample />
+	</TabItem>
+	<TabItem value="javascript-sdk" label="Javascript">
+		<AtAgentJavascriptSdkExample />
+	</TabItem>
+	<TabItem value="python-sdk" label="Python">
+		<AtAgentPythonSdkExample />
+	</TabItem>
+	<TabItem value="rust-sdk" label="Rust">
+		<AtAgentRustSdkExample />
+	</TabItem>
+	<TabItem value="k8s" label="Kubernetes Controller">
+		<AtAgentKubernetesExample />
+	</TabItem>
+</Tabs>
+
+<br />
+
+#### Terminate at Upstream
+
+<Tabs groupId="connectivity" queryString="cty">
+	<TabItem value="agent-cli" label="Agent CLI" default>
+		<AtUpstreamAgentCliExample />
+	</TabItem>
+	<TabItem value="agent-config" label="Agent Config">
+		<AtUpstreamAgentConfigExample />
+	</TabItem>
+	<TabItem value="ssh" label="SSH">
+		<AtUpstreamSshExample />
+	</TabItem>
+	<TabItem value="go-sdk" label="Go">
+		<AtUpstreamGoSdkExample />
+	</TabItem>
+	<TabItem value="javascript-sdk" label="Javascript">
+		<AtUpstreamJavascriptSdkExample />
+	</TabItem>
+	<TabItem value="python-sdk" label="Python">
+		<AtUpstreamPythonSdkExample />
+	</TabItem>
+	<TabItem value="rust-sdk" label="Rust">
+		<AtUpstreamRustSdkExample />
+	</TabItem>
+	<TabItem value="k8s" label="Kubernetes Controller">
+		<AtUpstreamKubernetesExample />
+	</TabItem>
+</Tabs>
+
+## `terminate-tls`
+
+The [`terminate-tls` Traffic Policy
+Action](/traffic-policy/actions/terminate-tls) enables you to terminate TLS
+connections at ngrok's cloud service for TCP and TLS endpoints.
+
+You may also use this action on HTTPS endpoints to customize how TLS is
+terminated. When you use the `terminate-tls` action on an HTTPS endpoint, ngrok
+will skip the default TLS termination step that it runs for all HTTPS endpoints
+so as not to terminate TLS twice.
+
+## Acceleration
+
+The ngrok cloud service improves the performance of your endpoints by
+accelerating TLS termination using ngrok's [global points
+of presence](/universal-gateway/network/points-of-presence).
+
+TLS connection set up requires multiple network round-trips. When round-trip
+times (RTTs) are long, TLS connection establishment slows down. ngrok reduces
+the latency of these round-trip times between the client and your endpoint by
+terminating connections at the closest [point of
+presence](/universal-gateway/network/points-of-presence/) via its [global load
+balancer](/universal-gateway/network/global-load-balancer).
+
+## Certificates
+
+When the ngrok cloud service terminates TLS connections, it does so with the
+[TLS Certificate](/universal-gateway/tls-certificates/) attached to the
+[Domain](/universal-gateway/domains/) which matches the Endpoint URL's
+hostname. See the documentation on [TLS
+Certificates](/universal-gateway/tls-certificates/) for more details on
+how they are
+[selected](/universal-gateway/tls-certificates/#certificate-selection),
+managed, provisioned and renewed.
+
+You may customize which TLS certificate is chosen for termination with the
+[`terminate-tls`](/traffic-policy/actions/terminate-tls) traffic policy action.
+
+## Handshake
+
+### TLS Version
+
+ngrok uses TLS 1.3 (the latest version) by default. If a client does not
+support TLS 1.3, ngrok will use the highest possible version that the client
+supports, down to TLS 1.1.
+
+You may customize the minimum and maximum supported versions of TLS with the
+[`terminate-tls`](/traffic-policy/actions/terminate-tls) traffic policy action.
+
+### ALPN
+
+`https` endpoints negotiate the next protocol via ALPN with the following
+default list in order of preference:
+
+```
+['h2', 'http/1.1']
+```
+
+### SNI
+
+ngrok endpoints do not support legacy clients which do not set the SNI
+extension. For example, the following clients (and others) will fail to work
+with ngrok endpoints:
+
+- Microsoft Internet Explorer 6.0
+- Microsoft Internet Explorer 7 & 8 on Windows XP or earlier
+- Native browser on Android 2.X
+- Java &lt;=1.6
+- [Python 2.X, 3.0, 3.1 if required modules are not installed](https://stackoverflow.com/questions/18578439/using-requests-with-tls-doesnt-give-sni-support/18579484#18579484)
+
+## FIPS Compliance
+
+ngrok does not use a FIPS-compliant TLS implementation by default, but one can
+be enabled for your endpoints.
+
+[Contact us](mailto:support@ngrok.com) if you require a FIPS-compliant TLS
+implementation.
+
+## End-to-end encryption
+
+You may choose to terminate TLS at your upstream service or at the ngrok agent
+to achieve end-to-end encryption (E2EE). When your endpoints operate in this
+mode, the ngrok cloud service can not see the payloads that transfer through
+your endpoints.
+
+Creating an endpoint with end-to-end encryption is simple:
+
+- Create a TLS or TCP endpoint
+- **Do not** add a `terminate-tls` action to its traffic policy.
+
+That's it! If you'd like to configure the agent to terminate TLS for you, the
+configuration depends on which kind you are using.
+
+| Agent               | Documentation                                                                                           |
+| ------------------- | ------------------------------------------------------------------------------------------------------- |
+| Agent Config File   | [`agent_tls_termination`](/agent/config/v3/#endpoint-configuration-options)                             |
+| Go SDK              | [WithTLSTerminationKeyPair](https://pkg.go.dev/golang.ngrok.com/ngrok/config#WithTLSTerminationKeyPair) |
+| Other SDKs          | not supported                                                                                           |
+| Kubernetes Operator | not supported                                                                                           |

@@ -1,0 +1,170 @@
+# Kubernetes Endpoints
+
+:::info Coming Soon
+
+Kubernetes endpoints are not available yet. [Contact us](mailto:support@ngrok.com) to
+request access to the developer preview.
+
+:::
+
+## Overview
+
+Kubernetes endpoints are secure, private endpoints that are only addressable
+inside of Kubernetes clusters where you install the [Kubernetes
+operator](/k8s/). They enable you to connect to ngrok endpoints without making
+them publicly addressable.
+
+Kubernetes endpoints have a
+[binding](/universal-gateway/endpoints/overview/#binding) of `kubernetes`.
+
+## Quickstart
+
+Create a Kubernetes endpoint by specifying binding of `kubernetes` when you
+create an endpoint.
+
+#### Step 1: Install the ngrok Kubernetes Operator
+
+```bash
+helm install ngrok-operator ngrok/kubernetes-operator \
+  --namespace ngrok-operator \
+  --create-namespace \
+  --set description="example operator" \
+  --set binding.enabled=true \
+  --set credentials.apiKey=$NGROK_API_KEY \
+  --set credentials.authtoken=$NGROK_AUTHTOKEN
+```
+
+#### Step 2: Create an ngrok endpoint
+
+Run the following command in the same ngrok account to create the kubernetes
+bound endpoint. After the command completes, the ngrok operator will [create
+`Service` objects](#service-creation) in the kubernetes cluster matching the
+endpoint's URL.
+
+```bash
+ngrok http 80 --url http://customer-2.prod --binding kubernetes
+```
+
+#### Step 3: Connect to the endpoint
+
+Other pods in the Kubernetes cluster where the ngrok operator is running can
+connect to the bound endpoint.
+
+```bash
+$ kubectl run -i --tty --rm debug --restart=Never --image=appropriate/curl -- /bin/sh
+# curl http://customer-2.prod
+```
+
+Congraulations, you just connected to your application via a private kubernetes
+endpoint!
+
+## URLs
+
+Kubernetes endpoint URL hostnames must be in the following format:
+
+- `[http|tcp]://name.namespace[:port]`
+
+The following restrictions are enforced:
+
+- **Scheme** - Must be `http` or `tcp`. `https` and `tls` are not supported.
+  and `tls`).
+- **Hostname** - Hostnames must always be two parts separated by a single dot,
+  e.g. `foo.bar`. Wildcard hostnames are not allowed.
+- **Port** - All port numbers [1-65535] are valid. Port must be specified for
+  `tcp` endpoints.
+- **Namespacing** - Kubernetes endpoints are namespaced on a per-account basis.
+  Two accounts may have kubernetes endpoints with the same URL (e.g.
+  http://api.internal) but those endpoints will not conflict or
+  [pool](/universal-gateway/endpoint-pools).
+
+#### Examples
+
+- `http://app.example`
+- `http://app.example:12345`
+- `tcp://app.example:443`
+- `tcp://app.example:12345`
+- `https://app.example` - invalid scheme `https`
+- `tls://app.example:12345` - invalid scheme `tls`
+- `http://app.foo.bar` - invalid hostname, must have only two parts
+- `tcp://app.example` - tcp endpoint must specify port number
+
+## Type and Pooling
+
+- Kubernetes endpoints support all [Endpoint
+  Types](/universal-gateway/endpoints/#type) (`agent` and `cloud`).
+- Kubernetes endpoints support [Endpoint
+  Pooling](/universal-gateway/endpoint/pools).
+
+## `Service` Creation
+
+After a kubernetes-bound endpoint is created, the ngrok cloud service notifies
+Kubernetes Operators that a new kubernetes-bound endpoint exists. Kubernetes
+Operators create `v1.Service` objects in their Kubernetes clusters which
+forward traffic they receive to the operators' pods.
+
+#### `ClusterIP` Service
+
+A Cluster IP service is created in the operator's namespace.
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: <endpoint-id> # the endpoint's ID
+  namespace: ngrok-operator
+spec:
+  selector:
+    app.kubernetes.io/name: ngrok-operator-forwarder
+  ports:
+    - protocol: TCP
+      port: 80 # the endpoint url's port
+      targetPort: <randomly-assigned> # assigned by operator to target the ngrok-operator-forwarder container
+```
+
+#### `ExternalName` Service
+
+An ExternalName service is created in the namespace targeted by the second part
+of the URL's hostname.
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: customer-2 # first part of the URL's hostname
+  namespace: prod ## second part of the URL's hostname
+spec:
+  # Point service at the Operator Forwarder
+  type: ExternalName
+  externalName: <endpoint-id>.ngrok-operator.svc.cluster.local
+```
+
+## Endpoint Selector
+
+If you don't want all kubernetes endpoints in your account to appear inside of
+a cluster, you may specify an Endpoint Selector which filters which Kubernetes
+endpoints are projected into the cluster it runs in. Endpoint Selectors are a
+CEL expression which is evaluated against each Kubernetes Endpoint in your
+account. The operator will only projects endpoints that the selector returns
+`true` for.
+
+For example, to only project kubernetes endpoints in the billing namespace, you would
+add the following flag when installing the Kubernetes Operator:
+
+```bash
+  --set binding.endpointSelector="ep.hostname.endsWith('.billing')" \
+```
+
+## Coming Soon
+
+This feature is in developer preview, more documentation is coming soon.
+
+## API
+
+Kubernetes endpoints can be created programatically. Consult the documentation
+on [Endpoint APIs](/endpoints/overview/#api).
+
+## Pricing
+
+Kubernetes endpoints are available on the Pay-as-you-go plan. Consult the
+[Endpoints Pricing](/universal-gateway/endpoints/overview/#pricing)
+documentation for billing details.
