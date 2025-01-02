@@ -53,7 +53,6 @@ const sidebars = {
 						{
 							label: "Protocols",
 							type: "category",
-							collapsible: false,
 							items: [
 								{
 									id: "universal-gateway/endpoints/http",
@@ -75,7 +74,6 @@ const sidebars = {
 						{
 							label: "Bindings",
 							type: "category",
-							collapsible: false,
 							items: [
 								{
 									id: "universal-gateway/endpoints/public",
@@ -97,7 +95,6 @@ const sidebars = {
 						{
 							label: "Types",
 							type: "category",
-							collapsible: false,
 							items: [
 								{
 									id: "universal-gateway/endpoints/agent",
@@ -116,14 +113,6 @@ const sidebars = {
 							type: "doc",
 							label: "Pools",
 						},
-						"universal-gateway/endpoints/edges",
-					],
-				},
-				{
-					label: "Components",
-					type: "category",
-					link: { type: "doc", id: "universal-gateway/domains" },
-					items: [
 						{ id: "universal-gateway/domains", type: "doc", label: "Domains" },
 						{
 							id: "universal-gateway/tcp-addresses",
@@ -131,6 +120,7 @@ const sidebars = {
 							label: "TCP Addresses",
 						},
 						"universal-gateway/tls-certificates",
+						"universal-gateway/endpoints/edges",
 					],
 				},
 				{
