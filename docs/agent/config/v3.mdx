@@ -391,14 +391,14 @@ String. The private key (provided as a file path or raw PEM data) corresponding 
 
 #### Example: Agent TLS Termination
 
-```
+```bash
 # 1. Generate Root CA private key and certificate
 openssl genpkey -algorithm RSA -out ca.key -pkeyopt rsa_keygen_bits:2048
 openssl req -x509 -new -nodes -key ca.key -sha256 -days 365 -out ca.crt -subj "/CN=ExampleCA"
 
 # 2. Generate server private key, CSR, and signed certificate
 openssl genpkey -algorithm RSA -out server.key -pkeyopt rsa_keygen_bits:2048
-openssl req -new -key server.key -out server.csr -subj "/CN=mo-test.ngrok.io"
+openssl req -new -key server.key -out server.csr -subj "/CN=your-domain.ngrok.io"
 openssl x509 -req -in server.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out server.crt -days 365 -sha256
 
 # 3. Generate client private key, CSR, and signed certificate
@@ -421,38 +421,38 @@ openssl x509 -in server.crt -text -noout
 openssl x509 -in client.crt -text -noout
 
 # 6. Create ngrok configuration file
-cat <<EOF > /home/mohamed/.config/ngrok/ngrok.yml
+cat <<EOF > /home/<your-user>/.config/ngrok/ngrok.yml
 version: 3
 agent:
   authtoken: 1yEmu1I7Nk4SqxKtdQwVbcBGdHk_53NW4yEmNDBnufjb1XDod
 endpoints:
   - name: foo
-    url: 'tls://mo-test.ngrok.io'
+    url: 'tls://your-domain.ngrok.io'
     upstream:
       url: 8080
     agent_tls_termination:
-      server_certificate: /home/mohamed/.config/ngrok/server.crt
-      server_private_key: /home/mohamed/.config/ngrok/server.key
+      server_certificate: /home/<your-user>/.config/ngrok/server.crt
+      server_private_key: /home/<your-user>/.config/ngrok/server.key
       mutual_tls_certificate_authorities:
-        - /home/mohamed/.config/ngrok/ca.crt
+        - /home/<your-user>/.config/ngrok/ca.crt
 EOF
 
 # 7. Start the ngrok endpoint
-ngrok api -- start --config=/home/mohamed/.config/ngrok/ngrok.yml --log=stdout --log-level=debug foo
+ngrok api start --config=/home/<your-user>/.config/ngrok/ngrok.yml --log=stdout --log-level=debug foo
 
 # 8. Verify connection to the endpoint with Root CA only
-curl -vk https://mo-test.ngrok.io --cacert ca.crt
+curl -v https://your-domain.ngrok.io --cacert ca.crt
 # Expected Output:
 # * CONNECTED(00000003)
 # * depth=1 CN = ExampleCA
 # * verify return:1
-# * depth=0 CN = mo-test.ngrok.io
+# * depth=0 CN = your-domain.ngrok.io
 # * verify return:1
 # * SSL handshake successful
 # * Verify return code: 0 (ok)
 
 # 9. Verify mutual TLS connection with client certificate
-curl -vk https://mo-test.ngrok.io \
+curl -v https://your-domain.ngrok.io \
   --cacert ca.crt \
   --cert client.crt \
   --key client.key
@@ -462,7 +462,7 @@ curl -vk https://mo-test.ngrok.io \
 # * Verify return code: 0 (ok)
 
 # 10. Test connection without client certificate (expected to fail)
-curl -vk https://mo-test.ngrok.io --cacert ca.crt
+curl -v https://your-domain.ngrok.io --cacert ca.crt
 # Expected Failure:
 # * SSL handshake failed
 # * verify error:num=20:unable to get local issuer certificate
@@ -472,14 +472,14 @@ curl -vk https://mo-test.ngrok.io --cacert ca.crt
 
 ##### Example: Agent MTLS Termination
 
-```
+```bash
 # 1. Generate Root CA private key and certificate
 openssl genpkey -algorithm RSA -out ca.key -pkeyopt rsa_keygen_bits:2048
 openssl req -x509 -new -nodes -key ca.key -sha256 -days 365 -out ca.crt -subj "/CN=ExampleCA"
 
 # 2. Generate server private key, CSR, and signed certificate
 openssl genpkey -algorithm RSA -out server.key -pkeyopt rsa_keygen_bits:2048
-openssl req -new -key server.key -out server.csr -subj "/CN=mo-test.ngrok.io"
+openssl req -new -key server.key -out server.csr -subj "/CN=your-domain.ngrok.io"
 openssl x509 -req -in server.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out server.crt -days 365 -sha256
 
 # 3. Generate client private key, CSR, and signed certificate
@@ -497,39 +497,39 @@ openssl x509 -in server.crt -text -noout
 openssl x509 -in client.crt -text -noout
 
 # 6. Create ngrok configuration file
-cat <<EOF > /home/mohamed/.config/ngrok/ngrok.yml
+cat <<EOF > /home/<your-user>/.config/ngrok/ngrok.yml
 version: 3
 agent:
   authtoken: 1yEmu1I7Nk4SqxKtdQwVbcBGdHk_53NW4yEmNDBnufjb1XDod
 endpoints:
   - name: foo
-    url: 'tls://mo-test.ngrok.io'
+    url: 'tls://your-domain.ngrok.io'
     upstream:
       url: 8080
     agent_tls_termination:
-      server_certificate: /home/mohamed/.config/ngrok/server.crt
-      server_private_key: /home/mohamed/.config/ngrok/server.key
+      server_certificate: /home/<your-user>/.config/ngrok/server.crt
+      server_private_key: /home/<your-user>/.config/ngrok/server.key
       mutual_tls_certificate_authorities:
-        - /home/mohamed/.config/ngrok/ca.crt
+        - /home/<your-user>/.config/ngrok/ca.crt
 EOF
 
 # 7. Start the ngrok endpoint
-ngrok api -- start --config=/home/mohamed/.config/ngrok/ngrok.yml --log=stdout --log-level=debug foo
+ngrok api  start --config=/home/<your-user>/.config/ngrok/ngrok.yml --log=stdout --log-level=debug foo
 
 # 8. Verify connection to the endpoint with Root CA only
-curl -vk https://mo-test.ngrok.io --cacert ca.crt
+curl -vk https://your-domain.ngrok.io --cacert ca.crt
 
 # Expected Output:
 # * CONNECTED(00000003)
 # * depth=1 CN = ExampleCA
 # * verify return:1
-# * depth=0 CN = mo-test.ngrok.io
+# * depth=0 CN = your-domain.ngrok.io
 # * verify return:1
 # * SSL handshake successful
 # * Verify return code: 0 (ok)
 
 # 9. Verify mutual TLS connection with client certificate
-curl -vk https://mo-test.ngrok.io \
+curl -v https://your-domain.ngrok.io \
   --cacert ca.crt \
   --cert client.crt \
   --key client.key
@@ -540,7 +540,7 @@ curl -vk https://mo-test.ngrok.io \
 # * Verify return code: 0 (ok)
 
 # 10. Test connection without client certificate (expected to fail)
-curl -vk https://mo-test.ngrok.io --cacert ca.crt
+curl -v https://your-domain.ngrok.io --cacert ca.crt
 
 # Expected Failure:
 # * SSL handshake failed
