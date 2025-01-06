@@ -1,0 +1,54 @@
+### Mutual TLS Configuration Example
+
+```bash
+# 1. Generate Root CA private key and certificate
+openssl genpkey -algorithm RSA -out ca.key -pkeyopt rsa_keygen_bits:2048
+openssl req -x509 -new -nodes -key ca.key -sha256 -days 365 -out ca.crt -subj "/CN=ExampleCA"
+
+# 2. Generate server private key, CSR, and signed certificate
+openssl genpkey -algorithm RSA -out server.key -pkeyopt rsa_keygen_bits:2048
+openssl req -new -key server.key -out server.csr -subj "/CN=mo-test.ngrok.io"
+openssl x509 -req -in server.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out server.crt -days 365 -sha256
+
+# 3. Generate client private key, CSR, and signed certificate
+openssl genpkey -algorithm RSA -out client.key -pkeyopt rsa_keygen_bits:2048
+openssl req -new -key client.key -out client.csr -subj "/CN=ExampleClient"
+openssl x509 -req -in client.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out client.crt -days 365 -sha256
+
+# 4. Create ngrok configuration file
+cat <<EOF > /home/mohamed/.config/ngrok/ngrok.yml
+version: 3
+agent:
+  authtoken: 1yEmu1I7Nk4SqxKtdQwVbcBGdHk_53NW4yEmNDBnufjb1XDod
+endpoints:
+  - name: foo
+    url: 'tls://mo-test.ngrok.io'
+    upstream:
+      url: 8080
+    agent_tls_termination:
+      server_certificate: /home/mohamed/.config/ngrok/server.crt
+      server_private_key: /home/mohamed/.config/ngrok/server.key
+      mutual_tls_certificate_authorities:
+        - /home/mohamed/.config/ngrok/ca.crt
+EOF
+
+# 5. Start ngrok endpoint
+ngrok api -- start --config=/home/mohamed/.config/ngrok/ngrok.yml --log=stdout --log-level=debug foo
+
+# 6. Verify connection to the endpoint using curl
+# Without client certificate (expected to fail)
+curl -v https://mo-test.ngrok.io --cacert ca.crt
+
+# With client certificate (expected to succeed)
+curl -v https://mo-test.ngrok.io \
+  --cacert ca.crt \
+  --cert client.crt \
+  --key client.key
+
+# Expected successful output:
+# * Connected to mo-test.ngrok.io (IP) port 443 (#0)
+# * SSL certificate verify ok.
+# HTTP/2 200
+# ...
+
+```
