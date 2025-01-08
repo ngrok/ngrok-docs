@@ -11,29 +11,40 @@ reference for this action.
 
 ### Type
 
-`oauth`
+`openid-connect`
 
 ### Configuration Fields
 
 <Config>
+	<ConfigItem title="issuer_url" type="string" required={true}>
+		<p>
+			The base URL of the Open ID provider that serves an OpenID Provider
+			Configuration Document at `/.well-known/openid-configuration`.
+		</p>
+	</ConfigItem>
 	<ConfigItem title="auth_id" type="string" required={false}>
 		<p>Unique authentication identifier for this provider.</p>
 	</ConfigItem>
-	<ConfigItem title="provider" type="string" required={true}>
-		<p>
-			The name of the _OAuth_ identity provider to be used for authentication.
-		</p>
-	</ConfigItem>
 	<ConfigItem title="client_id" type="string" required={false}>
-		<p>Your OAuth app's client ID.</p>
+		<p>Your OpenID Connect app's client ID.</p>
 	</ConfigItem>
 	<ConfigItem title="client_secret" type="string" required={false}>
-		<p>Your OAuth app's client secret.</p>
+		<p>Your OpenID Connect app's client secret.</p>
 	</ConfigItem>
 	<ConfigItem title="scope" type="array of strings" required={false}>
 		<p>
 			A list of additional scopes to request when users authenticate with the
 			identity provider.
+		</p>
+	</ConfigItem>
+	<ConfigItem
+		title="authz_url_params"
+		type="map of string to string"
+		required={false}
+	>
+		<p>
+			A map of additional URL parameters to apply to the authorization endpoint
+			URL.
 		</p>
 	</ConfigItem>
 	<ConfigItem title="max_session_duration" type="duration" required={false}>
@@ -66,30 +77,16 @@ reference for this action.
 	</ConfigItem>
 </Config>
 
-### Upstream Headers {#upstream-headers}
-
-This module adds headers to the HTTP request sent to your upstream service with
-details about the OAuth user who has authenticated. These headers will not be
-set for `OPTIONS` requests if you enable options passthrough.
-
-| Header                                 | Description                                                                 |
-| -------------------------------------- | --------------------------------------------------------------------------- |
-| `ngrok-auth-identity-provider-user-id` | Provider-defined identifier of the authorized user.                         |
-| `ngrok-auth-identity-name`             | Full name of the authorized user.                                           |
-| `ngrok-auth-identity-email`            | Authorized user's primary email address.                                    |
-| `ngrok-auth-access-token`              | The user's OAuth access token. Undefined when using a managed application.  |
-| `ngrok-auth-refresh-token`             | The user's OAuth refresh token. Undefined when using a managed application. |
-
 ### Special Paths
 
 Upstream applications behind endpoints with this module enabled do not receive
 any requests to paths beginning with `/auth/`. Your application may redirect
 clients to the following paths to invoke different behaviors.
 
-| Path           | Description                                                                                                                                                                                                                                                                                                                     |
-| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `/auth/login`  | Redirect users to this path to explicitly begin an authentication flow. After authentication, users will be redirected to `/`. If the IdP supports it, ngrok will attempt to instruct the IdP to force re-authentication which will force users to re-enter their credentials with the IdP even if they were already logged in. |
-| `/auth/logout` | Logs the user out by clearing their session cookie. Redirect users to this path to log them out.                                                                                                                                                                                                                                |
+| Path            | Description                                                                                                                                                                                                                                                                                                                     |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/ngrok/login`  | Redirect users to this path to explicitly begin an authentication flow. After authentication, users will be redirected to `/`. If the IdP supports it, ngrok will attempt to instruct the IdP to force re-authentication which will force users to re-enter their credentials with the IdP even if they were already logged in. |
+| `/ngrok/logout` | Logs the user out by clearing their session cookie. Redirect users to this path to log them out.                                                                                                                                                                                                                                |
 
 ### Events
 
@@ -103,37 +100,9 @@ When this module is enabled, it populates the following fields in the
 | `oauth.user.id`       |
 | `oauth.user.name`     |
 
-### Errors
-
-:::note Coming Soon
-
-This documentation is incomplete. Please check back later, we appreciate your
-patience.
-
-:::
-
-### Edges
-
-OAuth is an HTTPS Edge module which can be applied to Routes.
-
-- [OAuth Edge Module API Resource](/api/resources/edge-route-o-auth-module/)
-
 ### Pricing
 
-### Supported Providers {#supported-providers}
-
-ngrok currently supports the following OAuth providers (see the Integration Guides for more details):
-
-| Provider  | Provider Identifier | Managed App Available | Integration Guide                                    |
-| --------- | ------------------- | --------------------- | ---------------------------------------------------- |
-| Amazon    | `amazon`            | no                    | [Documentation](/docs/integrations/amazon/oauth/)    |
-| Facebook  | `facebook`          | no                    | [Documentation](/docs/integrations/facebook/oauth/)  |
-| GitHub    | `github`            | yes                   | [Documentation](/docs/integrations/github/oauth/)    |
-| GitLab    | `gitlab`            | yes                   | [Documentation](/docs/integrations/gitlab/oauth/)    |
-| Google    | `google`            | yes                   | [Documentation](/docs/integrations/google/oauth/)    |
-| LinkedIn  | `linkedin`          | yes                   | [Documentation](/docs/integrations/linkedin/oauth/)  |
-| Microsoft | `microsoft`         | yes                   | [Documentation](/docs/integrations/microsoft/oauth/) |
-| Twitch    | `twitch`            | yes                   | [Documentation](/docs/integrations/twitch/oauth/)    |
+Identity actions are limited to 2,000 requests with actions applied per month. Additional actions are available in ngrok's pay-as-you-go plan.
 
 ## Try it out
 
