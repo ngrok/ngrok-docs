@@ -119,16 +119,23 @@ hello, world!%
 The extra arguments added to the command suppress most of the output so that only the data exchanged with the server will be displayed.
 :::
 
-## Example Usage: mTLS
+## Mutual TLS example
 
-### Generate Root CA private key and certificate
+The following instructions will guide you through setting up Agent TLS termination using [Mutual TLS (mTLS)](/guides/other-guides/using-tls-mutual-authentication/) with ngrok.
+
+### **Step 1** – Generate a root CA private key and certificate
 
 ```yaml
 openssl genpkey -algorithm RSA -out your-ca.key -pkeyopt rsa_keygen_bits:2048
 openssl req -x509 -new -nodes -key your-ca.key -sha256 -days 365 -out your-ca.crt -subj "/CN=YourDemoCA"
 ```
 
-### Generate server private key, CSR, and signed certificate
+### **Step 2** – Generate server credentials
+
+The following terminal commands will generate these server credentials:
+- A server private key
+- A CSR
+- A signed certificate
 
 ```bash
 openssl genpkey -algorithm RSA -out your-server.key -pkeyopt rsa_keygen_bits:2048
@@ -136,7 +143,12 @@ openssl req -new -key your-server.key -out your-server.csr -subj "/CN=your-domai
 openssl x509 -req -in your-server.csr -CA your-ca.crt -CAkey your-ca.key -CAcreateserial -out your-server.crt -days 365 -sha256
 ```
 
-### Generate client private key, CSR, and signed certificate
+### **Step 3** – Generate client credentials
+
+The following terminal command will generate these client credentials:
+- A private key
+- A CSR
+- A signed certificate
 
 ```yaml
 openssl genpkey -algorithm RSA -out your-client.key -pkeyopt rsa_keygen_bits:2048
@@ -144,13 +156,15 @@ openssl req -new -key your-client.key -out your-client.csr -subj "/CN=YourDemoCA
 openssl x509 -req -in your-client.csr -CA your-ca.crt -CAkey your-ca.key -CAcreateserial -out your-client.crt -days 365 -sha256
 ```
 
-### Configuring Endpoint
+## **Step 4** – Configure your mTLS endpoint
 
-The `ngrok config` command gives a quick way to create or update a configuration file.
+Use the following command to create an agent configuration file with your generated certificates:
 
-`ngrok config add-authtoken you-authtoken` will create an agent config with the provided token.
+```bash
+ngrok config add-authtoken you-authtoken
+```
 
-`ngrok config edit` - Opens the configuration file in your default editor.
+Your generated configuration file should resemble the following:
 
 ```yaml
 version: 3
@@ -168,15 +182,17 @@ endpoints:
         - /path/to/your-ca.crt
 ```
 
-### Starting Endpoint
+### **Step 5** – Start your mTLS endpoint
 
-`ngrok start` - starts endpoints by name from the configuration file
+Next, use `ngrok start endpoint_name_here` in the terminal to start an endpoint using the settings in your agent configuration file, as shown below:
 
 ```bash
 ngrok start demo-mtls
 ```
 
-Start an upstream server
+### **Step 6** – Start your upstream server
+
+Start an upstream server on the specified port (e.g., `12345`) to handle incoming requests. The following example uses Python, but you can use any language or framework depending on your requirements.
 
 ```python
 import socket
@@ -196,11 +212,9 @@ while True:
     print(f"Connection with {client_address} closed")
 ```
 
-### Reaching Endpoint
+### **Step 7** – Try connecting to your mTLS endpoint
 
-`openssl s_client` initiates an SSL/TLS client connection. We’ll suppresses most of the output, such as the handshake and certificate details. Only the actual data exchanged with the server will be displayed.
-
-connecting without cert
+The following example uses `openssl s_client` to initiate an SSL/TLS client connection to your upstream server without a certificate. 
 
 ```bash
 openssl s_client -quiet -connect your-domain.ngrok.app:443 -verify_return_error
@@ -213,7 +227,7 @@ verify error:num=20:unable to get local issuer certificate
 408FB6F801000000:error:0A000086:SSL routines:tls_post_process_server_certificate:certificate verify failed:ssl/statem/statem_clnt.c:2093
 ```
 
-connecting with cert
+The following example uses `openssl s_client` to initiate an SSL/TLS client connection to your upstream server with a certificate.
 
 ```bash
 openssl s_client -quiet -connect your-domain.ngrok.app:443 -verify_return_error -CAfile your-ca.crt
