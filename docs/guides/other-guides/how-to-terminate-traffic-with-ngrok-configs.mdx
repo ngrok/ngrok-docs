@@ -1,0 +1,99 @@
+# Agent TLS Termination
+
+Agent tls termination allows you to secure your traffic with end-to-end encryption, seamlessly integrating it without needing to reconfigure your server. Even if the service you’re exposing doesn’t support TLS termination, you can still benefit from Zero-Knowledge TLS. The ngrok agent handles TLS termination for you. This approach is especially useful for legacy software that doesn’t support TLS or services operated outside your control.
+
+## Example Usage: TLS Termination
+
+### Generate cert and key pair
+
+This command generates a new certificate signing request (CSR) for a 4096-bit RSA key pair. It creates a self-signed certificate in x509 format using SHA-256 as the hash algorithm, with a validity of 365 days. The certificate is saved to `your-cert.crt`, and the private key is saved to `your-key.key`.
+
+```bash
+openssl req -new -newkey rsa:4096 -x509 -sha256 -days 365 -noenc -out your-cert.crt -keyout your-key.key
+```
+
+### Configuring Endpoint
+
+The `ngrok config` command gives a quick way to create or update a configuration file.
+
+`ngrok config add-authtoken you-authtoken` will create a v3 agent config with the provided token.
+
+```yaml
+version: 3
+agent:
+  authtoken: your-authtoken
+```
+
+`ngrok config edit` - Opens the configuration file in an editor defined by the EDITOR environment variable, defaulting to nano or Notepad depending on OS.
+
+```yaml
+version: 3
+agent:
+  authtoken: your-authtoken
+endpoints:
+  - name: demo-tls
+    url: "tls://your-domain.ngrok.app"
+    upstream:
+      url: 12345
+    agent_tls_termination:
+      server_certificate: /path/to/your-cert.crt
+      server_private_key: /path/to/your-key.key
+```
+
+### Starting Endpoint
+
+`ngrok start` - starts endpoints by name from the configuration file
+
+```bash
+ngrok start demo-tls
+```
+
+start an upstream server
+
+```python
+import socket
+
+host='127.0.0.1'
+port=12345
+server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+server.bind((host, port))
+print(f"Server started on {host}:{port}")
+server.listen(1)
+
+while True:
+    client, client_address = server.accept()
+    print(f"Connection established with {client_address}")
+    client.sendall(b"hello, world!")
+    client.close()
+    print(f"Connection with {client_address} closed")
+```
+
+### Reaching Endpoint
+
+`openssl s_client` initiates an SSL/TLS client connection. We’ll suppresses most of the output, such as the handshake and certificate details. Only the actual data exchanged with the server will be displayed.
+
+connecting without cert
+
+```bash
+openssl s_client -quiet -connect your-domain.ngrok.app:443 -verify_return_error
+```
+
+```bash
+Connecting to 2600:1f16:d83:1200::6e:0
+depth=0 C=AU, ST=Some-State, O=Internet Widgits Pty Ltd, CN=your-domain.ngrok.app
+verify error:num=18:self-signed certificate
+408FB6F801000000:error:0A000086:SSL routines:tls_post_process_server_certificate:certificate verify failed:ssl/statem/statem_clnt.c:2093:
+```
+
+connecting with cert
+
+```bash
+openssl s_client -quiet -connect your-domain.ngrok.app:443 -verify_return_error -CAfile your-cert.crt
+```
+
+```bash
+Connecting to 2600:1f16:d83:1200::6e:0
+depth=0 C=AU, ST=Some-State, O=Internet Widgits Pty Ltd, CN=your-domain.ngrok.app
+verify return:1
+hello, world!%
+```
