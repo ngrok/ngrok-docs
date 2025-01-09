@@ -16,15 +16,9 @@ openssl req -new -newkey rsa:4096 -x509 -sha256 -days 365 -noenc -out your-cert.
 
 The `ngrok config` command gives a quick way to create or update a configuration file.
 
-`ngrok config add-authtoken you-authtoken` will create a v3 agent config with the provided token.
+`ngrok config add-authtoken you-authtoken` will create an agent config with the provided token.
 
-```yaml
-version: 3
-agent:
-  authtoken: your-authtoken
-```
-
-`ngrok config edit` - Opens the configuration file in an editor defined by the EDITOR environment variable, defaulting to nano or Notepad depending on OS.
+`ngrok config edit` - Opens the configuration file in an editor defaulting to nano or Notepad depending on OS. You may also open the configuration file in an editor of your choice.
 
 ```yaml
 version: 3
@@ -94,6 +88,115 @@ openssl s_client -quiet -connect your-domain.ngrok.app:443 -verify_return_error 
 ```bash
 Connecting to 2600:1f16:d83:1200::6e:0
 depth=0 C=AU, ST=Some-State, O=Internet Widgits Pty Ltd, CN=your-domain.ngrok.app
+verify return:1
+hello, world!%
+```
+
+## Example Usage: mTLS
+
+### Generate Root CA private key and certificate
+
+```yaml
+openssl genpkey -algorithm RSA -out your-ca.key -pkeyopt rsa_keygen_bits:2048
+openssl req -x509 -new -nodes -key your-ca.key -sha256 -days 365 -out your-ca.crt -subj "/CN=YourDemoCA"
+```
+
+### Generate server private key, CSR, and signed certificate
+
+```bash
+openssl genpkey -algorithm RSA -out your-server.key -pkeyopt rsa_keygen_bits:2048
+openssl req -new -key your-server.key -out your-server.csr -subj "/CN=your-domain.ngrok.app"
+openssl x509 -req -in your-server.csr -CA your-ca.crt -CAkey your-ca.key -CAcreateserial -out your-server.crt -days 365 -sha256
+```
+
+### Generate client private key, CSR, and signed certificate
+
+```yaml
+openssl genpkey -algorithm RSA -out your-client.key -pkeyopt rsa_keygen_bits:2048
+openssl req -new -key your-client.key -out your-client.csr -subj "/CN=YourDemoCA"
+openssl x509 -req -in your-client.csr -CA your-ca.crt -CAkey your-ca.key -CAcreateserial -out your-client.crt -days 365 -sha256
+```
+
+### Configuring Endpoint
+
+The `ngrok config` command gives a quick way to create or update a configuration file.
+
+`ngrok config add-authtoken you-authtoken` will create an agent config with the provided token.
+
+`ngrok config edit` - Opens the configuration file in an editor defaulting to nano or Notepad depending on OS. You may also open the configuration file in an editor of your choice.
+
+```yaml
+version: 3
+agent:
+  authtoken: your-token
+endpoints:
+  - name: demo-mtls
+    url: "tls:/your-domain.ngrok.app"
+    upstream:
+      url: 8080
+    agent_tls_termination:
+      server_certificate: /path/to/your-cert.crt
+      server_private_key: /path/to/your-key.key
+      mutual_tls_certificate_authorities:
+        - /path/to/your-ca.crt
+```
+
+### Starting Endpoint
+
+`ngrok start` - starts endpoints by name from the configuration file
+
+```bash
+ngrok start demo-mtls
+```
+
+Start an upstream server
+
+```python
+import socket
+
+host='127.0.0.1'
+port=12345
+server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+server.bind((host, port))
+print(f"Server started on {host}:{port}")
+server.listen(1)
+
+while True:
+    client, client_address = server.accept()
+    print(f"Connection established with {client_address}")
+    client.sendall(b"hello, world!")
+    client.close()
+    print(f"Connection with {client_address} closed")
+```
+
+### Reaching Endpoint
+
+`openssl s_client` initiates an SSL/TLS client connection. We’ll suppresses most of the output, such as the handshake and certificate details. Only the actual data exchanged with the server will be displayed.
+
+connecting without cert
+
+```bash
+openssl s_client -quiet -connect your-domain.ngrok.app:443 -verify_return_error
+```
+
+```bash
+Connecting to 2600:1f16:d83:1200::6e:3
+depth=0 CN=your-domain.ngrok.app
+verify error:num=20:unable to get local issuer certificate
+408FB6F801000000:error:0A000086:SSL routines:tls_post_process_server_certificate:certificate verify failed:ssl/statem/statem_clnt.c:2093
+```
+
+connecting with cert
+
+```bash
+openssl s_client -quiet -connect your-domain.ngrok.app:443 -verify_return_error -CAfile your-ca.crt
+```
+
+```bash
+Connecting to 2600:1f16:d83:1200::6e:3
+depth=1 CN=YourDemoCA
+verify return:1
+depth=0 CN=your-domain.ngrok.app
 verify return:1
 hello, world!%
 ```
