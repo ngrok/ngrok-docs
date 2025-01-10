@@ -2,6 +2,8 @@
 description: Authenticate users with Amazon OAuth
 ---
 
+import ConfigExample from "/src/components/ConfigExample.tsx";
+
 # Amazon OAuth
 
 ## Configure Login with Amazon
@@ -24,11 +26,57 @@ The step-by-step instructions below follow Amazon's documentation on [Register f
 5.  On the **Security Profile** page, click **Edit**, enter `https://idp.ngrok.com/oauth2/callback` in the **Allowed Return URLs** field, and then click **Save**.
     ![](/img/howto/oauth/2-amazon-register.png)
 
-### Update your ngrok edge configuration
+### Update your ngrok endpoint configuration
 
-1.  Access the [ngrok Dashboard](https://dashboard.ngrok.com/), sign in, create or edit an edge, and click **OAuth** to enable the OAuth configuration.
-2.  Select **Amazon** in the **Identity Provider** selector and then enter the **Client ID** and **Client Secret** values you copied previously in the corresponding fields.
-3.  Click **Save**.
+1. Access the [ngrok Dashboard Endpoints page](https://dashboard.ngrok.com/endpoints?sortBy=createdAt&orderBy=desc) and locate an existing endpoint you'd like to add this to or create a new one.
+2. In your traffic policy, add the following configuration:
+
+<ConfigExample
+	snippetText={null}
+	showLineNumbers={true}
+	yamlMetastring="{4-10}"
+	jsonMetastring="{5-15}"
+	config={{
+		on_http_request: [
+			{
+				actions: [
+					{
+						type: "oauth",
+						config: {
+							provider: "amazon",
+							client_id: "{your app's OAuth client id}",
+							client_secret: "{your app's OAuth client secret}",
+							scopes: ["profile"],
+						},
+					},
+				],
+			},
+		],
+	}}
+/>
+
+3. Click **Save** to validate and update your traffic policy.
+
+4. Optionally, configure access control to your service by only allowing specific users or domains.
+
+<ConfigExample
+	snippetText="Only allow access to me@example.com. Add this after your OAuth Action."
+	showLineNumbers={true}
+	config={{
+		on_http_request: [
+			{
+				expressions: [
+					"!(actions.ngrok.oauth.identity.email in ['me@example.com'])",
+				],
+				actions: [
+					{
+						type: "deny",
+					},
+				],
+			},
+		],
+	}}
+/>
 
 ### Additional application setup information
 
