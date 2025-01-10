@@ -68,7 +68,14 @@ const sidebars = {
 				"tls/index",
 				"tls/ip-restrictions",
 				"tls/mutual-tls",
-				"tls/tls-termination",
+				{
+					label: "TLS Termination",
+					type: "category",
+					link: { type: "doc", id: "tls/termination/index" },
+					items: [
+						"tls/termination/agent-tls-termination",
+					],
+				},
 			],
 		},
 		{
