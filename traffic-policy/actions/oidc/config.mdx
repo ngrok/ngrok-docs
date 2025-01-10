@@ -1,0 +1,110 @@
+import { Config, ConfigItem } from "/src/components/ConfigTable.tsx";
+
+## Configuration Reference
+
+The [Traffic Policy](/traffic-policy/) configuration
+reference for this action.
+
+### Supported Phases
+
+`on_http_request`
+
+### Type
+
+`openid-connect`
+
+### Configuration Fields
+
+<Config>
+	<ConfigItem title="issuer_url" type="string" required={true}>
+		<p>
+			The base URL of the Open ID provider that serves an OpenID Provider
+			Configuration Document at `/.well-known/openid-configuration`.
+		</p>
+	</ConfigItem>
+	<ConfigItem title="auth_id" type="string" required={false}>
+		<p>Unique authentication identifier for this provider.</p>
+	</ConfigItem>
+	<ConfigItem title="client_id" type="string" required={false}>
+		<p>Your OpenID Connect app's client ID.</p>
+	</ConfigItem>
+	<ConfigItem title="client_secret" type="string" required={false}>
+		<p>Your OpenID Connect app's client secret.</p>
+	</ConfigItem>
+	<ConfigItem title="scope" type="array of strings" required={false}>
+		<p>
+			A list of additional scopes to request when users authenticate with the
+			identity provider.
+		</p>
+	</ConfigItem>
+	<ConfigItem
+		title="authz_url_params"
+		type="map of string to string"
+		required={false}
+	>
+		<p>
+			A map of additional URL parameters to apply to the authorization endpoint
+			URL.
+		</p>
+	</ConfigItem>
+	<ConfigItem title="max_session_duration" type="duration" required={false}>
+		<p>Defines the maximum lifetime of a session regardless of activity.</p>
+	</ConfigItem>
+	<ConfigItem title="idle_session_duration" type="duration" required={false}>
+		<p>
+			Defines the period of inactivity after which a user's session is
+			automatically ended, requiring re-authentication.
+		</p>
+	</ConfigItem>
+	<ConfigItem
+		title="userinfo_refresh_interval"
+		type="duration"
+		required={false}
+	>
+		<p>
+			How often should ngrok refresh data about the authenticated user from the
+			identity provider.
+		</p>
+	</ConfigItem>
+	<ConfigItem title="allow_cors_preflight" type="boolean" required={false}>
+		<p>
+			Allow CORES preflight requests to bypass authentication checks. Enable if
+			the endpoint needs to be accessible via CORES.
+		</p>
+	</ConfigItem>
+	<ConfigItem title="auth_cookie_domain" type="string" required={false}>
+		<p>Sets the allowed domain for the auth cookie.</p>
+	</ConfigItem>
+</Config>
+
+### Special Paths
+
+Upstream applications behind endpoints with this module enabled do not receive
+any requests to paths beginning with `/auth/`. Your application may redirect
+clients to the following paths to invoke different behaviors.
+
+| Path            | Description                                                                                                                                                                                                                                                                                                                     |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/ngrok/login`  | Redirect users to this path to explicitly begin an authentication flow. After authentication, users will be redirected to `/`. If the IdP supports it, ngrok will attempt to instruct the IdP to force re-authentication which will force users to re-enter their credentials with the IdP even if they were already logged in. |
+| `/ngrok/logout` | Logs the user out by clearing their session cookie. Redirect users to this path to log them out.                                                                                                                                                                                                                                |
+
+### Events
+
+When this module is enabled, it populates the following fields in the
+[http_request_complete.v0](/obs/reference/#http-request-complete) event:
+
+| Fields                |
+| --------------------- |
+| `oauth.app_client_id` |
+| `oauth.decision`      |
+| `oauth.user.id`       |
+| `oauth.user.name`     |
+
+### Pricing
+
+Identity actions are limited to 2,000 requests with actions applied per month. Additional actions are available in ngrok's pay-as-you-go plan.
+
+## Try it out
+
+Consult the list of [supported providers](#supported-providers) for
+step-by-step integration guides.
