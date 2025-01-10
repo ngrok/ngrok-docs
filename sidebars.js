@@ -72,9 +72,7 @@ const sidebars = {
 					label: "TLS Termination",
 					type: "category",
 					link: { type: "doc", id: "tls/termination/index" },
-					items: [
-						"tls/termination/agent-tls-termination",
-					],
+					items: ["tls/termination/agent-tls-termination"],
 				},
 			],
 		},
