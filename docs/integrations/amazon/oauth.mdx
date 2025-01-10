@@ -2,7 +2,8 @@
 description: Authenticate users with Amazon OAuth
 ---
 
-import ConfigExample from "/src/components/ConfigExample.tsx";
+import Amazon from "/traffic-policy/actions/oauth/examples/custom-amazon-example.mdx";
+import Email from "/traffic-policy/actions/oauth/examples/restrict-by-email-example.mdx";
 
 # Amazon OAuth
 
@@ -26,57 +27,18 @@ The step-by-step instructions below follow Amazon's documentation on [Register f
 5.  On the **Security Profile** page, click **Edit**, enter `https://idp.ngrok.com/oauth2/callback` in the **Allowed Return URLs** field, and then click **Save**.
     ![](/img/howto/oauth/2-amazon-register.png)
 
-### Update your ngrok endpoint configuration
+### Update your ngrok endpoint traffic policy
 
 1. Access the [ngrok Dashboard Endpoints page](https://dashboard.ngrok.com/endpoints?sortBy=createdAt&orderBy=desc) and locate an existing endpoint you'd like to add this to or create a new one.
 2. In your traffic policy, add the following configuration:
 
-<ConfigExample
-	snippetText={null}
-	showLineNumbers={true}
-	yamlMetastring="{4-10}"
-	jsonMetastring="{5-15}"
-	config={{
-		on_http_request: [
-			{
-				actions: [
-					{
-						type: "oauth",
-						config: {
-							provider: "amazon",
-							client_id: "{your app's OAuth client id}",
-							client_secret: "{your app's OAuth client secret}",
-							scopes: ["profile"],
-						},
-					},
-				],
-			},
-		],
-	}}
-/>
+<Amazon />
 
 3. Click **Save** to validate and update your traffic policy.
 
 4. Optionally, configure access control to your service by only allowing specific users or domains.
 
-<ConfigExample
-	snippetText="Only allow access to me@example.com. Add this after your OAuth Action."
-	showLineNumbers={true}
-	config={{
-		on_http_request: [
-			{
-				expressions: [
-					"!(actions.ngrok.oauth.identity.email in ['me@example.com'])",
-				],
-				actions: [
-					{
-						type: "deny",
-					},
-				],
-			},
-		],
-	}}
-/>
+<Email />
 
 ### Additional application setup information
 
