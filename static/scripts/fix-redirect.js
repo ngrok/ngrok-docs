@@ -234,6 +234,9 @@ const redirects = [
 
     // DEC 2024 - New TP Getting Started
     [ fromExact(`/docs/traffic-policy/getting-started/`), `/docs/traffic-policy/getting-started/agent-endpoints/cli` ],
+
+    [ fromExact(`/docs/tls/tls-termination/`), `/docs/tls/termination/` ],
+    [ fromExact(`/docs/tls/tls-termination`), `/docs/tls/termination` ],
 ]
 
 // get current href from window
