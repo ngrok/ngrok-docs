@@ -604,53 +604,26 @@ export const OIDCIdentityToken = () => (
 export const ForwardInternalFull = () => (
 	<ConfigExample
 		config={{
-            version: "3",
-	        agent: {
-                authtoken: "your-authtoken",
+			version: "3",
+			agent: {
+				authtoken: "your-authtoken",
 			},
-            endpoints: [
+			endpoints: [
 				{
-                    name: "httpexample", 
-                    url: "https://mypublic.ngrok.app",
-                    upstream: {
-                        url: "localhost:80"
-				    },
-                    traffic_policy: {
-                        on_http_request: [
-					        {
-                                expressions: [
-                                    "req.url.path.startsWith('/service1')",
-								],
-                                actions: [
-									{
-                                        type: "forward-internal",
-                                        config: {
-                                            url: "https://service1.internal:443",
-									    },
-									},
-								],
-							},
-						],
+					name: "httpexample",
+					url: "https://mypublic.ngrok.app",
+					upstream: {
+						url: "localhost:80",
 					},
-                },
-				{
-                    name: "example-internal-1",
-                    url: "service1.internal",
-                    upstream: {
-                        url: "localhost:81",
-					},
-                    traffic_policy: {
-                        on_http_request: [
+					traffic_policy: {
+						on_http_request: [
 							{
-                                expressions: [
-                                    "req.url.path.startsWith('/service1')",
-								],
-                                actions: [
+								expressions: ["req.url.path.startsWith('/service1')"],
+								actions: [
 									{
-                                        type: "url-rewrite",
-                                        config: {
-                                            from: "/service1/?([.*]+)?",
-                                            to: "/$1",
+										type: "forward-internal",
+										config: {
+											url: "https://service1.internal:443",
 										},
 									},
 								],
@@ -658,7 +631,30 @@ export const ForwardInternalFull = () => (
 						],
 					},
 				},
-			],		
+				{
+					name: "example-internal-1",
+					url: "service1.internal",
+					upstream: {
+						url: "localhost:81",
+					},
+					traffic_policy: {
+						on_http_request: [
+							{
+								expressions: ["req.url.path.startsWith('/service1')"],
+								actions: [
+									{
+										type: "url-rewrite",
+										config: {
+											from: "/service1/?([.*]+)?",
+											to: "/$1",
+										},
+									},
+								],
+							},
+						],
+					},
+				},
+			],
 		}}
 	/>
 );
