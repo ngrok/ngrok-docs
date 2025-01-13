@@ -2,7 +2,8 @@
 description: Authenticate users with Amazon OAuth
 ---
 
-import ConfigExample from "/src/components/ConfigExample.tsx";
+import Amazon from "/traffic-policy/actions/oauth/examples/custom-amazon-example.mdx";
+import UpdatePolicyInstructions from "/traffic-policy/actions/oauth/update-policy/update-policy-instructions.mdx";
 
 # Amazon OAuth
 
@@ -14,7 +15,9 @@ The step-by-step instructions below follow Amazon's documentation on [Register f
 
 1.  Navigate to the [Login with Amazon](https://developer.amazon.com/loginwithamazon/console/site/lwa/overview.html) portal, and sign in with your Amazon Developer credentials.
 
-    **Note**: If you don't have a developer account, you'll need to sign up for a new one.
+    :::note
+    If you don't have a developer account, you'll need to sign up for a new one.
+    :::
 
 2.  Click **Create a New Security Profile**, provide a **Name** and a **Description** for your security profile, enter the privacy URL provided by your application (i.e. `https://ngrok.com/privacy`) in the **Consent Privacy Notice URL**, and then click **Save**.
     ![](/img/howto/oauth/1-amazon-register.png)
@@ -26,57 +29,9 @@ The step-by-step instructions below follow Amazon's documentation on [Register f
 5.  On the **Security Profile** page, click **Edit**, enter `https://idp.ngrok.com/oauth2/callback` in the **Allowed Return URLs** field, and then click **Save**.
     ![](/img/howto/oauth/2-amazon-register.png)
 
-### Update your ngrok endpoint configuration
+### Update your ngrok endpoint traffic policy
 
-1. Access the [ngrok Dashboard Endpoints page](https://dashboard.ngrok.com/endpoints?sortBy=createdAt&orderBy=desc) and locate an existing endpoint you'd like to add this to or create a new one.
-2. In your traffic policy, add the following configuration:
-
-<ConfigExample
-	snippetText={null}
-	showLineNumbers={true}
-	yamlMetastring="{4-10}"
-	jsonMetastring="{5-15}"
-	config={{
-		on_http_request: [
-			{
-				actions: [
-					{
-						type: "oauth",
-						config: {
-							provider: "amazon",
-							client_id: "{your app's OAuth client id}",
-							client_secret: "{your app's OAuth client secret}",
-							scopes: ["profile"],
-						},
-					},
-				],
-			},
-		],
-	}}
-/>
-
-3. Click **Save** to validate and update your traffic policy.
-
-4. Optionally, configure access control to your service by only allowing specific users or domains.
-
-<ConfigExample
-	snippetText="Only allow access to me@example.com. Add this after your OAuth Action."
-	showLineNumbers={true}
-	config={{
-		on_http_request: [
-			{
-				expressions: [
-					"!(actions.ngrok.oauth.identity.email in ['me@example.com'])",
-				],
-				actions: [
-					{
-						type: "deny",
-					},
-				],
-			},
-		],
-	}}
-/>
+<UpdatePolicyInstructions showScopesTip={true} policySnippet={<Amazon />} />
 
 ### Additional application setup information
 
