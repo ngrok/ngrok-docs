@@ -1,0 +1,83 @@
+## Behavior
+
+### Callback URL
+
+When you create your own OAuth app, you must specify a 'Callback URL' or
+'Redirect URL' to the OAuth provider. When using ngrok's OAuth action, that
+Callback URL is always:
+
+```
+https://idp.ngrok.com/oauth2/callback
+```
+
+### Authentication
+
+When an unauthenticated request is made to an OAuth-protected endpoint, it
+returns a redirect response that begins an authentication flow with the
+configured identity provider. The original URI path is saved so that users can
+be redirected to it if they successfully authenticate.
+
+**If the user fails to authenticate with the identity provider**, ngrok will
+display an error describing the failure returned by the identity provider and
+prompt them to try logging in again.
+
+**If the user successfully authenticates with the identity provider**, ngrok
+will take the following actions:
+
+- Sets a [session cookie](#cookies) to avoid repeating the authentication flow again.
+- Redirects the user to the original URI path they were attempting to access
+  before the authentication flow began. If no such URI path was captured, they
+  are redirected to `/`.
+- Continue processing the rest of the traffic policy actions.
+
+### Continuous Authorization
+
+When an authenticated user makes a request, ngrok will sometimes refresh a
+user's data from the identity provider (email, name, etc) and re-evaluate
+authorization constraints. This refresh is executed as a back channel request to
+the identity provider; it is transparent to the user and they do not go through
+a re-authentication flow.
+
+The following circumstances trigger refresh and authorization re-evaluation:
+
+- On a periodic interval defined by the [`userinfo_refresh_interval`](/docs/traffic-policy/actions/oauth/#configuration-fields) parameter.
+- If you update the OAuth configuration of the endpoint either in the agent or through the dashboard.
+- If you update the OAuth configuration of the endpoint.
+
+If a previously authenticated user becomes unauthorized because their identity
+provider information changed or because the OAuth action configuration changed,
+they are presented an error and are prompted to try logging in again.
+
+### Managed Applications
+
+Managed applications allow you to use ngrok's OAuth action without setting up
+your own OAuth apps with the identity providers. More practically, this means
+you can use the OAuth action without configuring a client id and client secret.
+
+Managed applications are great for getting started but they have some
+limitations.
+
+- They are [only available for some identity providers](#supported-providers)
+- You may not pass custom scopes when using a managed application.
+- The [upstream headers](#upstream-headers) `ngrok-auth-oauth-access-token` and
+  `ngrok-auth-oauth-refresh-token` are not sent to your application.
+
+### App Users
+
+ngrok's [App Users](/docs/network-edge/app-users/) feature can be used to observe
+all of the authenticated user activity across your account in the ngrok
+dashboard or via API. Whenever a user authenticates or accesses an endpoint
+with a configured OAuth action, their App User record is created or updated.
+
+You may also use App Users to remotely log a user out by [revoking a
+session](/network-edge/app-users/#revoke-sessions).
+
+### Cookies
+
+This action sets two cookies in its operation. Cookies values are opaque to the
+upstream service and must not be modified.
+
+| Cookie    | Description                             |
+| --------- | --------------------------------------- |
+| `session` | Used to track an authenticated user.    |
+| `nonce`   | Used to secure the authentication flow. |

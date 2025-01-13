@@ -6,9 +6,13 @@ title: Changelog
 
 ## v3
 
+### ngrok Agent 3.18.0 - \[2024-12-19\]
+
+- Add tls termination to v3 agent configs.
+
 ### ngrok Agent 3.18.4 - \[2024-11-11\]
 
-- Fixed a bug causing the `--url` flag require an explicit scheme
+- Fixed a bug causing the `--url` flag require an explicit scheme.
 
 ### ngrok Agent 3.18.3 - \[2024-11-07\]
 
@@ -68,6 +72,10 @@ title: Changelog
   - Some agent configuration fields have been renamed in v3.
   - v2 is still supported, but does not support the new `endpoints:` , or `agent:` fields.
 - Added support for [endpoint fields](/docs/api/resources/endpoints/#list-endpoints) in ngrok's `api`.
+
+### ngrok Agent 3.14.1 - \[2024-08-22\]
+
+- Resolved an issue with mTLS detection.
 
 ### ngrok Agent 3.14.0 - \[2024-08-01\]
 

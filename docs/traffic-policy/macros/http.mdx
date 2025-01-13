@@ -1,0 +1,274 @@
+---
+title: HTTP Macros
+---
+
+import ConfigExample from "/src/components/ConfigExample.tsx";
+
+# HTTP Macros
+
+ngrok provides additional CEL macros that you can use specifically in the `on_http_request` and `on_http_response` phases.
+
+| Name                                                   | Return Type | Description                                                                                                                                                                                                        |
+| ------------------------------------------------------ | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| [`isQueryString(string)`](#isquerystringstring---bool) | `bool`      | Returns `true` or `false` if the provided string is valid query string.                                                                                                                                            |
+| [`isUrl(string)`](#isurlstring---bool)                 | `bool`      | Returns `true` or `false` if the provided string is a valid URL.                                                                                                                                                   |
+| [`isJson(string)`](#isjsonstring---bool)               | `bool`      | Returns `true` or `false` if the provided string is a valid JSON.                                                                                                                                                  |
+| [`hasReqHeader(string)`](#hasreqheaderstring---bool)   | `bool`      | Returns `true` or `false` if the provided header key is present on the request.                                                                                                                                    |
+| [`getReqHeader(string)`](#getreqheaderstring---list)   | `list`      | Returns a list of header values for the provided key on the request.                                                                                                                                               |
+| [`hasQueryParam(string)`](#hasqueryparamstring---bool) | `bool`      | Returns `true` or `false` if the specified query parameter key is part of the request URL.                                                                                                                         |
+| [`getQueryParam(string)`](#getqueryparamstring---list) | `list`      | Returns a list of the query parameter values from the request URL for the specified key.                                                                                                                           |
+| [`hasReqCookie(string)`](#hasreqcookiestring---bool)   | `bool`      | Returns `true` or `false` if a cookie exists on the request with the specified name.                                                                                                                               |
+| [`getReqCookie(string)`](#getreqcookiestring---cookie) | `cookie`    | Returns the cookie struct for the specified cookie name, if it exists on the request. If there are multiple cookies of the same name, the first from the ordering specified in the Cookie header will be returned. |
+| [`hasResHeader(string)`](#hasresheaderstring---bool)   | `bool`      | Returns `true` or `false` if the provided header key is present on the response.                                                                                                                                   |
+| [`getResHeader(string)`](#getresheaderstring---list)   | `list`      | Returns a list of header values for the provided key on the response.                                                                                                                                              |
+| [`hasResCookie(string)`](#hasrescookiestring---bool)   | `bool`      | Returns `true` or `false` if a cookie exists on the response with the specified name.                                                                                                                              |
+| [`getResCookie(string)`](#getrescookiestring---cookie) | `cookie`    | Returns the cookie struct for the specified cookie name, if it exists on the response. If there are multiple cookies of the same name, the cookie with the longest path will be returned.                          |
+
+## `on_http_*`
+
+The following macros can be used in both the `on_http_request` and `on_http_response` phases.
+
+### `isQueryString(string) -> bool`
+
+Returns `true` or `false` if the provided string is valid query string.
+
+#### Example
+
+```go
+isQueryString('a=b&c=d') // true
+isQueryString('not a query string') // false
+```
+
+#### Example (Expression)
+
+<ConfigExample
+	config={{
+		expressions: ["isQueryString(res.headers['baz'])"],
+	}}
+/>
+
+### `isUrl(string) -> bool`
+
+Returns `true` or `false` if the provided string is a valid URL.
+
+#### Example
+
+```go
+isUrl('https://ngrok.com') // true
+isUrl('not a url') // false
+```
+
+#### Example (Expression)
+
+<ConfigExample
+	config={{
+		expressions: ["isUrl(res.location)"],
+	}}
+/>
+
+### `isJson(string) -> bool`
+
+Returns `true` or `false` if the provided string is a valid JSON.
+
+#### Example
+
+```go
+isJson('{"a":"b","c":"d"}') // true
+isJson('not json') // false
+```
+
+#### Example (Expression)
+
+<ConfigExample
+	config={{
+		expressions: ['isJson(res.headers["x-json-blob"])'],
+	}}
+/>
+
+### `hasReqHeader(string) -> bool`
+
+Returns `true` or `false` if the provided header key is present on the request. Header keys must be written in canonical format.
+
+#### Example
+
+```go
+hasReqHeader('Authorization')
+```
+
+#### Example (Expression)
+
+<ConfigExample
+	config={{
+		expressions: ["hasReqHeader('X-Version-Id')"],
+	}}
+/>
+
+### `getReqHeader(string) -> list`
+
+Returns a list of header values for the provided key on the request. Header keys must be written in canonical format.
+
+#### Example
+
+```go
+getReqHeader('User-Agent')
+```
+
+#### Example (Expression)
+
+<ConfigExample
+	config={{
+		expressions: [
+			"getReqHeader('User-Agent').exists(v, v.matches('(?i)google-images'))",
+		],
+	}}
+/>
+
+### `hasQueryParam(string) -> bool`
+
+Returns `true` or `false` if the specified query parameter key is part of the request URL.
+
+#### Example
+
+```go
+hasQueryParam('query')
+```
+
+#### Example (Expression)
+
+<ConfigExample
+	config={{
+		expressions: ["hasQueryParam('q')"],
+	}}
+/>
+
+### `getQueryParam(string) -> list`
+
+Returns a list of the query parameter values from the request URL for the specified key.
+
+#### Example
+
+```go
+getQueryParam('search')
+```
+
+#### Example (Expression)
+
+<ConfigExample
+	config={{
+		expressions: ["size(getQueryParam('q')) == 0"],
+	}}
+/>
+
+### `hasReqCookie(string) -> bool`
+
+Returns `true` or `false` if a cookie exists on the request with the specified name.
+
+#### Example
+
+```go
+hasReqCookie('session')
+```
+
+#### Example (Expression)
+
+<ConfigExample
+	config={{
+		expressions: ["hasReqCookie('session')"],
+	}}
+/>
+
+### `getReqCookie(string) -> cookie`
+
+Returns the cookie struct for the specified cookie name, if it exists on the request. If there are multiple cookies of the same name, the first from the ordering specified in the Cookie header will be returned.
+
+#### Example
+
+```go
+getReqCookie('session')
+```
+
+#### Example (Expression)
+
+<ConfigExample
+	config={{
+		expressions: ["getReqCookie('session').secure"],
+	}}
+/>
+
+## `on_http_response`
+
+The following macros can only be used in the `on_http_response` phase.
+
+### `hasResHeader(string) -> bool`
+
+Returns `true` or `false` if the provided header key is present on the response. Header keys must be written in canonical format.
+
+#### Example
+
+```go
+hasResHeader('Content-Type')
+```
+
+#### Example (Expression)
+
+<ConfigExample
+	config={{
+		expressions: ["hasResHeader('Content-Type')"],
+	}}
+/>
+
+### `getResHeader(string) -> list`
+
+Returns a list of header values for the provided key on the response. Header keys must be written in canonical format.
+
+#### Example
+
+```go
+getResHeader('Content-Type')
+```
+
+#### Example (Expression)
+
+<ConfigExample
+	config={{
+		expressions: [
+			"size(getResHeader('Content-Type').filter(v, v.matches('application/json'))) > 0",
+		],
+	}}
+/>
+
+### `hasResCookie(string) -> bool`
+
+Returns `true` or `false` if a cookie exists on the response with the specified name.
+
+#### Example
+
+```go
+hasResCookie('_device_id')
+```
+
+#### Example (Expression)
+
+<ConfigExample
+	config={{
+		expressions: ["hasResCookie('_device_id')"],
+	}}
+/>
+
+### `getResCookie(string) -> cookie`
+
+Returns the cookie struct for the specified cookie name, if it exists on the response. If there are multiple cookies of the same name, the cookie with the longest path will be returned.
+
+#### Example
+
+```go
+getResCookie('_device_id')
+```
+
+#### Example (Expression)
+
+<ConfigExample
+	config={{
+		expressions: ["getResCookie('_device_id').value == 'mobile-phone-14'"],
+	}}
+/>

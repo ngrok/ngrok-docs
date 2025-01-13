@@ -1,0 +1,150 @@
+import { Config, ConfigItem } from "/src/components/ConfigTable.tsx";
+
+## Configuration Reference
+
+The [Traffic Policy](/traffic-policy/) configuration
+reference for this action.
+
+### Supported Phases
+
+`on_http_request`
+
+### Type
+
+`oauth`
+
+### Configuration Fields
+
+<Config>
+	<ConfigItem title="provider" type="string" required={true}>
+		<p>
+			The name of the _OAuth_ identity provider to be used for authentication.
+		</p>
+	</ConfigItem>
+	<ConfigItem title="auth_id" type="string" required={false}>
+		<p>
+			Unique authentication identifier for this provider. This value will be
+			used for the cookie, redirect, authentication and logout purposes.
+		</p>
+		<p>
+			To login a user you must use `/ngrok/login?auth_id={auth_id}`. If you are
+			using path based auth you must include the path to be redirected back to:
+			`?redirect_path=/foo`
+		</p>
+		<p>To log a user out you must use `/ngrok/logout?auth_id={auth_id}`</p>
+		<p>
+			You additionally can provide a path to redirect the user to on logout:
+			`?redirect_path=/`
+		</p>
+	</ConfigItem>
+	<ConfigItem title="client_id" type="string" required={false}>
+		<p>Your OAuth app's client ID.</p>
+		<p>Leave this empty if you want to use ngrok’s managed application.</p>
+	</ConfigItem>
+	<ConfigItem title="client_secret" type="string" required={false}>
+		<p>Your OAuth app's client secret.</p>
+		<p>Leave this empty if you want to use a managed application.</p>
+	</ConfigItem>
+	<ConfigItem title="scopes" type="array of strings" required={false}>
+		<p>
+			A list of additional scopes to request when users authenticate with the
+			identity provider.
+		</p>
+	</ConfigItem>
+	<ConfigItem
+		title="authz_url_params"
+		type="map of string to string"
+		required={false}
+	>
+		<p>
+			A map of additional URL parameters to apply to the authorization endpoint
+			URL.
+		</p>
+	</ConfigItem>
+	<ConfigItem title="max_session_duration" type="duration" required={false}>
+		<p>Defines the maximum lifetime of a session regardless of activity.</p>
+	</ConfigItem>
+	<ConfigItem title="idle_session_timeout" type="duration" required={false}>
+		<p>
+			Defines the period of inactivity after which a user's session is
+			automatically ended, requiring re-authentication.
+		</p>
+	</ConfigItem>
+	<ConfigItem
+		title="userinfo_refresh_interval"
+		type="duration"
+		required={false}
+	>
+		<p>
+			How often should ngrok refresh data about the authenticated user from the
+			identity provider.
+		</p>
+	</ConfigItem>
+	<ConfigItem title="allow_cors_preflight" type="boolean" required={false}>
+		<p>
+			Allow CORS preflight requests to bypass authentication checks. Enable if
+			the endpoint needs to be accessible via CORS.
+		</p>
+		<p>Default: `false`</p>
+	</ConfigItem>
+	<ConfigItem title="auth_cookie_domain" type="string" required={false}>
+		<p>Sets the allowed domain for the auth cookie.</p>
+	</ConfigItem>
+</Config>
+
+### Special Paths
+
+| Path            | Description                                                                                                                                                                                                                                                                                                                     |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/ngrok/login`  | Redirect users to this path to explicitly begin an authentication flow. After authentication, users will be redirected to `/`. If the IdP supports it, ngrok will attempt to instruct the IdP to force re-authentication which will force users to re-enter their credentials with the IdP even if they were already logged in. |
+| `/ngrok/logout` | Logs the user out by clearing their session cookie. Redirect users to this path to log them out.                                                                                                                                                                                                                                |
+
+### Events
+
+When this action is enabled, it populates the following fields in the
+[http_request_complete.v0](/obs/reference/#http-request-complete) event:
+
+| Fields                |
+| --------------------- |
+| `oauth.app_client_id` |
+| `oauth.decision`      |
+| `oauth.user.id`       |
+| `oauth.user.name`     |
+
+### Supported Providers {#supported-providers}
+
+ngrok currently supports the following OAuth providers (see the Integration Guides for more details). In some instances, ngrok has a
+[managed application](#managed-applications) that allows you to configure OAuth without setting up your own application in your provider. This is useful for testing and
+development, but when you move into production, we recommend using your own custom application in your specific provider.
+
+| Provider  | Provider Identifier | Managed App Available | Integration Guide                                    |
+| --------- | ------------------- | --------------------- | ---------------------------------------------------- |
+| Amazon    | `amazon`            | no                    | [Documentation](/docs/integrations/amazon/oauth/)    |
+| Facebook  | `facebook`          | no                    | [Documentation](/docs/integrations/facebook/oauth/)  |
+| GitHub    | `github`            | yes                   | [Documentation](/docs/integrations/github/oauth/)    |
+| GitLab    | `gitlab`            | yes                   | [Documentation](/docs/integrations/gitlab/oauth/)    |
+| Google    | `google`            | yes                   | [Documentation](/docs/integrations/google/oauth/)    |
+| LinkedIn  | `linkedin`          | yes                   | [Documentation](/docs/integrations/linkedin/oauth/)  |
+| Microsoft | `microsoft`         | yes                   | [Documentation](/docs/integrations/microsoft/oauth/) |
+| Twitch    | `twitch`            | yes                   | [Documentation](/docs/integrations/twitch/oauth/)    |
+
+### Required Scopes
+
+This is a list of the minimum required scopes for each provider. You can use this when configuring your identity provider. These are not
+required when using the ngrok managed applications.
+
+| Provider  | Scopes                                                                                               |
+| --------- | ---------------------------------------------------------------------------------------------------- |
+| Amazon    | `profile`                                                                                            |
+| Facebook  | `email`                                                                                              |
+| Github    | `read:org`, `read:user`                                                                              |
+| Gitlab    | `email`, `openid`, `profile`                                                                         |
+| Google    | `https://www.googleapis.com/auth/userinfo.email`, `https://www.googleapis.com/auth/userinfo.profile` |
+| LinkedIn  | `r_emailaddress`, `r_liteprofile`                                                                    |
+| Microsoft | `User.Read`                                                                                          |
+| Twitch    | `user:read:email`                                                                                    |
+
+## Try it out
+
+Consult the list of [supported providers](#supported-providers) for
+step-by-step integration guides.

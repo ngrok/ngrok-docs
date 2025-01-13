@@ -186,10 +186,61 @@ const redirects = [
     [ fromIncludes(`/docs/platform/ip-policies`), `/docs/api/resources/ip-policies/` ],
     [ fromIncludes(`/docs/http-header-templates`), `/docs/http/request-headers/` ],
 
+    // (DEC 2024) New Traffic Policy
+    [ fromIncludes(`/docs/traffic-policy/gallery/`), `/docs/traffic-policy/templates/` ],
+    [ fromIncludes(`/docs/http/traffic-policy/gallery/`), `/docs/traffic-policy/templates/` ],
+    [ fromIncludes(`/docs/tls/traffic-policy/gallery/`), `/docs/traffic-policy/templates/` ],
+    [ fromIncludes(`/docs/tcp/traffic-policy/gallery/`), `/docs/traffic-policy/templates/` ],
+    [ fromIncludes(`/docs/http/traffic-policy/expressions/writing-guide/`), `/docs/traffic-policy/concepts/expressions/#writing-expressions` ],
+    [ fromIncludes(`/docs/tls/traffic-policy/expressions/writing-guide/`), `/docs/traffic-policy/concepts/expressions/#writing-expressions` ],
+    [ fromIncludes(`/docs/tcp/traffic-policy/expressions/writing-guide/`), `/docs/traffic-policy/concepts/expressions/#writing-expressions` ],
+    [ fromIncludes(`/docs/http/traffic-policy/expressions/variables/#action-result-variables`), `/docs/traffic-policy/variables/action/` ],
+    [ fromIncludes(`/docs/http/traffic-policy/expressions/variables/#connection-variables`), `/docs/traffic-policy/variables/connection/` ],
+    [ fromIncludes(`/docs/http/traffic-policy/expressions/variables/#connection-geo-variables`), `/docs/traffic-policy/variables/connection/#connection-geo-variables` ],
+    [ fromIncludes(`/docs/http/traffic-policy/expressions/variables/#connection-tls-variables`), `/docs/traffic-policy/variables/connection/#connection-tls-variables` ],
+    [ fromIncludes(`/docs/http/traffic-policy/expressions/variables/#connection-tls-client-variables`), `/docs/traffic-policy/variables/connection/#connection-tls-client-variables` ],
+    [ fromIncludes(`/docs/http/traffic-policy/expressions/variables/#connection-tls-server-variables`), `/docs/traffic-policy/variables/connection/#connection-tls-server-variables` ],
+    [ fromIncludes(`/docs/http/traffic-policy/expressions/variables/#endpoint-variables`), `/docs/traffic-policy/variables/endpoint/` ],
+    [ fromIncludes(`/docs/http/traffic-policy/expressions/variables/#time-variables`), `/docs/traffic-policy/variables/time/` ],
+    [ fromIncludes(`/docs/tls/traffic-policy/expressions/variables/#action-result-variables`), `/docs/traffic-policy/variables/action/` ],
+    [ fromIncludes(`/docs/tls/traffic-policy/expressions/variables/#connection-variables`), `/docs/traffic-policy/variables/connection/` ],
+    [ fromIncludes(`/docs/tls/traffic-policy/expressions/variables/#connection-geo-variables`), `/docs/traffic-policy/variables/connection/#connection-geo-variables` ],
+    [ fromIncludes(`/docs/tls/traffic-policy/expressions/variables/#connection-tls-variables`), `/docs/traffic-policy/variables/connection/#connection-tls-variables` ],
+    [ fromIncludes(`/docs/tls/traffic-policy/expressions/variables/#connection-tls-client-variables`), `/docs/traffic-policy/variables/connection/#connection-tls-client-variables` ],
+    [ fromIncludes(`/docs/tls/traffic-policy/expressions/variables/#connection-tls-server-variables`), `/docs/traffic-policy/variables/connection/#connection-tls-server-variables` ],
+    [ fromIncludes(`/docs/tls/traffic-policy/expressions/variables/#endpoint-variables`), `/docs/traffic-policy/variables/endpoint/` ],
+    [ fromIncludes(`/docs/tls/traffic-policy/expressions/variables/#time-variables`), `/docs/traffic-policy/variables/time/` ],
+    [ fromIncludes(`/docs/tcp/traffic-policy/expressions/variables/#action-result-variables`), `/docs/traffic-policy/variables/action/` ],
+    [ fromIncludes(`/docs/tcp/traffic-policy/expressions/variables/#connection-variables`), `/docs/traffic-policy/variables/connection/` ],
+    [ fromIncludes(`/docs/tcp/traffic-policy/expressions/variables/#connection-geo-variables`), `/docs/traffic-policy/variables/connection/#connection-geo-variables` ],
+    [ fromIncludes(`/docs/tcp/traffic-policy/expressions/variables/#connection-tls-variables`), `/docs/traffic-policy/variables/connection/#connection-tls-variables` ],
+    [ fromIncludes(`/docs/tcp/traffic-policy/expressions/variables/#connection-tls-client-variables`), `/docs/traffic-policy/variables/connection/#connection-tls-client-variables` ],
+    [ fromIncludes(`/docs/tcp/traffic-policy/expressions/variables/#connection-tls-server-variables`), `/docs/traffic-policy/variables/connection/#connection-tls-server-variables` ],
+    [ fromIncludes(`/docs/tcp/traffic-policy/expressions/variables/#endpoint-variables`), `/docs/traffic-policy/variables/endpoint/` ],
+    [ fromIncludes(`/docs/tcp/traffic-policy/expressions/variables/#time-variables`), `/docs/traffic-policy/variables/time/` ],
+    [ fromIncludes(`/docs/tcp/traffic-policy/expressions/variables/`), `/docs/traffic-policy/variables/` ],
+    [ fromIncludes(`/docs/http/traffic-policy/expressions/variables/`), `/docs/traffic-policy/variables/` ],
+    [ fromIncludes(`/docs/tls/traffic-policy/expressions/variables/`), `/docs/traffic-policy/variables/` ],
+    [ fromIncludes(`/docs/tcp/traffic-policy/expressions/variables/`), `/docs/traffic-policy/variables/` ],
+    [ fromIncludes(`/docs/http/traffic-policy/expressions/macros/`), `/docs/traffic-policy/macros/` ],
+    [ fromIncludes(`/docs/tls/traffic-policy/expressions/macros/`), `/docs/traffic-policy/macros/` ],
+    [ fromIncludes(`/docs/tcp/traffic-policy/expressions/macros/`), `/docs/traffic-policy/macros/` ],
+    [ fromIncludes(`/docs/http/traffic-policy/expressions/`), `/docs/traffic-policy/concepts/expressions/` ],
+    [ fromIncludes(`/docs/tls/traffic-policy/expressions/`), `/docs/traffic-policy/concepts/expressions/` ],
+    [ fromIncludes(`/docs/tcp/traffic-policy/expressions/`), `/docs/traffic-policy/concepts/expressions/` ],
+    [ fromIncludes(`/docs/http/traffic-policy/`), `/docs/traffic-policy/` ],
+    [ fromIncludes(`/docs/tls/traffic-policy/`), `/docs/traffic-policy/` ],
+    [ fromIncludes(`/docs/tcp/traffic-policy/`), `/docs/traffic-policy/` ],
+
+    // DEC 2024 - New TP Getting Started
+    [ fromExact(`/docs/traffic-policy/getting-started/`), `/docs/traffic-policy/getting-started/agent-endpoints/cli` ],
+
+    [ fromExact(`/docs/tls/tls-termination/`), `/docs/tls/termination/` ],
+    [ fromExact(`/docs/tls/tls-termination`), `/docs/tls/termination` ],
 ]
 
 // get current href from window
-const currentPath = window.location.href
+const currentPath = window.location.pathname
 
 // set new path to current path
 let newPath = currentPath
@@ -212,6 +263,7 @@ for (const redirect of redirects) {
     }
 
     const [from, fromResult] = fromFn(newPath)
+    console.log(from, fromResult, fromFn, newPath)
     if (fromResult) {
         newPath = toFn(newPath, from)
     }

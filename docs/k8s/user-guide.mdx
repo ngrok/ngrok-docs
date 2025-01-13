@@ -485,7 +485,7 @@ spec:
 
 ## Traffic Policy
 
-Traffic policies for inbound and outbound traffic can simplifify edge management.
+Traffic policies for inbound and outbound traffic can simplify edge management.
 
 <TrafficPolicyWarning />
 
@@ -882,4 +882,343 @@ Kubernetes control plane is running at https://tlsedgetest.ngrok.app
 CoreDNS is running at https://tlsedgetest.ngrok.app/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
 
 To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+```
+
+## Agent Endpoints
+
+Agent Endpoints along with [Cloud Endpoints](https://ngrok.com/docs/network-edge/cloud-endpoints/) are the successors to [Edges](https://ngrok.com/docs/network-edge/edges/). Agent Endpoints are ephemeral and tied to the lifetime of the ngrok agent.
+
+Using Agent Endpoints, you can easily expose your Kubernetes services to internet, or use `.internal` domains to allow other ngrok endpoints to route to them internally without exposing them to the public internet.
+
+The ngrok kubernetes operator ensures that you always have a set of Agent Endpoints according to the configuration of any and all `AgentEndpoint` custom resources ([AgentEndpoint CRD reference](https://ngrok.com/docs/k8s/crds/#agent-endpoints)). you have applied. You may see the ID's of any agent endpoints
+within the ngrok dashboard change over time if they are managed by the operator whenever the operator is restarted, but their configuraiton and availability will always be consistent so long as the operator is running.
+
+See the [ngrok agent CLI configuration page](https://ngrok.com/docs/agent/config/v3/#endpoint-definitions), for more information about using the CLI to start agent endpoints outside of Kubernetes.
+
+**Note:** Agent Endpoints are currently in feature-preview for the ngrok Kubernetes operator. You will need to use `--version 0.17.0-rc.1` (or newer) when using
+`helm` to install or update the operator. See [the deployment guide](https://ngrok-docs-git-alicewasko-agent-endpoint-k8s-ngrok-dev.vercel.app/docs/k8s/deployment-guide/) for information about installing
+the ngrok Kubernetes operator.
+
+### HTTP Endpoints
+
+This Agent Endpoint accepts cleartext HTTP connections at `http://example-http-domain.ngrok.io`, and forwards to the kubernetes service `test-service.default` on port 8080 over cleartext HTTP.
+While the public url is `http://`, the `upstream.url` does not need to also use `http://`. You can forward traffic to HTTPS or cleartext HTTP upstream urls.
+
+```yaml
+---
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: AgentEndpoint
+metadata:
+  name: http-k8s
+  namespace: default
+spec:
+  description: example HTTP agent endpoint # optional description
+  metadata: '{"owned-by":"ngrok-operator"}' # optional metadata
+  upstream:
+    protocol: http1 # optional, allows http1/http2. defaults to http1 for HTTP/HTTPS agent endpoints
+    url: test-service.default:8080
+  url: http://example-http-domain.ngrok.io
+```
+
+### HTTPS Endpoints
+
+This Agent Endpoint accepts HTTPS connections at `https://example-https-domain.ngrok.io`, terminates TLS, and forwards to the kubernetes service `test-service.default` on port 8443 over HTTPS.
+While the public url is `https://`, the `upstream.url` does not need to also use `https://`. You can forward traffic to HTTPS or cleartext HTTP upstream urls.
+
+```yaml
+---
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: AgentEndpoint
+metadata:
+  name: https-k8s
+  namespace: default
+spec:
+  description: example HTTPS agent endpoint
+  metadata: '{"owned-by":"ngrok-operator"}'
+  upstream:
+    protocol: http2
+    url: https://test-service.default:8443
+  url: https://example-https-domain.ngrok.io
+```
+
+The following example showcases forwarding traffic to a publicy routable url outside of Kubernetes, but will also work with an HTTP Agent Endpoint.
+
+```yaml
+---
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: AgentEndpoint
+metadata:
+  name: https-external
+  namespace: default
+spec:
+  description: example HTTPS agent endpoint with external upstream
+  metadata: '{"owned-by":"ngrok-operator"}'
+  upstream:
+    protocol: http2
+    url: https://httpbin.org
+  url: https://example-https-domain-external-upstream.ngrok.io
+```
+
+The following example showcases how a traffic policy with the [terminate-tls action](https://ngrok.com/docs/traffic-policy/actions/terminate-tls/) can be used to control TLS termination options.
+More information and examples about configuring traffic policies on Agent Endpoints can be found in [the traffic policy section below](#traffic-policies-with-agent-endpoints).
+
+For HTTPS endpoints, ngrok will already terminate TLS connections for you even if you do not explicitly use this action in your Traffic Policy. If you specify this action in your Traffic
+Policy without any configuration, you will see no change in behavior for your endpoints.
+
+```yaml
+---
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: AgentEndpoint
+metadata:
+  name: https-k8s
+  namespace: default
+spec:
+  description: example HTTPS agent endpoint
+  metadata: '{"owned-by":"ngrok-operator"}'
+  trafficPolicy:
+    inline:
+      on_tcp_connect:
+        - actions:
+            - type: terminate-tls
+              config:
+                min_version: 1.2
+                max_version: 1.3
+  upstream:
+    protocol: http2
+    url: https://test-service.default:8443
+  url: https://example-https-domain.ngrok.io
+```
+
+### TCP Endpoints
+
+TCP Agent Endpoints can be used to forward raw TCP traffic. In order to create a TCP Agent Endpoint, you must first [reserve a TCP address through the ngrok dashboard](https://dashboard.ngrok.com/tcp-addresses).
+
+```yaml
+---
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: AgentEndpoint
+metadata:
+  name: tcp-k8s
+  namespace: default
+spec:
+  description: example TCP agent endpoint
+  metadata: '{"owned-by":"ngrok-operator"}'
+  upstream:
+    url: tcp://test-service.default:9000
+  url: tcp://5.tcp.ngrok.io:24429 # TCP address reserved from the ngrok dashboard
+```
+
+### TLS Endpoints
+
+[TLS endpoints](https://ngrok.com/docs/tls/) enable you to deliver any network service that runs over a TLS-based protocol. TLS endpoints make no assumptions about the wrapped protocol being transported.
+
+```yaml
+---
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: AgentEndpoint
+metadata:
+  name: tls-k8s
+  namespace: default
+spec:
+  description: test tls agent endpoint
+  metadata: '{"owned-by":"ngrok-operator"}'
+  upstream:
+    url: tls://test-service.default:9000
+  url: https://example-tls-domain.ngrok.io
+```
+
+The following example showcases how a traffic policy with the [terminate-tls action](https://ngrok.com/docs/traffic-policy/actions/terminate-tls/) can be used to control TLS termination options.
+More information and examples about configuring traffic policies on Agent Endpoints can be found in [the traffic policy section below](#traffic-policies-with-agent-endpoints).
+
+For TLS endpoints, ngrok will not terminate the TLS connection by default and it is up to you to handle TLS termination in your upstream service.
+
+```yaml
+---
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: AgentEndpoint
+metadata:
+  name: tls-k8s
+  namespace: default
+spec:
+  description: test tls agent endpoint
+  metadata: '{"owned-by":"ngrok-operator"}'
+  trafficPolicy:
+    inline:
+      on_tcp_connect:
+        - actions:
+            - type: terminate-tls
+              config:
+                min_version: 1.2
+                max_version: 1.3
+  upstream:
+    url: tls://test-service.default:9000
+  url: https://example-tls-domain.ngrok.io
+```
+
+### Internal Endpoints
+
+Agent Endpoints with a `url` ending in `.internal` can be used to create [Internal Endpoints](https://ngrok.com/docs/network-edge/internal-endpoints/).
+
+All internal endpoints end in `.internal`, and are specific to one ngrok account. Requests may only be forwarded to a internal endpoint on the same account as the the internal endpoint, and the target must be of the same protocol (i.e. an HTTP Endpoint may only forward to an HTTP Internal Endpoint).
+In addition, the target's traffic policy may only specify policy for the current protocol, for example if [forward-internal](https://ngrok.com/docs/traffic-policy/actions/forward-internal/) is used in the `on_http_request` traffic policy phase,
+the internal endpoint may only have `on_http_request` and `on_http_response` sections in its traffic policy configuration.
+
+#### 1. Create a public Agent Endpoint
+
+The following Agent Endpoint will forward all traffic to an internal Agent Endpoint that will be created next
+
+```yaml
+---
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: AgentEndpoint
+metadata:
+  name: forward-internal
+  namespace: default
+spec:
+  description: forwards to the following internal agent endpoint
+  metadata: '{"owned-by":"ngrok-operator"}'
+  trafficPolicy:
+    inline:
+      on_http_request:
+        - actions:
+            - type: forward-internal
+              config:
+                binding: internal
+                url: https://example-https-endpoint.internal
+  upstream:
+    protocol: http1
+    url: foo.bar:8080
+  url: https://example-forward-internal-aep.ngrok.io
+```
+
+Since the above endpoint is forwarding all traffic to the below internal endpoint, no traffic will be sent to `foo.bar:8080` which is the upstream.
+
+#### 2. Create an internal Agent Endpoint
+
+This internal Agent Endpoint is not accessible from the public internet, but may receive traffic from other Cloud and Agent Endpoints using their
+traffic policy's `forward-internal` action.
+
+```yaml
+---
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: AgentEndpoint
+metadata:
+  name: internal
+  namespace: default
+spec:
+  description: example internal agent endpoint
+  metadata: '{"owned-by":"ngrok-operator"}'
+  upstream:
+    protocol: http1
+    url: test-service.default:8080
+  url: https://example-https-endpoint.internal
+  bindings:
+    - internal
+```
+
+#### 3. Create a Cloud Endpoint
+
+The following showcases how you could also use a [Cloud Endpoint](https://ngrok.com/docs/network-edge/cloud-endpoints/) to forward traffic to your internal Agent Endpoint
+
+Cloud Endpoints can created with Kubernetes resources such as with the following example, but they can also be created
+from the [ngrok dashboard](https://dashboard.ngrok.com) and [the ngrok API](https://ngrok.com/docs/api/).
+
+Cloud Endpoints enable you to:
+
+- Centrally manage your traffic policy configurations in Kubernetes and/or ngrok's cloud service
+- Load balance traffic to different ngrok agents/operators
+- Apply different configurations for each path in your application. For example, you may apply OAuth on `/app` and Compression on `/static/css`
+
+```yaml
+---
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: CloudEndpoint
+metadata:
+  name: forward-internal
+  namespace: default
+spec:
+  description: https cloud endpoint forwarding to internal agent endpoint
+  metadata: '{"owned-by":"ngrok-operator"}'
+  trafficPolicy:
+    policy:
+      on_http_request:
+        - actions:
+            - type: forward-internal
+              config:
+                url: https://example-https-endpoint.internal
+  url: https://example-forward-internal-cep.ngrok.io
+```
+
+### Traffic Policies with Agent Endpoints
+
+The follwoing example showcases how to inline a traffic policy configuration for an Agent Endpoint.
+
+```yaml
+---
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: AgentEndpoint
+metadata:
+  name: inline-traffic-policy
+  namespace: default
+spec:
+  description: https agent endpoint with inline traffic policy
+  metadata: '{"owned-by":"ngrok-operator"}'
+  trafficPolicy:
+    inline:
+      on_http_request:
+        - actions:
+            - type: custom-response
+              config:
+                status_code: 503
+                content:
+                  <html><body><h1>Service Unavailable</h1><p>Our servers are currently
+                  down for maintenance. Please check back later.</p></body></html>
+                headers:
+                  content-type: text/html
+  upstream:
+    protocol: http2
+    url: https://httpbin.org
+  url: https://example-endpoint-tp-inline.ngrok.io
+```
+
+The follwoing example showcases how to supply a traffic policy configuration via reference to an `NgrokTrafficPolicy` custom resource
+for an Agent Endpoint. Note that the referenced `NgrokTrafficPolicy` must be in the same namespace as the `AgentEndpoint` it is being referenced from.
+
+```yaml
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: NgrokTrafficPolicy
+metadata:
+  name: example-policy
+  namespace: default
+spec:
+  policy:
+    on_http_request:
+      - actions:
+          - type: custom-response
+            config:
+              status_code: 503
+              content:
+                <html><body><h1>Service Unavailable</h1><p>Our servers are currently
+                down for maintenance. Please check back later.</p></body></html>
+              headers:
+                content-type: text/html
+```
+
+```yaml
+---
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: AgentEndpoint
+metadata:
+  name: referenced-traffic-policy
+  namespace: default
+spec:
+  description: https agent endpoint with referenced traffic policy
+  metadata: '{"owned-by":"ngrok-operator"}'
+  trafficPolicy:
+    targetRef:
+      name: example-policy
+  upstream:
+    protocol: http2
+    url: https://httpbin.org
+  url: https://example-endpoint-tp-ref.ngrok.io
 ```

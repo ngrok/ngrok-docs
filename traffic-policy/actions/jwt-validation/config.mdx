@@ -1,84 +1,113 @@
+import {
+	Config,
+	ConfigChildren,
+	ConfigEnum,
+	ConfigEnumOption,
+	ConfigItem,
+} from "/src/components/ConfigTable.tsx";
+
 ## Configuration Reference
 
-This is the [Traffic Policy](/docs/http/traffic-policy/) configuration
+The [Traffic Policy](/traffic-policy/) configuration
 reference for this action.
 
-### Action Type
+### Supported Phases
+
+`on_http_request`
+
+### Type
 
 `jwt-validation`
 
 ### Configuration Fields
 
-| Parameter  | Type                                                 | Description                                                               |
-| ---------- | ---------------------------------------------------- | ------------------------------------------------------------------------- |
-| `issuer`   | [`JWTIssuerConfig`](#jwtissuerconfig-parameters)     | **Required.** Configuration object for the Issuer(s) of the JWTs.         |
-| `audience` | [`JWTAudienceConfig`](#jwtaudienceconfig-parameters) | **Required.** Configuration object for the Audience(s) of the JWTs.       |
-| `http`     | [`JWTHTTPConfig`](#jwthttpconfig-parameters)         | **Required.** Configuration object for the HTTP requests containing JWTs. |
-| `jws`      | [`JWTSigningConfig`](#jwtsigningconfig-parameters)   | **Required.** Configuration object for signed JWTs (JWS).                 |
+<Config>
+    <ConfigItem title="issuer" type="object" required={true}>
+        <p>Configuration object for the Issuer(s) of the JWTs.</p>
+        <ConfigChildren>
+            <ConfigItem title="allow_list" type="array of objects" required={true}>
+                <p>List of allowed issuers. Minimum `1`.</p>
+                <ConfigChildren>
+                    <ConfigItem title="allow_list[*].value" type="string" required={true}>
+                        <p>Issuer URL. This can be found in the <code>iss</code> claim after decoding the JWT or from the <code>/.well-known/openid-configuration</code> endpoint in your Identity Provider.</p>
+                    </ConfigItem>
+                </ConfigChildren>
+            </ConfigItem>
+        </ConfigChildren>
+    </ConfigItem>
 
-#### `JWTIssuerConfig` Parameters
+    <ConfigItem title="audience" type="object" required={true}>
+        <p>Configuration object for the Audience(s) of the JWTs.</p>
+        <ConfigChildren>
+            <ConfigItem title="allow_list" type="array of objects" required={true}>
+                <p>List of allowed audiences. Minimum `1`.</p>
+                <ConfigChildren>
+                    <ConfigItem title="allow_list[*].value" type="string" required={true}>
+                        <p>Audience claim value. This can be found in the <code>aud</code> claim after decoding the JWT or from the request used to create the token in the first place.</p>
+                    </ConfigItem>
+                </ConfigChildren>
+            </ConfigItem>
+        </ConfigChildren>
+    </ConfigItem>
 
-| Parameter    | Type                                   | Description                                         |
-| ------------ | -------------------------------------- | --------------------------------------------------- |
-| `allow_list` | [`[]JWTIssuer`](#jwtissuer-parameters) | **Required.** List of allowed issuers. Minimum `1`. |
+    <ConfigItem title="http" type="object" required={true}>
+        <p>Configuration object for the HTTP requests containing JWTs.</p>
+        <ConfigChildren>
+            <ConfigItem title="tokens" type="array of objects" required={true}>
+                <p>List of tokens to validate. Minimum `1`.</p>
+                <ConfigChildren>
+                    <ConfigItem title="tokens[*].type" type="enum" required={true}>
+                        <p>Type of the JWT, which acts as a hint about how ngrok should parse the token.</p>
+                        <ConfigEnum>
+                            <ConfigEnumOption>`id_token`</ConfigEnumOption>
+                            <ConfigEnumOption>`access_token`</ConfigEnumOption>
+                            <ConfigEnumOption>`at+jwt`</ConfigEnumOption>
+                            <ConfigEnumOption>`it+jwt`</ConfigEnumOption>
+                            <ConfigEnumOption>`plain`</ConfigEnumOption>
+                            <ConfigEnumOption>`jwt`</ConfigEnumOption>
+                        </ConfigEnum>
+                    </ConfigItem>
+                    <ConfigItem title="tokens[*].method" type="enum" required={true}>
+                        <p>Location in the request to expect the JWT.</p>
+                        <ConfigEnum>
+                            <ConfigEnumOption>`header`</ConfigEnumOption>
+                            <ConfigEnumOption>`body`</ConfigEnumOption>
+                        </ConfigEnum>
+                        <p>When choosing `header`, the <code>content-type</code> header must be set to either <code>application/json</code> or <code>application/x-www-form-urlencoded</code>.</p>
+                        <p>When choosing <code>body</code>, the method must be <code>POST</code>, <code>PUT</code>, or <code>PATCH</code></p>
+                        <p>We do not support including a token as a URL query parameter.</p>
+                    </ConfigItem>
+                    <ConfigItem title="tokens[*].name" type="string" required={true}>
+                        <p>Name of the header or body field where the JWT is expected (Example: <code>"Authorization"</code>). This is not case sensitive.</p>
+                    </ConfigItem>
+                    <ConfigItem title="tokens[*].prefix" type="string">
+                        <p>Any prefix to strip from the header or body field before parsing the JWT (Example: <code>"Bearer "</code>).</p>
+                    </ConfigItem>
+                </ConfigChildren>
+            </ConfigItem>
+        </ConfigChildren>
+    </ConfigItem>
 
-##### `JWTIssuer` Parameters
+    <ConfigItem title="jws" type="object" required={true}>
+        <p>Configuration object for signed JWTs (JWS).</p>
+        <ConfigChildren>
+            <ConfigItem title="allowed_algorithms" type="array of strings" required={true}>
+                <p>List of allowed signing algorithms. We do not support <code>none</code> as a value here because it is insecure. Minimum `1`.</p>
+            </ConfigItem>
+            <ConfigItem title="keys" type="array of objects" required={true}>
+                <p>Configuration for the JWT signing keys.</p>
+                <ConfigChildren>
+                    <ConfigItem title="keys[*].sources" type="array of objects" required={true}>
+                        <p>Configuration for the key material used to verify the signed JWTs.</p>
+                        <ConfigChildren>
+                            <ConfigItem title="keys[*].sources[*].additional_jkus" type="array of strings" required={true}>
+                                <p>List of URLs which serve the possible signing keys in JWKS format. These URLs are cached and refreshed roughly every 15 minutes.</p>
+                            </ConfigItem>
+                        </ConfigChildren>
+                    </ConfigItem>
+                </ConfigChildren>
+            </ConfigItem>
+        </ConfigChildren>
+    </ConfigItem>
 
-| Parameter | Type     | Description                                                                                                                                                               |
-| --------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `value`   | `string` | **Required**. Issuer URL. This can be found in the `iss` claim after decoding the JWT or from the `/.well-known/openid-configuration` endpoint in your Identity Provider. |
-
-#### `JWTAudienceConfig` Parameters
-
-| Parameter    | Type                                       | Description                                           |
-| ------------ | ------------------------------------------ | ----------------------------------------------------- |
-| `allow_list` | [`[]JWTAudience`](#jwtaudience-parameters) | **Required**. List of allowed audiences. Minimum `1`. |
-
-##### `JWTAudience` Parameters
-
-| Parameter | Type     | Description                                                                                                                                                      |
-| --------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `value`   | `string` | **Required**. Audience claim value. This can be found in the `aud` claim after decoding the JWT or from the request used to create the token in the first place. |
-
-#### `JWTHTTPConfig` Parameters
-
-| Parameter | Type                                         | Description                                            |
-| --------- | -------------------------------------------- | ------------------------------------------------------ |
-| `tokens`  | [`[]JWTHTTPToken`](#jwthttptoken-parameters) | **Required**. List of tokens to validate. Minimum `1`. |
-
-##### `JWTHTTPToken` Parameters
-
-| Parameter | Type     | Description                                                                                                                                                                                                                                                                                                                                     |
-| --------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `type`    | `string` | **Required**. Type of the JWT, which acts as a hint about how ngrok should parse the token. Must be one of `"access_token"`, `"at+jwt"`, `"id_token"`, `"it+jwt"`, `"plain"`, or `"jwt"`.                                                                                                                                                       |
-| `method`  | `string` | **Required**. Location in the request to expect the JWT. Must be one of `"header"` or `"body"`. We do not support including a token as a URL query parameter. When choosing `body`, the method must be `POST`, `PUT`, or `PATCH` and the `content-type` header must be set to either `application/json` or `application/x-www-form-urlencoded`. |
-| `name`    | `string` | **Required**. Name of the header or body field where the JWT is expected (Example: `"Authorization"`). This is not case sensitive.                                                                                                                                                                                                              |
-| `prefix`  | `string` | Any prefix to strip from the header or body field before parsing the JWT (Example: `"Bearer "`).                                                                                                                                                                                                                                                |
-
-#### `JWTSigningConfig` Parameters
-
-| Parameter            | Type                                             | Description                                                                                                                     |
-| -------------------- | ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------- |
-| `allowed_algorithms` | `[]string`                                       | **Required**. List of allowed signing algorithms. We do not support `none` as a value here because it is insecure. Minimum `1`. |
-| `keys`               | [`[]JWTSigningKeys`](#jwtsigningkeys-parameters) | **Required**. Configuration for the JWT signing keys.                                                                           |
-
-##### `JWTSigningKeys` Parameters
-
-| Parameter | Type                                                         | Description                                                                      |
-| --------- | ------------------------------------------------------------ | -------------------------------------------------------------------------------- |
-| `sources` | [`[]JWTSigningKeySources`](#jwtsigningkeysources-parameters) | **Required**. Configuration for the key material used to verify the signed JWTs. |
-
-###### `JWTSigningKeySources` Parameters
-
-| Parameter         | Type       | Description                                                                                                                                    |
-| ----------------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| `additional_jkus` | `[]string` | **Required**. List of URLs which serve the possible signing keys in JWKS format. These urls are cached and refreshed roughly every 15 minutes. |
-
-### Supported Phases
-
-- `on_http_request`
-
-### Supported Schemes
-
-- `https`
-- `http`
+</Config>
