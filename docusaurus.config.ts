@@ -56,8 +56,8 @@ const config = {
 			  redirects: [
 				// /docs/oldDoc -> /docs/newDoc
 				{
-					from: '/docs/tcp/traffic-policy/expressions/macros',
-				  to: '/docs/api',
+					from: '/tcp/traffic-policy/expressions/macros',
+				  to: '/api',
 				},
 			  ],
 			},
