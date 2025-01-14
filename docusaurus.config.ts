@@ -51,22 +51,22 @@ const config = {
 
 	plugins: [
 		[
-			'@docusaurus/plugin-client-redirects',
+			"@docusaurus/plugin-client-redirects",
 			{
-			  redirects: [
-				// /docs/oldDoc -> /docs/newDoc
-				{
-					from: '/docs/tcp/traffic-policy/expressions/macros',
-				  to: '/docs/',
-				},
-				// Redirect from multiple old paths to the new path
-				{
-				  to: '/docs/newDoc2',
-				  from: ['/docs/oldDocFrom2019', '/docs/legacyDocFrom2016'],
-				},
-			  ],
+				redirects: [
+					// /docs/oldDoc -> /docs/newDoc
+					{
+						from: "/docs/tcp/traffic-policy/expressions/macros",
+						to: "/docs/",
+					},
+					// Redirect from multiple old paths to the new path
+					{
+						to: "/docs/newDoc2",
+						from: ["/docs/oldDocFrom2019", "/docs/legacyDocFrom2016"],
+					},
+				],
 			},
-		  ],
+		],
 		"./src/plugins/ngrok-parse-integrations",
 		"@stackql/docusaurus-plugin-hubspot",
 		"@docusaurus/theme-mermaid",
