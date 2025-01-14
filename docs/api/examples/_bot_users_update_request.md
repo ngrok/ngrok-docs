@@ -9,5 +9,5 @@ curl \
 -H "Content-Type: application/json" \
 -H "Ngrok-Version: 2" \
 -d '{"active":false,"name":"inactive bot user from API"}' \
-https://api.ngrok.com/bot_users/bot_2qRzBDakf3I4uARW5QJKLPvA0sr
+https://api.ngrok.com/bot_users/bot_2rcCvh0pkLnQTRl8DHbT8tuwHfy
 ```

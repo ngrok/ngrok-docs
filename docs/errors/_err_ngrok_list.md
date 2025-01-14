@@ -9982,7 +9982,7 @@
         <a id="ERR_NGROK_9040" href="/docs/errors/err_ngrok_9040">ERR_NGROK_9040</a>
       </td>
       <td class="pre-wrapped">
-        We do not allow agents to connect to ngrok from your IP address. If you believe this to be in error, please contact support: support@ngrok.com
+        We do not allow agents to connect to ngrok from your IP address (<code>&lt;IP&gt;</code>).
       </td>
     </tr>
     <tr>
@@ -10814,7 +10814,7 @@
         <a id="ERR_NGROK_18008" href="/docs/errors/err_ngrok_18008">ERR_NGROK_18008</a>
       </td>
       <td class="pre-wrapped">
-        This account does not have access to Cloud Endpoints.
+        This account does not have access to Cloud Endpoints. Upgrade or switch to a pay-as-you-go plan for access.
       </td>
     </tr>
     <tr>
@@ -10944,6 +10944,14 @@
       </td>
       <td class="pre-wrapped">
         Failed to create CSR.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_21000" href="/docs/errors/err_ngrok_21000">ERR_NGROK_21000</a>
+      </td>
+      <td class="pre-wrapped">
+        Failed to lookup IP <code>&lt;IP&gt;</code>: <code>&lt;ERR&gt;</code>.
       </td>
     </tr>
   </tbody>
