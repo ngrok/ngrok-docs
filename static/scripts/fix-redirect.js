@@ -27,7 +27,7 @@ const redirects = [
     [ fromIncludes(`/docs/platform/ip-policies/`), `/docs/network-edge/ip-policies/` ],
     [ fromIncludes(`/docs/platform/botusers/`), `/docs/user-management/#bot-users` ],
     [ fromIncludes(`/docs/platform/dashboard/`), `/docs/user-management/#sso` ],
-    [ fromIncludes(`/docs/cloud-edge/modules/webhook/`), `/docs/network-edge/modules/webhook-verification/` ],
+    [ fromIncludes(`/docs/cloud-edge/modules/webhook/`), `/docs/api/resources/edge-route-webhook-verification-module` ],
     [ fromIncludes(`/docs/cloud-edge/modules/oauth/amazon/`), `/docs/integrations/amazon/oauth/` ],
     [ fromIncludes(`/docs/cloud-edge/modules/oauth/facebook/`), `/docs/integrations/facebook/oauth/` ],
     [ fromIncludes(`/docs/cloud-edge/modules/oauth/github/`), `/docs/integrations/github/oauth/` ],
@@ -44,8 +44,8 @@ const redirects = [
     [ fromIncludes(`/docs/secure-tunnels/tunnels/ssh-reverse-tunnel-agent`), `/docs/agent/ssh-reverse-tunnel-agent` ],
 
     // /docs/guides -> /docs/guides/other-guides
-    // /docs/guides/how-to-set-up-a-custom-domain -> /docs/guides/other-guides/how-to-set-up-a-custom-domain
-    [ fromIncludes(`/docs/guides/how-to-set-up-a-custom-domain`), `/docs/guides/other-guides/how-to-set-up-a-custom-domain` ],
+    // /docs/guides/other-guides/how-to-set-up-a-custom-domain -> /docs/guides/other-guides/how-to-set-up-a-custom-domain
+    [ fromIncludes(`/docs/guides/other-guides/how-to-set-up-a-custom-domain`), `/docs/guides/other-guides/how-to-set-up-a-custom-domain` ],
 
     // /docs/guides/limits -> /docs/guides/other-guides/limits
     [ fromIncludes(`/docs/guides/limits`), `/docs/guides/other-guides/limits` ],
