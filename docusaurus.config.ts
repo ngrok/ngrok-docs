@@ -53,13 +53,13 @@ const config = {
 		[
 			"@docusaurus/plugin-client-redirects",
 			{
-			  redirects: [
-				// /docs/oldDoc -> /docs/newDoc
-				{
-					from: '/tcp/traffic-policy/expressions/macros',
-				  to: '/api',
-				},
-			  ],
+				redirects: [
+					// /docs/oldDoc -> /docs/newDoc
+					{
+						from: "/tcp/traffic-policy/expressions/macros",
+						to: "/api",
+					},
+				],
 			},
 		],
 		"./src/plugins/ngrok-parse-integrations",
