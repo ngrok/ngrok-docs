@@ -51,7 +51,7 @@ const config = {
 
 	plugins: [
 		[
-			'@docusaurus/plugin-client-redirects',
+			"@docusaurus/plugin-client-redirects",
 			{
 			  redirects: [
 				// /docs/oldDoc -> /docs/newDoc
@@ -61,7 +61,7 @@ const config = {
 				},
 			  ],
 			},
-		  ],
+		],
 		"./src/plugins/ngrok-parse-integrations",
 		"@stackql/docusaurus-plugin-hubspot",
 		"@docusaurus/theme-mermaid",
