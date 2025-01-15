@@ -26,7 +26,7 @@ This may stabilize to a first class CRD in the future, but for now, it's not rec
 | ngrokAPICommon | [ngrokAPICommon](#ngrokapicommon)                                                                                         | No       | Common fields shared by all ngrok resources.     |
 | hostports      | []string                                                                                                                  | Yes      | A list of hostports served by this edge.         |
 | routes         | []HTTPSEdgeRouteSpec                                                                                                      | No       | A list of routes served by this edge.            |
-| tlsTermination | [EndpointTLSTerminationAtEdge](https://ngrok.com/docs/api/resources/edges-https/#endpointtlsterminationatedge-parameters) | No       | The TLS termination configuration for this edge. |
+| tlsTermination | [EndpointTLSTerminationAtEdge](/api/resources/edges-https/#endpointtlsterminationatedge-parameters) | No       | The TLS termination configuration for this edge. |
 
 ### HTTPSEdgeRouteSpec
 
@@ -35,11 +35,11 @@ This may stabilize to a first class CRD in the future, but for now, it's not rec
 | ngrokAPICommon      | [ngrokAPICommon](#ngrokapicommon)                                                                                            | No       | Common fields shared by all ngrok resources.                                               |
 | matchType           | string                                                                                                                       | Yes      | The type of match to use for this route. Valid values are: `exact_path` and `path_prefix`. |
 | match               | string                                                                                                                       | Yes      | The value to match against the request path.                                               |
-| backend             | [TunnelGroupBackend](https://ngrok.com/docs/api/resources/tunnel-group-backends/)                                            | Yes      | The definition for the tunnel group backend that serves traffic for this edge.             |
-| compression         | [EndpointCompression](https://ngrok.com/docs/api/resources/edges-https-routes/#endpointcompression-parameters)               | No       | Whether or not to enable compression for this route.                                       |
-| ipRestriction       | [EndpointIPPolicy](https://ngrok.com/docs/api/resources/edges-https-routes/#endpointippolicymutate-parameters)               | No       | An IPRestriction to apply to this route.                                                   |
-| headers             | [EndpointHeaders](https://ngrok.com/docs/api/resources/edges-https-routes/#endpointrequestheaders-parameters)                | No       | Request/response headers to apply to this route.                                           |
-| webhookVerification | [EndpointWebhookVerification](https://ngrok.com/docs/api/resources/edges-https-routes/#endpointwebhookvalidation-parameters) | No       | Webhook verification configuration to apply to this route.                                 |
+| backend             | [TunnelGroupBackend](/api/resources/tunnel-group-backends/)                                            | Yes      | The definition for the tunnel group backend that serves traffic for this edge.             |
+| compression         | [EndpointCompression](/api/resources/edges-https-routes/#endpointcompression-parameters)               | No       | Whether or not to enable compression for this route.                                       |
+| ipRestriction       | [EndpointIPPolicy](/api/resources/edges-https-routes/#endpointippolicymutate-parameters)               | No       | An IPRestriction to apply to this route.                                                   |
+| headers             | [EndpointHeaders](/api/resources/edges-https-routes/#endpointrequestheaders-parameters)                | No       | Request/response headers to apply to this route.                                           |
+| webhookVerification | [EndpointWebhookVerification](/api/resources/edges-https-routes/#endpointwebhookvalidation-parameters) | No       | Webhook verification configuration to apply to this route.                                 |
 
 ### HTTPSEdgeRouteStatus
 
@@ -49,7 +49,7 @@ This may stabilize to a first class CRD in the future, but for now, it's not rec
 | uri       | string                                                                                  | No       | The URI for this route.                                                                    |
 | match     | string                                                                                  | No       | The value to match against the request path.                                               |
 | matchType | string                                                                                  | No       | The type of match to use for this route. Valid values are: `exact_path` and `path_prefix`. |
-| backend   | [TunnelGroupBackendStatus](https://ngrok.com/docs/api/resources/tunnel-group-backends/) | No       | Stores the status of the tunnel group backend, mainly the ID of the backend.               |
+| backend   | [TunnelGroupBackendStatus](/api/resources/tunnel-group-backends/) | No       | Stores the status of the tunnel group backend, mainly the ID of the backend.               |
 
 ### HTTPSEdgeStatus
 

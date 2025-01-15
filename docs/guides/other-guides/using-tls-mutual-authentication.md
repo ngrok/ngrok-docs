@@ -79,7 +79,7 @@ The command starts a ngrok HTTPs endpoint forwarding traffic to port 80 on your 
 
 ### Cloud Edges
 
-If using the Cloud Edges product, we'll need to upload the CA certificate creating a [Certificate Authority](https://ngrok.com/docs/api/resources/certificate-authorities/) object that will be referenced by the Cloud Edge mTLS module.
+If using the Cloud Edges product, we'll need to upload the CA certificate creating a [Certificate Authority](/api/resources/certificate-authorities/) object that will be referenced by the Cloud Edge mTLS module.
 From within the [ngrok dashboard](https://dashboard.ngrok.com) follow the next steps.
 
 #### Upload CA cert

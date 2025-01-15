@@ -91,7 +91,7 @@ _**Warning:**_ There are other CRDs not documented here that are used internally
 
 ## IP Policies
 
-The `IPPolicy` CRD manages the ngrok [API resource](https://ngrok.com/docs/api/resources/ip-policies) directly. It is a first class CRD that you can manage to control these policies in your account.
+The `IPPolicy` CRD manages the ngrok [API resource](/api/resources/ip-policies) directly. It is a first class CRD that you can manage to control these policies in your account.
 
 It's optional to create IP Policies this way vs using the ngrok dashboard or [terraform provider](https://registry.terraform.io/providers/ngrok/ngrok/latest/docs/resources/ip_policy). Once created though, you can use it in your ingress objects using the [annotations](/docs/k8s/user-guide#ip-restrictions).
 
@@ -121,7 +121,7 @@ It's optional to create IP Policies this way vs using the ngrok dashboard or [te
 
 ## TCP Edges {#tcp-edges}
 
-The Kubernetes ingress spec does not directly support TCP traffic. The ngrok Kubernetes Operator supports TCP traffic via the [TCP Edge](https://ngrok.com/docs/api/resources/edges-tcp/) resource. This is a first class CRD that you can manage to control these edges in your account. See the [TCP and TLS Edges guide](/docs/k8s/user-guide#tcp-tls-edges) for more details.
+The Kubernetes ingress spec does not directly support TCP traffic. The ngrok Kubernetes Operator supports TCP traffic via the [TCP Edge](/api/resources/edges-tcp/) resource. This is a first class CRD that you can manage to control these edges in your account. See the [TCP and TLS Edges guide](/docs/k8s/user-guide#tcp-tls-edges) for more details.
 
 | Field      | Type                                                                                    | Required | Description                                                                                                                                                                                                                   |
 | ---------- | --------------------------------------------------------------------------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -138,7 +138,7 @@ The Kubernetes ingress spec does not directly support TCP traffic. The ngrok Kub
 | description   | string                                                                                   | No       | A human-readable description of the edge.                                      |
 | metadata      | string                                                                                   | No       | Metadata for the edge.                                                         |
 | backend       | [TunnelGroupBackend](#tunnelgroupbackend)                                                | Yes      | The definition for the tunnel group backend that serves traffic for this edge. |
-| ipRestriction | [EndpointIPPolicy](https://ngrok.com/docs/api/resources/tcp-edge-ip-restriction-module/) | No       | An IPRestriction to apply to this route.                                       |
+| ipRestriction | [EndpointIPPolicy](/api/resources/tcp-edge-ip-restriction-module/) | No       | An IPRestriction to apply to this route.                                       |
 
 ### TunnelGroupBackend
 
@@ -165,7 +165,7 @@ The Kubernetes ingress spec does not directly support TCP traffic. The ngrok Kub
 
 ## TLS Edges
 
-ngrok's TLS Edges function similarly to TCP Edges in that they may contain arbitrary application data, not just HTTP. As such, the Kubernetes Ingress spec isn't a perfect fit for them either. The ngrok Kubernetes Operator supports arbitrary TLS endpoints via the [TLS Edge](https://ngrok.com/docs/api/resources/edges-tls/) resource. This is a first class CRD that you can manage to control these edges in your account. See the [TCP and TLS Edges guide](/docs/k8s/user-guide#tcp-tls-edges) for more details.
+ngrok's TLS Edges function similarly to TCP Edges in that they may contain arbitrary application data, not just HTTP. As such, the Kubernetes Ingress spec isn't a perfect fit for them either. The ngrok Kubernetes Operator supports arbitrary TLS endpoints via the [TLS Edge](/api/resources/edges-tls/) resource. This is a first class CRD that you can manage to control these edges in your account. See the [TCP and TLS Edges guide](/docs/k8s/user-guide#tcp-tls-edges) for more details.
 
 | Field      | Type                                                                                    | Required | Description                                                                                                                                                                                                                   |
 | ---------- | --------------------------------------------------------------------------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -183,9 +183,9 @@ ngrok's TLS Edges function similarly to TCP Edges in that they may contain arbit
 | metadata       | string                                                                                              | No       | Metadata for the edge.                                                         |
 | backend        | [TunnelGroupBackend](#tunnelgroupbackend)                                                           | Yes      | The definition for the tunnel group backend that serves traffic for this edge. |
 | hostports      | []string                                                                                            | Yes      | A list of hostports served by this edge.                                       |
-| ipRestriction  | [EndpointIPPolicy](https://ngrok.com/docs/api/resources/tls-edge-ip-restriction-module/)            | No       | An IPRestriction to apply to this edge.                                        |
-| tlsTermination | [TLSTermination](https://ngrok.com/docs/api/resources/edges-tls/#endpointtlstermination-parameters) | No       | TLS Termination behaviour for this edge.                                       |
-| mutualTls      | [MutualTLS](https://ngrok.com/docs/api/resources/edges-tls/#endpointmutualtlsmutate-parameters)     | No       | Mutual TLS validation for this edge.                                           |
+| ipRestriction  | [EndpointIPPolicy](/api/resources/tls-edge-ip-restriction-module/)            | No       | An IPRestriction to apply to this edge.                                        |
+| tlsTermination | [TLSTermination](/api/resources/edges-tls/#endpointtlstermination-parameters) | No       | TLS Termination behaviour for this edge.                                       |
+| mutualTls      | [MutualTLS](/api/resources/edges-tls/#endpointmutualtlsmutate-parameters)     | No       | Mutual TLS validation for this edge.                                           |
 
 ### TLSEdgeStatus
 
@@ -271,7 +271,7 @@ Agent endpoints are ephemeral endpoints tied to the lifetime of the agent. When 
 agent endpoints for you according to the configuration of the `AgentEndpoint` custom resources you create. So long as at least one instance of the `operator-agent` pod is running, your agent endpoints will be available. You may occasionally notice
 the IDs of Agent Endpoints managed by the operator change if the operator pods restart, this will not halt traffic through your agent endpoints unless all of the operator pods have stopped.
 
-See the [ngrok agent CLI configuration page](https://ngrok.com/docs/agent/config/v3/#endpoint-definitions), for more information about using the CLI to start agent endpoints outside of Kubernetes.
+See the [ngrok agent CLI configuration page](/agent/config/v3/#endpoint-definitions), for more information about using the CLI to start agent endpoints outside of Kubernetes.
 
 **Note:** Agent Endpoints are currently in feature-preview for the ngrok Kubernetes operator. You will need to use `--version 0.17.0-rc.1` (or newer) when using
 `helm` to install or update the operator. See [the deployment guide](https://ngrok-docs-git-alicewasko-agent-endpoint-k8s-ngrok-dev.vercel.app/docs/k8s/deployment-guide/) for information about installing
@@ -360,7 +360,7 @@ The following formats are supported:
 ### TrafficPolicyCfg
 
 Configuration for a traffic policy that may be provided inline or via a reference to an `NgrokTrafficPolicy` resource in the
-Kubernetes cluster. See [policy configuration](https://ngrok.com/docs/traffic-policy/) for traffic policy configuration options
+Kubernetes cluster. See [policy configuration](/traffic-policy/) for traffic policy configuration options
 
 | Field     | Type                          | Required | Description                                                                                                         |
 | --------- | ----------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------- |
