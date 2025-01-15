@@ -133,11 +133,11 @@ The Kubernetes ingress spec does not directly support TCP traffic. The ngrok Kub
 
 ### TCPEdgeSpec
 
-| Field         | Type                                                                                     | Required | Description                                                                    |
-| ------------- | ---------------------------------------------------------------------------------------- | -------- | ------------------------------------------------------------------------------ |
-| description   | string                                                                                   | No       | A human-readable description of the edge.                                      |
-| metadata      | string                                                                                   | No       | Metadata for the edge.                                                         |
-| backend       | [TunnelGroupBackend](#tunnelgroupbackend)                                                | Yes      | The definition for the tunnel group backend that serves traffic for this edge. |
+| Field         | Type                                                               | Required | Description                                                                    |
+| ------------- | ------------------------------------------------------------------ | -------- | ------------------------------------------------------------------------------ |
+| description   | string                                                             | No       | A human-readable description of the edge.                                      |
+| metadata      | string                                                             | No       | Metadata for the edge.                                                         |
+| backend       | [TunnelGroupBackend](#tunnelgroupbackend)                          | Yes      | The definition for the tunnel group backend that serves traffic for this edge. |
 | ipRestriction | [EndpointIPPolicy](/api/resources/tcp-edge-ip-restriction-module/) | No       | An IPRestriction to apply to this route.                                       |
 
 ### TunnelGroupBackend
@@ -177,12 +177,12 @@ ngrok's TLS Edges function similarly to TCP Edges in that they may contain arbit
 
 ### TLSEdgeSpec
 
-| Field          | Type                                                                                                | Required | Description                                                                    |
-| -------------- | --------------------------------------------------------------------------------------------------- | -------- | ------------------------------------------------------------------------------ |
-| description    | string                                                                                              | No       | A human-readable description of the edge.                                      |
-| metadata       | string                                                                                              | No       | Metadata for the edge.                                                         |
-| backend        | [TunnelGroupBackend](#tunnelgroupbackend)                                                           | Yes      | The definition for the tunnel group backend that serves traffic for this edge. |
-| hostports      | []string                                                                                            | Yes      | A list of hostports served by this edge.                                       |
+| Field          | Type                                                                          | Required | Description                                                                    |
+| -------------- | ----------------------------------------------------------------------------- | -------- | ------------------------------------------------------------------------------ |
+| description    | string                                                                        | No       | A human-readable description of the edge.                                      |
+| metadata       | string                                                                        | No       | Metadata for the edge.                                                         |
+| backend        | [TunnelGroupBackend](#tunnelgroupbackend)                                     | Yes      | The definition for the tunnel group backend that serves traffic for this edge. |
+| hostports      | []string                                                                      | Yes      | A list of hostports served by this edge.                                       |
 | ipRestriction  | [EndpointIPPolicy](/api/resources/tls-edge-ip-restriction-module/)            | No       | An IPRestriction to apply to this edge.                                        |
 | tlsTermination | [TLSTermination](/api/resources/edges-tls/#endpointtlstermination-parameters) | No       | TLS Termination behaviour for this edge.                                       |
 | mutualTls      | [MutualTLS](/api/resources/edges-tls/#endpointmutualtlsmutate-parameters)     | No       | Mutual TLS validation for this edge.                                           |
