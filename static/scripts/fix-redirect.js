@@ -117,7 +117,6 @@ const redirects = [
     [ fromIncludes(`/docs/secure-tunnels/ngrok-agent/supported-platforms/`), `/docs/agent/#system-requirements` ],
     [ fromIncludes(`/docs/secure-tunnels/ngrok-agent/tunnel-authtokens/`), `/docs/agent/#authtokens` ],
     [ fromIncludes(`/docs/secure-tunnels/ngrok-agent/web-inspection-interface/`), `/docs/agent/web-inspection-interface/` ],
-    [ fromIncludes(`/docs/secure-tunnels/ngrok-agent/reference/ngrok`), `/docs/agent/cli` ],
     [ fromIncludes(`/docs/secure-tunnels/ngrok-agent/api-access/`), `/docs/agent/api/` ],
     [ fromIncludes(`/docs/secure-tunnels/ngrok-agent/automatic-updates/`), `/docs/agent/#updates` ],
     [ fromIncludes(`/docs/secure-tunnels/ngrok-agent/configuration-file/`), `/docs/agent/config/` ],
