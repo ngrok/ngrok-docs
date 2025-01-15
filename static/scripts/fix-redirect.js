@@ -1,5 +1,12 @@
 const fromExact = (from) => (path) => [ from, path === from ]               // [xyz]
-const fromIncludes = (from) => (path) => [ from, path.includes(from) ]      // [xy]z
+const fromIncludes = (from) => (path) => {
+    // Normalize both paths by removing trailing slashes if present
+    const normalizedFrom = from.endsWith('/') ? from.slice(0, -1) : from;
+    const normalizedPath = path.endsWith('/') ? path.slice(0, -1) : path;
+  
+    return [normalizedFrom, normalizedPath.includes(normalizedFrom)];
+  };
+  
 const toExact = (to) => () => to                                            // x -> y
 const toReplace = (to) => (path, from) => path.replace(from, to)            // abc/x -> xyz/x
 
@@ -157,7 +164,7 @@ const redirects = [
     [ fromIncludes(`/docs/cloud-edge/modules/`), `/docs/http/#modules` ],
     [ fromIncludes(`/docs/cloud-edge/observability/`), `/docs/http/#observability` ],
     [ fromIncludes(`/docs/cloud-edge/pops/`), `/docs/network-edge/#points-of-presence` ],
-    [ fromIncludes(`/docs/cloud-edge/zero-knowledge-tls/`), `/docs/tls/tls-termination/#zero-knowledge-tls` ],
+    [ fromIncludes(`/docs/cloud-edge/zero-knowledge-tls/`), `/docs/tls/tls/termination/#zero-knowledge-tls` ],
     [ fromIncludes(`/docs/cloud-edge/`), `/docs/network-edge/` ],
 
     // Redirects for Traffic Policy Expressions
@@ -234,8 +241,7 @@ const redirects = [
     // DEC 2024 - New TP Getting Started
     [ fromExact(`/docs/traffic-policy/getting-started/`), `/docs/traffic-policy/getting-started/agent-endpoints/cli` ],
 
-    [ fromExact(`/docs/tls/tls-termination/`), `/docs/tls/termination/` ],
-    [ fromExact(`/docs/tls/tls-termination`), `/docs/tls/termination` ],
+    [ fromIncludes(`/docs/tls/tls-termination/`), `/docs/tls/termination/` ],
 ]
 
 // get current href from window
@@ -243,7 +249,7 @@ const currentPath = window.location.pathname
 
 // set new path to current path
 let newPath = currentPath
-
+let val = '';
 // iterate over each redirect, when a match is found, update newPath
 // we do this until the list is finished letting us stack redirects:
 // redirect A (2018) -> redirect B (2020) -> redirect C (current year)
@@ -262,7 +268,7 @@ for (const redirect of redirects) {
     }
 
     const [from, fromResult] = fromFn(newPath)
-    console.log(from, fromResult, fromFn, newPath)
+    val = {from, fromResult};
     if (fromResult) {
         newPath = toFn(newPath, from)
     }
@@ -272,5 +278,6 @@ for (const redirect of redirects) {
 if (newPath != currentPath && newPath != window.location.pathname) {
     window.location.href = newPath
 } else {
+    console.log("The results are", val)
     console.error(`ignoring redirect from ${window.location.href} to ${newPath}; looks loopy`)
 }

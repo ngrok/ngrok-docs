@@ -82,7 +82,11 @@ function useResultsFooterComponent({ closeModal }) {
 	);
 }
 function Hit({ hit, children }) {
-	return <a href={`https://ngrok.com/docs/${hit.url}`}>{children}</a>;
+  /**
+   * We're using <a> instead of <Link> as a temporary workaround until we get server side redirects set up.
+   * Currently we use CSR, which doesn't trigger our redirect script, so search results hit 404s if the page is intended to be redirected.
+   */
+	return <a href={`https://ngrok.com${hit.url}`}>{children}</a>;
 }
 function ResultsFooter({ state, onClose }) {
 	const createSearchLink = useSearchLinkCreator();
