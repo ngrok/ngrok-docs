@@ -4,9 +4,9 @@ You can only use a a tunnel URL for one tunnel session at a time. This error occ
 
 This error also appears if you attempt to create multiple tunnels using the same hostname.
 
-You can view tunnel status from your dashboard: [https://dashboard.ngrok.com/endpoints/status](https://dashboard.ngrok.com/endpoints/status)
+You can [view tunnel status from your dashboard](https://dashboard.ngrok.com/ingress).
 
-You can also view agent session status from your dashboard: [https://dashboard.ngrok.com/tunnel-agents/sessions](https://dashboard.ngrok.com/tunnel-agents/sessions)
+You can also [view agent session status from your dashboard](https://dashboard.ngrok.com/agents)
 
 ### Possible Solutions
 
