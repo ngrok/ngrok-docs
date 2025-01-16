@@ -81,12 +81,21 @@ function useResultsFooterComponent({ closeModal }) {
 		[closeModal],
 	);
 }
+
+/**
+ * We're using <a> instead of <Link> as a temporary workaround until we get server side redirects set up.
+ * Currently we use CSR, which doesn't trigger our redirect script, so search results hit 404s if the page is intended to be redirected.
+ */
 function Hit({ hit, children }) {
 	/**
-	 * We're using <a> instead of <Link> as a temporary workaround until we get server side redirects set up.
-	 * Currently we use CSR, which doesn't trigger our redirect script, so search results hit 404s if the page is intended to be redirected.
+	 * This prevents results from sending you to prod
+	 * when you search locally.
 	 */
-	return <a href={`https://ngrok.com${hit.url}`}>{children}</a>;
+	const absoluteUrlRoot =
+		process.env.NODE_ENV === "production"
+			? "https://ngrok.com"
+			: "http://localhost:3000";
+	return <a href={`${absoluteUrlRoot}${hit.url}`}>{children}</a>;
 }
 function ResultsFooter({ state, onClose }) {
 	const createSearchLink = useSearchLinkCreator();
