@@ -9,7 +9,7 @@ ngrok is unable to assist with end user content as all content is neither hosted
 
 ### The most common causes of this error are:
 
-- **Agent Not Running** The ngrok Agent is no longer running, or you forgot to start the Agent. Verify that the Agent is running and showing the expected "Forwarding" address. Cloud Endpoints remain online independent of an agent. If you continue to have this problem, [use a cloud endpoint]. (/docs/network-edge/cloud-endpoints/)
+- **Agent Not Running** The ngrok Agent is no longer running, or you forgot to start the Agent. Verify that the Agent is running and showing the expected "Forwarding" address. Cloud Endpoints remain online independent of an agent. If you continue to have this problem, [use a cloud endpoint](/docs/network-edge/cloud-endpoints/).
 - **Session Timed Out or Stopped** The Agent session has timed out or stopped. Restart the ngrok Agent to restart the Agent and tunnel sessions.
 - **Endpoint Domain or Hostname Change** The endpoint domain or hostname has changed. If you are on the Free plan or have not set the `--domain` flag to set the domain on the tunnel, please be aware that the forwarding address will change each time the Agent and session are restarted. If you previously obtained a forwarding URL from an agent session but have since closed that session or closed the client window, the URL will change when a new Agent session starts.
 - **Typo in Endpoint Address** You have made a typo in the endpoint address you have entered in the browser. Verify that the tunnel hostname is correct. Incorrectly entering the address (a typo) in a browser address bar can also result in this error.

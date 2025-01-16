@@ -1,4 +1,4 @@
-## Possible Solutions
+### Possible Solutions
 
 - You can upgrade to a paid plan in [the Billing section of the dashboard](https://dashboard.ngrok.com/billing). You will need a Personal, Pro or Enterprise plan to use a custom hostname.
   - You can follow this guide to [register and use a custom domain](/guides/other-guides/how-to-set-up-a-custom-domain/).

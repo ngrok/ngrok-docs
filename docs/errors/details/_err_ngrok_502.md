@@ -4,6 +4,5 @@ ngrok resource limits are per-user, not per-account. For example, an account wit
 
 ### Possible Solutions
 
-You can invite more users to join your ngrok account.
-
-If you need a more scalable option, contact sales [here](https://ngrok.com/enterprise/contact).
+- You can [invite more users to join your ngrok account](/docs/iam/users/#invitations).
+- If you need a more scalable option, [contact sales](https://ngrok.com/enterprise/contact).
