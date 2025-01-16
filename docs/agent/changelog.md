@@ -6,7 +6,7 @@ title: Changelog
 
 ## v3
 
-### ngrok Agent 3.18.0 - \[2024-12-19\]
+### ngrok Agent 3.19.0 - \[2024-12-19\]
 
 - Add tls termination to v3 agent configs.
 

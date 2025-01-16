@@ -1,6 +1,6 @@
 # How to Set Up a Custom Domain
 
-ngrok allows for using hostnames from a custom domain that you own to be used with your tunnel endpoints or [Edges](https://ngrok.com/docs/network-edge/edges/). Utilizing CNAMEs, ngrok will host an endpoint using your custom domain while also providing the ability to manage the complete TLS certficate lifecycyle for you.
+ngrok allows for using hostnames from a custom domain that you own to be used with your tunnel endpoints or [Edges](/network-edge/edges/). Utilizing CNAMEs, ngrok will host an endpoint using your custom domain while also providing the ability to manage the complete TLS certficate lifecycyle for you.
 
 ngrok is not a domain registrar and will not provide or manage custom domains. As a prerequisite it is required that you have already reserved your custom domain from any available domain registrar. For demo purposes in this guide, we've registered the domain name `example.com` with a domain name registrar and will be using it with ngrok.
 
