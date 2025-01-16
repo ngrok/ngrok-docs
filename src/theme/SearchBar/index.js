@@ -88,12 +88,12 @@ function useResultsFooterComponent({ closeModal }) {
  */
 const getUrlRootForHit = () => {
 	// Return preview URL if we're in a Vercel preview deployment
-	if (process.env.VERCEL_ENV === "preview")
+	if (process?.env?.VERCEL_ENV === "preview")
 		return `https://${process.env.VERCEL_URL}`;
 
-	return process.env.NODE_ENV === "production"
-		? "https://ngrok.com"
-		: "http://localhost:3000";
+	return process?.env?.NODE_ENV !== "production"
+		? "http://localhost:3000"
+		: "https://ngrok.com";
 };
 
 /**
