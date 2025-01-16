@@ -83,20 +83,27 @@ function useResultsFooterComponent({ closeModal }) {
 }
 
 /**
+ * This prevents results from sending you to prod
+ * when you search locally.
+ */
+const getUrlRootForHit = () => {
+	// Return preview URL if we're in a Vercel preview deployment
+	if (process.env.VERCEL_ENV === "preview")
+		return `https://${process.env.VERCEL_URL}`;
+
+	return process.env.NODE_ENV === "production"
+		? "https://ngrok.com"
+		: "http://localhost:3000";
+};
+
+/**
  * We're using <a> instead of <Link> as a temporary workaround until we get server side redirects set up.
  * Currently we use CSR, which doesn't trigger our redirect script, so search results hit 404s if the page is intended to be redirected.
  */
 function Hit({ hit, children }) {
-	/**
-	 * This prevents results from sending you to prod
-	 * when you search locally.
-	 */
-	const absoluteUrlRoot =
-		process.env.NODE_ENV === "production"
-			? "https://ngrok.com"
-			: "http://localhost:3000";
-	return <a href={`${absoluteUrlRoot}${hit.url}`}>{children}</a>;
+	return <a href={`${getUrlRootForHit()}${hit.url}`}>{children}</a>;
 }
+
 function ResultsFooter({ state, onClose }) {
 	const createSearchLink = useSearchLinkCreator();
 	return (
