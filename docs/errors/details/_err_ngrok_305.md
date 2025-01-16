@@ -4,6 +4,6 @@ Binding a custom subdomain on an ngrok domain requires a paid plan. Once you sig
 
 ### Possible Solutions
 
-[Sign up for a paid plan](https://dashboard.ngrok.com/signup). You'll need the Basic plan or better.
+- [Sign up for a paid plan](https://dashboard.ngrok.com/signup). You'll need either a Personal plan or higher or any pay-as-you-go plan.
 
 Add the authtoken from your account dashboard to your ngrok agent in your terminal.

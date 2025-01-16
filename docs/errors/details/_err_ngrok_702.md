@@ -7,4 +7,4 @@
 
 ### Possible Solutions
 
-- Upgrade your account to a Pro or Business plan from your [account dashboard](https://dashboard.ngrok.com/billing/plan) in order to reserve a custom hostname.
+- Upgrade your account to a Pro or Pay-as-you-go plan from your [account dashboard](https://dashboard.ngrok.com/billing/plan) in order to reserve a custom hostname.
