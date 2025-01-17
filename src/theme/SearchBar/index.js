@@ -103,7 +103,10 @@ const getUrlRootForHit = ({ isProduction, vercel }) => {
  * Currently we use CSR, which doesn't trigger our redirect script, so search results hit 404s if the page is intended to be redirected.
  */
 function Hit({ hit, children }) {
-	const root = getUrlRootForHit(useDocusaurusContext());
+	const {
+		siteConfig: { customFields },
+	} = useDocusaurusContext();
+	const root = getUrlRootForHit(customFields);
 	return <a href={`${root}${hit.url}`}>{children}</a>;
 }
 
