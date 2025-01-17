@@ -278,6 +278,5 @@ for (const redirect of redirects) {
 if (newPath != currentPath && newPath != window.location.pathname) {
     window.location.href = newPath
 } else {
-    console.log("The results are", val)
     console.error(`ignoring redirect from ${window.location.href} to ${newPath}; looks loopy`)
 }

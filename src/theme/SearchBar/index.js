@@ -83,17 +83,19 @@ function useResultsFooterComponent({ closeModal }) {
 }
 
 /**
- * This prevents results from sending you to prod
- * when you search locally.
+ * Returns a different root URL based on environment.
+ * This prevents search results from sending you to
+ * prod when you search locally.
  */
-const getUrlRootForHit = () => {
-	// Return preview URL if we're in a Vercel preview deployment
-	if (process?.env?.VERCEL_ENV === "preview")
-		return `https://${process.env.VERCEL_URL}`;
+const getUrlRootForHit = ({ isProduction, vercel }) => {
+	console.log("Env is", { isProduction, vercel });
 
-	return process?.env?.NODE_ENV !== "production"
-		? "http://localhost:3000"
-		: "https://ngrok.com";
+	if (!isProduction) return "http://localhost:3000";
+
+	// Return preview URL if we're in a Vercel preview deployment
+	if (vercel.env === "preview") return `https://${process.env.VERCEL_URL}`;
+
+	return "https://ngrok.com";
 };
 
 /**
@@ -101,7 +103,8 @@ const getUrlRootForHit = () => {
  * Currently we use CSR, which doesn't trigger our redirect script, so search results hit 404s if the page is intended to be redirected.
  */
 function Hit({ hit, children }) {
-	return <a href={`${getUrlRootForHit()}${hit.url}`}>{children}</a>;
+	const root = getUrlRootForHit(useDocusaurusContext());
+	return <a href={`${root}${hit.url}`}>{children}</a>;
 }
 
 function ResultsFooter({ state, onClose }) {

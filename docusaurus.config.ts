@@ -36,6 +36,13 @@ const config = {
 	favicon: "img/favicon.ico",
 	trailingSlash: true,
 
+	customFields: {
+		isProduction,
+		vercel: {
+			env: process.env?.VERCEL_ENV,
+		},
+	},
+
 	// GitHub pages deployment config.
 	// If you aren't using GitHub pages, you don't need these.
 	organizationName: "ngrok", // Usually your GitHub org/user name.
