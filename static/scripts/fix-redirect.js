@@ -242,6 +242,7 @@ const redirects = [
     [ fromExact(`/docs/traffic-policy/getting-started/`), `/docs/traffic-policy/getting-started/agent-endpoints/cli` ],
 
     [ fromIncludes(`/docs/tls/tls-termination/`), `/docs/tls/termination/` ],
+    [ fromIncludes(`/docs/guides/how-to-set-up-a-custom-domain/`), `/guides/other-guides/how-to-set-up-a-custom-domain/` ],
 ]
 
 // get current href from window
@@ -278,5 +279,6 @@ for (const redirect of redirects) {
 if (newPath != currentPath && newPath != window.location.pathname) {
     window.location.href = newPath
 } else {
+    console.log("The results are", val)
     console.error(`ignoring redirect from ${window.location.href} to ${newPath}; looks loopy`)
 }
