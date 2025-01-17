@@ -88,8 +88,6 @@ function useResultsFooterComponent({ closeModal }) {
  * prod when you search locally.
  */
 const getUrlRootForHit = ({ isProduction, vercel }) => {
-	console.log("Env is", { isProduction, vercel });
-
 	if (!isProduction) return "http://localhost:3000";
 
 	// Return preview URL if we're in a Vercel preview deployment
