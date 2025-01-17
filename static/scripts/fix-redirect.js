@@ -50,10 +50,6 @@ const redirects = [
     [ fromIncludes(`/docs/secure-tunnels/tunnels/tcp-tunnels`), `/docs/tcp/` ],
     [ fromIncludes(`/docs/secure-tunnels/tunnels/ssh-reverse-tunnel-agent`), `/docs/agent/ssh-reverse-tunnel-agent` ],
 
-    // /docs/guides -> /docs/guides/other-guides
-    // /docs/guides/other-guides/how-to-set-up-a-custom-domain -> /docs/guides/other-guides/how-to-set-up-a-custom-domain
-    [ fromIncludes(`/docs/guides/other-guides/how-to-set-up-a-custom-domain`), `/docs/guides/other-guides/how-to-set-up-a-custom-domain` ],
-
     // /docs/guides/limits -> /docs/guides/other-guides/limits
     [ fromIncludes(`/docs/guides/limits`), `/docs/guides/other-guides/limits` ],
 
@@ -243,6 +239,7 @@ const redirects = [
 
     [ fromIncludes(`/docs/tls/tls-termination/`), `/docs/tls/termination/` ],
     [ fromIncludes(`/docs/guides/how-to-set-up-a-custom-domain/`), `/guides/other-guides/how-to-set-up-a-custom-domain/` ],
+    [ fromIncludes(`/docs/traffic-poly/pricing-limits`), `/` ],
 ]
 
 // get current href from window

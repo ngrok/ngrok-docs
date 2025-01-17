@@ -35,6 +35,12 @@ const sidebars = {
 			],
 		},
 		{
+			label: "Pricing & Limits",
+			type: "category",
+			link: { type: "doc", id: "pricing-limits" },
+			items: ["pricing-limits/index", "pricing-limits/free-plan-limits"],
+		},
+		{
 			type: "html",
 			value: "<div class='menu__section'>Endpoints</div>",
 		},
