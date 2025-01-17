@@ -40,6 +40,7 @@ const config = {
 		isProduction,
 		vercel: {
 			env: process.env?.VERCEL_ENV,
+			url: process.env?.VERCEL_URL,
 		},
 	},
 

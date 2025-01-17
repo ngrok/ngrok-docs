@@ -93,7 +93,7 @@ const getUrlRootForHit = ({ isProduction, vercel }) => {
 	if (!isProduction) return "http://localhost:3000";
 
 	// Return preview URL if we're in a Vercel preview deployment
-	if (vercel.env === "preview") return `https://${process.env.VERCEL_URL}`;
+	if (vercel.env === "preview") return `https://${vercel.url}`;
 
 	return "https://ngrok.com";
 };
