@@ -53,8 +53,7 @@ const redirects = [
     // /docs/guides/limits -> /docs/guides/other-guides/limits
     [ fromIncludes(`/docs/guides/limits`), `/docs/guides/other-guides/limits` ],
 
-    // /docs/guides/licensing -> /docs/guides/other-guides/licensing
-    [ fromIncludes(`/docs/guides/licensing`), `/docs/guides/other-guides/licensing`],
+    [ fromIncludes(`/docs/guides/licensing`), `/docs/pricing-limits/`],
 
     // /docs/guides/upgrade-v2-v3 -> /docs/guides/other-guides/upgrade-v2-v3
     [ fromIncludes(`/docs/guides/upgrade-v2-v3`), `/docs/guides/other-guides/upgrade-v2-v3`],

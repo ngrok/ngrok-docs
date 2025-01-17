@@ -101,7 +101,7 @@ Features included for free on all plans
 
 ## I hit a limit on my plan. What are my options?
 
-ngrok's [free plans](/guides/other-guides/licensing) are generous, but some users on Free and Personal plans will find that they run into limits.
+ngrok's [free plans](/docs/pricing-limits/) are generous, but some users on Free and Personal plans will find that they run into limits.
 
 If you run into a limit, you have two options:
 
