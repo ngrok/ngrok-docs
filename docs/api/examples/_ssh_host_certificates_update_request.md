@@ -1,7 +1,5 @@
 <!-- Code generated for API Clients. DO NOT EDIT. -->
-
 #### Example Request
-
 ```bash
 curl \
 -X PATCH \
@@ -9,5 +7,4 @@ curl \
 -H "Content-Type: application/json" \
 -H "Ngrok-Version: 2" \
 -d '{"metadata":"{\"region\": \"us-west-2\"}"}' \
-https://api.ngrok.com/ssh_host_certificates/shcrt_2rcCv6PfsL6yhJ1xhmJHemrv9YV
-```
+https://api.ngrok.com/ssh_host_certificates/shcrt_2rmHAXpkcVqA18onQoz8Bh3YLCH

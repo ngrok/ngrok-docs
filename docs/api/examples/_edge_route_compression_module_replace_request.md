@@ -1,7 +1,5 @@
 <!-- Code generated for API Clients. DO NOT EDIT. -->
-
 #### Example Request
-
 ```bash
 curl \
 -X PUT \
@@ -9,5 +7,4 @@ curl \
 -H "Content-Type: application/json" \
 -H "Ngrok-Version: 2" \
 -d '{"enabled":true}' \
-https://api.ngrok.com/edges/https/edghts_2rcCvAw6ig0lid6XnAXiOR0rXkp/routes/edghtsrt_2rcCvDNQDBSM8GPzCyC9lWNXqWz/compression
-```
+https://api.ngrok.com/edges/https/edghts_2rmHAlUG01MNX5Hfu7Zd9cHMxio/routes/edghtsrt_2rmHAlzsRQZOEUENM2fErQndTVu/compression

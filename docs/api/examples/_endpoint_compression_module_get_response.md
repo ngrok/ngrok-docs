@@ -1,9 +1,6 @@
 <!-- Code generated for API Clients. DO NOT EDIT. -->
-
 #### Example Response
-
 ```json
 {
-	"enabled": false
+  "enabled": false
 }
-```

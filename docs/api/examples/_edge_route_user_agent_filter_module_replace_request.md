@@ -1,7 +1,5 @@
 <!-- Code generated for API Clients. DO NOT EDIT. -->
-
 #### Example Request
-
 ```bash
 curl \
 -X PUT \
@@ -9,5 +7,4 @@ curl \
 -H "Content-Type: application/json" \
 -H "Ngrok-Version: 2" \
 -d '{"allow":["(Pingdom\\.com_bot_version_)(\\d+)\\.(\\d+)"],"deny":["(made_up_bot)/(\\d+)\\.(\\d+)"],"enabled":true}' \
-https://api.ngrok.com/edges/https/edghts_2rcCvX4D2NtKfxsAAuWfoGLWZ8g/routes/edghtsrt_2rcCvUtrIn7x4Owss5k3gBDmuMw/user_agent_filter
-```
+https://api.ngrok.com/edges/https/edghts_2rmHApp6ZbRylSTTHLdMSTb0qJF/routes/edghtsrt_2rmHAqln7nPm8DgJJa82JJVZIvi/user_agent_filter

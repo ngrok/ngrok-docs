@@ -1,7 +1,5 @@
 <!-- Code generated for API Clients. DO NOT EDIT. -->
-
 #### Example Request
-
 ```bash
 curl \
 -X POST \
@@ -10,4 +8,3 @@ curl \
 -H "Ngrok-Version: 2" \
 -d '{"description":"ad-hoc dev testing","metadata":"{\"environment\":\"dev\"}"}' \
 https://api.ngrok.com/api_keys
-```

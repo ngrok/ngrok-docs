@@ -1,7 +1,7 @@
 <!-- Code generated for API Clients. DO NOT EDIT. -->
 
-[Tunnel Credentials](#api-credentials)
 
+[Tunnel Credentials](#api-credentials)
 - [Create](#api-credentials-create)
 - [Delete](#api-credentials-delete)
 - [Get](#api-credentials-get)

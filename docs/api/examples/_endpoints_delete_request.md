@@ -1,11 +1,8 @@
 <!-- Code generated for API Clients. DO NOT EDIT. -->
-
 #### Example Request
-
 ```bash
 curl \
 -X DELETE \
 -H "Authorization: Bearer {API_KEY}" \
 -H "Ngrok-Version: 2" \
-https://api.ngrok.com/endpoints/ep_2rcCuj3bi4YCDt6F0mMVar6gGfk
-```
+https://api.ngrok.com/endpoints/ep_2rmHAEl9IihPfkKL2d92iTPfXuO

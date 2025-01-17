@@ -1,7 +1,5 @@
 <!-- Code generated for API Clients. DO NOT EDIT. -->
-
 #### Example Request
-
 ```bash
 curl \
 -X PUT \
@@ -9,5 +7,4 @@ curl \
 -H "Content-Type: application/json" \
 -H "Ngrok-Version: 2" \
 -d '{"enabled":true,"provider":{"google":{"client_id":"client-id","client_secret":"client-secret","email_addresses":["alan@example.com"],"scopes":["profile","email","https://www.googleapis.com/auth/userinfo.email"]}}}' \
-https://api.ngrok.com/edges/https/edghts_2rcCvPUtPn2N8EbnMo3LL36fyzz/routes/edghtsrt_2rcCvJP2dh3V8kgU4eNXG2k95so/oauth
-```
+https://api.ngrok.com/edges/https/edghts_2rmHAnC7oRebkvEkoyuzvWgXSZc/routes/edghtsrt_2rmHAh0O9bjaHTZQ0A1GNGkvtwU/oauth

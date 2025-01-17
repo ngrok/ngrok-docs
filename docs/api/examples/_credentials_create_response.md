@@ -1,15 +1,12 @@
 <!-- Code generated for API Clients. DO NOT EDIT. -->
-
 #### Example Response
-
 ```json
 {
-	"acl": [],
-	"created_at": "2025-01-14T10:06:20Z",
-	"description": "development cred for alan@example.com",
-	"id": "cr_2rcCsCY33MXfPgZls9m1PJZALh2",
-	"owner_id": "usr_2rcCs3aBfA01H0kq4OxydHqoED0",
-	"token": "2rcCsCY33MXfPgZls9m1PJZALh2_4tDNXLAi3sjvNne4KAyCs",
-	"uri": "https://api.ngrok.com/credentials/cr_2rcCsCY33MXfPgZls9m1PJZALh2"
+  "acl": [],
+  "created_at": "2025-01-17T23:39:23Z",
+  "description": "development cred for alan@example.com",
+  "id": "cr_2rmH7a3hvh7FyTea42PEOsoFzIe",
+  "owner_id": "usr_2rmH7Rnnm9yLoitn0QOR2NdWawG",
+  "token": "2rmH7a3hvh7FyTea42PEOsoFzIe_5F3K2bcLx5ReaeD6PymPk",
+  "uri": "https://api.ngrok.com/credentials/cr_2rmH7a3hvh7FyTea42PEOsoFzIe"
 }
-```

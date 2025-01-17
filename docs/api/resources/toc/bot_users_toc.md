@@ -1,7 +1,7 @@
 <!-- Code generated for API Clients. DO NOT EDIT. -->
 
-[Bot Users](#api-bot-users)
 
+[Bot Users](#api-bot-users)
 - [Create](#api-bot-users-create)
 - [Delete](#api-bot-users-delete)
 - [Get](#api-bot-users-get)

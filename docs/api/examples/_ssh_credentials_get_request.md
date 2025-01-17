@@ -1,11 +1,8 @@
 <!-- Code generated for API Clients. DO NOT EDIT. -->
-
 #### Example Request
-
 ```bash
 curl \
 -X GET \
 -H "Authorization: Bearer {API_KEY}" \
 -H "Ngrok-Version: 2" \
-https://api.ngrok.com/ssh_credentials/sshcr_2rcCv1qLfkFjQMNXEnB5UoK05yE
-```
+https://api.ngrok.com/ssh_credentials/sshcr_2rmHAOFGvGRlYOSV8Ixlg3dEfoX

@@ -1,20 +1,19 @@
 <!-- Code generated for API Clients. DO NOT EDIT. -->
-
 #### Example Response
-
 ```json
 {
-	"backends": [
-		{
-			"backends": ["bkdhr_2rcCv8WSTPGo4atlNxQAa8ggT2N"],
-			"created_at": "2025-01-14T10:06:43Z",
-			"description": "acme failover",
-			"id": "bkdfo_2rcCv41PW6SxihUUiSQYOkFYYBI",
-			"metadata": "{\"environment\": \"staging\"}",
-			"uri": "https://api.ngrok.com/backends/failover/bkdfo_2rcCv41PW6SxihUUiSQYOkFYYBI"
-		}
-	],
-	"next_page_uri": null,
-	"uri": "https://api.ngrok.com/backends/failover"
+  "backends": [
+    {
+      "backends": [
+        "bkdhr_2rmHARilIdKUbyA50dy5fnLP0ye"
+      ],
+      "created_at": "2025-01-17T23:39:47Z",
+      "description": "acme failover",
+      "id": "bkdfo_2rmHAatdA6uADKVFuneHKQYpUP9",
+      "metadata": "{\"environment\": \"staging\"}",
+      "uri": "https://api.ngrok.com/backends/failover/bkdfo_2rmHAatdA6uADKVFuneHKQYpUP9"
+    }
+  ],
+  "next_page_uri": null,
+  "uri": "https://api.ngrok.com/backends/failover"
 }
-```

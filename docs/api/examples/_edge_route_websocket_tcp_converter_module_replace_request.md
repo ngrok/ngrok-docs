@@ -1,7 +1,5 @@
 <!-- Code generated for API Clients. DO NOT EDIT. -->
-
 #### Example Request
-
 ```bash
 curl \
 -X PUT \
@@ -9,5 +7,4 @@ curl \
 -H "Content-Type: application/json" \
 -H "Ngrok-Version: 2" \
 -d '{"enabled":true}' \
-https://api.ngrok.com/edges/https/edghts_2rcCvZAM1C1xssUfZeasjokDfxy/routes/edghtsrt_2rcCvatvnSajk5FQ5PQJOrKLmvY/websocket_tcp_converter
-```
+https://api.ngrok.com/edges/https/edghts_2rmHB223sHn6vJfxXOsz6PP3wEn/routes/edghtsrt_2rmHAwSgXCIN9hqrFBDIbnvAV6z/websocket_tcp_converter

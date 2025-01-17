@@ -1,7 +1,5 @@
 <!-- Code generated for API Clients. DO NOT EDIT. -->
-
 #### Example Request
-
 ```bash
 curl \
 -X PATCH \
@@ -9,5 +7,4 @@ curl \
 -H "Content-Type: application/json" \
 -H "Ngrok-Version: 2" \
 -d '{"active":false,"name":"inactive bot user from API"}' \
-https://api.ngrok.com/bot_users/bot_2rcCvh0pkLnQTRl8DHbT8tuwHfy
-```
+https://api.ngrok.com/bot_users/bot_2rmHB5Iw9fXBeKIU1OrOnqVXGFN

@@ -1,7 +1,7 @@
 <!-- Code generated for API Clients. DO NOT EDIT. -->
 
-[Event Sources](#api-event-sources)
 
+[Event Sources](#api-event-sources)
 - [Create](#api-event-sources-create)
 - [Delete](#api-event-sources-delete)
 - [Get](#api-event-sources-get)
