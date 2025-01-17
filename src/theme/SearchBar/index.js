@@ -85,7 +85,7 @@ function useResultsFooterComponent({ closeModal }) {
 /**
  * Returns a different root URL based on environment.
  * This prevents search results from sending you to
- * prod when you search locally.
+ * prod when you're using docs in localhost.
  */
 const getUrlRootForHit = ({ isProduction, vercel }) => {
 	if (!isProduction) return "http://localhost:3000";
