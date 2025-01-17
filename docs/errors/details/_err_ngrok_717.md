@@ -4,5 +4,5 @@ ngrok can be used without a registered account for limited use cases but is only
 
 ### Possible Solutions
 
-1. If you do not have an ngrok account, please [register for one](https://dashboard.ngrok.com) and install the authtoken for your agent using the command `ngrok config add-authtoken <TOKEN>`.
-2. If you have an ngrok account, ensure your authtoken is installed correctly using the command `ngrok config add-authtoken <TOKEN>`
+- If you do not have an ngrok account, please [register for one](https://dashboard.ngrok.com) and install the authtoken for your agent using the command `ngrok config add-authtoken <TOKEN>`.
+- If you have an ngrok account, ensure your authtoken is installed correctly using the command `ngrok config add-authtoken <TOKEN>`

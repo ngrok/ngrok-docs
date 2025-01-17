@@ -1,6 +1,6 @@
 ### Overview
 
-This error occurs when a ngrok account has been banned, usually due to suspected phishing or login capture activities. While the ban is in place, any tunnels or endpoints associated with the account will not function.
+This error occurs when a ngrok account has been banned, usually due to suspected phishing or login capture activities. While the ban is in place, any endpoints or endpoints associated with the account will not function.
 
 ### For Website Visitors
 
