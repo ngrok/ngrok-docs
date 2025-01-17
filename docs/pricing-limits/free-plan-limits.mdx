@@ -1,17 +1,20 @@
 ---
-title: Free Plan Limits
+title: Free Plan Limits and Resources
 ---
 
 import TabItem from "@theme/TabItem";
 import Tabs from "@theme/Tabs";
+import FreeResources from "@site/shared/limits/free-resources.mdx";
 
-# Limits in ngrok's free plan
+# Limits for ngrok's free plan
 
 Learn about the limits enforced in the ngrok free plan.
 
 :::tip
 See [the pricing page](https://ngrok.com/pricing?ref=docs) for more details on increasing or removing these limits.
 :::
+
+## Free plan limit table
 
 | Resource          | Limit on Free | Limit on Development Plans | Limit on Production Plans |
 | ----------------- | ------------- | -------------------------- | ------------------------- |
@@ -21,106 +24,78 @@ See [the pricing page](https://ngrok.com/pricing?ref=docs) for more details on i
 | TCP Connections   | 5,000         | No limit                   | 10,000 then usage-based   |
 | TLS Connections   | 5,000         | No limit                   | 10,000 then usage-based   |
 
+:::note
+You can check your current usage [in the dashboard](https://dashboard.ngrok.com/usage).
+:::
 
-# How can I see how my account stacks up against my limits?
+## Free plan resources
 
-The ngrok usage page at dashboard.ngrok.com/usage
+<FreeResources />
 
-# How often do limits refresh?
+## Learn more about ngrok limits
 
-Your count of resources against a limit refreshes on the first day of each month.
+See the [Pricing and Limits](/docs/pricing-limits#general-limits) page for more details on ngrok's pricing, limits, and licensing model.
 
-### How does ngrok calculate endpoints for limits?
+## Removing the interstitial page
 
-ngrok uses a combination of unique host:port combinations to calculate endpoints. You cannot have one of more than one of these in use at a time. Unlike other limits, this limit does not refresh at the end of each calendar month, you must simply stop using one endpoint in order to get another.
-
-## Need to Increase your ngrok limits?
-
-Request adjustments to limits that conflict with your project by contacting ngrok. To request an increase to a limit, complete the [Limit Increase Request Form](https://tally.so/r/mKlYOK) and we will reach out with next steps.
-
-## Removing the interstitial warning in front of your HTML content
-
-To prevent bad actors from using ngrok to create phishing pages to steal user credentials, ngrok [injects an interstitial page](https://ngrok.com/blog-post/fighting-abuse-on-the-ngrok-platform) in front of all HTML browser traffic on the free tier. Once the user acknowledges that the site is being served by ngrok, a cookie is set that is valid for 7 days for that domain.
+To prevent bad actors from using ngrok to create [phishing pages](https://en.wikipedia.org/wiki/Phishing), ngrok [injects an interstitial page](https://ngrok.com/blog-post/fighting-abuse-on-the-ngrok-platform) in front of all HTML browser traffic on the free tier. Once the user acknowledges that the site is being served by ngrok, a cookie is set that is valid for 7 days for that domain.
 
 :::note
 This does not impact users serving APIs or accessing ngrok endpoints programmatically.
 :::
 
-You can remove the interstitial in one of the following ways:
+You can remove the interstitial by upgrading to [any paid plan](https://ngrok.com/pricing?ref=docs-interstitial-removal) or using one of the following mehtods:
 
 - From the client accessing the ngrok endpoint, add a header value of `ngrok-skip-browser-warning` and set it to any value. These requests will bypass the interstitial.
+  <Tabs groupId="headers" queryString="library">
+    <TabItem value="axios" label="Axios">
+    ```js
+    axios.get(url, { 'headers': { 'ngrok-skip-browser-warning': '1' } })
+      .then((response => {
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    ```
+    </TabItem>
+    <TabItem value="fetch" label="Fetch" default>    
+    ```js
+    const response = await fetch(URL, {
+      headers: {
+        "ngrok-skip-browser-warning": "1",
+      },
+      // ...
+    });
+    ```
+    </TabItem>
+    <TabItem value="superagent" label="Super Agent" default>
+    ```js
+    request
+          .get('/endpoint')
+          .set('ngrok-skip-browser-warning', '1')
+          .then(callback);
+    ```
+    </TabItem>
+    <TabItem value="jquery" label="JQuery">
+    ```js
+    request
+          .get('/endpoint')
+          .set('ngrok-skip-browser-warning', '1')
+          .then(callback);
+    ```
+    </TabItem>
+  </Tabs>
 - Change your user agent by setting the `User-Agent` header to something non-standard, such as `MyApp/0.0.1`, to bypass the warning.
-- Upgrade to [any paid plan](https://ngrok.com/pricing?ref=docs).
+  :::tip
+  You can also use a browser extension to customize your browser's user agent value. Here is an [example for Chrome](https://chromewebstore.google.com/detail/requestly-intercept-modif/mdnleldcmiljblolnjhpnblkcekpdkpa?hl=en-US).
+  :::
 
-### Code Examples
+## I hit a limit on my plan. What are my options?
 
+If you run into a limit, you have two options:
 
-<Tabs groupId="connectivity" queryString="cty">
-	<TabItem value="agent-cli" label="Agent CLI">
-		<CustomIngressAgentCliExample />
-	</TabItem>
-	<TabItem value="agent-config" label="Agent Config" default>
-		<CustomIngressAgentConfigExample />
-	</TabItem>
-	<TabItem value="ssh" label="SSH" default>
-		<CustomIngressSshExample />
-	</TabItem>
-	<TabItem value="go-sdk" label="Go">
-		<CustomIngressGoSdkExample />
-	</TabItem>
-	<TabItem value="javascript-sdk" label="Javascript">
-		<CustomIngressJavascriptSdkExample />
-	</TabItem>
-	<TabItem value="python-sdk" label="Python">
-		<CustomIngressPythonSdkExample />
-	</TabItem>
-	<TabItem value="rust-sdk" label="Rust">
-		<CustomIngressRustSdkExample />
-	</TabItem>
-	<TabItem value="k8s" label="Kubernetes Controller">
-		<CustomIngressKubernetesExample />
-	</TabItem>
-</Tabs>
+- You can wait for your cycle to refresh (limits refresh every 30 days per account)
+- Upgrade to a plan with higher limits. If you're using ngrok for testing webhooks, the Pro plan is probably the best fit. If you're using ngrok for production, try the Pay-as-you-go plan.
 
-Axios
-
-```
-axios.get(url, { 'headers': { 'ngrok-skip-browser-warning': '1' } })
-  .then((response => {
-    console.log(response.data);
-  })
-  .catch((error) => {
-    console.log(error);
-  });
-```
-
-Fetch
-
-```
-const response = await fetch(URL, {
-  headers: {
-    "ngrok-skip-browser-warning": "1",
-  },
-  // ...
-});
-```
-
-SuperAgent
-
-```
- request
-       .get('/endpoint')
-       .set('ngrok-skip-browser-warning', '1')
-       .then(callback);
-```
-
-JQuery
-
-```
- request
-       .get('/endpoint')
-       .set('ngrok-skip-browser-warning', '1')
-       .then(callback);
-```
-
-If you are a developer trying to access your own endpoint, you can use a browser extension to customize your browser's user agent value. Here is an [example for Chrome](https://chromewebstore.google.com/detail/requestly-intercept-modif/mdnleldcmiljblolnjhpnblkcekpdkpa?hl=en-US).
+[^1]: Endpoints are the public URLs that ngrok creates for your tunnels.
