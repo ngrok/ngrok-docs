@@ -239,7 +239,8 @@ const redirects = [
 
     [ fromIncludes(`/docs/tls/tls-termination/`), `/docs/tls/termination/` ],
     [ fromIncludes(`/docs/guides/how-to-set-up-a-custom-domain/`), `/guides/other-guides/how-to-set-up-a-custom-domain/` ],
-    [ fromIncludes(`/docs/traffic-poly/pricing-limits`), `/` ],
+    [ fromIncludes(`/docs/traffic-policy/pricing-limits/`), `/docs/pricing-limits/` ],
+    [ fromIncludes(`/docs/guides/other-guides/limits`), `/docs/pricing-limits/free-plan-limits` ],
 ]
 
 // get current href from window
