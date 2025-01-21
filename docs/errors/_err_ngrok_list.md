@@ -31,7 +31,7 @@
       <td class="pre-wrapped">
         The account <code>&lt;ACCOUNT&gt;</code> has been suspended.
         This is usually the result of violating the ngrok Terms of Service.
-        Email contact@ngrok.com if you think your suspension is an error.
+        Email support@ngrok.com if you think your suspension is an error.
       </td>
     </tr>
     <tr>
@@ -270,7 +270,7 @@
         <a id="ERR_NGROK_205" href="/docs/errors/err_ngrok_205">ERR_NGROK_205</a>
       </td>
       <td class="pre-wrapped">
-        The account <code>&lt;ACCOUNT&gt;</code> has been suspended. This is usually the result of violating the ngrok Terms of Service. Email contact@ngrok.com if you think your suspension is an error.
+        The account <code>&lt;ACCOUNT&gt;</code> has been suspended. This is usually the result of violating the ngrok Terms of Service. Email support@ngrok.com if you think your suspension is an error.
       </td>
     </tr>
     <tr>
@@ -390,7 +390,7 @@
         <a id="ERR_NGROK_221" href="/docs/errors/err_ngrok_221">ERR_NGROK_221</a>
       </td>
       <td class="pre-wrapped">
-        This is a valid API token, but the account <code>&lt;ACCOUNT&gt;</code> is not authorized to submit or view abuse reports. Email contact@ngrok.com if you believe this is an error.
+        This is a valid API token, but the account <code>&lt;ACCOUNT&gt;</code> is not authorized to submit or view abuse reports. Email support@ngrok.com if you believe this is an error.
       </td>
     </tr>
     <tr>
@@ -945,7 +945,7 @@
       <td class="pre-wrapped">
         The account <code>&lt;ACCOUNT&gt;</code> has been suspended.
         This is usually the result of violating the ngrok Terms of Service.
-        Email contact@ngrok.com if you think your suspension is an error.
+        Email support@ngrok.com if you think your suspension is an error.
       </td>
     </tr>
     <tr>
@@ -2630,7 +2630,7 @@
         <a id="ERR_NGROK_1002" href="/docs/errors/err_ngrok_1002">ERR_NGROK_1002</a>
       </td>
       <td class="pre-wrapped">
-        Your account is limited to <code>&lt;MAX&gt;</code> billing email addresses. Email contact@ngrok.com to increase the limit
+        Your account is limited to <code>&lt;MAX&gt;</code> billing email addresses. Email support@ngrok.com to increase the limit
       </td>
     </tr>
     <tr>
@@ -5215,6 +5215,30 @@
     </tr>
     <tr>
       <td>
+        <a id="ERR_NGROK_2244" href="/docs/errors/err_ngrok_2244">ERR_NGROK_2244</a>
+      </td>
+      <td class="pre-wrapped">
+        Invalid configuration for <code>&lt;PHASE&gt;</code> <code>&lt;ACTION&gt;</code>: <code>&lt;CONFIG&gt;</code> can have at most <code>&lt;MAX&gt;</code> query key/value pairs, but <code>&lt;VAL&gt;</code> were provided.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_2245" href="/docs/errors/err_ngrok_2245">ERR_NGROK_2245</a>
+      </td>
+      <td class="pre-wrapped">
+        Invalid configuration for <code>&lt;PHASE&gt;</code> <code>&lt;ACTION&gt;</code>: <code>&lt;CONFIG&gt;</code>: exceeds maximum allowed key length of <code>&lt;MAX&gt;</code>, was <code>&lt;VAL&gt;</code>.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_2246" href="/docs/errors/err_ngrok_2246">ERR_NGROK_2246</a>
+      </td>
+      <td class="pre-wrapped">
+        Invalid configuration for <code>&lt;PHASE&gt;</code> <code>&lt;ACTION&gt;</code>: <code>&lt;CONFIG&gt;</code>: exceeds maximum allowed key length of <code>&lt;MAX&gt;</code>, was <code>&lt;VAL&gt;</code>.
+      </td>
+    </tr>
+    <tr>
+      <td>
         <a id="ERR_NGROK_3002" href="/docs/errors/err_ngrok_3002">ERR_NGROK_3002</a>
       </td>
       <td class="pre-wrapped">
@@ -6276,7 +6300,7 @@
         <a id="ERR_NGROK_4403" href="/docs/errors/err_ngrok_4403">ERR_NGROK_4403</a>
       </td>
       <td class="pre-wrapped">
-        You cannot invite any more users. Please email contact@ngrok.com if you believe this is an error.
+        You cannot invite any more users. Please email support@ngrok.com if you believe this is an error.
       </td>
     </tr>
     <tr>
@@ -10868,6 +10892,22 @@
     </tr>
     <tr>
       <td>
+        <a id="ERR_NGROK_18016" href="/docs/errors/err_ngrok_18016">ERR_NGROK_18016</a>
+      </td>
+      <td class="pre-wrapped">
+        The provided cloud endpoint was invalid because pooling was set to enabled when another endpoint exists for this url that has pooling disabled.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_18017" href="/docs/errors/err_ngrok_18017">ERR_NGROK_18017</a>
+      </td>
+      <td class="pre-wrapped">
+        The provided cloud endpoint was invalid because pooling was set to disabled when another endpoint exists for this url that has pooling enabled.
+      </td>
+    </tr>
+    <tr>
+      <td>
         <a id="ERR_NGROK_19000" href="/docs/errors/err_ngrok_19000">ERR_NGROK_19000</a>
       </td>
       <td class="pre-wrapped">
@@ -10952,6 +10992,22 @@
       </td>
       <td class="pre-wrapped">
         Failed to lookup IP <code>&lt;IP&gt;</code>: <code>&lt;ERR&gt;</code>.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_22000" href="/docs/errors/err_ngrok_22000">ERR_NGROK_22000</a>
+      </td>
+      <td class="pre-wrapped">
+        We do not allow access to ngrok.com from anonymous proxies such as Tor.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_22001" href="/docs/errors/err_ngrok_22001">ERR_NGROK_22001</a>
+      </td>
+      <td class="pre-wrapped">
+        We do not allow access to ngrok.com from your location. Your location was determined using your IP address.
       </td>
     </tr>
   </tbody>
