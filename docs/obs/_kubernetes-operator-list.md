@@ -10,7 +10,7 @@
 | metadata           | string             | arbitrary user-defined machine-readable data of this Kubernetes Operator. optional, max 4096 bytes.                           |
 | id                 | string             | a resource identifier                                                                                                         |
 | uri                | string             | a uri for locating a resource                                                                                                 |
-| enabled_features   | List&lt;string&gt; | features enabled for this Kubernetes Operator. a subset of {"bindings", "ingress", and "gateway"}                             |
+| enabled_features   | List&lt;string&gt; | features enabled for this Kubernetes Operator. a subset of "bindings", "ingress", and "gateway"                               |
 | region             | string             | the ngrok region in which the ingress for this operator is served. defaults to "global"                                       |
 | name               | string             | the deployment name                                                                                                           |
 | namespace          | string             | the namespace this Kubernetes Operator is deployed to                                                                         |
