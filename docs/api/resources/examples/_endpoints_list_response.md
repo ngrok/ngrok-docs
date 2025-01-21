@@ -7,46 +7,68 @@
 	"endpoints": [
 		{
 			"bindings": ["public"],
-			"created_at": "2024-10-17T20:26:41Z",
-			"hostport": "e3c98b29d802.ngrok.paid:443",
-			"id": "ep_2na2KRmwQ3xUTK7fsBf4gPPtWhu",
-			"name": "command_line",
-			"principal": {
-				"id": "usr_2na2I2d8Ao6a5681xuYxdgYUSB3",
-				"uri": ""
+			"created_at": "2025-01-21T17:39:20Z",
+			"description": "sample cloud endpoint",
+			"domain": {
+				"id": "rd_2rwrop2e610ZJhzp0SZ5JULHbpj",
+				"uri": "https://api.ngrok.com/reserved_domains/rd_2rwrop2e610ZJhzp0SZ5JULHbpj"
 			},
+			"hostport": "endpoint-example2.com:443",
+			"id": "ep_2rwrpPU74eMBg2GbKt1QjdUV9EF",
+			"metadata": "{\"environment\": \"staging\"}",
+			"pooling_enabled": false,
 			"proto": "https",
-			"public_url": "https://e3c98b29d802.ngrok.paid",
-			"tunnel": {
-				"id": "tn_2na2KRmwQ3xUTK7fsBf4gPPtWhu",
-				"uri": "https://api.ngrok.com/tunnels/tn_2na2KRmwQ3xUTK7fsBf4gPPtWhu"
-			},
-			"tunnel_session": {
-				"id": "ts_2na2KPli9fvvUbVYYCIjWPE8zWg",
-				"uri": "https://api.ngrok.com/tunnel_sessions/ts_2na2KPli9fvvUbVYYCIjWPE8zWg"
-			},
-			"type": "ephemeral",
-			"updated_at": "2024-10-17T20:26:41Z",
-			"upstream_url": "http://localhost:80",
-			"url": "https://e3c98b29d802.ngrok.paid"
+			"public_url": "https://endpoint-example2.com",
+			"traffic_policy": "{\"on_http_request\":[{\"actions\":[{\"type\":\"deny\",\"config\":{\"status_code\":404}}]}]}",
+			"type": "cloud",
+			"updated_at": "2025-01-21T17:39:20Z",
+			"uri": "https://api.ngrok.com/endpoints/ep_2rwrpPU74eMBg2GbKt1QjdUV9EF",
+			"url": "https://endpoint-example2.com"
 		},
 		{
 			"bindings": ["public"],
-			"created_at": "2024-10-17T20:26:39Z",
+			"created_at": "2025-01-21T17:39:18Z",
+			"hostport": "2b8d790cdc1e.ngrok.paid:443",
+			"id": "ep_2rwrpAfrGLqIDqYqN5SGb5mOtrJ",
+			"name": "command_line",
+			"pooling_enabled": false,
+			"principal": {
+				"id": "usr_2rwrmd5Fgon2iJ86NudzUp5nYYa",
+				"uri": ""
+			},
+			"proto": "https",
+			"public_url": "https://2b8d790cdc1e.ngrok.paid",
+			"tunnel": {
+				"id": "tn_2rwrpAfrGLqIDqYqN5SGb5mOtrJ",
+				"uri": "https://api.ngrok.com/tunnels/tn_2rwrpAfrGLqIDqYqN5SGb5mOtrJ"
+			},
+			"tunnel_session": {
+				"id": "ts_2rwrpD5dZCDOHQHOzNTXaIrn6cC",
+				"uri": "https://api.ngrok.com/tunnel_sessions/ts_2rwrpD5dZCDOHQHOzNTXaIrn6cC"
+			},
+			"type": "ephemeral",
+			"updated_at": "2025-01-21T17:39:18Z",
+			"upstream_url": "http://localhost:80",
+			"url": "https://2b8d790cdc1e.ngrok.paid"
+		},
+		{
+			"bindings": ["public"],
+			"created_at": "2025-01-21T17:39:16Z",
 			"domain": {
-				"id": "rd_2na2K4obUiVgxjyGhELNXZRomOt",
-				"uri": "https://api.ngrok.com/reserved_domains/rd_2na2K4obUiVgxjyGhELNXZRomOt"
+				"id": "rd_2rwrop2e610ZJhzp0SZ5JULHbpj",
+				"uri": "https://api.ngrok.com/reserved_domains/rd_2rwrop2e610ZJhzp0SZ5JULHbpj"
 			},
 			"edge": {
-				"id": "edgtls_2na2K2SHqq1jVXErSG2EhkglPNe",
-				"uri": "https://api.ngrok.com/edges/tls/edgtls_2na2K2SHqq1jVXErSG2EhkglPNe"
+				"id": "edgtls_2rwrong2WVOcP3Rw7Typ6pYRUzR",
+				"uri": "https://api.ngrok.com/edges/tls/edgtls_2rwrong2WVOcP3Rw7Typ6pYRUzR"
 			},
 			"hostport": "endpoint-example2.com:443",
-			"id": "ep_2na2KDE8CTY0AZG8vME1nBU7Eed",
+			"id": "ep_2rwrom3eGX903hWV2jnDmAx6eff",
+			"pooling_enabled": false,
 			"proto": "tls",
 			"public_url": "tls://endpoint-example2.com",
 			"type": "edge",
-			"updated_at": "2024-10-17T20:26:39Z"
+			"updated_at": "2025-01-21T17:39:16Z"
 		}
 	],
 	"next_page_uri": null,
