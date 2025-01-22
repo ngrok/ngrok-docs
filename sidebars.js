@@ -19,9 +19,6 @@ const sidebars = {
 		"how-ngrok-works",
 		"why-ngrok",
 		"whats-new",
-		// These aren't ready yet
-		// "install",
-		// "core-concepts",
 		{
 			label: "Getting Started",
 			type: "category",

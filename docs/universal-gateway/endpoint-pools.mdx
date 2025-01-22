@@ -5,10 +5,10 @@ description: Endpoint Pools
 
 # Endpoint Pools
 
-:::note Coming Soon
+:::info Coming Soon
 
-Endpoint pools are not available yet. [Contact us](mailto:support@ngrok.com) to
-request access to the developer preview.
+Endpoints pools are not yet generally available, [request access to the
+developer preview](https://dashboard.ngrok.com/developer-preview).
 
 :::
 
@@ -16,96 +16,210 @@ request access to the developer preview.
 
 Endpoints Pools make load balancing dead simple. When your create two endpoints
 with the same URL (and binding), those endpoints automatically "pool" together
-and traffic to their URL is balanced among them.
+and traffic to their URL is balanced among them. You have the flexibility to
+define custom balancing strategies and you can even pool endpoints with
+different Traffic Policies.
 
-Endpoint pools are enabled by default for new accounts. You may disable pooling
-when creating basis. Endpoints can be configured to disallow pooling if you
-want exclusive ownership of a URL.
+Pooling can be enabled or disabled on a per-endpoint basis.
+
+## When to use Endpoint Pools
+
+Endpoint pools are good choice when you want to:
+
+- Load balance among multiple replicas of the same application, even running in
+  different cloud providers, on-prem, etc.
+- Switch from agent endpoints to cloud endpoints with no downtime (or
+  vice-versa)
+- Implement blue-green deployments to reduce risk and rollback times
+- Deploy canary version of your application
+- A/B test different version of your apps with blue-green deployments
+- Gradually roll out changes to an endpoint's Traffic Policy
 
 ## Quickstart
 
 ### Agent Endpoints
 
-First, create an endpoint forwarding to a local service:
+Create two endpoints with the same URL forwarding to two different ports. They
+will automatically be pooled together.
 
 ```
-ngrok http 8080 --url https://foo.ngrok.app
+ngrok http 8080 --url https://your-domain.ngrok.app --pooling-enabled true
 ```
 
 ```
-ngrok http 9090 --url https://foo.ngrok.app
+ngrok http 9090 --url https://your-domain.ngrok.app --pooling-enabled true
+```
+
+When you make requests to the endpoints' URL, you will see responses balanced
+among each endpoint in the pool.
+
+```
+curl https://your-domain.ngrok.app
+<Response from 8080>
+
+curl https://your-domain.ngrok.app
+<Response from 9090>
 ```
 
 ### Cloud Endpoints
 
-TODO
+Create two endpoints with the same URL and two different traffic policies. They
+will automatically be pooled together.
 
-## When should I use Endpoint Pools?
+```
+ngrok api endpoints create \
+    --url https://your-domain.ngrok.app \
+    --traffic-policy $(cat policy-a.yaml) \
+    --pooling-enabled=true
+```
 
-Endpoint pools are good choice for:
+##### `policy-a.yaml`
+```
+on_http_request:
+  - actions:
+    - type: custom-response
+      config:
+        status_code: 200
+        content: Policy A
+```
 
-- Load balancing between multiple replicas of the same application
-- Load balancing to apps running in different cloud providers or even on-prem datacenters
-- Switching between cloud endpoints and agent endpoints with zero downtime
-- Blue-green deployment strategies of new software
-- A/B testing different applications
-- Balancing against a new endpoint policy
-- Canary deployments
+```
+ngrok api endpoints create \
+    --url https://your-domain.ngrok.app \
+    --traffic-policy $(cat policy-b.yaml) \
+    --pooling-enabled=true
+```
+
+##### `policy-b.yaml`
+```
+on_http_request:
+  - actions:
+    - type: custom-response
+      config:
+        status_code: 200
+        content: Policy B
+```
+
+When you make requests to the endpoints' URL, you will see responses balanced
+among each endpoint in the pool.
+
+```
+curl https://your-domain.ngrok.app
+<Response from 8080>
+
+curl https://your-domain.ngrok.app
+<Response from 9090>
+```
 
 ## Lifecycle
 
-Endpoint pools are never explicitly created or destroyed. Whenever you create
-two endpoints with the same URL and binding, an Endpoint Pool is automatically
-created for you (unless one of those Endpoints [disables
-pooling](#disabling-pooling)).
+Endpoint pools are automatically created and destroyed for you. Whenever you
+create two endpoints with the same URL and binding and pooling enabled, an
+Endpoint Pool is automatically created for you (unless one of those Endpoints
+[disables pooling](#disabling-pooling)). When only a single endpoint remains in
+a pool, the pool is deleted.
 
-- Endpoint pools are never explicitly created or destroyed.
-- Endpoint pools are automatically created when two endpoints are created with the same URL and binding.
-- Endpoint pools are automatically deleted when endpoints are deleted such that a pool would only contain a single endpoint.
+## Enabling Pooling
 
-## Disabling Pooling
+Endpoints do not pool by default. You must enable pooling on each endpoint you
+want to pool by setting `pooling_enabled` to `true`.
 
-Endpoint pooling is enabled by default on Agent Endpoints and Cloud Endpoints.
+## Pool Size
 
-- Endpoint pools can be disabled (https://www.notion.so/ngrok/Endpoint-Pools-10f1586b81cf4a6389f9f61a26afc6ac?pvs=4#d448fc3fda9b4e5294abeba550ef3e89)
-- Endpoints will add a new boolean `allows_pooling` field.
-  - The value of this field defines whether the endpoint may join pools with other endpoints.
-  - The default value of `allows_pooling`
-    - For Cloud Endpoints is `true`.
-    - For Edge Endpoint is `false`.
-    - For Agent Endpoints is `false` then update to `true` when we do version `4` release.
-      - We’d like it to be `true` but that will create backwards compatibility problems.
-      - We could maybe make it `true` with a new major version release of the Agent and SDKs.
-      - Older Agent Endpoints should always be `false` unless we add a new account flag `OldAgentsAllowsPoolingBehavior` and it is enabled.
-      - The default for `allow_pooling` is fixed and does not depend on whether an existing endpoint in the pool has `allows_pooling` set to `true` or `false`.When you attempt to start an endpoint on a pool that has `allows_pooling` set to `true` and do not pass the flag it should error out.
-- Can you go from `true` to `false`?
-  - Not allowed when other endpoints are in the pool
-- If an endpoint with `allows_pooling=false` is created such that it would join any Endpoint Pools because other Endpoints already exist with those URLs/bindings, the Endpoint must fail to create.
-  ```bash
-  ngrok http 80 --url https://foo.ngrok.app --allows-pooling=true
-  ngrok http 80 --url https://foo.ngrok.app --allows-pooling=false # this fails
-  ```
-- If an endpoint with `allows_pooling=true` is created such that it would join any Endpoint Pool with an existing Endpoint that has `allows_pooling=false` , the Endpoint must fail to create.
-  ```bash
-  ngrok http 80 --url https://foo.ngrok.app --allows-pooling=false
-  ngrok http 80 --url https://foo.ngrok.app --allows-pooling=true # this fails
-  ```
-- If a conflict is detected because two endpoints started “simultaneously” join the same Endpoint Pool, we will kick the most recent Endpoint by timestamp (same heuristic but different metric) offline.
+There is no limit on the number of endpoints that may be in a pool.
+
+## Conflicts
+
+If you create a second endpoint with the same URL and binding as an existing
+endpoint, both the new endpoint and existing endpoint must have [pooling
+enabled](#enabling-pooling). If they do not, ngrok will return a conflict error
+when attempting to start the second endpoint.
+
+The URLs of all endpoints in a pool must share the same protocol. For example,
+you may not pool the endpoints `https://foo.internal:1234` and
+`tcp://foo.internal:1234` together because they have a different protocol.
+
+Conflicts can only occur during endpoint creation because both the URL and the
+pooling enabled property may not be updated after an endpoint has been created.
 
 ## Load Balancing
 
-### Strategy
+Traffic to pooled URLs is load balanced among the endpoints in the pool. Load
+balancing is applied in two places:
 
-### Layer 4 vs Layer 7
+- When pooled public and kubernetes endpoints load balance traffic received
+  from external clients.
+- When pooled internal endpoints receive traffic that is forwarded to them via
+  the `forward-internal` Traffic Policy action.
 
-### Endpoints with different Traffic Policies
+### Granularity
 
-## Stuff
+ngrok intelligently chooses the load balancing layer automatically for you.
 
-- Endpoint pools are global and regionally aware (global load balancer)
-- Endpoints with the same host port binding but different protocol will conflict, not pool
-- Endpoint pooling with different traffic policies
-- Traffic Policy fields
+Traffic to TCP and TLS endpoints is balanced on a per-connection basis (layer
+4).
+
+Traffic to HTTP and HTTPS endpoints balanced on a per-request basis (layer 7).
+If multiple endpoints in a pool have different `on_tcp_connect` phases in their
+Traffic Policy, load balancing is instead done on a per-connection basis (layer
+4).
+
+### Heterogenous Endpoints
+
+Endpoints in a pool may have different Traffic Policies. This lets you run old
+and new Traffic Policies side-by-side during a transition. It also enables you
+to roll out new Traffic Policy changes without risking an all-or-nothing
+deployment.
+
+When traffic is balanced among endpoints with different Traffic Policies, ngrok
+first chooses an endpoint to balance to and then executes the Traffic Policy of
+the chosen endpoint.
+
+### Default Strategy
+
+ngrok's default balancing strategy attempts to strike a balance between
+performance and faireness:
+
+- First, it identifies all endpoints in the pool which are in the point of
+  presence closest to where a connection is received.
+- Then, connections are balanced in a random distribution among those
+  endpoints.
+
+For the purposes of the first step, [cloud
+endpoints](/universal-gateway/cloud-endpoints) are considered to be online in
+all points of presence.
+
+For example, if an endpoint pool consist of the following endpoints:
+
+- Endpoint A: Agent Endpoint connected to `eu`
+- Endpoint B: Agent Endpoint connected `eu`
+- Endpoint C: Agent Endpoint connected `us`
+- Endpoint D: Cloud Endpoint
+
+Then:
+
+- A connection received in `eu` will be balanced among endpoints A, B, D
+- A connection received in `us` will be balanced among endpoints C, D
+- A connection received in `jp` will be balanced among endpoints D
+
+## Custom Strategies
+
+When balancing traffic to internal endpoints you may define your own balancing
+strategy by setting the `endpoint_selectors` and `endpoint_weights` fields on
+the `forward-internal` Traffic Policy action configuration.
+
+:::info Coming Soon
+
+Custom load balancing strategies are not yet generally available, [request access to the
+developer preview](mailto:support@ngrok.com).
+
+:::
+
+### Retries
+
+When a connection or request is balanced to an endpoint in a pool, if that
+connection or request fails, it is not retried by sending it to another
+endpoint in the pool.
 
 ## Wildcard Endpoints
 
