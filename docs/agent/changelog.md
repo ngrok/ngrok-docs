@@ -6,6 +6,11 @@ title: Changelog
 
 ## v3
 
+### ngrok Agent 3.19.1 - \[2024-1-23\]
+
+- Improve ux of CLI errors.
+- Correct error scheme on errors.
+
 ### ngrok Agent 3.19.0 - \[2024-12-19\]
 
 - Add tls termination to v3 agent configs.
