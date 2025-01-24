@@ -123,7 +123,7 @@ const sidebars = {
 						{
 							id: "universal-gateway/endpoint-pools",
 							type: "doc",
-							label: "Pools",
+							label: "Pooling",
 						},
 					],
 				},

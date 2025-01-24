@@ -8,14 +8,14 @@ receive traffic that is forwarded to them via the [`forward-internal` traffic
 policy action](/traffic-policy/actions/forward-internal).
 
 Internal endpoints are what you route traffic to. It is a common pattern to
-create a public [cloud endpoint](/universal-gateway/endpoints/cloud) where you
+create a public [cloud endpoint](/universal-gateway/cloud-endpoints/) where you
 manage centralized policy before routing its traffic with [traffic policy
 expressions](/traffic-policy/concepts/expressions/) and the `forward-internal`
 action to one or more internal [agent
-endpoints](/universal-gateway/endpoints/agent).
+endpoints](/universal-gateway/agent-endpoints/).
 
 Internal Endpoints have a
-[binding](/universal-gateway/endpoints/overview/#binding) of `internal` and
+[binding](/universal-gateway/endpoints-overview/#binding) of `internal` and
 their URL hostnames must end with `.internal`.
 
 ## Quickstart
@@ -31,8 +31,8 @@ ngrok http 8080 --url "https://example.internal" --binding internal
 
 ### Cloud Endpoint
 
-Create an internal agent endpoint by specifying a binding of `internal` when
-you create an endpoint.
+Instead of an agent endpoint, you can create an internal cloud endpoint.
+Specify a binding of `internal` when you create the cloud endpoint.
 
 ```bash
 ngrok api create \
@@ -42,7 +42,7 @@ ngrok api create \
   --traffic-policy "$(cat traffic-policy.yml)"
 ```
 
-#### `traffic-policy.yml`
+#### `traffic-policy-quickstart.yml`
 
 ```yaml
 on_http_request:
@@ -57,9 +57,9 @@ on_http_request:
 
 ### Forwarding
 
-Internal endpoints aren't useful unless create another endpoint forwards to
-them. To complete our above examples, create another **public** endpoint which
-forwards to your internal endpoint, `https://example.internal`.
+Internal endpoints aren't useful until you create another endpoint that
+forwards to them. To complete our above examples, create another **public**
+endpoint which forwards to your internal endpoint, `https://example.internal`.
 
 ```bash
 ngrok api create \
@@ -68,7 +68,7 @@ ngrok api create \
   --traffic-policy "$(cat traffic-policy.yml)"
 ```
 
-#### `traffic-policy.yml`
+#### `traffic-policy-forwarding.yml`
 
 ```yaml
 on_http_request:
@@ -117,7 +117,7 @@ ngrok http 8080 --url "https://example.internal"
 
 ## Type and Pooling
 
-- Internal endpoints support all [Endpoint
+- Internal endpoints support both [Endpoint
   Types](/universal-gateway/endpoints/#type) (`agent` and `cloud`).
 - Internal endpoints support [Endpoint
   Pooling](/universal-gateway/endpoint/pools).
