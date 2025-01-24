@@ -301,11 +301,11 @@ Given this example tunnel configuration, behavior will change in the following w
 
 ##### Old Behavior
 
-Starts a tunnel using the name of the tunnel as the subdomain resulting in the URL `http://webapp.ngrok.io`
+Starts a tunnel using the name of the tunnel as the subdomain resulting in the URL `http://webapp.ngrok.app`
 
 ##### New Behavior
 
-Starts a tunnel with a random subdomain, for example a URL like `http://d95211d2.ngrok.io`
+Starts a tunnel with a random subdomain, for example a URL like `http://d95211d2.ngrok.app`
 
 ##### How to keep the old behavior
 
@@ -316,5 +316,5 @@ tunnels:
   webapp:
     proto: http
     addr: 80
-    domain: webapp.ngrok.io
+    domain: webapp.ngrok.app
 ```
