@@ -104,14 +104,18 @@ ngrok config edit
 1. Add the following to the end of the file and then save it:
 
 ```yaml
-tunnels:
-  device-ssh:
-    proto: tcp
-    addr: 22
-    remote_addr: NGROK_TCP_ADDRESS
-    ip_restriction:
-      allow_cidrs:
-        - ALLOWED_IP_ADDRESS_CIDR
+endpoints:
+  - name: device-ssh
+    url: tcp://NGROK_TCP_ADDRESS
+    upstream:
+      url: 22
+    traffic_policy:
+      on_tcp_connect:
+        - actions:
+            - type: restrict-ips
+              config:
+                allow:
+                  - ALLOWED_IP_ADDRESS_CIDR
 ```
 
 **Note**: Make sure to replace **NGROK_TCP_ADDRESS** with the address you reserved earlier in the ngrok dashboard (i.e. `1.tcp.ngrok.io:12345`) and **ALLOWED_IP_ADDRESS_CIDR** with the CIDR notation of the allowed IP Address(es) (i.e. `123.123.123.0/24`).
