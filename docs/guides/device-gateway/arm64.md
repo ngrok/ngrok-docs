@@ -102,10 +102,10 @@ If you already established a TCP tunnel for SSH access, you'll either need to cr
    Forwarding                    https://12345.ngrok.app -> http://localhost:8080
    ```
 
-1. Optionally, you can reserve a [static subdomain](/docs/network-edge/domains-and-tcp-addresses.mdx) on `ngrok.app` or `ngrok.dev` like so:
+1. Optionally, you can reserve a [static subdomain](/universal-gateway/domains/) like so:
 
    ```
-   ngrok http 8080 --domain example.ngrok.app
+   ngrok http 8080 --url https://example.ngrok.app
    ```
 
 1. Open a browser and navigate to the endpoint, e.g. `https://12345.ngrok.app`, to access the service from any remote system.
