@@ -54,11 +54,9 @@ const redirects = [
     // /docs/guides/how-to-set-up-a-custom-domain -> /docs/guides/other-guides/how-to-set-up-a-custom-domain
     [ fromIncludes(`/docs/guides/how-to-set-up-a-custom-domain`), `/docs/guides/other-guides/how-to-set-up-a-custom-domain` ],
 
-    // /docs/guides/limits -> /docs/guides/other-guides/limits
-    [ fromIncludes(`/docs/guides/limits`), `/docs/guides/other-guides/limits` ],
+    [ fromIncludes(`/docs/guides/limits`), `/docs/pricing-limits` ],
 
-    // /docs/guides/licensing -> /docs/guides/other-guides/licensing
-    [ fromIncludes(`/docs/guides/licensing`), `/docs/guides/other-guides/licensing`],
+    [ fromIncludes(`/docs/guides/licensing`), `/docs/pricing-limits/`],
 
     // /docs/guides/upgrade-v2-v3 -> /docs/guides/other-guides/upgrade-v2-v3
     [ fromIncludes(`/docs/guides/upgrade-v2-v3`), `/docs/guides/other-guides/upgrade-v2-v3`],

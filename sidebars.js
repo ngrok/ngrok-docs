@@ -35,6 +35,12 @@ const sidebars = {
 			],
 		},
 		{
+			label: "Pricing & Limits",
+			type: "category",
+			link: { type: "doc", id: "pricing-limits/index" },
+			items: ["pricing-limits/free-plan-limits"],
+		},
+		{
 			type: "html",
 			value: "<div class='menu__section'>Endpoints</div>",
 		},
@@ -186,7 +192,6 @@ const sidebars = {
 			items: [
 				"agent/index",
 				"agent/web-inspection-interface",
-				"agent/cli",
 				"agent/cli-api",
 				{
 					label: "Configuration file",
