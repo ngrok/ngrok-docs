@@ -121,7 +121,7 @@ const sidebars = {
 							],
 						},
 						{
-							id: "universal-gateway/endpoint-pools",
+							id: "universal-gateway/endpoint-pooling",
 							type: "doc",
 							label: "Pooling",
 						},
