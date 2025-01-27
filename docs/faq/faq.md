@@ -19,7 +19,7 @@ Valid payment methods include credit or debit cards. Prepaid cards may not be us
 ngrok is beloved for our ease of use and powerful capability. Unfortunately, those same
 attributes also make us an attractive target for bad actors trying to phish credentials or create back doors into private networks.
 
-We proactively monitor and ban any accounts we identify that are involved with these attacks, and also work with 3rd parties that report malware and abuse via abuse@ngrok.com and our [abuse APIs](/docs/api/resources/abuse-reports/).
+We proactively monitor and ban any accounts we identify that are involved with these attacks, and also work with 3rd parties that report malware and abuse via abuse@ngrok.com and our [abuse APIs](/api/resources/abuse-reports/).
 
 Because ngrok is sometimes used by bad actors for attacks, we are occasionally flagged by some antivirus companies as malware or a potentially unwanted application (PAU).
 We actively monitor and reach out to these companies and attempt to obtain the correct classification in their system and be added to the allow lists.
@@ -126,4 +126,4 @@ and theirs, which allows them to access and take action on your services and
 data.
 
 For details about what ngrok is, how to install the ngrok agent, and how to work
-with your vendor to implement adequate security practices, see our [end customer installation guide](/docs/guides/site-to-site-connectivity/end-customers/).
+with your vendor to implement adequate security practices, see our [end customer installation guide](/guides/site-to-site-connectivity/end-customers/).

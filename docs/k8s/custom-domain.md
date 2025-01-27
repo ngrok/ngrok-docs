@@ -1,6 +1,6 @@
 # Custom domain
 
-In the Kubernetes Ingress and Gateway API specs, ingresses and routes can have multiple rules with different hostnames. The full relationship of these rules' hostnames to ngrok reserved domains and edges can be found in the [ingress to edge relationship](/docs/k8s/with-edges.mdx#name-based-virtual-hosting) documentation. While standard ngrok domains are available for use immediately after reservation, custom white label domains may require a couple extra steps to get working. The following outlines 2 options for getting custom white label domains working with the ngrok Kubernetes Operator.
+In the Kubernetes Ingress and Gateway API specs, ingresses and routes can have multiple rules with different hostnames. The full relationship of these rules' hostnames to ngrok reserved domains and edges can be found in the [ingress to edge relationship](/k8s/with-edges.mdx#name-based-virtual-hosting) documentation. While standard ngrok domains are available for use immediately after reservation, custom white label domains may require a couple extra steps to get working. The following outlines 2 options for getting custom white label domains working with the ngrok Kubernetes Operator.
 
 ## Managed by Kubernetes
 

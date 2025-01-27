@@ -150,7 +150,7 @@ this guide focuses on integrating Rancher's management tool with Kubernetes ingr
 to add the ngrok Kubernetes Operator via the Rancher dashboard.
 
 :::note
-You can also install the ngrok Kubernetes Operator with Helm instead of via Rancher's management platform. See our [Using ngrok with Kubernetes](/docs/using-ngrok-with/k8s/#step-2-setup-your-kubernetes-cluster-and-install-the-ngrok-ingress-controller) guide for details.
+You can also install the ngrok Kubernetes Operator with Helm instead of via Rancher's management platform. See our [Using ngrok with Kubernetes](/using-ngrok-with/k8s/#step-2-setup-your-kubernetes-cluster-and-install-the-ngrok-ingress-controller) guide for details.
 :::
 
 1. Create an `ngrok-ingress-controller` namespace.
@@ -347,7 +347,7 @@ unique ngrok edge domains, like `foo1.bar.com` and `foo2.bar.com`, pointing to t
 You can also configure the ngrok Kubernetes Operator with [route
 modules](https://github.com/ngrok/ngrok-operator/blob/main/docs/user-guide/route-modules.md), [custom
 domains](https://github.com/ngrok/ngrok-operator/blob/main/docs/user-guide/custom-domain.md), or [add
-edge security with OAuth](/docs/using-ngrok-with/k8s/#step-3-add-edge-security-to-your-app), and more.
+edge security with OAuth](/using-ngrok-with/k8s/#step-3-add-edge-security-to-your-app), and more.
 
 Learn more about the ngrok Kubernetes Operator, or contribute, by checking out the [GitHub
 repository](https://github.com/ngrok/ngrok-operator) and the [project-specific
