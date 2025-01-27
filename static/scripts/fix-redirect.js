@@ -165,6 +165,7 @@ const redirects = [
     [ fromIncludes(`/docs/cloud-edge/zero-knowledge-tls/`), `/docs/tls/termination/` ],
     [ fromIncludes(`/docs/tls/tls/termination/`), `/docs/tls/termination/` ],
     [ fromIncludes(`/docs/cloud-edge/`), `/docs/network-edge/` ],
+    [ fromIncludes(`/docs/integrations/home-assistant/home-assistant`), `/docs/integrations/home-assistant/home-assistant-with-ngrok` ],
 
     // Redirects for Traffic Policy Expressions
     [ fromIncludes(`/docs/http/traffic-policy/expressions/#connection-variables`), `/docs/http/traffic-policy/expressions/variables#connection-variables` ],
