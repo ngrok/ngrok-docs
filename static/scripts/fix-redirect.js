@@ -54,8 +54,7 @@ const redirects = [
     // /docs/guides/how-to-set-up-a-custom-domain -> /docs/guides/other-guides/how-to-set-up-a-custom-domain
     [ fromIncludes(`/docs/guides/how-to-set-up-a-custom-domain`), `/docs/guides/other-guides/how-to-set-up-a-custom-domain` ],
 
-    // /docs/guides/limits -> /docs/guides/other-guides/limits
-    [ fromIncludes(`/docs/guides/limits`), `/docs/guides/other-guides/limits` ],
+    [ fromIncludes(`/docs/guides/limits`), `/docs/pricing-limits` ],
 
     [ fromIncludes(`/docs/guides/licensing`), `/docs/pricing-limits/`],
 
