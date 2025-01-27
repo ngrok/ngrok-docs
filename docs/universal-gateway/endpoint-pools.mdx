@@ -77,16 +77,9 @@ curl https://your-domain.ngrok.app
 Create two endpoints with the same URL and two different traffic policies. They
 will automatically be pooled together.
 
-```
-ngrok api endpoints create \
-    --url https://your-domain.ngrok.app \
-    --traffic-policy $(cat policy-a.yaml) \
-    --pooling-enabled=true
-```
+First, create two traffic policy files, `policy-a.yml` and `policy-b.yml`.
 
-##### `policy-a.yaml`
-
-```
+```yaml title="policy-a.yml" mode=traffic-policy
 on_http_request:
   - actions:
     - type: custom-response
@@ -95,16 +88,7 @@ on_http_request:
         content: Policy A
 ```
 
-```
-ngrok api endpoints create \
-    --url https://your-domain.ngrok.app \
-    --traffic-policy $(cat policy-b.yaml) \
-    --pooling-enabled=true
-```
-
-##### `policy-b.yaml`
-
-```
+```yaml title="policy-b.yml" mode=traffic-policy
 on_http_request:
   - actions:
     - type: custom-response
@@ -113,10 +97,24 @@ on_http_request:
         content: Policy B
 ```
 
+Then create two cloud endpoints, one with each policy:
+
+```sh title="Command line"
+ngrok api endpoints create \
+    --url https://your-domain.ngrok.app \
+    --traffic-policy "$(cat policy-a.yml)" \
+    --pooling-enabled=true
+
+ngrok api endpoints create \
+    --url https://your-domain.ngrok.app \
+    --traffic-policy "$(cat policy-b.yml)" \
+    --pooling-enabled=true
+```
+
 When you make requests to the endpoints' URL, you will see responses balanced
 among each endpoint in the pool.
 
-```
+```sh title="Command line"
 curl https://your-domain.ngrok.app
 <Response from 8080>
 
