@@ -89,7 +89,7 @@ From within the [ngrok dashboard](https://dashboard.ngrok.com) follow the next s
 
 #### Enable mTLS on Edge
 
-- From within the [ngrok dashboard](https://dashboard.ngrok.com), navigate to [**Universal Gateway** --> **Edges**](https://dashboard.ngrok.com/cloud-edge/edges) and select your existing Edge or click on + New Edge to create either a HTTPs or TLS edge.
+- From within the [ngrok dashboard](https://dashboard.ngrok.com), navigate to [**Universal Gateway** --> **Edges**](https://dashboard.ngrok.comedges) and select your existing Edge or click on + New Edge to create either a HTTPs or TLS edge.
 - Within the Edges configuration, select the **Mutual TLS** module and click **Begin Setup**
 - Click **Attach Authority**, select the previously uploaded CA, click **Attach 1 Certificate Authority** and then click **Save**.
 

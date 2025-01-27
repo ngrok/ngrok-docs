@@ -211,7 +211,7 @@ sample application to your cluster. The ngrok Kubernetes Operator will connect t
 simplifying how you route external traffic through your Rancher-managed cluster.
 
 1. Create a ngrok static subdomain for ingress if you don't have one already. Navigate to the [**Domains**
-   section](https://dashboard.ngrok.com/cloud-edge/domains) of the ngrok dashboard and click **Create Domain** or **New
+   section](https://dashboard.ngrok.comdomains) of the ngrok dashboard and click **Create Domain** or **New
    Domain**. This static subdomain will be your `NGROK_DOMAIN` for the remainder of this guide.
 
    Creating a subdomain on the ngrok network provides a public route to accept HTTP, HTTPS, and TLS traffic.

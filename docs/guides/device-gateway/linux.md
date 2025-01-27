@@ -93,7 +93,7 @@ Read more about the `ngrok service`command which allows you to run and control a
 
 The ngrok agent works with native OS services like `systemd`. This helps you ensure that the ngrok service is available even after the machine restarts. Before we do this though, it's useful to reserve a TCP address in the ngrok dashboard which allows you to reuse the same address each time the device is restarted.
 
-1. Navigate to the ngrok Dashboard and access [Universal Gateway > TCP Addresses](https://dashboard.ngrok.com/cloud-edge/tcp-addresses). Create a new TCP address with a description and click **Save**. Your new TCP address will look something like `1.tcp.ngrok.io:12345`.
+1. Navigate to the ngrok Dashboard and access [Universal Gateway > TCP Addresses](https://dashboard.ngrok.comtcp-addresses). Create a new TCP address with a description and click **Save**. Your new TCP address will look something like `1.tcp.ngrok.io:12345`.
 
 Update the ngrok config file in your Linux device to start the ngrok agent using this TCP address.
 

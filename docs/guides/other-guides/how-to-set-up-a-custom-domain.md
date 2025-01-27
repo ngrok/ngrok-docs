@@ -12,7 +12,7 @@ To get the hostname `foo.example.com` working with an ngrok tunnel we'll need to
 
 ## **Create Hostname Within ngrok Dashboard**
 
-Adding your custom domain hostname will be done from within your ngrok account, this "reservation" process is performed from the domains page of [your ngrok dashboard](https://dashboard.ngrok.com/cloud-edge/domains).
+Adding your custom domain hostname will be done from within your ngrok account, this "reservation" process is performed from the domains page of [your ngrok dashboard](https://dashboard.ngrok.comdomains).
 
 Select "New Domain" and then put `foo.example.com` into the form that appears to add that domain hostname to your account. ngrok will validate that the custom name isn't currently reserved. Select the available name from the list provided and then you'll be able to add a Description, attach an Edge if desired and select your TLS Certificate configuration (we recommend our automated TLS certificates).
 
