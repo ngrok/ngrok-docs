@@ -1,3 +1,4 @@
+import BrowserOnly from "@docusaurus/BrowserOnly";
 import TabItem from "@theme/TabItem";
 import Tabs from "@theme/Tabs";
 import type { ReactNode } from "react";
@@ -31,26 +32,34 @@ export default function ConfigExample({
 	const jsonConfig = JSON.stringify(config, null, 2);
 
 	return (
-		<Tabs groupId="config_example" queryString="config">
+		<Tabs className="mb-4" groupId="config_example" queryString="config">
 			<TabItem value="YAML" label="YAML">
-				<DocsCodeBlock
-					language="yaml"
-					metastring={yamlMetastring}
-					title={title}
-					icon={icon}
-				>
-					{snippetText ? `# ${snippetText}\n` + yamlConfig : yamlConfig}
-				</DocsCodeBlock>
+				<BrowserOnly fallback={<p>Loading...</p>}>
+					{() => (
+						<DocsCodeBlock
+							language="yaml"
+							metastring={yamlMetastring}
+							title={title}
+							icon={icon}
+						>
+							{snippetText ? `# ${snippetText}\n` + yamlConfig : yamlConfig}
+						</DocsCodeBlock>
+					)}
+				</BrowserOnly>
 			</TabItem>
 			<TabItem value="JSON" label="JSON">
-				<DocsCodeBlock
-					language="yaml"
-					metastring={jsonMetastring}
-					title={title}
-					icon={icon}
-				>
-					{snippetText ? `// ${snippetText}\n` + jsonConfig : jsonConfig}
-				</DocsCodeBlock>
+				<BrowserOnly fallback={<p>Loading...</p>}>
+					{() => (
+						<DocsCodeBlock
+							language="yaml"
+							metastring={jsonMetastring}
+							title={title}
+							icon={icon}
+						>
+							{snippetText ? `// ${snippetText}\n` + jsonConfig : jsonConfig}
+						</DocsCodeBlock>
+					)}
+				</BrowserOnly>
 			</TabItem>
 		</Tabs>
 	);
