@@ -162,7 +162,8 @@ const redirects = [
     [ fromIncludes(`/docs/cloud-edge/modules/`), `/docs/http/#modules` ],
     [ fromIncludes(`/docs/cloud-edge/observability/`), `/docs/http/#observability` ],
     [ fromIncludes(`/docs/cloud-edge/pops/`), `/docs/network-edge/#points-of-presence` ],
-    [ fromIncludes(`/docs/cloud-edge/zero-knowledge-tls/`), `/docs/tls/tls/termination/#zero-knowledge-tls` ],
+    [ fromIncludes(`/docs/cloud-edge/zero-knowledge-tls/`), `/docs/tls/termination/` ],
+    [ fromIncludes(`/docs/tls/tls/termination/`), `/docs/tls/termination/` ],
     [ fromIncludes(`/docs/cloud-edge/`), `/docs/network-edge/` ],
 
     // Redirects for Traffic Policy Expressions
@@ -241,7 +242,7 @@ const redirects = [
 
     // JAN 2025
     [ fromIncludes(`/docs/tls/tls-termination/`), `/docs/tls/termination/` ],
-    [ fromIncludes(`/docs/traffic-policy/templates/`), `/docs/traffic-policy/examples/` ],
+    [ fromIncludes(`/docs/traffic-policy/examples/`), `/docs/traffic-policy/examples/` ],
 ]
 
 // get current href from window
