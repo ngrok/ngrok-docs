@@ -15,7 +15,7 @@ import React, { type ReactNode } from "react";
 export default function DocsRoot(props: Props): ReactNode {
 	return (
 		<HtmlClassNameProvider className={clsx(ThemeClassNames.wrapper.docsPages)}>
-			<MantleThemeHeadContent />
+			<MantleThemeHeadContent defaultTheme="light" />
 			<ThemeProvider>
 				<Layout>{renderRoutes(props.route.routes!)}</Layout>
 			</ThemeProvider>
