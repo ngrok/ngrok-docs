@@ -51,8 +51,8 @@ const redirects = [
     [ fromIncludes(`/docs/secure-tunnels/tunnels/ssh-reverse-tunnel-agent`), `/docs/agent/ssh-reverse-tunnel-agent` ],
 
     // /docs/guides -> /docs/guides/other-guides
-    // /docs/guides/other-guides/how-to-set-up-a-custom-domain -> /docs/guides/other-guides/how-to-set-up-a-custom-domain
-    [ fromIncludes(`/docs/guides/other-guides/how-to-set-up-a-custom-domain`), `/docs/guides/other-guides/how-to-set-up-a-custom-domain` ],
+    // /docs/guides/how-to-set-up-a-custom-domain -> /docs/guides/other-guides/how-to-set-up-a-custom-domain
+    [ fromIncludes(`/docs/guides/how-to-set-up-a-custom-domain`), `/docs/guides/other-guides/how-to-set-up-a-custom-domain` ],
 
     // /docs/guides/limits -> /docs/guides/other-guides/limits
     [ fromIncludes(`/docs/guides/limits`), `/docs/guides/other-guides/limits` ],
@@ -193,10 +193,10 @@ const redirects = [
     [ fromIncludes(`/docs/http-header-templates`), `/docs/http/request-headers/` ],
 
     // (DEC 2024) New Traffic Policy
-    [ fromIncludes(`/docs/traffic-policy/gallery/`), `/docs/traffic-policy/templates/` ],
-    [ fromIncludes(`/docs/http/traffic-policy/gallery/`), `/docs/traffic-policy/templates/` ],
-    [ fromIncludes(`/docs/tls/traffic-policy/gallery/`), `/docs/traffic-policy/templates/` ],
-    [ fromIncludes(`/docs/tcp/traffic-policy/gallery/`), `/docs/traffic-policy/templates/` ],
+    [ fromIncludes(`/docs/traffic-policy/gallery/`), `/docs/traffic-policy/examples/` ],
+    [ fromIncludes(`/docs/http/traffic-policy/gallery/`), `/docs/traffic-policy/examples/` ],
+    [ fromIncludes(`/docs/tls/traffic-policy/gallery/`), `/docs/traffic-policy/examples/` ],
+    [ fromIncludes(`/docs/tcp/traffic-policy/gallery/`), `/docs/traffic-policy/examples/` ],
     [ fromIncludes(`/docs/http/traffic-policy/expressions/writing-guide/`), `/docs/traffic-policy/concepts/expressions/#writing-expressions` ],
     [ fromIncludes(`/docs/tls/traffic-policy/expressions/writing-guide/`), `/docs/traffic-policy/concepts/expressions/#writing-expressions` ],
     [ fromIncludes(`/docs/tcp/traffic-policy/expressions/writing-guide/`), `/docs/traffic-policy/concepts/expressions/#writing-expressions` ],
@@ -238,10 +238,12 @@ const redirects = [
     [ fromIncludes(`/docs/tls/traffic-policy/`), `/docs/traffic-policy/` ],
     [ fromIncludes(`/docs/tcp/traffic-policy/`), `/docs/traffic-policy/` ],
 
-    // DEC 2024 - New TP Getting Started
+    // DEC 2024
     [ fromExact(`/docs/traffic-policy/getting-started/`), `/docs/traffic-policy/getting-started/agent-endpoints/cli` ],
 
+    // JAN 2025
     [ fromIncludes(`/docs/tls/tls-termination/`), `/docs/tls/termination/` ],
+    [ fromIncludes(`/docs/traffic-policy/templates/`), `/docs/traffic-policy/examples/` ],
 ]
 
 // get current href from window

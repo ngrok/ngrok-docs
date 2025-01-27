@@ -4,4 +4,4 @@ This error usually occurs when users are hosting a secure upstream service (`htt
 
 ### Possible Solutions
 
-When starting the ngrok agent, use the full upstream service address. For example: `ngrok http https://localhost:8081`.
+- When starting the ngrok agent, use the full upstream service address. For example: `ngrok http https://localhost:8081`.
