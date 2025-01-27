@@ -38,7 +38,7 @@ const sidebars = {
 			label: "Pricing & Limits",
 			type: "category",
 			link: { type: "doc", id: "pricing-limits/index" },
-			items: ["pricing-limits/free-plan-limits", "agent/cli"],
+			items: ["pricing-limits/free-plan-limits"],
 		},
 		{
 			type: "html",
