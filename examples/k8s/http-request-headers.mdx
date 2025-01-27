@@ -1,22 +1,11 @@
 ```yaml
-kind: NgrokModuleSet
-apiVersion: ingress.k8s.ngrok.com/v1alpha1
-metadata:
-  name: ngrok-module-set
-modules:
-  headers:
-    request:
-      add:
-        is-ngrok: "1"
-        country: "${conn.geo.country_code}"
-      remove: ["referrer"]
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: example-ingress
   annotations:
-    k8s.ngrok.com/modules: ngrok-module-set
+    k8s.ngrok.com/traffic-policy: example
 spec:
   ingressClassName: ngrok
   rules:
@@ -30,4 +19,20 @@ spec:
                 name: example-service
                 port:
                   number: 80
+---
+kind: NgrokTrafficPolicy
+apiVersion: ingress.k8s.ngrok.com/v1alpha1
+metadata:
+  name: example
+policy:
+  on_http_request:
+    - actions:
+        - type: add-headers
+          config:
+            headers:
+              is-ngrok: 1
+              country: ${conn.geo.country_code}
+        - type: remove-headers
+          config:
+            headers: ["referrer"]
 ```

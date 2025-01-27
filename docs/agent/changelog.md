@@ -54,12 +54,12 @@ title: Changelog
   - Added `--url` agent CLI flag for creation of HTTP(S), TLS, and TCP protocol endpoints.
   - Deprecated `--domain`, `--scheme`, and `--remote-addr` agent CLI flags, which have been replaced by `--url`.
   - Added `--metadata` and `--description` agent CLI flags when using `--url`.
-  - Added `endpoints:` as a new field used for [endpoint creation](/docs/agent/config/v3/).
+  - Added `endpoints:` as a new field used for [endpoint creation](/agent/config/v3/).
   - A new `agent:` field has been added to the agent configuration format for V3.
     - v3 supports _both_ tunnels and endpoints. Tunnels are now considered deprecated when using config v3.
     - Some agent configuration fields have been renamed in v3.
     - v2 is still supported, but does not support the new `endpoints:` , or `agent:` fields.
-  - Added support for [endpoint fields](/docs/api/resources/endpoints/#list-endpoints) in ngrok's `api`.
+  - Added support for [endpoint fields](/api/resources/endpoints/#list-endpoints) in ngrok's `api`.
 - Update `config` commands to support new configuration version 3, including `upgrade`, `add-authtoken`, and `add-api-key`
 
 ### ngrok Agent 3.15.1 - \[2024-08-29\]
@@ -71,12 +71,12 @@ title: Changelog
 - Added `--url` agent CLI flag for creation of HTTP(S), TLS, and TCP protocol endpoints.
 - Deprecated `--domain`, `--scheme`, and `--remote-addr` agent CLI flags, which have been replaced by `--url`.
 - Added `--metadata` and `--description` agent CLI flags when using `--url`.
-- Added `endpoints:` as a new field used for [endpoint creation](/docs/agent/config/v3/).
+- Added `endpoints:` as a new field used for [endpoint creation](/agent/config/v3/).
 - A new `agent:` field has been added to the agent configuration format for V3.
   - v3 supports _both_ tunnels and endpoints. Tunnels are now considered deprecated when using config v3.
   - Some agent configuration fields have been renamed in v3.
   - v2 is still supported, but does not support the new `endpoints:` , or `agent:` fields.
-- Added support for [endpoint fields](/docs/api/resources/endpoints/#list-endpoints) in ngrok's `api`.
+- Added support for [endpoint fields](/api/resources/endpoints/#list-endpoints) in ngrok's `api`.
 
 ### ngrok Agent 3.14.1 - \[2024-08-22\]
 
@@ -113,7 +113,7 @@ title: Changelog
 ### ngrok Agent 3.10.0 - \[2024-05-23\]
 
 - **ACTION MAY BE REQUIRED**: The domain used for Certificate Revocation List (CRL) checks is now `crl.ngrok-agent.com` to align it with the domain used for session connections. This may require changes to your firewall or proxy settings to allow this outbound connection on port 80, or setting `crl_noverify: true` in the agent config file.
-- Added CLI API support for [Bot Users](/docs/iam/bot-users/).
+- Added CLI API support for [Bot Users](/iam/bot-users/).
 
 ### ngrok Agent 3.9.0 - \[2024-04-24\]
 
@@ -301,11 +301,11 @@ Given this example tunnel configuration, behavior will change in the following w
 
 ##### Old Behavior
 
-Starts a tunnel using the name of the tunnel as the subdomain resulting in the URL `http://webapp.ngrok.io`
+Starts a tunnel using the name of the tunnel as the subdomain resulting in the URL `http://webapp.ngrok.app`
 
 ##### New Behavior
 
-Starts a tunnel with a random subdomain, for example a URL like `http://d95211d2.ngrok.io`
+Starts a tunnel with a random subdomain, for example a URL like `http://d95211d2.ngrok.app`
 
 ##### How to keep the old behavior
 
@@ -316,5 +316,5 @@ tunnels:
   webapp:
     proto: http
     addr: 80
-    domain: webapp.ngrok.io
+    domain: webapp.ngrok.app
 ```

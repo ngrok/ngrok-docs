@@ -1,22 +1,11 @@
 ```yaml
 ---
-kind: NgrokModuleSet
-apiVersion: ingress.k8s.ngrok.com/v1alpha1
-metadata:
-  name: ngrok-module-set
-modules:
-  oauth:
-    google:
-      optionsPassthrough: false
-      inactivityTimeout: 4h
-      maximumDuration: 24h
-      authCheckInterval: 1h
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: example-ingress
   annotations:
-    k8s.ngrok.com/modules: ngrok-module-set
+    k8s.ngrok.com/traffic-policy: example
 spec:
   ingressClassName: ngrok
   rules:
@@ -30,4 +19,15 @@ spec:
                 name: example-service
                 port:
                   number: 80
+---
+kind: NgrokTrafficPolicy
+apiVersion: ingress.k8s.ngrok.com/v1alpha1
+metadata:
+  name: example
+policy:
+  on_http_request:
+    - actions:
+        - type: oauth
+          config:
+            provider: google
 ```

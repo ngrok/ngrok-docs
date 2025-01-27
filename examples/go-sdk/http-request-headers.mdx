@@ -7,12 +7,23 @@ import (
 	"golang.ngrok.com/ngrok/config"
 )
 
+trafficPolicy := `
+on_http_request:
+  - actions:
+      - type: add-headers
+        config:
+          headers:
+            is-ngrok: 1
+            country: ${conn.geo.country_code}
+      - type: remove-headers
+        config:
+          headers: ["referrer"]
+`
+
 func ngrokListener(ctx context.Context) (net.Listener, error) {
 	return ngrok.Listen(ctx,
 		config.HTTPEndpoint(
-			config.WithRequestHeader("is-ngrok", "1"),
-			config.WithRequestHeader("country", "${conn.geo.country_code}"),
-			config.WithRemoveRequestHeader("referrer"),
+			config.WithTrafficPolicy(trafficPolicy),
 		),
 		ngrok.WithAuthtokenFromEnv(),
 	)
@@ -21,5 +32,4 @@ func ngrokListener(ctx context.Context) (net.Listener, error) {
 
 Go Package Docs:
 
-- [https://pkg.go.dev/golang.ngrok.com/ngrok/config#WithRequestHeader](https://pkg.go.dev/golang.ngrok.com/ngrok/config#WithRequestHeader)
-- [https://pkg.go.dev/golang.ngrok.com/ngrok/config#WithRemoveRequestHeader](https://pkg.go.dev/golang.ngrok.com/ngrok/config#WithRemoveRequestHeader)
+- [https://pkg.go.dev/golang.ngrok.com/ngrok/config#WithTrafficPolicy](https://pkg.go.dev/golang.ngrok.com/ngrok/config#WithTrafficPolicy)
