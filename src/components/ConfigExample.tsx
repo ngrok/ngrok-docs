@@ -4,7 +4,7 @@ import Tabs from "@theme/Tabs";
 import YAML from "yaml";
 
 type Props = {
-	config: Record<string, any>;
+	config: Record<string, unknown>;
 	snippetText?: string;
 	showLineNumbers?: boolean;
 	yamlMetastring?: string;
