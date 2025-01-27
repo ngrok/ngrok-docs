@@ -41,7 +41,7 @@ To follow this guide, you need:
 3. Unzip the file and move it to a directory in your `PATH`, like `/usr/local/bin`.
 
    ```bash
-   sudo tar xvzf ./ngrok-v3-stable-linux-amd64.tgz -C /usr/local/bin
+   sudo tar xvzf ./ngrok-v3-stable-linux-arm64.tgz -C /usr/local/bin
    ```
 
 4. Link the ngrok agent to your ngrok account with your authtoken, replacing `{NGROK_AUTHOKEN}` with the value found in your [ngrok dashboard](https://dashboard.ngrok.com/get-started/your-authtoken).

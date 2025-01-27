@@ -5,23 +5,22 @@
 ```json
 {
 	"bindings": ["public"],
-	"created_at": "2024-10-17T20:26:44Z",
+	"created_at": "2025-01-21T18:19:51Z",
 	"description": "sample cloud endpoint",
 	"domain": {
-		"id": "rd_2na2K4obUiVgxjyGhELNXZRomOt",
-		"uri": "https://api.ngrok.com/reserved_domains/rd_2na2K4obUiVgxjyGhELNXZRomOt"
-	},
-	"edge": {
-		"id": "edgtls_2na2K2SHqq1jVXErSG2EhkglPNe",
-		"uri": "https://api.ngrok.com/edges/tls/edgtls_2na2K2SHqq1jVXErSG2EhkglPNe"
+		"id": "rd_2rwwkHa8wqYExR6hOXZQ5SZu4uh",
+		"uri": "https://api.ngrok.com/reserved_domains/rd_2rwwkHa8wqYExR6hOXZQ5SZu4uh"
 	},
 	"hostport": "endpoint-example2.com:443",
-	"id": "ep_2na2KihUjFYIhLR6demIzdJsxTH",
+	"id": "ep_2rwwkyc3QdH2qPHnpQ79mClWxrk",
+	"metadata": "{\"environment\": \"staging\"}",
+	"pooling_enabled": false,
 	"proto": "https",
 	"public_url": "https://endpoint-example2.com",
+	"traffic_policy": "{\"on_http_request\":[{\"actions\":[{\"type\":\"deny\",\"config\":{\"status_code\":404}}]}]}",
 	"type": "cloud",
-	"updated_at": "2024-10-17T20:26:44Z",
-	"uri": "https://api.ngrok.com/endpoints/ep_2na2KihUjFYIhLR6demIzdJsxTH",
+	"updated_at": "2025-01-21T18:19:51Z",
+	"uri": "https://api.ngrok.com/endpoints/ep_2rwwkyc3QdH2qPHnpQ79mClWxrk",
 	"url": "https://endpoint-example2.com"
 }
 ```
