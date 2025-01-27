@@ -4,15 +4,15 @@
 
 ```json
 {
-	"created_at": "2024-10-17T20:26:46Z",
+	"created_at": "2025-01-21T18:19:53Z",
 	"description": "acme tunnel group",
-	"id": "bkdtg_2na2L46MXIwtiFrIqTQs0PkC0VE",
+	"id": "bkdtg_2rwwlBV3giwRa5gGhtBlK6AH8q4",
 	"labels": {
 		"baz": "qux",
 		"foo": "bar"
 	},
 	"metadata": "{\"environment\": \"production\"}",
 	"tunnels": [],
-	"uri": "https://api.ngrok.com/backends/tunnel_group/bkdtg_2na2L46MXIwtiFrIqTQs0PkC0VE"
+	"uri": "https://api.ngrok.com/backends/tunnel_group/bkdtg_2rwwlBV3giwRa5gGhtBlK6AH8q4"
 }
 ```
