@@ -263,6 +263,7 @@ const sidebars = {
 						"agent/api",
 						"agent/ssh-reverse-tunnel-agent",
 						"agent/ingress",
+						"tls/termination/agent-tls-termination",
 						"agent/changelog",
 						"agent/version-support-policy",
 						"agent/diagnose",
