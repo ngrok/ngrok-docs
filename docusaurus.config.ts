@@ -1,11 +1,7 @@
 import type { Config } from "@docusaurus/types";
 import dotenv from "dotenv";
-import * as prismReactRenderer from "prism-react-renderer";
 
 dotenv.config();
-
-const lightCodeTheme = prismReactRenderer.themes.github;
-const darkCodeTheme = prismReactRenderer.themes.dracula;
 
 const docsRepo = "https://github.com/ngrok/ngrok-docs";
 
@@ -337,11 +333,6 @@ const config = {
 					},
 				],
 				copyright: `© ngrok ${new Date().getFullYear()}`,
-			},
-			prism: {
-				theme: lightCodeTheme,
-				darkTheme: darkCodeTheme,
-				additionalLanguages: ["hcl", "rust", "http", "bash"],
 			},
 			docs: {
 				sidebar: {

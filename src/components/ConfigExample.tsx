@@ -1,22 +1,27 @@
-import CodeBlock from "@theme/CodeBlock";
+import BrowserOnly from "@docusaurus/BrowserOnly";
 import TabItem from "@theme/TabItem";
 import Tabs from "@theme/Tabs";
+import type { ReactNode } from "react";
 import YAML from "yaml";
+import DocsCodeBlock, { CodeBlockFallback } from "./code-block";
 
 type Props = {
-	config: Record<string, any>;
+	config: Record<string, unknown>;
 	snippetText?: string;
 	showLineNumbers?: boolean;
 	yamlMetastring?: string;
 	jsonMetastring?: string;
+	title?: string;
+	icon?: ReactNode;
 };
 
 export default function ConfigExample({
 	config,
 	snippetText = "snippet",
-	showLineNumbers = false,
 	yamlMetastring = "",
 	jsonMetastring = "",
+	title,
+	icon,
 }: Props) {
 	const yamlConfig = YAML.stringify(config, {
 		indent: 2,
@@ -27,24 +32,42 @@ export default function ConfigExample({
 	const jsonConfig = JSON.stringify(config, null, 2);
 
 	return (
-		<Tabs groupId="config_example" queryString="config">
+		<Tabs className="mb-4" groupId="config_example" queryString="config">
 			<TabItem value="YAML" label="YAML">
-				<CodeBlock
-					language="yaml"
-					showLineNumbers={showLineNumbers}
-					metastring={yamlMetastring}
+				<BrowserOnly
+					fallback={
+						<CodeBlockFallback className="mb-4">Loading…</CodeBlockFallback>
+					}
 				>
-					{snippetText ? `# ${snippetText}\n` + yamlConfig : yamlConfig}
-				</CodeBlock>
+					{() => (
+						<DocsCodeBlock
+							language="yaml"
+							metastring={yamlMetastring}
+							title={title}
+							icon={icon}
+						>
+							{snippetText ? `# ${snippetText}\n` + yamlConfig : yamlConfig}
+						</DocsCodeBlock>
+					)}
+				</BrowserOnly>
 			</TabItem>
 			<TabItem value="JSON" label="JSON">
-				<CodeBlock
-					language="yaml"
-					showLineNumbers={showLineNumbers}
-					metastring={jsonMetastring}
+				<BrowserOnly
+					fallback={
+						<CodeBlockFallback className="mb-4">Loading…</CodeBlockFallback>
+					}
 				>
-					{snippetText ? `// ${snippetText}\n` + jsonConfig : jsonConfig}
-				</CodeBlock>
+					{() => (
+						<DocsCodeBlock
+							language="json"
+							metastring={jsonMetastring}
+							title={title}
+							icon={icon}
+						>
+							{snippetText ? `// ${snippetText}\n` + jsonConfig : jsonConfig}
+						</DocsCodeBlock>
+					)}
+				</BrowserOnly>
 			</TabItem>
 		</Tabs>
 	);
