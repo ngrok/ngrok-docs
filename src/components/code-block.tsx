@@ -76,7 +76,7 @@ function DocsCodeBlock({
 				</CodeBlockHeader>
 			)}
 			<CodeBlockBody>
-				{!meta.disableCopy && <CodeBlockCopyButton />}
+				{!meta.disableCopy && <CodeBlockCopyButton className="shadow-none" />}
 				<CodeBlockCode
 					className="m-0 text-size-inherit [&_code]:text-size-inherit"
 					language={language}
