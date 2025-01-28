@@ -42,11 +42,6 @@ const sidebars = {
 					label: "Concepts",
 					type: "category",
 					items: [
-						{
-							id: "universal-gateway/endpoints",
-							type: "doc",
-							label: "Endpoints",
-						},
 						{ id: "universal-gateway/domains", type: "doc", label: "Domains" },
 						{
 							id: "universal-gateway/tcp-addresses",
