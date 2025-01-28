@@ -243,6 +243,7 @@ const redirects = [
 
     // JAN 2025
     [ fromIncludes(`/docs/tls/tls-termination/`), `/docs/tls/termination/` ],
+    [ fromIncludes(`/docs/traffic-policy/templates/`), `/docs/traffic-policy/examples/` ],
 ]
 
 // get current href from window
