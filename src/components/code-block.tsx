@@ -77,11 +77,7 @@ function DocsCodeBlock({
 			)}
 			<CodeBlockBody>
 				{!meta.disableCopy && <CodeBlockCopyButton />}
-				<CodeBlockCode
-					className="m-0 rounded-none bg-inherit font-mono text-size-inherit text-inherit [&_code]:text-size-inherit"
-					language={language}
-					value={fmtCode`${children}`}
-				/>
+				<CodeBlockCode language={language} value={fmtCode`${children}`} />
 				{collapsible && <CodeBlockExpanderButton />}
 			</CodeBlockBody>
 		</CodeBlock>
