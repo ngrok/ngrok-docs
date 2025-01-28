@@ -121,6 +121,32 @@ function useResultsFooterComponent({
 	);
 }
 
+type CustomFields = {
+	isProduction: boolean;
+	vercel: {
+		env: string;
+		url: string;
+	};
+};
+
+/**
+ * Returns a different root URL based on environment.
+ * This prevents search results from sending you to
+ * prod when you're using docs in localhost.
+ */
+const getUrlRootForHit = ({ isProduction, vercel }: CustomFields) => {
+	if (!isProduction) return "http://localhost:3000";
+
+	// Return preview URL if we're in a Vercel preview deployment
+	if (vercel?.env === "preview") return `https://${vercel.url}`;
+
+	return "https://ngrok.com";
+};
+
+/**
+ * We're using <a> instead of <Link> as a temporary workaround until we get server side redirects set up.
+ * Currently we use CSR, which doesn't trigger our redirect script, so search results hit 404s if the page is intended to be redirected.
+ */
 function Hit({
 	hit,
 	children,
@@ -128,7 +154,11 @@ function Hit({
 	hit: InternalDocSearchHit | StoredDocSearchHit;
 	children: React.ReactNode;
 }) {
-	return <Link to={hit.url}>{children}</Link>;
+	const {
+		siteConfig: { customFields },
+	} = useDocusaurusContext();
+	const root = getUrlRootForHit(customFields as CustomFields);
+	return <a href={`${root}${hit.url}`}>{children}</a>;
 }
 
 type ResultsFooterProps = {
