@@ -59,7 +59,7 @@ export default function ConfigExample({
 				>
 					{() => (
 						<DocsCodeBlock
-							language="yaml"
+							language="json"
 							metastring={jsonMetastring}
 							title={title}
 							icon={icon}
