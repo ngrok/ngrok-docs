@@ -3,7 +3,7 @@ import TabItem from "@theme/TabItem";
 import Tabs from "@theme/Tabs";
 import type { ReactNode } from "react";
 import YAML from "yaml";
-import DocsCodeBlock from "./code-block";
+import DocsCodeBlock, { CodeBlockFallback } from "./code-block";
 
 type Props = {
 	config: Record<string, unknown>;
@@ -34,7 +34,11 @@ export default function ConfigExample({
 	return (
 		<Tabs className="mb-4" groupId="config_example" queryString="config">
 			<TabItem value="YAML" label="YAML">
-				<BrowserOnly fallback={<p>Loading...</p>}>
+				<BrowserOnly
+					fallback={
+						<CodeBlockFallback className="mb-4">Loading…</CodeBlockFallback>
+					}
+				>
 					{() => (
 						<DocsCodeBlock
 							language="yaml"
@@ -48,10 +52,14 @@ export default function ConfigExample({
 				</BrowserOnly>
 			</TabItem>
 			<TabItem value="JSON" label="JSON">
-				<BrowserOnly fallback={<p>Loading...</p>}>
+				<BrowserOnly
+					fallback={
+						<CodeBlockFallback className="mb-4">Loading…</CodeBlockFallback>
+					}
+				>
 					{() => (
 						<DocsCodeBlock
-							language="yaml"
+							language="json"
 							metastring={jsonMetastring}
 							title={title}
 							icon={icon}

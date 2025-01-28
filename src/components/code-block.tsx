@@ -13,7 +13,7 @@ import {
 	parseMetastring,
 } from "@ngrok/mantle/code-block";
 import type { WithStyleProps } from "@ngrok/mantle/types";
-import type { ReactNode } from "react";
+import type { ComponentProps, ReactNode } from "react";
 
 type Props = WithStyleProps & {
 	/**
@@ -77,15 +77,30 @@ function DocsCodeBlock({
 			)}
 			<CodeBlockBody>
 				{!meta.disableCopy && <CodeBlockCopyButton />}
-				<CodeBlockCode
-					className="m-0 text-size-inherit [&_code]:text-size-inherit"
-					language={language}
-					value={fmtCode`${children}`}
-				/>
+				<CodeBlockCode language={language} value={fmtCode`${children}`} />
 				{collapsible && <CodeBlockExpanderButton />}
 			</CodeBlockBody>
 		</CodeBlock>
 	);
 }
 
+/**
+ * Fallback (loading) component for the code block.
+ */
+const CodeBlockFallback = ({
+	children,
+	...props
+}: ComponentProps<typeof CodeBlock>) => (
+	<CodeBlock {...props}>
+		<pre className="min-h-[3.25rem] p-4 pr-[3.375rem] font-mono text-mono">
+			{children}
+		</pre>
+	</CodeBlock>
+);
+
 export default DocsCodeBlock;
+
+export {
+	//,
+	CodeBlockFallback,
+};
