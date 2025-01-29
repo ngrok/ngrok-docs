@@ -29,11 +29,11 @@ _**Warning:**_ There are other CRDs not documented here that are used internally
 
 ### NgrokTrafficPolicy
 
-| Field        | Type            | Description                                       |
-| ------------ | --------------- | ------------------------------------------------- |
-| `apiVersion` | string          | API version of the `NgrokTrafficPolicy`           |
-| `kind`       | string          | Kind of the custom resource definition            |
-| `metadata`   | ObjectMeta      | Standard Kubernetes metadata                      |
+| Field        | Type            | Description                                  |
+| ------------ | --------------- | -------------------------------------------- |
+| `apiVersion` | string          | API version of the `NgrokTrafficPolicy`      |
+| `kind`       | string          | Kind of the custom resource definition       |
+| `metadata`   | ObjectMeta      | Standard Kubernetes metadata                 |
 | `policy`     | json.RawMessage | See [policy configuration](/traffic-policy/) |
 
 ### EndpointCompression
