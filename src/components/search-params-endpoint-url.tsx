@@ -12,7 +12,7 @@ const searchParamKey = "endpoint_url";
  *
  * Provide a `fallback` to render when the search param is not present.
  */
-function EndpointHostnameFromSearchParams({ fallback }: Props) {
+function EndpointUrlHostname({ fallback }: Props) {
 	const endpointUrl = useEndpointUrlFromSearchParams();
 	return endpointUrl?.hostname ?? fallback;
 }
@@ -22,7 +22,7 @@ function EndpointHostnameFromSearchParams({ fallback }: Props) {
  *
  * Provide a `fallback` to render when the search param is not present.
  */
-function EndpointOriginFromSearchParams({ fallback }: Props) {
+function EndpointUrlOrigin({ fallback }: Props) {
 	const endpointUrl = useEndpointUrlFromSearchParams();
 	return endpointUrl?.origin ?? fallback;
 }
@@ -39,8 +39,8 @@ function useEndpointUrlFromSearchParams() {
 
 export {
 	//,
-	EndpointHostnameFromSearchParams,
-	EndpointOriginFromSearchParams,
+	EndpointUrlHostname,
+	EndpointUrlOrigin,
 	useEndpointUrlFromSearchParams,
 };
 
