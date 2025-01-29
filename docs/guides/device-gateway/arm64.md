@@ -52,7 +52,7 @@ To follow this guide, you need:
 
 ## Step 2: Enable SSH access
 
-If you want to perform remote administration on your ARM64 device using a reserved TCP address and an encrypted tunnel, instead of relying on IP addresses, you can create a [TCP tunnel](/tcp//) at port `22` on your ARM64 device.
+If you want to perform remote administration on your ARM64 device using a reserved TCP address and an encrypted tunnel, instead of relying on IP addresses, you can create a [TCP tunnel](/tcp/) at port `22` on your ARM64 device.
 
 1. Start the TCP tunnel with `ngrok`.
 
