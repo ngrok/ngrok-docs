@@ -17,9 +17,9 @@ In this guide, you'll learn how to install ngrok on any Linux ARM64 device to fo
 
 This guide is specific to ARM64 devices on Linux—if you're using a different device or CPU architecture, first check whether your platform meets the ngrok agent's [system and resource requirements](/agent/#system-requirements). We also have other guides that may fit your use case more precisely:
 
-- [Linux AMD64 devices](/guides/device-gateway/linux.md)
-- [Raspberry Pi](/guides/device-gateway/raspberry-pi.md)
-- [Raspberry Pi OS](/guides/device-gateway/raspbian.md)
+- [Linux AMD64 devices](/guides/device-gateway/linux/)
+- [Raspberry Pi](/guides/device-gateway/raspberry-pi/)
+- [Raspberry Pi OS](/guides/device-gateway/raspbian/)
 
 ## Prerequisites
 
@@ -112,7 +112,7 @@ If you already established a TCP tunnel for SSH access, you'll either need to cr
 
 ## Step 4: Add a Traffic Policy to restrict IPs
 
-Now that you have SSH tunneling and service ingress handled via ngrok, you may also want to protect those services from unknown and untrusted users. You'll use the Traffic Policy module and the Restrict IPs action, which works with both [HTTPS](/traffic-policy/actions/restrict-ips.mdx) and [TCP](/tcp/traffic-policy/actions/restrict-ips.mdx) tunnels.
+Now that you have SSH tunneling and service ingress handled via ngrok, you may also want to protect those services from unknown and untrusted users. You'll use the Traffic Policy module and the Restrict IPs action, which works with both [HTTPS](/traffic-policy/actions/restrict-ips/) and [TCP](/tcp/traffic-policy/actions/restrict-ips/) tunnels.
 
 1.  Create a new file on your ARM64 device, where you create ngrok tunnels, named `policy.yml`.
 
@@ -159,6 +159,6 @@ Now that you have SSH tunneling and service ingress handled via ngrok, you may a
 
 Now that you can create ngrok tunnels on your Linux ARM64 device and understand the fundamentals of managing traffic with policies, you can extend your usage to make your device—or even a fleet of them—ready for production usage.
 
-- Bring a [custom domain](/guides/other-guides/how-to-set-up-a-custom-domain.md) to ngrok to create static endpoints.
+- Bring a [custom domain](/guides/other-guides/how-to-set-up-a-custom-domain/) to ngrok to create static endpoints.
 - Learn how to write an [agent configuration file](/agent/config/v3/) to define and create multiple tunnels from a single command line.
 - Install [ngrok as a service](/agent/#background-service) to start after your ARM64 device boots and automatically restart after crashes.
