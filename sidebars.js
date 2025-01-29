@@ -63,19 +63,26 @@ const sidebars = {
 							label: "Overview",
 						},
 						{
-							id: "universal-gateway/agent-endpoints",
-							type: "doc",
-							label: "Agent Endpoints",
-						},
-						{
-							id: "universal-gateway/cloud-endpoints",
-							type: "doc",
-							label: "Cloud Endpoints",
+							label: "Types",
+							type: "category",
+							link: { type: "doc", id: "universal-gateway/types" },
+							items: [
+								{
+									id: "universal-gateway/agent-endpoints",
+									type: "doc",
+									label: "Agent Endpoints",
+								},
+								{
+									id: "universal-gateway/cloud-endpoints",
+									type: "doc",
+									label: "Cloud Endpoints",
+								},
+							],
 						},
 						{
 							label: "Protocols",
 							type: "category",
-							link: { type: "doc", id: "universal-gateway/http" },
+							link: { type: "doc", id: "universal-gateway/protocols" },
 							items: [
 								{
 									id: "universal-gateway/http",
