@@ -65,7 +65,7 @@ function DocsCodeBlock({
 	const mode = _mode || meta.mode;
 	const hasHeader = title || mode || _icon;
 
-	const collapsible = children.split("\n").length > 20 || meta.collapsible;
+	const collapsible = meta.collapsible && children.split("\n").length > 20;
 
 	return (
 		<CodeBlock className={className} {...props}>
