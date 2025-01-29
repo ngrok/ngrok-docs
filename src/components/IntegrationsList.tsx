@@ -1,4 +1,3 @@
-import React from "react";
 import { useIntegrations } from "./integrations/use-integrations";
 import NgrokCard from "./NgrokCard";
 
