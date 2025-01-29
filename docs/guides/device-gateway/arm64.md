@@ -52,7 +52,7 @@ To follow this guide, you need:
 
 ## Step 2: Enable SSH access
 
-If you want to perform remote administration on your ARM64 device using a reserved TCP address and an encrypted tunnel, instead of relying on IP addresses, you can create a [TCP tunnel](/tcp/index.mdx) at port `22` on your ARM64 device.
+If you want to perform remote administration on your ARM64 device using a reserved TCP address and an encrypted tunnel, instead of relying on IP addresses, you can create a [TCP tunnel](/tcp//) at port `22` on your ARM64 device.
 
 1. Start the TCP tunnel with `ngrok`.
 
@@ -84,7 +84,7 @@ If you want to perform remote administration on your ARM64 device using a reserv
 
 ## Step 3: Enable ingress to a service on your ARM64-based Linux device
 
-Separately from SSH access, you can also use ngrok to create an [HTTP tunnel](/http/index.mdx) to route traffic to specific applications or services running on your ARM64 device's `localhost` network.
+Separately from SSH access, you can also use ngrok to create an [HTTP tunnel](/http//) to route traffic to specific applications or services running on your ARM64 device's `localhost` network.
 
 :::note
 If you already established a TCP tunnel for SSH access, you'll either need to create a second tunnel for the HTTP tunnel, or use the [agent configuration file](/agent/config/v3/) to define multiple tunnels.
@@ -112,7 +112,7 @@ If you already established a TCP tunnel for SSH access, you'll either need to cr
 
 ## Step 4: Add a Traffic Policy to restrict IPs
 
-Now that you have SSH tunneling and service ingress handled via ngrok, you may also want to protect those services from unknown and untrusted users. You'll use the Traffic Policy module and the Restrict IPs action, which works with both [HTTPS](/http/traffic-policy/actions/restrict-ips.mdx) and [TCP](/tcp/traffic-policy/actions/restrict-ips.mdx) tunnels.
+Now that you have SSH tunneling and service ingress handled via ngrok, you may also want to protect those services from unknown and untrusted users. You'll use the Traffic Policy module and the Restrict IPs action, which works with both [HTTPS](/traffic-policy/actions/restrict-ips.mdx) and [TCP](/tcp/traffic-policy/actions/restrict-ips.mdx) tunnels.
 
 1.  Create a new file on your ARM64 device, where you create ngrok tunnels, named `policy.yml`.
 
@@ -161,4 +161,4 @@ Now that you can create ngrok tunnels on your Linux ARM64 device and understand 
 
 - Bring a [custom domain](/guides/other-guides/how-to-set-up-a-custom-domain.md) to ngrok to create static endpoints.
 - Learn how to write an [agent configuration file](/agent/config/v3/) to define and create multiple tunnels from a single command line.
-- Install [ngrok as a service](/agent/index.mdx#background-service) to start after your ARM64 device boots and automatically restart after crashes.
+- Install [ngrok as a service](/agent/#background-service) to start after your ARM64 device boots and automatically restart after crashes.
