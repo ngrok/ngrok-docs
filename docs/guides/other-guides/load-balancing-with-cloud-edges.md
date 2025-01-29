@@ -8,7 +8,7 @@ This guide will walk you through the process of configuring load balancing on yo
 
 ### Setting up an HTTPS Edge
 
-Once you have your [ngrok account](https://dashboard.ngrok.com), open up the ngrok dashboard and navigate to the [Cloud Edges page](https://dashboard.ngrok.comedges/). Click the "+ New Edge" button and select an HTTPS Edge. Doing this will create everything you need to start load balancing traffic to your upstream service. You now have a new HTTPS edge for serving web traffic, a public URL for accessing that traffic, and a default failover backend.
+Once you have your [ngrok account](https://dashboard.ngrok.com), open up the ngrok dashboard and navigate to the [Cloud Edges page](https://dashboard.ngrok.com/edges/). Click the "+ New Edge" button and select an HTTPS Edge. Doing this will create everything you need to start load balancing traffic to your upstream service. You now have a new HTTPS edge for serving web traffic, a public URL for accessing that traffic, and a default failover backend.
 
 [Backends](/universal-gateway/edges/#backends) tell an edge how to handle traffic that is sent to its endpoints. A failover backend allows you to specify an ordered list of other backends to try. The default failover backend for this edge includes a tunnel group backend and a static 404 page to failover to. A tunnel group backend is what will provide the load balancing of requests across multiple ngrok agents.
 
@@ -40,5 +40,5 @@ That's all there is to it. You now have multiple ngrok agents load balancing tra
 
 - [HTTPS Edges](/http/#edges)
 - [HTTPS Edge Routes](/http/#routes)
-- [HTTPS Edge Modules](/http/#modules)
+- [HTTPS Edge Modules](/traffic-policy/actions/)
 - [Securing your ngrok Tunnels](/guides/other-guides/securing-your-tunnels)

@@ -55,10 +55,10 @@ const sidebars = {
 				{
 					label: "Endpoints",
 					type: "category",
-					link: { type: "doc", id: "universal-gateway/endpoints-overview" },
+					link: { type: "doc", id: "universal-gateway/endpoints" },
 					items: [
 						{
-							id: "universal-gateway/endpoints-overview",
+							id: "universal-gateway/endpoints",
 							type: "doc",
 							label: "Overview",
 						},
@@ -220,8 +220,8 @@ const sidebars = {
 				{
 					label: "Resources",
 					type: "category",
-					link: { type: "doc", id: "traffic-policy/resources/identities" },
-					items: ["traffic-policy/resources/identities"],
+					link: { type: "doc", id: "traffic-policy/identities" },
+					items: ["traffic-policy/identities"],
 				},
 				{
 					label: "Examples",
@@ -263,7 +263,7 @@ const sidebars = {
 						"agent/api",
 						"agent/ssh-reverse-tunnel-agent",
 						"agent/ingress",
-						"tls/termination/agent-tls-termination",
+						"agent/agent-tls-termination",
 						"agent/changelog",
 						"agent/version-support-policy",
 						"agent/diagnose",

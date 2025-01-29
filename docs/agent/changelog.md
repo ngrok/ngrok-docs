@@ -156,7 +156,7 @@ title: Changelog
 
 ### ngrok Agent 3.3.5 - \[2023-09-26\]
 
-- Added support for the [User Agent Filter module](/http/user-agent-filter/) that allows or denies traffic to HTTPS endpoints based on incoming user agents.
+- Added support for the User Agent Filter module (now deprecated by traffic policy) that allows or denies traffic to HTTPS endpoints based on incoming user agents.
 - Added `--ua-filter-allow` and `--ua-filter-deny` flags that accept a list of regular expression strings
 
 ### ngrok Agent 3.3.4 - \[2023-08-18\]
@@ -248,7 +248,7 @@ title: Changelog
 
 ### ngrok Agent 3.0.0 - \[2022-03-28\]
 
-For more information about upgrading from previous versions of the agent to v3.0, see our [upgrade guide](/guides/other-guides/upgrade-v2-v3.mdx).
+For more information about upgrading from previous versions of the agent to v3.0, see our [upgrade guide](/guides/other-guides/upgrade-v2-v3/).
 
 - Fixed an issue where an agent would not reconnect after removing a reserved domain from your account.
 - Added `ngrok completion` to enable autocomplete for the cli.

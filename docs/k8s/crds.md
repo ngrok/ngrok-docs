@@ -34,7 +34,7 @@ _**Warning:**_ There are other CRDs not documented here that are used internally
 | `apiVersion` | string          | API version of the `NgrokTrafficPolicy`           |
 | `kind`       | string          | Kind of the custom resource definition            |
 | `metadata`   | ObjectMeta      | Standard Kubernetes metadata                      |
-| `policy`     | json.RawMessage | See [policy configuration](/http/traffic-policy/) |
+| `policy`     | json.RawMessage | See [policy configuration](/traffic-policy/) |
 
 ### EndpointCompression
 

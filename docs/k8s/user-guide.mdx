@@ -8,7 +8,7 @@ import TrafficPolicyWarning from "/shared/warnings/traffic-policy-preview.mdx";
 
 The guide contains information on how to use the ngrok Kubernetes Operator. This is the place to start if you have the operator installed and want to use it to add ingress, gateways, routes, and other ngrok features to your clusters' apps and services.
 
-Start by reading the [ingress-to-edge-relationship](/k8s/with-edges.mdx) documentation to understand how ingress, gateway, and route objects are converted into ngrok edges.
+Start by reading the [ingress-to-edge-relationship](/k8s/with-edges/) documentation to understand how ingress, gateway, and route objects are converted into ngrok edges.
 
 For see or contribute a specific example, file a PR in the [examples section of our repo see](https://github.com/ngrok/ngrok-operator/blob/main/docs/examples/README.md).
 
@@ -24,12 +24,12 @@ Additionally, [TLS Edges](/api/resources/edges-tls) may be supported soon in the
 `IPPolicy` modules are currently only supported with the Operator.
 :::
 
-ngrok offers the ability to restrict access to your edges by IP address via [IP Restrictions](/http/ip-restrictions/).
+ngrok offers the ability to restrict access to your edges by IP address via [IP Restrictions](/traffic-policy/actions/restrict-ips/).
 These are configurable via the [IPPolicy](/k8s/crds#ip-policies) CRD and can be attached to Ingress objects via [NgrokModuleSet](#modules).
 
 # Modules {#modules}
 
-ngrok's Cloud Edge [Modules](/http/#modules) allow you to configure features like compression, IP Restrictions, OAuth, adding/removing headers, and more.
+ngrok's Cloud Edge [Modules](/traffic-policy/actions/) allow you to configure features like compression, IP Restrictions, OAuth, adding/removing headers, and more.
 
 :::note
 These modules are currently only supported with the ingress controller. The Gateway API supports some of these capabilities using route rules
@@ -126,7 +126,7 @@ using pre-made configurations.
 
 ### Circuit Breaker
 
-[Circuit breakers](/http/circuit-breaker/) are used to protect upstream servers by rejecting traffic to them when they become overwhelmed.
+[Circuit breakers](/traffic-policy/actions/circuit-breaker/) are used to protect upstream servers by rejecting traffic to them when they become overwhelmed.
 
 ```yaml
 kind: NgrokModuleSet
@@ -174,7 +174,7 @@ modules:
 
 #### Request
 
-The [Request Headers](/http/request-headers/) module allows you to add and remove headers from HTTP requests before they are sent to your upstream server.
+The [Request Headers](/traffic-policy/actions/add-headers/) module allows you to add and remove headers from HTTP requests before they are sent to your upstream server.
 
 ```yaml
 kind: NgrokModuleSet
@@ -193,7 +193,7 @@ modules:
 
 #### Response
 
-The [Response Headers module](/http/response-headers/) allows you to add and remove headers from HTTP responses before they are returned to the client.
+The [Response Headers module](/traffic-policy/actions/add-headers/) allows you to add and remove headers from HTTP responses before they are returned to the client.
 
 ```yaml
 kind: NgrokModuleSet
@@ -212,7 +212,7 @@ modules:
 
 ### IP Restrictions
 
-[IP Restrictions](/http/ip-restrictions/) allow you to attach one or more IP policies to the route.
+[IP Restrictions](/traffic-policy/actions/restrict-ips/) allow you to attach one or more IP policies to the route.
 
 Policies may be specified by either their `ID` in the ngrok API or by the name of an `ippolicy.ingress.k8s.ngrok.com` Custom Resource if managed by the ingress controller.
 
@@ -244,7 +244,7 @@ modules:
 
 ### OAuth
 
-The [OAuth module](/http/oauth/) enforces an OAuth authentication flow in front of any route it is enabled on.
+The [OAuth module](/traffic-policy/actions/oauth/) enforces an OAuth authentication flow in front of any route it is enabled on.
 
 #### Ngrok Managed OAuth Application
 
@@ -305,7 +305,7 @@ modules:
 
 ### OpenID Connect (OIDC)
 
-The [OIDC module](/http/openid-connect/) restricts endpoint access to only users authorized by a OpenID Identity Provider.
+The [OIDC module](/traffic-policy/actions/oidc/) restricts endpoint access to only users authorized by a OpenID Identity Provider.
 
 ```yaml
 ---
@@ -336,10 +336,6 @@ modules:
       - email
 ```
 
-### SAML
-
-The [SAML module](/http/saml/) restricts endpoint access to only users authorized by a SAML IdP.
-
 ### TLS Termination
 
 Allows you to configure whether ngrok terminates TLS traffic at its edge or forwards the TLS traffic through unterminated.
@@ -356,7 +352,7 @@ modules:
 
 ### Mutual TLS
 
-This [mutual TLS (mTLS) module](/http/mutual-tls/) performs authentication when the ngrok edge terminates TLS on incoming connections to your HTTP endpoint. The client must present a valid TLS certificate that is signed by one of the specified CAs or the connection will be rejected.
+This [mutual TLS (mTLS) module](/traffic-policy/actions/terminate-tls/) performs authentication when the ngrok edge terminates TLS on incoming connections to your HTTP endpoint. The client must present a valid TLS certificate that is signed by one of the specified CAs or the connection will be rejected.
 
 ```yaml
 kind: NgrokModuleSet
@@ -372,7 +368,7 @@ modules:
 
 ### Webhook Verification
 
-The [webhook verification module](/http/webhook-verification/) allows ngrok to assert requests to your endpoint originate from a supported webhook provider like Slack or Github.
+The [webhook verification module](/traffic-policy/actions/verify-webhook/) allows ngrok to assert requests to your endpoint originate from a supported webhook provider like Slack or Github.
 
 ```yaml
 ---
@@ -516,8 +512,8 @@ spec:
 
 Learn more about the policy expressions and actions here:
 
-- [Policy Expressions](/http/traffic-policy/expressions/)
-- [Policy Actions](/http/traffic-policy/actions/)
+- [Policy Expressions](/traffic-policy/concepts/expressions/)
+- [Policy Actions](/traffic-policy/actions/)
 
 ### Ingress Composition
 
@@ -626,7 +622,7 @@ While these edges and tunnels can be managed via the CRDs, the operator is capab
 
 ### TCP LoadBalancer
 
-By default, services of type `LoadBalancer` are exposed using a ngrok [TCP Edge](/universal-gateway/tcp/#edges). A reserved address is automatically created for the service and the service's status will be updated with the reserved address. Other projects like [external-dns](https://github.com/ngrok/ngrok-operator/docs/examples/external-dns/README.md) can be used to create a CNAME record for the reserved address automatically.
+By default, services of type `LoadBalancer` are exposed using a ngrok [TCP Edge](/universal-gateway/edges/). A reserved address is automatically created for the service and the service's status will be updated with the reserved address. Other projects like [external-dns](https://github.com/ngrok/ngrok-operator/docs/examples/external-dns/README.md) can be used to create a CNAME record for the reserved address automatically.
 
 #### Example
 
@@ -655,7 +651,7 @@ spec:
 The `k8s.ngrok.com/modules` annotation can be used to specify the ngrok modules to use for the service. The following modules are available for TCP
 services:
 
-- [IP Restrictions](./#ip-restrictions)
+- [IP Restrictions](#ip-restrictions)
 
 If other modules are supplied that are not supported by the TCP edge, the controller will ignore them.
 
@@ -693,7 +689,7 @@ spec:
 The `k8s.ngrok.com/modules` annotation can be used to specify the ngrok modules to use for the service. The following modules are available for TLS
 services:
 
-- [IP Restrictions](./#ip-restrictions)
+- [IP Restrictions](#ip-restrictions)
 - [Mutual TLS](./#mutual-tls)
 
 If other modules are supplied that are not supported by the TLS edge, the controller will ignore them.
@@ -725,7 +721,7 @@ Create the edge CRD. These resources are fairly similar, and both require you to
 specify a [TunnelGroupBackend](/k8s/crds#tunnelgroupbackend). This consists of a
 list of labels that determine which specific [Tunnel](/k8s/crds#tunnels) should
 receive traffic from the edge. Both may also specify [IP
-Policies](/traffic-policy/actions/ip-restrictions/) for limiting access
+Policies](/traffic-policy/actions/restrict-ips/) for limiting access
 to the edge. At the time of writing, these policies must be provided as a
 reference in the form `ipp_<id>`.
 
