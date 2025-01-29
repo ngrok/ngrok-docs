@@ -38,7 +38,7 @@ On each of the machines that are running your upstream service, you should start
 
 That's all there is to it. You now have multiple ngrok agents load balancing traffic to your upstream service. Now that you have an HTTPS edge configured, check out these next steps:
 
-- [HTTPS Edges](/http/#edges)
-- [HTTPS Edge Routes](/http/#routes)
-- [HTTPS Edge Modules](/traffic-policy/actions/)
+- [Edges](/universal-gateway/edges/)
+- [Edge Routes](/universal-gateway/edges/#routes)
+- [Edge Modules](/universal-gateway/edges/#https-modules)
 - [Securing your ngrok Tunnels](/guides/other-guides/securing-your-tunnels)

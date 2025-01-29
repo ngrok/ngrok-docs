@@ -22,7 +22,7 @@ Set up a [minimum ACL per Authtoken](/agent/#authtoken-acls) to limit the endpoi
 
 For our HTTP tunnel type, use `scheme https` to configure the ngrok agent to open only a HTTPS endpoint and not a HTTP endpoint. If you are running the latest ngrok agent, this is the default.
 
-If your local service is not running on the same machine as the ngrok agent, we recommend that you set up TLS encryption for the ngrok agent to upstream service leg of the tunnel using our [local HTTPS feature](/http/#upstream-https-servers).
+If your local service is not running on the same machine as the ngrok agent, we recommend that you set up TLS encryption for the ngrok agent to upstream service leg of the tunnel using our [local HTTPS feature](/universal-gateway/http/#https-forwarding).
 
 For custom domains, use ngrok's [Automated TLS certificates](/universal-gateway/tls-certificates/#automated) to have ngrok automatically provision a TLS certificate for your endpoint from Let's Encrypt.
 
