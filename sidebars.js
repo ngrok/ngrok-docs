@@ -247,6 +247,26 @@ const sidebars = {
 			],
 		},
 		{
+			label: "Traffic Observability",
+			type: "category",
+			collapsible: false,
+			className: "menu__list-item--category",
+			link: { type: "doc", id: "obs/index" },
+			items: [
+				"obs/index",
+				"obs/traffic-inspection",
+				{
+					type: "category",
+					label: "Events",
+					link: { type: "doc", id: "obs/events/index" },
+					items: [
+						{ id: "obs/events/index", type: "doc", label: "Overview" },
+						"obs/events/reference",
+					],
+				},
+			],
+		},
+		{
 			label: "Secure Tunnels",
 			type: "category",
 			link: { type: "doc", id: "agent/index" },
@@ -303,27 +323,7 @@ const sidebars = {
 			],
 		},
 		{
-			label: "Traffic Observability",
-			type: "category",
-			collapsible: false,
-			className: "menu__list-item--category",
-			link: { type: "doc", id: "obs/index" },
-			items: [
-				"obs/index",
-				"obs/traffic-inspection",
-				{
-					type: "category",
-					label: "Events",
-					link: { type: "doc", id: "obs/events/index" },
-					items: [
-						{ id: "obs/events/index", type: "doc", label: "Overview" },
-						"obs/events/reference",
-					],
-				},
-			],
-		},
-		{
-			label: "IAM",
+			label: "Identity & Access",
 			type: "category",
 			collapsible: false,
 			className: "menu__list-item--category",
