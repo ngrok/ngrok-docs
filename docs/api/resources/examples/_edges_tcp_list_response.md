@@ -8,15 +8,15 @@
 	"tcp_edges": [
 		{
 			"backend": null,
-			"created_at": "2025-01-21T18:19:56Z",
+			"created_at": "2025-01-29T21:10:17Z",
 			"description": "acme tcp edge",
 			"hostports": null,
-			"id": "edgtcp_2rwwlbQCIB8W3hDgoxLLy4ArYxQ",
+			"id": "edgtcp_2sJsTEYGR37A9PC8KqigfAodTnI",
 			"ip_restriction": null,
 			"metadata": "{\"environment\": \"staging\"}",
 			"policy": null,
 			"traffic_policy": null,
-			"uri": "https://api.ngrok.com/edges/tcp/edgtcp_2rwwlbQCIB8W3hDgoxLLy4ArYxQ"
+			"uri": "https://api.ngrok.com/edges/tcp/edgtcp_2sJsTEYGR37A9PC8KqigfAodTnI"
 		}
 	],
 	"uri": "https://api.ngrok.com/edges/tcp"
