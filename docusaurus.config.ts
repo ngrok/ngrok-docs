@@ -100,8 +100,8 @@ const config = {
 					sidebarPath: require.resolve("./sidebars.js"),
 					routeBasePath: "/",
 					editUrl: `${docsRepo}/edit/main`,
-					showLastUpdateAuthor: false,
-					showLastUpdateTime: false,
+					showLastUpdateAuthor: true,
+					showLastUpdateTime: true,
 				},
 				blog: false,
 				theme: {

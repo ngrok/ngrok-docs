@@ -68,14 +68,14 @@ const sidebars = {
 							link: { type: "doc", id: "universal-gateway/types" },
 							items: [
 								{
-									id: "universal-gateway/agent-endpoints",
-									type: "doc",
-									label: "Agent Endpoints",
-								},
-								{
 									id: "universal-gateway/cloud-endpoints",
 									type: "doc",
 									label: "Cloud Endpoints",
+								},
+								{
+									id: "universal-gateway/agent-endpoints",
+									type: "doc",
+									label: "Agent Endpoints",
 								},
 							],
 						},
@@ -104,6 +104,7 @@ const sidebars = {
 						{
 							label: "Bindings",
 							type: "category",
+							link: { type: "doc", id: "universal-gateway/bindings" },
 							items: [
 								{
 									id: "universal-gateway/public-endpoints",

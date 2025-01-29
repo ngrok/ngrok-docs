@@ -27,7 +27,13 @@ Because endpoints are composable, you can configure them to handle diverse traff
 
 ## Quickstart
 
-Create your first endpoint with one of the following quickstart guides:
+Assuming you have a working web application at port 8080, you can open your app to public traffic with the following [ngrok agent CLI](/agent/) command:
+
+```bash
+ngrok http http://localhost:8080
+```
+
+For a more detailed guide to creating your first endpoint, see one of the following quickstarts:
 
 - **[Cloud Endpoints quickstart](/universal-gateway/agent-endpoints)** (Recommended) — Create a persistent, always-on endpoint hosted in the cloud that allows you to forward traffic to your internal resources.
 - **[Agent Endpoints quickstart](/universal-gateway/cloud-endpoints)** — Create an endpoint that lives on your local machine and exists only for the lifetime of the [ngrok agent](/agent/) process that started it.
@@ -37,57 +43,22 @@ Create your first endpoint with one of the following quickstart guides:
 You can configure how your endpoints handle traffic by customizing their:
 - **URL** — The address used to access your endpoint. For example: `https://app.example.com`.
 - **[Protocol](/universal-gateway/protocols)** — The type of traffic your endpoint handles. For example: `http`, `https`, `tcp`, `tls`.
-- **[Type](/universal-gateway/types)** — You can either have an [Agent endpoint]() or a [Cloud endpoint](). The type of endpoint you choose determines its lifecycle, where its configuration is defined, and how it handles connections. See [Choosing the appropriate endpoint type](/universal-gateway/types#choosing-the-appropriate-endpoint-type) for more information.
-- **[Binding](/universal-gateway/bindings)** — 
-- **[Traffic policy](/traffic-policy/)** — 
+- **[Type](/universal-gateway/types)** — You can either have a [Cloud endpoint](/universal-gateway/cloud-endpoints/) or an [Agent endpoint](/universal-gateway/agent-endpoints/). See [the endpoint types documentation](/universal-gateway/types#choosing-the-appropriate-endpoint-type) to learn how to choose a type.
+- **[Binding](/universal-gateway/bindings)** — Where the endpoint is available to traffic. For example, an `internal` endpoint is only accessible from other endpoints in your account. `public` endpoints are accessible from the internet.
+- **[Traffic policy](/traffic-policy/)** — How your endpoint filters, matches, managees and orchestrates traffic.
 
-
-## Binding
-
-Endpoints have a **binding** which is one: `public`, `internal` or
-`kubernetes`. An Endpoint's binding determines where it is available to receive
-traffic. Said another way, the binding defines where an endpoint 'listens'.
-
-- **Public Endpoints** (`public`) - Endpoints with a `public` binding have a
-  publicly addressable URL that receives traffic from the internet via the
-  ngrok cloud service's global points of presence. e.g.
-  `https://inconshreveable.ngrok.app`, `https://blog.inconshreveable.com`.
-
-- **Internal Endpoints** (`internal`) - Endpoints with an `internal` binding
-  can only receive traffic forwarded to them from other Endpoints in your ngrok
-  account via the `forward-internal`. Internal endpoints have URLs that end in
-  `.internal`. Example URLs: `https://example.internal`, `tcp://ssh.internal:22`
-
-- **Kubernetes Endpoints** (`kubernetes`) - Endpoints with a `kubernetes`
-  binding are private endpoints that are only available inside of Kubernetes
-  clusters where you installed the ngrok [Kubernetes Operator](/k8s). Example
-  URLs: `http://service.namespace`, `tcp://db.controlplane:5432`
-
-## Traffic Policy
-
-Every endpoint may specify a [Traffic Policy](/traffic-policy) to handle the
-traffic it receives with actions to route, transform, authenticate or reject
-the traffic it receives.
-
-TODO Example
-
-## Pooling
-
-[Endpoint Pooling](/universal-gateway/endpoint-pooling) allows you to create
-multiple endpoints with the same URL. Traffic sent to a URL with an Endpoint
-Pool is load balanced among the Endpoints in the pool.
-
-You may set `allow_pooling: false` on an Endpoint to disallow Endpoint Pooling
-on its URL.
+## Load balancing with Endpoint Pooling
 
 :::info Coming Soon
-
 This feature is not yet generally available. [Contact us](mailto:support@ngrok.com) to
 request access.
-
 :::
 
-## API
+[Endpoint Pooling](/universal-gateway/endpoint-pooling) allows you to create multiple endpoints with the same URL. Traffic sent to a URL with an Endpoint Pool is [load-balanced](/network-edge/gslb/) among the Endpoints in the pool.
+
+See the [Endpoint Pooling quickstart](/universal-gateway/endpoint-pooling/#quickstart) to learn more.
+
+## Managing endpoints with ngrok's APIs
 
 [Cloud Endpoints](/universal-gateway/cloud-endpoints/) are
 programatically managed via:
@@ -102,19 +73,23 @@ are programtically managed via:
 - [Agent API](/agent/api/)
 - [Kubernetes Operator](/k8s/getting-started-kic/)
 
-Agent Endpoints are also included in a read-only capacity via:
+Agent Endpoints are also accessible in a read-only capacity via:
 
 - [`/endpoints` API Resource](/api/resources/endpoints/#list-endpoints) of the [API](/api)
 
 ## Pricing
 
-Seat-based plans (Personal, Pro and Enterprise) include a fixed number of
+Paid plans (Personal, Pro and Enterprise) include a fixed number of
 endpoints that you may create based on the number of licenses you have
 purchased.
 
-On the Pay-as-you-go plan, there is no limit on the number of endpoints you
-create. An endpoint that transmits data in a billing period is counted as an
-active endpoint for billing purposes.
+On the Pay-as-you-go plan, there is no limit on the number of endpoints you can create. An endpoint that transmits data in a billing period is counted as an active endpoint for billing purposes.
 
-See [Pricing](https://ngrok.com/pricing)
-for additional details on endpoint billing and pricing.
+See [Pricing](https://ngrok.com/pricing) for more information.
+
+## Learn more about endpoints
+
+- [API](/api/resources/endpoints/) — Learn how to manage endpoints programmatically.
+- [Agent Endpoints](/universal-gateway/agent-endpoints) — Learn how to create and manage agent endpoints.
+- [Cloud Endpoints](/universal-gateway/cloud-endpoints) — Learn how to create and manage cloud endpoints.
+- [Agent CLI](/agent/cli) — Learn how to create and manage endpoints using the ngrok agent CLI.
