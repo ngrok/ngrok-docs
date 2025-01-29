@@ -8,22 +8,31 @@ import Tabs from "@theme/Tabs";
 
 # Deploy a multi-cloud API gateway
 
-You've developed a world-class API, and now you want to make it available online on not just one cloud provider, but two or more.
+You've developed a world-class API, and now you want to make it available online
+on not just one cloud provider, but two or more.
 
 Aside from the challenges involved in any multi-cloud deployment, you're looking
 for a multi-cloud API gateway that allows you to consistently apply security and
 traffic management policy in one place, provide a single pane of glass for
-observability, fail-over automatically, and work identically in every cloud or environment.
+observability, fail-over automatically, and work identically in every cloud or
+environment.
 
 In this guide, you'll learn how to implement ngrok as a multi-cloud API gateway
 with these broad steps:
 
-1. Set up the common pattern of cloud and internal agent endpoints, which uses a single cloud endpoint to accept all API traffic and route it to internal agent endpoints via the [`forward-internal` Trafic Policy action](/docs/traffic-policy/actions/forward-internal.mdx).
-2. Use endpoint pooling to enable dead-simple load balancing between your API services.
-3. Apply Traffic Policy rules to your endpoints to manage traffic according to common API gateway use cases.
+1. Set up the common pattern of cloud and internal agent endpoints, which uses a
+single cloud endpoint to accept all API traffic and route it to internal agent
+endpoints via the [`forward-internal` Trafic Policy
+action](/docs/traffic-policy/actions/forward-internal.mdx).
+2. Use endpoint pooling to enable dead-simple load balancing between your API
+services.
+3. Apply Traffic Policy rules to your endpoints to manage traffic
+according to common API gateway use cases.
 
 :::info
-This guide uses endpoint pools, which are not yet generally available. To use them, you must [request access to the developer preview](https://dashboard.ngrok.com/developer-preview).
+This guide uses endpoint pools, which are not yet generally available. To use
+them, you must [request access to the developer
+preview](https://dashboard.ngrok.com/developer-preview). 
 :::
 
 ## What you'll need
@@ -36,8 +45,9 @@ This guide uses endpoint pools, which are not yet generally available. To use th
   the ngrok dashboard or using the [ngrok
   API](/docs/api/resources/reserved-domains/#create-reserved-domain). You can
   choose from an ngrok subdomain or bring your own [custom branded
-  domain](/docs/guides/other-guides/how-to-set-up-a-custom-domain.mdx), like `https://api.example.com`. We'll
-  refer to this domain as `{YOUR_NGROK_DOMAIN}` throughout the guide.
+	domain](/docs/guides/other-guides/how-to-set-up-a-custom-domain.mdx), like
+	`https://api.example.com`. We'll refer to this domain as `{YOUR_NGROK_DOMAIN}`
+	throughout the guide.
 - **The ngrok agent**: [Download](https://download.ngrok.com) the appropriate
   version and install it on the same machine or network as the API service you
   want to make available via ngrok's API gateway.
@@ -47,15 +57,20 @@ This guide uses endpoint pools, which are not yet generally available. To use th
 
 ## Deploy a demo API service (optional)
 
-If you don't yet have API services you'd like to bring online with a multi-cloud API gateway, or just want to quickly wire up a POC using ngrok, we recommend running multiple "replicas" of [httpbin](https://httpbin.org/), which is simple HTTP request and response service.
+If you don't yet have API services you'd like to bring online with a multi-cloud
+API gateway, or just want to quickly wire up a POC using ngrok, we recommend
+running multiple "replicas" of [httpbin](https://httpbin.org/), which is simple
+HTTP request and response service.
 
-Assuming you have Docker installed on the systems where your API services run, you can deploy an httpbin container listening on port `8080`.
+Assuming you have Docker installed on the systems where your API services run,
+you can deploy an httpbin container listening on port `8080`.
 
 ```shell
 docker run -p 8080:80 -d kennethreitz/httpbin
 ```
 
-Repeat this process on your other cloud providers where you want to run replicas of your API service.
+Repeat this process on your other cloud providers where you want to run replicas
+of your API service.
 
 ## Bring your multi-cloud API gateway online
 
@@ -72,17 +87,13 @@ In one cloud, create an internal agent endpoint on an internal URL, like
 yourself.
 
 ```
-ngrok http 8080 --url https://api.internal
+ngrok http 8080 --url https://api.internal --pooling-enabled=true
 ```
 
-Repeat the process for additional replicas of your API service in other clouds.
+Run the same command on other clouds for each replica of your API service.
 
-```
-ngrok http 8080 --url https://api.internal
-```
-
-These two internal agent endpoints are now in a single endpoint pool, and
-traffic is automatically load balanced between them.
+These internal agent endpoints are now in a single endpoint pool with traffic
+automatically load balanced between them.
 
 ### Create a Traffic Policy file to forward traffic
 
@@ -108,44 +119,49 @@ You'll use this Traffic Policy file in the next step.
 
 ### Create a cloud endpoint for your API
 
-Cloud endpoints are persistent, always-on endpoints that you can manage with the ngrok dashboard or API.
+Cloud endpoints are persistent, always-on endpoints that you can manage with the
+ngrok dashboard or API.
 
-You centrally control your traffic management and security policy on this cloud endpoint, then forward traffic to your endpoint pool, rather than trying to apply policy separately for each replica and cloud.
+You centrally control your traffic management and security policy on this cloud
+endpoint, then forward traffic to your endpoint pool, rather than trying to
+apply policy separately for each replica and cloud.
 
 <Tabs>
 	<TabItem value="Dashboard">
 
-    	First, log into the [ngrok dashboard](https://dashboard.ngrok.com). Click **Endpoints &rarr; + New**.
+		First, log into the [ngrok dashboard](https://dashboard.ngrok.com). Click **Endpoints &rarr; + New**.
 
-    	Leave the **Binding** value **Public**, then enter the domain name you reserved earlier. Click **Create Cloud Endpoint**.
+		Leave the **Binding** value **Public**, then enter the domain name you reserved earlier. Click **Create Cloud Endpoint**.
 
-    	With your cloud endpoint created, you'll see a default Traffic Policy in the dashboard. Open up your `multi-cloud-policy.yaml` file, copy its contents, and paste them into the editor. Click **Save** to apply your changes.
+		With your cloud endpoint created, you'll see a default Traffic Policy in the dashboard. Open up your `multi-cloud-policy.yaml` file, copy its contents, and paste them into the editor. Click **Save** to apply your changes.
 
-    </TabItem>
-    <TabItem value="API">
+	</TabItem>
+	<TabItem value="API">
 
-    	The `ngrok` CLI provides a helpful wrapper around the [ngrok API](/docs/api/index.mdx) to simplify its usage.
+		The `ngrok` CLI provides a helpful wrapper around the [ngrok API](/docs/api/index.mdx) to simplify its usage.
 
-    	Create a cloud endpoint on `{YOUR_NGROK_DOMAIN}`, passing your `multi-cloud-policy.yaml` file as an option.
+		Create a cloud endpoint on `{YOUR_NGROK_DOMAIN}`, passing your `multi-cloud-policy.yaml` file as an option.
 
-    	```shell
-    	ngrok api endpoints create \
-      --bindings public \
-      --url https://{YOUR_NGROK_DOMAIN}
-        --traffic-policy "$(cat multi-cloud-policy.yaml)"
-    	```
+		```shell
+		ngrok api endpoints create \
+		--bindings public \
+		--url https://{YOUR_NGROK_DOMAIN}
+			--traffic-policy "$(cat multi-cloud-policy.yaml)"
+		```
 
-    	You'll get a `201` response—save the value of `id`, as you'll need it again later to continue configuring the Traffic Policy applied to your cloud endpoint.
+		You'll get a `201` response—save the value of `id`, as you'll need it again later to continue configuring the Traffic Policy applied to your cloud endpoint.
 
-    </TabItem>
-
+	</TabItem>
 </Tabs>
 
 ### Access your API services
 
-At this point, you have a front door to your multi-cloud API gateway with a cloud endpoint, which in turn forwards traffic to your endpoint pool for automatic load balancing between clouds.
+At this point, you have a front door to your multi-cloud API gateway with a
+cloud endpoint, which in turn forwards traffic to your endpoint pool for
+automatic load balancing between clouds.
 
-If you're running httpbin as a demo API service, send a query to the `/get` route—if you've brought your own service, change the route accordingly.
+If you're running httpbin as a demo API service, send a query to the `/get`
+route—if you've brought your own service, change the route accordingly.
 
 ```bash
 curl -X GET https://{YOUR_NGROK_DOMAIN}/get
@@ -157,21 +173,103 @@ With httpbin, you'll see a response like:
 TK
 ```
 
-## Manage multi-cloud API traffic with Traffic Policy rules
+## Manage multi-cloud API traffic with composable Traffic Policy rules
+
+At this point, you have a functional multi-cloud API gateway with ngrok.
+Requests to `{YOUR_NGROK_DOMAIN}` are forwarded to your pool of internal agent
+endpoints and load balanced between them, plus automatic failover if one of your
+replicas—or entire clouds—goes offline for any reason.
+
+You can now start to take full advantage of Traffic Policy, our configuration
+language for managing traffic. You can attach Traffic Policy rules to both your
+cloud and agent endpoints, allowing you to compose some rules across all your
+APIs and others to individual upstream services or replicas.
+
+### Add a rate limiting policy to all APIs
+
+We recommend you add a rate limiting policy on your cloud endpoint to protect
+all your services from unintentional misuse and malicious attacks.
+
+When you apply the policy to your cloud endpoint, ngrok applies it to all API
+services equally.
+
+Edit the `multi-cloud-policy.yaml` file you created earlier to prepend a
+[`rate-limit` Traffic Policy
+action](/docs/traffic-policy/actions/rate-limit.mdx). This rule sets a low
+capacity, only allowing for 10 requests per IP per minute, to help you see how
+it works.
 
 TK
 
-### Add security policy across your multi-cloud API gateway
+```yaml title="multi-cloud-policy.yaml" mode=traffic-policy
+---
+on_http_request:
+  - actions: 
+      - type: rate-limit
+				config:
+					name: Only allow 10 requests per minute
+					algorithm: sliding_window
+					capacity: 10
+					rate: 60s
+					bucket_key:
+						- conn.client_ip
+  - actions:
+      - type: forward-internal
+        config:
+          url: https://api.internal
+          binding: internal
+```
 
-TK
-
-### Add rate limiting for all API services
+### Add a security policy to all APIs
 
 TK
 
 ### Compose policies on specific API services
 
-TK
+In certain cases, you'll want to apply Traffic Policy rules to just one API
+service—in those cases, you should update your internal agent endpoint with a
+Traffic Policy file.
+
+For example, one API service is running on a machine with less system resources,
+making it more suseptible to errors during peak load. You can implement the
+[`circuit-breaker` Traffic Policy
+action](/docs/traffic-policy/actions/circuit-breaker.mdx) on just the internal
+agent endpoint that forwards traffic to that service for additional protection.
+
+Create a new Traffic Policy file named `circuit-breaker.yaml` on the system
+where this internal agent endpoint runs. To help you see how it works, the
+following `circuit-breaker` rule sets an intentionally low volume threshold that
+allows `10` requests in a `60s` window before tripping the circuit breaker for
+`2m`.
+
+```yaml title="circuit-breaker.yaml" mode=traffic-policy
+---
+on_http_request:
+  - actions:
+      - type: circuit-breaker
+        config:
+          error_threshold: 0
+          volume_threshold: 10
+          window_duration: 60s
+          tripped_duration: 2m
+          enforce: true
+```
+
+Restart the ngrok agent on the same internal URL and with endpoint pooling still
+enabled, but also specifying your new Traffic Policy file.
+
+```
+ngrok http 8080 --url https://api.internal --pooling-enabled=true --traffic-policy-file=circuit-breaker.yaml
+```
+
+You can test this behavior out by sending multiple `curl` requests to your APIs
+
+In a production setting, you should tweak the circuit breaker's threshold and
+durations to match the resilience of your API services and the volume of
+requests you regularly receive. If your API service starts to fail, the ngrok
+will trip the circuit breaker and automatically route all subsequent requests to
+other internal agent endpoints in the same pool—even if they're in different
+clouds.
 
 ## Define custom load balancing strategies with endpoint pools
 
@@ -179,7 +277,8 @@ TK
 
 ## Extend your multi-cloud API gateway with additional services
 
-So far, you've deployed multiple replicas of a single API service and added automatic load balancing with an endpoint pool.
+So far, you've deployed multiple replicas of a single API service and added
+automatic load balancing with an endpoint pool.
 
 What if you have more than one API service you'd like to make available behind a
 multi-cloud API gateway? You'll need to add additional `forward-internal`
