@@ -34,7 +34,7 @@ If your organization uses a custom ingress domain, your default ngrok configurat
 
 ### TLS termination
 
-TLS Encryption is terminated at different locations depending on the ngrok Tunnel / Edge type and configuration. See the documentation on [Terminating TLS Connections](/network-edge#tls-termination) for more details.
+TLS Encryption is terminated at different locations depending on the ngrok Tunnel / Edge type and configuration. See the documentation on [Terminating TLS Connections](/universal-gateway/tls-termination/) for more details.
 
 ### Minimum TLS version
 

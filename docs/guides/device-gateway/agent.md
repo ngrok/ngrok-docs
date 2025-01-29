@@ -16,7 +16,7 @@ This example shows you how to securely run the ngrok agent to access
 to an API running on an IoT device. The connection will be end-to-end encrypted using mutual TLS (mTLS).
 
 For a deeper understanding for how mTLS is implemented within ngrok, reference the [Mutual TLS module
-page](/http/mutual-tls/).
+page](/traffic-policy/actions/terminate-tls/).
 
 ## **Prerequisites**
 

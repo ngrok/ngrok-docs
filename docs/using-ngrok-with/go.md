@@ -14,4 +14,4 @@ packaged as a Go library.
 - [Quickstart Guide](/getting-started/go/)
 - [API Reference Documentation](https://pkg.go.dev/golang.ngrok.com/ngrok)
 - [Open-Source GitHub Repository](http://github.com/ngrok/ngrok-go)
-- [HTTP Examples](/http/?cty=go-sdk)
+- [HTTP Examples](/universal-gateway/http/?cty=go-sdk)

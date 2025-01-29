@@ -156,7 +156,7 @@ title: Changelog
 
 ### ngrok Agent 3.3.5 - \[2023-09-26\]
 
-- Added support for the [User Agent Filter module](/http/user-agent-filter/) that allows or denies traffic to HTTPS endpoints based on incoming user agents.
+- Added support for the User Agent Filter module (now deprecated by traffic policy) that allows or denies traffic to HTTPS endpoints based on incoming user agents.
 - Added `--ua-filter-allow` and `--ua-filter-deny` flags that accept a list of regular expression strings
 
 ### ngrok Agent 3.3.4 - \[2023-08-18\]

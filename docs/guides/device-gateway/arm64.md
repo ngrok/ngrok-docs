@@ -112,7 +112,7 @@ If you already established a TCP tunnel for SSH access, you'll either need to cr
 
 ## Step 4: Add a Traffic Policy to restrict IPs
 
-Now that you have SSH tunneling and service ingress handled via ngrok, you may also want to protect those services from unknown and untrusted users. You'll use the Traffic Policy module and the Restrict IPs action, which works with both [HTTPS](/traffic-policy/actions/restrict-ips/) and [TCP](/tcp/traffic-policy/actions/restrict-ips/) tunnels.
+Now that you have SSH tunneling and service ingress handled via ngrok, you may also want to protect those services from unknown and untrusted users. You'll use the [Restrict IPs](/traffic-policy/actions/restrict-ips) traffic policy action.
 
 1.  Create a new file on your ARM64 device, where you create ngrok tunnels, named `policy.yml`.
 
