@@ -3,48 +3,71 @@ sidebar_position: 0
 title: Endpoints
 ---
 
-An ngrok endpoint is a URL that enables network traffic to reach your services. You can use endpoints to allow traffic to:
+import TypesComparison from "@site/shared/types-comparison.mdx";
 
-- Integrate with third-party APIs.
-- Communicate with devices.
-- Access internal services.
-- Deliver static responses.
-- Access any other destination you require.
+An **ngrok Endpoint** is a URL that enables network traffic to reach your services.
 
-Endpoints are at the center of everything in ngrok; they're how you receive, route, transform, and forward traffic. They're also the primary way you put your apps and APIs online, whether those apps live on your local machine, private networks, or in the cloud.
+You can think of endpoints as a gateway to anything you want to enable access for—whether that's a local development server on your laptop, a production Kubernetes cluster, a database behind a corporate firewall, or a cloud API. Endpoints bridge the gap between your resources and the traffic that needs to reach them.
 
-## Use cases
+## Why endpoints matter
 
-You can use endpoints to control:
+Endpoints are ngrok's universal gateways, letting you:
 
-- **Where traffic originates from:** You can make a public, internal, or cloud endpoint by setting your endpoint's binding.
-- **What protocol is used to handle traffic:** When specifying your endpoint's URL, you also specify its protocol, which can be HTTP/HTTPS, TCP, or TLS.
-- **How requests are processed:** Transformations, business logic, load balancing, routing rules.
-- **Where requests go:** A local server, cloud-based infrastructure, Kubernetes service, or any other destination.
+- **Go live instantly**: Enable access to local prototypes, internal tools or [Kubernetes](/k8s/) services in seconds.
+- **Talk to anything**: APIs, Kubernetes clusters, game servers, third-party tools, IoT devices, legacy apps—endpoints support them all.
+- **Secure access**: Effortlessly lock down access with encryption, authentication, or IP restrictions to whatever you need without code changes.
+- **Observability:** Instantly gain insights into how traffic is flowing through endpoints with our Traffic Inspector and Event Logging.
+- **Simplify your stack**: Reduce infrastructure sprawl by chaining endpoints and embedding logic directly into traffic flow—rate limiting, mock responses, or security policies, executed at the edge with no code required.
 
-Because endpoints are composable, you can configure them to handle diverse traffic flows, such as routing certain paths to different backends, applying security or authentication steps, or chaining multiple endpoints together (e.g., a public cloud endpoint forwarding traffic to an internal agent endpoint).
+## How endpoints work
+
+Endpoints enable traffic flow and management through three core features:
+
+- **URL:** The entry point for traffic to reach your services. This could be any URL, such as `https://your-app.ngrok.io` or `tcp://your-api.internal`.
+- **[Binding](#control-access-with-bindings):** The source or origin of incoming traffic. 
+- **[Traffic Policy](/traffic-policy/):** Configuration to manage, manipulate and secure traffic.
+
+### Control Access with Bindings
+
+An endpoint's [binding](/universal-gateway/bindings) defines *where traffic originates*:
+
+- **Public:** Accepts traffic from the open internet (e.g. `https://your-app.ngrok.io`).
+- **Internal:** Restricted to accept traffic only through the [`forward-internal` Traffic Policy action](/traffic-policy/actions/forward-internal/) (e.g. `http://your-api.internal`).
+- **[Kubernetes](/k8s/):** Restricted to accept traffic only from Kubernetes clusters using the ngrok Kubernetes Operator.
+
+### Set Protocol via URL Scheme
+
+You can specify your endpoint's URL protocol to indicate the type of traffic it should handle. This allows you to configure your endpoint to match your services and application type:
+
+- `HTTP/HTTPS`: Best for Webhooks, APIs, apps
+- `TCP`: Best for raw streams (SSH, gaming, IoT)
+- `TLS`: Best for custom encrypted workloads
+
+### Manage, manipulate and secure traffic through policies
+
+Add business logic and route traffic during the request lifecycle with [Traffic Policy](/traffic-policy/):
+
+- **Route traffic by anything:** Paths, headers or any other available variable.
+- **Manipulate traffic through [actions](/traffic-policy/actions/):** Redirect urls, inject headers or send custom responses.
+- **Secure:** Add [OAuth](/traffic-policy/actions/oauth/), [IP restrictions](/tls/ip-restrictions/) or [mutual TLS](/tls/mutual-tls/).
+
+### Deliver traffic anywhere
+
+You can host endpoints on your local machine with the [ngrok Agent](/agent/) or in the cloud with [ngrok Cloud Endpoints](/universal-gateway/cloud-endpoints/).
+
+<TypesComparison />
+
+See [Cloud Endpoints vs Agent Endpoints](/universal-gateway/types#cloud-endpoints-vs-agent-endpoints) for a side-by-side comparison.
 
 ## Quickstart
 
-Assuming you have a working web application at port 8080, you can open your app to public traffic with the following [ngrok agent CLI](/agent/) command:
+Enable access to a local web app on port `8080` with the [ngrok CLI](/agent/cli):
 
 ```bash
-ngrok http http://localhost:8080
+ngrok http 8080
 ```
 
-For a more detailed guide to creating your first endpoint, see one of the following quickstarts:
-
-- **[Cloud Endpoints quickstart](/universal-gateway/agent-endpoints)** (Recommended) — Create a persistent, always-on endpoint hosted in the cloud that allows you to forward traffic to your internal resources.
-- **[Agent Endpoints quickstart](/universal-gateway/cloud-endpoints)** — Create an endpoint that lives on your local machine and exists only for the lifetime of the [ngrok agent](/agent/) process that started it.
-
-## Configuring endpoints
-
-You can configure how your endpoints handle traffic by customizing their:
-- **URL** — The address used to access your endpoint. For example: `https://app.example.com`.
-- **[Protocol](/universal-gateway/protocols)** — The type of traffic your endpoint handles. For example: `http`, `https`, `tcp`, `tls`.
-- **[Type](/universal-gateway/types)** — You can either have a [Cloud endpoint](/universal-gateway/cloud-endpoints/) or an [Agent endpoint](/universal-gateway/agent-endpoints/). See [the endpoint types documentation](/universal-gateway/types#choosing-the-appropriate-endpoint-type) to learn how to choose a type.
-- **[Binding](/universal-gateway/bindings)** — Where the endpoint is available to traffic. For example, an `internal` endpoint is only accessible from other endpoints in your account. `public` endpoints are accessible from the internet.
-- **[Traffic policy](/traffic-policy/)** — How your endpoint filters, matches, managees and orchestrates traffic.
+This command will start an Agent Endpoint that forwards traffic through the ngrok CLI agent to your locally running application on port 8080.
 
 ## Load balancing with Endpoint Pooling
 
@@ -86,9 +109,9 @@ On the Pay-as-you-go plan, there is no limit on the number of endpoints you can 
 
 See [Pricing](https://ngrok.com/pricing) for more information.
 
-## Learn more about endpoints
+### Explore Further
 
-- [API](/api/resources/endpoints/) — Learn how to manage endpoints programmatically.
-- [Agent Endpoints](/universal-gateway/agent-endpoints) — Learn how to create and manage agent endpoints.
-- [Cloud Endpoints](/universal-gateway/cloud-endpoints) — Learn how to create and manage cloud endpoints.
-- [Agent CLI](/agent/cli) — Learn how to create and manage endpoints using the ngrok agent CLI.
+- **[Cloud Endpoints](/universal-gateway/cloud-endpoints):** Create always-on endpoints to deliver and manage traffic to custom responses, internal endpoints or third-party services.
+    - Great for centralized configuration and routing across multiple services and handling failover when your upstream applications and services are offline.
+- **[Agent Endpoints](/universal-gateway/agent-endpoints):** Create an endpoint that only exists as long the agent is running to deliver and manage traffic to your local applications, files, services or third-party services.
+    - Great for load balancing and managing individual APIs, services, applications, devices and forwarding traffic to third-party destinations.
