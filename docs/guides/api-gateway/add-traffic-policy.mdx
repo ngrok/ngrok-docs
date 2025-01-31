@@ -1,0 +1,101 @@
+---
+title: Add API gateway traffic management policies
+description: TK
+---
+
+# Add API gateway traffic management policies
+
+TK
+
+
+
+## Add a rate limiting policy to all API services
+
+We recommend you add a rate limiting policy on your cloud endpoint to protect
+all your services from unintentional misuse and malicious attacks.
+
+When you apply the policy to your cloud endpoint, ngrok applies it to all API
+services equally.
+
+Edit the `multi-cloud-policy.yaml` file you created earlier to prepend a
+[`rate-limit` Traffic Policy
+action](/docs/traffic-policy/actions/rate-limit.mdx). This rule sets a low
+capacity, only allowing for 10 requests per IP per minute, to help you see how
+it works.
+
+TK
+
+```yaml title="policy.yaml" mode=traffic-policy
+---
+on_http_request:
+  - actions:
+      - type: rate-limit
+				config:
+					name: Only allow 10 requests per minute
+					algorithm: sliding_window
+					capacity: 10
+					rate: 60s
+					bucket_key:
+						- conn.client_ip
+  - actions:
+      - type: forward-internal
+        config:
+          url: https://api.internal
+          binding: internal
+```
+
+## Add a security policy to all API services
+
+TK
+
+## Compose policies on specific API services
+
+In certain cases, you'll want to apply Traffic Policy rules to just one API
+service—in those cases, you should update your internal agent endpoint with a
+Traffic Policy file.
+
+For example, one API service is running on a machine with less system resources,
+making it more suseptible to errors during peak load. You can implement the
+[`circuit-breaker` Traffic Policy
+action](/docs/traffic-policy/actions/circuit-breaker.mdx) on just the internal
+agent endpoint that forwards traffic to that service for additional protection.
+
+Create a new Traffic Policy file named `circuit-breaker.yaml` on the system
+where this internal agent endpoint runs. To help you see how it works, the
+following `circuit-breaker` rule sets an intentionally low volume threshold that
+allows `10` requests in a `60s` window before tripping the circuit breaker for
+`2m`.
+
+```yaml title="circuit-breaker.yaml" mode=traffic-policy
+---
+on_http_request:
+  - actions:
+      - type: circuit-breaker
+        config:
+          error_threshold: 0
+          volume_threshold: 10
+          window_duration: 60s
+          tripped_duration: 2m
+          enforce: true
+```
+
+Restart the ngrok agent on the same internal URL and with endpoint pooling still
+enabled, but also specifying your new Traffic Policy file.
+
+```
+ngrok http 8080 --url https://api.internal --traffic-policy-file=circuit-breaker.yaml
+```
+
+:::hint
+If you're using endpoint pooling, make sure to add the `--pooling-enabled=true`
+flag when you start the ngrok agent.
+:::
+
+You can test this behavior out by sending multiple `curl` requests to your APIs
+
+In a production setting, you should tweak the circuit breaker's threshold and
+durations to match the resilience of your API services and the volume of
+requests you regularly receive. If your API service starts to fail, the ngrok
+will trip the circuit breaker and automatically route all subsequent requests to
+other internal agent endpoints in the same pool—even if they're in different
+clouds.

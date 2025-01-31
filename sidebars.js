@@ -429,6 +429,20 @@ const sidebars = {
 		},
 		{
 			type: "html",
+			value: "<div class='menu__section'>Tutorials</div>",
+		},
+		{
+			label: "API Gateway",
+			type: "category",
+			items: [
+				"guides/api-gateway/get-started",
+				"guides/api-gateway/kubernetes",
+				"guides/api-gateway/multi-cloud",
+				"guides/api-gateway/add-traffic-policy",
+			],
+		},
+		{
+			type: "html",
 			value: "<div class='menu__section'>Walkthroughs</div>",
 		},
 		{
