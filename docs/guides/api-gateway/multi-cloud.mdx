@@ -21,13 +21,13 @@ In this tutorial, you'll learn how to implement ngrok as a multi-cloud API gatew
 with these broad steps:
 
 1. Set up the common pattern of cloud and internal agent endpoints, which uses a
-single cloud endpoint to accept all API traffic and route it to internal agent
-endpoints via the [`forward-internal` Trafic Policy
-action](/docs/traffic-policy/actions/forward-internal.mdx).
+   single cloud endpoint to accept all API traffic and route it to internal agent
+   endpoints via the [`forward-internal` Trafic Policy
+   action](/docs/traffic-policy/actions/forward-internal.mdx).
 2. Use endpoint pooling to enable dead-simple load balancing between replicas of
-your API service. 
+   your API service.
 3. Apply Traffic Policy rules to your endpoints to manage traffic according to
-common API gateway use cases.
+   common API gateway use cases.
 
 :::info
 This guide uses endpoint pools, which are not yet generally available. To use
@@ -104,9 +104,9 @@ To fix that, you need two things:
 
 1. A cloud endpoint for traffic routing and centralized policy management.
 2. A Traffic Policy rule with the [`forward-internal`
-action](/docs/traffic-policy/actions/forward-internal.mdx), which lets you
-specify which internal URL—in this case, your endpoint pool at
-`https://foo.internal`—to forward traffic to.
+   action](/docs/traffic-policy/actions/forward-internal.mdx), which lets you
+   specify which internal URL—in this case, your endpoint pool at
+   `https://foo.internal`—to forward traffic to.
 
 ### Create a cloud endpoint for your API
 
@@ -126,34 +126,34 @@ apply policy separately for each replica and cloud.
 
     	With your cloud endpoint created, you'll see a default Traffic Policy in the dashboard. Paste in the YAML below to apply the rule.
 
-			```yaml title="policy.yaml" mode=traffic-policy
-			---
-			on_http_request:
-				- actions:
-						- type: forward-internal
-							config:
-								url: https://foo.internal
-								binding: internal
-			```
+    		```yaml title="policy.yaml" mode=traffic-policy
+    		---
+    		on_http_request:
+    			- actions:
+    					- type: forward-internal
+    						config:
+    							url: https://foo.internal
+    							binding: internal
+    		```
 
-			Click **Save** to apply your changes.
+    		Click **Save** to apply your changes.
 
     </TabItem>
     <TabItem value="API">
 
     	The `ngrok` CLI provides a helpful wrapper around the [ngrok API](/docs/api/index.mdx), which you can use to create a cloud endpoint and apply a file containing Traffic Policy rules.
 
-			Create a new file named `policy.yaml` on your local workstation with the following YAML.
-			
-			```yaml title="policy.yaml" mode=traffic-policy
-			---
-			on_http_request:
-				- actions:
-						- type: forward-internal
-							config:
-								url: https://foo.internal
-								binding: internal
-			```
+    		Create a new file named `policy.yaml` on your local workstation with the following YAML.
+
+    		```yaml title="policy.yaml" mode=traffic-policy
+    		---
+    		on_http_request:
+    			- actions:
+    					- type: forward-internal
+    						config:
+    							url: https://foo.internal
+    							binding: internal
+    		```
 
     	Create a cloud endpoint on `{YOUR_NGROK_DOMAIN}`, passing your `policy.yaml` file as an option.
 
@@ -246,12 +246,12 @@ based on the value of the path.
 The Traffic Policy file below does the following:
 
 1. Routes requests to `https://{YOUR_NGROK_DOMAIN}/foo` to the
-`https://foo.internal` endpoint pool.
+   `https://foo.internal` endpoint pool.
 2. Routes requests to `https://{YOUR_NGROK_DOMAIN}/bar` to the
-`https://bar.internal` agent endpoint.
+   `https://bar.internal` agent endpoint.
 3. Uses the [`custom-response`
-action](/docs/traffic-policy/actions/custom-response.mdx) to capture requests to
-any other path and respond with a generic `403` error.
+   action](/docs/traffic-policy/actions/custom-response.mdx) to capture requests to
+   any other path and respond with a generic `403` error.
 
 ```yaml title="policy.yaml" traffic-policy
 on_http_request:
@@ -290,11 +290,11 @@ interpolation](/docs/traffic-policy/concepts/cel-interpolation.mdx).
 The Traffic Policy file below does the following:
 
 1. Checks whether requests contain a `x-api` header, and if so, forward to the
-internal URL with the same name using CEL interpolation. 
+   internal URL with the same name using CEL interpolation.
 2. Uses the [`custom-response`
-action](/docs/traffic-policy/actions/custom-response.mdx) to capture requests
-without an appropriate header and respond with a generic `403`
-error.
+   action](/docs/traffic-policy/actions/custom-response.mdx) to capture requests
+   without an appropriate header and respond with a generic `403`
+   error.
 
 ```yaml title="policy.yaml" traffic-policy
 on_http_request:
@@ -333,4 +333,3 @@ replay requests across your API gateway.
 
 Explore other opportunities to manage and take action on API traffic in our
 [Traffic Policy documentation](/docs/traffic-policy/index.mdx).
-
