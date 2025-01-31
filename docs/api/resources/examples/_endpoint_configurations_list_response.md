@@ -8,6 +8,32 @@
 		{
 			"backend": null,
 			"basic_auth": null,
+			"circuit_breaker": null,
+			"compression": null,
+			"created_at": "2025-01-29T21:09:50Z",
+			"description": "app servers",
+			"id": "ec_2sJsPsUZlJcIi3iktEaq0ouvQfa",
+			"ip_policy": null,
+			"mutual_tls": null,
+			"oauth": null,
+			"oidc": null,
+			"request_headers": {
+				"add": {
+					"x-frontend": "ngrok"
+				},
+				"enabled": true,
+				"remove": ["cache-control"]
+			},
+			"response_headers": null,
+			"saml": null,
+			"tls_termination": null,
+			"type": "https",
+			"uri": "https://api.ngrok.com/endpoint_configurations/ec_2sJsPsUZlJcIi3iktEaq0ouvQfa",
+			"webhook_validation": null
+		},
+		{
+			"backend": null,
+			"basic_auth": null,
 			"circuit_breaker": {
 				"enabled": true,
 				"error_threshold_percentage": 0.2,
@@ -19,9 +45,9 @@
 			"compression": {
 				"enabled": true
 			},
-			"created_at": "2025-01-21T18:19:29Z",
+			"created_at": "2025-01-29T21:09:50Z",
 			"description": "web servers",
-			"id": "ec_2rwwiCnTVyNbcCYRzYoOd22mPqG",
+			"id": "ec_2sJsPp1q2j5Ga8ulqT54cdqnhP4",
 			"ip_policy": null,
 			"mutual_tls": null,
 			"oauth": null,
@@ -38,33 +64,7 @@
 			"saml": null,
 			"tls_termination": null,
 			"type": "https",
-			"uri": "https://api.ngrok.com/endpoint_configurations/ec_2rwwiCnTVyNbcCYRzYoOd22mPqG",
-			"webhook_validation": null
-		},
-		{
-			"backend": null,
-			"basic_auth": null,
-			"circuit_breaker": null,
-			"compression": null,
-			"created_at": "2025-01-21T18:19:29Z",
-			"description": "app servers",
-			"id": "ec_2rwwiBweYZyXlGvkhIo6Im4vaRh",
-			"ip_policy": null,
-			"mutual_tls": null,
-			"oauth": null,
-			"oidc": null,
-			"request_headers": {
-				"add": {
-					"x-frontend": "ngrok"
-				},
-				"enabled": true,
-				"remove": ["cache-control"]
-			},
-			"response_headers": null,
-			"saml": null,
-			"tls_termination": null,
-			"type": "https",
-			"uri": "https://api.ngrok.com/endpoint_configurations/ec_2rwwiBweYZyXlGvkhIo6Im4vaRh",
+			"uri": "https://api.ngrok.com/endpoint_configurations/ec_2sJsPp1q2j5Ga8ulqT54cdqnhP4",
 			"webhook_validation": null
 		}
 	],

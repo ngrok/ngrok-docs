@@ -192,6 +192,7 @@ const sidebars = {
 			items: [
 				"agent/index",
 				"agent/web-inspection-interface",
+				"agent/cli",
 				"agent/cli-api",
 				{
 					label: "Configuration file",
