@@ -1,27 +1,47 @@
 ---
 title: Add API gateway traffic management policies
-description: TK
+description: Learn how to add and compose Traffic Policy rules, like authentication and rate limiting, to all or some of your API services.
 ---
+
+import TabItem from "@theme/TabItem";
+import Tabs from "@theme/Tabs";
+import Auth0 from "./img/auth0-create-api.png";
 
 # Add API gateway traffic management policies
 
-TK
+ngrok's API gateway is designed for composability, allowing you to pick and
+choose from many [Traffic Policy
+actions](/docs/traffic-policy/actions/index.mdx) and order them in many ways to
+manage API traffic according to your needs.
+
+With our common pattern of using a cloud endpoint to route traffic to internal
+agent endpoints, you can centrally manage certain policies like rate limiting or
+authentication, then compose additional policies onto specific internal agent
+endpoints and API services.
+
+If you haven't yet deployed ngrok as your API gateway, start with one of these
+tutorials:
+
+- [Get started with an API gateway](/docs/guides/api-gateway/get-started.mdx)
+- [Deploy an API gateway in Kubernetes](/docs/guides/api-gateway/kubernetes.mdx)
+- [Deploy a multi-cloud API gateway](/docs/guides/api-gateway/multi-cloud.mdx)
 
 ## Add a rate limiting policy to all API services
 
 We recommend you add a rate limiting policy on your cloud endpoint to protect
 all your services from unintentional misuse and malicious attacks.
 
-When you apply the policy to your cloud endpoint, ngrok applies it to all API
-services equally.
+When you apply rate limiting to your cloud endpoint, then forward traffic to one
+or more internal URLs, then ngrok applies the policy equally across all your API
+services.
 
-Edit the `multi-cloud-policy.yaml` file you created earlier to prepend a
-[`rate-limit` Traffic Policy
-action](/docs/traffic-policy/actions/rate-limit.mdx). This rule sets a low
-capacity, only allowing for 10 requests per IP per minute, to help you see how
-it works.
+The Traffic Policy file below:
 
-TK
+1. Allows up to `10` requests per IP in a `60s` window.
+2. Rejects requests that exceed the rate limiting `capacity` with a `429` error response.
+3. Forwards all requests not subject to the rate limit to an internal endpoint.
+You will need to edit this action, and potentially add additional
+`forward-internal` actions, based on your routing topology.
 
 ```yaml title="policy.yaml" mode=traffic-policy
 ---
@@ -38,19 +58,158 @@ on_http_request:
   - actions:
       - type: forward-internal
         config:
-          url: https://api.internal
-          binding: internal
+          url: https://foo.internal
 ```
+
+Apply the rule to your cloud endpoint with the dashboard or API.
+
+<Tabs>
+	<TabItem value="Dashboard">
+
+			Navigate to the [Endpoints](https://dashboard.ngrok.com/endpoints) section
+			of the ngrok dashboard and click on the cloud endpoint to edit.
+
+			Paste in the YAML above and click **Save** to apply the Traffic Policy rules.
+
+    </TabItem>
+    <TabItem value="API">
+
+			Save the YAML above into a file named `policy.yaml` or similar.
+
+			Use the ngrok CLI to update your endpoint based on its `id`.
+
+			```
+			ngrok api endpoints update \
+			{ENDPOINT_ID} \
+			--traffic-policy "$(cat policy.yaml)"
+			```
+
+			:::tip
+			If you don't remember your cloud endpoint's `id`, run `ngrok api endpoints list` and find it from the list.
+			:::
+
+    </TabItem>
+</Tabs>
+
+### Test your rate limiting policy
+
+You can test the rate limiting action by running the following command,
+substituting the appropriate value for `{YOUR_NGROK_DOMAIN}`:
+
+```bash
+for i in `seq 1 50`; do curl -X GET -w '%{http_code}' https://{YOUR_NGROK_DOMAIN}/ ; done
+```
+
+You'll see a few normal responses until you hit the rate limit, and then you'll
+see `429` errors returned.
 
 ## Add a security policy to all API services
 
-TK
+The JWT validation policy action allows you to integrate your ngrok endpoints
+with your existing authentication provider. This example provides step-by-step
+instructions for integrating with Auth0, but you can configure JWT validation
+for any OAuth provider.
+
+### Define your API in Auth0
+
+1. Log in to your [Auth0 tenant dashboard](https://manage.auth0.com/dashboard).
+1. Select **Applications > APIs**, then **+ Create API**.
+1. Name your API whatever you'd like.
+1. Replace the value of the **Identifier** field with `{YOUR_NGROK_DOMAIN}`.
+1. Leave the default values for **JSON Web Token (JWT) Profile \*** and **JSON
+Web Token Signing Algorithm \***.
+1. Click **Create**.
+
+<img src={Auth0} alt="Auth0 Create API" className="w-full md:w-3/4 center rounded-md border shadow-lg" />
+
+### Access your JWT
+
+Upon creating your new API, Auth0 will create an associated application under
+**Applications > APIs** in the left navigation bar.
+
+Navigate to your application, and click on the `Test` tab. Here, you will
+find a signed, fully functional JWT, as well as examples of how to programmatically
+generate one.
+
+### Update your Traffic Policy rules with the `validate-jwt` action
+
+The Traffic Policy file below:
+
+1. Integrates ngrok with your authentication provider so ngrok can validate JWTs
+passed in requests to your API. 
+2. Rejects requests without a `Authorization: Bearer ...` header or valid token.
+3. Forwards all authenticated requests to an internal endpoint. You will need to
+edit this action, and potentially add additional `forward-internal` actions,
+based on your routing topology.
+
+```yaml title="policy.yaml" traffic-policy
+on_http_request:
+  - actions:
+      - type: "jwt-validation"
+        config:
+          issuer:
+            allow_list:
+              - value: "https://{YOUR_AUTH0_TENANT_ID}.us.auth0.com/"
+          audience:
+            allow_list:
+              - value: "https://{YOUR_NGROK_DOMAIN}"
+          http:
+            tokens:
+              - type: "jwt"
+                method: "header"
+                name: "Authorization"
+                prefix: "Bearer "
+          jws:
+            allowed_algorithms:
+              - "RS256"
+            keys:
+              sources:
+                additional_jkus:
+                  - "https://{YOUR_AUTH0_TENANT_ID}.us.auth0.com/.well-known/jwks.json"
+  - name: "Forward internal"
+    actions:
+      - type: "forward-internal"
+        config:
+          url: "https://foo.internal"
+          binding: internal
+```
+
+Replace `{YOUR_AUTH0_TENANT_ID}` and `{YOUR_NGROK_DOMAIN}` and apply the rule to
+your cloud endpoint with the dashboard or API.
+
+### Test your authentication policy
+
+You can test the JWT validation policy by running the following command,
+substituting your domain for `{YOUR_NGROK_DOMAIN}` and the JWT obtained from the
+Auth0 dashboard for `{YOUR_JWT}`:
+
+```bash
+curl -X GET https://{YOUR_NGROK_DOMAIN}/ \
+  --header "Authorization: Bearer {YOUR_JWT}"
+```
+
+You'll receive a `200` response and body, if applicable.
+
+Run the same command, switching out one character of your JWT, and you'll get a
+`403 Forbidden` error.
+
+Run the command with no `Authorization` header, substituting your domain for
+`{YOUR_NGROK_DOMAIN}`:
+
+```bash
+curl -X GET https://{YOUR_NGROK_DOMAIN}/cards
+```
+
+You'll receive a `401 Unauthorized` error. Your API is now protected from
+unauthorized requests.
 
 ## Compose policies on specific API services
 
 In certain cases, you'll want to apply Traffic Policy rules to just one API
 service—in those cases, you should update your internal agent endpoint with a
 Traffic Policy file.
+
+### Example with the `circuit-breaker` action
 
 For example, one API service is running on a machine with less system resources,
 making it more suseptible to errors during peak load. You can implement the
@@ -77,23 +236,32 @@ on_http_request:
           enforce: true
 ```
 
-Restart the ngrok agent on the same internal URL and with endpoint pooling still
-enabled, but also specifying your new Traffic Policy file.
+Restart the ngrok agent on the same internal URL, while also specifying your new
+Traffic Policy file.
 
 ```
-ngrok http 8080 --url https://api.internal --traffic-policy-file=circuit-breaker.yaml
+ngrok http 8080 --url https://foo.internal --traffic-policy-file=circuit-breaker.yaml
 ```
 
-:::hint
-If you're using endpoint pooling, make sure to add the `--pooling-enabled=true`
-flag when you start the ngrok agent.
+:::tip
+If you're using other configuration flags, like `--pooling-enabled=true`, make
+sure you add those to the command above.
 :::
 
 You can test this behavior out by sending multiple `curl` requests to your APIs
+in quick succession to trip the circuit breaker.
 
-In a production setting, you should tweak the circuit breaker's threshold and
-durations to match the resilience of your API services and the volume of
-requests you regularly receive. If your API service starts to fail, the ngrok
-will trip the circuit breaker and automatically route all subsequent requests to
-other internal agent endpoints in the same pool—even if they're in different
-clouds.
+## What's next?
+
+You've now adding common traffic management policies to your ngrok API gateway
+at both your cloud and internal agent endpoints, allowing you to centrally
+manage certain rules and compose others as needed.
+
+Explore other opportunities to manage and take action on API traffic in our
+[Traffic Policy documentation](/docs/traffic-policy/index.mdx).
+
+Check out your [Traffic
+Inspector](https://dashboard.ngrok.com/observability/traffic-inspector)
+([documentation](/docs/obs/traffic-inspection.mdx)) to observe, modify, and
+replay requests across your API gateway.
+
