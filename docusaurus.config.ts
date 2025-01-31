@@ -1,11 +1,7 @@
 import type { Config } from "@docusaurus/types";
 import dotenv from "dotenv";
-import * as prismReactRenderer from "prism-react-renderer";
 
 dotenv.config();
-
-const lightCodeTheme = prismReactRenderer.themes.github;
-const darkCodeTheme = prismReactRenderer.themes.dracula;
 
 const docsRepo = "https://github.com/ngrok/ngrok-docs";
 
@@ -35,6 +31,14 @@ const config = {
 	onBrokenMarkdownLinks: "warn",
 	favicon: "img/favicon.ico",
 	trailingSlash: true,
+
+	customFields: {
+		isProduction,
+		vercel: {
+			env: process.env?.VERCEL_ENV,
+			url: process.env?.VERCEL_URL,
+		},
+	},
 
 	// GitHub pages deployment config.
 	// If you aren't using GitHub pages, you don't need these.
@@ -329,11 +333,6 @@ const config = {
 					},
 				],
 				copyright: `© ngrok ${new Date().getFullYear()}`,
-			},
-			prism: {
-				theme: lightCodeTheme,
-				darkTheme: darkCodeTheme,
-				additionalLanguages: ["hcl", "rust", "http", "bash"],
 			},
 			docs: {
 				sidebar: {

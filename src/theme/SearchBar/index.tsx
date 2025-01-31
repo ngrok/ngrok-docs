@@ -1,4 +1,13 @@
+import type { AutocompleteState } from "@algolia/autocomplete-core";
 import { DocSearchButton, useDocSearchKeyboardEvents } from "@docsearch/react";
+import type {
+	DocSearchHit,
+	DocSearchModalProps,
+	DocSearchModal as DocSearchModalType,
+	DocSearchTransformClient,
+	InternalDocSearchHit,
+	StoredDocSearchHit,
+} from "@docsearch/react";
 import Head from "@docusaurus/Head";
 import Link from "@docusaurus/Link";
 import { useHistory } from "@docusaurus/router";
@@ -11,28 +20,49 @@ import {
 	useSearchResultUrlProcessor,
 } from "@docusaurus/theme-search-algolia/client";
 import Translate from "@docusaurus/Translate";
-import useBaseUrl from "@docusaurus/useBaseUrl";
 import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import translations from "@theme/SearchTranslations";
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import type { FacetFilters } from "algoliasearch/lite";
+import React, {
+	useCallback,
+	useMemo,
+	useRef,
+	useState,
+	type ReactNode,
+} from "react";
 import { createPortal } from "react-dom";
 
-let DocSearchModal = null;
+type DocSearchProps = Omit<
+	DocSearchModalProps,
+	"onClose" | "initialScrollY"
+> & {
+	contextualSearch?: string;
+	externalUrlRegex?: string;
+	searchPagePath: boolean | string;
+};
+
+let DocSearchModal: typeof DocSearchModalType | null = null;
+
 function importDocSearchModalIfNeeded() {
 	if (DocSearchModal) {
 		return Promise.resolve();
 	}
 	return Promise.all([
+		// @ts-expect-error
 		import("@docsearch/react/modal"),
+		// @ts-expect-error
 		import("@docsearch/react/style"),
 		import("./styles.css"),
 	]).then(([{ DocSearchModal: Modal }]) => {
 		DocSearchModal = Modal;
 	});
 }
-function useNavigator({ externalUrlRegex }) {
+
+function useNavigator({
+	externalUrlRegex,
+}: Pick<DocSearchProps, "externalUrlRegex">) {
 	const history = useHistory();
-	const [navigator] = useState(() => {
+	const [navigator] = useState<DocSearchModalProps["navigator"]>(() => {
 		return {
 			navigate(params) {
 				// Algolia results could contain URL's from other domains which cannot
@@ -47,49 +77,98 @@ function useNavigator({ externalUrlRegex }) {
 	});
 	return navigator;
 }
-function useTransformSearchClient() {
+
+function useTransformSearchClient(): DocSearchModalProps["transformSearchClient"] {
 	const {
 		siteMetadata: { docusaurusVersion },
 	} = useDocusaurusContext();
 	return useCallback(
-		(searchClient) => {
+		(searchClient: DocSearchTransformClient) => {
 			searchClient.addAlgoliaAgent("docusaurus", docusaurusVersion);
 			return searchClient;
 		},
 		[docusaurusVersion],
 	);
 }
-function useTransformItems(props) {
+
+function useTransformItems(props: Pick<DocSearchProps, "transformItems">) {
 	const processSearchResultUrl = useSearchResultUrlProcessor();
-	const [transformItems] = useState(() => {
-		return (items) =>
-			props.transformItems
-				? // Custom transformItems
-					props.transformItems(items)
-				: // Default transformItems
-					items.map((item) => ({
-						...item,
-						url: processSearchResultUrl(item.url),
-					}));
-	});
+	const [transformItems] = useState<DocSearchModalProps["transformItems"]>(
+		() => {
+			return (items: DocSearchHit[]) =>
+				props.transformItems
+					? // Custom transformItems
+						props.transformItems(items)
+					: // Default transformItems
+						items.map((item) => ({
+							...item,
+							url: processSearchResultUrl(item.url),
+						}));
+		},
+	);
 	return transformItems;
 }
-function useResultsFooterComponent({ closeModal }) {
+
+function useResultsFooterComponent({
+	closeModal,
+}: {
+	closeModal: () => void;
+}): DocSearchProps["resultsFooterComponent"] {
 	return useMemo(
 		() =>
 			({ state }) => <ResultsFooter state={state} onClose={closeModal} />,
 		[closeModal],
 	);
 }
-function Hit({ hit, children }) {
-	/**
-	 * We're using <a> instead of <Link> as a temporary workaround until we get server side redirects set up.
-	 * Currently we use CSR, which doesn't trigger our redirect script, so search results hit 404s if the page is intended to be redirected.
-	 */
-	return <a href={`https://ngrok.com${hit.url}`}>{children}</a>;
+
+type CustomFields = {
+	isProduction: boolean;
+	vercel: {
+		env: string;
+		url: string;
+	};
+};
+
+/**
+ * Returns a different root URL based on environment.
+ * This prevents search results from sending you to
+ * prod when you're using docs in localhost.
+ */
+const getUrlRootForHit = ({ isProduction, vercel }: CustomFields) => {
+	if (!isProduction) return "http://localhost:3000";
+
+	// Return preview URL if we're in a Vercel preview deployment
+	if (vercel?.env === "preview") return `https://${vercel.url}`;
+
+	return "https://ngrok.com";
+};
+
+/**
+ * We're using <a> instead of <Link> as a temporary workaround until we get server side redirects set up.
+ * Currently we use CSR, which doesn't trigger our redirect script, so search results hit 404s if the page is intended to be redirected.
+ */
+function Hit({
+	hit,
+	children,
+}: {
+	hit: InternalDocSearchHit | StoredDocSearchHit;
+	children: React.ReactNode;
+}) {
+	const {
+		siteConfig: { customFields },
+	} = useDocusaurusContext();
+	const root = getUrlRootForHit(customFields as CustomFields);
+	return <a href={`${root}${hit.url}`}>{children}</a>;
 }
-function ResultsFooter({ state, onClose }) {
+
+type ResultsFooterProps = {
+	state: AutocompleteState<InternalDocSearchHit>;
+	onClose: () => void;
+};
+
+function ResultsFooter({ state, onClose }: ResultsFooterProps) {
 	const createSearchLink = useSearchLinkCreator();
+
 	return (
 		<Link to={createSearchLink(state.query)} onClick={onClose}>
 			<Translate
@@ -101,34 +180,50 @@ function ResultsFooter({ state, onClose }) {
 		</Link>
 	);
 }
-function useSearchParameters({ contextualSearch, ...props }) {
-	function mergeFacetFilters(f1, f2) {
-		const normalize = (f) => (typeof f === "string" ? [f] : f);
+
+function useSearchParameters({
+	contextualSearch,
+	...props
+}: DocSearchProps): DocSearchProps["searchParameters"] {
+	function mergeFacetFilters(f1: FacetFilters, f2: FacetFilters): FacetFilters {
+		const normalize = (f: FacetFilters): FacetFilters =>
+			typeof f === "string" ? [f] : f;
 		return [...normalize(f1), ...normalize(f2)];
 	}
-	const contextualSearchFacetFilters = useAlgoliaContextualFacetFilters();
-	const configFacetFilters = props.searchParameters?.facetFilters ?? [];
-	const facetFilters = contextualSearch
+
+	const contextualSearchFacetFilters =
+		useAlgoliaContextualFacetFilters() as FacetFilters;
+
+	const configFacetFilters: FacetFilters =
+		props.searchParameters?.facetFilters ?? [];
+
+	const facetFilters: FacetFilters = contextualSearch
 		? // Merge contextual search filters with config filters
 			mergeFacetFilters(contextualSearchFacetFilters, configFacetFilters)
 		: // ... or use config facetFilters
 			configFacetFilters;
+
 	// We let users override default searchParameters if they want to
 	return {
 		...props.searchParameters,
 		facetFilters,
 	};
 }
-function DocSearch({ externalUrlRegex, ...props }) {
+
+function DocSearch({ externalUrlRegex, ...props }: DocSearchProps) {
 	const navigator = useNavigator({ externalUrlRegex });
 	const searchParameters = useSearchParameters({ ...props });
 	const transformItems = useTransformItems(props);
 	const transformSearchClient = useTransformSearchClient();
-	const searchContainer = useRef(null);
+
+	const searchContainer = useRef<HTMLDivElement | null>(null);
 	// TODO remove "as any" after React 19 upgrade
-	const searchButtonRef = useRef(null);
+	const searchButtonRef = useRef<HTMLButtonElement>(null as any);
 	const [isOpen, setIsOpen] = useState(false);
-	const [initialQuery, setInitialQuery] = useState(undefined);
+	const [initialQuery, setInitialQuery] = useState<string | undefined>(
+		undefined,
+	);
+
 	const prepareSearchContainer = useCallback(() => {
 		if (!searchContainer.current) {
 			const divElement = document.createElement("div");
@@ -136,17 +231,20 @@ function DocSearch({ externalUrlRegex, ...props }) {
 			document.body.insertBefore(divElement, document.body.firstChild);
 		}
 	}, []);
+
 	const openModal = useCallback(() => {
 		prepareSearchContainer();
 		importDocSearchModalIfNeeded().then(() => setIsOpen(true));
 	}, [prepareSearchContainer]);
+
 	const closeModal = useCallback(() => {
 		setIsOpen(false);
 		searchButtonRef.current?.focus();
 		setInitialQuery(undefined);
 	}, []);
+
 	const handleInput = useCallback(
-		(event) => {
+		(event: KeyboardEvent) => {
 			if (event.key === "f" && (event.metaKey || event.ctrlKey)) {
 				// ignore browser's ctrl+f
 				return;
@@ -158,7 +256,9 @@ function DocSearch({ externalUrlRegex, ...props }) {
 		},
 		[openModal],
 	);
+
 	const resultsFooterComponent = useResultsFooterComponent({ closeModal });
+
 	useDocSearchKeyboardEvents({
 		isOpen,
 		onOpen: openModal,
@@ -166,6 +266,7 @@ function DocSearch({ externalUrlRegex, ...props }) {
 		onInput: handleInput,
 		searchButtonRef,
 	});
+
 	return (
 		<>
 			<Head>
@@ -213,7 +314,8 @@ function DocSearch({ externalUrlRegex, ...props }) {
 		</>
 	);
 }
-export default function SearchBar() {
+
+export default function SearchBar(): ReactNode {
 	const { siteConfig } = useDocusaurusContext();
-	return <DocSearch {...siteConfig.themeConfig.algolia} />;
+	return <DocSearch {...(siteConfig.themeConfig.algolia as DocSearchProps)} />;
 }

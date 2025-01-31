@@ -5239,6 +5239,22 @@
     </tr>
     <tr>
       <td>
+        <a id="ERR_NGROK_2247" href="/docs/errors/err_ngrok_2247">ERR_NGROK_2247</a>
+      </td>
+      <td class="pre-wrapped">
+        Already validated url didn't parse during <code>&lt;STEP&gt;</code> step: <code>&lt;URL&gt;</code> <code>&lt;ERR&gt;</code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_2248" href="/docs/errors/err_ngrok_2248">ERR_NGROK_2248</a>
+      </td>
+      <td class="pre-wrapped">
+        HTTPS Edges do not support the on_tcp_connect Traffic Policy phase. Use a Cloud Endpoint instead.
+      </td>
+    </tr>
+    <tr>
+      <td>
         <a id="ERR_NGROK_3002" href="/docs/errors/err_ngrok_3002">ERR_NGROK_3002</a>
       </td>
       <td class="pre-wrapped">
@@ -5660,7 +5676,7 @@
         <a id="ERR_NGROK_3200" href="/docs/errors/err_ngrok_3200">ERR_NGROK_3200</a>
       </td>
       <td class="pre-wrapped">
-        Tunnel <code>&lt;HOSTNAME&gt;</code> not found
+        The endpoint <code>&lt;ENDPOINTURL&gt;</code> is offline.
       </td>
     </tr>
     <tr>
@@ -7577,6 +7593,14 @@
       </td>
       <td class="pre-wrapped">
         The Endpoint <code>&lt;HOSTPORT&gt;</code> has both a Cloud Endpoint (<code>&lt;CLEPID&gt;</code>) and Endpoint Configuration (<code>&lt;TUNID&gt;</code>) configured.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_6030" href="/docs/errors/err_ngrok_6030">ERR_NGROK_6030</a>
+      </td>
+      <td class="pre-wrapped">
+        The url <code>&lt;URL&gt;</code> has multiple endpoints, but they do not all have pooling enabled.
       </td>
     </tr>
     <tr>
@@ -10007,6 +10031,14 @@
       </td>
       <td class="pre-wrapped">
         We do not allow agents to connect to ngrok from your IP address (<code>&lt;IP&gt;</code>).
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_9041" href="/docs/errors/err_ngrok_9041">ERR_NGROK_9041</a>
+      </td>
+      <td class="pre-wrapped">
+        Supported protocols for kubernetes-bound endpoints are http and tcp at this time. You provided <code>&lt;PROTO&gt;</code>.
       </td>
     </tr>
     <tr>

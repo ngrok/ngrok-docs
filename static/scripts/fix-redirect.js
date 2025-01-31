@@ -54,11 +54,9 @@ const redirects = [
     // /docs/guides/how-to-set-up-a-custom-domain -> /docs/guides/other-guides/how-to-set-up-a-custom-domain
     [ fromIncludes(`/docs/guides/how-to-set-up-a-custom-domain`), `/docs/guides/other-guides/how-to-set-up-a-custom-domain` ],
 
-    // /docs/guides/limits -> /docs/guides/other-guides/limits
-    [ fromIncludes(`/docs/guides/limits`), `/docs/guides/other-guides/limits` ],
+    [ fromIncludes(`/docs/guides/limits`), `/docs/pricing-limits` ],
 
-    // /docs/guides/licensing -> /docs/guides/other-guides/licensing
-    [ fromIncludes(`/docs/guides/licensing`), `/docs/guides/other-guides/licensing`],
+    [ fromIncludes(`/docs/guides/licensing`), `/docs/pricing-limits/`],
 
     // /docs/guides/upgrade-v2-v3 -> /docs/guides/other-guides/upgrade-v2-v3
     [ fromIncludes(`/docs/guides/upgrade-v2-v3`), `/docs/guides/other-guides/upgrade-v2-v3`],
@@ -164,8 +162,10 @@ const redirects = [
     [ fromIncludes(`/docs/cloud-edge/modules/`), `/docs/http/#modules` ],
     [ fromIncludes(`/docs/cloud-edge/observability/`), `/docs/http/#observability` ],
     [ fromIncludes(`/docs/cloud-edge/pops/`), `/docs/network-edge/#points-of-presence` ],
-    [ fromIncludes(`/docs/cloud-edge/zero-knowledge-tls/`), `/docs/tls/tls/termination/#zero-knowledge-tls` ],
+    [ fromIncludes(`/docs/cloud-edge/zero-knowledge-tls/`), `/docs/tls/termination/` ],
+    [ fromIncludes(`/docs/tls/tls/termination/`), `/docs/tls/termination/` ],
     [ fromIncludes(`/docs/cloud-edge/`), `/docs/network-edge/` ],
+    [ fromIncludes(`/docs/integrations/home-assistant/home-assistant`), `/docs/integrations/home-assistant/home-assistant-with-ngrok` ],
 
     // Redirects for Traffic Policy Expressions
     [ fromIncludes(`/docs/http/traffic-policy/expressions/#connection-variables`), `/docs/http/traffic-policy/expressions/variables#connection-variables` ],

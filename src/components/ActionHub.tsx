@@ -11,7 +11,7 @@ import {
 	SelectValue,
 } from "@ngrok/mantle/select";
 import { MagnifyingGlass } from "@phosphor-icons/react";
-import React, { useState } from "react";
+import { useState } from "react";
 
 const DefaultPhaseValue = "any";
 const DefaultProtocolValue = "any";
@@ -97,7 +97,7 @@ export default function ActionHub({ actions }: Props) {
 					className="max-w-64 font-sans"
 					placeholder="Filter..."
 					value={actionSearch}
-					onChange={(e) => setActionSearch(e.target.value)}
+					onChange={(event) => setActionSearch(event.target.value)}
 				>
 					<MagnifyingGlass />
 					<InputCapture />
@@ -113,7 +113,9 @@ export default function ActionHub({ actions }: Props) {
 								All Protocols
 							</SelectItem>
 							{Object.keys(Protocols).map((protocol) => (
-								<SelectItem value={protocol}>{protocol}</SelectItem>
+								<SelectItem key={protocol} value={protocol}>
+									{protocol}
+								</SelectItem>
 							))}
 						</SelectContent>
 					</Select>
