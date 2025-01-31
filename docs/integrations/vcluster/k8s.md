@@ -147,7 +147,7 @@ ngrok credentials. To demonstrate how the Operator simplifies routing external t
 cluster, virtual cluster, and ultimately an exposed service or endpoint, you can install a sample application.
 
 1. Create a ngrok static subdomain for ingress if you don't have one already. Navigate to the [**Domains**
-   section](https://dashboard.ngrok.com/cloud-edge/domains) of the ngrok dashboard and click **Create Domain** or **New
+   section](https://dashboard.ngrok.com/domains) of the ngrok dashboard and click **Create Domain** or **New
    Domain**. This static subdomain will be your `NGROK_DOMAIN` for the remainder of this guide.
 
    By creating a subdomain on the ngrok network, you provide a public route to accept HTTP, HTTPS, and TLS traffic.
@@ -235,7 +235,7 @@ cluster, virtual cluster, and ultimately an exposed service or endpoint, you can
    :::
 
 1. Confirm your vcluster successfully deployed your 2048 application by navigating to the [**Edges**
-   section](https://dashboard.ngrok.com/cloud-edge/edges) in the ngrok dashboard.
+   section](https://dashboard.ngrok.com/edges) in the ngrok dashboard.
 
    An edge connects your 2048 application, running in your vcluster, to the rest of the world through the ngrok Ingress
    Controller. You should see a new edge configuration created by `kubernetes-ingress-controller` that matches the domain
@@ -248,7 +248,7 @@ cluster, virtual cluster, and ultimately an exposed service or endpoint, you can
    !["Looking at existing Edge configurations in the ngrok dashboard"](img/ngrok-k8s-vcluster_edges.png)
 
    Click on your edge configuration to see additional details and options for advanced ingress needs, like creating
-   multiple tunnels for load balancing, enabling the [Mutual TLS module](/http/mutual-tls/), adding
+   multiple tunnels for load balancing, enabling the [Mutual TLS module](/traffic-policy/actions/terminate-tls/), adding
    compression, and more. We'll use one of these options, OAuth, in the next step.
 
 1. Access your 2048 demo app by navigating to the your domain, e.g. `https://one-two-three.ngrok.app`. ngrok's edge
@@ -358,7 +358,7 @@ allowing ingress and access to your endpoint.
    kubectl apply -f 2048.yaml
    ```
 
-1. Visit the [**Edges** section](https://dashboard.ngrok.com/cloud-edge/edges/) of the ngrok dashboard, click on the
+1. Visit the [**Edges** section](https://dashboard.ngrok.com/edges/) of the ngrok dashboard, click on the
    edge for your deployment, then click **OAuth** to confirm the module is using the configuration you added to your
    `2048.yaml` manifest.
 

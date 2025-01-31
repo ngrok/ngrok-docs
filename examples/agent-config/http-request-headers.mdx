@@ -1,9 +1,19 @@
 ```yaml
-tunnels:
-  example:
-    proto: http
-    addr: 80
-    request_header:
-      add: ["is-ngrok: 1", "country: ${conn.geo.country_code}"]
-      remove: ["referrer"]
+version: 3
+endpoints:
+  - name: example
+    url: https://example.ngrok.app
+    upstream:
+      url: 80
+    traffic_policy:
+      on_http_request:
+        - actions:
+            - type: add-headers
+              config:
+                headers:
+                  is-ngrok: 1
+                  country: ${conn.geo.country_code}
+            - type: remove-headers
+              config:
+                headers: ["referrer"]
 ```

@@ -7,10 +7,18 @@ import (
 	"golang.ngrok.com/ngrok/config"
 )
 
+trafficPolicy := `
+on_http_request:
+  - actions:
+      - type: oauth
+        config:
+          provider: google
+`
+
 func ngrokListener(ctx context.Context) (net.Listener, error) {
 	return ngrok.Listen(ctx,
 		config.HTTPEndpoint(
-			config.WithOAuth("google"),
+			config.WithTrafficPolicy(trafficPolicy),
 		),
 		ngrok.WithAuthtokenFromEnv(),
 	)
@@ -19,5 +27,4 @@ func ngrokListener(ctx context.Context) (net.Listener, error) {
 
 Go Package Docs:
 
-- [https://pkg.go.dev/golang.ngrok.com/ngrok/config#WithOAuth](https://pkg.go.dev/golang.ngrok.com/ngrok/config#WithOAuth)
-- [https://pkg.go.dev/golang.ngrok.com/ngrok/config#OAuthOption](https://pkg.go.dev/golang.ngrok.com/ngrok/config#OAuthOption)
+- [https://pkg.go.dev/golang.ngrok.com/ngrok/config#WithTrafficPolicy](https://pkg.go.dev/golang.ngrok.com/ngrok/config#WithTrafficPolicy)
