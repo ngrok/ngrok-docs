@@ -8,7 +8,7 @@ description: Setup a local Consul Service mesh to demonstrate how to use the ngr
 To use the ngrok Kubernetes Operator with Consul in a local demo environment:
 
 1. [Set up a local Consul Service Mesh on Kubernetes](#set-up-a-consul-service-mesh-on-kubernetes)
-1. [Install the ngrok Kubernetes Operator](#install-the-ngrok-ingress-controller)
+1. [Install the ngrok Kubernetes Operator](#install-the-ngrok-kubernetes-operator)
 1. [Install a sample application](#install-a-sample-application)
 1. [Configure Public Ingress for the sample application](#configure-public-ingress-for-the-sample-application)
 1. [Secure the app with OAuth](#add-oauth-protection-to-the-app)
@@ -34,7 +34,7 @@ Together, Consul provides a robust and secure way for Services within a cluster 
 
 ## **Step 1**: Set up a local Consul Service Mesh on Kubernetes {#set-up-a-consul-service-mesh-on-kubernetes}
 
-For this guide, we'll need access to a remote or local Kubernetes cluster with Consul installed. If you have an existing cluster with Consul set up, you can skip this step and proceed to [Step 2: Install the ngrok Kubernetes Operator](#install-the-ngrok-ingress-controller).
+For this guide, we'll need access to a remote or local Kubernetes cluster with Consul installed. If you have an existing cluster with Consul set up, you can skip this step and proceed to [Step 2: Install the ngrok Kubernetes Operator](#install-the-ngrok-kubernetes-operator).
 
 If you don't have one set up, we'll set up a local Minikube cluster and install Consul now.
 
@@ -105,7 +105,7 @@ We now have a Kubernetes cluster with a Consul service mesh installed.
 These steps are based on Consul's Tutorial [Consul Service Discovery and Service Mesh on Minikube](https://developer.hashicorp.com/consul/tutorials/kubernetes/kubernetes-minikube)
 :::
 
-## **Step 2**: Install the ngrok Kubernetes Operator {#install-the-ngrok-ingress-controller}
+## **Step 2**: Install the ngrok Kubernetes Operator {#install-the-ngrok-kubernetes-operator}
 
 Now that we have a Kubernetes cluster with Consul installed, we can install the ngrok Kubernetes Operator to provide ingress to our services. We'll use Helm to install the ngrok Kubernetes Operator into our cluster and use pod annotations to enable the Consul Connect sidecar injector. This will allow us to use Consul Connect to secure the traffic between the ngrok Kubernetes Operator and our services.
 
@@ -115,7 +115,7 @@ Now that we have a Kubernetes cluster with Consul installed, we can install the 
 apiVersion: v1
 kind: Service
 metadata:
-  name: ngrok-ingress-controller
+  name: ngrok-operator
   namespace: consul
 spec:
   ports:
@@ -124,7 +124,7 @@ spec:
       protocol: TCP
       targetPort: 80
   selector:
-    app.kubernetes.io/name: kubernetes-ingress-controller
+    app.kubernetes.io/name: ngrok-operator
 ```
 
 1. Add the ngrok Kubernetes Operator Helm repo
@@ -148,9 +148,9 @@ Next, we'll install the ngrok Kubernetes Operator into our cluster. We want the 
     ```
 
 ```bash
-helm install ngrok-ingress-controller ngrok/kubernetes-ingress-controller \
+helm install ngrok-operator ngrok/ngrok-operator\
   --namespace consul \
-  --set fullnameOverride=ngrok-ingress-controller \
+  --set clusterName=my-k8s-cluster \
   --set credentials.apiKey=$NGROK_API_KEY \
   --set credentials.authtoken=$NGROK_AUTHTOKEN \
   --set-string podAnnotations.consul\\.hashicorp\\.com/connect-inject=true \
@@ -168,9 +168,10 @@ helm install ngrok-ingress-controller ngrok/kubernetes-ingress-controller \
 5. Verify the ngrok Kubernetes Operator is installed and all its pods are healthy
 
 ```bash
-kubectl get pods -l 'app.kubernetes.io/name=kubernetes-ingress-controller' -n consul
-NAME                                                READY   STATUS    RESTARTS      AGE
-ngrok-ingress-controller-manager-5b796c88f7-k7v6z   2/2     Running   1 (64s ago)   67s
+kubectl get pods -l 'app.kubernetes.io/name=ngrok-operator' -n consul
+NAME                                                 READY   STATUS    RESTARTS      AGE
+ngrok-operator-agent-74b65b9-cg4zs                   1/1     Running   1          4d21h
+ngrok-operator-manager-6fd57968f4-kcfxj              1/1     Running   2          4d21h
 ```
 
 ## **Step 3**: Install a Sample Application {#install-a-sample-application}
@@ -219,7 +220,7 @@ spec:
     name: frontend
   sources:
     - action: allow
-      name: ngrok-ingress-controller
+      name: ngrok-operator
 ```
 
 ```yaml
@@ -232,7 +233,7 @@ spec:
   sources:
     - name: frontend
       action: allow
-    - name: ngrok-ingress-controller
+    - name: ngrok-operator
       action: allow
   destination:
     name: public-api

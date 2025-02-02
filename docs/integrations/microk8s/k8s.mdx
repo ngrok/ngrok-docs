@@ -81,12 +81,13 @@ Now that you have a Kubernetes cluster deployed using MicroK8s, you can install 
    export NGROK_API_KEY=[YOUR-API-KEY]
    ```
 
-1. Install the ngrok Kubernetes Operator with Helm under a new `ngrok-ingress-controller` namespace, with the `useExperimentalGatewayApi=true` option.
+1. Install the ngrok Kubernetes Operator with Helm under a new `ngrok-operator` namespace, with the `useExperimentalGatewayApi=true` option.
 
    ```bash
-   helm install ngrok-ingress-controller ngrok/kubernetes-ingress-controller \
-     --namespace ngrok-ingress-controller \
+   helm install ngrok-operator ngrok/ngrok-operator \
+     --namespace ngrok-operator \
      --create-namespace \
+     --set clusterName=my-k8s-cluster \
      --set credentials.apiKey=$NGROK_API_KEY \
      --set credentials.authtoken=$NGROK_AUTHTOKEN \
      --set useExperimentalGatewayApi=true
@@ -95,10 +96,11 @@ Now that you have a Kubernetes cluster deployed using MicroK8s, you can install 
 1. Verify you have installed the ngrok Kubernetes Operator successfully via a single running pod.
 
    ```bash
-   kubectl get pods --namespace ngrok-ingress-controller
+   kubectl get pods --namespace ngrok-operator
 
-   NAME                                                              READY   STATUS    RESTARTS   AGE
-   ngrok-ingress-controller-kubernetes-ingress-controller-man2fg5p   1/1     Running   0          2m23s
+   NAME                                                 READY   STATUS    RESTARTS   AGE
+   ngrok-operator-agent-74b65b9-cg4zs                   1/1     Running   1          4d21h
+   ngrok-operator-manager-6fd57968f4-kcfxj              1/1     Running   2          4d21h
    ```
 
 ## **Step 3**: Install an example app {#install-example-app}
@@ -116,7 +118,7 @@ Now you need a domain and Kubernetes service to ingress traffic to!
    kind: Service
    metadata:
      name: game-2048
-     namespace: ngrok-ingress-controller
+     namespace: ngrok-operator
    spec:
      ports:
        - name: http
@@ -129,7 +131,7 @@ Now you need a domain and Kubernetes service to ingress traffic to!
    kind: Deployment
    metadata:
      name: game-2048
-     namespace: ngrok-ingress-controller
+     namespace: ngrok-operator
    spec:
      replicas: 1
      selector:
@@ -190,7 +192,7 @@ You'll first create a [GatewayClass](https://gateway-api.sigs.k8s.io/api-types/g
    kind: Gateway
    metadata:
      name: 2048-gateway
-     namespace: ngrok-ingress-controller
+     namespace: ngrok-operator
    spec:
      gatewayClassName: ngrok
      listeners:
@@ -217,12 +219,12 @@ You'll first create a [GatewayClass](https://gateway-api.sigs.k8s.io/api-types/g
    kind: HTTPRoute
    metadata:
      name: 2048-route
-     namespace: ngrok-ingress-controller
+     namespace: ngrok-operator
    spec:
      parentRefs:
        - kind: Gateway
          name: 2048-gateway
-         namespace: ngrok-ingress-controller
+         namespace: ngrok-operator
      hostnames:
        #highlight-start
        - "NGROK_DOMAIN"
