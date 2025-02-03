@@ -53,22 +53,22 @@ const StickNum = ({ num, isLast }: { num: number; isLast: boolean }) => {
 		</div>
 	);
 };
-
 type StepListProps = {
 	children: ReactNode;
 };
 
 const StepList = ({ children, className }: StepListProps & WithStyleProps) => {
 	const arrayChildren = Children.toArray(children);
+
 	return (
-		<div className={className}>
+		<div style={{ margin: "10px" }} className={className}>
 			{arrayChildren.map((child, index) => (
-				<div key={index} className="relative">
+				<div key={index} className="relative m-0.5">
 					<StickNum
 						num={index + 1}
 						isLast={index === arrayChildren.length - 1}
 					/>
-					<div>{child}</div>
+					{child}
 				</div>
 			))}
 		</div>

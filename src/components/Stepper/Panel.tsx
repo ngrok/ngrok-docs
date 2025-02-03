@@ -2,7 +2,7 @@ import { cx } from "@ngrok/mantle/cx";
 import type { WithStyleProps } from "@ngrok/mantle/types";
 import { forwardRef } from "react";
 import type { PropsWithChildren } from "react";
-import linkStyles from "shared/theme/link.module.css";
+import linkStyles from "./panel.module.css";
 
 type PanelProps = WithStyleProps & PropsWithChildren;
 
