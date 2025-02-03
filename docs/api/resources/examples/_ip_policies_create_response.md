@@ -4,9 +4,9 @@
 
 ```json
 {
-	"created_at": "2025-01-29T21:09:50Z",
+	"created_at": "2025-02-03T10:07:26Z",
 	"description": "API Outbound Gateway",
-	"id": "ipp_2sJsPtCnK7ytQAl8VCBFvOslwXL",
-	"uri": "https://api.ngrok.com/ip_policies/ipp_2sJsPtCnK7ytQAl8VCBFvOslwXL"
+	"id": "ipp_2sWhTcnNh2GOp75BYWcYpc7B2Df",
+	"uri": "https://api.ngrok.com/ip_policies/ipp_2sWhTcnNh2GOp75BYWcYpc7B2Df"
 }
 ```
