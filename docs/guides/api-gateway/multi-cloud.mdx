@@ -95,12 +95,8 @@ Run the same command on other clouds for each replica of your API service.
 These internal agent endpoints are now in a single endpoint pool with traffic
 automatically load balanced between them.
 
-### Create a Traffic Policy file to forward traffic
-
-The internal agent endpoints you just created—and the endpoint pool that handles
-load balancing between them—are not yet addressable on the public internet.
-
-To fix that, you need two things:
+They aren't, however, accessible on the public internet. To fix that, you need
+two things:
 
 1. A cloud endpoint for traffic routing and centralized policy management.
 2. A Traffic Policy rule with the [`forward-internal`
@@ -191,11 +187,11 @@ With httpbin, you'll see a response like:
   "headers": {
     "Accept": "*/*",
     "Accept-Encoding": "gzip",
-    "Host": "mc-api.joelhans.xyz",
+    "Host": "{YOUR_NGROK_DOMAIN}",
     "User-Agent": "curl/8.7.1"
   },
   "origin": "172.17.0.1",
-  "url": "http://mc-api.joelhans.xyz/get"
+  "url": "{YOUR_NGROK_DOMAIN}/get"
 }
 ```
 
@@ -264,7 +260,7 @@ on_http_request:
           url: https://foo.internal
   - name: "Route the /bar/* path to service bar"
     expressions:
-      - req.url.path.startsWith('/payouts')
+      - req.url.path.startsWith('/bar')
     actions:
       - type: forward-internal
         config:
