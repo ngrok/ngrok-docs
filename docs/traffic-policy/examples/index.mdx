@@ -37,11 +37,11 @@ A number of these examples come from a longer article about how ngrok [makes pol
 ### Forward to an internal endpoints based on request attributes
 
 You can use [CEL
-interpolation](/docs/traffic-policy/concepts/cel-interpolation.mdx) to
+interpolation](/docs/traffic-policy/concepts/cel-interpolation) to
 dynamically forward requests to different internal endpoints based on URL,
 hostname, path, headers, and more. This allows you to manage complex traffic
 topologies without manually creating and managing each [`forward-internal`
-action](/docs/traffic-policy/actions/forward-internal.mdx).
+action](/docs/traffic-policy/actions/forward-internal).
 
 Forward requests from `https://*.example.com` to `https://<SUBDOMAIN>.internal`.
 
@@ -50,7 +50,7 @@ on_http_request:
   - actions:
       - type: forward-internal
         config:
-          url: https://${req.host.split('.example.com)[0]}.internal
+          url: https://${req.host.split('.example.com')[0]}.internal
 ```
 
 Forward requsets containing a `X-Customer-Value: {CUSTOMER}` header to `https://{CUSTOMER}.internal`.
@@ -60,7 +60,7 @@ on_http_request:
   - actions:
       - type: "forward-internal"
         config:
-          url: https://${getReqHeader(‘X-Customer-Value’)[0]}.internal
+          url: https://${getReqHeader('X-Customer-Value')[0]}.internal
 ```
 
 ## Add authentication
@@ -104,7 +104,7 @@ Using a naming scheme in your upstream servers, and API calls using a `tier` hea
 
 ### Deny traffic from Tor networks
 
-Use connection variables available in [IP Intelligence](/docs/traffic-policy/variables/ip-intel.mdx) to block Tor exit node IPs.
+Use connection variables available in [IP Intelligence](/docs/traffic-policy/variables/ip-intel) to block Tor exit node IPs.
 
 ```yaml traffic-policy
 on_http_request:
@@ -183,8 +183,11 @@ on_http_request:
 
 ### Remove service details from response headers
 
-Some frameworks, like Express, add headers like `X-Powered-By: Express` to
-responses, which you may not want to reveal to your users.
+Some frameworks, like [Express](https://expressjs.com/), add headers like
+`X-Powered-By: Express` to responses, which you may not want to reveal to your
+users.
+
+The following example removes the `X-Powered-By` header.
 
 ```yaml mode=traffic-policy
 on_http_response:
@@ -200,7 +203,7 @@ on_http_response:
 ### Deploy simple A/B tests
 
 Using the [`rand.double()`
-macro](/docs/traffic-policy/macros/utility.mdx#randdouble--double) set to `>=
+macro](/docs/traffic-policy/macros/utility#randdouble--double) set to `>=
 0.5`, you can equally split incoming requests to two different internal agent
 endpoints, which forward traffic to the two versions of your service.
 
@@ -240,9 +243,13 @@ on_http_request:
 ### Create 'pretty' URLs for SEO
 
 You can map the permalinks created by a blog CMS to "pretty" alternatives that
-are easier for both humans and SEO bot to grok. The following rule rewrites the
-user-friendly `/blog/11/example-title` to
-`/blog/index.php?p=11&title=example-title`, which is readable by your CMS.
+are easier for both humans and [SEO
+bots](https://developers.google.com/search/docs/crawling-indexing/googlebot) to
+understand.
+
+The following rule rewrites the a user-friendly URL like
+`/blog/11/example-title` to `/blog/index.php?p=11&title=example-title`, which is
+readable by your CMS.
 
 ```yaml mode=traffic-policy
 on_http_request:
