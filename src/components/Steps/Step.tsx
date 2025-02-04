@@ -1,5 +1,6 @@
 import { cx } from "@ngrok/mantle/cx";
 import type { ReactNode } from "react";
+import type React from "react";
 import { Panel } from "./Panel";
 
 const StickNum = ({ num, isLast }: { num: number; isLast: boolean }) => {
@@ -58,11 +59,12 @@ const StickNum = ({ num, isLast }: { num: number; isLast: boolean }) => {
 export type StepProps = {
 	num: number;
 	body: ReactNode[];
-	title: string;
+	title: ReactNode;
 	isLast: boolean;
 };
 
 const Step = ({ body, isLast = false, num, title }: StepProps) => {
+	console.log("Title", num, title);
 	return (
 		<>
 			<StickNum num={num} isLast={isLast} />
@@ -75,9 +77,9 @@ const Step = ({ body, isLast = false, num, title }: StepProps) => {
 				)}
 			>
 				<Panel.Header className="relative px-0 text-gray-600 md:mb-6 md:p-4 md:py-0">
-					<h2 className="-ml-0.5 mb-1 p-0 text-4xl font-medium text-strong">
+					<div className="-ml-0.5 mb-1 p-0 text-4xl font-medium text-strong">
 						{title}
-					</h2>
+					</div>
 				</Panel.Header>
 				<Panel.Body className={cx("rounded-lg border border-card p-4 md:p-6")}>
 					{body}

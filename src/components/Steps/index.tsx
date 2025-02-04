@@ -9,7 +9,7 @@ const getStepData = (arrayChildren: Array<any>): Array<StepData> => {
 		if (child?.type?.name === "h2") {
 			stepNum++;
 			return stepData.push({
-				title: child.props.children,
+				title: child,
 				body: [],
 			});
 		}
@@ -27,7 +27,7 @@ type StepListProps = {
 };
 
 type StepData = {
-	title: string;
+	title: ReactNode;
 	body: Array<any>;
 };
 
