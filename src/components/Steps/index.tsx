@@ -5,7 +5,7 @@ import Step from "./Step";
 const getStepData = (arrayChildren: Array<any>): Array<StepData> => {
 	const stepData: Array<StepData> = [];
 	let stepNum = -1;
-	arrayChildren.forEach((child: any, i) => {
+	arrayChildren.forEach((child: any) => {
 		if (child?.type?.name === "h2") {
 			stepNum++;
 			return stepData.push({
