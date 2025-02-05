@@ -265,7 +265,17 @@ const redirects = [
     [ fromIncludes('/docs/network-edge/edges'), '/docs/universal-gateway/edges'],
     [ fromIncludes('/docs/network-edge/'), '/docs/universal-gateway/edges'],
     [ fromIncludes('/docs/network-edge/internal-endpoints'), '/docs/universal-gateway/internal-endpoints'],
-    [ fromIncludes('/docs/network-edge/tls-certificates'), '/docs/universal-gateway/tls-certificates'],
+    [ fromIncludes('/docs/network-edge/tls-certificates'), '/docs/universal-gateway/tls-certificates'],  
+        // obs redirects   
+    [ fromIncludes('/docs/obs/reference'), '/docs/obs/events/reference'],
+    //tcp
+    [ fromIncludes('/docs/tcp/ip-restrictions'), '/docs/traffic-policy/actions/restrict-ips/'],
+    [ fromIncludes('/docs/tcp/traffic-policy/actions/deny/'), '/docs/traffic-policy/actions/deny/'],
+    [ fromIncludes('/docs/tcp/traffic-policy/actions/deny/'), '/docs/traffic-policy/actions/deny/'],
+    [ fromIncludes('/docs/tcp/traffic-policy/actions/'), '/docs/traffic-policy/actions/'],
+    [ fromIncludes('/docs/tcp/traffic-policy/actions/log/'), '/docs/traffic-policy/actions/log'],
+    [ fromIncludes('/docs/tcp/traffic-policy/actions/restrict-ips/'), '/docs/traffic-policy/actions/restrict-ips'],
+    
 ]
 
 // get current href from window
