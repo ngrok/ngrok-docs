@@ -20,7 +20,7 @@ const toReplace = (to) => (path, from) => path.replace(from, to)            // a
 const redirects = [
     [ fromIncludes(`/docs/1`), `/docs/` ],
     [ fromIncludes(`/docs/2`), `/docs/` ],
-    [ fromIncludes(`/docs/ngrok-link`), `/docs/network-edge/` ],
+    [ fromIncludes(`/docs/ngrok-link`), `/docs/universal-gateway/overview/` ],
     [ fromIncludes(`/docs/api/api-clients`), `/docs/api/#client-libraries` ],
     [ fromIncludes(`/docs/api/client-libraries`), `/docs/api/#client-libraries` ],
     [ fromIncludes(`/docs/api/terraform`), `/docs/api/#terraform-provider` ],
@@ -28,8 +28,8 @@ const redirects = [
     [ fromIncludes(`/docs/platform/events`), `/docs/events/` ],
     [ fromIncludes(`/docs/events/filtering`), `/docs/events/#filters` ],
     [ fromIncludes(`/docs/http-header-templates/`), `/docs/network-edge/http-header-templates/` ],
-    [ fromIncludes(`/docs/network-edge/pops`), `/docs/network-edge/#points-of-presence` ],
-    [ fromIncludes(`/docs/platform/pops`), `/docs/network-edge/#points-of-presence` ],
+    [ fromIncludes(`/docs/network-edge/pops`), `/docs/universal-gateway/points-of-presence/` ],
+    [ fromIncludes(`/docs/platform/pops`), `/docs/universal-gateway/points-of-presence/` ],
     [ fromIncludes(`/docs/best-practices/security-dev-productivity/`), `/docs/guides/security-dev-productivity/` ],
     [ fromIncludes(`/docs/platform/ip-policies/`), `/docs/network-edge/ip-policies/` ],
     [ fromIncludes(`/docs/platform/botusers/`), `/docs/user-management/#bot-users` ],
@@ -161,10 +161,10 @@ const redirects = [
     [ fromIncludes(`/docs/cloud-edge/modules/webhook-verification/`), `/docs/http/webhook-verification/` ],
     [ fromIncludes(`/docs/cloud-edge/modules/`), `/docs/http/#modules` ],
     [ fromIncludes(`/docs/cloud-edge/observability/`), `/docs/http/#observability` ],
-    [ fromIncludes(`/docs/cloud-edge/pops/`), `/docs/network-edge/#points-of-presence` ],
+    [ fromIncludes(`/docs/cloud-edge/pops/`), `/docs/universal-gateway/points-of-presence/` ],
     [ fromIncludes(`/docs/cloud-edge/zero-knowledge-tls/`), `/docs/tls/termination/` ],
     [ fromIncludes(`/docs/tls/tls/termination/`), `/docs/tls/termination/` ],
-    [ fromIncludes(`/docs/cloud-edge/`), `/docs/network-edge/` ],
+    [ fromIncludes(`/docs/cloud-edge/`), `/docs/universal-gateway/overview/` ],
     [ fromIncludes(`/docs/integrations/home-assistant/home-assistant`), `/docs/integrations/home-assistant/home-assistant-with-ngrok` ],
 
     // Redirects for Traffic Policy Expressions
@@ -259,6 +259,13 @@ const redirects = [
     [ fromIncludes('/docs/http/request-headers/'), '/docs/traffic-policy/actions/add-headers'],
     [ fromIncludes('/docs/http/response-headers/'), '/docs/traffic-policy/actions/custom-response'],
     [ fromIncludes('/docs/http/saml/'), '/docs/traffic-policy/actions/saml'],    
+        // Network Edge
+    [ fromIncludes('/docs/network-edge/cloud-endpoints'), '/docs/universal-gateway/cloud-endpoints'],
+    [ fromIncludes('/docs/network-edge/domains-and-tcp-addresses'), '/docs/universal-gateway/domains'],
+    [ fromIncludes('/docs/network-edge/edges'), '/docs/universal-gateway/edges'],
+    [ fromIncludes('/docs/network-edge/'), '/docs/universal-gateway/edges'],
+    [ fromIncludes('/docs/network-edge/internal-endpoints'), '/docs/universal-gateway/internal-endpoints'],
+    [ fromIncludes('/docs/network-edge/tls-certificates'), '/docs/universal-gateway/tls-certificates'],
 ]
 
 // get current href from window
