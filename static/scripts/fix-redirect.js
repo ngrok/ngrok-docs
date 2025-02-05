@@ -141,7 +141,7 @@ const redirects = [
     [ fromIncludes(`/docs/secure-tunnels/`), `/docs/agent/` ],
 
     // redirects for cloud edges
-    [ fromIncludes(`/docs/cloud-edge/app-users/`), `/docs/network-edge/app-users/` ],
+    [ fromIncludes(`/docs/cloud-edge/app-users/`), `/docs/traffic-policy/identities/` ],
     [ fromIncludes(`/docs/cloud-edge/edges/`), `/docs/network-edge/edges/` ],
     [ fromIncludes(`/docs/cloud-edge/edges/https/`), `/docs/http/` ],
     [ fromIncludes(`/docs/cloud-edge/edges/tcp/`), `/docs/tcp/` ],
@@ -151,7 +151,7 @@ const redirects = [
     [ fromIncludes(`/docs/cloud-edge/modules/circuit-breaker/`), `/docs/http/circuit-breaker/` ],
     [ fromIncludes(`/docs/cloud-edge/modules/compression/`), `/docs/http/compression/` ],
     [ fromIncludes(`/docs/cloud-edge/modules/ip-restrictions/`), `/docs/http/ip-restrictions/` ],
-    [ fromIncludes(`/docs/cloud-edge/modules/mutual-tls/`), `/docs/http/mutual-tls/` ],
+    [ fromIncludes(`/docs/cloud-edge/modules/mutual-tls/`), `/docs/traffic-policy/actions/terminate-tls/#enabling-mutual-tls` ],
     [ fromIncludes(`/docs/cloud-edge/modules/oauth/`), `/docs/http/oauth/` ],
     [ fromIncludes(`/docs/cloud-edge/modules/openid-connect/`), `/docs/http/openid-connect/` ],
     [ fromIncludes(`/docs/cloud-edge/modules/request-headers/`), `/docs/http/request-headers/` ],
@@ -277,6 +277,17 @@ const redirects = [
     [ fromIncludes('/docs/tcp/traffic-policy/actions/restrict-ips/'), '/docs/traffic-policy/actions/restrict-ips'],
         // tls
     [ fromIncludes('/docs/tls/ip-restrictions/'), '/docs/traffic-policy/actions/restrict-ips'],
+    [ fromIncludes('/docs/tls/mutual-tls/'), '/docs/traffic-policy/actions/terminate-tls/#enabling-mutual-tls'],
+    [ fromIncludes('/docs/tls/termination/index'), '/docs/agent/agent-tls-termination/'],
+        // traffic policy
+    [ fromIncludes('/docs/network-edge/app-users/'), '/docs/traffic-policy/identities/'],
+        // universal gateway
+    [ fromIncludes('/docs/network-edge/gslb/'), '/docs/universal-gateway/global-load-balancer/'],
+    [ fromIncludes('/docs/http/'), '/docs/universal-gateway/http/'],
+    [ fromIncludes('/docs/tcp/'), '/docs/universal-gateway/tcp/'],
+    [ fromIncludes('/docs/tls/'), '/docs/universal-gateway/tls/'],
+
+
 ]
 
 // get current href from window
