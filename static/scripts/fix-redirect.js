@@ -175,7 +175,7 @@ const redirects = [
     [ fromIncludes(`/docs/tls/traffic-policy/expressions/#connection-variables`), `/docs/tls/traffic-policy/expressions/variables#connection-variables` ],
     [ fromIncludes(`/docs/tls/traffic-policy/expressions/#macros`), `/docs/tls/traffic-policy/expressions/macros` ],
     [ fromIncludes(`/docs/tcp/traffic-policy/expressions/#connection-variables`), `/docs/tcp/traffic-policy/expressions/variables#connection-variables` ],
-    [ fromIncludes(`/docs/tcp/traffic-policy/expressions/#macros`), `/docs/tcp/traffic-policy/expressions/macros` ],
+    [ fromIncludes(`/docs/tcp/traffic-policy/expressions/#macros`), `/docs/traffic-policy/macros/` ],
 
     // /docs/user-management/* -> /docs/iam/*
     [ fromIncludes(`/docs/user-management/#bot-users`), `/docs/iam/bot-users/` ],
@@ -275,7 +275,6 @@ const redirects = [
     [ fromIncludes('/docs/tcp/traffic-policy/actions/'), '/docs/traffic-policy/actions/'],
     [ fromIncludes('/docs/tcp/traffic-policy/actions/log/'), '/docs/traffic-policy/actions/log'],
     [ fromIncludes('/docs/tcp/traffic-policy/actions/restrict-ips/'), '/docs/traffic-policy/actions/restrict-ips'],
-    
 ]
 
 // get current href from window
