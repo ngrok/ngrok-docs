@@ -1,5 +1,5 @@
 const fromExact = (from) => (path) => [ from, path === from ]               // [xyz]
-const fromIncludes = (from) => (path) => {
+export const fromIncludes = (from) => (path) => {
     // Normalize both paths by removing trailing slashes if present
     const normalizedFrom = from.endsWith('/') ? from.slice(0, -1) : from;
     const normalizedPath = path.endsWith('/') ? path.slice(0, -1) : path;
@@ -244,6 +244,21 @@ const redirects = [
     // JAN 2025
     [ fromIncludes(`/docs/tls/tls-termination/`), `/docs/tls/termination/` ],
     [ fromIncludes(`/docs/traffic-policy/templates/`), `/docs/traffic-policy/examples/` ],
+
+    /*IA Restructure redirects*/
+    [ fromIncludes('/docs/tls/termination/agent-tls-termination/'), '/docs/agent/agent-tls-termination/']
+    [ fromIncludes('/docs/concepts/'), '/docs/overview/']
+        // HTTP Redirects
+    [ fromIncludes('/docs/http/basic-auth'), '/docs/traffic-policy/actions/basic-auth/'],
+    [ fromIncludes('/docs/http/circuit-breaker'), '/docs/traffic-policy/actions/circuit-breaker/'],
+    [ fromIncludes('/docs/http/compression/'), '/docs/traffic-policy/actions/compress-response/'],
+    [ fromIncludes('/docs/http/ip-restrictions/'), '/docs/traffic-policy/actions/restrict-ips/'],
+    [ fromIncludes('/docs/http/mutual-tls/'), '/docs/traffic-policy/actions/terminate-tls/#enabling-mutual-tls'],
+    [ fromIncludes('/docs/http/oauth/'), '/docs/traffic-policy/actions/oauth'],
+    [ fromIncludes('/docs/http/openid-connect/'), '/docs/traffic-policy/actions/oidc'],
+    [ fromIncludes('/docs/http/request-headers/'), '/docs/traffic-policy/actions/add-headers'],
+    [ fromIncludes('/docs/http/response-headers/'), '/docs/traffic-policy/actions/custom-response'],
+    [ fromIncludes('/docs/http/saml/'), '/docs/traffic-policy/actions/saml'],    
 ]
 
 // get current href from window
@@ -280,6 +295,5 @@ for (const redirect of redirects) {
 if (newPath != currentPath && newPath != window.location.pathname) {
     window.location.href = newPath
 } else {
-    console.log("The results are", val)
     console.error(`ignoring redirect from ${window.location.href} to ${newPath}; looks loopy`)
 }
