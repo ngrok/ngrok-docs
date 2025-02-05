@@ -1,5 +1,5 @@
 const fromExact = (from) => (path) => [ from, path === from ]               // [xyz]
-export const fromIncludes = (from) => (path) => {
+const fromIncludes = (from) => (path) => {
     // Normalize both paths by removing trailing slashes if present
     const normalizedFrom = from.endsWith('/') ? from.slice(0, -1) : from;
     const normalizedPath = path.endsWith('/') ? path.slice(0, -1) : path;
@@ -246,8 +246,8 @@ const redirects = [
     [ fromIncludes(`/docs/traffic-policy/templates/`), `/docs/traffic-policy/examples/` ],
 
     /*IA Restructure redirects*/
-    [ fromIncludes('/docs/tls/termination/agent-tls-termination/'), '/docs/agent/agent-tls-termination/']
-    [ fromIncludes('/docs/concepts/'), '/docs/overview/']
+    [ fromIncludes('/docs/tls/termination/agent-tls-termination/'), '/docs/agent/agent-tls-termination/'],
+    [ fromIncludes('/docs/concepts/'), '/docs/overview/'],
         // HTTP Redirects
     [ fromIncludes('/docs/http/basic-auth'), '/docs/traffic-policy/actions/basic-auth/'],
     [ fromIncludes('/docs/http/circuit-breaker'), '/docs/traffic-policy/actions/circuit-breaker/'],
@@ -275,6 +275,8 @@ const redirects = [
     [ fromIncludes('/docs/tcp/traffic-policy/actions/'), '/docs/traffic-policy/actions/'],
     [ fromIncludes('/docs/tcp/traffic-policy/actions/log/'), '/docs/traffic-policy/actions/log'],
     [ fromIncludes('/docs/tcp/traffic-policy/actions/restrict-ips/'), '/docs/traffic-policy/actions/restrict-ips'],
+        // tls
+    [ fromIncludes('/docs/tls/ip-restrictions/'), '/docs/traffic-policy/actions/restrict-ips'],
 ]
 
 // get current href from window
