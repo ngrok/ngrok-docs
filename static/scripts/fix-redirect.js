@@ -1,3 +1,5 @@
+import { iaRestructureRedirects } from "./other-redirects/ia-restructure";
+
 const fromExact = (from) => (path) => [ from, path === from ]               // [xyz]
 const fromIncludes = (from) => (path) => {
     // Normalize both paths by removing trailing slashes if present
@@ -18,6 +20,7 @@ const toReplace = (to) => (path, from) => path.replace(from, to)            // a
 //  [0 - from]: (path) => [matchStr, boolean (true for match, false for do not match)]
 //  [1 - to]:  (path, from) => string (returned value becomes the new path)
 const redirects = [
+    ... iaRestructureRedirects,
     [ fromIncludes(`/docs/1`), `/docs/` ],
     [ fromIncludes(`/docs/2`), `/docs/` ],
     [ fromIncludes(`/docs/ngrok-link`), `/docs/universal-gateway/overview/` ],
@@ -142,21 +145,21 @@ const redirects = [
 
     // redirects for cloud edges
     [ fromIncludes(`/docs/cloud-edge/app-users/`), `/docs/traffic-policy/identities/` ],
-    [ fromIncludes(`/docs/cloud-edge/edges/`), `/docs/network-edge/edges/` ],
+    [ fromIncludes(`/docs/cloud-edge/edges/`), `/docs/universal-gateway/edges/` ],
     [ fromIncludes(`/docs/cloud-edge/edges/https/`), `/docs/http/` ],
     [ fromIncludes(`/docs/cloud-edge/edges/tcp/`), `/docs/tcp/` ],
     [ fromIncludes(`/docs/cloud-edge/edges/tls/`), `/docs/tls/` ],
     [ fromIncludes(`/docs/cloud-edge/endpoints/`), `/docs/http/` ],
     [ fromIncludes(`/docs/cloud-edge/ip-policies/`), `/docs/http/#ip-restrictions` ],
-    [ fromIncludes(`/docs/cloud-edge/modules/circuit-breaker/`), `/docs/http/circuit-breaker/` ],
-    [ fromIncludes(`/docs/cloud-edge/modules/compression/`), `/docs/http/compression/` ],
-    [ fromIncludes(`/docs/cloud-edge/modules/ip-restrictions/`), `/docs/http/ip-restrictions/` ],
+    [ fromIncludes(`/docs/cloud-edge/modules/circuit-breaker/`), `/docs/traffic-policy/actions/circuit-breaker/` ],
+    [ fromIncludes(`/docs/cloud-edge/modules/compression/`), `/docs/traffic-policy/actions/compress-response/` ],
+    [ fromIncludes(`/docs/cloud-edge/modules/ip-restrictions/`), `/docs/traffic-policy/actions/restrict-ips/` ],
     [ fromIncludes(`/docs/cloud-edge/modules/mutual-tls/`), `/docs/traffic-policy/actions/terminate-tls/#enabling-mutual-tls` ],
-    [ fromIncludes(`/docs/cloud-edge/modules/oauth/`), `/docs/http/oauth/` ],
-    [ fromIncludes(`/docs/cloud-edge/modules/openid-connect/`), `/docs/http/openid-connect/` ],
-    [ fromIncludes(`/docs/cloud-edge/modules/request-headers/`), `/docs/http/request-headers/` ],
-    [ fromIncludes(`/docs/cloud-edge/modules/response-headers/`), `/docs/http/response-headers/` ],
-    [ fromIncludes(`/docs/cloud-edge/modules/saml/`), `/docs/http/saml/` ],
+    [ fromIncludes(`/docs/cloud-edge/modules/oauth/`), `/docs/traffic-policy/actions/oauth/` ],
+    [ fromIncludes(`/docs/cloud-edge/modules/openid-connect/`), `/docs/traffic-policy/actions/oidc/` ],
+    [ fromIncludes(`/docs/cloud-edge/modules/request-headers/`), `/docs/traffic-policy/actions/add-headers/` ],
+    [ fromIncludes(`/docs/cloud-edge/modules/response-headers/`), `/docs/traffic-policy/actions/custom-response/` ],
+    [ fromIncludes(`/docs/cloud-edge/modules/saml/`), `/docs/traffic-policy/actions/saml` ],
     [ fromIncludes(`/docs/cloud-edge/modules/tls-termination/`), `/docs/http/tls-termination/` ],
     [ fromIncludes(`/docs/cloud-edge/modules/webhook-verification/`), `/docs/http/webhook-verification/` ],
     [ fromIncludes(`/docs/cloud-edge/modules/`), `/docs/http/#modules` ],
@@ -190,7 +193,7 @@ const redirects = [
     [ fromIncludes(`/docs/ngrok-agent/ngrok`), `/docs/agent/` ],
     [ fromIncludes(`/docs/network-edge/modules/webhook-verification`), `/docs/api/resources/edge-route-webhook-verification-module/` ],
     [ fromIncludes(`/docs/platform/ip-policies`), `/docs/api/resources/ip-policies/` ],
-    [ fromIncludes(`/docs/http-header-templates`), `/docs/http/request-headers/` ],
+    [ fromIncludes(`/docs/http-header-templates`), `/docs/traffic-policy/actions/add-headers/` ],
 
     // (DEC 2024) New Traffic Policy
     [ fromIncludes(`/docs/traffic-policy/gallery/`), `/docs/traffic-policy/examples/` ],
@@ -244,50 +247,6 @@ const redirects = [
     // JAN 2025
     [ fromIncludes(`/docs/tls/tls-termination/`), `/docs/tls/termination/` ],
     [ fromIncludes(`/docs/traffic-policy/templates/`), `/docs/traffic-policy/examples/` ],
-
-    /*IA Restructure redirects*/
-    [ fromIncludes('/docs/tls/termination/agent-tls-termination/'), '/docs/agent/agent-tls-termination/'],
-    [ fromIncludes('/docs/concepts/'), '/docs/overview/'],
-        // HTTP Redirects
-    [ fromIncludes('/docs/http/basic-auth'), '/docs/traffic-policy/actions/basic-auth/'],
-    [ fromIncludes('/docs/http/circuit-breaker'), '/docs/traffic-policy/actions/circuit-breaker/'],
-    [ fromIncludes('/docs/http/compression/'), '/docs/traffic-policy/actions/compress-response/'],
-    [ fromIncludes('/docs/http/ip-restrictions/'), '/docs/traffic-policy/actions/restrict-ips/'],
-    [ fromIncludes('/docs/http/mutual-tls/'), '/docs/traffic-policy/actions/terminate-tls/#enabling-mutual-tls'],
-    [ fromIncludes('/docs/http/oauth/'), '/docs/traffic-policy/actions/oauth'],
-    [ fromIncludes('/docs/http/openid-connect/'), '/docs/traffic-policy/actions/oidc'],
-    [ fromIncludes('/docs/http/request-headers/'), '/docs/traffic-policy/actions/add-headers'],
-    [ fromIncludes('/docs/http/response-headers/'), '/docs/traffic-policy/actions/custom-response'],
-    [ fromIncludes('/docs/http/saml/'), '/docs/traffic-policy/actions/saml'],    
-        // Network Edge
-    [ fromIncludes('/docs/network-edge/cloud-endpoints'), '/docs/universal-gateway/cloud-endpoints'],
-    [ fromIncludes('/docs/network-edge/domains-and-tcp-addresses'), '/docs/universal-gateway/domains'],
-    [ fromIncludes('/docs/network-edge/edges'), '/docs/universal-gateway/edges'],
-    [ fromIncludes('/docs/network-edge/'), '/docs/universal-gateway/edges'],
-    [ fromIncludes('/docs/network-edge/internal-endpoints'), '/docs/universal-gateway/internal-endpoints'],
-    [ fromIncludes('/docs/network-edge/tls-certificates'), '/docs/universal-gateway/tls-certificates'],  
-        // obs redirects   
-    [ fromIncludes('/docs/obs/reference'), '/docs/obs/events/reference'],
-    //tcp
-    [ fromIncludes('/docs/tcp/ip-restrictions'), '/docs/traffic-policy/actions/restrict-ips/'],
-    [ fromIncludes('/docs/tcp/traffic-policy/actions/deny/'), '/docs/traffic-policy/actions/deny/'],
-    [ fromIncludes('/docs/tcp/traffic-policy/actions/deny/'), '/docs/traffic-policy/actions/deny/'],
-    [ fromIncludes('/docs/tcp/traffic-policy/actions/'), '/docs/traffic-policy/actions/'],
-    [ fromIncludes('/docs/tcp/traffic-policy/actions/log/'), '/docs/traffic-policy/actions/log'],
-    [ fromIncludes('/docs/tcp/traffic-policy/actions/restrict-ips/'), '/docs/traffic-policy/actions/restrict-ips'],
-        // tls
-    [ fromIncludes('/docs/tls/ip-restrictions/'), '/docs/traffic-policy/actions/restrict-ips'],
-    [ fromIncludes('/docs/tls/mutual-tls/'), '/docs/traffic-policy/actions/terminate-tls/#enabling-mutual-tls'],
-    [ fromIncludes('/docs/tls/termination/index'), '/docs/agent/agent-tls-termination/'],
-        // traffic policy
-    [ fromIncludes('/docs/network-edge/app-users/'), '/docs/traffic-policy/identities/'],
-        // universal gateway
-    [ fromIncludes('/docs/network-edge/gslb/'), '/docs/universal-gateway/global-load-balancer/'],
-    [ fromIncludes('/docs/http/'), '/docs/universal-gateway/http/'],
-    [ fromIncludes('/docs/tcp/'), '/docs/universal-gateway/tcp/'],
-    [ fromIncludes('/docs/tls/'), '/docs/universal-gateway/tls/'],
-
-
 ]
 
 // get current href from window
