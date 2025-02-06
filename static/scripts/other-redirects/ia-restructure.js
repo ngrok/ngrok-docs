@@ -25,14 +25,13 @@ export const iaRestructureRedirects = [
         //tcp
     [ fromIncludes('/docs/tcp/ip-restrictions'), '/docs/traffic-policy/actions/restrict-ips/'],
     [ fromIncludes('/docs/tcp/traffic-policy/actions/deny/'), '/docs/traffic-policy/actions/deny/'],
-    [ fromIncludes('/docs/tcp/traffic-policy/actions/deny/'), '/docs/traffic-policy/actions/deny/'],
     [ fromIncludes('/docs/tcp/traffic-policy/actions/'), '/docs/traffic-policy/actions/'],
     [ fromIncludes('/docs/tcp/traffic-policy/actions/log/'), '/docs/traffic-policy/actions/log'],
     [ fromIncludes('/docs/tcp/traffic-policy/actions/restrict-ips/'), '/docs/traffic-policy/actions/restrict-ips'],
         // tls
     [ fromIncludes('/docs/tls/ip-restrictions/'), '/docs/traffic-policy/actions/restrict-ips'],
     [ fromIncludes('/docs/tls/mutual-tls/'), '/docs/traffic-policy/actions/terminate-tls/#enabling-mutual-tls'],
-    [ fromIncludes('/docs/tls/termination/index'), '/docs/agent/agent-tls-termination/'],
+    [ fromIncludes(`/docs/tls/termination/`), '/docs/agent/agent-tls-termination/'],
         // traffic policy
     [ fromIncludes('/docs/network-edge/app-users/'), '/docs/traffic-policy/identities/'],
         // universal gateway
