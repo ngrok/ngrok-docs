@@ -57,17 +57,20 @@ preview](https://dashboard.ngrok.com/developer-preview).
 
 If you don't yet have API services you'd like to bring online with a multicloud
 API gateway, or just want to quickly wire up a POC using ngrok, we recommend
-running multiple "replicas" of [httpbin](https://httpbin.org/), a simple
-HTTP request and response service.
+running multiple "replicas" of our [ngrok demo
+API](https://github.com/ngrok-samples/api-demo), which responds with details
+about the request.
 
 Assuming you have Docker installed on the systems where your API services run,
-you can deploy a container listening on port `8080`.
+you can deploy a container listening on port `4000`.
 
 ```shell
-docker run -p 8080:80 -d kennethreitz/httpbin
+docker run -p 4000:4000 -e MESSAGE='Hello from cloud A!' -d joelatngrok/api-demo 
 ```
 
-Spin up httpbin on your other cloud providers as replicas.
+Spin up the same service on your other cloud providers as replicas. Change the
+`MESSAGE` environment variable to help you later see which replica and which
+clouds respond to your requests.
 
 ## Add your API services to an endpoint pool
 
@@ -76,10 +79,10 @@ them by default, load-balancing traffic between them. This can improve your
 API's performance and resiliency.
 
 In one cloud, create an internal agent endpoint on an internal URL, like
-`https://foo.internal`. Replace `8080` if you've brought your own API service.
+`https://foo.internal`. Replace `4000` if you've brought your own API service.
 
 ```
-ngrok http 8080 --url https://foo.internal --pooling-enabled=true
+ngrok http 4000 --url https://foo.internal --pooling-enabled=true
 ```
 
 Run the same command for each replica of your API service on other clouds.
@@ -158,28 +161,20 @@ At this point, your multicloud API gateway is ready for traffic!
 All requests to `{YOUR_NGROK_DOMAIN}` are forwarded to your load-balanced pool
 of replicas.
 
-If you're running httpbin as a demo API service, send a query to the `/get`
-route—if you've brought your own service, change the route accordingly.
+You can now start to send requests.
 
 ```bash
-curl -X GET https://{YOUR_NGROK_DOMAIN}/get
+curl -X GET https://{YOUR_NGROK_DOMAIN}
 ```
 
-With httpbin, you'll see a response like:
+If you're using our demo API, you'll see a response like:
 
+```json
+{"message":"Hello from cloud A!","host":"localhost:4000","req_headers":{"host":"localhost:4000","user-agent":"curl/8.5.0","accept":"*/*"},"method":"GET","url":"/","time":"2025-02-06T21:44:23.116Z","status":200}
 ```
-{
-  "args": {},
-  "headers": {
-    "Accept": "*/*",
-    "Accept-Encoding": "gzip",
-    "Host": "{YOUR_NGROK_DOMAIN}",
-    "User-Agent": "curl/8.7.1"
-  },
-  "origin": "172.17.0.1",
-  "url": "{YOUR_NGROK_DOMAIN}/get"
-}
-```
+
+Try a few more times, and you'll see `Hello from cloud B!` instead—proof you're
+load balancing between clouds.
 
 Now is the time to start getting even more from Traffic Policy, our configuration
 language for managing traffic. You can attach Traffic Policy rules to both your
