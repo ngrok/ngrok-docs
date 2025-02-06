@@ -14,12 +14,13 @@ export const iaRestructureRedirects = [
     [ fromIncludes('/docs/http/response-headers/'), '/docs/traffic-policy/actions/custom-response'],
     [ fromIncludes('/docs/http/saml/'), '/docs/traffic-policy/actions/saml'],    
         // Network Edge
+    [ fromIncludes('/docs/network-edge/'), '/docs/universal-gateway/edges'],
+    [ fromIncludes('/docs/network-edge/edges'), '/docs/universal-gateway/edges'],
     [ fromIncludes('/docs/network-edge/cloud-endpoints'), '/docs/universal-gateway/cloud-endpoints'],
     [ fromIncludes('/docs/network-edge/domains-and-tcp-addresses'), '/docs/universal-gateway/domains'],
-    [ fromIncludes('/docs/network-edge/edges'), '/docs/universal-gateway/edges'],
-    [ fromIncludes('/docs/network-edge/'), '/docs/universal-gateway/edges'],
     [ fromIncludes('/docs/network-edge/internal-endpoints'), '/docs/universal-gateway/internal-endpoints'],
     [ fromIncludes('/docs/network-edge/tls-certificates'), '/docs/universal-gateway/tls-certificates'],  
+    [ fromIncludes('/docs/network-edge/app-users/'), '/docs/traffic-policy/identities/'],
         // obs redirects   
     [ fromIncludes('/docs/obs/reference'), '/docs/obs/events/reference'],
         //tcp
@@ -31,9 +32,7 @@ export const iaRestructureRedirects = [
         // tls
     [ fromIncludes('/docs/tls/ip-restrictions/'), '/docs/traffic-policy/actions/restrict-ips'],
     [ fromIncludes('/docs/tls/mutual-tls/'), '/docs/traffic-policy/actions/terminate-tls/#enabling-mutual-tls'],
-    [ fromIncludes(`/docs/tls/termination/`), '/docs/agent/agent-tls-termination/'],
-        // traffic policy
-    [ fromIncludes('/docs/network-edge/app-users/'), '/docs/traffic-policy/identities/'],
+    [ fromIncludes(`/docs/tls/termination/`), '/docs/traffic-policy/actions/terminate-tls/'],
         // universal gateway
     [ fromIncludes('/docs/network-edge/gslb/'), '/docs/universal-gateway/global-load-balancer/'],
     [ fromIncludes('/docs/http/'), '/docs/universal-gateway/http/'],
