@@ -438,7 +438,7 @@ const sidebars = {
 			items: [
 				"guides/api-gateway/get-started",
 				"guides/api-gateway/kubernetes",
-				"guides/api-gateway/multi-cloud",
+				"guides/api-gateway/multicloud",
 				"guides/api-gateway/add-traffic-policy",
 			],
 		},
