@@ -60,6 +60,35 @@ const config = {
 		"./src/plugins/tailwindcss",
 	],
 	headTags: [
+		{
+			tagName: "link",
+			attributes: {
+				href: "https://assets.ngrok.com",
+				rel: "preconnect",
+			},
+		},
+		{
+			tagName: "link",
+			attributes: {
+				href: "https://fonts.googleapis.com",
+				rel: "preconnect",
+			},
+		},
+		{
+			tagName: "link",
+			attributes: {
+				crossorigin: "anonymous",
+				href: "https://fonts.gstatic.com",
+				rel: "preconnect",
+			},
+		},
+		{
+			tagName: "link",
+			attributes: {
+				href: "https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&amp;display=swap",
+				rel: "stylesheet",
+			},
+		},
 		...fontHrefs.map((href) => ({
 			tagName: "link",
 			attributes: {
@@ -73,6 +102,9 @@ const config = {
 	],
 
 	scripts: [
+		{
+			src: "/docs/scripts/prevent-fouc.js",
+		},
 		{
 			src: "/docs/scripts/ketch.js",
 		},
