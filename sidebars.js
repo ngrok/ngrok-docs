@@ -31,6 +31,12 @@ const sidebars = {
 			],
 		},
 		{
+			label: "Pricing & Limits",
+			type: "category",
+			link: { type: "doc", id: "pricing-limits/index" },
+			items: ["pricing-limits/free-plan-limits"],
+		},
+		{
 			label: "Universal Gateway",
 			type: "category",
 			collapsible: false,
@@ -318,6 +324,15 @@ const sidebars = {
 						"k8s/advanced-deployments",
 						"k8s/crds",
 						"k8s/custom-domain",
+						{
+							label: "Developer Guide",
+							type: "category",
+							link: { type: "doc", id: "k8s/developer-guide/index" },
+							items: [
+								"k8s/developer-guide/architecture",
+								"k8s/developer-guide/releasing",
+							],
+						},
 					],
 				},
 			],

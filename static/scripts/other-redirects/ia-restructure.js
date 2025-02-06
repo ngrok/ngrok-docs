@@ -21,7 +21,7 @@ export const iaRestructureRedirects = [
     [ fromIncludes('/docs/network-edge/internal-endpoints'), '/docs/universal-gateway/internal-endpoints'],
     [ fromIncludes('/docs/network-edge/tls-certificates'), '/docs/universal-gateway/tls-certificates'],  
     [ fromIncludes('/docs/network-edge/app-users/'), '/docs/traffic-policy/identities/'],
-        // obs redirects   
+        // obs   
     [ fromIncludes('/docs/obs/reference'), '/docs/obs/events/reference'],
         //tcp
     [ fromIncludes('/docs/tcp/ip-restrictions'), '/docs/traffic-policy/actions/restrict-ips/'],
