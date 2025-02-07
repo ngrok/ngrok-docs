@@ -1,0 +1,50 @@
+---
+title: Route request Example
+sidebar_label: Route requests
+---
+
+import TabItem from "@theme/TabItem";
+import Tabs from "@theme/Tabs";
+import BasedOnURL from "/traffic-policy/gallery/route-requests/BasedOnURL.tsx";
+
+You can use [CEL
+interpolation](/docs/traffic-policy/concepts/cel-interpolation) to
+dynamically forward requests to different internal endpoints based on URL
+request attributes, including but not limited to:
+- URL
+- hostname
+- path
+- headers
+
+This allows you to manage complex traffic
+topologies without manually creating and managing each [`forward-internal`
+action](/docs/traffic-policy/actions/forward-internal).
+
+## Based on URL
+
+The following example forwards requests from `https://*.example.com` to `https://<SUBDOMAIN>.internal`.
+
+<Tabs groupId="policy-method" queryString="pm">
+	<TabItem value="yml" label="policy.yml">
+
+```yaml mode=traffic-policy title="policy.yml"
+on_http_request:
+  - actions:
+      - type: forward-internal
+        config:
+          url: https://${req.host.split('.example.com')[0]}.internal
+```
+    </TabItem>
+</Tabs>
+
+## Based on headers
+
+The following example forwards requests containing a `X-Customer-Value: {CUSTOMER}` header to `https://{CUSTOMER}.internal`.
+
+```yaml mode=traffic-policy
+on_http_request:
+  - actions:
+      - type: "forward-internal"
+        config:
+          url: https://${getReqHeader('X-Customer-Value')[0]}.internal
+```
