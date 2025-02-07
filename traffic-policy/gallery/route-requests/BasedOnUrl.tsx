@@ -1,4 +1,4 @@
-import ConfigExample from "/src/components/ConfigExample";
+import ConfigExample from "../../../src/components/ConfigExample";
 
 export const BasedOnURL = () => (
 	<ConfigExample
@@ -10,7 +10,7 @@ export const BasedOnURL = () => (
 						{
 							type: "forward-internal",
 							config: {
-								url: `https://${req.host.split(".example.com")[0]}.internal`,
+								url: 'https://${req.host.split(".example.com")[0]}.internal',
 							},
 						},
 					],
