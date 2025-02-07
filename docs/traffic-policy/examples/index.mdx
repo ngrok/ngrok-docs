@@ -24,66 +24,6 @@ Explore a curated collection of examples and configuration examples spanning fro
 
 A number of these examples come from a longer article about how ngrok [makes policy management accessible](https://ngrok.com/blog-post/api-gateway-policy-management-examples) to developers, including a simple Go-based application for testing these and other configurations.
 
-
-## Block unwanted requests
-
-### Deny traffic from Tor networks
-
-Use connection variables available in [IP Intelligence](/docs/traffic-policy/variables/ip-intel) to block Tor exit node IPs.
-
-```yaml traffic-policy
-on_http_request:
-  - expressions:
-      - "!('proxy.anonymous.tor' in conn.client_ip.categories)"
-    actions:
-      - type: deny
-        config:
-          status_code: 403
-```
-
-### Disallow bots and crawlers with a `robots.txt`
-
-This rule returns a custom response with a [`robots.txt` file](https://developers.google.com/search/docs/crawling-indexing/robots/intro) to deny search engine or AI crawlers on all paths.
-
-<AddRobotsTxt />
-
-You can also extend the expression above to create specific rules for crawlers based on their user agent strings, like `ChatGPT-User` and `GPTBot`.
-
-<AddRobotsTxtSpecific />
-
-### Block bots and crawlers by user agent
-
-In addition to, or instead of, denying bots and crawlers with a `robots.txt` file, you can also take action on only incoming requests that contain specific strings in the [`req.user_agent` request variable](/docs/http/traffic-policy/expressions/variables.mdx#requser_agent).
-
-You can extend the expression to include additional user agents by extending `(chatgpt-user|gptbot)` like so: `(chatgpt-user|gptbot|anthropic|claude|any|other|user-agent|goes|here)`.
-
-<BlockSpecificBots />
-
-### Deny non-GET requests
-
-This rule denies all inbound traffic that is not a GET request.
-
-<Deny />
-
-### Custom response for unauthorized requests
-
-This rule sends a custom response with status code `401` and body `Unauthorized`
-for requests without an Authorization header.
-
-<CustomResponse />
-
-### Block traffic from specific countries
-
-Remain compliant with data regulations or sanctions by blocking requests originating from one or more countries using their respective [ISO country codes](https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes).
-
-<BlockCountries />
-
-### Limit request sizes
-
-Prevent excessively large user uploads, like text or images, that might cause performance or availability issues for your upstream service.
-
-<LimitSize />
-
 ## Manipulate headers
 
 ### Enrich your upstream service
