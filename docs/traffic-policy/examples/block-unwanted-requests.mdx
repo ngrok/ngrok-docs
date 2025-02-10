@@ -5,21 +5,11 @@ sidebar_label: Block Unwanted Requests
 
 With Traffic Policy, you can block unwanted requests to your endpoints. This page demonstrates a few examples of doing so.
 
-### Deny traffic from Tor networks
+## Deny traffic from Tor networks
 
 The following example uses the [connection variables](/traffic-policy/variables/connection/) available in [IP Intelligence](/traffic-policy/variables/ip-intel) to block [Tor](https://en.wikipedia.org/wiki/Tor_(network)) exit node IPs.
 
-```yaml traffic-policy
-on_http_request:
-  - expressions:
-      - "!('proxy.anonymous.tor' in conn.client_ip.categories)"
-    actions:
-      - type: deny
-        config:
-          status_code: 403
-```
-
-### Disallow bots and crawlers with a `robots.txt`
+## Block bots and crawlers with a `robots.txt`
 
 The following example returns a custom response with a [`robots.txt` file](https://developers.google.com/search/docs/crawling-indexing/robots/intro) to deny search engine or [AI crawlers](https://platform.openai.com/docs/bots/) on all paths.
 
@@ -29,35 +19,38 @@ You can also extend the previous example to create specific rules for crawlers b
 
 <AddRobotsTxtSpecific />
 
-### Block bots and crawlers by user agent
+## Block bots and crawlers by user agent
 
-In addition to, or instead of, denying bots and crawlers with a `robots.txt` file, you can also take action on only incoming requests that contain specific strings in the [`req.user_agent` request variable](/docs/http/traffic-policy/expressions/variables.mdx#requser_agent).
+You can also take action on only incoming requests that contain specific strings in the [`req.user_agent` request variable](/http/request-headers/#http).
 
-You can extend the expression to include additional user agents by extending `(chatgpt-user|gptbot)` like so: `(chatgpt-user|gptbot|anthropic|claude|any|other|user-agent|goes|here)`.
+You can extend the expression to include additional user agents by extending `(chatgpt-user|gptbot)` like so:
+
+```bash
+(chatgpt-user|gptbot|anthropic|claude|any|other|user-agent|goes|here)
+```
 
 <BlockSpecificBots />
 
 ### Deny non-GET requests
 
-This rule denies all inbound traffic that is not a GET request.
+The following example denies all inbound traffic that is not a GET request.
 
 <Deny />
 
 ### Custom response for unauthorized requests
 
-This rule sends a custom response with status code `401` and body `Unauthorized`
-for requests without an Authorization header.
+The following example sends a custom response with status code `401` and body `Unauthorized` for requests without an Authorization header.
 
 <CustomResponse />
 
 ### Block traffic from specific countries
 
-Remain compliant with data regulations or sanctions by blocking requests originating from one or more countries using their respective [ISO country codes](https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes).
+The following example demonstrates how to remain compliant with data regulations or sanctions by blocking requests originating from one or more countries using their respective [ISO country codes](https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes).
 
 <BlockCountries />
 
 ### Limit request sizes
 
-Prevent excessively large user uploads, like text or images, that might cause performance or availability issues for your upstream service.
+The following example demonstrates how to prevent excessively large user uploads, like text or images, that might cause performance or availability issues for your upstream service.
 
 <LimitSize />
