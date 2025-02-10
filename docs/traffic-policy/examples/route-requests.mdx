@@ -4,9 +4,9 @@ sidebar_label: Route requests
 ---
 
 import TabItem from "@theme/TabItem";
-import Tabs from "@theme/Tabs";
-import BasedOnURL from "/traffic-policy/gallery/route-requests/BasedOnURL.mdx";
-import { BasedOnHeaders } from "/traffic-policy/gallery/route-requests/BasedOnHeaders.mdx";
+import Tabs from "@theme/Tab    s";
+import ConfigExample from "/src/components/ConfigExample.tsx";
+
 
 You can use [CEL
 interpolation](/docs/traffic-policy/concepts/cel-interpolation) to
@@ -26,10 +26,38 @@ action](/docs/traffic-policy/actions/forward-internal).
 
 The following example forwards requests from `https://*.example.com` to `https://<SUBDOMAIN>.internal`.
 
-<BasedOnURL />
+<ConfigExample
+	config={{
+		on_http_request: [
+			{
+				name: "Route requests based on URL",
+				actions: [
+					{
+						type: "forward-internal",
+						config: {
+							url: 'https://${req.host.split(".example.com")[0]}.internal',
+						},
+					},
+				],
+			},
+		],
+	}}
+/>
+
 
 ## Based on headers
 
 The following example forwards requests containing a `X-Customer-Value: {CUSTOMER}` header to `https://{CUSTOMER}.internal`.
 
-<BasedOnHeaders />
+<ConfigExample
+	config={{
+		on_http_request: {
+			actions: {
+				type: "forward-internal",
+				config: {
+					url: "https://${getReqHeader('X-Customer-Value')[0]}.internal",
+				},
+			},
+		},
+	}}
+/>
