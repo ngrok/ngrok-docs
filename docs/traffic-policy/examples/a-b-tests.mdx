@@ -3,40 +3,58 @@ title: A/B Test Example
 sidebar_label: A/B Tests
 ---
 
-Using the [`rand.double()`
-macro](/docs/traffic-policy/macros/utility#randdouble--double) set to `>=
-0.5`, you can equally split incoming requests to two different internal agent
-endpoints, which forward traffic to the two versions of your service.
+import ConfigExample from "/src/components/ConfigExample.tsx";
 
-You can manipulate `<= 0.5` to match the percentage of requests to route to your
-B test, e.g. `<= 0.1` for 10%.
+You can run simple A/B tests with Traffic Policy. Using the [`rand.double()` macro](/docs/traffic-policy/macros/utility#randdouble--double) set to `>=0.5`, you can equally split incoming requests to two different internal agent endpoints.
 
-```yaml mode=traffic-policy
----
-on_http_request:
-  - expressions:
-      - "rand.double() <= 0.5"
-    actions:
-      - type: "forward-internal"
-        config:
-          url: https://b.internal
-  - actions:
-      - type: "forward-internal"
-        config:
-          url: https://a.internal
-```
+:::tip
+The value does not have to be `>=0.5`. You can adjust the value to split the traffic in different ratios. For example,`>=0.8` would send 80% of the traffic to one endpoint and 20% to the other.
+:::
 
-If you don't have multiple services, you could also route B traffic to a
-separate route.
+<ConfigExample
+	config={{
+		on_http_request: [
+			{
+                expressions: ["rand.double() <= 0.5"],
+				actions: [
+					{
+						type: "forward-internal",
+						config: {
+							url: 'https://a.internal',
+						},
+					},
+					{
+						type: "forward-internal",
+						config: {
+							url: 'https://b.internal',
+						},
+					},
+				],
+			},
+		],
+	}}
+/>
 
-```yaml mode=traffic-policy
----
-on_http_request:
-  - expressions:
-      - "rand.double() <= 0.5"
-    actions:
-      - type: "url-rewrite"
-        config:
-					from: "/path/to/test"
-          to: "/path/to/test-b"
+You can also route B traffic to a separate route.
+
+<ConfigExample
+	config={{
+		on_http_request: [
+			{
+                expressions: ["rand.double() <= 0.5"],
+				actions: [
+					{
+						type: "url-rewrite",
+						config: {
+							from: "/path/to/test",
+                            to: "/path/to/test-b"
+						},
+					},
+				],
+			},
+		],
+	}}
+/>
+
+See [URL Rewrite Example](/docs/traffic-policy/examples/url-rewrites) for another example using rewrites.
 ```
