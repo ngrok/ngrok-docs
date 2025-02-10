@@ -1,0 +1,40 @@
+
+### Deploy simple A/B tests
+
+Using the [`rand.double()`
+macro](/docs/traffic-policy/macros/utility#randdouble--double) set to `>=
+0.5`, you can equally split incoming requests to two different internal agent
+endpoints, which forward traffic to the two versions of your service.
+
+You can manipulate `<= 0.5` to match the percentage of requests to route to your
+B test, e.g. `<= 0.1` for 10%.
+
+```yaml mode=traffic-policy
+---
+on_http_request:
+  - expressions:
+      - "rand.double() <= 0.5"
+    actions:
+      - type: "forward-internal"
+        config:
+          url: https://b.internal
+  - actions:
+      - type: "forward-internal"
+        config:
+          url: https://a.internal
+```
+
+If you don't have multiple services, you could also route B traffic to a
+separate route.
+
+```yaml mode=traffic-policy
+---
+on_http_request:
+  - expressions:
+      - "rand.double() <= 0.5"
+    actions:
+      - type: "url-rewrite"
+        config:
+					from: "/path/to/test"
+          to: "/path/to/test-b"
+```
