@@ -17,7 +17,7 @@ type Props = {
 
 export default function ConfigExample({
 	config,
-	snippetText = "snippet",
+	snippetText = "",
 	yamlMetastring = "",
 	jsonMetastring = "",
 	title,
@@ -27,7 +27,9 @@ export default function ConfigExample({
 		indent: 2,
 		directives: true,
 		defaultKeyType: "PLAIN",
-	});
+		// I'm removing the initial --- because having it there
+		// makes it annoying to copy/paste this in the dashboard
+	}).slice(4); // Remove the initial `---\n` from the YAML output
 
 	const jsonConfig = JSON.stringify(config, null, 2);
 
