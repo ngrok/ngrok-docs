@@ -14,25 +14,25 @@ Add new headers to requests to give your upstream service more context about the
 This rule adds multiple headers to the request, including the client's IP address, the endpoint ID, and the client's location.
 
 <ConfigExample
-    config={{
-        on_http_request: [
-            {
-                actions: [
-                    {
-                        type: "add-headers",
-                        config: {
-                            "x-is-ngrok": "1",
-                            "x-endpoint-id": "${endpoint.id}",
-                            "x-client-ip": "${conn.client_ip}",
-                            "x-client-conn-start": "${conn.ts.start}",
-                            "x-client-loc": "${conn.geo.city}, ${conn.geo.country}",
-                            "x-client-path": "${req.url.path}",
-                        },
-                    },
-                ],
-            },
-        ],
-    }}
+	config={{
+		on_http_request: [
+			{
+				actions: [
+					{
+						type: "add-headers",
+						config: {
+							"x-is-ngrok": "1",
+							"x-endpoint-id": "${endpoint.id}",
+							"x-client-ip": "${conn.client_ip}",
+							"x-client-conn-start": "${conn.ts.start}",
+							"x-client-loc": "${conn.geo.city}, ${conn.geo.country}",
+							"x-client-path": "${req.url.path}",
+						},
+					},
+				],
+			},
+		],
+	}}
 />
 
 See [the `add-headers` Traffic Policy action docs](/traffic-policy/actions/add-headers/) for more information.
@@ -44,22 +44,20 @@ Some frameworks, like [Express](https://expressjs.com/), add headers like `X-Pow
 This rule removes the `X-Powered-By` header.
 
 <ConfigExample
-    config={{
-        on_http_request: [
-            {
-                actions: [
-                    {
-                        type: "remove-headers",
-                        config: {
-                            headers: [
-                                "X-Powered-By",
-                            ],
-                        }
-                    },
-                ],
-            },
-        ],
-    }}
+	config={{
+		on_http_request: [
+			{
+				actions: [
+					{
+						type: "remove-headers",
+						config: {
+							headers: ["X-Powered-By"],
+						},
+					},
+				],
+			},
+		],
+	}}
 />
 
 See [the `remove-headers` Traffic Policy action docs](/traffic-policy/actions/remove-headers/) for more information.
@@ -69,29 +67,29 @@ See [the `remove-headers` Traffic Policy action docs](/traffic-policy/actions/re
 By including an `X-Api-Version` header in your API reference or developer documentation, you can quickly return a helpful error message, which encourages them to explore usage of the new version.
 
 This rule:
+
 1. Checks the request's `X-Api-Version`
 1. If its value is `2`, it returns a `400 Bad Request` response with a custom error message
 
 <ConfigExample
-    config={{
-        on_http_request: [
-            {
-                expressions: ["'2' in req.headers['X-Api-Version']"],
-                name: "Deprecate API v2",
-                actions: [
-                    {
-                        type: "custom-response",
-                        config: {
-                            status_code: 400,
-                            content:
-                                '{"error":{"message":"Version 2 of the API is no longer supported. Use Version 3 instead."}}',
-                        },
-                    },
-                ],
-            },
-        ],
- 
-    }}
+	config={{
+		on_http_request: [
+			{
+				expressions: ["'2' in req.headers['X-Api-Version']"],
+				name: "Deprecate API v2",
+				actions: [
+					{
+						type: "custom-response",
+						config: {
+							status_code: 400,
+							content:
+								'{"error":{"message":"Version 2 of the API is no longer supported. Use Version 3 instead."}}',
+						},
+					},
+				],
+			},
+		],
+	}}
 />
 
 See [the `custom-response` Traffic Policy action docs](/traffic-policy/actions/custom-response/) for more information.
