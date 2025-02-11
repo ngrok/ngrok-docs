@@ -6,11 +6,15 @@ sidebar_label: Block Unwanted Requests
 import ConfigExample from "/src/components/ConfigExample.tsx";
 
 
-With Traffic Policy, you can block unwanted requests to your endpoints. This page demonstrates a few examples of doing so.
+With Traffic Policy, you can block unwanted requests to your endpoints. This page demonstrates a few example rules that do so.
+
+See the following Traffic Policy action docs for more information:
+- [`deny`](/traffic-policy/actions/deny/)
+- [`custom-response`](/traffic-policy/actions/custom-response/)
 
 ## Deny traffic from Tor networks
 
-The following example uses the [connection variables](/traffic-policy/variables/connection/) available in [IP Intelligence](/traffic-policy/variables/ip-intel) to block [Tor](https://en.wikipedia.org/wiki/Tor_(network)) exit node IPs.
+This rule uses the [connection variables](/traffic-policy/variables/connection/) available in [IP Intelligence](/traffic-policy/variables/ip-intel) to block [Tor](https://en.wikipedia.org/wiki/Tor_(network)) exit node IPs.
 
 <ConfigExample
     config={{
@@ -34,7 +38,7 @@ The following example uses the [connection variables](/traffic-policy/variables/
 
 ## Block bots and crawlers with a `robots.txt`
 
-The following example returns a custom response with a [`robots.txt` file](https://developers.google.com/search/docs/crawling-indexing/robots/intro) to deny search engine or [AI crawlers](https://platform.openai.com/docs/bots/) on all paths.
+This rule returns a custom response with a [`robots.txt` file](https://developers.google.com/search/docs/crawling-indexing/robots/intro) to deny search engine or [AI crawlers](https://platform.openai.com/docs/bots/) on all paths.
 
 <ConfigExample
     config={{
@@ -59,7 +63,7 @@ The following example returns a custom response with a [`robots.txt` file](https
     }}
 />
 
-You can also extend the previous example to create specific rules for crawlers based on their user agent strings, like [`ChatGPT-User` and `GPTBot`](https://platform.openai.com/docs/bots).
+You can extend this example to create specific rules for crawlers based on their user agent strings, like [`ChatGPT-User` and `GPTBot`](https://platform.openai.com/docs/bots).
 
 <ConfigExample
     config={{
@@ -86,13 +90,7 @@ You can also extend the previous example to create specific rules for crawlers b
 
 ## Block bots and crawlers by user agent
 
-You can also take action on only incoming requests that contain specific strings in the [`req.user_agent` request variable](/http/request-headers/#http).
-
-You can extend the expression to include additional user agents by extending `(chatgpt-user|gptbot)` like so:
-
-```bash
-(chatgpt-user|gptbot|anthropic|claude|any|other|user-agent|goes|here)
-```
+You can also take action on incoming requests that contain specific strings in [the `req.user_agent` request variable](/http/request-headers/#http).
 
 <ConfigExample
     config={{
@@ -115,9 +113,18 @@ You can extend the expression to include additional user agents by extending `(c
     }}
 />
 
+:::tip
+
+You can expand the expression to include additional user agents by extending the `(chatgpt-user|gptbot)` section of the regular expression.
+
+```bash
+(chatgpt-user|gptbot|anthropic|claude|any|other|user-agent|goes|here)
+```
+:::
+
 ### Deny non-GET requests
 
-The following example denies all inbound traffic that is not a GET request.
+This rule denies all inbound traffic that is not a GET request.
 
 <ConfigExample
     config={{
@@ -132,7 +139,7 @@ The following example denies all inbound traffic that is not a GET request.
 
 ### Custom response for unauthorized requests
 
-The following example sends a custom response with status code `401` and body `Unauthorized` for requests without an Authorization header.
+This rule sends a custom response with status code `401` and body `Unauthorized` for requests without an Authorization header.
 
 <ConfigExample
     config={{
@@ -155,7 +162,10 @@ The following example sends a custom response with status code `401` and body `U
 
 ### Block traffic from specific countries
 
-The following example demonstrates how to remain compliant with data regulations or sanctions by blocking requests originating from one or more countries using their respective [ISO country codes](https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes).
+Sometimes you may need to block requests originating from one or more countries to remain compliant with data regulations or sanctions. This rule blocks requests based on the origin country using [ISO country codes](https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes) with the following steps:
+
+1. Check if the request is from an array of countries you can define
+1. If so, return a `401` status code with an error message.
 
 <ConfigExample
     config={{
@@ -170,40 +180,44 @@ The following example demonstrates how to remain compliant with data regulations
                         type: "custom-response",
                         config: {
                             status_code: 401,
-                            content: "Unauthorized request due to country of origin",
+                            content: "Unauthorized request due to country of origin.",
                         },
                     },
                 ],
             },
         ],
-        on_http_response: [],
+ 
     }}
 />
 
 ### Limit request sizes
 
-The following example demonstrates how to prevent excessively large user uploads, like text or images, that might cause performance or availability issues for your upstream service.
+This rule demonstrates how to prevent excessively large user uploads, like text or images, that might cause performance or availability issues for your upstream service with the following steps:
+
+1. Check if the request is `POST` or `PUT
+1. Check if the request's content is 1MB or larger.
+1. If both conditions are met, return a `400` status code with an error message.
 
 <ConfigExample
     config={{
         on_http_request: [
             {
+                name: "Block large POST/PUT requests.",
                 expressions: [
                     "req.method == 'POST' || req.method == 'PUT'",
                     "req.content_length >= 1000",
                 ],
-                name: "Block POST/PUT requests of excessive length",
                 actions: [
                     {
                         type: "custom-response",
                         config: {
                             status_code: 400,
-                            content: "Error: content length",
+                            content: "Error: You can't upload content larger than 1MB.",
                         },
                     },
                 ],
             },
         ],
-        on_http_response: [],
+ 
     }}
 />
