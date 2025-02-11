@@ -1,5 +1,5 @@
 ---
-title: Rate Limit Requests Examples
+title: Rate Limit Request Examples
 sidebar_label: Rate Limit Requests
 ---
 
@@ -7,10 +7,11 @@ import ConfigExample from "/src/components/ConfigExample.tsx";
 
 With Traffic Policy, you can rate limit requests to your endpoints based on a variety of criteria. This page demonstrates a few example rules that do so.
 
+See [the `rate-limit` Traffic Policy action docs](/traffic-policy/actions/rate-limit/) for more information.
+
 ## By endpoint
 
-This rule applies rate limiting of `30` requests per second to the endpoint
-`/api/videos`.
+This rule applies rate limiting of `30` requests per second to the endpoint `/api/videos`.
 
 <ConfigExample
     config={{
@@ -19,9 +20,9 @@ This rule applies rate limiting of `30` requests per second to the endpoint
                 expressions: ["req.url.contains('/api/specific_endpoint')"],
                 actions: [
                     {
+                        name: "Only allow 30 requests per minute",
                         type: "rate-limit",
                         config: {
-                            name: "Only allow 30 requests per minute",
                             algorithm: "sliding_window",
                             capacity: 30,
                             rate: "60s",
@@ -80,7 +81,9 @@ This rule creates a lower rate limit for unauthenticated (likely free) users, wh
 
 ## Based on pricing tiers
 
-Using a naming scheme in your upstream servers, and API calls using a `tier` header, you can quickly customize access to your API based on any number of pricing tiers.
+Using a naming scheme in your upstream servers with API calls using a `tier` header, you can quickly customize access to your API based on any number of pricing tiers.
+
+This rule checks for a `Tier` header in the request and applies rate limiting based on the value of that header.
 
 <ConfigExample
     config={{
