@@ -20,7 +20,7 @@ export default function ConfigExample({
 	snippetText = "",
 	yamlMetastring = "",
 	jsonMetastring = "",
-	title,
+	title = "traffic-policy",
 	icon,
 }: Props) {
 	const yamlConfig = YAML.stringify(config, {
@@ -45,7 +45,7 @@ export default function ConfigExample({
 						<DocsCodeBlock
 							language="yaml"
 							metastring={yamlMetastring}
-							title={title}
+							title={title + ".yml"}
 							icon={icon}
 						>
 							{snippetText ? `# ${snippetText}\n` + yamlConfig : yamlConfig}
@@ -63,7 +63,7 @@ export default function ConfigExample({
 						<DocsCodeBlock
 							language="json"
 							metastring={jsonMetastring}
-							title={title}
+							title={title + ".json"}
 							icon={icon}
 						>
 							{snippetText ? `// ${snippetText}\n` + jsonConfig : jsonConfig}

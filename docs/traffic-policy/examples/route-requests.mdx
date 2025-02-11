@@ -3,6 +3,8 @@ title: Route Request Examples
 sidebar_label: Route requests
 ---
 
+import TabItem from "@theme/TabItem";
+import Tabs from "@theme/Tabs";
 import ConfigExample from "/src/components/ConfigExample.tsx";
 
 With Traffic Policy, yhou can use [CEL interpolation](/traffic-policy/concepts/cel-interpolation) to dynamically forward requests to different internal endpoints based on URL request attributes, including but not limited to:
@@ -22,6 +24,10 @@ See [the `forward-internal` Traffic Policy action docs](/traffic-policy/actions/
 
 This rule forwards requests from `https://*.example.com` to `https://<SUBDOMAIN>.internal`.
 
+<Tabs groupId="exampleType" queryString="type" defaultValue="snippet">
+
+<TabItem value="snippet" label="Snippet">
+
 <ConfigExample
 	config={{
 		on_http_request: [
@@ -40,19 +46,70 @@ This rule forwards requests from `https://*.example.com` to `https://<SUBDOMAIN>
 	}}
 />
 
+</TabItem>
+
+<TabItem value="full" label="Full Configuration File">
+
+```yaml mode=traffic-policy title="config.yml"
+endpoints:
+	- name: my-agent-endpoint
+	- description: My first Agent Endpoint with a Traffic Policy
+	- upstream:
+		- url: 80
+	- traffic_policy:
+		on_http_request:
+			- name: Route requests based on URL
+				actions:
+					- type: forward-internal
+						config:
+							url: https://${req.host.split(".example.com")[0]}.internal
+```
+
+</TabItem>
+
+</Tabs>
+
 ## Based on headers
 
 This rule forwards requests containing a `X-Customer-Value: {CUSTOMER}` header to `https://{CUSTOMER}.internal`.
 
+<Tabs groupId="exampleType" queryString="type" defaultValue="snippet">
+
+<TabItem value="snippet" label="Snippet">
+
 <ConfigExample
 	config={{
 		on_http_request: {
-			actions: {
-				type: "forward-internal",
-				config: {
-					url: "https://${getReqHeader('X-Customer-Value')[0]}.internal",
+			actions: [
+				{
+					type: "forward-internal",
+					config: {
+						url: "https://${getReqHeader('X-Customer-Value')[0]}.internal",
+					},
 				},
-			},
+			],
 		},
 	}}
 />
+
+</TabItem>
+
+<TabItem value="full" label="Full Configuration File">
+
+```yaml mode=traffic-policy title="config.yml"
+endpoints:
+	- name: my-agent-endpoint
+	- description: My first Agent Endpoint with a Traffic Policy
+	- upstream:
+		- url: 80
+	- traffic_policy:
+		on_http_request:
+			- actions:
+				- type: forward-internal
+					config:
+						url: https://${getReqHeader('X-Customer-Value')[0]}.internal
+```
+
+</TabItem>
+
+</Tabs>

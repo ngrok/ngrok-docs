@@ -8,7 +8,6 @@ import {
 	CodeBlockHeader,
 	CodeBlockIcon,
 	CodeBlockTitle,
-	fmtCode,
 	parseLanguage,
 	parseMetastring,
 } from "@ngrok/mantle/code-block";

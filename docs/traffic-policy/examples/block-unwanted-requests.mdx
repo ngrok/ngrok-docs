@@ -3,6 +3,8 @@ title: Block Unwanted Requests Examples
 sidebar_label: Block Unwanted Requests
 ---
 
+import TabItem from "@theme/TabItem";
+import Tabs from "@theme/Tabs";
 import ConfigExample from "/src/components/ConfigExample.tsx";
 
 With Traffic Policy, you can block unwanted requests to your endpoints. This page demonstrates a few example rules that do so.
@@ -15,6 +17,10 @@ See the following Traffic Policy action docs for more information:
 ## Deny traffic from Tor networks
 
 This rule uses the [connection variables](/traffic-policy/variables/connection/) available in [IP Intelligence](/traffic-policy/variables/ip-intel) to block [Tor](<https://en.wikipedia.org/wiki/Tor_(network)>) exit node IPs.
+
+<Tabs groupId="exampleType" queryString="type" defaultValue="snippet">
+
+<TabItem value="snippet" label="Snippet">
 
 <ConfigExample
 	config={{
@@ -34,9 +40,37 @@ This rule uses the [connection variables](/traffic-policy/variables/connection/)
 	}}
 />
 
+</TabItem>
+
+<TabItem value="full" label="Full Configuration File">
+
+```yaml mode=traffic-policy title="config.yml"
+endpoints:
+	- name: my-agent-endpoint
+	- description: My first Agent Endpoint with a Traffic Policy
+	- upstream:
+		- url: 80
+	- traffic_policy:
+		on_http_request:
+		- expressions:
+				- "!('proxy.anonymous.tor' in conn.client_ip.categories)"
+				actions:
+				- type: deny
+						config:
+						status_code: 403
+```
+
+</TabItem>
+
+</Tabs>
+
 ## Block bots and crawlers with a `robots.txt`
 
 This rule returns a custom response with a [`robots.txt` file](https://developers.google.com/search/docs/crawling-indexing/robots/intro) to deny search engine or [AI crawlers](https://platform.openai.com/docs/bots/) on all paths.
+
+<Tabs groupId="exampleType" queryString="type" defaultValue="snippet">
+
+<TabItem value="snippet" label="Snippet">
 
 <ConfigExample
 	config={{
@@ -61,7 +95,39 @@ This rule returns a custom response with a [`robots.txt` file](https://developer
 	}}
 />
 
+</TabItem>
+
+<TabItem value="full" label="Full Configuration File">
+
+```yaml mode=traffic-policy title="config.yml"
+endpoints:
+	- name: my-agent-endpoint
+	- description: My first Agent Endpoint with a Traffic Policy
+	- upstream:
+		- url: 80
+	- traffic_policy:
+		on_http_request:
+			- name: Add `robots.txt` to deny all bots and crawlers
+				expressions:
+					- req.url.contains('/robots.txt')
+				actions:
+					- type: custom-response
+						config:
+							status_code: 200
+							content: "User-agent: *\r\nDisallow: /"
+							headers:
+								content-type: text/plain
+```
+
+</TabItem>
+
+</Tabs>
+
 You can extend this example to create specific rules for crawlers based on their user agent strings, like [`ChatGPT-User` and `GPTBot`](https://platform.openai.com/docs/bots).
+
+<Tabs groupId="exampleType" queryString="type" defaultValue="snippet">
+
+<TabItem value="snippet" label="Snippet">
 
 <ConfigExample
 	config={{
@@ -86,9 +152,41 @@ You can extend this example to create specific rules for crawlers based on their
 	}}
 />
 
+</TabItem>
+
+<TabItem value="full" label="Full Configuration File">
+
+```yaml mode=traffic-policy title="config.yml"
+endpoints:
+	- name: my-agent-endpoint
+	- description: My first Agent Endpoint with a Traffic Policy
+	- upstream:
+		- url: 80
+	- traffic_policy:
+		on_http_request:
+			- name: Add `robots.txt` to deny specific bots and crawlers
+				expressions:
+					- req.url.contains('/robots.txt')
+				actions:
+					- type: custom-response
+						config:
+							status_code: 200
+							content: "User-agent: ChatGPT-User\\r\\nDisallow: /"
+							headers:
+								content-type: text/plain
+```
+
+</TabItem>
+
+</Tabs>
+
 ## Block bots and crawlers by user agent
 
 You can also take action on incoming requests that contain specific strings in [the `req.user_agent` request variable](/http/request-headers/#http).
+
+<Tabs groupId="exampleType" queryString="type" defaultValue="snippet">
+
+<TabItem value="snippet" label="Snippet">
 
 <ConfigExample
 	config={{
@@ -111,6 +209,31 @@ You can also take action on incoming requests that contain specific strings in [
 	}}
 />
 
+</TabItem>
+
+<TabItem value="full" label="Full Configuration File">
+
+```yaml mode=traffic-policy title="config.yml"
+endpoints:
+	- name: my-agent-endpoint
+	- description: My first Agent Endpoint with a Traffic Policy
+	- upstream:
+		- url: 80
+	- traffic_policy:
+		on_http_request:
+			- name: Block specific bots by user agent
+				expressions:
+					- req.user_agent.matches('(?i).*(chatgpt-user|gptbot)/\\d+.*')
+				actions:
+					- type: deny
+						config:
+							status_code: 404
+```
+
+</TabItem>
+
+</Tabs>
+
 :::tip
 
 You can expand the expression to include additional user agents by extending the `(chatgpt-user|gptbot)` section of the regular expression.
@@ -121,9 +244,13 @@ You can expand the expression to include additional user agents by extending the
 
 :::
 
-### Deny non-GET requests
+## Deny non-GET requests
 
 This rule denies all inbound traffic that is not a GET request.
+
+<Tabs groupId="exampleType" queryString="type" defaultValue="snippet">
+
+<TabItem value="snippet" label="Snippet">
 
 <ConfigExample
 	config={{
@@ -136,9 +263,35 @@ This rule denies all inbound traffic that is not a GET request.
 	}}
 />
 
-### Custom response for unauthorized requests
+</TabItem>
+
+<TabItem value="full" label="Full Configuration File">
+
+```yaml mode=traffic-policy title="config.yml"
+endpoints:
+	- name: my-agent-endpoint
+	- description: My first Agent Endpoint with a Traffic Policy
+	- upstream:
+		- url: 80
+	- traffic_policy:
+		on_http_request:
+			- expressions:
+					- req.method != 'GET'
+				actions:
+					- type: deny
+```
+
+</TabItem>
+
+</Tabs>
+
+## Custom response for unauthorized requests
 
 This rule sends a custom response with status code `401` and body `Unauthorized` for requests without an Authorization header.
+
+<Tabs groupId="exampleType" queryString="type" defaultValue="snippet">
+
+<TabItem value="snippet" label="Snippet">
 
 <ConfigExample
 	config={{
@@ -159,12 +312,41 @@ This rule sends a custom response with status code `401` and body `Unauthorized`
 	}}
 />
 
-### Block traffic from specific countries
+</TabItem>
+
+<TabItem value="full" label="Full Configuration File">
+
+```yaml mode=traffic-policy title="config.yml"
+endpoints:
+	- name: my-agent-endpoint
+	- description: My first Agent Endpoint with a Traffic Policy
+	- upstream:
+		- url: 80
+	- traffic_policy:
+		on_http_request:
+			- expressions:
+					- "!('authorization' in req.headers)"
+				actions:
+					- type: custom-response
+						config:
+							status_code: 401
+							content: Unauthorized
+```
+
+</TabItem>
+
+</Tabs>
+
+## Block traffic from specific countries
 
 Sometimes you may need to block requests originating from one or more countries to remain compliant with data regulations or sanctions. This rule blocks requests based on the origin country using [ISO country codes](https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes) with the following steps:
 
 1. Check if the request is from an array of countries you can define
 1. If so, return a `401` status code with an error message.
+
+<Tabs groupId="exampleType" queryString="type" defaultValue="snippet">
+
+<TabItem value="snippet" label="Snippet">
 
 <ConfigExample
 	config={{
@@ -188,7 +370,33 @@ Sometimes you may need to block requests originating from one or more countries 
 	}}
 />
 
-### Limit request sizes
+</TabItem>
+
+<TabItem value="full" label="Full Configuration File">
+
+```yaml mode=traffic-policy title="config.yml"
+endpoints:
+	- name: my-agent-endpoint
+	- description: My first Agent Endpoint with a Traffic Policy
+	- upstream:
+		- url: 80
+	- traffic_policy:
+		on_http_request:
+			- expressions:
+					- conn.geo.country_code in ['<COUNTRY-01>', '<COUNTRY-02>']
+				name: Block traffic from unwanted countries
+				actions:
+					- type: custom-response
+						config:
+							status_code: 401
+							content: Unauthorized request due to country of origin.
+```
+
+</TabItem>
+
+</Tabs>
+
+## Limit request sizes
 
 This rule demonstrates how to prevent excessively large user uploads, like text or images, that might cause performance or availability issues for your upstream service with the following steps:
 

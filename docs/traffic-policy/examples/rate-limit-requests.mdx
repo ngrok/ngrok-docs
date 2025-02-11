@@ -3,6 +3,8 @@ title: Rate Limit Request Examples
 sidebar_label: Rate Limit Requests
 ---
 
+import TabItem from "@theme/TabItem";
+import Tabs from "@theme/Tabs";
 import ConfigExample from "/src/components/ConfigExample.tsx";
 
 With Traffic Policy, you can rate limit requests to your endpoints based on a variety of criteria. This page demonstrates a few example rules that do so.
@@ -12,6 +14,10 @@ See [the `rate-limit` Traffic Policy action docs](/traffic-policy/actions/rate-l
 ## By endpoint
 
 This rule applies rate limiting of `30` requests per second to the endpoint `/api/videos`.
+
+<Tabs groupId="exampleType" queryString="type" defaultValue="snippet">
+
+<TabItem value="snippet" label="Snippet">
 
 <ConfigExample
 	config={{
@@ -35,9 +41,42 @@ This rule applies rate limiting of `30` requests per second to the endpoint `/ap
 	}}
 />
 
+</TabItem>
+
+<TabItem value="full" label="Full Configuration File">
+
+```yaml mode=traffic-policy title="config.yml"
+endpoints:
+	- name: my-agent-endpoint
+	- description: My first Agent Endpoint with a Traffic Policy
+	- upstream:
+		- url: 80
+	- traffic_policy:
+        on_http_request:
+        - expressions:
+            - req.url.contains('/api/specific_endpoint')
+            actions:
+            - name: Only allow 30 requests per minute
+                type: rate-limit
+                config:
+                algorithm: sliding_window
+                capacity: 30
+                rate: 60s
+                bucket_key:
+                    - conn.client_ip
+```
+
+</TabItem>
+
+</Tabs>
+
 ## Based on authentication status
 
 This rule creates a lower rate limit for unauthenticated (likely free) users, while allowing authenticated users a higher level of capacity.
+
+<Tabs groupId="exampleType" queryString="type" defaultValue="snippet">
+
+<TabItem value="snippet" label="Snippet">
 
 <ConfigExample
 	config={{
@@ -78,11 +117,44 @@ This rule creates a lower rate limit for unauthenticated (likely free) users, wh
 	}}
 />
 
+</TabItem>
+
+<TabItem value="full" label="Full Configuration File">
+
+```yaml mode=traffic-policy title="config.yml"
+endpoints:
+	- name: my-agent-endpoint
+	- description: My first Agent Endpoint with a Traffic Policy
+	- upstream:
+		- url: 80
+	- traffic_policy:
+		on_http_request:
+		- expressions:
+				- req.url.contains('/api/specific_endpoint')
+				actions:
+				- name: Only allow 30 requests per minute
+						type: rate-limit
+						config:
+						algorithm: sliding_window
+						capacity: 30
+						rate: 60s
+						bucket_key:
+								- conn.client_ip
+```
+
+</TabItem>
+
+</Tabs>
+
 ## Based on pricing tiers
 
 Using a naming scheme in your upstream servers with API calls using a `tier` header, you can quickly customize access to your API based on any number of pricing tiers.
 
 This rule checks for a `Tier` header in the request and applies rate limiting based on the value of that header.
+
+<Tabs groupId="exampleType" queryString="type" defaultValue="snippet">
+
+<TabItem value="snippet" label="Snippet">
 
 <ConfigExample
 	config={{
@@ -158,3 +230,69 @@ This rule checks for a `Tier` header in the request and applies rate limiting ba
 		],
 	}}
 />
+
+</TabItem>
+
+<TabItem value="full" label="Full Configuration File">
+
+```yaml mode=traffic-policy title="config.yml"
+endpoints:
+	- name: my-agent-endpoint
+	- description: My first Agent Endpoint with a Traffic Policy
+	- upstream:
+		- url: 80
+	- traffic_policy:
+		on_http_request:
+			- expressions:
+					- "!('Tier' in req.headers)"
+				name: Free rate limiting tier
+				actions:
+					- type: rate-limit
+						config:
+							name: Allow 10 requests per minute
+							algorithm: sliding_window
+							capacity: 10
+							rate: 60s
+							bucket_key:
+								- conn.client_ip
+			- expressions:
+					- getReqHeader('tier').exists(v, v.matches('(?i)bronze'))
+				name: Bronze rate limiting tier
+				actions:
+					- type: rate-limit
+						config:
+							name: Allow 100 requests per minute
+							algorithm: sliding_window
+							capacity: 100
+							rate: 60s
+							bucket_key:
+								- conn.client_ip
+			- expressions:
+					- getReqHeader('tier').exists(v, v.matches('(?i)silver'))
+				name: Bronze rate limiting tier
+				actions:
+					- type: rate-limit
+						config:
+							name: Allow 1000 requests per minute
+							algorithm: sliding_window
+							capacity: 1000
+							rate: 60s
+							bucket_key:
+								- conn.client_ip
+			- expressions:
+					- getReqHeader('tier').exists(v, v.matches('(?i)gold'))
+				name: Gold rate limiting tier
+				actions:
+					- type: rate-limit
+						config:
+							name: Allow 10000 requests per minute
+							algorithm: sliding_window
+							capacity: 10000
+							rate: 60s
+							bucket_key:
+								- conn.client_ip
+```
+
+</TabItem>
+
+</Tabs>

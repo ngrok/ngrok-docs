@@ -3,12 +3,18 @@ title: URL Rewrites Examples
 sidebar_label: URL Rewrites
 ---
 
+import TabItem from "@theme/TabItem";
+import Tabs from "@theme/Tabs";
 import ConfigExample from "/src/components/ConfigExample.tsx";
 
 With Traffic Policy, you can map permalinks to "pretty" alternatives that are easier for both humans and [SEO bots](https://developers.google.com/search/docs/crawling-indexing/googlebot) to understand. This is especially useful for blogs that use a CMS, since the generated permalinks might be affecting your SEO performance.
 
 This rule rewrites a user-friendly URL like
 `/blog/11/example-title` to `/blog/index.php?p=11&title=example-title`, which is readable by your CMS.
+
+<Tabs groupId="exampleType" queryString="type" defaultValue="snippet">
+
+<TabItem value="snippet" label="Snippet">
 
 <ConfigExample
 	config={{
@@ -28,5 +34,29 @@ This rule rewrites a user-friendly URL like
 		],
 	}}
 />
+
+</TabItem>
+<TabItem value="full" label="Full Configuration File">
+
+```yaml mode=traffic-policy title="config.yml"
+endpoints:
+	- name: my-agent-endpoint
+	- description: My first Agent Endpoint with a Traffic Policy
+	- upstream:
+		- url: 80
+	- traffic_policy:
+		on_http_request:
+			- expressions:
+				- req.url.path.startsWith('/blog')
+				actions:
+					- type: url-rewrite
+						config:
+							from: /blog/([0-9]+)/([a-zA-Z]+)/
+							to: /blog/index.php?p=$1&title=$2
+```
+
+</TabItem>
+
+</Tabs>
 
 See [the `url-rewrite` Traffic Policy action docs](/traffic-policy/actions/url-rewrite/) for more information.
