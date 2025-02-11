@@ -211,6 +211,56 @@ In certain cases, you'll want to apply Traffic Policy rules to just one API
 service—in those cases, you should update your internal agent endpoint with a
 Traffic Policy file.
 
+### Example with URL rewrites
+
+The [`url-rewrite` Traffic Policy
+action](/docs/traffic-policy/actions/url-rewrite/) lets you to modify the
+incoming request URL before it reaches your API service and invisibly to the
+user—perfect for routing user requests without exposing details about your
+internal systems.
+
+To rewrite one path to another:
+
+```yaml title="url-rewrite.yaml" mode=traffic-policy
+---
+on_http_request:
+  - expressions:
+      - "req.url.path == '/foo'"
+    actions:
+      - type: url-rewrite
+        config:
+          from: /foo
+          to: /bar
+```
+
+To rewrite multiple URLs using regular expressions:
+
+```
+on_http_request:
+  - expressions:
+      - req.url.path.startsWith('/products')
+    actions:
+      - type: url-rewrite
+        config:
+          from: /foo/?([.*]+)?
+          to: /bar/$1
+```
+
+Restart the ngrok agent on the same internal URL, while also specifying your new
+Traffic Policy file.
+
+```
+ngrok http 8080 --url https://foo.internal --traffic-policy-file=url-rewrite.yaml
+```
+
+:::tip
+If you're using other configuration flags, like `--pooling-enabled`, make
+sure you add those to the command above.
+:::
+
+When you send a request to the `/foo` path, your API service will respond as
+though it had come from the `/bar` path.
+
 ### Example with the `circuit-breaker` action
 
 For example, one API service is running on a machine with less system resources,
@@ -245,7 +295,7 @@ ngrok http 8080 --url https://foo.internal --traffic-policy-file=circuit-breaker
 ```
 
 :::tip
-If you're using other configuration flags, like `--pooling-enabled=true`, make
+If you're using other configuration flags, like `--pooling-enabled`, make
 sure you add those to the command above.
 :::
 
