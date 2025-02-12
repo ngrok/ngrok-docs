@@ -133,12 +133,12 @@ export default function ConfigExample(props: ConfigExampleProps) {
 		fullConfig.jsonConfig,
 	);
 	return (
-		<Tabs groupId="exampleType" queryString="type" defaultValue="snippet">
-			<TabItem value="snippet" label="Snippet">
+		<Tabs groupId="exampleType" queryString="type" defaultValue="policy">
+			<TabItem value="policy" label="Traffic Policy">
 				{policySnippet}
 			</TabItem>
 
-			<TabItem value="full" label="Full Configuration File">
+			<TabItem value="agent" label="Agent Configuration File">
 				{fullSnippet}
 			</TabItem>
 		</Tabs>
