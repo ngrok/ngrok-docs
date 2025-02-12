@@ -168,42 +168,28 @@ on_http_request:
               sources:
                 additional_jkus:
                   - "https://{YOUR_AUTH0_TENANT_ID}.us.auth0.com/.well-known/jwks.json"
-  - name: "Forward internal"
-    actions:
+  - actions:
       - type: "forward-internal"
         config:
           url: "https://foo.internal"
-          binding: internal
 ```
 
 Replace `{YOUR_AUTH0_TENANT_ID}` and `{YOUR_NGROK_DOMAIN}` and apply the rule to
 your cloud endpoint with the dashboard or API.
 
-### Test your authentication policy
-
-You can test the JWT validation policy by running the following command,
-substituting your domain for `{YOUR_NGROK_DOMAIN}` and the JWT obtained from the
-Auth0 dashboard for `{YOUR_JWT}`:
+You can test the JWT validation policy, substituting your domain for
+`{YOUR_NGROK_DOMAIN}` and the JWT obtained from the Auth0 dashboard for
+`{YOUR_JWT}`:
 
 ```bash
 curl -X GET https://{YOUR_NGROK_DOMAIN}/ \
   --header "Authorization: Bearer {YOUR_JWT}"
 ```
 
-You'll receive a `200` response and body, if applicable.
-
-Run the same command, switching out one character of your JWT, and you'll get a
-`403 Forbidden` error.
-
-Run the command with no `Authorization` header, substituting your domain for
-`{YOUR_NGROK_DOMAIN}`:
-
-```bash
-curl -X GET https://{YOUR_NGROK_DOMAIN}/cards
-```
-
-You'll receive a `401 Unauthorized` error. Your API is now protected from
-unauthorized requests.
+By authenticating yourself against ngrok's JWT validation, you'll get the
+expected response. If you include an invalid token, you'll see a `403 Forbidden`
+error, and if you send a request with no `Authorization` header, you'll get `401
+Unauthorized` error. 
 
 ## Compose policies on specific API services
 
@@ -222,7 +208,6 @@ internal systems.
 To rewrite one path to another:
 
 ```yaml title="url-rewrite.yaml" mode=traffic-policy
----
 on_http_request:
   - expressions:
       - "req.url.path == '/foo'"
