@@ -138,6 +138,7 @@ export default function ConfigExample(props: ConfigExampleProps) {
 	if (!components.h3) return <p>Error rendering config example.</p>;
 	return (
 		<>
+			<p>You can use one of the following snippets:</p>
 			{createElement(components.h3, { id: "policy" }, "Policy")}
 			{policySnippet}
 			{createElement(components.h3, { id: "agent-config" }, "Agent Config")}
