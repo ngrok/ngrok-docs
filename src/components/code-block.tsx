@@ -8,6 +8,7 @@ import {
 	CodeBlockHeader,
 	CodeBlockIcon,
 	CodeBlockTitle,
+	fmtCode,
 	parseLanguage,
 	parseMetastring,
 } from "@ngrok/mantle/code-block";
@@ -70,15 +71,13 @@ function DocsCodeBlock({
 		<CodeBlock className={className} {...props}>
 			{hasHeader && (
 				<CodeBlockHeader>
-					<div style={{ display: "flex", flexDirection: "column" }}>
-						{mode ? <CodeBlockIcon preset={mode} /> : _icon}
-						{title && <CodeBlockTitle>{title}</CodeBlockTitle>}
-					</div>
+					{mode ? <CodeBlockIcon preset={mode} /> : _icon}
+					{title && <CodeBlockTitle>{title}</CodeBlockTitle>}
 				</CodeBlockHeader>
 			)}
 			<CodeBlockBody>
 				{!meta.disableCopy && <CodeBlockCopyButton />}
-				<CodeBlockCode language={language} value={`${children}`} />
+				<CodeBlockCode language={language} value={fmtCode`${children}`} />
 				{collapsible && <CodeBlockExpanderButton />}
 			</CodeBlockBody>
 		</CodeBlock>
