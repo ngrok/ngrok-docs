@@ -15,6 +15,63 @@ Using `add-headers` enables you to:
 - **Authentication**: Secure upstream services by using Traffic Policy to add authentication headers to requests.
 - **Debugging**: Add headers to requests and responses to help with debugging and monitoring of your services.
 
+## Example
+
+### Adding headers to an HTTP response
+
+The following [Traffic Policy](/docs/http/traffic-policy/)
+configuration:
+
+- Checks if the request method is `GET` and the URL starts with `/status/200`
+- If so, adds the following headers to the response from the upstream service
+  - `x-custom-header`:`my-custom-value`
+  - `x-string-interpolation-example`:`started at ${conn.ts.start}` - This header gets its value from CEL interpolation using [IP Intelligence Variables] to include the request connection start time.
+
+<ConfigExample
+	snippetText={null}
+	showLineNumbers={true}
+	yamlMetastring="{6-10}"
+	jsonMetastring="{8-16}"
+	config={{
+		on_http_response: [
+			{
+				expressions: [
+					'req.method == "GET" && req.url.path.startsWith("/status/200")',
+				],
+				actions: [
+					{
+						type: "add-headers",
+						config: {
+							headers: {
+								"x-custom-header": "my-custom-value",
+								"x-string-interpolation-example": "started at ${conn.ts.start}",
+							},
+						},
+					},
+				],
+			},
+		],
+	}}
+/>
+
+:::note
+For this example, we are assuming that ngrok is pointing at the upstream service https://httpbin.org.
+:::
+
+#### Example Request
+
+To test the configuration, you could run a [`curl`](https://curl.se/docs/) request similar to the following:
+
+```shell
+$ curl -i https://httpbin.ngrok.app/status/200
+```
+
+```http
+HTTP/2 200 OK
+x-custom-header: my-custom-value
+x-string-interpolation-example: started at 2024-07-13T00:10:16Z
+```
+
 ## Configuration Reference
 
 - [**Supported Phases**](/traffic-policy/concepts/phases/)
@@ -54,17 +111,15 @@ See [the example on this page](#example) for a full traffic policy using this ac
 
 ## Behavior
 
-When configured in the `on_http_request` phase, this action will add the specified headers to incoming http requests before reaching the upstream server. When
-configured in the `on_http_response` phase, the specified headers are added to the http response from the upstream server.
+- [`on_http_request`](/traffic-policy/concepts/phases/#on_http_request): When configured in this phase, this action will add the specified headers to incoming http requests before reaching the upstream server.
+- [`on_http_response`](/traffic-policy/concepts/phases/#on_http_response) When configured in this phase, the specified headers are added to the http response from the upstream server.
 
 ### Addition Only
 
-This action will only add headers to the request or response. If the header already exists
-it will append another header with the same key unless it is the `host` header,
-see [Special Cases](#special-cases).
+This action will only add headers to the request or response. If the header already exists it will append another header with the same key unless it is the `host` header. See [Limitations](#limitations) for more information.
 
-To replace or remove headers use the [`remove-headers`](/docs/traffic-policy/actions/remove-headers) action then
-add the header with the desired value.
+To replace or remove headers, use [`remove-headers`](/docs/traffic-policy/actions/remove-headers). You can then
+add your prefered headers with `add-headers`.
 
 ### Case Sensitivity
 
@@ -72,8 +127,7 @@ Header keys added through this action are normalized to lowercase per the [HTTP/
 
 ### Ordering
 
-Since actions are run in the order they are specified, to modify headers that have been added by other actions you must place this action
-after them in your traffic policy document.
+Since actions are run in the order they are specified, to modify headers that have been added by other actions you must place this action after them in your traffic policy document.
 
 ### Limitations
 
@@ -88,55 +142,3 @@ after them in your traffic policy document.
 		<p>Map of headers that were added by the action.</p>
 	</ConfigItem>
 </Config>
-
-## Example
-
-### Adding headers to an HTTP response
-
-The following [Traffic Policy](/docs/http/traffic-policy/)
-configuration will add headers to the response from the upstream service when the method is `GET` and the URL starts with `/status/200`.
-
-<ConfigExample
-	snippetText={null}
-	showLineNumbers={true}
-	yamlMetastring="{6-10}"
-	jsonMetastring="{8-16}"
-	config={{
-		on_http_response: [
-			{
-				expressions: [
-					'req.method == "GET" && req.url.path.startsWith("/status/200")',
-				],
-				actions: [
-					{
-						type: "add-headers",
-						config: {
-							headers: {
-								"x-custom-header": "my-custom-value",
-								"x-string-interpolation-example": "started at ${conn.ts.start}",
-							},
-						},
-					},
-				],
-			},
-		],
-	}}
-/>
-
-For this example, we are assuming that ngrok is pointing at the upstream service
-https://httpbin.org and we will be adding two headers:
-
-- `x-custom-header` with the value `my-custom-value`
-- `x-string-interpolation-example` with the value `started at ${conn.ts.start}` to demonstrate the use of CEL interpolation to include the request connection start time.
-
-#### Example Request
-
-```shell
-$ curl -i https://httpbin.ngrok.app/status/200
-```
-
-```http
-HTTP/2 200 OK
-x-custom-header: my-custom-value
-x-string-interpolation-example: started at 2024-07-13T00:10:16Z
-```

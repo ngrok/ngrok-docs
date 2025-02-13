@@ -91,11 +91,11 @@ export type ConfigExampleProps = {
 	jsonMetastring?: string;
 	title?: string;
 	icon?: ReactNode;
-	showSnippetOnly?: boolean;
+	showAgentConfig?: boolean;
 };
 
 export default function ConfigExample(props: ConfigExampleProps) {
-	const { config, showSnippetOnly } = props;
+	const { config, showAgentConfig } = props;
 	const components = useMDXComponents();
 
 	const yamlOptions = {
@@ -125,8 +125,6 @@ export default function ConfigExample(props: ConfigExampleProps) {
 	 * Then we can pass in the policy content and the agent config content
 	 */
 
-	if (showSnippetOnly) return policySnippet;
-
 	const agentConfig = getAgentConfig(config, yamlOptions);
 	defaultTitle = "config";
 	const agentConfigSnippet = showExample(
@@ -138,11 +136,19 @@ export default function ConfigExample(props: ConfigExampleProps) {
 	if (!components.h3) return <p>Error rendering config example.</p>;
 	return (
 		<>
-			<p>You can use one of the following snippets:</p>
-			{createElement(components.h3, { id: "policy" }, "Policy")}
+			{showAgentConfig && (
+				<>
+					<p>You can use one of the following:</p>
+					{createElement(components.h3, { id: "policy" }, "Policy")}
+				</>
+			)}
 			{policySnippet}
-			{createElement(components.h3, { id: "agent-config" }, "Agent Config")}
-			{agentConfigSnippet}
+			{showAgentConfig ? (
+				<>
+					{createElement(components.h3, { id: "agent-config" }, "Agent Config")}
+					{agentConfigSnippet}
+				</>
+			) : null}
 		</>
 	);
 }
