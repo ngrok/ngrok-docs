@@ -70,8 +70,10 @@ function DocsCodeBlock({
 		<CodeBlock className={className} {...props}>
 			{hasHeader && (
 				<CodeBlockHeader>
-					{mode ? <CodeBlockIcon preset={mode} /> : _icon}
-					{title && <CodeBlockTitle>{title}</CodeBlockTitle>}
+					<div style={{ display: "flex", flexDirection: "column" }}>
+						{mode ? <CodeBlockIcon preset={mode} /> : _icon}
+						{title && <CodeBlockTitle>{title}</CodeBlockTitle>}
+					</div>
 				</CodeBlockHeader>
 			)}
 			<CodeBlockBody>
