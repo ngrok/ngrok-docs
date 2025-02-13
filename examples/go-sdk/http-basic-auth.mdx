@@ -7,11 +7,20 @@ import (
 	"golang.ngrok.com/ngrok/config"
 )
 
+trafficPolicy := `
+on_http_request:
+  - actions:
+      - type: basic-auth
+        config:
+          credentials:
+            - username1:password1
+            - username2:password2
+`
+
 func ngrokListener(ctx context.Context) (net.Listener, error) {
 	return ngrok.Listen(ctx,
 		config.HTTPEndpoint(
-			config.WithBasicAuth("username1", "password1"),
-			config.WithBasicAuth("username2", "password2"),
+			config.WithTrafficPolicy(trafficPolicy)
 		),
 		ngrok.WithAuthtokenFromEnv(),
 	)
@@ -20,4 +29,4 @@ func ngrokListener(ctx context.Context) (net.Listener, error) {
 
 Go Package Docs:
 
-- [https://pkg.go.dev/golang.ngrok.com/ngrok/config#WithBasicAuth](https://pkg.go.dev/golang.ngrok.com/ngrok/config#WithBasicAuth)
+- [https://pkg.go.dev/golang.ngrok.com/ngrok/config#WithTrafficPolicy](https://pkg.go.dev/golang.ngrok.com/ngrok/config#WithTrafficPolicy)

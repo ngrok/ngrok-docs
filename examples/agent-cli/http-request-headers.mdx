@@ -1,6 +1,18 @@
 ```bash
-ngrok http 80 \
-  --request-header-add='is-ngrok: 1' \
-  --request-header-add='country: ${conn.geo.country_code}' \
-  --request-header-remove='referrer'
+ngrok http 80 --traffic-policy-file traffic-policy.yml
+```
+
+##### `traffic-policy.yml`
+
+```yaml
+on_http_request:
+  - actions:
+      - type: add-headers
+        config:
+          headers:
+            is-ngrok: 1
+            country: ${conn.geo.country_code}
+      - type: remove-headers
+        config:
+          headers: ["referrer"]
 ```

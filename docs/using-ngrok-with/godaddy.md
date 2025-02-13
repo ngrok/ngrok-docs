@@ -16,7 +16,7 @@ You will need to use a subdomain (e.g. `www.example.com`) when using ngrok.
 
 ## Step 1: Find your reserved domain in ngrok
 
-1. Log into the [ngrok Dashboard](https://dashboard.ngrok.com) and navigate to your domain in the [Domains section](https://dashboard.ngrok.com/cloud-edge/domains).
+1. Log into the [ngrok Dashboard](https://dashboard.ngrok.com) and navigate to your domain in the [Domains section](https://dashboard.ngrok.com/domains).
 1. Click in your domain to open the details, and click on the "DNS Targets" link in the top table. This will provide you with the relevant CNAME values to use in later steps.
 
 ## Step 2: Log in to Your GoDaddy Account & Access DNS Management

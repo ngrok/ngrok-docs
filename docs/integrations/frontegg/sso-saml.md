@@ -144,7 +144,7 @@ To configure an edge with Frontegg:
 
 ### **Step 5**: Start a Tunnel {#start-tunnel}
 
-1. Access the [ngrok edges page](https://dashboard.ngrok.com/cloud-edge/edges), click your edge, and then click **Start a tunnel**.
+1. Access the [ngrok edges page](https://dashboard.ngrok.com/edges), click your edge, and then click **Start a tunnel**.
 
 :::tip Note
 For this step, we assume you have an app running locally (i.e. on localhost:3000) with the ngrok client installed.
