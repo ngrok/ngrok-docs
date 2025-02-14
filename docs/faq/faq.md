@@ -14,7 +14,7 @@ In an effort to combat abuse on the platform, we now require a valid payment met
 
 Valid payment methods include credit or debit cards. Prepaid cards may not be used to enable TCP endpoints.
 
-## Why is my antivirus software reporting the ngrok agent as a virus / malware / or potentially unwanted application (PAU)?
+## Is ngrok a virus?
 
 ngrok is beloved for our ease of use and powerful capability. Unfortunately, those same
 attributes also make us an attractive target for bad actors trying to phish credentials or create back doors into private networks.
