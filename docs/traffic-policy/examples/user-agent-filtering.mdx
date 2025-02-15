@@ -1,0 +1,36 @@
+---
+title: User Agent Filtering Example
+sidebar_label: User Agent Filtering
+---
+
+import ConfigExample from "/src/components/ConfigExample.tsx";
+
+With Traffic Policy, you can check a request's `User-Agent` header to deliver tailored content to users based on their browser and device, or to customize responses for SEO crawlers and bots.
+
+This rule delivers tailored content to Microsoft Edge users by examining the `User-Agent` header for the case-insensitive string `(?i)edg/` succeeded by digits `\d`. To see how this works in practice, explore the following [regex101 demonstration](https://regex101.com/r/3NPVub/1).
+
+<ConfigExample
+	config={{
+		on_http_request: [
+			{
+				expressions: [
+					"'user-agent' in req.headers",
+					"size(req.headers['user-agent'].filter(x, x.matches('(?i).*Edg/\\\\d+.*'))) > 0",
+				],
+				actions: [
+					{
+						type: "custom-response",
+						config: {
+							status_code: 200,
+							content: "Hello Edge User!",
+						},
+					},
+				],
+			},
+		],
+	}}
+/>
+
+:::tip
+To ensure correct decoding from YAML/JSON, it's necessary to properly escape the `\d` sequence. In YAML, if your string is not enclosed in quotes, use a single escape: `\\d`. However, when your string is wrapped in quotes, either in YAML or JSON, you need to double-escape: `\\\\d` for accurate decoding.
+:::
