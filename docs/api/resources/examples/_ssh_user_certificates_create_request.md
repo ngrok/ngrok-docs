@@ -8,6 +8,6 @@ curl \
 -H "Authorization: Bearer {API_KEY}" \
 -H "Content-Type: application/json" \
 -H "Ngrok-Version: 2" \
--d '{"description":"temporary access to staging machine","principals":["ec2-user","root"],"public_key":"ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBK58lFzmWlDimDtBz78wVT4oauA8PjY0CiXTCEIsBNC6UwOJvZ0jdSaYNhDaa7dRV84DfBb/gKzqlXC7cVMZjl0= alan@work-laptop","ssh_certificate_authority_id":"sshca_2sJsSlM7zcMAmeymIaRj8if2s5b","valid_until":"2025-04-29T21:10:13Z"}' \
+-d '{"description":"temporary access to staging machine","principals":["ec2-user","root"],"public_key":"ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBK58lFzmWlDimDtBz78wVT4oauA8PjY0CiXTCEIsBNC6UwOJvZ0jdSaYNhDaa7dRV84DfBb/gKzqlXC7cVMZjl0= alan@work-laptop","ssh_certificate_authority_id":"sshca_2t7QA2uY3wsFU9P7Whtbm6zmVm2","valid_until":"2025-05-17T10:08:05Z"}' \
 https://api.ngrok.com/ssh_user_certificates
 ```
