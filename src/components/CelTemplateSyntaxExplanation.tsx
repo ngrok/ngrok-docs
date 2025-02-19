@@ -10,7 +10,7 @@ const CelTemplateSyntaxExplanation = () => {
 				<em>
 					For a complete list of available variables and functions or to see a
 					more detailed explanation, checkout the{" "}
-					<a href="/docs/http/traffic-policy/expressions/">docs</a>.
+					<a href="/traffic-policy/expressions/">docs</a>.
 				</em>
 			</p>
 		</>

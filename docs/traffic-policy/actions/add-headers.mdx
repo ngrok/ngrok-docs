@@ -1,148 +1,18 @@
----
-title: Add Headers
----
+import ActionBehavior from "/traffic-policy/actions/add-headers/behavior.mdx";
+import ActionConfig from "/traffic-policy/actions/add-headers/config.mdx";
+import ActionExamples from "/traffic-policy/actions/add-headers/examples/index.mdx";
+import ActionOverview from "/traffic-policy/actions/add-headers/index.mdx";
+import ActionVariables from "/traffic-policy/actions/add-headers/variables.mdx";
+import ActionVariablesDescription from "/traffic-policy/common/action-variables-description.mdx";
 
-import ConfigExample from "/src/components/ConfigExample.tsx";
-import { Config, ConfigItem } from "/src/components/ConfigTable.tsx";
+# Add Headers
 
-The `add-headers` [Traffic Policy](/traffic-policy/) action enables you to add headers to an HTTP request before it is sent upstream or an HTTP response before it is sent back to the client.
+<ActionOverview />
+<ActionConfig />
+<ActionBehavior />
+<ActionExamples />
 
-## Use cases
+## Action Result Variables
 
-Using `add-headers` enables you to:
-
-- **Enrich your upstream service**: Add rich contextual features to your upstream services such as language localization, regional pricing, and more by adding [geolocation data](/traffic-policy/variables/ip-intel#client-ip-geo-location) to the headers of incoming requests.
-- **Authentication**: Secure upstream services by using Traffic Policy to add authentication headers to requests.
-- **Debugging**: Add headers to requests and responses to help with debugging and monitoring of your services.
-
-## Example
-
-### Adding headers to an HTTP response
-
-The following [Traffic Policy](/docs/http/traffic-policy/)
-configuration:
-
-- Checks if the request method is `GET` and the URL starts with `/status/200`
-- If so, adds the following headers to the response from the upstream service
-  - `x-custom-header`:`my-custom-value`
-  - `x-string-interpolation-example`:`started at ${conn.ts.start}` - This header gets its value from CEL interpolation using [IP Intelligence Variables] to include the request connection start time.
-
-<ConfigExample
-	snippetText={null}
-	showLineNumbers={true}
-	yamlMetastring="{6-10}"
-	jsonMetastring="{8-16}"
-	config={{
-		on_http_response: [
-			{
-				expressions: [
-					'req.method == "GET" && req.url.path.startsWith("/status/200")',
-				],
-				actions: [
-					{
-						type: "add-headers",
-						config: {
-							headers: {
-								"x-custom-header": "my-custom-value",
-								"x-string-interpolation-example": "started at ${conn.ts.start}",
-							},
-						},
-					},
-				],
-			},
-		],
-	}}
-/>
-
-:::note
-For this example, we are assuming that ngrok is pointing at the upstream service https://httpbin.org.
-:::
-
-#### Example request
-
-To test the configuration, you could run a [`curl`](https://curl.se/docs/) request similar to the following:
-
-```shell
-$ curl -i https://httpbin.ngrok.app/status/200
-```
-
-```http
-HTTP/2 200 OK
-x-custom-header: my-custom-value
-x-string-interpolation-example: started at 2024-07-13T00:10:16Z
-```
-
-## Configuration reference
-
-- [**Supported Phases**](/traffic-policy/concepts/phases/)
-  - [`on_http_request`](/traffic-policy/concepts/phases/#on_http_request)
-  - [`on_http_response`](/traffic-policy/concepts/phases/#on_http_response)
-- **Type**
-  - `add-headers`
-
-### Fields
-
-<Config>
-	<ConfigItem title="headers" type="object" cel={true}>
-		<p>Map of header key to header value to be added.</p>
-		<p>Minimum `1`, Maximum `10`.</p>
-		<p>
-			Supports [CEL Interpolation](/traffic-policy/concepts/cel-interpolation)
-			in header values.
-		</p>
-	</ConfigItem>
-</Config>
-
-#### Example configuration
-
-Here's an example `add-headers` action configured to add a header with a string and a header with an IP Intelligence Variable.
-
-```yaml
-actions: [
-  {
-    type: "add-headers",
-    config: {
-      "x-example-header": "example-value",
-      "x-example-header2": "${endpoint.id}"
-    },
-  },
-],
-```
-
-See [the example on this page](#example) for a full traffic policy using this action.
-
-## Action result variables
-
-These are the variables you can use in subsequent actions after this action has been executed.
-
-<Config>
-	<ConfigItem title="actions.ngrok.add_headers.headers_added" type="object">
-		<p>Map of headers that were added by the action.</p>
-	</ConfigItem>
-</Config>
-
-## Behavior
-
-- [`on_http_request`](/traffic-policy/concepts/phases/#on_http_request): When configured in this phase, this action will add the specified headers to incoming http requests before reaching the upstream server.
-- [`on_http_response`](/traffic-policy/concepts/phases/#on_http_response) When configured in this phase, the specified headers are added to the http response from the upstream server.
-
-### Addition only
-
-This action will only add headers to the request or response. If the header already exists it will append another header with the same key unless it is the `host` header. See [Limitations](#limitations) for more information.
-
-To replace or remove headers, use [`remove-headers`](/docs/traffic-policy/actions/remove-headers). You can then
-add your prefered headers with `add-headers`.
-
-### Case sensitivity
-
-Header keys added through this action are normalized to lowercase per the [HTTP/2 specification](https://datatracker.ietf.org/doc/html/rfc7540#section-8.1.2).
-
-### Ordering
-
-Since actions are run in the order they are specified, to modify headers that have been added by other actions you must place this action after them in your traffic policy document.
-
-### Limitations
-
-- Adding the `host` header override the existing value instead of appending another header.
-- You may not add or remove the `user-agent` header.
-- You may not use this action to add the `ngrok-skip-browser-warning` header to skip the ngrok browser warning on free accounts. For more information, check out the [free plan limits guide](http://localhost:3000/docs/guides/limits/#why-is-there-an-interstitial-in-front-of-my-html-content).
+<ActionVariablesDescription />
+<ActionVariables />
