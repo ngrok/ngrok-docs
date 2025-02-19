@@ -74,9 +74,13 @@ const sidebars = {
 							link: { type: "doc", id: "universal-gateway/types" },
 							items: [
 								{
-									id: "universal-gateway/cloud-endpoints",
-									type: "doc",
 									label: "Cloud Endpoints",
+									type: "category",
+									link: {
+										type: "doc",
+										id: "universal-gateway/cloud-endpoints/index",
+									},
+									items: ["universal-gateway/cloud-endpoints/quickstart"],
 								},
 								{
 									id: "universal-gateway/agent-endpoints",
