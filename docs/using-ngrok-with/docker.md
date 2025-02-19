@@ -13,13 +13,13 @@ docker run --net=host -it -e NGROK_AUTHTOKEN=xyz ngrok/ngrok:latest http 80
 Note: the Docker version of ngrok follows the same convention as the agent, for example:
 
 ```bash
-docker run -it -e NGROK_AUTHTOKEN=xyz ngrok/ngrok:latest http 80                               # secure public URL for port 80 web server
-docker run -it -e NGROK_AUTHTOKEN=xyz ngrok/ngrok:latest http --url=https://baz.ngrok.app 8080 # port 8080 available at https://baz.ngrok.dev
-docker run -it -e NGROK_AUTHTOKEN=xyz ngrok/ngrok:latest http foo.dev:80                       # tunnel to host:port instead of localhost
-docker run -it -e NGROK_AUTHTOKEN=xyz ngrok/ngrok:latest http https://localhost:5001           # expose a local https server running on port 5001
-docker run -it -e NGROK_AUTHTOKEN=xyz ngrok/ngrok:latest tcp 22                                # tunnel arbitrary TCP traffic to port 22
-docker run -it -e NGROK_AUTHTOKEN=xyz ngrok/ngrok:latest tls --url=tls://foo.com 443           # TLS traffic for https://foo.com to port 443
-docker run -it -e NGROK_AUTHTOKEN=xyz ngrok/ngrok:latest start foo bar baz                     # start tunnels from the configuration file
+docker run -it -e NGROK_AUTHTOKEN=xyz ngrok/ngrok:latest http 80                            # secure public URL for port 80 web server
+docker run -it -e NGROK_AUTHTOKEN=xyz ngrok/ngrok:latest http --url baz.ngrok.dev 8080   # port 8080 available at baz.ngrok.dev
+docker run -it -e NGROK_AUTHTOKEN=xyz ngrok/ngrok:latest http foo.dev:80                    # tunnel to host:port instead of localhost
+docker run -it -e NGROK_AUTHTOKEN=xyz ngrok/ngrok:latest http https://localhost:5001        # expose a local https server running on port 5001
+docker run -it -e NGROK_AUTHTOKEN=xyz ngrok/ngrok:latest tcp 22                             # tunnel arbitrary TCP traffic to port 22
+docker run -it -e NGROK_AUTHTOKEN=xyz ngrok/ngrok:latest tls --url foo.com 443           # TLS traffic for foo.com to port 443
+docker run -it -e NGROK_AUTHTOKEN=xyz ngrok/ngrok:latest start foo bar baz                  # start tunnels from the configuration file
 ```
 
 ::::note
