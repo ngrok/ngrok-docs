@@ -1,10 +1,21 @@
 
-const fromExact = (from) => (path) => [ from, path === from ]               // [xyz]
+const getNormalizedPaths = (from, path) => {
+    return {
+        normalizedFrom: from.endsWith('/') ? from.slice(0, -1) : from,
+        normalizedPath: path.endsWith('/') ? path.slice(0, -1) : path
+    }
+}
+
+const fromExact = (from) => (path) => {
+    const {normalizedFrom, normalizedPath} = getNormalizedPaths(from, path);
+    return [ normalizedFrom, normalizedPath === normalizedFrom ]               // [xyz]
+}
+
 const fromIncludes = (from) => (path) => {
     // Normalize both paths by removing trailing slashes if present
-    const normalizedFrom = from.endsWith('/') ? from.slice(0, -1) : from;
-    const normalizedPath = path.endsWith('/') ? path.slice(0, -1) : path;
   
+    const {normalizedFrom, normalizedPath} = getNormalizedPaths(from, path);
+
     return [normalizedFrom, normalizedPath.includes(normalizedFrom)];
   };
   
@@ -175,7 +186,7 @@ const redirects = [
     [ fromIncludes(`/docs/http/traffic-policy/expressions/#macros`), `/docs/http/traffic-policy/expressions/macros` ],
     [ fromIncludes(`/docs/tls/traffic-policy/expressions/#connection-variables`), `/docs/tls/traffic-policy/expressions/variables#connection-variables` ],
     [ fromIncludes(`/docs/tls/traffic-policy/expressions/#macros`), `/docs/tls/traffic-policy/expressions/macros` ],
-    [ fromIncludes(`/docs/tcp/traffic-policy/expressions/#connection-variables`), `/docs/tcp/traffic-policy/expressions/variables#connection-variables` ],
+    [ fromIncludes(`/docs/tcp/traffic-policy/expressions/#connection-variables`), `/docs/traffic-policy/variables/` ],
     [ fromIncludes(`/docs/tcp/traffic-policy/expressions/#macros`), `/docs/traffic-policy/macros/` ],
 
     // /docs/user-management/* -> /docs/iam/*
@@ -237,7 +248,6 @@ const redirects = [
     [ fromIncludes(`/docs/tcp/traffic-policy/expressions/`), `/docs/traffic-policy/concepts/expressions/` ],
     [ fromIncludes(`/docs/http/traffic-policy/`), `/docs/traffic-policy/` ],
     [ fromIncludes(`/docs/tls/traffic-policy/`), `/docs/traffic-policy/` ],
-    [ fromIncludes(`/docs/tcp/traffic-policy/`), `/docs/traffic-policy/` ],
 
     // DEC 2024
     [ fromExact(`/docs/traffic-policy/getting-started/`), `/docs/traffic-policy/getting-started/agent-endpoints/cli` ],
@@ -246,9 +256,9 @@ const redirects = [
     [ fromIncludes(`/docs/tls/tls-termination/`), `/docs/traffic-policy/actions/terminate-tls/` ],
     [ fromIncludes(`/docs/traffic-policy/templates/`), `/docs/traffic-policy/examples/` ],
     
-    /*IA Restructure redirects*/
+        // IA Restructure redirects
     [ fromIncludes('/docs/tls/termination/agent-tls-termination/'), '/docs/agent/agent-tls-termination/'],
-    [ fromIncludes('/docs/concepts/'), '/docs/overview/'],
+    [ fromIncludes('/docs/concepts/'), '/docs/'],
         // HTTP Redirects
     [ fromIncludes('/docs/http/basic-auth'), '/docs/traffic-policy/actions/basic-auth/'],
     [ fromIncludes('/docs/http/circuit-breaker'), '/docs/traffic-policy/actions/circuit-breaker/'],
@@ -271,20 +281,21 @@ const redirects = [
     [ fromIncludes('/docs/network-edge/'), '/docs/universal-gateway/edges'],
         // obs   
     [ fromIncludes('/docs/obs/reference'), '/docs/obs/events/reference'],
-        //tcp
+        // tcp
     [ fromIncludes('/docs/tcp/ip-restrictions'), '/docs/traffic-policy/actions/restrict-ips/'],
     [ fromIncludes('/docs/tcp/traffic-policy/actions/deny/'), '/docs/traffic-policy/actions/deny/'],
-    [ fromIncludes('/docs/tcp/traffic-policy/actions/'), '/docs/traffic-policy/actions/'],
     [ fromIncludes('/docs/tcp/traffic-policy/actions/log/'), '/docs/traffic-policy/actions/log'],
     [ fromIncludes('/docs/tcp/traffic-policy/actions/restrict-ips/'), '/docs/traffic-policy/actions/restrict-ips'],
+    [ fromIncludes('/docs/tcp/traffic-policy/actions/'), '/docs/traffic-policy/actions/'],
+    [ fromExact(`/docs/tcp/traffic-policy/`), `/docs/traffic-policy/` ],
         // tls
-    [ fromIncludes('/docs/tls/ip-restrictions/'), '/docs/traffic-policy/actions/restrict-ips'],
-    [ fromIncludes('/docs/tls/mutual-tls/'), '/docs/traffic-policy/actions/terminate-tls/#enabling-mutual-tls'],
-    [ fromIncludes(`/docs/tls/termination/`), '/docs/traffic-policy/actions/terminate-tls/'],
-        // universal gateway
-    [ fromIncludes('/docs/http/'), '/docs/universal-gateway/http/'],
-    [ fromIncludes('/docs/tcp/'), '/docs/universal-gateway/tcp/'],
-    [ fromIncludes('/docs/tls/'), '/docs/universal-gateway/tls/'],
+    [ fromExact('/docs/tls/ip-restrictions/'), '/docs/traffic-policy/actions/restrict-ips'],
+    [ fromExact('/docs/tls/mutual-tls/'), '/docs/traffic-policy/actions/terminate-tls/#enabling-mutual-tls'],
+    [ fromExact(`/docs/tls/termination/`), '/docs/traffic-policy/actions/terminate-tls/'],
+        // Universal Gateway
+    [ fromExact('/docs/http/'), '/docs/universal-gateway/http/'],
+    [ fromExact('/docs/tcp/'), '/docs/universal-gateway/tcp/'],
+    [ fromExact('/docs/tls/'), '/docs/universal-gateway/tls/'],
 ]
 
 // get current href from window
