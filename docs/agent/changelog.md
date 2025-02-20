@@ -6,6 +6,10 @@ title: Changelog
 
 ## v3
 
+### ngrok Agent 3.20.0 \[2025-02-20\]
+
+- Add bindings to v3 configs
+
 ### ngrok Agent 3.19.1 - \[2024-1-23\]
 
 - Improve ux of CLI errors.
