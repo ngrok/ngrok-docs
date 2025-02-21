@@ -7,10 +7,19 @@ import (
 	"golang.ngrok.com/ngrok/config"
 )
 
+trafficPolicy := `
+on_http_request:
+  - actions:
+      - type: add-headers
+        config:
+          headers:
+            host: localhost
+`
+
 func ngrokListener(ctx context.Context) (net.Listener, error) {
 	return ngrok.Listen(ctx,
 		config.HTTPEndpoint(
-			config.WithRequestHeader("host", "localhost"),
+			config.WithTrafficPolicy(trafficPolicy),
 		),
 		ngrok.WithAuthtokenFromEnv(),
 	)
@@ -19,4 +28,4 @@ func ngrokListener(ctx context.Context) (net.Listener, error) {
 
 Go Package Docs:
 
-- [https://pkg.go.dev/golang.ngrok.com/ngrok/config#WithRequestHeader](https://pkg.go.dev/golang.ngrok.com/ngrok/config#WithRequestHeader)
+- [https://pkg.go.dev/golang.ngrok.com/ngrok/config#WithTrafficPolicy](https://pkg.go.dev/golang.ngrok.com/ngrok/config#WithTrafficPolicy)
