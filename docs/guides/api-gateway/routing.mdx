@@ -1,0 +1,83 @@
+---
+title: Route to multiple services
+---
+
+TK
+
+## Route by path
+
+Path-based routing lets you direct traffic to different backend services
+based on the value of the path.
+
+The Traffic Policy file below:
+
+1. Routes requests to `https://{YOUR_NGROK_DOMAIN}/foo` to the
+   `https://foo.internal` endpoint pool.
+2. Routes requests to `https://{YOUR_NGROK_DOMAIN}/bar` to the
+   `https://bar.internal` agent endpoint.
+3. Uses the [`custom-response`
+   action](/docs/traffic-policy/actions/custom-response) to capture requests to
+   any other path and respond with a generic `403` error.
+
+```yaml title="policy.yaml" traffic-policy
+on_http_request:
+  - name: "Route the /foo/ path to service foo"
+    expressions:
+      - req.url.path.startsWith('/foo')
+    actions:
+      - type: forward-internal
+        config:
+          url: https://foo.internal
+  - name: "Route the /bar/* path to service bar"
+    expressions:
+      - req.url.path.startsWith('/bar')
+    actions:
+      - type: forward-internal
+        config:
+          url: https://bar.internal
+  - name: "Custom response for other paths"
+    actions:
+			- type: custom-response
+				config:
+          status_code: 403
+```
+
+Apply this Traffic Policy rule to your cloud endpoint through the dashboard or
+API to start forwarding traffic.
+
+## Route by headers
+
+You can also route to endpoints based on the dynamic value of a header with [CEL
+interpolation](/docs/traffic-policy/concepts/cel-interpolation).
+
+The Traffic Policy file below:
+
+1. Checks whether requests contain a `x-api` header, and if so, forwards to the
+   internal URL with the same name using CEL interpolation.
+2. Uses the [`custom-response`
+   action](/docs/traffic-policy/actions/custom-response) to capture requests
+   without an appropriate header and respond with a generic `403`
+   error.
+
+```yaml title="policy.yaml" traffic-policy
+on_http_request:
+  - name: "Forward traffic to API service based on `x-api` header value."
+    expressions:
+      - "req.headers['x-api']"
+    actions:
+      - type: forward-internal
+        config:
+          url: https://${getReqHeader(‘x-api’)[0]}.internal
+  - name: "Custom response for requests without expected headers"
+    actions:
+			- type: custom-response
+				config:
+          status_code: 403
+```
+
+Apply this Traffic Policy rule to your cloud endpoint through the dashboard or
+API to forward traffic based on the header values, like `x-api: foo` or `x-api: bar`.
+
+## What's next?
+
+TK
