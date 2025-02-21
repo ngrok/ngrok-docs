@@ -1,6 +1,6 @@
 ---
 title: Quickstart
-pagination_next: http/index
+pagination_next: universal-gateway/http
 ---
 
 import TabItem from "@theme/TabItem";
@@ -25,11 +25,12 @@ brew install ngrok
 <TabItem value="linux" label="Debian Linux">
 
 ```bash
-curl -s https://ngrok-agent.s3.amazonaws.com/ngrok.asc | \
-  sudo gpg --dearmor -o /etc/apt/keyrings/ngrok.gpg && \
-  echo "deb [signed-by=/etc/apt/keyrings/ngrok.gpg] https://ngrok-agent.s3.amazonaws.com buster main" | \
-  sudo tee /etc/apt/sources.list.d/ngrok.list && \
-  sudo apt update && sudo apt install ngrok
+curl -sSL https://ngrok-agent.s3.amazonaws.com/ngrok.asc \
+  | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null \
+  && echo "deb https://ngrok-agent.s3.amazonaws.com buster main" \
+  | sudo tee /etc/apt/sources.list.d/ngrok.list \
+  && sudo apt update \
+  && sudo apt install ngrok
 ```
 
 </TabItem>
@@ -112,12 +113,12 @@ Open the Forwarding URL in your browser and you will see your web application.
 ## Step 4: Always use the same domain
 
 If you want to keep the same URL each time you use ngrok, [create a static
-domain on your dashboard](https://dashboard.ngrok.com/cloud-edge/domains) and
+domain on your dashboard](https://dashboard.ngrok.com/domains) and
 then use the `--url` flag to ask the ngrok agent to use it. First, stop
 ngrok with `Ctrl+C` and then run ngrok again:
 
 ```
-ngrok http 8080 --url jumpy-red-mollusk.ngrok-free.app
+ngrok http 8080 --url https://jumpy-red-mollusk.ngrok-free.app
 ```
 
 ## Step 5: Secure your app
@@ -128,7 +129,7 @@ account is `alan@example.com`, you can restrict access only for yourself by
 running ngrok with:
 
 ```
-ngrok http http://localhost:8080 --oauth=google --oauth-allow-email=alan@example.com
+ngrok http http://localhost:8080 --oauth google --oauth-allow-email alan@example.com
 ```
 
 Anyone accessing your app will be prompted to log in with Google and only your
@@ -149,13 +150,14 @@ ngrok http http://localhost:8080 --basic-auth 'username:a-very-secure-password'
 
 ngrok supports many forms of authentication including:
 
-- [OAuth](/http/oauth/) (what we just used)
-- [Basic Auth](/http/basic-auth/) (what we just used)
-- [IP Restrictions](/http/ip-restrictions/)
-- [Webhook Verification](/http/webhook-verification/)
-- [Mutual TLS](/http/mutual-tls/)
-- [OpenID Connect](/http/openid-connect/)
-- [SAML](/http/saml/)
+- [OAuth](/traffic-policy/actions/oauth/) (what we just used)
+- [Basic Auth](/traffic-policy/actions/basic-auth/) (what we just used)
+- [IP Restrictions](/traffic-policy/actions/restrict-ips/)
+- [Webhook Verification](/traffic-policy/actions/verify-webhook/)
+- [Mutual TLS](/traffic-policy/actions/terminate-tls/)
+- [OpenID Connect](/traffic-policy/actions/oidc/)
+- [JWT Validation](/traffic-policy/actions/jwt-validation/)
+- [SAML](/traffic-policy/actions/saml/)
 
 ## Running ngrok Persistently
 
@@ -169,9 +171,9 @@ While this guide gets you started with ngrok, you might want your tunnel to keep
 
 ## What's next?
 
-- Browse examples in the [HTTP documentation](/http/?cty=agent-cli) of other ways ngrok can augment your application
-- Bring your own [custom domain to ngrok](/http/#bring-your-own-domain)
-- Create connectivity to non-HTTP services such as SSH, RDP, or game servers using [TCP Endpoints](/tcp/)
+- Browse examples in the [HTTP documentation](/universal-gateway/http/?cty=agent-cli) of other ways ngrok can augment your application
+- Bring your own [custom domain to ngrok](/universal-gateway/http/#bring-your-own-domain)
+- Create connectivity to non-HTTP services such as SSH, RDP, or game servers using [TCP Endpoints](/universal-gateway/tcp/)
 - Embed ngrok in your app programmatically without the agent with our [Agent SDKs](/agent-sdks/)
 - Add your [API key and automate via the `ngrok api` command](/api/#quickstart)
 

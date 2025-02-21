@@ -1,3 +1,149 @@
-## Overview
+import ConfigExample from "/src/components/ConfigExample.tsx";
+import { Config, ConfigItem } from "/src/components/ConfigTable.tsx";
+import ActionBehavior from "/traffic-policy/actions/circuit-breaker/behavior.mdx";
+import ActionConfig from "/traffic-policy/actions/circuit-breaker/config.mdx";
+import ActionExamples from "/traffic-policy/actions/circuit-breaker/examples/index.mdx";
+import ActionOverview from "/traffic-policy/actions/circuit-breaker/index.mdx";
+import ActionVariables from "/traffic-policy/actions/circuit-breaker/variables.mdx";
+
+## Circuit Breaker
 
 The Circuit Breaker action helps maintain system reliability by rejecting requests when the error rate and request volume within a rolling window exceed defined thresholds. It pauses traffic temporarily to allow the system to recover and automatically re-evaluates upstream health before resuming.
+
+### Configuration Reference
+
+The [Traffic Policy](/traffic-policy/) configuration
+reference for this action.
+
+#### Supported Phases
+
+`on_http_request`
+
+#### Type
+
+`circuit-breaker`
+
+#### Configuration Fields
+
+<Config>
+	<ConfigItem title="error_threshold" type="float" required={true}>
+		<p>
+			Threshold percentage of errors that must be met before requests are
+			rejected. Must be a value between `0.0` and `1.0`. Defaults to `0.5`.
+		</p>
+	</ConfigItem>
+	<ConfigItem title="volume_threshold" type="integer">
+		<p>
+			Number of requests in a rolling window before checking the error
+			threshold. Must be a number between `1` and `2,000,000,000`. Defaults to
+			`10`.
+		</p>
+	</ConfigItem>
+	<ConfigItem title="window_duration" type="duration">
+		<p>
+			Number of seconds in the rolling window that metrics are retained for.
+			Must be a value between `1s` and `2m`. Defaults to `10s`.
+		</p>
+	</ConfigItem>
+	<ConfigItem title="tripped_duration" type="duration">
+		<p>
+			Number of seconds the system waits after rejecting a request before
+			re-evaluating upstream health. Must be a value between `1s` and `2m`.
+			Defaults to `10s`.
+		</p>
+	</ConfigItem>
+	<ConfigItem title="num_buckets" type="integer">
+		<p>
+			Number of buckets that metrics are divided into within the rolling window.
+			Fixed at `10`.
+		</p>
+	</ConfigItem>
+	<ConfigItem title="enforce" type="boolean">
+		<p>
+			Determines if the circuit breaker is active. If `false`, the circuit
+			breaker never trips, and no requests are rejected. Defaults to `true`.
+		</p>
+	</ConfigItem>
+</Config>
+
+### Examples
+
+This example configuration sets up an endpoint (`hotdog.ngrok.io`) that allows only 1 request every 60 seconds and trips the circuit breaker for 2 minutes.
+
+#### Example Traffic Policy Document
+
+<ConfigExample
+	snippetText={null}
+	showLineNumbers={true}
+	jsonMetastring="{5-51}"
+	yamlMetastring="{4-28}"
+	config={{
+		on_http_request: [
+			{
+				actions: [
+					{
+						type: "circuit-breaker",
+						config: {
+							error_threshold: 0.0,
+							volume_threshold: 1,
+							window_duration: "60s",
+							tripped_duration: "2m",
+							enforce: true,
+						},
+					},
+				],
+			},
+		],
+	}}
+/>
+
+#### Start Endpoint with Traffic Policy
+
+```shell
+ngrok http 8080 --url hotdog.ngrok.io --traffic-policy-file /path/to/policy.yml
+```
+
+#### Helper script
+
+```python
+import requests
+import time
+
+# Replace with your domain
+url = "https://hotdog.ngrok.io"
+
+attempt = 1
+
+while True:
+    try:
+        response = requests.get(url)
+
+        # Log the response
+        if response.status_code == 200:
+            print(f"Attempt {attempt}: Success ({response.status_code})")
+        else:
+            print(f"Attempt {attempt}: Failure ({response.status_code})")
+
+        # Stop when circuit breaker trips
+        if response.status_code == 503:
+            print("\nCircuit breaker tripped!")
+            break
+    except requests.exceptions.RequestException as e:
+        print(f"Attempt {attempt}: Error ({e})")
+        break
+
+    attempt += 1
+    time.sleep(0.01)  # Reduce delay for faster request rate
+```
+
+```shell
+➜  ~ python3  circuit_breaker.py
+Attempt 1: Success (200)
+Attempt 2: Failure (503)
+
+Circuit breaker tripped!
+```
+
+### Action Result Variables
+
+This action does not set any variables after it has been executed.

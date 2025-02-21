@@ -34,7 +34,7 @@ To started with the ngrok Kubernetes Operator:
 1. Access the [ngrok Dashboard](https://dashboard.ngrok.com)
 1. Click [Your Authtoken](https://dashboard.ngrok.com/get-started/your-authtoken). Copy the Authtoken to a text editor.
 1. Click [API](https://dashboard.ngrok.com/api) and follow the instructions to create a new API key. Copy the API key to a text editor.
-1. Click [Universal Gateway > Domains](https://dashboard.ngrok.com/cloud-edge/domains) and register or claim a domain. Save this value, you will need it later. This is the URL you will use to access your service from anywhere.
+1. Click [Universal Gateway > Domains](https://dashboard.ngrok.com/edges) and register or claim a domain. Save this value, you will need it later. This is the URL you will use to access your service from anywhere.
 
 ## Step 2: Setup your Kubernetes cluster and install the ngrok Kubernetes Operator
 
@@ -145,7 +145,7 @@ spec:
 
    **Note:** If you get an error when applying the manifest, double check that you've updated the `NGROK_DOMAIN` value and try again.
 
-1. To confirm the manifest is successfully applied, go to the [ngrok Dashboard](https://dashboard.ngrok.com) and click [Edge Configurations](https://dashboard.ngrok.com/cloud-edge/edges). You should see a new Edge Configuration for your cluster with the name matching your URL (1) — for example: `my-awesome-k8s-cluster.ngrok.app`. Also note that your some of your cluster configurations are presented int the dashboard as annotations (2).
+1. To confirm the manifest is successfully applied, go to the [ngrok Dashboard](https://dashboard.ngrok.com) and click [Edge Configurations](https://dashboard.ngrok.com/edges). You should see a new Edge Configuration for your cluster with the name matching your URL (1) — for example: `my-awesome-k8s-cluster.ngrok.app`. Also note that your some of your cluster configurations are presented int the dashboard as annotations (2).
 
    ![ingress created](/img/howto/kubernetes-operator/k8s-ingress-app-1.png)
 
@@ -261,7 +261,7 @@ modules:
 
 1. To confirm the circuit breaking configuration is successfully applied:
 
-   1. Go to [ngrok Dashboard](https://dashboard.ngrok.com) > [Edge Configurations](https://dashboard.ngrok.com/cloud-edge/edges).
+   1. Go to [ngrok Dashboard](https://dashboard.ngrok.com) > [Edge Configurations](https://dashboard.ngrok.com/edges).
    1. Click the edge configuration that matches your URL.
    1. On the left hand side, click Circuit Breaker.
    1. Notice how the circuit breaker configuration matches your manifest file.

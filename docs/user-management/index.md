@@ -26,7 +26,7 @@ ngrok supports two enforcement options once you have configured your identity pr
 
 A bot user is a service account that owns a set of credentials - authtokens, API keys, and SSH keys - independently of a person. You can see and manage your bot users in the [ngrok Dashboard](https://dashboard.ngrok.com/users/bots).
 
-Bot users are similar to [Users](/docs/iam/users/) but they are intended for automated
+Bot users are similar to [Users](/iam/users/) but they are intended for automated
 systems that programmatically interact with your ngrok accounts either by
 starting ngrok Agents or making requests to the API.
 
@@ -57,7 +57,7 @@ You can create a bot user via the dashboard or programmatically through the ngro
 
 In the [ngrok Dashboard](https://dashboard.ngrok.com/users/bots), navigate to the "Users" section of the left hand navigation, and then "bot users" to create a new bot user.
 
-Using the API, you can POST to the [`/bot_users` endpoint](/docs/api/resources/bot-users/).
+Using the API, you can POST to the [`/bot_users` endpoint](/api/resources/bot-users/).
 
 ### When should I use a bot user? {#bot-user-use-cases}
 
