@@ -29,20 +29,21 @@ For MacOS or Windows users, the `--net=host` option will not work. You will need
 docker run -it -e NGROK_AUTHTOKEN=xyz ngrok/ngrok:latest http host.docker.internal:80
 ```
 
-This also applies to the upstream `addr` in your ngrok config file. For example:
+This also applies to the `upstream.url` endpoint property in your ngrok config file. For example:
 
 ```yaml
-tunnels:
-  test:
-    proto: http
-    addr: http://host.docker.internal:80
+endpoints:
+  - name: example
+    url: https://example.ngrok.app
+    upstream:
+      url: http://host.docker.internal:80
 ```
 
 ::::
 
 # Using ngrok with Docker Compose
 
-If you're more comfortable using Docker Compose, you can use the following as a starting point. Copy the contents below into a new file named `docker-compose.yaml`, then run `docker compose up` in that directory. This Docker compose file assumes that you have an `ngrok.yml` file in the same directory with at least one tunnel defined. Check out the [ngrok agent config file documentation](/docs/agent/config/) for help creating a configuration file with a tunnel definition. If you want to use the same configuration file as your local ngrok agent, you can view the location of the default config file using `ngrok config check`.
+If you're more comfortable using Docker Compose, you can use the following as a starting point. Copy the contents below into a new file named `docker-compose.yaml`, then run `docker compose up` in that directory. This Docker compose file assumes that you have an `ngrok.yml` file in the same directory with at least one tunnel defined. Check out the [ngrok agent config file documentation](/agent/config/) for help creating a configuration file with a tunnel definition. If you want to use the same configuration file as your local ngrok agent, you can view the location of the default config file using `ngrok config check`.
 
 ```yaml
 services:
