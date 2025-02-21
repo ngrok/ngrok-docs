@@ -535,6 +535,7 @@ const sidebars = {
 				"guides/api-gateway/get-started",
 				"guides/api-gateway/kubernetes",
 				"guides/api-gateway/multicloud",
+				"guides/api-gateway/routing",
 				"guides/api-gateway/add-traffic-policy",
 			],
 		},

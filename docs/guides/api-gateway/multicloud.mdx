@@ -209,82 +209,9 @@ ngrok http 9090 --url https://bar.internal
 
 If you send another request to `{YOUR_NGROK_DOMAIN}`, ngrok forwards it to
 `https://foo.internal` because your Traffic Policy rules don't yet contain a
-strategy for routing traffic to multiple API services. ngrok has a few common
-patterns to fix that.
+strategy for routing traffic to multiple API services.
 
-### Route by path
-
-Path-based routing lets you direct traffic to different backend services
-based on the value of the path.
-
-The Traffic Policy file below:
-
-1. Routes requests to `https://{YOUR_NGROK_DOMAIN}/foo` to the
-   `https://foo.internal` endpoint pool.
-2. Routes requests to `https://{YOUR_NGROK_DOMAIN}/bar` to the
-   `https://bar.internal` agent endpoint.
-3. Uses the [`custom-response`
-   action](/docs/traffic-policy/actions/custom-response) to capture requests to
-   any other path and respond with a generic `403` error.
-
-```yaml title="policy.yaml" traffic-policy
-on_http_request:
-  - name: "Route the /foo/ path to service foo"
-    expressions:
-      - req.url.path.startsWith('/foo')
-    actions:
-      - type: forward-internal
-        config:
-          url: https://foo.internal
-  - name: "Route the /bar/* path to service bar"
-    expressions:
-      - req.url.path.startsWith('/bar')
-    actions:
-      - type: forward-internal
-        config:
-          url: https://bar.internal
-  - name: "Custom response for other paths"
-    actions:
-			- type: custom-response
-				config:
-          status_code: 403
-```
-
-Apply this Traffic Policy rule to your cloud endpoint through the dashboard or
-API to start forwarding traffic.
-
-### Route by headers
-
-You can also route to endpoints based on the dynamic value of a header with [CEL
-interpolation](/docs/traffic-policy/concepts/cel-interpolation).
-
-The Traffic Policy file below:
-
-1. Checks whether requests contain a `x-api` header, and if so, forwards to the
-   internal URL with the same name using CEL interpolation.
-2. Uses the [`custom-response`
-   action](/docs/traffic-policy/actions/custom-response) to capture requests
-   without an appropriate header and respond with a generic `403`
-   error.
-
-```yaml title="policy.yaml" traffic-policy
-on_http_request:
-  - name: "Forward traffic to API service based on `x-api` header value."
-    expressions:
-      - "req.headers['x-api']"
-    actions:
-      - type: forward-internal
-        config:
-          url: https://${getReqHeader(‘x-api’)[0]}.internal
-  - name: "Custom response for requests without expected headers"
-    actions:
-			- type: custom-response
-				config:
-          status_code: 403
-```
-
-Apply this Traffic Policy rule to your cloud endpoint through the dashboard or
-API to forward traffic based on the header values, like `x-api: foo` or `x-api: bar`.
+To make that work, you need to implement a [routing topology](/docs/guides/api-gateway/routing.mdx) based on path or headers.
 
 ## What's next?
 
@@ -293,10 +220,16 @@ includes features like DDoS protection and global load balancing.
 
 Next up, we recommend you:
 
-- Continue your API gateway tutorial by [adding and composing traffic management
-  policies](/docs/guides/api-gateway/add-traffic-policy) to finish offloading
-  non-functional requirements, like rate limiting and authentication, to your
-  ngrok API gateway.
+1. [Add a routing topology](/docs/guides/api-gateway/routing) to forward traffic
+	to multiple API services.
+2. [Add traffic management policies](/docs/guides/api-gateway/traffic-management)
+	to offload non-functional requirements, like rate limiting and authentication,
+	to your ngrok API gateway. You can attach Traffic Policy rules to both your
+cloud and internal agent endpoints, allowing you to compose some rules across all your
+APIs and others to individual upstream services or replicas.
+
+Once your API gateway is set up, you can explore even more:
+
 - Check out your [Traffic
   Inspector](https://dashboard.ngrok.com/observability/traffic-inspector)
   ([documentation](/docs/obs/traffic-inspection)) to observe, modify, and
