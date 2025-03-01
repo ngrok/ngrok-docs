@@ -1,0 +1,305 @@
+---
+title: Deploy a multicloud API gateway
+description: In this tutorial, you'll learn how to load balance API services across multiple clouds and apply common multicloud traffic patterns.
+---
+
+import TabItem from "@theme/TabItem";
+import Tabs from "@theme/Tabs";
+
+You've developed a world-class API, and now you want to make it available online
+on not just one cloud provider, but two or more.
+
+Aside from the challenges involved in any multicloud deployment, you're looking
+for a multicloud API gateway that allows you to:
+
+- Consistently apply security and traffic management policy in one place
+- Provide a single pane of glass for observability
+- Work identically in every cloud or environment
+
+## What you'll learn
+
+In this tutorial, you'll learn how to implement ngrok as a multicloud API gateway
+with these broad steps:
+
+1. Set up the common pattern of using a single cloud endpoint to route all API
+   traffic to internal agent endpoints.
+2. Use endpoint pooling to enable dead-simple load balancing between replicas of
+   your API service.
+3. Connect non-replicated API services with additional internal agent endpoints.
+
+## What you'll need
+
+- **An ngrok account**: [Sign up](https://dashboard.ngrok.com/signup) for for
+  free if you don't already have one.
+- **Your authtoken**: [Create an
+  authtoken](https://dashboard.ngrok.com/authtokens) using the ngrok dashboard.
+- **A reserved domain**: [Reserve a domain](https://dashboard.ngrok.com/domains)
+  in the ngrok dashboard or using the [ngrok
+  API](/docs/api/resources/reserved-domains/#create-reserved-domain).
+  - You can choose from an ngrok subdomain or bring your own [custom branded
+    domain](/docs/guides/other-guides/how-to-set-up-a-custom-domain), like
+    `https://api.example.com`.
+  - We'll refer to this domain as `{YOUR_NGROK_DOMAIN}` throughout the guide.
+- **The ngrok agent**: [Download](https://download.ngrok.com) the appropriate
+  version and install it on the same machine or network as the API service you
+  want to make available via ngrok's API gateway.
+- (optional) **An API key**: [Create an ngrok API
+  key](https://dashboard.ngrok.com/api-keys/new) if you'd like to use the ngrok
+  API to manage your cloud endpoints.
+
+## Deploy a demo API service (optional)
+
+If you don't yet have API services you'd like to bring online with a multicloud
+API gateway, or just want to quickly wire up a POC using ngrok, we recommend
+running multiple "replicas" of our [ngrok demo
+API](https://github.com/ngrok-samples/api-demo), which responds with details
+about the request.
+
+Assuming you have Docker installed on the systems where your API services run,
+you can deploy a container listening on port `4000`.
+
+```shell
+docker run -p 4000:4000 -e MESSAGE='Hello from cloud A!' -d joelatngrok/api-demo
+```
+
+Spin up the same service on your other cloud providers as replicas. Change the
+`MESSAGE` environment variable to help you later see which replica and which
+clouds respond to your requests.
+
+## Add your API services to an endpoint pool
+
+When your create multiple endpoints with the same URL and binding, ngrok pools
+them by default, load-balancing traffic between them. This can improve your
+API's performance and resiliency.
+
+In one cloud, create an internal agent endpoint on an internal URL, like
+`https://foo.internal`. Replace `4000` if you've brought your own API service.
+
+```
+ngrok http 4000 --url https://foo.internal --pooling-enabled
+```
+
+Run the same command for each replica of your API service on other clouds.
+
+Your API service replicas are now pooled and load-balanced, but not yet
+accessible on the public internet. To fix that, you need two things:
+
+1. A cloud endpoint for traffic routing and centralized policy management.
+2. A Traffic Policy rule that forwards traffic from your cloud endpoint to
+   `https://foo.internal`.
+
+## Create a cloud endpoint
+
+Cloud endpoints are persistent, always-on endpoints that you can manage with the
+ngrok dashboard or API.
+
+You centrally control your traffic management and security policy on your cloud
+endpoint, then forward traffic to your endpoint pool. That's much easier than trying
+to synchronize policies across multiple replicas and >1 cloud.
+
+<Tabs>
+	<TabItem value="Dashboard">
+
+    	First, log into the [ngrok dashboard](https://dashboard.ngrok.com). Click **Endpoints &rarr; + New**.
+
+    	Leave the **Binding** value **Public**, then enter the domain name you reserved earlier. Click **Create Cloud Endpoint**.
+
+    	With your cloud endpoint created, you'll see a default Traffic Policy in the dashboard. Paste in the YAML below to apply the rule.
+
+    		```yaml title="policy.yaml" mode=traffic-policy
+    		on_http_request:
+    			- actions:
+    					- type: forward-internal
+    						config:
+    							url: https://foo.internal
+    							binding: internal
+    		```
+
+    		Click **Save** to apply your changes.
+
+    </TabItem>
+    <TabItem value="API">
+
+    	The `ngrok` CLI provides a helpful wrapper around the [ngrok API](/docs/api/index), which you can use to create a cloud endpoint and apply a file containing Traffic Policy rules.
+
+    		Create a new file named `policy.yaml` on your local workstation with the following YAML.
+
+    		```yaml title="policy.yaml" mode=traffic-policy
+    		on_http_request:
+    			- actions:
+    					- type: forward-internal
+    						config:
+    							url: https://foo.internal
+    							binding: internal
+    		```
+
+    	Create a cloud endpoint on `{YOUR_NGROK_DOMAIN}`, passing your `policy.yaml` file as an option.
+
+    	```shell
+    	ngrok api endpoints create \
+    	--bindings public \
+    	--url https://{YOUR_NGROK_DOMAIN}
+    		--traffic-policy "$(cat policy.yaml)"
+    	```
+
+    	You'll get a `201` response—save the value of `id`, as you'll need it again later to continue configuring the Traffic Policy applied to your cloud endpoint.
+
+    </TabItem>
+
+</Tabs>
+
+## Access your API services
+
+At this point, your multicloud API gateway is ready for traffic! Why don't you
+give it a go?
+
+```bash
+curl -X GET https://{YOUR_NGROK_DOMAIN}
+```
+
+If you're using our demo API, you'll see a response like:
+
+```json
+{
+	"message": "Hello from cloud A!",
+	"host": "localhost:4000",
+	"req_headers": {
+		"host": "localhost:4000",
+		"user-agent": "curl/8.5.0",
+		"accept": "*/*"
+	},
+	"method": "GET",
+	"url": "/",
+	"time": "2025-02-06T21:44:23.116Z",
+	"status": 200
+}
+```
+
+Try a few more times, and you'll see `Hello from cloud B!` instead—proof you're
+load balancing between clouds.
+
+Now is the time to start getting even more from Traffic Policy, our configuration
+language for managing traffic. You can attach Traffic Policy rules to both your
+cloud and agent endpoints, allowing you to compose some rules across all your
+APIs and others to individual upstream services or replicas.
+
+See our tutorial on [API gateway traffic
+management](/docs/guides/api-gateway/add-traffic-policy) for details.
+
+## Extend your multicloud API gateway with non-replicated services
+
+So far, you've deployed multiple replicas of a single API service and added load
+balancing with an endpoint pool.
+
+What if you have more than one API service you'd like to make available behind a
+multicloud API gateway? Or you've acquired a new business and want to integrate
+their API services into your existing API gateway?
+
+To make this work, you need to add additional `forward-internal` actions and
+implement a strategy for routing to different upstream services based on the
+attributes of incoming requests.
+
+Let's assume you want to start a new `bar` service, which runs on port
+`9090`. Create a new internal agent endpoint on a unique URL, like
+`https://bar.internal`, to separate it from your endpoint pool.
+
+```
+ngrok http 9090 --url https://bar.internal
+```
+
+If you send another request to `{YOUR_NGROK_DOMAIN}`, ngrok forwards it to
+`https://foo.internal` because your Traffic Policy rules don't yet contain a
+strategy for routing traffic to multiple API services. ngrok has a few common
+patterns to fix that.
+
+### Route by path
+
+Path-based routing lets you direct traffic to different backend services
+based on the value of the path.
+
+The Traffic Policy file below:
+
+1. Routes requests to `https://{YOUR_NGROK_DOMAIN}/foo` to the
+   `https://foo.internal` endpoint pool.
+2. Routes requests to `https://{YOUR_NGROK_DOMAIN}/bar` to the
+   `https://bar.internal` agent endpoint.
+3. Uses the [`custom-response`
+   action](/docs/traffic-policy/actions/custom-response) to capture requests to
+   any other path and respond with a generic `403` error.
+
+```yaml title="policy.yaml" traffic-policy
+on_http_request:
+  - name: "Route the /foo/ path to service foo"
+    expressions:
+      - req.url.path.startsWith('/foo')
+    actions:
+      - type: forward-internal
+        config:
+          url: https://foo.internal
+  - name: "Route the /bar/* path to service bar"
+    expressions:
+      - req.url.path.startsWith('/bar')
+    actions:
+      - type: forward-internal
+        config:
+          url: https://bar.internal
+  - name: "Custom response for other paths"
+    actions:
+			- type: custom-response
+				config:
+          status_code: 403
+```
+
+Apply this Traffic Policy rule to your cloud endpoint through the dashboard or
+API to start forwarding traffic.
+
+### Route by headers
+
+You can also route to endpoints based on the dynamic value of a header with [CEL
+interpolation](/docs/traffic-policy/concepts/cel-interpolation).
+
+The Traffic Policy file below:
+
+1. Checks whether requests contain a `x-api` header, and if so, forwards to the
+   internal URL with the same name using CEL interpolation.
+2. Uses the [`custom-response`
+   action](/docs/traffic-policy/actions/custom-response) to capture requests
+   without an appropriate header and respond with a generic `403`
+   error.
+
+```yaml title="policy.yaml" traffic-policy
+on_http_request:
+  - name: "Forward traffic to API service based on `x-api` header value."
+    expressions:
+      - "req.headers['x-api']"
+    actions:
+      - type: forward-internal
+        config:
+          url: https://${getReqHeader(‘x-api’)[0]}.internal
+  - name: "Custom response for requests without expected headers"
+    actions:
+			- type: custom-response
+				config:
+          status_code: 403
+```
+
+Apply this Traffic Policy rule to your cloud endpoint through the dashboard or
+API to forward traffic based on the header values, like `x-api: foo` or `x-api: bar`.
+
+## What's next?
+
+You've now brought your multicloud APIs online with ngrok's API gateway, which
+includes features like DDoS protection and global load balancing.
+
+Next up, we recommend you:
+
+- Continue your API gateway tutorial by [adding and composing traffic management
+  policies](/docs/guides/api-gateway/add-traffic-policy) to finish offloading
+  non-functional requirements, like rate limiting and authentication, to your
+  ngrok API gateway.
+- Check out your [Traffic
+  Inspector](https://dashboard.ngrok.com/observability/traffic-inspector)
+  ([documentation](/docs/obs/traffic-inspection)) to observe, modify, and
+  replay requests across your API gateway.
+- Explore other opportunities to manage and take action on API traffic in our
+  [Traffic Policy documentation](/docs/traffic-policy/index).
