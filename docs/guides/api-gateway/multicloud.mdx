@@ -27,7 +27,7 @@ gateway in a Kubernetes environment with these broad steps:
 
 1. Deploy the ngrok Kubernetes Operator to your clusters in multiple clouds.
 2. Set up a single hostname, attached to a [Cloud Endpoint](/docs/universal-gateway/cloud-endpoints/) that routes traffic to services on multiple clouds based on pathname, an internal [Agent
-	 Endpoint](/docs/universal-gateway/agent-endpoints) then receives in your cluster.
+   Endpoint](/docs/universal-gateway/agent-endpoints) then receives in your cluster.
 3. Add traffic management rules, like JWT validation and rate limiting, to all
    or some of your API services.
 
@@ -78,13 +78,13 @@ spec:
         app: abc-app
     spec:
       containers:
-      - name: abc-app
-        image: joelatngrok/api-demo:latest
-        ports:
-        - containerPort: 4000
-        env:
-        - name: MESSAGE
-          value: "Hello from `abc-app` on cloud A!"
+        - name: abc-app
+          image: joelatngrok/api-demo:latest
+          ports:
+            - containerPort: 4000
+          env:
+            - name: MESSAGE
+              value: "Hello from `abc-app` on cloud A!"
 ---
 apiVersion: v1
 kind: Service
@@ -94,8 +94,8 @@ spec:
   selector:
     app: abc-app
   ports:
-  - port: 4000
-    targetPort: 4000
+    - port: 4000
+      targetPort: 4000
 ```
 
   </TabItem>
@@ -117,13 +117,13 @@ spec:
         app: xyz-app
     spec:
       containers:
-      - name: xyz-app
-        image: joelatngrok/api-demo:latest
-        ports:
-        - containerPort: 4000
-        env:
-        - name: MESSAGE
-          value: "Hello from `xyz-app` on cloud B!"
+        - name: xyz-app
+          image: joelatngrok/api-demo:latest
+          ports:
+            - containerPort: 4000
+          env:
+            - name: MESSAGE
+              value: "Hello from `xyz-app` on cloud B!"
 ---
 apiVersion: v1
 kind: Service
@@ -133,10 +133,10 @@ spec:
   selector:
     app: xyz-app
   ports:
-  - port: 4000
-    targetPort: 4000
+    - port: 4000
+      targetPort: 4000
 ```
-  
+
   </TabItem>
 </Tabs>
 
@@ -218,7 +218,7 @@ spec:
   upstream:
     url: http://xyz-app-service.default:4000
 ```
-  
+
   </TabItem>
 </Tabs>
 
@@ -252,7 +252,7 @@ global network.
 The rules below uses [expressions](/docs/traffic-policy/concepts/expressions) to:
 
 1. Route all traffic on `https://<YOUR_NGROK_DOMAIN>/abc` to your
-   `https://abc-cloud-a.internal` agent endpoint in cloud A. 
+   `https://abc-cloud-a.internal` agent endpoint in cloud A.
 2. Route all traffic
    on `https://<YOUR_NGROK_DOMAIN>/xyz` to your `https://xyz-cloud-b.internal`
    agent endpoint in cloud B.
@@ -310,7 +310,7 @@ of an API gateway: offload all the non-functional requirements away from your
 services.
 
 One great feature of ngrok's building blocks of endpoints and Traffic Policy
-rules is that they're *composable*—you can reuse them, chain them, and apply
+rules is that they're _composable_—you can reuse them, chain them, and apply
 them at multiple stages in the lifecycle of an API request.
 
 With the shape you've already created, you can centrally manage certain policies,
@@ -320,7 +320,7 @@ specific services.
 ### Validate JWTs on all APIs
 
 API authentication is too important not to apply consistently across all your
-APIs and requests. That's where the always-on, *front door to all your routes*
+APIs and requests. That's where the always-on, _front door to all your routes_
 quality of a cloud endpoint comes in handy—you can apply the [`jwt-validation`
 action](/docs/traffic-policy/actions/jwt-validation) once for dependable AuthN
 no matter how many services you end up deploying behind your multicloud API
@@ -345,7 +345,7 @@ The rule below builds on top of the previous cloud endpoint policy to:
 1. Reject requests missing a token with a `401 Unauthorized` error.
 2. Reject requests with an invalid token with a `403 Forbidden` error.
 3. Forward requests with a valid token to one of your internal agent endpoints
-based on the pathname.
+   based on the pathname.
 
 ```yaml mode="traffic-policy"
 on_http_request:
@@ -397,7 +397,7 @@ with a `429` error code once a user or group have exceeded your customizable
 threshold, and the `AgentEndpoint` CRD allows you to define a Traffic Policy for
 just that endpoint.
 
-The rule below builds on top of your `AgentEndpoint` CR from earlier to: 
+The rule below builds on top of your `AgentEndpoint` CR from earlier to:
 
 1. Allow up to `10` requests per IP in a `60s` window.
 2. Reject requests that exceed the rate limiting capacity with a `429` error response.
@@ -428,7 +428,7 @@ spec:
                   - conn.client_ip
 ```
 
-Apply the updated manifest with `kubectl apply -f ...`. 
+Apply the updated manifest with `kubectl apply -f ...`.
 
 Ready to test your rate limit in action? Run the below command after replacing
 `<YOUR_NGROK_DOMAIN>` and the path, if relevant.
@@ -461,7 +461,6 @@ beginning. Next up, we recommend you:
 1. Check out your [Traffic
    Inspector](https://dashboard.ngrok.com/observability/traffic-inspector)
    ([documentation](/docs/obs/traffic-inspection#ngrok-traffic-inspector) to
-   observe, modify, and replay requests across your API gateway. 
+   observe, modify, and replay requests across your API gateway.
 2. Explore other opportunities to manage and take action on API traffic in our
    [Traffic Policy documentation](/docs/traffic-policy).
-
