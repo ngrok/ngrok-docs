@@ -205,7 +205,7 @@ const redirects = [
     [ fromIncludes(`/docs/http-header-templates`), `/docs/traffic-policy/actions/add-headers/` ],
 
     // (DEC 2024) New Traffic Policy
-    [ fromIncludes(`/docs/traffic-policy/gallery/`), `/docs/traffic-policy/examples/` ],
+    [ fromIncludes(`/docs/traffic-policy/gallery/`), `/docs/traffic-policy/examples/a-b-tests/` ],
     [ fromIncludes(`/docs/http/traffic-policy/gallery/`), `/docs/traffic-policy/examples/` ],
     [ fromIncludes(`/docs/tls/traffic-policy/gallery/`), `/docs/traffic-policy/examples/` ],
     [ fromIncludes(`/docs/tcp/traffic-policy/gallery/`), `/docs/traffic-policy/examples/` ],
