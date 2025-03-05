@@ -5255,6 +5255,22 @@
     </tr>
     <tr>
       <td>
+        <a id="ERR_NGROK_2249" href="/docs/errors/err_ngrok_2249">ERR_NGROK_2249</a>
+      </td>
+      <td class="pre-wrapped">
+        Memory limit exceeded by <code>&lt;ACTION&gt;</code> action: <code>&lt;ERR&gt;</code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_2250" href="/docs/errors/err_ngrok_2250">ERR_NGROK_2250</a>
+      </td>
+      <td class="pre-wrapped">
+        Invalid configuration for <code>&lt;ACTION&gt;</code>: Nested variables are too deep. Maximum nesting allowed is <code>&lt;MAX&gt;</code>
+      </td>
+    </tr>
+    <tr>
+      <td>
         <a id="ERR_NGROK_3002" href="/docs/errors/err_ngrok_3002">ERR_NGROK_3002</a>
       </td>
       <td class="pre-wrapped">
@@ -5969,6 +5985,22 @@
       </td>
       <td class="pre-wrapped">
         ForwardInternal may only forward through <code>&lt;MAX&gt;</code> endpoints.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_3601" href="/docs/errors/err_ngrok_3601">ERR_NGROK_3601</a>
+      </td>
+      <td class="pre-wrapped">
+        The response received from the http-request target had a size exceeding the maximum allowed.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_3602" href="/docs/errors/err_ngrok_3602">ERR_NGROK_3602</a>
+      </td>
+      <td class="pre-wrapped">
+        The configured http-request timeout was reached before a successful request could be made.
       </td>
     </tr>
     <tr>
@@ -9689,6 +9721,14 @@
     </tr>
     <tr>
       <td>
+        <a id="ERR_NGROK_8014" href="/docs/errors/err_ngrok_8014">ERR_NGROK_8014</a>
+      </td>
+      <td class="pre-wrapped">
+        Your agent has been blocked from connecting to ngrok because it has been suspected of violating our Acceptable Use policy: <a href="https://ngrok.com/tos">https://ngrok.com/tos</a>
+      </td>
+    </tr>
+    <tr>
+      <td>
         <a id="ERR_NGROK_9000" href="/docs/errors/err_ngrok_9000">ERR_NGROK_9000</a>
       </td>
       <td class="pre-wrapped">
@@ -10038,7 +10078,7 @@
         <a id="ERR_NGROK_9041" href="/docs/errors/err_ngrok_9041">ERR_NGROK_9041</a>
       </td>
       <td class="pre-wrapped">
-        Supported protocols for kubernetes-bound endpoints are http and tcp at this time. You provided <code>&lt;PROTO&gt;</code>.
+        Supported protocols for kubernetes-bound endpoints are http, tls, and tcp. You provided <code>&lt;PROTO&gt;</code>.
       </td>
     </tr>
     <tr>
@@ -10935,7 +10975,7 @@
         <a id="ERR_NGROK_18017" href="/docs/errors/err_ngrok_18017">ERR_NGROK_18017</a>
       </td>
       <td class="pre-wrapped">
-        The provided cloud endpoint was invalid because pooling was set to disabled when another endpoint exists for this url that has pooling enabled.
+        The provided cloud endpoint was invalid because pooling was set to disabled when another endpoint exists for this url.
       </td>
     </tr>
     <tr>
