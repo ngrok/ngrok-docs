@@ -52,8 +52,8 @@ will look like:
     `https://api.example.com`.
   - We'll refer to this domain as `<YOUR_NGROK_DOMAIN>`.
 - An [**Auth0
-	account**](https://auth0.com/signup?place=header&type=button&text=sign%20up)
-	(free is fine) for creating an API and generating JWTs.
+  account**](https://auth0.com/signup?place=header&type=button&text=sign%20up)
+  (free is fine) for creating an API and generating JWTs.
 
 ## Deploy demo API services (optional)
 
@@ -281,11 +281,12 @@ configured and managed in different ways.
     		--traffic-policy "$(cat policy.yaml)"
     	```
 
-			You'll get a `201` response—save the value of `id`, as you'll need it
-			again later to continue configuring the Traffic Policy applied to your
-			cloud endpoint. We'll refer to it as `<CLOUD_ENDPOINT_ID>`.
+    		You'll get a `201` response—save the value of `id`, as you'll need it
+    		again later to continue configuring the Traffic Policy applied to your
+    		cloud endpoint. We'll refer to it as `<CLOUD_ENDPOINT_ID>`.
 
     </TabItem>
+
 </Tabs>
 
 ## Route traffic to your services
@@ -320,61 +321,62 @@ headers.
 <Tabs>
 	<TabItem value="Dashboard">
 
-		Copy and paste the rules below into your cloud endpoint's Traffic Policy editor
-		in the dashboard. If you're bringing your own API services instead of using the
-		demo API, you'll need to change `/abc` and `/xyz` to match your services' paths
-		and the `url` for your internal agent endpoints.
+    	Copy and paste the rules below into your cloud endpoint's Traffic Policy editor
+    	in the dashboard. If you're bringing your own API services instead of using the
+    	demo API, you'll need to change `/abc` and `/xyz` to match your services' paths
+    	and the `url` for your internal agent endpoints.
 
-		```yaml mode=traffic-policy title="policy.yaml"
-		on_http_request:
-			- expressions:
-					- "req.url.path.startsWith('/abc')"
-				actions:
-					- type: forward-internal
-						config:
-							url: https://abc-cloud-a.internal
-			- expressions:
-					- "req.url.path.startsWith('/xyz')"
-				actions:
-					- type: forward-internal
-						config:
-							url: https://xyz.cloud-b.internal
-		```
+    	```yaml mode=traffic-policy title="policy.yaml"
+    	on_http_request:
+    		- expressions:
+    				- "req.url.path.startsWith('/abc')"
+    			actions:
+    				- type: forward-internal
+    					config:
+    						url: https://abc-cloud-a.internal
+    		- expressions:
+    				- "req.url.path.startsWith('/xyz')"
+    			actions:
+    				- type: forward-internal
+    					config:
+    						url: https://xyz.cloud-b.internal
+    	```
 
-		Hit **Save** to lock in the new policy.
+    	Hit **Save** to lock in the new policy.
 
-	</TabItem>
-	<TabItem value="API">
+    </TabItem>
+    <TabItem value="API">
 
-		Update your existing `policy.yaml` file with the YAML below. If you're
-		bringing your own API services instead of using the demo API, you'll need to
-		change `/abc` and `/xyz` to match your services' paths and the `url` for
-		your internal agent endpoints.
+    	Update your existing `policy.yaml` file with the YAML below. If you're
+    	bringing your own API services instead of using the demo API, you'll need to
+    	change `/abc` and `/xyz` to match your services' paths and the `url` for
+    	your internal agent endpoints.
 
-		```yaml mode=traffic-policy title="policy.yaml"
-		on_http_request:
-			- expressions:
-					- "req.url.path.startsWith('/abc')"
-				actions:
-					- type: forward-internal
-						config:
-							url: https://abc-cloud-a.internal
-			- expressions:
-					- "req.url.path.startsWith('/xyz')"
-				actions:
-					- type: forward-internal
-						config:
-							url: https://xyz.cloud-b.internal
-		```
+    	```yaml mode=traffic-policy title="policy.yaml"
+    	on_http_request:
+    		- expressions:
+    				- "req.url.path.startsWith('/abc')"
+    			actions:
+    				- type: forward-internal
+    					config:
+    						url: https://abc-cloud-a.internal
+    		- expressions:
+    				- "req.url.path.startsWith('/xyz')"
+    			actions:
+    				- type: forward-internal
+    					config:
+    						url: https://xyz.cloud-b.internal
+    	```
 
-		Update your cloud endpoint.
+    	Update your cloud endpoint.
 
-		```shell
-		ngrok api endpoints update <CLOUD_ENDPOINT_ID> \
-			--traffic-policy "$(cat policy.yaml)"
-		```
+    	```shell
+    	ngrok api endpoints update <CLOUD_ENDPOINT_ID> \
+    		--traffic-policy "$(cat policy.yaml)"
+    	```
 
-	</TabItem>
+    </TabItem>
+
 </Tabs>
 
 At this point, your multicloud API gateway is up and running! Give it a try,
@@ -423,12 +425,12 @@ ngrok's JWT validation action helps you:
 
 - Give your end users many ways to access your APIs.
 - Ensure only requests containing the correct access token, specified by an
-	`Authorization: Bearer ...` header, can access any of your APIs.
+  `Authorization: Bearer ...` header, can access any of your APIs.
 - Add claims to tokens for authorization and fine-grained access control where a
-	specific token may only have access to a certain API (`service_access: abc`)
-	or apply RBAC (`features: read`).
+  specific token may only have access to a certain API (`service_access: abc`)
+  or apply RBAC (`features: read`).
 - Use a single credential for end users who need to access multiple upstream
-	services.
+  services.
 - Offload all this logic from your API services and run it in ngrok's network.
 
 You can use any OAuth provider for JWT validation, but but let's quickly cover the
