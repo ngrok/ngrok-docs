@@ -9,7 +9,7 @@ const docFrontMatterSchema = z.object({
 
 const integrationDocSchema = z.object({
 	content: z.string().trim().min(1),
-	contentTitle: z.string().trim().min(1),
+	contentTitle: z.string().trim().min(1).optional(),
 	excerpt: z.string().trim().min(1).optional(),
 	frontMatter: docFrontMatterSchema.optional(),
 	path: z.string().trim().min(1),
