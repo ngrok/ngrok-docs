@@ -51,6 +51,9 @@ will look like:
     domain](/docs/guides/other-guides/how-to-set-up-a-custom-domain), like
     `https://api.example.com`.
   - We'll refer to this domain as `<YOUR_NGROK_DOMAIN>`.
+- An [**Auth0
+	account**](https://auth0.com/signup?place=header&type=button&text=sign%20up)
+	(free is fine) for creating an API and generating JWTs.
 
 ## Deploy demo API services (optional)
 
@@ -126,7 +129,7 @@ spec:
             - containerPort: 4000
           env:
             - name: MESSAGE
-              value: "Hello from `xyz-app` on cloud B!"
+              value: "Hello from `xyz` on cloud B!"
 ---
 apiVersion: v1
 kind: Service
@@ -280,7 +283,7 @@ configured and managed in different ways.
 
 			You'll get a `201` response—save the value of `id`, as you'll need it
 			again later to continue configuring the Traffic Policy applied to your
-			cloud endpoint.
+			cloud endpoint. We'll refer to it as `<CLOUD_ENDPOINT_ID>`.
 
 	</TabItem>
 </Tabs>
@@ -314,28 +317,65 @@ You can also [route by other
 properties](/docs/traffic-policy/examples/route-requests), like subdomains and
 headers.
 
-Copy and paste the rules below into your cloud endpoint's Traffic Policy editor
-in the dashboard. If you're bringing your own API services instead of using the
-demo API, you'll need to change `/abc` and `/xyz` to match your services' paths
-and the `url` for your internal agent endpoints.
+<Tabs>
+	<TabItem value="Dashboard">
 
-```yaml mode=traffic-policy
-on_http_request:
-  - expressions:
-      - "req.url.path.startsWith('/abc')"
-    actions:
-      - type: forward-internal
-        config:
-          url: https://abc-cloud-a.internal
-  - expressions:
-      - "req.url.path.startsWith('/xyz')"
-    actions:
-      - type: forward-internal
-        config:
-          url: https://xyz.cloud-b.internal
-```
+		Copy and paste the rules below into your cloud endpoint's Traffic Policy editor
+		in the dashboard. If you're bringing your own API services instead of using the
+		demo API, you'll need to change `/abc` and `/xyz` to match your services' paths
+		and the `url` for your internal agent endpoints.
 
-Hit **Save** to lock in the new policy.
+		```yaml mode=traffic-policy title="policy.yaml"
+		on_http_request:
+			- expressions:
+					- "req.url.path.startsWith('/abc')"
+				actions:
+					- type: forward-internal
+						config:
+							url: https://abc-cloud-a.internal
+			- expressions:
+					- "req.url.path.startsWith('/xyz')"
+				actions:
+					- type: forward-internal
+						config:
+							url: https://xyz.cloud-b.internal
+		```
+
+		Hit **Save** to lock in the new policy.
+
+	</TabItem>
+	<TabItem value="API">
+
+		Update your existing `policy.yaml` file with the YAML below. If you're
+		bringing your own API services instead of using the demo API, you'll need to
+		change `/abc` and `/xyz` to match your services' paths and the `url` for
+		your internal agent endpoints.
+
+		```yaml mode=traffic-policy title="policy.yaml"
+		on_http_request:
+			- expressions:
+					- "req.url.path.startsWith('/abc')"
+				actions:
+					- type: forward-internal
+						config:
+							url: https://abc-cloud-a.internal
+			- expressions:
+					- "req.url.path.startsWith('/xyz')"
+				actions:
+					- type: forward-internal
+						config:
+							url: https://xyz.cloud-b.internal
+		```
+
+		Update your cloud endpoint.
+
+		```shell
+		ngrok api endpoints update <CLOUD_ENDPOINT_ID> \
+			--traffic-policy "$(cat policy.yaml)"
+		```
+
+	</TabItem>
+</Tabs>
 
 At this point, your multicloud API gateway is up and running! Give it a try,
 won't you?
@@ -347,13 +387,13 @@ curl https://<YOUR_NGROK_DOMAIN>/abc
 You should get a response like:
 
 ```
-{"message":"Hello from `abc-app` on cloud A!","host":"<YOUR_NGROK_DOMAIN>","req_headers":{"host":"<YOUR_NGROK_DOMAIN>","user-agent":"curl/8.7.1","accept":"*/*","accept-encoding":"gzip"},"method":"GET","url":"/abc","time":"2025-03-04T01:10:25.812Z","status":200}
+{"message":"Hello from `abc` on cloud A!","host":"<YOUR_NGROK_DOMAIN>","req_headers":{"host":"<YOUR_NGROK_DOMAIN>","user-agent":"curl/8.7.1","accept":"*/*","accept-encoding":"gzip"},"method":"GET","url":"/abc","time":"2025-03-04T01:10:25.812Z","status":200}
 ```
 
 And when you run `curl https://<YOUR_NGROK_DOMAIN>/xyz`?
 
 ```
-{"message":"Hello from `xyz-app` on cloud B!","host":"<YOUR_NGROK_DOMAIN>","req_headers":{"host":"<YOUR_NGROK_DOMAIN>","user-agent":"curl/8.7.1","accept":"*/*","accept-encoding":"gzip"},"method":"GET","url":"/xyz","time":"2025-03-04T01:10:25.812Z","status":200}
+{"message":"Hello from `xyz` on cloud B!","host":"<YOUR_NGROK_DOMAIN>","req_headers":{"host":"<YOUR_NGROK_DOMAIN>","user-agent":"curl/8.7.1","accept":"*/*","accept-encoding":"gzip"},"method":"GET","url":"/xyz","time":"2025-03-04T01:10:25.812Z","status":200}
 ```
 
 ## Add traffic management policies
@@ -370,7 +410,7 @@ With the shape you've already created, you can centrally manage certain policies
 like authentication, on your cloud endpoint, then compose additional rules onto
 specific services.
 
-### Validate JWTs on all API and requests
+### Validate JWTs on all APIs and requests
 
 API authentication is too important not to apply consistently across all your
 APIs and requests. That's where the always-on, _front door to all your routes_
@@ -379,7 +419,19 @@ action](/docs/traffic-policy/actions/jwt-validation) once for dependable AuthN
 no matter how many services you end up deploying behind your multicloud API
 gateway.
 
-You can use any OAuth provider for JWT validation, but let's quickly cover the
+ngrok's JWT validation action helps you:
+
+- Give your end users many ways to access your APIs.
+- Ensure only requests containing the correct access token, specified by an
+	`Authorization: Bearer ...` header, can access any of your APIs.
+- Add claims to tokens for authorization and fine-grained access control where a
+	specific token may only have access to a certain API (`service_access: abc`)
+	or apply RBAC (`features: read`).
+- Use a single credential for end users who need to access multiple upstream
+	services.
+- Offload all this logic from your API services and run it in ngrok's network.
+
+You can use any OAuth provider for JWT validation, but but let's quickly cover the
 process with Auth0.
 
 - Log in to your [Auth0 tenant dashboard](https://manage.auth0.com/dashboard).
@@ -400,14 +452,18 @@ The rule below builds on top of the previous cloud endpoint policy to:
 3. Forward requests with a valid token to one of your internal agent endpoints
    based on the pathname.
 
-```yaml mode="traffic-policy"
+You'll need to change the variables accordingly—if you're not sure where to find
+this information, we have a full [integration
+guide](/docs/integrations/auth0/jwt-action) with more details.
+
+```yaml mode="traffic-policy" title="policy.yaml"
 on_http_request:
   - actions:
       - type: jwt-validation
         config:
           issuer:
             allow_list:
-              - value: "https://<YOUR_AUTH0_TENANT_ID>.us.auth0.com/"
+              - value: "https://<YOUR_AUTH0_TENANT_ID>.<YOUR_AUTH0_REGION>.auth0.com/"
           audience:
             allow_list:
               - value: "https://<YOUR_NGROK_DOMAIN>"
@@ -423,7 +479,7 @@ on_http_request:
             keys:
               sources:
                 additional_jkus:
-                  - "https://<YOUR_AUTH0_TENANT_ID>.us.auth0.com/.well-known/jwks.json"
+                  - "https://<YOUR_AUTH0_TENANT_ID>.<YOUR_AUTH0_REGION>.auth0.com/.well-known/jwks.json"
   - expressions:
       - "req.url.path.startsWith('/abc')"
     actions:
@@ -437,6 +493,8 @@ on_http_request:
         config:
           url: https://xyz.cloud-b.internal
 ```
+
+Apply in either the dashboard or ngrok API.
 
 ### Rate limit specific API services
 
