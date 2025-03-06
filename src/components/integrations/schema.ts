@@ -5,11 +5,12 @@ const docFrontMatterSchema = z.object({
 	sidebar_label: z.string().optional(),
 	tags: z.array(z.string()).optional(),
 	title: z.string().optional(),
+	name: z.string().optional(),
 });
 
 const integrationDocSchema = z.object({
 	content: z.string().trim().min(1),
-	contentTitle: z.string().trim().min(1),
+	contentTitle: z.string().trim().min(1).optional(),
 	excerpt: z.string().trim().min(1).optional(),
 	frontMatter: docFrontMatterSchema.optional(),
 	path: z.string().trim().min(1),
