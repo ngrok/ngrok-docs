@@ -206,9 +206,9 @@ const redirects = [
 
     // (DEC 2024) New Traffic Policy
     [ fromIncludes(`/docs/traffic-policy/gallery/`), `/docs/traffic-policy/examples/a-b-tests/` ],
-    [ fromIncludes(`/docs/http/traffic-policy/gallery/`), `/docs/traffic-policy/examples/` ],
-    [ fromIncludes(`/docs/tls/traffic-policy/gallery/`), `/docs/traffic-policy/examples/` ],
-    [ fromIncludes(`/docs/tcp/traffic-policy/gallery/`), `/docs/traffic-policy/examples/` ],
+    [ fromIncludes(`/docs/http/traffic-policy/gallery/`), `/docs/traffic-policy/examples/a-b-tests/` ],
+    [ fromIncludes(`/docs/tls/traffic-policy/gallery/`), `/docs/traffic-policy/examples/a-b-tests/` ],
+    [ fromIncludes(`/docs/tcp/traffic-policy/gallery/`), `/docs/traffic-policy/examples/a-b-tests/` ],
     [ fromIncludes(`/docs/http/traffic-policy/expressions/writing-guide/`), `/docs/traffic-policy/concepts/expressions/#writing-expressions` ],
     [ fromIncludes(`/docs/tls/traffic-policy/expressions/writing-guide/`), `/docs/traffic-policy/concepts/expressions/#writing-expressions` ],
     [ fromIncludes(`/docs/tcp/traffic-policy/expressions/writing-guide/`), `/docs/traffic-policy/concepts/expressions/#writing-expressions` ],
@@ -254,7 +254,7 @@ const redirects = [
 
     // JAN 2025
     [ fromIncludes(`/docs/tls/tls-termination/`), `/docs/traffic-policy/actions/terminate-tls/` ],
-    [ fromIncludes(`/docs/traffic-policy/templates/`), `/docs/traffic-policy/examples/` ],
+    [ fromIncludes(`/docs/traffic-policy/templates/`), `/docs/traffic-policy/examples/a-b-tests/` ],
     
         // IA Restructure redirects
     [ fromIncludes('/docs/tls/termination/agent-tls-termination/'), '/docs/agent/agent-tls-termination/'],
@@ -296,6 +296,7 @@ const redirects = [
     [ fromExact('/docs/http/'), '/docs/universal-gateway/http/'],
     [ fromExact('/docs/tcp/'), '/docs/universal-gateway/tcp/'],
     [ fromExact('/docs/tls/'), '/docs/universal-gateway/tls/'],
+
 ]
 
 // get current href from window
