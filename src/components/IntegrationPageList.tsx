@@ -19,7 +19,7 @@ export default function IntegrationPageList({ name }: Props) {
 					<NgrokCard
 						to={doc.path}
 						size="sm"
-						title={doc.frontMatter?.title || doc.contentTitle}
+						title={doc.frontMatter?.title || doc.contentTitle || doc.frontmatter?.name || "Integration"}
 						description={doc.frontMatter?.description || doc.excerpt}
 					/>
 				</li>
