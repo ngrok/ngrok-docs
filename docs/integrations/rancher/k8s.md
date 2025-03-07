@@ -150,7 +150,7 @@ this guide focuses on integrating Rancher's management tool with Kubernetes ingr
 to add the ngrok Kubernetes Operator via the Rancher dashboard.
 
 :::note
-You can also install the ngrok Kubernetes Operator with Helm instead of via Rancher's management platform. See our [Using ngrok with Kubernetes](/using-ngrok-with/k8s/#step-2-setup-your-kubernetes-cluster-and-install-the-ngrok-ingress-controller) guide for details.
+You can also install the ngrok Kubernetes Operator with Helm instead of via Rancher's management platform. See our [Using ngrok with Kubernetes](/using-ngrok-with/k8s/#step-2-setup-your-kubernetes-cluster-and-install-the-ngrok-kubernetes-operator) guide for details.
 :::
 
 1. Create an `ngrok-ingress-controller` namespace.
