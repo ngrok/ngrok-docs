@@ -22,7 +22,6 @@ export default function IntegrationPageList({ name }: Props) {
 						title={
 							doc.frontMatter?.title ||
 							doc.contentTitle ||
-							doc.frontMatter?.name ||
 							"Integration"
 						}
 						description={doc.frontMatter?.description || doc.excerpt}
