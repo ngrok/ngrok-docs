@@ -334,6 +334,7 @@ const sidebars = {
 							items: [
 								"k8s/developer-guide/architecture",
 								"k8s/developer-guide/releasing",
+								"k8s/developer-guide/internal-crds",
 							],
 						},
 					],
