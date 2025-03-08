@@ -1,0 +1,148 @@
+---
+title: AgentEndpoint
+---
+
+
+# AgentEndpoint Custom Resource
+
+- **apiVersion:** `ngrok.k8s.ngrok.com/v1alpha1`
+- **kind:** `AgentEndpoint`
+
+// TODO: Alice, write overview
+
+# AgentEndpoint Structure and Types
+
+The following outlines the high level structure and typings of an `AgentEndpoint`
+
+```yaml
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: AgentEndpoint
+metadata:
+  name: <string>
+	namespace: <string>
+spec:
+  url: <string>							# required
+	upstream:									# required
+		url: <string>						# required
+	trafficPolicy:						# optional
+		targetRef:							# optional, one of inline or targetRef must be supplied
+			name: <string>				# required
+    inline:									# optional, one of inline or targetRef must be supplied
+      <traffic policy string>
+```
+
+# Example AgentEndpoint
+
+The following is an example of what an `AgentEndpoint` might look like
+
+```yaml
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: AgentEndpoint
+metadata:
+  name: example-agent-endpoint
+spec:
+  url: https://example-agent-endpoint.ngrok.io
+	upstream:
+		url: http://my-service.my-namespace:8080
+	trafficPolicy:
+    inline:
+      on_http_request:
+			- name: example-rule
+				expressions:
+        - req.url.query_params['debug'][0]=='true'
+        actions:
+				- type: custom-response
+          config:
+            content: Example response from traffic policy
+            headers:
+              content-type: text/plain
+            status_code: 200
+```
+
+
+# AgentEndpoint Fields
+
+The following sections outline each field of the `AgentEndpoint` custom resource, whether they are required, what their default values are (if applicable), and a description of their purpose/constraints.
+
+## `spec`
+
+`spec` defines the desired state of the `AgentEndpoint`
+
+**Type:** `Object`
+
+**Required:** Yes
+
+**Default:** No Default
+
+**Fields:**
+
+| Field Name            | Type       | Required  | Default    | Description                                        |
+| --------------------- | ---------- | --------- | ---------- | -------------------------------------------------- |
+| `spec.url`            | `string`   | Yes       | No Default | The unique URL for this agent endpoint that defines how the endpoint is accessed                                         |
+| `spec.upstream`       | `Object`   | Yes       | No Default | The upstream that will receive traffic sent to the endpoint (unless a response is sent by a traffic policy action first) |
+| `spec.trafficPolicy`  | `Object`   | No        | No Default | Allows a traffic policy to be supplied for the endpoint                                                                  |
+
+
+## `spec.url`
+
+**Type:** `String`
+**Required:** Yes
+**Default:** No Default
+**fields:**
+
+	// The unique URL for this agent endpoint. This URL is the public address. The following formats are accepted
+	// Domain - example.org
+	//     When using the domain format you are only defining the domain. The scheme and port will be inferred.
+	// Origin - https://example.ngrok.app or https://example.ngrok.app:443 or tcp://1.tcp.ngrok.io:12345 or tls://example.ngrok.app
+	//     When using the origin format you are defining the protocol, domain and port. HTTP endpoints accept ports 80 or 443 with respective protocol.
+	// Scheme (shorthand) - https:// or tcp:// or tls:// or http://
+	//     When using scheme you are defining the protocol and will receive back a randomly assigned ngrok address.
+	// Empty - ``
+	//     When empty your endpoint will default to be https and receive back a randomly assigned ngrok address.
+	// Internal - some.domain.internal
+	//     When ending your url with .internal, an internal endpoint will be created. nternal Endpoints cannot be accessed directly, but rather
+	//     can only be accessed using the forward-internal traffic policy action.
+
+## `spec.upstream`
+
+| Field Name                     | Type              | Required  | Default    | Description                                        |
+| ------------------------------ | ----------------- | --------- | ---------- | -------------------------------------------------- |
+| `spec.upstream.url`            | `string`          | Yes       | No Default | The local or remote address that incoming traffic should be forwarded to |
+| `spec.upstream.protocol`       | `string` (enum)   | No        | `http1`    | The protocol to use when connecting to the upstream                      |
+
+
+## `spec.upstream.url`
+
+
+
+	// The local or remote address you would like to incoming traffic to be forwarded to. Accepted formats are:
+	// Origin - https://example.org or http://example.org:80 or tcp://127.0.0.1:80
+	//     When using the origin format you are defining the protocol, domain and port.
+	//         When no port is present and scheme is https or http the port will be inferred.
+	//             For https port will be443.
+	//             For http port will be 80.
+	// Domain - example.org
+	//     This is only allowed for https and http endpoints.
+	//         For tcp and tls endpoints host and port is required.
+	//     When using the domain format you are only defining the host.
+	//         Scheme will default to http.
+	//         Port will default to 80.
+	// Scheme (shorthand) - https://
+	//     This only works for https and http.
+	//         For tcp and tls host and port is required.
+	//     When using scheme you are defining the protocol and the port will be inferred on the local host.
+	//         For https port will be443.
+	//         For http port will be 80.
+	//         Host will be localhost.
+	// Port (shorthand) - 8080
+	//     When using port you are defining the port on the local host that will receive traffic.
+	//         Scheme will default to http.
+	//         Host will default to localhost.
+
+## `spec.upstream.protocol`
+
+	// Specifies the protocol to use when connecting to the upstream. Currently only http1 and http2 are supported
+	// with prior knowledge (defaulting to http1). alpn negotiation is not currently supported.
+
+## `spec.trafficPolicy`
+## `spec.trafficPolicy.name`
