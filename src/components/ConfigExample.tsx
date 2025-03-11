@@ -103,7 +103,7 @@ export type ConfigExampleProps = {
 };
 
 export default function ConfigExample({
-	config,
+	// Show the agent config by default
 	showAgentConfig = true,
 	...props
 }: ConfigExampleProps) {
@@ -117,8 +117,8 @@ export default function ConfigExample({
 	} as ToStringOptions;
 	// This removes the initial --- because having it there
 	// makes it annoying to copy/paste this in the dashboard
-	const policyYamlConfig = YAML.stringify(config, yamlOptions).slice(4);
-	const policyJsonConfig = JSON.stringify(config, null, 2);
+	const policyYamlConfig = YAML.stringify(props.config, yamlOptions).slice(4);
+	const policyJsonConfig = JSON.stringify(props.config, null, 2);
 
 	const policySnippet = showExample(
 		"traffic-policy",
@@ -127,7 +127,7 @@ export default function ConfigExample({
 		policyJsonConfig,
 	);
 
-	const agentConfig = getAgentConfig(config, yamlOptions);
+	const agentConfig = getAgentConfig(props.config, yamlOptions);
 	const agentConfigSnippet = showExample(
 		"config",
 		props,
