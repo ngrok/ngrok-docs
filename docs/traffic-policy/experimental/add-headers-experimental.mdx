@@ -1,0 +1,136 @@
+---
+title: Add Headers
+---
+
+import ConfigExample from "/src/components/ConfigExample.tsx";
+import { Config, ConfigItem } from "/src/components/ConfigTable.tsx";
+
+The **Add Headers** Traffic Policy action enables you to add headers to an HTTP request before it is sent upstream or an HTTP response before it is sent back to the client.
+
+This action will only _add_ headers to the request or response. If the header already exists it will append another header with the same key unless it is the `host` header, see [Special Cases](#special-cases).
+
+:::tip
+To replace or remove headers, use the [`remove-headers`](/docs/traffic-policy/actions/remove-headers) action then add the header with the desired value.
+:::
+
+## Add headers to a request
+
+When configured in the `on_http_request` phase, this action will add the specified headers to incoming http requests before reaching the upstream server. When
+
+The following [Traffic Policy](/docs/traffic-policy/)
+configuration will add headers to the request from the upstream service when the method is `GET` and the URL starts with `/status/200`.
+
+<ConfigExample
+	snippetText={null}
+	showLineNumbers={true}
+	yamlMetastring="{6-10}"
+	jsonMetastring="{8-16}"
+	config={{
+		on_http_response: [
+			{
+				expressions: [
+					'req.method == "GET" && req.url.path.startsWith("/status/200")',
+				],
+				actions: [
+					{
+						type: "add-headers",
+						config: {
+							headers: {
+								"x-custom-header": "my-custom-value",
+								"x-string-interpolation-example": "started at ${conn.ts.start}",
+							},
+						},
+					},
+				],
+			},
+		],
+	}}
+/>
+
+## Add headers to a response
+
+To add headers to the response from the upstream service, you must configure the `add-headers` action to run during the `on_http_response` phase.
+
+The following [Traffic Policy](/docs/traffic-policy/)
+configuration will add headers to the response from the upstream service when the method is `GET` and the URL starts with `/status/200`.
+
+<ConfigExample
+	snippetText={null}
+	showLineNumbers={true}
+	yamlMetastring="{6-10}"
+	jsonMetastring="{8-16}"
+	config={{
+		on_http_response: [
+			{
+				expressions: [
+					'req.method == "GET" && req.url.path.startsWith("/status/200")',
+				],
+				actions: [
+					{
+						type: "add-headers",
+						config: {
+							headers: {
+								"x-custom-header": "my-custom-value",
+								"x-string-interpolation-example": "started at ${conn.ts.start}",
+							},
+						},
+					},
+				],
+			},
+		],
+	}}
+/>
+
+For this example, we are assuming that ngrok is pointing at the upstream service
+https://httpbin.org and we will be adding two headers:
+
+- `x-custom-header` with the value `my-custom-value`
+- `x-string-interpolation-example` with the value `started at ${conn.ts.start}`
+  to demonstrate the use of CEL interpolation to include the request connection
+  start time.
+
+#### Example Request
+
+```shell
+$ curl -i https://httpbin.ngrok.app/status/200
+```
+
+```http
+HTTP/2 200 OK
+x-custom-header: my-custom-value
+x-string-interpolation-example: started at 2024-07-13T00:10:16Z
+```
+
+## Enrich your upstream services
+
+Add new headers to requests to give your upstream service more context about the consumer, which in turn allows for richer functionality, such as localized languages and pricing.
+
+This rule adds multiple headers to the request, including the client's IP address, the endpoint ID, and the client's location.
+
+<ConfigExample
+	config={{
+		on_http_request: [
+			{
+				actions: [
+					{
+						type: "add-headers",
+						config: {
+							"x-is-ngrok": "1",
+							"x-endpoint-id": "${endpoint.id}",
+							"x-client-ip": "${conn.client_ip}",
+							"x-client-conn-start": "${conn.ts.start}",
+							"x-client-loc": "${conn.geo.city}, ${conn.geo.country}",
+							"x-client-path": "${req.url.path}",
+						},
+					},
+				],
+			},
+		],
+	}}
+/>
+
+See [the `add-headers` Traffic Policy action docs](/traffic-policy/actions/add-headers/) for more information.
+
+## Learn more
+
+Learn more about the `add-headers` action in the [reference docs](/docs/traffic-policy/references/add-headers).
