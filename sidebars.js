@@ -217,7 +217,7 @@ const sidebars = {
 					label: "Requests & Responses",
 					type: "category",
 					items: [
-						"traffic-policy/experimental/add-headers",
+						"traffic-policy/experimental/add-headers-experimental",
 						"traffic-policy/actions/remove-headers",
 						"traffic-policy/actions/redirect",
 						"traffic-policy/actions/url-rewrite",
