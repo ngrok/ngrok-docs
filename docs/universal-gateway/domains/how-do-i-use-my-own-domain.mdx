@@ -6,8 +6,10 @@ You can use any domain name that you already own with ngrok, e.g.
 `app.your-domain.com`. To do so:
 
 1. Create a Domain in the ngrok dashboard. [You can do so by going here](https://dashboard.ngrok.com/domains).
-1. When you create a Domain, you'll be given a `CNAME` value such as `exampledata.otherdata.ngrok-cname.com`. Copy it.
-1. In a new tab, navigate to your domain hosting provider's dashboard and create a CNAME record. Check your hosting provider's support content or documentation to learn how.
+   - You can also create a Domain via the [ngrok API](/api/resources/reserved-domains/#request).
+1. When you create a Domain in the dashboard, you'll be given a `CNAME` value such as `exampledata.otherdata.ngrok-cname.com`. Copy it.
+   - This value will be in the `"cname_target"` field of [the response object](/api/resources/reserved-domains/#response) if you create a Domain via the API.
+1. In a new browser tab, navigate to your domain hosting provider's dashboard and create a CNAME record. Check your hosting provider's support content or documentation to learn how.
    - Typically, this process includes creating a [DNS record](https://en.wikipedia.org/wiki/List_of_DNS_record_types).
 1. When configuring the record, use the following values:
    - Its **type** should be `CNAME`
@@ -16,19 +18,17 @@ You can use any domain name that you already own with ngrok, e.g.
 1. Add the `CNAME` value you copied from to point traffic from the domain to ngrok's cloud service. When you create a Domain, you will be presented with a target value for the CNAME record you need to create. If you [create the Domain via
    API](/api/resources/reserved-domains/), this value is the `cname_target` field.
 
-If you bring your own [wildcard domain](#wildcard-domains), you will need to
-create a second DNS CNAME record for [wildcard TLS Certificate
-provisioning](/universal-gateway/tls-certificates/#wildcard-domains).
-
+:::note
 ngrok is not a domain registrar; you must already own a domain name to use it
 with ngrok.
+:::
+
+## Wildcard domains
+
+If you bring your own [wildcard domain](/universal-gateway/what-are-public-endpoints#wildcard-domains), e.g. `*.example.com`, you will need to create a second `CNAME` record with your domain host for [wildcard TLS Certificate provisioning](/universal-gateway/tls-certificates/#wildcard-domains).
 
 ## Apex domains
 
-If you want to use an apex domain (e.g. `example.com`) with ngrok, you must use
-a DNS provider that supports an ALIAS record or CNAME flattening because the
-DNS RFC does not permit CNAME records for apex domains. Because of how
-ALIAS/CNAME flattening is implemented, apex domains will not take advantage of
-the [Global Load Balancer](#global-load-balancer). If you are trying to create
-your apex domain because you need to create endpoints for multiple subdomains,
-use a [wildcard domain](#wildcard-domains) instead.
+Because it's not possible to create `CNAME` records for apex domains, if you want to use an apex domain, e.g. `example.com`, you must use a DNS provider that supports an `ALIAS` record or `CNAME` flattening.
+
+Because of how `ALIAS`/`CNAME` flattening is implemented, apex domains will not take advantage of the [Global Load Balancer](/universal-gateway/global-load-balancer/#domains). If you're trying to create your apex domain because you need to create endpoints for multiple subdomains, use a [wildcard domain](/universal-gateway/what-are-public-endpoints#wildcard-domains) instead.
