@@ -45,6 +45,19 @@ const sidebars = {
 			items: [
 				"universal-gateway/overview",
 				{
+					label: "What are Domains?",
+					type: "category",
+					link: {
+						type: "doc",
+						id: "universal-gateway/domains/what-are-domains",
+					},
+					items: [
+						"universal-gateway/domains/what-are-public-endpoints",
+						"universal-gateway/domains/how-do-i-use-my-own-domain",
+						"universal-gateway/domains/what-are-the-managed-domains",
+					],
+				},
+				{
 					label: "Concepts",
 					type: "category",
 					items: [
