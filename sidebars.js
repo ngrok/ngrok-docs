@@ -271,11 +271,11 @@ const sidebars = {
 					link: { type: "doc", id: "kubernetes/installation/install" },
 					items: [
 						"kubernetes/installation/install",
-						// "kubernetes/installation/update",
-						// "kubernetes/installation/helm",
-						// "kubernetes/installation/config",
-						// "kubernetes/installation/architecture",
-						// "kubernetes/installation/uninstall",
+						"kubernetes/installation/update",
+						"kubernetes/installation/helm",
+						"kubernetes/installation/config",
+						"kubernetes/installation/architecture",
+						"kubernetes/installation/uninstall",
 					],
 				},
 				{
@@ -287,10 +287,12 @@ const sidebars = {
 						{
 							label: "How do I?",
 							type: "category",
-							link: { type: "doc", id: "kubernetes/guides/how-to/request-routing" },
+							link: {
+								type: "doc",
+								id: "kubernetes/guides/how-to/request-routing",
+							},
 							items: [
 								"kubernetes/guides/how-to/request-routing",
-								/*
 								"kubernetes/guides/how-to/basic-auth",
 								"kubernetes/guides/how-to/cert-manager",
 								"kubernetes/guides/how-to/circuit-breaking",
@@ -307,11 +309,9 @@ const sidebars = {
 								"kubernetes/guides/how-to/static-response",
 								"kubernetes/guides/how-to/terminate-tls",
 								"kubernetes/guides/how-to/upstream-tls",
-								*/
 							],
 						},
 						"kubernetes/guides/annotations",
-						/*
 						"kubernetes/guides/troubleshooting",
 						"kubernetes/guides/bindings",
 						"kubernetes/guides/custom-domain",
@@ -322,7 +322,6 @@ const sidebars = {
 						"kubernetes/guides/using-gwapi",
 						"kubernetes/guides/using-ingresses",
 						"kubernetes/guides/using-loadbalancers",
-						*/
 					],
 				},
 				{
