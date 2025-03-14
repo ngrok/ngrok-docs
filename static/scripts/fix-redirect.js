@@ -1,3 +1,4 @@
+import questionAnswerRedirects from "./redirects/question-answer-redirects";
 
 export const getNormalizedPaths = (from, path) => {
     return {
@@ -296,7 +297,7 @@ const redirects = [
     [ fromExact('/docs/http/'), '/docs/universal-gateway/http/'],
     [ fromExact('/docs/tcp/'), '/docs/universal-gateway/tcp/'],
     [ fromExact('/docs/tls/'), '/docs/universal-gateway/tls/'],
-
+		...questionAnswerRedirects,
 ]
 
 // get current href from window
