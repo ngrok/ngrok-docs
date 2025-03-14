@@ -45,15 +45,33 @@ const sidebars = {
 			items: [
 				"universal-gateway/overview",
 				{
+					label: "What are Domains?",
+					type: "category",
+					link: {
+						type: "doc",
+						id: "universal-gateway/domains/what-are-domains",
+					},
+					items: [
+						"universal-gateway/domains/how-do-i-use-my-own-domain",
+						"universal-gateway/domains/what-are-managed-domains",
+					],
+				},
+				"universal-gateway/what-are-matching-endpoints",
+				{
+					label: "What are TCP Addresses?",
+					type: "category",
+					link: {
+						type: "doc",
+						id: "universal-gateway/tcp-addresses/what-are-tcp-addresses",
+					},
+					items: [
+						"universal-gateway/tcp-addresses/how-are-tcp-addresses-assigned",
+					],
+				},
+				{
 					label: "Concepts",
 					type: "category",
 					items: [
-						{ id: "universal-gateway/domains", type: "doc", label: "Domains" },
-						{
-							id: "universal-gateway/tcp-addresses",
-							type: "doc",
-							label: "TCP Addresses",
-						},
 						"universal-gateway/tls-certificates",
 						"universal-gateway/edges",
 					],
