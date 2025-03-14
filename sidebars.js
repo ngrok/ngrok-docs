@@ -275,16 +275,15 @@ const sidebars = {
 						// "kubernetes/installation/helm",
 						// "kubernetes/installation/config",
 						// "kubernetes/installation/architecture",
-						// "kubernetes/installation/debugging",
 						// "kubernetes/installation/uninstall",
 					],
 				},
 				{
 					label: "Usage Guides",
 					type: "category",
-					link: { type: "doc", id: "kubernetes/guides/index" },
+					link: { type: "doc", id: "kubernetes/guides/quickstart" },
 					items: [
-						"kubernetes/guides/index",
+						"kubernetes/guides/quickstart",
 						{
 							label: "How do I?",
 							type: "category",
@@ -311,8 +310,9 @@ const sidebars = {
 								*/
 							],
 						},
-						/*
 						"kubernetes/guides/annotations",
+						/*
+						"kubernetes/guides/troubleshooting",
 						"kubernetes/guides/bindings",
 						"kubernetes/guides/custom-domain",
 						"kubernetes/guides/finalizers",

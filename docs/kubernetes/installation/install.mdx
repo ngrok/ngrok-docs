@@ -1,6 +1,6 @@
 ---
 title: Install
-#pagination_next: kubernetes/installation/update
+pagination_next: kubernetes/guides/quickstart
 ---
 
 import TabItem from "@theme/TabItem";
@@ -57,7 +57,19 @@ We recommend using the default `ngrok-operator` namespace unless you need to cha
 export NAMESPACE=ngrok-operator
 ```
 
-### 4. Install the Operator
+### 4. (Optional) Install Gateway API CRDs
+
+If you plan on using the Gateway API CRDs with the ngrok Kubernetes operator, install them before the operator.
+When the operator starts up it will enable support for Gateway API if the Gateway API CRDs are detected in your cluster.
+If you do not plan on using the Gateway API, then you can ignore this optional step.
+The Gateway API CRDs can be installed at a later point, but you will need to restart the operator after installing the Gateway API CRDs
+for the Gateway API support to be enabled.
+
+You can select either the standard or experimental set of Gateway API CRDs depending on your preference. Either verison will work with the ngrok Kubernetes operator.
+
+https://gateway-api.sigs.k8s.io/guides/
+
+### 5. Install the Operator
 
 While you can pass the credential values directly via helm values like the below simple example shows, we do not recommend this for production scenarios.
 Instead, we recommend creating a Kubernetes secret and passing the secret name to the helm chart.
@@ -65,7 +77,7 @@ This allows for easier infrastructure as code and prevents users with access to 
 Select one of the below options based on which method you are comfortable with.
 
 <Tabs groupId="k8s" queryString="k8s-install">
-	<TabItem value="simple" label="Simple Credentials" default>
+	<TabItem value="simple" label="Simple Method" default>
 		```bash
 		helm install ngrok-operator ngrok/ngrok-operator \
     --namespace $NAMESPACE \
@@ -74,7 +86,7 @@ Select one of the below options based on which method you are comfortable with.
     --set credentials.authtoken=$NGROK_AUTHTOKEN
 		```
 	</TabItem>
-	<TabItem value="secure" label="Secure Credentials">
+	<TabItem value="secure" label="More Secure Method">
 		First, prepare the Secret for your credentials
 
     	```bash
@@ -105,41 +117,37 @@ Select one of the below options based on which method you are comfortable with.
 
 </Tabs>
 
-### Creating the Secret
+## Next Steps
 
-To create the secret, follow these steps:
+The following will help you learn more about the ngrok Kubernetes operator and get started with it.
 
-- Make sure the secret is in the same namespace as the ngrok Kubernetes Operator
-- Use a well-formed name that can be passed to the helm chart
-- Add two keys to the secret: `API_KEY` and `AUTHTOKEN`
+### Getting Started Guide
+Head to the [quickstart guide](/kubernetes/guides/quickstart) to get started with an example deployment.
 
-Here is an example secret manifest:
+### Pricing
 
-```yaml
-apiVersion: v1
-kind: Secret
-metadata:
-  name: ngrok-ingress-controller-credentials
-  namespace: ngrok-ingress-controller
-data:
-  API_KEY: "YOUR-API-KEY-BASE64"
-  AUTHTOKEN: "YOUR-AUTHTOKEN-BASE64"
-```
+The ngrok Kubernetes Operator is available to all ngrok users at no
+additional charge. You only incur costs if the resources provisioned by the
+controller incur a cost. More details can be found on our [pricing page](https://ngrok.com/pricing).
 
-```bash
-export NGROK_AUTHTOKEN=your coppied auth token goes here
-export NGROK_API_KEY=your coppied api key goes here
-```
+### Helm Configuration Values
 
-```bash
-export NAMESPACE=[YOUR_K8S_NAMESPACE]
-export NGROK_AUTHTOKEN=[AUTHTOKEN]
-export NGROK_API_KEY=[API_KEY]
+This section provides some common use cases and recommendations when using this helm chart in a production setting. The Helm chart offers a variety of overrides that are useful for many different use cases in Kubernetes. Below is a list of common recipes that you may find helpful. If your use case is not achievable with the existing set of values, please log an issue detailing your use case and the values you would like to see added. For a full list of values, see [here](https://github.com/ngrok/ngrok-operator/blob/main/helm/kubernetes-operator/values.yaml).
 
-helm install ngrok-ingress-controller ngrok/kubernetes-ingress-controller \
-  --namespace $NAMESPACE \
-  --create-namespace \
-  --set credentials.apiKey=$NGROK_API_KEY \
-  --set credentials.authtoken=$NGROK_AUTHTOKEN \
-  --set useExperimentalGatewayApi=true
-```
+### Deployment Scaling
+
+By default, the replica count is set to 1 via `replicaCount` . We recommend overriding this to 2 or more to ensure high availability during roll-outs and failures, and to spread out the load.
+
+### ngrok Region
+
+ngrok runs globally distributed tunnel servers around the world to enable fast, low latency traffic to your applications. See [ngrok's points of presence](/universal-gateway/points-of-presence/) for more information on ngrok's regions.
+
+Similar to the agent, if you do not explicitly pick a region via helm when installing the operator, the operator will attempt to pick the region with the least latency, which is usually the one geographically closest to your machine.
+
+See the [helm value `region`](https://github.com/ngrok/ngrok-operator/blob/main/helm/kubernetes-operator/README.md#controller-parameters) to configure a specific region for the controller to use.
+
+### Metrics
+
+This operator exposes prometheus metrics on the `/metrics` endpoint. The metrics are exposed on the `:8080` port and can be scraped by prometheus or other services using typical means.
+
+This project is built using kube-builder, so out of the box it exposes the metrics listed [here](https://book.kubebuilder.io/reference/metrics-reference.html?highlight=metrics#default-exported-metrics-references)
