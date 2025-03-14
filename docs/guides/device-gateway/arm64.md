@@ -102,7 +102,7 @@ If you already established a TCP tunnel for SSH access, you'll either need to cr
    Forwarding                    https://12345.ngrok.app -> http://localhost:8080
    ```
 
-1. Optionally, you can reserve a [static subdomain](/universal-gateway/domains/) like so:
+1. Optionally, you can reserve a [static subdomain](/universal-gateway/domains/what-are-domains/) like so:
 
    ```
    ngrok http 8080 --url https://example.ngrok.app
