@@ -5273,10 +5273,10 @@
     </tr>
     <tr>
       <td>
-        <a id="ERR_NGROK_2251" href="/docs/errors/err_ngrok_2251">ERR_NGROK_2251</a>
+        <a id="ERR_NGROK_2252" href="/docs/errors/err_ngrok_2252">ERR_NGROK_2252</a>
       </td>
       <td class="pre-wrapped">
-        Invalid configuration for set-vars: Cannot set variables based on other variables that were previously created using the set-vars action
+        Invalid format for set-vars: vars must be a list of maps of exactly size 1
       </td>
     </tr>
     <tr>
