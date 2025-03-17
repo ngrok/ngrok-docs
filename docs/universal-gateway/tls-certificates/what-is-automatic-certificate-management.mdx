@@ -11,7 +11,7 @@ Alternatively, you can [bring your own TLS certificates](/universal-gateway/tls-
 It is recommended that you choose automatic TLS certificate management unless you have special requirements.
 :::
 
-## Provisioning with Let's Encrypt
+## Let's Encrypt provisioning
 
 ngrok is a [Let's Encrypt sponsor](https://letsencrypt.org/sponsors/).
 
@@ -23,21 +23,19 @@ TLS certificates are provisioned asynchronously. Depending on the speed of the A
 
 You can check the status of a certificate provisioning job by [requesting the domain with ngrok's API](/api/resources/reserved-domains/#get-reserved-domain). Each domain object contains a `certificate_management_status` property.
 
-## Using your own domain
+## Configuring automatic management
 
-When you [bring your own domain](/universal-gateway/how-do-i-use-my-own-domain) (e.g. `api.your-domain.com`), automatic certificate provisioning will not begin until your create a `CNAME` DNS record with your domain provider.
+You can use the API to configure automatic TLS certificate management for a domain by sending a request with the `"certificate_management_policy"` property to [`/reserved_domains/{id}`](https://ngrok.com/docs/api/resources/reserved-domains/#update-reserved-domain).
 
-### Using wildcard domains
-
-With wild card domains (e.g. `*.app.example.com`), ngrok uses a [DNS01 challenge](https://letsencrypt.org/docs/challenge-types/#dns-01-challenge) for TLS certificate provisioning. This means you must create two `CNAME` records when adding wildcard domains to your ngrok account.
-
-For example, If your domain is `*.app.example.com` you will be required to create the following two CNAME records:
-
-- `*.app.example.com`
-- `_acme-challenge.app.example.com`
-
-Certificate provisioning will not begin until you have created both DNS
-records.
+```bash
+curl \
+-X PATCH \
+-H "Authorization: Bearer {API_KEY}" \
+-H "Content-Type: application/json" \
+-H "Ngrok-Version: 2" \
+-d '{"certificate_management_policy":{"authority":"letsencrypt"},"description":"point-of-sale new york #302","http_endpoint_configuration_id":"ec_2uBNwE5PEQsAgI7WQkwC8mL1a2x","https_endpoint_configuration_id":"ec_2uBNwBytfQIshIWu9bdcD0Buy78","metadata":"{env: \"staging\", \"connector_id\":\"64698fcc-5f5c-4b63-910e-8669d04bd943\"}"}' \
+https://api.ngrok.com/reserved_domains/rd_2uBNwCkQlImhoyji1BWWiMGAHwc
+```
 
 ### Private Keys
 
