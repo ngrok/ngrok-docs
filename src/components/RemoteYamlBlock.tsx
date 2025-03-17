@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from "react";
 import DocsCodeBlock from "./code-block";
 
-interface LiveYamlViewProps {
+interface RemoteYamlBlockProps {
 	url: string;
 	title?: string;
 }
 
-const LiveYamlView: React.FC<LiveYamlViewProps> = ({
+const RemoteYamlBlock: React.FC<RemoteYamlBlockProps> = ({
 	url,
 	title,
-}: LiveYamlViewProps) => {
+}: RemoteYamlBlockProps) => {
 	const [yamlContent, setYamlContent] = useState<string>("");
 
 	useEffect(() => {
@@ -32,4 +32,4 @@ const LiveYamlView: React.FC<LiveYamlViewProps> = ({
 	);
 };
 
-export default LiveYamlView;
+export default RemoteYamlBlock;

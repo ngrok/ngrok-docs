@@ -289,7 +289,6 @@ const sidebars = {
 						"kubernetes/guides/bindings",
 						"kubernetes/guides/custom-domain",
 						"kubernetes/guides/finalizers",
-						"kubernetes/guides/forward-internal",
 						"kubernetes/guides/managed-resources",
 						"kubernetes/guides/using-crds",
 						"kubernetes/guides/using-gwapi",

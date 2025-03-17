@@ -1,12 +1,68 @@
 ---
-title: Debugging
+title: Troubleshooting
 ---
 
-# Debugging
+# Troubleshooting Operator Issues
 
-TODO: Alice, write content
+## Describe Resources
+
+You can use `kubectl describe` on the custom resources for the ngrok operator to check their statuses if they are not behaving properly or are not accessible.
+This is a good first step
+
+## Check Kuberentes Events
+
+If something is not right with the operator you can check the events for the operator namespace.
+
+```bash
+kubectl get events -n ngrok-operator --sort-by='.lastTimestamp'
+```
+
+Example Output:
+
+```bash
+LAST SEEN   TYPE     REASON              OBJECT                                                     MESSAGE
+3m24s       Normal   Scheduled           pod/ngrok-operator-manager-657c5b69d7-f7vvg                Successfully assigned ngrok-operator/ngrok-operator-manager-657c5b69d7-f7vvg to k3d-ngrok-operator-server-0
+3m25s       Normal   ScalingReplicaSet   deployment/ngrok-operator-manager                          Scaled up replica set ngrok-operator-manager-657c5b69d7 to 1
+3m25s       Normal   SuccessfulCreate    replicaset/ngrok-operator-manager-657c5b69d7               Created pod: ngrok-operator-manager-657c5b69d7-f7vvg
+3m24s       Normal   Started             pod/ngrok-operator-manager-657c5b69d7-f7vvg                Started container ngrok-operator
+3m24s       Normal   Created             pod/ngrok-operator-manager-657c5b69d7-f7vvg                Created container ngrok-operator
+3m24s       Normal   Pulled              pod/ngrok-operator-manager-657c5b69d7-f7vvg                Container image "docker.io/ngrok/ngrok-operator:0.15.0" already present on machine
+3m15s       Normal   ScalingReplicaSet   deployment/ngrok-operator-manager                          Scaled down replica set ngrok-operator-manager-74b76d8f6d to 0 from 1
+3m15s       Normal   SuccessfulDelete    replicaset/ngrok-operator-manager-74b76d8f6d               Deleted pod: ngrok-operator-manager-74b76d8f6d-2679x
+3m15s       Normal   Killing             pod/ngrok-operator-manager-74b76d8f6d-2679x                Stopping container ngrok-operator
+2m55s       Normal   Updating            boundendpoint/ngrok-22680758-eb09-576e-a7ac-dc3728458dfc   Updating BoundEndpoint/ngrok-22680758-eb09-576e-a7ac-dc3728458dfc
+2m55s       Normal   Updated             boundendpoint/ngrok-012050e0-8f06-560c-953e-c9d675d41305   Updated BoundEndpoint/ngrok-012050e0-8f06-560c-953e-c9d675d41305
+2m55s       Normal   Updated             boundendpoint/ngrok-22680758-eb09-576e-a7ac-dc3728458dfc   Updated BoundEndpoint/ngrok-22680758-eb09-576e-a7ac-dc3728458dfc
+2m55s       Normal   Status              boundendpoint/ngrok-22680758-eb09-576e-a7ac-dc3728458dfc   Successfully reconciled status
+2m55s       Normal   Updated             boundendpoint/ngrok-22680758-eb09-576e-a7ac-dc3728458dfc   Updated Services
+2m55s       Normal   Updated             service/ngrok-22680758-eb09-576e-a7ac-dc3728458dfc         Updated Upstream Service
+2m55s       Normal   Updating            boundendpoint/ngrok-012050e0-8f06-560c-953e-c9d675d41305   Updating BoundEndpoint/ngrok-012050e0-8f06-560c-953e-c9d675d41305
+2m55s       Normal   LeaderElection      lease/ngrok-operator-leader                                ngrok-operator-manager-657c5b69d7-f7vvg_72fb437b-38ad-444c-a9d8-d37349f2f677 became leader
+2m55s       Normal   Status              boundendpoint/ngrok-012050e0-8f06-560c-953e-c9d675d41305   Successfully reconciled status
+2m55s       Normal   Updated             boundendpoint/ngrok-012050e0-8f06-560c-953e-c9d675d41305   Updated Services
+2m55s       Normal   Updated             service/ngrok-012050e0-8f06-560c-953e-c9d675d41305         Updated Upstream Service
+2m55s       Normal   Updating            kubernetesoperator/ngrok-operator                          Updating KubernetesOperator/ngrok-operator
+2m55s       Normal   Status              kubernetesoperator/ngrok-operator                          Successfully reconciled status
+2m55s       Normal   Updated             kubernetesoperator/ngrok-operator                          Updated KubernetesOperator/ngrok-operator
+```
+
+:::tip
+Kubernetes events usually expire after an hour, so you might want to restart the operator to re-create the events while troubleshooting if the events happened more than an hour ago.
+:::
+
+## Check Operator Errors
+
+To quickly check the operator logs for only errors, you can use a command such as the following. 
+You can replace the name/namespace if you installed the operator somewhere other than the default location.
+
+```bash
+k logs -n ngrok-operator deploy/ngrok-operator-manager | grep "ERROR"
+```
 
 ## Resources not getting deleted
+
+If you marked an ngrok custom resource for deletion but it is not getting deleted, there may be unresolved finalizers on it. 
+You can refer to the [finalizers page](/kubernetes/guides/finalizers) for more information about how the operator uses finalizers and how to clean up resources with dangling finalizers.
 
 ## Cloud endpoint not showing up on the dashboard
 
