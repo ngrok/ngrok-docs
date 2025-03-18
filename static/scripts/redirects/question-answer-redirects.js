@@ -20,4 +20,13 @@ export default [
 	[ fromExact('/docs/universal-gateway/tcp-addresses/#public-endpoint-creation'), '/docs/universal-gateway/tcp-addresses/what-are-tcp-addresses/' ],
 	[ fromExact('/docs/universal-gateway/tcp-addresses/#address-assignment'), '/docs/universal-gateway/tcp-addresses/how-are-tcp-addresses-assigned/' ],
 	[ fromExact('/docs/universal-gateway/tcp-addresses/#global-load-balancer/'), '/docs/universal-gateway/tcp-addresses/what-are-tcp-addresses/#tcp-address-load-balancing' ],
+
+		//TLS Certificates
+		[fromExact('/docs/universal-gateway/tls-certificates/'), '/docs/universal-gateway/tls-certificates/how-does-ngrok-handle-tls' ],
+			// hashes
+			[fromExact('/docs/universal-gateway/tls-certificates/#automated'), '/docs/universal-gateway/tls-certificates/what-is-automatic-certificate-management' ],
+			[fromExact('/docs/universal-gateway/tls-certificates/#certificate-selection'), '/docs/universal-gateway/tls-certificates/how-are-certificates-selected' ],
+			[fromExact('/docs/universal-gateway/tls-certificates/#certificate-provisioning'), '/docs/universal-gateway/tls-certificates/how-does-ngrok-handle-tls#how-certificates-work' ],
+			[fromExact('/docs/universal-gateway/tls-certificates/#certificate-bundles'), '/docs/universal-gateway/tls-certificates/what-is-a-certificate-bundle/' ],
+			[fromExact('/docs/universal-gateway/tls-certificates/#private-keys'), '/docs/universal-gateway/tls-certificates/what-are-private-tls-keys/' ],
 ]
