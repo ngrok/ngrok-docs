@@ -78,7 +78,7 @@ const sidebars = {
 					items: [
 						"universal-gateway/tls-certificates/what-is-automatic-certificate-management",
 						"universal-gateway/tls-certificates/how-are-certificates-selected",
-						"universal-gateway/tls-certificates/how-do-i-use-my-own-certificate",
+						"universal-gateway/tls-certificates/how-do-i-use-my-own-certificates",
 						"universal-gateway/tls-certificates/what-is-a-certificate-bundle",
 						"universal-gateway/tls-certificates/what-are-private-tls-keys",
 					],
