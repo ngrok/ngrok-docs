@@ -84,11 +84,6 @@ const sidebars = {
 					],
 				},
 				{
-					label: "Concepts",
-					type: "category",
-					items: ["universal-gateway/edges"],
-				},
-				{
 					label: "Endpoints",
 					type: "category",
 					link: { type: "doc", id: "universal-gateway/endpoints" },
@@ -622,6 +617,11 @@ const sidebars = {
 			value: "<div class='menu__section'></div>",
 		},
 		"faq/faq",
+		{
+			label: "Deprecated",
+			type: "category",
+			items: ["universal-gateway/edges"],
+		},
 	],
 };
 
