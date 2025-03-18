@@ -6,10 +6,10 @@ title: Finalizers
 
 ## What Are Finalizers?
 
-Finalizers are **mechanisms in Kubernetes** that prevent a resource from being deleted until **certain cleanup operations** have been completed. 
+Finalizers are **mechanisms in Kubernetes** that prevent a resource from being deleted until **certain cleanup operations** have been completed.
 They act as a safeguard to ensure that dependent external resources, such as resources in your ngrok account that the operator creates/updates/deletes, are properly removed before the Kubernetes object disappears.
 
-When a resource with a finalizer is deleted, Kubernetes **does not immediately remove it**. 
+When a resource with a finalizer is deleted, Kubernetes **does not immediately remove it**.
 Instead, the resource enters a **"deletion in progress"** state, allowing the operator to perform necessary cleanup tasks before the resource is fully deleted.
 If you are using the ngrok Kubernetes operator, and delete resources such as `CloudEndpoint`/`AgentEndpoint` and notice that they are not going away, this is likely the case.
 
@@ -20,7 +20,8 @@ If you are using the ngrok Kubernetes operator, and delete resources such as `Cl
 The ngrok Kubernetes operator **automatically attaches finalizers** to its **custom resources** to make sure that any associated resources in your ngrok account are properly cleaned up before deletion.
 
 ### **Why Does the Operator Use Finalizers?**
-- **Prevents orphaned resources** 
+
+- **Prevents orphaned resources**
   - Ensures ngrok resources (e.g., tunnels, endpoints) are deleted before removing the Kubernetes object.
 - **Ensures a clean teardown**
   - Avoids leaving behind unnecessary external configurations.
@@ -32,15 +33,16 @@ The ngrok Kubernetes operator **automatically attaches finalizers** to its **cus
 ## How Finalizers Work
 
 1. **Resource is Marked for Deletion**  
-   When a user deletes an ngrok **custom resource**, Kubernetes does **not** immediately remove it. 
-	 Instead, it **sets a deletion timestamp** on the resource.
+   When a user deletes an ngrok **custom resource**, Kubernetes does **not** immediately remove it.
+   Instead, it **sets a deletion timestamp** on the resource.
 
 2. **The Operator Detects the Deletion Request**  
    The ngrok operator sees that the resource has a **finalizer** and begins the **cleanup process**.
 
-3. **Cleanup Operations are Performed**  
-	 - **Contacts the ngrok API** to delete the associated **tunnel, endpoint, or cloud resource**.
-	 - **Verifies successful cleanup** before proceeding.
+3. **Cleanup Operations are Performed**
+
+   - **Contacts the ngrok API** to delete the associated **tunnel, endpoint, or cloud resource**.
+   - **Verifies successful cleanup** before proceeding.
 
 4. **Finalizer is Removed**  
    Once the ngrok resource is fully cleaned up, the operator **removes the finalizer** from the Kubernetes object.
@@ -53,6 +55,7 @@ The ngrok Kubernetes operator **automatically attaches finalizers** to its **cus
 ## Checking Finalizers on a Resource
 
 To check if a resource has a finalizer, use:
+
 ```bash
 kubectl get <resource> <name> -o yaml
 ```

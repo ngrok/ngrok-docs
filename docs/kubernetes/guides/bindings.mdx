@@ -11,14 +11,16 @@ With the Kubernetes operator, bindings can be used on the `CloudEndpoint` and `A
 
 ## Public Binding
 
-Endpoints with a public binding have a publicly addressable URL that receives traffic from the internet via the ngrok cloud service's global points of presence. e.g. 
+Endpoints with a public binding have a publicly addressable URL that receives traffic from the internet via the ngrok cloud service's global points of presence. e.g.
 These endpoints might use an ngrok subdomain or a custom domain.
 
 Public endpoint URLs must:
+
 - Use either a Domain or TCP Address
 - Use the public binding
 
 Example URLs:
+
 - https://example.ngrok.app
 - https://blog.example.com
 
@@ -52,6 +54,7 @@ The public binding and url for the above `CloudEndpoint` make it accessible on t
 Endpoints with an internal binding can only receive traffic forwarded to them from other Endpoints in your ngrok account via the forward-internal Traffic Policy action.
 
 Example URLs:
+
 - https://example.internal
 - tcp://ssh.internal:22
 
@@ -82,11 +85,12 @@ This is not limited to the Kuberntes cluster that you installed the operator in,
 Endpoints with a kubernetes binding are private endpoints that are only available inside of Kubernetes clusters where you installed the ngrok Kubernetes Operator.
 
 Example URLs:
--  http://service.namespace
+
+- http://service.namespace
 - tcp://db.controlplane:5432
 
-
 Public endpoint URLs must:
+
 - Use the kubernetes binding
 - The `spec.url` must follow the format `<scheme>://<service-name>.<service-namespace>`
 
@@ -113,7 +117,7 @@ requests to a projected `Service` that is created for the endpoint.
 ### How Kubernetes Bound Endpoints Work
 
 An endpoint with a Kubernetes binding will cause instances of the ngrok Kubernetes operator to create a `BoundEndpoint` custom resource for the endpoint.
-The `BoundEndpoint` will cause the endpoint to be projected into the cluster as a `Service` resource. 
+The `BoundEndpoint` will cause the endpoint to be projected into the cluster as a `Service` resource.
 
 This enables many different use-cases such as enabling secure communication between different Kubernetes clusters using Kubernetes bound endpoints.
 
@@ -170,10 +174,10 @@ metadata:
 spec:
   externalName: ngrok-22680758-eb09-576e-a7ac-dc3728458dfc.ngrok-operator.svc.cluster.local
   ports:
-  - name: http
-    port: 80
-    protocol: TCP
-    targetPort: 80
+    - name: http
+      port: 80
+      protocol: TCP
+      targetPort: 80
   sessionAffinity: ClientIP
   sessionAffinityConfig:
     clientIP:
@@ -183,7 +187,6 @@ spec:
 
 When anything in the cluster makes a request to the `my-bound-service.my-namespace` `Service` it will hit the above `AgentEndpoint` and ultimately be routed to the `my-service.my-namespace` `Service`.
 
-
 This can be used within a single cluster to use ngrok traffic policies on your endpoints for `Service` to `Service` networking in order to perform operations such as rate-limiting, header manupulation, etc.
 Furthermore, the true power in Kubernetes bindings is allowing you to project a `Service` in one cluster to one or more other clusters running the ngrok Kubernetes operator.
 When doing this, you can configure networking between different Kubernetes clusters without needing to expose any publicly accessible URLs that would need to require authentication to prevent unwanted access.
@@ -191,7 +194,7 @@ This is not simply limited to Kubernetes clusters. You could for example, create
 
 ### Enable Bindings for the Operator
 
-By default, the kubernetes bindings feature is not enabled for the ngrok operator. 
+By default, the kubernetes bindings feature is not enabled for the ngrok operator.
 Without enabling the feature, you can still create endpoints like any of the above examples for `internal`/`public`/`kubernetes` endpoints, but the operator will not create any `BoundEndpoint` resources for endpoints in your ngrok account with a Kubernetes binding.
 
 To enable the feature and allow your operator to create `BoundEndpoints` in response to endpoints with a kubernetes binding, use the helm value `bindings.enabled`.
@@ -212,11 +215,10 @@ You can modify your operator to only process a subset of them with the `bindings
 It defaults to `["true"]` which causes it to process all endpoints with a Kubernetes type binding. This can be modified to anything you like to control which
 endpoints the operator should process. This strategy can enable you to easily only project endpoints into certain clusters running the ngrok Kubernetes operator.
 
-
 ## Bindings with `Ingresses`
 
 By default, creating an `Ingress` will create a `CloudEndpoint` that has a `public` binding, meaning that its URL is accessible via the public internet, and an `AgentEndpoint` with an `internal` binding, meaning that its URL is only accessible using the `forward-internal` traffic policy action.
-You can control the binding on the `CloudEndpoint` that will be created by this `Ingress` using the `k8s.ngrok.com/bindings` annotation. 
+You can control the binding on the `CloudEndpoint` that will be created by this `Ingress` using the `k8s.ngrok.com/bindings` annotation.
 
 For more information about bindings, see [the bindings page](/kubernetes/guides/bindings)
 
@@ -232,7 +234,7 @@ metadata:
 	annotations:
 		k8s.ngrok.com/bindings: "internal"
 spec:
-  ingressClassName: ngrok       
+  ingressClassName: ngrok
   rules:
     - host: example-ingress.internal
       http:
@@ -249,7 +251,7 @@ spec:
 ## Bindings with Gateway API
 
 By default, the `CloudEndpoint` resources that are created by the operator from Gateway API config have a `public` binding, meaning that its URL is accessible via the public internet, and any created `AgentEndpoint` resources will have an `internal` binding, meaning that its URL is only accessible using the `forward-internal` traffic policy action.
-You can control the binding on the `CloudEndpoint` that will be created by using the `k8s.ngrok.com/bindings` annotation. 
+You can control the binding on the `CloudEndpoint` that will be created by using the `k8s.ngrok.com/bindings` annotation.
 
 For more information about bindings, see [the bindings page](/kubernetes/guides/bindings)
 
@@ -297,4 +299,3 @@ spec:
         port: 80
         weight: 1
 ```
-

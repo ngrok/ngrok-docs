@@ -12,7 +12,7 @@ You can also head to the [Custom Resource Definition docs](/kubernetes/crds) for
 
 The `AgentEndpoint` resource is used to create [Agent Endpoints](/universal-gateway/agent-endpoints/) using the operator.
 
-At a high level, Agent Endpoints are endpoints that accept traffic and forward it to an upstream of your choice. 
+At a high level, Agent Endpoints are endpoints that accept traffic and forward it to an upstream of your choice.
 They may optionally include [traffic policy](/traffic-policy/) configuration specified in-line or as a reference to an `NgrokTrafficPolicy` resource.
 The lifetime of these endpoints is tied to the lifetime of the "agent" responsible for them, in this scenario, the operator is the "agent", so if the operator is deleted, then the endpoint will be deleted.
 
@@ -123,28 +123,29 @@ spec:
 
 ## `AgentEndpoint` Public URL vs. Upstream URL
 
-With AgentEndpoints, While the public URL of an endpoint may have a scheme such as `http://`, the `upstream.url` for that endpoint does not need to also use the same scheme as the public URL. 
+With AgentEndpoints, While the public URL of an endpoint may have a scheme such as `http://`, the `upstream.url` for that endpoint does not need to also use the same scheme as the public URL.
 You can create an endpoint with an `http://` scheme as the public URL and still use `https://` as the scheme for the upstream URL.
-The following Agent Endpoint accepts cleartext HTTP connections at http://example-http-domain.ngrok.app, and forwards to the kubernetes service `https://example-service.default` on port `443` over HTTPS. 
+The following Agent Endpoint accepts cleartext HTTP connections at http://example-http-domain.ngrok.app, and forwards to the kubernetes service `https://example-service.default` on port `443` over HTTPS.
 
-	```yaml
-	---
-  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-  kind: AgentEndpoint
-  metadata:
-    name: example-agent-endpoint
-    namespace: default
-  spec:
-    upstream:
-      url: https://example-service.default:443
-    url: http://example-http-domain.ngrok.app
-	```
+    ```yaml
+    ---
+
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: AgentEndpoint
+metadata:
+name: example-agent-endpoint
+namespace: default
+spec:
+upstream:
+url: https://example-service.default:443
+url: http://example-http-domain.ngrok.app
+```
 
 ## Using `CloudEndpoint`
 
 The `CloudEndpoint` resource is used to create [Cloud Endpoints](/universal-gateway/cloud-endpoints/) using the operator.
 
-At a high level, Cloud Endpoints are endpoints that live in the ngrok cloud and are always online. 
+At a high level, Cloud Endpoints are endpoints that live in the ngrok cloud and are always online.
 They may optionally include [traffic policy](/traffic-policy/) configuration specified in-line or as a reference to an `NgrokTrafficPolicy` resource.
 Since they live in the ngrok cloud, Cloud Endpoints are always accessible, even if the cluster running your ngrok operator goes down.
 
@@ -228,7 +229,6 @@ This makes it easy to create common `NgrokTrafficPolicy` resources and re-use th
 
 The following example showcases creating an `NgrokTrafficPolicy` resource that will return a custom response when the `?debug=true` query parameter is sent with the request.
 
-
 ```yaml
 apiVersion: ngrok.k8s.ngrok.com/v1alpha1
 kind: NgrokTrafficPolicy
@@ -260,19 +260,19 @@ They are created by the operator in response to `AgentEndpoint`, `CloudEndpoint`
 You can use `kubectl describe` on any of them to check their status and conditions when debugging configuration.
 
 **Domains**:
+
 - Domains reserve domains in your ngrok that are used in hostnames across `Ingress`, etc. resources.
 - [Domain Reference](/kubernetes/crds/domain)
-**Tunnels**:
+  **Tunnels**:
 - Tunnels establish connections to your upstream services to handle forwarding traffic.
 - [Tunnel Reference](/kubernetes/crds/tunnel)
-**BoundEndpoints**:
+  **BoundEndpoints**:
 - BoundEndpoints project endpoints with a binding type of `kubernetes` into one or more Kubernetes clusters running the ngrok operator.
   For more information on endpoint bindings, refer to [the bindings page](/kubernetes/guides/bindings).
 - [BoundEndpoint Reference](/kubernetes/crds/boundendpoint)
-**KubernetesOperators**:
+  **KubernetesOperators**:
 - KubernetesOperators are used to synchronize the state of any instances of the ngrok Kubernetes operator with your ngrok account.
 - [KubernetesOperator Reference](/kubernetes/crds/kubernetesoperator)
-
 
 ## Using Edges
 
