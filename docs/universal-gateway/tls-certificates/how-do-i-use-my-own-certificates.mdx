@@ -3,7 +3,7 @@ title: How do I use my own certificates?
 description: Learn how to use your own TLS certificates rather than automatic certificate management.
 ---
 
-ngrok [manages TLS certificates for your domains automatically](/universal-gateway/tls-certificates/what-is-automatic-certificate-management) by default, and in general automatic management is recommended. However, you may also upload and manage your own TLS certificates.
+ngrok [manages TLS certificates for your domains automatically](/universal-gateway/tls-certificates/what-is-automatic-certificate-management) by default, and in general automatic management is recommended. However, you may also upload and manage the renewal and rotation of your TLS certificates yourself.
 
 :::warning
 You cannot use your own certificates with [ngrok's managed domains](/universal-gateway/domains/what-are-managed-domains).
@@ -18,7 +18,7 @@ Uploading your own certificates may be the right choice if you are:
 
 To use your own TLS certificates with ngrok, you first need to upload the certificate, then attach it to a domain. To do so:
 
-1. Upload a certificate bundle and a private key. You can do this with one of the following:
+1. Upload a [certificate bundle](/universal-gateway/tls-certificates/what-is-a-cerficate-bundle) and a [private key](/universal-gateway/tls-certificates/what-is-a-private-key). You can do this with one of the following:
    - [The TLS section of the Dashboard](https://dashboard.ngrok.com/tls-certs)
    - [The API](/api/resources/tls-certificates/#create-tls-certificate):
      ```bash
@@ -44,67 +44,3 @@ To use your own TLS certificates with ngrok, you first need to upload the certif
      -d '{"certificate_id":"id-for-certificate-here' \
      https://api.ngrok.com/reserved_domains/rd_2uBNwCkQlImhoyji1BWWiMGAHwc
      ```
-
-### Certificate bundles
-
-Unlike [automatic certificate management](/universal-gateway/tls-certificates/what-is-automatic-certificate-management), when you use custom TLS certificates, you must manage the renewal and rotation of new certificates yourself.
-
-When uploading your own TLS certificates to ngrok, you are expected to provide a certificate bundle of all certificates necessary to establish a chain of trust to a trusted root certificate authority. Many TLS certificate vendors will provide you with a constructed certificate bundle, but some will return the leaf certificate and the intermediate certificates separately and you must concatenate them to construct the bundle yourself. This is the `certificate_pem` field in the [TLS Certificate Create
-API](/api/resources/tls-certificates/).
-
-Certificate bundles are a series of PEM-encoded X.509 certificates that have
-been concatenated together. **The order of this bundle is significant.**
-
-The first certificate in the bundle must be the leaf certificate. The leaf
-certificate is the one which is signed for your domain and [the private
-key](#private-keys) you will upload.
-
-After the leaf certificate are the intermediates certificates, if any. Each
-intermediate certificate signs the certificate preceding it in the bundle. As
-an example, the first intermediate will sign the leaf, and that signature is
-part of the leaf certificate itself. The final certificate will be signed by
-the root certificate authority. You may also included the root certificate in
-the bundle as well, but it is not necessary or common practice to do so.
-
-A certificate bundle will look like the following:
-
-```pem
------BEGIN CERTIFICATE-----
-...
------END CERTIFICATE-----
------BEGIN CERTIFICATE-----
-...
------END CERTIFICATE-----
------BEGIN CERTIFICATE-----
-...
------END CERTIFICATE-----
-```
-
-### Private Keys {#private-keys}
-
-ngrok accepts the following formats for the private key of an uploaded TLS
-certificate. This is the `private_key_pem` field in the [TLS Certificate Create
-API](/api/resources/tls-certificates/).
-
-- RSA, in either PKCS#1 or PKCS#8 form.
-- ECDSA, in either SEC 1 or PKCS#8 form.
-- Ed25519, in PKCS#8 form.
-
-Regardless of the format you choose, the private key must be formatted as ASN.1
-DER, encoded as PEM. ngrok will not accept any private keys that are encrypted
-(e.g. with DES).
-
-ngrok encrypts your uploaded private keys at rest with
-[NaCL](https://nacl.cr.yp.to/).
-
-## Using wildcard domains
-
-With wild card domains (e.g. `*.app.example.com`), ngrok uses a [DNS01 challenge](https://letsencrypt.org/docs/challenge-types/#dns-01-challenge) for TLS certificate provisioning. This means you must create two `CNAME` records when adding wildcard domains to your ngrok account.
-
-For example, If your domain is `*.app.example.com` you will be required to create the following two CNAME records:
-
-- `*.app.example.com`
-- `_acme-challenge.app.example.com`
-
-Certificate provisioning will not begin until you have created both DNS
-records.
