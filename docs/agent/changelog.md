@@ -6,7 +6,7 @@ title: Changelog
 
 ## v3
 
-### ngrok Agent 3.20.0 \[2025-03-13\]
+### ngrok Agent 3.21.0 \[2025-03-13\]
 
 - Add TCP KeepAlive configuration option.
 
