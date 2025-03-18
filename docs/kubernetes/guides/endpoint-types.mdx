@@ -1,0 +1,211 @@
+---
+title: Endpoint Types
+---
+
+import TabItem from "@theme/TabItem";
+import Tabs from "@theme/Tabs";
+
+The ngrok Kubernetes operator offers `CloudEndpoint` and `AgentEndpoint` as custom resource types that let you create endpoints in ngrok.
+The [using CRDs guide](/kubernetes/guides/using-crds) goes over the details and differences about how to configure each one. 
+This page covers the different types of endpoints that can be created using either `CloudEndpoint` or `AgentEndpoint`.
+
+## HTTP Endpoints
+
+The following examples showcase how you can create endpoints that accept `http://` cleartext requests.
+
+<!-- prettier-ignore-start -->
+<Tabs groupId="http" queryString="http">
+	<TabItem value="agent-endpoint" label="AgentEndpoint" default>
+	The example showcases an upstream that accepts `http://` requests, but you can also use `https://` for the upstream.
+	For `AgentEndpoints`, the `upstream.url` scheme does not need to match the scheme of the public URL.
+	
+	```yaml
+	---
+  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+  kind: AgentEndpoint
+  metadata:
+    name: https-agent-endpoint
+    namespace: default
+  spec:
+		url: http://example-http-domain.ngrok.app
+    upstream:
+      url: http://example-service.default:8080
+		bindings:
+    - public
+	```
+	</TabItem>
+	<TabItem value="cloud-endpoint" label="CloudEndpoint">
+	```yaml
+  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+  kind: CloudEndpoint
+  metadata:
+    name: http-cloud-endpoint
+  spec:
+    url: http://example-http-domain.ngrok.app
+    bindings:
+    - public
+    trafficPolicy:
+      policy:
+        on_http_request:
+        - actions:
+          - type: forward-internal
+            config:
+              url: http://example-service.internal:8080
+	```
+  </TabItem>
+</Tabs>
+<!-- prettier-ignore-end -->
+
+## HTTPS Endpoints
+
+The following examples showcase how you can create endpoints that accept `https://` cleartext requests.
+For HTTPS endpoints, ngrok will automatically terminate TLS connections for your HTTPS endpoints. 
+If you would like to control TLS termination yourself, you can use the [terminate-tls traffic policy action](/traffic-policy/actions/terminate-tls/).
+
+<!-- prettier-ignore-start -->
+<Tabs groupId="https" queryString="https">
+	<TabItem value="agent-endpoint" label="AgentEndpoint" default>
+	The example showcases an upstream that accepts `https://` requests, but you can also use `http://` for the upstream.
+	For `AgentEndpoints`, the `upstream.url` scheme does not need to match the scheme of the public URL.
+
+	```yaml
+	---
+  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+  kind: AgentEndpoint
+  metadata:
+    name: https-agent-endpoint
+    namespace: default
+  spec:
+		url: https://example-http-domain.ngrok.app
+    upstream:
+      url: https://example-service.default:8443
+		bindings:
+    - public
+	```
+	</TabItem>
+	<TabItem value="cloud-endpoint" label="CloudEndpoint">
+	```yaml
+  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+  kind: CloudEndpoint
+  metadata:
+    name: https-cloud-endpoint
+  spec:
+    url: https://example-https-domain.ngrok.app
+    bindings:
+    - public
+    trafficPolicy:
+      policy:
+        on_http_request:
+        - actions:
+          - type: forward-internal
+            config:
+              url: https://example-service.internal:8443
+		bindings:
+    - public
+	```
+  </TabItem>
+</Tabs>
+<!-- prettier-ignore-end -->
+
+## TCP Endpoints
+
+The following examples showcase how you can create endpoints that accept `tcp://` requests.
+TCP Endpoints can be used to forward raw TCP traffic. 
+In order to create a TCP Endpoint, you must first [reserve a TCP address through the ngrok dashboard](https://dashboard.ngrok.com/tcp-addresses).
+This step is not necessary for internal endpoints. See [the bindings page](/kubernetes/guides/bindings) for more information about public/internal/kubernetes endpoints.
+
+<!-- prettier-ignore-start -->
+<Tabs groupId="tcp" queryString="tcp">
+	<TabItem value="agent-endpoint" label="AgentEndpoint" default>
+	The example showcases an upstream that accepts `tcp://` requests, but you can also use `tls://` for the upstream.
+	For `AgentEndpoints`, the `upstream.url` scheme does not need to match the scheme of the public URL.
+
+	```yaml
+	---
+  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+  kind: AgentEndpoint
+  metadata:
+    name: tcp-agent-endpoint
+    namespace: default
+  spec:
+		url: tcp://example-http-domain.ngrok.app
+    upstream:
+      url: tcp://example-service.default:8000
+		bindings:
+    - public
+	```
+	</TabItem>
+	<TabItem value="cloud-endpoint" label="CloudEndpoint">
+	```yaml
+  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+  kind: CloudEndpoint
+  metadata:
+    name: tcp-cloud-endpoint
+  spec:
+    url: tcp://example-tcp-domain.ngrok.app
+    bindings:
+    - public
+    trafficPolicy:
+      policy:
+        on_http_request:
+        - actions:
+          - type: forward-internal
+            config:
+              url: tcp://example-service.internal:8000
+		bindings:
+    - public
+	```
+  </TabItem>
+</Tabs>
+<!-- prettier-ignore-end -->
+
+## TLS Endpoints
+
+The following examples showcase how you can create endpoints that accept `tls://` requests.
+TLS endpoints enable you to deliver any network service that runs over a TLS-based protocol. 
+TLS endpoints make no assumptions about the wrapped protocol being transported.
+
+
+For TLS endpoints, ngrok will not terminate the TLS connection by default and it is up to you to handle TLS termination in your upstream service.
+
+<!-- prettier-ignore-start -->
+<Tabs groupId="tls" queryString="tls">
+	<TabItem value="agent-endpoint" label="AgentEndpoint" default>
+	```yaml
+	---
+  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+  kind: AgentEndpoint
+  metadata:
+    name: tls-agent-endpoint
+    namespace: default
+  spec:
+		url: tls://example-tls-domain.ngrok.app
+    upstream:
+      url: tls://example-service.default:9000
+		bindings:
+    - public
+	```
+	</TabItem>
+	<TabItem value="cloud-endpoint" label="CloudEndpoint">
+	```yaml
+  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+  kind: CloudEndpoint
+  metadata:
+    name: tls-cloud-endpoint
+  spec:
+    url: tls://example-tls-domain.ngrok.app
+    bindings:
+    - public
+    trafficPolicy:
+      policy:
+        on_http_request:
+        - actions:
+          - type: forward-internal
+            config:
+              url: tls://example-service.internal:9000
+		bindings:
+    - public
+	```
+  </TabItem>
+</Tabs>
+<!-- prettier-ignore-end -->

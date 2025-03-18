@@ -16,6 +16,7 @@ At a high level, Agent Endpoints are endpoints that accept traffic and forward i
 They may optionally include [traffic policy](/traffic-policy/) configuration specified in-line or as a reference to an `NgrokTrafficPolicy` resource.
 The lifetime of these endpoints is tied to the lifetime of the "agent" responsible for them, in this scenario, the operator is the "agent", so if the operator is deleted, then the endpoint will be deleted.
 
+The [endpoint types page](/kubernetes/guides/endpoint-types) showcases using different protocols with `AgentEndpoint` and/or `CloudEndpoint` resources.
 See the [AgentEndpoint Reference](/kubernetes/crds/agentendpoint) for more detailed information about `AgentEndpoint` structure and fields.
 
 ### Public `AgentEndpoint`
@@ -120,6 +121,25 @@ spec:
 		namespace: default
 ```
 
+## `AgentEndpoint` Public URL vs. Upstream URL
+
+With AgentEndpoints, While the public URL of an endpoint may have a scheme such as `http://`, the `upstream.url` for that endpoint does not need to also use the same scheme as the public URL. 
+You can create an endpoint with an `http://` scheme as the public URL and still use `https://` as the scheme for the upstream URL.
+The following Agent Endpoint accepts cleartext HTTP connections at http://example-http-domain.ngrok.app, and forwards to the kubernetes service `https://example-service.default` on port `443` over HTTPS. 
+
+	```yaml
+	---
+  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+  kind: AgentEndpoint
+  metadata:
+    name: example-agent-endpoint
+    namespace: default
+  spec:
+    upstream:
+      url: https://example-service.default:443
+    url: http://example-http-domain.ngrok.app
+	```
+
 ## Using `CloudEndpoint`
 
 The `CloudEndpoint` resource is used to create [Cloud Endpoints](/universal-gateway/cloud-endpoints/) using the operator.
@@ -133,6 +153,7 @@ Their primary purpose is to run traffic policies which can be used to forward tr
 
 A very common pattern is to make a publicly accessible Cloud Endpoint for a hostname that has traffic policy to forward traffic to one of several other Cloud or Agent endpoints depending on the path/headers/etc.
 
+The [endpoint types page](/kubernetes/guides/endpoint-types) showcases using different protocols with `AgentEndpoint` and/or `CloudEndpoint` resources.
 See the [CloudEndpoint Reference](/kubernetes/crds/cloudendpoint) for more detailed information about `CloudEndpoint` structure and fields.
 
 ### `CloudEndpoint` with In-line Traffic Policy
@@ -192,7 +213,7 @@ spec:
 
 ### `CloudEndpoint` Routing
 
-For a more in-depth guide on using `CloudEndpoints` to forward requests to other endpoints, see the [request routing guide](/kubernetes/guides/request-routing)
+For a more in-depth guide on using `CloudEndpoints` to forward requests to other endpoints using the `forward-internal` action, see the [request routing guide](/kubernetes/guides/request-routing)
 
 ## Using `NgrokTrafficPolicy`
 

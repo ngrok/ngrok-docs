@@ -1,6 +1,61 @@
 ---
-title: Using LoadBalancers
+title: Using LoadBalancer Services
 pagination_next: kubernetes/guides/using-gwapi
 ---
 
-TODO: Alice...
+## How the ngrok Operator Uses LoadBalancer Services
+
+By default, services of type `LoadBalancer` are exposed using a TCP Endpoint. 
+A reserved address is automatically created for the service and the service's status will be updated with the reserved address. 
+Other projects like [external-dns](https://github.com/ngrok/ngrok-operator/docs/examples/external-dns/README.md) can be used to create a CNAME record for the reserved address automatically.
+
+See the [TCP Endpoint](/tcp/) and [TLS Endpoint](/tls/) pages for more information about how ngrok handles these kinds of endpoints.
+
+For example, the following `LoadBalancer` service will be provided by a TCP Endpoint.
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysite
+spec:
+  allocateLoadBalancerNodePorts: false # ngrok's tunneling technology does not require NodePorts to be allocated.
+  loadBalancerClass: ngrok
+  type: LoadBalancer
+  selector:
+    app: mysite
+  ports:
+    - name: traffic
+      port: 9000
+      protocol: TCP
+      targetPort: 9000
+```
+
+
+
+If you would instead like a TLS Endpoint, the following example showcases how you can create one.
+The `k8s.ngrok.com/domain` annotation is required to use TLS and will expose the service as a TLS endpoint. 
+Once the reserved domain is ready and the endpoint is created, the service's status will be updated with the ngrok address. 
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysite
+  annotations:
+    k8s.ngrok.com/domain: mysite.mydomain.com # Required to use TLS
+    external-dns.alpha.kubernetes.io/hostname: "mysite.mydomain.com"
+spec:
+  allocateLoadBalancerNodePorts: false # ngrok's tunneling technology does not require NodePorts to be allocated.
+  loadBalancerClass: ngrok
+  type: LoadBalancer
+  selector:
+    app: mysite
+  ports:
+    - name: traffic
+      port: 9000
+      protocol: TCP
+      targetPort: 9000
+```
+
+While using Services offers simplicity, using the `CloudEndpoint` and `AgentEndpoint` resources directly instead of translating `LoadBalancer` services into them using the operator offers more configuration options and flexibility for configuring TCP and TLS endpoints.

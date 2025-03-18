@@ -143,3 +143,32 @@ spec:
 				kind: "NgrokTrafficPolicy"
 				name: basic-auth
 ```
+
+
+## Gateway API HTTPS Upstreams
+
+If you have an `HTTPRoute` that routes to a Service that expects HTTPS instead of HTTP, you can specify this using the `k8s.ngrok.com/app-protocols` annotation on your `Service`.
+For example, the following `Service` uses the annotation to let the operator know which ports use HTTPS
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: example-service
+  labels:
+    app: example-app
+  annotations:
+    k8s.ngrok.com/app-protocols: '{"https-port":"https","http-port":"http"}'
+spec:
+  ports:
+    - name: https-port
+      port: 443
+      protocol: TCP
+      targetPort: 8443
+    - name: http-port
+      port: 80
+      protocol: TCP
+      targetPort: 8080
+  selector:
+    app: example-app
+```

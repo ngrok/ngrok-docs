@@ -264,7 +264,6 @@ const sidebars = {
 			items: [
 				"kubernetes/index",
 				"kubernetes/how-it-works",
-				"kubernetes/changelog",
 				{
 					label: "Install & Manage",
 					type: "category",
@@ -287,12 +286,14 @@ const sidebars = {
 						"kubernetes/guides/using-gwapi",
 						"kubernetes/guides/using-ingresses",
 						"kubernetes/guides/using-loadbalancers",
+						"kubernetes/guides/endpoint-types",
 						"kubernetes/guides/bindings",
 						"kubernetes/guides/pooling",
 						"kubernetes/guides/custom-domain",
 						"kubernetes/guides/annotations",
 						"kubernetes/guides/managed-resources",
 						"kubernetes/guides/finalizers",
+						"kubernetes/guides/local-cluster",
 						"kubernetes/guides/troubleshooting",
 						{
 							label: "How do I?",
@@ -358,6 +359,8 @@ const sidebars = {
 						"kubernetes/integrations/vcluster",
 					],
 				},
+				"kubernetes/changelog",
+				"kubernetes/releasing",
 			],
 		},
 		{

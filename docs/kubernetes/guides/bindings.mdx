@@ -134,7 +134,8 @@ spec:
     url: http://my-service.my-namespace:80
 ```
 
-Will cause the following `BoundEndpoint` to be created by the operator
+Will cause the following `BoundEndpoint` to be created by the operator.
+You can also configure the same options on `CloudEndpoint` resources.
 
 ```yaml
 apiVersion: bindings.k8s.ngrok.com/v1alpha1
@@ -210,3 +211,90 @@ You can modify your operator to only process a subset of them with the `bindings
 `bindings.endpointSelectors` is a list of cel expressions used to filter which kubernetes-bound endpoints should be projected into this cluster.
 It defaults to `["true"]` which causes it to process all endpoints with a Kubernetes type binding. This can be modified to anything you like to control which
 endpoints the operator should process. This strategy can enable you to easily only project endpoints into certain clusters running the ngrok Kubernetes operator.
+
+
+## Bindings with `Ingresses`
+
+By default, creating an `Ingress` will create a `CloudEndpoint` that has a `public` binding, meaning that its URL is accessible via the public internet, and an `AgentEndpoint` with an `internal` binding, meaning that its URL is only accessible using the `forward-internal` traffic policy action.
+You can control the binding on the `CloudEndpoint` that will be created by this `Ingress` using the `k8s.ngrok.com/bindings` annotation. 
+
+For more information about bindings, see [the bindings page](/kubernetes/guides/bindings)
+
+The following `Ingress` will create a `CloudEndpoint` with an `internal` binding.
+**Note that with the internal binding, the URL must end in .internal**
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: example-ingress
+  namespace: default
+	annotations:
+		k8s.ngrok.com/bindings: "internal"
+spec:
+  ingressClassName: ngrok       
+  rules:
+    - host: example-ingress.internal
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: example-service
+                port:
+                  number: 80
+```
+
+## Bindings with Gateway API
+
+By default, the `CloudEndpoint` resources that are created by the operator from Gateway API config have a `public` binding, meaning that its URL is accessible via the public internet, and any created `AgentEndpoint` resources will have an `internal` binding, meaning that its URL is only accessible using the `forward-internal` traffic policy action.
+You can control the binding on the `CloudEndpoint` that will be created by using the `k8s.ngrok.com/bindings` annotation. 
+
+For more information about bindings, see [the bindings page](/kubernetes/guides/bindings)
+
+The following configuration will create a `CloudEndpoint` with an `internal` binding. the annotation can be used on the `Gateway` but not `HTTPRoute`.
+**Note that with the internal binding, the URL must end in .internal**
+
+```yaml
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: example-gateway
+  namespace: default
+	annotations:
+		k8s.ngrok.com/bindings: "internal"
+spec:
+  gatewayClassName: ngrok
+  listeners:
+    - name: example-hostname
+      hostname: "example-hostname.internal"
+      port: 443
+      protocol: HTTPS
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: example-route
+  namespace: default
+spec:
+  hostnames:
+  - example-hostname.internal
+  parentRefs:
+  - group: gateway.networking.k8s.io
+    kind: Gateway
+    name: example-gateway
+    namespace: default
+  rules:
+  - matches:
+      - path:
+          type: PathPrefix
+          value: /
+    backendRefs:
+      - group: ""
+        kind: Service
+        name: example-service
+        port: 80
+        weight: 1
+```
+
