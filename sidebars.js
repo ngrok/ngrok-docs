@@ -310,7 +310,6 @@ const sidebars = {
 								"kubernetes/guides/how-to/static-response",
 								"kubernetes/guides/how-to/terminate-tls",
 								"kubernetes/guides/how-to/upstream-tls",
-								"kubernetes/guides/how-to/cert-manager",
 								"kubernetes/guides/how-to/rate-limiting",
 								"kubernetes/guides/how-to/deny-requests",
 								"kubernetes/guides/how-to/basic-auth",
