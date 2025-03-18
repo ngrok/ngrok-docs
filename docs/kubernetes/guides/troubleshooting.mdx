@@ -66,14 +66,110 @@ You can refer to the [finalizers page](/kubernetes/guides/finalizers) for more i
 
 ## Cloud endpoints not getting created from Ingress / Gateway API
 
-If you're applying `Ingress` and/or Gateway API resources and do not see any `CloudEndpoint` or `AgentEndpoint` custom resources created by the operator, here are a few steps to identify the reason
+If you're applying `Ingress` and/or Gateway API resources and do not see any `CloudEndpoint` or `AgentEndpoint` custom resources created by the operator, here are a few steps to identify the reason.
+
 
 ### Ingress uses ngrok IngressClass?
 
+The ngrok `IngressClass` is required to use `Ingress` resources. Check that your `Ingress` uses the ngrok `IngressClass` like the following example.
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: demo-ingress
+  namespace: default
+spec:
+  ingressClassName: ngrok
+  rules:
+  - host: example-ingress.ngrok.io
+    http:
+      paths:
+      - backend:
+          service:
+            name: example-service
+            port:
+              number: 80
+        path: /
+        pathType: Prefix
+```
+
+
 ### Gateway API uses the ngrok GatewayClass?
 
-## Cloud endpoint not showing up on the dashboard
+The ngrok `GatewayClass` is required to use Gateway API resources. If you do not already have it installed, you can create it with:
 
-If you have `CloudEndpoint`
+```bash
+kubectl apply -f -<<EOF
+apiVersion: gateway.networking.k8s.io/v1
+kind: GatewayClass
+metadata:
+  name: ngrok
+spec:
+  controllerName: ngrok.com/gateway-controller
+EOF
+```
 
-## Domain limits
+Then, make sure your `Gateway` uses the `GatewayClass` like the following example:
+
+```yaml
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: example-gateway
+  namespace: default
+spec:
+  gatewayClassName: ngrok
+  listeners:
+  - allowedRoutes:
+      namespaces:
+        from: Same
+    hostname: example-gateway.ngrok.io
+    name: example
+    port: 443
+    protocol: HTTPS
+```
+
+
+### Check Manager Pod Logs
+
+The "manager" pods are responsible for performing the translation from `Ingress` and Gateway API into native ngrok resources.
+Check the manager pods for any errors to see if there is a problem with your configuration.
+
+```bash
+kubectl logs -n ngrok-operator deploy/ngrok-operator-manager | grep "ERROR"
+```
+
+## Endpoints not showing up on the dashboard
+
+If you have `CloudEndpoint` and/or `AgentEndpoint` resources that are not working, and you can't tell what's wrong with them using `kubectl describe`, then check the logs for any errors processing them.
+
+### Check for `AgentEndpoint` Error Logs
+
+`AgentEndpoint` resources are handled by the "agent" pods. Check these for any errors to see if there was an issue processing your `AgentEndpoint`.
+Common errors are an invalid traffic policy configuration that may prevent your endpoint from being created.
+
+```bash
+kubectl logs -n ngrok-operator deploy/ngrok-operator-agent | grep "ERROR"
+```
+
+### Check for `CloudEndpoint` Error Logs
+
+`CloudEndpoint` resources are handled by the "manager" pods. Check these for any errors to see if there was an issue processing your `CloudEndpoint`.
+Common errors are an invalid traffic policy configuration that may prevent your endpoint from being created.
+
+```bash
+kubectl logs -n ngrok-operator deploy/ngrok-operator-manager | grep "ERROR"
+```
+
+## Resource Limits
+
+If you've added several resources such as domains and endpoints, you may encounter a limit for the resource you are trying to create depending on your payment plan.
+If you are on the pay-as-you-go plan, then you will not encounter this issue and you will be able to create resources freely and only be billed for the resources you create.
+Check with the [pricing and limits page](/pricing-limits/) for information about each plan and any limits associated with it.
+
+
+## Still Need Help?
+
+If you aren't able to identify and resolve your issue, head over to the [support page](https://ngrok.com/support) to reach out to ngrok support.
+You can also head over to [the operator GitHub repo](https://github.com/ngrok/ngrok-operator) and see if anyone else encountered the same problem or file a new issue.
