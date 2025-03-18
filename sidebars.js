@@ -69,12 +69,24 @@ const sidebars = {
 					],
 				},
 				{
+					label: "How Does ngrok Handle TLS?",
+					type: "category",
+					link: {
+						type: "doc",
+						id: "universal-gateway/tls-certificates/how-does-ngrok-handle-tls",
+					},
+					items: [
+						"universal-gateway/tls-certificates/what-is-automatic-certificate-management",
+						"universal-gateway/tls-certificates/how-are-certificates-selected",
+						"universal-gateway/tls-certificates/how-do-i-use-my-own-certificate",
+						"universal-gateway/tls-certificates/what-is-a-certificate-bundle",
+						"universal-gateway/tls-certificates/what-are-private-tls-keys",
+					],
+				},
+				{
 					label: "Concepts",
 					type: "category",
-					items: [
-						"universal-gateway/tls-certificates",
-						"universal-gateway/edges",
-					],
+					items: ["universal-gateway/edges"],
 				},
 				{
 					label: "Endpoints",
