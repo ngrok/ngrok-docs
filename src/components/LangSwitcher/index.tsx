@@ -36,11 +36,7 @@ const getStructuredChildren = (children: any) => {
 	});
 };
 
-export function LangSwitcher({
-	children,
-}: {
-	children: (typeof DocsCodeBlock)[];
-}) {
+export function LangSwitcher({ children }: { children: any[] }) {
 	console.log("Raw children", children);
 	const structuredChildren = getStructuredChildren(children);
 	console.log("structured children", structuredChildren);
