@@ -35,11 +35,100 @@ Key Benefits:
 <!-- prettier-ignore-start -->
 <Tabs groupId="kind" queryString="kind">
 	<TabItem value="agent-endpoint" label="AgentEndpoint" default>
+	Check out the [URL rewrite traffic policy action](/traffic-policy/actions/url-rewrite/) page for more details about how it functions and the parameters it accepts.
+
+	```yaml
+  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+  kind: AgentEndpoint
+  metadata:
+    name: example-agent-endpoint
+  spec:
+    url: https://example-agent-endpoint.ngrok.io
+    upstream:
+      url: http://my-service.my-namespace:8080
+    trafficPolicy:
+      inline:
+        on_http_request:
+          - expressions:
+              - req.url.path.startsWith('/products')
+            actions:
+              - type: url-rewrite
+                config:
+                  from: /products/?([.*]+)?
+                  to: /products.php?query=$1
+	```
 	</TabItem>
 	<TabItem value="cloud-endpoint" label="CloudEndpoint">
+	Check out the [URL rewrite traffic policy action](/traffic-policy/actions/url-rewrite/) page for more details about how it functions and the parameters it accepts.
+
+	```yaml
+  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+  kind: CloudEndpoint
+  metadata:
+    name: example-cloud-endpoint
+  spec:
+    url: https://example-cloud-endpoint.ngrok.io
+    trafficPolicy:
+      policy:
+        on_http_request:
+          - expressions:
+              - req.url.path.startsWith('/products')
+            actions:
+              - type: url-rewrite
+                config:
+                  from: /products/?([.*]+)?
+                  to: /products.php?query=$1
+	```
   </TabItem>
 	<TabItem value="ingress" label="Ingress">
-	❌ Ingress resources do not have native URL rewriting capabilities, but they can be extended to take advantage of ngrok's [URL rewrite traffic policy action](/traffic-policy/actions/url-rewrite/).
+	💡 Ingress resources do not have native URL rewriting capabilities, but they can be extended using a traffic policy.
+
+	Check out the [URL rewrite traffic policy action](/traffic-policy/actions/url-rewrite/) page for more details about how it functions and the parameters it accepts.
+
+	### 1. Create an `NgrokTrafficPolicy`
+
+	```yaml
+  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+  kind: NgrokTrafficPolicy
+  metadata:
+    name: example-tp
+    namespace: default
+  spec:
+    policy:
+      on_http_request:
+        - expressions:
+            - req.url.path.startsWith('/products')
+          actions:
+            - type: url-rewrite
+              config:
+                from: /products/?([.*]+)?
+                to: /products.php?query=$1
+	```
+
+	### 2. Use the `NgrokTrafficPolicy` on an `Ingress`
+
+	```yaml
+  apiVersion: networking.k8s.io/v1
+  kind: Ingress
+  metadata:
+    annotations:
+      k8s.ngrok.com/traffic-policy: example-tp
+    name: example-ingress
+    namespace: default
+  spec:
+    ingressClassName: ngrok
+    rules:
+      - host: example-ingress.ngrok.io
+        http:
+          paths:
+            - path: /
+              pathType: Prefix
+              backend:
+                service:
+                  name: example-service
+                  port:
+                    number: 80
+	```
   </TabItem>
 	<TabItem value="gateway-api" label="Gateway API">
 	✅ Gateway API natively supports URL rewriting, and this feature is fully supported by the ngrok Kubernetes operator.

@@ -31,17 +31,158 @@ If you need more secure authentication methods for production traffic, consider 
 
 ## Basic Authentication Examples
 
+The following examples show how to set up an endpoint that accepts requests that contian basic auth credentials for either `user:password1` or `admin:password2`.
+All other requests will be denied with a `401` response code.
+
+Check out the [basic auth traffic policy action](/traffic-policy/actions/basic-auth/) page for more details about how it functions and the parameters it accepts.
+
 <!-- prettier-ignore-start -->
 <Tabs groupId="kind" queryString="kind">
 	<TabItem value="agent-endpoint" label="AgentEndpoint" default>
+	```yaml
+  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+  kind: AgentEndpoint
+  metadata:
+    name: example-agent-endpoint
+  spec:
+    url: https://example-agent-endpoint.ngrok.io
+    upstream:
+      url: http://my-service.my-namespace:8080
+    trafficPolicy:
+      inline:
+        on_http_request:
+        - actions:
+          - type: basic-auth
+            config:
+              realm: sample-realm
+              credentials:
+                - user:password1
+                - admin:password2
+              enforce: true
+	```
 	</TabItem>
 	<TabItem value="cloud-endpoint" label="CloudEndpoint">
+	```yaml
+  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+  kind: CloudEndpoint
+  metadata:
+    name: example-cloud-endpoint
+  spec:
+    url: https://example-cloud-endpoint.ngrok.io
+    trafficPolicy:
+      policy:
+        on_http_request:
+        - actions:
+          - type: basic-auth
+            config:
+              realm: sample-realm
+              credentials:
+                - user:password1
+                - admin:password2
+              enforce: true
+          - type: custom-response
+            config:
+              status_code: 200
+              headers:
+                content-type: text/plain
+              content: Successfully Authenticated!
+	```
   </TabItem>
 	<TabItem value="ingress" label="Ingress">
-	❌ `Ingress` resources do not natively support Basic Authentication, but they can be extended to take advantage of ngrok's [basic auth traffic policy action](/traffic-policy/actions/basic-auth/).
+	💡 `Ingress` resources do not natively support Basic Authentication, but they can be extended using a traffic policy.
+
+	### 1. Create an `NgrokTrafficPolicy`
+
+	```yaml
+  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+  kind: NgrokTrafficPolicy
+  metadata:
+    name: example-tp
+    namespace: default
+  spec:
+    policy:
+      on_http_request:
+      - actions:
+        - type: basic-auth
+          config:
+            realm: sample-realm
+            credentials:
+              - user:password1
+              - admin:password2
+            enforce: true
+	```
+
+	### 2. Use the `NgrokTrafficPolicy` on an `Ingress`
+
+	```yaml
+  apiVersion: networking.k8s.io/v1
+  kind: Ingress
+  metadata:
+    annotations:
+      k8s.ngrok.com/traffic-policy: example-tp
+    name: example-ingress
+    namespace: default
+  spec:
+    ingressClassName: ngrok
+    rules:
+      - host: example-ingress.ngrok.io
+        http:
+          paths:
+            - path: /
+              pathType: Prefix
+              backend:
+                service:
+                  name: example-service
+                  port:
+                    number: 80
+	```
   </TabItem>
 	<TabItem value="gateway-api" label="Gateway API">
-	❌ Gateway API resources do not natively support Basic Authentication, but they can be extended to take advantage of ngrok's [basic auth traffic policy action](/traffic-policy/actions/basic-auth/).
+	💡 Gateway API resources do not natively support Basic Authentication, but they can be extended using a traffic policy.
+
+	### 1. Create an `NgrokTrafficPolicy`
+
+	```yaml
+  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+  kind: NgrokTrafficPolicy
+  metadata:
+    name: example-tp
+    namespace: default
+  spec:
+    policy:
+      on_http_request:
+      - actions:
+        - type: basic-auth
+          config:
+            realm: sample-realm
+            credentials:
+              - user:password1
+              - admin:password2
+            enforce: true
+	```
+
+	### 2. Use the `NgrokTrafficPolicy` on a `Gateway`
+
+	The following example showcases supplying the `NgrokTrafficPolicy` on a `Gateway` resource. All requests to the `Gateway` will run the traffic policy.
+	If you prefer, `NgrokTrafficPolicy` can also be used on the route level by using an `externalRef` filter on an `HTTPRoute`. See the [using Gateway API guide](/kubernetes/guides/using-gwapi) for examples.
+
+	```yaml
+  ---
+  apiVersion: gateway.networking.k8s.io/v1
+  kind: Gateway
+  metadata:
+    name: example-gateway
+    namespace: default
+    annotations:
+      k8s.ngrok.com/traffic-policy: example-tp
+  spec:
+    gatewayClassName: ngrok
+    listeners:
+      - name: example-hostname
+        hostname: "example-hostname.ngrok.io"
+        port: 443
+        protocol: HTTPS
+	```
   </TabItem>
 </Tabs>
 <!-- prettier-ignore-end -->
