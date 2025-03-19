@@ -1,7 +1,6 @@
 import { parseLanguage, parseMetastring } from "@ngrok/mantle/code-block";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@ngrok/mantle/tabs";
-import { titleCase } from "title-case";
-import DocsCodeBlock from "../code-block.tsx";
+import DocsCodeBlock from "../code-block";
 
 // The name of the query param or localstorage item to search for
 // to get the default tab value
@@ -23,15 +22,16 @@ const getDefaultTab = (structuredChildren: any) => {
 
 const getStructuredChildren = (children: any) => {
 	return children.map((child: any) => {
-		const { className, metastring, children } = child.props.children.props;
-		const language = parseLanguage(className);
+		const { className, metastring, children, language } =
+			child.props.children.props ?? child.props;
+		const parsedLanguage = language || parseLanguage(className);
 		const meta = parseMetastring(metastring);
-		const title = meta.title;
+		const title = meta.title ?? child.props.title;
 		return {
-			language,
-			title,
+			language: parsedLanguage,
 			content: children,
 			meta,
+			title,
 		};
 	});
 };
@@ -41,8 +41,9 @@ export function LangSwitcher({
 }: {
 	children: (typeof DocsCodeBlock)[];
 }) {
-	console.log("Rendering children", children);
+	console.log("Raw children", children);
 	const structuredChildren = getStructuredChildren(children);
+	console.log("structured children", structuredChildren);
 
 	return (
 		<Tabs
@@ -58,7 +59,7 @@ export function LangSwitcher({
 						key={child.content}
 						value={child.language}
 					>
-						{titleCase(child.language)}
+						{child.language.toUpperCase()}
 					</TabsTrigger>
 				))}
 			</TabsList>
