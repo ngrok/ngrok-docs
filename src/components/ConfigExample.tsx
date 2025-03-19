@@ -1,4 +1,3 @@
-import BrowserOnly from "@docusaurus/BrowserOnly";
 import { useMDXComponents } from "@mdx-js/react";
 import {
 	Accordion,
@@ -8,11 +7,9 @@ import {
 	AccordionTrigger,
 	AccordionTriggerIcon,
 } from "@ngrok/mantle/accordion";
-import TabItem from "@theme/TabItem";
-import Tabs from "@theme/Tabs";
 import { useState, type ReactNode } from "react";
 import YAML, { type ToStringOptions } from "yaml";
-import DocsCodeBlock, { CodeBlockFallback } from "./code-block";
+import DocsCodeBlock from "./code-block";
 import { LangSwitcher } from "./LangSwitcher";
 
 const showExample = (
