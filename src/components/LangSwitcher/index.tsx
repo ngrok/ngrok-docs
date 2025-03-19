@@ -1,6 +1,7 @@
+import BrowserOnly from "@docusaurus/BrowserOnly";
 import { parseLanguage, parseMetastring } from "@ngrok/mantle/code-block";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@ngrok/mantle/tabs";
-import DocsCodeBlock from "../code-block";
+import DocsCodeBlock, { CodeBlockFallback } from "../code-block";
 
 // The name of the query param or localstorage item to search for
 // to get the default tab value
@@ -62,12 +63,20 @@ export function LangSwitcher({ children }: { children: any[] }) {
 					key={child.content + child.language}
 					value={child.language}
 				>
-					<DocsCodeBlock
-						className={child.language}
-						metastring={`title=${child.title}`}
+					<BrowserOnly
+						fallback={
+							<CodeBlockFallback className="mb-4">Loading…</CodeBlockFallback>
+						}
 					>
-						{child.content}
-					</DocsCodeBlock>
+						{() => (
+							<DocsCodeBlock
+								className={child.language}
+								metastring={`title=${child.title}`}
+							>
+								{child.content}
+							</DocsCodeBlock>
+						)}
+					</BrowserOnly>
 				</TabsContent>
 			))}
 		</Tabs>
