@@ -224,5 +224,5 @@ By following the best practices in this document, you can secure ngrok usage by 
 
 ## Learn more
 
-- To learn more about ngrok’s capabilities: [https://ngrok.com/product](https://ngrok.com/product)
-- To explore configuration options, visit [https://ngrok.com/docs](https://ngrok.com/docs)
+- Visit [the product page](https://ngrok.com/product) to learn more about ngrok’s capabilities.
+- To explore configuration options, visit [the docs](/docs).

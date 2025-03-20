@@ -20,7 +20,7 @@ ngrok http 80 --oauth=github
 
 By adding the OAuth flag in the example above, only users who log into GitHub can access your applications.
 
-ngrok supports various major OAuth providers such as Google, GitHub, and Microsoft, as well as any solution compatible with OAuth, including OpenID Connect and SAML. This includes Okta, Auth0, and many other identity providers. [Learn more about creating custom OAuth applications here.](https://ngrok.com/docs/cloud-edge/modules/oauth/google/#creating-a-custom-google-oauth-application)
+ngrok supports various major OAuth providers such as Google, GitHub, and Microsoft, as well as any solution compatible with OAuth, including OpenID Connect and SAML. This includes Okta, Auth0, and many other identity providers. [Learn more about creating custom OAuth applications here.](/integrations/google/oauth/)
 
 # Granular Authorization Requests
 

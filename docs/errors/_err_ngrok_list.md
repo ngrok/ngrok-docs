@@ -31,7 +31,7 @@
       <td class="pre-wrapped">
         The account <code>&lt;ACCOUNT&gt;</code> has been suspended.
         This is usually the result of violating the ngrok Terms of Service.
-        Email contact@ngrok.com if you think your suspension is an error.
+        Email support@ngrok.com if you think your suspension is an error.
       </td>
     </tr>
     <tr>
@@ -270,7 +270,7 @@
         <a id="ERR_NGROK_205" href="/docs/errors/err_ngrok_205">ERR_NGROK_205</a>
       </td>
       <td class="pre-wrapped">
-        The account <code>&lt;ACCOUNT&gt;</code> has been suspended. This is usually the result of violating the ngrok Terms of Service. Email contact@ngrok.com if you think your suspension is an error.
+        The account <code>&lt;ACCOUNT&gt;</code> has been suspended. This is usually the result of violating the ngrok Terms of Service. Email support@ngrok.com if you think your suspension is an error.
       </td>
     </tr>
     <tr>
@@ -390,7 +390,7 @@
         <a id="ERR_NGROK_221" href="/docs/errors/err_ngrok_221">ERR_NGROK_221</a>
       </td>
       <td class="pre-wrapped">
-        This is a valid API token, but the account <code>&lt;ACCOUNT&gt;</code> is not authorized to submit or view abuse reports. Email contact@ngrok.com if you believe this is an error.
+        This is a valid API token, but the account <code>&lt;ACCOUNT&gt;</code> is not authorized to submit or view abuse reports. Email support@ngrok.com if you believe this is an error.
       </td>
     </tr>
     <tr>
@@ -909,7 +909,9 @@
         <a id="ERR_NGROK_334" href="/docs/errors/err_ngrok_334">ERR_NGROK_334</a>
       </td>
       <td class="pre-wrapped">
-        The tunnel <code>&lt;URL&gt;</code> is already bound to another tunnel session
+        The endpoint <code>&lt;URL&gt;</code> is already online. Either
+        1. stop your existing endpoint first, or
+        2. start both endpoints with `--pooling-enabled` to load balance between them.
       </td>
     </tr>
     <tr>
@@ -945,7 +947,7 @@
       <td class="pre-wrapped">
         The account <code>&lt;ACCOUNT&gt;</code> has been suspended.
         This is usually the result of violating the ngrok Terms of Service.
-        Email contact@ngrok.com if you think your suspension is an error.
+        Email support@ngrok.com if you think your suspension is an error.
       </td>
     </tr>
     <tr>
@@ -2630,7 +2632,7 @@
         <a id="ERR_NGROK_1002" href="/docs/errors/err_ngrok_1002">ERR_NGROK_1002</a>
       </td>
       <td class="pre-wrapped">
-        Your account is limited to <code>&lt;MAX&gt;</code> billing email addresses. Email contact@ngrok.com to increase the limit
+        Your account is limited to <code>&lt;MAX&gt;</code> billing email addresses. Email support@ngrok.com to increase the limit
       </td>
     </tr>
     <tr>
@@ -5215,6 +5217,70 @@
     </tr>
     <tr>
       <td>
+        <a id="ERR_NGROK_2244" href="/docs/errors/err_ngrok_2244">ERR_NGROK_2244</a>
+      </td>
+      <td class="pre-wrapped">
+        Invalid configuration for <code>&lt;PHASE&gt;</code> <code>&lt;ACTION&gt;</code>: <code>&lt;CONFIG&gt;</code> can have at most <code>&lt;MAX&gt;</code> query key/value pairs, but <code>&lt;VAL&gt;</code> were provided.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_2245" href="/docs/errors/err_ngrok_2245">ERR_NGROK_2245</a>
+      </td>
+      <td class="pre-wrapped">
+        Invalid configuration for <code>&lt;PHASE&gt;</code> <code>&lt;ACTION&gt;</code>: <code>&lt;CONFIG&gt;</code>: exceeds maximum allowed key length of <code>&lt;MAX&gt;</code>, was <code>&lt;VAL&gt;</code>.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_2246" href="/docs/errors/err_ngrok_2246">ERR_NGROK_2246</a>
+      </td>
+      <td class="pre-wrapped">
+        Invalid configuration for <code>&lt;PHASE&gt;</code> <code>&lt;ACTION&gt;</code>: <code>&lt;CONFIG&gt;</code>: exceeds maximum allowed key length of <code>&lt;MAX&gt;</code>, was <code>&lt;VAL&gt;</code>.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_2247" href="/docs/errors/err_ngrok_2247">ERR_NGROK_2247</a>
+      </td>
+      <td class="pre-wrapped">
+        Already validated url didn't parse during <code>&lt;STEP&gt;</code> step: <code>&lt;URL&gt;</code> <code>&lt;ERR&gt;</code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_2248" href="/docs/errors/err_ngrok_2248">ERR_NGROK_2248</a>
+      </td>
+      <td class="pre-wrapped">
+        HTTPS Edges do not support the on_tcp_connect Traffic Policy phase. Use a Cloud Endpoint instead.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_2249" href="/docs/errors/err_ngrok_2249">ERR_NGROK_2249</a>
+      </td>
+      <td class="pre-wrapped">
+        Memory limit exceeded by <code>&lt;ACTION&gt;</code> action: <code>&lt;ERR&gt;</code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_2250" href="/docs/errors/err_ngrok_2250">ERR_NGROK_2250</a>
+      </td>
+      <td class="pre-wrapped">
+        Invalid configuration for <code>&lt;ACTION&gt;</code>: Nested variables are too deep. Maximum nesting allowed is <code>&lt;MAX&gt;</code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_2252" href="/docs/errors/err_ngrok_2252">ERR_NGROK_2252</a>
+      </td>
+      <td class="pre-wrapped">
+        Invalid format for set-vars: vars must be a list of maps of exactly size 1
+      </td>
+    </tr>
+    <tr>
+      <td>
         <a id="ERR_NGROK_3002" href="/docs/errors/err_ngrok_3002">ERR_NGROK_3002</a>
       </td>
       <td class="pre-wrapped">
@@ -5636,7 +5702,7 @@
         <a id="ERR_NGROK_3200" href="/docs/errors/err_ngrok_3200">ERR_NGROK_3200</a>
       </td>
       <td class="pre-wrapped">
-        Tunnel <code>&lt;HOSTNAME&gt;</code> not found
+        The endpoint <code>&lt;ENDPOINTURL&gt;</code> is offline.
       </td>
     </tr>
     <tr>
@@ -5929,6 +5995,22 @@
       </td>
       <td class="pre-wrapped">
         ForwardInternal may only forward through <code>&lt;MAX&gt;</code> endpoints.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_3601" href="/docs/errors/err_ngrok_3601">ERR_NGROK_3601</a>
+      </td>
+      <td class="pre-wrapped">
+        The response received from the http-request target had a size exceeding the maximum allowed.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_3602" href="/docs/errors/err_ngrok_3602">ERR_NGROK_3602</a>
+      </td>
+      <td class="pre-wrapped">
+        The configured http-request timeout was reached before a successful request could be made.
       </td>
     </tr>
     <tr>
@@ -6276,7 +6358,7 @@
         <a id="ERR_NGROK_4403" href="/docs/errors/err_ngrok_4403">ERR_NGROK_4403</a>
       </td>
       <td class="pre-wrapped">
-        You cannot invite any more users. Please email contact@ngrok.com if you believe this is an error.
+        You cannot invite any more users. Please email support@ngrok.com if you believe this is an error.
       </td>
     </tr>
     <tr>
@@ -7557,6 +7639,14 @@
     </tr>
     <tr>
       <td>
+        <a id="ERR_NGROK_6030" href="/docs/errors/err_ngrok_6030">ERR_NGROK_6030</a>
+      </td>
+      <td class="pre-wrapped">
+        The url <code>&lt;URL&gt;</code> has multiple endpoints, but they do not all have pooling enabled.
+      </td>
+    </tr>
+    <tr>
+      <td>
         <a id="ERR_NGROK_6500" href="/docs/errors/err_ngrok_6500">ERR_NGROK_6500</a>
       </td>
       <td class="pre-wrapped">
@@ -8086,9 +8176,9 @@
         <a id="ERR_NGROK_7008" href="/docs/errors/err_ngrok_7008">ERR_NGROK_7008</a>
       </td>
       <td class="pre-wrapped">
-        Only Pro and Enterprise plans are allowed to use edges.
-        Your account is not authorized to use edges.
-        Upgrade to a Pro or Enterprise plan at: <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a>
+        Edges are deprecated and no longer available.
+        If you’ve used edges before, a migration guide is available: <a href="https://ngrok.com/docs/universal-gateway/edges">https://ngrok.com/docs/universal-gateway/edges</a>/#migration-guide.
+        If you have lost access to actively running edges, this is an error, please contact support@ngrok.com for help.
       </td>
     </tr>
     <tr>
@@ -9641,6 +9731,14 @@
     </tr>
     <tr>
       <td>
+        <a id="ERR_NGROK_8014" href="/docs/errors/err_ngrok_8014">ERR_NGROK_8014</a>
+      </td>
+      <td class="pre-wrapped">
+        Your agent has been blocked from connecting to ngrok because it has been suspected of violating our Acceptable Use policy: <a href="https://ngrok.com/tos">https://ngrok.com/tos</a>
+      </td>
+    </tr>
+    <tr>
+      <td>
         <a id="ERR_NGROK_9000" href="/docs/errors/err_ngrok_9000">ERR_NGROK_9000</a>
       </td>
       <td class="pre-wrapped">
@@ -9982,7 +10080,15 @@
         <a id="ERR_NGROK_9040" href="/docs/errors/err_ngrok_9040">ERR_NGROK_9040</a>
       </td>
       <td class="pre-wrapped">
-        We do not allow agents to connect to ngrok from your IP address. If you believe this to be in error, please contact support: support@ngrok.com
+        We do not allow agents to connect to ngrok from your IP address (<code>&lt;IP&gt;</code>).
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_9041" href="/docs/errors/err_ngrok_9041">ERR_NGROK_9041</a>
+      </td>
+      <td class="pre-wrapped">
+        Supported protocols for kubernetes-bound endpoints are http, tls, and tcp. You provided <code>&lt;PROTO&gt;</code>.
       </td>
     </tr>
     <tr>
@@ -10814,7 +10920,7 @@
         <a id="ERR_NGROK_18008" href="/docs/errors/err_ngrok_18008">ERR_NGROK_18008</a>
       </td>
       <td class="pre-wrapped">
-        This account does not have access to Cloud Endpoints.
+        This account does not have access to Cloud Endpoints. Upgrade or switch to a pay-as-you-go plan for access.
       </td>
     </tr>
     <tr>
@@ -10868,6 +10974,22 @@
     </tr>
     <tr>
       <td>
+        <a id="ERR_NGROK_18016" href="/docs/errors/err_ngrok_18016">ERR_NGROK_18016</a>
+      </td>
+      <td class="pre-wrapped">
+        The provided cloud endpoint was invalid because pooling was set to enabled when another endpoint exists for this url that has pooling disabled.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_18017" href="/docs/errors/err_ngrok_18017">ERR_NGROK_18017</a>
+      </td>
+      <td class="pre-wrapped">
+        The provided cloud endpoint was invalid because pooling was set to disabled when another endpoint exists for this url.
+      </td>
+    </tr>
+    <tr>
+      <td>
         <a id="ERR_NGROK_19000" href="/docs/errors/err_ngrok_19000">ERR_NGROK_19000</a>
       </td>
       <td class="pre-wrapped">
@@ -10888,6 +11010,14 @@
       </td>
       <td class="pre-wrapped">
         Failed to validate Kubernetes Operator! Reason: <code>&lt;ERROR&gt;</code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_19003" href="/docs/errors/err_ngrok_19003">ERR_NGROK_19003</a>
+      </td>
+      <td class="pre-wrapped">
+        Failed to validate  endpoint selectors! Reason: <code>&lt;ERROR&gt;</code>
       </td>
     </tr>
     <tr>
@@ -10944,6 +11074,30 @@
       </td>
       <td class="pre-wrapped">
         Failed to create CSR.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_21000" href="/docs/errors/err_ngrok_21000">ERR_NGROK_21000</a>
+      </td>
+      <td class="pre-wrapped">
+        Failed to lookup IP <code>&lt;IP&gt;</code>: <code>&lt;ERR&gt;</code>.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_22000" href="/docs/errors/err_ngrok_22000">ERR_NGROK_22000</a>
+      </td>
+      <td class="pre-wrapped">
+        We do not allow access to ngrok.com from anonymous proxies such as Tor.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_22001" href="/docs/errors/err_ngrok_22001">ERR_NGROK_22001</a>
+      </td>
+      <td class="pre-wrapped">
+        We do not allow access to ngrok.com from your location. Your location was determined using your IP address.
       </td>
     </tr>
   </tbody>

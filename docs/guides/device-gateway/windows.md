@@ -89,7 +89,7 @@ Alternatively, you can create an IP policy in the ngrok dashboard (under [Securi
 
 The ngrok agent works with native OS services like `systemd`. This helps you ensure that the ngrok service is available even after the machine restarts. Before we do this though, it's useful to reserve a TCP address in the ngrok dashboard which allows you to reuse the same address each time the device is restarted.
 
-1. Navigate to the ngrok Dashboard and access [Universal Gateway > TCP Addresses](https://dashboard.ngrok.com/cloud-edge/tcp-addresses). Create a new TCP address with a description and click **Save**. Your new TCP address will look something like `1.tcp.ngrok.io:12345`.
+1. Navigate to the ngrok Dashboard and access [Universal Gateway > TCP Addresses](https://dashboard.ngrok.com/tcp-addresses). Create a new TCP address with a description and click **Save**. Your new TCP address will look something like `1.tcp.ngrok.io:12345`.
 
 Update the ngrok config file in your Windows device to start the ngrok agent using this TCP address.
 
@@ -102,14 +102,18 @@ ngrok config edit
 1. Add the following to the end of the file and then save it:
 
 ```yaml
-tunnels:
-  device-ssh:
-    proto: tcp
-    addr: 3389
-    remote_addr: NGROK_TCP_ADDRESS
-    ip_restriction:
-      allow_cidrs:
-        - ALLOWED_IP_ADDRESS_CIDR
+endpoints:
+  - name: device-ssh
+    url: tcp://NGROK_TCP_ADDRESS
+    upstream:
+      url: 3389
+    traffic_policy:
+      on_tcp_connect:
+        - actions:
+            - type: restrict-ips
+              config:
+                allow:
+                  - ALLOWED_IP_ADDRESS_CIDR
 ```
 
 **Note**: Make sure to replace **NGROK_TCP_ADDRESS** with the address you reserved earlier in the ngrok dashboard (i.e. `1.tcp.ngrok.io:12345`) and **ALLOWED_IP_ADDRESS_CIDR** with the CIDR notation of the allowed IP Address(es) (i.e. `123.123.123.0/24`).
@@ -148,14 +152,14 @@ Now that your device is integrated to ngrok, you can ​​execute tasks at the 
 
 ### Logging Traffic Events from ngrok
 
-Each action that happens in ngrok is published as an event, and [Event Subscriptions](/docs/obs/) allow you to subscribe to the events that are interested in and write them to one or more destinations.
+Each action that happens in ngrok is published as an event, and [Event Subscriptions](/obs/) allow you to subscribe to the events that are interested in and write them to one or more destinations.
 
 An Event Subscription is made up of a set of event sources (some of which can be filtered), and event destinations. Each subscription can send the events to one or more destinations, such as Amazon CloudWatch Logs, Amazon Kinesis (as a data stream), or Amazon Kinesis Firehose (as a delivery stream).
 
-Event subscriptions can be configured through the [ngrok Dashboard](https://dashboard.ngrok.com/observability/event-subscriptions) or the [ngrok API](/docs/api/resources/event-destinations/).
+Event subscriptions can be configured through the [ngrok Dashboard](https://dashboard.ngrok.com/observability/event-subscriptions) or the [ngrok API](/api/resources/event-destinations/).
 
-You can also forward all or some of your traffic events from [ngrok to your preferred logging tool](/docs/obs/).
+You can also forward all or some of your traffic events from [ngrok to your preferred logging tool](/obs/).
 
 ### Remote checks, stop, start, and updates
 
-ngrok provides [APIs](/docs/api/resources/tunnel-sessions/#restart-tunnel-agent) and a [dashboard UI](https://dashboard.ngrok.com/tunnels/agents) for you to monitor the health of ngrok agents running in your fleet. The interfaces also allow you to remotely stop, start, and update agents.
+ngrok provides [APIs](/api/resources/tunnel-sessions/#restart-tunnel-agent) and a [dashboard UI](https://dashboard.ngrok.com/tunnels/agents) for you to monitor the health of ngrok agents running in your fleet. The interfaces also allow you to remotely stop, start, and update agents.

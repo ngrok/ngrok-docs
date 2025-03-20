@@ -1,11 +1,7 @@
 import type { Config } from "@docusaurus/types";
 import dotenv from "dotenv";
-import * as prismReactRenderer from "prism-react-renderer";
 
 dotenv.config();
-
-const lightCodeTheme = prismReactRenderer.themes.github;
-const darkCodeTheme = prismReactRenderer.themes.dracula;
 
 const docsRepo = "https://github.com/ngrok/ngrok-docs";
 
@@ -36,6 +32,14 @@ const config = {
 	favicon: "img/favicon.ico",
 	trailingSlash: true,
 
+	customFields: {
+		isProduction,
+		vercel: {
+			env: process.env?.VERCEL_ENV,
+			url: process.env?.VERCEL_URL,
+		},
+	},
+
 	// GitHub pages deployment config.
 	// If you aren't using GitHub pages, you don't need these.
 	organizationName: "ngrok", // Usually your GitHub org/user name.
@@ -56,6 +60,35 @@ const config = {
 		"./src/plugins/tailwindcss",
 	],
 	headTags: [
+		{
+			tagName: "link",
+			attributes: {
+				href: "https://assets.ngrok.com",
+				rel: "preconnect",
+			},
+		},
+		{
+			tagName: "link",
+			attributes: {
+				href: "https://fonts.googleapis.com",
+				rel: "preconnect",
+			},
+		},
+		{
+			tagName: "link",
+			attributes: {
+				crossorigin: "anonymous",
+				href: "https://fonts.gstatic.com",
+				rel: "preconnect",
+			},
+		},
+		{
+			tagName: "link",
+			attributes: {
+				href: "https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&amp;display=swap",
+				rel: "stylesheet",
+			},
+		},
 		...fontHrefs.map((href) => ({
 			tagName: "link",
 			attributes: {
@@ -69,6 +102,9 @@ const config = {
 	],
 
 	scripts: [
+		{
+			src: "/docs/scripts/prevent-fouc.js",
+		},
 		{
 			src: "/docs/scripts/ketch.js",
 		},
@@ -329,11 +365,6 @@ const config = {
 					},
 				],
 				copyright: `© ngrok ${new Date().getFullYear()}`,
-			},
-			prism: {
-				theme: lightCodeTheme,
-				darkTheme: darkCodeTheme,
-				additionalLanguages: ["hcl", "rust", "http", "bash"],
 			},
 			docs: {
 				sidebar: {

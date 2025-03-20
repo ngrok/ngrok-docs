@@ -72,7 +72,7 @@ GET/api/tunnels
         {
             "name": "command_line",
             "uri": "/api/tunnels/command_line",
-            "public_url": "https://d95211d2.ngrok.io",
+            "public_url": "https://d95211d2.ngrok.app",
             "proto": "https",
             "config": {
                 "addr": "localhost:80",
@@ -188,7 +188,7 @@ GET/api/tunnels/:name
 {
     "name": "command_line",
     "uri": "/api/tunnels/command_line",
-    "public_url": "https://ac294125.ngrok.io",
+    "public_url": "https://ac294125.ngrok.app",
     "proto": "https",
     "config": {
         "addr": "localhost:80",
@@ -292,7 +292,7 @@ curl http://localhost:4040/api/requests/http?limit=50
                         "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.71 Safari/537.36"
                     ],
                     "X-Original-Host": [
-                        "c159663f.ngrok.io"
+                        "c159663f.ngrok.app"
                     ]
                 },
                 "uri": "/favicon.ico",
@@ -392,7 +392,7 @@ GET/api/requests/http/:request_id
                 "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.71 Safari/537.36"
             ],
             "X-Original-Host": [
-                "c159663f.ngrok.io"
+                "c159663f.ngrok.app"
             ]
         },
         "uri": "/favicon.ico",

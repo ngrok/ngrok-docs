@@ -1,6 +1,5 @@
 import ErrorBoundary from "@docusaurus/ErrorBoundary";
 import loadable from "@loadable/component";
-import React from "react";
 
 type ErrorDetailsProps = {
 	error: `err_ngrok_${string}` | `err_ngrok_${number}` | (string & {});

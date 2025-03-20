@@ -8,15 +8,15 @@ import TrafficPolicyWarning from "/shared/warnings/traffic-policy-preview.mdx";
 
 The guide contains information on how to use the ngrok Kubernetes Operator. This is the place to start if you have the operator installed and want to use it to add ingress, gateways, routes, and other ngrok features to your clusters' apps and services.
 
-Start by reading the [ingress-to-edge-relationship](/docs/k8s/with-edges.mdx) documentation to understand how ingress, gateway, and route objects are converted into ngrok edges.
+Start by reading the [ingress-to-edge-relationship](/k8s/with-edges/) documentation to understand how ingress, gateway, and route objects are converted into ngrok edges.
 
 For see or contribute a specific example, file a PR in the [examples section of our repo see](https://github.com/ngrok/ngrok-operator/blob/main/docs/examples/README.md).
 
 # TLS and HTTPS
 
-For http based traffic, the ngrok Kubernetes Operator will and can only provide HTTPS secured traffic. This is because the controller is responsible for creating the ngrok tunnel and edge, and ngrok only supports HTTPS for http traffic. By default if you use a standard ngrok subdomain, all traffic will be over https. If you are using a custom domain, please see the [custom domain](/docs/k8s/custom-domain) documentation for more details.
+For http based traffic, the ngrok Kubernetes Operator will and can only provide HTTPS secured traffic. This is because the controller is responsible for creating the ngrok tunnel and edge, and ngrok only supports HTTPS for http traffic. By default if you use a standard ngrok subdomain, all traffic will be over https. If you are using a custom domain, please see the [custom domain](/k8s/custom-domain) documentation for more details.
 
-Additionally, [TLS Edges](https://ngrok.com/docs/api/resources/edges-tls) may be supported soon in the future!
+Additionally, [TLS Edges](/api/resources/edges-tls) may be supported soon in the future!
 
 # IP Restrictions {#ip-restrictions}
 
@@ -24,12 +24,12 @@ Additionally, [TLS Edges](https://ngrok.com/docs/api/resources/edges-tls) may be
 `IPPolicy` modules are currently only supported with the Operator.
 :::
 
-ngrok offers the ability to restrict access to your edges by IP address via [IP Restrictions](/docs/http/ip-restrictions/).
-These are configurable via the [IPPolicy](/docs/k8s/crds#ip-policies) CRD and can be attached to Ingress objects via [NgrokModuleSet](#modules).
+ngrok offers the ability to restrict access to your edges by IP address via [IP Restrictions](/traffic-policy/actions/restrict-ips/).
+These are configurable via the [IPPolicy](/k8s/crds#ip-policies) CRD and can be attached to Ingress objects via [NgrokModuleSet](#modules).
 
 # Modules {#modules}
 
-ngrok's Cloud Edge [Modules](https://ngrok.com/docs/http/#modules) allow you to configure features like compression, IP Restrictions, OAuth, adding/removing headers, and more.
+ngrok's Cloud Edge [Modules](/traffic-policy/actions/) allow you to configure features like compression, IP Restrictions, OAuth, adding/removing headers, and more.
 
 :::note
 These modules are currently only supported with the ingress controller. The Gateway API supports some of these capabilities using route rules
@@ -126,7 +126,7 @@ using pre-made configurations.
 
 ### Circuit Breaker
 
-[Circuit breakers](https://ngrok.com/docs/http/circuit-breaker/) are used to protect upstream servers by rejecting traffic to them when they become overwhelmed.
+[Circuit breakers](/traffic-policy/actions/circuit-breaker/) are used to protect upstream servers by rejecting traffic to them when they become overwhelmed.
 
 ```yaml
 kind: NgrokModuleSet
@@ -174,7 +174,7 @@ modules:
 
 #### Request
 
-The [Request Headers](https://ngrok.com/docs/http/request-headers/) module allows you to add and remove headers from HTTP requests before they are sent to your upstream server.
+The [Request Headers](/traffic-policy/actions/add-headers/) module allows you to add and remove headers from HTTP requests before they are sent to your upstream server.
 
 ```yaml
 kind: NgrokModuleSet
@@ -193,7 +193,7 @@ modules:
 
 #### Response
 
-The [Response Headers module](https://ngrok.com/docs/http/response-headers/) allows you to add and remove headers from HTTP responses before they are returned to the client.
+The [Response Headers module](/traffic-policy/actions/add-headers/) allows you to add and remove headers from HTTP responses before they are returned to the client.
 
 ```yaml
 kind: NgrokModuleSet
@@ -212,7 +212,7 @@ modules:
 
 ### IP Restrictions
 
-[IP Restrictions](https://ngrok.com/docs/http/ip-restrictions/) allow you to attach one or more IP policies to the route.
+[IP Restrictions](/traffic-policy/actions/restrict-ips/) allow you to attach one or more IP policies to the route.
 
 Policies may be specified by either their `ID` in the ngrok API or by the name of an `ippolicy.ingress.k8s.ngrok.com` Custom Resource if managed by the ingress controller.
 
@@ -244,7 +244,7 @@ modules:
 
 ### OAuth
 
-The [OAuth module](https://ngrok.com/docs/http/oauth/) enforces an OAuth authentication flow in front of any route it is enabled on.
+The [OAuth module](/traffic-policy/actions/oauth/) enforces an OAuth authentication flow in front of any route it is enabled on.
 
 #### Ngrok Managed OAuth Application
 
@@ -305,7 +305,7 @@ modules:
 
 ### OpenID Connect (OIDC)
 
-The [OIDC module](https://ngrok.com/docs/http/openid-connect/) restricts endpoint access to only users authorized by a OpenID Identity Provider.
+The [OIDC module](/traffic-policy/actions/oidc/) restricts endpoint access to only users authorized by a OpenID Identity Provider.
 
 ```yaml
 ---
@@ -336,10 +336,6 @@ modules:
       - email
 ```
 
-### SAML
-
-The [SAML module](https://ngrok.com/docs/http/saml/) restricts endpoint access to only users authorized by a SAML IdP.
-
 ### TLS Termination
 
 Allows you to configure whether ngrok terminates TLS traffic at its edge or forwards the TLS traffic through unterminated.
@@ -356,7 +352,7 @@ modules:
 
 ### Mutual TLS
 
-This [mutual TLS (mTLS) module](https://ngrok.com/docs/http/mutual-tls/) performs authentication when the ngrok edge terminates TLS on incoming connections to your HTTP endpoint. The client must present a valid TLS certificate that is signed by one of the specified CAs or the connection will be rejected.
+This [mutual TLS (mTLS) module](/traffic-policy/actions/terminate-tls/) performs authentication when the ngrok edge terminates TLS on incoming connections to your HTTP endpoint. The client must present a valid TLS certificate that is signed by one of the specified CAs or the connection will be rejected.
 
 ```yaml
 kind: NgrokModuleSet
@@ -372,7 +368,7 @@ modules:
 
 ### Webhook Verification
 
-The [webhook verification module](https://ngrok.com/docs/http/webhook-verification/) allows ngrok to assert requests to your endpoint originate from a supported webhook provider like Slack or Github.
+The [webhook verification module](/traffic-policy/actions/verify-webhook/) allows ngrok to assert requests to your endpoint originate from a supported webhook provider like Slack or Github.
 
 ```yaml
 ---
@@ -485,7 +481,7 @@ spec:
 
 ## Traffic Policy
 
-Traffic policies for inbound and outbound traffic can simplifify edge management.
+Traffic policies for inbound and outbound traffic can simplify edge management.
 
 <TrafficPolicyWarning />
 
@@ -504,7 +500,7 @@ spec:
       - name: "greetings"
         expressions:
           - "req.method == 'GET'"
-          - "req.path.startsWith('/greetings')"
+          - "req.url.path.startsWith('/greetings')"
         actions:
           - type: "custom_response"
             config:
@@ -516,8 +512,8 @@ spec:
 
 Learn more about the policy expressions and actions here:
 
-- [Policy Expressions](https://ngrok.com/docs/http/traffic-policy/expressions/)
-- [Policy Actions](https://ngrok.com/docs/http/traffic-policy/actions/)
+- [Policy Expressions](/traffic-policy/concepts/expressions/)
+- [Policy Actions](/traffic-policy/actions/)
 
 ### Ingress Composition
 
@@ -613,20 +609,20 @@ spec:
           port: <service-port>
 ```
 
-## TCP and TLS Edges {#tcp-tls-edges}
+## TCP and TLS Endpoints {#tcp-tls-edges}
 
-ngrok offers [TCP](https://ngrok.com/docs/tcp/) and
-[TLS](https://ngrok.com/docs/tls/) Edges which can be used to
+ngrok offers [TCP](/universal-gateway/tcp/) and
+[TLS](/universal-gateway/tls/) endpoints which can be used to
 provide ingress to TCP or TLS based services. Both are implemented as CRDs and
 function similarly in broad strokes, albeit with slightly different
-configuration options offered. [Their CRD reference](/docs/k8s/crds#tcp-edges) is a
+configuration options offered. [Their CRD reference](/k8s/crds#tcp-edges) is a
 useful companion to this guide.
 
 While these edges and tunnels can be managed via the CRDs, the operator is capable of exposing kubernetes `Service` resources to the internet. This is done by creating a ngrok tunnel and edge for the service. The controller will automatically create a ngrok tunnel and edge for the service when the service is created or updated. The controller will also automatically delete the ngrok tunnel and edge when the service is deleted.
 
 ### TCP LoadBalancer
 
-By default, services of type `LoadBalancer` are exposed using a ngrok [TCP Edge](https://ngrok.com/docs/tcp/#edges). A reserved address is automatically created for the service and the service's status will be updated with the reserved address. Other projects like [external-dns](https://github.com/ngrok/ngrok-operator/docs/examples/external-dns/README.md) can be used to create a CNAME record for the reserved address automatically.
+By default, services of type `LoadBalancer` are exposed using a ngrok [TCP Edge](/universal-gateway/edges/). A reserved address is automatically created for the service and the service's status will be updated with the reserved address. Other projects like [external-dns](https://github.com/ngrok/ngrok-operator/docs/examples/external-dns/README.md) can be used to create a CNAME record for the reserved address automatically.
 
 #### Example
 
@@ -655,7 +651,7 @@ spec:
 The `k8s.ngrok.com/modules` annotation can be used to specify the ngrok modules to use for the service. The following modules are available for TCP
 services:
 
-- [IP Restrictions](./#ip-restrictions)
+- [IP Restrictions](#ip-restrictions)
 
 If other modules are supplied that are not supported by the TCP edge, the controller will ignore them.
 
@@ -663,7 +659,7 @@ If other modules are supplied that are not supported by the TCP edge, the contro
 
 #### Example
 
-**Note**: the `k8s.ngrok.com/domain` annotation is required to use TLS and will expose the service as a [TLS Edge](https://ngrok.com/docs/tls/).
+**Note**: the `k8s.ngrok.com/domain` annotation is required to use TLS and will expose the service as a [TLS endpoint](/universal-gateway/tls/).
 Once the reserved domain is ready and the `TLSEdge` is created, the service's status will be updated with the ngrok address. Other projects like [external-dns](https://github.com/ngrok/ngrok-operator/docs/examples/external-dns/README.md) can be used to create a CNAME record for the reserved domain automatically.
 
 ```yaml
@@ -693,7 +689,7 @@ spec:
 The `k8s.ngrok.com/modules` annotation can be used to specify the ngrok modules to use for the service. The following modules are available for TLS
 services:
 
-- [IP Restrictions](./#ip-restrictions)
+- [IP Restrictions](#ip-restrictions)
 - [Mutual TLS](./#mutual-tls)
 
 If other modules are supplied that are not supported by the TLS edge, the controller will ignore them.
@@ -706,7 +702,7 @@ While using services is recommended for simplicity, TCP and TLS edges and tunnel
 
 At least one `hostports` must be specified when creating a TLSEdge resource,
 which takes the form `<fqdn>:443`. The fully qualified domain name must first be
-reserved either via the ngrok dashboard or the [Domain](/docs/k8s/crds#domains) CRD.
+reserved either via the ngrok dashboard or the [Domain](/k8s/crds#domains) CRD.
 
 Example:
 
@@ -722,10 +718,10 @@ spec:
 #### Create the Edge
 
 Create the edge CRD. These resources are fairly similar, and both require you to
-specify a [TunnelGroupBackend](/docs/k8s/crds#tunnelgroupbackend). This consists of a
-list of labels that determine which specific [Tunnel](/docs/k8s/crds#tunnels) should
+specify a [TunnelGroupBackend](/k8s/crds#tunnelgroupbackend). This consists of a
+list of labels that determine which specific [Tunnel](/k8s/crds#tunnels) should
 receive traffic from the edge. Both may also specify [IP
-Policies](https://ngrok.com/docs/tls/ip-restrictions/) for limiting access
+Policies](/traffic-policy/actions/restrict-ips/) for limiting access
 to the edge. At the time of writing, these policies must be provided as a
 reference in the form `ipp_<id>`.
 
@@ -733,8 +729,8 @@ On top of the options available to TCP Edges, TLS Edges support (and require) a 
 
 - (required) `hostports`: A list of `"<fqdn>:443"` strings declaring the list of
   reserved domains for the edge to listen on.
-- [`tlsTermination`](https://ngrok.com/docs/api/resources/tls-edge-tls-termination-module/): Configure the TLS Termination behavior. The `terminateAt` field may be set to `upstream` to pass the encrypted stream to the Tunnel backend, or `edge` to terminate the TLS stream at the ngrok edge, and pass plaintext bytes to the Tunnel.
-- [`mutualTls`](https://ngrok.com/docs/api/resources/tls-edge-mutual-tls-module/): Configure client certificate validation at the edge. Requires a reference to a [Certificate Authority](https://ngrok.com/docs/api/resources/certificate-authorities/).
+- [`tlsTermination`](/api/resources/tls-edge-tls-termination-module/): Configure the TLS Termination behavior. The `terminateAt` field may be set to `upstream` to pass the encrypted stream to the Tunnel backend, or `edge` to terminate the TLS stream at the ngrok edge, and pass plaintext bytes to the Tunnel.
+- [`mutualTls`](/api/resources/tls-edge-mutual-tls-module/): Configure client certificate validation at the edge. Requires a reference to a [Certificate Authority](/api/resources/certificate-authorities/).
 
 TCP Example:
 
@@ -886,14 +882,14 @@ To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
 
 ## Agent Endpoints
 
-Agent Endpoints along with [Cloud Endpoints](https://ngrok.com/docs/network-edge/cloud-endpoints/) are the successors to [Edges](https://ngrok.com/docs/network-edge/edges/). Agent Endpoints are ephemeral and tied to the lifetime of the ngrok agent.
+Agent Endpoints along with [Cloud Endpoints](/universal-gateway/cloud-endpoints/) are the successors to [Edges](/universal-gateway/edges/). Agent Endpoints are ephemeral and tied to the lifetime of the ngrok agent.
 
 Using Agent Endpoints, you can easily expose your Kubernetes services to internet, or use `.internal` domains to allow other ngrok endpoints to route to them internally without exposing them to the public internet.
 
-The ngrok kubernetes operator ensures that you always have a set of Agent Endpoints according to the configuration of any and all `AgentEndpoint` custom resources ([AgentEndpoint CRD reference](https://ngrok.com/docs/k8s/crds/#agent-endpoints)). you have applied. You may see the ID's of any agent endpoints
+The ngrok kubernetes operator ensures that you always have a set of Agent Endpoints according to the configuration of any and all `AgentEndpoint` custom resources ([AgentEndpoint CRD reference](/k8s/crds/#agent-endpoints)). you have applied. You may see the ID's of any agent endpoints
 within the ngrok dashboard change over time if they are managed by the operator whenever the operator is restarted, but their configuraiton and availability will always be consistent so long as the operator is running.
 
-See the [ngrok agent CLI configuration page](https://ngrok.com/docs/agent/config/v3/#endpoint-definitions), for more information about using the CLI to start agent endpoints outside of Kubernetes.
+See the [ngrok agent CLI configuration page](/agent/config/v3/#endpoint-definitions), for more information about using the CLI to start agent endpoints outside of Kubernetes.
 
 **Note:** Agent Endpoints are currently in feature-preview for the ngrok Kubernetes operator. You will need to use `--version 0.17.0-rc.1` (or newer) when using
 `helm` to install or update the operator. See [the deployment guide](https://ngrok-docs-git-alicewasko-agent-endpoint-k8s-ngrok-dev.vercel.app/docs/k8s/deployment-guide/) for information about installing
@@ -901,7 +897,7 @@ the ngrok Kubernetes operator.
 
 ### HTTP Endpoints
 
-This Agent Endpoint accepts cleartext HTTP connections at `http://example-http-domain.ngrok.io`, and forwards to the kubernetes service `test-service.default` on port 8080 over cleartext HTTP.
+This Agent Endpoint accepts cleartext HTTP connections at `http://example-http-domain.ngrok.app`, and forwards to the kubernetes service `test-service.default` on port 8080 over cleartext HTTP.
 While the public url is `http://`, the `upstream.url` does not need to also use `http://`. You can forward traffic to HTTPS or cleartext HTTP upstream urls.
 
 ```yaml
@@ -917,12 +913,12 @@ spec:
   upstream:
     protocol: http1 # optional, allows http1/http2. defaults to http1 for HTTP/HTTPS agent endpoints
     url: test-service.default:8080
-  url: http://example-http-domain.ngrok.io
+  url: http://example-http-domain.ngrok.app
 ```
 
 ### HTTPS Endpoints
 
-This Agent Endpoint accepts HTTPS connections at `https://example-https-domain.ngrok.io`, terminates TLS, and forwards to the kubernetes service `test-service.default` on port 8443 over HTTPS.
+This Agent Endpoint accepts HTTPS connections at `https://example-https-domain.ngrok.app`, terminates TLS, and forwards to the kubernetes service `test-service.default` on port 8443 over HTTPS.
 While the public url is `https://`, the `upstream.url` does not need to also use `https://`. You can forward traffic to HTTPS or cleartext HTTP upstream urls.
 
 ```yaml
@@ -938,7 +934,7 @@ spec:
   upstream:
     protocol: http2
     url: https://test-service.default:8443
-  url: https://example-https-domain.ngrok.io
+  url: https://example-https-domain.ngrok.app
 ```
 
 The following example showcases forwarding traffic to a publicy routable url outside of Kubernetes, but will also work with an HTTP Agent Endpoint.
@@ -956,10 +952,10 @@ spec:
   upstream:
     protocol: http2
     url: https://httpbin.org
-  url: https://example-https-domain-external-upstream.ngrok.io
+  url: https://example-https-domain-external-upstream.ngrok.app
 ```
 
-The following example showcases how a traffic policy with the [terminate-tls action](https://ngrok.com/docs/traffic-policy/actions/terminate-tls/) can be used to control TLS termination options.
+The following example showcases how a traffic policy with the [terminate-tls action](/traffic-policy/actions/terminate-tls/) can be used to control TLS termination options.
 More information and examples about configuring traffic policies on Agent Endpoints can be found in [the traffic policy section below](#traffic-policies-with-agent-endpoints).
 
 For HTTPS endpoints, ngrok will already terminate TLS connections for you even if you do not explicitly use this action in your Traffic Policy. If you specify this action in your Traffic
@@ -986,7 +982,7 @@ spec:
   upstream:
     protocol: http2
     url: https://test-service.default:8443
-  url: https://example-https-domain.ngrok.io
+  url: https://example-https-domain.ngrok.app
 ```
 
 ### TCP Endpoints
@@ -1010,7 +1006,7 @@ spec:
 
 ### TLS Endpoints
 
-[TLS endpoints](https://ngrok.com/docs/tls/) enable you to deliver any network service that runs over a TLS-based protocol. TLS endpoints make no assumptions about the wrapped protocol being transported.
+[TLS endpoints](/universal-gateway/tls/) enable you to deliver any network service that runs over a TLS-based protocol. TLS endpoints make no assumptions about the wrapped protocol being transported.
 
 ```yaml
 ---
@@ -1024,10 +1020,10 @@ spec:
   metadata: '{"owned-by":"ngrok-operator"}'
   upstream:
     url: tls://test-service.default:9000
-  url: https://example-tls-domain.ngrok.io
+  url: https://example-tls-domain.ngrok.app
 ```
 
-The following example showcases how a traffic policy with the [terminate-tls action](https://ngrok.com/docs/traffic-policy/actions/terminate-tls/) can be used to control TLS termination options.
+The following example showcases how a traffic policy with the [terminate-tls action](/traffic-policy/actions/terminate-tls/) can be used to control TLS termination options.
 More information and examples about configuring traffic policies on Agent Endpoints can be found in [the traffic policy section below](#traffic-policies-with-agent-endpoints).
 
 For TLS endpoints, ngrok will not terminate the TLS connection by default and it is up to you to handle TLS termination in your upstream service.
@@ -1052,15 +1048,15 @@ spec:
                 max_version: 1.3
   upstream:
     url: tls://test-service.default:9000
-  url: https://example-tls-domain.ngrok.io
+  url: https://example-tls-domain.ngrok.app
 ```
 
 ### Internal Endpoints
 
-Agent Endpoints with a `url` ending in `.internal` can be used to create [Internal Endpoints](https://ngrok.com/docs/network-edge/internal-endpoints/).
+Agent Endpoints with a `url` ending in `.internal` can be used to create [Internal Endpoints](/universal-gateway/internal-endpoints/).
 
 All internal endpoints end in `.internal`, and are specific to one ngrok account. Requests may only be forwarded to a internal endpoint on the same account as the the internal endpoint, and the target must be of the same protocol (i.e. an HTTP Endpoint may only forward to an HTTP Internal Endpoint).
-In addition, the target's traffic policy may only specify policy for the current protocol, for example if [forward-internal](https://ngrok.com/docs/traffic-policy/actions/forward-internal/) is used in the `on_http_request` traffic policy phase,
+In addition, the target's traffic policy may only specify policy for the current protocol, for example if [forward-internal](/traffic-policy/actions/forward-internal/) is used in the `on_http_request` traffic policy phase,
 the internal endpoint may only have `on_http_request` and `on_http_response` sections in its traffic policy configuration.
 
 #### 1. Create a public Agent Endpoint
@@ -1083,12 +1079,11 @@ spec:
         - actions:
             - type: forward-internal
               config:
-                binding: internal
                 url: https://example-https-endpoint.internal
   upstream:
     protocol: http1
     url: foo.bar:8080
-  url: https://example-forward-internal-aep.ngrok.io
+  url: https://example-forward-internal-aep.ngrok.app
 ```
 
 Since the above endpoint is forwarding all traffic to the below internal endpoint, no traffic will be sent to `foo.bar:8080` which is the upstream.
@@ -1118,10 +1113,10 @@ spec:
 
 #### 3. Create a Cloud Endpoint
 
-The following showcases how you could also use a [Cloud Endpoint](https://ngrok.com/docs/network-edge/cloud-endpoints/) to forward traffic to your internal Agent Endpoint
+The following showcases how you could also use a [Cloud Endpoint](/universal-gateway/cloud-endpoints/) to forward traffic to your internal Agent Endpoint
 
 Cloud Endpoints can created with Kubernetes resources such as with the following example, but they can also be created
-from the [ngrok dashboard](https://dashboard.ngrok.com) and [the ngrok API](https://ngrok.com/docs/api/).
+from the [ngrok dashboard](https://dashboard.ngrok.com) and [the ngrok API](/api/).
 
 Cloud Endpoints enable you to:
 
@@ -1146,7 +1141,7 @@ spec:
             - type: forward-internal
               config:
                 url: https://example-https-endpoint.internal
-  url: https://example-forward-internal-cep.ngrok.io
+  url: https://example-forward-internal-cep.ngrok.app
 ```
 
 ### Traffic Policies with Agent Endpoints
@@ -1178,7 +1173,7 @@ spec:
   upstream:
     protocol: http2
     url: https://httpbin.org
-  url: https://example-endpoint-tp-inline.ngrok.io
+  url: https://example-endpoint-tp-inline.ngrok.app
 ```
 
 The follwoing example showcases how to supply a traffic policy configuration via reference to an `NgrokTrafficPolicy` custom resource
@@ -1220,5 +1215,5 @@ spec:
   upstream:
     protocol: http2
     url: https://httpbin.org
-  url: https://example-endpoint-tp-ref.ngrok.io
+  url: https://example-endpoint-tp-ref.ngrok.app
 ```

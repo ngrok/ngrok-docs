@@ -14,4 +14,4 @@ packaged as a Rust crate.
 - [Quickstart Guide](/getting-started/rust/)
 - [API Reference Documentation](https://docs.rs/ngrok)
 - [Open-Source GitHub Repository](https://github.com/ngrok/ngrok-rust)
-- [HTTP Examples](/http/?cty=rust-sdk)
+- [HTTP Examples](/universal-gateway/http/?cty=rust-sdk)

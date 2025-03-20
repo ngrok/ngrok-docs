@@ -33,7 +33,7 @@ Make sure you save the API key before you leave the screen because it won't be d
 
 ## Create a custom wildcard domain
 
-Create a custom [wildcard domain](/docs/api/resources/reserved-domains/), which will allow you to
+Create a custom [wildcard domain](/api/resources/reserved-domains/), which will allow you to
 create endpoints and receive traffic on any subdomain of your domain.
 
 For example, you might create `*.sitea.{YOUR_DOMAIN}`. You would then be able to create endpoints
@@ -210,7 +210,7 @@ You'll use this API to create, delete, and list tunnels remotely.
 The application persists tunnels in a local JSON file, `ngrok_config.json`, and recreates them when the application is restarted. You could extend this application to store tunnel configuration in a backend database.
 
 You may pass policy information directly in the body of the request. The application includes a JSON
-file, `test.json`, which contains the default [policies](https://ngrok.com/docs/http/traffic-policy/) it applies to any new request that doesn't specify policy information. You could update this file to control policies applied to new tunnels rather than passing the policy information in each request.
+file, `test.json`, which contains the default [policies](/traffic-policy/) it applies to any new request that doesn't specify policy information. You could update this file to control policies applied to new tunnels rather than passing the policy information in each request.
 
 ### Start the app
 
@@ -263,7 +263,7 @@ You should receive a `200` response similar to the following:
 ```
 
 You'll notice that the `policy` property is `null`. This is because the request didn't include
-any [policies](https://ngrok.com/docs/http/traffic-policy/). However, this sample application applies the default polcies defined in `test.json`
+any [policies](/traffic-policy/). However, this sample application applies the default polcies defined in `test.json`
 if no policies are included in the request.
 
 ### List tunnels
@@ -286,7 +286,7 @@ the request:
 
 ### Start a tunnel with policies
 
-Run the following command, substituting the appropriate values for the variables to create a new tunnel, specifying [policies](https://ngrok.com/docs/http/traffic-policy/) directly in the request.
+Run the following command, substituting the appropriate values for the variables to create a new tunnel, specifying [policies](/traffic-policy/) directly in the request.
 
 ```curl
 curl -k \

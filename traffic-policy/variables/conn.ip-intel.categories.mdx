@@ -11,7 +11,7 @@ Here's an example of how to block Tor exit node IPs from accessing your endpoint
 
 <ConfigExample
 	config={{
-		expressions: ["!('proxy.anonymous.tor' in conn.client_ip.categories)"],
+		expressions: ["('proxy.anonymous.tor' in conn.client_ip.categories)"],
 	}}
 />
 
@@ -19,504 +19,233 @@ Or you can block all anonymous proxies which would include Tor as well as any ot
 
 <ConfigExample
 	config={{
-		expressions: ["!('proxy.anonymous' in conn.client_ip.categories)"],
+		expressions: ["('proxy.anonymous' in conn.client_ip.categories)"],
 	}}
 />
 
-## Blocklists
-
-| Name                                                                                           | Description                                                                                                                                                                                                                                                                                                                                                                                           | Sources                                                                    |
-| ---------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
-| [`blocklist.co.greensnow`](#blocklistcogreensnow)                                              | From [greensnow.co](https://greensnow.co/): GreenSnow is a team consisting of the best specialists in computer security, we harvest a large number of IPs from different computers located around the world. GreenSnow is comparable with Spamhaus for attacks of any kind except for spam. Our list is updated automatically and you can withdraw at any time your IP address if it has been listed. | [Source](https://blocklist.greensnow.co/greensnow.txt)                     |
-| [`blocklist.com.stopforumspam.toxic_ips`](#blocklistcomstopforumspamtoxic_ips)                 | From [stopforumspam.com](https://www.stopforumspam.com/downloads): The data provided here represents what we believe will only ever ben used to abuse. IP Addresses listed here will be returned in API results as "blacklisted". You would be very unlikely to see valid content from either the IP addresses listed.                                                                                | [Source](https://www.stopforumspam.com/downloads/toxic_ip_cidr.txt)        |
-| [`blocklist.de.blocklist.all`](#blocklistdeblocklistall)                                       | From [BlockList.de](https://www.blocklist.de/en/index.html): All IP addresses that have attacked one of our customers/servers in the last 48 hours.                                                                                                                                                                                                                                                   | [Source](https://lists.blocklist.de/lists/all.txt)                         |
-| [`blocklist.de.blocklist.apache`](#blocklistdeblocklistapache)                                 | From [BlockList.de](https://www.blocklist.de/en/index.html): All IP addresses which have been reported within the last 48 hours as having run attacks on the service Apache, Apache-DDOS, RFI-Attacks.                                                                                                                                                                                                | [Source](https://lists.blocklist.de/lists/apache.txt)                      |
-| [`blocklist.de.blocklist.bots`](#blocklistdeblocklistbots)                                     | From [BlockList.de](https://www.blocklist.de/en/index.html): All IP addresses which have been reported within the last 48 hours as having run attacks attacks on the RFI-Attacks, REG-Bots, IRC-Bots or BadBots (BadBots = he has posted a Spam-Comment on a open Forum or Wiki).                                                                                                                     | [Source](https://lists.blocklist.de/lists/bots.txt)                        |
-| [`blocklist.de.blocklist.bruteforcelogin`](#blocklistdeblocklistbruteforcelogin)               | From [BlockList.de](https://www.blocklist.de/en/index.html): All IPs which attacks Joomlas, Wordpress and other Web-Logins with Brute-Force Logins.                                                                                                                                                                                                                                                   | [Source](https://lists.blocklist.de/lists/bruteforcelogin.txt)             |
-| [`blocklist.de.blocklist.ftp`](#blocklistdeblocklistftp)                                       | From [BlockList.de](https://www.blocklist.de/en/index.html): All IP addresses which have been reported within the last 48 hours for attacks on the Service FTP.                                                                                                                                                                                                                                       | [Source](https://lists.blocklist.de/lists/ftp.txt)                         |
-| [`blocklist.de.blocklist.imap`](#blocklistdeblocklistimap)                                     | From [BlockList.de](https://www.blocklist.de/en/index.html): All IP addresses which have been reported within the last 48 hours for attacks on the Service imap, sasl, pop3.                                                                                                                                                                                                                          | [Source](https://lists.blocklist.de/lists/imap.txt)                        |
-| [`blocklist.de.blocklist.mail`](#blocklistdeblocklistmail)                                     | From [BlockList.de](https://www.blocklist.de/en/index.html): All IP addresses which have been reported within the last 48 hours as having run attacks on the service Mail, Postfix.                                                                                                                                                                                                                   | [Source](https://lists.blocklist.de/lists/mail.txt)                        |
-| [`blocklist.de.blocklist.sip`](#blocklistdeblocklistsip)                                       | From [BlockList.de](https://www.blocklist.de/en/index.html): All IP addresses that tried to login in a SIP-, VOIP- or Asterisk-Server and are included in the IPs-List from http://www.infiltrated.net/ (Twitter).                                                                                                                                                                                    | [Source](https://lists.blocklist.de/lists/sip.txt)                         |
-| [`blocklist.de.blocklist.strongips`](#blocklistdeblockliststrongips)                           | From [BlockList.de](https://www.blocklist.de/en/index.html): All IPs which are older then 2 month and have more then 5.000 attacks.                                                                                                                                                                                                                                                                   | [Source](https://lists.blocklist.de/lists/strongips.txt)                   |
-| [`blocklist.de.blocklist.ssh`](#blocklistdeblocklistssh)                                       | From [BlockList.de](https://www.blocklist.de/en/index.html): All IP addresses which have been reported within the last 48 hours as having run attacks on the service SSH.                                                                                                                                                                                                                             | [Source](https://lists.blocklist.de/lists/ssh.txt)                         |
-| [`blocklist.net.emergingthreats.compromised_ips`](#blocklistnetemergingthreatscompromised_ips) | From [emergingthreats.net](https://rules.emergingthreats.net/blockrules/): Emerging Threats Intelligence from Proofpoint provides information on IP addresses and domains that may be compromised.                                                                                                                                                                                                    | [Source](https://rules.emergingthreats.net/blockrules/compromised-ips.txt) |
-| [`blocklist.org.firehol.abusers_1d`](#blocklistorgfireholabusers_1d)                           | From [firehol.org](https://iplists.firehol.org/?ipset=firehol_abusers_1d): An ipset made from blocklists that track abusers in the last 24 hours.                                                                                                                                                                                                                                                     | [Source](https://iplists.firehol.org/files/firehol_abusers_1d.netset)      |
-| [`blocklist.org.firehol.abusers_30d`](#blocklistorgfireholabusers_30d)                         | From [firehol.org](https://iplists.firehol.org/?ipset=firehol_abusers_30d): An ipset made from blocklists that track abusers in the last 30 days.                                                                                                                                                                                                                                                     | [Source](https://iplists.firehol.org/files/firehol_abusers_30d.netset)     |
-| [`blocklist.org.firehol.level_1`](#blocklistorgfirehollevel_1)                                 | From [firehol.org](https://iplists.firehol.org/?ipset=firehol_level1): The objective is to create a blacklist that can be safe enough to be used on all systems, with a firewall, to block access entirely, from and to its listed IPs. The key prerequisite for this cause, is to have no false positives. All IPs listed should be bad and should be blocked, without exceptions.                   | [Source](https://iplists.firehol.org/files/firehol_level1.netset)          |
-| [`blocklist.org.firehol.level_2`](#blocklistorgfirehollevel_2)                                 | From [firehol.org](https://iplists.firehol.org/?ipset=firehol_level2): An ipset made from blocklists that track attacks, during about the last 48 hours.                                                                                                                                                                                                                                              | [Source](https://iplists.firehol.org/files/firehol_level2.netset)          |
-| [`blocklist.org.firehol.level_3`](#blocklistorgfirehollevel_3)                                 | From [firehol.org](https://iplists.firehol.org/?ipset=firehol_level3): An ipset made from blocklists that track attacks, spyware, viruses. It includes IPs than have been reported or detected in the last 30 days.                                                                                                                                                                                   | [Source](https://iplists.firehol.org/files/firehol_level3.netset)          |
-| [`blocklist.org.spamhaus.drop.ipv4`](#blocklistorgspamhausdropipv4)                            | From [spamhaus.org](https://www.spamhaus.org/blocklists/do-not-route-or-peer/): Don't Route Or Peer (DROP) lists the worst of the worst IP traffic. It is an advisory “drop all traffic”, containing IP ranges which are so dangerous to internet users that Spamhaus provides access to anyone who wants to add this layer of protection, free of charge.                                            | [Source](https://www.spamhaus.org/drop/drop.txt)                           |
-| [`blocklist.org.spamhaus.drop.ipv6`](#blocklistorgspamhausdropipv6)                            | From [spamhaus.org](https://www.spamhaus.org/blocklists/do-not-route-or-peer/): Don't Route Or Peer (DROP) lists the worst of the worst IP traffic. It is an advisory “drop all traffic”, containing IP ranges which are so dangerous to internet users that Spamhaus provides access to anyone who wants to add this layer of protection, free of charge.                                            | [Source](https://www.spamhaus.org/drop/drop.txt)                           |
-| [`blocklist.org.team_cymru.fullbogons.ipv4`](#blocklistorgteam_cymrufullbogonsipv4)            | From [team-cymru.com](https://www.team-cymru.com/bogon-reference-http): The traditional bogon prefixes, plus prefixes that have been allocated to RIRs but not yet assigned by those RIRs to ISPs, end-users, etc.                                                                                                                                                                                    | [Source](https://team-cymru.org/Services/Bogons/fullbogons-ipv4.txt)       |
-| [`blocklist.org.team_cymru.fullbogons.ipv6`](#blocklistorgteam_cymrufullbogonsipv6)            | From [team-cymru.com](https://www.team-cymru.com/bogon-reference-http): IPv6 "fullbogons", all IPv6 prefixes that have not been allocated to RIRs and that have not been assigned by RIRs to ISPs, end-users, etc.                                                                                                                                                                                    | [Source](https://team-cymru.org/Services/Bogons/fullbogons-ipv6.txt)       |
-
-### `blocklist.co.greensnow`
-
-From [greensnow.co](https://greensnow.co/): GreenSnow is a team consisting of the best specialists in computer security, we harvest a large number of IPs from different computers located around the world. GreenSnow is comparable with SpamHaus.org for attacks of any kind except for spam. Our list is updated automatically and you can withdraw at any time your IP address if it has been listed.
-
-<ConfigExample
-	config={{
-		expressions: ["!('blocklist.co.greensnow' in conn.client_ip.categories)"],
-	}}
-/>
-
-### `blocklist.com.stopforumspam.toxic_ips`
-
-From [stopforumspam.com](https://www.stopforumspam.com/downloads): The data provided here represents what we believe will only ever ben used to abuse. IP Addresses listed here will be returned in API results as "blacklisted". You would be very unlikely to see valid content from the IP addresses listed.
-
-<ConfigExample
-	config={{
-		expressions: [
-			"!('blocklist.com.stopforumspam.toxic_ips' in conn.client_ip.categories)",
-		],
-	}}
-/>
-
-### `blocklist.de.blocklist.all`
-
-From [BlockList.de](https://www.blocklist.de/en/index.html): All IP addresses that have attacked one of our customers/servers in the last 48 hours.
-
-<ConfigExample
-	config={{
-		expressions: [
-			"!('blocklist.de.blocklist.all' in conn.client_ip.categories)",
-		],
-	}}
-/>
-
-### `blocklist.de.blocklist.apache`
-
-From [BlockList.de](https://www.blocklist.de/en/index.html): All IP addresses which have been reported within the last 48 hours as having run attacks on the service Apache, Apache-DDOS, RFI-Attacks.
-
-<ConfigExample
-	config={{
-		expressions: [
-			"!('blocklist.de.blocklist.apache' in conn.client_ip.categories)",
-		],
-	}}
-/>
-
-### `blocklist.de.blocklist.bots`
-
-From [BlockList.de](https://www.blocklist.de/en/index.html): All IP addresses which have been reported within the last 48 hours as having run attacks attacks on the RFI-Attacks, REG-Bots, IRC-Bots or BadBots (BadBots = he has posted a Spam-Comment on a open Forum or Wiki).
-
-<ConfigExample
-	config={{
-		expressions: [
-			"!('blocklist.de.blocklist.bots' in conn.client_ip.categories)",
-		],
-	}}
-/>
-
-### `blocklist.de.blocklist.bruteforcelogin`
-
-From [BlockList.de](https://www.blocklist.de/en/index.html): All IPs which attacks Joomlas, Wordpress and other Web-Logins with Brute-Force Logins.
-
-<ConfigExample
-	config={{
-		expressions: [
-			"!('blocklist.de.blocklist.bruteforcelogin' in conn.client_ip.categories)",
-		],
-	}}
-/>
-
-### `blocklist.de.blocklist.ftp`
-
-From [BlockList.de](https://www.blocklist.de/en/index.html): All IP addresses which have been reported within the last 48 hours for attacks on the Service FTP.
-
-<ConfigExample
-	config={{
-		expressions: [
-			"!('blocklist.de.blocklist.ftp' in conn.client_ip.categories)",
-		],
-	}}
-/>
-
-### `blocklist.de.blocklist.imap`
-
-From [BlockList.de](https://www.blocklist.de/en/index.html): All IP addresses which have been reported within the last 48 hours for attacks on the Service imap, sasl, pop3.
-
-<ConfigExample
-	config={{
-		expressions: [
-			"!('blocklist.de.blocklist.imap' in conn.client_ip.categories)",
-		],
-	}}
-/>
-
-### `blocklist.de.blocklist.mail`
-
-From [BlockList.de](https://www.blocklist.de/en/index.html): All IP addresses which have been reported within the last 48 hours as having run attacks on the service Mail, Postfix.
-
-<ConfigExample
-	config={{
-		expressions: [
-			"!('blocklist.de.blocklist.mail' in conn.client_ip.categories)",
-		],
-	}}
-/>
-
-### `blocklist.de.blocklist.sip`
-
-From [BlockList.de](https://www.blocklist.de/en/index.html): All IP addresses that tried to login in a SIP-, VOIP- or Asterisk-Server and are included in the IPs-List from http://www.infiltrated.net/ (Twitter).
-
-<ConfigExample
-	config={{
-		expressions: [
-			"!('blocklist.de.blocklist.sip' in conn.client_ip.categories)",
-		],
-	}}
-/>
-
-### `blocklist.de.blocklist.ssh`
-
-From [BlockList.de](https://www.blocklist.de/en/index.html): All IP addresses which have been reported within the last 48 hours as having run attacks on the service SSH.
-
-<ConfigExample
-	config={{
-		expressions: [
-			"!('blocklist.de.blocklist.ssh' in conn.client_ip.categories)",
-		],
-	}}
-/>
-
-### `blocklist.de.blocklist.strongips`
-
-From [BlockList.de](https://www.blocklist.de/en/index.html): All IPs which are older then 2 month and have more then 5.000 attacks.
-
-<ConfigExample
-	config={{
-		expressions: [
-			"!('blocklist.de.blocklist.strongips' in conn.client_ip.categories)",
-		],
-	}}
-/>
-
-### `blocklist.org.firehol.level_1`
-
-From [firehol.org](https://iplists.firehol.org/?ipset=firehol_level1): The objective is to create a blacklist that can be safe enough to be used on all systems, with a firewall, to block access entirely, from and to its listed IPs. The key prerequisite for this cause, is to have no false positives. All IPs listed should be bad and should be blocked, without exceptions.
-
-<ConfigExample
-	config={{
-		expressions: [
-			"!('blocklist.org.firehol.level_1' in conn.client_ip.categories)",
-		],
-	}}
-/>
-
-### `blocklist.org.firehol.level_2`
-
-From [firehol.org](https://iplists.firehol.org/?ipset=firehol_level2): An ipset made from blocklists that track attacks, during about the last 48 hours.
-
-<ConfigExample
-	config={{
-		expressions: [
-			"!('blocklist.org.firehol.level_2' in conn.client_ip.categories)",
-		],
-	}}
-/>
-
-### `blocklist.org.firehol.level_3`
-
-From [firehol.org](https://iplists.firehol.org/?ipset=firehol_level3): An ipset made from blocklists that track attacks, spyware, viruses. It includes IPs than have been reported or detected in the last 30 days.
-
-<ConfigExample
-	config={{
-		expressions: [
-			"!('blocklist.org.firehol.level_3' in conn.client_ip.categories)",
-		],
-	}}
-/>
-
-### `blocklist.org.firehol.abusers_1d`
-
-From [firehol.org](https://iplists.firehol.org/?ipset=firehol_abusers_1d): An ipset made from blocklists that track abusers in the last 24 hours.
-
-<ConfigExample
-	config={{
-		expressions: [
-			"!('blocklist.org.firehol.abusers_1d' in conn.client_ip.categories)",
-		],
-	}}
-/>
-
-### `blocklist.org.firehol.abusers_30d`
-
-From [firehol.org](https://iplists.firehol.org/?ipset=firehol_abusers_30d): An ipset made from blocklists that track abusers in the last 30 days.
-
-<ConfigExample
-	config={{
-		expressions: [
-			"!('blocklist.org.firehol.abusers_30d' in conn.client_ip.categories)",
-		],
-	}}
-/>
-
-### `blocklist.org.spamhaus.drop.ipv4`
-
-From [spamhaus.org](https://www.spamhaus.org/blocklists/do-not-route-or-peer/): Don't Route Or Peer (DROP) lists the worst of the worst IP traffic. It is an advisory “drop all traffic”, containing IP ranges which are so dangerous to internet users that Spamhaus provides access to anyone who wants to add this layer of protection, free of charge.
-
-<ConfigExample
-	config={{
-		expressions: [
-			"!('blocklist.org.spamhaus.drop.ipv4' in conn.client_ip.categories)",
-		],
-	}}
-/>
-
-### `blocklist.org.spamhaus.drop.ipv6`
-
-From [spamhaus.org](https://www.spamhaus.org/blocklists/do-not-route-or-peer/): Don't Route Or Peer (DROP) lists the worst of the worst IP traffic. It is an advisory “drop all traffic”, containing IP ranges which are so dangerous to internet users that Spamhaus provides access to anyone who wants to add this layer of protection, free of charge.
-
-<ConfigExample
-	config={{
-		expressions: [
-			"!('blocklist.org.spamhaus.drop.ipv6' in conn.client_ip.categories)",
-		],
-	}}
-/>
-
-### `blocklist.org.team_cymru.fullbogons.ipv4`
-
-From [team-cymru.com](https://www.team-cymru.com/bogon-reference-http): The traditional bogon prefixes, plus prefixes that have been allocated to RIRs but not yet assigned by those RIRs to ISPs, end-users, etc.
-
-<ConfigExample
-	config={{
-		expressions: [
-			"!('blocklist.org.team_cymru.fullbogons.ipv4' in conn.client_ip.categories)",
-		],
-	}}
-/>
-
-### `blocklist.org.team_cymru.fullbogons.ipv6`
-
-From [team-cymru.com](https://www.team-cymru.com/bogon-reference-http): IPv6 "fullbogons", all IPv6 prefixes that have not been allocated to RIRs and that have not been assigned by RIRs to ISPs, end-users, etc.
-
-<ConfigExample
-	config={{
-		expressions: [
-			"!('blocklist.org.team_cymru.fullbogons.ipv6' in conn.client_ip.categories)",
-		],
-	}}
-/>
-
-## Proxies / VPNs
-
-| Name                                                        | Description                                                                                                                                                                                   | Sources                                                              |
-| ----------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
-| [`proxy.anonymous.org.firehol`](#proxyanonymousfirehol_org) | From [firehol.org](https://iplists.firehol.org/?ipset=firehol_anonymous): An ipset that includes all the anonymizing IPs of the world. (includes: anonymous dm_tor firehol_proxies tor_exits) | [Source](https://iplists.firehol.org/files/firehol_anonymous.netset) |
-| [`proxy.anonymous.tor`](#proxyanonymoustor)                 | These IPs are actively serving as Tor Exit nodes.                                                                                                                                             | [Source](https://www.dan.me.uk/torlist/?exit)                        |
-| [`proxy.open.org.firehol`](#proxyopenfirehol_org)           | From [firehol.org](https://iplists.firehol.org/?ipset=firehol_proxies): An ipset made from all sources that track open proxies. It includes IPs reported or detected in the last 30 days.     | [Source](https://iplists.firehol.org/files/firehol_proxies.netset)   |
-
-### `proxy.anonymous.org.firehol`
-
-From [firehol.org](https://iplists.firehol.org/?ipset=firehol_anonymous): An ipset that includes all the anonymizing IPs of the world. (includes: anonymous dm_tor firehol_proxies tor_exits)
-
-<ConfigExample
-	config={{
-		expressions: [
-			"!('proxy.anonymous.org.firehol' in conn.client_ip.categories)",
-		],
-	}}
-/>
-
-### `proxy.anonymous.tor`
-
-These IPs are actively serving as Tor Exit nodes.
-
-<ConfigExample
-	config={{
-		expressions: ["!('proxy.anonymous.tor' in conn.client_ip.categories)"],
-	}}
-/>
-
-### `proxy.open.org.firehol`
-
-From [firehol.org](https://iplists.firehol.org/?ipset=firehol_proxies): An ipset made from all sources that track open proxies. It includes IPs reported or detected in the last 30 days.
-
-<ConfigExample
-	config={{
-		expressions: ["!('proxy.open.org.firehol' in conn.client_ip.categories)"],
-	}}
-/>
+### Blocklists
+
+| Name                                            | Description                                                                                                                                                                                                                                                                                                                                                                                                                    | Sources                                                                    |
+| ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------- |
+| `blocklist.co.greensnow`                        | From [greensnow.co](https://greensnow.co/): GreenSnow is a team consisting of the best specialists in computer security, we harvest a large number of IPs from different computers located around the world. GreenSnow is comparable with Spamhaus for attacks of any kind except for spam. Our list is updated automatically and you can withdraw at any time your IP address if it has been listed.                          | [Source](https://blocklist.greensnow.co/greensnow.txt)                     |
+| `blocklist.com.stopforumspam.toxic_ips`         | From [stopforumspam.com](https://www.stopforumspam.com/downloads): The data provided here represents what we believe will only ever be used to abuse. IP Addresses listed here will be returned in API results as "blacklisted". You would be very unlikely to see valid content from the IP addresses listed.                                                                                                                 | [Source](https://www.stopforumspam.com/downloads/toxic_ip_cidr.txt)        |
+| `blocklist.com.cinsscore.army`                  | From [cinsscore.com](https://cinsscore.com): The CINS Army list is a subset of the [CINS Active Threat Intelligence](https://cinsscore.com/#cins-ati) ruleset, and consists of IP addresses that meet one of two basic criteria: 1. The IP's recent Rogue Packet score factor is very poor, or 2. The IP has tripped a designated number of 'trusted' alerts across a given number of our Sentinels deployed around the world. | [Source](http://cinsscore.com/list/ci-badguys.txt)                         |
+| `blocklist.de.blocklist.all`                    | From [BlockList.de](https://www.blocklist.de/en/index.html): All IP addresses that have attacked one of our customers/servers in the last 48 hours.                                                                                                                                                                                                                                                                            | [Source](https://lists.blocklist.de/lists/all.txt)                         |
+| `blocklist.de.blocklist.apache`                 | From [BlockList.de](https://www.blocklist.de/en/index.html): All IP addresses which have been reported within the last 48 hours as having run attacks on the service Apache, Apache-DDOS, RFI-Attacks.                                                                                                                                                                                                                         | [Source](https://lists.blocklist.de/lists/apache.txt)                      |
+| `blocklist.de.blocklist.bots`                   | From [BlockList.de](https://www.blocklist.de/en/index.html): All IP addresses which have been reported within the last 48 hours as having run attacks on the RFI-Attacks, REG-Bots, IRC-Bots or BadBots (BadBots = he has posted a Spam-Comment on a open Forum or Wiki).                                                                                                                                                      | [Source](https://lists.blocklist.de/lists/bots.txt)                        |
+| `blocklist.de.blocklist.bruteforcelogin`        | From [BlockList.de](https://www.blocklist.de/en/index.html): All IPs which attacks Joomlas, Wordpress and other Web-Logins with Brute-Force Logins.                                                                                                                                                                                                                                                                            | [Source](https://lists.blocklist.de/lists/bruteforcelogin.txt)             |
+| `blocklist.de.blocklist.ftp`                    | From [BlockList.de](https://www.blocklist.de/en/index.html): All IP addresses which have been reported within the last 48 hours for attacks on the Service FTP.                                                                                                                                                                                                                                                                | [Source](https://lists.blocklist.de/lists/ftp.txt)                         |
+| `blocklist.de.blocklist.imap`                   | From [BlockList.de](https://www.blocklist.de/en/index.html): All IP addresses which have been reported within the last 48 hours for attacks on the Service imap, sasl, pop3.                                                                                                                                                                                                                                                   | [Source](https://lists.blocklist.de/lists/imap.txt)                        |
+| `blocklist.de.blocklist.mail`                   | From [BlockList.de](https://www.blocklist.de/en/index.html): All IP addresses which have been reported within the last 48 hours as having run attacks on the service Mail, Postfix.                                                                                                                                                                                                                                            | [Source](https://lists.blocklist.de/lists/mail.txt)                        |
+| `blocklist.de.blocklist.sip`                    | From [BlockList.de](https://www.blocklist.de/en/index.html): All IP addresses that tried to login in a SIP-, VOIP- or Asterisk-Server and are included in the IPs-List from http://www.infiltrated.net/ (Twitter).                                                                                                                                                                                                             | [Source](https://lists.blocklist.de/lists/sip.txt)                         |
+| `blocklist.de.blocklist.strongips`              | From [BlockList.de](https://www.blocklist.de/en/index.html): All IPs which are older then 2 month and have more than 5,000 attacks.                                                                                                                                                                                                                                                                                            | [Source](https://lists.blocklist.de/lists/strongips.txt)                   |
+| `blocklist.de.blocklist.ssh`                    | From [BlockList.de](https://www.blocklist.de/en/index.html): All IP addresses which have been reported within the last 48 hours as having run attacks on the service SSH.                                                                                                                                                                                                                                                      | [Source](https://lists.blocklist.de/lists/ssh.txt)                         |
+| `blocklist.net.emergingthreats.compromised_ips` | From [emergingthreats.net](https://rules.emergingthreats.net/blockrules/): Emerging Threats Intelligence from Proofpoint provides information on IP addresses and domains that may be compromised.                                                                                                                                                                                                                             | [Source](https://rules.emergingthreats.net/blockrules/compromised-ips.txt) |
+| `blocklist.org.firehol.abusers_1d`              | From [firehol.org](https://iplists.firehol.org/?ipset=firehol_abusers_1d): An ipset made from blocklists that track abusers in the last 24 hours.                                                                                                                                                                                                                                                                              | [Source](https://iplists.firehol.org/files/firehol_abusers_1d.netset)      |
+| `blocklist.org.firehol.abusers_30d`             | From [firehol.org](https://iplists.firehol.org/?ipset=firehol_abusers_30d): An ipset made from blocklists that track abusers in the last 30 days.                                                                                                                                                                                                                                                                              | [Source](https://iplists.firehol.org/files/firehol_abusers_30d.netset)     |
+| `blocklist.org.firehol.level_1`                 | From [firehol.org](https://iplists.firehol.org/?ipset=firehol_level1): The objective is to create a blacklist that can be safe enough to be used on all systems, with a firewall, to block access entirely, from and to its listed IPs. The key prerequisite for this cause, is to have no false positives. All IPs listed should be bad and should be blocked, without exceptions.                                            | [Source](https://iplists.firehol.org/files/firehol_level1.netset)          |
+| `blocklist.org.firehol.level_2`                 | From [firehol.org](https://iplists.firehol.org/?ipset=firehol_level2): An ipset made from blocklists that track attacks, during the last 48 hours.                                                                                                                                                                                                                                                                             | [Source](https://iplists.firehol.org/files/firehol_level2.netset)          |
+| `blocklist.org.firehol.level_3`                 | From [firehol.org](https://iplists.firehol.org/?ipset=firehol_level3): An ipset made from blocklists that track attacks, spyware, viruses. It includes IPs than have been reported or detected in the last 30 days.                                                                                                                                                                                                            | [Source](https://iplists.firehol.org/files/firehol_level3.netset)          |
+| `blocklist.org.spamhaus.drop.ipv4`              | From [spamhaus.org](https://www.spamhaus.org/blocklists/do-not-route-or-peer/): Don't Route Or Peer (DROP) lists the worst of the worst IP traffic. It is an advisory “drop all traffic”, containing IP ranges which are so dangerous to internet users that Spamhaus provides access to anyone who wants to add this layer of protection, free of charge.                                                                     | [Source](https://www.spamhaus.org/drop/drop.txt)                           |
+| `blocklist.org.spamhaus.drop.ipv6`              | From [spamhaus.org](https://www.spamhaus.org/blocklists/do-not-route-or-peer/): Don't Route Or Peer (DROP) lists the worst of the worst IP traffic. It is an advisory “drop all traffic”, containing IP ranges which are so dangerous to internet users that Spamhaus provides access to anyone who wants to add this layer of protection, free of charge.                                                                     | [Source](https://www.spamhaus.org/drop/drop.txt)                           |
+| `blocklist.org.team_cymru.fullbogons.ipv4`      | From [team-cymru.com](https://www.team-cymru.com/bogon-reference-http): The traditional bogon prefixes, plus prefixes that have been allocated to RIRs but not yet assigned by those RIRs to ISPs, end-users, etc.                                                                                                                                                                                                             | [Source](https://team-cymru.org/Services/Bogons/fullbogons-ipv4.txt)       |
+| `blocklist.org.team_cymru.fullbogons.ipv6`      | From [team-cymru.com](https://www.team-cymru.com/bogon-reference-http): IPv6 "fullbogons", all IPv6 prefixes that have not been allocated to RIRs and that have not been assigned by RIRs to ISPs, end-users, etc.                                                                                                                                                                                                             | [Source](https://team-cymru.org/Services/Bogons/fullbogons-ipv6.txt)       |
+
+### Proxies / VPNs
+
+| Name                          | Description                                                                                                                                                                                   | Sources                                                              |
+| ----------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| `proxy.anonymous.org.firehol` | From [firehol.org](https://iplists.firehol.org/?ipset=firehol_anonymous): An ipset that includes all the anonymizing IPs of the world. (includes: anonymous dm_tor firehol_proxies tor_exits) | [Source](https://iplists.firehol.org/files/firehol_anonymous.netset) |
+| `proxy.anonymous.tor`         | These IPs are actively serving as Tor Exit nodes.                                                                                                                                             | [Source](https://www.dan.me.uk/torlist/?exit)                        |
+| `proxy.open.org.firehol`      | From [firehol.org](https://iplists.firehol.org/?ipset=firehol_proxies): An ipset made from all sources that track open proxies. It includes IPs reported or detected in the last 30 days.     | [Source](https://iplists.firehol.org/files/firehol_proxies.netset)   |
+| `proxy.vpn.protonvpn`         | The entry and exit IPs for ProtonVPN                                                                                                                                                          | [Source](https://api.protonmail.ch/vpn/logicals)                     |
 
 ## Organizations
 
-| Name                                                | Description                                                                                                                                                                                                                                                                                       | Sources                                                                                  |
-| --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
-| [`com.aws`](#comaws)                                | IPs from AWS                                                                                                                                                                                                                                                                                      | [Source](https://ip-ranges.amazonaws.com/ip-ranges.json)                                 |
-| [`com.aws.sns`](#comawssns)                         | IPs from AWS SNS service                                                                                                                                                                                                                                                                          | [Source](https://ip-ranges.amazonaws.com/ip-ranges.json)                                 |
-| [`com.aws.us-east-1.sns`](#comawsus-east-1sns)      | IPs from AWS SNS service for the `us-east-1` region                                                                                                                                                                                                                                               | [Source](https://ip-ranges.amazonaws.com/ip-ranges.json)                                 |
-| [`com.aws.us-east-2.sns`](#comawsus-east-2sns)      | IPs from AWS SNS service for the `us-east-2` region                                                                                                                                                                                                                                               | [Source](https://ip-ranges.amazonaws.com/ip-ranges.json)                                 |
-| [`com.aws.us-west-1.sns`](#comawsus-west-1sns)      | IPs from AWS SNS service for the `us-west-1` region                                                                                                                                                                                                                                               | [Source](https://ip-ranges.amazonaws.com/ip-ranges.json)                                 |
-| [`com.aws.us-west-2.sns`](#comawsus-west-2sns)      | IPs from AWS SNS service for the `us-west-2` region                                                                                                                                                                                                                                               | [Source](https://ip-ranges.amazonaws.com/ip-ranges.json)                                 |
-| [`com.cloudflare.ipv4`](#comcloudflareipv4)         | IPv4s from Cloudflare                                                                                                                                                                                                                                                                             | [IPv4](https://www.cloudflare.com/ips-v4/#), [IPv6](https://www.cloudflare.com/ips-v6/#) |
-| [`com.cloudflare.ipv6`](#comcloudflareipv6)         | IPv6s from Cloudflare                                                                                                                                                                                                                                                                             | [IPv4](https://www.cloudflare.com/ips-v4/#), [IPv6](https://www.cloudflare.com/ips-v6/#) |
-| [`com.stripe.api`](#comstripeapi)                   | The full list of IP addresses that api.stripe.com may resolve to                                                                                                                                                                                                                                  | [Source](https://stripe.com/files/ips/ips_api.txt)                                       |
-| [`com.stripe.armada_gator`](#comstripearmada_gator) | The full list of IP addresses that files.stripe.com, armada.stripe.com, and gator.stripe.com may resolve to                                                                                                                                                                                       | [Source](https://stripe.com/files/ips/ips_armada_gator.txt)                              |
-| [`com.stripe.webhooks`](#comstripewebhooks)         | The full list of IP addresses that webhook notifications may come from                                                                                                                                                                                                                            | [Source](https://stripe.com/files/ips/ips_webhooks.txt)                                  |
-| [`com.vultr`](#comvultr)                            | IPs for Vultr                                                                                                                                                                                                                                                                                     | [Source](https://geofeed.constant.com/)                                                  |
-| [`io.censys.scanners`](#iocensysscanners)           | The IPs that Censys bots use to continually scans the entire public IPv4 address space across all possible IP and port combinations using automatic protocol detection.                                                                                                                           | [Source](https://support.censys.io/hc/en-us/article_attachments/25644686434196)          |
-| [`org.firehol.level_4`](#orgfirehollevel_4)         | From [firehol.org](https://iplists.firehol.org/?ipset=firehol_level4): An ipset made from blocklists that track attacks, but may include a large number of false positives.                                                                                                                       | [Source](https://iplists.firehol.org/files/firehol_level4.netset)                        |
-| [`org.firehol.webserver`](#orgfireholwebserver)     | From [firehol.org](https://iplists.firehol.org/?ipset=firehol_webserver): A web server IP blacklist made from blocklists that track IPs that should never be used by your web users. (This list includes IPs that are servers hosting malware, bots, etc or users having a long criminal history. | [Source](https://iplists.firehol.org/files/firehol_webserver.netset)                     |
-| [`org.telegram`](#orgtelegram)                      | IPs for Telegram Bots                                                                                                                                                                                                                                                                             | [Source](https://core.telegram.org/resources/cidr.txt)                                   |
+### Ahrefs
 
-### `com.aws`
+| Name         | Description     | Sources                                                      |
+| ------------ | --------------- | ------------------------------------------------------------ |
+| `com.ahrefs` | IPs from Ahrefs | [Source](https://api.ahrefs.com/v3/public/crawler-ip-ranges) |
 
-IPs from AWS.
+### Amazon Web Services (AWS)
 
-<ConfigExample
-	config={{
-		expressions: ["'com.aws' in conn.client_ip.categories"],
-	}}
-/>
+| Name                    | Description                                         | Sources                                                  |
+| ----------------------- | --------------------------------------------------- | -------------------------------------------------------- |
+| `com.aws.sns`           | IPs from AWS SNS service                            | [Source](https://ip-ranges.amazonaws.com/ip-ranges.json) |
+| `com.aws.us-east-1.sns` | IPs from AWS SNS service for the `us-east-1` region | [Source](https://ip-ranges.amazonaws.com/ip-ranges.json) |
+| `com.aws.us-east-2.sns` | IPs from AWS SNS service for the `us-east-2` region | [Source](https://ip-ranges.amazonaws.com/ip-ranges.json) |
+| `com.aws.us-west-1.sns` | IPs from AWS SNS service for the `us-west-1` region | [Source](https://ip-ranges.amazonaws.com/ip-ranges.json) |
+| `com.aws.us-west-2.sns` | IPs from AWS SNS service for the `us-west-2` region | [Source](https://ip-ranges.amazonaws.com/ip-ranges.json) |
+| `com.aws`               | IPs from AWS                                        | [Source](https://ip-ranges.amazonaws.com/ip-ranges.json) |
 
-### `com.aws.sns`
+### Apple
 
-IPs from AWS SNS service.
+| Name                             | Description                                                                                                                                                                                                                                                                                                                          | Sources                                                    |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------- |
+| `com.apple.icloud-private-relay` | From [Apple](https://developer.apple.com/icloud/prepare-your-network-for-icloud-private-relay/): iCloud Private Relay is an internet privacy service offered as a part of an iCloud+ subscription that allows users on iOS 15, iPadOS 15, and macOS Monterey and later to connect to and browse the web more privately and securely. | [Source](https://mask-api.icloud.com/egress-ip-ranges.csv) |
 
-<ConfigExample
-	config={{
-		expressions: ["'com.aws.sns' in conn.client_ip.categories"],
-	}}
-/>
+### Censys
 
-### `com.aws.us-east-1.sns`
+| Name                 | Description                                                                                                                                                                                   | Sources                                                                         |
+| -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| `io.censys.scanners` | The IPs that [Censys](https://censys.com/) bots use to continually scan the entire public IPv4 address space across all possible IP and port combinations using automatic protocol detection. | [Source](https://support.censys.io/hc/en-us/article_attachments/25644686434196) |
 
-IPs from AWS SNS service for the `us-east-1` region.
+### Cloudflare
 
-<ConfigExample
-	config={{
-		expressions: ["'com.aws.us-east-1.sns' in conn.client_ip.categories"],
-	}}
-/>
+| Name                  | Description           | Sources                                                                                  |
+| --------------------- | --------------------- | ---------------------------------------------------------------------------------------- |
+| `com.cloudflare.ipv4` | IPv4s from Cloudflare | [IPv4](https://www.cloudflare.com/ips-v4/#), [IPv6](https://www.cloudflare.com/ips-v6/#) |
+| `com.cloudflare.ipv6` | IPv6s from Cloudflare | [IPv4](https://www.cloudflare.com/ips-v4/#), [IPv6](https://www.cloudflare.com/ips-v6/#) |
 
-### `com.aws.us-east-2.sns`
+### DigitalOcean
 
-IPs from AWS SNS service for the `us-east-2` region.
+| Name               | Description           | Sources                                           |
+| ------------------ | --------------------- | ------------------------------------------------- |
+| `com.digitalocean` | IPs from DigitalOcean | [Source](https://digitalocean.com/geo/google.csv) |
 
-<ConfigExample
-	config={{
-		expressions: ["'com.aws.us-east-2.sns' in conn.client_ip.categories"],
-	}}
-/>
+### Datadog
 
-### `com.aws.us-west-1.sns`
+| Name                                       | Description                                  | Sources                                    |
+| ------------------------------------------ | -------------------------------------------- | ------------------------------------------ |
+| `com.datadog.agents`                       | IPs for Datadog Agents                       | [Source](https://ip-ranges.datadoghq.com/) |
+| `com.datadog.api`                          | IPs for Datadog API                          | [Source](https://ip-ranges.datadoghq.com/) |
+| `com.datadog.apm`                          | IPs for Datadog APM                          | [Source](https://ip-ranges.datadoghq.com/) |
+| `com.datadog.global`                       | IPs for Datadog Global                       | [Source](https://ip-ranges.datadoghq.com/) |
+| `com.datadog.logs`                         | IPs for Datadog Logs                         | [Source](https://ip-ranges.datadoghq.com/) |
+| `com.datadog.orchestrator`                 | IPs for Datadog Orchestrators                | [Source](https://ip-ranges.datadoghq.com/) |
+| `com.datadog.process`                      | IPs for Datadog Processes                    | [Source](https://ip-ranges.datadoghq.com/) |
+| `com.datadog.remote-configuration`         | IPs for Datadog Remote Configurations        | [Source](https://ip-ranges.datadoghq.com/) |
+| `com.datadog.synthetics-private-locations` | IPs for Datadog Synthetics Private Locations | [Source](https://ip-ranges.datadoghq.com/) |
+| `com.datadog.synthetics`                   | IPs for Datadog Synthetics                   | [Source](https://ip-ranges.datadoghq.com/) |
+| `com.datadog.webhooks`                     | IPs for Datadog Webhooks                     | [Source](https://ip-ranges.datadoghq.com/) |
+| `com.datadog`                              | IPs for Datadog                              | [Source](https://ip-ranges.datadoghq.com/) |
 
-IPs from AWS SNS service for the `us-west-1` region.
+### Delinea
 
-<ConfigExample
-	config={{
-		expressions: ["'com.aws.us-west-1.sns' in conn.client_ip.categories"],
-	}}
-/>
+| Name                         | Description                            | Sources                                                                                                                           |
+| ---------------------------- | -------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| `com.delinea.<ipv4 \| ipv6>` | IPs for [Delinea](https://delinea.com) | [Source](https://docs.delinea.com/online-help/delinea-platform/getting-started/architecture.htm#DelineaPlatformHighLevelOverview) |
 
-### `com.aws.us-west-2.sns`
+### Fastly
 
-IPs from AWS SNS service for the `us-west-2` region.
+| Name                        | Description    | Sources                                         |
+| --------------------------- | -------------- | ----------------------------------------------- |
+| `com.fastly.<ipv4 \| ipv6>` | IPs for Fastly | [Source](https://api.fastly.com/public-ip-list) |
 
-<ConfigExample
-	config={{
-		expressions: ["'com.aws.us-west-2.sns' in conn.client_ip.categories"],
-	}}
-/>
+### Firehol
 
-### `com.cloudflare.ipv4`
+| Name                    | Description                                                                                                                                                                                                                                                                                      | Sources                                                              |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------- |
+| `org.firehol.level_4`   | From [firehol.org](https://iplists.firehol.org/?ipset=firehol_level4): An ipset made from blocklists that track attacks, but may include a large number of false positives.                                                                                                                      | [Source](https://iplists.firehol.org/files/firehol_level4.netset)    |
+| `org.firehol.webserver` | From [firehol.org](https://iplists.firehol.org/?ipset=firehol_webserver): A web server IP blacklist made from blocklists that track IPs that should never be used by your web users. This list includes IPs that are servers hosting malware, bots, etc or users having a long criminal history. | [Source](https://iplists.firehol.org/files/firehol_webserver.netset) |
 
-IPv4s from Cloudflare.
+### Github
 
-<ConfigExample
-	config={{
-		expressions: ["'com.cloudflare.ipv4' in conn.client_ip.categories"],
-	}}
-/>
+| Name                                    | Description                        | Sources                               |
+| --------------------------------------- | ---------------------------------- | ------------------------------------- |
+| `com.github.actions_macos`              | IPs for Github Actions from MacOS  | [Source](https://api.github.com/meta) |
+| `com.github.actions`                    | IPs for Github Actions             | [Source](https://api.github.com/meta) |
+| `com.github.api`                        | IPs for the Github API             | [Source](https://api.github.com/meta) |
+| `com.github.codespaces`                 | IPs for Github Code Spaces         | [Source](https://api.github.com/meta) |
+| `com.github.copilot`                    | IPs for Github CoPilot             | [Source](https://api.github.com/meta) |
+| `com.github.dependabot`                 | IPs for Github Dependabot          | [Source](https://api.github.com/meta) |
+| `com.github.git`                        | IPs for Github Git                 | [Source](https://api.github.com/meta) |
+| `com.github.github_enterprise_importer` | IPs for Github Enterprise Importer | [Source](https://api.github.com/meta) |
+| `com.github.hooks`                      | IPs for Github Webhooks            | [Source](https://api.github.com/meta) |
+| `com.github.importer`                   | IPs for Github Importer            | [Source](https://api.github.com/meta) |
+| `com.github.packages`                   | IPs for Github Packages            | [Source](https://api.github.com/meta) |
+| `com.github.pages`                      | IPs for Github Pages               | [Source](https://api.github.com/meta) |
+| `com.github.web`                        | IPs for Github Web                 | [Source](https://api.github.com/meta) |
 
-### `com.cloudflare.ipv6`
+### Linode (Akamai)
 
-IPv6s from Cloudflare.
+| Name         | Description                          | Sources                             |
+| ------------ | ------------------------------------ | ----------------------------------- |
+| `com.linode` | IPs for Linode (now part of Akamai). | [Source](https://geoip.linode.com/) |
 
-<ConfigExample
-	config={{
-		expressions: ["'com.cloudflare.ipv6' in conn.client_ip.categories"],
-	}}
-/>
+### Pagerduty
 
-### `com.stripe.api`
+| Name                                | Description                                                    | Sources                                                    |
+| ----------------------------------- | -------------------------------------------------------------- | ---------------------------------------------------------- |
+| `com.pagerduty.webhooks.<us \| eu>` | IPs for Pagerduty Webhooks split out by region (`us` or `eu`). | [Source](https://developer.pagerduty.com/docs/webhook-ips) |
 
-The full list of IP addresses that api.stripe.com may resolve to.
+### Plaid
 
-<ConfigExample
-	config={{
-		expressions: ["'com.stripe.api' in conn.client_ip.categories"],
-	}}
-/>
+| Name                 | Description             | Sources                                                             |
+| -------------------- | ----------------------- | ------------------------------------------------------------------- |
+| `com.plaid.webhooks` | IPs for Plaid Webhooks. | [Source](https://plaid.com/docs/api/webhooks/#configuring-webhooks) |
 
-### `com.stripe.armada_gator`
+### Stripe
 
-The full list of IP addresses that files.stripe.com, armada.stripe.com, and gator.stripe.com may resolve to.
+| Name                      | Description                                                                                                 | Sources                                                     |
+| ------------------------- | ----------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| `com.stripe.api`          | The full list of IP addresses that api.stripe.com may resolve to                                            | [Source](https://stripe.com/files/ips/ips_api.txt)          |
+| `com.stripe.armada_gator` | The full list of IP addresses that files.stripe.com, armada.stripe.com, and gator.stripe.com may resolve to | [Source](https://stripe.com/files/ips/ips_armada_gator.txt) |
+| `com.stripe.webhooks`     | The full list of IP addresses that Stripe webhook notifications may come from                               | [Source](https://stripe.com/files/ips/ips_webhooks.txt)     |
 
-<ConfigExample
-	config={{
-		expressions: ["'com.stripe.armada_gator' in conn.client_ip.categories"],
-	}}
-/>
+### Telegram
 
-### `com.stripe.webhooks`
+| Name           | Description           | Sources                                                |
+| -------------- | --------------------- | ------------------------------------------------------ |
+| `org.telegram` | IPs for Telegram Bots | [Source](https://core.telegram.org/resources/cidr.txt) |
 
-The full list of IP addresses that webhook notifications may come from.
+### Teleport
 
-<ConfigExample
-	config={{
-		expressions: ["'com.stripe.webhooks' in conn.client_ip.categories"],
-	}}
-/>
+| Name           | Description                                                       | Sources                                    |
+| -------------- | ----------------------------------------------------------------- | ------------------------------------------ |
+| `com.teleport` | Public address allow list for [Teleport](https://goteleport.com/) | [Source](https://goteleport.com/docs/ips/) |
 
-### `com.vultr`
+### Vultr
 
-IPs from Vultr.com
+| Name        | Description                             | Sources                                 |
+| ----------- | --------------------------------------- | --------------------------------------- |
+| `com.vultr` | IPs for [Vultr](https://www.vultr.com/) | [Source](https://geofeed.constant.com/) |
 
-<ConfigExample
-	config={{
-		expressions: ["'com.vultr' in conn.client_ip.categories"],
-	}}
-/>
+### Zscaler
 
-### `io.censys.scanners`
-
-The IPs that Censys bots use to continually scans the entire public IPv4 address space across all possible IP and port combinations using automatic protocol detection.
-
-<ConfigExample
-	config={{
-		expressions: ["!('io.censys.scanners' in conn.client_ip.categories)"],
-	}}
-/>
-
-### `org.firehol.level_4`
-
-From [firehol.org](https://iplists.firehol.org/?ipset=firehol_level4): An ipset made from blocklists that track attacks, but may include a **large number of false positives**.
-
-<ConfigExample
-	config={{
-		expressions: ["!('org.firehol.level_4' in conn.client_ip.categories)"],
-	}}
-/>
-
-### `org.firehol.webserver`
-
-From [firehol.org](https://iplists.firehol.org/?ipset=firehol_webserver): A web server IP blocklist made from blocklists that track IPs that should never be used by your web users. (This list includes IPs that are servers hosting malware, bots, etc or users having a long criminal history.
-
-<ConfigExample
-	config={{
-		expressions: ["!('org.firehol.webserver' in conn.client_ip.categories)"],
-	}}
-/>
-
-### `org.telegram`
-
-IPs for Telegram.org bots
-
-<ConfigExample
-	config={{
-		expressions: ["'org.telegram' in conn.client_ip.categories"],
-	}}
-/>
+| Name                                              | Description                                                                                                                                 | Sources                                                                                                                                                                        |
+| ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `com.zscaler.private.zpa`                         | [Zscaler Private Access Firewall Allowlist for private.zscaler.com](https://config.zscaler.com/private.zscaler.com/zpa)                     | [Source](https://config.zscaler.com/api/private.zscaler.com/zpa/json)                                                                                                          |
+| `net.zdxbeta.future`                              | [Zscaler Egress IP ranges and Future Data Centers for zdxbeta.net](https://config.zscaler.com/zdxbeta.net/cloud-telemetry-gateway-ranges)   | [Source](https://config.zscaler.com/api/zdxbeta.net/cenr/json)                                                                                                                 |
+| `net.zdxbeta.hubs.<required \| recommended>`      | [Zscaler Hub IP Addresses for zdxbeta.net](https://config.zscaler.com/zdxbeta.net/hubs)                                                     | [Required](https://config.zscaler.com/api/zdxbeta.net/hubs/cidr/json/required), [Recommended](https://config.zscaler.com/api/zdxbeta.net/hubs/cidr/json/recommended)           |
+| `net.zdxcloud.future`                             | [Zscaler Egress IP ranges and Future Data Centers for zdxcloud.net](https://config.zscaler.com/zdxcloud.net/cloud-telemetry-gateway-ranges) | [Source](https://config.zscaler.com/api/zdxcloud.net/cenr/json)                                                                                                                |
+| `net.zdxcloud.hubs.<required \| recommended>`     | [Zscaler Hub IP Addresses for zdxcloud.net](https://config.zscaler.com/zdxcloud.net/hubs)                                                   | [Required](https://config.zscaler.com/api/zdxcloud.net/hubs/cidr/json/required), [Recommended](https://config.zscaler.com/api/zdxcloud.net/hubs/cidr/json/recommended)         |
+| `net.zdxgov.hubs.<required \| recommended>`       | [Zscaler Hub IP Addresses for zdxgov.net](https://config.zscaler.com/zdxgov.net/hubs)                                                       | [Required](https://config.zscaler.com/api/zdxgov.net/hubs/cidr/json/required), [Recommended](https://config.zscaler.com/api/zdxgov.net/hubs/cidr/json/recommended)             |
+| `net.zdxten.hubs.<required \| recommended>`       | [Zscaler Hub IP Addresses for zdxten.net](https://config.zscaler.com/zdxten.net/hubs)                                                       | [Required](https://config.zscaler.com/api/zdxten.net/hubs/cidr/json/required), [Recommended](https://config.zscaler.com/api/zdxten.net/hubs/cidr/json/recommended)             |
+| `net.zdxten.zpa`                                  | [Zscaler Private Access Firewall Allowlist for zdxten.net](https://config.zscaler.com/zdxten.net/)                                          | [Source](https://config.zscaler.com/api/zdxten.net/zpa/json)                                                                                                                   |
+| `net.zpabeta.zpa`                                 | [Zscaler Private Access Firewall Allowlist for zpabeta.net](https://config.zscaler.com/zpabeta.net/)                                        | [Source](https://config.zscaler.com/api/zpabeta.net/zpa/json)                                                                                                                  |
+| `net.zpagov.zpa`                                  | [Zscaler Private Access Firewall Allowlist for zpagov.net](https://config.zscaler.com/zpagov.net/)                                          | [Source](https://config.zscaler.com/api/zpagov.net/zpa/json)                                                                                                                   |
+| `net.zpatwo.zpa`                                  | [Zscaler Private Access Firewall Allowlist for zpatwo.net](https://config.zscaler.com/zpatwo.net/)                                          | [Source](https://config.zscaler.com/api/zpatwo.net/zpa/json)                                                                                                                   |
+| `net.zscaler.cenr.<continent>`                    | [Current Data Centers for zscaler.net](https://config.zscaler.com/zscaler.net/)                                                             | [Source](https://config.zscaler.com/api/zscaler.net/cenr/json)                                                                                                                 |
+| `net.zscaler.future`                              | [Zscaler Aggregate IP Address Ranges for zscaler.net](https://config.zscaler.com/zscaler.net/)                                              | [Source](https://config.zscaler.com/api/zscaler.net/future/json)                                                                                                               |
+| `net.zscaler.hubs.<required \| recommended>`      | [Zscaler Hub IP Addresses for zscaler.net](https://config.zscaler.com/zscaler.net/hubs)                                                     | [Required](https://config.zscaler.com/api/zscaler.net/hubs/cidr/json/required), [Recommended](https://config.zscaler.com/api/zscaler.net/hubs/cidr/json/recommended)           |
+| `net.zscaler.zpa`                                 | [Zscaler Private Access Firewall Allowlist for zscaler.net](https://config.zscaler.com/zscaler.net/)                                        | [Source](https://config.zscaler.com/api/zscaler.net/zpa/json)                                                                                                                  |
+| `net.zscalerbeta.cenr.<continent>`                | [Current Data Centers for zscalerbeta.net](https://config.zscaler.com/api/zscalerbeta.net/cenr/json)                                        | [Source](https://config.zscaler.com/api/zscalerbeta.net/cenr/json)                                                                                                             |
+| `net.zscalerbeta.future`                          | [Zscaler Aggregate IP Address Ranges for zscalerbeta.net](https://config.zscaler.com/zscalerbeta.net/)                                      | [Source](https://config.zscaler.com/api/zscalerbeta.net/future/json)                                                                                                           |
+| `net.zscalerbeta.hubs.<required \| recommended>`  | [Zscaler Hub IP Addresses for zscalerbeta.net](https://config.zscaler.com/zscalerbeta.net/hubs)                                             | [Required](https://config.zscaler.com/api/zscalerbeta.net/hubs/cidr/json/required), [Recommended](https://config.zscaler.com/api/zscalerbeta.net/hubs/cidr/json/recommended)   |
+| `net.zscalerbeta.zpa`                             | [Zscaler Private Access Firewall Allowlist for zscalerbeta.net](https://config.zscaler.com/zscalerbeta.net/)                                | [Source](https://config.zscaler.com/api/zscalerbeta.net/zpa/json)                                                                                                              |
+| `net.zscalergov.cenr.<continent>`                 | [Current Data Centers for zscalergov.net](https://config.zscaler.com/zscalergov.net/)                                                       | [Source](https://config.zscaler.com/api/zscalergov.net/cenr/json)                                                                                                              |
+| `net.zscalergov.future`                           | [Zscaler Aggregate IP Address Ranges for zscalergov.net](https://config.zscaler.com/zscalergov.net/)                                        | [Source](https://config.zscaler.com/api/zscalergov.net/future/json)                                                                                                            |
+| `net.zscalergov.hubs.<required \| recommended>`   | [Zscaler Hub IP Addresses for zscalergov.net](https://config.zscaler.com/zscalergov.net/hubs)                                               | [Required](https://config.zscaler.com/api/zscalergov.net/hubs/cidr/json/required), [Recommended](https://config.zscaler.com/api/zscalergov.net/hubs/cidr/json/recommended)     |
+| `net.zscalergov.zpa`                              | [Zscaler Private Access Firewall Allowlist for zscalergov.net](https://config.zscaler.com/zscalergov.net/)                                  | [Source](https://config.zscaler.com/api/zscalergov.net/zpa/json)                                                                                                               |
+| `net.zscalerone.cenr.<continent>`                 | [Current Data Centers for zscalerone.net](https://config.zscaler.com/api/zscalerone.net/cenr/json)                                          | [Source](https://config.zscaler.com/api/zscalerone.net/cenr/json)                                                                                                              |
+| `net.zscalerone.future`                           | [Zscaler Aggregate IP Address Ranges for zscalerone.net](https://config.zscaler.com/zscalerone.net/)                                        | [Source](https://config.zscaler.com/api/zscalerone.net/future/json)                                                                                                            |
+| `net.zscalerone.hubs.<required \| recommended>`   | [Zscaler Hub IP Addresses for zscalerone.net](https://config.zscaler.com/zscalerone.net/hubs)                                               | [Required](https://config.zscaler.com/api/zscalerone.net/hubs/cidr/json/required), [Recommended](https://config.zscaler.com/api/zscalerone.net/hubs/cidr/json/recommended)     |
+| `net.zscalerone.zpa`                              | [Zscaler Private Access Firewall Allowlist for zscalerone.net](https://config.zscaler.com/zscalerone.net/)                                  | [Source](https://config.zscaler.com/api/zscalerone.net/zpa/json)                                                                                                               |
+| `net.zscalerten.cenr.<continent>`                 | [Current Data Centers for zscalerten.net](https://config.zscaler.com/zscalerten.net/)                                                       | [Source](https://config.zscaler.com/api/zscalerten.net/cenr/json)                                                                                                              |
+| `net.zscalerten.hubs.<required \| recommended>`   | [Zscaler Hub IP Addresses for zscalerten.net](https://config.zscaler.com/zscalerten.net/hubs)                                               | [Required](https://config.zscaler.com/api/zscalerten.net/hubs/cidr/json/required), [Recommended](https://config.zscaler.com/api/zscalerten.net/hubs/cidr/json/recommended)     |
+| `net.zscalerten.zpa`                              | [Zscaler Private Access Firewall Allowlist for zscalerten.net](https://config.zscaler.com/zscalerten.net/)                                  | [Source](https://config.zscaler.com/api/zscalerten.net/zpa/json)                                                                                                               |
+| `net.zscalerthree.cenr.<continent>`               | [Current Data Centers for zscalerthree.net](https://config.zscaler.com/zscalerthree.net/)                                                   | [Source](https://config.zscaler.com/api/zscalerthree.net/cenr/json)                                                                                                            |
+| `net.zscalerthree.future`                         | [Zscaler Aggregate IP Address Ranges for zscalerthree.net](https://config.zscaler.com/zscalerthree.net/)                                    | [Source](https://config.zscaler.com/api/zscalerthree.net/future/json)                                                                                                          |
+| `net.zscalerthree.hubs.<required \| recommended>` | [Zscaler Hub IP Addresses for zscalerthree.net](https://config.zscaler.com/zscalerthree.net/hubs)                                           | [Required](https://config.zscaler.com/api/zscalerthree.net/hubs/cidr/json/required), [Recommended](https://config.zscaler.com/api/zscalerthree.net/hubs/cidr/json/recommended) |
+| `net.zscalerthree.zpa`                            | [Zscaler Private Access Firewall Allowlist for zscalerthree.net](https://config.zscaler.com/zscalerthree.net/)                              | [Source](https://config.zscaler.com/api/zscalerthree.net/zpa/json)                                                                                                             |
+| `net.zscalertwo.cenr.<continent>`                 | [Current Data Centers for zscalertwo.net](https://config.zscaler.com/zscalertwo.net/)                                                       | [Source](https://config.zscaler.com/api/zscalertwo.net/cenr/json)                                                                                                              |
+| `net.zscalertwo.future`                           | [Zscaler Aggregate IP Address Ranges for zscalertwo.net](https://config.zscaler.com/zscalertwo.net/)                                        | [Source](https://config.zscaler.com/api/zscalertwo.net/future/json)                                                                                                            |
+| `net.zscalertwo.hubs.<required \| recommended>`   | [Zscaler Hub IP Addresses for zscalertwo.net](https://config.zscaler.com/zscalertwo.net/hubs)                                               | [Required](https://config.zscaler.com/api/zscalertwo.net/hubs/cidr/json/required), [Recommended](https://config.zscaler.com/api/zscalertwo.net/hubs/cidr/json/recommended)     |
+| `net.zscalertwo.zpa`                              | [Zscaler Private Access Firewall Allowlist for zscalertwo.net](https://config.zscaler.com/zscalertwo.net/)                                  | [Source](https://config.zscaler.com/api/zscalertwo.net/zpa/json)                                                                                                               |
+| `net.zscloud.cenr.<continent>`                    | [Current Data Centers for zscloud.net](https://config.zscaler.com/zscloud.net/)                                                             | [Source](https://config.zscaler.com/api/zscloud.net/cenr/json)                                                                                                                 |
+| `net.zscloud.future`                              | [Zscaler Aggregate IP Address Ranges for zscloud.net](https://config.zscaler.com/zscloud.net/)                                              | [Source](https://config.zscaler.com/api/zscloud.net/future/json)                                                                                                               |
+| `net.zscloud.hubs.<required \| recommended>`      | [Zscaler Hub IP Addresses for zscloud.net](https://config.zscaler.com/zscloud.net/hubs)                                                     | [Required](https://config.zscaler.com/api/zscloud.net/hubs/cidr/json/required), [Recommended](https://config.zscaler.com/api/zscloud.net/hubs/cidr/json/recommended)           |
+| `net.zscloud.zpa`                                 | [Zscaler Private Access Firewall Allowlist for zpatwo.net](https://config.zscaler.com/zpatwo.net/)                                          | [Source](https://config.zscaler.com/api/zpatwo.net/zpa/json)                                                                                                                   |
+| `us.zpagov.zpa`                                   | [Zscaler Private Access Firewall Allowlist for zpagov.us](https://config.zscaler.com/zpagov.us/)                                            | [Source](https://config.zscaler.com/api/zpagov.us/zpa/json)                                                                                                                    |

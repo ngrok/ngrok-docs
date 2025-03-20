@@ -1,0 +1,92 @@
+---
+title: Cloud Endpoints Quickstart
+sidebar_label: Quickstart
+description: Set up your first ngrok Cloud Endpoint to start managing traffic to your services.
+---
+
+import TabItem from "@theme/TabItem";
+import Tabs from "@theme/Tabs";
+import ConfigExample from "/src/components/ConfigExample.tsx";
+
+[Cloud Endpoints](/universal-gateway/cloud-endpoints) are centrally managed endpoints in the cloud that can be used to route traffic to agent endpoints.
+
+This guide will walk you through setting up a Cloud Endpoint quickly.
+
+## Prerequisites
+
+Whether you're using the API or the Dashboard, to create Cloud Endpoints you'll need:
+
+- A reserved [domain](https://dashboard.ngrok.com/domains/) or [TCP address](https://dashboard.ngrok.com/tcp-addresses)
+- If you're using the API, you'll need an [ngrok API key](https://dashboard.ngrok.com/api-keys)
+
+## Dashboard
+
+You can create Cloud Endpoints using [the ngrok dashboard](https://dashboard.ngrok.com/).
+
+1. In the menu on the left side, [navigate to Universal Gateway > Endpoints](https://dashboard.ngrok.com/endpoints).
+1. Select the **+ New** button, then select **Cloud Endpoint** in the modal that appears.
+1. Select a **[binding](/universal-gateway/bindings)**. For this example, you can choose **public**.
+1. Enter the URL you want to use for your endpoint. For example, for a public Cloud Endpoint that serves traffic over HTTPS you might use `https://my-app.ngrok.dev`.
+1. Select **Create Cloud Endpoint**.
+
+After completing these steps, you'll be taken to a page where you can manage your Cloud Endpoint's [Traffic Policy](/traffic-policy/). Visit the URL you specified to ensure that it's online. You should see a default landing page that says "This is your new Cloud Endpoint!"
+
+## API
+
+You can also create Cloud Endpoints programmatically via [the ngrok API](/api/). This example uses the ngrok CLI to interact with the API, but you can use any HTTP client of your choice.
+
+:::tip
+Before you start, you'll need [your ngrok API Key](https://dashboard.ngrok.com/api-keys).
+:::
+
+### **1** - Create your Traffic Policy
+
+First, create a `policy.yml` on your local machine. The policy you'll create for this example will:
+
+- Forward incoming HTTP requests to an Internal Endpoint (https://default.internal)
+- If your Internal Endpoint is not reachable, it will fall back to a custom response
+
+Paste the following into your `policy.yml` file:
+
+```yaml title="policy.yml"
+on_http_request:
+  - actions:
+      - type: "forward-internal"
+        config:
+          url: "https://default.internal"
+         on_error: continue
+      - type: custom-response
+        config:
+          status_code: 200
+          headers:
+            content-type: text/html
+          content: |
+             <b>Agent offline!</b>
+             <p>Run <code>ngrok http 80 --url https://default.internal</code> to put your application online!</p>
+
+```
+
+### **2** - Create your Cloud Endpoint
+
+Now you can create your Cloud Endpoint by running the following command, replacing `{YOUR_API_KEY}` and `https://my-example-app.ngrok.dev` with your API key and desired URL:
+
+```bash
+ngrok api endpoints create \
+ --api-key {YOUR_API_KEY} \
+ --description "Cloud endpoint for my API" \
+ --type cloud \
+ --bindings public \
+ --url https://my-example-app.ngrok.dev \
+ --traffic-policy-file policy.yml
+```
+
+### **3** - Visit your endpoint
+
+Your endpoint should be successfully online. Verify this by visiting the URL you assigned to it. You should see the content available at the [Internal Endpoint](/universal-gateway/internal-endpoints) you're forwarding traffic to.
+
+If your Internal Endpoint is down, you should see the custom response you configured in your policy, which in thise case reads `Agent offline!`.
+
+## Next Steps
+
+- Check out [the guide on load balancing with Cloud Endpoints](/guides/other-guides/forwarding-and-load-balancing-with-cloud-endpoints) to learn how to distribute traffic across multiple internal endpoints.
+- See [the Cloud Endpoints overview](/universal-gateway/cloud-endpoints/) to learn about use cases, how they compare to Agent Endpoints, and more.

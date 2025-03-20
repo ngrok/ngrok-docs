@@ -4,11 +4,13 @@ import ConfigExample from "/src/components/ConfigExample.tsx";
 
 The following variables are available under the `conn.tls` namespace:
 
-| Name                                            | Type     | Description                                                                 |
-| ----------------------------------------------- | -------- | --------------------------------------------------------------------------- |
-| [`conn.tls.cipher_suite`](#conntlscipher_suite) | `string` | The cipher suite selected during the TLS handshake.                         |
-| [`conn.tls.sni`](#conntlssni)                   | `string` | The hostname included in the `ClientHello` message via the SNI extension.   |
-| [`conn.tls.version`](#conntlsversion)           | `string` | The version of the TLS protocol used between the client and the ngrok edge. |
+| Name                                                  | Type     | Description                                                                                                    |
+| ----------------------------------------------------- | -------- | -------------------------------------------------------------------------------------------------------------- |
+| [`conn.tls.cipher_suite`](#conntlscipher_suite)       | `string` | The cipher suite selected during the TLS handshake.                                                            |
+| [`conn.tls.negotiated_alpn`](#conntlsnegotiated_alpn) | `string` | TLS Application-Layer Protocol Negotiation (ALPN) Protocol ID of the protocol agreed upon in the TLS handshake |
+| [`conn.tls.session_resumed`](#conntlssession_resumed) | `bool`   | True if the TLS session was resumed. Currently always false                                                    |
+| [`conn.tls.sni`](#conntlssni)                         | `string` | The hostname included in the `ClientHello` message via the SNI extension.                                      |
+| [`conn.tls.version`](#conntlsversion)                 | `string` | The version of the TLS protocol used between the client and the ngrok edge.                                    |
 
 ### `conn.tls.cipher_suite`
 
@@ -17,6 +19,26 @@ The cipher suite selected during the TLS handshake.
 <ConfigExample
 	config={{
 		expressions: ["conn.tls.cipher_suite == 'TLS_AES_128_GCM_SHA256'"],
+	}}
+/>
+
+### `conn.tls.negotiated_alpn`
+
+The TLS Application-Layer Protocol Negotiation (ALPN) Protocol ID of the protocol agreed upon in the TLS handshake. Defaults to `""` if no ALPN was successfully negotiated.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.tls.negotiated_alpn == 'h2'"],
+	}}
+/>
+
+### `conn.tls.session_resumed`
+
+True if the TLS session was resumed. Currently always false as we do not yet support TLS session resumption.
+
+<ConfigExample
+	config={{
+		expressions: ["conn.tls.session_resumed == false"],
 	}}
 />
 
@@ -59,6 +81,7 @@ The following variables are available under the `conn.tls.client` namespace:
 | [`conn.tls.client.issuer.postal_code`](#conntlsclientissuerpostal_code)                   | `[]string`    | Postal code of the issuing authority.                                                                               |
 | [`conn.tls.client.issuer.province`](#conntlsclientissuerprovince)                         | `[]string`    | Province or state of the issuing authority.                                                                         |
 | [`conn.tls.client.issuer.street_address`](#conntlsclientissuerstreet_address)             | `[]string`    | Street address of the issuing authority.                                                                            |
+| [`conn.tls.client.pem`](#conntlsclientpem)                                                | `string`      | Full PEM-encoded client certificate of the TLS connection.                                                          |
 | [`conn.tls.client.san`](#conntlsclientsan)                                                | `string`      | Subject alternative names of the client certificate.                                                                |
 | [`conn.tls.client.san.dns_names`](#conntlsclientsandns_names)                             | `[]string`    | DNS names in the subject alternative names.                                                                         |
 | [`conn.tls.client.san.email_addresses`](#conntlsclientsanemail_addresses)                 | `[]string`    | Email addresses in the subject alternative names.                                                                   |
@@ -208,6 +231,19 @@ Street address of the issuing authority.
 	config={{
 		expressions: [
 			"conn.tls.client.issuer.street_address == ['1234 Encryption Way']",
+		],
+	}}
+/>
+
+### `conn.tls.client.pem`
+
+Full PEM-encoded client certificate of the TLS connection, with `\n` used for newlines.
+
+<ConfigExample
+	config={{
+		expressions: [
+			"conn.tls.client.pem.starts_with('-----BEGIN CERTIFICATE-----')",
+			"conn.tls.client.pem.ends_with('-----END CERTIFICATE-----')",
 		],
 	}}
 />

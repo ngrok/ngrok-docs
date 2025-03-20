@@ -21,7 +21,7 @@ protocol translation, and more, providing a single point of entry for clients an
 - [Sign up](https://dashboard.ngrok.com/signup) for an ngrok account if you don't already have one.
 - Deploy our [sample REST API](https://github.com/ngrok-samples/ngrok-rest-api) for testing purposes.
 - [Download](https://download.ngrok.com) the appropriate version of the ngrok agent, and install it on the same subnet as the API you wish to manage.
-- [Create an ngrok API key](https://dashboard.ngrok.com/api-keys/new) using the ngrok dashboard, and [add it to your agent](/docs/agent/#api-keys).
+- [Create an ngrok API key](https://dashboard.ngrok.com/api-keys/new) using the ngrok dashboard, and [add it to your agent](/agent/#api-keys).
 
 ## Set up sample API
 
@@ -66,7 +66,7 @@ npm run start
 Create an internal endpoint for one of the instances of the API by running the following command:
 
 ```bash
-ngrok http 8001 --url=https://api.internal
+ngrok http 8001 --url https://api.internal
 ```
 
 ## Reserve a domain
@@ -78,10 +78,10 @@ ngrok api reserved-domains create --domain {YOUR_NGROK_DOMAIN}
 ```
 
 This example uses an
-[ngrok-managed domain](/docs/network-edge/domains-and-tcp-addresses/#ngrok-managed-domains), but you can use
-your own [branded domain](/docs/network-edge/domains-and-tcp-addresses/#branded-domains) when you're ready for production.
+[ngrok-managed domain](/universal-gateway/domains/#ngrok-managed-domains), but you can use
+your own [branded domain](/universal-gateway/domains/#branded-domains) when you're ready for production.
 In that case, substitute your branded domain for `{YOUR_NGROK_DOMAIN}` in the command above, and
-[follow the steps](/docs/guides/other-guides/how-to-set-up-a-custom-domain/#create-cname-record-in-domain-dns)
+[follow the steps](/guides/other-guides/how-to-set-up-a-custom-domain/#create-cname-record-in-domain-dns)
 to configure DNS.
 
 If the domain you chose is already in use, you'll get a `400` error with a message to that effect. In that case, run the
@@ -107,7 +107,6 @@ on_http_request:
       - type: forward-internal
         config:
           url: https://api.internal
-          binding: internal
 ```
 
 ### Create a cloud endpoint
@@ -215,8 +214,8 @@ You can configure traffic policy rules to direct traffic based on HTTP header va
 To implement this example, run each of the following commands in a separate terminal to start internal endpoints to the two instances of the sample API:
 
 ```bash
-ngrok http 8001 --url=https://v1.api.internal
-ngrok http 8002 --url=https://v2.api.internal
+ngrok http 8001 --url https://v1.api.internal
+ngrok http 8002 --url https://v2.api.internal
 ```
 
 While these endpoints point to two separate instances of the same backend API, they simulate the scenario where you need to direct traffic to two
@@ -238,7 +237,6 @@ on_http_request:
       - type: forward-internal
         config:
           url: https://v1.api.internal
-          binding: internal
   - name: "Route traffic to API v2"
     expressions:
       - "'2' in req.headers['x-api-version']"
@@ -246,12 +244,10 @@ on_http_request:
       - type: forward-internal
         config:
           url: https://v2.api.internal
-          binding: internal
   - actions:
       - type: forward-internal
         config:
           url: https://v2.api.internal
-          binding: internal
 ```
 
 :::note
@@ -347,8 +343,8 @@ Path-based routing enables you to direct traffic to different backend services b
 To implement this example, run the following commands in separate terminals to start internal endpoints to the two instances of the sample API:
 
 ```bash
-ngrok http 8001 --url=https://hostA.api.internal
-ngrok http 8002 --url=https://hostB.api.internal
+ngrok http 8001 --url https://hostA.api.internal
+ngrok http 8002 --url https://hostB.api.internal
 ```
 
 While these endpoints point to two separate instances of the same backend API, they simulate the scenario where you need to direct
@@ -380,7 +376,6 @@ on_http_request:
       - type: forward-internal
         config:
           url: https://hostB.api.internal
-          binding: internal
 ```
 
 :::note
@@ -420,7 +415,7 @@ without exposing internal system details.
 Run the following command to start an internal endpoint:
 
 ```bash
-ngrok http 8001 --url=https://api.internal
+ngrok http 8001 --url https://api.internal
 ```
 
 #### Update your policy rules
@@ -443,7 +438,6 @@ on_http_request:
       - type: forward-internal
         config:
           url: https://api.internal
-          binding: internal
 ```
 
 :::note
@@ -473,16 +467,16 @@ that each of your clients has fair access to your API.
 Run the following command to start an internal endpoint:
 
 ```bash
-ngrok http 8001 --url=https://api.internal
+ngrok http 8001 --url https://api.internal
 ```
 
 #### Update your policy rules
 
 This traffic policy rule allows 10 requests over a 60 second window
 based on the API key of the client as determined by the value of the HTTP header. You can also limit by
-[endpoint](/docs/http/traffic-policy/gallery/#rate-limit-for-specific-endpoint),
-[authentication status](/docs/http/traffic-policy/gallery/#rate-limit-api-consumers-based-on-authentication-status),
-or [pricing tier](/docs/http/traffic-policy/gallery/#rate-limit-api-consumers-based-on-pricing-tiers).
+[endpoint](/traffic-policy/examples/rate-limit-requests/#by-endpoint),
+[authentication status](/traffic-policy/examples/rate-limit-requests/#based-on-authentication-status),
+or [pricing tier](/traffic-policy/examples/rate-limit-requests/#based-on-pricing-tiers).
 
 Copy the following contents into your `policy.yaml` file, overwriting all previous contents:
 
@@ -504,7 +498,6 @@ on_http_request:
       - type: forward-internal
         config:
           url: https://api.internal
-          binding: internal
 ```
 
 :::note
@@ -526,7 +519,7 @@ You can test the rate limiting action by running the following command, substitu
 for i in `seq 1 50`; do curl -X GET -w '%{http_code}' https://{YOUR_NGROK_DOMAIN}/cards ; done
 ```
 
-You'll see a response similar to [the first example](/docs/guides/api-gateway/get-started/#test-traffic-policies) until you
+You'll see a response similar to [the first example](/guides/api-gateway/get-started/#test-traffic-policies) until you
 hit the rate limit, and then you'll see `429` errors returned.
 
 Stop the agent to remove the internal endpoint you just created.
@@ -535,7 +528,7 @@ Stop the agent to remove the internal endpoint you just created.
 
 The JWT validation policy action allows you to integrate your ngrok endpoints with your existing authentication provider. This example provides
 step-by-step instructions for integrating with Auth0, but you can configure JWT validation for any OAuth provider. Check
-out our [integrations guides](/docs/integrations/) for specific examples.
+out our [integrations guides](/integrations/) for specific examples.
 
 #### Define your API in Auth0
 
@@ -565,7 +558,7 @@ generate one.
 Run the following command to start an internal endpoint:
 
 ```bash
-ngrok http 8001 --url=https://api.internal
+ngrok http 8001 --url https://api.internal
 ```
 
 #### Update your policy rules
@@ -609,7 +602,6 @@ on_http_request:
       - type: "forward-internal"
         config:
           url: "https://api.internal"
-          binding: internal
 ```
 
 #### Test traffic policies
@@ -622,7 +614,7 @@ curl -X GET https://{YOUR_NGROK_DOMAIN}/cards \
  --header "Authorization: Bearer {YOUR_JWT}"
 ```
 
-You'll receive a `200` response with [the same contents as before](/docs/guides/api-gateway/get-started/#test-traffic-policies).
+You'll receive a `200` response with [the same contents as before](/guides/api-gateway/get-started/#test-traffic-policies).
 
 Run the same command, switching out one character of your JWT, and you'll get a `403 Forbidden` error.
 
@@ -638,4 +630,4 @@ You'll receive a `401 Unauthorized` error. Your API is now protected from unauth
 
 You've successfully brought your API online and protected it with ngrok's API gateway, allowing you to offload non-functional
 requirements like rate limiting, authentication, routing, and global load balancing to ngrok. Check out our
-[rules gallery](/docs/http/traffic-policy/gallery/) to learn how to extend your traffic policy rules.
+[rules gallery](/traffic-policy/examples/a-b-tests/) to learn how to extend your traffic policy rules.

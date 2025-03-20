@@ -1,6 +1,5 @@
 import Link from "@docusaurus/Link";
 import { clsx } from "clsx";
-import React from "react";
 import type { ReactNode } from "react";
 
 const cardSizes = ["xs", "sm", "md", "lg", "xl"] as const;

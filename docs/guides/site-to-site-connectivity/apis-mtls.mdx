@@ -16,7 +16,7 @@ This example shows you how to securely run the ngrok agent at an external site t
 to locally running APIs. The connection will be end-to-end encrypted using mutual TLS (mTLS).
 
 For a deeper understanding for how mTLS is implemented within ngrok, reference the [Mutual TLS module
-page](/http/mutual-tls/).
+page](/traffic-policy/actions/terminate-tls/).
 
 :::tip
 Ready to educate your customers with information about why they must install the
@@ -131,7 +131,7 @@ https://api.ngrok.com/agent_ingresses
 
 ## Create a custom wildcard domain
 
-Next, create a custom [wildcard domain](/docs/network-edge/domains-and-tcp-addresses/#wildcard-domains), which will allow you to
+Next, create a custom [wildcard domain](/universal-gateway/domains/#wildcard-domains), which will allow you to
 create endpoints and receive traffic on any subdomain of your domain.
 
 For example, you might create `*.customer1.{YOUR_DOMAIN}`. You would then be able to create endpoints
@@ -254,7 +254,7 @@ This ACL will allow an agent with the authtoken to create tunnels on any subdoma
 
 ## Configure the ngrok agent API
 
-You can use the ngrok [agent API](/docs/agent/api/) to start and stop tunnels remotely, collect and replay captured requests,
+You can use the ngrok [agent API](/agent/api/) to start and stop tunnels remotely, collect and replay captured requests,
 and collect stats and metrics.
 
 The API runs on `localhost:4040` wherever the agent runs, but you can start an ngrok tunnel to make the API available
@@ -280,7 +280,7 @@ This is useful when your customer already uses ngrok and you wish to use the exi
 agent to serve the ngrok agent API.
 
 Refer to the `region_domain` values you saved when you created the custom agent ingress address.
-These are custom addresses for ngrok’s global [Points of Presence (POPs)](http://localhost:3000/docs/network-edge/#points-of-presence).
+These are custom addresses for ngrok’s global [Points of Presence (POPs)](/universal-gateway/points-of-presence/).
 Support for [Global Server Load Balancing (GSLB)](https://ngrok.com/blog-post/gslb-global-server-load-balancing)
 is not yet available when using a custom agent ingress address, so you’ll
 need to specify the POP this agent should use to connect to the ngrok platform.
@@ -291,16 +291,17 @@ including a subdomain to connect to the agent api, such as `agent.customer1.conf
 ```yaml
 #config.yml
 
-version: "2"
-authtoken: {YOUR_AUTHTOKEN_WITH_ACL}
-server_addr: {VALUE_FROM_REGION_DOMAINS}
+version: 3
+agent:
+  authtoken: {YOUR_AUTHTOKEN_WITH_ACL}
+  connect_url: {VALUE_FROM_REGION_DOMAINS}
+  inspect_db_size: -1
 
-tunnels:
-  agent-api:
-    proto: http
-    domain: agent.customer1.{ YOUR_DOMAIN }
-    addr: 4040
-    inspect: false
+endpoints:
+  - name: agent-api
+    url: https://agent.customer1.{ YOUR_DOMAIN }
+    upstream:
+      url: 4040
 ```
 
 ### Start the agent to access the agent API

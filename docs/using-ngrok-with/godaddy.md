@@ -6,7 +6,7 @@ title: GoDaddy
 
 This guide explains how to configure a custom domain in GoDaddy to work with ngrok.
 
-The guide assumes that you have already [added a reserved domain](/guides/how-to-set-up-a-custom-domain/) in ngrok with a subdomain (e.g. myapp.example.com).
+The guide assumes that you have already [added a reserved domain](/guides/other-guides/how-to-set-up-a-custom-domain/) in ngrok with a subdomain (e.g. myapp.example.com).
 
 ::::note
 GoDaddy does not support CNAMEs as apex records. An apex record is a DNS record at the root (or apex) of a DNS zone. For example, in the DNS zone example.com, an apex record also has the fully qualified name example.com (this is sometimes called a naked domain). By convention, the relative name '@' is used to represent apex records.
@@ -16,7 +16,7 @@ You will need to use a subdomain (e.g. `www.example.com`) when using ngrok.
 
 ## Step 1: Find your reserved domain in ngrok
 
-1. Log into the [ngrok Dashboard](https://dashboard.ngrok.com) and navigate to your domain in the [Domains section](https://dashboard.ngrok.com/cloud-edge/domains).
+1. Log into the [ngrok Dashboard](https://dashboard.ngrok.com) and navigate to your domain in the [Domains section](https://dashboard.ngrok.com/domains).
 1. Click in your domain to open the details, and click on the "DNS Targets" link in the top table. This will provide you with the relevant CNAME values to use in later steps.
 
 ## Step 2: Log in to Your GoDaddy Account & Access DNS Management

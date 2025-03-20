@@ -1,11 +1,17 @@
 ### Additional Information
 
-We encountered an issue when trying to process your card. We accept most major payment cards, but do not accept payment via PayPal, Venmo or any form of cryptocurrency at this time.
+We encountered an issue when trying to process your card.
 
-We also return this error when your card provider or bank declines your payment.
+- Your card provider or bank may have declined your payment.
+- We accept most major payment cards, but do not accept:
+  - PayPal
+  - Venmo
+  - Cryptocurrency
 
 ### Possible Solutions
 
-Please make sure you are using a credit card and that you have entered all the information correctly. If you are using a pre-paid card, please ensure your payment card account balance is enough to cover the cost of your purchase.
+- Confirm that you're using a valid credit card.
+- Confirm that your billing information is correct.
+- If you're using a pre-paid card, confirm that your account balance is sufficient.
 
 If you are repeatedly seeing this error, your bank or card provider may be able to provide additional information. While there's often not much we can do, you can email us with a request for further investigation.

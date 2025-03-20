@@ -15,18 +15,18 @@ import Tabs from "@theme/Tabs";
 
 In this guide, you'll learn how to install ngrok on any Linux ARM64 device to forward traffic from public endpoints to your upstream services or for remote management. You'll also create some a traffic policy to protect your device from unauthorized traffic.
 
-This guide is specific to ARM64 devices on Linux—if you're using a different device or CPU architecture, first check whether your platform meets the ngrok agent's [system and resource requirements](/docs/agent/#system-requirements). We also have other guides that may fit your use case more precisely:
+This guide is specific to ARM64 devices on Linux—if you're using a different device or CPU architecture, first check whether your platform meets the ngrok agent's [system and resource requirements](/agent/#system-requirements). We also have other guides that may fit your use case more precisely:
 
-- [Linux AMD64 devices](/docs/guides/device-gateway/linux.md)
-- [Raspberry Pi](/docs/guides/device-gateway/raspberry-pi.md)
-- [Raspberry Pi OS](/docs/guides/device-gateway/raspbian.md)
+- [Linux AMD64 devices](/guides/device-gateway/linux/)
+- [Raspberry Pi](/guides/device-gateway/raspberry-pi/)
+- [Raspberry Pi OS](/guides/device-gateway/raspbian/)
 
 ## Prerequisites
 
 To follow this guide, you need:
 
 - An [ngrok account](https://dashboard.ngrok.com/signup) (some features require a [pay-as-you-go plan](https://ngrok.com/pricing))
-- Any ARM64 device running Linux (see our [system requirements](/docs/agent/#system-requirements) for all supported architectures)
+- Any ARM64 device running Linux (see our [system requirements](/agent/#system-requirements) for all supported architectures)
 
 ## Step 1: Install the ngrok Agent
 
@@ -41,7 +41,7 @@ To follow this guide, you need:
 3. Unzip the file and move it to a directory in your `PATH`, like `/usr/local/bin`.
 
    ```bash
-   sudo tar xvzf ./ngrok-v3-stable-linux-amd64.tgz -C /usr/local/bin
+   sudo tar xvzf ./ngrok-v3-stable-linux-arm64.tgz -C /usr/local/bin
    ```
 
 4. Link the ngrok agent to your ngrok account with your authtoken, replacing `{NGROK_AUTHOKEN}` with the value found in your [ngrok dashboard](https://dashboard.ngrok.com/get-started/your-authtoken).
@@ -52,7 +52,7 @@ To follow this guide, you need:
 
 ## Step 2: Enable SSH access
 
-If you want to perform remote administration on your ARM64 device using a reserved TCP address and an encrypted tunnel, instead of relying on IP addresses, you can create a [TCP tunnel](/docs/tcp/index.mdx) at port `22` on your ARM64 device.
+If you want to perform remote administration on your ARM64 device using a reserved TCP address and an encrypted tunnel, instead of relying on IP addresses, you can create a [TCP tunnel](/universal-gateway/tcp/) at port `22` on your ARM64 device.
 
 1. Start the TCP tunnel with `ngrok`.
 
@@ -84,10 +84,10 @@ If you want to perform remote administration on your ARM64 device using a reserv
 
 ## Step 3: Enable ingress to a service on your ARM64-based Linux device
 
-Separately from SSH access, you can also use ngrok to create an [HTTP tunnel](/docs/http/index.mdx) to route traffic to specific applications or services running on your ARM64 device's `localhost` network.
+Separately from SSH access, you can also use ngrok to create an [HTTP tunnel](/universal-gateway/http/) to route traffic to specific applications or services running on your ARM64 device's `localhost` network.
 
 :::note
-If you already established a TCP tunnel for SSH access, you'll either need to create a second tunnel for the HTTP tunnel, or use the [agent configuration file](/docs/agent/config/v3/) to define multiple tunnels.
+If you already established a TCP tunnel for SSH access, you'll either need to create a second tunnel for the HTTP tunnel, or use the [agent configuration file](/agent/config/v3/) to define multiple tunnels.
 :::
 
 1. Use ngrok to create an HTTP tunnel at the port on which your service operates, e.g. port `8080`.
@@ -102,17 +102,17 @@ If you already established a TCP tunnel for SSH access, you'll either need to cr
    Forwarding                    https://12345.ngrok.app -> http://localhost:8080
    ```
 
-1. Optionally, you can reserve a [static subdomain](/docs/network-edge/domains-and-tcp-addresses.mdx) on `ngrok.app` or `ngrok.dev` like so:
+1. Optionally, you can reserve a [static subdomain](/universal-gateway/domains/) like so:
 
    ```
-   ngrok http 8080 --domain example.ngrok.app
+   ngrok http 8080 --url https://example.ngrok.app
    ```
 
 1. Open a browser and navigate to the endpoint, e.g. `https://12345.ngrok.app`, to access the service from any remote system.
 
 ## Step 4: Add a Traffic Policy to restrict IPs
 
-Now that you have SSH tunneling and service ingress handled via ngrok, you may also want to protect those services from unknown and untrusted users. You'll use the Traffic Policy module and the Restrict IPs action, which works with both [HTTPS](/docs/http/traffic-policy/actions/restrict-ips.mdx) and [TCP](/docs/tcp/traffic-policy/actions/restrict-ips.mdx) tunnels.
+Now that you have SSH tunneling and service ingress handled via ngrok, you may also want to protect those services from unknown and untrusted users. You'll use the [Restrict IPs](/traffic-policy/actions/restrict-ips) traffic policy action.
 
 1.  Create a new file on your ARM64 device, where you create ngrok tunnels, named `policy.yml`.
 
@@ -159,6 +159,6 @@ Now that you have SSH tunneling and service ingress handled via ngrok, you may a
 
 Now that you can create ngrok tunnels on your Linux ARM64 device and understand the fundamentals of managing traffic with policies, you can extend your usage to make your device—or even a fleet of them—ready for production usage.
 
-- Bring a [custom domain](/docs/guides/other-guides/how-to-set-up-a-custom-domain.md) to ngrok to create static endpoints.
-- Learn how to write an [agent configuration file](/docs/agent/config/v3/) to define and create multiple tunnels from a single command line.
-- Install [ngrok as a service](/docs/agent/index.mdx#background-service) to start after your ARM64 device boots and automatically restart after crashes.
+- Bring a [custom domain](/guides/other-guides/how-to-set-up-a-custom-domain/) to ngrok to create static endpoints.
+- Learn how to write an [agent configuration file](/agent/config/v3/) to define and create multiple tunnels from a single command line.
+- Install [ngrok as a service](/agent/#background-service) to start after your ARM64 device boots and automatically restart after crashes.

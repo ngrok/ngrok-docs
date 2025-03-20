@@ -1,5 +1,35 @@
-:::info
-
-This module is not supported by the ngrok Kubernetes Operator.
-
-:::
+```yaml
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: example-ingress
+  annotations:
+    k8s.ngrok.com/traffic-policy: example
+spec:
+  ingressClassName: ngrok
+  rules:
+    - host: your-domain.ngrok.app
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: example-service
+                port:
+                  number: 80
+---
+kind: NgrokTrafficPolicy
+apiVersion: ingress.k8s.ngrok.com/v1alpha1
+metadata:
+  name: example
+policy:
+  on_http_request:
+    - actions:
+        - type: basic-auth
+          config:
+            credentials:
+              - username1:password1
+              - username2:password2
+```
