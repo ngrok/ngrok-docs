@@ -1,3 +1,4 @@
+import BrowserOnly from "@docusaurus/BrowserOnly";
 import { useMDXComponents } from "@mdx-js/react";
 import {
 	Accordion,
@@ -9,7 +10,7 @@ import {
 } from "@ngrok/mantle/accordion";
 import { useState, type ReactNode } from "react";
 import YAML, { type ToStringOptions } from "yaml";
-import DocsCodeBlock from "./code-block";
+import DocsCodeBlock, { CodeBlockFallback } from "./code-block";
 import { LangSwitcher } from "./LangSwitcher";
 
 const showExample = (
@@ -115,7 +116,13 @@ export default function ConfigExample({
 	if (!components.h3) return <p>Error rendering config example.</p>;
 	return (
 		<>
-			{policySnippet}
+			<BrowserOnly
+				fallback={
+					<CodeBlockFallback className="mb-4">Loading…</CodeBlockFallback>
+				}
+			>
+				{() => policySnippet}
+			</BrowserOnly>
 			{showAgentConfig && (
 				<Accordion type="multiple" defaultValue={["show-agent-config"]}>
 					<AccordionItem value="show-agent-config1">

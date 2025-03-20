@@ -41,44 +41,54 @@ export function LangSwitcher({ children }: { children: any[] }) {
 	const structuredChildren = getStructuredChildren(children);
 
 	return (
-		<Tabs
-			orientation="horizontal"
-			defaultValue={
-				getDefaultTab(structuredChildren) || structuredChildren[0]?.language
+		<BrowserOnly
+			fallback={
+				<CodeBlockFallback className="mb-4">Loading…</CodeBlockFallback>
 			}
 		>
-			<TabsList>
-				{structuredChildren.map((child: any) => (
-					<TabsTrigger
-						onClick={() => localStorage.setItem(paramName, child.language)}
-						key={child.content}
-						value={child.language}
-					>
-						{child.language.toUpperCase()}
-					</TabsTrigger>
-				))}
-			</TabsList>
-			{structuredChildren.map((child: any) => (
-				<TabsContent
-					key={child.content + child.language}
-					value={child.language}
+			{() => (
+				<Tabs
+					orientation="horizontal"
+					defaultValue={
+						getDefaultTab(structuredChildren) || structuredChildren[0]?.language
+					}
 				>
-					<BrowserOnly
-						fallback={
-							<CodeBlockFallback className="mb-4">Loading…</CodeBlockFallback>
-						}
-					>
-						{() => (
-							<DocsCodeBlock
-								className={child.language}
-								metastring={`title=${child.title}`}
+					<TabsList>
+						{structuredChildren.map((child: any) => (
+							<TabsTrigger
+								onClick={() => localStorage.setItem(paramName, child.language)}
+								key={child.content}
+								value={child.language}
 							>
-								{child.content}
-							</DocsCodeBlock>
-						)}
-					</BrowserOnly>
-				</TabsContent>
-			))}
-		</Tabs>
+								{child.language.toUpperCase()}
+							</TabsTrigger>
+						))}
+					</TabsList>
+					{structuredChildren.map((child: any) => (
+						<TabsContent
+							key={child.content + child.language}
+							value={child.language}
+						>
+							<BrowserOnly
+								fallback={
+									<CodeBlockFallback className="mb-4">
+										Loading…
+									</CodeBlockFallback>
+								}
+							>
+								{() => (
+									<DocsCodeBlock
+										className={child.language}
+										metastring={`title=${child.title}`}
+									>
+										{child.content}
+									</DocsCodeBlock>
+								)}
+							</BrowserOnly>
+						</TabsContent>
+					))}
+				</Tabs>
+			)}
+		</BrowserOnly>
 	);
 }
