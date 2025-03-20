@@ -41,6 +41,7 @@ export function LangSwitcher({ children }: { children: any[] }) {
 	const structuredChildren = getStructuredChildren(children);
 
 	return (
+		// This uses localstorage, so can only run in the browser
 		<BrowserOnly
 			fallback={
 				<CodeBlockFallback className="mb-4">Loading…</CodeBlockFallback>
