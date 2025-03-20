@@ -220,7 +220,6 @@ By following the best practices in this document, you can secure ngrok usage by 
 ![All developers on the same ngrok tenant with best practices applied](img/4.png)
 
 - Visit our [Universal Gateway docs](/docs/universal-gateway) to explore more of
-	ngrok's interfaces and what you can do with them.
+  ngrok's interfaces and what you can do with them.
 - Learn more about filtering, managing, and taking action on traffic with our
-	[Traffic Policy system](/docs/traffic-policy).
-
+  [Traffic Policy system](/docs/traffic-policy).
