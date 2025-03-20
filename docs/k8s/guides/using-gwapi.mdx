@@ -44,32 +44,32 @@ The `NgrokTrafficPolicy` must be in the same namespace as the `Gateway`
 apiVersion: ngrok.k8s.ngrok.com/v1alpha1
 kind: NgrokTrafficPolicy
 metadata:
-  name: remove-header
-  namespace: default
+	name: remove-header
+	namespace: default
 spec:
-  policy:
-    on_http_request:
-      - name: Remove Bad Header
-        actions:
-          - type: remove-headers
-            config:
-              headers:
-                - "X-Removed-Header"
+	policy:
+		on_http_request:
+			- name: Remove Bad Header
+				actions:
+					- type: remove-headers
+						config:
+							headers:
+								- "X-Removed-Header"
 ---
 apiVersion: gateway.networking.k8s.io/v1
 kind: Gateway
 metadata:
-  name: example-gateway
-  namespace: default
-  annotations:
-    k8s.ngrok.com/traffic-policy: remove-header
+	name: example-gateway
+	namespace: default
+	annotations:
+		k8s.ngrok.com/traffic-policy: remove-header
 spec:
-  gatewayClassName: ngrok
-  listeners:
-    - name: example-hostname
-      hostname: "example-hostname.ngrok.io"
-      port: 443
-      protocol: HTTPS
+	gatewayClassName: ngrok
+	listeners:
+		- name: example-hostname
+			hostname: "example-hostname.ngrok.io"
+			port: 443
+			protocol: HTTPS
 ```
 
 ### Use `NgrokTrafficPolicy` on `HTTPRoutes`
@@ -85,58 +85,58 @@ While redundant, this example showcases both methods.
 apiVersion: ngrok.k8s.ngrok.com/v1alpha1
 kind: NgrokTrafficPolicy
 metadata:
-  name: basic-auth
-  namespace: default
+	name: basic-auth
+	namespace: default
 spec:
-  policy:
-    on_http_request:
-      - actions:
-          - type: basic-auth
-            config:
-              realm: sample-realm
-              credentials:
-                - user:password1
-                - admin:password2
-              enforce: true
-          - type: custom-response
-            config:
-              status_code: 200
-              headers:
-                content-type: text/plain
-              content: Successfully Authenticated!
+	policy:
+		on_http_request:
+			- actions:
+					- type: basic-auth
+						config:
+							realm: sample-realm
+							credentials:
+								- user:password1
+								- admin:password2
+							enforce: true
+					- type: custom-response
+						config:
+							status_code: 200
+							headers:
+								content-type: text/plain
+							content: Successfully Authenticated!
 ---
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
-  name: example-route
-  namespace: default
+	name: example-route
+	namespace: default
 spec:
-  hostnames:
-  - example-hostname.ngrok.io
-  parentRefs:
-  - group: gateway.networking.k8s.io
-    kind: Gateway
-    name: example-gateway
-    namespace: default
-  rules:
-  - matches:
-      - path:
-          type: PathPrefix
-          value: /
-    backendRefs:
-      - group: ""
-        kind: Service
-        name: example-service
-        port: 80
-        weight: 1
-        filters:
-        - type: ExtensionRef
+	hostnames:
+	- example-hostname.ngrok.io
+	parentRefs:
+	- group: gateway.networking.k8s.io
+		kind: Gateway
+		name: example-gateway
+		namespace: default
+	rules:
+	- matches:
+			- path:
+					type: PathPrefix
+					value: /
+		backendRefs:
+			- group: ""
+				kind: Service
+				name: example-service
+				port: 80
+				weight: 1
+				filters:
+				- type: ExtensionRef
 					extensionRef:
 						group: "ngrok.k8s.ngrok.com"
 						kind: "NgrokTrafficPolicy"
 						name: basic-auth
-    filters:
-    - type: ExtensionRef
+		filters:
+		- type: ExtensionRef
 			extensionRef:
 				group: "ngrok.k8s.ngrok.com"
 				kind: "NgrokTrafficPolicy"
@@ -152,21 +152,21 @@ For example, the following `Service` uses the annotation to let the operator kno
 apiVersion: v1
 kind: Service
 metadata:
-  name: example-service
-  labels:
-    app: example-app
-  annotations:
-    k8s.ngrok.com/app-protocols: '{"https-port":"https","http-port":"http"}'
+	name: example-service
+	labels:
+		app: example-app
+	annotations:
+		k8s.ngrok.com/app-protocols: '{"https-port":"https","http-port":"http"}'
 spec:
-  ports:
-    - name: https-port
-      port: 443
-      protocol: TCP
-      targetPort: 8443
-    - name: http-port
-      port: 80
-      protocol: TCP
-      targetPort: 8080
-  selector:
-    app: example-app
+	ports:
+		- name: https-port
+			port: 443
+			protocol: TCP
+			targetPort: 8443
+		- name: http-port
+			port: 80
+			protocol: TCP
+			targetPort: 8080
+	selector:
+		app: example-app
 ```

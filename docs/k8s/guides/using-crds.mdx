@@ -27,9 +27,9 @@ The following example will create a publicly accessible `AgentEndpoint` that for
 apiVersion: ngrok.k8s.ngrok.com/v1alpha1
 kind: AgentEndpoint
 metadata:
-  name: example-agent-endpoint
+	name: example-agent-endpoint
 spec:
-  url: https://example-agent-endpoint.ngrok.io
+	url: https://example-agent-endpoint.ngrok.io
 	upstream:
 		url: http://my-service.my-namespace:8080
 ```
@@ -42,24 +42,24 @@ The following example showcases an `AgentEndpoint` with in-line traffic policy c
 apiVersion: ngrok.k8s.ngrok.com/v1alpha1
 kind: AgentEndpoint
 metadata:
-  name: example-agent-endpoint
+	name: example-agent-endpoint
 spec:
-  url: https://example-agent-endpoint.ngrok.io
+	url: https://example-agent-endpoint.ngrok.io
 	upstream:
 		url: http://my-service.my-namespace:8080
 	trafficPolicy:
-    inline:
-      on_http_request:
+		inline:
+			on_http_request:
 			- name: example-rule
 				expressions:
-        - req.url.query_params['debug'][0]=='true'
-        actions:
+				- req.url.query_params['debug'][0]=='true'
+				actions:
 				- type: custom-response
-          config:
-            content: Example response from traffic policy
-            headers:
-              content-type: text/plain
-            status_code: 200
+					config:
+						content: Example response from traffic policy
+						headers:
+							content-type: text/plain
+						status_code: 200
 ```
 
 ### `AgentEndpoint` with referenced `NgrokTrafficPolicy`
@@ -70,33 +70,33 @@ The following example showcases an `AgentEndpoint` with traffic policy configura
 apiVersion: ngrok.k8s.ngrok.com/v1alpha1
 kind: NgrokTrafficPolicy
 metadata:
-  name: example-tp
-  namespace: default
+	name: example-tp
+	namespace: default
 spec:
-  policy:
-    on_http_request:
+	policy:
+		on_http_request:
 		- name: example-rule
 			expressions:
-      - req.url.query_params['debug'][0]=='true'
-      actions:
+			- req.url.query_params['debug'][0]=='true'
+			actions:
 			- type: custom-response
-        config:
-          content: Example response from traffic policy
-          headers:
-            content-type: text/plain
-          status_code: 200
+				config:
+					content: Example response from traffic policy
+					headers:
+						content-type: text/plain
+					status_code: 200
 ---
 apiVersion: ngrok.k8s.ngrok.com/v1alpha1
 kind: AgentEndpoint
 metadata:
-  name: example-agent-endpoint
+	name: example-agent-endpoint
 spec:
-  url: https://example-agent-endpoint.ngrok.io
+	url: https://example-agent-endpoint.ngrok.io
 	upstream:
 		url: http://my-service.my-namespace:8080
 	trafficPolicy:
-    targetRef:
-      name: example-tp
+		targetRef:
+			name: example-tp
 ```
 
 ### `AgentEndpoint` with client certificates
@@ -111,9 +111,9 @@ If you would like to enforce mutual TLS, you can reference `Secret` objects that
 apiVersion: ngrok.k8s.ngrok.com/v1alpha1
 kind: AgentEndpoint
 metadata:
-  name: example-agent-endpoint
+	name: example-agent-endpoint
 spec:
-  url: https://example-agent-endpoint.ngrok.io
+	url: https://example-agent-endpoint.ngrok.io
 	upstream:
 		url: https://my-https-service.my-namespace:8443
 	clientCertificateRefs:
@@ -127,20 +127,17 @@ With AgentEndpoints, While the public URL of an endpoint may have a scheme such 
 You can create an endpoint with an `http://` scheme as the public URL and still use `https://` as the scheme for the upstream URL.
 The following Agent Endpoint accepts cleartext HTTP connections at http://example-http-domain.ngrok.app, and forwards to the kubernetes service `https://example-service.default` on port `443` over HTTPS.
 
-    ```yaml
-    ---
-
+```yaml
 apiVersion: ngrok.k8s.ngrok.com/v1alpha1
 kind: AgentEndpoint
 metadata:
-name: example-agent-endpoint
-namespace: default
+	name: example-agent-endpoint
+	namespace: default
 spec:
-upstream:
-url: https://example-service.default:443
-url: http://example-http-domain.ngrok.app
-
-````
+	url: http://example-http-domain.ngrok.app
+	upstream:
+		url: https://example-service.default:443
+```
 
 ## Using `CloudEndpoint`
 
