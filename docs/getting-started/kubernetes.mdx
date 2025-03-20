@@ -1,8 +1,186 @@
 ---
-title: Kubernetes
-pagination_next: universal-gateway/http
+title: Install
+pagination_next: k8s/guides/quickstart
 ---
 
-import K8sIngressInstallExample from "/k8s/installation/install.mdx";
+import TabItem from "@theme/TabItem";
+import Tabs from "@theme/Tabs";
 
-<K8sIngressInstallExample />
+# Install the ngrok Kubernetes Operator
+
+## Prerequisites
+
+- A K8s cluster with kubectl access - We recommend using a recent version of K8s and will specify and test past versions as a part of [this GitHub issue](https://github.com/ngrok/ngrok-operator/issues/154)
+- [helm](https://helm.sh/docs/intro/install/) - 3.0.0 or later.
+
+**Need a quick cluster for testing/development? Check out the [local cluster guide](/k8s/guides/local-cluster) first!**
+
+## Installation
+
+### 1. Add the ngrok Helm chart
+
+```bash
+helm repo add ngrok https://charts.ngrok.com
+helm repo update
+```
+
+:::note
+Whenever you want to update the operator or install a new version, you must run `helm repo update` to fetch the latest charts.
+:::
+
+### 2. Get your ngrok API Key and Auth Token
+
+In order to use the ngrok Kubernetes Operator, you will need an ngrok account.
+Once you have an account, you will need to log into the [ngrok dashboard](https://dashboard.ngrok.com) to gather the necessary credentials.
+
+You will need two things from the dashboard:
+
+- Your auth token, which can be found [here](https://dashboard.ngrok.com/get-started/your-authtoken)
+- An API key, which can be generaterd [here](https://dashboard.ngrok.com/api)
+
+These credentials will be created as a Kubernetes secret, which the controller will have access to.
+The auth token is used to create tunnels, and the API key is used to manage resources via the ngrok API.
+
+```bash
+export NGROK_AUTHTOKEN=your coppied auth token goes here
+export NGROK_API_KEY=your coppied api key goes here
+```
+
+### 3. Select your Namespace
+
+Set the following variable to whatever you would like the installation namespace to be.
+We recommend using the default `ngrok-operator` namespace unless you need to change that.
+
+```bash
+export NAMESPACE=ngrok-operator
+```
+
+### 4. (Optional) Install Gateway API CRDs
+
+If you plan on using the Gateway API CRDs with the ngrok Kubernetes operator, install them before the operator.
+When the operator starts up it will enable support for Gateway API if the Gateway API CRDs are detected in your cluster.
+If you do not plan on using the Gateway API, then you can ignore this optional step.
+The Gateway API CRDs can be installed at a later point, but you will need to restart the operator after installing the Gateway API CRDs
+for the Gateway API support to be enabled.
+
+You can select either the standard or experimental set of Gateway API CRDs depending on your preference. Either verison will work with the ngrok Kubernetes operator.
+
+https://gateway-api.sigs.k8s.io/guides/
+
+After installing the Gateway API CRDs, create the following `GatewayClass` so that you can mark which Gateway API resources that the ngrok operator should handle
+
+```bash
+kubectl apply -f -<<EOF
+apiVersion: gateway.networking.k8s.io/v1
+kind: GatewayClass
+metadata:
+  name: ngrok
+spec:
+  controllerName: ngrok.com/gateway-controller
+EOF
+```
+
+### 5. (optional) Find a Specific Version
+
+The following command will print out a list of all the available versions of the ngrok Kubernetes operator chart including development releases.
+
+If you want to update to a specific release of the operator instead of updating to the latest version, you add `--version <Chart Version>` to the
+following `helm install` command.
+
+This step is necessary if you plan on upgrading to a development version as helm will never install these versions for you unless you explicitly
+specify that you want to install a development version. Development versions are considered any version that does not follow the format `<major version>.<minor version>.<patch version>` such as `0.17.0-rc.1`.
+Many of the development versions of the ngrok Kubernetes opator follow that format with `rc` standing for Release Candidate. These are early development builds before an official release
+and may contain features that have not been fully implemented or bugs that have not been identified through testing.
+
+```bash
+helm search repo ngrok/ngrok-operator --versions --devel
+```
+
+### 6. Install the Operator
+
+While you can pass the credential values directly via helm values like the below simple example shows, we do not recommend this for production scenarios.
+Instead, we recommend creating a Kubernetes secret and passing the secret name to the helm chart.
+This allows for easier infrastructure as code and prevents users with access to the cluster from viewing the API key and auth token using commands like `helm get values`.
+Select one of the below options based on which method you are comfortable with.
+
+<Tabs groupId="k8s" queryString="k8s-install">
+	<TabItem value="simple" label="Simple Method" default>
+		```bash
+		helm install ngrok-operator ngrok/ngrok-operator \
+    --namespace $NAMESPACE \
+    --create-namespace \
+    --set credentials.apiKey=$NGROK_API_KEY \
+    --set credentials.authtoken=$NGROK_AUTHTOKEN
+		```
+	</TabItem>
+	<TabItem value="secure" label="More Secure Method">
+		First, prepare the Secret for your credentials
+
+    ```bash
+    export ENCODED_NGROK_AUTHTOKEN=$(echo -n "$NGROK_AUTHTOKEN" | base64)
+    export ENCODED_NGROK_API_KEY=$(echo -n "$NGROK_API_KEY" | base64)
+    kubectl apply -f -<<EOF
+    apiVersion: v1
+    kind: Secret
+    metadata:
+      name: ngrok-operator-credentials
+      namespace: $NAMESPACE
+    data:
+      API_KEY: "$ENCODED_NGROK_API_KEY"
+      AUTHTOKEN: "$ENCODED_NGROK_AUTHTOKEN"
+    EOF
+    ```
+
+    Next, install the operator
+
+    ```bash
+    helm install ngrok-operator ngrok/ngrok-operator \
+    --namespace $NAMESPACE \
+    --create-namespace \
+    --set credentials.secret.name=ngrok-operator-credentials \
+    ```
+    </TabItem>
+
+</Tabs>
+
+## Next Steps
+
+The following will help you learn more about the ngrok Kubernetes operator and get started with it.
+
+### Getting Started Guide
+
+Head to the [quickstart guide](/k8s/guides/quickstart) to get started with an example deployment.
+
+### Pricing
+
+The ngrok Kubernetes Operator is available to all ngrok users at no
+additional charge. You only incur costs if the resources provisioned by the
+controller incur a cost. More details can be found on our [pricing page](https://ngrok.com/pricing).
+
+### Helm Configuration Values
+
+This section provides some common use cases and recommendations when using this helm chart in a production setting. The Helm chart offers a variety of overrides that are useful for many different use cases in Kubernetes. Below is a list of common recipes that you may find helpful. If your use case is not achievable with the existing set of values, please log an issue detailing your use case and the values you would like to see added. For a full list of values, see [here](https://github.com/ngrok/ngrok-operator/blob/main/helm/k8s-operator/values.yaml).
+
+### Deployment Scaling
+
+By default, the replica count is set to 1 via `replicaCount` . We recommend overriding this to 2 or more to ensure high availability during roll-outs and failures, and to spread out the load.
+
+### ngrok Region
+
+ngrok runs globally distributed tunnel servers around the world to enable fast, low latency traffic to your applications. See [ngrok's points of presence](/universal-gateway/points-of-presence/) for more information on ngrok's regions.
+
+Similar to the agent, if you do not explicitly pick a region via helm when installing the operator, the operator will attempt to pick the region with the least latency, which is usually the one geographically closest to your machine.
+
+See the [helm value `region`](/k8s/installation/helm) to configure a specific region for the controller to use.
+
+### Metrics
+
+This operator exposes prometheus metrics on the `/metrics` endpoint. The metrics are exposed on the `:8080` port and can be scraped by prometheus or other services using typical means.
+
+This project is built using kube-builder, so out of the box it exposes the metrics listed [here](https://book.kubebuilder.io/reference/metrics-reference.html?highlight=metrics#default-exported-metrics-references)
+
+### Watching Specific Namespacves
+
+By default, the Operator watches all namespaces.
+It's a common use case to need a controller to watch only a specific namespace in the case where you may run a controller in a namespace for each team or environment.
+In order to watch only a specific namespace for ingress objects, you can set the helm value `watchNamespace` to the namespace you want to watch.
