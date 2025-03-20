@@ -6,6 +6,10 @@ title: Changelog
 
 ## v3
 
+### ngrok Agent 3.22.0 \[2025-03-20\]
+
+- Fixed a bug where TCP KeepAlive support could cause a crash on old versions of Windows
+
 ### ngrok Agent 3.21.0 \[2025-03-13\]
 
 - Add TCP KeepAlive configuration option.
