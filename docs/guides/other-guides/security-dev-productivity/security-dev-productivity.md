@@ -1,24 +1,10 @@
 ---
+title: Best security practices for developer productivity
+sidebar_label: Secure developer productivity
 sidebar_position: 3
-title: Secure developer productivity
 ---
 
 # Best security practices for developer productivity
-
-:::note
-This guide describes the best practices and features organizations can apply to consistently secure developers using ngrok while leveraging their existing security investments.
-For a printed version, please [download the PDF](pathname:///other/best_practices_dev_security.pdf).
-
-![ngrok best practices](img/0.png)
-:::
-
-## Table of contents
-
-import TOCInline from '@theme/TOCInline';
-
-<TOCInline toc={toc} />
-
-## Introduction
 
 ngrok is the leading way to make apps available on the internet, trusted by more than seven million developers and recommended by category leaders, such as Twilio, GitHub, Okta, Microsoft, Zoom, and Shopify.
 
@@ -26,7 +12,13 @@ While developers use ngrok for productivity, organizations must ensure security 
 
 This guide describes the best practices and features organizations can apply to consistently secure developers using ngrok while leveraging their existing security investments.
 
-### Why do developers use ngrok?
+## Table of contents
+
+import TOCInline from '@theme/TOCInline';
+
+<TOCInline toc={toc} />
+
+## Why do developers use ngrok?
 
 Developers use ngrok to increase their productivity while building and validating software in a few ways:
 
@@ -43,7 +35,7 @@ By using ngrok as a universal gateway to their APIs and apps, developers elimina
 
 ![development and test cycle with ngrok](img/1.png)
 
-### How does ngrok secure traffic orchestration?
+## How does ngrok secure traffic orchestration?
 
 While most developers begin and end their ngrok usage with simple connectivity, ngrok makes it easy to secure your network traffic with [Traffic Policy](/docs/traffic-policy/index.mdx), a flexible configuration language to filter, manage, and orchestrate traffic exactly as you need.
 
@@ -59,8 +51,6 @@ Leveraging and combining edge components allows you to meet your security requir
 
 Many organizations allow developers to use ngrok at an individual level. In this deployment model, each developer owns and manages their ngrok tenants and decides which security policies, from ngrok settings to Traffic Policy rules, to apply to their agents and endpoints:
 
-![Each developer manages their ngrok tenant with different levels of security](img/3.png)
-
 This leads to three challenges:
 
 - **Security inconsistency**: Each developer applies ngrok security based on their own needs and discretion, making security controls inconsistent.
@@ -71,9 +61,7 @@ By following the best practices, organizations manage the ngrok usage in a singl
 
 ![All developers on the same ngrok tenant with best practices applied](img/4.png)
 
-## Best practices
-
-### 1. Elect a tenant for team usage
+## Elect a tenant for team usage
 
 To implement security best practices consistently and enable security operations at scale, we recommend using a unified tenant for the team, with a limited number of administrators.
 
@@ -83,33 +71,42 @@ The process of electing and setting up a single tenant involves the following st
 1. Create administrative accounts for your security and management teams.
 1. Invite developers to use ngrok with limited access.
 
-Developers will receive an invitation in their emails to the unified tenant. On sign-in, developers can enter the setup command to reassociate their ngrok agent(s) with your team tenant:
+Developers will receive an invitation in their emails to the unified tenant. On sign-in, developers can enter the setup command to reassociate their ngrok agent(s) with your team tenant with `ngrok config add-authtoken ...`.
 
-![The process of onboarding ngrok users on the new tenant](img/5.png)
-
-### 2. Add authentication to public-facing URLs
+## Add authentication to public-facing URLs
 
 With OAuth and SAML SSO, you can leverage your company's identity solution (SSO/MFA) or social providers to restrict access to specific public endpoints. ngrok enforces the authentication at the edge and block unauthorized calls before they reach your APIs/apps, providing authentication, authorization, and auditing events while preventing reconnaissance campaigns and DDoS attacks.
 
 ngrok lets you configure authentication in different ways:
 
-#### Enterprise authentication and MFA
+### Enterprise authentication and MFA
 
-Use any SAML or OIDC-compliant provider — such as Okta, Microsoft Azure AD or AD FS, Ping, and Auth0 — to control access to public endpoints. This integration leverages the strong authentication mechanisms and policies defined in your identity solution, such as Okta Verify, ThreatInsights, and FastPass, Azure Conditional Access, PingID's MFA, WebAuthn, and Yubikeys.
+Use any OIDC-compliant provider—such as Okta, Microsoft Azure AD or AD
+FS, Ping, and Auth0—to control access to public endpoints.
+
+With the [`openid-connect` Traffic Policy
+action](/docs/traffic-policy/actions/oidc), you can enforce strong
+authentication mechanisms and policies defined in your identity solution, such
+as Okta Verify, ThreatInsights, and FastPass, Azure
+Conditional Access, PingID's MFA, WebAuthn, and Yubikeys.
 
 ```yaml
 on_http_request:
   - actions:
-      - type: oauth
+      - type: openid-connect
         config:
-          provider: okta
-          client_id: https://<YOUR_ORG>.okta.com
-          client_secret: <SECRET_PROVIDED_BY_OKTA>
+          issuer_url: "<ISSUER_URL>"
+          client_id: "<YOUR_APP_CLIIENT_ID>"
+          client_secret: "<YOUR_APP_CLIENT_SECRET>"
+          scopes:
+            - openid
+            - profile
+            - email
 ```
 
-#### Social authentication
+### Social authentication
 
-In addition to enterprise identity, you can use Traffic Policy configure your endpoints to use social providers, such as GitHub and Google, for authentication. Social identity providers deliver a lightweight option for securing contractors or temp workers without onboarding them in your enterprise SSO solution.
+In addition to enterprise identity, you can use the [`oauth` Traffic Policy Action](/docs/traffic-policy/actions/oauth/) configure your endpoints to use social providers, such as GitHub and Google, for authentication. Social identity providers deliver a lightweight option for securing contractors or temp workers without onboarding them in your enterprise SSO solution.
 
 ```yaml
 on_http_request:
@@ -134,9 +131,9 @@ on_http_request:
       - type: deny
 ```
 
-### 3. Secure webhook communications
+## Secure webhook communications
 
-By using [webhook verification action](/docs/traffic-policy/actions/verify-webhook.mdx) in Traffic Policy, you can ensure only legitimate webhook calls are sent to your endpoints. For example, the following rule would verify all incoming PagerDuty webhooks against the secret value `secret!`, which you set when creating a [generic webhook](/docs/integrations/pagerduty/webhooks.mdx#setup-webhook).
+With the [`verify-webhook` Traffic Policy action](/docs/traffic-policy/actions/verify-webhook), you can ensure only legitimate webhook calls are sent to your endpoints. For example, the following rule would verify all incoming PagerDuty webhooks against the secret value `secret!`, which you set when creating a [generic webhook](/docs/integrations/pagerduty/webhooks.mdx#setup-webhook).
 
 ```yaml
 on_http_request:
@@ -147,9 +144,9 @@ on_http_request:
           secret: secret!
 ```
 
-With webhook verification, ngrok authenticates webhook request authenticity and message integrity at the edge. As a result, unauthorized calls are blocked even before they even reach your developer's apps, providing authentication and integrity while preventing reconnaissance campaigns and DDoS attacks. To learn more, check our [webhook verification](/docs/traffic-policy/actions/verify-webhook.mdx) docs and documentation of providers such as [GitHub](https://ngrok.com/docs/integrations/github/webhooks/), [Okta](https://ngrok.com/docs/integrations/okta/webhooks/), and [Twilio](https://ngrok.com/docs/integrations/twilio/webhooks/).
+With webhook verification, ngrok authenticates webhook request authenticity and message integrity at the edge. As a result, unauthorized calls are blocked even before they even reach your developer's apps, providing authentication and integrity while preventing reconnaissance campaigns and DDoS attacks. To learn more, check our [webhook verification](/docs/traffic-policy/actions/verify-webhook) docs and documentation of providers such as [GitHub](/docs/integrations/github/webhooks/), [Okta](/docs/integrations/okta/webhooks/), and [Twilio](/docs/integrations/twilio/webhooks/).
 
-### 4. Enable IP Policies
+## Enable IP Policies
 
 [IP Policies](https://dashboard.ngrok.com/ip-policies/) allow companies to restrict access to ngrok based on IPs on all ngrok network communications, including:
 
@@ -173,7 +170,7 @@ IP Policies can be combined with other security controls, such as network, ident
 - Combining **IP Policies and SSO/MFA** helps ensure that **only authenticated users on approved networks** can access ngrok endpoints.
 - Combining **IP Policies and webhook verification** helps ensure that **only webhook calls from expected IPs** — i.e., [Brex](https://developer.brex.com/docs/webhooks/#ip-whitelisting), [Castle](https://docs.castle.io/docs/webhooks#allowlisting-castle-ips), and [Zoom](https://developers.zoom.us/docs/api/rest/webhook-reference/#ip-addresses), **authenticated and with message integrity** can reach your developer environment.
 
-### 5. Enforce and restrict ngrok agents with ACLs
+## Enforce and restrict ngrok agents with ACLs
 
 After implementing access control, webhook security, and IP restrictions, companies must ensure developers launch only endpoints that adhere to security-defined policies. This enforcement can be achieved by using tunnel authtokens with ACLs.
 
@@ -185,7 +182,7 @@ alt="Use ACLs to restrict access to specific configurations and domains"
 className="border rounded"
 />
 
-### 6. Track and block unauthorized activity
+## Track and block unauthorized activity
 
 To ensure ngrok endpoints leverage right security policies, many organizations want to identify and block the use of independent ngrok accounts — using free plans and without the enterprise security controls — inside their networks. Organizations can accomplish that by defining custom ingress domains within ngrok while blocking free ngrok traffic.
 
@@ -202,7 +199,7 @@ alt="Define a custom ingress with records for your DNS server"
 className="border rounded"
 />
 
-### 7. Add SSO and MFA to the admin UI
+## Add SSO and MFA to the admin UI
 
 With Dashboard SSO, you can restrict access to the ngrok administrative interface only for users authenticated in your identity providers — such as Okta, Azure AD, Ping, AD FS, and Auth0. The ngrok dashboard SSO works with any SAML provider, and can be used with your identity provider MFA — i.e., Windows Hello, Okta Verify, FIDO, and PingID — to ensure two-factor authentication (2FA) in compliance with your security requirements.
 
@@ -212,7 +209,7 @@ alt="Enable both MFA for all accounts and SSO for new developer accounts"
 className="border rounded"
 />
 
-## Conclusion
+## What's next?
 
 Developers use ngrok to increase productivity, whether that's bringing APIs and
 apps to production or sharing in-development services running on `localhost`
@@ -222,7 +219,8 @@ By following the best practices in this document, you can secure ngrok usage by 
 
 ![All developers on the same ngrok tenant with best practices applied](img/4.png)
 
-## Learn more
+- Visit our [Universal Gateway docs](/docs/universal-gateway) to explore more of
+	ngrok's interfaces and what you can do with them.
+- Learn more about filtering, managing, and taking action on traffic with our
+	[Traffic Policy system](/docs/traffic-policy).
 
-- Visit [the product page](https://ngrok.com/product) to learn more about ngrok’s capabilities.
-- To explore configuration options, visit [the docs](/docs).
