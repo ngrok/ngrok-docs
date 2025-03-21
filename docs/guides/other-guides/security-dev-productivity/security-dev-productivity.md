@@ -2,34 +2,33 @@
 title: Best security practices for developer productivity
 sidebar_label: Secure developer productivity
 sidebar_position: 3
+toc_max_heading_level: 2
 ---
 
-# Best security practices for developer productivity
-
-ngrok is the leading way to make apps available on the internet, trusted by more than seven million developers and recommended by category leaders, such as Twilio, GitHub, Okta, Microsoft, Zoom, and Shopify.
-
-While developers use ngrok for productivity, organizations must ensure security controls — such as single sign-on, MFA, network security, auditing, and shadow IT policies — are consistently applied across all networks, including ngrok communications.
+While developers use ngrok for productivity, organizations must ensure security controls such as single sign-on, MFA, network security, auditing, shadow IT policies, and more, are consistently applied across all networks, including ngrok communications.
 
 This guide describes the best practices and features organizations can apply to consistently secure developers using ngrok while leveraging their existing security investments.
 
-## Table of contents
-
-import TOCInline from '@theme/TOCInline';
-
-<TOCInline toc={toc} />
-
 ## Why do developers use ngrok?
 
-Developers use ngrok to increase their productivity while building and validating software in a few ways:
+Developers use ngrok to increase their productivity while building and validating software in a few ways.
 
-- **Delivering APIs and applications to production**: With a [self-service
-  platform](https://ngrok.com/blog-post/developer-self-service-composability),
-  created by a DevOps or platform engineering team, developers can create [internal
-  endpoints](/docs/network-edge/internal-endpoints.mdx) for their upstream
-  services and make them publicly available using an environment-agnostic
-  configuration&mdash;and without needing to wire-up complex networks.
-- **Exposing localhost apps to the internet for user access and collaboration**: In this use-case, developers expose localhost apps for public access so other peers — i.e., product designers, product managers, contractors, and users — can review and validate their work.
-- **Exposing local environments, APIs, and webhooks for SaaS services and API clients**: In this use-case, developers expose webhooks and APIs running on localhost for integration tests with SaaS services — i.e., Slack & MS Team bots, Twilio webhook listeners, Zoom apps — and APIs clients — i.e., mobile apps, desktop apps, B2B services.
+### Delivering APIs and applications to production
+
+With a [self-service
+platform](https://ngrok.com/blog-post/developer-self-service-composability),
+created by a DevOps or platform engineering team, developers can create [internal
+endpoints](/docs/universal-gateway/internal-endpoints) for their upstream
+services and make them publicly available using an environment-agnostic
+configuration&mdash; without needing to wire-up complex networks.
+
+### Exposing localhost apps to the internet for user access and collaboration
+
+In this use-case, developers expose localhost apps for public access so other peers — i.e., product designers, product managers, contractors, and users — can review and validate their work.
+
+### Exposing local environments, APIs, and webhooks for SaaS services and API clients
+
+In this use-case, developers expose webhooks and APIs running on localhost for integration tests with SaaS services — i.e., Slack & MS Team bots, Twilio webhook listeners, Zoom apps — and APIs clients — i.e., mobile apps, desktop apps, B2B services.
 
 By using ngrok as a universal gateway to their APIs and apps, developers eliminate the repetitive tasks and time spent packaging and deploying their apps while testing and tweaking their apps for production usage, saving up to 90% time on each integrated test and review cycle:
 
@@ -37,7 +36,7 @@ By using ngrok as a universal gateway to their APIs and apps, developers elimina
 
 ## How does ngrok secure traffic orchestration?
 
-While most developers begin and end their ngrok usage with simple connectivity, ngrok makes it easy to secure your network traffic with [Traffic Policy](/docs/traffic-policy/index.mdx), a flexible configuration language to filter, manage, and orchestrate traffic exactly as you need.
+While most developers begin and end their ngrok usage with simple connectivity, ngrok makes it easy to secure your network traffic with [Traffic Policy](/docs/traffic-policy/), a flexible configuration language to filter, manage, and orchestrate traffic exactly as you need.
 
 With Traffic Policy, you can validate incoming traffic, enforce authentication,
 block malicious requests, and choose between multiple forms of TLS termination,
