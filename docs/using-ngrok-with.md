@@ -14,7 +14,7 @@ Here you will find notes on using ngrok with particular technologies. Think we'r
 | [Google Colab](/using-ngrok-with/googleColab)                      | Run ngrok inside your Google Colab projects                                                   |
 | [gRPC](/using-ngrok-with/gRPC)                                     | ngrok TCP tunnels work great with gRPC                                                        |
 | [Java](/using-ngrok-with/java)                                     | Learn how to integrate with your Java projects                                                |
-| [Kubernetes](/using-ngrok-with/k8s)                                | Add public and secure ingress traffic to your k8s services with the ngrok Kubernetes Operator |
+| [Kubernetes](/k8s)                                                 | Add public and secure ingress traffic to your k8s services with the ngrok Kubernetes Operator |
 | [Laravel](/using-ngrok-with/laravel)                               | ngrok is built into Laravel Valet                                                             |
 | [Minecraft](/using-ngrok-with/minecraft)                           | ngrok can help you and your friends connect for online gaming                                 |
 | [MongoDB](/using-ngrok-with/mongodb)                               | Connect to local MongoDB servers with ngrok                                                   |

@@ -1,0 +1,184 @@
+---
+title: OAuth
+---
+
+import TabItem from "@theme/TabItem";
+import Tabs from "@theme/Tabs";
+
+# Securing Your Endpoints with OAuth Authentication
+
+OAuth is a widely adopted authentication and authorization mechanism that enables users to securely access resources without exposing their credentials. It is commonly used for single sign-on (SSO), API security, and third-party integrations.
+
+By enforcing OAuth authentication at the network edge, you can:
+
+🔐 Ensure only authorized users can access your services. <br />
+⚡ Offload authentication from your application, simplifying backend logic. <br />
+🛡 Prevent unauthorized access by requiring valid OAuth tokens before forwarding requests. <br />
+
+
+## 🔍 What are the Benefits of Using OAuth for Authentication?
+
+OAuth allows applications to delegate authentication to a trusted identity provider (IdP), reducing the need for applications to handle passwords directly.
+This enhances security, user experience, and compliance.
+
+Key Benefits:
+
+- **Secure Authentication:** Prevent unauthorized access with token-based authentication.
+- **Seamless Single Sign-On (SSO):** Enable SSO across multiple services without requiring users to reauthenticate.
+- **Supports Major Identity Providers:** Works with Google, Microsoft, GitHub, Okta, and other OAuth providers.
+- **Improves Security & Compliance:** Helps meet security best practices like OAuth 2.0 and OpenID Connect (OIDC).
+- **Reduces Backend Complexity:** Authentication happens before requests reach your application, eliminating the need for custom auth logic.
+
+## OAuth Examples
+
+The following example showcases how you might set up a required Google login with a custom provider that requests the `userinfo.profile` and `userinfo.email` scopes.
+
+Check out the [OAuth traffic policy action](/traffic-policy/actions/oauth/) page for more details about how it functions and the parameters it accepts.
+Consult the list of [supported providers](/traffic-policy/actions/oauth/#supported-providers) for step-by-step integration guides for each one.
+
+<Tabs groupId="kind" queryString="kind">
+	<TabItem value="agent-endpoint" label="AgentEndpoint" default>
+	```yaml
+	apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+	kind: AgentEndpoint
+	metadata:
+		name: example-agent-endpoint
+	spec:
+		url: https://example-hostname.ngrok.io
+		upstream:
+			url: http://my-service.my-namespace:8080
+		trafficPolicy:
+			inline:
+				on_http_request:
+					- actions:
+							- type: oauth
+								config:
+									provider: google
+									client_id: "{your app's oauth client id}"
+									client_secret: "{your app's oauth client secret}"
+									scopes:
+										- https://www.googleapis.com/auth/userinfo.profile
+										- https://www.googleapis.com/auth/userinfo.email
+	```
+	</TabItem>
+	<TabItem value="cloud-endpoint" label="CloudEndpoint">
+	```yaml
+	apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+	kind: CloudEndpoint
+	metadata:
+		name: example-cloud-endpoint
+	spec:
+		url: https://example-hostname.ngrok.io
+		trafficPolicy:
+			policy:
+				on_http_request:
+					- actions:
+							- type: oauth
+								config:
+									provider: google
+									client_id: "{your app's oauth client id}"
+									client_secret: "{your app's oauth client secret}"
+									scopes:
+										- https://www.googleapis.com/auth/userinfo.profile
+										- https://www.googleapis.com/auth/userinfo.email
+	```
+	</TabItem>
+	<TabItem value="ingress" label="Ingress">
+	💡 `Ingress` resources do not natively support OAuth enforcement, but they can be extended using a traffic policy.
+
+	### 1. Create an `NgrokTrafficPolicy`
+
+	```yaml
+	apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+	kind: NgrokTrafficPolicy
+	metadata:
+		name: example-tp
+		namespace: default
+	spec:
+		policy:
+			on_http_request:
+				- actions:
+						- type: oauth
+							config:
+								provider: google
+								client_id: "{your app's oauth client id}"
+								client_secret: "{your app's oauth client secret}"
+								scopes:
+									- https://www.googleapis.com/auth/userinfo.profile
+									- https://www.googleapis.com/auth/userinfo.email
+	```
+
+	### 2. Use the `NgrokTrafficPolicy` on an `Ingress`
+
+	```yaml
+	apiVersion: networking.k8s.io/v1
+	kind: Ingress
+	metadata:
+		annotations:
+			k8s.ngrok.com/traffic-policy: example-tp
+		name: example-ingress
+		namespace: default
+	spec:
+		ingressClassName: ngrok
+		rules:
+			- host: example-hostname.ngrok.io
+				http:
+					paths:
+						- path: /
+							pathType: Prefix
+							backend:
+								service:
+									name: example-service
+									port:
+										number: 80
+	```
+	</TabItem>
+	<TabItem value="gateway-api" label="Gateway API">
+	💡 Gateway API resources do not natively support OAuth enforcement, but they can be extended using a traffic policy.
+
+	### 1. Create an `NgrokTrafficPolicy`
+
+	```yaml
+	apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+	kind: NgrokTrafficPolicy
+	metadata:
+		name: example-tp
+		namespace: default
+	spec:
+		policy:
+			on_http_request:
+				- actions:
+						- type: oauth
+							config:
+								provider: google
+								client_id: "{your app's oauth client id}"
+								client_secret: "{your app's oauth client secret}"
+								scopes:
+									- https://www.googleapis.com/auth/userinfo.profile
+									- https://www.googleapis.com/auth/userinfo.email
+	```
+
+	### 2. Use the `NgrokTrafficPolicy` on a `Gateway`
+
+	The following example showcases supplying the `NgrokTrafficPolicy` on a `Gateway` resource. All requests to the `Gateway` will run the traffic policy.
+	If you prefer, `NgrokTrafficPolicy` can also be used on the route level by using an `externalRef` filter on an `HTTPRoute`. See the [using Gateway API guide](/k8s/guides/using-gwapi) for examples.
+
+	```yaml
+	---
+	apiVersion: gateway.networking.k8s.io/v1
+	kind: Gateway
+	metadata:
+		name: example-gateway
+		namespace: default
+		annotations:
+			k8s.ngrok.com/traffic-policy: example-tp
+	spec:
+		gatewayClassName: ngrok
+		listeners:
+			- name: example-hostname
+				hostname: "example-hostname.ngrok.io"
+				port: 443
+				protocol: HTTPS
+	```
+	</TabItem>
+</Tabs>
