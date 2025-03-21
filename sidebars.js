@@ -45,17 +45,42 @@ const sidebars = {
 			items: [
 				"universal-gateway/overview",
 				{
-					label: "Concepts",
+					label: "What are Domains?",
 					type: "category",
+					link: {
+						type: "doc",
+						id: "universal-gateway/domains/what-are-domains",
+					},
 					items: [
-						{ id: "universal-gateway/domains", type: "doc", label: "Domains" },
-						{
-							id: "universal-gateway/tcp-addresses",
-							type: "doc",
-							label: "TCP Addresses",
-						},
-						"universal-gateway/tls-certificates",
-						"universal-gateway/edges",
+						"universal-gateway/domains/how-do-i-use-my-own-domain",
+						"universal-gateway/domains/what-are-managed-domains",
+					],
+				},
+				"universal-gateway/what-are-matching-endpoints",
+				{
+					label: "What are TCP Addresses?",
+					type: "category",
+					link: {
+						type: "doc",
+						id: "universal-gateway/tcp-addresses/what-are-tcp-addresses",
+					},
+					items: [
+						"universal-gateway/tcp-addresses/how-are-tcp-addresses-assigned",
+					],
+				},
+				{
+					label: "How Does ngrok Handle TLS?",
+					type: "category",
+					link: {
+						type: "doc",
+						id: "universal-gateway/tls-certificates/how-does-ngrok-handle-tls",
+					},
+					items: [
+						"universal-gateway/tls-certificates/what-is-automatic-certificate-management",
+						"universal-gateway/tls-certificates/how-are-certificates-selected",
+						"universal-gateway/tls-certificates/how-do-i-use-my-own-certificates",
+						"universal-gateway/tls-certificates/what-is-a-certificate-bundle",
+						"universal-gateway/tls-certificates/what-are-private-tls-keys",
 					],
 				},
 				{
@@ -592,6 +617,11 @@ const sidebars = {
 			value: "<div class='menu__section'></div>",
 		},
 		"faq/faq",
+		{
+			label: "Deprecated",
+			type: "category",
+			items: ["universal-gateway/edges"],
+		},
 	],
 };
 
