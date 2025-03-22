@@ -11084,21 +11084,5 @@
         Failed to lookup IP <code>&lt;IP&gt;</code>: <code>&lt;ERR&gt;</code>.
       </td>
     </tr>
-    <tr>
-      <td>
-        <a id="ERR_NGROK_22000" href="/docs/errors/err_ngrok_22000">ERR_NGROK_22000</a>
-      </td>
-      <td class="pre-wrapped">
-        We do not allow access to ngrok.com from anonymous proxies such as Tor.
-      </td>
-    </tr>
-    <tr>
-      <td>
-        <a id="ERR_NGROK_22001" href="/docs/errors/err_ngrok_22001">ERR_NGROK_22001</a>
-      </td>
-      <td class="pre-wrapped">
-        We do not allow access to ngrok.com from your location. Your location was determined using your IP address.
-      </td>
-    </tr>
   </tbody>
 </table>
