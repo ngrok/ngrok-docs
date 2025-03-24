@@ -115,11 +115,9 @@ const sidebars = {
 					link: { type: "doc", id: "universal-gateway/cloud-endpoints/index" },
 					items: ["universal-gateway/cloud-endpoints/quickstart"],
 				},
-				{
-					label: "How Do I Accept Traffic from Another Endpoint?",
-					id: "universal-gateway/cloud-endpoints/quickstart",
-					type: "doc",
-				},
+				"universal-gateway/forward-traffic",
+				"universal-gateway/mock-api",
+				"universal-gateway/chain-endpoints",
 				{
 					label: "Endpoints",
 					type: "category",
