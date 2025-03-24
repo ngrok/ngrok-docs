@@ -1,0 +1,44 @@
+---
+title: How are Kubernetes Services Created?
+---
+
+After a kubernetes-bound endpoint is created, the ngrok cloud service notifies
+Kubernetes Operators that a new kubernetes-bound endpoint exists. Kubernetes
+Operators create `v1.Service` objects in their Kubernetes clusters which
+forward traffic they receive to the operators' pods.
+
+### `ClusterIP` Service
+
+A Cluster IP service is created in the operator's namespace.
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: <endpoint-id> # the endpoint's ID
+  namespace: ngrok-operator
+spec:
+  selector:
+    app.kubernetes.io/name: ngrok-operator-forwarder
+  ports:
+    - protocol: TCP
+      port: 80 # the endpoint url's port
+      targetPort: <randomly-assigned> # assigned by operator to target the ngrok-operator-forwarder container
+```
+
+### `ExternalName` Service
+
+An ExternalName service is created in the namespace targeted by the second part
+of the URL's hostname.
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: customer-2 # first part of the URL's hostname
+  namespace: prod ## second part of the URL's hostname
+spec:
+  # Point service at the Operator Forwarder
+  type: ExternalName
+  externalName: <endpoint-id>.ngrok-operator.svc.cluster.local
+```

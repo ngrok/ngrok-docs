@@ -54,7 +54,7 @@ Invalid:
 - The hostname and port must match the address of a [TCP
   Address](/universal-gateway/tcp-addresses/what-are-tcp-addresses/) in your account.
 
-### Examples
+#### Examples
 
 Valid:
 
@@ -83,3 +83,37 @@ Invalid:
 - `tls://example.internal`
 - `tls://example.internal:12345`
 - `tcp://example.internal:12345`
+
+## Kubernetes Endpoints
+
+Kubernetes endpoint URL hostnames must be in the following format:
+
+- `[http|tcp]://name.namespace[:port]`
+
+The following restrictions are enforced:
+
+- **Scheme** - Must be `http` or `tcp`. `https` and `tls` are not supported.
+- **Hostname** - Hostnames must always be two parts separated by a single dot,
+  e.g. `foo.bar`. Wildcard hostnames are not allowed.
+- **Port** - All port numbers [1-65535] are valid. Port must be specified for
+  `tcp` endpoints.
+- **Namespacing** - Kubernetes endpoints are namespaced on a per-account basis.
+  Two accounts may have kubernetes endpoints with the same URL (e.g.
+  http://api.internal). Those endpoints will not conflict or
+  [pool](/universal-gateway/endpoint-pooling).
+
+#### Examples
+
+Valid:
+
+- `http://app.example`
+- `http://app.example:12345`
+- `tcp://app.example:443`
+- `tcp://app.example:12345`
+
+Invalid:
+
+- `https://app.example` - invalid scheme `https`
+- `tls://app.example:12345` - invalid scheme `tls`
+- `http://app.foo.bar` - invalid hostname, must have only two parts
+- `tcp://app.example` - tcp endpoint must specify port number

@@ -87,24 +87,38 @@ const sidebars = {
 				"universal-gateway/bindings",
 				"universal-gateway/public-endpoints/index",
 				"universal-gateway/what-are-endpoint-urls",
-				"universal-gateway/internal-endpoints/index",
-				"universal-gateway/kubernetes-endpoints",
+				{
+					label: "What are Internal Endpoints?",
+					type: "category",
+					link: {
+						type: "doc",
+						id: "universal-gateway/internal-endpoints/index",
+					},
+					items: ["universal-gateway/internal-endpoints/quickstart"],
+				},
+				{
+					label: "What are Kubernetes Endpoints?",
+					type: "category",
+					link: {
+						type: "doc",
+						id: "universal-gateway/kubernetes-endpoints",
+					},
+					items: [
+						"universal-gateway/kubernetes-endpoints/quickstart",
+						"universal-gateway/kubernetes-endpoints/services",
+						"universal-gateway/kubernetes-endpoints/selector",
+					],
+				},
 				{
 					label: "What are Cloud Endpoints?",
 					type: "category",
 					link: { type: "doc", id: "universal-gateway/cloud-endpoints/index" },
-					items: [
-						{
-							id: "universal-gateway/cloud-endpoints/quickstart",
-							type: "doc",
-							label: "How Do I Create a Cloud Endpoint?",
-						},
-					],
+					items: ["universal-gateway/cloud-endpoints/quickstart"],
 				},
 				{
+					label: "How Do I Accept Traffic from Another Endpoint?",
 					id: "universal-gateway/cloud-endpoints/quickstart",
 					type: "doc",
-					label: "How Do I Accept Traffic from Another Endpoint?",
 				},
 				{
 					label: "Endpoints",
