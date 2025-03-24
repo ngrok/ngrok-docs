@@ -84,15 +84,37 @@ const sidebars = {
 					],
 				},
 				{
+					id: "universal-gateway/endpoints",
+					type: "doc",
+					label: "What are Endpoints?",
+				},
+				{
+					label: "What are Endpoint Bindings?",
+					type: "category",
+					link: { type: "doc", id: "universal-gateway/bindings" },
+					items: [
+						{
+							id: "universal-gateway/public-endpoints",
+							type: "doc",
+							label: "What are Public Endpoints?",
+						},
+						{
+							id: "universal-gateway/internal-endpoints",
+							type: "doc",
+							label: "What are Internal Endpoints?",
+						},
+						{
+							id: "universal-gateway/kubernetes-endpoints",
+							type: "doc",
+							label: "What are Kubernetes Endpoints?",
+						},
+					],
+				},
+				{
 					label: "Endpoints",
 					type: "category",
 					link: { type: "doc", id: "universal-gateway/endpoints" },
 					items: [
-						{
-							id: "universal-gateway/endpoints",
-							type: "doc",
-							label: "Overview",
-						},
 						{
 							label: "Types",
 							type: "category",
