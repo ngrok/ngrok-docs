@@ -1,16 +1,20 @@
 ---
-title: What are Public Endpoint URLs?
+title: What are Endpoint URLs?
 ---
+
+URLs are the entry point for traffic to reach the services connected to your endpoints. This could be any URL, such as `https://your-app.ngrok.io` or `tcp://your-api.internal`.
+
+## Public Endpoints
 
 When you create a [Public Endpoint], the URL you create it with is validated differently based on the protocol of the URL.
 
-## `http`
+### `http`
 
 - The hostname must match a [Domain](/universal-gateway/domains/what-are-domains/) in your account.
 - The hostname must be a domain with a valid [public suffix](https://publicsuffix.org/).
 - The port must be `80`, which is the default when creating public endpoints.
 
-### Examples
+#### Examples
 
 Valid:
 
@@ -24,13 +28,13 @@ Invalid:
 - `http://example.doesnotexist` - invalid hostname: `.doesnotexist` is not a public suffix domain
 - `http://example.internal` - invalid hostname: `.internal` is not a public suffix domain
 
-## `https`, `tls`
+### `https`, `tls`
 
 - The hostname must match a [Domain](/universal-gateway/domains/what-are-domains/) in your account.
 - The hostname must be a domain with a valid [public suffix](https://publicsuffix.org/).
 - The port must be `443`. If you do not specify a port, the default `443` will be used for you.
 
-### Examples
+#### Examples
 
 Valid:
 
@@ -44,7 +48,7 @@ Invalid:
 - `https://example.nosuchtld` - invalid hostname, `.nosuchtld` is not a public suffix domain
 - `https://example.internal` - invalid hostname, public endpoints cannot use `.internal`
 
-## `tcp`
+### `tcp`
 
 - You must specify a port number in TCP URLs.
 - The hostname and port must match the address of a [TCP
@@ -62,3 +66,20 @@ Invalid:
 - `tcp://1.tcp.ngrok.io` - invalid, does not specify a port number
 - `tcp://example.ngrok.app:12345` - invalid, does not match a TCP Address
 - `tcp://your-domain.com:12345` - invalid, does not match a TCP Address
+
+## Internal Endpoints
+
+- **Scheme** - Internal endpoints support all [Endpoint Protocols](/universal-gateway/protocols) (`http`, `https`, `tcp` and `tls`).
+- **Hostname** - Hostnames **must** end with `.internal` and may contain up to 5 subdomains. You must specify a URL with a hostname, randomly-assigned hostnames are not supported. You may specify wildcard hostnames.
+- **Port** - All port numbers [1-65535] are valid. For `tcp` endpoints, you **must** specify a port.
+- **Namespacing** - Internal endpoints are namespaced on a per-account basis.
+  This means that, two different accounts may have internal endpoints with the same URL (e.g. `https://api.internal`) without conflict or interference in [endpoint pooling](/universal-gateway/endpoint-pooling).
+
+#### Examples
+
+- `https://example.internal`
+- `https://example.foo.bar.internal`
+- `https://example.internal:12345`
+- `tls://example.internal`
+- `tls://example.internal:12345`
+- `tcp://example.internal:12345`

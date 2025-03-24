@@ -83,44 +83,12 @@ const sidebars = {
 						"universal-gateway/tls-certificates/what-are-private-tls-keys",
 					],
 				},
-				{
-					label: "What are Endpoints?",
-					id: "universal-gateway/endpoints",
-					type: "doc",
-				},
-				{
-					label: "What are Endpoint Bindings?",
-					type: "doc",
-					id: "universal-gateway/bindings",
-				},
-				{
-					link: { type: "doc", id: "universal-gateway/public-endpoints/index" },
-					type: "category",
-					label: "What are Public Endpoints?",
-					items: [
-						{
-							id: "universal-gateway/public-endpoints/urls",
-							type: "doc",
-							label: "What are Public Endpoint URLs?",
-						},
-					],
-				},
-				{
-					link: {
-						type: "doc",
-						id: "universal-gateway/internal-endpoints/index",
-					},
-					type: "category",
-					label: "What are Internal Endpoints?",
-					items: [
-						"universal-gateway/internal-endpoints/create-internal-endpoints",
-					],
-				},
-				{
-					id: "universal-gateway/kubernetes-endpoints",
-					type: "doc",
-					label: "What are Kubernetes Endpoints?",
-				},
+				"universal-gateway/endpoints",
+				"universal-gateway/bindings",
+				"universal-gateway/public-endpoints/index",
+				"universal-gateway/what-are-endpoint-urls",
+				"universal-gateway/internal-endpoints/index",
+				"universal-gateway/kubernetes-endpoints",
 				{
 					label: "What are Cloud Endpoints?",
 					type: "category",
