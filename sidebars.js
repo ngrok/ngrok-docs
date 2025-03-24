@@ -116,6 +116,11 @@ const sidebars = {
 					label: "How Do I Create a Cloud Endpoint?",
 				},
 				{
+					id: "universal-gateway/cloud-endpoints/quickstart",
+					type: "doc",
+					label: "How Do I Accept Traffic from Another Endpoint?",
+				},
+				{
 					label: "Endpoints",
 					type: "category",
 					link: { type: "doc", id: "universal-gateway/endpoints" },
