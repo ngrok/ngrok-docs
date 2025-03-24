@@ -84,36 +84,54 @@ const sidebars = {
 					],
 				},
 				{
+					label: "What are Endpoints?",
 					id: "universal-gateway/endpoints",
 					type: "doc",
-					label: "What are Endpoints?",
 				},
 				{
 					label: "What are Endpoint Bindings?",
+					type: "doc",
+					id: "universal-gateway/bindings",
+				},
+				{
+					link: { type: "doc", id: "universal-gateway/public-endpoints/index" },
 					type: "category",
-					link: { type: "doc", id: "universal-gateway/bindings" },
+					label: "What are Public Endpoints?",
 					items: [
 						{
-							id: "universal-gateway/public-endpoints",
+							id: "universal-gateway/public-endpoints/urls",
 							type: "doc",
-							label: "What are Public Endpoints?",
-						},
-						{
-							id: "universal-gateway/internal-endpoints",
-							type: "doc",
-							label: "What are Internal Endpoints?",
-						},
-						{
-							id: "universal-gateway/kubernetes-endpoints",
-							type: "doc",
-							label: "What are Kubernetes Endpoints?",
+							label: "What are Public Endpoint URLs?",
 						},
 					],
 				},
 				{
-					id: "universal-gateway/cloud-endpoints/quickstart",
+					link: {
+						type: "doc",
+						id: "universal-gateway/internal-endpoints/index",
+					},
+					type: "category",
+					label: "What are Internal Endpoints?",
+					items: [
+						"universal-gateway/internal-endpoints/create-internal-endpoints",
+					],
+				},
+				{
+					id: "universal-gateway/kubernetes-endpoints",
 					type: "doc",
-					label: "How Do I Create a Cloud Endpoint?",
+					label: "What are Kubernetes Endpoints?",
+				},
+				{
+					label: "What are Cloud Endpoints?",
+					type: "category",
+					link: { type: "doc", id: "universal-gateway/cloud-endpoints/index" },
+					items: [
+						{
+							id: "universal-gateway/cloud-endpoints/quickstart",
+							type: "doc",
+							label: "How Do I Create a Cloud Endpoint?",
+						},
+					],
 				},
 				{
 					id: "universal-gateway/cloud-endpoints/quickstart",

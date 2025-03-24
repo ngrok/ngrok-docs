@@ -1,5 +1,5 @@
 ---
-title: Internal Endpoints
+title: What are Internal Endpoints?
 description: Learn about staging internal services and applications using internal endpoints.
 ---
 
@@ -10,72 +10,13 @@ Internal endpoint URLs must:
 - End with the `.internal` domain extension
 - Use the `internal` [binding](/docs/universal-gateway/bindings/)
 
+:::tip
 A common practice is to use a [public](/docs/universal-gateway/public-endpoints) [cloud endpoints](/docs/universal-gateway/cloud-endpoints/) to manage a centralized Traffic Policy, then forward traffic to one or more internal [endpoints](/docs/universal-gateway/endpoints/). See [the guide on using cloud endpoints with internal endpoints](/docs/guides/other-guides/forwarding-and-load-balancing-with-cloud-endpoints/) to learn more.
+:::
 
-## Quickstart
+## Get started
 
-### Agent Endpoint
-
-Create an internal agent endpoint by specifying a binding of `internal` when
-you create an endpoint.
-
-```bash
-ngrok http 8080 --url "https://example.internal" --binding internal
-```
-
-### Cloud Endpoint
-
-Instead of an agent endpoint, you can create an internal cloud endpoint.
-
-Specify a binding of `internal` when you create the cloud endpoint.
-
-```bash
-ngrok api create \
-  --type cloud \
-  --binding internal \
-  --url "https://example.internal" \
-  --traffic-policy "$(cat traffic-policy.yml)"
-```
-
-##### `traffic-policy.yml`
-
-```yaml
-on_http_request:
-  - actions:
-      - type: custom-response
-        config:
-          status_code: 200
-          headers:
-            content-type: text/plain
-          content: "Hello world!"
-```
-
-### Forwarding
-
-Internal endpoints aren’t directly accessible. To send traffic to an Internal Endpoint, you must create an endpoint that uses the Traffic Policy to forward traffic using the [`forward-internal` action](/docs/traffic-policy/actions/forward-internal/).
-
-For example, to route public traffic to your internal endpoint, use the following command and traffic policy to create a Public Cloud Endpoint that forwards requests to your Internal Endpoint:
-
-```bash
-ngrok api create \
-  --type cloud \
-  --url "https://your-name.ngrok.app" \
-  --traffic-policy "$(cat traffic-policy.yml)"
-```
-
-##### `traffic-policy.yml`
-
-```yaml
-on_http_request:
-  - actions:
-      - type: forward-internal
-        config:
-          url: https://example.internal
-```
-
-Now, when you make a request to `https://your-name.ngrok.app`, ngrok applies the specified traffic policy. This policy instructs ngrok to use the forward-internal action, routing the incoming HTTP request directly to your internal endpoint at `https://example.internal`.
-
-This configuration lets you manage how traffic reaches your service without requiring it to be directly accessible on the public internet.
+See [the quickstart](/docs/universal-gateway/internal-endpoints/create-internal-endpoints) to create your first Internal Endpoint.
 
 ## Inferred Binding
 
