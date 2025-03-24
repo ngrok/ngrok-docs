@@ -111,6 +111,11 @@ const sidebars = {
 					],
 				},
 				{
+					id: "universal-gateway/cloud-endpoints/quickstart",
+					type: "doc",
+					label: "How Do I Create a Cloud Endpoint?",
+				},
+				{
 					label: "Endpoints",
 					type: "category",
 					link: { type: "doc", id: "universal-gateway/endpoints" },
