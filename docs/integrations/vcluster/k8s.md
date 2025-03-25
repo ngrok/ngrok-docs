@@ -10,7 +10,7 @@ To use the ngrok Kubernetes Operator with vcluster in a local cluster:
 
 1. [Set up a local virtual cluster](#set-up-vcluster)
 2. [Install the ngrok Kubernetes
-	 Operator](#install-the-ngrok-kubernetes-operator)
+   Operator](#install-the-ngrok-kubernetes-operator)
 3. [Install a sample application](#install-a-sample-application)
 4. [Add OAuth protection to your demo app](#add-oauth-protection)
 
