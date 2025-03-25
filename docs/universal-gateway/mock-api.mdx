@@ -1,3 +1,113 @@
 ---
 title: How Do I Mock API Endpoints?
 ---
+
+import TabItem from "@theme/TabItem";
+import Tabs from "@theme/Tabs";
+import ConfigExample from "/src/components/ConfigExample.tsx";
+
+You can mock API responses using ngrok Endpoints. This enables you to test your application's functionality without having to stand up a full backend service or make requests to real APIs.
+
+The following steps will walk you through using [Traffic Policy](/traffic-policy/) to mock API responses.
+
+## 1. Create a Traffic Policy
+
+When requests are made to an Endpoint with a Traffic Policy, the policy can execute certain actions before returning a response or forwarding the traffic to downstream services. Using [request variables](/docs/traffic-policy/variables/req/), you can check many aspects of a request before sending a response, such as the value of its headers, the scheme, the user agent, and more.
+
+The following example Traffic Policy checks the URL path of all incoming requests, then returns a custom response if the path matches `/api/example`:
+
+<ConfigExample
+	snippetText={null}
+	showLineNumbers={true}
+	jsonMetastring="{8-17}"
+	yamlMetastring="{6-12}"
+	config={{
+		on_http_request: [
+			{
+				expressions: ["req.url.path == '/api/example'"],
+				actions: [
+					{
+						type: "custom-response",
+						config: {
+							status_code: 503,
+							content: '{"hello":"world"}',
+							headers: {
+								"content-type": "application/json",
+							},
+						},
+					},
+				],
+			},
+		],
+	}}
+/>
+
+## 2. Apply the Traffic Policy to an Endpoint
+
+There are multiple ways to apply the Traffic Policy from the previous section to your Endpoints. How you should do so depends on the type of Endpoint you're using.
+
+### Agent Endpoints
+
+<Tabs groupId="agent-endpoint-option" queryString="ceo1">
+	<TabItem value="cli-flags" label="With CLI flags">
+
+Run the following terminal command to create an Agent Endpoint with a Traffic Policy file:
+
+```bash
+		ngrok http 8080 --traffic-policy "policy-file-here.yml"
+```
+
+See [the guide on using Traffic Policy with CLI flags](/docs/traffic-policy/getting-started/agent-endpoints/cli/) for more information.
+
+</TabItem>
+	<TabItem value="config-file" label="With a configuration file">
+
+Use the following terminal command to edit your ngrok config file:
+
+```bash
+ngrok config edit
+```
+
+See [the guide on using Traffic Policy with a config file](/docs/traffic-policy/getting-started/agent-endpoints/config-file/) for more information.
+
+</TabItem>
+</Tabs>
+
+### Cloud Endpoints
+
+<Tabs groupId="cloud-endpoint-option" queryString="ceo1">
+	<TabItem value="dashboard" label="Dashboard">
+	
+	1. Navigate to the [Endpoints](https://dashboard.ngrok.com/endpoints/) page.
+	1. Select the Cloud Endpoint you want to use. You'll be taken to a page where you can edit the Traffic Policy directly.
+
+  </TabItem>
+	<TabItem value="cli-api" label="ngrok CLI">
+	With the ngrok CLI `api` command, you can add a Traffic Policy file to your Cloud Endpoint with the following command options:
+  ```bash
+  ngrok api endpoints create \
+  --url https://<your-reserve-domain> \
+  --traffic-policy "policy-file-here.yml"
+  ```
+  See [the guide on using Traffic Policy with Cloud Endpoints](/docs/traffic-policy/getting-started/cloud-endpoints/api/) for more information.
+	</TabItem>
+</Tabs>
+
+## 3. Test the Traffic Policy
+
+To test the Traffic Policy defined in this guide, you could send a `curl` request like this:
+
+```shell
+$ curl https://example.ngrok.app/api/example
+```
+
+The response should look like this:
+
+```http
+HTTP/2 200 OK
+content-type: application/json
+
+{
+  "hello": "world"
+}
+```
