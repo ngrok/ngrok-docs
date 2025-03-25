@@ -21,7 +21,7 @@ Running Kubernetes inside containers has the benefits of being quick and simple 
 This is not a recommendation for how you should productionize your Kubernetes setup, but rather a guide on getting an easy to use local environment setup for development and testing.
 The following sections outline various options for running Kubernetes inside Docker containers on your local machine, but you can run the ngrok Kubernetes operator in any Kubernetes cluster you like.
 
-## 1. Pick a Container Runtime
+## Choosing a Container Runtime
 
 Before setting up a local Kubernetes cluster, you need a container runtime. The container runtime is responsible for running containers, managing their lifecycle, and handling networking.
 If you don't already have a container runtime such as Docker installed, choose one from the options below.
@@ -33,15 +33,22 @@ If you don't already have a container runtime such as Docker installed, choose o
 | [Containerd](https://github.com/containerd/containerd)            | Linux, Windows                    | x86_64, ARM64, s390x, ppc64le | Minimalist, Kubernetes-native runtime. Great for Kubernetes users who need a lightweight runtime without Docker dependencies. |
 | [Colima](https://github.com/abiosoft/colima)                      | Linux, macOS                      | x86_64, ARM64 (Apple Silicon) | macOS-native alternative to Docker Desktop. Great for Mac users looking for a lightweight and fast Docker-compatible runtime. |
 
-## 2. Pick a Cluster Provider
+## Choosing a Cluster Provider
 
 Select one of the following options for running Kubernetes inside containers on your local machine.
 
+| Provider		| Pros | Cons |
+| ------------- | ----------- | ----------- |
+| [k3d](https://k3d.io/stable/) | Lightweight (runs on [K3s](https://k3s.io/)), fast cluster creation, low memory/CPU usage | Heavily focused on local development, making it more feature-limited |
+| [Minikube](https://minikube.sigs.k8s.io/docs/) | Official Kubernetes project, easy to use, [supports multiple drivers](https://minikube.sigs.k8s.io/docs/drivers/) | Slower, consumes more CPU/memory |
+| [kind](https://kind.sigs.k8s.io/) | Multi-node clusters in Docker, great for testing, CI/CD | Focused on testing, other options may be better for local development |
+| [Microk8s](https://microk8s.io/) | Lightweight, full Kubernetes experience, easy to install | Config not automatically added to Kubeconfig, requires manual addition |
+| [Docker Desktop](https://www.docker.com/products/docker-desktop/) | Simple interface, Kubernetes support | GUI-based, may be slower than other options |
+
+### Basic commands
+
 <Tabs groupId="k8s-provider" queryString="k8s-provider">
 	<TabItem value="k3d" label="k3d" default>
-	[k3d](https://k3d.io/stable/) is a lightweight tool that runs [K3s](https://k3s.io/) (a minimal Kubernetes distribution) inside Docker containers. 
-	k3d tends to be more feature-limited than the following options, focusing on the local development use-case, but focuses heavily on fast cluster creation and low memoy/CPU usage
-	compared to other options.
 
     #### Create a k3d cluster
     ```bash
@@ -61,11 +68,6 @@ Select one of the following options for running Kubernetes inside containers on 
     ```
     </TabItem>
     <TabItem value="minikube" label="Minikube" default>
-    [Minikube](https://minikube.sigs.k8s.io/docs/) is an official Kubernetes project that allows users to run Kubernetes clusters locally.
-    It is designed for learning, development, and testing.
-    Minikube provides an easy way to run Kubernetes locally and focuses on support for many different features although compared to other options such as
-    k3d and Microk8s, it tends to be a bit slower and consumes more CPU and memory. One of its major advantages is the ability to deploy Kubernetes clusters with one of [multiple different drivers](https://minikube.sigs.k8s.io/docs/drivers/) for a very custom solution
-    that has support for a very wide variety of different setups.
 
     #### Create a Minikube cluster
     ```bash
@@ -85,10 +87,6 @@ Select one of the following options for running Kubernetes inside containers on 
     ```
     </TabItem>
     <TabItem value="kind" label="Kind" default>
-    [kind](https://kind.sigs.k8s.io/) creates multi-node Kubernetes clusters entirely within Docker.
-    It is widely used for Kubernetes testing, CI/CD pipelines, and development environments that need to simulate production-like clusters.
-    kind is a great choice for testing Kubernetes itself and Kubernetes workloads (especially in CI), but since its primary focus is in testing, other options
-    focusing more on the local development experience may be more compelling options for this use-case.
 
     #### Create a kind cluster
     ```bash
@@ -109,10 +107,6 @@ Select one of the following options for running Kubernetes inside containers on 
 
     </TabItem>
     <TabItem value="microk8s" label="Microk8s" default>
-    [Microk8s](https://microk8s.io/) is a lightweight Kubernetes distribution developed by Canonical.
-    It's designed for edge computing, IoT, and low-resource environments, while still offering a full Kubernetes experience.
-    It's easy to install and manage, making it a good option for both local development and smaller production systems.
-    It comes with all dependencies included to make installation easier and there are regular security updates that can be applied manually or scheduled.
 
     #### Create a Microk8s cluster
     ```bash
