@@ -101,7 +101,7 @@ const sidebars = {
 					type: "category",
 					link: {
 						type: "doc",
-						id: "universal-gateway/kubernetes-endpoints",
+						id: "universal-gateway/kubernetes-endpoints/index",
 					},
 					items: [
 						"universal-gateway/kubernetes-endpoints/quickstart",
@@ -173,17 +173,17 @@ const sidebars = {
 							link: { type: "doc", id: "universal-gateway/bindings" },
 							items: [
 								{
-									id: "universal-gateway/public-endpoints",
+									id: "universal-gateway/public-endpoints/index",
 									type: "doc",
 									label: "Public",
 								},
 								{
-									id: "universal-gateway/internal-endpoints",
+									id: "universal-gateway/internal-endpoints/index",
 									type: "doc",
 									label: "Internal",
 								},
 								{
-									id: "universal-gateway/kubernetes-endpoints",
+									id: "universal-gateway/kubernetes-endpoints/index",
 									type: "doc",
 									label: "Kubernetes",
 								},
