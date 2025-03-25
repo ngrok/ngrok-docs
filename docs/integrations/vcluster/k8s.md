@@ -8,8 +8,9 @@ description: Setup a local virtual cluster to demonstrate how to use the ngrok K
 
 To use the ngrok Kubernetes Operator with vcluster in a local cluster:
 
-1. [Set up a local virtual cluster](#set-up-a-consul-service-mesh-on-kubernetes)
-2. [Install the ngrok Kubernetes Operator](#install-the-ngrok-ingress-controller)
+1. [Set up a local virtual cluster](#set-up-vcluster)
+2. [Install the ngrok Kubernetes
+	 Operator](#install-the-ngrok-kubernetes-operator)
 3. [Install a sample application](#install-a-sample-application)
 4. [Add OAuth protection to your demo app](#add-oauth-protection)
 
@@ -45,11 +46,11 @@ demo application to the ngrok platform to route traffic to your vcluster.
 
 :::
 
-## **Step 1**: Set up a local virtual cluster with vcluster {#set-up-a-consul-service-mesh-on-kubernetes}
+## **Step 1**: Set up a local virtual cluster with vcluster {#set-up-vcluster}
 
 To follow along with this guide, you need a remote or local Kubernetes cluster with vcluster installed. If you have an
-existing cluster with vcluster set up, you can skip this step and proceed to [Step 2: Install the ngrok Ingress
-Controller](#install-the-ngrok-ingress-controller).
+existing cluster with vcluster set up, you can skip this step and proceed to
+[Step 2: Install the ngrok Kubernetes Operator](#install-the-ngrok-kubernetes-operator).
 
 If you don't have a cluster already, create one locally with minikube and install vcluster.
 
@@ -100,7 +101,7 @@ If you don't have a cluster already, create one locally with minikube and instal
 
    :::
 
-## **Step 2**: Install the ngrok Kubernetes Operator {#install-the-ngrok-ingress-controller}
+## **Step 2**: Install the ngrok Kubernetes Operator {#install-the-ngrok-kubernetes-operator}
 
 Now that you have a Kubernetes cluster integrated with vcluster, you can install
 the ngrok Kubernetes Operator to get traffic to your Kubernetes workloads.
