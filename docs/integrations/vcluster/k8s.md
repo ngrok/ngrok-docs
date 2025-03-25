@@ -123,9 +123,9 @@ cluster, virtual cluster, and ultimately an exposed service or endpoint, you can
 1. Create a new Kubernetes manifest (`2048.yaml`) with the below contents. This manifest defines the 2048 application
    service and deployment, then configures the ngrok Kubernetes Operator to connect the `game-2048` service to the ngrok
    network. Be sure to replace `<NGROK_DOMAIN>` with the domain you reserved a
-	 moment ago.
+   moment ago.
 
-   ```yaml 
+   ```yaml
    apiVersion: v1
    kind: Service
    metadata:
@@ -220,11 +220,11 @@ apply the policy to just a specific backend or as the default backend for an
 Ingresses](/docs/k8s/guides/using-ingresses/#using-ngroktrafficpolicy-with-ingress).
 
 1. Edit your existing `2048.yaml` manifest with the following, leaving the
-	 `Service` and `Deployment` as they were. Note the new `annotations` field and
-	 the `NgrokTrafficPolicy` CR.
+   `Service` and `Deployment` as they were. Note the new `annotations` field and
+   the `NgrokTrafficPolicy` CR.
 
    ```yaml
-	 ...
+    ...
    ---
    # Configuration for ngrok's Kubernetes Operator
    apiVersion: networking.k8s.io/v1
@@ -256,10 +256,10 @@ Ingresses](/docs/k8s/guides/using-ingresses/#using-ngroktrafficpolicy-with-ingre
      namespace: default
    spec:
      policy:
-		   on_http_request:
-			   - type: oauth
-				   config:
-				     provider: google
+   	   on_http_request:
+   		   - type: oauth
+   			   config:
+   			     provider: google
    ```
 
 1. Re-apply your `2048.yaml` configuration.
@@ -269,15 +269,15 @@ Ingresses](/docs/k8s/guides/using-ingresses/#using-ngroktrafficpolicy-with-ingre
    ```
 
 1. When you open your demo app again, you'll be asked to log in via Google.
-	 That's a start, but what if you want to authenticate only yourself or colleagues?
+   That's a start, but what if you want to authenticate only yourself or colleagues?
 
 1. You can use [expressions](/docs/traffic-policy/concepts/expressions) and [CEL
-	 interpolation](/docs/traffic-policy/concepts/cel-interpolation) to filter out
-	 and reject OAuth logins that don't contain `example.com`. Update the
-	 `NgrokTrafficPolicy` portion of your manifest after changing `example.com` to
-	 your domain.
+   interpolation](/docs/traffic-policy/concepts/cel-interpolation) to filter out
+   and reject OAuth logins that don't contain `example.com`. Update the
+   `NgrokTrafficPolicy` portion of your manifest after changing `example.com` to
+   your domain.
 
-   ```yaml 
+   ```yaml
    ---
    # Traffic Policy configuration for OAuth
    apiVersion: ngrok.k8s.ngrok.com/v1alpha1
@@ -287,12 +287,12 @@ Ingresses](/docs/k8s/guides/using-ingresses/#using-ngroktrafficpolicy-with-ingre
      namespace: default
    spec:
      policy:
-		   on_http_request:
-			   - type: oauth
-				   config:
-				     provider: google
-				 - expressions:
-				     - "!actions.ngrok.oauth.identity.email.endsWith('example.com')"
+   	   on_http_request:
+   		   - type: oauth
+   			   config:
+   			     provider: google
+   			 - expressions:
+   			     - "!actions.ngrok.oauth.identity.email.endsWith('example.com')"
            actions:
              - type: custom-response
                config:
@@ -301,7 +301,7 @@ Ingresses](/docs/k8s/guides/using-ingresses/#using-ngroktrafficpolicy-with-ingre
    ```
 
 1. Check out your deployed 2048 app once again. If you log in with an email that
-	 doesn't match your domain, ngrok rejects your request. Authentication... done!
+   doesn't match your domain, ngrok rejects your request. Authentication... done!
 
 ## What's next?
 
@@ -323,4 +323,3 @@ how the Operator works, different ways you can integrate ngrok with an existing
 production cluster, or use more advanced features like
 [bindings](docs/k8s/guides/bindings/) or [endpoint
 pooling](/docs/k8s/guides/pooling/).
-
