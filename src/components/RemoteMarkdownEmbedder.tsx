@@ -3,10 +3,12 @@ import ReactMarkdown from "react-markdown";
 
 interface RemoteMarkdownEmbedderProps {
 	url: string;
+	textToRemove?: string;
 }
 
 const RemoteMarkdownEmbedder: React.FC<RemoteMarkdownEmbedderProps> = ({
 	url,
+	textToRemove,
 }: RemoteMarkdownEmbedderProps) => {
 	const [content, setContent] = useState<string>("");
 
@@ -16,7 +18,11 @@ const RemoteMarkdownEmbedder: React.FC<RemoteMarkdownEmbedderProps> = ({
 			.then(setContent);
 	}, [url]);
 
-	return <ReactMarkdown>{content}</ReactMarkdown>;
+	const finalContent = textToRemove
+		? content.replace(textToRemove, "")
+		: content;
+
+	return <ReactMarkdown>{finalContent}</ReactMarkdown>;
 };
 
 export default RemoteMarkdownEmbedder;
