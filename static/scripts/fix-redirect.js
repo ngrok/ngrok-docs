@@ -296,7 +296,15 @@ const redirects = [
     [ fromExact('/docs/http/'), '/docs/universal-gateway/http/'],
     [ fromExact('/docs/tcp/'), '/docs/universal-gateway/tcp/'],
     [ fromExact('/docs/tls/'), '/docs/universal-gateway/tls/'],
-
+		
+		// Kubernetes Operator Revamp
+    [ fromExact('/docs/k8s/advanced-deployments/'), '/docs/k8s/installation/install/'],
+    [ fromExact('/docs/k8s/deployment-guide/'), '/docs/k8s/installation/install/'],
+    [ fromExact('/docs/k8s/developer-guide/'), '/docs/k8s/installation/install/'],
+    [ fromExact('/docs/k8s/developer-guide/architecture/'), '/docs/k8s/installation/architecture/'],
+    [ fromExact('/docs/k8s/developer-guide/releasing/'), '/docs/k8s/releasing/'],
+    [ fromExact('/docs/k8s/developer-guide/internal-crds/'), '/docs/k8s/crds/'],
+		
 ]
 
 // get current href from window
