@@ -1,4 +1,3 @@
-import BrowserOnly from "@docusaurus/BrowserOnly";
 import { useMDXComponents } from "@mdx-js/react";
 import {
 	Accordion,
@@ -8,11 +7,10 @@ import {
 	AccordionTrigger,
 	AccordionTriggerIcon,
 } from "@ngrok/mantle/accordion";
-import TabItem from "@theme/TabItem";
-import Tabs from "@theme/Tabs";
 import { useState, type ReactNode } from "react";
 import YAML, { type ToStringOptions } from "yaml";
-import DocsCodeBlock, { CodeBlockFallback } from "./code-block";
+import DocsCodeBlock from "./code-block";
+import { LangSwitcher } from "./LangSwitcher";
 
 const showExample = (
 	defaultTitle: string,
@@ -28,44 +26,24 @@ const showExample = (
 ) => {
 	const titleToUse = title || defaultTitle;
 	return (
-		<Tabs className="mb-4" groupId="config_example" queryString="config">
-			<TabItem value="YAML" label="YAML">
-				<BrowserOnly
-					fallback={
-						<CodeBlockFallback className="mb-4">Loading…</CodeBlockFallback>
-					}
-				>
-					{() => (
-						<DocsCodeBlock
-							language="yaml"
-							metastring={yamlMetastring}
-							title={titleToUse + ".yml"}
-							icon={icon}
-						>
-							{snippetText ? `# ${snippetText}\n` + yamlConfig : yamlConfig}
-						</DocsCodeBlock>
-					)}
-				</BrowserOnly>
-			</TabItem>
-			<TabItem value="JSON" label="JSON">
-				<BrowserOnly
-					fallback={
-						<CodeBlockFallback className="mb-4">Loading…</CodeBlockFallback>
-					}
-				>
-					{() => (
-						<DocsCodeBlock
-							language="json"
-							metastring={jsonMetastring}
-							title={titleToUse + ".json"}
-							icon={icon}
-						>
-							{snippetText ? `// ${snippetText}\n` + jsonConfig : jsonConfig}
-						</DocsCodeBlock>
-					)}
-				</BrowserOnly>
-			</TabItem>
-		</Tabs>
+		<LangSwitcher>
+			<DocsCodeBlock
+				language="yaml"
+				metastring={yamlMetastring}
+				title={titleToUse + ".yml"}
+				icon={icon}
+			>
+				{snippetText ? `# ${snippetText}\n` + yamlConfig : yamlConfig}
+			</DocsCodeBlock>
+			<DocsCodeBlock
+				language="json"
+				metastring={jsonMetastring}
+				title={titleToUse + ".json"}
+				icon={icon}
+			>
+				{snippetText ? `// ${snippetText}\n` + jsonConfig : jsonConfig}
+			</DocsCodeBlock>
+		</LangSwitcher>
 	);
 };
 
