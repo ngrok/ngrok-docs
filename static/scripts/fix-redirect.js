@@ -304,7 +304,11 @@ const redirects = [
     [ fromExact('/docs/k8s/developer-guide/architecture/'), '/docs/k8s/installation/architecture/'],
     [ fromExact('/docs/k8s/developer-guide/releasing/'), '/docs/k8s/releasing/'],
     [ fromExact('/docs/k8s/developer-guide/internal-crds/'), '/docs/k8s/crds/'],
-		
+    [ fromExact('/docs/k8s/getting-started-gwapi/'), '/docs/k8s/guides/using-gwapi'],
+    [ fromExact('/docs/k8s/getting-started-kic/'), '/docs/k8s/guides/using-ingresses/'],
+    [ fromExact('/docs/k8s/custom-domain/'), '/docs/k8s/guides/custom-domain/'],
+    [ fromExact('/docs/k8s/user-guide/'), '/docs/k8s/'],
+    [ fromExact('/docs/k8s/with-edges/'), '/docs/k8s/guides/using-ingresses/'],
 ]
 
 // get current href from window
