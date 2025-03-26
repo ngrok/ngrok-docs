@@ -909,7 +909,9 @@
         <a id="ERR_NGROK_334" href="/docs/errors/err_ngrok_334">ERR_NGROK_334</a>
       </td>
       <td class="pre-wrapped">
-        The tunnel <code>&lt;URL&gt;</code> is already bound to another tunnel session
+        The endpoint <code>&lt;URL&gt;</code> is already online. Either
+        1. stop your existing endpoint first, or
+        2. start both endpoints with `--pooling-enabled` to load balance between them.
       </td>
     </tr>
     <tr>
@@ -5255,6 +5257,30 @@
     </tr>
     <tr>
       <td>
+        <a id="ERR_NGROK_2249" href="/docs/errors/err_ngrok_2249">ERR_NGROK_2249</a>
+      </td>
+      <td class="pre-wrapped">
+        Memory limit exceeded by <code>&lt;ACTION&gt;</code> action: <code>&lt;ERR&gt;</code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_2250" href="/docs/errors/err_ngrok_2250">ERR_NGROK_2250</a>
+      </td>
+      <td class="pre-wrapped">
+        Invalid configuration for <code>&lt;ACTION&gt;</code>: Nested variables are too deep. Maximum nesting allowed is <code>&lt;MAX&gt;</code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_2252" href="/docs/errors/err_ngrok_2252">ERR_NGROK_2252</a>
+      </td>
+      <td class="pre-wrapped">
+        Invalid format for set-vars: vars must be a list of maps of exactly size 1
+      </td>
+    </tr>
+    <tr>
+      <td>
         <a id="ERR_NGROK_3002" href="/docs/errors/err_ngrok_3002">ERR_NGROK_3002</a>
       </td>
       <td class="pre-wrapped">
@@ -5969,6 +5995,22 @@
       </td>
       <td class="pre-wrapped">
         ForwardInternal may only forward through <code>&lt;MAX&gt;</code> endpoints.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_3601" href="/docs/errors/err_ngrok_3601">ERR_NGROK_3601</a>
+      </td>
+      <td class="pre-wrapped">
+        The response received from the http-request target had a size exceeding the maximum allowed.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_3602" href="/docs/errors/err_ngrok_3602">ERR_NGROK_3602</a>
+      </td>
+      <td class="pre-wrapped">
+        The configured http-request timeout was reached before a successful request could be made.
       </td>
     </tr>
     <tr>
@@ -8134,9 +8176,9 @@
         <a id="ERR_NGROK_7008" href="/docs/errors/err_ngrok_7008">ERR_NGROK_7008</a>
       </td>
       <td class="pre-wrapped">
-        Only Pro and Enterprise plans are allowed to use edges.
-        Your account is not authorized to use edges.
-        Upgrade to a Pro or Enterprise plan at: <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a>
+        Edges are deprecated and no longer available.
+        If you’ve used edges before, a migration guide is available: <a href="https://ngrok.com/docs/universal-gateway/edges">https://ngrok.com/docs/universal-gateway/edges</a>/#migration-guide.
+        If you have lost access to actively running edges, this is an error, please contact support@ngrok.com for help.
       </td>
     </tr>
     <tr>
@@ -9689,6 +9731,14 @@
     </tr>
     <tr>
       <td>
+        <a id="ERR_NGROK_8014" href="/docs/errors/err_ngrok_8014">ERR_NGROK_8014</a>
+      </td>
+      <td class="pre-wrapped">
+        Your agent has been blocked from connecting to ngrok because it has been suspected of violating our Acceptable Use policy: <a href="https://ngrok.com/tos">https://ngrok.com/tos</a>
+      </td>
+    </tr>
+    <tr>
+      <td>
         <a id="ERR_NGROK_9000" href="/docs/errors/err_ngrok_9000">ERR_NGROK_9000</a>
       </td>
       <td class="pre-wrapped">
@@ -10038,7 +10088,7 @@
         <a id="ERR_NGROK_9041" href="/docs/errors/err_ngrok_9041">ERR_NGROK_9041</a>
       </td>
       <td class="pre-wrapped">
-        Supported protocols for kubernetes-bound endpoints are http and tcp at this time. You provided <code>&lt;PROTO&gt;</code>.
+        Supported protocols for kubernetes-bound endpoints are http, tls, and tcp. You provided <code>&lt;PROTO&gt;</code>.
       </td>
     </tr>
     <tr>
@@ -10935,7 +10985,7 @@
         <a id="ERR_NGROK_18017" href="/docs/errors/err_ngrok_18017">ERR_NGROK_18017</a>
       </td>
       <td class="pre-wrapped">
-        The provided cloud endpoint was invalid because pooling was set to disabled when another endpoint exists for this url that has pooling enabled.
+        The provided cloud endpoint was invalid because pooling was set to disabled when another endpoint exists for this url.
       </td>
     </tr>
     <tr>
@@ -10960,6 +11010,14 @@
       </td>
       <td class="pre-wrapped">
         Failed to validate Kubernetes Operator! Reason: <code>&lt;ERROR&gt;</code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_19003" href="/docs/errors/err_ngrok_19003">ERR_NGROK_19003</a>
+      </td>
+      <td class="pre-wrapped">
+        Failed to validate  endpoint selectors! Reason: <code>&lt;ERROR&gt;</code>
       </td>
     </tr>
     <tr>
