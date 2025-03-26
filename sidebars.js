@@ -264,6 +264,7 @@ const sidebars = {
 			items: [
 				"k8s/index",
 				"k8s/how-it-works",
+				"k8s/guides/quickstart",
 				{
 					label: "Install & Manage",
 					type: "category",
@@ -271,17 +272,16 @@ const sidebars = {
 					items: [
 						"k8s/installation/install",
 						"k8s/installation/update",
-						"k8s/installation/helm",
 						"k8s/installation/architecture",
+						"k8s/installation/helm",
 						"k8s/installation/uninstall",
 					],
 				},
 				{
 					label: "Usage Guides",
 					type: "category",
-					link: { type: "doc", id: "k8s/guides/quickstart" },
+					link: { type: "doc", id: "k8s/guides/using-crds" },
 					items: [
-						"k8s/guides/quickstart",
 						"k8s/guides/using-crds",
 						"k8s/guides/using-gwapi",
 						"k8s/guides/using-ingresses",
