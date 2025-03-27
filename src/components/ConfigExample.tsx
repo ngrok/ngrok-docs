@@ -1,6 +1,6 @@
 import { useMDXComponents } from "@mdx-js/react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@ngrok/mantle/tabs";
-import { type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import YAML, { type ToStringOptions } from "yaml";
 import DocsCodeBlock from "./code-block";
 import { LangSwitcher } from "./LangSwitcher";

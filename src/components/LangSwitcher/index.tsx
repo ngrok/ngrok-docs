@@ -28,11 +28,11 @@ export function LangSwitcher({ children, className, ...props }: any) {
 	// if no language tab is set yet
 	if (tabLanguage === null) {
 		// Check if the user has specified a default language
-		// if no default language is set, set the first tab as the selected tab
 		const startingLanguage =
 			codeBlocks.find((child: any) => child.language === defaultLanguage) ||
 			codeBlocks[0];
 		updateTab(startingLanguage.language);
+		// if no default language is set, set the first tab as the selected tab
 	}
 
 	const matchingBlock =
