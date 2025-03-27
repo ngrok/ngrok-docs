@@ -1,0 +1,218 @@
+---
+title: Local Cluster Options
+pagination_next: k8s/installation/install
+---
+
+import TabItem from "@theme/TabItem";
+import Tabs from "@theme/Tabs";
+
+# Run a local Kubernetes Cluster
+
+You can install the ngrok Kubernetes operator in a locally running Kubernetes cluster rather than paying for one from a cloud provider.
+
+This is useful for:
+
+- Quickly getting started trying out the ngrok Operator
+- Local development & testing
+- Connecting containerized workloads on your local machine to your ngrok infrastructure
+- Faster iteration cycles without cloud latency
+
+Running Kubernetes inside containers has the benefits of being quick and simple to setup compared to a bare-metal installation and keeps the Kubernetes environment more isolated from the dependencies and other applications on your computer.
+This is not a recommendation for how you should productionize your Kubernetes setup, but rather a guide on getting an easy to use local environment setup for development and testing.
+The following sections outline various options for running Kubernetes inside Docker containers on your local machine, but you can run the ngrok Kubernetes operator in any Kubernetes cluster you like.
+
+## Choosing a Container Runtime
+
+Before setting up a local Kubernetes cluster, you need a container runtime. The container runtime is responsible for running containers, managing their lifecycle, and handling networking.
+If you don't already have a container runtime such as Docker installed, choose one from the options below.
+
+| Runtime                                                           | OS Support                        | Architecture Support          | Description                                                                                                                   |
+| ----------------------------------------------------------------- | --------------------------------- | ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| [Docker Engine](https://docs.docker.com/engine/install/)          | Linux, ⚠️ Windows (WSL2 required) | x86_64, ARM64                 | Standard CLI-based runtime. Great for users who need a lightweight container runtime without a GUI.                           |
+| [Docker Desktop](https://www.docker.com/products/docker-desktop/) | Linux, macOS, Windows             | x86_64, ARM64 (Apple Silicon) | GUI-based runtime. Great for developers who want an easy-to-use experience with a dashboard.                                  |
+| [Containerd](https://github.com/containerd/containerd)            | Linux, Windows                    | x86_64, ARM64, s390x, ppc64le | Minimalist, Kubernetes-native runtime. Great for Kubernetes users who need a lightweight runtime without Docker dependencies. |
+| [Colima](https://github.com/abiosoft/colima)                      | Linux, macOS                      | x86_64, ARM64 (Apple Silicon) | macOS-native alternative to Docker Desktop. Great for Mac users looking for a lightweight and fast Docker-compatible runtime. |
+
+## Choosing a Cluster Provider
+
+Select one of the following options for running Kubernetes inside containers on your local machine.
+
+| Provider		| Benefits | Things to consider |
+| ------------- | ----------- | ----------- |
+| [k3d](https://k3d.io/stable/) | Lightweight (runs on [K3s](https://k3s.io/)), fast cluster creation, low memory/CPU usage | Heavily focused on local development, making it more feature-limited |
+| [Minikube](https://minikube.sigs.k8s.io/docs/) | Official Kubernetes project, easy to use, [supports multiple drivers](https://minikube.sigs.k8s.io/docs/drivers/) | Compared to others may be slower and consume more CPU/memory |
+| [kind](https://kind.sigs.k8s.io/) | Multi-node clusters in Docker, great for testing, CI/CD | Focused on testing, other options may be better for local development |
+| [Microk8s](https://microk8s.io/) | Lightweight, full Kubernetes experience, easy to install | Config not automatically added to Kubeconfig, requires manual addition |
+| [Docker Desktop](https://www.docker.com/products/docker-desktop/) | Simple interface, Kubernetes support | GUI-based, may be slower than other options |
+
+### Basic commands
+
+<Tabs groupId="k8s-provider" queryString="k8s-provider">
+	<TabItem value="k3d" label="k3d" default>
+
+    #### Create a k3d cluster
+    ```bash
+    k3d cluster create my-cluster
+    ```
+
+    When creating a k3d cluster, the config is automatically added to your Kubeconfig file so you are ready to go immediately.
+
+    #### List running clusters
+    ```bash
+    k3d cluster list
+    ```
+
+    #### Delete a k3d cluster
+    ```bash
+    k3d cluster delete my-cluster
+    ```
+    </TabItem>
+    <TabItem value="minikube" label="Minikube" default>
+
+    #### Create a Minikube cluster
+    ```bash
+    minikube start
+    ```
+
+    When creating a Minikube cluster, the config is automatically added to your Kubeconfig file so you are ready to go immediately.
+
+    #### List running clusters
+    ```bash
+    minikube profile list
+    ```
+
+    #### Delete a Minikube cluster
+    ```bash
+    minikube delete
+    ```
+    </TabItem>
+    <TabItem value="kind" label="Kind" default>
+
+    #### Create a kind cluster
+    ```bash
+    kind create cluster --name my-cluster
+    ```
+
+    When creating a kind cluster, the config is automatically added to your Kubeconfig file so you are ready to go immediately.
+
+    #### List running clusters
+    ```bash
+    kind get clusters
+    ```
+
+    #### Delete a kind cluster
+    ```bash
+    kind delete cluster --name my-cluster
+    ```
+
+    </TabItem>
+    <TabItem value="microk8s" label="Microk8s" default>
+
+    #### Create a Microk8s cluster
+    ```bash
+    microk8s start
+    ```
+
+    When creating a Microk8s cluster, the config is **NOT** automatically added to your Kubeconfig file, so you can use the following command
+    to add it.
+
+    ```bash
+    microk8s config > $KUBECONFIG
+    ```
+
+    #### List running clusters
+    ```bash
+    microk8s stop
+    ```
+
+    #### Delete a Microk8s cluster
+    ```bash
+    microk8s reset
+    ```
+    </TabItem>
+    <TabItem value="docker-desktop" label="Docker Desktop" default>
+    [Docker Desktop](https://www.docker.com/products/docker-desktop/) offers a simple to use interface that includes support for running Kubernetes in docker with [its Kubernetes feature](https://docs.docker.com/desktop/features/k8s/)
+    </TabItem>
+
+</Tabs>
+
+## Managing Kubernetes Contexts
+
+When working with multiple Kubernetes clusters (e.g., Minikube, k3d, kind, MicroK8s, cloud clusters), it is important to manage **kubeconfig contexts** efficiently.
+A **context** in Kubernetes determines:
+
+- **Which cluster** `kubectl` is communicating with.
+- **Which user credentials** to use for authentication.
+- **Which namespace** is the default for commands.
+
+Kubernetes stores this information in the **kubeconfig file** (default location: `~/.kube/config`).
+The `$KUBECONFIG` environment variable is used by `kubectl` to know where your configuraiton file is.
+If you would like to store it somewhere else, or use different files for different clusters, you can modify the `$KUBECONFIG` variable.
+
+### Viewing the Current Context
+
+To check which Kubernetes cluster you are currently using:
+
+```bash
+kubectl config current-context
+```
+
+This returns the active context, which tells kubectl which cluster and credentials are being used.
+
+### Listing All Contexts
+
+To see all available Kubernetes contexts in your kubeconfig:
+
+```bash
+kubectl config get-contexts
+```
+
+This will display a list of available contexts, including:
+
+- Cluster Name (e.g., minikube, kind-my-cluster, k3d-my-cluster).
+- User Credentials.
+- Current Context (marked with \*).
+
+### Switching Between Contexts
+
+To switch from one Kubernetes cluster to another:
+
+```bash
+kubectl config use-context my-cluster
+```
+
+### Setting a Default Namespace for a Context
+
+By default, kubectl uses the default namespace. You can change the default namespace for a specific context:
+
+```bash
+kubectl config set-context --current --namespace=my-namespace
+```
+
+Or, specify a namespace when switching to a different context:
+
+```bash
+kubectl config set-context my-cluster --namespace=custom-namespace
+```
+
+### Deleting a Context
+
+If you no longer need a specific context, you can remove it from your kubeconfig:
+
+```bash
+kubectl config delete-context <context-name>
+```
+
+This does not delete the cluster itself, only its entry from your kubeconfig.
+
+### Merging Multiple Kubeconfig Files
+
+If you have multiple kubeconfig files (e.g., from cloud providers and local clusters), you can merge them:
+
+```bash
+export KUBECONFIG=~/.kube/config:~/.kube/k3d-config:~/.kube/microk8s-config
+kubectl config view --merge --flatten > ~/.kube/config-merged
+mv ~/.kube/config-merged ~/.kube/config
+```
+
+This consolidates multiple different cluster credentials into a single kubeconfig file.
