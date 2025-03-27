@@ -7,6 +7,13 @@ import {
 	AccordionTrigger,
 	AccordionTriggerIcon,
 } from "@ngrok/mantle/accordion";
+import {
+	TabBadge,
+	Tabs,
+	TabsContent,
+	TabsList,
+	TabsTrigger,
+} from "@ngrok/mantle/tabs";
 import { useState, type ReactNode } from "react";
 import YAML, { type ToStringOptions } from "yaml";
 import DocsCodeBlock from "./code-block";
@@ -114,32 +121,13 @@ export default function ConfigExample({
 	);
 	if (!components.h3) return <p>Error rendering config example.</p>;
 	return (
-		<>
-			{policySnippet}
-			{showAgentConfig && (
-				<Accordion type="multiple" defaultValue={["show-agent-config"]}>
-					<AccordionItem value="show-agent-config1">
-						<AccordionHeading asChild>
-							<p className="text-sm font-medium text-gray-600">
-								{!configShowing
-									? "Show agent config example"
-									: "Hide agent config example"}
-								<AccordionTrigger
-									onClick={() => setConfigShowing(!configShowing)}
-								>
-									<AccordionTriggerIcon />
-								</AccordionTrigger>
-							</p>
-						</AccordionHeading>
-						<AccordionContent className="mx-[10px] pt-[-15px]">
-							<>
-								<p>You can add the snippet to your agent config like this:</p>
-								{agentConfigSnippet}
-							</>
-						</AccordionContent>
-					</AccordionItem>
-				</Accordion>
-			)}
-		</>
+		<Tabs orientation="horizontal" defaultValue="traffic-policy">
+			<TabsList>
+				<TabsTrigger value="traffic-policy">Traffic Policy</TabsTrigger>
+				<TabsTrigger value="agent-config">Agent Config</TabsTrigger>
+			</TabsList>
+			<TabsContent value="traffic-policy">{policySnippet}</TabsContent>
+			<TabsContent value="agent-config">{agentConfigSnippet}</TabsContent>
+		</Tabs>
 	);
 }

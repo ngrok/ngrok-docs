@@ -44,7 +44,6 @@ export function LangSwitcher({ children, className, ...props }: any) {
 	const collapsible =
 		meta.collapsible && matchingBlock.content.split("\n").length > 20;
 
-	console.log("matchingBlock", matchingBlock);
 	return (
 		<BrowserOnly
 			fallback={
