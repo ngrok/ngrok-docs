@@ -7,7 +7,7 @@ import {
 } from "@site/src/components/LangSwitcher/utils";
 import Content from "@theme-original/DocItem/Content";
 import type ContentType from "@theme/DocItem/Content";
-import React, { useState, type ReactNode } from "react";
+import React, { useEffect, useState, type ReactNode } from "react";
 
 type Props = WrapperProps<typeof ContentType>;
 
