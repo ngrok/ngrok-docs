@@ -23,6 +23,8 @@ export function LangSwitcher({ children, className, ...props }: any) {
 		useContext<LangSwitcherContextType>(LangSwitcherContext);
 	const codeBlocks = getCodeBlocks(children);
 
+	if (!updateTab) return "Error loading code block";
+
 	// if no language tab is set yet
 	if (tabLanguage === null) {
 		// Check if the user has specified a default language

@@ -12,7 +12,7 @@ import React, { useState, type ReactNode } from "react";
 type Props = WrapperProps<typeof ContentType>;
 
 export default function ContentWrapper(props: Props): ReactNode {
-	const [defaultLanguage, setDefaultTabData] = useState(getDefaultLanguage());
+	const defaultLanguage = getDefaultLanguage();
 	const [tabLanguage, setTabLanguage] = useState(defaultLanguage);
 	const updateTab = (newLang: string | SupportedLanguage) => {
 		localStorage.setItem(paramName, newLang);

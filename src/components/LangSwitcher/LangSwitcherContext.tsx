@@ -4,12 +4,12 @@ import { createContext } from "react";
 export type LangSwitcherContextType = {
 	tabLanguage: string | SupportedLanguage | null;
 	defaultLanguage: string | null;
-	updateTab: (newLang: string | SupportedLanguage) => void;
+	updateTab: null | ((newLang: string | SupportedLanguage) => void);
 };
 
 const LangSwitcherContext = createContext<LangSwitcherContextType>({
 	tabLanguage: "",
-	updateTab: (newLang: SupportedLanguage | string) => {},
+	updateTab: null,
 	defaultLanguage: null,
 });
 

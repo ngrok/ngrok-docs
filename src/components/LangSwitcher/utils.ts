@@ -1,8 +1,4 @@
-import {
-	parseLanguage,
-	parseMetastring,
-	type SupportedLanguage,
-} from "@ngrok/mantle/code-block";
+import { parseLanguage, parseMetastring } from "@ngrok/mantle/code-block";
 
 export const getCodeBlocks = (children: any) => {
 	return children.map((child: any) => {

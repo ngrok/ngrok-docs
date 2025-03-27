@@ -79,7 +79,6 @@ export default function ConfigExample({
 	...props
 }: ConfigExampleProps) {
 	const components = useMDXComponents();
-	const [configShowing, setConfigShowing] = useState(false);
 
 	const yamlOptions = {
 		indent: 2,
