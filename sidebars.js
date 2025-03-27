@@ -467,7 +467,7 @@ const sidebars = {
 								"api/resources/reserved-addrs",
 								"api/resources/reserved-domains",
 								"api/resources/tls-certificates",
-								"api/resources/kubernetes-operators", 
+								"api/resources/kubernetes-operators",
 								// Edges (deprecated)
 								{
 									type: "category",
