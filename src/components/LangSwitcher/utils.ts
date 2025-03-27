@@ -18,14 +18,9 @@ export const getCodeBlocks = (children: any) => {
 
 // The name of the query param or localstorage item to search for
 // to get the default tab value
-export const paramName = "defaultTabLang";
+export const paramName = "defaultSwitcherLang";
 
 export const getDefaultLanguage = (): string | null => {
 	const searchParams = new URLSearchParams(window.location.search);
-	let tempLang = searchParams.get(paramName);
-	if (!tempLang) {
-		tempLang = localStorage.getItem(paramName);
-	}
-
-	return tempLang;
+	return searchParams.get(paramName);
 };
