@@ -1,19 +1,5 @@
 import { useMDXComponents } from "@mdx-js/react";
-import {
-	Accordion,
-	AccordionContent,
-	AccordionHeading,
-	AccordionItem,
-	AccordionTrigger,
-	AccordionTriggerIcon,
-} from "@ngrok/mantle/accordion";
-import {
-	TabBadge,
-	Tabs,
-	TabsContent,
-	TabsList,
-	TabsTrigger,
-} from "@ngrok/mantle/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@ngrok/mantle/tabs";
 import { useState, type ReactNode } from "react";
 import YAML, { type ToStringOptions } from "yaml";
 import DocsCodeBlock from "./code-block";

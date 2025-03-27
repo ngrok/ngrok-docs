@@ -7,13 +7,10 @@ import {
 	CodeBlockCopyButton,
 	CodeBlockExpanderButton,
 	CodeBlockHeader,
-	CodeBlockIcon,
 	CodeBlockTitle,
 	fmtCode,
-	parseLanguage,
-	parseMetastring,
 } from "@ngrok/mantle/code-block";
-import type { SupportedLanguage } from "@ngrok/mantle/code-block";
+import clsx from "clsx";
 import { useContext } from "react";
 import { CodeBlockFallback } from "../code-block";
 import LangSwitcherContext, {
@@ -51,7 +48,7 @@ export function LangSwitcher({ children, className, ...props }: any) {
 			}
 		>
 			{() => (
-				<CodeBlock className={className} {...props}>
+				<CodeBlock className={clsx(className, "mb-4")} {...props}>
 					<CodeBlockHeader className="flex-col overflow-x-auto p-1">
 						<div className="flex w-[100%] gap-1.5">
 							{codeBlocks.map((child: any) => (
