@@ -1,5 +1,5 @@
 import type { SupportedLanguage } from "@ngrok/mantle/code-block";
-import { createContext, type SetStateAction } from "react";
+import { createContext } from "react";
 
 export type LangSwitcherContextType = {
 	tabLanguage: string | SupportedLanguage | null;
