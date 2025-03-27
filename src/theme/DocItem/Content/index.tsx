@@ -1,3 +1,4 @@
+import BrowserOnly from "@docusaurus/BrowserOnly";
 import type { WrapperProps } from "@docusaurus/types";
 import type { SupportedLanguage } from "@ngrok/mantle/code-block";
 import LangSwitcherContext from "@site/src/components/LangSwitcher/LangSwitcherContext";
@@ -20,10 +21,14 @@ export default function ContentWrapper(props: Props): ReactNode {
 	};
 
 	return (
-		<LangSwitcherContext.Provider
-			value={{ defaultLanguage, tabLanguage, updateTab }}
-		>
-			<Content {...props} />
-		</LangSwitcherContext.Provider>
+		<BrowserOnly fallback={<Content {...props} />}>
+			{() => (
+				<LangSwitcherContext.Provider
+					value={{ defaultLanguage, tabLanguage, updateTab }}
+				>
+					<Content {...props} />
+				</LangSwitcherContext.Provider>
+			)}
+		</BrowserOnly>
 	);
 }
