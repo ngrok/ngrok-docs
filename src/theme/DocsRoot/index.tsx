@@ -1,4 +1,3 @@
-import BrowserOnly from "@docusaurus/BrowserOnly";
 import renderRoutes from "@docusaurus/renderRoutes";
 import {
 	HtmlClassNameProvider,
@@ -12,16 +11,10 @@ import { type ReactNode } from "react";
 
 export default function DocsRoot(props: Props): ReactNode {
 	return (
-		<BrowserOnly fallback={<div>Loading...</div>}>
-			{() => (
-				<HtmlClassNameProvider
-					className={clsx(ThemeClassNames.wrapper.docsPages)}
-				>
-					<ThemeProvider>
-						<Layout>{renderRoutes(props.route.routes!)}</Layout>
-					</ThemeProvider>
-				</HtmlClassNameProvider>
-			)}
-		</BrowserOnly>
+		<HtmlClassNameProvider className={clsx(ThemeClassNames.wrapper.docsPages)}>
+			<ThemeProvider>
+				<Layout>{renderRoutes(props.route.routes!)}</Layout>
+			</ThemeProvider>
+		</HtmlClassNameProvider>
 	);
 }
