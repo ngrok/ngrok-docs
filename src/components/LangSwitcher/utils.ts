@@ -21,14 +21,12 @@ export const getCodeBlocks = (children: any) => {
 export const paramName = "defaultTabLang";
 
 export const getDefaultLanguage = (): string | null => {
-	if (window) {
-		const searchParams = new URLSearchParams(window.location.search);
-		let tempLang = searchParams.get(paramName);
-		if (!tempLang) {
-			tempLang = localStorage.getItem(paramName);
-		}
-
-		return tempLang;
+	if (!window) return null;
+	const searchParams = new URLSearchParams(window?.location?.search);
+	let tempLang = searchParams.get(paramName);
+	if (!tempLang && localStorage) {
+		tempLang = localStorage.getItem(paramName);
 	}
-	return null;
+
+	return tempLang;
 };
