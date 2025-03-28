@@ -123,6 +123,7 @@ const sidebars = {
 				"universal-gateway/chain-endpoints",
 				"universal-gateway/mock-api",
 				"universal-gateway/migrate-from-tunnels",
+				"universal-gateway/http-s/index",
 				{
 					label: "Endpoints",
 					type: "category",
