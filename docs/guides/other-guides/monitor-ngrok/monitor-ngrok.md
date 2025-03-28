@@ -204,3 +204,4 @@ https://httpbin.org/#/HTTP_Methods/get_get
   - use you first, we if necessary is fine
   - bold ui elements
   - variables in <> in YAML
+- copy details from adjacent article
