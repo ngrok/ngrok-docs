@@ -1,7 +1,7 @@
 import { parseLanguage, parseMetastring } from "@ngrok/mantle/code-block";
 
 export const getCodeBlocks = (children: any) => {
-	return children.map((child: any) => {
+	return children.map((child: any, index: number) => {
 		const { className, metastring, children, language } =
 			child.props.children.props ?? child.props;
 		const parsedLanguage = language || parseLanguage(className);
@@ -10,8 +10,13 @@ export const getCodeBlocks = (children: any) => {
 		return {
 			language: parsedLanguage,
 			content: children,
-			meta,
+			meta: {
+				...meta,
+				// Make it collapsible by default
+				collapsible: true,
+			},
 			title,
+			childIndex: index,
 		};
 	});
 };
