@@ -123,6 +123,7 @@ With your example app running alongside the ngrok Kubernetes Operator, you now n
 
 You'll first create a [GatewayClass](https://gateway-api.sigs.k8s.io/api-types/gatewayclass/), which represents a class of cluster-level [Gateways](https://gateway-api.sigs.k8s.io/api-types/gateway/). You'll then configure the Gateway with a listener, and an [HTTPRoute](https://gateway-api.sigs.k8s.io/api-types/httproute/) to specify how the Gateway should route requests.
 
+
 1. Create a new file called `gatewayclass.yaml` on your workstation with the below YAML:
 
    ```yaml
@@ -152,22 +153,12 @@ You'll first create a [GatewayClass](https://gateway-api.sigs.k8s.io/api-types/g
      gatewayClassName: ngrok
      listeners:
        - name: 2048-web
-         #highlight-start
+				 protocol: HTTPS
+				 port: 80	
          hostname: "<YOUR_NGROK_DOMAIN>"
-         #highlight-end
-         port: 80
-         protocol: HTTPS
-         tls:
-           mode: Terminate
-           certificateRefs:
-         allowedRoutes:
-           kinds:
-             - kind: HTTPRoute
-           namespaces:
-             from: Selector
-             selector:
-               matchLabels:
-                 expose-apps: "true"
+				 allowedRoutes:
+				   namespaces:
+					   from: Same
    ---
    apiVersion: gateway.networking.k8s.io/v1
    kind: HTTPRoute
@@ -176,7 +167,8 @@ You'll first create a [GatewayClass](https://gateway-api.sigs.k8s.io/api-types/g
      namespace: default
    spec:
      parentRefs:
-       - kind: Gateway
+       - group: gateway.networking.k8s.io
+				 kind: Gateway
          name: 2048-gateway
          namespace: default
      hostnames:
@@ -191,13 +183,6 @@ You'll first create a [GatewayClass](https://gateway-api.sigs.k8s.io/api-types/g
              kind: Service
              port: 80
    ```
-
-   :::tip
-
-   **Note:** If you get an error when applying the manifest, double check that you've updated the `<YOUR_NGROK_DOMAIN>` value
-   and try again.
-
-   :::
 
    This YAML uses the [Gateway API](https://gateway-api.sigs.k8s.io/#introduction) to first define a [Gateway](https://gateway-api.sigs.k8s.io/api-types/gateway) that allows north/south traffic to enter the cluster from external requests, then uses an [HTTPRoute](https://gateway-api.sigs.k8s.io/concepts/api-overview/#httproute) to terminate the connection at the pod running the `game-2048` service.
 
