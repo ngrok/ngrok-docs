@@ -115,6 +115,11 @@ const sidebars = {
 					link: { type: "doc", id: "universal-gateway/cloud-endpoints/index" },
 					items: ["universal-gateway/cloud-endpoints/quickstart"],
 				},
+				{
+					label: "What are Agent Endpoints?",
+					id: "universal-gateway/agent-endpoints",
+					type: "doc",
+				},
 				"universal-gateway/chain-endpoints",
 				"universal-gateway/mock-api",
 				"universal-gateway/migrate-from-tunnels",
@@ -123,27 +128,6 @@ const sidebars = {
 					type: "category",
 					link: { type: "doc", id: "universal-gateway/endpoints" },
 					items: [
-						{
-							label: "Types",
-							type: "category",
-							link: { type: "doc", id: "universal-gateway/types" },
-							items: [
-								{
-									label: "Cloud Endpoints",
-									type: "category",
-									link: {
-										type: "doc",
-										id: "universal-gateway/cloud-endpoints/index",
-									},
-									items: ["universal-gateway/cloud-endpoints/quickstart"],
-								},
-								{
-									id: "universal-gateway/agent-endpoints",
-									type: "doc",
-									label: "Agent Endpoints",
-								},
-							],
-						},
 						{
 							label: "Protocols",
 							type: "category",
