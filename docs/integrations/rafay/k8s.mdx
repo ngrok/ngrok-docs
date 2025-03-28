@@ -47,7 +47,7 @@ To prepare your cluster for the ngrok Kubernetes Operator and an app you'd like 
 
 Before you create a Rafay blueprint for ingress managed by ngrok, you need to prepare your infrastructure in a way that works with Rafay's blueprints.
 
-1. In Rafay, create a namespace by clicking **Infrastructure&rarr;Namespaces**, then **New Namespace**. Enter **ngrok-ingress-controller** and under **Type**, select **Wizard**. Finally, click **Save**.
+1. In Rafay, create a namespace by clicking **Infrastructure&rarr;Namespaces**, then **New Namespace**. Enter **ngrok-operator** and under **Type**, select **Wizard**. Finally, click **Save**.
 
    ![Create a new namespace](img/namespace-create.png)
 
@@ -115,13 +115,7 @@ You can deploy workloads directly from Rafay's catalog, but in this example, you
    curl https://raw.githubusercontent.com/Azure-Samples/aks-store-demo/main/aks-store-quickstart.yaml -o aks-store-workload.yaml
    ```
 
-1. Add the following ingress configuration to the bottom of your `aks-store-workload.yaml` file. This configuration defines how the ngrok Kubernetes Operator will route traffic arriving on `NGROK_DOMAIN` to the `store-front` service on port `80` as defined in the manifest.
-
-   :::tip
-
-   Make sure you edit line `10` of the YAML below, which contains the `<NGROK_DOMAIN>` variable, with the ngrok subdomain you created in the previous step.
-
-   :::
+1. Add the following ingress configuration to the bottom of your `aks-store-workload.yaml` file. This configuration defines how the ngrok Kubernetes Operator will route traffic arriving on `<NGROK_DOMAIN>` to the `store-front` service on port `80` as defined in the manifest.
 
    ```yaml showLineNumbers
    ---
@@ -129,13 +123,11 @@ You can deploy workloads directly from Rafay's catalog, but in this example, you
    kind: Ingress
    metadata:
      name: store-ingress
-     namespace: ngrok-ingress-controller
+     namespace: ngrok-operator
    spec:
      ingressClassName: ngrok
      rules:
-       # highlight-start
        - host: <NGROK_DOMAIN>
-         # highlight-end
          http:
            paths:
              - path: /
@@ -164,7 +156,5 @@ You can deploy workloads directly from Rafay's catalog, but in this example, you
 You've now used the open source ngrok Kubernetes Operator to add public ingress to a demo app on a cluster managed by Rafay. Because ngrok abstracts ingress and middleware execution to its Cloud Edge, and you have saved your configuration to Rafay as a blueprint and workload, you can deploy and manage additional versions of this app in a few clicks.
 
 As you extend your internal catalog of blueprints and networks, you can enable self-service for developers who want to deploy apps without sacrificing on control or efficiency.
-
-One appealing option for platform or DevOps teams using Rafay to create a better experience for their internal development teams would be a [name-based virtual hosting](https://github.com/ngrok/ngrok-operator/blob/main/docs/user-guide/ingress-to-edge-relationship.md#name-based-virtual-hosting), which lets you create unique names on the ngrok Cloud Edge, like `foo1.bar.com` and `foo2.bar.com`, to direct traffic to different apps.
 
 Learn more about the ngrok Kubernetes Operator, or contribute to its ongoing development, by checking out the [GitHub repository](https://github.com/ngrok/ngrok-operator) and the [project-specific documentation](https://github.com/ngrok/ngrok-operator/tree/main/docs).
