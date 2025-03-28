@@ -116,8 +116,8 @@ const sidebars = {
 					items: ["universal-gateway/cloud-endpoints/quickstart"],
 				},
 				"universal-gateway/forward-traffic",
-				"universal-gateway/mock-api",
 				"universal-gateway/chain-endpoints",
+				"universal-gateway/mock-api",
 				"universal-gateway/migrate-from-tunnels",
 				{
 					label: "Endpoints",
