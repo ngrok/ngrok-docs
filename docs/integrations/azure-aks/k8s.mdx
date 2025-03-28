@@ -66,46 +66,16 @@ Start by creating a new managed Kubernetes cluster in AKS. If you already have o
 
 ## **Step 2**: Install the ngrok Kubernetes Operator {#install-the-ngrok-kubernetes-ingress-controller}
 
-We recommend installing the [ngrok Kubernetes Ingress
-Controller](https://github.com/ngrok/ngrok-operator) before your end-user apps to separate the steps around infrastructure vs. app configuration.
+We recommend reserving a domain for ingress if you don't have one already.
+Navigate to the [**Domains** section](https://dashboard.ngrok.com/domains) of
+the ngrok dashboard and click **Create Domain** or **New Domain**. This will be
+your `NGROK_DOMAIN` for the remainder of this guide.
 
-1. Create an ngrok static subdomain for ingress if you don't have one already. Navigate to the [**Domains**
-   section](https://dashboard.ngrok.com/domains) of the ngrok dashboard and click **Create Domain** or **New
-   Domain**. This static subdomain will be your `NGROK_DOMAIN` for the remainder of this guide.
+Now that you have a Kubernetes cluster running on AKS, you can install
+the ngrok Kubernetes Operator to get traffic to your Kubernetes workloads.
 
-1. Add the ngrok Helm repository if you haven't already.
-
-   ```bash
-   helm repo add ngrok https://charts.ngrok.com
-   ```
-
-1. Set up the `AUTHTOKEN` and `API_KEY` exports, which allows Helm to install the Operator using your ngrok credentials. Find your `AUTHTOKEN` under [**Your Authtoken**](https://dashboard.ngrok.com/get-started/your-authtoken) in the ngrok dashboard.
-
-   To create a new API key, navigate to the [**API** section](https://dashboard.ngrok.com/api) of the ngrok dashboard, click the **New API Key** button, change the description or owner, and click the **Add API Key** button. Copy the API key token shown in the modal window before closing, as the ngrok dashboard will not show you the token again.
-
-   ```bash
-   export NGROK_AUTHTOKEN=[YOUR-AUTHTOKEN]
-   export NGROK_API_KEY=[YOUR-API-KEY]
-   ```
-
-1. Install the ngrok Kubernetes Operator with Helm under a new `ngrok-ingress-controller` namespace.
-
-   ```bash
-   helm install ngrok-ingress-controller ngrok/kubernetes-ingress-controller \
-     --namespace ngrok-ingress-controller \
-     --create-namespace \
-     --set credentials.apiKey=$NGROK_API_KEY \
-     --set credentials.authtoken=$NGROK_AUTHTOKEN
-   ```
-
-1. Verify you have successfully installed the ngrok Kubernetes Operator and that pods are healthy.
-
-   ```bash
-   kubectl get pods -l 'app.kubernetes.io/name=kubernetes-ingress-controller' --namespace ngrok-ingress-controller
-
-   NAME                                                              READY   STATUS    RESTARTS   AGE
-   ngrok-ingress-controller-kubernetes-ingress-controller-man2fg5p   1/1     Running   0          27s
-   ```
+Check out our [Operator installation doc](/docs/k8s/installation/install/) for
+details on how to use Helm to install with your ngrok credentials.
 
 ## **Step 3**: Deploy a demo microservices app {#deploy-a-demo-microservices-app}
 
@@ -379,9 +349,7 @@ Next, you'll configure and deploy the [ngrok Kubernetes Operator](https://github
    spec:
      ingressClassName: ngrok
      rules:
-       # highlight-start
        - host: NGROK_DOMAIN
-         # highlight-end
          http:
            paths:
              - path: /
@@ -405,56 +373,102 @@ Next, you'll configure and deploy the [ngrok Kubernetes Operator](https://github
 
 Now that your demo app is publicly accessible through the ngrok Cloud Edge, you can quickly layer on [additional capabilities](/universal-gateway/http/), like authentication, without configuring and deploying complex infrastructure. Let's see how that works for restricting access to individual Google accounts or any Google account under a specific domain name.
 
-1. Apply a new YAML definition to your cluster with the YAML below, replacing `YOUR_DOMAIN.TLD` with the domain name you'd like to authenticate visitors against.
+With our [Traffic Policy system](/docs/traffic-policy/) and the [`oauth`
+action](/docs/traffic-policy/actions/oauth), ngrok manages OAuth protection
+entirely at the cloud edge, which means you don't need to add any
+additional services to your cluster, or alter routes, to ensure ngrok's edge
+authenticates and authorizes all requests before allowing ingress and access to
+your endpoint.
 
-   ```yaml showLineNumbers
-   kind: NgrokModuleSet
-   apiVersion: ingress.k8s.ngrok.com/v1alpha1
-   metadata:
-     name: ngrok-managed-google-oauth
-     namespace: ngrok-ingress-controller
-   modules:
-     oauth:
-       google:
-         emailDomains:
-           - YOUR_DOMAIN.TLD
-   ```
+To enable the `oauth` action, you'll create a new `NgrokTrafficPolicy` custom
+resource and apply it to your entire `Ingress` with an annotation. You can also
+apply the policy to just a specific backend or as the default backend for an
+`Ingress`—see our doc on using the [Operator with
+Ingresses](/docs/k8s/guides/using-ingresses/#using-ngroktrafficpolicy-with-ingress).
 
-1. Edit your ingress definition to connect your ngrok Kubernetes Operator with the `NgrokModuleSet` configuration you just deployed for OAuth.
+1. Edit your existing ingress YAML with the following. Note the new `annotations` field and
+   the `NgrokTrafficPolicy` CR.
 
-   In the Azure Portal, click **Services and ingresses**&rarr;**Ingresses**, then `store-ingress`, then the **YAML** tab. Add the highlighted YAML below, then validate and save your changes.
-
-   ```yaml showLineNumbers
+   ```yaml
+    ...
+   ---
+   # Configuration for ngrok's Kubernetes Operator
    apiVersion: networking.k8s.io/v1
    kind: Ingress
    metadata:
-     name: store-ingress
-     namespace: ngrok-ingress-controller
-   # highlight-start
-   annotations:
-     k8s.ngrok.com/modules: ngrok-managed-google-oauth
-   # highlight-end
+     name: game-2048-ingress
+     namespace: default
+     annotations:
+       k8s.ngrok.com/traffic-policy: oauth
    spec:
      ingressClassName: ngrok
      rules:
-       - host: NGROK_DOMAIN
+       - host: <NGROK_DOMAIN>
          http:
            paths:
              - path: /
                pathType: Prefix
                backend:
                  service:
-                   name: store-front
+                   name: game-2048
                    port:
                      number: 80
+   ---
+   # Traffic Policy configuration for OAuth
+   apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+   kind: NgrokTrafficPolicy
+   metadata:
+     name: oauth
+     namespace: default
+   spec:
+     policy:
+   	   on_http_request:
+   		   - type: oauth
+   			   config:
+   			     provider: google
    ```
 
-1. Reload your demo app in your browser to see a request to sign in via Google. If the account's domain name matches yours, they'll be given authorization to access your app—otherwise, they'll be redirected to an error page.
+1. When you open your demo app again, you'll be asked to log in via Google.
+   That's a start, but what if you want to authenticate only yourself or colleagues?
+
+1. You can use [expressions](/docs/traffic-policy/concepts/expressions) and [CEL
+   interpolation](/docs/traffic-policy/concepts/cel-interpolation) to filter out
+   and reject OAuth logins that don't contain `example.com`. Update the
+   `NgrokTrafficPolicy` portion of your manifest after changing `example.com` to
+   your domain.
+
+   ```yaml
+   ---
+   # Traffic Policy configuration for OAuth
+   apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+   kind: NgrokTrafficPolicy
+   metadata:
+     name: oauth
+     namespace: default
+   spec:
+     policy:
+   	   on_http_request:
+   		   - type: oauth
+   			   config:
+   			     provider: google
+   			 - expressions:
+   			     - "!actions.ngrok.oauth.identity.email.endsWith('example.com')"
+           actions:
+             - type: custom-response
+               config:
+                 content: Hey, no auth for you ${actions.ngrok.oauth.identity.name}!
+                 status_code: 400
+   ```
+
+1. Check out your deployed app once again. If you log in with an email that
+   doesn't match your domain, ngrok rejects your request. Authentication... done!
 
 ## What's next?
 
 You've now used the open source ngrok Kubernetes Operator to add public ingress to a demo app on a cluster managed in AKS without having to worry about complex Kubernetes networking configurations. Because ngrok abstracts ingress and middleware execution to its Cloud Edge, you can follow a similar process to route public traffic to your next production-ready app.
 
-You can also extend the integration with additional [route modules](https://github.com/ngrok/ngrok-operator/blob/main/docs/user-guide/route-modules.md), like circuit breakers, compression, or edit headers before they are sent to your app. Additional deployment options include [name-based virtual hosting](https://github.com/ngrok/ngrok-operator/blob/main/docs/user-guide/ingress-to-edge-relationship.md#name-based-virtual-hosting), which lets you deploy and manage any number of Kubernetes clusters and apps in AKS, then create unique ngrok edge domains, like `foo1.bar.com` and `foo2.bar.com`, to direct traffic to the respective services.
-
-Learn more about the ngrok Kubernetes Operator, or contribute to its ongoing development, by checking out the [GitHub repository](https://github.com/ngrok/ngrok-operator) and the [project-specific documentation](https://github.com/ngrok/ngrok-operator/tree/main/docs).
+For next steps, explore our [Kubernetes docs](/docs/k8s/) for more details on
+how the Operator works, different ways you can integrate ngrok with an existing
+production cluster, or use more advanced features like
+[bindings](docs/k8s/guides/bindings/) or [endpoint
+pooling](/docs/k8s/guides/pooling/).
