@@ -1,4 +1,3 @@
-import { useMDXComponents } from "@mdx-js/react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@ngrok/mantle/tabs";
 import { type ReactNode } from "react";
 import YAML, { type ToStringOptions } from "yaml";
@@ -78,8 +77,6 @@ export default function ConfigExample({
 	showAgentConfig = true,
 	...props
 }: ConfigExampleProps) {
-	const components = useMDXComponents();
-
 	const yamlOptions = {
 		indent: 2,
 		directives: true,
@@ -104,7 +101,6 @@ export default function ConfigExample({
 		agentConfig.yamlConfig,
 		agentConfig.jsonConfig,
 	);
-	if (!components.h3) return <p>Error rendering config example.</p>;
 	return (
 		<Tabs orientation="horizontal" defaultValue="traffic-policy">
 			<TabsList>
