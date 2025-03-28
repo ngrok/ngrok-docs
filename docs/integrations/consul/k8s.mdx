@@ -87,7 +87,7 @@ helm repo add hashicorp https://helm.releases.hashicorp.com
 helm install --values values.yaml consul hashicorp/consul --create-namespace --namespace consul --version "1.0.0"
 ```
 
-:::tip 
+:::tip
 
 Depending on your computer, this can take some time for the pods to become healthy. You can watch the status of the pods with `kubectl get pods --namespace consul -w`
 
@@ -113,27 +113,27 @@ These steps are based on Consul's Tutorial [Consul Service Discovery and Service
 
 Now that we have a Kubernetes cluster with Consul installed, we can install the ngrok Kubernetes Operator to provide ingress to our services. We'll use Helm to install the ngrok Kubernetes Operator into our cluster and use pod annotations to enable the Consul Connect sidecar injector. This will allow us to use Consul Connect to secure the traffic between the ngrok Kubernetes Operator and our services.
 
-1. First, we need to create a Kubernetes Service for the ngrok Kubernetes Operator. Consul relies on this to name our services to declare Service Intention `source` and `destination` values. We'll create a Kubernetes Service for the ngrok Kubernetes Operator in the `consul` namespace.
+1.  First, we need to create a Kubernetes Service for the ngrok Kubernetes Operator. Consul relies on this to name our services to declare Service Intention `source` and `destination` values. We'll create a Kubernetes Service for the ngrok Kubernetes Operator in the `consul` namespace.
 
-	 ```yaml
-	 apiVersion: v1
-	 kind: Service
-	 metadata:
-		 name: ngrok-operator
-		 namespace: consul
-	 spec:
-		 ports:
-			 - name: http
-				 port: 80
-				 protocol: TCP
-				 targetPort: 80
-		 selector:
-			 app.kubernetes.io/name: ngrok-operator
-	 ```
+    ```yaml
+    apiVersion: v1
+    kind: Service
+    metadata:
+    	 name: ngrok-operator
+    	 namespace: consul
+    spec:
+    	 ports:
+    		 - name: http
+    			 port: 80
+    			 protocol: TCP
+    			 targetPort: 80
+    	 selector:
+    		 app.kubernetes.io/name: ngrok-operator
+    ```
 
-1. Install the ngrok Kubernetes Operator
+1.  Install the ngrok Kubernetes Operator
 
-	 Next, we'll install the ngrok Kubernetes Operator into our cluster. We want the controller pods to be in the Consul service mesh in order to proxy traffic to our other services. We'll use pod annotations to enable the Consul Connect sidecar injector and allow outbound traffic to use the Consul mesh. Consul documents how to set these 2 annotations in the [Configure Operators for Consul on Kubernetes](https://developer.hashicorp.com/consul/docs/k8s/connect/ingress-controllers) doc.
+    Next, we'll install the ngrok Kubernetes Operator into our cluster. We want the controller pods to be in the Consul service mesh in order to proxy traffic to our other services. We'll use pod annotations to enable the Consul Connect sidecar injector and allow outbound traffic to use the Consul mesh. Consul documents how to set these 2 annotations in the [Configure Operators for Consul on Kubernetes](https://developer.hashicorp.com/consul/docs/k8s/connect/ingress-controllers) doc.
 
     ```yaml
     # This annotation is required to enable the Consul Connect sidecar injector
@@ -142,14 +142,14 @@ Now that we have a Kubernetes cluster with Consul installed, we can install the 
     consul.hashicorp.com/transparent-proxy-exclude-outbound-cidrs: "10.96.0.1/32"
     ```
 
-		Check out our [Operator installation doc](/docs/k8s/installation/install/) for details on how to use Helm to install with your ngrok credentials. Once you've done that, you can run the command below to set the appropriate annotations.
+        Check out our [Operator installation doc](/docs/k8s/installation/install/) for details on how to use Helm to install with your ngrok credentials. Once you've done that, you can run the command below to set the appropriate annotations.
 
-	 ```bash
-	 helm install ngrok-operator ngrok/ngrok-operator \
-     --reuse-values
-	   --set-string podAnnotations.consul\\.hashicorp\\.com/connect-inject=true \
-		 --set podAnnotations."consul\.hashicorp\.com/transparent-proxy-exclude-outbound-cidrs"="YOUR KUBERNETES API CIDR"
-	 ```
+    ```bash
+    helm install ngrok-operator ngrok/ngrok-operator \
+    --reuse-values
+      --set-string podAnnotations.consul\\.hashicorp\\.com/connect-inject=true \
+    	 --set podAnnotations."consul\.hashicorp\.com/transparent-proxy-exclude-outbound-cidrs"="YOUR KUBERNETES API CIDR"
+    ```
 
 :::note
 
@@ -295,33 +295,33 @@ Ingresses](/docs/k8s/guides/using-ingresses/#using-ngroktrafficpolicy-with-ingre
    the `NgrokTrafficPolicy` CR.
 
    ```yaml
-	 apiVersion: networking.k8s.io/v1
-	 kind: Ingress
-	 metadata:
-	   name: ingress-consul
-	   namespace: consul
-		 annotations:
+    apiVersion: networking.k8s.io/v1
+    kind: Ingress
+    metadata:
+      name: ingress-consul
+      namespace: consul
+   	 annotations:
        k8s.ngrok.com/traffic-policy: oauth
-	 spec:
-	   ingressClassName: ngrok
-	   rules:
-	     - host: $NGROK_DOMAIN_NAME
-	       http:
-	         paths:
-	           - path: /
-	             pathType: Prefix
-	             backend:
-	               service:
-	                 name: frontend
-	                 port:
-	                   number: 3000
-	           - path: /api
-	             pathType: Prefix
-	             backend:
-	               service:
-	                name: public-api
-	                 port:
-	                   number: 8080
+    spec:
+      ingressClassName: ngrok
+      rules:
+        - host: $NGROK_DOMAIN_NAME
+          http:
+            paths:
+              - path: /
+                pathType: Prefix
+                backend:
+                  service:
+                    name: frontend
+                    port:
+                      number: 3000
+              - path: /api
+                pathType: Prefix
+                backend:
+                  service:
+                   name: public-api
+                    port:
+                      number: 8080
    ---
    # Traffic Policy configuration for OAuth
    apiVersion: ngrok.k8s.ngrok.com/v1alpha1
