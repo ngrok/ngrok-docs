@@ -115,7 +115,6 @@ const sidebars = {
 					link: { type: "doc", id: "universal-gateway/cloud-endpoints/index" },
 					items: ["universal-gateway/cloud-endpoints/quickstart"],
 				},
-				"universal-gateway/forward-traffic",
 				"universal-gateway/chain-endpoints",
 				"universal-gateway/mock-api",
 				"universal-gateway/migrate-from-tunnels",
