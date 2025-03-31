@@ -71,11 +71,13 @@ export type ConfigExampleProps = {
 	title?: string;
 	icon?: ReactNode;
 	hideAgentConfig?: boolean;
+	hideTrafficPolicy?: boolean;
 };
 
 export default function ConfigExample({
 	// Show the agent config by default
 	hideAgentConfig = false,
+	hideTrafficPolicy = false,
 	...props
 }: ConfigExampleProps) {
 	const components = useMDXComponents();
@@ -108,12 +110,16 @@ export default function ConfigExample({
 	return (
 		<Tabs orientation="horizontal" defaultValue="traffic-policy">
 			<TabsList>
-				<TabsTrigger value="traffic-policy">Traffic Policy</TabsTrigger>
+				{hideTrafficPolicy ? null : (
+					<TabsTrigger value="traffic-policy">Traffic Policy</TabsTrigger>
+				)}
 				{hideAgentConfig ? null : (
 					<TabsTrigger value="agent-config">Agent Config</TabsTrigger>
 				)}
 			</TabsList>
-			<TabsContent value="traffic-policy">{policySnippet}</TabsContent>
+			{hideTrafficPolicy ? null : (
+				<TabsContent value="traffic-policy">{policySnippet}</TabsContent>
+			)}
 			{hideAgentConfig ? null : (
 				<TabsContent value="agent-config">{agentConfigSnippet}</TabsContent>
 			)}
