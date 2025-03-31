@@ -5,19 +5,6 @@ sidebar_position: 3
 toc_max_heading_level: 3
 ---
 
-- [Introduction](#introduction)
-- [Prerequisites](#prerequisites)
-- [Create an example API to monitor](#create-an-example-api-to-monitor)
-- [Publish your app with ngrok](#publish-your-app-with-ngrok)
-- [Ways to monitor your app](#ways-to-monitor-your-app)
-- [Traffic inspector](#traffic-inspector)
-  - [Traffic policy example](#traffic-policy-example)
-- [Monitor events](#monitor-events)
-- [Create a dashboard](#create-a-dashboard)
-- [Create a notification](#create-a-notification)
-- [Further reading](#further-reading)
-- [TODO](#todo)
-
 ## Introduction
 
 This tutorial demonstrates how to monitor your API or web app with ngrok - including traffic reports, error request replay, and exporting logs and events to an external dashboard. (We'll use the terms API and app interchangeably in this article as ngrok can monitor any web server).
@@ -65,7 +52,7 @@ docker run --platform=linux/amd64 --rm -p 7777:80 --network=ngrokTest -v ".:/app
 
 This command runs the Docker image for Deno, exposing the API locally on port 7777, names the container `api`, and removes the container (`--rm`) upon exiting. You can now browse to http://localhost:7777 to test the app.
 
-(The app uses a named network, `ngrokTest`, so that in the next section you can start the ngrok agent on the same network as the app. The [ngrok docs](https://dashboard.ngrok.com/get-started/setup/docker) suggest using the host network for Docker instead, but this probably won't work if you're using a Mac).
+(The app uses a named network, `ngrokTest`, so that in the next section you can start the ngrok agent on the same network as the app).
 
 ![Simple web app](./img/appConsole.webp)
 
@@ -126,7 +113,7 @@ The event should now show all the request and response details and content. You 
 
 - Click the replay button and notice the request will be resent from the ngrok host.
 
-Unfortunately, replaying a request with a free ngrok account does not work currently, even though the feature appears available. Replay will work only with a paid account. This [bug](https://github.com/ngrok/ngrok-docs/issues/1247) may be fixed by the time you read this guide.
+Replaying a request with a free ngrok account does not work currently, even though the feature appears available. Replay will work only with a paid account. This [bug](https://github.com/ngrok/ngrok-docs/issues/1247) may be fixed by the time you read this guide.
 
 ![Replay request](./img/replayError.webp)
 
@@ -140,7 +127,7 @@ Replaying requests is useful for debugging. For example, you can find a request 
 
 Replaying requests is also a way to test new [traffic policies](https://ngrok.com/docs/traffic-policy). ngrok applies the traffic policy rules in effect at the current time of replay, which could be quite different from those in effect in the past when the original request was received.
 
-Policies can be used to request passwords, block malicious traffic, route requests, rewrite URLs, and respond with custom content. If you use a permanent domain name (called a [cloud endpoint](https://ngrok.com/docs/universal-gateway/cloud-endpoints)) on ngrok, you can set a policy for every agent that uses that domain. Otherwise, for temporary [agent points](https://ngrok.com/docs/universal-gateway/agent-endpoints), you can set a traffic policy inside each agent individually.
+Policies can be used to request passwords, block malicious traffic, route requests, rewrite URLs, and respond with custom content. If you use a custom permanent domain name (called a [cloud endpoint](https://ngrok.com/docs/universal-gateway/cloud-endpoints)) on ngrok, you can set a policy for every agent that uses that domain. Otherwise, for temporary [agent points](https://ngrok.com/docs/universal-gateway/agent-endpoints), you can set a traffic policy inside each agent individually.
 
 Let's look at a policy example: rate limiting. This is one of the many [actions](https://ngrok.com/docs/traffic-policy/actions/rate-limit) available. So far in this guide, unlimited requests could be sent to the test app. You'll change that to allow only one request a minute.
 
@@ -184,7 +171,7 @@ docker run -it --rm --platform=linux/amd64 --network=ngrokTest -v ".:/app" -w "/
 
 In this section you'll learn how to export ngrok [events](https://ngrok.com/docs/obs/events) to a monitoring service, DataDog.
 
-There are two [types of events](https://ngrok.com/docs/obs/events/reference/): standard traffic events (requests to your API) and audit events (changes to secret keys and URLs). For this simple example, you'll monitor a traffic event.
+There are two [types of events](https://ngrok.com/docs/obs/events/reference): standard traffic events (requests to your API) and audit events (changes to secret keys and URLs). For this simple example, you'll monitor a traffic event.
 
 Before adding an event subscription, you'll need somewhere to send events.
 
@@ -288,41 +275,19 @@ It's important that the `@webhook` name matches the webhook integration you crea
 
 - Save the monitor. Now, after a delay, if you refresh the ngrok endpoint for your app and errors occur, a notification will be sent.
 
+If you want a different notification system to ntfy, consider email, Slack, Discord, WhatsApp, Threema, and Webhook.site.
+
 ## Further reading
 
+- [Get Docker](https://docs.docker.com/get-started/get-docker)
 - [Gettings started with Docker for ngrok](https://dashboard.ngrok.com/get-started/setup/docker)
 - [Complete Docker ngrok agent documentation](https://ngrok.com/docs/using-ngrok-with/docker)
+- [ngrok agent points](https://ngrok.com/docs/universal-gateway/agent-endpoints)
+- [ngrok cloud endpoints](https://ngrok.com/docs/universal-gateway/cloud-endpoints)
 - [ngrok traffic policies](https://ngrok.com/docs/traffic-policy)
 - [ngrok traffic policy actions](https://ngrok.com/docs/traffic-policy/actions/rate-limit)
 - [ngrok cloud endpoints](https://ngrok.com/docs/universal-gateway/cloud-endpoints)
 - [ngrok agent endpoints](https://ngrok.com/docs/universal-gateway/agent-endpoints)
 - [ngrok events](https://ngrok.com/docs/obs/events)
-
-## TODO
-
-- log a documentation bug for host network on mac or windows for this page https://dashboard.ngrok.com/get-started/setup/docker in github here https://github.com/ngrok/ngrok-docs/issues. `host.docker.internal` works on mac and windows (test if it works on linux too).
-- update further reading with all links in this guide
-- read all docs and update this guide with info therein
-- domain vs cloud endpoint?
-- put guide into fork of https://github.com/ngrok/ngrok-docs and use docusaurus formatting, especially for code snippets. add docker instructions to docs readme file.
-
-
-
-
-
-- The article is here , in branch draft-monitoringNgrok.
-- Brief - https://docs.google.com/document/d/1pHGp3QFcpfyxWb-_jnZM84gW8lp8r8n2DRAC_q5FTjY/edit?tab=t.ueah339ii4w1
-- Build the docs:
-```sh
-docker run --rm -p 3000:3000 -it --name=ngrokDocs -v "./:/app" -w "/app" --platform=linux/amd64 guergeiro/pnpm:current-latest-alpine sh -c "apk add direnv; direnv allow; pnpm install; pnpm run start"
-```
-- Docusaurus markdown features (nothing here that needs checking really) - https://v1.docusaurus.io/docs/en/doc-markdown
-- Style guide - https://drafts.cc.ritza.co/s/bo-MDE3LO#
-  - capitalize first use, then lower case afterwards
-  - sentence case
-  - use you first, we if necessary is fine
-  - bold ui elements
-- I logged some other issues with ngrok too in the process of writing this guide:
-  - https://github.com/ngrok/ngrok-docs/pull/1255
-  - https://github.com/ngrok/ngrok-docs/issues/1247
-  - https://github.com/ngrok/ngrok-docs/pull/1261
+- [DataDog](https://www.datadoghq.com)
+- [ntfy](https://ntfy.sh)
