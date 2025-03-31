@@ -293,7 +293,7 @@ It's important that the `@webhook` name matches the webhook integration you crea
 
 ## TODO
 
-- docker run --rm -p 3000:3000 -it --name=ngrokDocs -v "./:/app" -w "/app" --platform=linux/amd64 guergeiro/pnpm:current-latest-alpine sh -c "apk add direnv; direnv allow; pnpm install; pnpm run start"
+-
 - log a documentation bug for host network on mac or windows for this page https://dashboard.ngrok.com/get-started/setup/docker in github here https://github.com/ngrok/ngrok-docs/issues. `host.docker.internal` works on mac and windows (test if it works on linux too).
 - update further reading with all links in this guide
 - read all docs and update this guide with info therein
@@ -301,10 +301,17 @@ It's important that the `@webhook` name matches the webhook integration you crea
 - put guide into fork of https://github.com/ngrok/ngrok-docs and use docusaurus formatting, especially for code snippets. add docker instructions to docs readme file.
 - Brief - https://docs.google.com/document/d/1pHGp3QFcpfyxWb-_jnZM84gW8lp8r8n2DRAC_q5FTjY/edit?tab=t.ueah339ii4w1
 - unfinished draft - https://docs.google.com/document/d/1CD7Hf2Wkx3SiexU_Bg1Eobg6vrvN2jKtkvMz6Y-HP6I/edit?tab=t.0#heading=h.jgcu1dc4h1lo
+- copy metadata details from adjacent article
+
+For Tatenda and Sarah:
+
+- Build the docs:
+```sh
+docker run --rm -p 3000:3000 -it --name=ngrokDocs -v "./:/app" -w "/app" --platform=linux/amd64 guergeiro/pnpm:current-latest-alpine sh -c "apk add direnv; direnv allow; pnpm install; pnpm run start"
+```
 - Style guide - https://drafts.cc.ritza.co/s/bo-MDE3LO#
   - capitalize first use, then lower case afterwards
   - sentence case
   - use you first, we if necessary is fine
   - bold ui elements
   - variables in <> in YAML
-- copy metadata details from adjacent article
