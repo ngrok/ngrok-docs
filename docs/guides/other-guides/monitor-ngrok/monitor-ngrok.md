@@ -1,3 +1,10 @@
+---
+title: Monitor ngrok APIs with DataDog
+sidebar_label: Monitor ngrok APIs
+sidebar_position: 1
+toc_max_heading_level: 3
+---
+
 - [Introduction](#introduction)
 - [Prerequisites](#prerequisites)
 - [Create an example API to monitor](#create-an-example-api-to-monitor)
@@ -293,18 +300,19 @@ It's important that the `@webhook` name matches the webhook integration you crea
 
 ## TODO
 
--
 - log a documentation bug for host network on mac or windows for this page https://dashboard.ngrok.com/get-started/setup/docker in github here https://github.com/ngrok/ngrok-docs/issues. `host.docker.internal` works on mac and windows (test if it works on linux too).
 - update further reading with all links in this guide
 - read all docs and update this guide with info therein
 - domain vs cloud endpoint?
 - put guide into fork of https://github.com/ngrok/ngrok-docs and use docusaurus formatting, especially for code snippets. add docker instructions to docs readme file.
-- Brief - https://docs.google.com/document/d/1pHGp3QFcpfyxWb-_jnZM84gW8lp8r8n2DRAC_q5FTjY/edit?tab=t.ueah339ii4w1
-- unfinished draft - https://docs.google.com/document/d/1CD7Hf2Wkx3SiexU_Bg1Eobg6vrvN2jKtkvMz6Y-HP6I/edit?tab=t.0#heading=h.jgcu1dc4h1lo
 - copy metadata details from adjacent article
 
-For Tatenda and Sarah:
 
+
+
+
+- Article -
+- Brief - https://docs.google.com/document/d/1pHGp3QFcpfyxWb-_jnZM84gW8lp8r8n2DRAC_q5FTjY/edit?tab=t.ueah339ii4w1
 - Build the docs:
 ```sh
 docker run --rm -p 3000:3000 -it --name=ngrokDocs -v "./:/app" -w "/app" --platform=linux/amd64 guergeiro/pnpm:current-latest-alpine sh -c "apk add direnv; direnv allow; pnpm install; pnpm run start"
@@ -315,3 +323,7 @@ docker run --rm -p 3000:3000 -it --name=ngrokDocs -v "./:/app" -w "/app" --platf
   - use you first, we if necessary is fine
   - bold ui elements
   - variables in <> in YAML
+- I logged some other issues with ngrok too in the process of writing this guide:
+  - https://github.com/ngrok/ngrok-docs/pull/1255
+  - https://github.com/ngrok/ngrok-docs/issues/1247
+  - https://github.com/ngrok/ngrok-docs/pull/1261
