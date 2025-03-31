@@ -305,18 +305,18 @@ It's important that the `@webhook` name matches the webhook integration you crea
 - read all docs and update this guide with info therein
 - domain vs cloud endpoint?
 - put guide into fork of https://github.com/ngrok/ngrok-docs and use docusaurus formatting, especially for code snippets. add docker instructions to docs readme file.
-- copy metadata details from adjacent article
 
 
 
 
 
-- Article -
+- The article is here , in branch draft-monitoringNgrok.
 - Brief - https://docs.google.com/document/d/1pHGp3QFcpfyxWb-_jnZM84gW8lp8r8n2DRAC_q5FTjY/edit?tab=t.ueah339ii4w1
 - Build the docs:
 ```sh
 docker run --rm -p 3000:3000 -it --name=ngrokDocs -v "./:/app" -w "/app" --platform=linux/amd64 guergeiro/pnpm:current-latest-alpine sh -c "apk add direnv; direnv allow; pnpm install; pnpm run start"
 ```
+- Docusaurus markdown features (nothing here that needs checking really) - https://v1.docusaurus.io/docs/en/doc-markdown
 - Style guide - https://drafts.cc.ritza.co/s/bo-MDE3LO#
   - capitalize first use, then lower case afterwards
   - sentence case
