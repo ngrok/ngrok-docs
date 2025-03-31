@@ -84,7 +84,7 @@ There are two ways to perform monitoring in ngrok: the Traffic Inspector and Eve
 
 The traffic inspector is a filterable list of requests and responses to your API, available in the ngrok dashboard.  It's a useful place to view details if errors occur, or replay requests to test new policies and bugfixes. The inspector is a manual way to monitor your app.
 
-Events are data about your requests provided by ngrok that have to be exported to a dedicated monitoring platform, such as Elastic, Prometheus, DataDog, and others. Events are an automated way to monitor your app. Events are also the only way for your team to get automatic alerts (notifications), instead of constantly checking for errors on a dashboard.
+Events are data about your requests provided by ngrok that have to be exported to a dedicated monitoring platform, such as Elastic, Prometheus, DataDog, Splunk and others. Events are an automated way to monitor your app. Events are also the only way for your team to get automatic alerts (notifications), instead of constantly checking for errors on a dashboard.
 
 You'll learn about both the inspector and exporting events in the next two sections.
 
@@ -169,23 +169,18 @@ docker run -it --rm --platform=linux/amd64 --network=ngrokTest -v ".:/app" -w "/
 
 ## Monitoring events
 
+In this section you'll learn how to export ngrok [events](https://ngrok.com/docs/obs/events) to a monitoring application, Prometheus.
+
+There are two [types of events](https://ngrok.com/docs/obs/events/reference/): standard traffic events (requests to your API) and audit events (changes to secret keys and URLs). For this example, you'll send traffic events to a Prometheus, and audit events to a notification service, ntfy.sh.
+
+In your own production system, you can use whatever monitoring and notification services that you like — the setup process will be similar.
+
+
+
+
+
 TODO
 
-Create observability for traffic and audit events
-You can export the structured logs available in Traffic Inspector to an observability platform as event data.
-Traffic events: Fired when traffic passes through an endpoint
-Audit events: Fired when a change is made to your ngrok account
-Create an API gateway-specific event subscription
-Walk through the process of setting this up in ngrok.
-For an API gateway, you’ll want to export at least the following events:
-…
-Add a destination
-ngrok currently supports:
-…
-Walk through the process of setting up a destination—could be Datadog, could be another!
-Create your observability dashboards
-Inside of Datalog/AWS CloudWatch/etc, you can now view traffic and audit events from your ngrok endpoints, and then create visualizations or fully-fledged dashboards.
-Walk through the process of setting up at least 1 visualization, even if it’s relatively simple, like looking at duration/latency over time.
 
 https://httpbin.org/get
 https://httpbin.org/#/HTTP_Methods/get_get
@@ -198,6 +193,7 @@ https://httpbin.org/#/HTTP_Methods/get_get
 - [ngrok traffic policy actions](https://ngrok.com/docs/traffic-policy/actions/rate-limit)
 - [ngrok cloud endpoints](https://ngrok.com/docs/universal-gateway/cloud-endpoints)
 - [ngrok agent endpoints](https://ngrok.com/docs/universal-gateway/agent-endpoints)
+- [ngrok events](https://ngrok.com/docs/obs/events)
 
 ## TODO
 
