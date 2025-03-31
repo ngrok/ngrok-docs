@@ -186,12 +186,19 @@ You can enter nonsense for all the fields except your email address, which you n
 - Run the command below to start an Ubuntu Docker container. Then copy and paste terminal command from the DataDog page into the container terminal and run it.
 
 ```sh
-docker run --platform=linux/amd64 --rm -it -v ".:/app" -w "/app" ubuntu:24.04 bash
+docker run --platform=linux/amd64 --rm -it -h testHostname -v ".:/app" -w "/app" ubuntu:24.04 bash
 
 apt update
-apt install curl -y
+apt install apt-transport-https curl gnupg -y
 
-# DD_API_KEY=ec22494 DD_SITE="datadoghq.eu" bash -c "$(curl -L https://install.datadoghq.com/scripts/install_script_agent7.sh)"
+# DD_API_KEY=ec22494 DD_INSTALL_ONLY=true DD_SITE="datadoghq.eu" bash -c "$(curl -L https://install.datadoghq.com/scripts/install_script_agent7.sh)"
+
+service datadog-agent start
+```
+
+/var/log/datadog/agent.log
+```
+2025-03-31 11:10:44 UTC | CORE | ERROR | (comp/aggregator/demultiplexer/demultiplexerimpl/demultiplexer.go:81 in newDemultiplexer) | Error while getting hostname, exiting: unable to reliably determine the host name. You can define one in the agent config file or in your hosts file
 ```
 
 - Choose Ubuntu for this step, and note the command they give you.
