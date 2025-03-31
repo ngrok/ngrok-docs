@@ -183,27 +183,25 @@ Before adding an event subscription, you'll need somewhere to send them.
 
 You can enter nonsense for all the fields except your email address, which you need to confirm. You also can't skip step three in the sign up process — creating a DataDog agent somewhere.
 
-- Run the command below to start an Ubuntu Docker container. Then copy and paste terminal command from the DataDog page into the container terminal and run it.
-
-```sh
-docker run --platform=linux/amd64 --rm -it -h testHostname -v ".:/app" -w "/app" ubuntu:24.04 bash
-
-apt update
-apt install apt-transport-https curl gnupg -y
-
-# DD_API_KEY=ec22494 DD_INSTALL_ONLY=true DD_SITE="datadoghq.eu" bash -c "$(curl -L https://install.datadoghq.com/scripts/install_script_agent7.sh)"
-
-service datadog-agent start
-```
-
-/var/log/datadog/agent.log
-```
-2025-03-31 11:10:44 UTC | CORE | ERROR | (comp/aggregator/demultiplexer/demultiplexerimpl/demultiplexer.go:81 in newDemultiplexer) | Error while getting hostname, exiting: unable to reliably determine the host name. You can define one in the agent config file or in your hosts file
-```
-
-- Choose Ubuntu for this step, and note the command they give you.
+- In step three of the DataDog signup, click on **Docker** in the sidebar. Copy and paste the command given into a terminal.
 
 ![Join DataDog](./img/joinDatadog.webp)
+
+- In the DataDog site, click **Finish** at the bottom of the page once the site notices your agent is running.
+
+You no longer need the agent running locally and can remove the DataDog container with the command below if you want.
+
+```sh
+docker stop dd-agent
+docker remove dd-agent
+docker image rm gcr.io/datadoghq/agent:7
+```
+
+- Note which DataDog site you are using by following this [documentation](https://docs.datadoghq.com/getting_started/site/#access-the-datadog-site).
+
+- Note your DataDog API key from the menu at the bottom left of the sidebar where your username is.
+
+![DataDog API key](./img/datadogKey.webp)
 
 - In the ngrok navigation panel, browse to the [**Events Stream**](https://dashboard.ngrok.com/event-subscriptions) and add a new subscription.
 
@@ -214,14 +212,11 @@ service datadog-agent start
 ![Add source](./img/addEventType.webp)
 
 - Add a destination. Choose DataDog.
+- Add your site and API key that you noted earlier.
+- Send a test event.
+- In the DataDog site, browse the **Logs — Explorer** page in the navigation panel. Enable logs. You should see the event from ngrok has appeared.
 
-
-
-TODO
-
-
-https://httpbin.org/get
-https://httpbin.org/#/HTTP_Methods/get_get
+![DataDog logs](./img/datadogLog.webp)
 
 ## Further reading
 
