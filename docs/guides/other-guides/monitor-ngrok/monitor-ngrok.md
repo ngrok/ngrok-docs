@@ -6,6 +6,8 @@
 - [Traffic inspector](#traffic-inspector)
   - [Traffic policy example](#traffic-policy-example)
 - [Monitor events](#monitor-events)
+- [Create a dashboard](#create-a-dashboard)
+- [Create a notification](#create-a-notification)
 - [Further reading](#further-reading)
 - [TODO](#todo)
 
@@ -175,15 +177,15 @@ docker run -it --rm --platform=linux/amd64 --network=ngrokTest -v ".:/app" -w "/
 
 In this section you'll learn how to export ngrok [events](https://ngrok.com/docs/obs/events) to a monitoring service, DataDog.
 
-There are two [types of events](https://ngrok.com/docs/obs/events/reference/): standard traffic events (requests to your API) and audit events (changes to secret keys and URLs). For this simple example, you'll monitor traffic events.
+There are two [types of events](https://ngrok.com/docs/obs/events/reference/): standard traffic events (requests to your API) and audit events (changes to secret keys and URLs). For this simple example, you'll monitor a traffic event.
 
-Before adding an event subscription, you'll need somewhere to send them.
+Before adding an event subscription, you'll need somewhere to send events.
 
-- Sign up for the free trial account at [DataDog](https://www.datadoghq.com).
+- Sign up for a free trial account at [DataDog](https://www.datadoghq.com).
 
-You can enter nonsense for all the fields except your email address, which you need to confirm. You also can't skip step three in the sign up process — creating a DataDog agent somewhere.
+You can enter anonymous nonsense for all the fields except your email address, which you need to confirm. You also can't skip step three in the sign up process — creating a DataDog agent somewhere.
 
-- In step three of the DataDog signup, click on **Docker** in the sidebar. Copy and paste the command given into a terminal.
+- In step three of the DataDog signup, click on **Docker** in the sidebar. Copy and paste the given command into a terminal.
 
 ![Join DataDog](./img/joinDatadog.webp)
 
@@ -217,6 +219,67 @@ docker image rm gcr.io/datadoghq/agent:7
 - In the DataDog site, browse the **Logs — Explorer** page in the navigation panel. Enable logs. You should see the event from ngrok has appeared.
 
 ![DataDog logs](./img/datadogLog.webp)
+
+- In ngrok, click **Done** and **Save**.
+- Refresh your ngrok app page a few times so that new request are logged in DataDog, some with OK responses and some with errors.
+
+## Create a dashboard
+
+Now that events are being sent to DataDog, you can set up visualizations and notifications, to allow your support team to monitor your API's performance.
+
+- In the DataDog site, browse the **Dashboards — Dashboard List** page in the navigation panel. Click the **ngrok HTTP Events** item to view the default dashboard.
+
+![DataDog dashboard list](./img/datadogDashboardList.webp)
+
+To add a new widget to the dashboard, you need to clone the default one.
+
+- Click **Clone** at the top right.
+
+![DataDog default dashboard](./img/datadogDefaultDashboard.webp)
+
+- In the cloned dashboard, click **Add widget** and choose **Query value**.
+
+![DataDog add widget](./img/datadogAddWidget.webp)
+
+- In the widget details — **Graph data**, change **metrics** to **logs**. (ngrok does not export metrics.)
+- Enter the log filter `@http.status_code:500` so only errors will be counted.
+- Set the time preference to the last hour.
+- Name the widget `Errors in the last hour`.
+
+![DataDog edit widget](./img/datadogWidgetDetails.webp)
+
+Your new widget will be available in the dashboard, allowing your support staff to see instantly if any errors occurred in your API.
+
+![DataDog custom dashboard](./img/datadogCustomDashboard.webp)
+
+If you want to create widgets for other log information, you can see what fields are available by reading the JSON of any event you click on in the log inspector
+
+## Create a notification
+
+The final part of the monitoring system is setting up an alert that is pushed to your email or mobile app if an error occurs. You'll first add an integration to DataDog called a webhook. This webhook is merely a way of sending a POST request to https://ntfy.sh, a free notification service (that also has a mobile app available).
+
+- In DataDog, browse to **Integrations — Add integration — webhooks**.
+
+![DataDog add integration](./img/datadogAddIntegration.webp)
+
+- In the configuration page, under **Webhooks** at the bottom, click **New**. Set the name to `ntfy`, the URL to `https://ntfy.sh/ngrokTest` and the payload to `Blank`. Save.
+
+![DataDog add webhook](./img/datadogAddWebhook.webp)
+
+- In the ngrok navigation panel, browse to the **Monitors — New monitor**. Choose **Logs**.
+- In the monitor configuration, set the search query to `@http.status_code:500 `, the time to the last hour, and the notification message to `@webhook-ntfy Your API has errors. Investigate at https://app.datadoghq.eu/dashboard.`.
+
+![DataDog add webhook](./img/datadogConfigureMonitor.webp)
+
+It's important that the `@webhook` name matches the webhook integration you created earlier, or the notification won't arrive.
+
+- Browse to the [ntfy website at the ngrok test channel](https://ntfy.sh/ngrokTest).
+- Click **Test notifications** at the bottom of the DataDog page and send an alert with **Run tests**.
+- Notice that the alert appears in the ntfy page. You can install ntfy as a mobile app so that you are always aware if your API has errors.
+
+![DataDog notify](./img/datadogNotify.webp)
+
+- Save the monitor. Now, after a delay, if you refresh the ngrok endpoint for your app and errors occur, a notification will be sent.
 
 ## Further reading
 
