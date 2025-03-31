@@ -106,9 +106,15 @@ export default function ConfigExample({
 		agentConfig.yamlConfig,
 		agentConfig.jsonConfig,
 	);
-	if (!components.h3) return <p>Error rendering config example.</p>;
+	if (hideAgentConfig && hideTrafficPolicy)
+		throw new Error(
+			"At least one of hideAgentConfig or hideTrafficPolicy must be false",
+		);
 	return (
-		<Tabs orientation="horizontal" defaultValue="traffic-policy">
+		<Tabs
+			orientation="horizontal"
+			defaultValue={hideTrafficPolicy ? "agent-config" : "traffic-policy"}
+		>
 			<TabsList>
 				{hideTrafficPolicy ? null : (
 					<TabsTrigger value="traffic-policy">Traffic Policy</TabsTrigger>
