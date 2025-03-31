@@ -1,7 +1,7 @@
 ---
 title: Monitor ngrok APIs with DataDog
 sidebar_label: Monitor ngrok APIs
-sidebar_position: 1
+sidebar_position: 3
 toc_max_heading_level: 3
 ---
 
@@ -322,7 +322,6 @@ docker run --rm -p 3000:3000 -it --name=ngrokDocs -v "./:/app" -w "/app" --platf
   - sentence case
   - use you first, we if necessary is fine
   - bold ui elements
-  - variables in <> in YAML
 - I logged some other issues with ngrok too in the process of writing this guide:
   - https://github.com/ngrok/ngrok-docs/pull/1255
   - https://github.com/ngrok/ngrok-docs/issues/1247
