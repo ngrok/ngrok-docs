@@ -5,13 +5,13 @@
 - [Ways to monitor your app](#ways-to-monitor-your-app)
 - [Traffic inspector](#traffic-inspector)
   - [Traffic policy example](#traffic-policy-example)
-- [Monitoring events](#monitoring-events)
+- [Monitor events](#monitor-events)
 - [Further reading](#further-reading)
 - [TODO](#todo)
 
 ## Introduction
 
-This tutorial demonstrates how to monitor your API or web app with ngrok - including traffic reports, error request replay, and exporting logs and events to an external dashboard. (We'll use the terms API and app interchangeably in this article).
+This tutorial demonstrates how to monitor your API or web app with ngrok - including traffic reports, error request replay, and exporting logs and events to an external dashboard. (We'll use the terms API and app interchangeably in this article as ngrok can monitor any web server).
 
 Whether you're an existing ngrok user looking to make your API more robust, or a new user wondering if ngrok can do what you need, this guide will talk you through monitoring in detail.
 
@@ -82,9 +82,11 @@ You can now see your request going from the browser, to the ngrok agent in the t
 
 There are two ways to perform monitoring in ngrok: the Traffic Inspector and Events.
 
-The traffic inspector is a filterable list of requests and responses to your API, available in the ngrok dashboard.  It's a useful place to view details if errors occur, or replay requests to test new policies and bugfixes. The inspector is a manual way to monitor your app.
+The traffic inspector is a filterable list of requests and responses to your API, available in the ngrok dashboard.  It's a useful place to view details if errors occur, or replay requests to test new policies and bugfixes. The inspector is a manual way to monitor your app. Request data is kept for three days (ninety days as a paid extra).
 
-Events are data about your requests provided by ngrok that have to be exported to a dedicated monitoring platform, such as Elastic, Prometheus, DataDog, Splunk and others. Events are an automated way to monitor your app. Events are also the only way for your team to get automatic alerts (notifications), instead of constantly checking for errors on a dashboard.
+Events are data about your requests provided by ngrok that have to be exported to a dedicated monitoring platform. Events are an automated way to monitor your app. Events are also the only way for your team to get automatic alerts (notifications), instead of constantly checking for errors on a dashboard.
+
+At the time of writing, ngrok allows you to export events only to AWS, Azure, and DataDog. OpenTelemetry is not supported. Exporting events to a custom URL, such as a self-hosted server, is not supported, so you have to use a paid cloud service. You can't perform custom processing, or use Elastic, Prometheus, Splunk, or alternative monitoring or notification apps.
 
 You'll learn about both the inspector and exporting events in the next two sections.
 
@@ -95,6 +97,8 @@ You'll learn about both the inspector and exporting events in the next two secti
 This list of recent requests will show you simple information, like the time, origin, destination, duration, and response code of calls to your app. You can filter requests by these fields — for instance to show only server error responses.
 
 ![Traffic inspector](./img/trafficInspector.webp)
+
+Note that making a request to the app at http://localhost:7777 will not be displayed in the inspector. Only requests that pass through the ngrok endpoint, and therefore the ngrok agent running in Docker, will be known to ngrok.
 
 In order to see more details about a request, or replay it, you need to enable full capture, which permits ngrok to store up to 10 KB of your request data.
 
@@ -121,7 +125,7 @@ You can also replay a request with changes, to alter any of the headers or POST 
 
 ![Replay with changes](./img/replayChanges2.webp)
 
-Replaying requests is useful for debugging. For example, you can find a request that caused an error in your app, deploy a fix for the app, and replay the request to confirm you’ve fixed the issue.
+Replaying requests is useful for debugging. For example, you can find a request that caused an error in yojeremjur app, deploy a fix for the app, and replay the request to confirm you’ve fixed the issue.
 
 ### Traffic policy example
 
@@ -167,15 +171,42 @@ docker run -it --rm --platform=linux/amd64 --network=ngrokTest -v ".:/app" -w "/
 
 ![Replay after rate limit adjustment](./img/replayLimit.webp)
 
-## Monitoring events
+## Monitor events
 
-In this section you'll learn how to export ngrok [events](https://ngrok.com/docs/obs/events) to a monitoring application, Prometheus.
+In this section you'll learn how to export ngrok [events](https://ngrok.com/docs/obs/events) to a monitoring service, DataDog.
 
-There are two [types of events](https://ngrok.com/docs/obs/events/reference/): standard traffic events (requests to your API) and audit events (changes to secret keys and URLs). For this example, you'll send traffic events to a Prometheus, and audit events to a notification service, ntfy.sh.
+There are two [types of events](https://ngrok.com/docs/obs/events/reference/): standard traffic events (requests to your API) and audit events (changes to secret keys and URLs). For this simple example, you'll monitor traffic events.
 
-In your own production system, you can use whatever monitoring and notification services that you like — the setup process will be similar.
+Before adding an event subscription, you'll need somewhere to send them.
 
+- Sign up for the free trial account at [DataDog](https://www.datadoghq.com).
 
+You can enter nonsense for all the fields except your email address, which you need to confirm. You also can't skip step three in the sign up process — creating a DataDog agent somewhere.
+
+- Run the command below to start an Ubuntu Docker container. Then copy and paste terminal command from the DataDog page into the container terminal and run it.
+
+```sh
+docker run --platform=linux/amd64 --rm -it -v ".:/app" -w "/app" ubuntu:24.04 bash
+
+apt update
+apt install curl -y
+
+# DD_API_KEY=ec22494 DD_SITE="datadoghq.eu" bash -c "$(curl -L https://install.datadoghq.com/scripts/install_script_agent7.sh)"
+```
+
+- Choose Ubuntu for this step, and note the command they give you.
+
+![Join DataDog](./img/joinDatadog.webp)
+
+- In the ngrok navigation panel, browse to the [**Events Stream**](https://dashboard.ngrok.com/event-subscriptions) and add a new subscription.
+
+![Add event subscription](./img/makeSubscription.webp)
+
+- In the sidebar that opens, name the subscription `traffic`, and a new source (event type). Choose `http_request_complete`.
+
+![Add source](./img/addEventType.webp)
+
+- Add a destination. Choose DataDog.
 
 
 
