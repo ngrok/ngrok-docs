@@ -2,6 +2,7 @@
 - [Prerequisites](#prerequisites)
 - [Create an example API to monitor](#create-an-example-api-to-monitor)
 - [Publish your app with ngrok](#publish-your-app-with-ngrok)
+- [Ways to monitor your app](#ways-to-monitor-your-app)
 - [Traffic inspector](#traffic-inspector)
   - [Traffic policy example](#traffic-policy-example)
 - [Monitoring events](#monitoring-events)
@@ -77,6 +78,16 @@ You can now see your request going from the browser, to the ngrok agent in the t
 
 ![Published API](./img/ngrokAgent.webp)
 
+## Ways to monitor your app
+
+There are two ways to perform monitoring in ngrok: the Traffic Inspector and Events.
+
+The traffic inspector is a filterable list of requests and responses to your API, available in the ngrok dashboard.  It's a useful place to view details if errors occur, or replay requests to test new policies and bugfixes. The inspector is a manual way to monitor your app.
+
+Events are data about your requests provided by ngrok that have to be exported to a dedicated monitoring platform, such as Elastic, Prometheus, DataDog, and others. Events are an automated way to monitor your app. Events are also the only way for your team to get automatic alerts (notifications), instead of constantly checking for errors on a dashboard.
+
+You'll learn about both the inspector and exporting events in the next two sections.
+
 ## Traffic inspector
 
 - Browse to the ngrok [Traffic Inspector](https://dashboard.ngrok.com/traffic-inspector).
@@ -140,9 +151,9 @@ on_http_request:
           bucket_key:
             - req.headers['host']
 ```
-- Run the agent again with the command below. Replace the authentication token and the URL with yours.
+- Run the agent again with the command below. Replace the authentication token and the URL with yours (note the URL must be `https`, not `http`).
 ```sh
-docker run -it --rm --platform=linux/amd64 --network=ngrokTest -v ".:/app" -w "/app" -e NGROK_AUTHTOKEN=Y0urS3cr3t ngrok/ngrok:3.22.0-alpine-amd64 http http://api --traffic-policy-file policy.yml --url http://massive-pelican-arguably.ngrok-free.app
+docker run -it --rm --platform=linux/amd64 --network=ngrokTest -v ".:/app" -w "/app" -e NGROK_AUTHTOKEN=Y0urS3cr3t ngrok/ngrok:3.22.0-alpine-amd64 http http://api --traffic-policy-file policy.yml --url https://massive-pelican-arguably.ngrok-free.app
 ```
 
 - Browse to the app URL and refresh the page a few times. Notice that the page stops responding.
@@ -204,4 +215,4 @@ https://httpbin.org/#/HTTP_Methods/get_get
   - use you first, we if necessary is fine
   - bold ui elements
   - variables in <> in YAML
-- copy details from adjacent article
+- copy metadata details from adjacent article
