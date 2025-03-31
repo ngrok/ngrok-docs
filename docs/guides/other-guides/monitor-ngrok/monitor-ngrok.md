@@ -7,13 +7,15 @@ toc_max_heading_level: 3
 
 ## Introduction
 
-This tutorial demonstrates how to monitor your API or web app with ngrok - including traffic reports, error request replay, and exporting logs and events to an external dashboard. (We'll use the terms API and app interchangeably in this article as ngrok can monitor any web server).
+This guide explains how to monitor your API or web app with ngrok - including traffic reports, error request replay, and exporting logs and events to an external dashboard.
 
-Whether you're an existing ngrok user looking to make your API more robust, or a new user wondering if ngrok can do what you need, this guide will talk you through monitoring in detail.
+Whether you're an existing ngrok user looking to make your API more robust, or a new user wondering if ngrok can do what you need, this tutorial will demonstrate monitoring in detail.
+
+(We use the terms API and app interchangeably in this article, as ngrok can monitor any web server.)
 
 ## Prerequisites
 
-You'll need a ngrok account if you want to follow along with this tutorial. A free account is fine. If you don't have one, [sign up here](https://dashboard.ngrok.com/signup).
+You'll need a ngrok account if you want to follow along with this tutorial. A free account is sufficient. If you don't have one, [sign up here](https://dashboard.ngrok.com/signup).
 
 You'll also run a simple app locally using [Docker](https://docs.docker.com/get-started/get-docker). Even if you have an existing API you want to monitor, you can use the sample app in this guide to avoid making changes to your real one.
 
@@ -50,7 +52,7 @@ docker network create ngrokTest
 docker run --platform=linux/amd64 --rm -p 7777:80 --network=ngrokTest -v ".:/app" -w "/app" --name="api" denoland/deno:alpine-2.1.3 sh -c  "deno run --allow-net --unstable-detect-cjs ./server.ts"
 ```
 
-This command runs the Docker image for Deno, exposing the API locally on port 7777, names the container `api`, and removes the container (`--rm`) upon exiting. You can now browse to http://localhost:7777 to test the app.
+This command runs the Docker image for Deno, exposing the API locally on port 7777, names the Docker container `api`, and removes the container upon exiting with `--rm`. You can now browse to http://localhost:7777 to test the app.
 
 (The app uses a named network, `ngrokTest`, so that in the next section you can start the ngrok agent on the same network as the app).
 
@@ -70,7 +72,7 @@ This command starts the ngrok agent locally and connects it to the app running o
 
 - Browse to the URL shown in the terminal labelled `Forwarding`, which should look like `https://eb45-79-127-145-72.ngrok-free.app`.
 
-You can now see your request going from the browser, to the ngrok agent in the terminal, to the Deno API in the other terminal window.
+You can now see your request going from the browser to the ngrok agent in the terminal to the Deno API in the other terminal window.
 
 ![Published API](./img/ngrokAgent.webp)
 
@@ -82,15 +84,15 @@ The traffic inspector is a filterable list of requests and responses to your API
 
 Events are data about your requests provided by ngrok that have to be exported to a dedicated monitoring platform. Events are an automated way to monitor your app. Events are also the only way for your team to get automatic alerts (notifications), instead of constantly checking for errors on a dashboard.
 
-At the time of writing, ngrok allows you to export events only to AWS, Azure, and DataDog. OpenTelemetry is not supported. Exporting events to a custom URL, such as a self-hosted server, is not supported, so you have to use a paid cloud service. You can't perform custom processing, or use Elastic, Prometheus, Splunk, or alternative monitoring or notification apps.
+At the time of writing, ngrok allows you to export events only to AWS, Azure, and DataDog. OpenTelemetry is not supported. Exporting events to a custom URL, such as a self-hosted server, is not supported, so you have to use a paid cloud service. You can't perform custom processing, or use Elastic, Prometheus, Splunk, or alternative monitoring apps.
 
 You'll learn about both the inspector and exporting events in the next two sections.
 
 ## Traffic inspector
 
-- Browse to the ngrok [Traffic Inspector](https://dashboard.ngrok.com/traffic-inspector).
+- Browse to the ngrok [Traffic Inspector](https://dashboard.ngrok.com/traffic-inspector) in your ngrok account dashboard.
 
-This list of recent requests will show you simple information, like the time, origin, destination, duration, and response code of calls to your app. You can filter requests by these fields — for instance to show only server error responses.
+This list of recent requests will show you simple information, like the time, origin, destination, duration, and response code of calls to your app. You can filter requests by these fields — for instance to show only server error responses, and not successes.
 
 ![Traffic inspector](./img/trafficInspector.webp)
 
@@ -121,7 +123,7 @@ You can also replay a request with changes, to alter any of the headers or POST 
 
 ![Replay with changes](./img/replayChanges2.webp)
 
-Replaying requests is useful for debugging. For example, you can find a request that caused an error in yojeremjur app, deploy a fix for the app, and replay the request to confirm you’ve fixed the issue.
+Replaying requests is useful for debugging. For example, you can find a request that caused an error in your app, deploy a fix for the app, and replay the request to confirm you’ve fixed the issue.
 
 ### Traffic policy example
 
@@ -163,6 +165,7 @@ docker run -it --rm --platform=linux/amd64 --network=ngrokTest -v ".:/app" -w "/
 ![Rate limit](./img/rateLimit.webp)
 
 - Edit the `policy.yml` file and change `capacity` to `10`.
+- Restart the ngrok container.
 - In the traffic inspector, click on one of the `429` events, then click **Replay**. Note that the request now responds without error as the rate limit has been increased.
 
 ![Replay after rate limit adjustment](./img/replayLimit.webp)
@@ -177,9 +180,9 @@ Before adding an event subscription, you'll need somewhere to send events.
 
 - Sign up for a free trial account at [DataDog](https://www.datadoghq.com).
 
-You can enter anonymous nonsense for all the fields except your email address, which you need to confirm. You also can't skip step three in the sign up process — creating a DataDog agent somewhere.
+You can enter anonymous nonsense for all the DataDog registration fields except your email address, which you need to confirm. You also can't skip step three in the sign up process — creating a DataDog agent somewhere.
 
-- In step three of the DataDog signup, click on **Docker** in the sidebar. Copy and paste the given command into a terminal.
+- In step three of the DataDog signup, click on **Docker** in the sidebar. Copy and paste the given command into a terminal and run it.
 
 ![Join DataDog](./img/joinDatadog.webp)
 
@@ -203,7 +206,7 @@ docker image rm gcr.io/datadoghq/agent:7
 
 ![Add event subscription](./img/makeSubscription.webp)
 
-- In the sidebar that opens, name the subscription `traffic`, and a new source (event type). Choose `http_request_complete`.
+- In the sidebar that opens, name the subscription `traffic`, and add a new source (event type). Choose `http_request_complete`.
 
 ![Add source](./img/addEventType.webp)
 
@@ -246,11 +249,11 @@ Your new widget will be available in the dashboard, allowing your support staff 
 
 ![DataDog custom dashboard](./img/datadogCustomDashboard.webp)
 
-If you want to create widgets for other log information, you can see what fields are available by reading the JSON of any event you click on in the log inspector
+If you want to create widgets for other log information, you can see what fields are available by reading the JSON of any event you click on in the log inspector.
 
 ## Create a notification
 
-The final part of the monitoring system is setting up an alert that is pushed to your email or mobile app if an error occurs. You'll first add an integration to DataDog called a webhook. This webhook is merely a way of sending a POST request to https://ntfy.sh, a free notification service (that also has a mobile app available).
+The final part of the monitoring system is setting up an alert that is pushed to your email or mobile app if an error occurs. You'll first add an integration to DataDog called a webhook. This webhook is merely a way of sending a POST request to https://ntfy.sh, a free notification service.
 
 - In DataDog, browse to **Integrations — Add integration — webhooks**.
 
@@ -278,6 +281,10 @@ It's important that the `@webhook` name matches the webhook integration you crea
 If you want a different notification system to ntfy, consider email, Slack, Discord, WhatsApp, Threema, and Webhook.site.
 
 ## Further reading
+
+You now know how to provide any web app or API publicy on the internet through ngrok with Docker, how to monitor requests to the app in ngrok directly, how to export data to DataDog, and how to create dashboards and alerts.
+
+To learn more about any of these concepts, consult the following documentation.
 
 - [Get Docker](https://docs.docker.com/get-started/get-docker)
 - [Gettings started with Docker for ngrok](https://dashboard.ngrok.com/get-started/setup/docker)
