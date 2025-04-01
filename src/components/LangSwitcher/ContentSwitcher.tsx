@@ -4,7 +4,7 @@ import LangSwitcherContext from "./LangSwitcherContext";
 
 /**
  * Renders its children only if the specified language matches the
- * currently selected language for the <LangSwithcher> component.
+ * currently selected language for the LangSwithcher component.
  * This is useful for conditionally rendering content based on the
  * selected language.
  */

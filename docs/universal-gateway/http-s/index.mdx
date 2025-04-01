@@ -1,5 +1,6 @@
 ---
-title: How do I handle HTTP/S traffic?
+title: How Do I Handle HTTP/S traffic?
+description: Learn how to create HTTP/S endpoints with ngrok.
 ---
 
 import TabItem from "@theme/TabItem";
@@ -70,15 +71,6 @@ import HostHeaderPythonSdkExample from "/examples/python-sdk/http-rewrite-host-h
 import HostHeaderRustSdkExample from "/examples/rust-sdk/http-rewrite-host-header.mdx";
 import HostHeaderSshExample from "/examples/ssh/http-rewrite-host-header.mdx";
 
-import WildcardAgentCliExample from "/examples/agent-cli/http-wildcard-domain.mdx";
-import WildcardAgentConfigExample from "/examples/agent-config/http-wildcard-domain.mdx";
-import WildcardGoSdkExample from "/examples/go-sdk/http-wildcard-domain.mdx";
-import WildcardJavascriptSdkExample from "/examples/javascript-sdk/http-wildcard-domain.mdx";
-import WildcardKubernetesExample from "/examples/k8s/http-wildcard-domain.mdx";
-import WildcardPythonSdkExample from "/examples/python-sdk/http-wildcard-domain.mdx";
-import WildcardRustSdkExample from "/examples/rust-sdk/http-wildcard-domain.mdx";
-import WildcardSshExample from "/examples/ssh/http-wildcard-domain.mdx";
-
 import NonLocalAgentCliExample from "/examples/agent-cli/http-nonlocal.mdx";
 import NonLocalAgentConfigExample from "/examples/agent-config/http-nonlocal.mdx";
 import NonLocalGoSdkExample from "/examples/go-sdk/http-nonlocal.mdx";
@@ -115,20 +107,13 @@ import WindowsFileserverPythonSdkExample from "/examples/python-sdk/http-fileser
 import WindowsFileserverRustSdkExample from "/examples/rust-sdk/http-fileserver-windows.mdx";
 import WindowsFileserverSshExample from "/examples/ssh/http-fileserver-windows.mdx";
 
-import { ContentSwitcher } from "@site/src/components/LangSwitcher/ContentSwitcher";
-
-You can create HTTP/S endpoints to serve web services like REST APIs, web applications, websites and websocket servers. Serving a web application is as
-simple as `ngrok http 80`.
+You can create HTTP/S endpoints to serve web services like REST APIs, web applications, websites and websocket servers. You can serve an HTTP/S endpoint in one of the following ways.
 
 <Tabs groupId="connectivity" queryString="cty">
 	<TabItem value="agent-endpoint" label="Agent Endpoint" default>
-	Agent Endpoints are the easiest way to create an HTTP/S endpoint. An [agent
-endpoint](/universal-gateway/cloud-endpoints/) is started by a
-[Secure Tunnels](/agent/) agent. The endpoint lives for the lifetime of the
-process and forwards traffic to a port or URL of your choosing.
+	[Agent Endpoints](/agent/) are the easiest way to create an HTTP/S endpoint. You can start agent endpoints on your local machine. The endpoint wil llive for the lifetime of the process and forward traffic to a port or URL of your choosing.
 
-Create the endpoint `https://example.ngrok.app` and forward its traffic to a
-local port.
+    The following example creates the endpoint `https://example.ngrok.app` and forwards its traffic to a local port.
 
     <LangSwitcher>
     ```bash title="Agent CLI"
@@ -168,7 +153,7 @@ local port.
 
     	console.log(`Ingress established at: ${listener.url()}`);
     })();
-    ````
+    ```
 
     ```python
     import ngrok
@@ -212,65 +197,13 @@ local port.
     <StaticDomainAgentConfigExample />
 
     </TabItem>
-    <TabItem value="cloud-endpoint" label="Agent Cloud Endpoint"></TabItem>
-    <TabItem value="Kubernetes" label="Kubernetes Endpoint">
+    <TabItem value="cloud-endpoint" label="Cloud Endpoint">
 
-    ```yaml title="Kubernetes Example"
-    apiVersion: networking.k8s.io/v1
-    kind: Ingress
-    metadata:
-    	name: example-ingress
-    spec:
-    	ingressClassName: ngrok
-    	rules:
-    		- host: example.ngrok.app
-    			http:
-    				paths:
-    					- path: /
-    						pathType: Prefix
-    						backend:
-    							service:
-    								name: example-service
-    								port:
-    									number: 80
-    ```
+[Cloud endpoints](/universal-gateway/cloud-endpoints/) are created via [the ngrok Dashboard](https://dashboard.ngrok.com/endpoints/new) or [API](/api/). They are persistent and live until they are deleted. [Traffic Policy](/traffic-policy/) controls how a cloud endpoint handles traffic.
 
-    </TabItem>
+To create an HTTPS cloud endpoint which returns a `Hello world!` `200 OK` response, you can add the following to your Cloud Endpoint's Traffic Policy in the ngrok Dashboard:
 
-</Tabs>
-
-### Agent Endpoint
-
-Agent Endpoints are the easiest way to get started with ngrok. An [agent
-endpoint](/universal-gateway/cloud-endpoints/) is started by a
-[Secure Tunnels](/agent/) agent. The endpoint lives for the lifetime of the
-process and forwards traffic to a port or URL of your choosing.
-
-Create the endpoint `https://example.ngrok.app` and forward its traffic to a
-local port.
-
-<br />
-
-### Cloud Endpoint
-
-[Cloud endpoints](/universal-gateway/cloud-endpoints/) are created via the
-ngrok Dashboard or [API](/api/). They are persistent and live until they are
-deleted. [Traffic Policy](/traffic-policy/) controls how a cloud endpoint
-handles traffic.
-
-[Create an HTTPS cloud endpoint](https://dashboard.ngrok.com/endpoints/new)
-which returns a `Hello world!` 200 OK response.
-
-<Tabs groupId="connectivity" queryString="cty">
-	<TabItem value="agent-api" label="Agent CLI" default>
-
-```sh title="Command line"
-ngrok api endpoints create \
-  --url https://example.ngrok.app \
-  --traffic-policy "$(<traffic-policy.yml)"
-```
-
-```yaml title="traffic-policy.yml" mode=traffic-policy
+```yaml
 on_http_request:
   - actions:
       - type: custom-response
@@ -281,168 +214,44 @@ on_http_request:
           content: "Hello world!"
 ```
 
+If you want to add it with the API instead, you can save that policy to a local file, then run the following command in your terminal, referencing the file you created:
+
+```sh title="Command line"
+ngrok api endpoints create \
+  --url https://example.ngrok.app \
+  --traffic-policy "$(<traffic-policy.yml)"
+```
+
+    	</TabItem>
+    <TabItem value="Kubernetes" label="Kubernetes Endpoint">
+
+    	Follow the [ngrok Kubernetes Controller documentation](https://ngrok.com/docs/k8s/guides/quickstart/) to get started using ngrok with Kubernetes. You can use the following service definition to create an HTTP endpoint:
+
+    <StaticDomainKubernetesExample />
+
+
     </TabItem>
 
 </Tabs>
 
-## URL
+## URLs
 
-URLs are validated differently depending on their [binding](/universal-gateway/bindings). To learn more about valid URLs for HTTP/S endpoints, see [the Endpoint URLs documentation](/docs/universal-gateway/what-are-endpoint-urls/).
+URLs are validated differently depending on their [binding](/universal-gateway/bindings). To learn more about valid URLs for HTTP/S endpoints, see [the Endpoint URLs documentation](/docs/universal-gateway/what-are-endpoint-urls/#http).
 
-#### Public
+To listen for both http and https traffic, create two endpoints.
 
-###### HTTP
-
-- The hostname must be a domain with a valid [public suffix](https://publicsuffix.org/).
-- The port must be `80`. If you do not specify a port, the default `80` will be used for you.
-
-**Examples**
-
-- `http://example.ngrok.app`
-- `http://example.ngrok.app:80`
-- `http://example.party`
-- `http://example.ngrok.app:81` - invalid port: port number must be `80`, not `81`
-- `http://example.doesnotexist` - invalid hostname: `.doesnotexist` is not a public suffix domain
-- `http://example.internal` - invalid hostname: `.internal` is not a public suffix domain
-
-###### HTTPS
-
-- The hostname must be a domain with a valid [public suffix](https://publicsuffix.org/).
-- The port must be `443`. If you do not specify a port, the default `443` will be used for you.
-
-#### Internal
-
-#### Kubernetes
-
-##### Valid URLs
-
-- https://example.ngrok.app
-- https://example.ngrok.app:443
-- https://example.party
-
-##### Invalid URLs
-
-- https://example.ngrok.app:8443
-- https://example.nosuchtld
-- https://example.internal
-
-### Validation
-
-When you create an agent endpoint, if you do not specify a complete URL,
-following defaults are used to construct an endpoint URL. When you create a
-cloud endpoint, you must always specify both a scheme and hostname.
-
-| URL Part | Default                                                   |
-| -------- | --------------------------------------------------------- |
-| Scheme   | `https`                                                   |
-| Hostname | randomly selected                                         |
-| Port     | `443` if scheme is `https`<br /> `80` if scheme is `http` |
-
-Consult the following table of examples of URL defaulting:
-
-| Value                           | Endpoint URL                                             |
-| ------------------------------- | -------------------------------------------------------- |
-| `https://example.ngrok.app`     | `https://example.ngrok.app`                              |
-| `http://example.ngrok.app`      | `http://example.ngrok.app`                               |
-| `example.ngrok.app`             | `https://example.ngrok.app`                              |
-| `app.example.com`               | `https://app.example.com`                                |
-| `https://example.internal`      | `https://example.internal`                               |
-| `https://example.internal:1234` | `https://example.internal:1234`                          |
-| `http://example.internal`       | `http://example.internal`                                |
-| `foo.internal`                  | `https://foo.internal`                                   |
-| `{empty}`                       | `https://1eb2-181-80-12-3.ngrok.app` (randomly selected) |
-
-If you would like to listen for both http and https traffic, create two endpoints.
-
-#### Domains
+## Domains
 
 When you create a public endpoint, it must match a
-[Domain](/universal-gateway/domains/what-are-domains) on your account. Domains help you set up
-branded domains and manage TLS certificates. You may create endpoints with
-wildcard domains as well.
-
-Endpoints with randomly-assigned hostnames are an exception and won't match an
-existing Domain object.
+Domain on your account. See [the Domains documentation](/universal-gateway/domains/what-are-domains/) for more information.
 
 ### Bring your own domain {#bring-your-own-domain}
 
-If you want to bring your own domain, first [create a Domain record and set up
-a DNS CNAME record](/universal-gateway/how-do-i-use-my-own-domain). Then
-create an endpoint on that domain by specifying a URL with a matching hostname.
+To bring your own domain, see [the guide on the subject](/universal-gateway/how-do-i-use-my-own-domain).
 
-For example, to create an HTTPS endpoint on `https://app.example.com`, [create
-a Domain](https://dashboard.ngrok.com/domains) and follow the instructions to
-set up a CNAME record. Then use the following example to start an endpoint on
-your domain:
+## Wildcard HTTP Endpoints
 
-<Tabs groupId="connectivity" queryString="cty">
-	<TabItem value="agent-cli" label="Agent CLI" default>
-		<BrandedDomainAgentCliExample />
-	</TabItem>
-	<TabItem value="agent-config" label="Agent Config">
-		<BrandedDomainAgentConfigExample />
-	</TabItem>
-	<TabItem value="ssh" label="SSH">
-		<BrandedDomainSshExample />
-	</TabItem>
-	<TabItem value="go-sdk" label="Go">
-		<BrandedDomainGoSdkExample />
-	</TabItem>
-	<TabItem value="javascript-sdk" label="Javascript">
-		<BrandedDomainJavascriptSdkExample />
-	</TabItem>
-	<TabItem value="python-sdk" label="Python">
-		<BrandedDomainPythonSdkExample />
-	</TabItem>
-	<TabItem value="rust-sdk" label="Rust">
-		<BrandedDomainRustSdkExample />
-	</TabItem>
-	<TabItem value="k8s" label="Kubernetes Controller">
-		<BrandedDomainKubernetesExample />
-	</TabItem>
-</Tabs>
-
-### Wildcard Endpoints
-
-You can create an endpoint which will receive traffic for all of the subdomains matching a given wildcard domain. See [the wildcard domain docs](/universal-gateway/wildcard-domains/) for more information.
-
-### Randomly assigned hostnames
-
-If you run create a public endpoint without specifying a hostname, ngrok will
-automatically assign a random one for you.by selecting a random subdomain of one of our [ngrok-managed
-Domains](/universal-gateway/domains#ngrok-managed-domains) to your endpoint.
-For example, the command `ngrok http 80` may create an endpoint like
-`https://1eb2-181-80-12-3.ngrok.app`.
-
-The following example create an HTTPS endpoint on a randomly assigned hostname
-that forwards to port 8080.
-
-<Tabs groupId="connectivity" queryString="cty">
-	<TabItem value="agent-cli" label="Agent CLI" default>
-		<RandomAgentCliExample />
-	</TabItem>
-	<TabItem value="agent-config" label="Agent Config">
-		<RandomAgentConfigExample />
-	</TabItem>
-	<TabItem value="ssh" label="SSH">
-		<RandomSshExample />
-	</TabItem>
-	<TabItem value="go-sdk" label="Go">
-		<RandomGoSdkExample />
-	</TabItem>
-	<TabItem value="javascript-sdk" label="Javascript">
-		<RandomJavascriptSdkExample />
-	</TabItem>
-	<TabItem value="python-sdk" label="Python">
-		<RandomPythonSdkExample />
-	</TabItem>
-	<TabItem value="rust-sdk" label="Rust">
-		<RandomRustSdkExample />
-	</TabItem>
-	<TabItem value="k8s" label="Kubernetes Controller">
-		<StaticDomainKubernetesExample />
-	</TabItem>
-</Tabs>
+You can create an HTTP/S endpoint which will receive traffic for all of the subdomains matching a given wildcard domain. See [the wildcard domain docs](/universal-gateway/wildcard-domains/) for more information.
 
 ## Traffic Policy
 

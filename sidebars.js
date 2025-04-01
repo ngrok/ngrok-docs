@@ -125,7 +125,13 @@ const sidebars = {
 				"universal-gateway/chain-endpoints",
 				"universal-gateway/mock-api",
 				"universal-gateway/migrate-from-tunnels",
-				"universal-gateway/http-s/index",
+
+				{
+					label: "How Do I Handle HTTP/S Traffic?",
+					type: "category",
+					link: { type: "doc", id: "universal-gateway/http-s/index" },
+					items: ["universal-gateway/http-s/endpoint-url-defaults"],
+				},
 				{
 					label: "Endpoints",
 					type: "category",

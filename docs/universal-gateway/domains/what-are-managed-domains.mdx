@@ -3,6 +3,9 @@ title: What Are Managed Domains?
 description: Learn about the free and paid domains that ngrok provides.
 ---
 
+import { LangSwitcher } from "@site/src/components/LangSwitcher";
+import { ContentSwitcher } from "@site/src/components/LangSwitcher/ContentSwitcher";
+
 If you don't [already own a Domain](/universal-gateway/how-do-i-use-my-own-domain) that you want to use with ngrok, you can create a domain that is a subdomain of an ngrok-managed base domain.
 
 | Domain             | Availability                                      | HSTS Global Preload |
@@ -29,3 +32,60 @@ If you need to create unencrypted `http` endpoints, you should create them with 
 :::tip
 ngrok does not prohibit you from creating `http` endpoints with hostnames whose base domain is on the global HSTS preload list. Non-browser clients (like `curl`) can still be used to make unencrypted HTTP requests to them.
 :::
+
+### Randomly assigned hostnames
+
+If you create a public endpoint without specifying a hostname, ngrok will automatically assign a random one for you.by selecting a random subdomain of one of ngrok's managed Domains to your endpoint.
+
+The following example creates an HTTPS endpoint on a randomly assigned hostname that forwards to port 8080.
+
+<LangSwitcher>
+
+```bash title="Agent CLI"
+ngrok http 8080
+```
+
+```sh title="SSH example"
+ssh -R 443:localhost:80 v2@connect.ngrok-agent.com http
+```
+
+</LangSwitcher>
+
+<ContentSwitcher language="bash">
+
+    :::note
+    If your Agent Config doesn't have hostname specified, and you create an endpoint, the hostname will also be randomly assigned. For example, if your Agent Config looks like this:
+
+    ```yaml
+    version: 3
+    endpoints:
+    	- name: example
+    		url: https://
+    		upstream:
+    			url: 8080
+    ```
+
+    :::
+
+</ContentSwitcher>
+{/* 
+<Tabs groupId="connectivity" queryString="cty">
+	<TabItem value="ssh" label="SSH">
+		<RandomSshExample />
+	</TabItem>
+	<TabItem value="go-sdk" label="Go">
+		<RandomGoSdkExample />
+	</TabItem>
+	<TabItem value="javascript-sdk" label="Javascript">
+		<RandomJavascriptSdkExample />
+	</TabItem>
+	<TabItem value="python-sdk" label="Python">
+		<RandomPythonSdkExample />
+	</TabItem>
+	<TabItem value="rust-sdk" label="Rust">
+		<RandomRustSdkExample />
+	</TabItem>
+	<TabItem value="k8s" label="Kubernetes Controller">
+		<StaticDomainKubernetesExample />
+	</TabItem>
+</Tabs> */}
