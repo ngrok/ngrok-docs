@@ -115,10 +115,129 @@ import WindowsFileserverPythonSdkExample from "/examples/python-sdk/http-fileser
 import WindowsFileserverRustSdkExample from "/examples/rust-sdk/http-fileserver-windows.mdx";
 import WindowsFileserverSshExample from "/examples/ssh/http-fileserver-windows.mdx";
 
+import { ContentSwitcher } from "@site/src/components/LangSwitcher/ContentSwitcher";
+
 You can create HTTP/S endpoints to serve web services like REST APIs, web applications, websites and websocket servers. Serving a web application is as
 simple as `ngrok http 80`.
 
-## Quickstart
+<Tabs groupId="connectivity" queryString="cty">
+	<TabItem value="agent-endpoint" label="Agent Endpoint" default>
+	Agent Endpoints are the easiest way to create an HTTP/S endpoint. An [agent
+endpoint](/universal-gateway/cloud-endpoints/) is started by a
+[Secure Tunnels](/agent/) agent. The endpoint lives for the lifetime of the
+process and forwards traffic to a port or URL of your choosing.
+
+Create the endpoint `https://example.ngrok.app` and forward its traffic to a
+local port.
+
+    <LangSwitcher>
+    ```bash title="Agent CLI"
+    ngrok http 8080 --url https://example.ngrok.app
+    ```
+    ```go
+    import (
+    	"context"
+    	"net"
+
+    		"golang.ngrok.com/ngrok"
+    		"golang.ngrok.com/ngrok/config"
+
+    )
+
+    func ngrokListener(ctx context.Context) (net.Listener, error) {
+    upstreamURL, \_ := url.Parse("http://localhost:8080")
+    return ngrok.ListenAndForward(ctx,
+    upstreamURL,
+    config.HTTPEndpoint(
+    config.WithURL("https://example.ngrok.app"),
+    ),
+    ngrok.WithAuthtokenFromEnv(),
+    )
+    }
+
+    ```
+    ```jsx
+    const ngrok = require("@ngrok/ngrok");
+
+    (async function () {
+    	const listener = await ngrok.forward({
+    		addr: 8080,
+    		authtoken_from_env: true,
+    		domain: "example.ngrok.app",
+    	});
+
+    	console.log(`Ingress established at: ${listener.url()}`);
+    })();
+    ````
+
+    ```python
+    import ngrok
+
+    listener = ngrok.forward("localhost:8080", authtoken_from_env=True,
+    		domain="example.ngrok.app")
+
+    print(f"Ingress established at: {listener.url()}");
+    ```
+
+    ```rust
+    use ngrok::prelude::*;
+
+    async fn listen_ngrok() -> anyhow::Result<impl Tunnel> {
+    		let sess = ngrok::Session::builder()
+    				.authtoken_from_env()
+    				.connect()
+    				.await?;
+
+    		let tun = sess
+    				.http_endpoint()
+    				.domain("example.ngrok.app")
+    				.listen()
+    				.await?;
+
+    		println!("Listening on URL: {:?}", tun.url());
+
+    		Ok(tun)
+    }
+    ```
+
+    </LangSwitcher>
+
+    <StaticDomainKubernetesExample />
+
+    		TODO: You can do SSH:
+    		<StaticDomainSshExample />
+
+    TODO: You can also use Agent Config
+
+    <StaticDomainAgentConfigExample />
+
+    </TabItem>
+    <TabItem value="cloud-endpoint" label="Agent Cloud Endpoint"></TabItem>
+    <TabItem value="Kubernetes" label="Kubernetes Endpoint">
+
+    ```yaml title="Kubernetes Example"
+    apiVersion: networking.k8s.io/v1
+    kind: Ingress
+    metadata:
+    	name: example-ingress
+    spec:
+    	ingressClassName: ngrok
+    	rules:
+    		- host: example.ngrok.app
+    			http:
+    				paths:
+    					- path: /
+    						pathType: Prefix
+    						backend:
+    							service:
+    								name: example-service
+    								port:
+    									number: 80
+    ```
+
+    </TabItem>
+
+</Tabs>
 
 ### Agent Endpoint
 
@@ -129,33 +248,6 @@ process and forwards traffic to a port or URL of your choosing.
 
 Create the endpoint `https://example.ngrok.app` and forward its traffic to a
 local port.
-
-<Tabs groupId="connectivity" queryString="cty">
-	<TabItem value="agent-cli" label="Agent CLI" default>
-		<StaticDomainAgentCliExample />
-	</TabItem>
-	<TabItem value="agent-config" label="Agent Config">
-		<StaticDomainAgentConfigExample />
-	</TabItem>
-	<TabItem value="ssh" label="SSH">
-		<StaticDomainSshExample />
-	</TabItem>
-	<TabItem value="go-sdk" label="Go">
-		<StaticDomainGoSdkExample />
-	</TabItem>
-	<TabItem value="javascript-sdk" label="Javascript">
-		<StaticDomainJavascriptSdkExample />
-	</TabItem>
-	<TabItem value="python-sdk" label="Python">
-		<StaticDomainPythonSdkExample />
-	</TabItem>
-	<TabItem value="rust-sdk" label="Rust">
-		<StaticDomainRustSdkExample />
-	</TabItem>
-	<TabItem value="k8s" label="Kubernetes Controller">
-		<StaticDomainKubernetesExample />
-	</TabItem>
-</Tabs>
 
 <br />
 

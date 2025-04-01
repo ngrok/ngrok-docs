@@ -54,6 +54,8 @@ const sidebars = {
 					items: [
 						"universal-gateway/domains/how-do-i-use-my-own-domain",
 						"universal-gateway/domains/what-are-managed-domains",
+						"universal-gateway/wildcard-domains/index",
+						"universal-gateway/wildcard-domains/wildcard-endpoints",
 					],
 				},
 				"universal-gateway/what-are-matching-endpoints",

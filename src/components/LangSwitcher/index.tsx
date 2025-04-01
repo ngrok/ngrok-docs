@@ -21,6 +21,7 @@ import { getCodeBlocks } from "./utils";
 export function LangSwitcher({ children, className, ...props }: any) {
 	const { defaultLanguage, tabLanguage, updateTab } =
 		useContext<LangSwitcherContextType>(LangSwitcherContext);
+
 	const codeBlocks = getCodeBlocks(children);
 
 	if (!updateTab) return "Error loading code block";
@@ -72,8 +73,8 @@ export function LangSwitcher({ children, className, ...props }: any) {
 					</CodeBlockHeader>
 					<CodeBlockBody>
 						{meta.title && (
-							<CodeBlockTitle className="mx-2 my-1">
-								{meta.title}
+							<CodeBlockTitle className="mx-2 mt-3.5">
+								<strong>{meta.title}</strong>
 							</CodeBlockTitle>
 						)}
 						{!meta.disableCopy && <CodeBlockCopyButton />}
