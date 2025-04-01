@@ -13,6 +13,7 @@ import {
 	parseMetastring,
 } from "@ngrok/mantle/code-block";
 import type { WithStyleProps } from "@ngrok/mantle/types";
+import convertToSpaces from "convert-to-spaces";
 import type { ComponentProps, ReactNode } from "react";
 
 type Props = WithStyleProps & {
@@ -72,6 +73,8 @@ function DocsCodeBlock({
 
 	const collapsible = meta.collapsible && children.split("\n").length > 20;
 
+	const codeblockContent = convertToSpaces(fmtCode`${children}`);
+
 	return (
 		<CodeBlock className={className} {...props}>
 			{hasHeader && (
@@ -82,7 +85,7 @@ function DocsCodeBlock({
 			)}
 			<CodeBlockBody>
 				{!meta.disableCopy && <CodeBlockCopyButton />}
-				<CodeBlockCode language={language} value={fmtCode`${children}`} />
+				<CodeBlockCode language={language} value={codeblockContent} />
 				{collapsible && <CodeBlockExpanderButton />}
 			</CodeBlockBody>
 		</CodeBlock>
