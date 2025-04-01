@@ -191,7 +191,7 @@ title: Changelog
 
 ### ngrok Agent 3.3.0 - \[2023-05-09\]
 
-- Added new default tunnel ingress names: the agent now connects to [`connect.ngrok-agent.com`](/guides/other-guides/security-dev-productivity/security-dev-productivity.md#6-track-and-block-unauthorized-tunnel-activity) when starting a session
+- Added new default tunnel ingress names: the agent now connects to [`connect.ngrok-agent.com`](/docs/guides/other-guides/security-dev-productivity/#track-and-block-unauthorized-activity) when starting a session
 - Improved `ngrok diagnose` output to check that the DNS entry for `localhost` resolves
 - Added the command `ngrok config add-server-addr` for configuring custom agent ingresses
 - Re-wrote the tunnel and session backend to use the `ngrok-go` library

@@ -11,3 +11,4 @@
 | csr                | string             | CSR is supplied during initial creation to enable creating a mutual TLS secured connection between ngrok and the operator. This is an internal implementation detail and subject to change. |
 | ingress_endpoint   | string             | the public ingress endpoint for this Kubernetes Operator                                                                                                                                    |
 | name               | string             | the deployment name                                                                                                                                                                         |
+| version            | string             | the version of this Kubernetes Operator                                                                                                                                                     |
