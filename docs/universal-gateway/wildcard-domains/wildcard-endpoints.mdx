@@ -1,5 +1,5 @@
 ---
-title: How Do I Use Wildcard Domains?
+title: How Do I Use Wildcard Endpoints?
 ---
 
 import WildcardAgentCliExample from "/examples/agent-cli/http-wildcard-domain.mdx";
@@ -11,23 +11,7 @@ import WildcardPythonSdkExample from "/examples/python-sdk/http-wildcard-domain.
 import WildcardRustSdkExample from "/examples/rust-sdk/http-wildcard-domain.mdx";
 import WildcardSshExample from "/examples/ssh/http-wildcard-domain.mdx";
 
-You may create a Domain with a wildcard name, e.g. `*.example.com`. A wildcard domain enables you to:
-
-- Create an endpoint which receives traffic for all of its subdomains, e.g. `https://*.example.com`. See [Wildcard Endpoints](/universal-gateway/http/#wildcard-endpoints) to understand the rules for matching and precedence.
-- Create an endpoint on any subdomain which matches the wildcard, e.g. `https://foo.example.com` or `https://foo.bar.baz.example.com`
-
-:::note
-The wildcard `*` character may only be used as the first part of a
-domain, you may not create domains like `app.*.example.com` or
-`*-app.example.com`.
-:::
-
-### Wildcard endpoints
-
-You can create an endpoint which will receive traffic for all of the subdomains
-matching a given wildcard domain like `*.example.com`. You must create a
-[wildcard domain](/universal-gateway/domains/what-are-domains/#wildcard-domains) to create a
-public wildcard endpoint.
+You can create an endpoint which will receive traffic for all of the subdomains matching a given wildcard domain like `*.example.com`. You must create a [wildcard domain](/universal-gateway/domains/what-are-domains/#wildcard-domains) to create a public wildcard endpoint.
 
 For example, if you create the wildcard endpoint `https://*.example.com`, it
 will receive traffic for `https://foo.example.com` and
@@ -69,14 +53,11 @@ will receive traffic for `https://foo.example.com` and
 	</TabItem>
 </Tabs>
 
-[Wildcard endpoints](/universal-gateway/wildcard-domains/#wildcard-endpoints) do not pool with non-wildcard URLs. For example, if you have
-two endpoints online, `https://foo.example.com` and `https://*.example.com`,
-they will not pool together and traffic to `https://foo.example.com` will not
-be load balanced. Consult the documentation for [wildcard
-endpoints](/universal-gateway/http/#wildcard-endpoints) to understand
-the rules for matching and precedence.
+## Wildcard endpoint pooling
 
-### Use multiple endpoints with wildcard subdomains
+Wildcard endpoints do not pool with non-wildcard URLs. For example, if you have two endpoints online, `https://foo.example.com` and `https://*.example.com`, they will not pool together and traffic to `https://foo.example.com` will not be load balanced.
+
+### How do I use multiple endpoints with wildcard subdomains?
 
 With the [Agent CLI](/agent/cli), you can create separate public endpoints for subdomains of a wildcard domain no matter where the upstream services are running. See [the Domains docs](/docs/universal-gateway/domains/#wildcard-domains) for more information.
 
@@ -97,25 +78,3 @@ ngrok http 81 --url https://api2.example.com
 :::tip
 This is only necessary for creating _public_ endpoints to subdomains. Internal endpoints don't require a domain.
 :::
-
-### TLS provisioning
-
-When you bring your own wildcard domain (e.g. `*.app.example.com`), ngrok uses
-a DNS01 challenge for TLS certificate provisioning which means that you must
-create two CNAME records when creating branded wildcard domains instead of just
-one.
-
-For example, If your domain is `*.app.example.com` you will be required to create the
-following two CNAME records:
-
-- `*.app.example.com`
-- `_acme-challenge.app.example.com`
-
-Certificate provisioning will not begin until you have created both DNS
-records.
-
-## Pricing
-
-Wildcard domains are available on our Enterprise plan self service. They are also available on Pay-as-You-Go plans if you contact support@ngrok.com. For Pay-as-You-Go when you create a wildcard domain and run endpoints domain `*.foo.com`, endpoints `https://a.foo.com` and `https://b.foo.com`, we bill you for each individual endpoint, which is why we ask that you request the feature.
-
-Reserving subdomains of a wildcard domain within the ngrok dashboard count towards the number of reserved domains in your account. For example, if you reserve `foo.example.com` and `*.example.com`, you have reserved two domains.. You will be charged for each subdomain you use. You may need to enable overages in order to do this on your paid plan.
