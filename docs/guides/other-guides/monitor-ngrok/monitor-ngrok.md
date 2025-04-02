@@ -27,7 +27,7 @@ To follow along with this tutorial, you need:
 Let's create the simplest possible app to monitor.
 
 :::note
-If you already have an app running on ngrok, you can skip to the [traffic inspector](#traffic-inspector) section.
+If you already have an app running on ngrok, you can skip to the [Traffic Inspector](#traffic-inspector) section.
 :::
 
 The TypeScript code below runs a web server that randomly returns a success or a failure to any request it receives.
@@ -62,7 +62,7 @@ docker run --platform=linux/amd64 --rm -p 7777:80 --network=ngrokTest -v ".:/app
 This command runs the Docker image for Deno, exposing the API locally on port 7777, names the Docker container `api`, and removes the container upon exiting with `--rm`. You can now browse to http://localhost:7777 to test the app.
 
 :::note
-The app uses a named network, `ngrokTest`, so that in the next section, you can start the ngrok agent on the same network as the app.
+The app uses a named network, `ngrokTest`, so that in the next section, you can start the ngrok Agent on the same network as the app.
 :::
 
 ![Simple web app](./img/appConsole.webp)
@@ -89,19 +89,19 @@ You can now see your request going from the browser to the ngrok agent you're ru
 
 You can monitor web servers in two ways in ngrok, with the Traffic Inspector and with Events.
 
-The traffic inspector is a filterable list of your API's requests and responses, available on the ngrok dashboard. The traffic inspector is useful for viewing error details and for replaying requests to test new policies and bug fixes. The inspector is a manual way to monitor your app. Request data is kept for three days (or for 90 days as a paid extra).
+The Traffic Inspector is a filterable list of your API's requests and responses, available on the ngrok dashboard. The Traffic Inspector is useful for viewing error details and for replaying requests to test new policies and bug fixes. The inspector is a manual way to monitor your app. Request data is kept for three days (or for 90 days as a paid extra).
 
 An event is the data that ngrok provides about a request, which is exported to a dedicated monitoring platform. Events offer an automated means of monitoring your app. Events are also the only way for your team to get automatic error alerts (notifications) instead of constantly having to check for errors on a dashboard.
 
 At the time of writing, ngrok allows you to export events only to AWS, Azure, and DataDog. We do not support event exports to OpenTelemetry or custom URLs, such as self-hosted servers, so you have to use a paid cloud service. You can't perform custom processing or use Elastic, Prometheus, Splunk, or alternative monitoring apps.
 
-## Use the traffic inspector
+## Use the Traffic Inspector
 
-Browse to the ngrok [traffic inspector](https://dashboard.ngrok.com/traffic-inspector) on your ngrok account dashboard.
+Browse to the ngrok [Traffic Inspector](https://dashboard.ngrok.com/traffic-inspector) on your ngrok account dashboard.
 
 The list of recent requests provides you with basic information, such as the time, origin, destination, duration, and response code of calls to your app. You can filter requests by these fields, for instance, to show only server error responses and not successes.
 
-![Traffic inspector](./img/trafficInspector.webp)
+![Traffic Inspector](./img/trafficInspector.webp)
 
 :::note
 Requests made to the app at http://localhost:7777 will not be displayed in the inspector. Only requests that pass through the ngrok endpoint, and therefore the ngrok agent running in Docker, will be known to ngrok.
@@ -109,7 +109,7 @@ Requests made to the app at http://localhost:7777 will not be displayed in the i
 
 To see more details about a request or to replay it, you need to enable full capture, which permits ngrok to store up to 10 KB of your request data.
 
-Click a request in the traffic inspector list, then click **Enable full capture** in the sidebar.
+Click a request in the Traffic Inspector list, then click **Enable full capture** in the sidebar.
 
 ![Enable full capture](./img/enableFullCapture.webp)
 
@@ -119,7 +119,7 @@ This button takes you to your account settings, where you can enable full captur
 
 Then, return to your published API URL and refresh the browser page a few times to send fresh requests through ngrok.
 
-In the ngrok traffic inspector, click on the event at the top of the list.
+In the ngrok Traffic Inspector, click on the event at the top of the list.
 
 The event should now show all the request and response details and content. If the full capture details don't appear, you may need to restart your ngrok agent in the terminal.
 
@@ -133,15 +133,15 @@ You can also replay a request with changes to alter any of the headers or POST d
 
 ![Replay with changes](./img/replayChanges2.webp)
 
-Replaying requests is useful for debugging. For example, you could find the request that caused an error in your app, deploy a fix for the app, and replay the request to confirm you’ve fixed the issue.
+Replaying requests is useful for debugging. For example, you could find the request that caused an error in your app, deploy a fix for the app, and replay the request to confirm you've fixed the issue.
 
-### Traffic policy example
+### Traffic Policy example
 
-You can also replay requests to test new [traffic policies](https://ngrok.com/docs/traffic-policy). ngrok applies the traffic policy rules in effect at the current time of replay, which may be different from the rules that were in effect when the original request was received.
+You can also replay requests to test new [traffic policies](https://ngrok.com/docs/traffic-policy). ngrok applies the Traffic Policy rules in effect at the current time of replay, which may be different from the rules that were in effect when the original request was received.
 
-You can use policies to request passwords, block malicious traffic, route requests, rewrite URLs, and respond with custom content. If you use a custom permanent domain name (called a [cloud endpoint](https://ngrok.com/docs/universal-gateway/cloud-endpoints)) on ngrok, you can set a policy for every agent that uses that domain. Otherwise, for temporary [agent points](https://ngrok.com/docs/universal-gateway/agent-endpoints), you can set a traffic policy inside each agent individually.
+You can use policies to request passwords, block malicious traffic, route requests, rewrite URLs, and respond with custom content. If you use a custom permanent domain name (called a [Cloud Endpoint](https://ngrok.com/docs/universal-gateway/cloud-endpoints)) on ngrok, you can set a policy for every agent that uses that domain. Otherwise, for temporary [Agent Endpoints](https://ngrok.com/docs/universal-gateway/agent-endpoints), you can set a traffic policy inside each agent individually.
 
-Let's look at rate limiting as an example of a traffic policy. Rate limiting is one of the many [traffic policy actions](https://ngrok.com/docs/traffic-policy/actions/rate-limit) available. At this stage of the guide, you could send unlimited requests to the test app you've created. Let's change that to allow only one request a minute.
+Let's look at rate limiting as an example of a traffic policy. Rate limiting is one of the many [Traffic Policy actions](https://ngrok.com/docs/traffic-policy/actions/rate-limit) available. At this stage of the guide, you could send unlimited requests to the test app you've created. Let's change that to allow only one request a minute.
 
 In order to test policies, you need to be able to re-use the same URL, which isn't possible if you keep using the temporary URLs that ngrok generates each time you restart an agent. So let's create a permanent URL.
 
@@ -174,13 +174,13 @@ docker run -it --rm --platform=linux/amd64 --network=ngrokTest -v ".:/app" -w "/
 
 Browse to the app URL and refresh the page a few times. Notice that the page stops responding.
 
-On the ngrok traffic inspector page, note that the error code **429** (rate limit) was returned and that the duration of the request was instant and caused no load on your app.
+On the ngrok Traffic Inspector page, note that the error code **429** (rate limit) was returned and that the duration of the request was instant and caused no load on your app.
 
 ![Rate limit](./img/rateLimit.webp)
 
 Edit the `policy.yml` file and change `capacity` to `10`, then restart the ngrok container.
 
-In the traffic inspector, click on one of the **429** events, then click **Replay**. Note that the request now responds without error because the rate limit has been increased.
+In the Traffic Inspector, click on one of the **429** events, then click **Replay**. Note that the request now responds without error because the rate limit has been increased.
 
 ![Replay after rate limit adjustment](./img/replayLimit.webp)
 
@@ -306,9 +306,8 @@ To learn more about any of these concepts, consult the following:
 - The [Get Docker](https://docs.docker.com/get-started/get-docker) guide
 - The guide to [getting started with Docker for ngrok](https://dashboard.ngrok.com/get-started/setup/docker)
 - The complete [Docker ngrok agent](https://ngrok.com/docs/using-ngrok-with/docker) documentation
-- The [ngrok agent points](https://ngrok.com/docs/universal-gateway/agent-endpoints) documentation
-- The [ngrok traffic policies](https://ngrok.com/docs/traffic-policy) documentation
-- The [ngrok traffic policy actions](https://ngrok.com/docs/traffic-policy/actions/rate-limit) documentation
+- The [ngrok Traffic Policy](https://ngrok.com/docs/traffic-policy) documentation
+- The [ngrok Traffic Policy actions](https://ngrok.com/docs/traffic-policy/actions/rate-limit) documentation
 - The [ngrok cloud endpoints](https://ngrok.com/docs/universal-gateway/cloud-endpoints) documentation
 - The [ngrok agent endpoints](https://ngrok.com/docs/universal-gateway/agent-endpoints) documentation
 - The [ngrok events](https://ngrok.com/docs/obs/events) documentation
