@@ -15,6 +15,8 @@ import {
 import type { WithStyleProps } from "@ngrok/mantle/types";
 import convertToSpaces from "convert-to-spaces";
 import type { ComponentProps, ReactNode } from "react";
+import { LanguageData } from "./LangSwitcher/LanguageData";
+import { getLanguageInfo } from "./LangSwitcher/utils";
 
 type Props = WithStyleProps & {
 	/**
@@ -74,21 +76,24 @@ function DocsCodeBlock({
 	const collapsible = meta.collapsible && children.split("\n").length > 20;
 
 	const codeblockContent = convertToSpaces(fmtCode`${children}`);
-
+	const info = getLanguageInfo(language);
 	return (
-		<CodeBlock className={className} {...props}>
-			{hasHeader && (
-				<CodeBlockHeader>
-					{mode ? <CodeBlockIcon preset={mode} /> : _icon}
-					{title && <CodeBlockTitle>{title}</CodeBlockTitle>}
-				</CodeBlockHeader>
-			)}
-			<CodeBlockBody>
-				{!meta.disableCopy && <CodeBlockCopyButton />}
-				<CodeBlockCode language={language} value={codeblockContent} />
-				{collapsible && <CodeBlockExpanderButton />}
-			</CodeBlockBody>
-		</CodeBlock>
+		<div>
+			<CodeBlock className={className} {...props}>
+				{hasHeader && (
+					<CodeBlockHeader>
+						{mode ? <CodeBlockIcon preset={mode} /> : _icon}
+						{title && <CodeBlockTitle>{title}</CodeBlockTitle>}
+					</CodeBlockHeader>
+				)}
+				<CodeBlockBody>
+					{!meta.disableCopy && <CodeBlockCopyButton />}
+					<CodeBlockCode language={language} value={codeblockContent} />
+					{collapsible && <CodeBlockExpanderButton />}
+				</CodeBlockBody>
+			</CodeBlock>
+			{info && <LanguageData data={info} />}
+		</div>
 	);
 }
 

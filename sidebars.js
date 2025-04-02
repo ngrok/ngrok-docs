@@ -125,8 +125,15 @@ const sidebars = {
 				"universal-gateway/chain-endpoints",
 				"universal-gateway/mock-api",
 				"universal-gateway/migrate-from-tunnels",
-				"universal-gateway/agent-forwarding",
-
+				{
+					label: "How Does Agent Fowarding Work?",
+					type: "category",
+					link: { type: "doc", id: "universal-gateway/agent-forwarding/index" },
+					items: [
+						"universal-gateway/agent-forwarding/non-local-forwarding",
+						"universal-gateway/agent-forwarding/serving-file-directories",
+					],
+				},
 				{
 					label: "How Do I Handle HTTP/S Traffic?",
 					type: "category",

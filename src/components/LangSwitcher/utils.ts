@@ -1,4 +1,5 @@
 import { parseLanguage, parseMetastring } from "@ngrok/mantle/code-block";
+import { languageData } from "./data";
 
 export const getCodeBlocks = (children: any) => {
 	return children.map((child: any, index: number) => {
@@ -17,8 +18,16 @@ export const getCodeBlocks = (children: any) => {
 			},
 			title,
 			childIndex: index,
+			info: getLanguageInfo(parsedLanguage),
 		};
 	});
+};
+
+export const getLanguageInfo = (language: string) => {
+	return languageData.find(
+		(item) =>
+			item.name === language || item?.altNames?.some((alt) => alt === language),
+	);
 };
 
 // The name of the query param or localstorage item to search for

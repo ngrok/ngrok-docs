@@ -1,0 +1,199 @@
+---
+title: How Does Non-Local Forwarding Work?
+---
+
+import TabItem from "@theme/TabItem";
+import Tabs from "@theme/Tabs";
+
+import { LangSwitcher } from "@site/src/components/LangSwitcher";
+import { ContentSwitcher } from "@site/src/components/LangSwitcher/ContentSwitcher";
+
+import NonLocalAgentConfigExample from "/examples/agent-config/http-nonlocal.mdx";
+import NonLocalAgentConfigExampleTCP from "/examples/agent-config/tcp-nonlocal.mdx";
+import NonLocalKubernetesExample from "/examples/k8s/http-nonlocal.mdx";
+import NonLocalKubernetesExampleTCP from "/examples/k8s/tcp-nonlocal.mdx";
+
+Aside from ports on your localhost, ngrok Agents can [forward traffic](/universal-gateway/agent-forwarding/) to any address or URL reachable from the agent.
+
+## HTTP non-local forwarding
+
+The following example demonstrates how to forward traffic to an HTTP server running on your network at `192.168.1.2:80`:
+
+<Tabs groupId="endpoint-type" queryString="ept">
+	<TabItem value="agent-endpoint" label="Agent Endpoint" default>
+    <LangSwitcher>
+    ```bash
+    ngrok http 192.168.1.2:80
+    ```
+
+    ```sh
+    ssh -R 0:192.168.1.2:80 v2@connect.ngrok-agent.com http
+    ```
+
+    ```go
+    import (
+    	"context"
+    	"net/url"
+
+    	"golang.ngrok.com/ngrok"
+    	"golang.ngrok.com/ngrok/config"
+    )
+
+    func ngrokForwarder(ctx context.Context) (ngrok.Forwarder, error) {
+    	backendUrl, err := url.Parse("http://192.168.1.2:80")
+    	if err != nil {
+    		return nil, err
+    	}
+
+    	return ngrok.ListenAndForward(ctx,
+    		backendUrl,
+    		config.HTTPEndpoint(),
+    		ngrok.WithAuthtokenFromEnv(),
+    	)
+    }
+
+    ```
+
+    ```jsx
+    const ngrok = require("@ngrok/ngrok");
+
+    (async function () {
+    	const listener = await ngrok.forward({
+    		addr: "192.168.1.2:80",
+    		authtoken_from_env: true,
+    	});
+
+    	console.log(`Ingress established at: ${listener.url()}`);
+    })();
+    ```
+
+    ```python
+    import ngrok
+
+    listener = ngrok.forward("192.168.1.2:80", authtoken_from_env=True)
+
+    print(f"Ingress established at: {listener.url()}");
+    ```
+
+    ```rust
+    use ngrok::prelude::*;
+    use ngrok::tunnel;
+    use ngrok::forwarder::Forwarder;
+    use url::Url;
+
+    async fn forward_ngrok() -> Result<Forwarder<tunnel::HttpTunnel>, Error> {
+    		let sess = ngrok::Session::builder()
+    				.authtoken_from_env()
+    				.connect()
+    				.await?;
+    		sess
+    				.http_endpoint()
+    				.listen_and_forward(Url::parse("http://192.168.1.2:80")?)
+    				.await
+    				.map_err(Into::into)
+    }
+    ```
+    </LangSwitcher>
+
+  </TabItem>
+	<TabItem value="agent-config" label="Agent Config">
+		<NonLocalAgentConfigExample />
+	</TabItem>
+	<TabItem value="k8s" label="Kubernetes Controller">
+		<NonLocalKubernetesExample />
+	</TabItem>
+
+</Tabs>
+
+## TCP non-local forwarding
+
+The following example demonstrates how to forward traffic to a Postgres server running on your network at `192.168.1.2:5432`:
+
+<Tabs groupId="endpoint-type" queryString="ept">
+	<TabItem value="agent-endpoint" label="Agent Endpoint" default>
+
+<LangSwitcher>
+```bash
+ngrok tcp 192.168.1.2:5432
+```
+
+```sh
+ssh -R 0:192.168.1.2:5432 v2@connect.ngrok-agent.com tcp
+```
+
+```go
+import (
+	"context"
+	"net/url"
+
+	"golang.ngrok.com/ngrok"
+	"golang.ngrok.com/ngrok/config"
+)
+
+func ngrokForwarder(ctx context.Context) (ngrok.Forwarder, error) {
+	backendUrl, err := url.Parse("tcp://192.168.1.2:80")
+	if err != nil {
+		return nil, err
+	}
+
+	return ngrok.ListenAndForward(ctx,
+		backendUrl,
+		config.TCPEndpoint(),
+		ngrok.WithAuthtokenFromEnv(),
+	)
+}
+```
+
+```jsx
+const ngrok = require("@ngrok/ngrok");
+
+(async function () {
+	const listener = await ngrok.forward({
+		addr: "192.168.1.2:5432",
+		authtoken_from_env: true,
+		proto: "tcp",
+	});
+
+	console.log(`Ingress established at: ${listener.url()}`);
+})();
+```
+
+```python
+import ngrok
+
+listener = ngrok.forward("192.168.1.2:5432", authtoken_from_env=True,
+    proto="tcp")
+
+print(f"Ingress established at: {listener.url()}");
+```
+
+```rust
+use ngrok::prelude::*;
+use ngrok::tunnel;
+use ngrok::forwarder::Forwarder;
+use url::Url;
+
+async fn forward_ngrok() -> Result<Forwarder<tunnel::TcpTunnel>, Error> {
+    let sess = ngrok::Session::builder()
+        .authtoken_from_env()
+        .connect()
+        .await?;
+    sess
+        .tcp_endpoint()
+        .listen_and_forward(Url::parse("tcp://127.0.0.1:8090")?)
+        .await
+        .map_err(Into::into)
+}
+```
+
+</LangSwitcher>
+</TabItem	>
+
+    <TabItem value="agent-config" label="Agent Config">
+    	<NonLocalAgentConfigExampleTCP />
+    </TabItem>
+    <TabItem value="k8s" label="Kubernetes Controller">
+    	<NonLocalKubernetesExampleTCP />
+    </TabItem>
+
+</Tabs>

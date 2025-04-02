@@ -1,5 +1,5 @@
 ---
-title: How does Agent Forwarding Work?
+title: How Does Agent Forwarding Work?
 ---
 
 import TabItem from "@theme/TabItem";
@@ -65,40 +65,11 @@ import HostHeaderRustSdkExample from "/examples/rust-sdk/http-rewrite-host-heade
 import HostHeaderSshExample from "/examples/ssh/http-rewrite-host-header.mdx";
 
 import NonLocalAgentCliExample from "/examples/agent-cli/http-nonlocal.mdx";
-import NonLocalAgentConfigExample from "/examples/agent-config/http-nonlocal.mdx";
 import NonLocalGoSdkExample from "/examples/go-sdk/http-nonlocal.mdx";
 import NonLocalJavascriptSdkExample from "/examples/javascript-sdk/http-nonlocal.mdx";
-import NonLocalKubernetesExample from "/examples/k8s/http-nonlocal.mdx";
 import NonLocalPythonSdkExample from "/examples/python-sdk/http-nonlocal.mdx";
 import NonLocalRustSdkExample from "/examples/rust-sdk/http-nonlocal.mdx";
 import NonLocalSshExample from "/examples/ssh/http-nonlocal.mdx";
-
-import AbsPathFileserverAgentCliExample from "/examples/agent-cli/http-fileserver-abs-path.mdx";
-import AbsPathFileserverAgentConfigExample from "/examples/agent-config/http-fileserver-abs-path.mdx";
-import AbsPathFileserverGoSdkExample from "/examples/go-sdk/http-fileserver-abs-path.mdx";
-import AbsPathFileserverJavascriptSdkExample from "/examples/javascript-sdk/http-fileserver-abs-path.mdx";
-import AbsPathFileserverKubernetesExample from "/examples/k8s/http-fileserver-abs-path.mdx";
-import AbsPathFileserverPythonSdkExample from "/examples/python-sdk/http-fileserver-abs-path.mdx";
-import AbsPathFileserverRustSdkExample from "/examples/rust-sdk/http-fileserver-abs-path.mdx";
-import AbsPathFileserverSshExample from "/examples/ssh/http-fileserver-abs-path.mdx";
-
-import WorkingDirFileserverAgentCliExample from "/examples/agent-cli/http-fileserver-working-dir.mdx";
-import WorkingDirFileserverAgentConfigExample from "/examples/agent-config/http-fileserver-working-dir.mdx";
-import WorkingDirFileserverGoSdkExample from "/examples/go-sdk/http-fileserver-working-dir.mdx";
-import WorkingDirFileserverJavascriptSdkExample from "/examples/javascript-sdk/http-fileserver-working-dir.mdx";
-import WorkingDirFileserverKubernetesExample from "/examples/k8s/http-fileserver-working-dir.mdx";
-import WorkingDirFileserverPythonSdkExample from "/examples/python-sdk/http-fileserver-working-dir.mdx";
-import WorkingDirFileserverRustSdkExample from "/examples/rust-sdk/http-fileserver-working-dir.mdx";
-import WorkingDirFileserverSshExample from "/examples/ssh/http-fileserver-working-dir.mdx";
-
-import WindowsFileserverAgentCliExample from "/examples/agent-cli/http-fileserver-windows.mdx";
-import WindowsFileserverAgentConfigExample from "/examples/agent-config/http-fileserver-windows.mdx";
-import WindowsFileserverGoSdkExample from "/examples/go-sdk/http-fileserver-windows.mdx";
-import WindowsFileserverJavascriptSdkExample from "/examples/javascript-sdk/http-fileserver-windows.mdx";
-import WindowsFileserverKubernetesExample from "/examples/k8s/http-fileserver-windows.mdx";
-import WindowsFileserverPythonSdkExample from "/examples/python-sdk/http-fileserver-windows.mdx";
-import WindowsFileserverRustSdkExample from "/examples/rust-sdk/http-fileserver-windows.mdx";
-import WindowsFileserverSshExample from "/examples/ssh/http-fileserver-windows.mdx";
 
 import RandomAgentCliExampleTCP from "/examples/agent-cli/tcp-random.mdx";
 import RandomAgentConfigExampleTCP from "/examples/agent-config/tcp-random.mdx";
@@ -182,6 +153,10 @@ import ProxyProtoRustSdkExampleTLS from "/examples/rust-sdk/tls-proxyproto.mdx";
 import ProxyProtoSshExampleTLS from "/examples/ssh/tls-proxyproto.mdx";
 
 The [ngrok agent](/agent/) and [Agent SDKs](/agent-sdks/) forward traffic that your endpoints receive to upstream services. You specify a URL or port number to instruct the ngrok agent where and how to forward traffic.
+
+:::note
+This page covers forwarding traffic to upstream resources. If you specifically want to forward traffic from one endpoint to another, [use Traffic Policy](/universal-gateway/chain-endpoints).
+:::
 
 ## HTTPS forwarding
 
@@ -285,7 +260,7 @@ async fn forward_ngrok() -> Result<Forwarder<tunnel::HttpTunnel>, Error> {
 
 <ContentSwitcher languages={["go"]}>
 
-    For HTTP/2 Use: `config.HTTPEndpoint(config.WithAppProtocol("http2"))`
+For HTTP/2 Use: `config.HTTPEndpoint(config.WithAppProtocol("http2"))`
 
 </ContentSwitcher>
 
@@ -296,39 +271,6 @@ Forwarding to an upstream HTTPS service is not supported via SSH.
 :::
 
 </ContentSwitcher>
-
-### Non-local forwarding
-
-Agents don't just forward to ports on your localhost. You can forward traffic
-to any address or URL reachable from the agent. For example, if you want to
-forward traffic to a HTTP server running on your network at `192.168.1.2:80`:
-
-<Tabs groupId="connectivity" queryString="cty">
-	<TabItem value="agent-cli" label="Agent CLI" default>
-		<NonLocalAgentCliExample />
-	</TabItem>
-	<TabItem value="agent-config" label="Agent Config">
-		<NonLocalAgentConfigExample />
-	</TabItem>
-	<TabItem value="ssh" label="SSH">
-		<NonLocalSshExample />
-	</TabItem>
-	<TabItem value="go-sdk" label="Go">
-		<NonLocalGoSdkExample />
-	</TabItem>
-	<TabItem value="javascript-sdk" label="Javascript">
-		<NonLocalJavascriptSdkExample />
-	</TabItem>
-	<TabItem value="python-sdk" label="Python">
-		<NonLocalPythonSdkExample />
-	</TabItem>
-	<TabItem value="rust-sdk" label="Rust">
-		<NonLocalRustSdkExample />
-	</TabItem>
-	<TabItem value="k8s" label="Kubernetes Controller">
-		<NonLocalKubernetesExample />
-	</TabItem>
-</Tabs>
 
 ### HTTP/2 forwarding
 
@@ -351,141 +293,7 @@ cloud service. We cannot use
 rely on [HTTP/2 with Prior
 Knowledge](https://httpwg.org/specs/rfc7540.html#known-http) currently.
 
-### Serving file directories
-
-The ngrok agent supports the `file://` scheme in a forwarding URL. When you use
-the `file://` scheme, the ngrok agent serves local file system directories by
-using its own built-in file server, no separate server needed. It works just
-like `python3 -m http.server` but it is built directly into the ngrok agent.
-
-Paths in `file://` URLs must be specified as absolute paths.
-
-#### Serve files in `/var/log`
-
-<Tabs groupId="connectivity" queryString="cty">
-	<TabItem value="agent-cli" label="Agent CLI" default>
-		<AbsPathFileserverAgentCliExample />
-	</TabItem>
-	<TabItem value="agent-config" label="Agent Config">
-		<AbsPathFileserverAgentConfigExample />
-	</TabItem>
-	<TabItem value="ssh" label="SSH">
-		<AbsPathFileserverSshExample />
-	</TabItem>
-	<TabItem value="go-sdk" label="Go">
-		<AbsPathFileserverGoSdkExample />
-	</TabItem>
-	<TabItem value="javascript-sdk" label="Javascript">
-		<AbsPathFileserverJavascriptSdkExample />
-	</TabItem>
-	<TabItem value="python-sdk" label="Python">
-		<AbsPathFileserverPythonSdkExample />
-	</TabItem>
-	<TabItem value="rust-sdk" label="Rust">
-		<AbsPathFileserverRustSdkExample />
-	</TabItem>
-	<TabItem value="k8s" label="Kubernetes Controller">
-		<AbsPathFileserverKubernetesExample />
-	</TabItem>
-</Tabs>
-
-<br />
-
-#### Serve files on Windows
-
-<Tabs groupId="connectivity" queryString="cty">
-	<TabItem value="agent-cli" label="Agent CLI" default>
-		<WindowsFileserverAgentCliExample />
-	</TabItem>
-	<TabItem value="agent-config" label="Agent Config">
-		<WindowsFileserverAgentConfigExample />
-	</TabItem>
-	<TabItem value="ssh" label="SSH">
-		<WindowsFileserverSshExample />
-	</TabItem>
-	<TabItem value="go-sdk" label="Go">
-		<WindowsFileserverGoSdkExample />
-	</TabItem>
-	<TabItem value="javascript-sdk" label="Javascript">
-		<WindowsFileserverJavascriptSdkExample />
-	</TabItem>
-	<TabItem value="python-sdk" label="Python">
-		<WindowsFileserverPythonSdkExample />
-	</TabItem>
-	<TabItem value="rust-sdk" label="Rust">
-		<WindowsFileserverRustSdkExample />
-	</TabItem>
-	<TabItem value="k8s" label="Kubernetes Controller">
-		<WindowsFileserverKubernetesExample />
-	</TabItem>
-</Tabs>
-
-<br />
-
-#### Serve files in your current working directory
-
-<Tabs groupId="connectivity" queryString="cty">
-	<TabItem value="agent-cli" label="Agent CLI" default>
-		<WorkingDirFileserverAgentCliExample />
-	</TabItem>
-	<TabItem value="agent-config" label="Agent Config">
-		<WorkingDirFileserverAgentConfigExample />
-	</TabItem>
-	<TabItem value="ssh" label="SSH">
-		<WorkingDirFileserverSshExample />
-	</TabItem>
-	<TabItem value="go-sdk" label="Go">
-		<WorkingDirFileserverGoSdkExample />
-	</TabItem>
-	<TabItem value="javascript-sdk" label="Javascript">
-		<WorkingDirFileserverJavascriptSdkExample />
-	</TabItem>
-	<TabItem value="python-sdk" label="Python">
-		<WorkingDirFileserverPythonSdkExample />
-	</TabItem>
-	<TabItem value="rust-sdk" label="Rust">
-		<WorkingDirFileserverRustSdkExample />
-	</TabItem>
-	<TabItem value="k8s" label="Kubernetes Controller">
-		<WorkingDirFileserverKubernetesExample />
-	</TabItem>
-</Tabs>
-
 ## TCP
-
-### Forward to non-local service
-
-Agents don't just forward to ports on your localhost. You can forward traffic
-to any address or URL reachable from the agent. For example, if you want to
-forward traffic to a Postgres server running on your network at
-`192.168.1.2:5432`:
-
-<Tabs groupId="connectivity" queryString="cty">
-	<TabItem value="agent-cli" label="Agent CLI" default>
-		<NonLocalAgentCliExample />
-	</TabItem>
-	<TabItem value="agent-config" label="Agent Config">
-		<NonLocalAgentConfigExample />
-	</TabItem>
-	<TabItem value="ssh" label="SSH">
-		<NonLocalSshExample />
-	</TabItem>
-	<TabItem value="go-sdk" label="Go">
-		<NonLocalGoSdkExample />
-	</TabItem>
-	<TabItem value="javascript-sdk" label="Javascript">
-		<NonLocalJavascriptSdkExample />
-	</TabItem>
-	<TabItem value="python-sdk" label="Python">
-		<NonLocalPythonSdkExample />
-	</TabItem>
-	<TabItem value="rust-sdk" label="Rust">
-		<NonLocalRustSdkExample />
-	</TabItem>
-	<TabItem value="k8s" label="Kubernetes Controller">
-		<NonLocalKubernetesExample />
-	</TabItem>
-</Tabs>
 
 ### PROXY Protocol
 
