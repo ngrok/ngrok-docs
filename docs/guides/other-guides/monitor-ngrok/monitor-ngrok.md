@@ -277,7 +277,7 @@ Under **Webhooks**, at the bottom of the configuration page, click **New**. Set 
 
 ![Datadog add webhook](./img/datadogAddWebhook.webp)
 
-In the ngrok navigation panel, browse to the **Monitors — New monitor**. Choose **Logs**.
+In the ngrok navigation panel, browse to the **Monitors > New monitor**. Choose **Logs**.
 
 In the monitor configuration, choose **Query** for your monitor scope, set the search query to `@http.status_code:500`, the time to the **last 1 hour**, and the notification message to `@webhook-ntfy Your API has errors. Investigate at https://app.datadoghq.eu/dashboard.`.
 
