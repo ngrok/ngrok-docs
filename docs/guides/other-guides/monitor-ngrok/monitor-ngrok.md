@@ -12,7 +12,7 @@ This guide explains how to monitor your API or web app with ngrok by viewing tra
 Whether you're an existing ngrok user looking to make your API more robust or a new user wondering whether ngrok meets your needs, this tutorial will demonstrate monitoring in detail.
 
 :::note
-I use the terms "API" and "app" interchangeably in this article, as ngrok can monitor any web server.
+This tutorial uses the terms "API" and "app" interchangeably in this article, as ngrok can monitor any web server.
 :::
 
 ## Prerequisites
@@ -89,11 +89,11 @@ You can now see your request going from the browser to the ngrok agent you're ru
 
 You can monitor web servers in two ways in ngrok, with the Traffic Inspector and with Events.
 
-The traffic inspector is a filterable list of your API's requests and responses, available on the ngrok dashboard.  The traffic inspector is useful for viewing error details and for replaying requests to test new policies and bug fixes. The inspector is a manual way to monitor your app. Request data is kept for three days (or for 90 days as a paid extra).
+The traffic inspector is a filterable list of your API's requests and responses, available on the ngrok dashboard. The traffic inspector is useful for viewing error details and for replaying requests to test new policies and bug fixes. The inspector is a manual way to monitor your app. Request data is kept for three days (or for 90 days as a paid extra).
 
-An event is the data that ngrok provides about a request. This data is then exported to a dedicated monitoring platform. Events offer an automated means of monitoring your app. Events are also the only way for your team to get automatic error alerts (notifications) instead of constantly having to check for errors on a dashboard.
+An event is the data that ngrok provides about a request, which is exported to a dedicated monitoring platform. Events offer an automated means of monitoring your app. Events are also the only way for your team to get automatic error alerts (notifications) instead of constantly having to check for errors on a dashboard.
 
-At the time of writing, ngrok only allows you to export events to AWS, Azure, and DataDog. We do not support event exports to OpenTelemetry or custom URLs, such as self-hosted servers, so you have to use a paid cloud service. You can't perform custom processing or use Elastic, Prometheus, Splunk, or alternative monitoring apps.
+At the time of writing, ngrok allows you to export events only to AWS, Azure, and DataDog. We do not support event exports to OpenTelemetry or custom URLs, such as self-hosted servers, so you have to use a paid cloud service. You can't perform custom processing or use Elastic, Prometheus, Splunk, or alternative monitoring apps.
 
 ## Use the traffic inspector
 
