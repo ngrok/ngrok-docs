@@ -174,7 +174,7 @@ docker run -it --rm --platform=linux/amd64 --network=ngrokTest -v ".:/app" -w "/
 
 Browse to the app URL and refresh the page a few times. Notice that the page stops responding.
 
-On the ngrok traffic inspector page, note that the error code **429** (rate limit) was returned. The duration of the request wa also instant and caused no load on your app.
+On the ngrok traffic inspector page, note that the error code **429** (rate limit) was returned. The duration of the request was also instant and caused no load on your app.
 
 ![Rate limit](./img/rateLimit.webp)
 
@@ -307,7 +307,6 @@ To learn more about any of these concepts, consult the following:
 - The guide to [getting started with Docker for ngrok](https://dashboard.ngrok.com/get-started/setup/docker)
 - The complete [Docker ngrok agent](https://ngrok.com/docs/using-ngrok-with/docker) documentation
 - The [ngrok agent points](https://ngrok.com/docs/universal-gateway/agent-endpoints) documentation
-- The [ngrok cloud endpoints](https://ngrok.com/docs/universal-gateway/cloud-endpoints) documentation
 - The [ngrok traffic policies](https://ngrok.com/docs/traffic-policy) documentation
 - The [ngrok traffic policy actions](https://ngrok.com/docs/traffic-policy/actions/rate-limit) documentation
 - The [ngrok cloud endpoints](https://ngrok.com/docs/universal-gateway/cloud-endpoints) documentation
