@@ -9,7 +9,7 @@ toc_max_heading_level: 3
 
 This guide explains how to monitor your API or web app with ngrok by viewing traffic reports, using error request replays, and exporting logs and events to an external dashboard.
 
-Whether you're an existing ngrok user looking to make your API more robust or a new user wondering whether ngrok can do what you need, this tutorial will demonstrate monitoring in detail.
+Whether you're an existing ngrok user looking to make your API more robust or a new user wondering whether ngrok meets your needs, this tutorial will demonstrate monitoring in detail.
 
 :::note
 I use the terms "API" and "app" interchangeably in this article, as ngrok can monitor any web server.
@@ -95,9 +95,9 @@ An event is the data that ngrok provides about a request. This data is then expo
 
 At the time of writing, ngrok only allows you to export events to AWS, Azure, and DataDog. We do not support event exports to OpenTelemetry or custom URLs, such as self-hosted servers, so you have to use a paid cloud service. You can't perform custom processing or use Elastic, Prometheus, Splunk, or alternative monitoring apps.
 
-## Traffic inspector
+## Use the traffic inspector
 
-Browse to the ngrok [traffic inspector](https://dashboard.ngrok.com/traffic-inspector) in your ngrok account dashboard.
+Browse to the ngrok [traffic inspector](https://dashboard.ngrok.com/traffic-inspector) on your ngrok account dashboard.
 
 The list of recent requests provides you with basic information, such as the time, origin, destination, duration, and response code of calls to your app. You can filter requests by these fields, for instance, to show only server error responses and not successes.
 
@@ -119,13 +119,13 @@ This button takes you to your account settings, where you can enable full captur
 
 Then, return to your published API URL and refresh the browser page a few times to send fresh requests through ngrok.
 
-In the traffic inspector in ngrok, click the top event in the list.
+In the ngrok traffic inspector, click on the event at the top of the list.
 
 The event should now show all the request and response details and content. If the full capture details don't appear, you may need to restart your ngrok agent in the terminal.
 
-Click the **Replay** button and notice the request is resent from the ngrok host.
+Click the **Replay** button and notice that the request is resent from the ngrok host.
 
-Due to a bug, you currently can't replay a request with a free ngrok account despite the feature appearing available. Replay only works for paid accounts. This [bug](https://github.com/ngrok/ngrok-docs/issues/1247) may be fixed by the time you read this guide.
+Due to a bug, you currently can't replay a request with a free ngrok account, despite the feature appearing available. Replay only works for paid accounts. This [bug](https://github.com/ngrok/ngrok-docs/issues/1247) may be fixed by the time you read this guide.
 
 ![Replay request](./img/replayError.webp)
 
@@ -141,7 +141,7 @@ You can also replay requests to test new [traffic policies](https://ngrok.com/do
 
 You can use policies to request passwords, block malicious traffic, route requests, rewrite URLs, and respond with custom content. If you use a custom permanent domain name (called a [cloud endpoint](https://ngrok.com/docs/universal-gateway/cloud-endpoints)) on ngrok, you can set a policy for every agent that uses that domain. Otherwise, for temporary [agent points](https://ngrok.com/docs/universal-gateway/agent-endpoints), you can set a traffic policy inside each agent individually.
 
-Let's look at a policy example: rate limiting. This is one of the many [traffic policy actions](https://ngrok.com/docs/traffic-policy/actions/rate-limit) available. At this stage of the guide, users could send unlimited requests to the test app you've created. You'll change that to allow only one request a minute.
+Let's look at rate limiting as an example of a traffic policy. Rate limiting is one of the many [traffic policy actions](https://ngrok.com/docs/traffic-policy/actions/rate-limit) available. At this stage of the guide, you could send unlimited requests to the test app you've created. Let's change that to allow only one request a minute.
 
 In order to test policies, you need to be able to re-use the same URL, which isn't possible if you keep using the temporary URLs that ngrok generates each time you restart an agent. So let's create a permanent URL.
 
@@ -174,25 +174,25 @@ docker run -it --rm --platform=linux/amd64 --network=ngrokTest -v ".:/app" -w "/
 
 Browse to the app URL and refresh the page a few times. Notice that the page stops responding.
 
-On the ngrok traffic inspector page, note that the error code **429** (rate limit) was returned. The duration of the request was also instant and caused no load on your app.
+On the ngrok traffic inspector page, note that the error code **429** (rate limit) was returned and that the duration of the request was instant and caused no load on your app.
 
 ![Rate limit](./img/rateLimit.webp)
 
-- Edit the `policy.yml` file and change `capacity` to `10`.
-- Restart the ngrok container.
-- In the traffic inspector, click on one of the **429** events, then click **Replay**. Note that the request now responds without error because the rate limit has been increased.
+Edit the `policy.yml` file and change `capacity` to `10`, then restart the ngrok container.
+
+In the traffic inspector, click on one of the **429** events, then click **Replay**. Note that the request now responds without error because the rate limit has been increased.
 
 ![Replay after rate limit adjustment](./img/replayLimit.webp)
 
 ## Monitor events
 
-In this section, you'll learn how to export ngrok [events](https://ngrok.com/docs/obs/events) to the monitoring service, DataDog.
+In this section, you'll learn how to export ngrok [events](https://ngrok.com/docs/obs/events) to the Datadog monitoring service.
 
 There are two [types of events](https://ngrok.com/docs/obs/events/reference): standard traffic events (requests to your API) and audit events (changes to secret keys and URLs). For this simple example, you'll monitor a traffic event.
 
 Before adding an event subscription, you need somewhere to send events.
 
-Sign up for a free trial account at [Datadog](https://www.datadoghq.com).
+Sign up for a free [Datadog](https://www.datadoghq.com) trial account.
 
 You can enter placeholder information for all the Datadog registration fields except your email address, which you need to confirm. You also can't skip the third step of the signup process, in which you create a Datadog agent somewhere.
 
@@ -220,13 +220,13 @@ In the ngrok navigation panel, browse to the [**Events Stream**](https://dashboa
 
 ![Add event subscription](./img/makeSubscription.webp)
 
-In the **New Event Subscription** sidebar, enter `traffic` as the **Description** and **Add** a new source (event type). Choose **`http_request_complete`**.
+In the **New Event Subscription** sidebar, enter `traffic` as the **Description** and then **Add** a new source (event type). Choose **`http_request_complete`**.
 
 ![Add source](./img/addEventType.webp)
 
-Then, add Datadog as a destination, add the Datadog site and API key you noted earlier, and send a test event.
+Add Datadog as a destination, add the Datadog site and API key you noted earlier, and send a test event.
 
-In the Datadog site, browse the **Logs > Explorer** page in the navigation panel. Enable logs. You should see the event from ngrok has appeared.
+Open the Datadog site and browse to the **Log Explorer** page from the navigation panel. Enable logs. You should see that the event from ngrok has appeared.
 
 ![Datadog logs](./img/datadogLog.webp)
 
@@ -238,11 +238,11 @@ Refresh your ngrok app page a few times so that new requests are logged in Datad
 
 Now that events are being sent to Datadog, you can set up visualizations and notifications to allow your support team to monitor your API's performance.
 
-In the Datadog site, browse the **Dashboards > Dashboard List** page in the navigation panel. Click the **ngrok HTTP Events** item to view the default dashboard.
+In the Datadog site, browse to the **Dashboards > Dashboard List** page from the navigation panel. Click the **ngrok HTTP Events** item to view the default dashboard.
 
 ![Datadog dashboard list](./img/datadogDashboardList.webp)
 
-To add a new widget to the dashboard, you need to clone the default one.
+To add a new widget to the dashboard, you need to clone the default dashboard.
 
 Click **Clone** at the top right of the page.
 
@@ -267,7 +267,7 @@ If you want to create widgets for other log information, you can see which field
 
 ## Create a notification
 
-To complete your monitoring system, you need to set up an alert to be pushed to your email or mobile app when an error occurs by adding a webhook integration to Datadog. Webhooks provide a way to send POST requests to https://ntfy.sh, a free notification service.
+To complete your monitoring system, you need to set up an alert that is pushed to your email or mobile app when an error occurs by adding a webhook integration to Datadog. Webhooks provide a way for you to send POST requests to https://ntfy.sh, a free notification service.
 
 In Datadog, browse to **Integrations > Add integration > Webhooks**.
 
