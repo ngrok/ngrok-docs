@@ -10,17 +10,21 @@ import LangSwitcherContext from "./LangSwitcherContext";
  */
 export function ContentSwitcher({
 	children,
-	language,
+	languages,
 }: {
 	children: React.ReactNode;
-	language: string;
+	languages: string[];
 	className?: string;
 }) {
 	const { tabLanguage } =
 		useContext<LangSwitcherContextType>(LangSwitcherContext);
-	if (!language)
+	if (!languages?.length)
 		throw new Error("Must specify a language for the ContentSwitcher");
 
-	if (language !== tabLanguage) return null;
-	return children;
+	for (const lang of languages) {
+		if (lang === tabLanguage) {
+			return children;
+		}
+	}
+	return null;
 }
