@@ -125,6 +125,7 @@ const sidebars = {
 				"universal-gateway/chain-endpoints",
 				"universal-gateway/mock-api",
 				"universal-gateway/migrate-from-tunnels",
+				"universal-gateway/agent-forwarding",
 
 				{
 					label: "How Do I Handle HTTP/S Traffic?",
