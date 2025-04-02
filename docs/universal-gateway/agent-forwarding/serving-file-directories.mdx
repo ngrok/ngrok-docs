@@ -6,126 +6,146 @@ import TabItem from "@theme/TabItem";
 import Tabs from "@theme/Tabs";
 
 import { LangSwitcher } from "@site/src/components/LangSwitcher";
-import { ContentSwitcher } from "@site/src/components/LangSwitcher/ContentSwitcher";
-
-import AbsPathFileserverAgentCliExample from "/examples/agent-cli/http-fileserver-abs-path.mdx";
-import AbsPathFileserverAgentConfigExample from "/examples/agent-config/http-fileserver-abs-path.mdx";
-import AbsPathFileserverGoSdkExample from "/examples/go-sdk/http-fileserver-abs-path.mdx";
-import AbsPathFileserverJavascriptSdkExample from "/examples/javascript-sdk/http-fileserver-abs-path.mdx";
-import AbsPathFileserverKubernetesExample from "/examples/k8s/http-fileserver-abs-path.mdx";
-import AbsPathFileserverPythonSdkExample from "/examples/python-sdk/http-fileserver-abs-path.mdx";
-import AbsPathFileserverRustSdkExample from "/examples/rust-sdk/http-fileserver-abs-path.mdx";
-import AbsPathFileserverSshExample from "/examples/ssh/http-fileserver-abs-path.mdx";
-
-import WorkingDirFileserverAgentCliExample from "/examples/agent-cli/http-fileserver-working-dir.mdx";
-import WorkingDirFileserverAgentConfigExample from "/examples/agent-config/http-fileserver-working-dir.mdx";
-import WorkingDirFileserverGoSdkExample from "/examples/go-sdk/http-fileserver-working-dir.mdx";
-import WorkingDirFileserverJavascriptSdkExample from "/examples/javascript-sdk/http-fileserver-working-dir.mdx";
-import WorkingDirFileserverKubernetesExample from "/examples/k8s/http-fileserver-working-dir.mdx";
-import WorkingDirFileserverPythonSdkExample from "/examples/python-sdk/http-fileserver-working-dir.mdx";
-import WorkingDirFileserverRustSdkExample from "/examples/rust-sdk/http-fileserver-working-dir.mdx";
-import WorkingDirFileserverSshExample from "/examples/ssh/http-fileserver-working-dir.mdx";
-
-import WindowsFileserverAgentCliExample from "/examples/agent-cli/http-fileserver-windows.mdx";
-import WindowsFileserverAgentConfigExample from "/examples/agent-config/http-fileserver-windows.mdx";
-import WindowsFileserverGoSdkExample from "/examples/go-sdk/http-fileserver-windows.mdx";
-import WindowsFileserverJavascriptSdkExample from "/examples/javascript-sdk/http-fileserver-windows.mdx";
-import WindowsFileserverKubernetesExample from "/examples/k8s/http-fileserver-windows.mdx";
-import WindowsFileserverPythonSdkExample from "/examples/python-sdk/http-fileserver-windows.mdx";
-import WindowsFileserverRustSdkExample from "/examples/rust-sdk/http-fileserver-windows.mdx";
-import WindowsFileserverSshExample from "/examples/ssh/http-fileserver-windows.mdx";
 
 The ngrok agent supports the `file://` scheme in [a forwarding URL](/universal-gateway/agent-forwarding/). When you use the `file://` scheme, the ngrok agent serves local file system directories by using its own built-in file server, no separate server needed. It works just like `python3 -m http.server` but it is built directly into the ngrok agent.
 
 Paths in `file://` URLs must be specified as absolute paths.
 
+:::info
+
+Serving directory files is not supported with:
+
+- SSH
+- JavaScript
+- Python
+- Rust
+- Kubernetes Operator
+  :::
+
 #### Serve files in `/var/log`
 
-<Tabs groupId="connectivity" queryString="cty">
-	<TabItem value="agent-cli" label="Agent CLI" default>
-		<AbsPathFileserverAgentCliExample />
-	</TabItem>
-	<TabItem value="agent-config" label="Agent Config">
-		<AbsPathFileserverAgentConfigExample />
-	</TabItem>
-	<TabItem value="ssh" label="SSH">
-		<AbsPathFileserverSshExample />
-	</TabItem>
-	<TabItem value="go-sdk" label="Go">
-		<AbsPathFileserverGoSdkExample />
-	</TabItem>
-	<TabItem value="javascript-sdk" label="Javascript">
-		<AbsPathFileserverJavascriptSdkExample />
-	</TabItem>
-	<TabItem value="python-sdk" label="Python">
-		<AbsPathFileserverPythonSdkExample />
-	</TabItem>
-	<TabItem value="rust-sdk" label="Rust">
-		<AbsPathFileserverRustSdkExample />
-	</TabItem>
-	<TabItem value="k8s" label="Kubernetes Controller">
-		<AbsPathFileserverKubernetesExample />
-	</TabItem>
-</Tabs>
+<Tabs groupId="endpoint-type" queryString="ept">
+<TabItem value="agent-endpoint" label="Agent Endpoint" default>
+	<LangSwitcher>
+		```bash
+		ngrok http "file:///var/log"
+		```
 
-<br />
+    	```go
+    	import (
+    		"context"
+    		"net"
+
+    		"golang.ngrok.com/ngrok"
+    		"golang.ngrok.com/ngrok/config"
+    	)
+
+    	func serveFiles(ctx context.Context) error {
+    		l, _ := ngrok.Listen(ctx,
+    			config.HTTPEndpoint(),
+    			ngrok.WithAuthtokenFromEnv(),
+    		)
+    					http.Serve(l, http.FileServer(http.Dir("/var/log")))
+    	}
+    	```
+
+    </LangSwitcher>
+
+</TabItem>
+
+<TabItem value="agent-config" label="Agent Config">
+```yaml
+version: 3
+endpoints:
+  - name: example
+    url: "https://example.ngrok.app"
+    upstream:
+      url: "file:///var/log"
+```
+
+</TabItem>
+
+</Tabs>
 
 #### Serve files on Windows
 
-<Tabs groupId="connectivity" queryString="cty">
-	<TabItem value="agent-cli" label="Agent CLI" default>
-		<WindowsFileserverAgentCliExample />
-	</TabItem>
-	<TabItem value="agent-config" label="Agent Config">
-		<WindowsFileserverAgentConfigExample />
-	</TabItem>
-	<TabItem value="ssh" label="SSH">
-		<WindowsFileserverSshExample />
-	</TabItem>
-	<TabItem value="go-sdk" label="Go">
-		<WindowsFileserverGoSdkExample />
-	</TabItem>
-	<TabItem value="javascript-sdk" label="Javascript">
-		<WindowsFileserverJavascriptSdkExample />
-	</TabItem>
-	<TabItem value="python-sdk" label="Python">
-		<WindowsFileserverPythonSdkExample />
-	</TabItem>
-	<TabItem value="rust-sdk" label="Rust">
-		<WindowsFileserverRustSdkExample />
-	</TabItem>
-	<TabItem value="k8s" label="Kubernetes Controller">
-		<WindowsFileserverKubernetesExample />
-	</TabItem>
+<Tabs groupId="endpoint-type" queryString="ept">
+	<TabItem value="agent-endpoint" label="Agent Endpoint" default>
+		
+		<LangSwitcher>
+```bash
+ngrok http "file://C:\Users\alan\Directory Name"
+```
+
+```go
+import (
+	"context"
+	"net"
+
+	"golang.ngrok.com/ngrok"
+	"golang.ngrok.com/ngrok/config"
+)
+
+func serveFiles(ctx context.Context) error {
+	l, _ := ngrok.Listen(ctx,
+		config.HTTPEndpoint(),
+		ngrok.WithAuthtokenFromEnv(),
+	)
+        http.Serve(l, http.FileServer(http.Dir("C:\Users\alan\Directory Name")))
+}
+```
+
+    	</LangSwitcher>
+
+    </TabItem>
+    <TabItem value="agent-config" label="Agent Config">
+
+```yaml
+version: 3
+endpoints:
+  - name: example
+    url: "https://example.ngrok.app"
+    upstream:
+      url: "file://C:\Users\alan\Directory Name"
+```
+
+    </TabItem>
+
 </Tabs>
 
 <br />
 
 #### Serve files in your current working directory
 
-<Tabs groupId="connectivity" queryString="cty">
-	<TabItem value="agent-cli" label="Agent CLI" default>
-		<WorkingDirFileserverAgentCliExample />
-	</TabItem>
-	<TabItem value="agent-config" label="Agent Config">
-		<WorkingDirFileserverAgentConfigExample />
-	</TabItem>
-	<TabItem value="ssh" label="SSH">
-		<WorkingDirFileserverSshExample />
-	</TabItem>
-	<TabItem value="go-sdk" label="Go">
-		<WorkingDirFileserverGoSdkExample />
-	</TabItem>
-	<TabItem value="javascript-sdk" label="Javascript">
-		<WorkingDirFileserverJavascriptSdkExample />
-	</TabItem>
-	<TabItem value="python-sdk" label="Python">
-		<WorkingDirFileserverPythonSdkExample />
-	</TabItem>
-	<TabItem value="rust-sdk" label="Rust">
-		<WorkingDirFileserverRustSdkExample />
-	</TabItem>
-	<TabItem value="k8s" label="Kubernetes Controller">
-		<WorkingDirFileserverKubernetesExample />
-	</TabItem>
+<Tabs groupId="endpoint-type" queryString="ept">
+	<TabItem value="agent-endpoint" label="Agent Endpoint" default>
+		<LangSwitcher>
+```bash
+ngrok http file://`pwd`
+```
+
+```go
+import (
+	"context"
+	"net"
+
+	"golang.ngrok.com/ngrok"
+	"golang.ngrok.com/ngrok/config"
+)
+
+func serveFiles(ctx context.Context) error {
+	l, _ := ngrok.Listen(ctx,
+		config.HTTPEndpoint(),
+		ngrok.WithAuthtokenFromEnv(),
+	)
+        http.Serve(l, http.FileServer(http.Dir(".")))
+}
+```
+
+    	</LangSwitcher>
+    </TabItem>
+    <TabItem value="agent-config" label="Agent Config">
+    	Serving the current working directory is not supported via the agent configuration file.
+    </TabItem>
+
 </Tabs>
