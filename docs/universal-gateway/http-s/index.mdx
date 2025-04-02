@@ -107,7 +107,9 @@ import WindowsFileserverPythonSdkExample from "/examples/python-sdk/http-fileser
 import WindowsFileserverRustSdkExample from "/examples/rust-sdk/http-fileserver-windows.mdx";
 import WindowsFileserverSshExample from "/examples/ssh/http-fileserver-windows.mdx";
 
-You can create HTTP/S endpoints to serve web services like REST APIs, web applications, websites and websocket servers. You can serve an HTTP/S endpoint in one of the following ways.
+You can create HTTP/S endpoints to serve web services like REST APIs, web applications, websites and websocket servers.
+
+## Quickstart
 
 <Tabs groupId="connectivity" queryString="cty">
 	<TabItem value="agent-endpoint" label="Agent Endpoint" default>
@@ -116,7 +118,7 @@ You can create HTTP/S endpoints to serve web services like REST APIs, web applic
     The following example creates the endpoint `https://example.ngrok.app` and forwards its traffic to a local port.
 
     <LangSwitcher>
-    ```bash title="Agent CLI"
+    ```bash title="Agent CLI" titleLink="/docs/agent/"
     ngrok http 8080 --url https://example.ngrok.app
     ```
     ```sh
@@ -227,7 +229,7 @@ ngrok api endpoints create \
     </TabItem>
     <TabItem value="agent-config" label="Agent Config File">
 
-    You can also create an HTTP/S endpoint using the [ngrok agent configuration file](/docs/traffic-policy/getting-started/agent-endpoints/config-file). You can edit the file with the following terminal command:
+    You can create an HTTP/S endpoint using the [ngrok agent configuration file](/docs/traffic-policy/getting-started/agent-endpoints/config-file). You can edit the file with the following terminal command:
 
     ```bash
     ngrok config edit
@@ -246,363 +248,17 @@ ngrok api endpoints create \
 
 </Tabs>
 
-## URLs
+## Learn more
 
-URLs are validated differently depending on their [binding](/universal-gateway/bindings). To learn more about valid URLs for HTTP/S endpoints, see [the Endpoint URLs documentation](/docs/universal-gateway/what-are-endpoint-urls/#http).
-
-To listen for both http and https traffic, create two endpoints.
-
-## Domains
-
-When you create a public endpoint, it must match a
-Domain on your account. See [the Domains documentation](/universal-gateway/domains/what-are-domains/) for more information.
-
-### Bring your own domain {#bring-your-own-domain}
-
-To bring your own domain, see [the guide on the subject](/universal-gateway/how-do-i-use-my-own-domain).
-
-## Wildcard HTTP Endpoints
-
-You can create an HTTP/S endpoint which will receive traffic for all of the subdomains matching a given wildcard domain. See [the wildcard domain docs](/universal-gateway/wildcard-domains/) for more information.
-
-## Traffic Policy
-
-Attach [Traffic Policy](/traffic-policy/) to endpoints to route, authenticate and transform the traffic through the endpoint.
-
-### Authentication
-
-Public endpoints are accessible to the public internet unless you secure them
-with authentication. That's desirable if you're hosting a public website but
-most often you want to add authentication. You can secure your endpoints with
-[Traffic Policy](/traffic-policy) with any of the following actions:
-
-- [Basic Auth](/traffic-policy/actions/basic-auth)
-- [OAuth](/traffic-policy/actions/oauth)
-- [IP Restriction](/traffic-policy/actions/restrict-ips/)
-- [Webhook Verification](/traffic-policy/actions/verify-webhook/)
-- [JWT](/traffic-policy/actions/jwt-validation/)
-- [Mutual TLS](/traffic-policy/actions/terminate-tls/)
-- [OpenID Connect](/traffic-policy/actions/oidc/)
-- [SAML](/traffic-policy/actions/saml/)
-
-#### Basic Auth Example
-
-Adds a username and password with the [Basic
-Auth](/traffic-policy/actions/basic-auth) Traffic Policy action.
-
-<Tabs groupId="connectivity" queryString="cty">
-	<TabItem value="agent-cli" label="Agent CLI" default>
-		<BasicAuthAgentCliExample />
-	</TabItem>
-	<TabItem value="agent-config" label="Agent Config">
-		<BasicAuthAgentConfigExample />
-	</TabItem>
-	<TabItem value="ssh" label="SSH">
-		<BasicAuthSshExample />
-	</TabItem>
-	<TabItem value="go-sdk" label="Go">
-		<BasicAuthGoSdkExample />
-	</TabItem>
-	<TabItem value="javascript-sdk" label="Javascript">
-		<BasicAuthJavascriptSdkExample />
-	</TabItem>
-	<TabItem value="python-sdk" label="Python">
-		<BasicAuthPythonSdkExample />
-	</TabItem>
-	<TabItem value="rust-sdk" label="Rust">
-		<BasicAuthRustSdkExample />
-	</TabItem>
-	<TabItem value="k8s" label="Kubernetes Controller">
-		<BasicAuthKubernetesExample />
-	</TabItem>
-</Tabs>
-
-<br />
-
-#### Google OAuth Example
-
-The following example enforces a browser-based OAuth redirect flow in front of
-your endpoint using Google as the identity provider by using the
-[OAuth](/traffic-policy/actions/oauth) Traffic Policy action.
-
-<Tabs groupId="connectivity" queryString="cty">
-	<TabItem value="agent-cli" label="Agent CLI" default>
-		<OAuthAgentCliExample />
-	</TabItem>
-	<TabItem value="agent-config" label="Agent Config">
-		<OAuthAgentConfigExample />
-	</TabItem>
-	<TabItem value="ssh" label="SSH">
-		<OAuthSshExample />
-	</TabItem>
-	<TabItem value="go-sdk" label="Go">
-		<OAuthGoSdkExample />
-	</TabItem>
-	<TabItem value="javascript-sdk" label="Javascript">
-		<OAuthJavascriptSdkExample />
-	</TabItem>
-	<TabItem value="python-sdk" label="Python">
-		<OAuthPythonSdkExample />
-	</TabItem>
-	<TabItem value="rust-sdk" label="Rust">
-		<OAuthRustSdkExample />
-	</TabItem>
-	<TabItem value="k8s" label="Kubernetes Controller">
-		<OAuthKubernetesExample />
-	</TabItem>
-</Tabs>
-
-#### Rewriting the `host` header {#rewrite-host-header}
-
-Some application servers expect the `host` header to match a specific value
-when they receive requests and some use the `host` header to determine which of
-many sites to display. ngrok can rewrite the `host` header of incoming requests
-so that your application behaves correctly.
-
-When you rewrite the `host` header, ngrok also rewrites the `location` header of
-HTTP responses automatically to match the hostname of your Endpoint URL.
-
-The following example rewrites the `host` header to the value `localhost` using
-the [`add-headers`](/traffic-policy/actions/add-headers) Traffic Policy action.
-Adding the `Host` header [is a special
-case](/traffic-policy/actions/add-headers/#special-cases) that replaces the existing
-`Host` header instead of appending a second value.
-
-<Tabs groupId="connectivity" queryString="cty">
-	<TabItem value="agent-cli" label="Agent CLI" default>
-		<HostHeaderAgentCliExample />
-	</TabItem>
-	<TabItem value="agent-config" label="Agent Config">
-		<HostHeaderAgentConfigExample />
-	</TabItem>
-	<TabItem value="ssh" label="SSH">
-		<HostHeaderSshExample />
-	</TabItem>
-	<TabItem value="go-sdk" label="Go">
-		<HostHeaderGoSdkExample />
-	</TabItem>
-	<TabItem value="javascript-sdk" label="Javascript">
-		<HostHeaderJavascriptSdkExample />
-	</TabItem>
-	<TabItem value="python-sdk" label="Python">
-		<HostHeaderPythonSdkExample />
-	</TabItem>
-	<TabItem value="rust-sdk" label="Rust">
-		<HostHeaderRustSdkExample />
-	</TabItem>
-	<TabItem value="k8s" label="Kubernetes Controller">
-		<HostHeaderKubernetesExample />
-	</TabItem>
-</Tabs>
-
-## Agent Forwarding
-
-The [ngrok agent](/agent/) and [Agent
-SDKs](/agent-sdks/) forward traffic that your endpoints receive
-to upstream services. You specify a URL or port number to instruct the ngrok
-agent where and how to forward traffic.
-
-### HTTPS forwarding
-
-The scheme in your upstream URL is used to determine whether to forward HTTP or
-HTTPS traffic to the upstream service. If you do not specify a scheme, the
-default `http` scheme is chosen _unless_ you forward to port `443`, in which
-case ngrok will use `https`. Consult the following table of examples.
-
-| Upstream URL             | Normalized Value         |
-| ------------------------ | ------------------------ |
-| `http://localhost:1234`  | `http://localhost:1234`  |
-| `https://localhost:1234` | `https://localhost:1234` |
-| `localhost:1234`         | `http://localhost:1234`  |
-| `1234`                   | `http://localhost:1234`  |
-| `localhost:443`          | `https://localhost:443`  |
-| `443`                    | `https://localhost:443`  |
-
-ngrok assumes that the network you run the agent on is private and it does not
-verify the TLS certificate presented by the upstream service. You may change
-this behavior with the [flags `--upstream-tls-verify` and
-`upstream-tls-verify-cas`](/agent/cli/#ngrok-http).
-
-<Tabs groupId="connectivity" queryString="cty">
-	<TabItem value="agent-cli" label="Agent CLI" default>
-		<ForwardHttpsAgentCliExample />
-	</TabItem>
-	<TabItem value="agent-config" label="Agent Config">
-		<ForwardHttpsAgentConfigExample />
-	</TabItem>
-	<TabItem value="ssh" label="SSH">
-		<ForwardHttpsSshExample />
-	</TabItem>
-	<TabItem value="go-sdk" label="Go">
-		<ForwardHttpsGoSdkExample />
-	</TabItem>
-	<TabItem value="javascript-sdk" label="Javascript">
-		<ForwardHttpsJavascriptSdkExample />
-	</TabItem>
-	<TabItem value="python-sdk" label="Python">
-		<ForwardHttpsPythonSdkExample />
-	</TabItem>
-	<TabItem value="rust-sdk" label="Rust">
-		<ForwardHttpsRustSdkExample />
-	</TabItem>
-	<TabItem value="k8s" label="Kubernetes Controller">
-		<ForwardHttpsKubernetesExample />
-	</TabItem>
-</Tabs>
-
-### Non-local forwarding
-
-Agents don't just forward to ports on your localhost. You can forward traffic
-to any address or URL reachable from the agent. For example, if you want to
-forward traffic to a HTTP server running on your network at `192.168.1.2:80`:
-
-<Tabs groupId="connectivity" queryString="cty">
-	<TabItem value="agent-cli" label="Agent CLI" default>
-		<NonLocalAgentCliExample />
-	</TabItem>
-	<TabItem value="agent-config" label="Agent Config">
-		<NonLocalAgentConfigExample />
-	</TabItem>
-	<TabItem value="ssh" label="SSH">
-		<NonLocalSshExample />
-	</TabItem>
-	<TabItem value="go-sdk" label="Go">
-		<NonLocalGoSdkExample />
-	</TabItem>
-	<TabItem value="javascript-sdk" label="Javascript">
-		<NonLocalJavascriptSdkExample />
-	</TabItem>
-	<TabItem value="python-sdk" label="Python">
-		<NonLocalPythonSdkExample />
-	</TabItem>
-	<TabItem value="rust-sdk" label="Rust">
-		<NonLocalRustSdkExample />
-	</TabItem>
-	<TabItem value="k8s" label="Kubernetes Controller">
-		<NonLocalKubernetesExample />
-	</TabItem>
-</Tabs>
-
-### HTTP/2 forwarding
-
-When agents forward to upstream http/2 services, connections use HTTP/1.1 by
-default.
-
-You can configure the agent, SDKs and Kubernetes Operator to instead use HTTP/2
-when forwarding to your upstream service.
-
-| Forwarder           | Option                            | Docs                                      |
-| ------------------- | --------------------------------- | ----------------------------------------- |
-| Agent               | `--upstream-protocol`             | [Agent CLI flags](/agent/cli/#ngrok-http) |
-| Agent SDKs          | language-dependent                | [Agent SDKs](/agent-sdks)                 |
-| Kubernetes Operator | `appProtocol` on the `Tunnel` CRD | [Kubernetes Operator](/k8s)               |
-
-When http2 forwarding is enabled, all requests to your upstream service will be
-transmitted over HTTP/2 Cleartext since TLS was already terminated at the ngrok
-cloud service. We cannot use
-[TLS-ALPN](https://httpwg.org/specs/rfc7540.html#TLS-ALPN) at this time. We
-rely on [HTTP/2 with Prior
-Knowledge](https://httpwg.org/specs/rfc7540.html#known-http) currently.
-
-### Serving file directories
-
-The ngrok agent supports the `file://` scheme in a forwarding URL. When you use
-the `file://` scheme, the ngrok agent serves local file system directories by
-using its own built-in file server, no separate server needed. It works just
-like `python3 -m http.server` but it is built directly into the ngrok agent.
-
-Paths in `file://` URLs must be specified as absolute paths.
-
-#### Serve files in `/var/log`
-
-<Tabs groupId="connectivity" queryString="cty">
-	<TabItem value="agent-cli" label="Agent CLI" default>
-		<AbsPathFileserverAgentCliExample />
-	</TabItem>
-	<TabItem value="agent-config" label="Agent Config">
-		<AbsPathFileserverAgentConfigExample />
-	</TabItem>
-	<TabItem value="ssh" label="SSH">
-		<AbsPathFileserverSshExample />
-	</TabItem>
-	<TabItem value="go-sdk" label="Go">
-		<AbsPathFileserverGoSdkExample />
-	</TabItem>
-	<TabItem value="javascript-sdk" label="Javascript">
-		<AbsPathFileserverJavascriptSdkExample />
-	</TabItem>
-	<TabItem value="python-sdk" label="Python">
-		<AbsPathFileserverPythonSdkExample />
-	</TabItem>
-	<TabItem value="rust-sdk" label="Rust">
-		<AbsPathFileserverRustSdkExample />
-	</TabItem>
-	<TabItem value="k8s" label="Kubernetes Controller">
-		<AbsPathFileserverKubernetesExample />
-	</TabItem>
-</Tabs>
-
-<br />
-
-#### Serve files on Windows
-
-<Tabs groupId="connectivity" queryString="cty">
-	<TabItem value="agent-cli" label="Agent CLI" default>
-		<WindowsFileserverAgentCliExample />
-	</TabItem>
-	<TabItem value="agent-config" label="Agent Config">
-		<WindowsFileserverAgentConfigExample />
-	</TabItem>
-	<TabItem value="ssh" label="SSH">
-		<WindowsFileserverSshExample />
-	</TabItem>
-	<TabItem value="go-sdk" label="Go">
-		<WindowsFileserverGoSdkExample />
-	</TabItem>
-	<TabItem value="javascript-sdk" label="Javascript">
-		<WindowsFileserverJavascriptSdkExample />
-	</TabItem>
-	<TabItem value="python-sdk" label="Python">
-		<WindowsFileserverPythonSdkExample />
-	</TabItem>
-	<TabItem value="rust-sdk" label="Rust">
-		<WindowsFileserverRustSdkExample />
-	</TabItem>
-	<TabItem value="k8s" label="Kubernetes Controller">
-		<WindowsFileserverKubernetesExample />
-	</TabItem>
-</Tabs>
-
-<br />
-
-#### Serve files in your current working directory
-
-<Tabs groupId="connectivity" queryString="cty">
-	<TabItem value="agent-cli" label="Agent CLI" default>
-		<WorkingDirFileserverAgentCliExample />
-	</TabItem>
-	<TabItem value="agent-config" label="Agent Config">
-		<WorkingDirFileserverAgentConfigExample />
-	</TabItem>
-	<TabItem value="ssh" label="SSH">
-		<WorkingDirFileserverSshExample />
-	</TabItem>
-	<TabItem value="go-sdk" label="Go">
-		<WorkingDirFileserverGoSdkExample />
-	</TabItem>
-	<TabItem value="javascript-sdk" label="Javascript">
-		<WorkingDirFileserverJavascriptSdkExample />
-	</TabItem>
-	<TabItem value="python-sdk" label="Python">
-		<WorkingDirFileserverPythonSdkExample />
-	</TabItem>
-	<TabItem value="rust-sdk" label="Rust">
-		<WorkingDirFileserverRustSdkExample />
-	</TabItem>
-	<TabItem value="k8s" label="Kubernetes Controller">
-		<WorkingDirFileserverKubernetesExample />
-	</TabItem>
-</Tabs>
+- **URLS** — URLs are validated differently depending on their [binding](/universal-gateway/bindings). To learn more about valid URLs for HTTP/S endpoints, see [the Endpoint URLs documentation](/docs/universal-gateway/what-are-endpoint-urls/#http).
+- **Domains** — Public HTTP/S endpoints must match a domain on your account. See [the domains documentation](/universal-gateway/domains/what-are-domains/) for more information.
+- **Bring your own domain** — To use your own domain with HTTP/S endpoints, see [the guide on the subject](/universal-gateway/how-do-i-use-my-own-domain).
+- **Wildcard Endpoints** — You can create HTTP/S endpoints that receive traffic from all of the subdomains matching a given wildcard domain. See [the wildcard domain docs](/universal-gateway/wildcard-domains/) for more information.
+- **Traffic Policy** — Attach [Traffic Policy](/traffic-policy/) to endpoints to route, authenticate and transform the traffic through the endpoint.
+- **Agent Forwarding** — The [ngrok agent](/agent/) and [Agent SDKs](/agent-sdks/) forward traffic that your endpoints receive to upstream services. See [the agent forwarding documentation](/universal-gateway/agent-forwarding/) for more information.
+- **URLS** —
+- **URLS** —
+- **URLS** —
 
 ## Traffic Observability
 
