@@ -35,7 +35,7 @@ export const getLanguageInfo = (language: string) => {
 export const langParamName = "defaultTabLang";
 export const tabParamName = "defaultTabItem";
 
-export const getDefaultLanguageAndTab = (): {
+export const getStorageLanguageAndTab = (): {
 	defaultLanguage: string | null;
 	defaultTabItem: string | null;
 } => {

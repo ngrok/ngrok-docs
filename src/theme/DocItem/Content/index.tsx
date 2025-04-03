@@ -3,7 +3,7 @@ import useIsBrowser from "@docusaurus/useIsBrowser";
 import type { SupportedLanguage } from "@ngrok/mantle/code-block";
 import LangSwitcherContext from "@site/src/components/LangSwitcher/LangSwitcherContext";
 import {
-	getDefaultLanguageAndTab,
+	getStorageLanguageAndTab,
 	langParamName,
 	tabParamName,
 } from "@site/src/components/LangSwitcher/utils";
@@ -17,12 +17,12 @@ type Props = WrapperProps<typeof ContentType>;
 export default function ContentWrapper(props: Props): ReactNode {
 	const isBrowser = useIsBrowser();
 
-	const defaultData = isBrowser ? getDefaultLanguageAndTab() : null;
+	const storageData = isBrowser ? getStorageLanguageAndTab() : null;
 	const [selectedLanguage, setSelectedLanguage] = useState(
-		defaultData?.defaultLanguage ?? null,
+		storageData?.defaultLanguage ?? null,
 	);
 	const [selectedTabItem, setSelectedTabItem] = useState(
-		defaultData?.defaultLanguage ?? null,
+		storageData?.defaultLanguage ?? null,
 	);
 	const updateSelectedLanguage = (newLang: string | SupportedLanguage) => {
 		if (isBrowser) {
@@ -30,18 +30,24 @@ export default function ContentWrapper(props: Props): ReactNode {
 		}
 		setSelectedLanguage(newLang);
 	};
+	const updateSelectedTabItem = (newItem: string) => {
+		if (isBrowser) {
+			localStorage.setItem(tabParamName, newItem);
+		}
+		setSelectedTabItem(newItem);
+	};
 
 	return (
 		<TabListContext.Provider
 			value={{
-				defaultTabItem: defaultData?.defaultTabItem ?? null,
+				localStorageTab: storageData?.defaultTabItem ?? null,
 				selectedTabItem,
-				setSelectedTabItem,
+				updateSelectedTabItem,
 			}}
 		>
 			<LangSwitcherContext.Provider
 				value={{
-					defaultLanguage: defaultData?.defaultTabItem ?? null,
+					defaultLanguage: storageData?.defaultTabItem ?? null,
 					selectedLanguage,
 					updateSelectedLanguage,
 				}}
