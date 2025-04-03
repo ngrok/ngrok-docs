@@ -1,6 +1,6 @@
 ---
-title: Monitor ngrok APIs with Datadog
-sidebar_label: Monitor ngrok APIs
+title: Observe your API Traffic with ngrok and Datadog 
+sidebar_label: Monitoring with Datadog
 sidebar_position: 3
 toc_max_heading_level: 3
 ---
@@ -79,7 +79,7 @@ Now that the app is running locally, you can expose it on a public URL, using th
 
   This command starts the ngrok agent locally and connects it to the app running on container `api`.
 
-- Browse to the URL labeled `Forwarding`, which should look like this in your terminal:`https://eb45-79-127-145-72.ngrok-free.app`.
+- Browse to the URL labeled `Forwarding`, which should look like this in your terminal: `https://eb45-79-127-145-72.ngrok-free.app`.
 - You can now see your request going from the browser to the ngrok agent you're running in one terminal window and then to the Deno API in your other terminal window.
 
 ![Published API](./img/ngrokAgent.webp)
@@ -92,11 +92,11 @@ The Traffic Inspector is a filterable list of your API's requests and responses,
 
 An event is the data that ngrok provides about a request, which is exported to a dedicated monitoring platform. Events offer an automated means of monitoring your app. Events are also the only way for your team to get automatic error alerts (notifications) instead of constantly having to check for errors on a dashboard.
 
-At the time of writing, ngrok allows you to export events only to AWS, Azure, and DataDog. We do not support event exports to OpenTelemetry or custom URLs, such as self-hosted servers, so you have to use a paid cloud service. You can't perform custom processing or use Elastic, Prometheus, Splunk, or alternative monitoring apps.
+At the time of writing, ngrok allows you to export events only to AWS, Azure, and Datadog. We do not support event exports to OpenTelemetry or custom URLs, such as self-hosted servers, so you have to use a paid cloud service. You can't perform custom processing or use Elastic, Prometheus, Splunk, or alternative monitoring apps.
 
 ## Use the Traffic Inspector
 
-In this section, you'll learn to to use the Traffic Inspector and work through an example of using the Traffic Inspector for rate limiting.
+In this section, you'll learn to use the Traffic Inspector and work through an example of using the Traffic Inspector for rate limiting.
 
 - Browse to the ngrok [Traffic Inspector](https://dashboard.ngrok.com/traffic-inspector) on your ngrok account dashboard.
 
@@ -198,7 +198,7 @@ Before adding an event subscription, you need somewhere to send events:
   ![Join Datadog](./img/joinDatadog.webp)
 
 - Once the Datadog site notices your agent is running, click **Finish** at the bottom of the page.
-- You now no longer need the agent running locally and can remove the DataDog container with the command below.
+- You now no longer need the agent running locally and can remove the Datadog container with the command below.
 
   ```sh
   docker stop dd-agent
@@ -280,7 +280,7 @@ To complete your monitoring system, you need to set up an alert that is pushed t
 
   It's important that the `@webhook` name matches the webhook integration you created earlier. If the names don't match, the notification won't arrive.
 
-- Browse to the [the ngrok test channel on the ntfy website](https://ntfy.sh/ngrokTest).
+- Browse to the [ngrok test channel on the ntfy website](https://ntfy.sh/ngrokTest).
 
 - Click **Test notifications** at the bottom of the Datadog page and send an alert with **Run tests**.
 
