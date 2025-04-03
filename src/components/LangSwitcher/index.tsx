@@ -21,25 +21,25 @@ import { LanguageData } from "./LanguageData";
 import { getCodeBlocks } from "./utils";
 
 export function LangSwitcher({ children, className, ...props }: any) {
-	const { defaultLanguage, tabLanguage, updateTab } =
+	const { defaultLanguage, selectedLanguage, updateSelectedLanguage } =
 		useContext<LangSwitcherContextType>(LangSwitcherContext);
 
 	const codeBlocks = getCodeBlocks(children);
 
-	if (!updateTab) return "Error loading code block";
+	if (!updateSelectedLanguage) return "Error loading code block";
 
 	// if no language tab is set yet
-	if (tabLanguage === null) {
+	if (selectedLanguage === null) {
 		// Check if the user has specified a default language
 		const startingLanguage =
 			codeBlocks.find((child: any) => child.language === defaultLanguage) ||
 			codeBlocks[0];
-		updateTab(startingLanguage.language);
+		updateSelectedLanguage(startingLanguage.language);
 		// if no default language is set, set the first tab as the selected tab
 	}
 
 	const matchingBlock =
-		codeBlocks.find((child: any) => child.language === tabLanguage) ||
+		codeBlocks.find((child: any) => child.language === selectedLanguage) ||
 		codeBlocks[0];
 	// This also needs to be updated to use the right codeblock data, not [0]
 	const { meta, info } = matchingBlock;
@@ -64,7 +64,7 @@ export function LangSwitcher({ children, className, ...props }: any) {
 								{codeBlocks.map((child: any) => (
 									<Button
 										key={child.language + child.content}
-										onClick={() => updateTab(child.language)}
+										onClick={() => updateSelectedLanguage(child.language)}
 										type="button"
 										priority="neutral"
 										appearance={

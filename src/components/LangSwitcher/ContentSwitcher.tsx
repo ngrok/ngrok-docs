@@ -16,13 +16,13 @@ export function ContentSwitcher({
 	languages: string[];
 	className?: string;
 }) {
-	const { tabLanguage } =
+	const { selectedLanguage } =
 		useContext<LangSwitcherContextType>(LangSwitcherContext);
 	if (!languages?.length)
 		throw new Error("Must specify a language for the ContentSwitcher");
 
 	for (const lang of languages) {
-		if (lang === tabLanguage) {
+		if (lang === selectedLanguage) {
 			return children;
 		}
 	}

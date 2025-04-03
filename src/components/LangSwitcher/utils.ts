@@ -32,14 +32,23 @@ export const getLanguageInfo = (language: string) => {
 
 // The name of the query param or localstorage item to search for
 // to get the default tab value
-export const paramName = "defaultTabLang";
+export const langParamName = "defaultTabLang";
+export const tabParamName = "defaultTabItem";
 
-export const getDefaultLanguage = (): string | null => {
-	const searchParams = new URLSearchParams(window?.location?.search);
-	let tempLang = searchParams.get(paramName);
-	if (!tempLang && localStorage) {
-		tempLang = localStorage.getItem(paramName);
+export const getDefaultLanguageAndTab = (): {
+	defaultLanguage: string | null;
+	defaultTabItem: string | null;
+} => {
+	function getStorageItem(key: string) {
+		if (localStorage) {
+			return localStorage.getItem(key);
+		}
+		return null;
 	}
+	const searchParams = new URLSearchParams(window?.location?.search);
+	let tempLang =
+		searchParams.get(langParamName) || getStorageItem(langParamName);
+	let tempTab = searchParams.get(tabParamName) || getStorageItem(tabParamName);
 
-	return tempLang;
+	return { defaultLanguage: tempLang ?? null, defaultTabItem: tempTab ?? null };
 };
