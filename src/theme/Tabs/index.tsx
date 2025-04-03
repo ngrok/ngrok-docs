@@ -74,7 +74,27 @@ function TabList({
 			default:
 				break;
 		}
+		switch (event.key) {
+			case "Enter": {
+				handleTabChange(event);
+				break;
+			}
+			case "ArrowRight": {
+				const nextTab = tabRefs.indexOf(event.currentTarget) + 1;
+				focusElement = tabRefs[nextTab] ?? tabRefs[0]!;
+				break;
+			}
+			case "ArrowLeft": {
+				const prevTab = tabRefs.indexOf(event.currentTarget) - 1;
+				focusElement = tabRefs[prevTab] ?? tabRefs[tabRefs.length - 1]!;
+				break;
+			}
+			default:
+				break;
+		}
 
+		focusElement?.focus();
+	};
 		focusElement?.focus();
 	};
 
@@ -140,6 +160,17 @@ function TabsComponent(props: Props): ReactNode {
 }
 
 export default function Tabs(props: Props): ReactNode {
+	const isBrowser = useIsBrowser();
+	return (
+		<TabsComponent
+			// Remount tabs after hydration
+			// Temporary fix for https://github.com/facebook/docusaurus/issues/5653
+			key={String(isBrowser)}
+			{...props}
+		>
+			{sanitizeTabsChildren(props.children)}
+		</TabsComponent>
+	);
 	const isBrowser = useIsBrowser();
 	return (
 		<TabsComponent
