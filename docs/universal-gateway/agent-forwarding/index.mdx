@@ -173,6 +173,10 @@ The scheme in your upstream URL is used to determine whether to forward HTTP or 
 
 ngrok assumes that the network you run the agent on is private and it does not verify the TLS certificate presented by the upstream service. You may change this behavior with the [flags `--upstream-tls-verify` and `upstream-tls-verify-cas`](/agent/cli/#ngrok-http).
 
+:::info
+Forwarding to an upstream HTTPS service is not supported via SSH.
+:::
+
 <Tabs groupId="endpoint-type" queryString="ept">
 <TabItem value="agent-endpoint" label="Agent Endpoint" default>
 <LangSwitcher>
@@ -260,14 +264,8 @@ async fn forward_ngrok() -> Result<Forwarder<tunnel::HttpTunnel>, Error> {
 
 <ContentSwitcher languages={["go"]}>
 
+:::note
 For HTTP/2 Use: `config.HTTPEndpoint(config.WithAppProtocol("http2"))`
-
-</ContentSwitcher>
-
-<ContentSwitcher languages={["bash", "sh"]}>
-
-:::info
-Forwarding to an upstream HTTPS service is not supported via SSH.
 :::
 
 </ContentSwitcher>
@@ -293,69 +291,41 @@ cloud service. We cannot use
 rely on [HTTP/2 with Prior
 Knowledge](https://httpwg.org/specs/rfc7540.html#known-http) currently.
 
-## TCP
-
-### PROXY Protocol
-
-When you forward traffic to an upstream TCP service, becuase traffic is coming
-from the ngrok agent, it won't know the client's original IP address. You can
-add the [PROXY
-protocol](https://www.haproxy.org/download/1.8/doc/proxy-protocol.txt) header
-on connections to your upstream service to send connection information like the
-original client IP address to your upstream service. You will need to configure
-your upstream service to handle the PROXY protocol header.
-
-<Tabs groupId="connectivity" queryString="cty">
-	<TabItem value="agent-cli" label="Agent CLI" default>
-		<ProxyProtoAgentCliExample />
-	</TabItem>
-	<TabItem value="agent-config" label="Agent Config">
-		<ProxyProtoAgentConfigExample />
-	</TabItem>
-	<TabItem value="ssh" label="SSH">
-		<ProxyProtoSshExample />
-	</TabItem>
-	<TabItem value="go-sdk" label="Go">
-		<ProxyProtoGoSdkExample />
-	</TabItem>
-	<TabItem value="javascript-sdk" label="Javascript">
-		<ProxyProtoJavascriptSdkExample />
-	</TabItem>
-	<TabItem value="python-sdk" label="Python">
-		<ProxyProtoPythonSdkExample />
-	</TabItem>
-	<TabItem value="rust-sdk" label="Rust">
-		<ProxyProtoRustSdkExample />
-	</TabItem>
-	<TabItem value="k8s" label="Kubernetes Controller">
-		<ProxyProtoKubernetesExample />
-	</TabItem>
-</Tabs>
-
-## TLS
-
-### Re-encrypt to Upstream
+### How do I encrypt traffic forwarded to upstream services?
 
 If you terminate TLS at the ngrok cloud service or ngrok agent, you may want to
 re-encrypt the connection from the agent to your upstream service. The ngrok
 agent supports this behavior by using the non-standard `tls://` scheme syntax.
 
-<Tabs groupId="connectivity" queryString="cty">
-<TabItem value="agent-cli" label="Agent CLI" default>
+<Tabs groupId="endpoint-type" queryString="ept">
+<TabItem value="agent-endpoint" label="Agent Endpoint" default>
 
+<LangSwitcher>
 ```bash
 ngrok tls tls://localhost:443 --terminate-at=edge
 ```
 
-</TabItem>
-<TabItem value="agent-config" label="Agent Config">
-<ReencryptUpstreamAgentConfigExample />
-</TabItem>
-<TabItem value="ssh" label="SSH">
-<ReencryptUpstreamSshExample />
-</TabItem>
-<TabItem value="go-sdk" label="Go">
-<ReencryptUpstreamGoSdkExample />
+```python
+import ngrok
+
+listener = ngrok.forward("tls://localhost:443", authtoken_from_env=True,
+    proto="tls"
+    crt=bytearray(),
+    key=bytearray())
+
+print(f"Ingress established at: {listener.url()}");
+```
+
+</LangSwitcher>
+
+<ContentSwitcher languages={["python"]}>
+	An empty certificate and key will default to the ngrok edge's automatically
+	provisioned keypair. The upstream certificate of `localhost:443` will be
+	validated by a filepath specified in the `SSL_CERT_FILE` environment variable
+	(e.g. `SSL_CERT_FILE=/path/to/ca.crt`), or falling back to the host OS
+	installed trusted certificate authorities.
+</ContentSwitcher>
+
 </TabItem>
 <TabItem value="javascript-sdk" label="Javascript">
 <ReencryptUpstreamJavascriptSdkExample />
@@ -363,44 +333,20 @@ ngrok tls tls://localhost:443 --terminate-at=edge
 <TabItem value="python-sdk" label="Python">
 <ReencryptUpstreamPythonSdkExample />
 </TabItem>
-<TabItem value="rust-sdk" label="Rust">
-<ReencryptUpstreamRustSdkExample />
+<TabItem value="agent-config" label="Agent Config">
+<ReencryptUpstreamAgentConfigExample />
 </TabItem>
 <TabItem value="k8s" label="Kubernetes Controller">
 <ReencryptUpstreamKubernetesExample />
 </TabItem>
 </Tabs>
 
-### PROXY Protocol
+:::info
 
-Add a [PROXY
-protocol](https://www.haproxy.org/download/1.8/doc/proxy-protocol.txt) header
-on connection to your upstream service. This sends connection information like
-the original client IP address to your upstream service.
+Re-encrypting the connection to your upstream service with TLS is not supported for:
 
-<Tabs groupId="connectivity" queryString="cty">
-	<TabItem value="agent-cli" label="Agent CLI" default>
-		<ProxyProtoAgentCliExample />
-	</TabItem>
-	<TabItem value="agent-config" label="Agent Config">
-		<ProxyProtoAgentConfigExample />
-	</TabItem>
-	<TabItem value="ssh" label="SSH">
-		<ProxyProtoSshExample />
-	</TabItem>
-	<TabItem value="go-sdk" label="Go">
-		<ProxyProtoGoSdkExample />
-	</TabItem>
-	<TabItem value="javascript-sdk" label="Javascript">
-		<ProxyProtoJavascriptSdkExample />
-	</TabItem>
-	<TabItem value="python-sdk" label="Python">
-		<ProxyProtoPythonSdkExample />
-	</TabItem>
-	<TabItem value="rust-sdk" label="Rust">
-		<ProxyProtoRustSdkExample />
-	</TabItem>
-	<TabItem value="k8s" label="Kubernetes Controller">
-		<ProxyProtoKubernetesExample />
-	</TabItem>
-</Tabs>
+- SSH
+- Go
+- Rust
+
+:::
