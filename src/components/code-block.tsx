@@ -13,6 +13,7 @@ import {
 	parseMetastring,
 } from "@ngrok/mantle/code-block";
 import type { WithStyleProps } from "@ngrok/mantle/types";
+import convertToSpaces from "convert-to-spaces";
 import type { ComponentProps, ReactNode } from "react";
 
 type Props = WithStyleProps & {
@@ -20,6 +21,10 @@ type Props = WithStyleProps & {
 	 * The code content inside the block. This contains the raw code to display as a string.
 	 */
 	children: string;
+	/**
+	 * The array of children to show in the codeblock if the switcher functionality is active
+	 */
+	switcherChildren?: string[];
 	/**
 	 * Specifies the language of the code block (e.g., language-js, language-python).
 	 */
@@ -57,6 +62,7 @@ function DocsCodeBlock({
 	metastring,
 	mode: _mode,
 	title: _title,
+	switcherChildren,
 	...props
 }: Props) {
 	const language = _language ?? parseLanguage(className);
@@ -66,6 +72,8 @@ function DocsCodeBlock({
 	const hasHeader = title || mode || _icon;
 
 	const collapsible = meta.collapsible && children.split("\n").length > 20;
+
+	const codeblockContent = convertToSpaces(fmtCode`${children}`);
 
 	return (
 		<CodeBlock className={className} {...props}>
@@ -77,7 +85,7 @@ function DocsCodeBlock({
 			)}
 			<CodeBlockBody>
 				{!meta.disableCopy && <CodeBlockCopyButton />}
-				<CodeBlockCode language={language} value={fmtCode`${children}`} />
+				<CodeBlockCode language={language} value={codeblockContent} />
 				{collapsible && <CodeBlockExpanderButton />}
 			</CodeBlockBody>
 		</CodeBlock>
