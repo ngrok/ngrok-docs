@@ -6,6 +6,10 @@ export type TabListContextType = {
 	updateSelectedTabItem: null | ((newTabItem: string) => void);
 };
 
-const TabListContext = createContext<TabListContextType | null>(null);
+const TabListContext = createContext<TabListContextType>({
+	localStorageTab: null,
+	selectedTabItem: null,
+	updateSelectedTabItem: null,
+});
 
 export default TabListContext;

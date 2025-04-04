@@ -62,7 +62,7 @@ function TabList({
 	const { blockElementScrollPositionUntilNextRender } =
 		useScrollPositionBlocker();
 	const { localStorageTab, selectedTabItem, updateSelectedTabItem } =
-		useContext(TabListContext) ?? {};
+		useContext(TabListContext);
 
 	const handleTabChange = (
 		event:

@@ -9,6 +9,10 @@ export type LangSwitcherContextType = {
 		| ((newLang: string | SupportedLanguage) => void);
 };
 
-const LangSwitcherContext = createContext<LangSwitcherContextType | null>(null);
+const LangSwitcherContext = createContext<LangSwitcherContextType>({
+	selectedLanguage: null,
+	updateSelectedLanguage: null,
+	defaultLanguage: null,
+});
 
 export default LangSwitcherContext;
