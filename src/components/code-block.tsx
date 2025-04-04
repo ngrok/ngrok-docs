@@ -70,9 +70,6 @@ function DocsCodeBlock({
 }: Props) {
 	const language = _language ?? parseLanguage(className);
 	const meta = parseMetastring(metastring);
-	const title = _title || meta.title;
-	const mode = _mode || meta.mode;
-	const hasHeader = title || mode || _icon;
 
 	const collapsible = meta.collapsible && children.split("\n").length > 20;
 

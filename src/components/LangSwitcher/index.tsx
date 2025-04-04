@@ -74,7 +74,7 @@ export function LangSwitcher({ children, className, ...props }: any) {
 												: "outlined"
 										}
 									>
-										{child.language.toUpperCase()}
+										{child.meta.tabName || child.language.toUpperCase()}
 									</Button>
 								))}
 							</div>

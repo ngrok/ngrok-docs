@@ -1,13 +1,42 @@
-import { parseLanguage, parseMetastring } from "@ngrok/mantle/code-block";
+import { parseLanguage } from "@ngrok/mantle/code-block";
 import { languageData } from "./data";
 
+function getTabNameData(metastring: string) {
+	if (!metastring.includes("tabName=")) return "";
+	// Get the substring starting with tabName= and ending with
+	// a closing quote and a space
+	const tabNameSubstring = metastring.split("tabName=")[1] ?? "";
+	const lastQuoteIndex = tabNameSubstring.indexOf(`" `);
+	const tabNameValueEnd =
+		lastQuoteIndex > 0 ? lastQuoteIndex : tabNameSubstring.length - 1;
+	return tabNameSubstring.substring(1, tabNameValueEnd);
+}
+
+function getMetaData(metastring: string | undefined) {
+	if (!metastring) {
+		return {};
+	}
+	const meta = metastring.split(/\s+/);
+	const metaData: Record<string, string> = {};
+	meta.forEach((item) => {
+		const [key, value] = item.split("=");
+		if (key && value) {
+			metaData[key] = value.replace(/['"]/g, ""); // Remove " characters
+		}
+	});
+	// Add the tabName to the metaData object
+	metaData["tabName"] = getTabNameData(metastring); // Remove " characters
+	return metaData;
+}
+
 export const getCodeBlocks = (children: any) => {
-	return children.map((child: any, index: number) => {
+	return children.map((child: any) => {
 		const { className, metastring, children, language } =
 			child.props.children.props ?? child.props;
+
 		const parsedLanguage = language || parseLanguage(className);
-		const meta = parseMetastring(metastring);
-		const title = meta.title ?? child.props.title;
+		const meta = getMetaData(metastring);
+		const title = meta.title || child.props.title;
 		return {
 			language: parsedLanguage,
 			content: children,
@@ -15,9 +44,10 @@ export const getCodeBlocks = (children: any) => {
 				...meta,
 				// Make it collapsible by default
 				collapsible: true,
+				// If no title found yet, check for a tabName.
+				// If a tabName exists, use the parsedLanguage as the title
+				title: title ? title : meta.tabName ? parsedLanguage : null,
 			},
-			title,
-			childIndex: index,
 			info: getLanguageInfo(parsedLanguage),
 		};
 	});

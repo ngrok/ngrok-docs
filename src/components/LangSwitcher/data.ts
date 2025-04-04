@@ -41,3 +41,17 @@ export const languageData: LanguageData[] = [
 		altNames: ["typescript", "ts", "js", "jsx", "tsx"],
 	},
 ];
+
+export type CustomLanguage = {
+	name: string;
+	// The language whose syntax should be used.
+	// For example, a "ssh" language could use "bash" syntax.
+	syntaxLanguage: string;
+};
+
+export const customLanguages: CustomLanguage[] = [
+	{
+		name: "ssh",
+		syntaxLanguage: "bash",
+	},
+];
