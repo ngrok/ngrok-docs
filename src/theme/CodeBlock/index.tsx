@@ -6,6 +6,7 @@ import DocsCodeBlock, { CodeBlockFallback } from "../../components/code-block";
 type Props = ComponentProps<typeof DocsCodeBlock>;
 
 export default function CodeBlock({ className, ...props }: Props) {
+	console.log("CodeBlock", props, className);
 	return (
 		<BrowserOnly
 			fallback={

@@ -45,50 +45,106 @@ const sidebars = {
 			items: [
 				"universal-gateway/overview",
 				{
-					label: "Concepts",
+					label: "What are Domains?",
 					type: "category",
+					link: {
+						type: "doc",
+						id: "universal-gateway/domains/what-are-domains",
+					},
 					items: [
-						{ id: "universal-gateway/domains", type: "doc", label: "Domains" },
-						{
-							id: "universal-gateway/tcp-addresses",
-							type: "doc",
-							label: "TCP Addresses",
-						},
-						"universal-gateway/tls-certificates",
-						"universal-gateway/edges",
+						"universal-gateway/domains/how-do-i-use-my-own-domain",
+						"universal-gateway/domains/what-are-managed-domains",
+						"universal-gateway/wildcard-domains/index",
+						"universal-gateway/wildcard-domains/wildcard-endpoints",
 					],
+				},
+				"universal-gateway/what-are-matching-endpoints",
+				{
+					label: "What are TCP Addresses?",
+					type: "category",
+					link: {
+						type: "doc",
+						id: "universal-gateway/tcp-addresses/what-are-tcp-addresses",
+					},
+					items: [
+						"universal-gateway/tcp-addresses/how-are-tcp-addresses-assigned",
+					],
+				},
+				{
+					label: "How Does ngrok Handle TLS?",
+					type: "category",
+					link: {
+						type: "doc",
+						id: "universal-gateway/tls-certificates/how-does-ngrok-handle-tls",
+					},
+					items: [
+						"universal-gateway/tls-certificates/what-is-automatic-certificate-management",
+						"universal-gateway/tls-certificates/how-are-certificates-selected",
+						"universal-gateway/tls-certificates/how-do-i-use-my-own-certificates",
+						"universal-gateway/tls-certificates/what-is-a-certificate-bundle",
+						"universal-gateway/tls-certificates/what-are-private-tls-keys",
+					],
+				},
+				"universal-gateway/endpoints",
+				"universal-gateway/bindings",
+				"universal-gateway/public-endpoints/index",
+				"universal-gateway/what-are-endpoint-urls",
+				{
+					label: "What are Internal Endpoints?",
+					type: "category",
+					link: {
+						type: "doc",
+						id: "universal-gateway/internal-endpoints/index",
+					},
+					items: ["universal-gateway/internal-endpoints/quickstart"],
+				},
+				{
+					label: "What are Kubernetes Endpoints?",
+					type: "category",
+					link: {
+						type: "doc",
+						id: "universal-gateway/kubernetes-endpoints/index",
+					},
+					items: [
+						"universal-gateway/kubernetes-endpoints/quickstart",
+						"universal-gateway/kubernetes-endpoints/services",
+						"universal-gateway/kubernetes-endpoints/selector",
+					],
+				},
+				{
+					label: "What are Cloud Endpoints?",
+					type: "category",
+					link: { type: "doc", id: "universal-gateway/cloud-endpoints/index" },
+					items: ["universal-gateway/cloud-endpoints/quickstart"],
+				},
+				{
+					label: "What are Agent Endpoints?",
+					id: "universal-gateway/agent-endpoints",
+					type: "doc",
+				},
+				"universal-gateway/chain-endpoints",
+				"universal-gateway/mock-api",
+				"universal-gateway/migrate-from-tunnels",
+				{
+					label: "How Does Agent Fowarding Work?",
+					type: "category",
+					link: { type: "doc", id: "universal-gateway/agent-forwarding/index" },
+					items: [
+						"universal-gateway/agent-forwarding/non-local-forwarding",
+						"universal-gateway/agent-forwarding/serving-file-directories",
+					],
+				},
+				{
+					label: "How Do I Handle HTTP/S Traffic?",
+					type: "category",
+					link: { type: "doc", id: "universal-gateway/http-s/index" },
+					items: ["universal-gateway/http-s/endpoint-url-defaults"],
 				},
 				{
 					label: "Endpoints",
 					type: "category",
 					link: { type: "doc", id: "universal-gateway/endpoints" },
 					items: [
-						{
-							id: "universal-gateway/endpoints",
-							type: "doc",
-							label: "Overview",
-						},
-						{
-							label: "Types",
-							type: "category",
-							link: { type: "doc", id: "universal-gateway/types" },
-							items: [
-								{
-									label: "Cloud Endpoints",
-									type: "category",
-									link: {
-										type: "doc",
-										id: "universal-gateway/cloud-endpoints/index",
-									},
-									items: ["universal-gateway/cloud-endpoints/quickstart"],
-								},
-								{
-									id: "universal-gateway/agent-endpoints",
-									type: "doc",
-									label: "Agent Endpoints",
-								},
-							],
-						},
 						{
 							label: "Protocols",
 							type: "category",
@@ -117,17 +173,17 @@ const sidebars = {
 							link: { type: "doc", id: "universal-gateway/bindings" },
 							items: [
 								{
-									id: "universal-gateway/public-endpoints",
+									id: "universal-gateway/public-endpoints/index",
 									type: "doc",
 									label: "Public",
 								},
 								{
-									id: "universal-gateway/internal-endpoints",
+									id: "universal-gateway/internal-endpoints/index",
 									type: "doc",
 									label: "Internal",
 								},
 								{
-									id: "universal-gateway/kubernetes-endpoints",
+									id: "universal-gateway/kubernetes-endpoints/index",
 									type: "doc",
 									label: "Kubernetes",
 								},
@@ -673,6 +729,11 @@ const sidebars = {
 			value: "<div class='menu__section'></div>",
 		},
 		"faq/faq",
+		{
+			label: "Deprecated",
+			type: "category",
+			items: ["universal-gateway/edges"],
+		},
 	],
 };
 
