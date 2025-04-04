@@ -1,3 +1,4 @@
+import { Button } from "@ngrok/mantle/button";
 import type { Mode, SupportedLanguage } from "@ngrok/mantle/code-block";
 import {
 	CodeBlock,
@@ -80,13 +81,32 @@ function DocsCodeBlock({
 	return (
 		<div>
 			<CodeBlock className={className} {...props}>
-				{hasHeader && (
-					<CodeBlockHeader>
-						{mode ? <CodeBlockIcon preset={mode} /> : _icon}
-						{title && <CodeBlockTitle>{title}</CodeBlockTitle>}
-					</CodeBlockHeader>
-				)}
+				<CodeBlockHeader className="flex w-[100%] justify-start p-1">
+					<Button
+						disabled
+						type="button"
+						priority="neutral"
+						appearance={"outlined"}
+					>
+						{language.toUpperCase()}
+					</Button>
+					{/* {title && <CodeBlockTitle>{title}</CodeBlockTitle>} */}
+				</CodeBlockHeader>
 				<CodeBlockBody>
+					{meta.title && (
+						<div className="mx-2 mt-3.5 flex w-[100%] items-end justify-start gap-1.5">
+							<>
+								{meta.mode ? (
+									<CodeBlockIcon preset={meta.mode} />
+								) : (
+									<CodeBlockIcon preset="file" />
+								)}
+								<CodeBlockTitle>
+									<strong>{meta.title}</strong>
+								</CodeBlockTitle>
+							</>
+						</div>
+					)}
 					{!meta.disableCopy && <CodeBlockCopyButton />}
 					<CodeBlockCode language={language} value={codeblockContent} />
 					{collapsible && <CodeBlockExpanderButton />}

@@ -7,6 +7,7 @@ import {
 	CodeBlockCopyButton,
 	CodeBlockExpanderButton,
 	CodeBlockHeader,
+	CodeBlockIcon,
 	CodeBlockTitle,
 	fmtCode,
 } from "@ngrok/mantle/code-block";
@@ -80,9 +81,18 @@ export function LangSwitcher({ children, className, ...props }: any) {
 						</CodeBlockHeader>
 						<CodeBlockBody>
 							{meta.title && (
-								<CodeBlockTitle className="mx-2 mt-3.5">
-									<strong>{meta.title}</strong>
-								</CodeBlockTitle>
+								<div className="mx-2 mt-3.5 flex w-[100%] items-end justify-start gap-1.5">
+									<>
+										{meta.mode ? (
+											<CodeBlockIcon preset={meta.mode} />
+										) : (
+											<CodeBlockIcon preset="file" />
+										)}
+										<CodeBlockTitle>
+											<strong>{meta.title}</strong>
+										</CodeBlockTitle>
+									</>
+								</div>
 							)}
 							{!meta.disableCopy && <CodeBlockCopyButton />}
 							<CodeBlockCode

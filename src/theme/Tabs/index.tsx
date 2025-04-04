@@ -14,12 +14,7 @@ import {
 } from "@ngrok/mantle/tabs";
 import type { Props } from "@theme/Tabs";
 import clsx from "clsx";
-import React, {
-	cloneElement,
-	useContext,
-	type ReactElement,
-	type ReactNode,
-} from "react";
+import React, { useContext, type ReactElement, type ReactNode } from "react";
 import styles from "./styles.module.css";
 import TabListContext from "./TabListContext";
 
