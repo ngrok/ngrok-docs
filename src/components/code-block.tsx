@@ -1,5 +1,5 @@
 import { Button } from "@ngrok/mantle/button";
-import type { Meta, Mode, SupportedLanguage } from "@ngrok/mantle/code-block";
+import type { Mode, SupportedLanguage } from "@ngrok/mantle/code-block";
 import {
 	CodeBlock,
 	CodeBlockBody,
@@ -93,7 +93,7 @@ function DocsCodeBlock({
 						<div className="mx-2 mt-3.5 flex w-[100%] items-end justify-start gap-1.5">
 							<>
 								{meta.mode ? (
-									<CodeBlockIcon preset={meta.mode as Meta} />
+									<CodeBlockIcon preset={meta.mode as any} />
 								) : (
 									<CodeBlockIcon preset="file" />
 								)}
