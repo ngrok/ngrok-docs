@@ -1,7 +1,7 @@
 import { parseLanguage } from "@ngrok/mantle/code-block";
 import { languageData } from "./data";
 
-function getTabNameData(metastring: string) {
+export function getTabNameData(metastring: string) {
 	if (!metastring.includes("tabName=")) return "";
 	// Get the substring starting with tabName= and ending with
 	// a closing quote and a space
@@ -12,7 +12,7 @@ function getTabNameData(metastring: string) {
 	return tabNameSubstring.substring(1, tabNameValueEnd);
 }
 
-function getMetaData(metastring: string | undefined) {
+export function getMetaData(metastring: string | undefined) {
 	if (!metastring) {
 		return {};
 	}

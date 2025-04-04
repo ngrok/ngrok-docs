@@ -1,4 +1,5 @@
 import BrowserOnly from "@docusaurus/BrowserOnly";
+import { useScrollPositionBlocker } from "@docusaurus/theme-common/internal";
 import { Button } from "@ngrok/mantle/button";
 import {
 	CodeBlock,
@@ -24,6 +25,8 @@ import { getCodeBlocks } from "./utils";
 export function LangSwitcher({ children, className, ...props }: any) {
 	const { defaultLanguage, selectedLanguage, updateSelectedLanguage } =
 		useContext<LangSwitcherContextType>(LangSwitcherContext);
+	const { blockElementScrollPositionUntilNextRender } =
+		useScrollPositionBlocker();
 
 	const codeBlocks = getCodeBlocks(children);
 
@@ -65,7 +68,11 @@ export function LangSwitcher({ children, className, ...props }: any) {
 								{codeBlocks.map((child: any) => (
 									<Button
 										key={child.language + child.content}
-										onClick={() => updateSelectedLanguage(child.language)}
+										onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+											const pressedButton = e?.currentTarget;
+											blockElementScrollPositionUntilNextRender(pressedButton);
+											updateSelectedLanguage(child.language);
+										}}
 										type="button"
 										priority="neutral"
 										appearance={
