@@ -116,42 +116,12 @@ Using this guide, you will launch a local cluster (or use an existing local/remo
 
 ## **Step 3**: Install the ngrok Kubernetes Operator {#install-the-ngrok-ingress-controller}
 
-Even though you have no applications currently running on your local cluster, you can configure and deploy the [ngrok Kubernetes Ingress
-Controller](https://github.com/ngrok/ngrok-operator) to simplify how you'll enable ingress in the future.
+Even though you have no applications currently running on your local cluster,
+you can configure and deploy the [ngrok Kubernetes Operator](/docs/k8s) to
+simplify how you'll enable ingress in the future.
 
-1. Add the ngrok Helm repository if you haven't already.
-
-   ```bash
-   helm repo add ngrok https://charts.ngrok.com
-   ```
-
-1. Set up the `AUTHTOKEN` and `API_KEY` exports, which allows Helm to install the Operator using your ngrok credentials. Find your `AUTHTOKEN` under [**Your Authtoken**](https://dashboard.ngrok.com/get-started/your-authtoken) in the ngrok dashboard.
-
-   To create a new API key, navigate to the [**API** section](https://dashboard.ngrok.com/api) of the ngrok dashboard, click the **New API Key** button, change the description or owner, and click the **Add API Key** button. Copy the API key token shown in the modal window before closing it, as the ngrok dashboard will not show you the token again.
-
-   ```bash
-   export NGROK_AUTHTOKEN=[YOUR-AUTHTOKEN]
-   export NGROK_API_KEY=[YOUR-API-KEY]
-   ```
-
-1. Install the ngrok Kubernetes Operator with Helm under a new `ngrok-ingress-controller` namespace.
-
-   ```bash
-   helm install ngrok-ingress-controller ngrok/kubernetes-ingress-controller \
-     --namespace ngrok-ingress-controller \
-     --create-namespace \
-     --set credentials.apiKey=$NGROK_API_KEY \
-     --set credentials.authtoken=$NGROK_AUTHTOKEN
-   ```
-
-1. Verify you have installed the ngrok Kubernetes Operator successfully and that pods are healthy.
-
-   ```bash
-   kubectl get pods -l 'app.kubernetes.io/name=kubernetes-ingress-controller' --namespace ngrok-ingress-controller
-
-   NAME                                                              READY   STATUS    RESTARTS   AGE
-   ngrok-ingress-controller-kubernetes-ingress-controller-man2fg5p   1/1     Running   0          2m23s
-   ```
+Check out our [Operator installation doc](/docs/k8s/installation/install/) for
+details on how to use Helm to install with your ngrok credentials.
 
 ## **Step 4**: Deploy an example microservices-based application {#deploy-an-example-microservices-based-application}
 
@@ -203,9 +173,7 @@ To demonstrate how Linkerd and the ngrok Kubernetes Operator integrate to add ad
    spec:
      ingressClassName: ngrok
      rules:
-       # highlight-start
-       - host: NGROK_DOMAIN
-         # highlight-end
+       - host: <NGROK_DOMAIN>
          http:
            paths:
              - path: /
