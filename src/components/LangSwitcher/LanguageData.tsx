@@ -1,6 +1,6 @@
-import type { LanguageData } from "./data";
+import type { LanguageInfo } from "./data";
 
-export function LanguageData({ data }: { data: LanguageData }) {
+export function LanguageData({ data }: { data: LanguageInfo }) {
 	let anchoredLinks = data.links.map((link) => {
 		return (
 			<a href={link} target="_blank" rel="noopener noreferrer">
@@ -21,7 +21,7 @@ export function LanguageData({ data }: { data: LanguageData }) {
 
 	return (
 		<div className="flex w-full justify-end">
-			<div className="mt-[-0.5rem] text-xs text-gray-500 dark:text-gray-600">
+			<div className="mb-[0.8rem] mt-[0.3rem] text-xs text-gray-500 dark:text-gray-600">
 				See the ngrok {data.displayName} package docs {linkText}.
 			</div>
 		</div>

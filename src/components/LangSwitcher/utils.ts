@@ -1,5 +1,5 @@
 import { parseLanguage } from "@ngrok/mantle/code-block";
-import { languageData } from "./data";
+import { languageInfo } from "./data";
 
 export function getTabNameData(metastring: string) {
 	if (!metastring.includes("tabName=")) return "";
@@ -54,7 +54,7 @@ export const getCodeBlocks = (children: any) => {
 };
 
 export const getLanguageInfo = (language: string) => {
-	return languageData.find(
+	return languageInfo.find(
 		(item) =>
 			item.name === language || item?.altNames?.some((alt) => alt === language),
 	);

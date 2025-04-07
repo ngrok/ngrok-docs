@@ -1,21 +1,9 @@
 import { Button } from "@ngrok/mantle/button";
 import type { Mode, SupportedLanguage } from "@ngrok/mantle/code-block";
-import {
-	CodeBlock,
-	CodeBlockBody,
-	CodeBlockCode,
-	CodeBlockCopyButton,
-	CodeBlockExpanderButton,
-	CodeBlockHeader,
-	CodeBlockIcon,
-	CodeBlockTitle,
-	fmtCode,
-	parseLanguage,
-} from "@ngrok/mantle/code-block";
+import { CodeBlock, parseLanguage } from "@ngrok/mantle/code-block";
 import type { WithStyleProps } from "@ngrok/mantle/types";
-import convertToSpaces from "convert-to-spaces";
 import type { ComponentProps, ReactNode } from "react";
-import { LanguageData } from "./LangSwitcher/LanguageData";
+import { CodeBlockWithInfo } from "./CodeBlockWithInfo";
 import { getLanguageInfo, getMetaData } from "./LangSwitcher/utils";
 
 type Props = WithStyleProps & {
@@ -66,50 +54,61 @@ function DocsCodeBlock({
 	const langInClassName = langMatchesInClassName
 		? langMatchesInClassName[0]?.split("-")[1]
 		: "";
-	const language = _language ?? parseLanguage(langInClassName);
-	console.log(props, className, language);
-	const meta = getMetaData(metastring);
-
-	const collapsible = meta.collapsible && children.split("\n").length > 20;
-
-	const codeblockContent = convertToSpaces(fmtCode`${children}`);
-	const info = getLanguageInfo(language);
+	const language = _language || parseLanguage(langInClassName);
 	return (
-		<div>
-			<CodeBlock className={className} {...props}>
-				<CodeBlockHeader className="flex w-[100%] justify-start p-1">
-					<Button
-						disabled
-						type="button"
-						priority="neutral"
-						appearance={"outlined"}
-					>
-						{language.toUpperCase()}
-					</Button>
-					{/* {title && <CodeBlockTitle>{title}</CodeBlockTitle>} */}
-				</CodeBlockHeader>
-				<CodeBlockBody>
-					{meta.title && (
-						<div className="mx-2 mt-3.5 flex w-[100%] items-end justify-start gap-1.5">
-							<>
-								{meta.mode ? (
-									<CodeBlockIcon preset={meta.mode as any} />
-								) : (
-									<CodeBlockIcon preset="file" />
-								)}
-								<CodeBlockTitle>
-									<strong>{meta.title}</strong>
-								</CodeBlockTitle>
-							</>
-						</div>
-					)}
-					{!meta.disableCopy && <CodeBlockCopyButton />}
-					<CodeBlockCode language={language} value={codeblockContent} />
-					{collapsible && <CodeBlockExpanderButton />}
-				</CodeBlockBody>
-			</CodeBlock>
-			{info && <LanguageData data={info} />}
-		</div>
+		<CodeBlockWithInfo
+			content={children}
+			language={language}
+			collapseLineNumber={20}
+			meta={getMetaData(metastring)}
+			className={className}
+			headerContent={
+				<Button
+					disabled
+					type="button"
+					priority="neutral"
+					appearance={"outlined"}
+				>
+					{language.toUpperCase()}
+				</Button>
+			}
+			info={getLanguageInfo(language)}
+			codeBlockProps={props}
+		/>
+		// <div>
+		// 	<CodeBlock className={className} {...props}>
+		// 		<CodeBlockHeader className="flex w-[100%] justify-start p-1">
+		// 			<Button
+		// 				disabled
+		// 				type="button"
+		// 				priority="neutral"
+		// 				appearance={"outlined"}
+		// 			>
+		// 				{language.toUpperCase()}
+		// 			</Button>
+		// 		</CodeBlockHeader>
+		// 		<CodeBlockBody>
+		// 			{meta.title && (
+		// 				<div className="mx-2 mt-3.5 flex w-[100%] items-end justify-start gap-1.5">
+		// 					<>
+		// 						{meta.mode ? (
+		// 							<CodeBlockIcon preset={meta.mode as any} />
+		// 						) : (
+		// 							<CodeBlockIcon preset="file" />
+		// 						)}
+		// 						<CodeBlockTitle>
+		// 							<strong>{meta.title}</strong>
+		// 						</CodeBlockTitle>
+		// 					</>
+		// 				</div>
+		// 			)}
+		// 			{!meta.disableCopy && <CodeBlockCopyButton />}
+		// 			<CodeBlockCode language={language} value={codeblockContent} />
+		// 			{collapsible && <CodeBlockExpanderButton />}
+		// 		</CodeBlockBody>
+		// 	</CodeBlock>
+		// 	{info && <LanguageData data={info} />}
+		// </div>
 	);
 }
 

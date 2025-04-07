@@ -1,11 +1,11 @@
-export type LanguageData = {
+export type LanguageInfo = {
 	name: string;
 	altNames?: string[];
 	displayName: string;
 	links: string[];
 };
 
-export const languageData: LanguageData[] = [
+export const languageInfo: LanguageInfo[] = [
 	{
 		name: "go",
 		displayName: "Go",
