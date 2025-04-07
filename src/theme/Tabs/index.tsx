@@ -17,7 +17,6 @@ import clsx from "clsx";
 import React, { useContext, type ReactElement, type ReactNode } from "react";
 import styles from "./styles.module.css";
 import TabListContext from "./TabListContext";
-import { getCommonLabel } from "./utils";
 
 function getValidTabToShow(
 	tabValues: readonly TabValue[],
@@ -163,10 +162,6 @@ function TabsComponent(props: Props): ReactNode {
 		...tabs,
 		tabValues: tabs.tabValues
 			.slice(0)
-			.map((tab) => ({
-				...tab,
-				label: getCommonLabel(tab.value) || tab.label,
-			}))
 			.sort((a: any, b: any) => a.label.localeCompare(b.label)),
 	};
 	console.log("Tabs", sortedTabs);
