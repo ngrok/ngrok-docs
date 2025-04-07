@@ -17,6 +17,7 @@ import clsx from "clsx";
 import React, { useContext, type ReactElement, type ReactNode } from "react";
 import styles from "./styles.module.css";
 import TabListContext from "./TabListContext";
+import { getCommonLabel } from "./utils";
 
 function getValidTabToShow(
 	tabValues: readonly TabValue[],
@@ -69,6 +70,8 @@ function TabList({
 		const newTabIndex = tabRefs.indexOf(newTab);
 		const newTabValue =
 			tabValues[newTabIndex]!.label || tabValues[newTabIndex]!.value;
+
+		console.log("Switching to", tabValues[newTabIndex]);
 
 		if (newTabValue !== selectedTabItem && updateSelectedTabItem) {
 			blockElementScrollPositionUntilNextRender(newTab);
@@ -155,9 +158,21 @@ function TabContent({ children }: Props & ReturnType<typeof useTabs>) {
 
 function TabsComponent(props: Props): ReactNode {
 	const tabs = useTabs(props);
+	console.log("Tabs before sorting", tabs);
+	const sortedTabs = {
+		...tabs,
+		tabValues: tabs.tabValues
+			.slice(0)
+			.map((tab) => ({
+				...tab,
+				label: getCommonLabel(tab.value) || tab.label,
+			}))
+			.sort((a: any, b: any) => a.label.localeCompare(b.label)),
+	};
+	console.log("Tabs", sortedTabs);
 	return (
 		<div className={clsx("tabs-container", styles.tabList)}>
-			<TabList {...tabs} {...props} />
+			<TabList {...sortedTabs} {...props} />
 		</div>
 	);
 }

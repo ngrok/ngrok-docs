@@ -75,40 +75,6 @@ function DocsCodeBlock({
 			info={getLanguageInfo(language)}
 			codeBlockProps={props}
 		/>
-		// <div>
-		// 	<CodeBlock className={className} {...props}>
-		// 		<CodeBlockHeader className="flex w-[100%] justify-start p-1">
-		// 			<Button
-		// 				disabled
-		// 				type="button"
-		// 				priority="neutral"
-		// 				appearance={"outlined"}
-		// 			>
-		// 				{language.toUpperCase()}
-		// 			</Button>
-		// 		</CodeBlockHeader>
-		// 		<CodeBlockBody>
-		// 			{meta.title && (
-		// 				<div className="mx-2 mt-3.5 flex w-[100%] items-end justify-start gap-1.5">
-		// 					<>
-		// 						{meta.mode ? (
-		// 							<CodeBlockIcon preset={meta.mode as any} />
-		// 						) : (
-		// 							<CodeBlockIcon preset="file" />
-		// 						)}
-		// 						<CodeBlockTitle>
-		// 							<strong>{meta.title}</strong>
-		// 						</CodeBlockTitle>
-		// 					</>
-		// 				</div>
-		// 			)}
-		// 			{!meta.disableCopy && <CodeBlockCopyButton />}
-		// 			<CodeBlockCode language={language} value={codeblockContent} />
-		// 			{collapsible && <CodeBlockExpanderButton />}
-		// 		</CodeBlockBody>
-		// 	</CodeBlock>
-		// 	{info && <LanguageData data={info} />}
-		// </div>
 	);
 }
 
