@@ -1,4 +1,4 @@
-import questionAnswerRedirects from "./redirects/question-answer-redirects";
+questionAnswerRedirects = require("./redirects/question-answer-redirects");
 
 export const getNormalizedPaths = (from, path) => {
     return {

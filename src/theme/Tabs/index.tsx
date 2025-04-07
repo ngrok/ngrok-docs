@@ -112,7 +112,7 @@ function TabList({
 			<TabsList>
 				{tabValues.map(({ value, label, attributes }) => (
 					<TabsTrigger
-						value={label ?? value}
+						value={label || value}
 						role="tab"
 						aria-selected={selectedTabItem === label}
 						key={value}
@@ -123,7 +123,7 @@ function TabList({
 						onClick={handleTabChange}
 						{...attributes}
 					>
-						{label ?? value}
+						{label || value}
 					</TabsTrigger>
 				))}
 			</TabsList>

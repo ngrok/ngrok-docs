@@ -1,6 +1,6 @@
 export type LanguageInfo = {
 	name: string;
-	altNames?: string[];
+	allNames?: string[];
 	displayName: string;
 	links: string[];
 };
@@ -38,7 +38,16 @@ export const languageInfo: LanguageInfo[] = [
 			"https://ngrok.github.io/ngrok-javascript/interfaces/Config.html#addr",
 			"https://ngrok.github.io/ngrok-javascript/classes/TcpListenerBuilder.html#listenAndForward",
 		],
-		altNames: ["typescript", "ts", "js", "jsx", "tsx"],
+		allNames: ["javascript", "typescript", "ts", "js", "jsx", "tsx"],
+	},
+	{
+		name: "typescript",
+		displayName: "TypeScript",
+		links: [
+			"https://ngrok.github.io/ngrok-javascript/interfaces/Config.html#addr",
+			"https://ngrok.github.io/ngrok-javascript/classes/TcpListenerBuilder.html#listenAndForward",
+		],
+		allNames: ["typescript", "ts", "tsx"],
 	},
 ];
 

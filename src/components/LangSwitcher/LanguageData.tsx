@@ -21,7 +21,7 @@ export function LanguageData({ data }: { data: LanguageInfo }) {
 
 	return (
 		<div className="flex w-full justify-end">
-			<div className="mb-[0.8rem] mt-[0.3rem] text-xs text-gray-500 dark:text-gray-600">
+			<div className="mb-[0.9rem] mt-[0.3rem] text-xs text-gray-500 dark:text-gray-600">
 				See the ngrok {data.displayName} package docs {linkText}.
 			</div>
 		</div>

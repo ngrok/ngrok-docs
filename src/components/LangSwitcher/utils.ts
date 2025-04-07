@@ -1,11 +1,17 @@
 import { parseLanguage } from "@ngrok/mantle/code-block";
-import { languageInfo } from "./data";
+import { languageInfo, type LanguageInfo } from "./data";
 
-export function getTabNameData(metastring: string) {
-	if (!metastring.includes("tabName=")) return "";
+export function getMetaDataWithQuotes(
+	propertyName: string,
+	metastring: string,
+) {
+	const property = `${propertyName}=`;
+	if (!metastring.includes(property)) return null;
 	// Get the substring starting with tabName= and ending with
 	// a closing quote and a space
-	const tabNameSubstring = metastring.split("tabName=")[1] ?? "";
+	const tabNameSubstring = metastring.split(property)[1] ?? "";
+	// If the first character is not a quote, we shouldn't parse this property
+	if (tabNameSubstring[0] !== '"') return null;
 	const lastQuoteIndex = tabNameSubstring.indexOf(`" `);
 	const tabNameValueEnd =
 		lastQuoteIndex > 0 ? lastQuoteIndex : tabNameSubstring.length - 1;
@@ -24,8 +30,13 @@ export function getMetaData(metastring: string | undefined) {
 			metaData[key] = value.replace(/['"]/g, ""); // Remove " characters
 		}
 	});
-	// Add the tabName to the metaData object
-	metaData["tabName"] = getTabNameData(metastring); // Remove " characters
+	// Add the properties that use quotes to the metaData object
+	["tabName", "title"].forEach((property) => {
+		const quotedData = getMetaDataWithQuotes(property, metastring);
+		if (quotedData) {
+			metaData[property] = quotedData;
+		}
+	});
 	return metaData;
 }
 
@@ -56,9 +67,23 @@ export const getCodeBlocks = (children: any) => {
 export const getLanguageInfo = (language: string) => {
 	return languageInfo.find(
 		(item) =>
-			item.name === language || item?.altNames?.some((alt) => alt === language),
+			item.name === language || item?.allNames?.some((alt) => alt === language),
 	);
 };
+
+export function languagesAreSynonyms(
+	languageToCheck: string,
+	selectedLanguage: string | null,
+) {
+	if (!selectedLanguage) return false;
+	const synonymousLanguage = languageInfo.find((lang: LanguageInfo) =>
+		lang.allNames?.includes(selectedLanguage),
+	);
+	return (
+		synonymousLanguage?.name === languageToCheck ||
+		synonymousLanguage?.allNames?.includes(languageToCheck)
+	);
+}
 
 // The name of the query param or localstorage item to search for
 // to get the default tab value

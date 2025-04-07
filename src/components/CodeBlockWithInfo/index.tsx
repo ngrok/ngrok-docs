@@ -1,3 +1,4 @@
+import useBaseUrl from "@docusaurus/useBaseUrl";
 import {
 	CodeBlock,
 	CodeBlockBody,
@@ -60,7 +61,13 @@ export function CodeBlockWithInfo({
 									<CodeBlockIcon preset="file" />
 								)}
 								<CodeBlockTitle>
-									<strong>{meta.title}</strong>
+									{meta.titleLink ? (
+										<a href={useBaseUrl(meta.titleLink)}>
+											<strong>{meta.title}</strong>
+										</a>
+									) : (
+										<strong>{meta.title}</strong>
+									)}
 								</CodeBlockTitle>
 							</>
 						</div>

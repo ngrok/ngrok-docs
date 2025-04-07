@@ -6,7 +6,7 @@ import { CodeBlockWithInfo } from "../CodeBlockWithInfo";
 import LangSwitcherContext, {
 	type LangSwitcherContextType,
 } from "./LangSwitcherContext";
-import { getCodeBlocks } from "./utils";
+import { getCodeBlocks, languagesAreSynonyms } from "./utils";
 
 export function LangSwitcher({ children, className, ...props }: any) {
 	const { defaultLanguage, selectedLanguage, updateSelectedLanguage } =
@@ -27,8 +27,11 @@ export function LangSwitcher({ children, className, ...props }: any) {
 	}
 
 	const matchingBlock =
-		codeBlocks.find((child: any) => child.language === selectedLanguage) ||
-		codeBlocks[0];
+		codeBlocks.find(
+			(child: any) =>
+				child.language === selectedLanguage ||
+				languagesAreSynonyms(child.language, selectedLanguage),
+		) || codeBlocks[0];
 
 	return (
 		<BrowserOnly
