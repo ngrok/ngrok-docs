@@ -58,33 +58,6 @@ const sidebars = {
 						"universal-gateway/wildcard-domains/wildcard-endpoints",
 					],
 				},
-				"universal-gateway/what-are-matching-endpoints",
-				{
-					label: "What are TCP Addresses?",
-					type: "category",
-					link: {
-						type: "doc",
-						id: "universal-gateway/tcp-addresses/what-are-tcp-addresses",
-					},
-					items: [
-						"universal-gateway/tcp-addresses/how-are-tcp-addresses-assigned",
-					],
-				},
-				{
-					label: "How Does ngrok Handle TLS?",
-					type: "category",
-					link: {
-						type: "doc",
-						id: "universal-gateway/tls-certificates/how-does-ngrok-handle-tls",
-					},
-					items: [
-						"universal-gateway/tls-certificates/what-is-automatic-certificate-management",
-						"universal-gateway/tls-certificates/how-are-certificates-selected",
-						"universal-gateway/tls-certificates/how-do-i-use-my-own-certificates",
-						"universal-gateway/tls-certificates/what-is-a-certificate-bundle",
-						"universal-gateway/tls-certificates/what-are-private-tls-keys",
-					],
-				},
 				{
 					label: "What are Endpoints?",
 					type: "category",
@@ -132,9 +105,36 @@ const sidebars = {
 							id: "universal-gateway/agent-endpoints",
 							type: "doc",
 						},
+						"universal-gateway/what-are-matching-endpoints",
 						"universal-gateway/chain-endpoints",
 						"universal-gateway/mock-api",
 						"universal-gateway/migrate-from-tunnels",
+					],
+				},
+				{
+					label: "What are TCP Addresses?",
+					type: "category",
+					link: {
+						type: "doc",
+						id: "universal-gateway/tcp-addresses/what-are-tcp-addresses",
+					},
+					items: [
+						"universal-gateway/tcp-addresses/how-are-tcp-addresses-assigned",
+					],
+				},
+				{
+					label: "How Does ngrok Handle TLS?",
+					type: "category",
+					link: {
+						type: "doc",
+						id: "universal-gateway/tls-certificates/how-does-ngrok-handle-tls",
+					},
+					items: [
+						"universal-gateway/tls-certificates/what-is-automatic-certificate-management",
+						"universal-gateway/tls-certificates/how-are-certificates-selected",
+						"universal-gateway/tls-certificates/how-do-i-use-my-own-certificates",
+						"universal-gateway/tls-certificates/what-is-a-certificate-bundle",
+						"universal-gateway/tls-certificates/what-are-private-tls-keys",
 					],
 				},
 				{
