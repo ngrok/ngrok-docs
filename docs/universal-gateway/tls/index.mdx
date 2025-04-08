@@ -1,0 +1,204 @@
+---
+title: TLS Endpoints
+---
+
+import { LangSwitcher } from "@site/src/components/LangSwitcher";
+import { ContentSwitcher } from "@site/src/components/LangSwitcher/ContentSwitcher";
+import TabItem from "@theme/TabItem";
+import Tabs from "@theme/Tabs";
+import TlsLimits from "./_tls_limits.mdx";
+
+# TLS Endpoints
+
+## Overview
+
+TLS endpoints enable you to deliver any network service that runs over a
+TLS-based protocol. TLS endpoints make no assumptions about the wrapped
+protocol being transported.
+
+TLS endpoints inspect the [Server Name Indication (SNI)](#sni)
+data on incoming TLS connections to route connections to the appropriate
+endpoint.
+
+Because the TLS protocol describes no application-level semantics, ngrok can
+only offer a [limited set of traffic policy actions](/traffic-policy/actions/)
+to handle TLS traffic.
+
+If you are delivering an HTTPS application, prefer to create an [HTTP
+Endpoint](/universal-gateway/http/).
+
+## Quickstart
+
+<Tabs groupId="endpoint-type" queryString="ept">
+	<TabItem value="agent-endpoint" label="Agent Endpoint" default>
+
+<LangSwitcher>
+```bash
+ngrok tls 80 \
+  --url tls://your-name.ngrok.app \
+  --traffic-policy-file traffic-policy.yml
+```
+
+```go
+import (
+        "context"
+        "net"
+
+        "golang.ngrok.com/ngrok"
+        "golang.ngrok.com/ngrok/config"
+)
+
+func ngrokListener(ctx context.Context) (net.Listener, error) {
+        return ngrok.Listen(ctx,
+                config.TLSEndpoint(
+                        config.WithDomain("your-name.ngrok.app"),
+                        config.WithTLSTermination(
+                                config.WithTLSTerminationAt(config.TLSAtEdge),
+                        ),
+                ),
+                ngrok.WithAuthtokenFromEnv(),
+        )
+}
+```
+
+```jsx
+const ngrok = require("@ngrok/ngrok");
+const fs = require("fs");
+
+(async function () {
+	const listener = await ngrok.forward({
+		addr: 8080,
+		authtoken_from_env: true,
+		proto: "tls",
+		domain: "app.example.com",
+		crt: fs.readFileSync("/path/to/app-example-com-crt.pem", "utf8"),
+		key: fs.readFileSync("/path/to/app-example-com-key.pem", "utf8"),
+		mutual_tls_cas: [fs.readFileSync("/path/to/cas.pem", "utf8")],
+	});
+
+	console.log(`Ingress established at: ${listener.url()}`);
+})();
+```
+
+```python
+import ngrok
+
+def load_file(name):
+    with open(name, "r") as crt:
+        return bytearray(crt.read().encode())
+
+listener = ngrok.forward("localhost:8080", authtoken_from_env=True,
+    proto="tls",
+    domain="app.example.com",
+    crt=load_file("/path/to/app-example-com-crt.pem"),
+    key=load_file("/path/to/app-example-com-key.pem"),
+	mutual_tls_cas=load_file("/path/to/cas.pem"))
+
+print(f"Ingress established at: {listener.url()}");
+```
+
+</LangSwitcher>
+
+<ContentSwitcher languages={["bash"]}>
+
+For the above example, you can use the following Traffic Policy file:
+
+```yaml title="traffic-policy.yml"
+on_tcp_connect:
+  - actions:
+      - type: terminate-tls
+```
+
+</ContentSwitcher>
+    </TabItem>
+    <TabItem value="agent-config" label="Agent Config">
+
+```yaml
+version: 3
+endpoints:
+  - name: example
+    url: tls://your-name.ngrok.app
+    upstream:
+      url: 80
+    traffic_policy:
+      on_tcp_connect:
+        - actions:
+            - type: terminate-tls
+```
+
+    </TabItem>
+    <TabItem value="k8s" label="Kubernetes Controller">
+
+```yaml
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: example-route
+  namespace: ngrok-gateway
+spec:
+  rules:
+    - backendRefs:
+        - name: game-2048
+          port: 80
+          kind: Service
+      filters:
+        - type: RequestHeaderModifier
+          requestHeaderModifier:
+            remove: ["x-request-id"]
+            add:
+              - name: my-request-header-name
+                value: my-header-value
+            set:
+              - name: my-request-header-to-set
+                value: set-header-value
+```
+
+    </TabItem>
+
+</Tabs>
+
+:::info
+
+TLS termination at the edge is not supported for:
+
+- SSH
+- Rust
+
+:::
+
+## Learn more
+
+- **URLS** — URLs are validated differently depending on their [binding](/universal-gateway/bindings). To learn more about valid URLs for TLS endpoints, see [the Endpoint URLs documentation](/docs/universal-gateway/what-are-endpoint-urls/#http).
+- **Domains** — Public TLS endpoints must match a domain on your account. See [the domains documentation](/universal-gateway/domains/what-are-domains/) for more information.
+- **Authentication** — You can secure your TLS endpoints with the [IP Restriction](/traffic-policy/actions/restrict-ips/) and [Mutual TLS](/docs/guides/other-guides/how-to-terminate-traffic-with-ngrok-configs/#mutual-tls-example) Traffic Policy actions. There is a limited set of actions available to authenticate TLS traffic because the TLS protocol is low-level.
+- **Bring your own domain** — To use your own domain with TLS endpoints, see [the guide on the subject](/universal-gateway/how-do-i-use-my-own-domain).
+- **Wildcard Endpoints** — You can create TLS endpoints that receive traffic from all of the subdomains matching a given wildcard domain. See [the wildcard domain docs](/universal-gateway/wildcard-domains/) for more information.
+- **Traffic Policy** — Attach [Traffic Policy](/traffic-policy/) to endpoints to route, authenticate and transform the traffic through the endpoint.
+- **Agent Forwarding** — The [ngrok agent](/agent/) and [Agent SDKs](/agent-sdks/) forward traffic that your endpoints receive to upstream services. See [the agent forwarding documentation](/universal-gateway/agent-forwarding/) for more information.
+- **Traffic Observability** — [Traffic Inspector](/obs/traffic-inspection/) gives you a real-time view in the ngrok dashboard of the traffic flowing through your TLS endpoints. You can even [export traffic logs with the Traffic Events system](/docs/obs/events/reference/).
+- **TLS Certificates** — Learn how [ngrok automatically handles TLS](/universal-gateway/tls-certificates/how-does-ngrok-handle-tls/) and [TLS termination](/universal-gateway/tls-termination/) for TLS endpoints for you.
+
+## TLS termination
+
+TLS Endpoints enable you to to define where [TLS termination](/universal-gateway/tls-termination/) occurs. You can configure your endpoint to terminate TLS at the ngrok cloud service. You can also achieve [end-to-end encryption](/universal-gateway/tls-termination/#end-to-end-encryption) by terminating at the agent or your upstream service.
+
+:::tip
+When you use end-to-end encryption, the ngrok cloud service can not see payloads that transit through your endpoints.
+:::
+
+See [the TLS Termination documentation](/universal-gateway/tls-termination/#termination-location) for more information.
+
+## Errors
+
+Learn how ngrok handles errors for TLS endpoints in the [Errors documentation](/errors/#tls-errors).
+
+## API
+
+TLS Endpoints can be created programatically. Consult the documentation on
+[Endpoint APIs](/api/resources/endpoints/).
+
+## Limits & Timeouts
+
+TLS endpoints are available on Pay-as-you-go, Pro, and Enterprise plans. Consult the [pricing](/pricing-limits/) documentation for general billing details.
+
+For TLS limits, see the [endpoint Limits documentation](/pricing-limits/endpoint-limits/).

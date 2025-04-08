@@ -127,7 +127,7 @@ const sidebars = {
 					type: "category",
 					link: {
 						type: "doc",
-						id: "universal-gateway/tls",
+						id: "universal-gateway/tls/index",
 					},
 					items: [
 						"universal-gateway/tls-termination",
@@ -146,6 +146,7 @@ const sidebars = {
 								"universal-gateway/tls-certificates/what-are-private-tls-keys",
 							],
 						},
+						"universal-gateway/tls/tls-clients",
 					],
 				},
 				{

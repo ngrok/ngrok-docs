@@ -23,7 +23,7 @@ export function ContentSwitcher({
 
 	for (const lang of languages) {
 		if (lang === selectedLanguage) {
-			return children;
+			return <div className="mt-[1rem]">{children}</div>;
 		}
 	}
 	return null;
