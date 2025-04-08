@@ -11,7 +11,6 @@ import {
 	fmtCode,
 } from "@ngrok/mantle/code-block";
 import clsx from "clsx";
-import convertToSpaces from "convert-to-spaces";
 import type { ReactNode } from "react";
 import type { LanguageInfo } from "../LangSwitcher/data";
 import { LanguageData } from "../LangSwitcher/LanguageData";
@@ -41,10 +40,6 @@ export function CodeBlockWithInfo({
 		? false
 		: meta.collapsible && content.split("\n").length > collapseLineNumber;
 
-	const codeblockContent = !meta?.tabsToSpaces
-		? content
-		: convertToSpaces(content);
-
 	return (
 		<div className="flex flex-col">
 			<CodeBlock className={clsx(className, "mb-0")} {...codeBlockProps}>
@@ -73,10 +68,7 @@ export function CodeBlockWithInfo({
 						</div>
 					)}
 					{!meta?.disableCopy && <CodeBlockCopyButton />}
-					<CodeBlockCode
-						language={language}
-						value={fmtCode`${codeblockContent}`}
-					/>
+					<CodeBlockCode language={language} value={fmtCode`${content}`} />
 					{collapsible && <CodeBlockExpanderButton />}
 				</CodeBlockBody>
 			</CodeBlock>
