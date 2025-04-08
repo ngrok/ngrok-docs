@@ -178,16 +178,6 @@ const sidebars = {
 							link: { type: "doc", id: "universal-gateway/protocols" },
 							items: [
 								{
-									id: "universal-gateway/http",
-									type: "doc",
-									label: "HTTP/S",
-								},
-								{
-									id: "universal-gateway/tls",
-									type: "doc",
-									label: "TLS",
-								},
-								{
 									id: "universal-gateway/tcp",
 									type: "doc",
 									label: "TCP",
