@@ -123,18 +123,28 @@ const sidebars = {
 					],
 				},
 				{
-					label: "How Does ngrok Handle TLS?",
+					label: "How Do I Handle TLS Traffic?",
 					type: "category",
 					link: {
 						type: "doc",
-						id: "universal-gateway/tls-certificates/how-does-ngrok-handle-tls",
+						id: "universal-gateway/tls",
 					},
 					items: [
-						"universal-gateway/tls-certificates/what-is-automatic-certificate-management",
-						"universal-gateway/tls-certificates/how-are-certificates-selected",
-						"universal-gateway/tls-certificates/how-do-i-use-my-own-certificates",
-						"universal-gateway/tls-certificates/what-is-a-certificate-bundle",
-						"universal-gateway/tls-certificates/what-are-private-tls-keys",
+						{
+							label: "How Does ngrok Handle TLS Certificates?",
+							type: "category",
+							link: {
+								type: "doc",
+								id: "universal-gateway/tls-certificates/how-does-ngrok-handle-tls",
+							},
+							items: [
+								"universal-gateway/tls-certificates/what-is-automatic-certificate-management",
+								"universal-gateway/tls-certificates/how-are-certificates-selected",
+								"universal-gateway/tls-certificates/how-do-i-use-my-own-certificates",
+								"universal-gateway/tls-certificates/what-is-a-certificate-bundle",
+								"universal-gateway/tls-certificates/what-are-private-tls-keys",
+							],
+						},
 					],
 				},
 				{
