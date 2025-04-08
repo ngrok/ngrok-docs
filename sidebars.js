@@ -67,8 +67,8 @@ const sidebars = {
 					},
 					items: [
 						"universal-gateway/bindings",
+						"universal-gateway/agent-endpoints",
 						"universal-gateway/public-endpoints/index",
-						"universal-gateway/what-are-endpoint-urls",
 						{
 							label: "What are Internal Endpoints?",
 							type: "category",
@@ -77,6 +77,15 @@ const sidebars = {
 								id: "universal-gateway/internal-endpoints/index",
 							},
 							items: ["universal-gateway/internal-endpoints/quickstart"],
+						},
+						{
+							label: "What are Cloud Endpoints?",
+							type: "category",
+							link: {
+								type: "doc",
+								id: "universal-gateway/cloud-endpoints/index",
+							},
+							items: ["universal-gateway/cloud-endpoints/quickstart"],
 						},
 						{
 							label: "What are Kubernetes Endpoints?",
@@ -91,20 +100,8 @@ const sidebars = {
 								"universal-gateway/kubernetes-endpoints/selector",
 							],
 						},
-						{
-							label: "What are Cloud Endpoints?",
-							type: "category",
-							link: {
-								type: "doc",
-								id: "universal-gateway/cloud-endpoints/index",
-							},
-							items: ["universal-gateway/cloud-endpoints/quickstart"],
-						},
-						{
-							label: "What are Agent Endpoints?",
-							id: "universal-gateway/agent-endpoints",
-							type: "doc",
-						},
+						"universal-gateway/what-are-endpoint-urls",
+						"universal-gateway/http-s/endpoint-url-defaults",
 						"universal-gateway/what-are-matching-endpoints",
 						"universal-gateway/chain-endpoints",
 						"universal-gateway/mock-api",
@@ -150,7 +147,7 @@ const sidebars = {
 					label: "How Do I Handle HTTP/S Traffic?",
 					type: "category",
 					link: { type: "doc", id: "universal-gateway/http-s/index" },
-					items: ["universal-gateway/http-s/endpoint-url-defaults"],
+					items: ["universal-gateway/http-s/http-s-endpoints"],
 				},
 				{
 					label: "Endpoints",

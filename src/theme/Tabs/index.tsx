@@ -155,7 +155,7 @@ function TabContent({ children }: Props & ReturnType<typeof useTabs>) {
 
 function TabsComponent(props: Props): ReactNode {
 	const tabs = useTabs(props);
-	const sortedTabs = {
+	const alphabetizedTabs = {
 		...tabs,
 		tabValues: tabs.tabValues
 			.slice(0)
@@ -165,7 +165,7 @@ function TabsComponent(props: Props): ReactNode {
 	};
 	return (
 		<div className={clsx("tabs-container", styles.tabList)}>
-			<TabList {...sortedTabs} {...props} />
+			<TabList {...alphabetizedTabs} {...props} />
 		</div>
 	);
 }

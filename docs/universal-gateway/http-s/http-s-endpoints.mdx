@@ -1,0 +1,55 @@
+---
+title: How do HTTP/S Endpoints Work?
+description: Learn how ngrok's HTTP/S endpoints support websockets, HTTP/2, and more.
+---
+
+[HTTP/S endpoints](/universal-gateway/https-s) are standards-compliant HTTP reverse proxies.
+
+## Supported versions
+
+- HTTP/S endpoints support HTTP/1.1.
+- HTTPS endpoints support HTTP/1.1 and HTTP/2.
+- HTTP/1.0, HTTP/3 and QUIC are **not** supported.
+
+## HTTP/2 support
+
+HTTP/2 is a newer version of HTTP that offers improved performance by enabling multiple requests and responses over a single connection, among [other benefits](https://en.wikipedia.org/wiki/HTTP/2).
+
+ngrok's HTTPS endpoints automatically use HTTP/2 for all connections if the client
+supports it. Client support is determined via standard [ALPN](https://en.wikipedia.org/wiki/Application-Layer_Protocol_Negotiation).
+
+HTTP/2 is used between the client and your endpoint even if your upstream
+service does not support HTTP/2.
+
+See the [HTTP/2 agent forwarding](/universal-gateway/agent-forwarding/#http2-forwarding) documentation to learn how to use HTTP/2 when sending traffic to an upstream service.
+
+## Websocket support
+
+Websocket connections are supported out-of-the-box with no configuration required.
+
+## Hop by hop headers
+
+ngrok does not forward any [hop-by-hop
+headers](https://datatracker.ietf.org/doc/html/rfc2616#section-13.5.1) to upstream services other than `Connection: upgrade`, which are forwarded
+to support [websockets](#websocket-support).
+
+For information on headers added automatically by ngrok, see
+[the docs on upstream headers for HTTP/S endpoints](/universal-gateway/http-s/#upstream-headers).
+
+## Persistent connections
+
+When a connection is made to HTTP/S ngrok endpoints with HTTP/1.1, ngrok may
+choose to use [persistent connections](https://en.wikipedia.org/wiki/HTTP_persistent_connection), or HTTP keep-alive, to improve the
+performance of future requests from the same client (if the client supports it).
+
+This behavior is not guaranteed and it is not configurable.
+
+See [RFC 7230](https://datatracker.ietf.org/doc/html/rfc7230#section-6.3) for
+additional details.
+
+## Well Known URIs
+
+ngrok handles the `/.well-known/acme-challenge` path of any HTTP endpoint matching a
+[domain](/universal-gateway/domains/what-are-domains) with [automated certificate management](/universal-gateway/tls-certificates/what-is-automatic-certificate-management/)
+enabled. You may disable this behavior by [uploading your own certificate](/universal-gateway/tls-certificates/how-do-i-use-my-own-certificates/) on the
+matching domain.
