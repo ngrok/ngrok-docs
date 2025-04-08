@@ -123,6 +123,15 @@ const sidebars = {
 					],
 				},
 				{
+					label: "How Do I Handle HTTP/S Traffic?",
+					type: "category",
+					link: { type: "doc", id: "universal-gateway/http-s/index" },
+					items: [
+						"universal-gateway/http-s/http-s-endpoints",
+						"universal-gateway/http-s/upstream-headers",
+					],
+				},
+				{
 					label: "How Do I Handle TLS Traffic?",
 					type: "category",
 					link: {
@@ -156,15 +165,6 @@ const sidebars = {
 					items: [
 						"universal-gateway/agent-forwarding/non-local-forwarding",
 						"universal-gateway/agent-forwarding/serving-file-directories",
-					],
-				},
-				{
-					label: "How Do I Handle HTTP/S Traffic?",
-					type: "category",
-					link: { type: "doc", id: "universal-gateway/http-s/index" },
-					items: [
-						"universal-gateway/http-s/http-s-endpoints",
-						"universal-gateway/http-s/upstream-headers",
 					],
 				},
 				{
