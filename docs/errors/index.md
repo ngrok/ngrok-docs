@@ -60,3 +60,17 @@ complete list of all of ngrok's error codes.
 ## Customize Error Pages for your Traffic
 
 To access and provide feedback on a development preview of custom error pages [Fill out the form](https://ngrok.com/new-features/custom-error-pages?ref=errordoc).
+
+## HTTP Errors
+
+If ngrok fails to handle an HTTP request it will set the `ngrok-error-code` header in the HTTP response with a [unique ngrok Error Code](/errors/) describing the failure.
+
+ngrok guarantees that the upstream service may never set the `ngrok-error-code` HTTP response header so you know reliably that it was set by ngrok.
+
+ngrok may return an error under the following conditions:
+
+- Your upstream service timed out or rejected the connection
+- Your upstream service returned a response that was not valid HTTP
+- A [Traffic Policy](/traffic-policy) action rejected the request.
+- [Traffic Policy](/traffic-policy) execution encountered a runtime error.
+- ngrok encountered an internal error
