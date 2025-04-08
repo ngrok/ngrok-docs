@@ -21,6 +21,10 @@ type Props = WithStyleProps & {
 	 */
 	children: string;
 	/**
+	 * The array of children to show in the codeblock if the switcher functionality is active
+	 */
+	switcherChildren?: string[];
+	/**
 	 * Specifies the language of the code block (e.g., language-js, language-python).
 	 */
 	className?: string;
@@ -57,6 +61,7 @@ function DocsCodeBlock({
 	metastring,
 	mode: _mode,
 	title: _title,
+	switcherChildren,
 	...props
 }: Props) {
 	const language = _language ?? parseLanguage(className);

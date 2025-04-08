@@ -1,18 +1,8 @@
-import BrowserOnly from "@docusaurus/BrowserOnly";
-import { useMDXComponents } from "@mdx-js/react";
-import {
-	Accordion,
-	AccordionContent,
-	AccordionHeading,
-	AccordionItem,
-	AccordionTrigger,
-	AccordionTriggerIcon,
-} from "@ngrok/mantle/accordion";
-import TabItem from "@theme/TabItem";
-import Tabs from "@theme/Tabs";
-import { useState, type ReactNode } from "react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@ngrok/mantle/tabs";
+import { type ReactNode } from "react";
 import YAML, { type ToStringOptions } from "yaml";
-import DocsCodeBlock, { CodeBlockFallback } from "./code-block";
+import DocsCodeBlock from "./code-block";
+import { LangSwitcher } from "./LangSwitcher";
 
 const showExample = (
 	defaultTitle: string,
@@ -28,44 +18,24 @@ const showExample = (
 ) => {
 	const titleToUse = title || defaultTitle;
 	return (
-		<Tabs className="mb-4" groupId="config_example" queryString="config">
-			<TabItem value="YAML" label="YAML">
-				<BrowserOnly
-					fallback={
-						<CodeBlockFallback className="mb-4">Loading…</CodeBlockFallback>
-					}
-				>
-					{() => (
-						<DocsCodeBlock
-							language="yaml"
-							metastring={yamlMetastring}
-							title={titleToUse + ".yml"}
-							icon={icon}
-						>
-							{snippetText ? `# ${snippetText}\n` + yamlConfig : yamlConfig}
-						</DocsCodeBlock>
-					)}
-				</BrowserOnly>
-			</TabItem>
-			<TabItem value="JSON" label="JSON">
-				<BrowserOnly
-					fallback={
-						<CodeBlockFallback className="mb-4">Loading…</CodeBlockFallback>
-					}
-				>
-					{() => (
-						<DocsCodeBlock
-							language="json"
-							metastring={jsonMetastring}
-							title={titleToUse + ".json"}
-							icon={icon}
-						>
-							{snippetText ? `// ${snippetText}\n` + jsonConfig : jsonConfig}
-						</DocsCodeBlock>
-					)}
-				</BrowserOnly>
-			</TabItem>
-		</Tabs>
+		<LangSwitcher>
+			<DocsCodeBlock
+				language="yaml"
+				metastring={yamlMetastring}
+				title={titleToUse + ".yml"}
+				icon={icon}
+			>
+				{snippetText ? `# ${snippetText}\n` + yamlConfig : yamlConfig}
+			</DocsCodeBlock>
+			<DocsCodeBlock
+				language="json"
+				metastring={jsonMetastring}
+				title={titleToUse + ".json"}
+				icon={icon}
+			>
+				{snippetText ? `// ${snippetText}\n` + jsonConfig : jsonConfig}
+			</DocsCodeBlock>
+		</LangSwitcher>
 	);
 };
 
@@ -99,17 +69,16 @@ export type ConfigExampleProps = {
 	jsonMetastring?: string;
 	title?: string;
 	icon?: ReactNode;
-	showAgentConfig?: boolean;
+	hideAgentConfig?: boolean;
+	hideTrafficPolicy?: boolean;
 };
 
 export default function ConfigExample({
 	// Show the agent config by default
-	showAgentConfig = true,
+	hideAgentConfig = false,
+	hideTrafficPolicy = false,
 	...props
 }: ConfigExampleProps) {
-	const components = useMDXComponents();
-	const [configShowing, setConfigShowing] = useState(false);
-
 	const yamlOptions = {
 		indent: 2,
 		directives: true,
@@ -134,34 +103,29 @@ export default function ConfigExample({
 		agentConfig.yamlConfig,
 		agentConfig.jsonConfig,
 	);
-	if (!components.h3) return <p>Error rendering config example.</p>;
+	if (hideAgentConfig && hideTrafficPolicy)
+		throw new Error(
+			"At least one of hideAgentConfig or hideTrafficPolicy must be false",
+		);
 	return (
-		<>
-			{policySnippet}
-			{showAgentConfig && (
-				<Accordion type="multiple" defaultValue={["show-agent-config"]}>
-					<AccordionItem value="show-agent-config1">
-						<AccordionHeading asChild>
-							<p className="text-sm font-medium text-gray-600">
-								{!configShowing
-									? "Show agent config example"
-									: "Hide agent config example"}
-								<AccordionTrigger
-									onClick={() => setConfigShowing(!configShowing)}
-								>
-									<AccordionTriggerIcon />
-								</AccordionTrigger>
-							</p>
-						</AccordionHeading>
-						<AccordionContent className="mx-[10px] pt-[-15px]">
-							<>
-								<p>You can add the snippet to your agent config like this:</p>
-								{agentConfigSnippet}
-							</>
-						</AccordionContent>
-					</AccordionItem>
-				</Accordion>
+		<Tabs
+			orientation="horizontal"
+			defaultValue={hideTrafficPolicy ? "agent-config" : "traffic-policy"}
+		>
+			<TabsList>
+				{hideTrafficPolicy ? null : (
+					<TabsTrigger value="traffic-policy">Traffic Policy</TabsTrigger>
+				)}
+				{hideAgentConfig ? null : (
+					<TabsTrigger value="agent-config">Agent Config</TabsTrigger>
+				)}
+			</TabsList>
+			{hideTrafficPolicy ? null : (
+				<TabsContent value="traffic-policy">{policySnippet}</TabsContent>
 			)}
-		</>
+			{hideAgentConfig ? null : (
+				<TabsContent value="agent-config">{agentConfigSnippet}</TabsContent>
+			)}
+		</Tabs>
 	);
 }

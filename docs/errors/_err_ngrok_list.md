@@ -5273,10 +5273,10 @@
     </tr>
     <tr>
       <td>
-        <a id="ERR_NGROK_2251" href="/docs/errors/err_ngrok_2251">ERR_NGROK_2251</a>
+        <a id="ERR_NGROK_2252" href="/docs/errors/err_ngrok_2252">ERR_NGROK_2252</a>
       </td>
       <td class="pre-wrapped">
-        Invalid configuration for set-vars: Cannot set variables based on other variables that were previously created using the set-vars action
+        Invalid format for set-vars: vars must be a list of maps of exactly size 1
       </td>
     </tr>
     <tr>
@@ -8176,9 +8176,9 @@
         <a id="ERR_NGROK_7008" href="/docs/errors/err_ngrok_7008">ERR_NGROK_7008</a>
       </td>
       <td class="pre-wrapped">
-        Only Pro and Enterprise plans are allowed to use edges.
-        Your account is not authorized to use edges.
-        Upgrade to a Pro or Enterprise plan at: <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a>
+        Edges are deprecated and no longer available.
+        If you’ve used edges before, a migration guide is available: <a href="https://ngrok.com/docs/universal-gateway/edges">https://ngrok.com/docs/universal-gateway/edges</a>/#migration-guide.
+        If you have lost access to actively running edges, this is an error, please contact support@ngrok.com for help.
       </td>
     </tr>
     <tr>
@@ -9734,7 +9734,7 @@
         <a id="ERR_NGROK_8014" href="/docs/errors/err_ngrok_8014">ERR_NGROK_8014</a>
       </td>
       <td class="pre-wrapped">
-        Your agent has been blocked from connecting to ngrok because it has been suspected of violating our Acceptable Use policy: <a href="https://ngrok.com/tos">https://ngrok.com/tos</a>
+        Your agent has been blocked from connecting to ngrok because it has been suspected of violating our Acceptable Use policy: <a href="https://ngrok.com/tos">https://ngrok.com/tos</a> Your actions have been reported to our security team.
       </td>
     </tr>
     <tr>
@@ -11014,6 +11014,14 @@
     </tr>
     <tr>
       <td>
+        <a id="ERR_NGROK_19003" href="/docs/errors/err_ngrok_19003">ERR_NGROK_19003</a>
+      </td>
+      <td class="pre-wrapped">
+        Failed to validate  endpoint selectors! Reason: <code>&lt;ERROR&gt;</code>
+      </td>
+    </tr>
+    <tr>
+      <td>
         <a id="ERR_NGROK_20000" href="/docs/errors/err_ngrok_20000">ERR_NGROK_20000</a>
       </td>
       <td class="pre-wrapped">
@@ -11074,22 +11082,6 @@
       </td>
       <td class="pre-wrapped">
         Failed to lookup IP <code>&lt;IP&gt;</code>: <code>&lt;ERR&gt;</code>.
-      </td>
-    </tr>
-    <tr>
-      <td>
-        <a id="ERR_NGROK_22000" href="/docs/errors/err_ngrok_22000">ERR_NGROK_22000</a>
-      </td>
-      <td class="pre-wrapped">
-        We do not allow access to ngrok.com from anonymous proxies such as Tor.
-      </td>
-    </tr>
-    <tr>
-      <td>
-        <a id="ERR_NGROK_22001" href="/docs/errors/err_ngrok_22001">ERR_NGROK_22001</a>
-      </td>
-      <td class="pre-wrapped">
-        We do not allow access to ngrok.com from your location. Your location was determined using your IP address.
       </td>
     </tr>
   </tbody>

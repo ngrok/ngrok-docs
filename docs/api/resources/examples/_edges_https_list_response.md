@@ -6,15 +6,15 @@
 {
 	"https_edges": [
 		{
-			"created_at": "2025-03-11T18:37:45Z",
+			"created_at": "2025-03-26T10:07:00Z",
 			"description": "acme https edge",
 			"hostports": ["example.com:443"],
-			"id": "edghts_2uBNywx1yzegPo53L1jR2RlZGYO",
+			"id": "edghts_2uqkijdSt7BcNcLRqE9ZCdqeRSs",
 			"metadata": "{\"environment\": \"staging\"}",
 			"mutual_tls": null,
 			"routes": [],
 			"tls_termination": null,
-			"uri": "https://api.ngrok.com/edges/https/edghts_2uBNywx1yzegPo53L1jR2RlZGYO"
+			"uri": "https://api.ngrok.com/edges/https/edghts_2uqkijdSt7BcNcLRqE9ZCdqeRSs"
 		}
 	],
 	"next_page_uri": null,

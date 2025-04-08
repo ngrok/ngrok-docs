@@ -1,0 +1,141 @@
+---
+title: Tunnel
+---
+
+## Tunnel Custom Resource
+
+### **apiVersion:** `ingress.k8s.ngrok.com/v1alpha1`
+
+### **kind:** `Tunnel`
+
+Tunnels are automatically created by the controller based on the created `Ingress`/`Gateway`/`CloudEndpoint`/`AgentEndpoint` resources.
+A tunnel will be created for each backend service name and port combination.
+Tunnels are automatically-created and managed but the custom resource provides a useful way to inspect established tunnels and should not be edited directly.
+
+## Tunnel Structure and Types
+
+The following outlines the high level structure and typings of a `Tunnel`
+
+```yaml
+apiVersion: ingress.k8s.ngrok.com/v1alpha1
+kind: Tunnel
+metadata:
+  name: <string>
+	namespace: <string>
+spec:
+  forwardsTo: <string>        # required
+	labels: <map[string]string> # optional
+	backend:                    # optional
+    protocol: <string>        # required
+	appProtocol: <string>       # optional
+```
+
+## Tunnel Fields
+
+The following sections outline each field of the `Tunnel` custom resource, whether they are required, what their default values are (if applicable), and a description of their purpose/constraints.
+
+### `spec`
+
+`spec` defines the desired state of the `Tunnel`
+
+**Type:** `Object`
+
+**Required:** yes
+
+**Default:** none
+
+**Fields:**
+
+| Field Name                             | Type                | Required | Default | Description                                                              |
+| -------------------------------------- | ------------------- | -------- | ------- | ------------------------------------------------------------------------ |
+| [`spec.forwardsTo`](#specforwardsto)   | `string`            | yes      | none    | The name and port of the service to forward traffic to                   |
+| [`spec.labels`](#speclabels)           | `map[string]string` | no       | none    | Key/value pairs that are attached to the tunnel                          |
+| [`spec.backend`](#specbackend)         | `Object`            | no       | none    | defines the configuration for backend connections to services            |
+| [`spec.appProtocol`](#specappprotocol) | `string` (enum)     | no       | none    | Specifies the application protocol to use when connecting to the backend |
+
+### `spec.forwardsTo`
+
+The name and port of the service to forward traffic to
+
+**Type:** `string`
+
+**Required:** yes
+
+**Default:** none
+
+### `spec.labels`
+
+Key/value pairs that are attached to the tunnel
+
+**Type:** `map[string]string`
+
+**Required:** no
+
+**Default:** none
+
+### `spec.backend`
+
+Defines the configuration for backend connections to Services.
+
+**Type:** `Object`
+
+**Required:** no
+
+**Default:** none
+
+**Fields:**
+
+| Field Name                              | Type            | Required | Default | Description                                                            |
+| --------------------------------------- | --------------- | -------- | ------- | ---------------------------------------------------------------------- |
+| [`spec.backend.protocol`](#specbackend) | `string` (enum) | yes      | none    | Specifies the transport protocol to use when connecting to the backend |
+
+### `spec.backend.protocol`
+
+Specifies the transport protocol to use when connecting to the backend. Currently only TCP and TLS are supported.
+
+**Type:** `string (enum)`
+
+**Required:** yes
+
+**Default:** none
+
+**Allowed Values:** `"TCP"`,`"TLS"`
+
+### `spec.appProtocol`
+
+Specifies the application protocol to use when connecting to the backend. Currently only http1 and http2 are supported with prior knowledge.
+
+**Type:** `string (enum)`
+
+**Required:** yes
+
+**Default:** `"http1"`
+
+**Allowed Values:** `"http1"`,`"http2"`
+
+## Example Tunnel
+
+```yaml
+apiVersion: ingress.k8s.ngrok.com/v1alpha1
+kind: Tunnel
+metadata:
+  labels:
+    k8s.ngrok.com/port: "80"
+    k8s.ngrok.com/service: example-service
+  name: example-service
+  namespace: default
+  ownerReferences:
+    - apiVersion: networking.k8s.io/v1
+      kind: Ingress
+      name: example-ingress
+      uid: a8e06d5c-861f-4dbf-9a69-c9cddf6cec74
+spec:
+  backend:
+    protocol: HTTP
+  forwardsTo: example-service.default.svc.cluster.local:80
+  labels:
+    k8s.ngrok.com/namespace: default
+    k8s.ngrok.com/port: "80"
+    k8s.ngrok.com/service: example-to
+    k8s.ngrok.com/service-uid: f1d53f97-e51d-49c6-a6ca-e94479180f55
+```

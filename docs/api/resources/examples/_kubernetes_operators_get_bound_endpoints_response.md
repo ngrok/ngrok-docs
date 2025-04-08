@@ -6,6 +6,6 @@
 {
 	"endpoints": [],
 	"next_page_uri": null,
-	"uri": "https://api.ngrok.com/kubernetes_operators/k8sop_2uBNzc7noq7jcHNhplWJvOIYK9k/bound_endpoints"
+	"uri": "https://api.ngrok.com/kubernetes_operators/k8sop_2uqkjOsOYHQvYPwOOL5Lok5lefH/bound_endpoints"
 }
 ```
