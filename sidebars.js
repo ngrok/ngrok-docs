@@ -34,7 +34,10 @@ const sidebars = {
 			label: "Pricing & Limits",
 			type: "category",
 			link: { type: "doc", id: "pricing-limits/index" },
-			items: ["pricing-limits/free-plan-limits"],
+			items: [
+				"pricing-limits/free-plan-limits",
+				"pricing-limits/http-s-limits",
+			],
 		},
 		{
 			label: "Universal Gateway",
@@ -132,6 +135,7 @@ const sidebars = {
 						"universal-gateway/tls-certificates/how-do-i-use-my-own-certificates",
 						"universal-gateway/tls-certificates/what-is-a-certificate-bundle",
 						"universal-gateway/tls-certificates/what-are-private-tls-keys",
+						"universal-gateway/http-s/upstream-headers",
 					],
 				},
 				{
