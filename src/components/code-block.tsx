@@ -15,6 +15,11 @@ import {
 import type { WithStyleProps } from "@ngrok/mantle/types";
 import type { ComponentProps, ReactNode } from "react";
 
+type WithIndentation = Pick<
+	ComponentProps<typeof CodeBlockCode>,
+	"indentation"
+>;
+
 type Props = WithStyleProps & {
 	/**
 	 * The code content inside the block. This contains the raw code to display as a string.
@@ -48,7 +53,7 @@ type Props = WithStyleProps & {
 	 * The title of the code block. This is displayed in the header of the code block.
 	 */
 	title?: string;
-};
+} & WithIndentation;
 
 /**
  * A code block component that support
@@ -57,6 +62,7 @@ function DocsCodeBlock({
 	children,
 	className,
 	icon: _icon,
+	indentation: _indentation,
 	language: _language,
 	metastring,
 	mode: _mode,
@@ -69,6 +75,7 @@ function DocsCodeBlock({
 	const title = _title || meta.title;
 	const mode = _mode || meta.mode;
 	const hasHeader = title || mode || _icon;
+	const indentation = _indentation ?? meta.indentation;
 
 	const collapsible = meta.collapsible && children.split("\n").length > 20;
 
@@ -82,7 +89,11 @@ function DocsCodeBlock({
 			)}
 			<CodeBlockBody>
 				{!meta.disableCopy && <CodeBlockCopyButton />}
-				<CodeBlockCode language={language} value={fmtCode`${children}`} />
+				<CodeBlockCode
+					indentation={indentation}
+					language={language}
+					value={fmtCode`${children}`}
+				/>
 				{collapsible && <CodeBlockExpanderButton />}
 			</CodeBlockBody>
 		</CodeBlock>
