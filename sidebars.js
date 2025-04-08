@@ -135,7 +135,6 @@ const sidebars = {
 						"universal-gateway/tls-certificates/how-do-i-use-my-own-certificates",
 						"universal-gateway/tls-certificates/what-is-a-certificate-bundle",
 						"universal-gateway/tls-certificates/what-are-private-tls-keys",
-						"universal-gateway/http-s/upstream-headers",
 					],
 				},
 				{
@@ -151,7 +150,10 @@ const sidebars = {
 					label: "How Do I Handle HTTP/S Traffic?",
 					type: "category",
 					link: { type: "doc", id: "universal-gateway/http-s/index" },
-					items: ["universal-gateway/http-s/http-s-endpoints"],
+					items: [
+						"universal-gateway/http-s/http-s-endpoints",
+						"universal-gateway/http-s/upstream-headers",
+					],
 				},
 				{
 					label: "Endpoints",
