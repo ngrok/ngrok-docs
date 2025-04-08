@@ -36,7 +36,7 @@ const sidebars = {
 			link: { type: "doc", id: "pricing-limits/index" },
 			items: [
 				"pricing-limits/free-plan-limits",
-				"pricing-limits/http-s-limits",
+				"pricing-limits/endpoint-limits",
 			],
 		},
 		{
@@ -130,6 +130,7 @@ const sidebars = {
 						id: "universal-gateway/tls",
 					},
 					items: [
+						"universal-gateway/tls-termination",
 						{
 							label: "How Does ngrok Handle TLS Certificates?",
 							type: "category",
@@ -230,7 +231,6 @@ const sidebars = {
 					},
 					items: [
 						"universal-gateway/global-load-balancer",
-						"universal-gateway/tls-termination",
 						"universal-gateway/ddos-protection",
 						"universal-gateway/ip-addresses",
 						"universal-gateway/points-of-presence",

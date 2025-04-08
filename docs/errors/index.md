@@ -74,3 +74,17 @@ ngrok may return an error under the following conditions:
 - A [Traffic Policy](/traffic-policy) action rejected the request.
 - [Traffic Policy](/traffic-policy) execution encountered a runtime error.
 - ngrok encountered an internal error
+
+## TLS Errors
+
+If a TLS handshake fails, an appropriate TLS abort code will be sent to the
+client.
+
+In all other cases, if an error is encountered while handling TLS connections
+to your endpoints (e.g. no available backends or internal server error), the
+connection will be closed. The TLS protocol and its implementations are not
+sufficiently flexible enough to deliver additional rich error information when
+failures are encountered.
+
+Use the [observability](#observability) features to understand connection
+handling errors.
