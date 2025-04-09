@@ -6,6 +6,11 @@ import type { ComponentProps, ReactNode } from "react";
 import { CodeBlockWithInfo } from "./CodeBlockWithInfo";
 import { getLanguageInfo, getMetaData } from "./LangSwitcher/utils";
 
+type WithIndentation = Pick<
+	ComponentProps<typeof CodeBlockCode>,
+	"indentation"
+>;
+
 type Props = WithStyleProps & {
 	/**
 	 * The code content inside the block. This contains the raw code to display as a string.
@@ -35,7 +40,7 @@ type Props = WithStyleProps & {
 	 * The title of the code block. This is displayed in the header of the code block.
 	 */
 	title?: string;
-};
+} & WithIndentation;
 
 /**
  * A code block component that support
@@ -44,6 +49,7 @@ function DocsCodeBlock({
 	children,
 	className,
 	icon: _icon,
+	indentation: _indentation,
 	language: _language,
 	metastring,
 	mode: _mode,
@@ -55,6 +61,8 @@ function DocsCodeBlock({
 		? langMatchesInClassName[0]?.split("-")[1]
 		: "";
 	const language = _language || parseLanguage(langInClassName);
+	// const indentation = _indentation ?? meta.indentation;
+
 	return (
 		<CodeBlockWithInfo
 			content={children}
