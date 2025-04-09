@@ -39,6 +39,7 @@ export function CodeBlockWithInfo({
 	const collapsible = !meta
 		? false
 		: meta.collapsible && content.split("\n").length > collapseLineNumber;
+	const indentation = meta?.indentation;
 
 	return (
 		<div className="flex flex-col">
@@ -68,7 +69,11 @@ export function CodeBlockWithInfo({
 						</div>
 					)}
 					{!meta?.disableCopy && <CodeBlockCopyButton />}
-					<CodeBlockCode language={language} value={fmtCode`${content}`} />
+					<CodeBlockCode
+						indentation={indentation}
+						language={language}
+						value={fmtCode`${content}`}
+					/>
 					{collapsible && <CodeBlockExpanderButton />}
 				</CodeBlockBody>
 			</CodeBlock>

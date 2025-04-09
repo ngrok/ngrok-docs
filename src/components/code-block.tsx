@@ -1,5 +1,9 @@
 import { Button } from "@ngrok/mantle/button";
-import type { Mode, SupportedLanguage } from "@ngrok/mantle/code-block";
+import type {
+	CodeBlockCode,
+	Mode,
+	SupportedLanguage,
+} from "@ngrok/mantle/code-block";
 import { CodeBlock, parseLanguage } from "@ngrok/mantle/code-block";
 import type { WithStyleProps } from "@ngrok/mantle/types";
 import type { ComponentProps, ReactNode } from "react";
@@ -61,7 +65,6 @@ function DocsCodeBlock({
 		? langMatchesInClassName[0]?.split("-")[1]
 		: "";
 	const language = _language || parseLanguage(langInClassName);
-	// const indentation = _indentation ?? meta.indentation;
 
 	return (
 		<CodeBlockWithInfo
