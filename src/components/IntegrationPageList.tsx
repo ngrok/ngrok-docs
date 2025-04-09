@@ -1,5 +1,5 @@
-import { useIntegration } from "./integrations/use-integrations";
 import NgrokCard from "./NgrokCard";
+import { useIntegration } from "./integrations/use-integrations";
 
 type Props = {
 	name: string;
@@ -13,7 +13,7 @@ export default function IntegrationPageList({ name }: Props) {
 	}
 
 	return (
-		<ul className="m-0 mb-5 grid list-none grid-cols-2 gap-5 p-0" role="list">
+		<ul className="m-0 mb-5 grid list-none grid-cols-2 gap-5 p-0">
 			{integration.docs.map((doc) => (
 				<li className="last-of-type:col-span-full" key={doc.path}>
 					<NgrokCard
