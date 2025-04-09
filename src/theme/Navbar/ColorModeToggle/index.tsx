@@ -1,15 +1,15 @@
 import { useColorMode, useThemeConfig } from "@docusaurus/theme-common";
 import { cx } from "@ngrok/mantle/cx";
 import {
+	type Theme,
 	useAppliedTheme,
 	useTheme,
-	type Theme,
 } from "@ngrok/mantle/theme-provider";
 import { Desktop } from "@phosphor-icons/react/Desktop";
 import { Moon } from "@phosphor-icons/react/Moon";
 import { Sun } from "@phosphor-icons/react/Sun";
 import type { Props } from "@theme/Navbar/ColorModeToggle";
-import { type ComponentProps, type ReactNode } from "react";
+import type { ComponentProps, ReactNode } from "react";
 
 export default function NavbarColorModeToggle({ className }: Props): ReactNode {
 	const themeConfig = useThemeConfig();

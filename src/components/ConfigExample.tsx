@@ -1,8 +1,8 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@ngrok/mantle/tabs";
-import { type ReactNode } from "react";
+import type { ReactNode } from "react";
 import YAML, { type ToStringOptions } from "yaml";
-import DocsCodeBlock from "./code-block";
 import { LangSwitcher } from "./LangSwitcher";
+import DocsCodeBlock from "./code-block";
 
 const showExample = (
 	defaultTitle: string,
@@ -22,18 +22,18 @@ const showExample = (
 			<DocsCodeBlock
 				language="yaml"
 				metastring={yamlMetastring}
-				title={titleToUse + ".yml"}
+				title={`${titleToUse}.yml`}
 				icon={icon}
 			>
-				{snippetText ? `# ${snippetText}\n` + yamlConfig : yamlConfig}
+				{snippetText ? `# ${snippetText}\n${yamlConfig}` : yamlConfig}
 			</DocsCodeBlock>
 			<DocsCodeBlock
 				language="json"
 				metastring={jsonMetastring}
-				title={titleToUse + ".json"}
+				title={`${titleToUse}.json`}
 				icon={icon}
 			>
-				{snippetText ? `// ${snippetText}\n` + jsonConfig : jsonConfig}
+				{snippetText ? `// ${snippetText}\n${jsonConfig}` : jsonConfig}
 			</DocsCodeBlock>
 		</LangSwitcher>
 	);
