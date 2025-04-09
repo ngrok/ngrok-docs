@@ -24,22 +24,22 @@ to ngrok using Rancher's Chart repository, and deploy a demo application, which 
 ## What you'll need
 
 - One or more Linux hosts that meet Rancher's
-   [requirements](https://ranchermanager.docs.rancher.com/v2.5/pages-for-subheaders/installation-requirements) for
-   operating as Kubernetes nodes. Your hosts can be local/on-prem virtual machines, cloud-based virtual machines, or bare
-   metal servers.
+  [requirements](https://ranchermanager.docs.rancher.com/v2.5/pages-for-subheaders/installation-requirements) for
+  operating as Kubernetes nodes. Your hosts can be local/on-prem virtual machines, cloud-based virtual machines, or bare
+  metal servers.
 - [Docker](https://docs.docker.com/engine/install/) installed locally.
 - An [ngrok account](https://ngrok.com/signup).
 - [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) and [Helm
-	3.0.0+](https://helm.sh/docs/intro/install/) installed on your local
-	workstation.
+  3.0.0+](https://helm.sh/docs/intro/install/) installed on your local
+  workstation.
 - The [ngrok Kubernetes Operator](/docs/k8s/installation/install/) installed on
-	your cluster. While you *can* install the Operator via Rancher directly, we
-	recommend using our official Helm chart.
+  your cluster. While you _can_ install the Operator via Rancher directly, we
+  recommend using our official Helm chart.
 - A reserved domain, which you can get in the ngrok
-	[dashboard](https://dashboard.ngrok.com/domains) or with the [ngrok
-	API](https://ngrok.com/docs/api/resources/reserved-domains/).
+  [dashboard](https://dashboard.ngrok.com/domains) or with the [ngrok
+  API](https://ngrok.com/docs/api/resources/reserved-domains/).
   - You can choose from an ngrok subdomain or bring your own custom branded
-		domain, like `https://api.example.com`.
+    domain, like `https://api.example.com`.
   - We'll refer to this domain as `<NGROK_DOMAIN>`.
 
 ## Install Rancher via Docker {#install-rancher-via-docker}

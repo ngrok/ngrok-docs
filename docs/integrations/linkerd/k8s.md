@@ -22,15 +22,15 @@ Using this guide, you will launch a local cluster (or use an existing local/remo
   the helper script, Homebrew, or by downloading the binary in your `$PATH`.
 - An [ngrok account](https://ngrok.com/signup).
 - [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) and [Helm
-	3.0.0+](https://helm.sh/docs/intro/install/) installed on your local
-	workstation.
+  3.0.0+](https://helm.sh/docs/intro/install/) installed on your local
+  workstation.
 - The [ngrok Kubernetes Operator](/docs/k8s/installation/install/) installed on
-	your cluster.
+  your cluster.
 - A reserved domain, which you can get in the ngrok
-	[dashboard](https://dashboard.ngrok.com/domains) or with the [ngrok
-	API](https://ngrok.com/docs/api/resources/reserved-domains/).
+  [dashboard](https://dashboard.ngrok.com/domains) or with the [ngrok
+  API](https://ngrok.com/docs/api/resources/reserved-domains/).
   - You can choose from an ngrok subdomain or bring your own custom branded
-		domain, like `https://api.example.com`.
+    domain, like `https://api.example.com`.
   - We'll refer to this domain as `<NGROK_DOMAIN>`.
 
 ## Set up a local development cluster {#set-up-a-local-development-cluster}
