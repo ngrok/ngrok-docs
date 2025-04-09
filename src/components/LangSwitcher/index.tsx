@@ -41,7 +41,7 @@ export function LangSwitcher({ children, className, ...props }: any) {
 	// This also needs to be updated to use the right codeblock data, not [0]
 	const { meta } = matchingBlock;
 	const collapsible =
-		meta.collapsible && matchingBlock.content.split("\n").length > 20;
+		meta.collapsible && matchingBlock.content.split("\n").length > 10;
 
 	return (
 		<BrowserOnly
