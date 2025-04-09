@@ -39,7 +39,7 @@ export function CodeBlockWithInfo({
 	const collapsible = !meta
 		? false
 		: meta.collapsible && content.split("\n").length > collapseLineNumber;
-	const indentation = meta?.indentation;
+	const indentation = meta?.indentation === "tabs" ? "tabs" : "spaces";
 
 	return (
 		<div className="flex flex-col">
