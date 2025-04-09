@@ -127,7 +127,7 @@ export default function ActionHub({ actions }: Props) {
 						<SelectContent width="trigger">
 							<SelectItem value={DefaultPhaseValue}>All Phases</SelectItem>
 							{Phases.map((phase) => (
-								<SelectItem key={phase} value={phase}>
+									<SelectItem key={phase} value={phase}>
 									{phase}
 								</SelectItem>
 							))}
