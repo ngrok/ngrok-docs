@@ -3,30 +3,11 @@ title: How Do I Terminate TLS?
 description: Learn how to terminate TLS with ngrok.
 ---
 
-# TLS Termination
+import ConfigExample from "/src/components/ConfigExample.tsx";
 
-ngrok automatically handles TLS (SSL) termination and certificate management
-for you. There is typically nothing to setup, configure or manage.
+You can configure TLS termination for HTTPS, TCP, and TLS endpoints with ngrok. By default, ngrok automatically terminates TLS for HTTPS endpoints, but you can still customize how that termination is done using the [`terminate-tls`](/traffic-policy/actions/terminate-tls/) Traffic Policy action.
 
-## Overview
-
-ngrok's TLS termination behavior is determined by an endpoint's protocol and
-traffic policy. You may customize each endpoint to choose where TLS is
-terminated, how it is terminated and even whether it is terminated at all. When
-ngrok's cloud service terminates TLS, it:
-
-- Uses latest and most secure version of TLS
-- Uses the [TLS
-  Certificate](/universal-gateway/tls-certificates/how-does-ngrok-handle-tls/) attached to the
-  [Domain](/universal-gateway/domains/what-are-domains/) which matches the Endpoint URL's
-  hostname
-- Accelerates your traffic by using the global load balancer to terminate at its
-  closest point of presence
-
-ngrok supports [end-to-end encryption](#end-to-end-encryption) where the ngrok
-cloud service does not terminate TLS connections and only sees enciphered
-traffic. When configured this way, you are responsible for configuring TLS
-termination in your upstream service or at the ngrok agent.
+TLS (SSL) certificate management is automatically handled for you by default for all endpoints, though you can also [bring your own TLS certificates](/universal-gateway/tls-certificates/bring-your-own-certs/).
 
 ## How is TLS terminated by default?
 
@@ -40,12 +21,60 @@ termination behavior.
 | [TLS](/universal-gateway/tls/)    | Default no termination, configurable with `terminate-tls` |
 | [TCP](/universal-gateway/tcp/)    | Default no termination, configurable with `terminate-tls` |
 
+## Example
+
+This example sets the minimum and maximum TLS versions that the endpoint will support for incoming connections to TLS version 1.3. Clients can then only connect to the endpoint using TLS version 1.3 and will receive a handshake error if they attempt to connect using a different version.
+
+### **Step 1** — Create a Traffic Policy
+
+<ConfigExample
+	snippetText={null}
+	showLineNumbers={true}
+	jsonMetastring="{5-11}"
+	yamlMetastring="{4-7}"
+	config={{
+		on_tcp_connect: [
+			{
+				actions: [
+					{
+						type: "terminate-tls",
+						config: {
+							min_version: "1.3",
+							max_version: "1.3",
+						},
+					},
+				],
+			},
+		],
+	}}
+/>
+
+### **Step 2** — Start an endpoint
+
+```shell
+ngrok http 8080 --url https://terminate-tls-example.ngrok.app --traffic-policy-file /path/to/policy.yml
+```
+
+### **Step 3** — Make a request
+
+```shell
+curl https://terminate-tls-example.ngrok.app
+```
+
+If your curl was built with a version of OpenSSL that supports TLS 1.3, the request will succeed. However, we can verify that the endpoint only supports TLS 1.3 by telling curl to use a different version of TLS:
+
+```shell
+curl https://terminate-tls-example.ngrok.app --tlsv1.2 --tls-max 1.2
+```
+
+You should receive an "alert protocol version" error indicating that the endpoint only supports TLS 1.3.
+
 ## Learn more
 
 - **Using Traffic Policy** — The [`terminate-tls` Traffic Policy
   Action](/traffic-policy/actions/terminate-tls) enables you to terminate TLS
   connections at ngrok's cloud service for TCP and TLS endpoints.
-- **Optimizations** — Learn about ngrok's [TLS termination optimizations](/universal-gateway/tls-termination/termination-mechanics/) and how they can improve the performance of your TLS endpoints.
+- **Behavior** — Learn about [how ngrok's TLS termination works](/universal-gateway/tls-termination/termination-mechanics/), and how its built-in optimizatiions can improve the performance of your TLS endpoints.
 - **Certificates** — ngrok makes managing TLS certificates simple. See [the TLS Certificates documentation](/universal-gateway/tls-certificates/how-does-ngrok-handle-tls/) for more details on how they are [selected](/universal-gateway/tls-certificates/how-are-certificates-selected), managed, provisioned and renewed.
 - **End-to-end encryption** — Enabling end-to-end encryption for TLS endpoints is straightforward. See the docs on [how TLS termination works](/universal-gateway/tls-termination/termination-mechanics/#end-to-end-encryption) to learn more.
 

@@ -146,7 +146,11 @@ const sidebars = {
 								type: "doc",
 								id: "universal-gateway/tls/tls-termination/index",
 							},
-							items: ["universal-gateway/tls/handshake"],
+							items: [
+								"universal-gateway/tls/handshake",
+								"universal-gateway/tls/tls-termination/termination-mechanics",
+								"universal-gateway/tls/tls-termination/termination-location",
+							],
 						},
 						{
 							label: "How Does ngrok Handle TLS Certificates?",
@@ -158,7 +162,7 @@ const sidebars = {
 							items: [
 								"universal-gateway/tls-certificates/what-is-automatic-certificate-management",
 								"universal-gateway/tls-certificates/how-are-certificates-selected",
-								"universal-gateway/tls-certificates/how-do-i-use-my-own-certificates",
+								"universal-gateway/tls-certificates/custom-certificates",
 								"universal-gateway/tls-certificates/what-is-a-certificate-bundle",
 								"universal-gateway/tls-certificates/what-are-private-tls-keys",
 							],
@@ -180,18 +184,6 @@ const sidebars = {
 					type: "category",
 					link: { type: "doc", id: "universal-gateway/endpoints" },
 					items: [
-						{
-							label: "Protocols",
-							type: "category",
-							link: { type: "doc", id: "universal-gateway/protocols" },
-							items: [
-								{
-									id: "universal-gateway/tcp",
-									type: "doc",
-									label: "TCP",
-								},
-							],
-						},
 						{
 							label: "Bindings",
 							type: "category",
