@@ -105,7 +105,6 @@ const sidebars = {
 						},
 						"universal-gateway/what-are-endpoint-urls",
 						"universal-gateway/http-s/endpoint-url-defaults",
-						"universal-gateway/what-are-matching-endpoints",
 						"universal-gateway/chain-endpoints",
 						"universal-gateway/mock-api",
 						"universal-gateway/migrate-from-tunnels",
@@ -171,7 +170,7 @@ const sidebars = {
 					],
 				},
 				{
-					label: "How Does Agent Fowarding Work?",
+					label: "How Do I Forward Traffic?",
 					type: "category",
 					link: { type: "doc", id: "universal-gateway/agent-forwarding/index" },
 					items: [
@@ -179,54 +178,54 @@ const sidebars = {
 						"universal-gateway/agent-forwarding/serving-file-directories",
 					],
 				},
-				{
-					label: "Endpoints",
-					type: "category",
-					link: { type: "doc", id: "universal-gateway/endpoints" },
-					items: [
-						{
-							label: "Bindings",
-							type: "category",
-							link: { type: "doc", id: "universal-gateway/bindings" },
-							items: [
-								{
-									id: "universal-gateway/public-endpoints/index",
-									type: "doc",
-									label: "Public",
-								},
-								{
-									id: "universal-gateway/internal-endpoints/index",
-									type: "doc",
-									label: "Internal",
-								},
-								{
-									id: "universal-gateway/kubernetes-endpoints/index",
-									type: "doc",
-									label: "Kubernetes",
-								},
-							],
-						},
-						{
-							id: "universal-gateway/endpoint-pooling",
-							type: "doc",
-							label: "Pooling",
-						},
-					],
-				},
-				{
-					label: "Network",
-					type: "category",
-					link: {
-						type: "doc",
-						id: "universal-gateway/global-load-balancer",
-					},
-					items: [
-						"universal-gateway/global-load-balancer",
-						"universal-gateway/ddos-protection",
-						"universal-gateway/ip-addresses",
-						"universal-gateway/points-of-presence",
-					],
-				},
+				// {
+				// 	label: "Endpoints",
+				// 	type: "category",
+				// 	link: { type: "doc", id: "universal-gateway/endpoints" },
+				// 	items: [
+				// 		{
+				// 			label: "Bindings",
+				// 			type: "category",
+				// 			link: { type: "doc", id: "universal-gateway/bindings" },
+				// 			items: [
+				// 				{
+				// 					id: "universal-gateway/public-endpoints/index",
+				// 					type: "doc",
+				// 					label: "Public",
+				// 				},
+				// 				{
+				// 					id: "universal-gateway/internal-endpoints/index",
+				// 					type: "doc",
+				// 					label: "Internal",
+				// 				},
+				// 				{
+				// 					id: "universal-gateway/kubernetes-endpoints/index",
+				// 					type: "doc",
+				// 					label: "Kubernetes",
+				// 				},
+				// 			],
+				// 		},
+				// 		{
+				// 			id: "universal-gateway/endpoint-pooling",
+				// 			type: "doc",
+				// 			label: "Pooling",
+				// 		},
+				// 	],
+				// },
+				// {
+				// 	label: "Network",
+				// 	type: "category",
+				// 	link: {
+				// 		type: "doc",
+				// 		id: "universal-gateway/global-load-balancer",
+				// 	},
+				// 	items: [
+				// 		"universal-gateway/global-load-balancer",
+				// 		"universal-gateway/ddos-protection",
+				// 		"universal-gateway/ip-addresses",
+				// 		"universal-gateway/points-of-presence",
+				// 	],
+				// },
 			],
 		},
 		{
