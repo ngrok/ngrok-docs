@@ -1,18 +1,7 @@
 ---
+title: Kubernetes ingress to applications and clusters managed by Rancher
 description: Set up a local installation of Rancher to deploy a new RKE2 cluster and add ingress to applications with ngrok's Kubernetes Operator.
 ---
-
-# Ingress to applications managed by Rancher in Kubernetes
-
-:::tip TL;DR
-
-To use the ngrok Kubernetes Operator with Rancher in a local cluster:
-
-1. [Install Rancher via Docker](#install-rancher-via-docker)
-2. [Install the ngrok Kubernetes Operator](#install-the-ngrok-ingress-controller)
-3. [Install a sample application](#install-a-sample-application)
-
-:::
 
 The ngrok [Operator for Kubernetes](https://ngrok.com/blog-post/ngrok-k8s) is the official controller for
 adding secure public ingress and middleware execution to your Kubernetes applications with ngrok's Cloud Edge. With
@@ -32,19 +21,28 @@ applications.
 With this guide, you'll launch Rancher's management platform, create a new RKE2 cluster, connect your cluster's ingress
 to ngrok using Rancher's Chart repository, and deploy a demo application, which will then be reachable to public traffic.
 
-:::caution This tutorial requires:
+## What you'll need
 
-1. An [ngrok account](https://ngrok.com/signup).
-2. One or more Linux hosts that meet Rancher's
+- One or more Linux hosts that meet Rancher's
    [requirements](https://ranchermanager.docs.rancher.com/v2.5/pages-for-subheaders/installation-requirements) for
    operating as Kubernetes nodes. Your hosts can be local/on-prem virtual machines, cloud-based virtual machines, or bare
    metal servers.
-3. [Docker](https://docs.docker.com/engine/install/) installed locally.
-4. [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) installed locally.
+- [Docker](https://docs.docker.com/engine/install/) installed locally.
+- An [ngrok account](https://ngrok.com/signup).
+- [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) and [Helm
+	3.0.0+](https://helm.sh/docs/intro/install/) installed on your local
+	workstation.
+- The [ngrok Kubernetes Operator](/docs/k8s/installation/install/) installed on
+	your cluster. While you *can* install the Operator via Rancher directly, we
+	recommend using our official Helm chart.
+- A reserved domain, which you can get in the ngrok
+	[dashboard](https://dashboard.ngrok.com/domains) or with the [ngrok
+	API](https://ngrok.com/docs/api/resources/reserved-domains/).
+  - You can choose from an ngrok subdomain or bring your own custom branded
+		domain, like `https://api.example.com`.
+  - We'll refer to this domain as `<NGROK_DOMAIN>`.
 
-:::
-
-## **Step 1**: Install Rancher via Docker {#install-rancher-via-docker}
+## Install Rancher via Docker {#install-rancher-via-docker}
 
 To follow along with this guide, you need Rancher installed on a local or remote Kubernetes cluster. If you already have
 an existing cluster running Rancher, you can skip this step and proceed to [Step 2: Install the ngrok Ingress
@@ -142,18 +140,7 @@ docker logs [DOCKER_NAME] 2>&1 | grep "Bootstrap Password:"
 You have now installed Rancher in a Docker container, created a new Kubernetes cluster for your applications, and
 connected one or more Linux nodes to Rancher for handling future workloads.
 
-## **Step 2**: Install the ngrok Kubernetes Operator using Rancher {#install-the-ngrok-ingress-controller}
-
-Next, install the [ngrok Kubernetes Operator](https://github.com/ngrok/ngrok-operator), which
-will then automatically handle public ingress to any properly configured application you add to your cluster.
-
-While you can install the Operator via the Rancher dashboard, we recommend
-installing with Helm directly for the most control.
-
-Check out our [Operator installation doc](/docs/k8s/installation/install/) for
-details on how to use Helm to install with your ngrok credentials.
-
-## **Step 3**: Install a sample application {#install-a-sample-application}
+## Install a sample application {#install-a-sample-application}
 
 Now that you have the ngrok Kubernetes Operator running and authenticated with your credentials, you're ready to add a
 sample application to your cluster. The ngrok Kubernetes Operator will connect this application to the ngrok cloud edge,

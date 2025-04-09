@@ -1,19 +1,7 @@
 ---
-description: Add ingress to any app running in a Kubernetes cluster managed by DigitalOcean using the ngrok Kubernetes Operator.
+title: Ingress to Kubernetes apps on clusters managed by DigitalOcean
+description: Add Kubernetes ingress to any app running in a cluster managed by DigitalOcean using the ngrok Kubernetes Operator.
 ---
-
-# Ingress to Kubernetes apps on clusters managed by DigitalOcean
-
-:::tip TL;DR
-
-To use the ngrok Kubernetes Operator with DigitalOcean:
-
-1. [Provision a new cluster on DigitalOcean with `doctl`](#provision-a-new-cluster)
-2. [Deploy an example app on your DigitalOcean-managed cluster](#deploy-an-example-app)
-3. [Configure the ngrok Kubernetes Operator](#configure-the-ngrok-kubernetes-ingress-controller)
-4. [Enable extra features of ngrok's Cloud Edge](#enable-extra-features-of-ngrok)
-
-:::
 
 Using this guide, you'll launch a new cluster on [DigitalOcean](https://digitalocean.com) and use the DigitalOcean Marketplace to provision the [ngrok Kubernetes Operator](https://marketplace.digitalocean.com/apps/ngrok-ingress-controller) to securely ingress public traffic to a demo app.
 
@@ -24,16 +12,23 @@ Here is what you'll be building with:
 - **The [ngrok Kubernetes Operator](https://ngrok.com/blog-post/ngrok-k8s)**: ngrok's official controller for adding secure public ingress and middleware execution to your Kubernetes apps with ngrok's Cloud Edge. With ngrok, you can manage and secure app traffic at every stage of the development lifecycle while benefiting from simpler configurations, security, and edge acceleration.
 - **DigitalOcean**: DigitalOcean is a cloud service provider focused on developers, startups, and small-to-midsize businesses. With reliable monthly rates for less than hyperscalers like AWS, DigitalOcean's Kubernetes solution is a great fit for internal development teams building or scaling up new platforms without massive infrastructure build-out or expense.
 
-:::caution This how-to guide requires:
+## What you'll need
 
-1. An [ngrok account](https://ngrok.com/signup) at any tier.
-1. A [DigitalOcean account](https://cloud.digitalocean.com/registrations/new).
-1. [doctl](https://docs.digitalocean.com/reference/doctl/) installed locally.
-1. [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) installed locally.
+- A [DigitalOcean account](https://cloud.digitalocean.com/registrations/new).
+- An [ngrok account](https://ngrok.com/signup).
+- [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) and [Helm
+	3.0.0+](https://helm.sh/docs/intro/install/) installed on your local
+	workstation.
+- The [ngrok Kubernetes Operator](/docs/k8s/installation/install/) installed on
+	your cluster.
+- A reserved domain, which you can get in the ngrok
+	[dashboard](https://dashboard.ngrok.com/domains) or with the [ngrok
+	API](https://ngrok.com/docs/api/resources/reserved-domains/).
+  - You can choose from an ngrok subdomain or bring your own custom branded
+		domain, like `https://api.example.com`.
+  - We'll refer to this domain as `<NGROK_DOMAIN>`.
 
-:::
-
-## **Step 1**: Provision a new cluster on DigitalOcean with `doctl` {#provision-a-new-cluster}
+## Provision a new cluster on DigitalOcean with `doctl` {#provision-a-new-cluster}
 
 In this guide, we'll stick with the CLI as much as possible to showcase how tightly the ngrok Kubernetes Operator can integrate with DigitalOcean and how you might automate these steps in the future.
 
@@ -62,7 +57,7 @@ In this guide, we'll stick with the CLI as much as possible to showcase how tigh
 
    Your new Kubernetes cluster, managed by DigitalOcean, is all set up—and with the ngrok Kubernetes Operator installed with a single option on the CLI.
 
-## **Step 3**: Deploy an example app on your DigitalOcean-managed cluster {#deploy-an-example-app}
+## Deploy an example app on your DigitalOcean-managed cluster {#deploy-an-example-app}
 
 Let's explore how you can add apps or services to your DigitalOcean-managed Kubernetes cluster. DigitalOcean has a repository of [sample Kubernetes apps](https://github.com/digitalocean/kubernetes-sample-apps/tree/master/bookinfo-example), including the [Bookinfo](https://github.com/digitalocean/kubernetes-sample-apps/tree/master/bookinfo-example) app, which we'll use.
 
@@ -81,7 +76,7 @@ Let's explore how you can add apps or services to your DigitalOcean-managed Kube
 
    You should see your cluster create a handful of new services, then verify everything is running correctly with `kubectl get all -n bookinfo`.
 
-## **Step 3**: Configure the ngrok Kubernetes Operator {#configure-the-ngrok-kubernetes-ingress-controller}
+## Configure the ngrok Kubernetes Operator {#configure-the-ngrok-kubernetes-ingress-controller}
 
 Your Bookinfo app is running, but you have no means of accessing it from your local workstation—or anywhere else, for that matter. You _could_ use `kubectl port-forward...`, but that's a fragile method of accessing your new app, and isn't appropriate for production use.
 
@@ -133,7 +128,7 @@ Instead, finish configuring the ngrok Kubernetes Operator to direct incoming req
 
    ![Successfully deployed Booklist app on DigitalOcean, Kubernetes, and ngrok](img/bookinfo-deployed.png)
 
-## **Step 4**: Enable extra features of ngrok's Cloud Edge {#enable-extra-features-of-ngrok}
+## Enable extra features of ngrok's Cloud Edge {#enable-extra-features-of-ngrok}
 
 To demonstrate how ingress configuration and [OAuth support](/traffic-policy/actions/oauth/) work, you can quickly launch an open-source observability stack including [Prometheus](https://github.com/prometheus), [Grafana](https://github.com/grafana/grafana), and [Alertmanager](https://github.com/prometheus/alertmanager/) on your cluster.
 

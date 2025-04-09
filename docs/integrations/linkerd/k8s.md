@@ -6,18 +6,6 @@ description: Set up a local cluster to demonstrate how to use the ngrok Kubernet
 
 ---
 
-:::tip TL;DR
-
-To use the ngrok Kubernetes Operator with Linkerd in a local cluster:
-
-1. [Set up a local testing cluster](#set-up-a-local-development-cluster)
-1. [Deploy Linkerd's service mesh to your cluster](#deploy-linkerds-service-mesh)
-1. [Install the ngrok Kubernetes Operator](#install-the-ngrok-ingress-controller)
-1. [Deploy an example microservices-based application](#deploy-an-example-microservices-based-application)
-1. [Add Linkerd's dashboard and verify mTLS](#add-linkerds-dashboard-and-verify-mtls)
-
-:::
-
 The ngrok Kubernetes Operator is the official controller for adding secure public ingress and middleware execution to your Kubernetes applications with ngrok's Cloud Edge. With ngrok, you can manage and secure traffic to your applications at every stage of the development lifecycle while also benefiting from simpler configurations, security, and edge acceleration.
 
 Linkerd is an open source [service mesh](https://linkerd.io/what-is-a-service-mesh/#), which is a set of network proxies that handle communications between microservices to add in observability, security, and reliability at the platform level, rather than the application level, of your cloud native infrastructure. For example, Linkerd enables mutual TLS (mTLS) between microservices, which ensures confidentiality (encryption) and authenticity (identity validation) on both sides of the connection. After you deploy Linkerd's control plane, you can then install extensions for additional functionality, like a dashboard for debugging errors, exploring workloads, and more.
@@ -26,19 +14,26 @@ When integrated, the ngrok Kubernetes Operator and Linkerd abstract complexity a
 
 Using this guide, you will launch a local cluster (or use an existing local/remote cluster) to mesh a microservices-based application with Linkerd, and leverage ngrok to route public traffic through an encrypted tunnel to your cluster.
 
-:::caution This tutorial requires:
+## What you'll need
 
-1. An [ngrok account](https://ngrok.com/signup).
-2. The [Linkerd 2.x CLI](https://linkerd.io/2.14/getting-started/#step-1-install-the-cli) installed locally with either
-   the helper script, Homebrew, or by downloading the binary in your `$PATH`.
-3. [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) installed locally.
-4. [Helm 3.0.0+](https://helm.sh/docs/intro/install/) installed locally.
-5. An existing remote or local Kubernetes cluster _OR_ the [minikube CLI](https://minikube.sigs.k8s.io/docs/start/)
-   installed locally to create a new testing cluster.
+- An existing remote or local Kubernetes cluster _OR_ the [minikube CLI](https://minikube.sigs.k8s.io/docs/start/)
+  installed locally to create a new testing cluster.
+- The [Linkerd 2.x CLI](https://linkerd.io/2.14/getting-started/#step-1-install-the-cli) installed locally with either
+  the helper script, Homebrew, or by downloading the binary in your `$PATH`.
+- An [ngrok account](https://ngrok.com/signup).
+- [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) and [Helm
+	3.0.0+](https://helm.sh/docs/intro/install/) installed on your local
+	workstation.
+- The [ngrok Kubernetes Operator](/docs/k8s/installation/install/) installed on
+	your cluster.
+- A reserved domain, which you can get in the ngrok
+	[dashboard](https://dashboard.ngrok.com/domains) or with the [ngrok
+	API](https://ngrok.com/docs/api/resources/reserved-domains/).
+  - You can choose from an ngrok subdomain or bring your own custom branded
+		domain, like `https://api.example.com`.
+  - We'll refer to this domain as `<NGROK_DOMAIN>`.
 
-:::
-
-## **Step 1**: Set up a local development cluster {#set-up-a-local-development-cluster}
+## Set up a local development cluster {#set-up-a-local-development-cluster}
 
 1. Create a local Kubernetes cluster with minikube. You will assign it a profile named `ngrok-linkerd` with `-p`, and for the best compatibility with Linkerd, you will use the `containerd` [container runtime](https://minikube.sigs.k8s.io/docs/runtimes/).
 
@@ -70,7 +65,7 @@ Using this guide, you will launch a local cluster (or use an existing local/remo
    kube-system       Active   72s
    ```
 
-## **Step 2**: Deploy Linkerd's service mesh to your cluster {#deploy-linkerds-service-mesh}
+## Deploy Linkerd's service mesh to your cluster {#deploy-linkerds-service-mesh}
 
 1. Verify your Linkerd CLI is working correctly with `linkerd version`, which should display the same output as below. The `Server version: unavailable` is expected at this point.
 
@@ -114,16 +109,7 @@ Using this guide, you will launch a local cluster (or use an existing local/remo
 
    :::
 
-## **Step 3**: Install the ngrok Kubernetes Operator {#install-the-ngrok-ingress-controller}
-
-Even though you have no applications currently running on your local cluster,
-you can configure and deploy the [ngrok Kubernetes Operator](/docs/k8s) to
-simplify how you'll enable ingress in the future.
-
-Check out our [Operator installation doc](/docs/k8s/installation/install/) for
-details on how to use Helm to install with your ngrok credentials.
-
-## **Step 4**: Deploy an example microservices-based application {#deploy-an-example-microservices-based-application}
+## Deploy an example microservices-based application {#deploy-an-example-microservices-based-application}
 
 To demonstrate how Linkerd and the ngrok Kubernetes Operator integrate to add additional observability, security, and reliability into your cluster, you'll deploy the [Emojivoto](https://github.com/BuoyantIO/emojivoto) demo application, which was developed by Buoyant, the company that originally developed Linkerd.
 
@@ -203,7 +189,7 @@ To demonstrate how Linkerd and the ngrok Kubernetes Operator integrate to add ad
 
    ![Viewing the Emojivoto application](img/emojivoto.png)
 
-## **Step 5**: Add Linkerd's dashboard to verify meshing and mTLS {#add-linkerds-dashboard-and-verify-mtls}
+## Add Linkerd's dashboard to verify meshing and mTLS {#add-linkerds-dashboard-and-verify-mtls}
 
 Given that one of the key benefits of a service mesh is increased observability, and the inherent security enhancements that come from mTLS connections between your microservices, you'll want to double-check that your deployments and pods are properly meshed.
 

@@ -1,6 +1,5 @@
 ---
-sidebar_label: Getting Started
-title: ngrok Kubernetes Operator on EKS
+title: Kubernetes ingress to services hosted on EKS
 description: Learn how to get started running the ngrok Kubernetes Operator on AWS EKS
 tags:
   - kubernetes
@@ -12,32 +11,25 @@ tags:
   - operator
 ---
 
-# ngrok Kubernetes Operator on Amazon EKS
-
-:::tip TL;DR
-To use the ngrok Kubernetes Operator with AWS EKS:
-
-1. [Ensure `kubectl` can speak with your cluster](#prereqs)
-1. [Install the ngrok Kubernetes Operator](#install-the-ngrok-kubernetes-operator)
-1. [Install a sample application](#install-a-sample-application)
-1. [Add edge security to your app](#add-edge-security)
-
-:::
-
-## Introduction
-
 The [ngrok Kubernetes Operator](https://github.com/ngrok/ngrok-operator) is our official open-source controller for adding public and secure ingress traffic to your k8s services. It works out of the box with n AWS EKS Kubernetes cluster to provide ingress to your services no matter the network configuration, as long as it has outbound access to the ngrok service. This allows ngrok to be portable and work seamlessly across any type of infrastructure.
 
-:::caution This tutorial requires:
+## What you'll need
 
-1. An [ngrok account](https://ngrok.com/signup).
-1. [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
-1. [Helm 3.0.0+](https://helm.sh/docs/intro/install/)
-1. An [AWS EKS cluster](https://eksctl.io/usage/creating-and-managing-clusters/)
+- An [AWS EKS cluster](https://eksctl.io/usage/creating-and-managing-clusters/).
+- An [ngrok account](https://ngrok.com/signup).
+- [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) and [Helm
+	3.0.0+](https://helm.sh/docs/intro/install/) installed on your local
+	workstation.
+- The [ngrok Kubernetes Operator](/docs/k8s/installation/install/) installed on
+	your cluster.
+- A reserved domain, which you can get in the ngrok
+	[dashboard](https://dashboard.ngrok.com/domains) or with the [ngrok
+	API](https://ngrok.com/docs/api/resources/reserved-domains/).
+  - You can choose from an ngrok subdomain or bring your own custom branded
+		domain, like `https://api.example.com`.
+  - We'll refer to this domain as `<NGROK_DOMAIN>`.
 
-:::
-
-## **Step 1**: Ensure `kubectl` can speak with your cluster {#prereqs}
+## Ensure `kubectl` can speak with your cluster {#prereqs}
 
 With an AWS EKS cluster, authentication for `kubectl` happens with a credential helper. So in-order to deploy the ngrok Kubernetes Operator to your cluster, you'll need to ensure that you can use the `aws` CLI and that the credential helper is available.
 
@@ -61,23 +53,9 @@ aws eks update-kubeconfig --kubeconfig kubeconfig --region <region-code> --name 
 export KUBECONFIG=$(pwd)/kubeconfig
 ```
 
-## **Step 2**: Install the ngrok Kubernetes Operator {#install-the-ngrok-kubernetes-operator}
-
-Now we can install the ngrok Kubernetes Operator to provide ingress to our services.
-
-Check out our [Operator installation doc](/docs/k8s/installation/install/) for
-details on how to use Helm to install with your ngrok credentials.
-
-## **Step 3**: Install a Sample Application {#install-a-sample-application}
+## Install a sample application and Kubernetes ingress {#install-a-sample-application}
 
 Create a manifest file (for example `ngrok-manifest.yaml`) with the following contents. You will need to replace the `NGROK_DOMAIN` on line 45 with your own custom value. This is the URL you will use to access your service from anywhere. If you're on a free account, it must be on a static subdomain which you can claim by logging into your account and following the instructions on the claim static subdomain banner. For paid accounts, you can use a custom domain or a subdomain of `ngrok.app` or `ngrok.dev` (for example, `username-loves-ingress.ngrok.app` or `k8s.example.com`).
-
-:::tip Notes:
-
-- Lines 1-34: Create the 2048 app service and deployment
-- Lines 35-54 (highlighted): Create the ngrok Kubernetes Operator. Line 45 determines the ingress URL for public requests.
-
-:::
 
 ```yaml showLineNumbers
 apiVersion: v1
@@ -113,16 +91,16 @@ spec:
             - name: http
               containerPort: 80
 ---
-# ngrok Ingress Controller Configuration
+# Configuration for ngrok's Kubernetes Operator
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: game-2048-ingress
-  namespace: ngrok-ingress-controller
+  namespace: default
 spec:
   ingressClassName: ngrok
   rules:
-    - host: NGROK_DOMAIN
+    - host: <NGROK_DOMAIN>
       http:
         paths:
           - path: /
@@ -146,78 +124,13 @@ spec:
 
    ![application public](/img/howto/kubernetes-operator/k8s-ingress-app-2.png)
 
-## Step 4: Add edge security to your app {#add-edge-security}
+## Add edge security to your app {#add-edge-security}
 
-The ngrok Kubernetes Operator provides custom resource definitions (CRDs) for additional edge features available in ngrok. In this example, we're expanding the ngrok Kubernetes Operator with Google OAuth to allow access only from users with the email domains `@acme.com` or `@ngrok.com` and to apply a circuit breaker to your app at 80% (requires a paid account). These features are enforced at the ngrok edge, ensuring only authorized users can access your app.
-
-As before, you will need to update line 46 of this manifest with your `NGROK_DOMAIN` in the Ingress object.
-
-:::tip Notes:
-This example is very similar to the previous version, with the following changes:
-
-- Lines 41-42: Associates your Kubernetes Operator with the configuration `oauth-and-circuit-breaking` via annotation
-- Lines 57-75: Sets the edge configuration as a custom CRD (NgrokModuleSet).
-- Lines 64-69: Sets the circuit breaker module over 50% threshold.
-- Lines 70-74: Sets the OAuth module to allow access only for users with the email domains `@acme.com` or `@ngrok.com`.
-
-:::
-
-````yaml showLineNumbers
-apiVersion: v1
-kind: Service
-metadata:
-  name: game-2048
-  namespace: ngrok-ingress-controller
-spec:
-  ports:
-    - name: http
-      port: 80
-      targetPort: 80
-  selector:
-    app: game-2048
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: game-2048
-  namespace: ngrok-ingress-controller
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: game-2048
-  template:
-    metadata:
-      labels:
-        app: game-2048
-    spec:
-      containers:
-        - name: backend
-          image: alexwhen/docker-2048
-          ports:
-            - name: http
-              containerPort: 80
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: game-2048-ingress
-  namespace: ngrok-ingress-controller
-  # highlight-start
-  annotations:
-    k8s.ngrok.com/modules: oauth-and-circuit-breaking
-  # highlight-end
-spec:
-  ingressClassName: ngrok
-  rules:
-    - host: NGROK_DOMAIN
-      http:
 With our [Traffic Policy system](/docs/traffic-policy/) and the [`oauth`
 action](/docs/traffic-policy/actions/oauth), ngrok manages OAuth protection
-entirely at the cloud edge, which means you don't need to add any
-additional services to your cluster, or alter routes, to ensure ngrok's edge
-authenticates and authorizes all requests before allowing ingress and access to
-your endpoint.
+entirely at the cloud edge. ngrok's edge authenticates and authorizes all
+requests before allowing ingress and access to your endpoint, meaning you don't
+need to add any additional services to your cluster, or alter any routes.
 
 To enable the `oauth` action, you'll create a new `NgrokTrafficPolicy` custom
 resource and apply it to your entire `Ingress` with an annotation. You can also
@@ -266,7 +179,7 @@ Ingresses](/docs/k8s/guides/using-ingresses/#using-ngroktrafficpolicy-with-ingre
    		   - type: oauth
    			   config:
    			     provider: google
-````
+	 ```
 
 1. Re-apply your `2048.yaml` configuration.
 

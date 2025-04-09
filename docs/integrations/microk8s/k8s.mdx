@@ -1,19 +1,7 @@
 ---
+title: Kubernetes ingress to apps/APIs on clusters managed by Canonical MicroK8s
 description: Add ingress to any app running in a Kubernetes cluster managed by Canonical Microk8s using the ngrok Kubernetes Operator.
 ---
-
-# Ingress to Kubernetes apps on clusters managed by Canonical MicroK8s
-
-:::tip TL;DR
-
-To use the ngrok Kubernetes Operator, which now supports the Kubernetes Gateway API spec, with Canonical MicroK8s:
-
-1. [Deploy a Kubernetes cluster with MicroK8s](#deploy-a-kubernetes-cluster-with-microk8s)
-1. [Deploy the ngrok Kubernetes Operator](#deploy-ngrok-kubernetes-operator)
-1. [Install an example app](#install-example-app)
-1. [Configure the ngrok Kubernetes Operator](#configure-ngrok-operator-kubernetes-gateway-api)
-
-:::
 
 Using this guide, you'll launch a new Kubernetes cluster with Canonical's open-source [MicroK8s](https://microk8s.io/) and use the [ngrok Kubernetes Operator](https://marketplace.digitalocean.com/apps/ngrok-ingress-controller) to securely ingress public traffic to an example app using the **new [Kubernetes Gateway API](https://kubernetes.io/docs/concepts/services-networking/gateway/)**.
 
@@ -25,16 +13,23 @@ Here is what you'll be building with:
 - The **Kubernetes Gateway API**: This new API, which made generally available in [October 2023](https://kubernetes.io/blog/2023/10/31/gateway-api-ga/), is a role-oriented mechanism for provisioning load-balancing infrastructure and routing traffic. The Gateway API does not replace "traditional" [Operators](https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/)—both are available for production usage, but the Gateway API may be better suited for large organizations with defined roles for managing Kubernetes services, cluster operators vs. application developers.
 - **Canonical MicroK8s**: An open-source system for low-ops, minimal, production-ready Kubernetes. MicroK8s' single-node configuration, small size, and customizeable footprint lets you use it for local development, in minimal environments like GitHub's CI/CD, or using Kubernetes on IoT hardware.
 
-:::caution This how-to guide requires:
+## What you'll need
 
-1. An [ngrok account](https://ngrok.com/signup) at any tier.
-1. [MicroK8s](https://microk8s.io/) installed locally.
-1. [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) installed locally.
-1. [Helm 3.0.0+](https://helm.sh/docs/intro/install/) installed locally.
+- [MicroK8s](https://microk8s.io/) installed locally.
+- An [ngrok account](https://ngrok.com/signup).
+- [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) and [Helm
+	3.0.0+](https://helm.sh/docs/intro/install/) installed on your local
+	workstation.
+- The [ngrok Kubernetes Operator](/docs/k8s/installation/install/) installed on
+	your cluster.
+- A reserved domain, which you can get in the ngrok
+	[dashboard](https://dashboard.ngrok.com/domains) or with the [ngrok
+	API](https://ngrok.com/docs/api/resources/reserved-domains/).
+  - You can choose from an ngrok subdomain or bring your own custom branded
+		domain, like `https://api.example.com`.
+  - We'll refer to this domain as `<NGROK_DOMAIN>`.
 
-:::
-
-## **Step 1**: Deploy a Kubernetes cluster with MicroK8s {#deploy-a-kubernetes-cluster-with-microk8s}
+## Deploy a Kubernetes cluster with MicroK8s {#deploy-a-kubernetes-cluster-with-microk8s}
 
 Start by deploying a new single-node MicroK8s Kubernetes cluster in your chosen environment. That could be your local workstation, an IoT device, a virtual machine in the cloud, or any system running one of the [42 supported flavors of Linux](https://snapcraft.io/microk8s).
 
@@ -56,14 +51,7 @@ Start by deploying a new single-node MicroK8s Kubernetes cluster in your chosen 
 
    If you see `microk8s is ready`, your new cluster is ready to go!
 
-## **Step 2**: Deploy the ngrok Kubernetes Operator {#deploy-ngrok-kubernetes-operator}
-
-Now that you have a Kubernetes cluster deployed using MicroK8s, you can install the ngrok Kubernetes Operator for secure ingress.
-
-Check out our [Operator installation doc](/docs/k8s/installation/install/) for
-details on how to use Helm to install with your ngrok credentials.
-
-## **Step 3**: Install an example app {#install-example-app}
+## Install an example app {#install-example-app}
 
 Now you need a domain and Kubernetes service to ingress traffic to!
 
@@ -116,7 +104,7 @@ Now you need a domain and Kubernetes service to ingress traffic to!
    kubectl apply -f 2048.yaml
    ```
 
-## **Step 4**: Configure the ngrok Kubernetes Operator {#configure-ngrok-operator-kubernetes-gateway-api}
+## Configure the ngrok Kubernetes Operator {#configure-ngrok-operator-kubernetes-gateway-api}
 
 With your example app running alongside the ngrok Kubernetes Operator, you now need to configure the new [Kubernetes Gateway API](/k8s/?k8s-install=gatewayAPI) to route traffic arriving from outside the cluster on `NGROK_DOMAIN` to the `game-2048` service.
 

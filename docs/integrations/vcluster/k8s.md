@@ -1,20 +1,7 @@
 ---
+title: Ingress to Kubernetes apps and srevices with vcluster
 description: Setup a local virtual cluster to demonstrate how to use the ngrok Kubernetes Operator with vcluster.
 ---
-
-# Ingress to services in a vcluster on Kubernetes
-
-:::tip TL;DR
-
-To use the ngrok Kubernetes Operator with vcluster in a local cluster:
-
-1. [Set up a local virtual cluster](#set-up-vcluster)
-2. [Install the ngrok Kubernetes
-   Operator](#install-the-ngrok-kubernetes-operator)
-3. [Install a sample application](#install-a-sample-application)
-4. [Add OAuth protection to your demo app](#add-oauth-protection)
-
-:::
 
 The ngrok [Operator for Kubernetes](https://ngrok.com/blog-post/ngrok-k8s) is the official controller for
 adding public and secure ingress traffic to your k8s services. This open source Operator works with any cloud,
@@ -35,18 +22,25 @@ With this guide, you'll use an existing Kubernetes cluster, or set up a local de
 launch a virtual cluster, and deploy a demo application. You'll then deploy the ngrok Kubernetes Operator to connect your
 demo application to the ngrok platform to route traffic to your vcluster.
 
-:::caution This tutorial requires:
+## What you'll need
 
-1. An [ngrok account](https://ngrok.com/signup).
-2. The [vcluster CLI](https://www.vcluster.com/docs/get-started/#deploy-vcluster) installed locally.
-3. [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) installed locally.
-4. [Helm 3.0.0+](https://helm.sh/docs/intro/install/) installed locally.
-5. An existing remote or local Kubernetes cluster _OR_ [minikube](https://minikube.sigs.k8s.io/docs/start/) to create a
+- The [vcluster CLI](https://www.vcluster.com/docs/get-started/#deploy-vcluster) installed locally.
+- An existing remote or local Kubernetes cluster _OR_ [minikube](https://minikube.sigs.k8s.io/docs/start/) to create a
    new demo cluster locally.
+- An [ngrok account](https://ngrok.com/signup).
+- [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) and [Helm
+	3.0.0+](https://helm.sh/docs/intro/install/) installed on your local
+	workstation.
+- The [ngrok Kubernetes Operator](/docs/k8s/installation/install/) installed on
+	your cluster.
+- A reserved domain, which you can get in the ngrok
+	[dashboard](https://dashboard.ngrok.com/domains) or with the [ngrok
+	API](https://ngrok.com/docs/api/resources/reserved-domains/).
+  - You can choose from an ngrok subdomain or bring your own custom branded
+		domain, like `https://api.example.com`.
+  - We'll refer to this domain as `<NGROK_DOMAIN>`.
 
-:::
-
-## **Step 1**: Set up a local virtual cluster with vcluster {#set-up-vcluster}
+## Set up a local virtual cluster with vcluster {#set-up-vcluster}
 
 To follow along with this guide, you need a remote or local Kubernetes cluster with vcluster installed. If you have an
 existing cluster with vcluster set up, you can skip this step and proceed to
@@ -101,15 +95,7 @@ If you don't have a cluster already, create one locally with minikube and instal
 
    :::
 
-## **Step 2**: Install the ngrok Kubernetes Operator {#install-the-ngrok-kubernetes-operator}
-
-Now that you have a Kubernetes cluster integrated with vcluster, you can install
-the ngrok Kubernetes Operator to get traffic to your Kubernetes workloads.
-
-Check out our [Operator installation doc](/docs/k8s/installation/install/) for
-details on how to use Helm to install with your ngrok credentials.
-
-## **Step 3**: Install a sample application {#install-a-sample-application}
+## Install a sample application {#install-a-sample-application}
 
 At this point, you have a functional vcluster with the ngrok Kubernetes Operator running and authenticated with your
 ngrok credentials. To demonstrate how the Operator simplifies routing external traffic to your primary
@@ -202,7 +188,7 @@ cluster, virtual cluster, and ultimately an exposed service or endpoint, you can
 
    !["Navigating directly to the https://one-two-three.ngrok.app domain to see the 2048 application"](img/ngrok-k8s-vcluster_2048.png)
 
-## **Step 4**: Add OAuth protection to your demo app {#add-oauth-protection}
+## Add OAuth protection to your demo app {#add-oauth-protection}
 
 Let's take your ingress needs a little further by assuming you want to add edge security, in the form of Google OAuth,
 to the endpoint where your 2048 application is humming along.
