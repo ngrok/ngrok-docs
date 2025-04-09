@@ -139,7 +139,15 @@ const sidebars = {
 						id: "universal-gateway/tls/index",
 					},
 					items: [
-						"universal-gateway/tls-termination",
+						{
+							label: "How Do I Terminate TLS?",
+							type: "category",
+							link: {
+								type: "doc",
+								id: "universal-gateway/tls/tls-termination/index",
+							},
+							items: ["universal-gateway/tls/handshake"],
+						},
 						{
 							label: "How Does ngrok Handle TLS Certificates?",
 							type: "category",

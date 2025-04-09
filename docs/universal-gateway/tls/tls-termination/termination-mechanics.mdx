@@ -1,0 +1,52 @@
+---
+title: How Does ngrok TLS Termination Work?
+description: Learn how ngrok optimizes TLS termination to give your apps better performance.
+---
+
+The ngrok cloud service has multiple built-in optimizations for [TLS termination](/universal-gateway/tls/tls-termination/).
+
+## Acceleration
+
+The ngrok cloud service improves the performance of your endpoints by
+accelerating TLS termination using ngrok's [global points
+of presence](/universal-gateway/points-of-presence).
+
+TLS connection set-up requires multiple network round-trips. When round-trip
+times (RTTs) are long, TLS connection establishment slows down. ngrok reduces
+the latency of these round-trip times between the client and your endpoint by
+terminating connections at the closest [point of
+presence](/universal-gateway/points-of-presence/) via its [global load
+balancer](/universal-gateway/global-load-balancer).
+
+## FIPS Compliance
+
+ngrok does not use a [FIPS-compliant](https://en.wikipedia.org/wiki/FIPS_140-2) TLS implementation by default, but one can
+be enabled for your endpoints.
+
+[Contact us](mailto:support@ngrok.com) if you require a FIPS-compliant TLS
+implementation.
+
+## End-to-end encryption
+
+You may choose to terminate TLS at your upstream service or at the ngrok agent
+to achieve end-to-end encryption (E2EE), often referred to as Zero-knowledge TLS. When your endpoints operate in this
+mode, the ngrok cloud service can not see the payloads that transfer through
+your endpoints.
+
+Creating an endpoint with end-to-end encryption is simple:
+
+- Create a TLS or TCP endpoint
+- **Do not** add a `terminate-tls` action to its traffic policy.
+
+That's it! Read the [Agent TLS Termination
+Guide](/agent/agent-tls-termination/) for a step by step approach to set it up.
+
+To set up the agent to terminate TLS for you, consult the following table
+because the configuration depends on which kind of agent you are using.
+
+| Agent               | Documentation                                                                                           |
+| ------------------- | ------------------------------------------------------------------------------------------------------- |
+| Agent Config File   | [`agent_tls_termination`](/agent/config/v3/#endpoint-configuration-options)                             |
+| Go SDK              | [WithTLSTerminationKeyPair](https://pkg.go.dev/golang.ngrok.com/ngrok/config#WithTLSTerminationKeyPair) |
+| Other SDKs          | not supported                                                                                           |
+| Kubernetes Operator | not supported                                                                                           |
