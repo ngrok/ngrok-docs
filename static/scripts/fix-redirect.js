@@ -714,8 +714,8 @@ const redirects = [
 	],
 
     // JAN 2025
-    [ fromIncludes(`/docs/tls/tls-termination/`), `/docs/traffic-policy/actions/terminate-tls/` ],
-    [ fromIncludes(`/docs/traffic-policy/templates/`), `/docs/traffic-policy/examples/a-b-tests/` ],
+    [ fromIncludes('/docs/tls/tls-termination/'), '/docs/traffic-policy/actions/terminate-tls/' ],
+    [ fromIncludes('/docs/traffic-policy/templates/'), '/docs/traffic-policy/examples/a-b-tests/' ],
     
         // IA Restructure redirects
     [ fromIncludes('/docs/tls/termination/agent-tls-termination/'), '/docs/agent/agent-tls-termination/'],
@@ -748,11 +748,11 @@ const redirects = [
     [ fromIncludes('/docs/tcp/traffic-policy/actions/log/'), '/docs/traffic-policy/actions/log'],
     [ fromIncludes('/docs/tcp/traffic-policy/actions/restrict-ips/'), '/docs/traffic-policy/actions/restrict-ips'],
     [ fromIncludes('/docs/tcp/traffic-policy/actions/'), '/docs/traffic-policy/actions/'],
-    [ fromExact(`/docs/tcp/traffic-policy/`), `/docs/traffic-policy/` ],
+    [ fromExact('/docs/tcp/traffic-policy/'), '/docs/traffic-policy/' ],
         // tls
     [ fromExact('/docs/tls/ip-restrictions/'), '/docs/traffic-policy/actions/restrict-ips'],
     [ fromExact('/docs/tls/mutual-tls/'), '/docs/traffic-policy/actions/terminate-tls/#enabling-mutual-tls'],
-    [ fromExact(`/docs/tls/termination/`), '/docs/traffic-policy/actions/terminate-tls/'],
+    [ fromExact('/docs/tls/termination/'), '/docs/traffic-policy/actions/terminate-tls/'],
         // Universal Gateway
     [ fromExact('/docs/http/'), '/docs/universal-gateway/http/'],
     [ fromExact('/docs/tcp/'), '/docs/universal-gateway/tcp/'],
@@ -807,6 +807,6 @@ if (newPath !== currentPath && newPath !== window.location.pathname) {
 	window.location.href = newPath;
 } else {
 	console.error(
-		`ignoring redirect from ${window.location.href} to ${newPath}; looks loopy`,
+		'ignoring redirect from ${window.location.href} to ${newPath}; looks loopy',
 	);
 }

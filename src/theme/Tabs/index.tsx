@@ -14,14 +14,14 @@ import {
 } from "@ngrok/mantle/tabs";
 import type { Props } from "@theme/Tabs";
 import clsx from "clsx";
-import React, { useContext, type ReactElement, type ReactNode } from "react";
+import { useContext, type ReactElement, type ReactNode } from "react";
 import styles from "./styles.module.css";
 import TabListContext from "./TabListContext";
 
 function getValidTabToShow(
 	tabValues: readonly TabValue[],
 	selectedValue: string | undefined,
-	defaultTab: string | undefined,
+	defaultTab: string | undefined
 ) {
 	if (selectedValue) {
 		const selectedTab = tabValues.find((tab) => tab.label === selectedValue);
@@ -34,15 +34,15 @@ function getValidTabToShow(
 
 function getValidDefaultTab(
 	tabValues: readonly TabValue[],
-	localStorageTab: string | null | undefined,
+	localStorageTab: string | null | undefined
 ) {
 	const defaultTab = tabValues.find(
-		(tab) => tab.label === localStorageTab || tab.value === localStorageTab,
+		(tab) => tab.label === localStorageTab || tab.value === localStorageTab
 	);
 	if (defaultTab) {
 		return defaultTab.label;
 	}
-	return tabValues[0]!.label;
+	return tabValues[0]?.label;
 }
 
 function TabList({
@@ -63,12 +63,12 @@ function TabList({
 		event:
 			| React.FocusEvent<HTMLButtonElement>
 			| React.MouseEvent<HTMLButtonElement>
-			| React.KeyboardEvent<HTMLButtonElement>,
+			| React.KeyboardEvent<HTMLButtonElement>
 	) => {
 		const newTab = event.currentTarget;
 		const newTabIndex = tabRefs.indexOf(newTab);
 		const newTabValue =
-			tabValues[newTabIndex]!.label || tabValues[newTabIndex]!.value;
+			tabValues[newTabIndex]?.label || tabValues[newTabIndex]?.value;
 
 		if (newTabValue !== selectedTabItem && updateSelectedTabItem) {
 			blockElementScrollPositionUntilNextRender(newTab);
@@ -86,12 +86,12 @@ function TabList({
 			}
 			case "ArrowRight": {
 				const nextTab = tabRefs.indexOf(event.currentTarget) + 1;
-				focusElement = tabRefs[nextTab] ?? tabRefs[0]!;
+				focusElement = tabRefs[nextTab] ?? tabRefs[0] ?? null;
 				break;
 			}
 			case "ArrowLeft": {
 				const prevTab = tabRefs.indexOf(event.currentTarget) - 1;
-				focusElement = tabRefs[prevTab] ?? tabRefs[tabRefs.length - 1]!;
+				focusElement = tabRefs[prevTab] ?? tabRefs[tabRefs.length - 1] ?? null;
 				break;
 			}
 			default:
@@ -131,6 +131,7 @@ function TabList({
 				tabValues={tabValues}
 				selectValue={selectValue}
 				selectedValue={selectedValue}
+				// biome-ignore lint/correctness/noChildrenProp:
 				children={props.children}
 			/>
 		</MantleTabs>
@@ -139,13 +140,13 @@ function TabList({
 
 function TabContent({ children }: Props & ReturnType<typeof useTabs>) {
 	const childTabs = (Array.isArray(children) ? children : [children]).filter(
-		Boolean,
+		Boolean
 	) as ReactElement<TabItemProps>[];
 	return childTabs.map((tabItem, i) => {
 		return (
 			<TabsContent
 				value={tabItem.props.label || tabItem.props.value}
-				key={tabItem.props.value + i}
+				key={`${tabItem.props.value}${i}`}
 			>
 				{tabItem.props.children}
 			</TabsContent>
@@ -159,8 +160,8 @@ function TabsComponent(props: Props): ReactNode {
 		...tabs,
 		tabValues: tabs.tabValues
 			.slice(0)
-			.sort((a: any, b: any) =>
-				a.label ? a.label.localeCompare(b.label) : -1,
+			.sort((a, b) =>
+				a.label && b.label ? a.label.localeCompare(b.label) : -1
 			),
 	};
 	return (

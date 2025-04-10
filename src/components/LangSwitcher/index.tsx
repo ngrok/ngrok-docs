@@ -30,6 +30,7 @@ export function LangSwitcher({ children, className, ...props }: any) {
 
 	const matchingBlock =
 		codeBlocks.find(
+			// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 			(child: any) =>
 				child.language === selectedLanguage ||
 				languagesAreSynonyms(child.language, selectedLanguage)
