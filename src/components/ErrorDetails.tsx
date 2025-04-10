@@ -6,10 +6,12 @@ type ErrorDetailsProps = {
 };
 
 export default function ErrorDetails({ error }: ErrorDetailsProps) {
-	const Error = loadable(() => import(`/docs/errors/details/_${error}.md`));
+	const LazyErrorPartial = loadable(
+		() => import(`/docs/errors/details/_${error}.md`),
+	);
 	return (
 		<ErrorBoundary fallback={() => <br />}>
-			<Error />
+			<LazyErrorPartial />
 		</ErrorBoundary>
 	);
 }

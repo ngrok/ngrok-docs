@@ -8,6 +8,7 @@ import LangSwitcherContext, {
 } from "./LangSwitcherContext";
 import { getCodeBlocks, languagesAreSynonyms } from "./utils";
 
+// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 export function LangSwitcher({ children, className, ...props }: any) {
 	const { defaultLanguage, selectedLanguage, updateSelectedLanguage } =
 		useContext<LangSwitcherContextType>(LangSwitcherContext);
@@ -20,6 +21,7 @@ export function LangSwitcher({ children, className, ...props }: any) {
 	if (selectedLanguage === null) {
 		// Check if the user has specified a default language
 		const startingLanguage =
+			// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 			codeBlocks.find((child: any) => child.language === defaultLanguage) ||
 			codeBlocks[0];
 		updateSelectedLanguage(startingLanguage.language);
@@ -48,6 +50,7 @@ export function LangSwitcher({ children, className, ...props }: any) {
 					className={className}
 					headerContent={
 						<div className="flex w-[100%] gap-1.5">
+							{/* biome-ignore lint/suspicious/noExplicitAny: <explanation> */}
 							{codeBlocks.map((child: any) => (
 								<Button
 									key={child.language + child.content}
@@ -55,7 +58,7 @@ export function LangSwitcher({ children, className, ...props }: any) {
 									type="button"
 									priority="neutral"
 									appearance={
-										matchingBlock.language === child.language
+										matchingBlock?.language === child.language
 											? "filled"
 											: "outlined"
 									}
