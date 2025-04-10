@@ -1,0 +1,123 @@
+---
+title: What are Endpoint URLs?
+---
+
+URLs are the entry point for traffic to reach the services connected to your endpoints. This could be any URL, such as `https://your-app.ngrok.io` or `tcp://your-api.internal`.
+
+## Public Endpoints
+
+When you create a [Public Endpoint], the URL you create it with is validated differently based on the protocol of the URL.
+
+### `http`
+
+- The hostname must match a [Domain](/universal-gateway/domains/what-are-domains/) in your account.
+- The hostname must be a domain with a valid [public suffix](https://publicsuffix.org/).
+- The port must be `80`, which is the default when creating public endpoints.
+
+#### Examples
+
+Valid:
+
+- `http://example.ngrok.app`
+- `http://example.ngrok.app:80`
+- `http://example.party`
+
+Invalid:
+
+- `http://example.ngrok.app:81` - invalid port, must be `80`, not `81`
+- `http://example.doesnotexist` - invalid hostname: `.doesnotexist` is not a public suffix domain
+- `http://example.internal` - invalid hostname: `.internal` is not a public suffix domain
+
+### `https`, `tls`
+
+- The hostname must match a [Domain](/universal-gateway/domains/what-are-domains/) in your account.
+- The hostname must be a domain with a valid [public suffix](https://publicsuffix.org/).
+- The port must be `443`. If you do not specify a port, the default `443` will be used for you.
+
+:::note
+There is no standard scheme for TLS URLs so ngrok renders them as `tls://`.
+:::
+
+#### Examples
+
+Valid:
+
+- `https://example.ngrok.app`
+- `https://example.ngrok.app:443`
+- `https://example.party`
+
+Invalid:
+
+- `https://example.ngrok.app:8443` - invalid port, must be `443`
+- `https://example.nosuchtld` - invalid hostname, `.nosuchtld` is not a public suffix domain
+- `https://example.internal` - invalid hostname, public endpoints cannot use `.internal`
+
+### `tcp`
+
+- You must specify a port number in TCP URLs.
+- The hostname and port must match the address of a [TCP
+  Address](/universal-gateway/tcp-addresses/) in your account.
+
+#### Examples
+
+Valid:
+
+- `tcp://1.tcp.ngrok.io:12345`
+- `tcp://1.tcp.eu.ngrok.io:12345`
+
+Invalid:
+
+- `tcp://1.tcp.ngrok.io` - invalid, does not specify a port number
+- `tcp://example.ngrok.app:12345` - invalid, does not match a TCP Address
+- `tcp://your-domain.com:12345` - invalid, does not match a TCP Address
+
+## Internal Endpoints
+
+- **Scheme** - Internal endpoints support all [Endpoint Protocols](/universal-gateway/protocols) (`http`, `https`, `tcp` and `tls`).
+- **Hostname** - Hostnames **must** end with `.internal` and may contain up to 5 subdomains. You must specify a URL with a hostname, randomly-assigned hostnames are not supported. You may specify wildcard hostnames.
+- **Port** - All port numbers [1-65535] are valid. For `tcp` endpoints, you **must** specify a port.
+- **Namespacing** - Internal endpoints are namespaced on a per-account basis.
+  This means that, two different accounts may have internal endpoints with the same URL (e.g. `https://api.internal`) without conflict or interference in [endpoint pooling](/universal-gateway/endpoint-pooling).
+
+#### Examples
+
+- `https://example.internal`
+- `https://example.foo.bar.internal`
+- `https://example.internal:12345`
+- `tls://example.internal`
+- `tls://example.internal:12345`
+- `tcp://example.internal:12345`
+
+## Kubernetes Endpoints
+
+Kubernetes endpoint URL hostnames must be in the following format:
+
+- `[http|tcp]://name.namespace[:port]`
+
+The following restrictions are enforced:
+
+- **Scheme** - Must be `http` or `tcp`. `https` and `tls` are not supported.
+- **Hostname** - Hostnames must always be two parts separated by a single dot,
+  e.g. `foo.bar`. Wildcard hostnames are not allowed.
+- **Port** - All port numbers [1-65535] are valid. Port must be specified for
+  `tcp` endpoints.
+- **Namespacing** - Kubernetes endpoints are namespaced on a per-account basis.
+  Two accounts may have kubernetes endpoints with the same URL (e.g.
+  http://api.internal). Those endpoints will not conflict or
+  [pool](/universal-gateway/endpoint-pooling).
+
+#### Examples
+
+Valid:
+
+- `http://app.example`
+- `http://app.example:12345`
+- `tcp://app.example:443`
+- `tcp://app.example:12345`
+
+Invalid:
+
+- `https://app.example` - invalid scheme `https`
+- `tls://app.example:12345` - invalid scheme `tls`
+- `http://app.foo.bar` - invalid hostname, must have only two parts
+- `tcp://app.example` - tcp endpoint must specify port number

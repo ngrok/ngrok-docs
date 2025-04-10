@@ -1,16 +1,18 @@
-const getNormalizedPaths = (from, path) => {
+questionAnswerRedirects = require("./redirects/question-answer-redirects");
+
+export const getNormalizedPaths = (from, path) => {
 	return {
 		normalizedFrom: from.endsWith("/") ? from.slice(0, -1) : from,
 		normalizedPath: path.endsWith("/") ? path.slice(0, -1) : path,
 	};
 };
 
-const fromExact = (from) => (path) => {
+export const fromExact = (from) => (path) => {
 	const { normalizedFrom, normalizedPath } = getNormalizedPaths(from, path);
 	return [normalizedFrom, normalizedPath === normalizedFrom]; // [xyz]
 };
 
-const fromIncludes = (from) => (path) => {
+export const fromIncludes = (from) => (path) => {
 	// Normalize both paths by removing trailing slashes if present
 
 	const { normalizedFrom, normalizedPath } = getNormalizedPaths(from, path);
@@ -18,8 +20,8 @@ const fromIncludes = (from) => (path) => {
 	return [normalizedFrom, normalizedPath.includes(normalizedFrom)];
 };
 
-const toExact = (to) => () => to; // x -> y
-const toReplace = (to) => (path, from) => path.replace(from, to); // abc/x -> xyz/x
+export const toExact = (to) => () => to; // x -> y
+export const toReplace = (to) => (path, from) => path.replace(from, to); // abc/x -> xyz/x
 
 // List of redirects
 //  String values are treated as exacts by default.
@@ -830,7 +832,7 @@ const redirects = [
 	[fromExact("/docs/http/"), "/docs/universal-gateway/http/"],
 	[fromExact("/docs/tcp/"), "/docs/universal-gateway/tcp/"],
 	[fromExact("/docs/tls/"), "/docs/universal-gateway/tls/"],
-
+	...questionAnswerRedirects,
 	// Kubernetes Operator Revamp
 	[
 		fromExact("/docs/k8s/advanced-deployments/"),
@@ -892,6 +894,6 @@ if (newPath !== currentPath && newPath !== window.location.pathname) {
 	window.location.href = newPath;
 } else {
 	console.error(
-		`ignoring redirect from ${window.location.href} to ${newPath}; looks loopy`,
+		"ignoring redirect from ${window.location.href} to ${newPath}; looks loopy",
 	);
 }

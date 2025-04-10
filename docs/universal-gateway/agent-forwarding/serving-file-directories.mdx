@@ -1,0 +1,151 @@
+---
+title: How Do I Serve File Directories?
+---
+
+import TabItem from "@theme/TabItem";
+import Tabs from "@theme/Tabs";
+
+import { LangSwitcher } from "@site/src/components/LangSwitcher";
+
+The ngrok agent supports the `file://` scheme in [a forwarding URL](/universal-gateway/agent-forwarding/). When you use the `file://` scheme, the ngrok agent serves local file system directories by using its own built-in file server, no separate server needed. It works just like `python3 -m http.server` but it is built directly into the ngrok agent.
+
+Paths in `file://` URLs must be specified as absolute paths.
+
+:::info
+
+Serving directory files is not supported with:
+
+- SSH
+- JavaScript
+- Python
+- Rust
+- Kubernetes Operator
+  :::
+
+#### Serve files in `/var/log`
+
+<Tabs groupId="endpoint-type" queryString="ept">
+<TabItem value="agent-endpoint" label="Agent Endpoint" default>
+	<LangSwitcher>
+		```bash
+		ngrok http "file:///var/log"
+		```
+
+    	```go
+    	import (
+    		"context"
+    		"net"
+
+    		"golang.ngrok.com/ngrok"
+    		"golang.ngrok.com/ngrok/config"
+    	)
+
+    	func serveFiles(ctx context.Context) error {
+    		l, _ := ngrok.Listen(ctx,
+    			config.HTTPEndpoint(),
+    			ngrok.WithAuthtokenFromEnv(),
+    		)
+    					http.Serve(l, http.FileServer(http.Dir("/var/log")))
+    	}
+    	```
+
+    </LangSwitcher>
+
+</TabItem>
+
+<TabItem value="agent-config" label="Agent Config">
+```yaml
+version: 3
+endpoints:
+  - name: example
+    url: "https://example.ngrok.app"
+    upstream:
+      url: "file:///var/log"
+```
+
+</TabItem>
+
+</Tabs>
+
+#### Serve files on Windows
+
+<Tabs groupId="endpoint-type" queryString="ept">
+	<TabItem value="agent-endpoint" label="Agent Endpoint" default>
+		
+		<LangSwitcher>
+```bash
+ngrok http "file://C:\Users\alan\Directory Name"
+```
+
+```go
+import (
+	"context"
+	"net"
+
+	"golang.ngrok.com/ngrok"
+	"golang.ngrok.com/ngrok/config"
+)
+
+func serveFiles(ctx context.Context) error {
+	l, _ := ngrok.Listen(ctx,
+		config.HTTPEndpoint(),
+		ngrok.WithAuthtokenFromEnv(),
+	)
+        http.Serve(l, http.FileServer(http.Dir("C:\Users\alan\Directory Name")))
+}
+```
+
+    	</LangSwitcher>
+
+    </TabItem>
+    <TabItem value="agent-config" label="Agent Config">
+
+```yaml
+version: 3
+endpoints:
+  - name: example
+    url: "https://example.ngrok.app"
+    upstream:
+      url: "file://C:\Users\alan\Directory Name"
+```
+
+    </TabItem>
+
+</Tabs>
+
+<br />
+
+#### Serve files in your current working directory
+
+<Tabs groupId="endpoint-type" queryString="ept">
+	<TabItem value="agent-endpoint" label="Agent Endpoint" default>
+		<LangSwitcher>
+```bash
+ngrok http file://`pwd`
+```
+
+```go
+import (
+	"context"
+	"net"
+
+	"golang.ngrok.com/ngrok"
+	"golang.ngrok.com/ngrok/config"
+)
+
+func serveFiles(ctx context.Context) error {
+	l, _ := ngrok.Listen(ctx,
+		config.HTTPEndpoint(),
+		ngrok.WithAuthtokenFromEnv(),
+	)
+        http.Serve(l, http.FileServer(http.Dir(".")))
+}
+```
+
+    	</LangSwitcher>
+    </TabItem>
+    <TabItem value="agent-config" label="Agent Config">
+    	Serving the current working directory is not supported via the agent configuration file.
+    </TabItem>
+
+</Tabs>

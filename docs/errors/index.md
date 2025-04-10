@@ -60,3 +60,42 @@ complete list of all of ngrok's error codes.
 ## Customize Error Pages for your Traffic
 
 To access and provide feedback on a development preview of custom error pages [Fill out the form](https://ngrok.com/new-features/custom-error-pages?ref=errordoc).
+
+## HTTP Errors
+
+If ngrok fails to handle an HTTP request it will set the `ngrok-error-code` header in the HTTP response with a [unique ngrok Error Code](/errors/) describing the failure.
+
+ngrok guarantees that the upstream service may never set the `ngrok-error-code` HTTP response header so you know reliably that it was set by ngrok.
+
+ngrok may return an error under the following conditions:
+
+- Your upstream service timed out or rejected the connection
+- Your upstream service returned a response that was not valid HTTP
+- A [Traffic Policy](/traffic-policy) action rejected the request.
+- [Traffic Policy](/traffic-policy) execution encountered a runtime error.
+- ngrok encountered an internal error
+
+## TLS Errors
+
+If a TLS handshake fails, an appropriate TLS abort code will be sent to the
+client.
+
+In all other cases, if an error is encountered while handling TLS connections
+to your endpoints (e.g. no available backends or internal server error), the
+connection will be closed. The TLS protocol and its implementations are not
+sufficiently flexible enough to deliver additional rich error information when
+failures are encountered.
+
+Use the [observability](#observability) features to understand connection
+handling errors.
+
+## TCP Errors
+
+If an error is encountered while handling connections to a TCP endpoint for any
+reason (e.g. traffic policy action error, internal server error), the
+connection will be closed. Because of the low-level nature of the TCP protocol,
+there is no mechanism used to transmit information about what error code was
+encountered.
+
+Use the [observability](/obs/events/reference/#tcp-connection-closed) features to understand connection
+handling errors.
