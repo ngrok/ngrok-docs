@@ -1,9 +1,9 @@
 import {
+	type TabItemProps,
+	type TabValue,
 	sanitizeTabsChildren,
 	useScrollPositionBlocker,
 	useTabs,
-	type TabItemProps,
-	type TabValue,
 } from "@docusaurus/theme-common/internal";
 import useIsBrowser from "@docusaurus/useIsBrowser";
 import {
@@ -14,14 +14,14 @@ import {
 } from "@ngrok/mantle/tabs";
 import type { Props } from "@theme/Tabs";
 import clsx from "clsx";
-import { useContext, type ReactElement, type ReactNode } from "react";
-import styles from "./styles.module.css";
+import { type ReactElement, type ReactNode, useContext } from "react";
 import TabListContext from "./TabListContext";
+import styles from "./styles.module.css";
 
 function getValidTabToShow(
 	tabValues: readonly TabValue[],
 	selectedValue: string | undefined,
-	defaultTab: string | undefined
+	defaultTab: string | undefined,
 ) {
 	if (selectedValue) {
 		const selectedTab = tabValues.find((tab) => tab.label === selectedValue);
@@ -34,10 +34,10 @@ function getValidTabToShow(
 
 function getValidDefaultTab(
 	tabValues: readonly TabValue[],
-	localStorageTab: string | null | undefined
+	localStorageTab: string | null | undefined,
 ) {
 	const defaultTab = tabValues.find(
-		(tab) => tab.label === localStorageTab || tab.value === localStorageTab
+		(tab) => tab.label === localStorageTab || tab.value === localStorageTab,
 	);
 	if (defaultTab) {
 		return defaultTab.label;
@@ -63,7 +63,7 @@ function TabList({
 		event:
 			| React.FocusEvent<HTMLButtonElement>
 			| React.MouseEvent<HTMLButtonElement>
-			| React.KeyboardEvent<HTMLButtonElement>
+			| React.KeyboardEvent<HTMLButtonElement>,
 	) => {
 		const newTab = event.currentTarget;
 		const newTabIndex = tabRefs.indexOf(newTab);
@@ -140,7 +140,7 @@ function TabList({
 
 function TabContent({ children }: Props & ReturnType<typeof useTabs>) {
 	const childTabs = (Array.isArray(children) ? children : [children]).filter(
-		Boolean
+		Boolean,
 	) as ReactElement<TabItemProps>[];
 	return childTabs.map((tabItem, i) => {
 		return (
@@ -161,7 +161,7 @@ function TabsComponent(props: Props): ReactNode {
 		tabValues: tabs.tabValues
 			.slice(0)
 			.sort((a, b) =>
-				a.label && b.label ? a.label.localeCompare(b.label) : -1
+				a.label && b.label ? a.label.localeCompare(b.label) : -1,
 			),
 	};
 	return (

@@ -1,8 +1,8 @@
 import BrowserOnly from "@docusaurus/BrowserOnly";
 import { Button } from "@ngrok/mantle/button";
 import { useContext } from "react";
-import { CodeBlockFallback } from "../code-block";
 import { CodeBlockWithInfo } from "../CodeBlockWithInfo";
+import { CodeBlockFallback } from "../code-block";
 import LangSwitcherContext, {
 	type LangSwitcherContextType,
 } from "./LangSwitcherContext";
@@ -33,7 +33,7 @@ export function LangSwitcher({ children, className, ...props }: any) {
 			// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 			(child: any) =>
 				child.language === selectedLanguage ||
-				languagesAreSynonyms(child.language, selectedLanguage)
+				languagesAreSynonyms(child.language, selectedLanguage),
 		) || codeBlocks[0];
 
 	return (

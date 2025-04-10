@@ -19,7 +19,7 @@ export function LanguageData({ data }: { data: LanguageInfo }) {
 				return [prev, ", and ", curr];
 			}
 			return [prev, ", ", curr];
-		}
+		},
 	);
 
 	return (

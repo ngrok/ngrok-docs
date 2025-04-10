@@ -11,8 +11,8 @@ import {
 	fmtCode,
 } from "@ngrok/mantle/code-block";
 import type { ReactNode } from "react";
-import type { LanguageInfo } from "../LangSwitcher/data";
 import { LanguageData } from "../LangSwitcher/LanguageData";
+import type { LanguageInfo } from "../LangSwitcher/data";
 
 type CodeBlockWithInfoProps = {
 	content: string;

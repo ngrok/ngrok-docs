@@ -1,14 +1,14 @@
 import {
-	parseLanguage,
 	type Meta,
 	type SupportedLanguage,
+	parseLanguage,
 } from "@ngrok/mantle/code-block";
-import { languageInfo, type LanguageInfo } from "./data";
 import type { ReactElement, ReactNode } from "react";
+import { type LanguageInfo, languageInfo } from "./data";
 
 export function getMetaDataWithQuotes(
 	propertyName: string,
-	metastring: string
+	metastring: string,
 ) {
 	const property = `${propertyName}=`;
 	if (!metastring.includes(property)) return null;
@@ -87,17 +87,17 @@ export const getCodeBlocks = (children: ReactElement[]): CodeBlockData[] => {
 export const getLanguageInfo = (language: string) => {
 	return languageInfo.find(
 		(item) =>
-			item.name === language || item?.allNames?.some((alt) => alt === language)
+			item.name === language || item?.allNames?.some((alt) => alt === language),
 	);
 };
 
 export function languagesAreSynonyms(
 	languageToCheck: string,
-	selectedLanguage: string | null
+	selectedLanguage: string | null,
 ) {
 	if (!selectedLanguage) return false;
 	const synonymousLanguage = languageInfo.find((lang: LanguageInfo) =>
-		lang.allNames?.includes(selectedLanguage)
+		lang.allNames?.includes(selectedLanguage),
 	);
 	return (
 		synonymousLanguage?.name === languageToCheck ||
