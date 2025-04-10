@@ -10,18 +10,21 @@ import {
 	CodeBlockTitle,
 	fmtCode,
 } from "@ngrok/mantle/code-block";
-import clsx from "clsx";
 import type { ReactNode } from "react";
 import type { LanguageInfo } from "../LangSwitcher/data";
 import { LanguageData } from "../LangSwitcher/LanguageData";
 
 type CodeBlockWithInfoProps = {
 	content: string;
+	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 	language: any;
 	collapseLineNumber: number;
-	meta: Record<string, string> | undefined;
-	className: string | undefined;
+	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+	meta: any;
+	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+	className?: any;
 	headerContent: ReactNode;
+	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 	codeBlockProps?: any;
 	info?: LanguageInfo | undefined;
 };
@@ -43,7 +46,7 @@ export function CodeBlockWithInfo({
 
 	return (
 		<div className="flex flex-col">
-			<CodeBlock className={clsx(className, "mb-0")} {...codeBlockProps}>
+			<CodeBlock className={className} {...codeBlockProps}>
 				<CodeBlockHeader className="flex w-[100%] justify-start p-1">
 					{headerContent}
 				</CodeBlockHeader>
@@ -51,18 +54,18 @@ export function CodeBlockWithInfo({
 					{meta?.title && (
 						<div className="mx-2 mt-3.5 flex w-[100%] items-end justify-start gap-1.5">
 							<>
-								{meta.mode ? (
-									<CodeBlockIcon preset={meta.mode as any} />
+								{meta?.mode ? (
+									<CodeBlockIcon preset={meta.mode} />
 								) : (
 									<CodeBlockIcon preset="file" />
 								)}
 								<CodeBlockTitle>
-									{meta.titleLink ? (
+									{meta?.titleLink ? (
 										<a href={useBaseUrl(meta.titleLink)}>
 											<strong>{meta.title}</strong>
 										</a>
 									) : (
-										<strong>{meta.title}</strong>
+										<strong>{meta?.title}</strong>
 									)}
 								</CodeBlockTitle>
 							</>

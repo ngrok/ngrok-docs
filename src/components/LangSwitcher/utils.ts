@@ -1,9 +1,14 @@
-import { parseLanguage } from "@ngrok/mantle/code-block";
+import {
+	parseLanguage,
+	type Meta,
+	type SupportedLanguage,
+} from "@ngrok/mantle/code-block";
 import { languageInfo, type LanguageInfo } from "./data";
+import type { ReactElement, ReactNode } from "react";
 
 export function getMetaDataWithQuotes(
 	propertyName: string,
-	metastring: string,
+	metastring: string
 ) {
 	const property = `${propertyName}=`;
 	if (!metastring.includes(property)) return null;
@@ -24,6 +29,7 @@ export function getMetaData(metastring: string | undefined) {
 	}
 	const meta = metastring.split(/\s+/);
 	const metaData: Record<string, string> = {};
+	// biome-ignore lint/complexity/noForEach: <explanation>
 	meta.forEach((item) => {
 		const [key, value] = item.split("=");
 		if (key && value) {
@@ -31,6 +37,7 @@ export function getMetaData(metastring: string | undefined) {
 		}
 	});
 	// Add the properties that use quotes to the metaData object
+	// biome-ignore lint/complexity/noForEach: <explanation>
 	["tabName", "title"].forEach((property) => {
 		const quotedData = getMetaDataWithQuotes(property, metastring);
 		if (quotedData) {
@@ -40,10 +47,22 @@ export function getMetaData(metastring: string | undefined) {
 	return metaData;
 }
 
-export const getCodeBlocks = (children: any) => {
-	return children.map((child: any) => {
+export type CodeBlockData = {
+	language: SupportedLanguage | string | undefined;
+	content: ReactNode[];
+	meta: Meta & {
+		collapsible: boolean;
+		titleLink?: string;
+		tabName?: string;
+		title?: string;
+	};
+	info?: LanguageInfo;
+};
+
+export const getCodeBlocks = (children: ReactElement[]): CodeBlockData[] => {
+	return children.map((child: ReactElement) => {
 		const { className, metastring, children, language } =
-			child.props.children.props ?? child.props;
+			child?.props.children.props ?? child.props;
 
 		const parsedLanguage = language || parseLanguage(className);
 		const meta = getMetaData(metastring);
@@ -55,9 +74,10 @@ export const getCodeBlocks = (children: any) => {
 				...meta,
 				// Make it collapsible by default
 				collapsible: true,
-				// If no title found yet, check for a tabName.
-				// If a tabName exists, use the parsedLanguage as the title
-				title: title ? title : meta.tabName ? parsedLanguage : null,
+				titleLink: meta.titleLink,
+				tabName: meta.tabName,
+				title,
+				disableCopy: false,
 			},
 			info: getLanguageInfo(parsedLanguage),
 		};
@@ -67,17 +87,17 @@ export const getCodeBlocks = (children: any) => {
 export const getLanguageInfo = (language: string) => {
 	return languageInfo.find(
 		(item) =>
-			item.name === language || item?.allNames?.some((alt) => alt === language),
+			item.name === language || item?.allNames?.some((alt) => alt === language)
 	);
 };
 
 export function languagesAreSynonyms(
 	languageToCheck: string,
-	selectedLanguage: string | null,
+	selectedLanguage: string | null
 ) {
 	if (!selectedLanguage) return false;
 	const synonymousLanguage = languageInfo.find((lang: LanguageInfo) =>
-		lang.allNames?.includes(selectedLanguage),
+		lang.allNames?.includes(selectedLanguage)
 	);
 	return (
 		synonymousLanguage?.name === languageToCheck ||
@@ -101,9 +121,10 @@ export const getStorageLanguageAndTab = (): {
 		return null;
 	}
 	const searchParams = new URLSearchParams(window?.location?.search);
-	let tempLang =
+	const tempLang =
 		searchParams.get(langParamName) || getStorageItem(langParamName);
-	let tempTab = searchParams.get(tabParamName) || getStorageItem(tabParamName);
+	const tempTab =
+		searchParams.get(tabParamName) || getStorageItem(tabParamName);
 
 	return { defaultLanguage: tempLang ?? null, defaultTabItem: tempTab ?? null };
 };

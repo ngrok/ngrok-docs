@@ -24,7 +24,7 @@ export function LangSwitcher({ children, className, ...props }: any) {
 			// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 			codeBlocks.find((child: any) => child.language === defaultLanguage) ||
 			codeBlocks[0];
-		updateSelectedLanguage(startingLanguage.language);
+		updateSelectedLanguage(startingLanguage?.language);
 		// if no default language is set, set the first tab as the selected tab
 	}
 
@@ -32,7 +32,7 @@ export function LangSwitcher({ children, className, ...props }: any) {
 		codeBlocks.find(
 			(child: any) =>
 				child.language === selectedLanguage ||
-				languagesAreSynonyms(child.language, selectedLanguage),
+				languagesAreSynonyms(child.language, selectedLanguage)
 		) || codeBlocks[0];
 
 	return (
@@ -43,10 +43,10 @@ export function LangSwitcher({ children, className, ...props }: any) {
 		>
 			{() => (
 				<CodeBlockWithInfo
-					content={matchingBlock.content.toString()}
-					language={matchingBlock.language || matchingBlock.meta.language}
+					content={matchingBlock?.content.toString()}
+					language={matchingBlock?.language || matchingBlock?.meta.language}
 					collapseLineNumber={10}
-					meta={matchingBlock.meta}
+					meta={matchingBlock?.meta}
 					className={className}
 					headerContent={
 						<div className="flex w-[100%] gap-1.5">
@@ -68,7 +68,7 @@ export function LangSwitcher({ children, className, ...props }: any) {
 							))}
 						</div>
 					}
-					info={matchingBlock.info}
+					info={matchingBlock?.info}
 					codeBlockProps={props}
 				/>
 			)}
