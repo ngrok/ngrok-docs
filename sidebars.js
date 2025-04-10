@@ -62,6 +62,17 @@ const sidebars = {
 					],
 				},
 				{
+					label: "What are TCP Addresses?",
+					type: "category",
+					link: {
+						type: "doc",
+						id: "universal-gateway/tcp-addresses/what-are-tcp-addresses",
+					},
+					items: [
+						"universal-gateway/tcp-addresses/how-are-tcp-addresses-assigned",
+					],
+				},
+				{
 					label: "What are Endpoints?",
 					type: "category",
 					link: {
@@ -108,17 +119,6 @@ const sidebars = {
 						"universal-gateway/chain-endpoints",
 						"universal-gateway/mock-api",
 						"universal-gateway/migrate-from-tunnels",
-					],
-				},
-				{
-					label: "What are TCP Addresses?",
-					type: "category",
-					link: {
-						type: "doc",
-						id: "universal-gateway/tcp-addresses/what-are-tcp-addresses",
-					},
-					items: [
-						"universal-gateway/tcp-addresses/how-are-tcp-addresses-assigned",
 					],
 				},
 				{
