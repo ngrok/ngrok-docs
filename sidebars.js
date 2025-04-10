@@ -66,7 +66,7 @@ const sidebars = {
 					type: "category",
 					link: {
 						type: "doc",
-						id: "universal-gateway/tcp-addresses/what-are-tcp-addresses",
+						id: "universal-gateway/tcp-addresses/index",
 					},
 					items: [
 						"universal-gateway/tcp-addresses/how-are-tcp-addresses-assigned",
@@ -122,7 +122,7 @@ const sidebars = {
 					],
 				},
 				{
-					label: "How Do I Handle HTTP/S Traffic?",
+					label: "Handling HTTP/S Traffic",
 					type: "category",
 					link: { type: "doc", id: "universal-gateway/http-s/index" },
 					items: [
@@ -131,7 +131,7 @@ const sidebars = {
 					],
 				},
 				{
-					label: "How Do I Handle TLS Traffic?",
+					label: "Handling TLS Traffic",
 					type: "category",
 					link: {
 						type: "doc",

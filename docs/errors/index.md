@@ -88,3 +88,14 @@ failures are encountered.
 
 Use the [observability](#observability) features to understand connection
 handling errors.
+
+## TCP Errors
+
+If an error is encountered while handling connections to a TCP endpoint for any
+reason (e.g. traffic policy action error, internal server error), the
+connection will be closed. Because of the low-level nature of the TCP protocol,
+there is no mechanism used to transmit information about what error code was
+encountered.
+
+Use the [observability](/obs/events/reference/#tcp-connection-closed) features to understand connection
+handling errors.
