@@ -55,7 +55,7 @@ const sidebars = {
 						id: "universal-gateway/domains/what-are-domains",
 					},
 					items: [
-						"universal-gateway/domains/how-do-i-use-my-own-domain",
+						"universal-gateway/domains/bring-your-own-domain",
 						"universal-gateway/domains/what-are-managed-domains",
 						"universal-gateway/wildcard-domains/index",
 						"universal-gateway/wildcard-domains/wildcard-endpoints",
@@ -170,10 +170,17 @@ const sidebars = {
 					],
 				},
 				{
+					label: "Handling TCP Traffic",
+					type: "category",
+					link: { type: "doc", id: "universal-gateway/tcp/index" },
+					items: ["universal-gateway/tcp/static-tcp-url"],
+				},
+				{
 					label: "How Do I Forward Traffic?",
 					type: "category",
 					link: { type: "doc", id: "universal-gateway/agent-forwarding/index" },
 					items: [
+						"universal-gateway/agent-forwarding/forward-original-connection-data",
 						"universal-gateway/agent-forwarding/non-local-forwarding",
 						"universal-gateway/agent-forwarding/serving-file-directories",
 					],

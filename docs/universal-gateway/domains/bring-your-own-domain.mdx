@@ -40,3 +40,21 @@ If you bring your own [wildcard domain](/universal-gateway/wildcard-domains), e.
 Because it's not possible to create `CNAME` records for apex domains, if you want to use an apex domain, e.g. `example.com`, you must use a DNS provider that supports an `ALIAS` record or `CNAME` flattening.
 
 Because of how `ALIAS`/`CNAME` flattening is implemented, apex domains will not take advantage of the [Global Load Balancer](/universal-gateway/global-load-balancer/#domains). If you're trying to create your apex domain because you need to create endpoints for multiple subdomains, use a [wildcard domain](/universal-gateway/what-are-public-endpoints#wildcard-domains) instead.
+
+## Using custom domains with TCP endpoints
+
+Public TCP endpoints are assigned randomly on an ngrok-controlled hostname with a randomly-assigned port. You may not choose the hostname and you may not select the port.
+
+You may, however, simulate a customized hostname by creating a `CNAME` record to the hostname of your assigned TCP address. If you do so, be aware that all ports on that hostname, even those provisioned to other accounts will then be available on your domain.
+
+For example if your TCP address is `5.tcp.ngrok.io:12345`, you could create the following `CNAME` record:
+
+```bash
+CNAME tcp.mydomain.com -> 5.tcp.ngrok.io
+```
+
+And then you can access that TCP endpoint with:
+
+```bash
+telnet tcp.mydomain.com 12345
+```
