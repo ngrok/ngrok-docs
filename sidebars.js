@@ -159,7 +159,7 @@ const sidebars = {
 								id: "universal-gateway/tls-certificates/how-does-ngrok-handle-tls",
 							},
 							items: [
-								"universal-gateway/tls-certificates/what-is-automatic-certificate-management",
+								"universal-gateway/tls-certificates/automatic-certificate-management",
 								"universal-gateway/tls-certificates/how-are-certificates-selected",
 								"universal-gateway/tls-certificates/custom-certificates",
 								"universal-gateway/tls-certificates/what-is-a-certificate-bundle",
