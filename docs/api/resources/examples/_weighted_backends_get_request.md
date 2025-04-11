@@ -1,11 +1,8 @@
 <!-- Code generated for API Clients. DO NOT EDIT. -->
-
 #### Example Request
-
 ```bash
 curl \
 -X GET \
 -H "Authorization: Bearer {API_KEY}" \
 -H "Ngrok-Version: 2" \
-https://api.ngrok.com/backends/weighted/bkdwd_2uqkil7a3gYz7fxNt6nUXHGJdyt
-```
+https://api.ngrok.com/backends/weighted/bkdwd_2vZwTgvo8PkfGqoraMHRW76YpdL

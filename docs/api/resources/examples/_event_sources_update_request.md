@@ -1,7 +1,5 @@
 <!-- Code generated for API Clients. DO NOT EDIT. -->
-
 #### Example Request
-
 ```bash
 curl \
 -X PATCH \
@@ -9,5 +7,4 @@ curl \
 -H "Content-Type: application/json" \
 -H "Ngrok-Version: 2" \
 -d '{}' \
-https://api.ngrok.com/event_subscriptions/esb_2uqkifo9cvaJIeAJiX0N8uW6hU6/sources/ip_policy_updated.v0
-```
+https://api.ngrok.com/event_subscriptions/esb_2vZwTnhCvMXIzUvI8uP6fpRJ0Cc/sources/ip_policy_updated.v0
