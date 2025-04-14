@@ -4,83 +4,11 @@ sidebar_label: Install
 pagination_next: k8s/guides/quickstart
 ---
 
-import TabItem from "@theme/TabItem";
-import Tabs from "@theme/Tabs";
+import Installation from "./_installation.mdx";
 
+<Installation />
 
-## Prerequisites
-
-- A K8s cluster with kubectl access - We recommend using a recent version of K8s and will specify and test past versions as a part of [this GitHub issue](https://github.com/ngrok/ngrok-operator/issues/154)
-- [helm](https://helm.sh/docs/intro/install/) - 3.0.0 or later.
-
-**Need a quick cluster for testing/development? Check out the [local cluster guide](/k8s/guides/local-cluster) first!**
-
-## Installation
-
-### 1. Add the ngrok Helm chart
-
-```bash
-helm repo add ngrok https://charts.ngrok.com
-helm repo update
-```
-
-:::note
-Whenever you want to update the operator or install a new version, you must run `helm repo update` to fetch the latest charts.
-:::
-
-### 2. Get your ngrok API Key and Auth Token
-
-In order to use the ngrok Kubernetes Operator, you will need an ngrok account.
-Once you have an account, you will need to log into the [ngrok dashboard](https://dashboard.ngrok.com) to gather the necessary credentials.
-
-You will need two things from the dashboard:
-
-- Your auth token, which can be found [here](https://dashboard.ngrok.com/get-started/your-authtoken)
-- An API key, which can be generated [here](https://dashboard.ngrok.com/api)
-
-These credentials will be created as a Kubernetes secret, which the controller will have access to.
-The auth token is used to create tunnels, and the API key is used to manage resources via the ngrok API.
-
-```bash
-export NGROK_AUTHTOKEN=your copied auth token goes here
-export NGROK_API_KEY=your copied api key goes here
-```
-
-### 3. Select your Namespace
-
-Set the following variable to whatever you would like the installation namespace to be.
-We recommend using the default `ngrok-operator` namespace unless you need to change that.
-
-```bash
-export NAMESPACE=ngrok-operator
-```
-
-### 4. (Optional) Install Gateway API CRDs
-
-If you plan on using the Gateway API CRDs with the ngrok Kubernetes operator, install them before the operator.
-When the operator starts up it will enable support for Gateway API if the Gateway API CRDs are detected in your cluster.
-If you do not plan on using the Gateway API, then you can ignore this optional step.
-The Gateway API CRDs can be installed at a later point, but you will need to restart the operator after installing the Gateway API CRDs
-for the Gateway API support to be enabled.
-
-You can select either the standard or experimental set of Gateway API CRDs depending on your preference. Either version will work with the ngrok Kubernetes operator.
-
-https://gateway-api.sigs.k8s.io/guides/
-
-After installing the Gateway API CRDs, create the following `GatewayClass` so that you can mark which Gateway API resources that the ngrok operator should handle
-
-```bash
-kubectl apply -f -<<EOF
-apiVersion: gateway.networking.k8s.io/v1
-kind: GatewayClass
-metadata:
-	name: ngrok
-spec:
-	controllerName: ngrok.com/gateway-controller
-EOF
-```
-
-### 5. (optional) Find a Specific Version
+## (optional) Find a Specific Version
 
 The following command will print out a list of all the available versions of the ngrok Kubernetes operator chart including development releases.
 
@@ -95,53 +23,6 @@ and may contain features that have not been fully implemented or bugs that have 
 ```bash
 helm search repo ngrok/ngrok-operator --versions --devel
 ```
-
-### 6. Install the Operator
-
-While you can pass the credential values directly via helm values like the below simple example shows, we do not recommend this for production scenarios.
-Instead, we recommend creating a Kubernetes secret and passing the secret name to the helm chart.
-This allows for easier infrastructure as code and prevents users with access to the cluster from viewing the API key and auth token using commands like `helm get values`.
-Select one of the below options based on which method you are comfortable with.
-
-<Tabs groupId="k8s" queryString="k8s-install">
-	<TabItem value="simple" label="Simple Method" default>
-		```bash
-		helm install ngrok-operator ngrok/ngrok-operator \
-		--namespace $NAMESPACE \
-		--create-namespace \
-		--set credentials.apiKey=$NGROK_API_KEY \
-		--set credentials.authtoken=$NGROK_AUTHTOKEN
-		```
-	</TabItem>
-	<TabItem value="secure" label="More Secure Method">
-		First, prepare the Secret for your credentials
-
-		```bash
-		export ENCODED_NGROK_AUTHTOKEN=$(echo -n "$NGROK_AUTHTOKEN" | base64)
-		export ENCODED_NGROK_API_KEY=$(echo -n "$NGROK_API_KEY" | base64)
-		kubectl apply -f -<<EOF
-		apiVersion: v1
-		kind: Secret
-		metadata:
-			name: ngrok-operator-credentials
-			namespace: $NAMESPACE
-		data:
-			API_KEY: "$ENCODED_NGROK_API_KEY"
-			AUTHTOKEN: "$ENCODED_NGROK_AUTHTOKEN"
-		EOF
-		```
-
-		Next, install the operator
-
-		```bash
-		helm install ngrok-operator ngrok/ngrok-operator \
-		--namespace $NAMESPACE \
-		--create-namespace \
-		--set credentials.secret.name=ngrok-operator-credentials \
-		```
-		</TabItem>
-
-</Tabs>
 
 ## Next Steps
 
