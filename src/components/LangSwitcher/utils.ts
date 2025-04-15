@@ -8,7 +8,7 @@ import { type LanguageInfo, languageInfo } from "./data";
 
 export function getMetaDataWithQuotes(
 	propertyName: string,
-	metastring: string,
+	metastring: string
 ) {
 	const property = `${propertyName}=`;
 	if (!metastring.includes(property)) return null;
@@ -55,6 +55,7 @@ export type CodeBlockData = {
 		titleLink?: string;
 		tabName?: string;
 		title?: string;
+		language?: string;
 	};
 	info?: LanguageInfo;
 };
@@ -87,17 +88,17 @@ export const getCodeBlocks = (children: ReactElement[]): CodeBlockData[] => {
 export const getLanguageInfo = (language: string) => {
 	return languageInfo.find(
 		(item) =>
-			item.name === language || item?.allNames?.some((alt) => alt === language),
+			item.name === language || item?.allNames?.some((alt) => alt === language)
 	);
 };
 
 export function languagesAreSynonyms(
 	languageToCheck: string,
-	selectedLanguage: string | null,
+	selectedLanguage: string | null
 ) {
 	if (!selectedLanguage) return false;
 	const synonymousLanguage = languageInfo.find((lang: LanguageInfo) =>
-		lang.allNames?.includes(selectedLanguage),
+		lang.allNames?.includes(selectedLanguage)
 	);
 	return (
 		synonymousLanguage?.name === languageToCheck ||
