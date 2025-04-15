@@ -15,7 +15,7 @@ import { LanguageData } from "../LangSwitcher/LanguageData";
 import type { LanguageInfo } from "../LangSwitcher/data";
 
 type CodeBlockWithInfoProps = {
-	content: string;
+	content: string | undefined;
 	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 	language: any;
 	collapseLineNumber: number;

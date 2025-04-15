@@ -6,7 +6,7 @@ export type LangSwitcherContextType = {
 	defaultLanguage: string | null;
 	updateSelectedLanguage:
 		| null
-		| ((newLang: string | SupportedLanguage) => void);
+		| ((newLang: string | SupportedLanguage | undefined) => void);
 };
 
 const LangSwitcherContext = createContext<LangSwitcherContextType>({
