@@ -194,6 +194,9 @@ const sidebars = {
 						"universal-gateway/pooling/pool-load-balancing",
 					],
 				},
+				"universal-gateway/ip-addresses",
+				"universal-gateway/points-of-presence",
+				"universal-gateway/ddos-protection",
 				// {
 				// 	label: "Endpoints",
 				// 	type: "category",
