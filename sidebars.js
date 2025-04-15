@@ -194,6 +194,18 @@ const sidebars = {
 						"universal-gateway/pooling/pool-load-balancing",
 					],
 				},
+				{
+					label: "What is the Global Load Balancer?",
+					type: "category",
+					link: {
+						type: "doc",
+						id: "universal-gateway/global-load-balancer/index",
+					},
+					items: [
+						"universal-gateway/global-load-balancer/gslb-endpoints",
+						"universal-gateway/global-load-balancer/gslb-agents",
+					],
+				},
 				"universal-gateway/ip-addresses",
 				"universal-gateway/points-of-presence",
 				"universal-gateway/ddos-protection",
