@@ -4,14 +4,9 @@ title: How Do I Use Wildcard Endpoints?
 
 import TabItem from "@theme/TabItem";
 import Tabs from "@theme/Tabs";
-import WildcardAgentCliExample from "/examples/agent-cli/http-wildcard-domain.mdx";
 import WildcardAgentConfigExample from "/examples/agent-config/http-wildcard-domain.mdx";
-import WildcardGoSdkExample from "/examples/go-sdk/http-wildcard-domain.mdx";
-import WildcardJavascriptSdkExample from "/examples/javascript-sdk/http-wildcard-domain.mdx";
 import WildcardKubernetesExample from "/examples/k8s/http-wildcard-domain.mdx";
-import WildcardPythonSdkExample from "/examples/python-sdk/http-wildcard-domain.mdx";
-import WildcardRustSdkExample from "/examples/rust-sdk/http-wildcard-domain.mdx";
-import WildcardSshExample from "/examples/ssh/http-wildcard-domain.mdx";
+import { LangSwitcher } from "@site/src/components/LangSwitcher";
 
 You can create an endpoint which will receive traffic for all of the subdomains matching a given wildcard domain like `*.example.com`. You must create a [wildcard domain](/universal-gateway/domains/what-are-domains/#wildcard-domains) to create a public wildcard endpoint.
 
@@ -28,38 +23,99 @@ will receive traffic for `https://foo.example.com` and
   online, a connection to `https://app.example.com` will not be routed to the
   wildcard endpoint.
 
-<Tabs groupId="connectivity" queryString="cty">
-	<TabItem value="agent-cli" label="Agent CLI" default>
-		<WildcardAgentCliExample />
-	</TabItem>
-	<TabItem value="agent-config" label="Agent Config">
-		<WildcardAgentConfigExample />
-	</TabItem>
-	<TabItem value="ssh" label="SSH">
-		<WildcardSshExample />
-	</TabItem>
-	<TabItem value="go-sdk" label="Go">
-		<WildcardGoSdkExample />
-	</TabItem>
-	<TabItem value="javascript-sdk" label="Javascript">
-		<WildcardJavascriptSdkExample />
-	</TabItem>
-	<TabItem value="python-sdk" label="Python">
-		<WildcardPythonSdkExample />
-	</TabItem>
-	<TabItem value="rust-sdk" label="Rust">
-		<WildcardRustSdkExample />
-	</TabItem>
-	<TabItem value="k8s" label="Kubernetes Controller">
-		<WildcardKubernetesExample />
-	</TabItem>
+## Getting started
+
+The following example creates a wildcard endpoint that forwards traffic to port `80`.
+
+<Tabs groupId="endpoint-type" queryString="ept">
+	<TabItem value="agent-endpoint" label="Agent Endpoint" default>
+<LangSwitcher>
+```bash
+ngrok http 80 --url "https://*.example.com"
+```
+
+```sh tabName="SSH"
+ssh -R '*.example.com:443:localhost:80' v2@connect.ngrok-agent.com http
+```
+
+```go
+import (
+	"context"
+	"net"
+
+	"golang.ngrok.com/ngrok"
+	"golang.ngrok.com/ngrok/config"
+)
+
+func ngrokListener(ctx context.Context) (net.Listener, error) {
+	return ngrok.Listen(ctx,
+		config.HTTPEndpoint(
+                        config.WithDomain("*.example.com"),
+                ),
+		ngrok.WithAuthtokenFromEnv(),
+	)
+}
+```
+
+```jsx
+const ngrok = require("@ngrok/ngrok");
+
+(async function () {
+	const listener = await ngrok.forward({
+		addr: 8080,
+		authtoken_from_env: true,
+		domain: "*.example.com",
+	});
+
+	console.log(`Ingress established at: ${listener.url()}`);
+})();
+```
+
+```python
+import ngrok
+
+listener = ngrok.forward("localhost:8080", authtoken_from_env=True,
+    domain="*.example.com")
+
+print(f"Ingress established at: {listener.url()}");
+```
+
+```rust
+use ngrok::prelude::*;
+
+async fn listen_ngrok() -> anyhow::Result<impl Tunnel> {
+    let sess = ngrok::Session::builder()
+        .authtoken_from_env()
+        .connect()
+        .await?;
+
+    let tun = sess
+        .http_endpoint()
+        .domain("*.example.com")
+        .listen()
+        .await?;
+
+    println!("Listening on URL: {:?}", tun.url());
+
+    Ok(tun)
+}
+```
+
+</LangSwitcher>
+</TabItem>
+<TabItem value="agent-config" label="Agent Config">
+	<WildcardAgentConfigExample />
+</TabItem>
+<TabItem value="k8s" label="Kubernetes Controller">
+	<WildcardKubernetesExample />
+</TabItem>
 </Tabs>
 
 ## Wildcard endpoint pooling
 
 Wildcard endpoints do not pool with non-wildcard URLs. For example, if you have two endpoints online, `https://foo.example.com` and `https://*.example.com`, they will not pool together and traffic to `https://foo.example.com` will not be load balanced.
 
-### How do I use multiple endpoints with wildcard subdomains?
+## Using multiple endpoints with wildcard subdomains
 
 With the [Agent CLI](/agent/cli), you can create separate public endpoints for subdomains of a wildcard domain no matter where the upstream services are running. See [the Domains docs](/docs/universal-gateway/domains/#wildcard-domains) for more information.
 
