@@ -3,6 +3,9 @@ title: Kubernetes ingress
 pagination_next: k8s/guides/quickstart
 ---
 
+import TabItem from "@theme/TabItem";
+import Tabs from "@theme/Tabs";
+
 This getting started guide will walk you through installing the ngrok Kubernetes
 Operator onto your cluster and configuring ingress to a Kubernetes service so
 that anyone can access it. We'll include an example deployment, but you could
@@ -15,6 +18,206 @@ import Installation from "../k8s/installation/_installation.mdx";
 import Quickstart from "../k8s/guides/quickstart.mdx";
 
 <Quickstart />
+
+You should now be able to access your service at `$NGROK_DOMAIN`!
+
+## Manage your Kubernetes ingress with Traffic Policy
+
+Our [Traffic Policy engine](/docs/traffic-policy) lets you filter traffic based
+on its properties and take action as it passes through ngrok's global network,
+into your cluster, and to your services.
+
+Let's use a popular example, the
+[`rate-limit`](/docs/traffic-policy/actions/rate-limit/) to illustrate where and
+how you can add Traffic Policy to your Kubernetes ingress. Reapply one of the
+following options, using the same ingress resource as before.
+
+<Tabs groupId="k8s" queryString="k8s">
+	<TabItem value="AgentEndpoint" label="Agent Endpoint" default>
+	```bash
+		kubectl apply -f -<<EOF
+		apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+		kind: AgentEndpoint
+		metadata:
+			name: game-2048
+			namespace: default
+		spec:
+			bindings:
+			- public
+			upstream:
+				url: http://game-2048.default:80
+			url: https://$NGROK_DOMAIN
+			trafficPolicy:
+				inline:
+					on_http_request:
+					  - actions:
+						    - type: rate-limit
+									config:
+										name: Only allow 30 requests per minute
+										algorithm: sliding_window
+										capacity: 30
+										rate: 60s
+										bucket_key:
+											- conn.client_ip
+		EOF
+	```
+	</TabItem>
+	<TabItem value="CloudEndpoint" label="Cloud and Agent Endpoint" default>
+	```bash
+	kubectl apply -f -<<EOF
+	apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+	kind: CloudEndpoint
+	metadata:
+		name: game-2048
+		namespace: default
+	spec:
+		url: https://$NGROK_DOMAIN
+		trafficPolicy:
+			policy:
+				on_http_request:
+				- name: game-2048
+					actions:
+					- type: forward-internal
+						config:
+							url: https://game-2048.internal
+					- type: rate-limit
+						config:
+							name: Only allow 30 requests per minute
+							algorithm: sliding_window
+							capacity: 30
+							rate: 60s
+							bucket_key:
+								- conn.client_ip
+	---
+	apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+	kind: AgentEndpoint
+	metadata:
+		name: game-2048
+		namespace: default
+	spec:
+		bindings:
+		- public
+		url: https://game-2048.internal
+		upstream:
+			url: http://game-2048.internal:80
+	EOF
+	```
+	</TabItem>
+	<TabItem value="Ingress" label="Ingress" default>
+	```bash
+	kubectl apply -f -<<EOF
+	apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+	kind: NgrokTrafficPolicy
+	metadata:
+		name: rate-limiting-policy
+		namespace: default
+	spec:
+		policy:
+			on_http_request:
+				- actions:
+					- type: rate-limit
+						config:
+							name: Only allow 30 requests per minute
+							algorithm: sliding_window
+							capacity: 30
+							rate: 60s
+							bucket_key:
+								- conn.client_ip
+	---
+	apiVersion: networking.k8s.io/v1
+	kind: Ingress
+	metadata:
+		name: game-2048-ingress
+		namespace: default
+		annotations:
+			k8s.ngrok.com/traffic-policy: rate-limting-policy
+	spec:
+		ingressClassName: ngrok
+		rules:
+			- host: $NGROK_DOMAIN
+				http:
+					paths:
+						- path: /
+							pathType: Prefix
+							backend:
+								service:
+									name: game-2048
+									port:
+										number: 80
+	EOF
+	```
+	</TabItem>
+	<TabItem value="GWAPI" label="Gateway API" default>
+	```bash
+	kubectl apply -f -<<EOF
+	apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+	kind: NgrokTrafficPolicy
+	metadata:
+		name: rate-limiting-policy
+		namespace: default
+	spec:
+		policy:
+			on_http_request:
+				- actions:
+					- type: rate-limit
+						config:
+							name: Only allow 30 requests per minute
+							algorithm: sliding_window
+							capacity: 30
+							rate: 60s
+							bucket_key:
+								- conn.client_ip
+	---
+	apiVersion: gateway.networking.k8s.io/v1
+	kind: Gateway
+	metadata:
+		name: ngrok-gateway
+		namespace: default
+		nnotations:
+			k8s.ngrok.com/traffic-policy: rate-limiting-policy
+	spec:
+		gatewayClassName: ngrok
+		listeners:
+			- name: http
+				protocol: HTTP
+				port: 80
+				hostname: "$NGROK_DOMAIN"
+				allowedRoutes:
+					namespaces:
+						from: Same
+	---
+	apiVersion: gateway.networking.k8s.io/v1
+	kind: HTTPRoute
+	metadata:
+		name: game-2048-route
+		namespace: default
+	spec:
+		parentRefs:
+		- group: gateway.networking.k8s.io
+			kind: Gateway
+			name: ngrok-gateway
+			namespace: default
+		hostnames:
+		- "$NGROK_DOMAIN"
+		rules:
+		- matches:
+			- path:
+					type: PathPrefix
+					value: /
+			backendRefs:
+			- name: game-2048
+				port: 80
+	EOF
+	```
+	</TabItem>
+</Tabs>
+
+You can test your rate limiting with a looping `curl` command, which should
+quickly result in `429` errors.
+
+```bash
+for i in `seq 1 50`; do curl -X GET -w '%{http_code}' https://<YOUR_NGROK_DOMAIN>/abc ; done
+```
 
 ## What's next?
 
