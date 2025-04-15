@@ -81,7 +81,6 @@ const sidebars = {
 					},
 					items: [
 						"universal-gateway/bindings",
-						"universal-gateway/agent-endpoints",
 						"universal-gateway/public-endpoints/index",
 						{
 							label: "What are Internal Endpoints?",
@@ -92,6 +91,7 @@ const sidebars = {
 							},
 							items: ["universal-gateway/internal-endpoints/quickstart"],
 						},
+						"universal-gateway/agent-endpoints",
 						{
 							label: "What are Cloud Endpoints?",
 							type: "category",
@@ -183,6 +183,15 @@ const sidebars = {
 						"universal-gateway/agent-forwarding/forward-original-connection-data",
 						"universal-gateway/agent-forwarding/non-local-forwarding",
 						"universal-gateway/agent-forwarding/serving-file-directories",
+					],
+				},
+				{
+					label: "What is Endpoint Pooling?",
+					type: "category",
+					link: { type: "doc", id: "universal-gateway/pooling/index" },
+					items: [
+						"universal-gateway/pooling/pooling-quickstart",
+						"universal-gateway/pooling/pool-load-balancing",
 					],
 				},
 				// {

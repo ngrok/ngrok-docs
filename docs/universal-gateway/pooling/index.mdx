@@ -1,0 +1,49 @@
+---
+title: Endpoint Pooling
+description: Learn how ngrok enables you to load balance traffic with endpoint pools.
+---
+
+When you create two endpoints with the same URL and binding, they automatically form a "pool" that load balances traffic between them. Load balancing helps you scale traffic across multiple replicas of your app to increase capacity, tolerate failures, and geo-distribute load.
+
+Endpoint pooling is vastly more flexible than comparable load balancing
+systems:
+
+- Endpoints join and leave pools automatically as they are created and
+  destroyed, there is no need to register your upstreams ahead of time.
+- You can define your own _dyanmic_ load balancing strategies. For example, you can define strategies that adjust traffic distribution based on the performance of upstream services or properties of the incoming requests.
+- You can pool endpoints with different Traffic Policies. This means that not only can you blue-green and canary deploy your own apps, you can also do that with the Traffic Policies themselves. This helps you dramatically mitigate the risk of gateway changes that so often cause site-wide outages.
+
+## When to use Endpoint Pooling
+
+Endpoint pooling is a good choice when you want to:
+
+- Load balance among multiple replicas of the same application, even running in different cloud providers, on-prem, etc.
+- Switch from agent endpoints to cloud endpoints with no downtime (or vice-versa)
+- Implement [blue-green deployments](https://en.wikipedia.org/wiki/Blue%E2%80%93green_deployment) to reduce risk and rollback times
+- A/B test different versions of your apps with blue-green deployments
+- Deploy canary version of your application
+- Gradually roll out changes to an endpoint's Traffic Policy
+
+## Enabling Pooling
+
+Endpoint pooling is disabled by default, and can be enabled on a per-endpoint basis. You must enable pooling on each endpoint you want to pool by setting `pooling_enabled` to `true`.
+
+## Getting started
+
+To try out endpoint pooling, see [the endpoint pooling quickstart guide](/universal-gateway/pooling/pooling-quickstart).
+
+## Using pooling with wildcard endpoints
+
+[Wildcard endpoints](/universal-gateway/wildcard-domains/wildcard-endpoints) do not pool with non-wildcard URLs. See [the docs on Wildcard Endpoints](/universal-gateway/wildcard-domains/wildcard-endpoints/#wildcard-endpoint-pooling) for more information.
+
+## API
+
+Because endpoint pools are created on-demand when two endpoints share the same URL and binding, there is no API resource for endpoint pools. Instead, each [Endpoint API Resource](/api/resources/endpoints/) has a read-only `pools` field which lists the other endpoints in the same pool as the requested endpoint.
+
+## Limits & pricing
+
+Endpoint pooling is available on the Pay-As-You-Go plan. Each endpoint in a pool is billed separately.
+
+See the [pooling limits documentation](/pricing-limits/pooling-limits/) for limits on pooling.
+
+See the [pricing](/pricing-limits/) documentation for general billing details.

@@ -1,0 +1,87 @@
+---
+title: Endpoint Pooling Quickstart
+sidebar_label: Quickstart
+description: Get started using endpoint pooling to load balance traffic with ngrok.
+---
+
+import TabItem from "@theme/TabItem";
+import Tabs from "@theme/Tabs";
+
+Endpoint pooling allows you to load balance traffic across multiple endpoints. See the [Endpoint Pooling documentation](/universal-gateway/pooling/) for more details.
+
+<Tabs groupId="endpoint-type" queryString="ept">
+<TabItem value="agent-endpoint" label="Agent Endpoints" default>
+
+Create two endpoints with the same URL forwarding to two different ports. They will automatically be pooled together.
+
+```
+ngrok http 8080 --url https://your-domain.ngrok.app --pooling-enabled true
+```
+
+```
+ngrok http 9090 --url https://your-domain.ngrok.app --pooling-enabled true
+```
+
+When you make requests to the endpoints' URL, you will see responses balanced
+among each endpoint in the pool.
+
+```
+curl https://your-domain.ngrok.app
+<Response from 8080>
+
+curl https://your-domain.ngrok.app
+<Response from 9090>
+```
+
+</TabItem>
+<TabItem value="cloud-endpoint" label="Cloud Endpoints">
+
+Create two endpoints with the same URL and two different traffic policies. They will automatically be pooled together.
+
+First, create two traffic policy files, `policy-a.yml` and `policy-b.yml`.
+
+```yaml title="policy-a.yml" mode=traffic-policy
+on_http_request:
+  - actions:
+      - type: custom-response
+        config:
+          status_code: 200
+          content: Policy A
+```
+
+```yaml title="policy-b.yml" mode=traffic-policy
+on_http_request:
+  - actions:
+      - type: custom-response
+        config:
+          status_code: 200
+          content: Policy B
+```
+
+Then create two cloud endpoints, one with each policy:
+
+```sh title="Command line"
+ngrok api endpoints create \
+    --url https://your-domain.ngrok.app \
+    --traffic-policy "$(cat policy-a.yml)" \
+    --pooling-enabled=true
+
+ngrok api endpoints create \
+    --url https://your-domain.ngrok.app \
+    --traffic-policy "$(cat policy-b.yml)" \
+    --pooling-enabled=true
+```
+
+When you make requests to the endpoints' URL, you will see responses balanced
+among each endpoint in the pool.
+
+```sh title="Command line"
+curl https://your-domain.ngrok.app
+<Response from 8080>
+
+curl https://your-domain.ngrok.app
+<Response from 9090>
+```
+
+</TabItem>
+</Tabs>
