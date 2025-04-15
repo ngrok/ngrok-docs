@@ -7,14 +7,8 @@ import TabItem from "@theme/TabItem";
 import Tabs from "@theme/Tabs";
 import { LangSwitcher } from "@site/src/components/LangSwitcher";
 import { ContentSwitcher } from "@site/src/components/LangSwitcher/ContentSwitcher";
-import FixedAgentCliExample from "/examples/agent-cli/tcp-fixed.mdx";
 import FixedAgentConfigExample from "/examples/agent-config/tcp-fixed.mdx";
-import FixedGoSdkExample from "/examples/go-sdk/tcp-fixed.mdx";
-import FixedJavascriptSdkExample from "/examples/javascript-sdk/tcp-fixed.mdx";
 import FixedKubernetesExample from "/examples/k8s/tcp-fixed.mdx";
-import FixedPythonSdkExample from "/examples/python-sdk/tcp-fixed.mdx";
-import FixedRustSdkExample from "/examples/rust-sdk/tcp-fixed.mdx";
-import FixedSshExample from "/examples/ssh/tcp-fixed.mdx";
 
 If you would like a public TCP endpoint to have a static URL, you must first
 create a [TCP Address](/universal-gateway/tcp-addresses/). When you create a TCP
@@ -30,25 +24,86 @@ After you have created a TCP Address, specify the address (e.g.
 
 <Tabs groupId="endpoint-type" queryString="ept">
 	<TabItem value="agent-endpoint" label="Agent Endpoint">
-		<FixedAgentCliExample />
+
+<LangSwitcher>
+```bash
+ngrok tcp 3389 --url tcp://1.tcp.eu.ngrok.io:12345
+```
+
+```sh tabName="SSH"
+ssh -R 1.tcp.eu.ngrok.io:12345:localhost:3389 connect.eu.ngrok-agent.com tcp
+```
+
+```go
+import (
+	"context"
+	"net"
+
+	"golang.ngrok.com/ngrok"
+	"golang.ngrok.com/ngrok/config"
+)
+
+func ngrokListener(ctx context.Context) (net.Listener, error) {
+	return ngrok.Listen(ctx,
+		config.TCPEndpoint(
+			config.WithRemoteAddr("1.tcp.ngrok.io:12345"),
+		),
+		ngrok.WithRegion("eu"),
+		ngrok.WithAuthtokenFromEnv(),
+	)
+}
+```
+
+```jsx
+const ngrok = require("@ngrok/ngrok");
+
+(async function () {
+	const listener = await ngrok.forward({
+		addr: 8080,
+		authtoken_from_env: true,
+		proto: "tcp",
+		remote_addr: "1.tcp.eu.ngrok.io:12345",
+	});
+
+	console.log(`Ingress established at: ${listener.url()}`);
+})();
+```
+
+```python
+import ngrok
+
+listener = ngrok.forward("localhost:8080", authtoken_from_env=True,
+    proto="tcp",
+    remote_addr="1.tcp.eu.ngrok.io:12345")
+
+print(f"Ingress established at: {listener.url()}");
+```
+
+```rust
+use ngrok::prelude::*;
+
+async fn listen_ngrok() -> anyhow::Result<impl Tunnel> {
+    let sess = ngrok::Session::builder()
+        .authtoken_from_env()
+        .connect()
+        .await?;
+
+    let tun = sess
+        .tcp_endpoint()
+        .remote_addr("1.tcp.eu.ngrok.io:12345")
+        .listen()
+        .await?;
+
+    println!("Listening on URL: {:?}", tun.url());
+
+    Ok(tun)
+}
+```
+
+</LangSwitcher>
 	</TabItem>
 	<TabItem value="agent-config" label="Agent Config" default>
 		<FixedAgentConfigExample />
-	</TabItem>
-	<TabItem value="ssh" label="SSH">
-		<FixedSshExample />
-	</TabItem>
-	<TabItem value="go-sdk" label="Go">
-		<FixedGoSdkExample />
-	</TabItem>
-	<TabItem value="javascript-sdk" label="Javascript">
-		<FixedJavascriptSdkExample />
-	</TabItem>
-	<TabItem value="python-sdk" label="Python">
-		<FixedPythonSdkExample />
-	</TabItem>
-	<TabItem value="rust-sdk" label="Rust">
-		<FixedRustSdkExample />
 	</TabItem>
 	<TabItem value="k8s" label="Kubernetes Controller">
 		<FixedKubernetesExample />
