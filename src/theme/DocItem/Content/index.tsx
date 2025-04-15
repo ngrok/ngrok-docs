@@ -9,7 +9,7 @@ import {
 } from "@site/src/components/LangSwitcher/utils";
 import Content from "@theme-original/DocItem/Content";
 import type ContentType from "@theme/DocItem/Content";
-import { type ReactNode, useState } from "react";
+import { type ReactNode, useEffect, useState } from "react";
 import TabListContext from "../../Tabs/TabListContext";
 
 type Props = WrapperProps<typeof ContentType>;
@@ -40,6 +40,8 @@ export default function ContentWrapper(props: Props): ReactNode {
 		}
 		setSelectedTabItem(newItem);
 	};
+
+	useEffect(() => {}, []);
 
 	return (
 		<TabListContext.Provider
