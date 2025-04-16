@@ -19,13 +19,13 @@ export default function ContentWrapper(props: Props): ReactNode {
 
 	const storageData = isBrowser ? getStorageLanguageAndTab() : null;
 	const [selectedLanguage, setSelectedLanguage] = useState(
-		storageData?.defaultLanguage ?? null
+		storageData?.defaultLanguage ?? null,
 	);
 	const [selectedTabItem, setSelectedTabItem] = useState(
-		storageData?.defaultLanguage ?? null
+		storageData?.defaultLanguage ?? null,
 	);
 	const updateSelectedLanguage = (
-		newLang: string | SupportedLanguage | undefined
+		newLang: string | SupportedLanguage | undefined,
 	) => {
 		if (!newLang) return;
 		if (isBrowser) {

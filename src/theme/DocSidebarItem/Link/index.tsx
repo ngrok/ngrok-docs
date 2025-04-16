@@ -1,11 +1,11 @@
-import { useEffect, useRef, type ReactNode } from "react";
-import clsx from "clsx";
-import { ThemeClassNames } from "@docusaurus/theme-common";
-import { isActiveSidebarItem } from "@docusaurus/plugin-content-docs/client";
 import Link from "@docusaurus/Link";
 import isInternalUrl from "@docusaurus/isInternalUrl";
-import IconExternalLink from "@theme/Icon/ExternalLink";
+import { isActiveSidebarItem } from "@docusaurus/plugin-content-docs/client";
+import { ThemeClassNames } from "@docusaurus/theme-common";
 import type { Props } from "@theme/DocSidebarItem/Link";
+import IconExternalLink from "@theme/Icon/ExternalLink";
+import clsx from "clsx";
+import { type ReactNode, useEffect, useRef } from "react";
 
 import styles from "./styles.module.css";
 
@@ -38,7 +38,7 @@ export default function DocSidebarItemLink({
 				ThemeClassNames.docs.docSidebarItemLink,
 				ThemeClassNames.docs.docSidebarItemLinkLevel(level),
 				"menu__list-item",
-				className
+				className,
 			)}
 			key={label}
 		>
@@ -48,7 +48,7 @@ export default function DocSidebarItemLink({
 					!isInternalLink && styles.menuExternalLink,
 					{
 						"menu__link--active": isActive,
-					}
+					},
 				)}
 				autoAddBaseUrl={autoAddBaseUrl}
 				aria-current={isActive ? "page" : undefined}
