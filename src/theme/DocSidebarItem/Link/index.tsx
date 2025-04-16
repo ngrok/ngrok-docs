@@ -26,7 +26,7 @@ export default function DocSidebarItemLink({
 		if (isActive && itemRef.current) {
 			itemRef.current.scrollIntoView({
 				behavior: "smooth",
-				block: "nearest",
+				block: "center",
 				inline: "nearest",
 			});
 		}
