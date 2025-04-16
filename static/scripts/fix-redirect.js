@@ -1,4 +1,3 @@
-
 const getNormalizedPaths = (from, path) => {
 	return {
 		normalizedFrom: from.endsWith("/") ? from.slice(0, -1) : from,
