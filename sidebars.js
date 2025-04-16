@@ -209,54 +209,6 @@ const sidebars = {
 				"universal-gateway/ip-addresses",
 				"universal-gateway/points-of-presence",
 				"universal-gateway/ddos-protection",
-				// {
-				// 	label: "Endpoints",
-				// 	type: "category",
-				// 	link: { type: "doc", id: "universal-gateway/endpoints" },
-				// 	items: [
-				// 		{
-				// 			label: "Bindings",
-				// 			type: "category",
-				// 			link: { type: "doc", id: "universal-gateway/bindings" },
-				// 			items: [
-				// 				{
-				// 					id: "universal-gateway/public-endpoints/index",
-				// 					type: "doc",
-				// 					label: "Public",
-				// 				},
-				// 				{
-				// 					id: "universal-gateway/internal-endpoints/index",
-				// 					type: "doc",
-				// 					label: "Internal",
-				// 				},
-				// 				{
-				// 					id: "universal-gateway/kubernetes-endpoints/index",
-				// 					type: "doc",
-				// 					label: "Kubernetes",
-				// 				},
-				// 			],
-				// 		},
-				// 		{
-				// 			id: "universal-gateway/endpoint-pooling",
-				// 			type: "doc",
-				// 			label: "Pooling",
-				// 		},
-				// 	],
-				// },
-				// {
-				// 	label: "Network",
-				// 	type: "category",
-				// 	link: {
-				// 		type: "doc",
-				// 		id: "universal-gateway/global-load-balancer",
-				// 	},
-				// 	items: [
-				// 		"universal-gateway/global-load-balancer",
-				// 		"universal-gateway/ddos-protection",
-				// 		"universal-gateway/ip-addresses",
-				// 		"universal-gateway/points-of-presence",
-				// 	],
-				// },
 			],
 		},
 		{
