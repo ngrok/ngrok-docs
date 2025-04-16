@@ -41,7 +41,9 @@ export function CodeBlockWithInfo({
 }: CodeBlockWithInfoProps) {
 	const collapsible = !meta
 		? false
-		: meta.collapsible && content.split("\n").length > collapseLineNumber;
+		: meta.collapsible &&
+		  content &&
+		  content.split("\n").length > collapseLineNumber;
 	const indentation = meta?.indentation === "tabs" ? "tabs" : "spaces";
 
 	return (
