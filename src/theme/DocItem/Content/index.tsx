@@ -3,32 +3,61 @@ import useIsBrowser from "@docusaurus/useIsBrowser";
 import type { SupportedLanguage } from "@ngrok/mantle/code-block";
 import LangSwitcherContext from "@site/src/components/LangSwitcher/LangSwitcherContext";
 import {
-	getDefaultLanguage,
-	paramName,
+	getStorageLanguageAndTab,
+	langParamName,
+	tabParamName,
 } from "@site/src/components/LangSwitcher/utils";
 import Content from "@theme-original/DocItem/Content";
 import type ContentType from "@theme/DocItem/Content";
-import React, { useState, type ReactNode } from "react";
+import { type ReactNode, useState } from "react";
+import TabListContext from "../../Tabs/TabListContext";
 
 type Props = WrapperProps<typeof ContentType>;
 
 export default function ContentWrapper(props: Props): ReactNode {
 	const isBrowser = useIsBrowser();
 
-	const defaultLanguage = isBrowser ? getDefaultLanguage() : null;
-	const [tabLanguage, setTabLanguage] = useState(defaultLanguage);
-	const updateTab = (newLang: string | SupportedLanguage) => {
+	const storageData = isBrowser ? getStorageLanguageAndTab() : null;
+	const [selectedLanguage, setSelectedLanguage] = useState(
+		storageData?.defaultLanguage ?? null,
+	);
+	const [selectedTabItem, setSelectedTabItem] = useState(
+		storageData?.defaultLanguage ?? null,
+	);
+	const updateSelectedLanguage = (
+		newLang: string | SupportedLanguage | undefined,
+	) => {
+		if (!newLang) return;
 		if (isBrowser) {
-			localStorage.setItem(paramName, newLang);
+			localStorage.setItem(langParamName, newLang);
 		}
-		setTabLanguage(newLang);
+		setSelectedLanguage(newLang);
+	};
+	const updateSelectedTabItem = (newItem: string | undefined) => {
+		if (!newItem) return;
+		if (isBrowser) {
+			localStorage.setItem(tabParamName, newItem);
+		}
+		setSelectedTabItem(newItem);
 	};
 
 	return (
-		<LangSwitcherContext.Provider
-			value={{ defaultLanguage, tabLanguage, updateTab }}
+		<TabListContext.Provider
+			value={{
+				localStorageTab: storageData?.defaultTabItem ?? null,
+				selectedTabItem,
+				updateSelectedTabItem,
+			}}
 		>
-			<Content {...props} />
-		</LangSwitcherContext.Provider>
+			<LangSwitcherContext.Provider
+				value={{
+					defaultLanguage: storageData?.defaultTabItem ?? null,
+					selectedLanguage,
+					updateSelectedLanguage,
+				}}
+			>
+				<Content {...props} />
+			</LangSwitcherContext.Provider>
+		</TabListContext.Provider>
 	);
 }

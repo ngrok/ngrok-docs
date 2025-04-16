@@ -1,0 +1,254 @@
+---
+title: Where Is TLS Terminated?
+description: Learn about the different locations where TLS termination can occur in ngrok.
+---
+
+import CustomDomainAgentConfigExample from "/examples/agent-config/tls-terminate-at-edge-custom-domain.mdx";
+import AtAgentAgentConfigExample from "/examples/agent-config/tls-terminate-at-agent.mdx";
+import AtUpstreamAgentConfigExample from "/examples/agent-config/tls-terminate-at-upstream.mdx";
+
+import TabItem from "@theme/TabItem";
+import Tabs from "@theme/Tabs";
+
+import { LangSwitcher } from "@site/src/components/LangSwitcher";
+import { ContentSwitcher } from "@site/src/components/LangSwitcher/ContentSwitcher";
+
+[TLS connections](/universal-gateway/tls/) to your ngrok endpoints are terminated at one of three locations.
+
+:::info
+TLS endpoints are not supported by the ngrok Kubernetes Operator
+:::
+
+## At ngrok's cloud service
+
+You can terminate TLS at the edge with ngrok's cloud service.
+
+This is the easiest and most common. All HTTPS endpoints terminate TLS at ngrok's cloud service. When connections are terminated by ngrok's cloud service, they are re-encrypted before they are transmitted over a Secure Tunnel to an agent.
+
+You can get started with the following example.
+
+<Tabs groupId="endpoint-type" queryString="ept">
+	<TabItem value="agent-endpoint" label="Agent Endpoint">
+		<ContentSwitcher languages={["bash"]} >
+
+Use a Traffic Policy file configured like the following:
+
+```yaml mode=traffic-policy
+on_tcp_connect:
+  - actions:
+      - type: terminate-tls
+```
+
+Then use the following command to start your ngrok agent:
+
+</ContentSwitcher>
+<LangSwitcher>
+
+```bash
+ngrok tls 80 \
+	--url tls://your-name.ngrok.app \
+	--traffic-policy-file traffic-policy.yml
+```
+
+```go
+import (
+        "context"
+        "net"
+
+        "golang.ngrok.com/ngrok"
+        "golang.ngrok.com/ngrok/config"
+)
+
+func ngrokListener(ctx context.Context) (net.Listener, error) {
+        return ngrok.Listen(ctx,
+                config.TLSEndpoint(
+                        config.WithDomain("your-name.ngrok.app"),
+                        config.WithTLSTermination(
+                                config.WithTLSTerminationAt(config.TLSAtEdge),
+                        ),
+                ),
+                ngrok.WithAuthtokenFromEnv(),
+        )
+}
+```
+
+```jsx
+const ngrok = require("@ngrok/ngrok");
+const fs = require("fs");
+
+(async function () {
+	const listener = await ngrok.forward({
+		addr: 8080,
+		authtoken_from_env: true,
+		proto: "tls",
+		domain: "app.example.com",
+		crt: fs.readFileSync("/path/to/app-example-com-crt.pem", "utf8"),
+		key: fs.readFileSync("/path/to/app-example-com-key.pem", "utf8"),
+		mutual_tls_cas: [fs.readFileSync("/path/to/cas.pem", "utf8")],
+	});
+
+	console.log(`Ingress established at: ${listener.url()}`);
+})();
+```
+
+```python
+import ngrok
+
+def load_file(name):
+    with open(name, "r") as crt:
+        return bytearray(crt.read().encode())
+
+listener = ngrok.forward("localhost:8080", authtoken_from_env=True,
+    proto="tls",
+    domain="app.example.com",
+    crt=load_file("/path/to/app-example-com-crt.pem"),
+    key=load_file("/path/to/app-example-com-key.pem"))
+
+print(f"Ingress established at: {listener.url()}");
+```
+
+    	</LangSwitcher>
+    </TabItem>
+    <TabItem value="agent-config" label="Agent Config" default>
+    	<CustomDomainAgentConfigExample />
+    </TabItem>
+
+</Tabs>
+
+:::info
+TLS Termination at the edge is not supported for:
+
+- SSH
+- Rust
+- Kubernetes
+  :::
+
+<br />
+
+## At your ngrok agent
+
+You can terminate TLS at your ngrok agent. Doing so prevents TLS from being terminated at ngrok's cloud service, ensuring [end-to-end encryption](/universal-gateway/tls/tls-termination/termination-mechanics/#end-to-end-encryption) between visitors and your upstream service.
+
+You can get started with the following example.
+
+<Tabs groupId="endpoint-type" queryString="ept">
+	<TabItem value="agent-endpoint" label="Agent Endpoint">
+```bash
+ngrok tls 80 \
+  --terminate-at agent \
+  --url tls://app.example.com \
+  --crt /path/to/app-example-com-crt.pem \
+  --key /path/to/app-example-com-key.pem
+```
+
+    </TabItem>
+    <TabItem value="agent-config" label="Agent Config" default>
+    	<AtAgentAgentConfigExample />
+    </TabItem>
+
+</Tabs>
+
+:::info
+Termination at the agent is not supported for:
+
+- SSH
+- Rust
+- Go
+- Javascript
+- Python
+- Kubernetes
+  :::
+
+<br />
+
+## At your upstream service
+
+You can handle TLS termination at your upstream services. This is another form of [end-to-end encryption](/universal-gateway/tls/tls-termination/termination-mechanics/#end-to-end-encryption) where neither the cloud service nor an agent terminates TLS connections. Instead, your upstream application service is responsible for TLS termination.
+
+You can get started with the following example.
+
+<Tabs groupId="endpoint-type" queryString="ept">
+	<TabItem value="agent-endpoint" label="Agent Endpoint">
+	<LangSwitcher>
+```bash
+ngrok tls 443 \
+  --terminate-at upstream \
+  --url tls://app.example.com
+```
+
+```go
+import (
+        "context"
+        "net"
+
+        "golang.ngrok.com/ngrok"
+        "golang.ngrok.com/ngrok/config"
+)
+
+func ngrokListener(ctx context.Context) (net.Listener, error) {
+        return ngrok.Listen(ctx,
+                config.TLSEndpoint(
+                        config.WithDomain("app.example.com"),
+                ),
+                ngrok.WithAuthtokenFromEnv(),
+        )
+}
+```
+
+```ssh tabName="SSH"
+ssh -R app.example.com:443:localhost:443 v2@connect.ngrok-agent.com tls
+```
+
+```jsx
+const ngrok = require("@ngrok/ngrok");
+
+(async function () {
+	const listener = await ngrok.forward({
+		addr: 8080,
+		authtoken_from_env: true,
+		proto: "tls",
+		domain: "app.example.com",
+	});
+
+	console.log(`Ingress established at: ${listener.url()}`);
+})();
+```
+
+```python
+import ngrok
+
+listener = ngrok.forward("localhost:8080", authtoken_from_env=True,
+    proto="tls",
+    domain="app.example.com")
+
+print(f"Ingress established at: {listener.url()}");
+```
+
+```rust
+use ngrok::prelude::*;
+
+async fn listen_ngrok() -> anyhow::Result<impl Tunnel> {
+    let sess = ngrok::Session::builder()
+        .authtoken_from_env()
+        .connect()
+        .await?;
+
+    let tun = sess
+        .tls_endpoint()
+        .domain("app.example.com")
+        .listen()
+        .await?;
+
+    println!("Listening on URL: {:?}", tun.url());
+
+    Ok(tun)
+}
+```
+
+    </LangSwitcher>
+    </TabItem>
+    <TabItem value="agent-config" label="Agent Config" default>
+    	<AtUpstreamAgentConfigExample />
+    </TabItem>
+
+</Tabs>

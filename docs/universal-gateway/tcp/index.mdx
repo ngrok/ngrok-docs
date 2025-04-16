@@ -1,0 +1,146 @@
+---
+title: How Do I Handle TCP Traffic?
+description: Learn how to handle TCP traffic with ngrok.
+---
+
+import { LangSwitcher } from "@site/src/components/LangSwitcher";
+
+import TabItem from "@theme/TabItem";
+import Tabs from "@theme/Tabs";
+
+import RandomAgentConfigExample from "/examples/agent-config/tcp-random.mdx";
+import RandomKubernetesExample from "/examples/k8s/tcp-random.mdx";
+
+TCP endpoints enable you to deliver any network service with a TCP-based
+protocol. They are commonly used to create connectivity for:
+
+- Remote access protocols like SSH, VNC and RDP
+- Databases like MySQL, Postgres, MSSQL and SQLite
+- IoT protocols like MQTT
+- Gaming servers like Minecraft
+
+If you are accepting TLS traffic, consider using a [TLS Endpoint](/universal-gateway/tls/).
+
+::::info Free Plan Usage
+TCP endpoints are only available on a free plan after [adding a valid payment method](https://dashboard.ngrok.com/settings#id-verification) to your account.
+::::
+
+## Quickstart
+
+Agent Endpoints are the easiest way to get started with ngrok. An [agent
+endpoint](/universal-gateway/cloud-endpoints/) is started by a
+[Secure Tunnels](/agent/) agent. The endpoint lives for the lifetime
+of the process and forwards traffic to a port or URL of your choosing.
+
+This example creates a TCP endpoint on a randomly-assigned URL - e.g.
+`tcp://1.tcp.ngrok.io:12345` and forwards its traffic to a local port.
+
+<Tabs groupId="endpoint-type" queryString="ept">
+	<TabItem value="agent-endpoint" label="Agent Endpoints" default>
+	<LangSwitcher>
+```bash
+ngrok tcp 22
+```
+
+```ssh tabName="SSH"
+ssh -R 0:localhost:22 v2@connect.ngrok-agent.com tcp
+```
+
+```go
+import (
+	"context"
+	"net"
+
+	"golang.ngrok.com/ngrok"
+	"golang.ngrok.com/ngrok/config"
+)
+
+func ngrokListener(ctx context.Context) (net.Listener, error) {
+	return ngrok.Listen(ctx,
+		config.TCPEndpoint(),
+		ngrok.WithAuthtokenFromEnv(),
+	)
+}
+```
+
+```jsx
+const ngrok = require("@ngrok/ngrok");
+
+(async function () {
+	const listener = await ngrok.forward({
+		addr: 8080,
+		authtoken_from_env: true,
+		proto: "tcp",
+	});
+
+	console.log(`Ingress established at: ${listener.url()}`);
+})();
+```
+
+```python
+import ngrok
+
+listener = ngrok.forward("localhost:8080", authtoken_from_env=True,
+    proto="tcp")
+
+print(f"Ingress established at: {listener.url()}");
+```
+
+```rust
+use ngrok::prelude::*;
+
+async fn listen_ngrok() -> anyhow::Result<impl Tunnel> {
+    let sess = ngrok::Session::builder()
+        .authtoken_from_env()
+        .connect()
+        .await?;
+
+    let tun = sess
+        .tcp_endpoint()
+        .listen()
+        .await?;
+
+    println!("Listening on URL: {:?}", tun.url());
+
+    Ok(tun)
+}
+```
+
+    </LangSwitcher>
+    </TabItem>
+    <TabItem value="agent-config" label="Agent Config" default>
+    	<RandomAgentConfigExample />
+    </TabItem>
+    <TabItem value="k8s" label="Kubernetes Controller">
+    	<RandomKubernetesExample />
+    </TabItem>
+
+</Tabs>
+
+## Learn more
+
+- **URL Validation** — URLs are validated differently depending on their [binding](/universal-gateway/bindings). To learn more about valid URLs for TCP endpoints, see [the Endpoint URLs documentation](/docs/universal-gateway/what-are-endpoint-urls/#tcp).
+- **Static URLs** — To create a public TCP endpoint with a static URL, you must first create a [TCP Address](/universal-gateway/tcp-addresses/). See [the documentation on static TCP URLs](/universal-gateway/tcp/static-tcp-urls/) for more information.
+- **Authentication** — You can secure your TCP endpoints with the [IP Restriction](/traffic-policy/actions/restrict-ips/) and [Mutual TLS](/docs/guides/other-guides/how-to-terminate-traffic-with-ngrok-configs/#mutual-tls-example) Traffic Policy actions. There is a limited set of actions available to authenticate TCP traffic because the protocol is low-level.
+- **Bring your own domain** — To use your own domain with TCP endpoints, see [the guide on the subject](/universal-gateway/bring-your-own-domain/#using-custom-domains-with-tcp-endpoints).
+- **Traffic Observability** — [Traffic Inspector](/obs/traffic-inspection/) gives you a real-time view in the ngrok dashboard of the traffic flowing through your TLS endpoints. You can even [export traffic logs with the Traffic Events system](/docs/obs/events/reference/).
+
+## Errors
+
+Learn how ngrok handles errors for TCP endpoints in the [Errors documentation](/errors/#tcp-errors).
+
+## API
+
+TCP Endpoints can be created programatically. Consult the documentation on
+[Endpoint APIs](/api/resources/endpoints/).
+
+## Limits & pricing
+
+TCP endpoints are available on all plans. To access them on the free plan, [add a payment method to your ngrok account](https://dashboard.ngrok.com/settings#id-verification). Consult the [pricing](/pricing-limits/) documentation for general billing details.
+
+For TCP limits, see the [endpoint Limits documentation](/pricing-limits/endpoint-limits/#tcp-timeout-limits).
+
+:::tip
+See [TCP Addresses pricing](/universal-gateway/tcp-addresses/#pricing) for
+details on pricing for fixed TCP Addresses.
+:::

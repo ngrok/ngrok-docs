@@ -84,3 +84,18 @@ pnpm run build
 
 For bug reports, feature request, questions and community support please ooen an issue or discussion in our [ngrok Community](https://github.com/ngrok/ngrok).
 To report a problem with our documentation, please open a new [Github issue](https://github.com/ngrok/ngrok-docs/issues).
+
+## Troubleshooting
+
+### EMFILE: too many open files error
+
+Sometimes when you run `pnpm run dev`, docusaurus fails to build the site with the following error:
+
+```bash
+Error: Docusaurus could not load module at path "C:/.../ngrok-docs/sidebars.js"
+Cause: EMFILE: too many open files, open 'C:/.../ngrok-docs/sidebars.js'
+```
+
+You can fix this by running `pnpm run clean-dev`.
+
+The issue appears to be related to the npm cache being too large. `pnpm run clean-dev` clears and verifies the cache before running `pnpm run dev` for you.

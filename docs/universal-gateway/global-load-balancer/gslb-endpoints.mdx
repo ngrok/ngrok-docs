@@ -1,0 +1,75 @@
+---
+title: Global Load Balancing for Endpoints
+description: Learn how ngrok's Global Load Balancer improves connection performance to your endpoints.
+---
+
+ngrok's GSLB improves the performance and resiliency of connections to your
+endpoints.
+
+When a client (such as a web browser) connects to your endpoint, it's routed to the closest [point of presence](/universal-gateway/points-of-presence/). The closest point of presence is the one with the shortest latency to the resolving DNS server for the connection. This ensures that clients are routed to the fastest point of presence even as internet routing conditions change.
+
+## Connection Acceleration
+
+Connecting to the closest point of presence accelerates your traffic by
+reducing the initialization time for TCP and TLS connections. TCP and TLS
+connection set up requires network round-trips. ngrok accelerates connections
+by reducing the latency of these round-trip times (RTTs) between the client and your endpoint by routing them to the closest point of presence.
+
+### Module Acceleration
+
+In addition to accelerating connection initialization, ngrok also accelerates the execution of [Modules](/traffic-policy/actions/) that you configure on your endpoints. Modules execute where the request is first received by the ngrok edge, at the geographically-closest point of presence. This means that any behaviors you define in your modules are automatically globally accelerated for all customers.
+
+## Geo-Aware Load Balancing
+
+When you are using a [Tunnel Group Backend](/universal-gateway/edges/#tunnel-group)
+with [Edges](/universal-gateway/edges), ngrok can automatically distribute traffic
+to the closest upstream if you run geographically distributed copies of your
+upstream application service.
+
+### Example scenario
+
+Let's say you have instances of your application running in Japan. When someone in Belgium makes a request to your app's endpoint, they will:
+
+1. First, be routed to the
+   closest ngrok point of presence in Europe, such as Germany
+1. Then, be routed through ngrok's internal network and finally to your
+   upstream services in Japan
+
+If you were to deploy additional copies of your application in
+France, those same requests from Belgium would:
+
+1. First, be routed to ngrok's nearest point of presence in Europe, which would be Germany
+1. Then, be routed to your new upstreams in France rather than Japan
+
+That's Geo-Aware Load Balancing.
+
+### Upstream failover
+
+When upstream services fail, ngrok's GSLB will automatically route traffic to the next-closest running upstream service.
+
+### Losing a Point of Presence
+
+If an ngrok point of presence fails, health checks automatically detect that
+failure and update our DNS resolution such that clients will attempt to connect to your endpoints via the next-closest healthy point of presence.
+
+## Disabling GSLB for an endpoint
+
+**There is no way to disable GSLB for HTTP/S and TLS endpoints**. TCP endpoints do not support GSLB.
+
+## GSLB for TCP endpoints
+
+ngrok does not support global load balancing for TCP Addresses, but you can connect TCP Addresses to [Agent Endpoints](/agent/) in different [Points of Presence](/universal-gateway/points-of-presence). This allows you to accept traffic to a TCP Address in one region, then forward it to an Agent in a different region.
+
+The following example [CLI command](/agent/cli) creates an agent in the `jp` region that connects to a TCP address in the `eu` region:
+
+```sh
+ngrok tcp 3389 --region jp --url tcp://1.tcp.eu.ngrok.io:12345
+```
+
+## Domains
+
+[Domains](/universal-gateway/domains/what-are-domains) allow you to configure which points of presence the Global Load
+Balancer may resolve clients to. This allows you to select which points of
+presence will receive traffic for the Domain's matching endpoints. To disable
+the Global Load Balancer, you may configure a domain to only resolve a single
+point of presence.

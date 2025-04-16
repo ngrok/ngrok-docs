@@ -1,0 +1,193 @@
+---
+title: Forwarding Original Connection Data
+description: Learn how to forward original connection data to your upstream services.
+---
+
+import TabItem from "@theme/TabItem";
+import Tabs from "@theme/Tabs";
+
+import { LangSwitcher } from "@site/src/components/LangSwitcher";
+import { ContentSwitcher } from "@site/src/components/LangSwitcher/ContentSwitcher";
+
+import ProxyProtoAgentConfigExample from "/examples/agent-config/tcp-proxyproto.mdx";
+import ProxyProtoKubernetesExample from "/examples/k8s/tcp-proxyproto.mdx";
+
+When you forward traffic to an upstream TCP service, becuase traffic is coming from the ngrok agent, it won't have access to connection information like the original client IP address. You can add the [PROXY protocol](https://www.haproxy.org/download/1.8/doc/proxy-protocol.txt) header on connections to your upstream service to send original connection information to your upstream service.
+
+You will need to configure your upstream service to handle the PROXY protocol header.
+
+:::info
+
+PROXY protocol is not support for SSH
+
+:::
+
+## TCP proxy protocol example
+
+<Tabs groupId="endpoint-type" queryString="ept">
+	<TabItem value="agent-endpoint" label="Agent Endpoint">
+		<LangSwitcher>
+```bash
+ngrok tcp 22 --upstream-proxy-protocol=2
+```
+
+```go
+import (
+	"context"
+	"net"
+
+	"golang.ngrok.com/ngrok"
+	"golang.ngrok.com/ngrok/config"
+)
+
+func ngrokListener(ctx context.Context) (net.Listener, error) {
+	return ngrok.Listen(ctx,
+		config.TCPEndpoint(
+			config.WithProxyProto(2),
+		),
+		ngrok.WithAuthtokenFromEnv(),
+	)
+}
+```
+
+```python
+import ngrok
+
+listener = ngrok.forward("localhost:8080", authtoken_from_env=True,
+    proto="tcp",
+    proxy_proto="2")
+
+print(f"Ingress established at: {listener.url()}");
+```
+
+```rust
+use ngrok::prelude::*;
+
+async fn listen_ngrok() -> anyhow::Result<impl Tunnel> {
+    let sess = ngrok::Session::builder()
+        .authtoken_from_env()
+        .connect()
+        .await?;
+
+    let tun = sess
+        .tcp_endpoint()
+        .proxy_proto(ProxyProto::V2)
+        .listen()
+        .await?;
+
+    println!("Listening on URL: {:?}", tun.url());
+
+    Ok(tun)
+}
+```
+
+```jsx
+const ngrok = require("@ngrok/ngrok");
+
+(async function () {
+	const listener = await ngrok.forward({
+		addr: 8080,
+		authtoken_from_env: true,
+		proto: "tcp",
+		proxy_proto: "2",
+	});
+
+	console.log(`Ingress established at: ${listener.url()}`);
+})();
+```
+
+    	</LangSwitcher>
+    </TabItem>
+    <TabItem value="agent-config" label="Agent Config" default>
+    	<ProxyProtoAgentConfigExample />
+    </TabItem>
+    <TabItem value="k8s" label="Kubernetes Controller">
+    	<ProxyProtoKubernetesExample />
+    </TabItem>
+
+</Tabs>
+
+## TLS proxy protocol example
+
+<Tabs groupId="endpoint-type" queryString="ept">
+	<TabItem value="agent-endpoint" label="Agent Endpoint">
+		<LangSwitcher>
+```bash
+ngrok tls 443 --upstream-proxy-protocol=2
+```
+
+```go
+import (
+	"context"
+	"net"
+
+	"golang.ngrok.com/ngrok"
+	"golang.ngrok.com/ngrok/config"
+)
+
+func ngrokListener(ctx context.Context) (net.Listener, error) {
+	return ngrok.Listen(ctx,
+		config.TLSEndpoint(
+			config.WithProxyProto(2),
+		),
+		ngrok.WithAuthtokenFromEnv(),
+	)
+}
+```
+
+```jsx
+const ngrok = require("@ngrok/ngrok");
+
+(async function () {
+	const listener = await ngrok.forward({
+		addr: 8080,
+		authtoken_from_env: true,
+		proto: "tls",
+		proxy_proto: "2",
+	});
+
+	console.log(`Ingress established at: ${listener.url()}`);
+})();
+```
+
+```python
+import ngrok
+
+listener = ngrok.forward("localhost:8080", authtoken_from_env=True,
+    proto="tls",
+    proxy_proto="2")
+
+print(f"Ingress established at: {listener.url()}");
+```
+
+```rust
+use ngrok::prelude::*;
+
+async fn listen_ngrok() -> anyhow::Result<impl Tunnel> {
+    let sess = ngrok::Session::builder()
+        .authtoken_from_env()
+        .connect()
+        .await?;
+
+    let tun = sess
+        .tls_endpoint()
+        .proxy_proto(ProxyProto::V2)
+        .listen()
+        .await?;
+
+    println!("Listening on URL: {:?}", tun.url());
+
+    Ok(tun)
+}
+```
+
+    </LangSwitcher>
+    </TabItem>
+    <TabItem value="agent-config" label="Agent Config" default>
+    	<ProxyProtoAgentConfigExample />
+    </TabItem>
+    <TabItem value="k8s" label="Kubernetes Controller">
+    	<ProxyProtoKubernetesExample />
+    </TabItem>
+
+</Tabs>

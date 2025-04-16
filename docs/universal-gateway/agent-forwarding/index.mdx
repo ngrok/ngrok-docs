@@ -1,0 +1,223 @@
+---
+title: How Do I Forward Traffic To My Upstream Services?
+---
+
+import TabItem from "@theme/TabItem";
+import Tabs from "@theme/Tabs";
+
+import { LangSwitcher } from "@site/src/components/LangSwitcher";
+import { ContentSwitcher } from "@site/src/components/LangSwitcher/ContentSwitcher";
+
+import ForwardHttpsAgentConfigExample from "/examples/agent-config/http-forward-https.mdx";
+import ForwardHttpsKubernetesExample from "/examples/k8s/http-forward-https.mdx";
+
+import ReencryptUpstreamAgentConfigExample from "/examples/agent-config/tls-reencrypt-upstream.mdx";
+
+The [ngrok agent](/agent/) and [Agent SDKs](/agent-sdks/) forward traffic that your endpoints receive to upstream services. You specify a URL or port number to instruct the ngrok agent where and how to forward traffic.
+
+:::note
+This page covers forwarding traffic to upstream resources. If you specifically want to forward traffic from one endpoint to another, [use Traffic Policy](/universal-gateway/chain-endpoints).
+:::
+
+## HTTPS forwarding
+
+The scheme in your upstream URL is used to determine whether to forward HTTP or HTTPS traffic to the upstream service. If you do not specify a scheme, the default `http` scheme is chosen _unless_ you forward to port `443`, in which case ngrok will use `https`. Consult the following table of examples.
+
+| Upstream URL             | Normalized Value         |
+| ------------------------ | ------------------------ |
+| `http://localhost:1234`  | `http://localhost:1234`  |
+| `https://localhost:1234` | `https://localhost:1234` |
+| `localhost:1234`         | `http://localhost:1234`  |
+| `1234`                   | `http://localhost:1234`  |
+| `localhost:443`          | `https://localhost:443`  |
+| `443`                    | `https://localhost:443`  |
+
+ngrok assumes that the network you run the agent on is private and it does not verify the TLS certificate presented by the upstream service. You may change this behavior with the [flags `--upstream-tls-verify` and `upstream-tls-verify-cas`](/agent/cli/#ngrok-http).
+
+:::info
+Forwarding to an upstream HTTPS service is not supported via SSH.
+:::
+
+<Tabs groupId="endpoint-type" queryString="ept">
+<TabItem value="agent-endpoint" label="Agent Endpoint">
+<LangSwitcher>
+```bash
+ngrok http https://localhost:8443
+```
+
+```go
+import (
+	"context"
+	"net/url"
+
+    "golang.ngrok.com/ngrok"
+    "golang.ngrok.com/ngrok/config"
+
+)
+
+func ngrokForwarder(ctx context.Context) (ngrok.Forwarder, error) {
+backendUrl, err := url.Parse("https://localhost:8443")
+if err != nil {
+return nil, err
+}
+
+    return ngrok.ListenAndForward(ctx,
+    	backendUrl,
+    	config.HTTPEndpoint(),
+    	ngrok.WithAuthtokenFromEnv(),
+    )
+
+}
+```
+
+```jsx
+const ngrok = require("@ngrok/ngrok");
+
+(async function () {
+	const listener = await ngrok.forward({
+		addr: "https://localhost:8443",
+		authtoken_from_env: true,
+	});
+
+	console.log(`Ingress established at: ${listener.url()}`);
+})();
+```
+
+```python
+import ngrok
+
+listener = ngrok.forward("https://localhost:8443", authtoken_from_env=True)
+
+print(f"Ingress established at: {listener.url()}");
+```
+
+```rust
+use ngrok::prelude::*;
+use ngrok::tunnel;
+use ngrok::forwarder::Forwarder;
+use url::Url;
+
+async fn forward_ngrok() -> Result<Forwarder<tunnel::HttpTunnel>, Error> {
+    let sess = ngrok::Session::builder()
+        .authtoken_from_env()
+        .connect()
+        .await?;
+    sess
+        .http_endpoint()
+        .listen_and_forward(Url::parse("https://localhost:8443")?)
+        .await
+        .map_err(Into::into)
+}
+```
+
+</LangSwitcher>
+
+</TabItem>
+
+<TabItem value="k8s" label="Kubernetes Controller">
+	<ForwardHttpsKubernetesExample />
+</TabItem>
+<TabItem value="agent-config" label="Agent Config" default>
+	<ForwardHttpsAgentConfigExample />
+</TabItem>
+
+</Tabs>
+
+<ContentSwitcher languages={["go"]}>
+
+:::note
+For HTTP/2 Use: `config.HTTPEndpoint(config.WithAppProtocol("http2"))`
+:::
+
+</ContentSwitcher>
+
+### HTTP/2 forwarding
+
+When agents forward to upstream http/2 services, connections use HTTP/1.1 by
+default.
+
+You can configure the agent, SDKs and Kubernetes Operator to instead use HTTP/2
+when forwarding to your upstream service.
+
+| Forwarder           | Option                            | Docs                                      |
+| ------------------- | --------------------------------- | ----------------------------------------- |
+| Agent               | `--upstream-protocol`             | [Agent CLI flags](/agent/cli/#ngrok-http) |
+| Agent SDKs          | language-dependent                | [Agent SDKs](/agent-sdks)                 |
+| Kubernetes Operator | `appProtocol` on the `Tunnel` CRD | [Kubernetes Operator](/k8s)               |
+
+When http2 forwarding is enabled, all requests to your upstream service will be
+transmitted over HTTP/2 Cleartext since TLS was already terminated at the ngrok
+cloud service. We cannot use
+[TLS-ALPN](https://httpwg.org/specs/rfc7540.html#TLS-ALPN) at this time. We
+rely on [HTTP/2 with Prior
+Knowledge](https://httpwg.org/specs/rfc7540.html#known-http) currently.
+
+### How do I encrypt traffic forwarded to upstream services?
+
+If you terminate TLS at the ngrok cloud service or ngrok agent, you may want to
+re-encrypt the connection from the agent to your upstream service. The ngrok
+agent supports this behavior by using the non-standard `tls://` scheme syntax.
+
+<Tabs groupId="endpoint-type" queryString="ept">
+<TabItem value="agent-endpoint" label="Agent Endpoint">
+
+<LangSwitcher>
+```bash
+ngrok tls tls://localhost:443 --terminate-at=edge
+```
+
+```python
+import ngrok
+
+listener = ngrok.forward("tls://localhost:443", authtoken_from_env=True,
+    proto="tls"
+    crt=bytearray(),
+    key=bytearray())
+
+print(f"Ingress established at: {listener.url()}");
+```
+
+```jsx
+const ngrok = require("@ngrok/ngrok");
+
+(async function () {
+	const listener = await ngrok.forward({
+		addr: "tls://localhost:443",
+		authtoken_from_env: true,
+		proto: "tls",
+		crt: "",
+		key: "",
+	});
+
+	console.log(`Ingress established at: ${listener.url()}`);
+})();
+```
+
+</LangSwitcher>
+
+<ContentSwitcher languages={["python", "javascript"]}>
+	An empty certificate and key will default to the ngrok edge's automatically
+	provisioned keypair. The upstream certificate of `localhost:443` will be
+	validated by a filepath specified in the `SSL_CERT_FILE` environment variable
+	(e.g. `SSL_CERT_FILE=/path/to/ca.crt`), or falling back to the host OS
+	installed trusted certificate authorities.
+</ContentSwitcher>
+
+</TabItem>
+<TabItem value="agent-config" label="Agent Config" default>
+<ReencryptUpstreamAgentConfigExample />
+</TabItem>
+<TabItem value="k8s" label="Kubernetes Controller">
+TLS endpoints are not supported by the ngrok Kubernetes Operator
+</TabItem>
+</Tabs>
+
+:::info
+
+Re-encrypting the connection to your upstream service with TLS is not supported for:
+
+- SSH
+- Go
+- Rust
+
+:::

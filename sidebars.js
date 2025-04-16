@@ -34,7 +34,10 @@ const sidebars = {
 			label: "Pricing & Limits",
 			type: "category",
 			link: { type: "doc", id: "pricing-limits/index" },
-			items: ["pricing-limits/free-plan-limits"],
+			items: [
+				"pricing-limits/free-plan-limits",
+				"pricing-limits/endpoint-limits",
+			],
 		},
 		{
 			label: "Universal Gateway",
@@ -45,116 +48,167 @@ const sidebars = {
 			items: [
 				"universal-gateway/overview",
 				{
-					label: "Concepts",
-					type: "category",
-					items: [
-						{ id: "universal-gateway/domains", type: "doc", label: "Domains" },
-						{
-							id: "universal-gateway/tcp-addresses",
-							type: "doc",
-							label: "TCP Addresses",
-						},
-						"universal-gateway/tls-certificates",
-						"universal-gateway/edges",
-					],
-				},
-				{
-					label: "Endpoints",
-					type: "category",
-					link: { type: "doc", id: "universal-gateway/endpoints" },
-					items: [
-						{
-							id: "universal-gateway/endpoints",
-							type: "doc",
-							label: "Overview",
-						},
-						{
-							label: "Types",
-							type: "category",
-							link: { type: "doc", id: "universal-gateway/types" },
-							items: [
-								{
-									label: "Cloud Endpoints",
-									type: "category",
-									link: {
-										type: "doc",
-										id: "universal-gateway/cloud-endpoints/index",
-									},
-									items: ["universal-gateway/cloud-endpoints/quickstart"],
-								},
-								{
-									id: "universal-gateway/agent-endpoints",
-									type: "doc",
-									label: "Agent Endpoints",
-								},
-							],
-						},
-						{
-							label: "Protocols",
-							type: "category",
-							link: { type: "doc", id: "universal-gateway/protocols" },
-							items: [
-								{
-									id: "universal-gateway/http",
-									type: "doc",
-									label: "HTTP/S",
-								},
-								{
-									id: "universal-gateway/tls",
-									type: "doc",
-									label: "TLS",
-								},
-								{
-									id: "universal-gateway/tcp",
-									type: "doc",
-									label: "TCP",
-								},
-							],
-						},
-						{
-							label: "Bindings",
-							type: "category",
-							link: { type: "doc", id: "universal-gateway/bindings" },
-							items: [
-								{
-									id: "universal-gateway/public-endpoints",
-									type: "doc",
-									label: "Public",
-								},
-								{
-									id: "universal-gateway/internal-endpoints",
-									type: "doc",
-									label: "Internal",
-								},
-								{
-									id: "universal-gateway/kubernetes-endpoints",
-									type: "doc",
-									label: "Kubernetes",
-								},
-							],
-						},
-						{
-							id: "universal-gateway/endpoint-pooling",
-							type: "doc",
-							label: "Pooling",
-						},
-					],
-				},
-				{
-					label: "Network",
+					label: "What are Domains?",
 					type: "category",
 					link: {
 						type: "doc",
-						id: "universal-gateway/global-load-balancer",
+						id: "universal-gateway/domains/what-are-domains",
 					},
 					items: [
-						"universal-gateway/global-load-balancer",
-						"universal-gateway/tls-termination",
-						"universal-gateway/ddos-protection",
-						"universal-gateway/ip-addresses",
-						"universal-gateway/points-of-presence",
+						"universal-gateway/domains/bring-your-own-domain",
+						"universal-gateway/domains/what-are-managed-domains",
+						"universal-gateway/wildcard-domains/index",
+						"universal-gateway/wildcard-domains/wildcard-endpoints",
 					],
 				},
+				{
+					label: "Using TCP Addresses",
+					type: "category",
+					link: {
+						type: "doc",
+						id: "universal-gateway/tcp-addresses/index",
+					},
+					items: [
+						"universal-gateway/tcp-addresses/how-are-tcp-addresses-assigned",
+					],
+				},
+				"universal-gateway/ip-addresses",
+				{
+					label: "What are Endpoints?",
+					type: "category",
+					link: {
+						type: "doc",
+						id: "universal-gateway/endpoints",
+					},
+					items: [
+						"universal-gateway/bindings",
+						"universal-gateway/public-endpoints/index",
+						{
+							label: "What are Internal Endpoints?",
+							type: "category",
+							link: {
+								type: "doc",
+								id: "universal-gateway/internal-endpoints/index",
+							},
+							items: ["universal-gateway/internal-endpoints/quickstart"],
+						},
+						"universal-gateway/agent-endpoints",
+						{
+							label: "What are Cloud Endpoints?",
+							type: "category",
+							link: {
+								type: "doc",
+								id: "universal-gateway/cloud-endpoints/index",
+							},
+							items: ["universal-gateway/cloud-endpoints/quickstart"],
+						},
+						{
+							label: "What are Kubernetes Endpoints?",
+							type: "category",
+							link: {
+								type: "doc",
+								id: "universal-gateway/kubernetes-endpoints/index",
+							},
+							items: [
+								"universal-gateway/kubernetes-endpoints/quickstart",
+								"universal-gateway/kubernetes-endpoints/services",
+								"universal-gateway/kubernetes-endpoints/selector",
+							],
+						},
+						"universal-gateway/what-are-endpoint-urls",
+						"universal-gateway/http-s/endpoint-url-defaults",
+						"universal-gateway/chain-endpoints",
+						"universal-gateway/mock-api",
+						"universal-gateway/migrate-from-tunnels",
+					],
+				},
+				{
+					label: "Handling HTTP/S Traffic",
+					type: "category",
+					link: { type: "doc", id: "universal-gateway/http-s/index" },
+					items: [
+						"universal-gateway/http-s/http-s-endpoints",
+						"universal-gateway/http-s/upstream-headers",
+					],
+				},
+				{
+					label: "Handling TLS Traffic",
+					type: "category",
+					link: {
+						type: "doc",
+						id: "universal-gateway/tls/index",
+					},
+					items: [
+						{
+							label: "How Do I Terminate TLS?",
+							type: "category",
+							link: {
+								type: "doc",
+								id: "universal-gateway/tls/tls-termination/index",
+							},
+							items: [
+								"universal-gateway/tls/handshake",
+								"universal-gateway/tls/tls-termination/termination-mechanics",
+								"universal-gateway/tls/tls-termination/termination-location",
+							],
+						},
+						{
+							label: "How Does ngrok Handle TLS Certificates?",
+							type: "category",
+							link: {
+								type: "doc",
+								id: "universal-gateway/tls-certificates/how-does-ngrok-handle-tls",
+							},
+							items: [
+								"universal-gateway/tls-certificates/automatic-certificate-management",
+								"universal-gateway/tls-certificates/how-are-certificates-selected",
+								"universal-gateway/tls-certificates/custom-certificates",
+								"universal-gateway/tls-certificates/what-is-a-certificate-bundle",
+								"universal-gateway/tls-certificates/what-are-private-tls-keys",
+							],
+						},
+						"universal-gateway/tls/tls-clients",
+					],
+				},
+				{
+					label: "Handling TCP Traffic",
+					type: "category",
+					link: { type: "doc", id: "universal-gateway/tcp/index" },
+					items: ["universal-gateway/tcp/static-tcp-url"],
+				},
+				{
+					label: "How Do I Forward Traffic?",
+					type: "category",
+					link: { type: "doc", id: "universal-gateway/agent-forwarding/index" },
+					items: [
+						"universal-gateway/agent-forwarding/forward-original-connection-data",
+						"universal-gateway/agent-forwarding/non-local-forwarding",
+						"universal-gateway/agent-forwarding/serving-file-directories",
+					],
+				},
+				{
+					label: "What is Endpoint Pooling?",
+					type: "category",
+					link: { type: "doc", id: "universal-gateway/pooling/index" },
+					items: [
+						"universal-gateway/pooling/pooling-quickstart",
+						"universal-gateway/pooling/pool-load-balancing",
+					],
+				},
+				{
+					label: "What is the Global Load Balancer?",
+					type: "category",
+					link: {
+						type: "doc",
+						id: "universal-gateway/global-load-balancer/index",
+					},
+					items: [
+						"universal-gateway/global-load-balancer/gslb-endpoints",
+						"universal-gateway/global-load-balancer/gslb-agents",
+					],
+				},
+				"universal-gateway/points-of-presence",
+				"universal-gateway/ddos-protection",
 			],
 		},
 		{
@@ -673,6 +727,11 @@ const sidebars = {
 			value: "<div class='menu__section'></div>",
 		},
 		"faq/faq",
+		{
+			label: "Deprecated",
+			type: "category",
+			items: ["universal-gateway/edges"],
+		},
 	],
 };
 
