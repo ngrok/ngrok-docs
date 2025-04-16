@@ -62,7 +62,7 @@ const sidebars = {
 					],
 				},
 				{
-					label: "What are TCP Addresses?",
+					label: "Using TCP Addresses",
 					type: "category",
 					link: {
 						type: "doc",
@@ -72,6 +72,7 @@ const sidebars = {
 						"universal-gateway/tcp-addresses/how-are-tcp-addresses-assigned",
 					],
 				},
+				"universal-gateway/ip-addresses",
 				{
 					label: "What are Endpoints?",
 					type: "category",
@@ -206,7 +207,6 @@ const sidebars = {
 						"universal-gateway/global-load-balancer/gslb-agents",
 					],
 				},
-				"universal-gateway/ip-addresses",
 				"universal-gateway/points-of-presence",
 				"universal-gateway/ddos-protection",
 			],
