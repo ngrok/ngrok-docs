@@ -1,13 +1,13 @@
-import type React from "react";
+import Link from "@docusaurus/Link";
+import { Button } from "@ngrok/mantle/button";
 import {
 	HoverCard,
 	HoverCardContent,
 	HoverCardTrigger,
 } from "@ngrok/mantle/hover-card";
 import { QuestionMark } from "@phosphor-icons/react";
-import { Button } from "@ngrok/mantle/button";
+import type React from "react";
 import { terms } from "./data";
-import Link from "@docusaurus/Link";
 
 type DefinitionProps = {
 	children: React.ReactNode;
@@ -21,11 +21,11 @@ export function Definition({
 	if (!children) throw new Error("<Definition/> requires children");
 	const getMatchingTerm = () => {
 		const match = terms.find((term) =>
-			term.titles.includes(children.toString())
+			term.titles.includes(children.toString()),
 		);
 		if (!match)
 			throw new Error(
-				"<Definition/> requires the meaning prop if no corresponding term is found."
+				"<Definition/> requires the meaning prop if no corresponding term is found.",
 			);
 		return (
 			<div>
