@@ -119,13 +119,13 @@ agent:
 
 endpoints:
   - name: telemetry-api
-    url: https://telemetry-api.internal
+    url: https://telemetry-api.internal:8080
     upstream:
-      url: http://192.168.1.100:8080 # API inside factory network
+      url: http://192.168.1.100 # API inside factory network
   - name: sensor-db
     url: tcp://database.internal:5432
     upstream:
-      url: tcp://192.168.1.101:5432 # PostgreSQL database
+      url: tcp://192.168.1.101 # PostgreSQL database
   - name: factory-dashboard
     url: https://dashboard.internal
     upstream:
@@ -144,6 +144,10 @@ Now, install and start the service
 ngrok service install --config /etc/ngrok.yml
 ngrok service start
 ```
+
+:::tip
+In most cases, installing ngrok as a service requires administrator privileges.
+:::
 
 This will start all tunnels defined in the configuration file, ensure ngrok runs persistently in the background,
 and integrate with native OS service tooling.
@@ -204,41 +208,31 @@ Since the telemetry API and database must be always accessible, create permanent
 internal endpoints. Create an HTTPs cloud endpoint for the API using the ngrok platform API.
 
 ```curl
-curl -X POST \
-  -H "Authorization: Bearer <NGROK_API_KEY>" \
-  -H "Content-Type: application/json" \
-  -H "Ngrok-Version: 2" \
-  -d '{
-    "type": "cloud",
-    "url": "https://factory1.api.acme.com",
-    "traffic_policy": {
-      "on_http_request": [
-        {
-          "expressions": [{ "req.url.path.startsWith": "/api" }],
-          "actions": [{ "type": "forward-internal", "config": { "url": "https://api.internal" } }]
-        }
-      ]
-    }
-  }' \
-  https://api.ngrok.com/endpoints
+curl -X POST https://api.ngrok.com/endpoints \
+ -H "Authorization: Bearer <NGROK_API_KEY>" \
+ -H "Content-Type: application/json" \
+ -H "Ngrok-Version: 2" \
+ -d '{
+  "type": "cloud",
+  "url": "https://factory1.api.acme.com",
+  "traffic_policy": "{ \"on_http_request\": [ { \"expressions\": [\"req.url.path.startsWith(\\\"/api\\\")\"], \"actions\": [ { \"type\": \"forward-internal\", \"config\": { \"url\": \"https://telemetry-api.internal\" } } ] } ] }"
+ }'
 ```
 
 Now factory1.api.acme.com/api permanently forwards traffic to api.internal inside the factory. Next, create a
 TCP cloud endpoint for the sensor database because it's on a TCP-based internal endpoint.
 
 ```curl
-curl -X POST \
+curl -X POST https://api.ngrok.com/endpoints \
   -H "Authorization: Bearer <NGROK_API_KEY>" \
   -H "Content-Type: application/json" \
   -H "Ngrok-Version: 2" \
-  -d '{ "url": "reserved TCP address",
-          "type": "cloud",
-          "bindings": ["public"],
-          "traffic_policy": "on_tcp_connect:\n  - actions:\n      - type: forward-internal\n
-           config:\n          url: \"tcp://database.internal\"\n      - type: restrict-ips\n
-           config:\n          enforce: true\n          allow:\n            - 203.0.113.0/24\n
-           deny:\n            - 192.0.2.0/24" }' \
-  https://api.ngrok.com/endpoints
+  -d '{
+    "url": "YOUR_RESERVED_ADDR",
+    "type": "cloud",
+    "bindings": ["public"],
+    "traffic_policy": "on_tcp_connect:\n  - actions:\n      - type: forward-internal\n        config:\n          url: \"tcp://database.internal:5432\"\n      - type: restrict-ips\n        config:\n          enforce: true\n          allow:\n            - 203.0.113.0/24\n          deny:\n            - 192.0.2.0/24"
+  }'
 ```
 
 Now, your reserved TCP address forwards TCP connections to the factory database and only allows access from
@@ -260,6 +254,10 @@ curl -X POST \
   }'  \
   https://agent.factory1.com/api/tunnel
 ```
+
+:::note
+Ensure your chosen domain has the proper TLS/SSL certs provisioned in order to create a secure, working connection.
+:::
 
 Now, app.factory.com is live—only for this session.
 
