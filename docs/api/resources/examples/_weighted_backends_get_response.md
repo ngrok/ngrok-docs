@@ -1,17 +1,14 @@
 <!-- Code generated for API Clients. DO NOT EDIT. -->
-
 #### Example Response
-
 ```json
 {
-	"backends": {
-		"bkdhr_2uqkikSadlirKbcqa2Zs20LBFZO": 1,
-		"bkdhr_2uqkill2aOTne0ovsrTuLCRQnK4": 0
-	},
-	"created_at": "2025-03-26T10:07:00Z",
-	"description": "acme weighted",
-	"id": "bkdwd_2uqkil7a3gYz7fxNt6nUXHGJdyt",
-	"metadata": "{\"environment\": \"staging\"}",
-	"uri": "https://api.ngrok.com/backends/weighted/bkdwd_2uqkil7a3gYz7fxNt6nUXHGJdyt"
+  "backends": {
+    "bkdhr_2vwXiVw6Vx8PJkQfC2MVGVQ3ZDP": 0,
+    "bkdhr_2vwXibCBMAPfOFJZCuLvJPuZLjP": 1
+  },
+  "created_at": "2025-04-19T10:07:17Z",
+  "description": "acme weighted",
+  "id": "bkdwd_2vwXiYnlnVlU6N0lcONJxrwLwuA",
+  "metadata": "{\"environment\": \"staging\"}",
+  "uri": "https://api.ngrok.com/backends/weighted/bkdwd_2vwXiYnlnVlU6N0lcONJxrwLwuA"
 }
-```

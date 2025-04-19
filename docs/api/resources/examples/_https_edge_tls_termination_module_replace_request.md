@@ -1,7 +1,5 @@
 <!-- Code generated for API Clients. DO NOT EDIT. -->
-
 #### Example Request
-
 ```bash
 curl \
 -X PUT \
@@ -9,5 +7,4 @@ curl \
 -H "Content-Type: application/json" \
 -H "Ngrok-Version: 2" \
 -d '{"enabled":true,"min_version":"1.3"}' \
-https://api.ngrok.com/edges/https/edghts_2uqkjEI1U97KMAeQ7QCIhr6dymH/tls_termination
-```
+https://api.ngrok.com/edges/https/edghts_2vwXiw745MHAQ5PkM5FPfMT3QiR/tls_termination

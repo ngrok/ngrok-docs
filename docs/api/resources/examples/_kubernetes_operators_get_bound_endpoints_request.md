@@ -1,11 +1,8 @@
 <!-- Code generated for API Clients. DO NOT EDIT. -->
-
 #### Example Request
-
 ```bash
 curl \
 -X GET \
 -H "Authorization: Bearer {API_KEY}" \
 -H "Ngrok-Version: 2" \
-https://api.ngrok.com/kubernetes_operators/k8sop_2uqkjOsOYHQvYPwOOL5Lok5lefH/bound_endpoints
-```
+https://api.ngrok.com/kubernetes_operators/k8sop_2vwXj5jfTfJHlUQzHut3jfE3aTR/bound_endpoints
