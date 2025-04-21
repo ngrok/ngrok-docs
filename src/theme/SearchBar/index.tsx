@@ -10,6 +10,7 @@ import type {
 } from "@docsearch/react";
 import Head from "@docusaurus/Head";
 import Link from "@docusaurus/Link";
+import Translate from "@docusaurus/Translate";
 import { useHistory } from "@docusaurus/router";
 import {
 	isRegexpStringMatch,
@@ -19,16 +20,17 @@ import {
 	useAlgoliaContextualFacetFilters,
 	useSearchResultUrlProcessor,
 } from "@docusaurus/theme-search-algolia/client";
-import Translate from "@docusaurus/Translate";
 import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import translations from "@theme/SearchTranslations";
 import type { FacetFilters } from "algoliasearch/lite";
-import React, {
+import type React from "react";
+import {
+	type ComponentRef,
+	type ReactNode,
 	useCallback,
 	useMemo,
 	useRef,
 	useState,
-	type ReactNode,
 } from "react";
 import { createPortal } from "react-dom";
 
@@ -216,9 +218,8 @@ function DocSearch({ externalUrlRegex, ...props }: DocSearchProps) {
 	const transformItems = useTransformItems(props);
 	const transformSearchClient = useTransformSearchClient();
 
-	const searchContainer = useRef<HTMLDivElement | null>(null);
-	// TODO remove "as any" after React 19 upgrade
-	const searchButtonRef = useRef<HTMLButtonElement>(null as any);
+	const searchContainer = useRef<ComponentRef<"div"> | null>(null);
+	const searchButtonRef = useRef<ComponentRef<"button"> | null>(null);
 	const [isOpen, setIsOpen] = useState(false);
 	const [initialQuery, setInitialQuery] = useState<string | undefined>(
 		undefined,

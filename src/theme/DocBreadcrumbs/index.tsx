@@ -1,8 +1,8 @@
 import Link from "@docusaurus/Link";
+import { translate } from "@docusaurus/Translate";
 import { useSidebarBreadcrumbs } from "@docusaurus/plugin-content-docs/client";
 import { ThemeClassNames } from "@docusaurus/theme-common";
 import { useHomePageRoute } from "@docusaurus/theme-common/internal";
-import { translate } from "@docusaurus/Translate";
 import HomeBreadcrumbItem from "@theme/DocBreadcrumbs/Items/Home";
 import clsx from "clsx";
 import React, { type ReactNode } from "react";
@@ -104,7 +104,7 @@ export default function DocBreadcrumbs(): ReactNode {
 							: item.href;
 					return (
 						<BreadcrumbsItem
-							key={idx}
+							key={item.href + item.label + item.type}
 							active={isLast}
 							index={idx}
 							addMicrodata={!!href}

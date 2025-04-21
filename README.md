@@ -10,6 +10,14 @@ See our [Contribution Guidelines](CONTRIBUTING.md) for detailed instructions on 
 
 ngrok is built using [Docusaurus 3](https://docusaurus.io/).
 
+The fastest and safest (isolated) way to run the documentation is with the Docker command below, then browse to http://localhost:3000/docs.
+
+```sh
+docker run --rm -p 3000:3000 -it --name=ngrokDocs -v "./:/app" -w "/app" --platform=linux/amd64 guergeiro/pnpm:20-8-alpine sh -c "apk add direnv; direnv allow; pnpm install; pnpm run start"
+```
+
+Otherwise, you can install and run everything on your local host.
+
 Prerequisites required:
 
 - [Node 20](https://nodejs.org/en/download)

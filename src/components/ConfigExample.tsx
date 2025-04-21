@@ -1,9 +1,8 @@
-import { useMDXComponents } from "@mdx-js/react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@ngrok/mantle/tabs";
-import { type ReactNode } from "react";
+import type { ReactNode } from "react";
 import YAML, { type ToStringOptions } from "yaml";
-import DocsCodeBlock from "./code-block";
 import { LangSwitcher } from "./LangSwitcher";
+import DocsCodeBlock from "./code-block";
 
 const showExample = (
 	defaultTitle: string,
@@ -23,18 +22,18 @@ const showExample = (
 			<DocsCodeBlock
 				language="yaml"
 				metastring={yamlMetastring}
-				title={titleToUse + ".yml"}
+				title={`${titleToUse}.yml`}
 				icon={icon}
 			>
-				{snippetText ? `# ${snippetText}\n` + yamlConfig : yamlConfig}
+				{snippetText ? `# ${snippetText}\n${yamlConfig}` : yamlConfig}
 			</DocsCodeBlock>
 			<DocsCodeBlock
 				language="json"
 				metastring={jsonMetastring}
-				title={titleToUse + ".json"}
+				title={`${titleToUse}.json`}
 				icon={icon}
 			>
-				{snippetText ? `// ${snippetText}\n` + jsonConfig : jsonConfig}
+				{snippetText ? `// ${snippetText}\n${jsonConfig}` : jsonConfig}
 			</DocsCodeBlock>
 		</LangSwitcher>
 	);
@@ -70,16 +69,16 @@ export type ConfigExampleProps = {
 	jsonMetastring?: string;
 	title?: string;
 	icon?: ReactNode;
-	showAgentConfig?: boolean;
+	hideAgentConfig?: boolean;
+	hideTrafficPolicy?: boolean;
 };
 
 export default function ConfigExample({
 	// Show the agent config by default
-	showAgentConfig = true,
+	hideAgentConfig = false,
+	hideTrafficPolicy = false,
 	...props
 }: ConfigExampleProps) {
-	const components = useMDXComponents();
-
 	const yamlOptions = {
 		indent: 2,
 		directives: true,
@@ -104,15 +103,29 @@ export default function ConfigExample({
 		agentConfig.yamlConfig,
 		agentConfig.jsonConfig,
 	);
-	if (!components.h3) return <p>Error rendering config example.</p>;
+	if (hideAgentConfig && hideTrafficPolicy)
+		throw new Error(
+			"At least one of hideAgentConfig or hideTrafficPolicy must be false",
+		);
 	return (
-		<Tabs orientation="horizontal" defaultValue="traffic-policy">
+		<Tabs
+			orientation="horizontal"
+			defaultValue={hideTrafficPolicy ? "agent-config" : "traffic-policy"}
+		>
 			<TabsList>
-				<TabsTrigger value="traffic-policy">Traffic Policy</TabsTrigger>
-				<TabsTrigger value="agent-config">Agent Config</TabsTrigger>
+				{hideTrafficPolicy ? null : (
+					<TabsTrigger value="traffic-policy">Traffic Policy</TabsTrigger>
+				)}
+				{hideAgentConfig ? null : (
+					<TabsTrigger value="agent-config">Agent Config</TabsTrigger>
+				)}
 			</TabsList>
-			<TabsContent value="traffic-policy">{policySnippet}</TabsContent>
-			<TabsContent value="agent-config">{agentConfigSnippet}</TabsContent>
+			{hideTrafficPolicy ? null : (
+				<TabsContent value="traffic-policy">{policySnippet}</TabsContent>
+			)}
+			{hideAgentConfig ? null : (
+				<TabsContent value="agent-config">{agentConfigSnippet}</TabsContent>
+			)}
 		</Tabs>
 	);
 }

@@ -57,7 +57,7 @@ export default function ActionHub({ actions }: Props) {
 
 	let filteredActions = sortedActions;
 
-	if (protocolFilter != DefaultProtocolValue) {
+	if (protocolFilter !== DefaultProtocolValue) {
 		filteredActions = filteredActions.filter((action) => {
 			const protocols = Protocols[protocolFilter];
 			let exists = 0;
@@ -73,7 +73,7 @@ export default function ActionHub({ actions }: Props) {
 		});
 	}
 
-	if (phaseFilter != DefaultPhaseValue) {
+	if (phaseFilter !== DefaultPhaseValue) {
 		filteredActions = filteredActions.filter((action) =>
 			// Filter by phase if set
 			action.phases.includes(phaseFilter),
@@ -127,7 +127,9 @@ export default function ActionHub({ actions }: Props) {
 						<SelectContent width="trigger">
 							<SelectItem value={DefaultPhaseValue}>All Phases</SelectItem>
 							{Phases.map((phase) => (
-								<SelectItem value={phase}>{phase}</SelectItem>
+								<SelectItem key={phase} value={phase}>
+									{phase}
+								</SelectItem>
 							))}
 						</SelectContent>
 					</Select>

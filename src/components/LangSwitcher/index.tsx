@@ -18,10 +18,11 @@ import LangSwitcherContext, {
 } from "./LangSwitcherContext";
 import { getCodeBlocks } from "./utils";
 
+// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 export function LangSwitcher({ children, className, ...props }: any) {
 	const { defaultLanguage, tabLanguage, updateTab } =
 		useContext<LangSwitcherContextType>(LangSwitcherContext);
-	const codeBlocks = getCodeBlocks(children);
+	const codeBlocks = getCodeBlocks(children) ?? [];
 
 	if (!updateTab) return "Error loading code block";
 
@@ -29,19 +30,23 @@ export function LangSwitcher({ children, className, ...props }: any) {
 	if (tabLanguage === null) {
 		// Check if the user has specified a default language
 		const startingLanguage =
+			// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 			codeBlocks.find((child: any) => child.language === defaultLanguage) ||
 			codeBlocks[0];
-		updateTab(startingLanguage.language);
+		updateTab(startingLanguage?.language);
 		// if no default language is set, set the first tab as the selected tab
 	}
 
 	const matchingBlock =
+		// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 		codeBlocks.find((child: any) => child.language === tabLanguage) ||
 		codeBlocks[0];
 	// This also needs to be updated to use the right codeblock data, not [0]
-	const { meta } = matchingBlock;
+	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+	const meta: { collapsible?: boolean; [key: string]: any } =
+		matchingBlock?.meta || {};
 	const collapsible =
-		meta.collapsible && matchingBlock.content.split("\n").length > 20;
+		meta.collapsible && matchingBlock?.content.split("\n").length > 10;
 
 	return (
 		<BrowserOnly
@@ -53,6 +58,7 @@ export function LangSwitcher({ children, className, ...props }: any) {
 				<CodeBlock className={clsx(className, "mb-4")} {...props}>
 					<CodeBlockHeader className="flex-col overflow-x-auto p-1">
 						<div className="flex w-[100%] gap-1.5">
+							{/* biome-ignore lint/suspicious/noExplicitAny: <explanation> */}
 							{codeBlocks.map((child: any) => (
 								<Button
 									key={child.language + child.content}
@@ -60,7 +66,7 @@ export function LangSwitcher({ children, className, ...props }: any) {
 									type="button"
 									priority="neutral"
 									appearance={
-										matchingBlock.language === child.language
+										matchingBlock?.language === child.language
 											? "filled"
 											: "outlined"
 									}
@@ -78,8 +84,8 @@ export function LangSwitcher({ children, className, ...props }: any) {
 						)}
 						{!meta.disableCopy && <CodeBlockCopyButton />}
 						<CodeBlockCode
-							language={matchingBlock.language || meta.language}
-							value={fmtCode`${matchingBlock.content.toString()}`}
+							language={matchingBlock?.language || meta.language}
+							value={fmtCode`${matchingBlock?.content.toString()}`}
 						/>
 						{collapsible && <CodeBlockExpanderButton />}
 					</CodeBlockBody>

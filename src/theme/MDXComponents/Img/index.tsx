@@ -8,8 +8,8 @@ function transformImgClassName(className?: string): string {
 }
 
 export default function MDXImg(props: Props): ReactNode {
+	// biome-ignore lint/a11y/useAltText: this is a reusable component, alt text comes from props
 	return (
-		// eslint-disable-next-line jsx-a11y/alt-text
 		<img
 			decoding="async"
 			loading="lazy"

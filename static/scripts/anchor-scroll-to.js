@@ -1,17 +1,17 @@
-var waitForEl = function (selector, callback) {
+const waitForEl = (selector, callback) => {
 	if (document.querySelector(selector) !== null) {
 		callback();
 	} else {
-		setTimeout(function () {
+		setTimeout(() => {
 			waitForEl(selector, callback);
 		}, 100);
 	}
 };
 
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", () => {
 	if (document.location.hash) {
-		var anchor = document.location.hash;
-		waitForEl(anchor, function () {
+		const anchor = document.location.hash;
+		waitForEl(anchor, () => {
 			document.querySelector(anchor).scrollIntoView();
 		});
 	}

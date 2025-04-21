@@ -1,17 +1,27 @@
 import { parseLanguage, parseMetastring } from "@ngrok/mantle/code-block";
+import { Children, isValidElement } from "react";
+import type { ReactNode } from "react";
 
-export const getCodeBlocks = (children: any) => {
-	return children.map((child: any) => {
-		const { className, metastring, children, language } =
-			child.props.children.props ?? child.props;
+export const getCodeBlocks = (children: ReactNode) => {
+	return Children.map(children, (child, index) => {
+		const { className, metastring, children, language } = isValidElement(child)
+			? (child.props.children?.props ?? child.props)
+			: {};
 		const parsedLanguage = language || parseLanguage(className);
 		const meta = parseMetastring(metastring);
-		const title = meta.title ?? child.props.title;
+		const title =
+			meta.title ?? (isValidElement(child) ? child.props.title : undefined);
+
 		return {
 			language: parsedLanguage,
 			content: children,
-			meta,
+			meta: {
+				...meta,
+				// Make it collapsible by default
+				collapsible: true,
+			},
 			title,
+			childIndex: index,
 		};
 	});
 };
