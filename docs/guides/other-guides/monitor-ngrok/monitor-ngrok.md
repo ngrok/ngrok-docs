@@ -5,12 +5,6 @@ sidebar_position: 3
 toc_max_heading_level: 3
 ---
 
-TODO
-
-explain what monitors we choose and why. in next steps section give example of others monitors to create
-  definitely latency
-  gareth: health check, error rates, throughput
-
 ## Introduction
 
 This guide explains how to monitor your API or web app with ngrok by viewing traffic reports, using error request replays, and exporting logs and events to an external dashboard.
@@ -22,6 +16,8 @@ Whether you're an existing ngrok user looking to make your API more robust or a 
 This guide assumes you already have [an ngrok account](https://dashboard.ngrok.com/signup) (a free account is sufficient) and have [Docker installed](https://docs.docker.com/get-started/get-docker) on your computer.
 
 You'll use the [sample API](https://github.com/ngrok-samples/api-demo) in this tutorial. Even if you have an existing API you want to monitor, you can test the sample before making changes to your real API.
+
+If you have no interest in running the sample app and immediately want to work on your live app, jump ahead to the section [monitor your API](#monitor-your-api).
 
 ## Start the sample API to monitor
 
@@ -269,6 +265,13 @@ To complete your monitoring system, you need to set up an alert that is pushed t
 - Save the monitor. Now, after a delay and once you've refreshed the ngrok endpoint for your API, you will receive a notification if an error occurs.
 
 If you want to use a different notification system to ntfy, consider using email, Slack, Discord, WhatsApp, Threema, or Webhook.site.
+
+## Next steps: What to monitor?
+
+explain what monitors we choose and why. in next steps section give example of others monitors to create
+  definitely latency
+  gareth: health check, error rates, throughput
+
 
 ## Further reading
 
