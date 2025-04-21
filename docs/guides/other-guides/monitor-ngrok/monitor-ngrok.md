@@ -21,14 +21,9 @@ Whether you're an existing ngrok user looking to make your API more robust or a 
 
 ## Prerequisites
 
-use the api demo - https://github.com/ngrok-samples/api-demo
-https://ngrok.com/docs/guides/api-gateway/get-started/
+This guide assumes you already have [an ngrok account](https://dashboard.ngrok.com/signup) (a free account is sufficient), have been through one of the [getting started guides](/guides/api-gateway), have an API connected to ngrok, and have [Docker installed](https://docs.docker.com/get-started/get-docker) on your computer.
 
-
-To follow along with this tutorial, you need:
-
-- **An ngrok account:** A free account is sufficient. If you don't have one, [sign up here](https://dashboard.ngrok.com/signup).
-- **A simple API that runs locally using [Docker](https://docs.docker.com/get-started/get-docker):** Even if you have an existing API you want to monitor, you can use the sample API in this guide to avoid making changes to your real one.
+You'll use the [sample API](https://github.com/ngrok-samples/api-demo) in this tutorial. Please download or clone it now. Even if you have an existing API you want to monitor, you can test the sample before making changes to your real one.
 
 ## Create an example API to monitor
 
