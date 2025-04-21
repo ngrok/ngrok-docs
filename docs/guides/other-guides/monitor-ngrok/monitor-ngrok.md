@@ -12,6 +12,9 @@ explain what monitors we choose and why. in next steps section give example of o
   gareth: health check, error rates, throughput
 explain we're using datadog but you can also use...
 
+docker run --platform=linux/amd64 --rm -p 7777:80 --network=ngrokTest -v ".:/app" -w "/app" --name="api" denoland/deno:alpine-2.1.3 sh -c  "deno run --allow-net --unstable-detect-cjs ./server.ts"
+
+
 
 ## Introduction
 
@@ -21,48 +24,21 @@ Whether you're an existing ngrok user looking to make your API more robust or a 
 
 ## Prerequisites
 
-This guide assumes you already have [an ngrok account](https://dashboard.ngrok.com/signup) (a free account is sufficient), have been through one of the [getting started guides](/guides/api-gateway), have an API connected to ngrok, and have [Docker installed](https://docs.docker.com/get-started/get-docker) on your computer.
+This guide assumes you already have [an ngrok account](https://dashboard.ngrok.com/signup) (a free account is sufficient), have been through one of the [getting started guides](/guides/api-gateway), and have [Docker installed](https://docs.docker.com/get-started/get-docker) on your computer.
 
-You'll use the [sample API](https://github.com/ngrok-samples/api-demo) in this tutorial. Please download or clone it now. Even if you have an existing API you want to monitor, you can test the sample before making changes to your real one.
+You'll use the [sample API](https://github.com/ngrok-samples/api-demo) in this tutorial. Even if you have an existing API you want to monitor, you can test the sample before making changes to your real one.
 
-## Create an example API to monitor
+## Start the sample API to monitor
 
-Let's create the simplest possible API to monitor.
+Let's start the sample API. Open a terminal and run the commands below.
 
-:::note
-If you already have an API running on ngrok, you can skip to the [Traffic Inspector](#traffic-inspector) section.
-:::
+```sh
+docker network create ngrokTest
 
-The TypeScript code below runs a web server that randomly returns a success or a failure to any request it receives.
+docker run --init --platform=linux/amd64 --rm -p 4000:4000 --network=ngrokTest --name="api" joelatngrok/api-demo
+```
 
-- Save the code to a file called `server.ts`.
-
-  ```js
-  const randomServerName = Math.floor(Math.random() * 900 + 100).toString();
-
-  Deno.serve({'hostname': '0.0.0.0', 'port': 80 }, handler);
-
-  async function handler(request: Request): Promise<Response> {
-    if (Math.random() > 0.5) {
-      const msg = 'Server ' + randomServerName + ' at time ' + Date.now() + ' has success response to request at ' + request.url;
-      console.log(msg);
-      return new Response(msg, { status: 200 });
-    }
-    const msg = 'Server ' + randomServerName + ' at time ' + Date.now() + ' has error response to request at ' + request.url;
-    console.log(msg);
-    return new Response(msg, { status: 500 });
-  }
-  ```
-
-- In the location where you saved the file, open your terminal and run the command below to start the API.
-
-  ```sh
-  docker network create ngrokTest
-
-  docker run --platform=linux/amd64 --rm -p 7777:80 --network=ngrokTest -v ".:/app" -w "/app" --name="api" denoland/deno:alpine-2.1.3 sh -c  "deno run --allow-net --unstable-detect-cjs ./server.ts"
-  ```
-
-  This command runs the Docker image for Deno, exposing the API locally on port 7777, names the Docker container `api`, and removes the container upon exiting with `--rm`. You can now browse to http://localhost:7777 to test the API.
+This command runs the Docker sample API container, exposing the API locally on port 4000, names the Docker container `api`, and removes the container upon exiting with `--rm`. You can now browse to http://localhost:4000 to test the API.
 
 :::note
 The API uses a named network, `ngrokTest`, so that in the next section, you can start the ngrok Agent on the same network as the API.
@@ -83,7 +59,7 @@ Now that the API is running locally, you can expose it on a public URL, using th
   This command starts the ngrok agent locally and connects it to the API running on container `api`.
 
 - Browse to the URL labeled `Forwarding`, which should look like this in your terminal: `https://eb45-79-127-145-72.ngrok-free.app`.
-- You can now see your request going from the browser to the ngrok agent you're running in one terminal window and then to the Deno API in your other terminal window.
+- You can now see your request going from the browser to the ngrok agent you're running in one terminal window and then to the API in your other terminal window.
 
 ![Published API](./img/ngrokAgent.webp)
 
@@ -110,7 +86,7 @@ In this section, you'll learn to use the Traffic Inspector and work through an e
   ![Traffic Inspector](./img/trafficInspector.webp)
 
 :::note
-Requests made to the API at http://localhost:7777 will not be displayed in the inspector. Only requests that pass through the ngrok endpoint, and therefore the ngrok agent running in Docker, will be known to ngrok.
+Requests made to the API at http://localhost:4000 will not be displayed in the inspector. Only requests that pass through the ngrok endpoint, and therefore the ngrok agent running in Docker, will be known to ngrok.
 :::
 
 To see more details about a request or to replay it, you need to enable full capture, which permits ngrok to store up to 10 KB of your request data.
