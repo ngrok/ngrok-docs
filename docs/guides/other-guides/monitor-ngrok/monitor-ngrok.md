@@ -1,15 +1,12 @@
 ---
-title: Observe your API Traffic with ngrok and Datadog
-sidebar_label: Monitoring with Datadog
+title: Observe your API traffic with ngrok and Datadog
+sidebar_label: Monitor with Datadog
 sidebar_position: 3
 toc_max_heading_level: 3
 ---
 
 TODO
-add link to this guides from all getting started guides
-    https://ngrok.com/docs/guides/api-gateway/multicloud/
-    https://ngrok.com/docs/guides/api-gateway/get-started/
-    https://ngrok.com/docs/guides/api-gateway/kubernetes/
+
 explain what monitors we choose and why. in next steps section give example of others monitors to create
   definitely latency
   gareth: health check, error rates, throughput
