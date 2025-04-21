@@ -1,9 +1,20 @@
 ---
-title: Observe your API Traffic with ngrok and Datadog 
+title: Observe your API Traffic with ngrok and Datadog
 sidebar_label: Monitoring with Datadog
 sidebar_position: 3
 toc_max_heading_level: 3
 ---
+
+TODO
+add link to this guides from all getting started guides
+    https://ngrok.com/docs/guides/api-gateway/multicloud/
+    https://ngrok.com/docs/guides/api-gateway/get-started/
+    https://ngrok.com/docs/guides/api-gateway/kubernetes/
+explain what monitors we choose and why. in next steps section give example of others monitors to create
+  definitely latency
+  gareth: health check, error rates, throughput
+explain we're using datadog but you can also use...
+
 
 ## Introduction
 
@@ -11,23 +22,23 @@ This guide explains how to monitor your API or web app with ngrok by viewing tra
 
 Whether you're an existing ngrok user looking to make your API more robust or a new user wondering whether ngrok meets your needs, this tutorial will demonstrate monitoring in detail.
 
-:::note
-This tutorial uses the terms "API" and "app" interchangeably in this article, as ngrok can monitor any web server.
-:::
-
 ## Prerequisites
+
+use the api demo - https://github.com/ngrok-samples/api-demo
+https://ngrok.com/docs/guides/api-gateway/get-started/
+
 
 To follow along with this tutorial, you need:
 
 - **An ngrok account:** A free account is sufficient. If you don't have one, [sign up here](https://dashboard.ngrok.com/signup).
-- **A simple app that runs locally using [Docker](https://docs.docker.com/get-started/get-docker):** Even if you have an existing API you want to monitor, you can use the sample app in this guide to avoid making changes to your real one.
+- **A simple API that runs locally using [Docker](https://docs.docker.com/get-started/get-docker):** Even if you have an existing API you want to monitor, you can use the sample API in this guide to avoid making changes to your real one.
 
 ## Create an example API to monitor
 
-Let's create the simplest possible app to monitor.
+Let's create the simplest possible API to monitor.
 
 :::note
-If you already have an app running on ngrok, you can skip to the [Traffic Inspector](#traffic-inspector) section.
+If you already have an API running on ngrok, you can skip to the [Traffic Inspector](#traffic-inspector) section.
 :::
 
 The TypeScript code below runs a web server that randomly returns a success or a failure to any request it receives.
@@ -36,9 +47,9 @@ The TypeScript code below runs a web server that randomly returns a success or a
 
   ```js
   const randomServerName = Math.floor(Math.random() * 900 + 100).toString();
-  
+
   Deno.serve({'hostname': '0.0.0.0', 'port': 80 }, handler);
-  
+
   async function handler(request: Request): Promise<Response> {
     if (Math.random() > 0.5) {
       const msg = 'Server ' + randomServerName + ' at time ' + Date.now() + ' has success response to request at ' + request.url;
@@ -59,17 +70,17 @@ The TypeScript code below runs a web server that randomly returns a success or a
   docker run --platform=linux/amd64 --rm -p 7777:80 --network=ngrokTest -v ".:/app" -w "/app" --name="api" denoland/deno:alpine-2.1.3 sh -c  "deno run --allow-net --unstable-detect-cjs ./server.ts"
   ```
 
-  This command runs the Docker image for Deno, exposing the API locally on port 7777, names the Docker container `api`, and removes the container upon exiting with `--rm`. You can now browse to http://localhost:7777 to test the app.
+  This command runs the Docker image for Deno, exposing the API locally on port 7777, names the Docker container `api`, and removes the container upon exiting with `--rm`. You can now browse to http://localhost:7777 to test the API.
 
 :::note
-The app uses a named network, `ngrokTest`, so that in the next section, you can start the ngrok Agent on the same network as the app.
+The API uses a named network, `ngrokTest`, so that in the next section, you can start the ngrok Agent on the same network as the API.
 :::
 
-![Simple web app](./img/appConsole.webp)
+![Simple web API](./img/appConsole.webp)
 
-## Publish your app with ngrok
+## Publish your API with ngrok
 
-Now that the app is running locally, you can expose it on a public URL, using the [Docker image for the ngrok agent](https://hub.docker.com/r/ngrok/ngrok).
+Now that the API is running locally, you can expose it on a public URL, using the [Docker image for the ngrok agent](https://hub.docker.com/r/ngrok/ngrok).
 
 - Replace the authentication token in the command below with your token from the [ngrok dashboard](https://dashboard.ngrok.com/get-started/your-authtoken), and run the command in a new terminal.
 
@@ -77,20 +88,20 @@ Now that the app is running locally, you can expose it on a public URL, using th
   docker run -it --rm --platform=linux/amd64 --network=ngrokTest -e NGROK_AUTHTOKEN=Y0urS3cr3tK3y ngrok/ngrok:3.22.0-alpine-amd64 http http://api
   ```
 
-  This command starts the ngrok agent locally and connects it to the app running on container `api`.
+  This command starts the ngrok agent locally and connects it to the API running on container `api`.
 
 - Browse to the URL labeled `Forwarding`, which should look like this in your terminal: `https://eb45-79-127-145-72.ngrok-free.app`.
 - You can now see your request going from the browser to the ngrok agent you're running in one terminal window and then to the Deno API in your other terminal window.
 
 ![Published API](./img/ngrokAgent.webp)
 
-## Monitor your app
+## Monitor your API
 
 You can monitor web servers in two ways in ngrok, with the Traffic Inspector and with Events.
 
-The Traffic Inspector is a filterable list of your API's requests and responses, available on the ngrok dashboard. The Traffic Inspector is useful for viewing error details and for replaying requests to test new policies and bug fixes. The inspector is a manual way to monitor your app. Request data is kept for three days (or for 90 days as a paid extra).
+The Traffic Inspector is a filterable list of your API's requests and responses, available on the ngrok dashboard. The Traffic Inspector is useful for viewing error details and for replaying requests to test new policies and bug fixes. The inspector is a manual way to monitor your API. Request data is kept for three days (or for 90 days as a paid extra).
 
-An event is the data that ngrok provides about a request, which is exported to a dedicated monitoring platform. Events offer an automated means of monitoring your app. Events are also the only way for your team to get automatic error alerts (notifications) instead of constantly having to check for errors on a dashboard.
+An event is the data that ngrok provides about a request, which is exported to a dedicated monitoring platform. Events offer an automated means of monitoring your API. Events are also the only way for your team to get automatic error alerts (notifications) instead of constantly having to check for errors on a dashboard.
 
 At the time of writing, ngrok allows you to export events only to AWS, Azure, and Datadog. We do not support event exports to OpenTelemetry or custom URLs, such as self-hosted servers, so you have to use a paid cloud service. You can't perform custom processing or use Elastic, Prometheus, Splunk, or alternative monitoring apps.
 
@@ -100,14 +111,14 @@ In this section, you'll learn to use the Traffic Inspector and work through an e
 
 - Browse to the ngrok [Traffic Inspector](https://dashboard.ngrok.com/traffic-inspector) on your ngrok account dashboard.
 
-  The list of recent requests provides you with basic information, such as the time, origin, destination, duration, and response code of calls to your app.
-  
+  The list of recent requests provides you with basic information, such as the time, origin, destination, duration, and response code of calls to your API.
+
 - You can filter requests by these fields, for instance, to show only server error responses and not successes.
 
   ![Traffic Inspector](./img/trafficInspector.webp)
 
 :::note
-Requests made to the app at http://localhost:7777 will not be displayed in the inspector. Only requests that pass through the ngrok endpoint, and therefore the ngrok agent running in Docker, will be known to ngrok.
+Requests made to the API at http://localhost:7777 will not be displayed in the inspector. Only requests that pass through the ngrok endpoint, and therefore the ngrok agent running in Docker, will be known to ngrok.
 :::
 
 To see more details about a request or to replay it, you need to enable full capture, which permits ngrok to store up to 10 KB of your request data.
@@ -135,7 +146,7 @@ To see more details about a request or to replay it, you need to enable full cap
 
   ![Replay with changes](./img/replayChanges2.webp)
 
-Replaying requests is useful for debugging. For example, you could find the request that caused an error in your app, deploy a fix for the app, and replay the request to confirm you've fixed the issue.
+Replaying requests is useful for debugging. For example, you could find the request that caused an error in your API, deploy a fix for the API, and replay the request to confirm you've fixed the issue.
 
 ### Traffic Policy example
 
@@ -143,7 +154,7 @@ You can also replay requests to test new [traffic policies](https://ngrok.com/do
 
 You can use policies to request passwords, block malicious traffic, route requests, rewrite URLs, and respond with custom content. If you use a custom permanent domain name (called a [Cloud Endpoint](https://ngrok.com/docs/universal-gateway/cloud-endpoints)) on ngrok, you can set a policy for every agent that uses that domain. Otherwise, for temporary [Agent Endpoints](https://ngrok.com/docs/universal-gateway/agent-endpoints), you can set a traffic policy inside each agent individually.
 
-Let's look at rate limiting as an example of a traffic policy. Rate limiting is one of the many [Traffic Policy actions](https://ngrok.com/docs/traffic-policy/actions/rate-limit) available. At this stage of the guide, you could send unlimited requests to the test app you've created. Let's change that to allow only one request a minute.
+Let's look at rate limiting as an example of a traffic policy. Rate limiting is one of the many [Traffic Policy actions](https://ngrok.com/docs/traffic-policy/actions/rate-limit) available. At this stage of the guide, you could send unlimited requests to the test API you've created. Let's change that to allow only one request a minute.
 
 In order to test policies, you need to be able to re-use the same URL, which isn't possible if you keep using the temporary URLs that ngrok generates each time you restart an agent. So let's create a permanent URL:
 
@@ -171,8 +182,8 @@ In order to test policies, you need to be able to re-use the same URL, which isn
   docker run -it --rm --platform=linux/amd64 --network=ngrokTest -v ".:/app" -w "/app" -e NGROK_AUTHTOKEN=Y0urS3cr3t ngrok/ngrok:3.22.0-alpine-amd64 http http://api --traffic-policy-file policy.yml --url https://massive-pelican-arguably.ngrok-free.app
   ```
 
-- Browse to the app URL and refresh the page a few times. Notice that the page stops responding.
-- On the ngrok Traffic Inspector page, note that the error code **`429`** (rate limit) was returned and that the duration of the request was instant and caused no load on your app.
+- Browse to the API URL and refresh the page a few times. Notice that the page stops responding.
+- On the ngrok Traffic Inspector page, note that the error code **`429`** (rate limit) was returned and that the duration of the request was instant and caused no load on your API.
 
   ![Rate limit](./img/rateLimit.webp)
 
@@ -227,7 +238,7 @@ Before adding an event subscription, you need somewhere to send events:
 
 - In ngrok, click **Done** and **Save**.
 
-- Refresh your ngrok app page a few times so that new requests are logged in Datadog, some with OK responses and some with errors.
+- Refresh your ngrok API page a few times so that new requests are logged in Datadog, some with OK responses and some with errors.
 
 ## Create a dashboard
 
@@ -288,13 +299,13 @@ To complete your monitoring system, you need to set up an alert that is pushed t
 
   ![Datadog notify](./img/datadogNotify.webp)
 
-- Save the monitor. Now, after a delay and once you've refreshed the ngrok endpoint for your app, you will receive a notification if an error occurs.
+- Save the monitor. Now, after a delay and once you've refreshed the ngrok endpoint for your API, you will receive a notification if an error occurs.
 
 If you want to use a different notification system to ntfy, consider using email, Slack, Discord, WhatsApp, Threema, or Webhook.site.
 
 ## Further reading
 
-You now know how to use ngrok to provide any public web app or API with Docker, how to monitor requests to the app in ngrok directly, how to export data to Datadog, and how to create dashboards and alerts.
+You now know how to use ngrok to provide any public web API with Docker, how to monitor requests to the API in ngrok directly, how to export data to Datadog, and how to create dashboards and alerts.
 
 To learn more about any of these concepts, consult the following:
 
