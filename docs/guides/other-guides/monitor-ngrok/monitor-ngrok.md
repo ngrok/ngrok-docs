@@ -280,7 +280,7 @@ In terms of user security, you need to monitor anything that indicates attackers
 
 ### Errors
 
-Errors are the simplest category to monitor. Generally, if your API returns status codes in the 500 range instead of the 200 range, it's important. Create an alert from Datadog monitors to ntfy or Slack for all errors. If a 500 error occurs, use the ngrok replay function to see if it can be reproduced on a QA server, and send the bug to your developers to fix it.
+Errors are the simplest category to monitor. Generally, if your API returns status codes in the 500 range instead of the 200 range, it needs fixing. Create an alert from Datadog monitors to ntfy or Slack for all errors. If a 500 error occurs, use the ngrok replay function to see if it can be reproduced on a QA server, and send the bug to your developers to fix it.
 
 ### Performance
 
@@ -288,9 +288,9 @@ Performance metrics need monitoring but don't need to trigger alerts, unless you
 
 Unlike with audit events, there is only one traffic event to monitor: [request complete](https://ngrok.com/docs/obs/events/reference/#http-request-complete). This event, with multiple fields, as well as the request and response bodies in the log, is enough to construct any metrics you need.
 
-General statistics practices apply to metric monitoring. Use medians instead of averages, as extreme values disproportionately affect averages.
+General statistics practices apply to metric monitoring. Use medians instead of arithmetic averages, as extreme values disproportionately affect averages.
 
-For latency, keep an eye on the median duration of a request, as well as outliers. Separate requests by endpoint to identify which endpoints take excessive time and could be improved. For throughput, look at the median number of requests per minute. For both metrics, also consider monitoring variance in addition to averages. Even if an endpoint has a quick average response, if the response time is highly variable — with many lower and higher than average durations — your users will probably be getting annoyed.
+For latency, keep an eye on the median duration of a request, as well as outliers. Separate requests by endpoint to identify which endpoints take excessive time and could be improved. For throughput, look at the median number of requests per minute. For both metrics, also consider monitoring variance in addition to averages. Even if an endpoint has a quick average response time, if the duration is highly variable — with many lower and higher than average durations — your users will probably be getting annoyed.
 
 ## Further reading
 
