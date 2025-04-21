@@ -304,6 +304,8 @@ const sidebars = {
 							},
 							items: [
 								"k8s/guides/how-to/request-routing",
+								"k8s/guides/how-to/tls-routing",
+								"k8s/guides/how-to/tcp-routing",
 								"k8s/guides/how-to/manipulate-headers",
 								"k8s/guides/how-to/redirects",
 								"k8s/guides/how-to/rewrite-url",
