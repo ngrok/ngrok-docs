@@ -10,11 +10,6 @@ TODO
 explain what monitors we choose and why. in next steps section give example of others monitors to create
   definitely latency
   gareth: health check, error rates, throughput
-explain we're using datadog but you can also use...
-
-docker run --platform=linux/amd64 --rm -p 7777:80 --network=ngrokTest -v ".:/app" -w "/app" --name="api" denoland/deno:alpine-2.1.3 sh -c  "deno run --allow-net --unstable-detect-cjs ./server.ts"
-
-
 
 ## Introduction
 
@@ -26,7 +21,7 @@ Whether you're an existing ngrok user looking to make your API more robust or a 
 
 This guide assumes you already have [an ngrok account](https://dashboard.ngrok.com/signup) (a free account is sufficient) and have [Docker installed](https://docs.docker.com/get-started/get-docker) on your computer.
 
-You'll use the [sample API](https://github.com/ngrok-samples/api-demo) in this tutorial. Even if you have an existing API you want to monitor, you can test the sample before making changes to your real one.
+You'll use the [sample API](https://github.com/ngrok-samples/api-demo) in this tutorial. Even if you have an existing API you want to monitor, you can test the sample before making changes to your real API.
 
 ## Start the sample API to monitor
 
@@ -52,9 +47,9 @@ Now that the API is running locally, you can expose it on a public URL, using th
 
 - Replace the authentication token in the command below with your token from the [ngrok dashboard](https://dashboard.ngrok.com/get-started/your-authtoken), and run the command in a new terminal.
 
-```sh
-docker run -it --rm --platform=linux/amd64 --network=ngrokTest -e NGROK_AUTHTOKEN=Y0urS3cr3tK3y ngrok/ngrok:3.22.0-alpine-amd64 http http://api
-```
+  ```sh
+  docker run -it --rm --platform=linux/amd64 --network=ngrokTest -e NGROK_AUTHTOKEN=Y0urS3cr3tK3y ngrok/ngrok:3.22.0-alpine-amd64 http http://api
+  ```
 
 This command starts the ngrok agent locally and connects it to the API running on container `api`.
 
@@ -122,7 +117,9 @@ You can also replay requests to test new [traffic policies](https://ngrok.com/do
 
 You can use policies to request passwords, block malicious traffic, route requests, rewrite URLs, and respond with custom content. If you use a custom permanent domain name (called a [Cloud Endpoint](https://ngrok.com/docs/universal-gateway/cloud-endpoints)) on ngrok, you can set a policy for every agent that uses that domain. Otherwise, for temporary [Agent Endpoints](https://ngrok.com/docs/universal-gateway/agent-endpoints), you can set a Traffic Policy inside each agent individually.
 
-Let's look at rate limiting as an example of a Traffic Policy. Rate limiting is one of the many [Traffic Policy actions](https://ngrok.com/docs/traffic-policy/actions/rate-limit) available. At this stage of the guide, you could send unlimited requests to the test API you've created. Let's change that to allow only one request a minute.
+Let's look at rate limiting as an example of a Traffic Policy. Rate limiting is one of the many [Traffic Policy actions](https://ngrok.com/docs/traffic-policy/actions/rate-limit) available. You can rate limit your login page to make password guessing tedious for hackers, or rate limit SMS requests to prevent automated attacks that try to incur massive costs to your business.
+
+At this stage of the guide, you could send unlimited requests to the test API you've created. Let's change that to allow only one request a minute.
 
 In order to test policies, you need to be able to re-use the same URL, which isn't possible if you keep using the temporary URLs that ngrok generates each time you restart an agent. So let's create a permanent URL:
 
@@ -160,8 +157,6 @@ In order to test policies, you need to be able to re-use the same URL, which isn
 
   ![Replay after rate limit adjustment](./img/replayLimit.webp)
 
-You can rate limit your login page to make password guessing tedious for hackers, or rate limit OTP SMS requests to prevent automated attacks that try to incur massive costs to your business.
-
 ## Monitor events
 
 In this section, you'll learn how to export ngrok [events](https://ngrok.com/docs/obs/events) to the Datadog monitoring service.
@@ -170,7 +165,7 @@ There are two [types of events](https://ngrok.com/docs/obs/events/reference): st
 
 Before adding an event subscription, you need somewhere to send events:
 
-- Sign up for a free [Datadog](https://www.datadoghq.com) trial account.
+- Sign up for a [Datadog](https://www.datadoghq.com) trial account. (You will eventually need a paid Datadog plan to continue using logs and monitors.)
 
   You can enter anonymous dummy values instead of your personal information for all the Datadog registration fields except your email address, which you need to confirm. You also can't skip the third step of the signup process, in which you create a Datadog agent somewhere.
 
@@ -208,7 +203,7 @@ Before adding an event subscription, you need somewhere to send events:
 
 - In ngrok, click **Done** and **Save**.
 
-- Refresh your ngrok API page a few times so that new requests are logged in Datadog, some with OK responses and some with errors.
+- Refresh your ngrok API page a few times so that new requests are logged in Datadog.
 
 ## Create a dashboard
 
@@ -239,11 +234,13 @@ Your new widget will be available in the dashboard, allowing your support staff 
 
 ![Datadog custom dashboard](./img/datadogCustomDashboard.webp)
 
+Since the sample API never returns errors, an easy way to test this errors-widget is to stop the sample API Docker container and then try to browse to the site on the public ngrok endpoint.
+
 If you want to create widgets for other log information, you can see which fields are available by reading the JSON of any event you click on in the log inspector.
 
 ## Create a notification
 
-To complete your monitoring system, you need to set up an alert that is pushed to your email or mobile app when an error occurs by adding a webhook integration to Datadog. Webhooks provide a way for you to send POST requests to https://ntfy.sh, a free notification service.
+To complete your monitoring system, you need to set up an alert that is pushed to your email or mobile app when an error occurs by adding a webhook integration to Datadog. This allows your support team to be notificed of errors, instead of having to repeatedly check the dashboard. Webhooks provide a way for you to send POST requests to https://ntfy.sh, a free notification service.
 
 - In Datadog, browse to **Integrations > Add integration > Webhooks**.
 
