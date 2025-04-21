@@ -24,7 +24,7 @@ Whether you're an existing ngrok user looking to make your API more robust or a 
 
 ## Prerequisites
 
-This guide assumes you already have [an ngrok account](https://dashboard.ngrok.com/signup) (a free account is sufficient), have been through one of the [getting started guides](/guides/api-gateway), and have [Docker installed](https://docs.docker.com/get-started/get-docker) on your computer.
+This guide assumes you already have [an ngrok account](https://dashboard.ngrok.com/signup) (a free account is sufficient) and have [Docker installed](https://docs.docker.com/get-started/get-docker) on your computer.
 
 You'll use the [sample API](https://github.com/ngrok-samples/api-demo) in this tutorial. Even if you have an existing API you want to monitor, you can test the sample before making changes to your real one.
 
@@ -35,7 +35,7 @@ Let's start the sample API. Open a terminal and run the commands below.
 ```sh
 docker network create ngrokTest
 
-docker run --init --platform=linux/amd64 --rm -p 4000:4000 --network=ngrokTest --name="api" joelatngrok/api-demo
+docker run --init --platform=linux/amd64 --rm -p 4000:80 --network=ngrokTest --name="api" -e PORT=80 joelatngrok/api-demo
 ```
 
 This command runs the Docker sample API container, exposing the API locally on port 4000, names the Docker container `api`, and removes the container upon exiting with `--rm`. You can now browse to http://localhost:4000 to test the API.
@@ -52,11 +52,11 @@ Now that the API is running locally, you can expose it on a public URL, using th
 
 - Replace the authentication token in the command below with your token from the [ngrok dashboard](https://dashboard.ngrok.com/get-started/your-authtoken), and run the command in a new terminal.
 
-  ```sh
-  docker run -it --rm --platform=linux/amd64 --network=ngrokTest -e NGROK_AUTHTOKEN=Y0urS3cr3tK3y ngrok/ngrok:3.22.0-alpine-amd64 http http://api
-  ```
+```sh
+docker run -it --rm --platform=linux/amd64 --network=ngrokTest -e NGROK_AUTHTOKEN=Y0urS3cr3tK3y ngrok/ngrok:3.22.0-alpine-amd64 http http://api
+```
 
-  This command starts the ngrok agent locally and connects it to the API running on container `api`.
+This command starts the ngrok agent locally and connects it to the API running on container `api`.
 
 - Browse to the URL labeled `Forwarding`, which should look like this in your terminal: `https://eb45-79-127-145-72.ngrok-free.app`.
 - You can now see your request going from the browser to the ngrok agent you're running in one terminal window and then to the API in your other terminal window.
@@ -126,7 +126,7 @@ Let's look at rate limiting as an example of a Traffic Policy. Rate limiting is 
 
 In order to test policies, you need to be able to re-use the same URL, which isn't possible if you keep using the temporary URLs that ngrok generates each time you restart an agent. So let's create a permanent URL:
 
-- Browse to the **Domains** page in the ngrok sidebar. If you're using a free account, register for your free domain, like `massive-pelican-arguably.ngrok-free.app`. If you're using a paid account, create a new domain for this test.
+- Browse to the **Domains** page in the ngrok sidebar. If you're using a free account, register for your free domain with a random name, like `massive-pelican-arguably.ngrok-free.app`. If you're using a paid account, create a new domain for this test.
 - Next, you need to stop and restart the ngrok container using a Traffic Policy.
 - Stop the ngrok Docker container in the terminal with <kbd>ctrl+c</kbd>.
 - Create a file named `policy.yml` with the code below.
@@ -159,6 +159,8 @@ In order to test policies, you need to be able to re-use the same URL, which isn
 - In the Traffic Inspector, click on one of the **`429`** events, then click **Replay**. Note that the request now responds without error because the rate limit has been increased.
 
   ![Replay after rate limit adjustment](./img/replayLimit.webp)
+
+You can rate limit your login page to make password guessing tedious for hackers, or rate limit OTP SMS requests to prevent automated attacks that try to incur massive costs to your business.
 
 ## Monitor events
 
