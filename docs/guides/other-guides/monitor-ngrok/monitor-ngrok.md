@@ -149,14 +149,14 @@ Replaying requests is useful for debugging. For example, you could find the requ
 
 You can also replay requests to test new [traffic policies](https://ngrok.com/docs/traffic-policy). ngrok applies the Traffic Policy rules in effect at the current time of replay, which may be different from the rules that were in effect when the original request was received.
 
-You can use policies to request passwords, block malicious traffic, route requests, rewrite URLs, and respond with custom content. If you use a custom permanent domain name (called a [Cloud Endpoint](https://ngrok.com/docs/universal-gateway/cloud-endpoints)) on ngrok, you can set a policy for every agent that uses that domain. Otherwise, for temporary [Agent Endpoints](https://ngrok.com/docs/universal-gateway/agent-endpoints), you can set a traffic policy inside each agent individually.
+You can use policies to request passwords, block malicious traffic, route requests, rewrite URLs, and respond with custom content. If you use a custom permanent domain name (called a [Cloud Endpoint](https://ngrok.com/docs/universal-gateway/cloud-endpoints)) on ngrok, you can set a policy for every agent that uses that domain. Otherwise, for temporary [Agent Endpoints](https://ngrok.com/docs/universal-gateway/agent-endpoints), you can set a Traffic Policy inside each agent individually.
 
-Let's look at rate limiting as an example of a traffic policy. Rate limiting is one of the many [Traffic Policy actions](https://ngrok.com/docs/traffic-policy/actions/rate-limit) available. At this stage of the guide, you could send unlimited requests to the test API you've created. Let's change that to allow only one request a minute.
+Let's look at rate limiting as an example of a Traffic Policy. Rate limiting is one of the many [Traffic Policy actions](https://ngrok.com/docs/traffic-policy/actions/rate-limit) available. At this stage of the guide, you could send unlimited requests to the test API you've created. Let's change that to allow only one request a minute.
 
 In order to test policies, you need to be able to re-use the same URL, which isn't possible if you keep using the temporary URLs that ngrok generates each time you restart an agent. So let's create a permanent URL:
 
 - Browse to the **Domains** page in the ngrok sidebar. If you're using a free account, register for your free domain, like `massive-pelican-arguably.ngrok-free.app`. If you're using a paid account, create a new domain for this test.
-- Next, you need to stop and restart the ngrok container using a traffic policy.
+- Next, you need to stop and restart the ngrok container using a Traffic Policy.
 - Stop the ngrok Docker container in the terminal with <kbd>ctrl+c</kbd>.
 - Create a file named `policy.yml` with the code below.
 
