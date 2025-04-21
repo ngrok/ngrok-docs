@@ -15,9 +15,7 @@ Whether you're an existing ngrok user looking to make your API more robust or a 
 
 This guide assumes you already have [an ngrok account](https://dashboard.ngrok.com/signup) (a free account is sufficient) and have [Docker installed](https://docs.docker.com/get-started/get-docker) on your computer.
 
-You'll use the [sample API](https://github.com/ngrok-samples/api-demo) in this tutorial. Even if you have an existing API you want to monitor, you can test the sample before making changes to your real API.
-
-If you have no interest in running the sample app and immediately want to work on your live app, jump ahead to the section [monitor your API](#monitor-your-api).
+You'll use the [ngrok sample API](https://github.com/ngrok-samples/api-demo) in this tutorial. Even if you have an existing API you want to monitor, you can test the sample before making changes to your real API. If you have no interest in running the sample app and immediately want to work on your live app, jump ahead to the section: [monitor your API](#monitor-your-api).
 
 ## Start the sample API to monitor
 
@@ -268,16 +266,31 @@ If you want to use a different notification system to ntfy, consider using email
 
 ## Next steps: What to monitor?
 
-explain what monitors we choose and why. in next steps section give example of others monitors to create
-  definitely latency
-  gareth: health check, error rates, throughput
+Now that you've seen how to connect your API traffic to Datadog, explore logs, create a dashboard with custom widgets, and send yourself alerts, let's discuss what exactly you should be monitoring.
+
+There are three categories to consider: security, errors, and performance.
+
+### Security
+
+You need to monitor the security of your own infrastructure, as well as attempts to hack users' accounts.
+
+As mentioned earlier, ngrok emits [audit events](https://ngrok.com/docs/obs/events/reference/#audit-events) for any security changes. You should set up alerts for any changes to API keys, domains, and SSH certificates — anything that indicates attackers might gain access to your infrastructure. Events like stopping and starting agents and tunnels are likely to happen frequently and so don't need alerts, especially when running Kubernetes and multiple containers. You still might want to add widgets to monitor these events on a dashboard however, as surges in activity might indicate problems with your system. Additionally, you can add monitors that trigger alerts when activity passes a certain threshold.
+
+In terms of user security, you need to monitor anything that indicates attackers might be accessing a user's account. This includes requests from different country IP addresses in a short time (though this has become common with the increasing use of VPNs), a high rate of failed login attempts, or an anomalous pattern of request access. In order to make a monitoring rule that recognizes anomalies, you first need to track the average number of requests to various endpoints in your API made by the average user.
+
+### Errors
+
+Errors are the simplest category to monitor. Generally, if your API returns status codes in the 500 range instead of the 200 range, it's important. Create an alert from Datadog monitors to ntfy or Slack for all errors. If a 500 error occurs, use the ngrok replay function to see if it can be reproduced on a QA server, and send the bug to your developers to fix it.
+
+### Performance
+
+Performance metrics don't need alerts, unless your service experience a sudden spike in usage or growth. The most import things to monitor are: uptime, latency (response time), and throughput.
+
 
 
 ## Further reading
 
-You now know how to use ngrok to provide any public web API with Docker, how to monitor requests to the API in ngrok directly, how to export data to Datadog, and how to create dashboards and alerts.
-
-To learn more about any of these concepts, consult the following:
+To learn more about any of the concepts in this guide, consult the following articles:
 
 - The [Get Docker](https://docs.docker.com/get-started/get-docker) guide
 - The guide to [getting started with Docker for ngrok](https://dashboard.ngrok.com/get-started/setup/docker)
