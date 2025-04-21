@@ -284,9 +284,13 @@ Errors are the simplest category to monitor. Generally, if your API returns stat
 
 ### Performance
 
-Performance metrics don't need alerts, unless your service experience a sudden spike in usage or growth. The most import things to monitor are: uptime, latency (response time), and throughput.
+Performance metrics need monitoring but don't need to trigger alerts, unless your service experiences a sudden spike in usage or growth. The most import things to monitor are: uptime, latency (response time), and throughput.
 
+Unlike with audit events, there is only one traffic event to monitor: [request complete](https://ngrok.com/docs/obs/events/reference/#http-request-complete). This event, with multiple fields, as well as the request and response bodies in the log, is enough to construct any metrics you need.
 
+General statistics practices apply to metric monitoring. Use medians instead of averages, as extreme values disproportionately affect averages.
+
+For latency, keep an eye on the median duration of a request, as well as outliers. Separate requests by endpoint to identify which endpoints take excessive time and could be improved. For throughput, look at the median number of requests per minute. For both metrics, also consider monitoring variance in addition to averages. Even if an endpoint has a quick average response, if the response time is highly variable — with many lower and higher than average durations — your users will probably be getting annoyed.
 
 ## Further reading
 
