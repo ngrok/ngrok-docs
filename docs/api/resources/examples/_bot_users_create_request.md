@@ -1,7 +1,5 @@
 <!-- Code generated for API Clients. DO NOT EDIT. -->
-
 #### Example Request
-
 ```bash
 curl \
 -X POST \
@@ -10,4 +8,3 @@ curl \
 -H "Ngrok-Version: 2" \
 -d '{"name":"new bot user from API"}' \
 https://api.ngrok.com/bot_users
-```

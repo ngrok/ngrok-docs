@@ -1,30 +1,30 @@
 <!-- Code generated for API Clients. DO NOT EDIT. -->
-
 #### Example Response
-
 ```json
 {
-	"next_page_uri": null,
-	"ssh_user_certificates": [
-		{
-			"certificate": "ecdsa-sha2-nistp256-cert-v01@openssh.com AAAAKGVjZHNhLXNoYTItbmlzdHAyNTYtY2VydC12MDFAb3BlbnNzaC5jb20AAAAgROELCJDwxpmnyBDu4AdY8L0d+MkyxU7LsCWcQuq99R4AAAAIbmlzdHAyNTYAAABBBK58lFzmWlDimDtBz78wVT4oauA8PjY0CiXTCEIsBNC6UwOJvZ0jdSaYNhDaa7dRV84DfBb/gKzqlXC7cVMZjl0AAAAAAAAAAAAAAAEAAAAhc3VjcnRfMnVxa2lobFAzNlpuQmJVeG1TRGJkSW8xT1VUAAAAFAAAAAhlYzItdXNlcgAAAARyb290AAAAAGfj0cQAAAAAaFp4xAAAAAAAAAAoAAAACnBlcm1pdC1wdHkAAAAAAAAADnBlcm1pdC11c2VyLXJjAAAAAAAAAAAAAAAzAAAAC3NzaC1lZDI1NTE5AAAAIJqn0R4hEmmw1Mmbyzu9nwDDBd4pEP8NRl1sYbgYsSJ0AAAAUwAAAAtzc2gtZWQyNTUxOQAAAECXSM1KkywJ5pDsQ/LUTxH5MzBJo28LuMuOcHzCdAj24RnHsdY/SXGqyrq+UUGLPPQmnF9yQYunP6bR6ZB0YPAI sucrt_2uqkihlP36ZnBbUxmSDbdIo1OUT",
-			"created_at": "2025-03-26T10:07:00Z",
-			"critical_options": {},
-			"description": "temporary access to staging machine",
-			"extensions": {
-				"permit-pty": "",
-				"permit-user-rc": ""
-			},
-			"id": "sucrt_2uqkihlP36ZnBbUxmSDbdIo1OUT",
-			"key_type": "ecdsa",
-			"principals": ["ec2-user", "root"],
-			"public_key": "ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBK58lFzmWlDimDtBz78wVT4oauA8PjY0CiXTCEIsBNC6UwOJvZ0jdSaYNhDaa7dRV84DfBb/gKzqlXC7cVMZjl0= alan@work-laptop",
-			"ssh_certificate_authority_id": "sshca_2uqkihOvk1Q29wQ5tyoowLRlmv3",
-			"uri": "https://api.ngrok.com/ssh_user_certificates/sucrt_2uqkihlP36ZnBbUxmSDbdIo1OUT",
-			"valid_after": "2025-03-26T10:07:00Z",
-			"valid_until": "2025-06-24T10:07:00Z"
-		}
-	],
-	"uri": "https://api.ngrok.com/ssh_user_certificates"
+  "next_page_uri": null,
+  "ssh_user_certificates": [
+    {
+      "certificate": "ecdsa-sha2-nistp256-cert-v01@openssh.com AAAAKGVjZHNhLXNoYTItbmlzdHAyNTYtY2VydC12MDFAb3BlbnNzaC5jb20AAAAgSL1SKWQ1BX7rFnXH1LnpWU0/6c6rtUurSy2dmGa47ZYAAAAIbmlzdHAyNTYAAABBBK58lFzmWlDimDtBz78wVT4oauA8PjY0CiXTCEIsBNC6UwOJvZ0jdSaYNhDaa7dRV84DfBb/gKzqlXC7cVMZjl0AAAAAAAAAAAAAAAEAAAAhc3VjcnRfMnc1MUZNVkdzWWVBYncxWHJGWnNZTlNYc2laAAAAFAAAAAhlYzItdXNlcgAAAARyb290AAAAAGgHaqMAAAAAaH4RowAAAAAAAAAoAAAACnBlcm1pdC1wdHkAAAAAAAAADnBlcm1pdC11c2VyLXJjAAAAAAAAAAAAAAAzAAAAC3NzaC1lZDI1NTE5AAAAIFIB4158yJCSr+4D8wN/7uJOTiHQS0qtu8MUodEnq9AKAAAAUwAAAAtzc2gtZWQyNTUxOQAAAEBDwEzUwKVVSyftQ/2wFJElUVpNO82OslFWiv6TgL19xp9k2qskOF6dpsyfU1zJgevEoy3MLP/JMhERG80FxLQK sucrt_2w51FMVGsYeAbw1XrFZsYNSXsiZ",
+      "created_at": "2025-04-22T10:08:35Z",
+      "critical_options": {},
+      "description": "temporary access to staging machine",
+      "extensions": {
+        "permit-pty": "",
+        "permit-user-rc": ""
+      },
+      "id": "sucrt_2w51FMVGsYeAbw1XrFZsYNSXsiZ",
+      "key_type": "ecdsa",
+      "principals": [
+        "ec2-user",
+        "root"
+      ],
+      "public_key": "ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBK58lFzmWlDimDtBz78wVT4oauA8PjY0CiXTCEIsBNC6UwOJvZ0jdSaYNhDaa7dRV84DfBb/gKzqlXC7cVMZjl0= alan@work-laptop",
+      "ssh_certificate_authority_id": "sshca_2w51FGbmNguFK23uuFttUm85sPU",
+      "uri": "https://api.ngrok.com/ssh_user_certificates/sucrt_2w51FMVGsYeAbw1XrFZsYNSXsiZ",
+      "valid_after": "2025-04-22T10:08:35Z",
+      "valid_until": "2025-07-21T10:08:35Z"
+    }
+  ],
+  "uri": "https://api.ngrok.com/ssh_user_certificates"
 }
-```

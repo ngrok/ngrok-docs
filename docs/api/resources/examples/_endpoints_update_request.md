@@ -1,7 +1,5 @@
 <!-- Code generated for API Clients. DO NOT EDIT. -->
-
 #### Example Request
-
 ```bash
 curl \
 -X PATCH \
@@ -9,5 +7,4 @@ curl \
 -H "Content-Type: application/json" \
 -H "Ngrok-Version: 2" \
 -d '{"description":"Sample Cloud Endpoint"}' \
-https://api.ngrok.com/endpoints/ep_2uqkie2Mo76bks8lItHfFrVZGbE
-```
+https://api.ngrok.com/endpoints/ep_2w51F1m3RTrU6Y6JFwi1ZuF1Ull
