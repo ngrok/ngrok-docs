@@ -1,7 +1,5 @@
 <!-- Code generated for API Clients. DO NOT EDIT. -->
-
 #### Example Request
-
 ```bash
 curl \
 -X PUT \
@@ -9,5 +7,4 @@ curl \
 -H "Content-Type: application/json" \
 -H "Ngrok-Version: 2" \
 -d '{"enabled":true,"value":"{\"on_tcp_connect\":[{\"name\":\"Block IP\",\"expressions\":[\"conn.client_ip == '192.0.2.0'\"],\"actions\":[{\"type\":\"deny\"}]}]}"}' \
-https://api.ngrok.com/edges/tcp/edgtcp_2uqkjB4JDp12aHuStlKmcbMAY0m/traffic_policy
-```
+https://api.ngrok.com/edges/tcp/edgtcp_2w51Ft9zVp33Oh0UssxecjQGE1m/traffic_policy

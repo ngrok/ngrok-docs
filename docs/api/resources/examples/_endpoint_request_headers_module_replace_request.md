@@ -1,7 +1,5 @@
 <!-- Code generated for API Clients. DO NOT EDIT. -->
-
 #### Example Request
-
 ```bash
 curl \
 -X PUT \
@@ -9,5 +7,4 @@ curl \
 -H "Content-Type: application/json" \
 -H "Ngrok-Version: 2" \
 -d '{"add":{"X-Baz":"qux","X-Foo":"bar"},"remove":["X-Internal-Header"]}' \
-https://api.ngrok.com/endpoint_configurations/ec_2uqkibl9X1nUljEi1j7ZsP02NXT/request_headers
-```
+https://api.ngrok.com/endpoint_configurations/ec_2w51F9tQdOYN1ocf1LxpxV3xpdt/request_headers

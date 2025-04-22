@@ -1,7 +1,5 @@
 <!-- Code generated for API Clients. DO NOT EDIT. -->
-
 #### Example Request
-
 ```bash
 curl \
 -X PUT \
@@ -9,5 +7,4 @@ curl \
 -H "Content-Type: application/json" \
 -H "Ngrok-Version: 2" \
 -d '{"error_threshold_percentage":0.2,"num_buckets":5,"rolling_window":300,"tripped_duration":120,"volume_threshold":20}' \
-https://api.ngrok.com/endpoint_configurations/ec_2uqkibl9X1nUljEi1j7ZsP02NXT/circuit_breaker
-```
+https://api.ngrok.com/endpoint_configurations/ec_2w51F9tQdOYN1ocf1LxpxV3xpdt/circuit_breaker
