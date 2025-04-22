@@ -203,9 +203,7 @@ Before adding an event subscription, you need somewhere to send events:
 
 Now that events are being sent to Datadog, you can set up visualizations and notifications to allow your support team to monitor your API's performance.
 
-- In the Datadog site, browse to the **Dashboards > Dashboard List** page from the navigation panel. 
-
-- Click the **ngrok HTTP Events** item to view the default dashboard.
+- In the Datadog site, browse to the **Dashboards > Dashboard List** page from the navigation panel. Click the **ngrok HTTP Events** item to view the default dashboard.
 
   ![Datadog dashboard list](./img/datadogDashboardList.webp)
 
