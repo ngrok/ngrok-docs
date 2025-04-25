@@ -3330,6 +3330,14 @@
     </tr>
     <tr>
       <td>
+        <a id="ERR_NGROK_1233" href="/docs/errors/err_ngrok_1233">ERR_NGROK_1233</a>
+      </td>
+      <td class="pre-wrapped">
+        The email address <code>&lt;EMAIL&gt;</code> is already associated with an SSO Identity Provider connection. Please contact support: support@ngrok.com
+      </td>
+    </tr>
+    <tr>
+      <td>
         <a id="ERR_NGROK_1400" href="/docs/errors/err_ngrok_1400">ERR_NGROK_1400</a>
       </td>
       <td class="pre-wrapped">
@@ -5314,6 +5322,14 @@
     </tr>
     <tr>
       <td>
+        <a id="ERR_NGROK_2256" href="/docs/errors/err_ngrok_2256">ERR_NGROK_2256</a>
+      </td>
+      <td class="pre-wrapped">
+        The action <code>&lt;ACTION&gt;</code> is not available for your current plan. Please upgrade to <code>&lt;PLANS&gt;</code> to use this action.
+      </td>
+    </tr>
+    <tr>
+      <td>
         <a id="ERR_NGROK_3002" href="/docs/errors/err_ngrok_3002">ERR_NGROK_3002</a>
       </td>
       <td class="pre-wrapped">
@@ -5832,6 +5848,14 @@
     </tr>
     <tr>
       <td>
+        <a id="ERR_NGROK_3214" href="/docs/errors/err_ngrok_3214">ERR_NGROK_3214</a>
+      </td>
+      <td class="pre-wrapped">
+        exceeded maximum number of redirects <code>&lt;MAX&gt;</code>: <code>&lt;URLS&gt;</code>
+      </td>
+    </tr>
+    <tr>
+      <td>
         <a id="ERR_NGROK_3300" href="/docs/errors/err_ngrok_3300">ERR_NGROK_3300</a>
       </td>
       <td class="pre-wrapped">
@@ -6076,6 +6100,14 @@
       </td>
       <td class="pre-wrapped">
         Something went wrong with the WAF.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_3702" href="/docs/errors/err_ngrok_3702">ERR_NGROK_3702</a>
+      </td>
+      <td class="pre-wrapped">
+        The response was blocked by the WAF.
       </td>
     </tr>
     <tr>
@@ -7708,6 +7740,14 @@
       </td>
       <td class="pre-wrapped">
         The Endpoint <code>&lt;HOSTPORT&gt;</code> has both a Cloud Endpoint (<code>&lt;CLEPID&gt;</code>) and Endpoint Configuration (<code>&lt;TUNID&gt;</code>) configured.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_6029" href="/docs/errors/err_ngrok_6029">ERR_NGROK_6029</a>
+      </td>
+      <td class="pre-wrapped">
+        The traffic policy configured for cloud endpoint <code>&lt;CLEPID&gt;</code> is non-terminating.
       </td>
     </tr>
     <tr>
@@ -11070,6 +11110,14 @@
       </td>
       <td class="pre-wrapped">
         The provided cloud endpoint was invalid because pooling was set to disabled when another endpoint exists for this url.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_18018" href="/docs/errors/err_ngrok_18018">ERR_NGROK_18018</a>
+      </td>
+      <td class="pre-wrapped">
+        Supported protocols for kubernetes-bound endpoints are http, tls, and tcp. You provided <code>&lt;PROTO&gt;</code>.
       </td>
     </tr>
     <tr>
