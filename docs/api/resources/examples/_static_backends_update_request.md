@@ -9,5 +9,5 @@ curl \
 -H "Content-Type: application/json" \
 -H "Ngrok-Version: 2" \
 -d '{"address":"example.com:8080","metadata":"{\"environment\": \"production\"}","tls":{}}' \
-https://api.ngrok.com/backends/static/bkdsc_2w51FNwo0wnpfHGH32HQTskg1Os
+https://api.ngrok.com/backends/static/bkdsc_2wEztW3CWcOAwhGrPEBOjHa9Yba
 ```

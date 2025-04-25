@@ -7,5 +7,5 @@ curl \
 -X DELETE \
 -H "Authorization: Bearer {API_KEY}" \
 -H "Ngrok-Version: 2" \
-https://api.ngrok.com/ip_policy_rules/ipr_2w51FE8O369kCl9Ba5ZDvTv80hT
+https://api.ngrok.com/ip_policy_rules/ipr_2wEztQxEEdonHLkTs8QuXMw2lrq
 ```
