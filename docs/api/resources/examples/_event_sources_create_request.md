@@ -1,5 +1,7 @@
 <!-- Code generated for API Clients. DO NOT EDIT. -->
+
 #### Example Request
+
 ```bash
 curl \
 -X POST \
@@ -8,3 +10,4 @@ curl \
 -H "Ngrok-Version: 2" \
 -d '{"type":"ip_policy_updated.v0"}' \
 https://api.ngrok.com/event_subscriptions/esb_2w51FBmlCWE1IyHJ0rlX4yPBgEv/sources
+```

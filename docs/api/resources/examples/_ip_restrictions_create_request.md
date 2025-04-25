@@ -1,5 +1,7 @@
 <!-- Code generated for API Clients. DO NOT EDIT. -->
+
 #### Example Request
+
 ```bash
 curl \
 -X POST \
@@ -8,3 +10,4 @@ curl \
 -H "Ngrok-Version: 2" \
 -d '{"ip_policy_ids":["ipp_2w51FExXkf8DX7w7pbfHa3D5qNp"],"type":"dashboard"}' \
 https://api.ngrok.com/ip_restrictions
+```

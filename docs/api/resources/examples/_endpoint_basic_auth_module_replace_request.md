@@ -1,5 +1,7 @@
 <!-- Code generated for API Clients. DO NOT EDIT. -->
+
 #### Example Request
+
 ```bash
 curl \
 -X PUT \
@@ -8,3 +10,4 @@ curl \
 -H "Ngrok-Version: 2" \
 -d '{"allow_options":true,"auth_provider_id":"agent"}' \
 https://api.ngrok.com/endpoint_configurations/ec_2w51F9tQdOYN1ocf1LxpxV3xpdt/basic_auth
+```
