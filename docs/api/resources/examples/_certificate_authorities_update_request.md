@@ -1,5 +1,7 @@
 <!-- Code generated for API Clients. DO NOT EDIT. -->
+
 #### Example Request
+
 ```bash
 curl \
 -X PATCH \
@@ -8,3 +10,4 @@ curl \
 -H "Ngrok-Version: 2" \
 -d '{"description":"Internal Corporate Services Authority (Legacy)"}' \
 https://api.ngrok.com/certificate_authorities/ca_2w51F9UFky0H1LzPaF5v3iLjKak
+```

@@ -1,5 +1,7 @@
 <!-- Code generated for API Clients. DO NOT EDIT. -->
+
 #### Example Request
+
 ```bash
 curl \
 -X PATCH \
@@ -8,3 +10,4 @@ curl \
 -H "Ngrok-Version: 2" \
 -d '{"metadata":"{\"environment\": \"production\"}"}' \
 https://api.ngrok.com/backends/http_response/bkdhr_2w51FK0fQVBKJ51dVNaagfe3tvm
+```

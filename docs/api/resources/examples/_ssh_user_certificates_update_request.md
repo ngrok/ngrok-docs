@@ -1,5 +1,7 @@
 <!-- Code generated for API Clients. DO NOT EDIT. -->
+
 #### Example Request
+
 ```bash
 curl \
 -X PATCH \
@@ -8,3 +10,4 @@ curl \
 -H "Ngrok-Version: 2" \
 -d '{"description":"temporary access to staging machine for alan","metadata":"{\"user_email\": \"alan@example.com\"}"}' \
 https://api.ngrok.com/ssh_user_certificates/sucrt_2w51FMVGsYeAbw1XrFZsYNSXsiZ
+```

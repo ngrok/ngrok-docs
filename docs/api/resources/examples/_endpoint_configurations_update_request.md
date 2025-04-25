@@ -1,5 +1,7 @@
 <!-- Code generated for API Clients. DO NOT EDIT. -->
+
 #### Example Request
+
 ```bash
 curl \
 -X PATCH \
@@ -8,3 +10,4 @@ curl \
 -H "Ngrok-Version: 2" \
 -d '{"ip_policy":{"ip_policy_ids":["ipp_2w51CPNxJYG6CC6eZh93FUADDDV"]}}' \
 https://api.ngrok.com/endpoint_configurations/ec_2w51CQ5fddXDYlA92VB3QxmAweC
+```
