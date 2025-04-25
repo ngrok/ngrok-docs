@@ -1,5 +1,7 @@
 <!-- Code generated for API Clients. DO NOT EDIT. -->
+
 #### Example Request
+
 ```bash
 curl \
 -X POST \
@@ -8,3 +10,4 @@ curl \
 -H "Ngrok-Version: 2" \
 -d '{"description":"acme tls edge","hostports":["example.com:443"],"metadata":"{\"environment\": \"staging\"}"}' \
 https://api.ngrok.com/edges/tls
+```
