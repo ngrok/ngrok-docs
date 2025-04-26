@@ -32,28 +32,28 @@ When the Kubernetes operator creates `AgentEndpoint` resources for you by transl
 apiVersion: ngrok.k8s.ngrok.com/v1alpha1
 kind: NgrokTrafficPolicy
 metadata:
-	name: static-response
-	namespace: default
+  name: static-response
+  namespace: default
 spec:
-	policy:
-		on_http_request:
-		- name: example-rule
-			actions:
-			- type: custom-response
-				config:
-					content: Example response from traffic policy
-					headers:
-						content-type: text/plain
-					status_code: 200
+  policy:
+    on_http_request:
+    - name: example-rule
+      actions:
+      - type: custom-response
+        config:
+          content: Example response from traffic policy
+          headers:
+            content-type: text/plain
+          status_code: 200
 ---
 apiVersion: ngrok.k8s.ngrok.com/v1alpha1
 kind: CloudEndpoint
 metadata:
-	name: example-cloud-endpoint
+  name: example-cloud-endpoint
 spec:
-	poolingEnabled: true
-	url: https://example-cloud-endpoint.ngrok.io
-	trafficPolicyName: static-response
+  poolingEnabled: true
+  url: https://example-cloud-endpoint.ngrok.io
+  trafficPolicyName: static-response
 ```
 
 ## Endpoint Pooling with `Ingresses`
@@ -65,23 +65,23 @@ The following will create an `Ingress` that creates a `CloudEndpoint` with pooli
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-	annotations:
-		k8s.ngrok.com/pooling-enabled: "true"
-	name: example-ingress
-	namespace: default
+  annotations:
+    k8s.ngrok.com/pooling-enabled: "true"
+  name: example-ingress
+  namespace: default
 spec:
-	ingressClassName: ngrok
-	rules:
-		- host: example-ingresses.ngrok.io
-			http:
-				paths:
-					- path: /
-						pathType: Prefix
-						backend:
-							service:
-								name: example-service
-								port:
-									number: 80
+  ingressClassName: ngrok
+  rules:
+    - host: example-ingresses.ngrok.io
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: example-service
+                port:
+                  number: 80
 ```
 
 Since the operator collapses `Ingress` resources that share the same hostname, you must make sure that all `Ingress` resources that use a given hostname use the same pooling enabled or disabled configuration.
@@ -96,40 +96,40 @@ The following will create a `CloudEndpoint` with pooling enabled. Any other endp
 apiVersion: gateway.networking.k8s.io/v1
 kind: Gateway
 metadata:
-	name: example-gateway
-	namespace: default
-	annotations:
-		k8s.ngrok.com/pooling-enabled: "true"
+  name: example-gateway
+  namespace: default
+  annotations:
+    k8s.ngrok.com/pooling-enabled: "true"
 spec:
-	gatewayClassName: ngrok
-	listeners:
-		- name: example-hostname
-			hostname: "example-hostname.ngrok.io"
-			port: 443
-			protocol: HTTPS
+  gatewayClassName: ngrok
+  listeners:
+    - name: example-hostname
+      hostname: "example-hostname.ngrok.io"
+      port: 443
+      protocol: HTTPS
 ---
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
-	name: example-route
-	namespace: default
+  name: example-route
+  namespace: default
 spec:
-	hostnames:
-	- example-hostname.ngrok.io
-	parentRefs:
-	- group: gateway.networking.k8s.io
-		kind: Gateway
-		name: example-gateway
-		namespace: default
-	rules:
-	- matches:
-			- path:
-					type: PathPrefix
-					value: /
-		backendRefs:
-			- group: ""
-				kind: Service
-				name: example-service
-				port: 80
-				weight: 1
+  hostnames:
+  - example-hostname.ngrok.io
+  parentRefs:
+  - group: gateway.networking.k8s.io
+    kind: Gateway
+    name: example-gateway
+    namespace: default
+  rules:
+  - matches:
+      - path:
+          type: PathPrefix
+          value: /
+    backendRefs:
+      - group: ""
+        kind: Service
+        name: example-service
+        port: 80
+        weight: 1
 ```

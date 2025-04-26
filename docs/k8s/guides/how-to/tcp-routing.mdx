@@ -41,48 +41,48 @@ See the [TCP Endpoints page](/docs/universal-gateway/tcp/) for more details on h
 <Tabs groupId="kind" queryString="kind">
 	<TabItem value="agentendpoint" label="AgentEndpoint">
 	```yaml
-	apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-	kind: AgentEndpoint
-	metadata:
-		name: example-service
-		namespace: default
-	spec:
-		url: tcp://1.tcp.ngrok.io:12345
-		upstream:
-			url: tcp://example-service.example-namespace:8443
+  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+  kind: AgentEndpoint
+  metadata:
+    name: example-service
+    namespace: default
+  spec:
+    url: tcp://1.tcp.ngrok.io:12345
+    upstream:
+      url: tcp://example-service.example-namespace:8443
 	```
 	</TabItem>
 	<TabItem value="endpoints" label="CloudEndpoint with AgentEndpoint">
 
 	### 1. Create an `AgentEndpoint` for your upstream `Service`
 	```yaml
-	apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-	kind: AgentEndpoint
-	metadata:
-		name: example-service
-		namespace: default
-	spec:
-		url: tcp://example-service.internal:8443
-		upstream:
-			url: tcp://example-service.example-namespace:8443
+  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+  kind: AgentEndpoint
+  metadata:
+    name: example-service
+    namespace: default
+  spec:
+    url: tcp://example-service.internal:8443
+    upstream:
+      url: tcp://example-service.example-namespace:8443
 	```
 
 	### 2. Create a `CloudEndpoint` that routes to the `AgentEndpoint`
 
 	```yaml
-	apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-	kind: CloudEndpoint
-	metadata:
-		name: example-cloud-endpoint
-	spec:
-		url: tcp://1.tcp.ngrok.io:12345
-		trafficPolicy:
-			policy:
-				on_http_request:
-				- actions:
-					- type: forward-internal
-						config:
-							url: tcp://example-service.internal:8443
+  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+  kind: CloudEndpoint
+  metadata:
+    name: example-cloud-endpoint
+  spec:
+    url: tcp://1.tcp.ngrok.io:12345
+    trafficPolicy:
+      policy:
+        on_http_request:
+        - actions:
+          - type: forward-internal
+            config:
+              url: tcp://example-service.internal:8443
 	```
 	</TabItem>
 	<TabItem value="gateway-api" label="Gateway API">
@@ -98,38 +98,38 @@ See the [TCP Endpoints page](/docs/universal-gateway/tcp/) for more details on h
 	If you already have a `Gateway` you can use that instead
 
 	```yaml
-	apiVersion: gateway.networking.k8s.io/v1
-	kind: Gateway
-	metadata:
-		name: example-gateway
-		namespace: default
-	spec:
-		gatewayClassName: ngrok
-		addresses:
-		- type: Hostname
-			value: 1.tcp.ngrok.io
-		listeners:
-			- name: p12345
-				port: 12345
-				protocol: TCP
+  apiVersion: gateway.networking.k8s.io/v1
+  kind: Gateway
+  metadata:
+    name: example-gateway
+    namespace: default
+  spec:
+    gatewayClassName: ngrok
+    addresses:
+    - type: Hostname
+      value: 1.tcp.ngrok.io
+    listeners:
+      - name: p12345
+        port: 12345
+        protocol: TCP
 	```
 
 	### 2. Create a `TCPRoute`
 
 	```yaml
-	apiVersion: gateway.networking.k8s.io/v1alpha2
-	kind: TCPRoute
-	metadata:
-		name: example-tlsroute
-		namespace: default
-	spec:
-		parentRefs:
-			- name: example-gateway
-				sectionName: p12345
-		rules:
-			- backendRefs:
-					- name: example-service
-						port: 9000
+  apiVersion: gateway.networking.k8s.io/v1alpha2
+  kind: TCPRoute
+  metadata:
+    name: example-tlsroute
+    namespace: default
+  spec:
+    parentRefs:
+      - name: example-gateway
+        sectionName: p12345
+    rules:
+      - backendRefs:
+          - name: example-service
+            port: 9000
 	```
 	</TabItem>
 </Tabs>

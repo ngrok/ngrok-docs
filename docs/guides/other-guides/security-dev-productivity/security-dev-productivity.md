@@ -120,12 +120,12 @@ To ensure only specific individuals or organizations can access your endpoints, 
 ```yaml
 on_http_request:
 - actions:
-      - type: oauth
-        config:
-          provider: github
+  - type: oauth
+    config:
+      provider: github
   - expressions:
-      - !(actions.ngrok.oauth.identity.email.endsWith('@example.com')
-      - !(actions.ngrok.oauth.identity.email == 'john@external.com')
+      - "!(actions.ngrok.oauth.identity.email.endsWith('@example.com')"
+      - "!(actions.ngrok.oauth.identity.email == 'john@external.com')"
     actions:
       - type: deny
 ```
