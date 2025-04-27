@@ -2,9 +2,6 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { validateCodeblocks } from "../validator";
 
-// Ensure fs functions are real for our tests
-jest.unmock("node:fs/promises");
-
 const TEST_DIR = path.join(__dirname, "test-files");
 
 describe("Code Block Validator", () => {
@@ -57,15 +54,17 @@ describe("Code Block Validator", () => {
 			testFiles.length,
 		);
 
-		// Check all files are categorized correctly
+		// Check if all files are categorized correctly
+		// Since we're using absolute paths in tinyglobby results, we need to check for the end of the path
 		for (const file of testFiles) {
-			const fullPath = path.join(TEST_DIR, file);
 			const shouldBeInvalid = expectedInvalidFiles.includes(file);
 
 			if (shouldBeInvalid) {
-				expect(result.invalidFiles).toContain(fullPath);
+				// Check that at least one invalid file path ends with our expected path
+				expect(result.invalidFiles.some((p) => p.endsWith(file))).toBe(true);
 			} else {
-				expect(result.validFiles).toContain(fullPath);
+				// Check that at least one valid file path ends with our expected path
+				expect(result.validFiles.some((p) => p.endsWith(file))).toBe(true);
 			}
 		}
 	});

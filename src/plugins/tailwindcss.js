@@ -1,4 +1,7 @@
-module.exports = async function myPlugin(context, options) {
+import { createRequire } from "node:module";
+const require = createRequire(import.meta.url);
+
+export default async function myPlugin(context, options) {
 	return {
 		name: "docusaurus-tailwindcss",
 		configurePostCss(postcssOptions) {
@@ -8,4 +11,4 @@ module.exports = async function myPlugin(context, options) {
 			return postcssOptions;
 		},
 	};
-};
+}

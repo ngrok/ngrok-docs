@@ -77,7 +77,23 @@ To ensure your changes work before submitting a pr, please run the following bef
 ```
 cd ngrok-docs
 pnpm run fmt
+pnpm run test
+pnpm run typecheck
 pnpm run build
+```
+
+## Testing
+
+We use [Vitest](https://vitest.dev/) for testing. To run the tests, use:
+
+```sh
+pnpm run test
+```
+
+To run tests in watch mode during development:
+
+```sh
+pnpm run test:watch
 ```
 
 ## Looking for support?

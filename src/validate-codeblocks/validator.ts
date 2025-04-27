@@ -1,7 +1,7 @@
 import fs from "node:fs/promises";
-import chalk from "chalk";
-import globby from "globby";
+import { styleText } from "node:util";
 import MarkdownIt from "markdown-it";
+import { glob } from "tinyglobby";
 import YAML from "yaml";
 
 interface ValidationOptions {
@@ -39,7 +39,7 @@ export async function validateCodeblocks(
 
 				if (stats?.isDirectory()) {
 					// If it's a directory, glob inside it
-					const dirFiles = await globby(`${path}/**/*.{md,mdx}`);
+					const dirFiles = await glob(`${path}/**/*.{md,mdx}`);
 					files.push(...dirFiles);
 				} else if (stats?.isFile()) {
 					// If it's a file and has .md or .mdx extension, add it directly
@@ -48,7 +48,10 @@ export async function validateCodeblocks(
 					}
 				} else if (verbose) {
 					console.log(
-						chalk.yellow(`Warning: Path not found or not accessible: ${path}`),
+						styleText(
+							"yellow",
+							`Warning: Path not found or not accessible: ${path}`,
+						),
 					);
 				}
 			} catch (error) {
@@ -56,24 +59,28 @@ export async function validateCodeblocks(
 				const errorMessage =
 					error instanceof Error ? error.message : String(error);
 				console.error(
-					chalk.red(`Error processing path ${path}: ${errorMessage}`),
+					styleText("red", `Error processing path ${path}: ${errorMessage}`),
 				);
 			}
 		}
 	} catch (error) {
 		// Handle catastrophic errors
 		const errorMessage = error instanceof Error ? error.message : String(error);
-		console.error(chalk.red(`Error during path processing: ${errorMessage}`));
+		console.error(
+			styleText("red", `Error during path processing: ${errorMessage}`),
+		);
 		return { validFiles, invalidFiles };
 	}
 
 	if (verbose) {
-		console.log(chalk.blue(`Found ${files.length} markdown files to validate`));
+		console.log(
+			styleText("blue", `Found ${files.length} markdown files to validate`),
+		);
 	}
 
 	for (const file of files) {
 		if (verbose) {
-			console.log(chalk.blue(`\nValidating ${file}...`));
+			console.log(styleText("blue", `\nValidating ${file}...`));
 		}
 
 		try {
@@ -81,7 +88,9 @@ export async function validateCodeblocks(
 			const codeBlocks = extractCodeBlocks(content, file);
 
 			if (verbose && codeBlocks.length > 0) {
-				console.log(chalk.blue(`Found ${codeBlocks.length} code blocks`));
+				console.log(
+					styleText("blue", `Found ${codeBlocks.length} code blocks`),
+				);
 			}
 
 			let fileValid = true;
@@ -101,13 +110,15 @@ export async function validateCodeblocks(
 					if (verbose) {
 						if (!language) {
 							console.log(
-								chalk.yellow(
+								styleText(
+									"yellow",
 									`  Line ${startLine}: No language could be detected, skipping validation`,
 								),
 							);
 						} else {
 							console.log(
-								chalk.blue(
+								styleText(
+									"blue",
 									`  Line ${startLine}: Language is ${language}, not YAML/JSON, skipping validation`,
 								),
 							);
@@ -121,7 +132,8 @@ export async function validateCodeblocks(
 				if (validationResult.isValid) {
 					if (showSuccess) {
 						console.log(
-							chalk.green(
+							styleText(
+								"green",
 								`  ✓ ${file}, Line ${startLine}: Valid ${language} code`,
 							),
 						);
@@ -132,18 +144,20 @@ export async function validateCodeblocks(
 					// }
 				} else {
 					console.log(
-						chalk.red(
+						styleText(
+							"red",
 							`  ✗ ${file}, Line ${startLine}: Invalid ${language} code`,
 						),
 					);
 					if (validationResult.errorMessage) {
 						console.log(
-							chalk.red(`    Error: ${validationResult.errorMessage}`),
+							styleText("red", `    Error: ${validationResult.errorMessage}`),
 						);
 					}
-					console.log(chalk.gray("    Code block:"));
+					console.log(styleText("dim", "    Code block:"));
 					console.log(
-						chalk.gray(
+						styleText(
+							"dim",
 							`    ${value.slice(0, 200).split("\n").join("\n    ")}${value.length > 200 ? "..." : ""}`,
 						),
 					);
@@ -159,7 +173,9 @@ export async function validateCodeblocks(
 		} catch (error) {
 			const errorMessage =
 				error instanceof Error ? error.message : String(error);
-			console.error(chalk.red(`Error processing ${file}: ${errorMessage}`));
+			console.error(
+				styleText("red", `Error processing ${file}: ${errorMessage}`),
+			);
 			invalidFiles.push(file);
 		}
 	}

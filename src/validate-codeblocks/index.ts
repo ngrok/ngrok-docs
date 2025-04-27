@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
-import chalk from "chalk";
+import { styleText } from "node:util";
 import { program } from "commander";
-import { validateCodeblocks } from "./validator";
+import { validateCodeblocks } from "./validator.js";
 
 program
 	.name("validate-codeblocks")
@@ -40,28 +40,30 @@ async function main() {
 		});
 
 		// Output summary
-		console.log(chalk.bold("\nValidation Summary:"));
-		console.log(chalk.green(`✓ Valid: ${validFiles.length} files`));
+		console.log(styleText("bold", "\nValidation Summary:"));
+		console.log(styleText("green", `✓ Valid: ${validFiles.length} files`));
 
 		if (invalidFiles.length > 0) {
-			console.log(chalk.red(`✗ Invalid: ${invalidFiles.length} files`));
+			console.log(styleText("red", `✗ Invalid: ${invalidFiles.length} files`));
 
 			if (options.warnings) {
 				console.log(
-					chalk.yellow("\nExiting with success due to --warnings flag"),
+					styleText("yellow", "\nExiting with success due to --warnings flag"),
 				);
 				process.exit(0);
 			} else {
 				process.exit(1);
 			}
 		} else {
-			console.log(chalk.green("\nAll code blocks validated successfully!"));
+			console.log(
+				styleText("green", "\nAll code blocks validated successfully!"),
+			);
 		}
 	} catch (error) {
 		// Add type checking before accessing properties
 		const errorMessage = error instanceof Error ? error.message : String(error);
 
-		console.error(chalk.red(`Error during validation: ${errorMessage}`));
+		console.error(styleText("red", `Error during validation: ${errorMessage}`));
 		process.exit(1);
 	}
 }

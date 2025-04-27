@@ -3,9 +3,6 @@ import os from "node:os";
 import path from "node:path";
 import { extractCodeBlocks } from "../validator";
 
-// Ensure fs functions are real for our tests
-jest.unmock("node:fs/promises");
-
 describe("Line Position Accuracy", () => {
 	const testContent = `# Test Document for Line Positions
 
