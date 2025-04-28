@@ -30,19 +30,19 @@ Example `CloudEndpoint` (the same `spec.bindings` configuration works for `Agent
 apiVersion: ngrok.k8s.ngrok.com/v1alpha1
 kind: CloudEndpoint
 metadata:
-	name: example-cloud-endpoint
+  name: example-cloud-endpoint
 spec:
-	url: https://example-cloud-endpoint.ngrok.io
-	bindings:
-	- public
-	description: Public Endpoint Created by the ngrok-operator
-	trafficPolicy:
-		policy:
-			on_http_request:
-			- actions:
-				- type: forward-internal
-					config:
-						url: https://my-k8s-service.internal
+  url: https://example-cloud-endpoint.ngrok.io
+  bindings:
+  - public
+  description: Public Endpoint Created by the ngrok-operator
+  trafficPolicy:
+    policy:
+      on_http_request:
+      - actions:
+        - type: forward-internal
+          config:
+            url: https://my-k8s-service.internal
 ```
 
 The public binding and url for the above `CloudEndpoint` make it accessible on the public internet at `https://example-cloud-endpoint.ngrok.io`
@@ -64,14 +64,14 @@ Example `AgentEndpoint` (the same `spec.bindings` configuration works for `Cloud
 apiVersion: ngrok.k8s.ngrok.com/v1alpha1
 kind: AgentEndpoint
 metadata:
-	name: example-agent-endpoint
+  name: example-agent-endpoint
 spec:
-	bindings:
-	- internal
-	description: Internal Endpoint Created by the ngrok-operator
-	url: https://my-k8s-service.internal
-	upstream:
-		url: http://my-service.default:80
+  bindings:
+  - internal
+  description: Internal Endpoint Created by the ngrok-operator
+  url: https://my-k8s-service.internal
+  upstream:
+    url: http://my-service.default:80
 ```
 
 The internal binding and url on the above internal `AgentEndpoint` make it not accessible via the public internet.
@@ -98,15 +98,15 @@ Public endpoint URLs must:
 apiVersion: ngrok.k8s.ngrok.com/v1alpha1
 kind: AgentEndpoint
 metadata:
-	name: example-agent-endpoint
-	namespace: my-namespace
+  name: example-agent-endpoint
+  namespace: my-namespace
 spec:
-	bindings:
-	- kubernetes
-	description: Kubernetes Bound Endpoint Created by the ngrok-operator
-	url: http://my-bound-service.my-namespace
-	upstream:
-		url: http://my-service.my-namespace:80
+  bindings:
+  - kubernetes
+  description: Kubernetes Bound Endpoint Created by the ngrok-operator
+  url: http://my-bound-service.my-namespace
+  upstream:
+    url: http://my-service.my-namespace:80
 ```
 
 The kubernetes binding and url for the above `AgentEndpoint` make it a Kubernetes bound endpoint.
@@ -127,15 +127,15 @@ For example, the following endpoint:
 apiVersion: ngrok.k8s.ngrok.com/v1alpha1
 kind: AgentEndpoint
 metadata:
-	name: example-agent-endpoint
-	namespace: my-namespace
+  name: example-agent-endpoint
+  namespace: my-namespace
 spec:
-	bindings:
-	- kubernetes
-	description: Kubernetes Bound Endpoint Created by the ngrok-operator
-	url: http://my-bound-service.my-namespace
-	upstream:
-		url: http://my-service.my-namespace:80
+  bindings:
+  - kubernetes
+  description: Kubernetes Bound Endpoint Created by the ngrok-operator
+  url: http://my-bound-service.my-namespace
+  upstream:
+    url: http://my-service.my-namespace:80
 ```
 
 Will cause the following `BoundEndpoint` to be created by the operator.
@@ -145,18 +145,18 @@ You can also configure the same options on `CloudEndpoint` resources.
 apiVersion: bindings.k8s.ngrok.com/v1alpha1
 kind: BoundEndpoint
 metadata:
-	name: ngrok-22680758-eb09-576e-a7ac-dc3728458dfc
-	namespace: ngrok-operator
+  name: ngrok-22680758-eb09-576e-a7ac-dc3728458dfc
+  namespace: ngrok-operator
 spec:
-	endpointURI: http://my-bound-service.my-namespace:80
-	port: 10001
-	scheme: http
-	target:
-		metadata: {}
-		namespace: my-namespace
-		port: 80
-		protocol: TCP
-		service: my-service
+  endpointURI: http://my-bound-service.my-namespace:80
+  port: 10001
+  scheme: http
+  target:
+    metadata: {}
+    namespace: my-namespace
+    port: 80
+    protocol: TCP
+    service: my-service
 ```
 
 Which in-turn causes the operator to project the following `Service` into your cluster
@@ -165,24 +165,24 @@ Which in-turn causes the operator to project the following `Service` into your c
 apiVersion: v1
 kind: Service
 metadata:
-	labels:
-		app.kubernetes.io/managed-by: ngrok-operator
-		bindings.k8s.ngrok.com/endpoint-binding-name: ngrok-22680758-eb09-576e-a7ac-dc3728458dfc
-		bindings.k8s.ngrok.com/endpoint-binding-namespace: ngrok-operator
-	name: my-bound-service
-	namespace: my-namespace
+  labels:
+    app.kubernetes.io/managed-by: ngrok-operator
+    bindings.k8s.ngrok.com/endpoint-binding-name: ngrok-22680758-eb09-576e-a7ac-dc3728458dfc
+    bindings.k8s.ngrok.com/endpoint-binding-namespace: ngrok-operator
+  name: my-bound-service
+  namespace: my-namespace
 spec:
-	externalName: ngrok-22680758-eb09-576e-a7ac-dc3728458dfc.ngrok-operator.svc.cluster.local
-	ports:
-		- name: http
-			port: 80
-			protocol: TCP
-			targetPort: 80
-	sessionAffinity: ClientIP
-	sessionAffinityConfig:
-		clientIP:
-			timeoutSeconds: 10800
-	type: ExternalName
+  externalName: ngrok-22680758-eb09-576e-a7ac-dc3728458dfc.ngrok-operator.svc.cluster.local
+  ports:
+    - name: http
+      port: 80
+      protocol: TCP
+      targetPort: 80
+  sessionAffinity: ClientIP
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 10800
+  type: ExternalName
 ```
 
 When anything in the cluster makes a request to the `my-bound-service.my-namespace` `Service` it will hit the above `AgentEndpoint` and ultimately be routed to the `my-service.my-namespace` `Service`.
@@ -229,23 +229,23 @@ The following `Ingress` will create a `CloudEndpoint` with an `internal` binding
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-	name: example-ingress
-	namespace: default
-	annotations:
-		k8s.ngrok.com/bindings: "internal"
+  name: example-ingress
+  namespace: default
+  annotations:
+    k8s.ngrok.com/bindings: "internal"
 spec:
-	ingressClassName: ngrok
-	rules:
-		- host: example-ingress.internal
-			http:
-				paths:
-					- path: /
-						pathType: Prefix
-						backend:
-							service:
-								name: example-service
-								port:
-									number: 80
+  ingressClassName: ngrok
+  rules:
+    - host: example-ingress.internal
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: example-service
+                port:
+                  number: 80
 ```
 
 ## Bindings with Gateway API
@@ -262,40 +262,40 @@ The following configuration will create a `CloudEndpoint` with an `internal` bin
 apiVersion: gateway.networking.k8s.io/v1
 kind: Gateway
 metadata:
-	name: example-gateway
-	namespace: default
-	annotations:
-		k8s.ngrok.com/bindings: "internal"
+  name: example-gateway
+  namespace: default
+  annotations:
+    k8s.ngrok.com/bindings: "internal"
 spec:
-	gatewayClassName: ngrok
-	listeners:
-		- name: example-hostname
-			hostname: "example-hostname.internal"
-			port: 443
-			protocol: HTTPS
+  gatewayClassName: ngrok
+  listeners:
+    - name: example-hostname
+      hostname: "example-hostname.internal"
+      port: 443
+      protocol: HTTPS
 ---
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
-	name: example-route
-	namespace: default
+  name: example-route
+  namespace: default
 spec:
-	hostnames:
-	- example-hostname.internal
-	parentRefs:
-	- group: gateway.networking.k8s.io
-		kind: Gateway
-		name: example-gateway
-		namespace: default
-	rules:
-	- matches:
-			- path:
-					type: PathPrefix
-					value: /
-		backendRefs:
-			- group: ""
-				kind: Service
-				name: example-service
-				port: 80
-				weight: 1
+  hostnames:
+  - example-hostname.internal
+  parentRefs:
+  - group: gateway.networking.k8s.io
+    kind: Gateway
+    name: example-gateway
+    namespace: default
+  rules:
+  - matches:
+      - path:
+          type: PathPrefix
+          value: /
+    backendRefs:
+      - group: ""
+        kind: Service
+        name: example-service
+        port: 80
+        weight: 1
 ```

@@ -20,42 +20,42 @@ For more information about using traffic policies with `Ingresses` and Gateway A
 apiVersion: ngrok.k8s.ngrok.com/v1alpha1
 kind: NgrokTrafficPolicy
 metadata:
-	name: custom-response-example
-	namespace: default
+  name: custom-response-example
+  namespace: default
 spec:
-	policy:
-		on_http_request:
-			- name: custom-response-example
-				expressions:
-					- req.url.path.startsWith('/custom-response')
-				actions:
-					- type: custom-response
-						config:
-							status_code: 200
-							content: "Custom response from your traffic policy"
-							headers:
-								content-type: text/plain
+  policy:
+    on_http_request:
+      - name: custom-response-example
+        expressions:
+          - req.url.path.startsWith('/custom-response')
+        actions:
+          - type: custom-response
+            config:
+              status_code: 200
+              content: "Custom response from your traffic policy"
+              headers:
+                content-type: text/plain
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-	annotations:
-		k8s.ngrok.com/traffic-policy: "custom-response-example"
-	name: example-ingress
-	namespace: default
+  annotations:
+    k8s.ngrok.com/traffic-policy: "custom-response-example"
+  name: example-ingress
+  namespace: default
 spec:
-	ingressClassName: ngrok
-	rules:
-		- host: example-ingresses.ngrok.io
-			http:
-				paths:
-					- path: /
-						pathType: Prefix
-						backend:
-							service:
-								name: example-service
-								port:
-									number: 80
+  ingressClassName: ngrok
+  rules:
+    - host: example-ingresses.ngrok.io
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: example-service
+                port:
+                  number: 80
 ```
 
 ## `k8s.ngrok.com/mapping-strategy`
@@ -74,23 +74,23 @@ For more information about how the operator translates resources, see [the using
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-	annotations:
-		k8s.ngrok.com/mapping-strategy: "edges"
-	name: example-ingress
-	namespace: default
+  annotations:
+    k8s.ngrok.com/mapping-strategy: "edges"
+  name: example-ingress
+  namespace: default
 spec:
-	ingressClassName: ngrok
-	rules:
-		- host: example-ingresses.ngrok.io
-			http:
-				paths:
-					- path: /
-						pathType: Prefix
-						backend:
-							service:
-								name: example-service
-								port:
-									number: 80
+  ingressClassName: ngrok
+  rules:
+    - host: example-ingresses.ngrok.io
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: example-service
+                port:
+                  number: 80
 ```
 
 ## `k8s.ngrok.com/pooling-enabled`
@@ -110,23 +110,23 @@ For more information about endpoint pooling, see [the pooling page](/k8s/guides/
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-	annotations:
-		k8s.ngrok.com/pooling-enabled: "true"
-	name: example-ingress
-	namespace: default
+  annotations:
+    k8s.ngrok.com/pooling-enabled: "true"
+  name: example-ingress
+  namespace: default
 spec:
-	ingressClassName: ngrok
-	rules:
-		- host: example-ingresses.ngrok.io
-			http:
-				paths:
-					- path: /
-						pathType: Prefix
-						backend:
-							service:
-								name: example-service
-								port:
-									number: 80
+  ingressClassName: ngrok
+  rules:
+    - host: example-ingresses.ngrok.io
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: example-service
+                port:
+                  number: 80
 ```
 
 :::note
@@ -149,26 +149,26 @@ For more information about bindings, see [the bindings page](/k8s/guides/binding
 **Example:**
 
 ```yaml
-	apiVersion: networking.k8s.io/v1
-	kind: Ingress
-	metadata:
-		name: example-ingress
-		namespace: default
-		annotations:
-			k8s.ngrok.com/bindings: "internal"
-	spec:
-		ingressClassName: ngrok
-		rules:
-			- host: example-domain.ngrok.io
-				http:
-					paths:
-						- path: /
-							pathType: Prefix
-							backend:
-								service:
-									name: example-service
-									port:
-										number: 80
+  apiVersion: networking.k8s.io/v1
+  kind: Ingress
+  metadata:
+    name: example-ingress
+    namespace: default
+    annotations:
+      k8s.ngrok.com/bindings: "internal"
+  spec:
+    ingressClassName: ngrok
+    rules:
+      - host: example-domain.ngrok.io
+        http:
+          paths:
+            - path: /
+              pathType: Prefix
+              backend:
+                service:
+                  name: example-service
+                  port:
+                    number: 80
 ```
 
 ## `k8s.ngrok.com/app-protocols`
@@ -187,21 +187,21 @@ The following example will mark the following service as having one port that is
 apiVersion: v1
 kind: Service
 metadata:
-	name: example-service
-	labels:
-		app: example-app
-	annotations:
-		k8s.ngrok.com/app-protocols: '{"https-port":"https","http-port":"http"}'
+  name: example-service
+  labels:
+    app: example-app
+  annotations:
+    k8s.ngrok.com/app-protocols: '{"https-port":"https","http-port":"http"}'
 spec:
-	ports:
-		- name: https-port
-			port: 443
-			protocol: TCP
-			targetPort: 8443
-		- name: http-port
-			port: 80
-			protocol: TCP
-			targetPort: 8080
-	selector:
-		app: example-app
+  ports:
+    - name: https-port
+      port: 443
+      protocol: TCP
+      targetPort: 8443
+    - name: http-port
+      port: 80
+      protocol: TCP
+      targetPort: 8080
+  selector:
+    app: example-app
 ```

@@ -43,42 +43,42 @@ The following examples showcase how to create an endpoint that rewrites requests
 	Check out the [URL rewrite traffic policy action](/traffic-policy/actions/url-rewrite/) page for more details about how it functions and the parameters it accepts.
 
 	```yaml
-	apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-	kind: AgentEndpoint
-	metadata:
-		name: example-agent-endpoint
-	spec:
-		url: https://example-hostname.ngrok.io
-		upstream:
-			url: http://my-service.my-namespace:8080
-		trafficPolicy:
-			inline:
-				on_http_request:
-					- actions:
-							- type: url-rewrite
-								config:
-									from: /.*
-									to: /rewrite
+  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+  kind: AgentEndpoint
+  metadata:
+    name: example-agent-endpoint
+  spec:
+    url: https://example-hostname.ngrok.io
+    upstream:
+      url: http://my-service.my-namespace:8080
+    trafficPolicy:
+      inline:
+        on_http_request:
+          - actions:
+              - type: url-rewrite
+                config:
+                  from: /.*
+                  to: /rewrite
 	```
 	</TabItem>
 	<TabItem value="cloud-endpoint" label="CloudEndpoint">
 	Check out the [URL rewrite traffic policy action](/traffic-policy/actions/url-rewrite/) page for more details about how it functions and the parameters it accepts.
 
 	```yaml
-	apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-	kind: CloudEndpoint
-	metadata:
-		name: example-cloud-endpoint
-	spec:
-		url: https://example-hostname.ngrok.io
-		trafficPolicy:
-			policy:
-				on_http_request:
-					- actions:
-							- type: url-rewrite
-								config:
-									from: /.*
-									to: /rewrite
+  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+  kind: CloudEndpoint
+  metadata:
+    name: example-cloud-endpoint
+  spec:
+    url: https://example-hostname.ngrok.io
+    trafficPolicy:
+      policy:
+        on_http_request:
+          - actions:
+              - type: url-rewrite
+                config:
+                  from: /.*
+                  to: /rewrite
 	```
 	</TabItem>
 	<TabItem value="ingress" label="Ingress">
@@ -88,44 +88,44 @@ The following examples showcase how to create an endpoint that rewrites requests
 	### 1. Create an `NgrokTrafficPolicy`
 
 	```yaml
-	apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-	kind: NgrokTrafficPolicy
-	metadata:
-		name: example-tp
-		namespace: default
-	spec:
-		policy:
-			on_http_request:
-				- actions:
-						- type: url-rewrite
-							config:
-								from: /.*
-								to: /rewrite
+  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+  kind: NgrokTrafficPolicy
+  metadata:
+    name: example-tp
+    namespace: default
+  spec:
+    policy:
+      on_http_request:
+        - actions:
+            - type: url-rewrite
+              config:
+                from: /.*
+                to: /rewrite
 	```
 
 	### 2. Use the `NgrokTrafficPolicy` on an `Ingress`
 
 	```yaml
-	apiVersion: networking.k8s.io/v1
-	kind: Ingress
-	metadata:
-		annotations:
-			k8s.ngrok.com/traffic-policy: example-tp
-		name: example-ingress
-		namespace: default
-	spec:
-		ingressClassName: ngrok
-		rules:
-			- host: example-hostname.ngrok.io
-				http:
-					paths:
-						- path: /
-							pathType: Prefix
-							backend:
-								service:
-									name: example-service
-									port:
-										number: 80
+  apiVersion: networking.k8s.io/v1
+  kind: Ingress
+  metadata:
+    annotations:
+      k8s.ngrok.com/traffic-policy: example-tp
+    name: example-ingress
+    namespace: default
+  spec:
+    ingressClassName: ngrok
+    rules:
+      - host: example-hostname.ngrok.io
+        http:
+          paths:
+            - path: /
+              pathType: Prefix
+              backend:
+                service:
+                  name: example-service
+                  port:
+                    number: 80
 	```
 	</TabItem>
 	<TabItem value="gateway-api" label="Gateway API">
@@ -136,53 +136,53 @@ The following examples showcase how to create an endpoint that rewrites requests
 	If you already have a `Gateway` you can use that instead
 
 	```yaml
-	apiVersion: gateway.networking.k8s.io/v1
-	kind: Gateway
-	metadata:
-		name: example-gateway
-		namespace: default
-	spec:
-		gatewayClassName: ngrok
-		listeners:
-			- name: example
-				hostname: "example-hostname.ngrok.io"
-				port: 443
-				protocol: HTTPS
+  apiVersion: gateway.networking.k8s.io/v1
+  kind: Gateway
+  metadata:
+    name: example-gateway
+    namespace: default
+  spec:
+    gatewayClassName: ngrok
+    listeners:
+      - name: example
+        hostname: "example-hostname.ngrok.io"
+        port: 443
+        protocol: HTTPS
 	```
 
 	### 2. Create an `HTTPRoute` with a URLRewrite Filter
 
 	```yaml
-	apiVersion: gateway.networking.k8s.io/v1
-	kind: HTTPRoute
-	metadata:
-		name: example-route
-		namespace: default
-	spec:
-		hostnames:
-		- example-hostname.ngrok.io
-		parentRefs:
-		- group: gateway.networking.k8s.io
-			kind: Gateway
-			name: example-gateway
-			namespace: default
-		rules:
-		- matches:
-			- path:
-					type: PathPrefix
-					value: /example
-			backendRefs:
-				- group: ""
-					kind: Service
-					name: example-service
-					port: 443
-					weight: 1
-			filters:
-			- type: URLRewrite
-				urlRewrite:
-					path: 
-						type: ReplaceFullPath
-						replaceFullPath: "/rewrite"
+  apiVersion: gateway.networking.k8s.io/v1
+  kind: HTTPRoute
+  metadata:
+    name: example-route
+    namespace: default
+  spec:
+    hostnames:
+    - example-hostname.ngrok.io
+    parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: example-gateway
+      namespace: default
+    rules:
+    - matches:
+      - path:
+          type: PathPrefix
+          value: /example
+      backendRefs:
+        - group: ""
+          kind: Service
+          name: example-service
+          port: 443
+          weight: 1
+      filters:
+      - type: URLRewrite
+        urlRewrite:
+          path: 
+            type: ReplaceFullPath
+            replaceFullPath: "/rewrite"
 	```
 	</TabItem>
 </Tabs>
@@ -199,42 +199,42 @@ The following examples showcase how to create an endpoint that rewrites requests
 	Check out the [URL rewrite traffic policy action](/traffic-policy/actions/url-rewrite/) page for more details about how it functions and the parameters it accepts.
 
 	```yaml
-	apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-	kind: AgentEndpoint
-	metadata:
-		name: example-agent-endpoint
-	spec:
-		url: https://example-hostname.ngrok.io
-		upstream:
-			url: http://my-service.my-namespace:8080
-		trafficPolicy:
-			inline:
-				on_http_request:
-					- actions:
-							- type: url-rewrite
-								config:
-									from: /example(.*)
-									to: /rewrite$1
+  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+  kind: AgentEndpoint
+  metadata:
+    name: example-agent-endpoint
+  spec:
+    url: https://example-hostname.ngrok.io
+    upstream:
+      url: http://my-service.my-namespace:8080
+    trafficPolicy:
+      inline:
+        on_http_request:
+          - actions:
+              - type: url-rewrite
+                config:
+                  from: /example(.*)
+                  to: /rewrite$1
 	```
 	</TabItem>
 	<TabItem value="cloud-endpoint" label="CloudEndpoint">
 	Check out the [URL rewrite traffic policy action](/traffic-policy/actions/url-rewrite/) page for more details about how it functions and the parameters it accepts.
 
 	```yaml
-	apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-	kind: CloudEndpoint
-	metadata:
-		name: example-cloud-endpoint
-	spec:
-		url: https://example-hostname.ngrok.io
-		trafficPolicy:
-			policy:
-				on_http_request:
-					- actions:
-							- type: url-rewrite
-								config:
-									from: /example(.*)
-									to: /rewrite$1
+  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+  kind: CloudEndpoint
+  metadata:
+    name: example-cloud-endpoint
+  spec:
+    url: https://example-hostname.ngrok.io
+    trafficPolicy:
+      policy:
+        on_http_request:
+          - actions:
+              - type: url-rewrite
+                config:
+                  from: /example(.*)
+                  to: /rewrite$1
 	```
 	</TabItem>
 	<TabItem value="ingress" label="Ingress">
@@ -244,44 +244,44 @@ The following examples showcase how to create an endpoint that rewrites requests
 	### 1. Create an `NgrokTrafficPolicy`
 
 	```yaml
-	apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-	kind: NgrokTrafficPolicy
-	metadata:
-		name: example-tp
-		namespace: default
-	spec:
-		policy:
-			on_http_request:
-				- actions:
-						- type: url-rewrite
-							config:
-								from: /example(.*)
-								to: /rewrite$1
+  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+  kind: NgrokTrafficPolicy
+  metadata:
+    name: example-tp
+    namespace: default
+  spec:
+    policy:
+      on_http_request:
+        - actions:
+            - type: url-rewrite
+              config:
+                from: /example(.*)
+                to: /rewrite$1
 	```
 
 	### 2. Use the `NgrokTrafficPolicy` on an `Ingress`
 
 	```yaml
-	apiVersion: networking.k8s.io/v1
-	kind: Ingress
-	metadata:
-		annotations:
-			k8s.ngrok.com/traffic-policy: example-tp
-		name: example-ingress
-		namespace: default
-	spec:
-		ingressClassName: ngrok
-		rules:
-			- host: example-hostname.ngrok.io
-				http:
-					paths:
-						- path: /
-							pathType: Prefix
-							backend:
-								service:
-									name: example-service
-									port:
-										number: 80
+  apiVersion: networking.k8s.io/v1
+  kind: Ingress
+  metadata:
+    annotations:
+      k8s.ngrok.com/traffic-policy: example-tp
+    name: example-ingress
+    namespace: default
+  spec:
+    ingressClassName: ngrok
+    rules:
+      - host: example-hostname.ngrok.io
+        http:
+          paths:
+            - path: /
+              pathType: Prefix
+              backend:
+                service:
+                  name: example-service
+                  port:
+                    number: 80
 	```
 	</TabItem>
 	<TabItem value="gateway-api" label="Gateway API">
@@ -292,47 +292,47 @@ The following examples showcase how to create an endpoint that rewrites requests
 	If you already have a `Gateway` you can use that instead
 
 	```yaml
-	apiVersion: gateway.networking.k8s.io/v1
-	kind: Gateway
-	metadata:
-		name: example-gateway
-		namespace: default
-	spec:
-		gatewayClassName: ngrok
-		listeners:
-			- name: example
-				hostname: "example-hostname.ngrok.io"
-				port: 443
-				protocol: HTTPS
+  apiVersion: gateway.networking.k8s.io/v1
+  kind: Gateway
+  metadata:
+    name: example-gateway
+    namespace: default
+  spec:
+    gatewayClassName: ngrok
+    listeners:
+      - name: example
+        hostname: "example-hostname.ngrok.io"
+        port: 443
+        protocol: HTTPS
 	```
 
 	### 2. Create an `HTTPRoute` with a URLRewrite Filter
 
 	```yaml
-	apiVersion: gateway.networking.k8s.io/v1
-	kind: HTTPRoute
-	metadata:
-		name: example-route
-		namespace: default
-	spec:
-		hostnames:
-		- example-hostname.ngrok.io
-		parentRefs:
-		- group: gateway.networking.k8s.io
-			kind: Gateway
-			name: example-gateway
-			namespace: default
-		rules:
-		- matches:
-			- path:
-					type: PathPrefix
-					value: /example
-			filters:
-			- type: URLRewrite
-				urlRewrite:
-					path: 
-						type: ReplacePrefixMatch
-						replacePrefixMatch: "/rewrite"
+  apiVersion: gateway.networking.k8s.io/v1
+  kind: HTTPRoute
+  metadata:
+    name: example-route
+    namespace: default
+  spec:
+    hostnames:
+    - example-hostname.ngrok.io
+    parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: example-gateway
+      namespace: default
+    rules:
+    - matches:
+      - path:
+          type: PathPrefix
+          value: /example
+      filters:
+      - type: URLRewrite
+        urlRewrite:
+          path: 
+            type: ReplacePrefixMatch
+            replacePrefixMatch: "/rewrite"
 	```
 	</TabItem>
 </Tabs>
@@ -348,42 +348,42 @@ The following examples showcase how to create an endpoint that rewrites requests
 	Check out the [URL rewrite traffic policy action](/traffic-policy/actions/url-rewrite/) page for more details about how it functions and the parameters it accepts.
 
 	```yaml
-	apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-	kind: AgentEndpoint
-	metadata:
-		name: example-agent-endpoint
-	spec:
-		url: http://example-hostname.ngrok.io:8080
-		upstream:
-			url: http://my-service.my-namespace:8080
-		trafficPolicy:
-			inline:
-				on_http_request:
-					- actions:
-							- type: url-rewrite
-								config:
-									from: :8080
-									to: :9090
+  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+  kind: AgentEndpoint
+  metadata:
+    name: example-agent-endpoint
+  spec:
+    url: http://example-hostname.ngrok.io:8080
+    upstream:
+      url: http://my-service.my-namespace:8080
+    trafficPolicy:
+      inline:
+        on_http_request:
+          - actions:
+              - type: url-rewrite
+                config:
+                  from: :8080
+                  to: :9090
 	```
 	</TabItem>
 	<TabItem value="cloud-endpoint" label="CloudEndpoint">
 	Check out the [URL rewrite traffic policy action](/traffic-policy/actions/url-rewrite/) page for more details about how it functions and the parameters it accepts.
 
 	```yaml
-	apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-	kind: CloudEndpoint
-	metadata:
-		name: example-cloud-endpoint
-	spec:
-		url: http://example-hostname.ngrok.io:8080
-		trafficPolicy:
-			policy:
-				on_http_request:
-					- actions:
-							- type: url-rewrite
-								config:
-									from: :8080
-									to: :9090
+  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+  kind: CloudEndpoint
+  metadata:
+    name: example-cloud-endpoint
+  spec:
+    url: http://example-hostname.ngrok.io:8080
+    trafficPolicy:
+      policy:
+        on_http_request:
+          - actions:
+              - type: url-rewrite
+                config:
+                  from: :8080
+                  to: :9090
 	```
 	</TabItem>
 	<TabItem value="ingress" label="Ingress">
@@ -393,44 +393,44 @@ The following examples showcase how to create an endpoint that rewrites requests
 	### 1. Create an `NgrokTrafficPolicy`
 
 	```yaml
-	apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-	kind: NgrokTrafficPolicy
-	metadata:
-		name: example-tp
-		namespace: default
-	spec:
-		policy:
-			on_http_request:
-				- actions:
-						- type: url-rewrite
-							config:
-								from: :8080
-								to: :9090
+  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+  kind: NgrokTrafficPolicy
+  metadata:
+    name: example-tp
+    namespace: default
+  spec:
+    policy:
+      on_http_request:
+        - actions:
+            - type: url-rewrite
+              config:
+                from: :8080
+                to: :9090
 	```
 
 	### 2. Use the `NgrokTrafficPolicy` on an `Ingress`
 
 	```yaml
-	apiVersion: networking.k8s.io/v1
-	kind: Ingress
-	metadata:
-		annotations:
-			k8s.ngrok.com/traffic-policy: example-tp
-		name: example-ingress
-		namespace: default
-	spec:
-		ingressClassName: ngrok
-		rules:
-			- host: example-hostname.ngrok.io
-				http:
-					paths:
-						- path: /
-							pathType: Prefix
-							backend:
-								service:
-									name: example-service
-									port:
-										number: 80
+  apiVersion: networking.k8s.io/v1
+  kind: Ingress
+  metadata:
+    annotations:
+      k8s.ngrok.com/traffic-policy: example-tp
+    name: example-ingress
+    namespace: default
+  spec:
+    ingressClassName: ngrok
+    rules:
+      - host: example-hostname.ngrok.io
+        http:
+          paths:
+            - path: /
+              pathType: Prefix
+              backend:
+                service:
+                  name: example-service
+                  port:
+                    number: 80
 	```
 	</TabItem>
 	<TabItem value="gateway-api" label="Gateway API">
@@ -441,45 +441,45 @@ The following examples showcase how to create an endpoint that rewrites requests
 	If you already have a `Gateway` you can use that instead
 
 	```yaml
-	apiVersion: gateway.networking.k8s.io/v1
-	kind: Gateway
-	metadata:
-		name: example-gateway
-		namespace: default
-	spec:
-		gatewayClassName: ngrok
-		listeners:
-			- name: example
-				hostname: "example-hostname.ngrok.io"
-				port: 8080
-				protocol: HTTPS
+  apiVersion: gateway.networking.k8s.io/v1
+  kind: Gateway
+  metadata:
+    name: example-gateway
+    namespace: default
+  spec:
+    gatewayClassName: ngrok
+    listeners:
+      - name: example
+        hostname: "example-hostname.ngrok.io"
+        port: 8080
+        protocol: HTTPS
 	```
 
 	### 2. Create an `HTTPRoute` with a URLRewrite Filter
 
 	```yaml
-	apiVersion: gateway.networking.k8s.io/v1
-	kind: HTTPRoute
-	metadata:
-		name: example-route
-		namespace: default
-	spec:
-		hostnames:
-		- example-hostname.ngrok.io
-		parentRefs:
-		- group: gateway.networking.k8s.io
-			kind: Gateway
-			name: example-gateway
-			namespace: default
-		rules:
-		- matches:
-			- path:
-					type: PathPrefix
-					value: /example
-			filters:
-			- type: URLRewrite
-				urlRewrite:
-					port: 9090
+  apiVersion: gateway.networking.k8s.io/v1
+  kind: HTTPRoute
+  metadata:
+    name: example-route
+    namespace: default
+  spec:
+    hostnames:
+    - example-hostname.ngrok.io
+    parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: example-gateway
+      namespace: default
+    rules:
+    - matches:
+      - path:
+          type: PathPrefix
+          value: /example
+      filters:
+      - type: URLRewrite
+        urlRewrite:
+          port: 9090
 	```
 	</TabItem>
 </Tabs>
@@ -496,42 +496,42 @@ The following examples showcase how to create an endpoint that rewrites requests
 	Check out the [URL rewrite traffic policy action](/traffic-policy/actions/url-rewrite/) page for more details about how it functions and the parameters it accepts.
 
 	```yaml
-	apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-	kind: AgentEndpoint
-	metadata:
-		name: example-agent-endpoint
-	spec:
-		url: https://example-hostname.ngrok.io
-		upstream:
-			url: http://my-service.my-namespace:8080
-		trafficPolicy:
-			inline:
-				on_http_request:
-					- actions:
-							- type: url-rewrite
-								config:
-									from: example-hostname.ngrok.io
-									to: other-example-hostname.ngrok.io
+  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+  kind: AgentEndpoint
+  metadata:
+    name: example-agent-endpoint
+  spec:
+    url: https://example-hostname.ngrok.io
+    upstream:
+      url: http://my-service.my-namespace:8080
+    trafficPolicy:
+      inline:
+        on_http_request:
+          - actions:
+              - type: url-rewrite
+                config:
+                  from: example-hostname.ngrok.io
+                  to: other-example-hostname.ngrok.io
 	```
 	</TabItem>
 	<TabItem value="cloud-endpoint" label="CloudEndpoint">
 	Check out the [URL rewrite traffic policy action](/traffic-policy/actions/url-rewrite/) page for more details about how it functions and the parameters it accepts.
 
 	```yaml
-	apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-	kind: CloudEndpoint
-	metadata:
-		name: example-cloud-endpoint
-	spec:
-		url: https://example-hostname.ngrok.io
-		trafficPolicy:
-			policy:
-				on_http_request:
-					- actions:
-							- type: url-rewrite
-								config:
-									from: example-hostname.ngrok.io
-									to: other-example-hostname.ngrok.io
+  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+  kind: CloudEndpoint
+  metadata:
+    name: example-cloud-endpoint
+  spec:
+    url: https://example-hostname.ngrok.io
+    trafficPolicy:
+      policy:
+        on_http_request:
+          - actions:
+              - type: url-rewrite
+                config:
+                  from: example-hostname.ngrok.io
+                  to: other-example-hostname.ngrok.io
 	```
 	</TabItem>
 	<TabItem value="ingress" label="Ingress">
@@ -541,44 +541,44 @@ The following examples showcase how to create an endpoint that rewrites requests
 	### 1. Create an `NgrokTrafficPolicy`
 
 	```yaml
-	apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-	kind: NgrokTrafficPolicy
-	metadata:
-		name: example-tp
-		namespace: default
-	spec:
-		policy:
-			on_http_request:
-				- actions:
-						- type: url-rewrite
-							config:
-								from: example-hostname.ngrok.io
-								to: other-example-hostname.ngrok.io
+  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+  kind: NgrokTrafficPolicy
+  metadata:
+    name: example-tp
+    namespace: default
+  spec:
+    policy:
+      on_http_request:
+        - actions:
+            - type: url-rewrite
+              config:
+                from: example-hostname.ngrok.io
+                to: other-example-hostname.ngrok.io
 	```
 
 	### 2. Use the `NgrokTrafficPolicy` on an `Ingress`
 
 	```yaml
-	apiVersion: networking.k8s.io/v1
-	kind: Ingress
-	metadata:
-		annotations:
-			k8s.ngrok.com/traffic-policy: example-tp
-		name: example-ingress
-		namespace: default
-	spec:
-		ingressClassName: ngrok
-		rules:
-			- host: example-hostname.ngrok.io
-				http:
-					paths:
-						- path: /
-							pathType: Prefix
-							backend:
-								service:
-									name: example-service
-									port:
-										number: 80
+  apiVersion: networking.k8s.io/v1
+  kind: Ingress
+  metadata:
+    annotations:
+      k8s.ngrok.com/traffic-policy: example-tp
+    name: example-ingress
+    namespace: default
+  spec:
+    ingressClassName: ngrok
+    rules:
+      - host: example-hostname.ngrok.io
+        http:
+          paths:
+            - path: /
+              pathType: Prefix
+              backend:
+                service:
+                  name: example-service
+                  port:
+                    number: 80
 	```
 	</TabItem>
 	<TabItem value="gateway-api" label="Gateway API">
@@ -589,45 +589,45 @@ The following examples showcase how to create an endpoint that rewrites requests
 	If you already have a `Gateway` you can use that instead
 
 	```yaml
-	apiVersion: gateway.networking.k8s.io/v1
-	kind: Gateway
-	metadata:
-		name: example-gateway
-		namespace: default
-	spec:
-		gatewayClassName: ngrok
-		listeners:
-			- name: example
-				hostname: "example-hostname.ngrok.io"
-				port: 443
-				protocol: HTTPS
+  apiVersion: gateway.networking.k8s.io/v1
+  kind: Gateway
+  metadata:
+    name: example-gateway
+    namespace: default
+  spec:
+    gatewayClassName: ngrok
+    listeners:
+      - name: example
+        hostname: "example-hostname.ngrok.io"
+        port: 443
+        protocol: HTTPS
 	```
 
 	### 2. Create an `HTTPRoute` with a URLRewrite Filter
 
 	```yaml
-	apiVersion: gateway.networking.k8s.io/v1
-	kind: HTTPRoute
-	metadata:
-		name: example-route
-		namespace: default
-	spec:
-		hostnames:
-		- example-hostname.ngrok.io
-		parentRefs:
-		- group: gateway.networking.k8s.io
-			kind: Gateway
-			name: example-gateway
-			namespace: default
-		rules:
-		- matches:
-			- path:
-					type: PathPrefix
-					value: /example
-			filters:
-			- type: URLRewrite
-				urlRewrite:
-					hostname: other-example-hostname.ngrok.io
+  apiVersion: gateway.networking.k8s.io/v1
+  kind: HTTPRoute
+  metadata:
+    name: example-route
+    namespace: default
+  spec:
+    hostnames:
+    - example-hostname.ngrok.io
+    parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: example-gateway
+      namespace: default
+    rules:
+    - matches:
+      - path:
+          type: PathPrefix
+          value: /example
+      filters:
+      - type: URLRewrite
+        urlRewrite:
+          hostname: other-example-hostname.ngrok.io
 	```
 	</TabItem>
 </Tabs>

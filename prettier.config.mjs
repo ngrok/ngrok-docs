@@ -14,6 +14,12 @@ const config = {
 				bracketSpacing: false,
 			},
 		},
+		{
+			files: ["**/*.md", "**/*.mdx"],
+			options: {
+				embeddedLanguageFormatting: "off",
+			},
+		},
 	],
 };
 

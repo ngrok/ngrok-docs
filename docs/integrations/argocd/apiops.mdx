@@ -212,34 +212,33 @@ The project comes with a basic example of such a Traffic Policy—[see `traffic-
    This defines a [filter](https://gateway-api.sigs.k8s.io/api-types/httproute/#filters-optional), which must be processes during the request or response lifecycle, allowing you to inject policy into all traffic arriving to your API through your ngrok API gateway.
 
    ```yaml
-   ---
-   apiVersion: gateway.networking.k8s.io/v1
-   kind: HTTPRoute
-   metadata:
-     name: apiops-demo-route
-     namespace: apiops-demo
-   spec:
-     parentRefs:
-       - kind: Gateway
-         name: apiops-demo-gateway
-         namespace: apiops-demo
-     hostnames:
-       - "apiops-demo.ngrok.app"
-     rules:
-       - matches:
-           - path:
-               type: PathPrefix
-               value: /
-         filters:
-           - type: ExtensionRef
-             extensionRef:
-               group: ngrok.k8s.ngrok.com
-               kind: NgrokTrafficPolicy
-               name: traffic-policy-rate-limiting
-         backendRefs:
-           - name: apiops-demo-service
-             port: 80
-             kind: Service
+    apiVersion: gateway.networking.k8s.io/v1
+    kind: HTTPRoute
+    metadata:
+      name: apiops-demo-route
+      namespace: apiops-demo
+    spec:
+      parentRefs:
+        - kind: Gateway
+          name: apiops-demo-gateway
+          namespace: apiops-demo
+      hostnames:
+        - "apiops-demo.ngrok.app"
+      rules:
+        - matches:
+            - path:
+                type: PathPrefix
+                value: /
+          filters:
+            - type: ExtensionRef
+              extensionRef:
+                group: ngrok.k8s.ngrok.com
+                kind: NgrokTrafficPolicy
+                name: traffic-policy-rate-limiting
+          backendRefs:
+            - name: apiops-demo-service
+              port: 80
+              kind: Service
    ```
 
 1. Add, commit, and push this change to your Git repository. Argo CD will auto sync this latest commit then reconcile the deployed state with those changes to the `NgrokTrafficPolicy` CRD and `HTTPRoute`.
