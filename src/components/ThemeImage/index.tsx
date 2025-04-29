@@ -1,6 +1,4 @@
-import { useLocation } from "@docusaurus/router";
 import { useColorMode } from "@docusaurus/theme-common";
-import Markdown from "react-markdown";
 
 export function ThemeImage({
 	darkSrc,
