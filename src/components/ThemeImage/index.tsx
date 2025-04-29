@@ -1,7 +1,5 @@
 import BrowserOnly from "@docusaurus/BrowserOnly";
-import { useColorMode } from "@docusaurus/theme-common";
 import { useTheme } from "@ngrok/mantle/theme-provider";
-import { useEffect, useState } from "react";
 
 export function ThemeImage({
 	darkSrc,
