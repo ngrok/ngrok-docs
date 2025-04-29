@@ -1,4 +1,5 @@
 import { useColorMode } from "@docusaurus/theme-common";
+import { useEffect, useState } from "react";
 
 export function ThemeImage({
 	darkSrc,
@@ -13,13 +14,18 @@ export function ThemeImage({
 }): React.ReactElement {
 	const { colorMode } = useColorMode(); // 'light' or 'dark'
 
+	const [imgSrc, setImgSrc] = useState<string>(lightSrc);
+
 	console.log("colormode", colorMode);
+	useEffect(()=>{
+		setImgSrc(colorMode === "dark" ? darkSrc : lightSrc)
+	}, [colorMode, darkSrc, lightSrc]);
 
 	return (
 		<img
 			alt={alt}
 			className={className}
-			src={colorMode === "dark" ? darkSrc : lightSrc}
+			src={imgSrc}
 		/>
 	);
 }
