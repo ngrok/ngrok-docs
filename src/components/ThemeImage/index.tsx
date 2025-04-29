@@ -8,14 +8,18 @@ export function ThemeImage({
 	alt,
 	className,
 }: {
-	darkSrc:string;
+	darkSrc: string;
 	lightSrc: string;
 	alt: string;
 	className?: string;
 }): React.ReactElement {
 	const { colorMode } = useColorMode(); // 'light' or 'dark'
-	
+
 	return (
-		<img alt={alt} className={className} src={colorMode === "dark" ? darkSrc : lightSrc} />
+		<img
+			alt={alt}
+			className={className}
+			src={colorMode === "dark" ? darkSrc : lightSrc}
+		/>
 	);
 }
