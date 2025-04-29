@@ -17,15 +17,9 @@ export function ThemeImage({
 	const [imgSrc, setImgSrc] = useState<string>(lightSrc);
 
 	console.log("colormode", colorMode);
-	useEffect(()=>{
-		setImgSrc(colorMode === "dark" ? darkSrc : lightSrc)
+	useEffect(() => {
+		setImgSrc(colorMode === "dark" ? darkSrc : lightSrc);
 	}, [colorMode, darkSrc, lightSrc]);
 
-	return (
-		<img
-			alt={alt}
-			className={className}
-			src={imgSrc}
-		/>
-	);
+	return <img alt={alt} className={className} src={imgSrc} />;
 }
