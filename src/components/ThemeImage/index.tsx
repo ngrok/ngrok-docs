@@ -1,4 +1,6 @@
+import { useLocation } from "@docusaurus/router";
 import { useColorMode } from "@docusaurus/theme-common";
+import Markdown from "react-markdown";
 
 export function ThemeImage({
 	darkSrc,
@@ -12,11 +14,8 @@ export function ThemeImage({
 	className?: string;
 }): React.ReactElement {
 	const { colorMode } = useColorMode(); // 'light' or 'dark'
+	
 	return (
-		<img
-			src={colorMode === "dark" ? darkSrc : lightSrc}
-			alt={alt}
-			className={`w-full h-full object-cover ${className}`}
-		/>
+		<img alt={alt} className={className} src={colorMode === "dark" ? darkSrc : lightSrc} />
 	);
 }
