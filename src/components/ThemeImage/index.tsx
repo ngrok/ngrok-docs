@@ -16,7 +16,9 @@ export function ThemeImage({
 
 	const [imgSrc, setImgSrc] = useState<string>(lightSrc);
 
-	console.log("colormode", colorMode);
+	// Have to do this in useEffect because sometimes the
+	// initial value of colorMode is not set yet when the
+	// component first renders
 	useEffect(() => {
 		setImgSrc(colorMode === "dark" ? darkSrc : lightSrc);
 	}, [colorMode, darkSrc, lightSrc]);
