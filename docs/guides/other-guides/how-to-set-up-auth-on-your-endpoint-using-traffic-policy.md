@@ -2,24 +2,25 @@
 title: OAuth Traffic Policy on Endpoints
 ---
 
-
 # How to add authentication to your ngrok endpoint using Traffic Policy
 
 You may have already configured your first endpoint, or you're about to put your endpoint online - congrats!
+
  
 You may not want everyone to be able to access your app/service. Did you know you can restrict access to authorized users for free by adding authentication to your endpoint? 
 
 You don’t even have to leave the ngrok agent CLI to do it. Below you'll find a couple of ways to protect your traffic using ngrok [Traffic Policy](https://ngrok.com/docs/traffic-policy/).
 
-### About ngrok Traffic Policy 
+### About ngrok Traffic Policy
 
 [Traffic Policy](https://ngrok.com/docs/traffic-policy/) is a configuration language that offers you the flexibility to filter, match, manage and orchestrate traffic to your endpoints. With Traffic Policy, you can:
+
 - [Block unwanted requests by IP](https://ngrok.com/docs/traffic-policy/examples/block-unwanted-requests/), geo, and more. 
 - [Add Authentication](https://ngrok.com/docs/traffic-policy/examples/add-authentication/) like OAuth (see below), SAML, JWT or OIDC. 
 - [Rate limit requests](https://ngrok.com/docs/traffic-policy/examples/rate-limit-requests/) by different variables so your service is protected.
 
-
 ## Add OAuth to your endpoint using Traffic Policy in 6 quick CLI-only steps:
+
  
 
 ### 1. Pick your provider
@@ -43,6 +44,7 @@ on_http_request:
           # client_id: ""         # only if you bring your own OAuth app
           # client_secret: ""     # only if you bring your own OAuth app
 ```
+
 That’s the entire policy for the managed Google flow. 
 
 ### 3. Restart your endpoint with the policy attached
@@ -57,7 +59,7 @@ ngrok http 3000 \
 
 The --traffic-policy-file flag tells ngrok to apply the YAML you just wrote to this endpoint
 
-If you start endpoints from an ngrok.yml config file instead, paste the on_http_request: block under the traffic_policy: key inside that endpoint, then run 
+If you start endpoints from an ngrok.yml config file instead, paste the on_http_request: block under the traffic_policy: key inside that endpoint, then run
 
 ```bash
 ngrok start <endpoint-name>
