@@ -13,6 +13,8 @@ export function ThemeImage({
 }): React.ReactElement {
 	const { colorMode } = useColorMode(); // 'light' or 'dark'
 
+	console.log("colormode", colorMode);
+
 	return (
 		<img
 			alt={alt}
