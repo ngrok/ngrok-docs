@@ -151,6 +151,7 @@ Note: When configuring a custom oauth app, while specifying `client_id` and `cli
 Below are two examples of how to apply these auth lifecycle options, depending on your traffic policy setup.
 
 What these examples do:
+
 - If a user visits `/ngrok/logout`, ngrok first destroys their session (built-in behavior), then your redirect action sends them straight to the login URL.
 - Any session inactive for 15 minutes or longer will auto-expire and trigger a re-login flow when the user returns.
 - After an hour (regardless of activity), users are forced to re-authenticate (`max_session_duration`).
