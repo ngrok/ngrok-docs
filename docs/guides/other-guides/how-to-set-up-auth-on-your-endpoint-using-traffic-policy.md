@@ -5,6 +5,7 @@ title: OAuth Traffic Policy on Endpoints
 # How to add authentication to your ngrok endpoint using Traffic Policy
 
 You may have already configured your first endpoint, or you're about to put your endpoint online - congrats!
+
  
 You may not want everyone to be able to access your app/service. Did you know you can restrict access to authorized users for free by adding authentication to your endpoint? 
 
@@ -13,6 +14,7 @@ You don’t even have to leave the ngrok agent CLI to do it. Below you'll find a
 ### About ngrok Traffic Policy
 
 [Traffic Policy](https://ngrok.com/docs/traffic-policy/) is a configuration language that offers you the flexibility to filter, match, manage and orchestrate traffic to your endpoints. With Traffic Policy, you can:
+
 - [Block unwanted requests by IP](https://ngrok.com/docs/traffic-policy/examples/block-unwanted-requests/), geo, and more. 
 - [Add Authentication](https://ngrok.com/docs/traffic-policy/examples/add-authentication/) like OAuth (see below), SAML, JWT or OIDC. 
 - [Rate limit requests](https://ngrok.com/docs/traffic-policy/examples/rate-limit-requests/) by different variables so your service is protected.
@@ -144,4 +146,4 @@ Now that you've added auth to your endpoint, here are some optional ways to fine
   </tbody>
 </table>
 
-#### Option 1. 
+#### Option 1.
