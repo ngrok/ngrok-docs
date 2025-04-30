@@ -146,4 +146,74 @@ Now that you've added auth to your endpoint, here are some optional ways to fine
   </tbody>
 </table>
 
-#### Option 1.
+Note: When configuring a custom oauth app, while specifying `client_id` and `client_secret`, ensure that the redirect URI https://idp.ngrok.com/oauth2/callback is registered with your OAuth provider. This is essential for the OAuth flow to function correctly.
+
+Below are two examples of how to apply these auth lifecycle options, depending on your traffic policy setup.
+
+What these examples do:
+- If a user visits `/ngrok/logout`, ngrok first destroys their session (built-in behavior), then your redirect action sends them straight to the login URL.
+- Any session inactive for 15 minutes or longer will auto-expire and trigger a re-login flow when the user returns.
+- After an hour (regardless of activity), users are forced to re-authenticate (`max_session_duration`).
+
+#### Option 6.1. If you're using a separate `oauth.yml` traffic policy file
+
+If you started your ngrok agent with a command like:
+
+```bash
+ngrok http 3000 --domain myapp.ngrok.app --traffic-policy-file oauth.yml
+```
+
+Then your oauth.yml file contains the traffic policy. To adjust settings such as session timeouts, scopes, or client credentials, edit this file directly. To force users to re-login after a timeout, and redirect them to logout to explicitly expire their session, add the following to your `oauth.yml` file under the `on_http_request` clause:
+
+```yaml
+# oauth.yml
+on_http_request:
+  - match:
+      path: "/ngrok/logout"
+    actions:
+      - type: redirect
+        config:
+          location: "/ngrok/login?auth_id=my-login"
+  - actions:
+      - type: oauth
+        config:
+          provider: google
+          auth_id: "my-login"
+          idle_session_timeout: "15m"
+          max_session_duration: "1h"
+```
+
+#### Option 6.2. If you're using an `ngrok.yml` config file
+
+If your setup involves an ngrok.yml file, locate the specific endpoint configuration and add or modify the traffic_policy section:
+
+```yaml
+tunnels:
+  myapp:
+    proto: http
+    addr: 3000
+    domain: myapp.ngrok.app
+    traffic_policy:
+      on_http_request:
+        - match:
+            path: "/ngrok/logout"
+          actions:
+            - type: redirect
+              config:
+                location: "/ngrok/login?auth_id=my-login"
+        - actions:
+            - type: oauth
+              config:
+                provider: google
+                auth_id: "my-login"
+                idle_session_timeout: "15m"
+                max_session_duration: "1h"
+```
+
+Apply the changes by restarting the specific tunnel:
+
+```bash
+ngrok start myapp
+```
+
+If you need assistance with specific configurations or further customization, feel free to ask our Support team at [support@ngrok.com](mailto:support@ngrok.com)!
