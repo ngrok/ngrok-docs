@@ -118,11 +118,16 @@ As mentioned, [Traffic Policy](https://ngrok.com/docs/traffic-policy/) is a comp
 
 Now that you've added auth to your endpoint, here are some optional ways to fine tune other parts of your auth setup aside from strictly how to handle logins:
 
-<table cellpadding="8" cellspacing="0" border="1" style="border-collapse: collapse; width: 100%;">
+<table
+  cellPadding="8"
+  cellSpacing="0"
+  border="1"
+  style={{ borderCollapse: 'collapse', width: '100%' }}
+>
   <thead>
     <tr>
-      <th style="background-color: #f2f2f2; text-align: left;">Need</th>
-      <th style="background-color: #f2f2f2; text-align: left;">What to change</th>
+      <th style={{ backgroundColor: '#f2f2f2', textAlign: 'left' }}>Need</th>
+      <th style={{ backgroundColor: '#f2f2f2', textAlign: 'left' }}>What to change</th>
     </tr>
   </thead>
   <tbody>
