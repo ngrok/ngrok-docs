@@ -45,7 +45,6 @@ on_http_request:
 
 That’s the entire policy for the managed Google flow. 
 
-
 ### 3. Restart your endpoint with the policy attached
 
 #### If you're using a separate traffic policy file
@@ -65,7 +64,6 @@ ngrok http 3000 \
 ```
 
 The `--traffic-policy-file` flag tells ngrok to apply the YAML you just wrote to this endpoint
-
 
 #### If you're using an `ngrok.yml` config file
 
@@ -102,20 +100,17 @@ ngrok start myapp
 # ngrok start <endpoint-name>
 ```
 
-
 ### 4. Verify in a browser
 
 Open your app's URL (<https://myapp.ngrok.app>) 
 
 You should be immediately redirected to the Google sign-in page, and after authenticating you’ll land back on your app
 
-
 ### 5. Ship it
 
 And that's it! Your existing agent endpoint is now identity-aware using Traffic Policy. 
 
 That’s all you need — edit one small YAML file and pass a single extra flag when you start the agent.
-
 
 ### 6. Explore more and fine-tune with Traffic Policy 
 
