@@ -15,7 +15,7 @@ Whether you're an existing ngrok user looking to make your API more robust or a 
 
 This guide assumes you already have [an ngrok account](https://dashboard.ngrok.com/signup) (a free account is sufficient) and have [Docker installed](https://docs.docker.com/get-started/get-docker) on your computer.
 
-You'll use the [ngrok sample API](https://github.com/ngrok-samples/api-demo) in this tutorial. Even if you have an existing API you want to monitor, you can test the sample before making changes to your real API. If you have no interest in running the sample app and immediately want to work on your live app, jump ahead to the section: [monitor your API](#monitor-your-api).
+You'll use the [ngrok sample API](https://github.com/ngrok-samples/api-demo) in this tutorial. Even if you have an existing API you want to monitor, you can test the sample before making changes to your real API. If you have no interest in running the sample app and immediately want to work on your live app, jump ahead to the [Monitor your API](#monitor-your-api) section.
 
 ## Start the sample API to monitor
 
@@ -27,13 +27,13 @@ docker network create ngrokTest
 docker run --init --platform=linux/amd64 --rm -p 4000:80 --network=ngrokTest --name="api" -e PORT=80 joelatngrok/api-demo
 ```
 
-This command runs the Docker sample API container, exposing the API locally on port 4000, names the Docker container `api`, and removes the container upon exiting with `--rm`. You can now browse to http://localhost:4000 to test the API.
+This command runs the Docker sample API container, exposing the API locally on port 4000, names the Docker container `api`, and removes the container with `--rm` upon exiting. You can now browse to http://localhost:4000 to test the API.
 
 :::note
 The API uses a named network, `ngrokTest`, so that in the next section, you can start the ngrok Agent on the same network as the API.
 :::
 
-![Simple web API](./img/appConsole.webp)
+![Simple web API](./img/simple-web-api.png)
 
 ## Publish your API with ngrok
 
@@ -45,16 +45,16 @@ Now that the API is running locally, you can expose it on a public URL, using th
   docker run -it --rm --platform=linux/amd64 --network=ngrokTest -e NGROK_AUTHTOKEN=Y0urS3cr3tK3y ngrok/ngrok:3.22.0-alpine-amd64 http http://api
   ```
 
-This command starts the ngrok agent locally and connects it to the API running on container `api`.
+  This command starts the ngrok agent locally and connects it to the API running on the `api` container.
 
 - Browse to the URL labeled `Forwarding`, which should look like this in your terminal: `https://eb45-79-127-145-72.ngrok-free.app`.
 - You can now see your request going from the browser to the ngrok agent you're running in one terminal window and then to the API in your other terminal window.
 
-![Published API](./img/ngrokAgent.webp)
+![Published API](./img/api-gent.png)
 
 ## Monitor your API
 
-You can monitor web servers in two ways in ngrok, with the Traffic Inspector and with Events.
+You can monitor web servers in two ways in ngrok, with the Traffic Inspector and with [Events](https://ngrok.com/docs/obs/events).
 
 The Traffic Inspector is a filterable list of your API's requests and responses, available on the ngrok dashboard. The Traffic Inspector is useful for viewing error details and for replaying requests to test new policies and bug fixes. The inspector is a manual way to monitor your API. Request data is kept for three days (or for 90 days as a paid extra).
 
@@ -72,7 +72,7 @@ In this section, you'll learn to use the Traffic Inspector and work through an e
 
 - You can filter requests by these fields, for instance, to show only server error responses and not successes.
 
-  ![Traffic Inspector](./img/trafficInspector.webp)
+  ![Traffic Inspector](./img/trafficInspector.png)
 
 :::note
 Requests made to the API at http://localhost:4000 will not be displayed in the inspector. Only requests that pass through the ngrok endpoint, and therefore the ngrok agent running in Docker, will be known to ngrok.
@@ -82,11 +82,11 @@ To see more details about a request or to replay it, you need to enable full cap
 
 - Click a request in the Traffic Inspector list, then click **Enable full capture** in the sidebar.
 
-  ![Enable full capture](./img/enableFullCapture.webp)
+  ![Enable full capture](./img/enableFullCapture.png)
 
 - This button takes you to your account settings, where you can enable full capture under **Observability**.
 
-  ![Enable full capture settings](./img/enableFullCaptureAccount.webp)
+  ![Enable full capture settings](./img/enableFullCaptureAccount.png)
 
 - Then, return to your published API URL and refresh the browser page a few times to send fresh requests through ngrok.
 - In the ngrok Traffic Inspector, click on the event at the top of the list.
@@ -95,13 +95,11 @@ To see more details about a request or to replay it, you need to enable full cap
 
 - Click the **Replay** button and notice that the request is resent from the ngrok host.
 
-  Due to a bug, you currently can't replay a request with a free ngrok account, despite the feature appearing available. Replay only works for paid accounts. This [bug](https://github.com/ngrok/ngrok-docs/issues/1247) may be fixed by the time you read this guide.
-
-  ![Replay request](./img/replayError.webp)
+  ![Replay request](./img/replay.png)
 
 - You can also replay a request with changes to alter any of the headers or POST data.
 
-  ![Replay with changes](./img/replayChanges2.webp)
+  ![Replay with changes](./img/replayChanges2.png)
 
 Replaying requests is useful for debugging. For example, you could find the request that caused an error in your API, deploy a fix for the API, and replay the request to confirm you've fixed the issue.
 
@@ -115,11 +113,11 @@ Let's look at rate limiting as an example of a Traffic Policy. Rate limiting is 
 
 At this stage of the guide, you could send unlimited requests to the test API you've created. Let's change that to allow only one request a minute.
 
-In order to test policies, you need to be able to re-use the same URL, which isn't possible if you keep using the temporary URLs that ngrok generates each time you restart an agent. So let's create a permanent URL:
+In order to test policies, you need to be able to reuse the same URL, which isn't possible if you keep using the temporary URLs that ngrok generates each time you restart an agent. So let's create a permanent URL:
 
 - Browse to the **Domains** page in the ngrok sidebar. If you're using a free account, register for your free domain with a random name, like `massive-pelican-arguably.ngrok-free.app`. If you're using a paid account, create a new domain for this test.
-- Next, you need to stop and restart the ngrok container using a Traffic Policy.
-- Stop the ngrok Docker container in the terminal with <kbd>ctrl+c</kbd>.
+- Next, you need to stop and restart the ngrok container using a traffic policy.
+- Stop the ngrok Docker container in the terminal with <kbd>Ctrl</kbd><kbd>+</kbd><kbd>C</kbd>.
 - Create a file named `policy.yml` with the code below.
 
   ```yml
@@ -144,16 +142,16 @@ In order to test policies, you need to be able to re-use the same URL, which isn
 - Browse to the API URL and refresh the page a few times. Notice that the page stops responding.
 - On the ngrok Traffic Inspector page, note that the error code **`429`** (rate limit) was returned and that the duration of the request was instant and caused no load on your API.
 
-  ![Rate limit](./img/rateLimit.webp)
+  ![Rate limit](./img/rateLimit.png)
 
 - Edit the `policy.yml` file and change `capacity` to `10`, then restart the ngrok container.
 - In the Traffic Inspector, click on one of the **`429`** events, then click **Replay**. Note that the request now responds without error because the rate limit has been increased.
 
-  ![Replay after rate limit adjustment](./img/replayLimit.webp)
+  ![Replay after rate limit adjustment](./img/replayLimit.png)
 
 ## Monitor events
 
-In this section, you'll learn how to export ngrok [events](https://ngrok.com/docs/obs/events) to the Datadog monitoring service.
+In this section, you'll learn how to export ngrok events to the Datadog monitoring service.
 
 There are two [types of events](https://ngrok.com/docs/obs/events/reference): standard traffic events (requests to your API) and audit events (changes to secret keys and URLs). For this simple example, you'll monitor a traffic event.
 
@@ -161,11 +159,11 @@ Before adding an event subscription, you need somewhere to send events:
 
 - Sign up for a [Datadog](https://www.datadoghq.com) trial account. (You will eventually need a paid Datadog plan to continue using logs and monitors.)
 
-  You can enter anonymous dummy values instead of your personal information for all the Datadog registration fields except your email address, which you need to confirm. You also can't skip the third step of the signup process, in which you create a Datadog agent somewhere.
+  You can enter anonymous dummy values instead of your personal information for all the Datadog registration fields except your email address, which you need to confirm. You also can't skip the third step of the sign-up process, in which you create a Datadog agent somewhere.
 
-- In Step 3 of the Datadog signup, click on **Docker** in the sidebar. Copy and paste the given command into a terminal and run it.
+- In Step 3 of the Datadog sign-up, click on **Docker** in the sidebar. Copy and paste the given command into a terminal and run it.
 
-  ![Join Datadog](./img/joinDatadog.webp)
+  ![Join Datadog](./img/joinDatadog.png)
 
 - Once the Datadog site notices your agent is running, click **Finish** at the bottom of the page.
 - You now no longer need the agent running locally and can remove the Datadog container with the command below.
@@ -179,21 +177,21 @@ Before adding an event subscription, you need somewhere to send events:
 - Note which Datadog site you're using by following the instructions in the [guide to getting started with Datadog sites](https://docs.datadoghq.com/getting_started/site/#access-the-datadog-site).
 - Take note of your Datadog API key, which you can access by clicking your username at the bottom left of the sidebar and clicking **API Keys** in the menu that opens.
 
-  ![Datadog API key](./img/datadogKey.webp)
+  ![Datadog API key](./img/datadogKey.png)
 
 - In the ngrok navigation panel, browse to the [**Events Stream**](https://dashboard.ngrok.com/event-subscriptions) and add a new subscription.
 
-  ![Add event subscription](./img/makeSubscription.webp)
+  ![Add event subscription](./img/makeSubscription.png)
 
 - In the **New Event Subscription** sidebar, enter `traffic` as the **Description** and then **Add** a new source (event type). Choose **`http_request_complete`**.
 
-  ![Add source](./img/addEventType.webp)
+  ![Add source](./img/addEventType.png)
 
 - Add Datadog as a destination, add the Datadog site and API key you noted earlier, and send a test event.
 
 - Open the Datadog site and browse to the **Log Explorer** page from the navigation panel. Enable logs. You should see that the event from ngrok has appeared.
 
-  ![Datadog logs](./img/datadogLog.webp)
+  ![Datadog logs](./img/datadogLog.png)
 
 - In ngrok, click **Done** and **Save**.
 
@@ -205,22 +203,24 @@ Now that events are being sent to Datadog, you can set up visualizations and not
 
 - In the Datadog site, browse to the **Dashboards > Dashboard List** page from the navigation panel. Click the **ngrok HTTP Events** item to view the default dashboard.
 
-- ![Datadog dashboard list](./img/datadogDashboardList.webp)
+  ![Datadog dashboard list](./img/datadogDashboardList.png)
 
 To add a new widget to the dashboard, you need to clone the default dashboard.
 
 - Click **Clone** at the top right of the page.
 
-  ![Datadog default dashboard](./img/datadogDefaultDashboard.webp)
+  ![Datadog default dashboard](./img/datadogDefaultDashboard.png)
 
-- In the cloned dashboard, click **Add widget**.
+- In the cloned dashboard, click **Add widgets**.
 
-  ![Datadog add widget](./img/datadogAddWidget.webp)
+  ![Datadog add widget](./img/datadogAddWidget.png)
 
-- In widget configuration, under **Select your visualization**, choose **Query value**.
-- Under **Graph your data**, change **Metrics** to **Logs** (ngrok does not export metrics) and enter the log filter, `@http.status_code:500`, so that Datadog only counts errors
-- **Set time preferences** to **Past 1 Hour** in the next section.
-- In the fourth section, name the widget `Errors in the last hour`.
+Configure the widget as follows.
+
+- **Step 1:** Choose **Query value** as your visualization.
+- **Step 2:** Change **Metrics** to **Logs** (ngrok does not export metrics) and enter the log filter, `@http.status_code:500`, so that Datadog only counts errors.
+- **Step 3:** Set the time preference to **Past 1 Hour**.
+- **Step 4:** Name the widget `Errors in the last hour`.
 
   ![Datadog edit widget](./img/datadogWidgetDetails.webp)
 
@@ -228,13 +228,13 @@ Your new widget will be available in the dashboard, allowing your support staff 
 
 ![Datadog custom dashboard](./img/datadogCustomDashboard.webp)
 
-Since the sample API never returns errors, an easy way to test this errors-widget is to stop the sample API Docker container and then try to browse to the site on the public ngrok endpoint.
+Since the sample API never returns errors, an easy way to test the `Errors in the last hour` widget is to stop the sample API Docker container and then try to browse to the site on the public ngrok endpoint.
 
 If you want to create widgets for other log information, you can see which fields are available by reading the JSON of any event you click on in the log inspector.
 
 ## Create a notification
 
-To complete your monitoring system, you need to set up an alert that is pushed to your email or mobile app when an error occurs by adding a webhook integration to Datadog. This allows your support team to be notificed of errors, instead of having to repeatedly check the dashboard. Webhooks provide a way for you to send POST requests to https://ntfy.sh, a free notification service.
+To complete your monitoring system, you need to set up an alert that is pushed to your email or mobile app when an error occurs by adding a webhook integration to Datadog. This allows your support team to receive error notifications instead of having to check the dashboard repeatedly. Webhooks provide a way for you to send POST requests to https://ntfy.sh, a free notification service.
 
 - In Datadog, browse to **Integrations > Add integration > Webhooks**.
 
@@ -246,7 +246,11 @@ To complete your monitoring system, you need to set up an alert that is pushed t
 
 - In the ngrok navigation panel, browse to the **Monitors > New monitor**. Choose **Logs**.
 
-- In the monitor configuration, choose **Query** for your monitor scope, set the search query to `@http.status_code:500`, the time to the **last 1 hour**, and the notification message to `@webhook-ntfy Your API has errors. Investigate at https://app.datadoghq.eu/dashboard.`.
+- In the monitor configuration, choose **Query** for your monitor scope, set the search query to `@http.status_code:500`, the time to the **last 1 hour**, and the notification message:
+
+   ```
+   @webhook-ntfy Your API has errors. Investigate at https://app.datadoghq.eu/dashboard.
+   ```
 
   ![Datadog add webhook](./img/datadogConfigureMonitor.webp)
 
@@ -272,25 +276,25 @@ There are three categories to consider: security, errors, and performance.
 
 ### Security
 
-You need to monitor the security of your own infrastructure, as well as attempts to hack users' accounts.
+You need to monitor the security of your own infrastructure, as well as any attempts to hack users' accounts.
 
-As mentioned earlier, ngrok emits [audit events](https://ngrok.com/docs/obs/events/reference/#audit-events) for any security changes. You should set up alerts for any changes to API keys, domains, and SSH certificates — anything that indicates attackers might gain access to your infrastructure. Events like stopping and starting agents and tunnels are likely to happen frequently and so don't need alerts, especially when running Kubernetes and multiple containers. You still might want to add widgets to monitor these events on a dashboard however, as surges in activity might indicate problems with your system. Additionally, you can add monitors that trigger alerts when activity passes a certain threshold.
+As mentioned earlier, ngrok emits [audit events](https://ngrok.com/docs/obs/events/reference/#audit-events) for any security changes. You should set up alerts for any changes to API keys, domains, and SSH certificates — anything that indicates attackers might gain access to your infrastructure. Events like stopping and starting agents and tunnels are likely to happen frequently, so they don't need alerts (especially when running Kubernetes and multiple containers). You still might want to add widgets to monitor these events on a dashboard, however, because surges in activity might indicate problems with your system. Additionally, you can add monitors that trigger alerts when activity passes a certain threshold.
 
-In terms of user security, you need to monitor anything that indicates attackers might be accessing a user's account. This includes requests from different country IP addresses in a short time (though this has become common with the increasing use of VPNs), a high rate of failed login attempts, or an anomalous pattern of request access. In order to make a monitoring rule that recognizes anomalies, you first need to track the average number of requests to various endpoints in your API made by the average user.
+In terms of user security, you need to monitor anything that indicates attackers might be accessing a user's account. This includes multiple requests from IP addresses in different countries in a short time span (though this has become common with the increasing use of VPNs), a high rate of failed login attempts, or an anomalous pattern of request access. In order to make a monitoring rule that recognizes anomalies, you first need to track the average number of requests that the average user makes to various endpoints in your API.
 
 ### Errors
 
-Errors are the simplest category to monitor. Generally, if your API returns status codes in the 500 range instead of the 200 range, it needs fixing. Create an alert from Datadog monitors to ntfy or Slack for all errors. If a 500 error occurs, use the ngrok replay function to see if it can be reproduced on a QA server, and send the bug to your developers to fix it.
+Errors are the simplest category to monitor. Generally, if your API returns status codes in the `500` range instead of the `200` range, it needs fixing. Using Datadog monitoring, create an alert that is sent to ntfy or Slack for all errors. If a `500` error occurs, use the ngrok replay function to see whether it can be reproduced on a QA server, and send the bug to your developers to fix it.
 
 ### Performance
 
-Performance metrics need monitoring but don't need to trigger alerts, unless your service experiences a sudden spike in usage or growth. The most import things to monitor are: uptime, latency (response time), and throughput.
+Performance metrics need monitoring, but they don't need to trigger alerts unless your service experiences a sudden spike in usage or growth. The most important things to monitor are uptime, latency (response time), and throughput.
 
-Unlike with audit events, there is only one traffic event to monitor: [request complete](https://ngrok.com/docs/obs/events/reference/#http-request-complete). This event, with multiple fields, as well as the request and response bodies in the log, is enough to construct any metrics you need.
+Unlike with audit events, there is only one traffic event to monitor: [HTTP Request Complete](https://ngrok.com/docs/obs/events/reference/#http-request-complete). This event, with multiple fields and the request and response bodies in the log, is enough to construct any metrics you need.
 
-General statistics practices apply to metric monitoring. Use medians instead of arithmetic averages, as extreme values disproportionately affect averages.
+General statistics practices apply to metric monitoring. Use medians instead of arithmetic averages, because extreme values disproportionately affect averages.
 
-For latency, keep an eye on the median duration of a request, as well as outliers. Separate requests by endpoint to identify which endpoints take excessive time and could be improved. For throughput, look at the median number of requests per minute. For both metrics, also consider monitoring variance in addition to averages. Even if an endpoint has a quick average response time, if the duration is highly variable — with many lower and higher than average durations — your users will probably be getting annoyed.
+For latency, keep an eye on the median duration of a request, as well as outliers. Separate requests by endpoint to identify which endpoints take excessive time and could be improved. For throughput, look at the median number of requests per minute. For both metrics, also consider monitoring variance in addition to averages. Even if an endpoint has a quick average response time, if the duration is highly variable – with many lower- and higher-than-average durations – your users will probably get annoyed.
 
 ## Further reading
 
@@ -301,8 +305,8 @@ To learn more about any of the concepts in this guide, consult the following art
 - The complete [Docker ngrok agent](https://ngrok.com/docs/using-ngrok-with/docker) documentation
 - The [ngrok Traffic Policy](https://ngrok.com/docs/traffic-policy) documentation
 - The [ngrok Traffic Policy actions](https://ngrok.com/docs/traffic-policy/actions/rate-limit) documentation
-- The [ngrok cloud endpoints](https://ngrok.com/docs/universal-gateway/cloud-endpoints) documentation
-- The [ngrok agent endpoints](https://ngrok.com/docs/universal-gateway/agent-endpoints) documentation
-- The [ngrok events](https://ngrok.com/docs/obs/events) documentation
+- The [ngrok Cloud Endpoints](https://ngrok.com/docs/universal-gateway/cloud-endpoints) documentation
+- The [ngrok Agent Endpoints](https://ngrok.com/docs/universal-gateway/agent-endpoints) documentation
+- The [ngrok Events](https://ngrok.com/docs/obs/events) documentation
 - [Datadog](https://www.datadoghq.com)
 - [ntfy](https://ntfy.sh)
