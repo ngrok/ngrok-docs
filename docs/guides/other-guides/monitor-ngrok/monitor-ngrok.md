@@ -33,7 +33,7 @@ This command runs the Docker sample API container, exposing the API locally on p
 The API uses a named network, `ngrokTest`, so that in the next section, you can start the ngrok Agent on the same network as the API.
 :::
 
-![Simple web API](./img/appConsole.webp)
+![Simple web API](./img/simple-web-api.png)
 
 ## Publish your API with ngrok
 
@@ -50,7 +50,7 @@ Now that the API is running locally, you can expose it on a public URL, using th
 - Browse to the URL labeled `Forwarding`, which should look like this in your terminal: `https://eb45-79-127-145-72.ngrok-free.app`.
 - You can now see your request going from the browser to the ngrok agent you're running in one terminal window and then to the API in your other terminal window.
 
-![Published API](./img/ngrokAgent.webp)
+![Published API](./img/api-gent.png)
 
 ## Monitor your API
 
@@ -72,7 +72,7 @@ In this section, you'll learn to use the Traffic Inspector and work through an e
 
 - You can filter requests by these fields, for instance, to show only server error responses and not successes.
 
-  ![Traffic Inspector](./img/trafficInspector.webp)
+  ![Traffic Inspector](./img/trafficInspector.png)
 
 :::note
 Requests made to the API at http://localhost:4000 will not be displayed in the inspector. Only requests that pass through the ngrok endpoint, and therefore the ngrok agent running in Docker, will be known to ngrok.
@@ -82,11 +82,11 @@ To see more details about a request or to replay it, you need to enable full cap
 
 - Click a request in the Traffic Inspector list, then click **Enable full capture** in the sidebar.
 
-  ![Enable full capture](./img/enableFullCapture.webp)
+  ![Enable full capture](./img/enableFullCapture.png)
 
 - This button takes you to your account settings, where you can enable full capture under **Observability**.
 
-  ![Enable full capture settings](./img/enableFullCaptureAccount.webp)
+  ![Enable full capture settings](./img/enableFullCaptureAccount.png)
 
 - Then, return to your published API URL and refresh the browser page a few times to send fresh requests through ngrok.
 - In the ngrok Traffic Inspector, click on the event at the top of the list.
@@ -95,13 +95,11 @@ To see more details about a request or to replay it, you need to enable full cap
 
 - Click the **Replay** button and notice that the request is resent from the ngrok host.
 
-  Due to a bug, you currently can't replay a request with a free ngrok account, despite the feature appearing available. Replay only works for paid accounts. This [bug](https://github.com/ngrok/ngrok-docs/issues/1247) may be fixed by the time you read this guide.
-
-  ![Replay request](./img/replayError.webp)
+  ![Replay request](./img/replay.png)
 
 - You can also replay a request with changes to alter any of the headers or POST data.
 
-  ![Replay with changes](./img/replayChanges2.webp)
+  ![Replay with changes](./img/replayChanges2.png)
 
 Replaying requests is useful for debugging. For example, you could find the request that caused an error in your API, deploy a fix for the API, and replay the request to confirm you've fixed the issue.
 
@@ -119,7 +117,7 @@ In order to test policies, you need to be able to reuse the same URL, which isn'
 
 - Browse to the **Domains** page in the ngrok sidebar. If you're using a free account, register for your free domain with a random name, like `massive-pelican-arguably.ngrok-free.app`. If you're using a paid account, create a new domain for this test.
 - Next, you need to stop and restart the ngrok container using a traffic policy.
-- Stop the ngrok Docker container in the terminal with <kbd>ctrl+c</kbd>.
+- Stop the ngrok Docker container in the terminal with <kbd>Ctrl</kbd><kbd>+</kbd><kbd>C</kbd>.
 - Create a file named `policy.yml` with the code below.
 
   ```yml
@@ -132,7 +130,7 @@ In order to test policies, you need to be able to reuse the same URL, which isn'
             capacity: 1
             rate: 1m
             bucket_key:
-              - req.headers['host']
+              - "hasReqHeader('host') ? getReqHeader('host')[0] : 'unknown'"
   ```
 
 - Run the agent again with the command below. Replace the authentication token and the URL with your token and URL (using `https`, not `http`).
@@ -144,12 +142,12 @@ In order to test policies, you need to be able to reuse the same URL, which isn'
 - Browse to the API URL and refresh the page a few times. Notice that the page stops responding.
 - On the ngrok Traffic Inspector page, note that the error code **`429`** (rate limit) was returned and that the duration of the request was instant and caused no load on your API.
 
-  ![Rate limit](./img/rateLimit.webp)
+  ![Rate limit](./img/rateLimit.png)
 
 - Edit the `policy.yml` file and change `capacity` to `10`, then restart the ngrok container.
 - In the Traffic Inspector, click on one of the **`429`** events, then click **Replay**. Note that the request now responds without error because the rate limit has been increased.
 
-  ![Replay after rate limit adjustment](./img/replayLimit.webp)
+  ![Replay after rate limit adjustment](./img/replayLimit.png)
 
 ## Monitor events
 
@@ -165,7 +163,7 @@ Before adding an event subscription, you need somewhere to send events:
 
 - In Step 3 of the Datadog sign-up, click on **Docker** in the sidebar. Copy and paste the given command into a terminal and run it.
 
-  ![Join Datadog](./img/joinDatadog.webp)
+  ![Join Datadog](./img/joinDatadog.png)
 
 - Once the Datadog site notices your agent is running, click **Finish** at the bottom of the page.
 - You now no longer need the agent running locally and can remove the Datadog container with the command below.
@@ -179,21 +177,21 @@ Before adding an event subscription, you need somewhere to send events:
 - Note which Datadog site you're using by following the instructions in the [guide to getting started with Datadog sites](https://docs.datadoghq.com/getting_started/site/#access-the-datadog-site).
 - Take note of your Datadog API key, which you can access by clicking your username at the bottom left of the sidebar and clicking **API Keys** in the menu that opens.
 
-  ![Datadog API key](./img/datadogKey.webp)
+  ![Datadog API key](./img/datadogKey.png)
 
 - In the ngrok navigation panel, browse to the [**Events Stream**](https://dashboard.ngrok.com/event-subscriptions) and add a new subscription.
 
-  ![Add event subscription](./img/makeSubscription.webp)
+  ![Add event subscription](./img/makeSubscription.png)
 
 - In the **New Event Subscription** sidebar, enter `traffic` as the **Description** and then **Add** a new source (event type). Choose **`http_request_complete`**.
 
-  ![Add source](./img/addEventType.webp)
+  ![Add source](./img/addEventType.png)
 
 - Add Datadog as a destination, add the Datadog site and API key you noted earlier, and send a test event.
 
 - Open the Datadog site and browse to the **Log Explorer** page from the navigation panel. Enable logs. You should see that the event from ngrok has appeared.
 
-  ![Datadog logs](./img/datadogLog.webp)
+  ![Datadog logs](./img/datadogLog.png)
 
 - In ngrok, click **Done** and **Save**.
 
@@ -205,17 +203,17 @@ Now that events are being sent to Datadog, you can set up visualizations and not
 
 - In the Datadog site, browse to the **Dashboards > Dashboard List** page from the navigation panel. Click the **ngrok HTTP Events** item to view the default dashboard.
 
-  ![Datadog dashboard list](./img/datadogDashboardList.webp)
+  ![Datadog dashboard list](./img/datadogDashboardList.png)
 
 To add a new widget to the dashboard, you need to clone the default dashboard.
 
 - Click **Clone** at the top right of the page.
 
-  ![Datadog default dashboard](./img/datadogDefaultDashboard.webp)
+  ![Datadog default dashboard](./img/datadogDefaultDashboard.png)
 
-- In the cloned dashboard, click **Add widget**.
+- In the cloned dashboard, click **Add widgets**.
 
-  ![Datadog add widget](./img/datadogAddWidget.webp)
+  ![Datadog add widget](./img/datadogAddWidget.png)
 
 Configure the widget as follows.
 
