@@ -38,7 +38,7 @@ on_http_request:
       - type: oauth
         config:
           provider: google        
-					# ^ change to github, microsoft, … as needed
+					# ^ change to github, microsoft, etc as needed
           # auth_id: "my-login"   # optional cookie/URL namespace
           # client_id: ""         # only if you bring your own OAuth app
           # client_secret: ""     # only if you bring your own OAuth app
