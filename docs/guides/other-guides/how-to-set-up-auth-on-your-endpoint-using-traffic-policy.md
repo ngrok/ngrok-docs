@@ -34,14 +34,13 @@ Let's use the managed Google OAuth flow as our example for this guide. For each 
 ```yaml
 # oauth.yml
 on_http_request:
-  - actions:
-      - type: oauth
-        config:
-          provider: google        
-					# change google to github, microsoft, etc as needed
-          # auth_id: "my-login" -- optional cookie/URL namespace
-          # client_id: "" -- only if you bring your own OAuth app
-          # client_secret: "" -- only if you bring your own OAuth app
+  - actions:
+      - type: oauth
+        config:
+          provider: google  # change google to github, microsoft, etc as needed
+          # auth_id: "my-login"  # optional cookie/URL namespace
+          # client_id: "..."     # only if you're using a custom OAuth app
+          # client_secret: "..."
 ```
 
 That’s the entire policy for the managed Google flow. 
