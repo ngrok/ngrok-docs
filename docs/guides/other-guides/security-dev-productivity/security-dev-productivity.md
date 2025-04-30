@@ -80,7 +80,7 @@ ngrok lets you configure authentication in different ways:
 
 ### Enterprise authentication and MFA
 
-Use any OIDC-compliant provider—such as Okta, Microsoft Azure AD or AD
+Use any OIDC-compliant provider—such as Okta, Microsoft Entra ID or AD
 FS, Ping, and Auth0—to control access to public endpoints.
 
 With the [`openid-connect` Traffic Policy
