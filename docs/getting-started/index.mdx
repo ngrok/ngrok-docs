@@ -6,6 +6,7 @@ pagination_next: universal-gateway/http
 import TabItem from "@theme/TabItem";
 import Tabs from "@theme/Tabs";
 import ConfigExample from "/src/components/ConfigExample.tsx";
+import SecureYourApp from "./_secure-your-app.mdx"
 
 # Quickstart
 
@@ -129,8 +130,7 @@ quickly add authentication to your app without any changes.
 
 In general, [Traffic Policy](/traffic-policy/) is the recommended way to secure your app.
 
-<Tabs groupId="auth-method" queryString="auth-method">
-<TabItem value="basic-auth" label="Basic Auth" default>
+<SecureYourApp firstTabValue="google-oauth" firstTabLabel="Google OAuth" secondTabLabel="Basic Auth" secondTabValue="basic-auth">
 
 The following example demonstrates how to use [the `basic-auth` Traffic Policy action](/traffic-policy/actions/basic-auth/) to only allow visitors with the credentials `user:password1` or `admin:password2` to access your app.
 
@@ -180,50 +180,7 @@ Successfully Authenticated!
 
 If you send the same request without the `Authorization` header, you should receive a `401 Unauthorized` response.
 
-</TabItem>
-<TabItem value="google" label="Google OAuth">
-
-When you restrict access to your app using [Traffic Policy and Google OAuth](/traffic-policy/examples/add-authentication/#sending-an-oidc-identity-token-over-headers), first your users will have to authenticate with Google, then your traffic policy will grant them access based on the rules you configure.
-
-This example uses ngrok's default managed google application to authenticate users. To configure your own Google OAuth application, see the [Google OAuth guide](/docs/integrations/google/oauth/).
-
-<ConfigExample
-	config={{
-		on_http_request: [
-			{
-				name: "OAuth",
-				actions: [
-					{
-						type: "oauth",
-						config: {
-							auth_id: "oauth",
-							provider: "google",
-						},
-					},
-				],
-			},
-			{
-				name: "bad email",
-				expressions: [
-					"!actions.ngrok.oauth.identity.email != 'alan@example.com",
-				],
-				actions: [
-					{
-						type: "custom-response",
-						config: {
-							content:
-								"Hey, no auth for you ${actions.ngrok.oauth.identity.name}!",
-							status_code: 400,
-						},
-					},
-				],
-			},
-		],
-	}}
-/>
-
-</TabItem>
-</Tabs>
+</SecureYourApp>
 
 ngrok supports many forms of authentication including:
 
