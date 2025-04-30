@@ -123,14 +123,14 @@ In order to test policies, you need to be able to reuse the same URL, which isn'
   ```yml
   on_http_request:
     - actions:
-        - type: rate-limit
-          config:
-            name: 1 request per minute
-            algorithm: sliding_window
-            capacity: 1
-            rate: 1m
-            bucket_key:
-              - "hasReqHeader('host') ? getReqHeader('host')[0] : 'unknown'"
+      - type: rate-limit
+        config:
+          name: 1 request per minute
+          algorithm: sliding_window
+          capacity: 1
+          rate: 1m
+          bucket_key:
+            - "hasReqHeader('host') ? getReqHeader('host')[0] : 'unknown'"
   ```
 
 - Run the agent again with the command below. Replace the authentication token and the URL with your token and URL (using `https`, not `http`).
