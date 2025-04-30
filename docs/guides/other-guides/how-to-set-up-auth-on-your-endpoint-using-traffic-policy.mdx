@@ -104,7 +104,7 @@ Now that you've added auth to your endpoint, here are some optional ways to fine
 | Namespace sessions            | `auth_id: "my-login"` (used in cookies & login/logout routing)                                                      |
 
 
-**Note**: When configuring a custom oauth app, while specifying `client_id` and `client_secret`, ensure that the redirect URI https://idp.ngrok.com/oauth2/callback is registered with your OAuth provider. This is essential for the OAuth flow to function correctly.
+**Note**: When configuring a custom OAuth app, while specifying `client_id` and `client_secret`, ensure that the redirect URI https://idp.ngrok.com/oauth2/callback is registered with your OAuth provider. This is essential for the OAuth flow to function correctly.
 
 **Table 2: Runtime Interactions (handled in your app logic via URL routes)**
 
@@ -117,7 +117,7 @@ Now that you've added auth to your endpoint, here are some optional ways to fine
 
 ### Traffic Policy Examples:
 
-Below are two examples of how to apply these additional auth lifecycle options, depending on your traffic policy setup.
+This section includes two examples of how to apply these additional auth lifecycle options, depending on your traffic policy setup.
 
 **What these examples do:**
 
@@ -125,65 +125,71 @@ Below are two examples of how to apply these additional auth lifecycle options, 
 - Any session inactive for 15 minutes or longer will auto-expire and trigger a re-login flow when the user returns.
 - After an hour (regardless of activity), users are forced to re-authenticate (`max_session_duration`).
 
-### If you're using a separate `oauth.yml` traffic policy file
+<ConfigExample
+	config={{
+	"on_http_request": [
+		{
+			"match": {
+				"path": "/ngrok/logout"
+			},
+			"actions": [
+				{
+					"type": "redirect",
+					"config": {
+						"location": "/ngrok/login?auth_id=my-login"
+					}
+				}
+			]
+		},
+		{
+			"actions": [
+				{
+					"type": "oauth",
+					"config": {
+						"provider": "google",
+						"auth_id": "my-login",
+						"idle_session_timeout": "15m",
+						"max_session_duration": "1h"
+					}
+				}
+			]
+		}
+	]
+}}
+/>
 
-If you started your ngrok agent with a command like:
+Now you can restart your endpoint with the updated traffic policy file or config.
 
-```bash
-ngrok http 3000 --domain myapp.ngrok.app --traffic-policy-file oauth.yml
-```
+<Tabs groupId="start-location" queryString="start-location">
+<TabItem value="policy" label="Using a local file" default>
 
-Then your `oauth.yml` file contains the traffic policy. To adjust settings such as session timeouts, scopes, or client credentials, edit this file directly. To force users to re-login after a timeout, and redirect them to logout to explicitly expire their session, add the following to your `oauth.yml` file under the `on_http_request` clause:
-
-```yaml
-# oauth.yml
-on_http_request:
-  - match:
-      path: "/ngrok/logout"
-    actions:
-      - type: redirect
-        config:
-          location: "/ngrok/login?auth_id=my-login"
-  - actions:
-      - type: oauth
-        config:
-          provider: google
-          auth_id: "my-login"
-          idle_session_timeout: "15m"
-          max_session_duration: "1h"
-```
-
-### If you're using an `ngrok.yml` config file
-
-If your setup involves an ngrok.yml file, locate the specific endpoint configuration and add or modify the traffic_policy section:
-
-```yaml
-tunnels:
-  myapp:
-    proto: http
-    addr: 3000
-    domain: myapp.ngrok.app
-    traffic_policy:
-      on_http_request:
-        - match:
-            path: "/ngrok/logout"
-          actions:
-            - type: redirect
-              config:
-                location: "/ngrok/login?auth_id=my-login"
-        - actions:
-            - type: oauth
-              config:
-                provider: google
-                auth_id: "my-login"
-                idle_session_timeout: "15m"
-                max_session_duration: "1h"
-```
-
-Apply the changes by restarting the specific tunnel:
+If you saved your Traffic Policy in a local file like `oauth.yml`, add the `--traffic-policy-file` flag to your ngrok command when starting your agent as shown in the following example.
 
 ```bash
-ngrok start myapp
+ngrok http 3000 --traffic-policy-file oauth.yml
 ```
 
-If you need assistance with specific configurations or further customization, feel free to ask our Support team at [support@ngrok.com](mailto:support@ngrok.com)!
+</TabItem>
+<TabItem value="config" label="Using an Agent Config file">
+
+If you've added the traffic policy to your agent config, run the following command in your terminal.
+
+```bash
+ngrok start endpoint-name-here
+```
+
+</TabItem>
+</Tabs>
+
+If you need assistance with specific configurations or further customization, feel free to ask our Support team at [support@ngrok.com](mailto:support@ngrok.com).
+
+## Bring your own OAuth application
+
+Though this guide uses ngrok's managed Google OAuth application, you can also use your own OAuth application. See the following guides to get started with your preferred provider:
+
+- [Google](https://ngrok.com/docs/integrations/google/oauth/)
+- [GitHub](https://ngrok.com/docs/integrations/github/oauth/)
+- [GitLab](https://ngrok.com/docs/integrations/gitlab/oauth/)
+- [LinkedIn](https://ngrok.com/docs/integrations/linkedin/oauth/)
+- [Microsoft](https://ngrok.com/docs/integrations/microsoft/oauth/)
+- [Twitch](https://ngrok.com/docs/integrations/twitch/oauth/)
