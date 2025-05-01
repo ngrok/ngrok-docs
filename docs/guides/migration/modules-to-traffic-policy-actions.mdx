@@ -1,0 +1,390 @@
+# Migrate from Modules to Traffic Policy Actions
+
+## ✨ Modules to Traffic Policy Actions Ref
+
+| Endpoint Module                    | Traffic Policy Action                                                                                                                                                  | Phase                                                                        | Notes                                   |
+| ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | --------------------------------------- |
+| `oauth`                            | [`set-vars`](/docs/traffic-policy/actions/set-vars/), [`oauth`](/docs/traffic-policy/actions/oauth), [`custom-response`](/docs/traffic-policy/actions/custom-response) | [`on_http_request`](/docs/traffic-policy/concepts/phases/#on_http_request)   | Maps OAuth provider and settings.       |
+| `oidc`                             | [`oidc`](/docs/traffic-policy/actions/oidc)                                                                                                                            | [`on_http_request`](/docs/traffic-policy/concepts/phases/#on_http_request)   | Maps OpenID Connect settings.           |
+| `ip_policy`                        | [`restrict-ips`](/docs/traffic-policy/actions/restrict-ips)                                                                                                            | [`on_tcp_connect`](/docs/traffic-policy/concepts/phases/#on_tcp_connect)     | Maps allowed IPs or policies.           |
+| `mutual_tls` and `tls_termination` | [`terminate-tls`](/docs/traffic-policy/actions/terminate-tls)                                                                                                          | [`on_tcp_connect`](/docs/traffic-policy/concepts/phases/#on_tcp_connect)     | Maps mTLS and TLS termination settings. |
+| `request_headers`                  | [`add-headers`](/docs/traffic-policy/actions/add-headers), [`remove-headers`](/docs/traffic-policy/actions/remove-headers)                                             | [`on_http_request`](/docs/traffic-policy/concepts/phases/#on_http_request)   | Modify request headers.                 |
+| `response_headers`                 | [`add-headers`](/docs/traffic-policy/actions/add-headers), [`remove-headers`](/docs/traffic-policy/actions/remove-headers)                                             | [`on_http_response`](/docs/traffic-policy/concepts/phases/#on_http_response) | Modify response headers.                |
+| `compression`                      | [`compress-response`](/docs/traffic-policy/actions/compress-response)                                                                                                  | [`on_http_response`](/docs/traffic-policy/concepts/phases/#on_http_response) | Enable response compression.            |
+| `webhook_validation`               | [`webhook-verification`](/docs/traffic-policy/actions/webhook-verification)                                                                                            | [`on_http_request`](/docs/traffic-policy/concepts/phases/#on_http_request)   | Validate webhook secrets.               |
+| `circuit_breaker`                  | [`circuit-breaker`](/docs/traffic-policy/actions/circuit-breaker)                                                                                                      | [`on_http_request`](/docs/traffic-policy/concepts/phases/#on_http_request)   | Define circuit breaking thresholds.     |
+| `saml`                             | (⚠️ Not supported)                                                                                                                                                     | N/A                                                                          | Try OIDC or contact support for help.   |
+
+## 🛠️ Migration Instructions Per Module
+
+### OAuth Authentication (`oauth`)
+
+**Old config example:**
+
+```json
+{
+  "oauth": {
+    "provider": "google",
+    "client_id": "abc",
+    "client_secret": "def",
+    "scopes": ["email"],
+    "email_addresses": ["user@domain.com"],
+    "email_domains": ["example.com"],
+    "options_passthrough": true
+  }
+}
+```
+
+**New Traffic Policy YAML:**
+
+Leverages the following actions:
+
+- [`set-vars`](/docs/traffic-policy/actions/set-vars)
+- [`oauth`](/docs/traffic-policy/actions/oauth)
+- [`custom-response`](/docs/traffic-policy/actions/custom-response)
+
+```yaml
+on_http_request:
+  # Setup list of allowed emails and domains
+  - actions:
+    - type: set-vars
+      config:
+        vars:
+          - allowed_emails:
+              - user@example.com
+          - allowed_email_domains:
+              - example.com
+
+  # Run OAuth action for authentication
+  - actions:
+    - type: oauth
+      config:
+        provider: google
+        client_id: abc
+        client_secret: def
+        scopes:
+          - email
+        allow_cors_preflight: true
+
+  # Get the result variables and do identity checks
+  - actions:
+    - type: set-vars
+      config:
+        vars:
+          # Set the authenticated user to vars.identity
+          - identity: "${actions.ngrok.oauth.identity}"
+          # Check whether the email is in the list of allowed emails
+          - is_email_allowed: "${vars.allowed_emails && !(vars.identity.email in vars.allowed_emails)}"
+          # Check whether the email domain is in the list of allowed email domains
+          - is_email_domain_allowed: "${vars.allowed_email_domains && !vars.allowed_email_domains.exists_one(i, (vars.identity.email.contains(i))}"
+
+  # Check whether the email was allowed or the domain was allowed
+  # Feel free to customize this to your liking!
+  - expressions:
+      - "vars.is_email_allowed || vars.is_email_domain_allowed"
+    actions:
+      - type: custom-response
+        config:
+          status_code: 403
+```
+
+### OpenID Connect Authentication (`oidc`)
+
+**Old config example:**
+
+```json
+{
+  "oidc": {
+    "issuer": "https://example.com",
+    "client_id": "abc",
+    "client_secret": "def",
+    "scopes": ["openid", "email"],
+    "options_passthrough": false,
+    "cookie_prefix": "auth.example.com",
+    "maximum_duration": 3600,
+    "inactivity_timeout": 600,
+    "auth_check_interval": 300
+  }
+}
+```
+
+**New Traffic Policy YAML:**
+
+Leverages the following actions:
+
+- [`oidc`](/docs/traffic-policy/actions/oidc)
+
+```yaml
+on_http_request:
+  - actions:
+    - type: oidc
+      config:
+        issuer_url: https://example.com
+        client_id: abc
+        client_secret: def
+        scopes:
+          - openid
+          - email
+        allow_cors_preflight: false
+        auth_cookie_domain: auth.example.com
+        max_session_duration: "3600s"
+        idle_session_duration: "600s"
+        userinfo_refresh_interval: "300s"
+```
+
+### IP Policy (`ip_policy`)
+
+**Old config example:**
+
+```json
+{
+  "ip_policy": {
+    "ip_policies": [
+      { "id": "ipp_123", "uri": "..." }
+    ]
+  }
+}
+```
+
+**New Traffic Policy YAML:**
+
+Leverages the following actions:
+
+- [`restrict-ips`](/docs/traffic-policy/actions/restrict-ips)
+
+```yaml
+on_tcp_connect:
+  - actions:
+    - type: restrict-ips
+      config:
+        ip_policies:
+          - ipp_123
+```
+
+### Mutual TLS and TLS Termination (`mutual_tls`, `tls_termination`)
+
+**Old config example:**
+
+```json
+{
+  "mutual_tls": {
+    "enabled": true,
+    "certificate_authorities": [{ "id": "ca_abc" }]
+  },
+  "tls_termination": {
+    "enabled": true,
+    "terminate_at": "edge",
+    "min_version": "1.3"
+  }
+}
+```
+
+**New Traffic Policy YAML:**
+
+Leverages the following actions:
+
+- [`terminate-tls`](/docs/traffic-policy/actions/terminate-tls)
+
+```yaml
+on_tcp_connect:
+  - actions:
+    - type: terminate-tls
+      config:
+        mutual_tls_certificate_authorities:
+          - ca_abc
+        min_version: "1.3"
+```
+
+### Request Headers (`request_headers`)
+
+**Old config example:**
+
+```json
+{
+  "request_headers": {
+    "add": {
+      "X-Test": "123"
+    },
+    "remove": ["X-Remove-Me"]
+  }
+}
+```
+
+**New Traffic Policy YAML:**
+
+Leverages the following actions:
+
+- [`add-headers`](/docs/traffic-policy/actions/add-headers)
+- [`remove-headers`](/docs/traffic-policy/actions/remove-headers)
+
+```yaml
+on_http_request:
+  - actions:
+    - type: add-headers
+      config:
+        headers:
+          X-Test: "123"
+  - actions:
+    - type: remove-headers
+      config:
+        headers:
+          - X-Remove-Me
+```
+
+### Response Headers (`response_headers`)
+
+**Old config example:**
+
+```json
+{
+  "response_headers": {
+    "add": {
+      "X-Test": "123"
+    },
+    "remove": ["X-Remove-Me"]
+  }
+}
+```
+
+**New Traffic Policy YAML:**
+
+Leverages the following actions:
+
+- [`add-headers`](/docs/traffic-policy/actions/add-headers)
+- [`remove-headers`](/docs/traffic-policy/actions/remove-headers)
+
+```yaml
+on_http_response:
+  - actions:
+    - type: add-headers
+      config:
+        headers:
+          X-Test: "123"
+  - actions:
+    - type: remove-headers
+      config:
+        headers:
+          - X-Remove-Me
+```
+
+### Compression (`compression`)
+
+**Old config example:**
+
+```json
+{
+  "compression": {
+    "enabled": true
+  }
+}
+
+```
+
+**New Traffic Policy YAML:**
+
+Leverages the following actions:
+
+- [`compress-response`](/docs/traffic-policy/actions/compress-response)
+
+```yaml
+on_http_request:
+  - actions:
+    - type: compress-response
+      config:
+        enabled: true
+
+```
+
+### Webhook Validation (`webhook_validation`)
+
+**Old config example:**
+
+```json
+{
+  "webhook_validation": {
+    "provider": "slack",
+    "secret": "abcdef"
+  }
+}
+
+```
+
+**New Traffic Policy YAML:**
+
+Leverages the following actions:
+
+- [`webhook-verification`](/docs/traffic-policy/actions/webhook-verification)
+
+```yaml
+on_http_request:
+  - actions:
+    - type: webhook-verification
+      config:
+        provider: slack
+        secret: abcdef
+
+```
+
+### Circuit Breaker (`circuit_breaker`)
+
+**Old config example:**
+
+```json
+{
+  "circuit_breaker": {
+    "tripped_duration": 30,
+    "rolling_window": 60,
+    "num_buckets": 10,
+    "volume_threshold": 100,
+    "error_threshold_percentage": 0.5
+  }
+}
+
+```
+
+**New Traffic Policy YAML:**
+
+Leverages the following actions:
+
+- [`circuit-breaker`](/docs/traffic-policy/actions/circuit-breaker)
+
+```yaml
+on_http_request:
+  - actions:
+    - type: circuit-breaker
+      config:
+        tripped_duration: "30s"
+        rolling_window: "60s"
+        num_buckets: 10
+        volume_threshold: 100
+        error_threshold_percentage: 0.5
+
+```
+
+### SAML Authentication (`saml`)
+
+- Traffic Policy **does not currently** natively support SAML.
+- You may want to try out the [OIDC](/docs/traffic-policy/actions/oidc) action or reach out to ngrok support.
+
+## ✅ Quick Checklist
+
+| Module                | Traffic Policy Action                  |
+| --------------------- | -------------------------------------- |
+| OAuth                 | `set-vars`, `oauth`, `custom-response` |
+| OIDC                  | `oidc`                                 |
+| IP Policy             | `ip-restriction`                       |
+| Mutual TLS / TLS Term | `terminate-tls`                        |
+| Request Headers       | `add-headers`, `remove-headers`        |
+| Response Headers      | `add-headers`, `remove-headers`        |
+| Compression           | `compress-response`                    |
+| Webhook Verification  | `webhook-verification`                 |
+| Circuit Breaker       | `circuit-breaker`                      |
+| SAML                  | ⚠️ (Not yet supported)                 |
+
+## 🛡️ Final Tips
+
+- **Always** test your traffic policy in staging before production.
+- **Validate YAML syntax** carefully — indentation matters.
+- If you have complex `expressions`, validate them in small steps.
+- If unsure, **rebuild small features** first, then layer on more complex features.
+- **Backup** your endpoint configuration before deletion.

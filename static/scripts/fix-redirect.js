@@ -855,6 +855,7 @@ const redirects = [
 	[fromExact("/docs/k8s/custom-domain/"), "/docs/k8s/guides/custom-domain/"],
 	[fromExact("/docs/k8s/user-guide/"), "/docs/k8s/"],
 	[fromExact("/docs/k8s/with-edges/"), "/docs/k8s/guides/using-ingresses/"],
+	[fromExact("/docs/using-ngrok-with/k8s/"), "/docs/k8s"],
 ];
 
 // get current href from window

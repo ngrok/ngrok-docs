@@ -1,0 +1,346 @@
+# Migrating ngrok Edges to Cloud Endpoints
+
+This guide walks you through manually migrating ngrok **Edge configurations** (HTTPS, TLS, TCP) to **Cloud Endpoints** using **Traffic Policies**.
+
+## 📋 Prerequisites
+
+- An **[ngrok account](https://dashboard.ngrok.com)** with an **[ngrok API key](https://dashboard.ngrok.com/api-keys)**.
+- The [ngrok API documentation](/docs/api).
+- Tools like `curl` or Postman (or [ngrok's own API libraries](/docs/api/#client-libraries)).
+- Understanding of your existing **edge configurations**.
+- YAML formatting skills for creating traffic policies.
+- A text editor to prepare YAML payloads.
+
+## ✅ What You'll Be Migrating
+
+| Edge Type | Replaced By                     | Policy Phases Used                    |
+| --------- | ------------------------------- | ------------------------------------- |
+| HTTPS     | Cloud Endpoint + Agent Endpoint | `on_http_request`, `on_http_response` |
+| TLS/TCP   | Cloud Endpoint + Agent Endpoint | `on_tcp_connect`                      |
+
+## ⚙️ Step 1 — Set Up Environment
+
+Make sure you have:
+
+- **NGROK_API_TOKEN** (your personal or organization token).
+- **API Base URL**: `https://api.ngrok.com`.
+
+**Example Header for all API requests:**
+
+```bash
+Authorization: Bearer $NGROK_API_KEY
+Ngrok-Version: 2
+Content-Type: application/json
+```
+
+## 📋 Step 2 — List Your Edges
+
+Use the ngrok API to list all existing edges:
+
+```bash
+GET /edges/https
+GET /edges/tls
+GET /edges/tcp
+```
+
+If a response includes a non-empty [`next_page_uri`](/docs/api/#pagination) you’ll want to follow it until it is `null`:
+
+```yaml
+{
+  "https_edges": [...],
+  "next_page_uri": "/edges/https?page=2"
+}
+```
+
+Just make sure to keep your [API rate limits](/docs/api/#rate-limits) in mind! Repeat this process for:
+
+- `/edges/tls`
+- `/edges/tcp`
+
+## 🧠 Step 3 — Determine the Target URL
+
+Each edge has one or more `hostports`. Use those to define a **cloud endpoint `url`**:
+
+| Edge Type | URL Format                   |
+| --------- | ---------------------------- |
+| HTTPS     | `https://yourdomain.com`     |
+| TLS       | `tls://yourdomain.com:443`   |
+| TCP       | `tcp://yourdomain.com:12345` |
+
+Note, you’ll have to create a cloud endpoint for each `hostport` attached to an edge if you want multiple `hostports` to service the same traffic flow.
+
+## 🛠️ Step 4 — Create a Traffic Policy
+
+Each cloud endpoint will have a YAML traffic policy.
+
+Here is the base structure of a Traffic Policy:
+
+```yaml
+on_http_request: []
+on_http_response: []
+on_tcp_connect: []
+```
+
+Use only the relevant phases for the edge type.
+
+## 🔁 Step 5 — Migrate Routes (HTTPS Only)
+
+HTTPS edges have routes, and we will need to convert each route’s to a CEL expression based on it’s `match_type` for use on every rule that is defined.
+
+Here are some example CEL expressions for routes based on the `match_type`:
+
+| Match Type    | CEL Expression                    |
+| ------------- | --------------------------------- |
+| `exact_path`  | `req.url.path == "/foo"`          |
+| `path_prefix` | `req.url.path.startsWith("/api")` |
+
+Create these for later use in each `expressions:` block in your policy rules.
+
+## 🔧 Step 6 — Convert Modules to Actions
+
+Each module on the edge or its routes maps to one or more policy actions:
+
+| Module                    | Actions                                                  |
+| ------------------------- | -------------------------------------------------------- |
+| `oauth`                   | `oauth` + `set-vars` + `custom-response` for restriction |
+| `oidc`                    | `oidc` with optional auth_id + session durations         |
+| `ip_restrictions`         | `restrict-ips`                                           |
+| `request_headers`         | `add-headers`, `remove-headers`                          |
+| `response_headers`        | `add-headers`, `remove-headers`                          |
+| `circuit_breaker`         | `circuit-breaker`                                        |
+| `webhook_verification`    | `verify-webhook`                                         |
+| `compression`             | `compress-response`                                      |
+| `user_agent_filter`       | `set-vars` + `deny` (based on user-agent match)          |
+| `websocket_tcp_converter` | ⚠️ Not supported                                         |
+
+You’ll want to translate each Module configuration to Action Configuration:
+
+- [📚 Guide: How to Migrate Each Endpoint Configuration Module to Traffic Policy Actions](/docs/guides/migration/modules-to-traffic-policy-actions)
+
+Add these actions under the correct phase (with matching route expressions when the endpoint is HTTP or HTTPS).
+
+## 🎯 Step 7 — Convert Backends
+
+Your edge’s backend defines where traffic goes. These should be placed **after all other actions you defined above. These should be added to the end of the phase.**
+
+### Tunnel Group Backends
+
+If the edge uses a `tunnel_group` backend (identified by labels):
+
+- Construct an internal domain for each label (e.g., `service=app` → `service-app.internal`)
+- Forward traffic to each internal domain using the `forward-internal` action and fall through with the `forward-internal` action.
+- Run the agent or create a cloud endpoint with that internal domain to receive traffic.
+
+**Example Policy (HTTPS):**
+
+```yaml
+on_http_request:
+  - expressions:
+      - req.url.path.startsWith("/api")
+    actions:
+      - type: forward-internal
+        config:
+          url: https://service-app.internal
+          on_error: continue
+      - type: custom-response
+        config:
+          content: |
+            No upstream tunnel available. Start your agent:
+            ngrok http 80 --url https://service-app.internal
+```
+
+Here we are defining `forward-internal` to forward to [`https://service-app.internal`](https://service-app.internal) and when an error occurs (like the endpoint being offline) fallback to some custom text (by leveraging `on_error: continue` and `custom-response`) describing how to get back online (this is optional).
+
+**Running internal agent endpoint via the CLI:**
+
+```bash
+ngrok http 80 --url https://service-app.internal
+```
+
+Here, we have started an agent endpoint with the URL [`https://service-app.internal`](https://service-app.internal) which points to a service running locally on the machine on port 80.
+
+### TCP/TLS Backends
+
+These are generally Tunnel Groups and should follow the same rules as above. However, wanted to call out that you should use the `on_tcp_connect` phase here instead:
+
+```yaml
+on_tcp_connect:
+  - actions:
+      - type: forward-internal
+        config:
+          url: tcp://app-service.internal:443
+
+```
+
+Additionally, you cannot use the `custom-response` action for an HTTP fallback.
+
+### HTTP Response Backends
+
+Use `custom-response` to serve static content:
+
+```yaml
+on_http_request:
+  - expressions:
+      - req.url.path.startsWith("/api")
+    actions:
+      - type: custom-response
+        config:
+          status_code: 200
+          content: pong
+```
+
+### Failover Backends
+
+1. Loop through the list of failover backends
+2. For each backend type, applying the same rules in group in sequence but on each Tunnel Group, use `on_error: continue` to fall-through to the next group, or HTTP Response backend.
+
+### Weighted Backends → Not yet supported
+
+These are not officially supported today in traffic policies.
+
+You can pseudo-replicate this functionality today using multiple internal endpoints and the `rand` macro to randomly send traffic:
+
+```yaml
+on_http_request:
+  - expressions:
+      - req.url.path.startsWith("/api")
+    actions:
+      - type: set-vars
+        config:
+          vars:
+            - urls:
+                - weight: 10
+                  url: https://a.internal
+                - weight: 20
+                  url: https://b.internal
+                - weight: 15
+                  url: https://c.internal
+                - weight: 5
+                  url: https://d.internal
+                - weight: 10
+                  url: https://e.internal
+                - weight: 8
+                  url: https://f.internal
+                - weight: 7
+                  url: https://g.internal
+                - weight: 12
+                  url: https://h.internal
+                - weight: 9
+                  url: https://i.internal
+                - weight: 4
+                  url: https://j.internal
+            - cumulative_weights: [10, 30, 45, 50, 60, 68, 75, 87, 96, 100]
+            - weighted_chance: ${rand.int(0, 99)}
+            - weighted_index: ${[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].filter(i, vars.cumulative_weights[i] > vars.weighted_chance)[0]}
+            - weighted_url: ${vars.urls[vars.weighted_index].url}
+  - expressions:
+      - req.url.path.startsWith("/api")
+    actions:
+      - type: forward-internal
+        config:
+          url: ${vars.weighted_url}
+          on_error: continue
+      - type: custom-response
+        config:
+          content: |
+            No upstream tunnel available. Start your agent:
+            ngrok http 80 --url ${vars.weighted_url}
+```
+
+Since our CEL environment doesn’t support reduce or fold you’ll have to use an external script to determine the cumulative weights, chance, and lookups:
+
+```python
+import yaml
+
+urls = [
+  {"weight": 10, "url": "https://a.internal"},
+  {"weight": 20, "url": "https://b.internal"},
+  {"weight": 15, "url": "https://c.internal"},
+  {"weight": 5,  "url": "https://d.internal"},
+  {"weight": 10, "url": "https://e.internal"},
+  {"weight": 8,  "url": "https://f.internal"},
+  {"weight": 7,  "url": "https://g.internal"},
+  {"weight": 12, "url": "https://h.internal"},
+  {"weight": 9,  "url": "https://i.internal"},
+  {"weight": 4,  "url": "https://j.internal"},
+]
+
+# Compute cumulative weights
+cumulative = []
+total = 0
+for u in urls:
+  total += u["weight"]
+  cumulative.append(total)
+
+# Build the CEL YAML block with correct string interpolation
+index_expr = "[{0}].filter(i, vars.cumulative_weights[i] > vars.weighted_chance)[0]".format(
+  ', '.join(map(str, range(len(urls))))
+)
+
+# Generate the configuration for set-vars
+config = {
+  "type": "set-vars",
+  "config": {
+    "vars": [
+      {"urls": urls},
+      {"cumulative_weights": cumulative},
+      {"weighted_chance": f"${{rand.int(0, {total - 1})}}"},
+      {"weighted_index": f"${{{index_expr}}}"},
+      {"weighted_url": "${vars.urls[vars.weighted_index].url}"}
+    ]
+  }
+}
+
+# Output the config
+yaml_output = yaml.dump([config], sort_keys=False)
+print(yaml_output)
+```
+
+## ✏️ Step 8 — Create the Cloud Endpoint
+
+Each edge `hostport` should become a separate **cloud endpoint** with its configuration represented as **JSON**, and the `traffic_policy` embedded as **stringified YAML**.
+
+**Endpoint configuration object**
+
+```json
+{
+  "type": "cloud",
+  "url": "https://yourdomain.com",
+  "description": "Migrated from edge abc123",
+  "traffic_policy": "on_http_request:\n  - expressions:\n      - req.url.path.startsWith(\"/api\")\n    actions:\n      - type: oauth\n        config:\n          provider: google\n          client_id: ...\n      - type: forward-internal\n        config:\n          url: https://app-service.internal:443\non_http_response:\n  - actions:\n      - type: add-headers\n        config:\n          headers:\n            X-Edge: migrated\n"
+}
+```
+
+> ⚠️ Ensure all newlines (\n) and indentations are preserved when stringifying YAML into JSON. It’s best to use a library or third-party service to stringify your YAML into an object and then generate the resulting cloud endpoint JSON object.
+
+**Submit to:**
+
+```bash
+POST /endpoints
+Content-Type: application/json
+Authorization: Bearer $NGROK_API_KEY
+Ngrok-Version: 2
+
+...
+```
+
+## 🧹 Step 9 — Clean Up the Old Edge
+
+Once you have validated that your edge has been migrated and works, you can clean up the edge from your account:
+
+```bash
+DELETE /edges/{type}/{id}
+```
+
+Repeat for all HTTPS, TLS, and TCP edges.
+
+## ✅ Final Checklist
+
+| Step                                                          | Done? |
+| ------------------------------------------------------------- | ----- |
+| Listed all edges and their `hostports`                        |       |
+| Converted modules to policy actions                           |       |
+| Converted backends to `forward-internal` or `custom-response` |       |
+| Created necessary internal endpoints                          |       |
+| Created cloud endpoints                                       |       |
+| Deleted the old edge                                          |       |
