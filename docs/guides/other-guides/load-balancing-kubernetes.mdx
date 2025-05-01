@@ -1,0 +1,139 @@
+---
+title: Load Balancing Between Services Deployed in Kubernetes
+description: Learn how to use Endpoint Pooling to share incoming traffic between services in different clusters or clouds.
+---
+
+import TabItem from "@theme/TabItem";
+import Tabs from "@theme/Tabs";
+
+A core benefit of Kubernetes is that it simplifies creating multiple replica
+pods for your apps or APIs and automatically load-balancing
+between them. That's helpful if you have a single cluster and need to
+horizontally scale, but Kubernetes can't help if you want to:
+
+- Share traffic between multiple clusters
+- Balance traffic between more than one cloud providers
+- Deploy canary versions or run A/B tests of your apps/APIs on a single cluster
+
+[Endpoint Pooling](/docs/universal-gateway/endpoint-pooling/) makes load
+balancing between Kubernetes services simple—you only need to create two
+endpoints with the same URL. Here's how that works in your clusters, whether
+you're using our `AgentEndpoint` custom resource,
+[Ingress](/docs/k8s/guides/using-ingresses) objects, or [Gateway
+API](/docs/k8s/guides/using-gwapi) resources.
+
+## 1. Install the ngrok Kubernetes Operator
+
+Check out our [installation instructions](/docs/k8s/installation/install/) for
+details on how to use Helm to deploy the open-source Operator to each cluster
+you'd like to load-balance between.
+
+## 2. Create your first Agent Endpoint
+
+Pooling is always enabled on `AgentEndpoint` resources, but with Ingress or
+Gateway API, you have to enable it with an annotation.
+
+The YAML snippets below are just illustrations—you'll also need to change the
+details of your services, like their names, ports, and namespaces, to match what
+you've already implemented. Same goes for `$NGROK_DOMAIN`—you can reserve a domain in
+the [dashboard](https://dashboard.ngrok.com/domains) if you don't have one already.
+
+<Tabs groupId="k8s" queryString="k8s">
+	<TabItem value="AgentEndpoint" label="Agent Endpoint" default>
+	```yaml
+		apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+		kind: AgentEndpoint
+		metadata:
+			name: example
+			namespace: default
+		spec:
+			upstream:
+				url: http://example.default:80
+			url: https://$NGROK_DOMAIN
+	```
+	</TabItem>
+	<TabItem value="Ingress" label="Ingress" default>
+	```yaml
+	apiVersion: networking.k8s.io/v1
+	kind: Ingress
+	metadata:
+		name: example-ingress
+		namespace: default
+		annotations:
+			k8s.ngrok.com/pooling-enabled: "true"
+	spec:
+		ingressClassName: ngrok
+		rules:
+			- host: $NGROK_DOMAIN
+				http:
+					paths:
+						- path: /
+							pathType: Prefix
+							backend:
+								service:
+									name: example
+									port:
+										number: 80
+	```
+	</TabItem>
+	<TabItem value="GWAPI" label="Gateway API" default>
+	```yaml
+	apiVersion: gateway.networking.k8s.io/v1
+	kind: Gateway
+	metadata:
+		name: ngrok-gateway
+		namespace: default
+		annotations:
+		  k8s.ngrok.com/pooling-enabled: "true"
+	spec:
+		gatewayClassName: ngrok
+		listeners:
+			- name: example-hostname
+				protocol: HTTP
+				port: 80
+				hostname: $NGROK_DOMAIN
+	---
+	apiVersion: gateway.networking.k8s.io/v1
+	kind: HTTPRoute
+	metadata:
+		name: example-route
+		namespace: default
+	spec:
+		parentRefs:
+		  - group: gateway.networking.k8s.io
+			  kind: Gateway
+		    name: ngrok-gateway
+		    namespace: default
+		hostnames:
+		  - $NGROK_DOMAIN
+		rules:
+		  - matches:
+			  - path:
+					  type: PathPrefix
+					  value: /
+			backendRefs:
+			  - name: example
+				  port: 80
+	```
+	</TabItem>
+</Tabs>
+
+## 3. Create a second Agent Endpoint to enable pooling
+
+On a second cluster, apply the same or similar ingress configuration—just
+make sure the `url`, `host`, or `hostname` value is the same for
+`AgentEndpoint`, Ingress, and Gateway API implementations, respectively.
+
+Hit your endpoint a few times to get responses from multiple clusters.
+
+## What's next?
+
+Now that you're load-balancing in Kubernetes, you can repeat the process in
+other clusters or clouds to add many other agent endpoints to the pool—there's
+no limit on how many services can share traffic on a single URL.
+
+You might also consider creating a single [Cloud
+Endpoint](/docs/universal-gateway/cloud-endpoints/) that serves as the "front
+door" to all your Kubernetes services, then create a pool of [internal Agent
+Endpoints](/docs/universal-gateway/internal-endpoints/) on a pooled URL like
+`https://example.internal`.
