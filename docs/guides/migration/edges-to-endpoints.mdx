@@ -200,39 +200,40 @@ These are not officially supported today in traffic policies.
 
 You can pseudo-replicate this functionality today using multiple internal endpoints and the `rand` macro to randomly send traffic:
 
+
 ```yaml
 on_http_request:
   - expressions:
       - req.url.path.startsWith("/api")
     actions:
-			- type: set-vars
-			  config:
-			    vars:
-			      - urls:
-			          - weight: 10
-			            url: https://a.internal
-			          - weight: 20
-			            url: https://b.internal
-			          - weight: 15
-			            url: https://c.internal
-			          - weight: 5
-			            url: https://d.internal
-			          - weight: 10
-			            url: https://e.internal
-			          - weight: 8
-			            url: https://f.internal
-			          - weight: 7
-			            url: https://g.internal
-			          - weight: 12
-			            url: https://h.internal
-			          - weight: 9
-			            url: https://i.internal
-			          - weight: 4
-			            url: https://j.internal
-			      - cumulative_weights: [10, 30, 45, 50, 60, 68, 75, 87, 96, 100]
-			      - weighted_chance: ${rand.int(0, 99)}
-			      - weighted_index: ${[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].filter(i, vars.cumulative_weights[i] > vars.weighted_chance)[0]}
-			      - weighted_url: ${vars.urls[vars.weighted_index].url}
+      - type: set-vars
+        config:
+          vars:
+            - urls:
+                - weight: 10
+                  url: https://a.internal
+                - weight: 20
+                  url: https://b.internal
+                - weight: 15
+                  url: https://c.internal
+                - weight: 5
+                  url: https://d.internal
+                - weight: 10
+                  url: https://e.internal
+                - weight: 8
+                  url: https://f.internal
+                - weight: 7
+                  url: https://g.internal
+                - weight: 12
+                  url: https://h.internal
+                - weight: 9
+                  url: https://i.internal
+                - weight: 4
+                  url: https://j.internal
+            - cumulative_weights: [10, 30, 45, 50, 60, 68, 75, 87, 96, 100]
+            - weighted_chance: ${rand.int(0, 99)}
+            - weighted_index: ${[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].filter(i, vars.cumulative_weights[i] > vars.weighted_chance)[0]}
+            - weighted_url: ${vars.urls[vars.weighted_index].url}
   - expressions:
       - req.url.path.startsWith("/api")
     actions:
@@ -253,42 +254,42 @@ Since our CEL environment doesn’t support reduce or fold you’ll have to use 
 import yaml
 
 urls = [
-    {"weight": 10, "url": "https://a.internal"},
-    {"weight": 20, "url": "https://b.internal"},
-    {"weight": 15, "url": "https://c.internal"},
-    {"weight": 5,  "url": "https://d.internal"},
-    {"weight": 10, "url": "https://e.internal"},
-    {"weight": 8,  "url": "https://f.internal"},
-    {"weight": 7,  "url": "https://g.internal"},
-    {"weight": 12, "url": "https://h.internal"},
-    {"weight": 9,  "url": "https://i.internal"},
-    {"weight": 4,  "url": "https://j.internal"},
+  {"weight": 10, "url": "https://a.internal"},
+  {"weight": 20, "url": "https://b.internal"},
+  {"weight": 15, "url": "https://c.internal"},
+  {"weight": 5,  "url": "https://d.internal"},
+  {"weight": 10, "url": "https://e.internal"},
+  {"weight": 8,  "url": "https://f.internal"},
+  {"weight": 7,  "url": "https://g.internal"},
+  {"weight": 12, "url": "https://h.internal"},
+  {"weight": 9,  "url": "https://i.internal"},
+  {"weight": 4,  "url": "https://j.internal"},
 ]
 
 # Compute cumulative weights
 cumulative = []
 total = 0
 for u in urls:
-    total += u["weight"]
-    cumulative.append(total)
+  total += u["weight"]
+  cumulative.append(total)
 
 # Build the CEL YAML block with correct string interpolation
 index_expr = "[{0}].filter(i, vars.cumulative_weights[i] > vars.weighted_chance)[0]".format(
-    ', '.join(map(str, range(len(urls))))
+  ', '.join(map(str, range(len(urls))))
 )
 
 # Generate the configuration for set-vars
 config = {
-    "type": "set-vars",
-    "config": {
-        "vars": [
-            {"urls": urls},
-            {"cumulative_weights": cumulative},
-            {"weighted_chance": f"${{rand.int(0, {total - 1})}}"},
-            {"weighted_index": f"${{{index_expr}}}"},
-            {"weighted_url": "${vars.urls[vars.weighted_index].url}"}
-        ]
-    }
+  "type": "set-vars",
+  "config": {
+    "vars": [
+      {"urls": urls},
+      {"cumulative_weights": cumulative},
+      {"weighted_chance": f"${{rand.int(0, {total - 1})}}"},
+      {"weighted_index": f"${{{index_expr}}}"},
+      {"weighted_url": "${vars.urls[vars.weighted_index].url}"}
+    ]
+  }
 }
 
 # Output the config
