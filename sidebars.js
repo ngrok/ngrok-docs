@@ -48,23 +48,44 @@ const sidebars = {
 			items: [
 				"universal-gateway/overview",
 				{
-					label: "What are Endpoints?",
+					label: "Endpoints",
 					type: "category",
 					link: {
 						type: "doc",
 						id: "universal-gateway/endpoints",
 					},
 					items: [
-						"universal-gateway/bindings",
-						"universal-gateway/public-endpoints/index",
 						{
-							label: "Using Internal Endpoints",
+							label: "Endpoint Bindings",
 							type: "category",
 							link: {
 								type: "doc",
-								id: "universal-gateway/internal-endpoints/index",
+								id: "universal-gateway/bindings",
 							},
-							items: ["universal-gateway/internal-endpoints/quickstart"],
+							items: [
+								"universal-gateway/public-endpoints/index",
+								{
+									label: "Internal Binding",
+									type: "category",
+									link: {
+										type: "doc",
+										id: "universal-gateway/internal-endpoints/index",
+									},
+									items: ["universal-gateway/internal-endpoints/quickstart"],
+								},
+								{
+									label: "Kubernetes Binding",
+									type: "category",
+									link: {
+										type: "doc",
+										id: "universal-gateway/kubernetes-endpoints/index",
+									},
+									items: [
+										"universal-gateway/kubernetes-endpoints/services",
+										"universal-gateway/kubernetes-endpoints/selector",
+									],
+								},
+							],
 						},
 						"universal-gateway/agent-endpoints",
 						{
@@ -75,19 +96,6 @@ const sidebars = {
 								id: "universal-gateway/cloud-endpoints/index",
 							},
 							items: ["universal-gateway/cloud-endpoints/quickstart"],
-						},
-						{
-							label: "Using Kubernetes Endpoints",
-							type: "category",
-							link: {
-								type: "doc",
-								id: "universal-gateway/kubernetes-endpoints/index",
-							},
-							items: [
-								"universal-gateway/kubernetes-endpoints/quickstart",
-								"universal-gateway/kubernetes-endpoints/services",
-								"universal-gateway/kubernetes-endpoints/selector",
-							],
 						},
 						"universal-gateway/what-are-endpoint-urls",
 						"universal-gateway/wildcard-domains/wildcard-endpoints",
