@@ -1,5 +1,5 @@
 import BrowserOnly from "@docusaurus/BrowserOnly";
-import { useTheme } from "@ngrok/mantle/theme-provider";
+import { useAppliedTheme } from "@ngrok/mantle/theme-provider";
 
 export function ThemeImage({
 	darkSrc,
