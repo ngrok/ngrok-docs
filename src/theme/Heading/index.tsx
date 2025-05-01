@@ -1,8 +1,8 @@
-import React, { useEffect, type ReactNode } from "react";
+import { useLocation } from "@docusaurus/router";
+import type { WrapperProps } from "@docusaurus/types";
 import Heading from "@theme-original/Heading";
 import type HeadingType from "@theme/Heading";
-import type { WrapperProps } from "@docusaurus/types";
-import { useLocation } from "@docusaurus/router";
+import React, { useEffect, type ReactNode } from "react";
 
 type Props = WrapperProps<typeof HeadingType>;
 
