@@ -13,10 +13,10 @@ This guide walks you through manually migrating ngrok **Edge configurations** (H
 
 ## ✅ What You'll Be Migrating
 
-| Edge Type | Replaced By | Policy Phases Used |
-| --- | --- | --- |
-| HTTPS | Cloud Endpoint + Agent Endpoint | `on_http_request`, `on_http_response` |
-| TLS/TCP | Cloud Endpoint + Agent Endpoint | `on_tcp_connect` |
+| Edge Type | Replaced By                     | Policy Phases Used                    |
+| --------- | ------------------------------- | ------------------------------------- |
+| HTTPS     | Cloud Endpoint + Agent Endpoint | `on_http_request`, `on_http_response` |
+| TLS/TCP   | Cloud Endpoint + Agent Endpoint | `on_tcp_connect`                      |
 
 ## ⚙️ Step 1 — Set Up Environment
 
@@ -61,17 +61,17 @@ Just make sure to keep your [API rate limits](/docs/api/#rate-limits) in mind! R
 
 Each edge has one or more `hostports`. Use those to define a **cloud endpoint `url`**:
 
-| Edge Type | URL Format |
-| --- | --- |
-| HTTPS | `https://yourdomain.com` |
-| TLS | `tls://yourdomain.com:443` |
-| TCP | `tcp://yourdomain.com:12345` |
+| Edge Type | URL Format                   |
+| --------- | ---------------------------- |
+| HTTPS     | `https://yourdomain.com`     |
+| TLS       | `tls://yourdomain.com:443`   |
+| TCP       | `tcp://yourdomain.com:12345` |
 
 Note, you’ll have to create a cloud endpoint for each `hostport` attached to an edge if you want multiple `hostports` to service the same traffic flow.
 
 ## 🛠️ Step 4 — Create a Traffic Policy
 
-Each cloud endpoint will have a YAML traffic policy. 
+Each cloud endpoint will have a YAML traffic policy.
 
 Here is the base structure of a Traffic Policy:
 
@@ -85,13 +85,13 @@ Use only the relevant phases for the edge type.
 
 ## 🔁 Step 5 — Migrate Routes (HTTPS Only)
 
-HTTPS edges have routes, and we will need to convert each route’s to a CEL expression based on it’s `match_type` for use on every rule that is defined. 
+HTTPS edges have routes, and we will need to convert each route’s to a CEL expression based on it’s `match_type` for use on every rule that is defined.
 
 Here are some example CEL expressions for routes based on the `match_type`:
 
-| Match Type | CEL Expression |
-| --- | --- |
-| `exact_path` | `req.url.path == "/foo"` |
+| Match Type    | CEL Expression                    |
+| ------------- | --------------------------------- |
+| `exact_path`  | `req.url.path == "/foo"`          |
 | `path_prefix` | `req.url.path.startsWith("/api")` |
 
 Create these for later use in each `expressions:` block in your policy rules.
@@ -100,18 +100,18 @@ Create these for later use in each `expressions:` block in your policy rules.
 
 Each module on the edge or its routes maps to one or more policy actions:
 
-| Module | Actions |
-| --- | --- |
-| `oauth` | `oauth` + `set-vars` + `custom-response` for restriction |
-| `oidc` | `oidc` with optional auth_id + session durations |
-| `ip_restrictions` | `restrict-ips` |
-| `request_headers` | `add-headers`, `remove-headers` |
-| `response_headers` | `add-headers`, `remove-headers` |
-| `circuit_breaker` | `circuit-breaker` |
-| `webhook_verification` | `verify-webhook` |
-| `compression` | `compress-response` |
-| `user_agent_filter` | `set-vars` + `deny` (based on user-agent match) |
-| `websocket_tcp_converter` | ⚠️ Not supported |
+| Module                    | Actions                                                  |
+| ------------------------- | -------------------------------------------------------- |
+| `oauth`                   | `oauth` + `set-vars` + `custom-response` for restriction |
+| `oidc`                    | `oidc` with optional auth_id + session durations         |
+| `ip_restrictions`         | `restrict-ips`                                           |
+| `request_headers`         | `add-headers`, `remove-headers`                          |
+| `response_headers`        | `add-headers`, `remove-headers`                          |
+| `circuit_breaker`         | `circuit-breaker`                                        |
+| `webhook_verification`    | `verify-webhook`                                         |
+| `compression`             | `compress-response`                                      |
+| `user_agent_filter`       | `set-vars` + `deny` (based on user-agent match)          |
+| `websocket_tcp_converter` | ⚠️ Not supported                                         |
 
 You’ll want to translate each Module configuration to Action Configuration:
 
@@ -196,7 +196,7 @@ on_http_request:
 
 ### Weighted Backends → Not yet supported
 
-These are not officially supported today in traffic policies. 
+These are not officially supported today in traffic policies.
 
 You can pseudo-replicate this functionality today using multiple internal endpoints and the `rand` macro to randomly send traffic:
 
@@ -312,7 +312,6 @@ Each edge `hostport` should become a separate **cloud endpoint** with its config
 ```
 
 > ⚠️ Ensure all newlines (\n) and indentations are preserved when stringifying YAML into JSON. It’s best to use a library or third-party service to stringify your YAML into an object and then generate the resulting cloud endpoint JSON object.
-> 
 
 **Submit to:**
 
@@ -337,11 +336,11 @@ Repeat for all HTTPS, TLS, and TCP edges.
 
 ## ✅ Final Checklist
 
-| Step | Done? |
-| --- | --- |
-| Listed all edges and their `hostports` |  |
-| Converted modules to policy actions |  |
-| Converted backends to `forward-internal` or `custom-response` |  |
-| Created necessary internal endpoints |  |
-| Created cloud endpoints |  |
-| Deleted the old edge |  |
+| Step                                                          | Done? |
+| ------------------------------------------------------------- | ----- |
+| Listed all edges and their `hostports`                        |       |
+| Converted modules to policy actions                           |       |
+| Converted backends to `forward-internal` or `custom-response` |       |
+| Created necessary internal endpoints                          |       |
+| Created cloud endpoints                                       |       |
+| Deleted the old edge                                          |       |
