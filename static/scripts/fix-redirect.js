@@ -942,6 +942,10 @@ const redirects = [
 		fromExact("/docs/universal-gateway/tls-certificates/#private-keys"),
 		"/docs/universal-gateway/tls-certificates/what-are-private-tls-keys/",
 	],
+	[
+		fromExact("/docs/universal-gateway/http/"),
+		"/docs/universal-gateway/http-s/",
+	],
 ];
 
 // get current href from window

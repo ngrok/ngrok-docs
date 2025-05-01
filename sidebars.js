@@ -58,7 +58,7 @@ const sidebars = {
 						"universal-gateway/bindings",
 						"universal-gateway/public-endpoints/index",
 						{
-							label: "What are Internal Endpoints?",
+							label: "Using Internal Endpoints",
 							type: "category",
 							link: {
 								type: "doc",
@@ -68,7 +68,7 @@ const sidebars = {
 						},
 						"universal-gateway/agent-endpoints",
 						{
-							label: "What are Cloud Endpoints?",
+							label: "Using Cloud Endpoints",
 							type: "category",
 							link: {
 								type: "doc",
@@ -77,7 +77,7 @@ const sidebars = {
 							items: ["universal-gateway/cloud-endpoints/quickstart"],
 						},
 						{
-							label: "What are Kubernetes Endpoints?",
+							label: "Using Kubernetes Endpoints",
 							type: "category",
 							link: {
 								type: "doc",
@@ -123,71 +123,78 @@ const sidebars = {
 				},
 				"universal-gateway/ip-addresses",
 				{
-					label: "Handling HTTP/S Traffic",
+					label: "Handling Traffic",
 					type: "category",
-					link: { type: "doc", id: "universal-gateway/http-s/index" },
-					items: [
-						"universal-gateway/http-s/http-s-endpoints",
-						"universal-gateway/http-s/upstream-headers",
-					],
-				},
-				{
-					label: "Handling TLS Traffic",
-					type: "category",
-					link: {
-						type: "doc",
-						id: "universal-gateway/tls/index",
-					},
 					items: [
 						{
-							label: "How Do I Terminate TLS?",
+							label: "HTTP/S",
+							type: "category",
+							link: { type: "doc", id: "universal-gateway/http-s/index" },
+							items: ["universal-gateway/http-s/http-s-endpoints"],
+						},
+						{
+							label: "TLS",
 							type: "category",
 							link: {
 								type: "doc",
-								id: "universal-gateway/tls/tls-termination/index",
+								id: "universal-gateway/tls/index",
 							},
 							items: [
-								"universal-gateway/tls/handshake",
-								"universal-gateway/tls/tls-termination/termination-mechanics",
-								"universal-gateway/tls/tls-termination/termination-location",
+								{
+									label: "Terminating TLS",
+									type: "category",
+									link: {
+										type: "doc",
+										id: "universal-gateway/tls/tls-termination/index",
+									},
+									items: [
+										"universal-gateway/tls/tls-termination/termination-mechanics",
+										"universal-gateway/tls/tls-termination/termination-location",
+										"universal-gateway/tls/handshake",
+									],
+								},
+								{
+									label: "Managing TLS Certificates",
+									type: "category",
+									link: {
+										type: "doc",
+										id: "universal-gateway/tls-certificates/how-does-ngrok-handle-tls",
+									},
+									items: [
+										"universal-gateway/tls-certificates/automatic-certificate-management",
+										"universal-gateway/tls-certificates/how-are-certificates-selected",
+										"universal-gateway/tls-certificates/custom-certificates",
+										"universal-gateway/tls-certificates/what-is-a-certificate-bundle",
+										"universal-gateway/tls-certificates/what-are-private-tls-keys",
+									],
+								},
+								"universal-gateway/tls/tls-clients",
 							],
 						},
 						{
-							label: "How Does ngrok Handle TLS Certificates?",
+							label: "TCP",
+							type: "category",
+							link: { type: "doc", id: "universal-gateway/tcp/index" },
+							items: ["universal-gateway/tcp/static-tcp-url"],
+						},
+						{
+							label: "Forwarding Traffic",
 							type: "category",
 							link: {
 								type: "doc",
-								id: "universal-gateway/tls-certificates/how-does-ngrok-handle-tls",
+								id: "universal-gateway/agent-forwarding/index",
 							},
 							items: [
-								"universal-gateway/tls-certificates/automatic-certificate-management",
-								"universal-gateway/tls-certificates/how-are-certificates-selected",
-								"universal-gateway/tls-certificates/custom-certificates",
-								"universal-gateway/tls-certificates/what-is-a-certificate-bundle",
-								"universal-gateway/tls-certificates/what-are-private-tls-keys",
+								"universal-gateway/agent-forwarding/forward-original-connection-data",
+								"universal-gateway/http-s/upstream-headers",
+								"universal-gateway/agent-forwarding/non-local-forwarding",
+								"universal-gateway/agent-forwarding/serving-file-directories",
 							],
 						},
-						"universal-gateway/tls/tls-clients",
 					],
 				},
 				{
-					label: "Handling TCP Traffic",
-					type: "category",
-					link: { type: "doc", id: "universal-gateway/tcp/index" },
-					items: ["universal-gateway/tcp/static-tcp-url"],
-				},
-				{
-					label: "How Do I Forward Traffic?",
-					type: "category",
-					link: { type: "doc", id: "universal-gateway/agent-forwarding/index" },
-					items: [
-						"universal-gateway/agent-forwarding/forward-original-connection-data",
-						"universal-gateway/agent-forwarding/non-local-forwarding",
-						"universal-gateway/agent-forwarding/serving-file-directories",
-					],
-				},
-				{
-					label: "What is Endpoint Pooling?",
+					label: "Endpoint Pooling",
 					type: "category",
 					link: { type: "doc", id: "universal-gateway/pooling/index" },
 					items: [
@@ -196,7 +203,7 @@ const sidebars = {
 					],
 				},
 				{
-					label: "What is the Global Load Balancer?",
+					label: "Using the Global Load Balancer",
 					type: "category",
 					link: {
 						type: "doc",
