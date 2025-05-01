@@ -58,7 +58,6 @@ const sidebars = {
 						"universal-gateway/domains/bring-your-own-domain",
 						"universal-gateway/domains/what-are-managed-domains",
 						"universal-gateway/wildcard-domains/index",
-						"universal-gateway/wildcard-domains/wildcard-endpoints",
 					],
 				},
 				{
@@ -116,6 +115,7 @@ const sidebars = {
 							],
 						},
 						"universal-gateway/what-are-endpoint-urls",
+						"universal-gateway/wildcard-domains/wildcard-endpoints",
 						"universal-gateway/http-s/endpoint-url-defaults",
 						"universal-gateway/chain-endpoints",
 						"universal-gateway/mock-api",
