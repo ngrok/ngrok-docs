@@ -13,21 +13,21 @@ export function ThemeImage({
 	className?: string;
 }): React.ReactElement {
 	const currentTheme = useAppliedTheme();
-  let imgSrc = lightSrc;
+	let imgSrc = lightSrc;
 
 	switch (currentTheme) {
 		case "dark":
 		case "dark-high-contrast": {
-		  imgSrc = darkSrc;
+			imgSrc = darkSrc;
 			break;
-		}	
+		}
 		case "light":
 		case "light-high-contrast":
 		default: {
-		  imgSrc = lightSrc;
+			imgSrc = lightSrc;
 		}
 	}
-	
+
 	return (
 		<BrowserOnly fallback={<span>Loading ...</span>}>
 			{() => <img alt={alt} className={className} src={imgSrc} />}
