@@ -12,28 +12,25 @@ export function ThemeImage({
 	alt: string;
 	className?: string;
 }): React.ReactElement {
-	const [currentTheme] = useTheme();
+	const currentTheme = useAppliedTheme();
+  let imgSrc = lightSrc;
 
-	function getColorMode() {
-		switch (currentTheme) {
-			case "dark":
-			case "dark-high-contrast":
-				return darkSrc;
-			case "light":
-			case "light-high-contrast":
-				return lightSrc;
-			case "system":
-				return window.matchMedia("(prefers-color-scheme: dark)").matches
-					? darkSrc
-					: lightSrc;
-			default:
-				return lightSrc;
+	switch (currentTheme) {
+		case "dark":
+		case "dark-high-contrast": {
+		  imgSrc = darkSrc;
+			break;
+		}	
+		case "light":
+		case "light-high-contrast":
+		default: {
+		  imgSrc = lightSrc;
 		}
 	}
-
+	
 	return (
 		<BrowserOnly fallback={<span>Loading ...</span>}>
-			{() => <img alt={alt} className={className} src={getColorMode()} />}
+			{() => <img alt={alt} className={className} src={imgSrc} />}
 		</BrowserOnly>
 	);
 }
