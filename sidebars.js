@@ -48,31 +48,6 @@ const sidebars = {
 			items: [
 				"universal-gateway/overview",
 				{
-					label: "What are Domains?",
-					type: "category",
-					link: {
-						type: "doc",
-						id: "universal-gateway/domains/what-are-domains",
-					},
-					items: [
-						"universal-gateway/domains/bring-your-own-domain",
-						"universal-gateway/domains/what-are-managed-domains",
-						"universal-gateway/wildcard-domains/index",
-					],
-				},
-				{
-					label: "Using TCP Addresses",
-					type: "category",
-					link: {
-						type: "doc",
-						id: "universal-gateway/tcp-addresses/index",
-					},
-					items: [
-						"universal-gateway/tcp-addresses/how-are-tcp-addresses-assigned",
-					],
-				},
-				"universal-gateway/ip-addresses",
-				{
 					label: "What are Endpoints?",
 					type: "category",
 					link: {
@@ -122,6 +97,31 @@ const sidebars = {
 						"universal-gateway/migrate-from-tunnels",
 					],
 				},
+				{
+					label: "Using TCP Addresses",
+					type: "category",
+					link: {
+						type: "doc",
+						id: "universal-gateway/tcp-addresses/index",
+					},
+					items: [
+						"universal-gateway/tcp-addresses/how-are-tcp-addresses-assigned",
+					],
+				},
+				{
+					label: "What are Domains?",
+					type: "category",
+					link: {
+						type: "doc",
+						id: "universal-gateway/domains/what-are-domains",
+					},
+					items: [
+						"universal-gateway/domains/bring-your-own-domain",
+						"universal-gateway/domains/what-are-managed-domains",
+						"universal-gateway/wildcard-domains/index",
+					],
+				},
+				"universal-gateway/ip-addresses",
 				{
 					label: "Handling HTTP/S Traffic",
 					type: "category",
