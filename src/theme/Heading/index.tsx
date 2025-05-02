@@ -22,7 +22,7 @@ export default function HeadingWrapper(props: Props): ReactNode {
 				// Delay the scroll until after any layout shift occurs
 			}, 100);
 		}
-	}, [location, id]);
+	}, []);
 
 	return (
 		<>
