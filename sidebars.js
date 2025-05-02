@@ -56,7 +56,7 @@ const sidebars = {
 					},
 					items: [
 						{
-							label: "Endpoint Bindings",
+							label: "Understanding Endpoint Bindings",
 							type: "category",
 							link: {
 								type: "doc",
@@ -76,6 +76,18 @@ const sidebars = {
 								"universal-gateway/kubernetes-endpoints/index",
 							],
 						},
+						{
+							label: "Understanding Endpoint URLs",
+							type: "category",
+							link: {
+								type: "doc",
+								id: "universal-gateway/what-are-endpoint-urls",
+							},
+							items: [
+								"universal-gateway/wildcard-domains/wildcard-endpoints",
+								"universal-gateway/http-s/endpoint-url-defaults",
+							],
+						},
 						"universal-gateway/agent-endpoints",
 						{
 							label: "Using Cloud Endpoints",
@@ -86,12 +98,9 @@ const sidebars = {
 							},
 							items: ["universal-gateway/cloud-endpoints/quickstart"],
 						},
-						"universal-gateway/what-are-endpoint-urls",
-						"universal-gateway/wildcard-domains/wildcard-endpoints",
-						"universal-gateway/http-s/endpoint-url-defaults",
 						"universal-gateway/chain-endpoints",
 						"universal-gateway/mock-api",
-						"universal-gateway/migrate-from-tunnels",
+						// "universal-gateway/migrate-from-tunnels",
 					],
 				},
 				{
