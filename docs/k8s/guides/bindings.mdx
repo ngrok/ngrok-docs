@@ -215,6 +215,22 @@ You can modify your operator to only process a subset of them with the `bindings
 It defaults to `["true"]` which causes it to process all endpoints with a Kubernetes type binding. This can be modified to anything you like to control which
 endpoints the operator should process. This strategy can enable you to easily only project endpoints into certain clusters running the ngrok Kubernetes operator.
 
+### Selecting endpoints for a cluster
+
+If you don't want all kubernetes endpoints in your account to appear inside of
+a cluster, you may specify an Endpoint Selector which filters which Kubernetes
+endpoints are projected into the cluster it runs in. Endpoint Selectors are a
+CEL expression which is evaluated against each Kubernetes Endpoint in your
+account. The operator will only projects endpoints that the selector returns
+`true` for.
+
+For example, to only project kubernetes endpoints in the billing namespace, you would
+add the following flag when installing the Kubernetes Operator:
+
+```bash
+  --set binding.endpointSelector="ep.hostname.endsWith('.billing')" \
+```
+
 ## Bindings with `Ingresses`
 
 By default, creating an `Ingress` will create a `CloudEndpoint` that has a `public` binding, meaning that its URL is accessible via the public internet, and an `AgentEndpoint` with an `internal` binding, meaning that its URL is only accessible using the `forward-internal` traffic policy action.

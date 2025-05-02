@@ -73,18 +73,7 @@ const sidebars = {
 									},
 									items: ["universal-gateway/internal-endpoints/quickstart"],
 								},
-								{
-									label: "Kubernetes Binding",
-									type: "category",
-									link: {
-										type: "doc",
-										id: "universal-gateway/kubernetes-endpoints/index",
-									},
-									items: [
-										"universal-gateway/kubernetes-endpoints/services",
-										"universal-gateway/kubernetes-endpoints/selector",
-									],
-								},
+								"universal-gateway/kubernetes-endpoints/index",
 							],
 						},
 						"universal-gateway/agent-endpoints",
@@ -357,6 +346,7 @@ const sidebars = {
 						"k8s/guides/using-loadbalancers",
 						"k8s/guides/endpoint-types",
 						"k8s/guides/bindings",
+						"universal-gateway/kubernetes-endpoints/services",
 						"k8s/guides/pooling",
 						"k8s/guides/custom-domain",
 						"k8s/guides/annotations",
