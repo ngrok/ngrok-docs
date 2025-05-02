@@ -5,40 +5,37 @@ import {
 	HoverCardContent,
 	HoverCardTrigger,
 } from "@ngrok/mantle/hover-card";
-import { QuestionMark } from "@phosphor-icons/react";
+import {
+	ArrowSquareOut,
+	LinkSimpleHorizontal,
+	QuestionMark,
+} from "@phosphor-icons/react";
 import type React from "react";
 import { terms } from "./data";
+import { Icon } from "@ngrok/mantle/icon";
 
 type DefinitionProps = {
 	children: React.ReactNode;
 	meaning?: string;
+	link?: string;
 };
 
 export function Definition({
 	children,
 	meaning,
+	link,
 }: DefinitionProps): React.ReactElement {
 	if (!children) throw new Error("<Definition/> requires children");
-	const getMatchingTerm = () => {
-		const match = terms.find((term) =>
-			term.titles.includes(children.toString()),
-		);
-		if (!match)
-			throw new Error(
-				"<Definition/> requires the meaning prop if no corresponding term is found.",
-			);
-		return (
-			<div>
-				<p>{match.meaning}</p>
-				<p>
-					{match.link && (
-						<Link className="mb-0" href={match.link}>
-							Learn More
-						</Link>
-					)}
-				</p>
-			</div>
-		);
+
+	// Don't get the match if the meaning or link is provided
+	const match =
+		meaning && link
+			? null
+			: terms.find((term) => term.titles.includes(children.toString()));
+
+	const data = {
+		meaning: meaning || match?.meaning,
+		link: link || match?.link,
 	};
 
 	return (
@@ -58,7 +55,21 @@ export function Definition({
 				</Button>
 			</HoverCardTrigger>
 			<HoverCardContent className="pb-0 w-80">
-				<span>{meaning || getMatchingTerm()}</span>
+				<div>
+					<p>{data.meaning}</p>
+					{Boolean(data.link) && (
+						<p className="flex">
+							<Link className="mb-0 flex gap-1 items-center" href={data.link}>
+								{data?.link?.includes("http") ? (
+									<Icon svg={<ArrowSquareOut />} />
+								) : (
+									<Icon svg={<LinkSimpleHorizontal />} />
+								)}
+								Learn More
+							</Link>
+						</p>
+					)}
+				</div>
 			</HoverCardContent>
 		</HoverCard>
 	);

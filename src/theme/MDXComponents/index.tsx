@@ -11,6 +11,7 @@ import MDXPre from "@theme/MDXComponents/Pre";
 import MDXUl from "@theme/MDXComponents/Ul";
 import Mermaid from "@theme/Mermaid";
 import React, { type ComponentProps } from "react";
+import { Definition } from "@site/src/components/Definition";
 
 const MDXComponents: MDXComponentsObject = {
 	Head,
@@ -30,6 +31,7 @@ const MDXComponents: MDXComponentsObject = {
 	h6: (props: ComponentProps<"h6">) => <MDXHeading as="h6" {...props} />,
 	admonition: Admonition,
 	mermaid: Mermaid,
+	Definition,
 };
 
 export default MDXComponents;

@@ -23,4 +23,29 @@ export const terms: Term[] = [
 			"Just-In-Time Single Sign-On Provisioning is a user account provisioning method that automatically creates (or updates) user accounts at the time of login via Single Sign-On, rather than pre-creating all user accounts in advance.",
 		link: "https://en.wikipedia.org/wiki/System_for_Cross-domain_Identity_Management",
 	},
+	{
+		titles: ["K8s", "K8"],
+		meaning: "K8s is an industry-standard abbreviation for Kubernetes.",
+	},
+	{
+		titles: ["Ingress"],
+		meaning:
+			"An ingress is an entry point into a network for traffic from outside of the network.",
+	},
+	{
+		titles: ["TCP keepalive", "TCP keep-alive", "TCP keep alive"],
+		meaning:
+			"TCP KeepAlive enables TCP connections to remain active even when no data is exchanged between the connected endpoints.",
+		link: "https://en.wikipedia.org/wiki/Keepalive",
+	},
+	{
+		titles: ["SaaS"],
+		meaning:
+			"SaaS is an industry-standard abbreviation of the term Software as a Service.",
+	},
+	{
+		titles: ["v3"],
+		meaning: "v3 is shorthand for the third major version of the ngrok Agent.",
+		link: "/docs/guides/other-guides/upgrade-v2-v3/",
+	},
 ];
