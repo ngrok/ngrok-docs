@@ -5,6 +5,7 @@ import {
 	HoverCardContent,
 	HoverCardTrigger,
 } from "@ngrok/mantle/hover-card";
+import { Icon } from "@ngrok/mantle/icon";
 import {
 	ArrowSquareOut,
 	LinkSimpleHorizontal,
@@ -12,7 +13,6 @@ import {
 } from "@phosphor-icons/react";
 import type React from "react";
 import { terms } from "./data";
-import { Icon } from "@ngrok/mantle/icon";
 
 type DefinitionProps = {
 	children: React.ReactNode;

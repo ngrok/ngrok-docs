@@ -1,4 +1,5 @@
 import Head from "@docusaurus/Head";
+import { Definition } from "@site/src/components/Definition";
 import Admonition from "@theme/Admonition";
 import type { MDXComponentsObject } from "@theme/MDXComponents";
 import MDXA from "@theme/MDXComponents/A";
@@ -11,7 +12,6 @@ import MDXPre from "@theme/MDXComponents/Pre";
 import MDXUl from "@theme/MDXComponents/Ul";
 import Mermaid from "@theme/Mermaid";
 import React, { type ComponentProps } from "react";
-import { Definition } from "@site/src/components/Definition";
 
 const MDXComponents: MDXComponentsObject = {
 	Head,

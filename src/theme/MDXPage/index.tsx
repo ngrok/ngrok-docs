@@ -1,15 +1,15 @@
-import React, { type ReactNode } from "react";
-import clsx from "clsx";
 import {
-	PageMetadata,
 	HtmlClassNameProvider,
+	PageMetadata,
 	ThemeClassNames,
 } from "@docusaurus/theme-common";
+import ContentVisibility from "@theme/ContentVisibility";
 import Layout from "@theme/Layout";
 import MDXContent from "@theme/MDXContent";
-import TOC from "@theme/TOC";
-import ContentVisibility from "@theme/ContentVisibility";
 import type { Props } from "@theme/MDXPage";
+import TOC from "@theme/TOC";
+import clsx from "clsx";
+import React, { type ReactNode } from "react";
 
 import EditMetaRow from "@theme/EditMetaRow";
 import styles from "./styles.module.css";
