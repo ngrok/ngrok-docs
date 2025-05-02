@@ -222,11 +222,11 @@ Configure the widget as follows.
 - **Step 3:** Set the time preference to **Past 1 Hour**.
 - **Step 4:** Name the widget `Errors in the last hour`.
 
-  ![Datadog edit widget](./img/datadogWidgetDetails.webp)
+  ![Datadog edit widget](./img/datadogWidgetDetails.png)
 
 Your new widget will be available in the dashboard, allowing your support staff to see instantly whether any errors have occurred in your API.
 
-![Datadog custom dashboard](./img/datadogCustomDashboard.webp)
+![Datadog custom dashboard](./img/datadogCustomDashboard.png)
 
 Since the sample API never returns errors, an easy way to test the `Errors in the last hour` widget is to stop the sample API Docker container and then try to browse to the site on the public ngrok endpoint.
 
@@ -238,13 +238,13 @@ To complete your monitoring system, you need to set up an alert that is pushed t
 
 - In Datadog, browse to **Integrations > Add integration > Webhooks**.
 
-  ![Datadog add integration](./img/datadogAddIntegration.webp)
+  ![Datadog add integration](./img/datadogAddIntegration.png)
 
 - Under **Webhooks**, at the bottom of the configuration page, click **New**. Set the **Name** to `ntfy`, the **URL** to `https://ntfy.sh/ngrokTest`, and the **Payload** to **Blank**. Click **Save**.
 
-  ![Datadog add webhook](./img/datadogAddWebhook.webp)
+  ![Datadog add webhook](./img/datadogAddWebhook.png)
 
-- In the ngrok navigation panel, browse to the **Monitors > New monitor**. Choose **Logs**.
+- In the Datadog navigation panel, browse to the **Monitors > New monitor**. Choose **Logs**.
 
 - In the monitor configuration, choose **Query** for your monitor scope, set the search query to `@http.status_code:500`, the time to the **last 1 hour**, and the notification message:
 
@@ -252,7 +252,7 @@ To complete your monitoring system, you need to set up an alert that is pushed t
    @webhook-ntfy Your API has errors. Investigate at https://app.datadoghq.eu/dashboard.
    ```
 
-  ![Datadog add webhook](./img/datadogConfigureMonitor.webp)
+  ![Datadog add webhook](./img/datadogConfigureMonitor.png)
 
   It's important that the `@webhook` name matches the webhook integration you created earlier. If the names don't match, the notification won't arrive.
 
@@ -262,7 +262,7 @@ To complete your monitoring system, you need to set up an alert that is pushed t
 
 - Notice that the alert appears on the ntfy page. You can install ntfy as a mobile app so that you are always aware of whether your API has errors.
 
-  ![Datadog notify](./img/datadogNotify.webp)
+  ![Datadog notify](./img/datadogNotify.png)
 
 - Save the monitor. Now, after a delay and once you've refreshed the ngrok endpoint for your API, you will receive a notification if an error occurs.
 
