@@ -46,7 +46,18 @@ const sidebars = {
 			className: "menu__list-item--category",
 			link: { type: "doc", id: "universal-gateway/overview" },
 			items: [
-				"universal-gateway/overview",
+				{
+					label: "Overview",
+					type: "category",
+					link: {
+						type: "doc",
+						id: "universal-gateway/overview",
+					},
+					items: [
+						"universal-gateway/points-of-presence",
+						"universal-gateway/ddos-protection",
+					],
+				},
 				{
 					label: "Endpoints",
 					type: "category",
@@ -220,8 +231,6 @@ const sidebars = {
 						"universal-gateway/global-load-balancer/gslb-agents",
 					],
 				},
-				"universal-gateway/points-of-presence",
-				"universal-gateway/ddos-protection",
 			],
 		},
 		{
