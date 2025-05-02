@@ -8,7 +8,12 @@ module.exports = function remarkWordWrapper(stuff) {
 		visit(tree, "text", (node, index, parent) => {
 			let matchingTitle = "";
 			const matchingTerm = terms.find((term) => {
-				matchingTitle = term.titles.find((title) => node.value.includes(title));
+				matchingTitle = term.titles.find((title) =>
+					// Case-insensitive check
+					node.value
+						?.toLowerCase()
+						.includes(title?.toLowerCase()),
+				);
 				return Boolean(matchingTitle);
 			});
 
@@ -18,12 +23,7 @@ module.exports = function remarkWordWrapper(stuff) {
 
 			// We only want to match the first instance of this term on the page
 			if (
-				foundTerms.some((term) =>
-					// Case-insensitive check
-					term.titles
-						.toLowerCase()
-						.includes(matchingTitle.toLowerCase()),
-				)
+				foundTerms.some((term) => term.titles[0] === matchingTerm.titles[0])
 			) {
 				return;
 			}

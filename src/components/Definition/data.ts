@@ -33,7 +33,7 @@ export const terms: Term[] = [
 			"An ingress is an entry point into a network for traffic from outside of the network.",
 	},
 	{
-		titles: ["TCP keepalive", "TCP keep-alive", "TCP keep alive"],
+		titles: ["TCP KeepAlive", "TCP Keep-Alive", "TCP Keep Alive"],
 		meaning:
 			"TCP KeepAlive enables TCP connections to remain active even when no data is exchanged between the connected endpoints.",
 		link: "https://en.wikipedia.org/wiki/Keepalive",
