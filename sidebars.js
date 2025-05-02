@@ -126,7 +126,7 @@ const sidebars = {
 					],
 				},
 				{
-					label: "What are Domains?",
+					label: "Using Domains",
 					type: "category",
 					link: {
 						type: "doc",
