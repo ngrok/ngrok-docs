@@ -4,8 +4,8 @@
 
 ```json
 {
-	"enabled": true,
-	"provider": "TWILIO",
-	"secret": "secret_token"
+  "enabled": true,
+  "provider": "TWILIO",
+  "secret": "secret_token"
 }
 ```

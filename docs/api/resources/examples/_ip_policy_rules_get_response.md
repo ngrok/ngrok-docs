@@ -4,15 +4,15 @@
 
 ```json
 {
-	"action": "allow",
-	"cidr": "212.3.15.0/24",
-	"created_at": "2025-04-25T22:55:34Z",
-	"description": "nyc office",
-	"id": "ipr_2wEztQxEEdonHLkTs8QuXMw2lrq",
-	"ip_policy": {
-		"id": "ipp_2wEztR7H4yStF7KWh0RjluMbvNI",
-		"uri": "https://api.ngrok.com/ip_policies/ipp_2wEztR7H4yStF7KWh0RjluMbvNI"
-	},
-	"uri": "https://api.ngrok.com/ip_policy_rules/ipr_2wEztQxEEdonHLkTs8QuXMw2lrq"
+  "action": "allow",
+  "cidr": "212.3.15.0/24",
+  "created_at": "2025-05-05T15:51:38Z",
+  "description": "nyc office",
+  "id": "ipr_2wgPZUWJi0TPe6Dusx36PfU8reP",
+  "ip_policy": {
+    "id": "ipp_2wgPZPrs4rjpCv9GeHzglrpDP4E",
+    "uri": "https://api.ngrok.com/ip_policies/ipp_2wgPZPrs4rjpCv9GeHzglrpDP4E"
+  },
+  "uri": "https://api.ngrok.com/ip_policy_rules/ipr_2wgPZUWJi0TPe6Dusx36PfU8reP"
 }
 ```
