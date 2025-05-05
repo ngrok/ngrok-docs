@@ -4,10 +4,10 @@
 
 ```json
 {
-	"active": false,
-	"created_at": "2025-04-25T22:55:40Z",
-	"id": "bot_2wEzu4orJGeQui9q7Ph4w8BXIWn",
-	"name": "inactive bot user from API",
-	"uri": "https://api.ngrok.com/bot_users/bot_2wEzu4orJGeQui9q7Ph4w8BXIWn"
+  "active": false,
+  "created_at": "2025-05-05T15:51:44Z",
+  "id": "bot_2wgPaC44Rn9DbQgmIL00mO2LIrZ",
+  "name": "inactive bot user from API",
+  "uri": "https://api.ngrok.com/bot_users/bot_2wgPaC44Rn9DbQgmIL00mO2LIrZ"
 }
 ```

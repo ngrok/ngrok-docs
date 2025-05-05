@@ -4,16 +4,16 @@
 
 ```json
 {
-	"bot_users": [
-		{
-			"active": true,
-			"created_at": "2025-04-25T22:55:40Z",
-			"id": "bot_2wEzu9UiFPmjUJ00OsG9jzg3JDJ",
-			"name": "API example bot user",
-			"uri": "https://api.ngrok.com/bot_users/bot_2wEzu9UiFPmjUJ00OsG9jzg3JDJ"
-		}
-	],
-	"next_page_uri": "https://api.ngrok.com/bot_users?before_id=bot_2wEzu9UiFPmjUJ00OsG9jzg3JDJ&limit=1",
-	"uri": "https://api.ngrok.com/bot_users"
+  "bot_users": [
+    {
+      "active": true,
+      "created_at": "2025-05-05T15:51:44Z",
+      "id": "bot_2wgPaE6YJAZMsrLbMswfegTK70Q",
+      "name": "API example bot user",
+      "uri": "https://api.ngrok.com/bot_users/bot_2wgPaE6YJAZMsrLbMswfegTK70Q"
+    }
+  ],
+  "next_page_uri": "https://api.ngrok.com/bot_users?before_id=bot_2wgPaE6YJAZMsrLbMswfegTK70Q&limit=1",
+  "uri": "https://api.ngrok.com/bot_users"
 }
 ```

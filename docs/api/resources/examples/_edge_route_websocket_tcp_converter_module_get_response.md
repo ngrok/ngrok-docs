@@ -4,6 +4,6 @@
 
 ```json
 {
-	"enabled": true
+  "enabled": true
 }
 ```
