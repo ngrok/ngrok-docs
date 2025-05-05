@@ -12,8 +12,10 @@ export default function HeadingWrapper(props: Props): ReactNode {
 
 	useEffect(() => {
 		if (location.hash === `#${id}`) {
-			setTimeout(() => {
-				if (!id) return;
+			window.setTimeout(() => {
+				if (!id) {
+					return;
+				}
 				const element = document.getElementById(id);
 				if (element) {
 					console.log("Scrolling to element:", element);
@@ -22,11 +24,7 @@ export default function HeadingWrapper(props: Props): ReactNode {
 				// Delay the scroll until after any layout shift occurs
 			}, 100);
 		}
-	}, [location, id]);
+	}, [id, location]);
 
-	return (
-		<>
-			<Heading {...props} />
-		</>
-	);
+	return <Heading {...props} />;
 }

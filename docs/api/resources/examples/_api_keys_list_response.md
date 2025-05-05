@@ -4,26 +4,26 @@
 
 ```json
 {
-	"keys": [
-		{
-			"created_at": "2025-04-25T22:55:12Z",
-			"description": "ad-hoc dev testing",
-			"id": "ak_2wEzqeYh9iSwDOE6klN3WiauooB",
-			"metadata": "{\"environment\":\"dev\"}",
-			"owner_id": "usr_2wEzqavPsqhEJcM6Mes5PsXNAPe",
-			"token": null,
-			"uri": "https://api.ngrok.com/api_keys/ak_2wEzqeYh9iSwDOE6klN3WiauooB"
-		},
-		{
-			"created_at": "2025-04-25T22:55:12Z",
-			"description": "api key for example generation",
-			"id": "ak_2wEzqZD1w2sFPcXSwNUTFkytfZK",
-			"owner_id": "usr_2wEzqavPsqhEJcM6Mes5PsXNAPe",
-			"token": null,
-			"uri": "https://api.ngrok.com/api_keys/ak_2wEzqZD1w2sFPcXSwNUTFkytfZK"
-		}
-	],
-	"next_page_uri": null,
-	"uri": "https://api.ngrok.com/api_keys"
+  "keys": [
+    {
+      "created_at": "2025-05-05T15:51:16Z",
+      "description": "ad-hoc dev testing",
+      "id": "ak_2wgPWfI36Rfq4ULg6CAejqXBpa8",
+      "metadata": "{\"environment\":\"dev\"}",
+      "owner_id": "usr_2wgPWhlx5LFDD961rx9Be56QUMt",
+      "token": null,
+      "uri": "https://api.ngrok.com/api_keys/ak_2wgPWfI36Rfq4ULg6CAejqXBpa8"
+    },
+    {
+      "created_at": "2025-05-05T15:51:16Z",
+      "description": "api key for example generation",
+      "id": "ak_2wgPWk5d2mSX25eY1YN9UX0avx1",
+      "owner_id": "usr_2wgPWhlx5LFDD961rx9Be56QUMt",
+      "token": null,
+      "uri": "https://api.ngrok.com/api_keys/ak_2wgPWk5d2mSX25eY1YN9UX0avx1"
+    }
+  ],
+  "next_page_uri": null,
+  "uri": "https://api.ngrok.com/api_keys"
 }
 ```
