@@ -34,7 +34,7 @@ export const ConfigItem = ({
 }: ConfigItemProps) => {
 	return (
 		<li className="space-y-2 p-4 px-2 pb-3">
-			<h4 className="m-0 flex gap-2 self-baseline p-0 text-sm font-normal leading-none">
+			<h4 className="m-0 flex gap-2 self-baseline p-0 text-sm font-normal leading-none" id={title.replace(/\.|\s|\*/g, '_')}>
 				<span className="font-mono font-semibold text-strong">{title}</span>
 				<span className="self-base flex gap-1.5 self-baseline text-xs text-muted">
 					<span>{type}</span>
