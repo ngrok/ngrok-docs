@@ -1,42 +1,34 @@
 ---
 title: Load Balancing Between Multiple Clouds
-description: TK
+description: Learn how to load balance traffic between multiple clouds with ngrok.
 ---
 
-When you load-balance within a single cloud, you can often get away with using
-that cloud provider's built-in solutions, like AWS Elastic Load Balancing, GCP
-Cloud Load Balancing, or DigitalOcean Global Load Balancers. But once you start
-deploying replicas of your services to multiple clouds, you need a load balancer
-that's multicloud-ready.
+When you load-balance within a single cloud, you can often get away with using that cloud provider's built-in solutions, like AWS Elastic Load Balancing for just one example. But once you start deploying replicas of your services to multiple clouds, you need a load balancer that's multicloud-ready.
 
 [Endpoint Pooling](/docs/universal-gateway/endpoint-pooling) makes multicloud
-load balancing simple as creating two endpoints with the same URL. ngrok then
+load balancing as simple as creating two endpoints with the same URL. ngrok then
 automatically distributes traffic to replicas in multiple clouds, which means
-you don't even need other load balancers in your stack at all. Plus, Endpoint
-Pooling:
+you don't need other load balancers in your stack. Plus, endpoint
+pooling:
 
 - Works with the [agent CLI](/docs/agent),
-  [SDKs](/docs/agent-sdks/), and even our [Kubernetes Operator](/docs/k8s)—even
-  in combination.
+  [SDKs](/docs/agent-sdks/) and our [Kubernetes Operator](/docs/k8s). You can even use both tools together.
 - Lets you migrate from one deployment strategy to another without hard
   cut-overs, like moving from VMs to Kubernetes.
-- Works with [Traffic Policy](/docs/traffic-policy) for managing traffic
-  identically across all your replicas from a single "front door" or enforcing
-  different policies for each replica.
+- Works with [Traffic Policy](/docs/traffic-policy), enabling you to manage traffic identically across all your replicas from a single "front door", or enforce different policies for each replica.
 
-## 1. Start with Agent Endpoints on the CLI
+This guide will show you how to set up endpoint pooling with a few different methods.
+
+## Using the CLI
 
 Start with a single [agent
-endpoint](/docs//docs/universal-gateway/agent-endpoints/) on an ngrok URL (or a
-[custom domain](/docs/guides/other-guides/how-to-set-up-a-custom-domain/)!), and
-the `--pooling-enabled` flag on.
+endpoint](/docs//docs/universal-gateway/agent-endpoints/) on an ngrok URL (or a [custom domain](/docs/guides/other-guides/how-to-set-up-a-custom-domain/)!), and the `--pooling-enabled` flag on.
 
 ```bash mode="cli"
 ngrok http 8000 --url https://$YOUR_DOMAIN.ngrok.app --pooling-enabled true
 ```
 
-Repeat the same steps on another cloud where you've deployed a replica of your
-service to start a second internal agent endpoint on the same URL.
+Repeat the same steps on another cloud where you've deployed a replica of your service to start a second internal agent endpoint on the same URL.
 
 ```bash mode="cli"
 ngrok http 8000 --url https://$YOUR_DOMAIN.ngrok.app --pooling-enabled true
@@ -48,23 +40,19 @@ endpoints, even though they're running in multiple clouds.
 
 You can verify pooling works in a few ways:
 
-1. Each agent's terminal UI, which will show a similar number of recent requests.
-2. In [Traffic Inspector](https://dashboard.ngrok.com/traffic-inspector)—click
-   on a request, then the **Response** tab, and look at **Ngrok-Agent-Ips** to see
-   the IP for the responding agent changes from request to request with a similar
-   frequency.
+1. Check each agent's UI in the terminal that launched the process. You should see your curl requests in the number of recent requests.
+2. In [Traffic Inspector](https://dashboard.ngrok.com/traffic-inspector)—click on a request, then the **Response** tab, and look at **Ngrok-Agent-Ips** to see the IP for the responding agent changes from request to request with a similar frequency.
 
-## 2. Add in another form factor
+## Using SDKs and other tools
 
 Pooling isn't limited to how you start a given service or its replicas. If
-you've already started up one agent endpoint on the CLI, you can start up
+you've already started up one agent endpoint with the CLI, you can start up
 another with one of our [SDKs](/docs/agent-sdks) or the [Kubernetes
 Operator](/docs/k8s) to load-balance between them.
 
-Here's an example of a very simple Go app with the [ngrok Go
-SDK](https://github.com/ngrok/ngrok-go). Just as with the agent CLI examples
-above, this Go app starts up an agent endpoint at `$YOUR_DOMAIN.ngrok.app` with
-pooling enabled.
+Here's an example of a Go app with the [ngrok Go SDK](https://github.com/ngrok/ngrok-go). Just as with the agent CLI examples in the previous step, this Go app starts up an agent endpoint at `$YOUR_DOMAIN.ngrok.app` with pooling enabled.
+
+To try this example, save the following file as `main.go`.
 
 ```go title="main.go"
 package main
@@ -106,15 +94,14 @@ func handler(w http.ResponseWriter, r *http.Request) {
 }
 ```
 
-Save this file as `main.go` and then initialize the dependencies.
+Then, initialize the dependencies.
 
 ```bash mode="cli"
 go mod init ngrok-go-example
 go get golang.ngrok.com/ngrok
 ```
 
-Start your app to fire up the ngrok Go SDK and add a new agent endpoint to your
-pool.
+Finally, start your app to fire up the ngrok Go SDK and add a new agent endpoint to your pool.
 
 ```bash mode="cli"
 NGROK_AUTHTOKEN="<TOKEN>" go run main.go
@@ -124,7 +111,7 @@ Make a few more requests to responses from the Go app alongside any existing
 agent CLIs you already have running, once again, despite these services
 operating in entirely different clouds and deployment environments.
 
-## 3. Step up to a Cloud Endpoint for custom traffic management
+## Using Cloud Endpoints for custom traffic management
 
 Pooling also works with [internal](/docs/universal-gateway/internal-endpoints/)
 Agent Endpoints, which can only receive traffic from the [`forward-internal`
