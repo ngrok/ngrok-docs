@@ -53,8 +53,8 @@ export function LangSwitcher({ children, className, ...props }: any) {
 		>
 			{() => (
 				<CodeBlock className={clsx(className, "mb-4")} {...props}>
-					<CodeBlockHeader className="flex-col overflow-x-auto p-1">
-						<div className="flex w-[100%] gap-1.5">
+					<CodeBlockHeader className="flex-col overflow-x-auto p-2">
+						<div className="flex w-[100%] gap-1">
 							{/* biome-ignore lint/suspicious/noExplicitAny: <explanation> */}
 							{codeBlocks.map((child: any) => (
 								<Button
@@ -62,11 +62,13 @@ export function LangSwitcher({ children, className, ...props }: any) {
 									onClick={() => updateTab(child.language)}
 									type="button"
 									priority="neutral"
-									appearance={
+									className={clsx(
+										"text-xs h-6 px-1.5",
 										matchingBlock?.language === child.language
-											? "filled"
-											: "outlined"
-									}
+											? "bg-neutral-500/10 text-neutral-800"
+											: "text-neutral-500",
+									)}
+									appearance="ghost"
 								>
 									{child.language.toUpperCase()}
 								</Button>
