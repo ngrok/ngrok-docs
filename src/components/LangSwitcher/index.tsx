@@ -62,12 +62,13 @@ export function LangSwitcher({ children, className, ...props }: any) {
 									onClick={() => updateTab(child.language)}
 									type="button"
 									priority="neutral"
-									className="text-xs h-6 px-1.5"
-									appearance={
+									className={clsx(
+										"text-xs h-6 px-1.5",
 										matchingBlock?.language === child.language
-											? "filled"
-											: "ghost"
-									}
+											? "bg-neutral-500/10 text-neutral-800"
+											: "text-neutral-500",
+									)}
+									appearance="ghost"
 								>
 									{child.language.toUpperCase()}
 								</Button>
