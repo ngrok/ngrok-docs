@@ -5,7 +5,6 @@ import {
 	CodeBlockBody,
 	CodeBlockCode,
 	CodeBlockCopyButton,
-	CodeBlockExpanderButton,
 	CodeBlockHeader,
 	CodeBlockTitle,
 	fmtCode,
@@ -45,8 +44,6 @@ export function LangSwitcher({ children, className, ...props }: any) {
 	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 	const meta: { collapsible?: boolean; [key: string]: any } =
 		matchingBlock?.meta || {};
-	const collapsible =
-		meta.collapsible && matchingBlock?.content.split("\n").length > 10;
 
 	return (
 		<BrowserOnly
@@ -87,7 +84,6 @@ export function LangSwitcher({ children, className, ...props }: any) {
 							language={matchingBlock?.language || meta.language}
 							value={fmtCode`${matchingBlock?.content.toString()}`}
 						/>
-						{collapsible && <CodeBlockExpanderButton />}
 					</CodeBlockBody>
 				</CodeBlock>
 			)}

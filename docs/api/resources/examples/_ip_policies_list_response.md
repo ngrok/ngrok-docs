@@ -4,21 +4,21 @@
 
 ```json
 {
-	"ip_policies": [
-		{
-			"created_at": "2025-03-26T10:06:37Z",
-			"description": "API Outbound Gateway",
-			"id": "ipp_2uqkfp8A3UHguYaSIFWoMbPBjsr",
-			"uri": "https://api.ngrok.com/ip_policies/ipp_2uqkfp8A3UHguYaSIFWoMbPBjsr"
-		},
-		{
-			"created_at": "2025-03-26T10:06:37Z",
-			"description": "Developer Environments",
-			"id": "ipp_2uqkfnB7oSG0bAgTVJAcpRlun61",
-			"uri": "https://api.ngrok.com/ip_policies/ipp_2uqkfnB7oSG0bAgTVJAcpRlun61"
-		}
-	],
-	"next_page_uri": null,
-	"uri": "https://api.ngrok.com/ip_policies"
+  "ip_policies": [
+    {
+      "created_at": "2025-05-05T15:51:16Z",
+      "description": "Developer Environments",
+      "id": "ipp_2wgPWecoIaYNhoWRyTvC51A0QWy",
+      "uri": "https://api.ngrok.com/ip_policies/ipp_2wgPWecoIaYNhoWRyTvC51A0QWy"
+    },
+    {
+      "created_at": "2025-05-05T15:51:16Z",
+      "description": "API Outbound Gateway",
+      "id": "ipp_2wgPWe28BTRR4IuyNL5YLb8Af0F",
+      "uri": "https://api.ngrok.com/ip_policies/ipp_2wgPWe28BTRR4IuyNL5YLb8Af0F"
+    }
+  ],
+  "next_page_uri": null,
+  "uri": "https://api.ngrok.com/ip_policies"
 }
 ```

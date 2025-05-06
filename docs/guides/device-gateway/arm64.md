@@ -119,15 +119,14 @@ Now that you have SSH tunneling and service ingress handled via ngrok, you may a
 1.  Open the file for editing and paste in the following contents, replacing `1.1.1.1` with the public IP of the workstation you use to access your ARM64 device:
 
     ```yaml
-    ---
     on_tcp_connect:
       - actions:
         - name: "Restrict all IPs except trusted CIDRs"
           type: "restrict-ips"
-            config:
-             enforce: true
-             allow:
-                - "1.1.1.1/32"
+          config:
+            enforce: true
+            allow:
+             - "1.1.1.1/32"
     ```
 
     :::note

@@ -80,7 +80,7 @@ ngrok lets you configure authentication in different ways:
 
 ### Enterprise authentication and MFA
 
-Use any OIDC-compliant provider—such as Okta, Microsoft Azure AD or AD
+Use any OIDC-compliant provider—such as Okta, Microsoft Entra ID or AD
 FS, Ping, and Auth0—to control access to public endpoints.
 
 With the [`openid-connect` Traffic Policy
@@ -120,12 +120,12 @@ To ensure only specific individuals or organizations can access your endpoints, 
 ```yaml
 on_http_request:
 - actions:
-      - type: oauth
-        config:
-          provider: github
+  - type: oauth
+    config:
+      provider: github
   - expressions:
-      - !(actions.ngrok.oauth.identity.email.endsWith('@example.com')
-      - !(actions.ngrok.oauth.identity.email == 'john@external.com')
+      - "!(actions.ngrok.oauth.identity.email.endsWith('@example.com')"
+      - "!(actions.ngrok.oauth.identity.email == 'john@external.com')"
     actions:
       - type: deny
 ```
@@ -200,7 +200,7 @@ className="border rounded"
 
 ## Add SSO and MFA to the admin UI
 
-With Dashboard SSO, you can restrict access to the ngrok administrative interface only for users authenticated in your identity providers — such as Okta, Azure AD, Ping, AD FS, and Auth0. The ngrok dashboard SSO works with any SAML provider, and can be used with your identity provider MFA — i.e., Windows Hello, Okta Verify, FIDO, and PingID — to ensure two-factor authentication (2FA) in compliance with your security requirements.
+With Dashboard SSO, you can restrict access to the ngrok administrative interface only for users authenticated in your identity providers — such as Okta, Microsoft Entra ID, Ping, AD FS, and Auth0. The ngrok dashboard SSO works with any SAML provider, and can be used with your identity provider MFA — i.e., Windows Hello, Okta Verify, FIDO, and PingID — to ensure two-factor authentication (2FA) in compliance with your security requirements.
 
 <img
 src={require('./img/mfa-sso.png').default}

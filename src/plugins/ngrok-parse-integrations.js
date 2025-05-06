@@ -1,8 +1,8 @@
-const fs = require("node:fs");
-const path = require("node:path");
-const utils = require("@docusaurus/utils");
+import fs from "node:fs";
+import path from "node:path";
+import * as utils from "@docusaurus/utils";
 
-module.exports = (context, options) => ({
+export default (context, options) => ({
 	name: "ngrok-parse-integrations",
 	async contentLoaded({ actions }) {
 		const { setGlobalData } = actions;
