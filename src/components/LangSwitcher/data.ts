@@ -9,22 +9,17 @@ export const languageInfo: LanguageInfo[] = [
 	{
 		name: "go",
 		displayName: "Go",
-		links: ["https://pkg.go.dev/golang.ngrok.com/ngrok#ListenAndForward"],
+		links: ["https://pkg.go.dev/golang.ngrok.com/ngrok"],
 	},
 	{
 		name: "rust",
 		displayName: "Rust",
-		links: [
-			"https://docs.rs/ngrok/0.14.0-pre.13/ngrok/config/struct.TcpTunnelBuilder.html#method.listen_and_forward",
-		],
+		links: ["https://docs.rs/ngrok/0.14.0-pre.13/ngrok/index.html"],
 	},
 	{
 		name: "python",
 		displayName: "Python",
-		links: [
-			"https://ngrok.github.io/ngrok-python/tcp_listener_builder.html#ngrok.TcpListenerBuilder.remote_addr",
-			"https://ngrok.github.io/ngrok-python/index.html#full-configuration",
-		],
+		links: ["https://ngrok.github.io/ngrok-python/index.html"],
 	},
 	{
 		name: "java",
@@ -34,19 +29,13 @@ export const languageInfo: LanguageInfo[] = [
 	{
 		name: "javascript",
 		displayName: "JavaScript",
-		links: [
-			"https://ngrok.github.io/ngrok-javascript/interfaces/Config.html#addr",
-			"https://ngrok.github.io/ngrok-javascript/classes/TcpListenerBuilder.html#listenAndForward",
-		],
-		allNames: ["javascript", "typescript", "ts", "js", "jsx", "tsx"],
+		links: ["https://ngrok.github.io/ngrok-javascript/"],
+		allNames: ["javascript", "js", "jsx"],
 	},
 	{
 		name: "typescript",
 		displayName: "TypeScript",
-		links: [
-			"https://ngrok.github.io/ngrok-javascript/interfaces/Config.html#addr",
-			"https://ngrok.github.io/ngrok-javascript/classes/TcpListenerBuilder.html#listenAndForward",
-		],
+		links: ["https://ngrok.github.io/ngrok-javascript/"],
 		allNames: ["typescript", "ts", "tsx"],
 	},
 ];

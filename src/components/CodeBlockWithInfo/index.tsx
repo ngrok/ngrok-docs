@@ -11,8 +11,9 @@ import {
 	fmtCode,
 } from "@ngrok/mantle/code-block";
 import type { ReactNode } from "react";
-import { LanguageData } from "../LangSwitcher/LanguageData";
+import { SdkButton } from "../LangSwitcher/SdkButton";
 import type { LanguageInfo } from "../LangSwitcher/data";
+import clsx from "clsx";
 
 type CodeBlockWithInfoProps = {
 	content: string | undefined;
@@ -49,8 +50,9 @@ export function CodeBlockWithInfo({
 	return (
 		<div className="flex flex-col">
 			<CodeBlock className={className} {...codeBlockProps}>
-				<CodeBlockHeader className="flex w-[100%] justify-start p-2">
+				<CodeBlockHeader className={clsx("flex w-[100%]  justify-start p-2")}>
 					{headerContent}
+					{info && <SdkButton className="ml-auto mr-0.5" data={info} />}
 				</CodeBlockHeader>
 				<CodeBlockBody>
 					{meta?.title && (
@@ -82,7 +84,6 @@ export function CodeBlockWithInfo({
 					{collapsible && <CodeBlockExpanderButton />}
 				</CodeBlockBody>
 			</CodeBlock>
-			{info && <LanguageData data={info} />}
 		</div>
 	);
 }

@@ -11,8 +11,6 @@ export function LangTab({
 	disabled?: boolean;
 	onClick?: () => void;
 }) {
-	const finalTabText =
-		tabText === "SH" || tabText === "SHELL" ? "BASH" : tabText;
 	return (
 		<Button
 			disabled={disabled}
@@ -22,7 +20,7 @@ export function LangTab({
 			appearance="ghost"
 			className={className}
 		>
-			{finalTabText}
+			{tabText}
 		</Button>
 	);
 }

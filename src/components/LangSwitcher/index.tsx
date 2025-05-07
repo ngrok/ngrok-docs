@@ -57,10 +57,6 @@ export function LangSwitcher({ children, className, ...props }: any) {
 						<div className="flex w-[100%] gap-1.5">
 							{/* biome-ignore lint/suspicious/noExplicitAny: <explanation> */}
 							{codeBlocks.map((child: any) => {
-								const tabText =
-									child?.meta.tabName || content?.startsWith("ssh")
-										? "SSH"
-										: child?.language.toUpperCase();
 								return (
 									<LangTab
 										key={child.language + child.content}
@@ -71,23 +67,10 @@ export function LangSwitcher({ children, className, ...props }: any) {
 												? "bg-neutral-500/10 text-neutral-800"
 												: "text-neutral-500",
 										)}
-										tabText={tabText || ""}
+										tabText={
+											child?.meta.tabName || child?.language.toUpperCase()
+										}
 									/>
-									// <Button
-									// 	key={child.language + child.content}
-									// 	onClick={() => updateSelectedLanguage(child.language)}
-									// 	type="button"
-									// 	priority="neutral"
-									// 	appearance="ghost"
-									// 	className={clsx(
-									// 		"text-xs h-6 px-1.5",
-									// 		matchingBlock?.language === child.language
-									// 			? "bg-neutral-500/10 text-neutral-800"
-									// 			: "text-neutral-500",
-									// 	)}
-									// >
-									// 	{child.meta.tabName || child.language.toUpperCase()}
-									// </Button>
 								);
 							})}
 						</div>
