@@ -40,8 +40,7 @@ export const OAuthConditionalAccess = () => (
 						{
 							type: "custom-response",
 							config: {
-								body:
-									"Hey, no auth for you ${actions.ngrok.oauth.identity.name}!",
+								body: "Hey, no auth for you ${actions.ngrok.oauth.identity.name}!",
 								status_code: 400,
 							},
 						},
