@@ -22,6 +22,9 @@ const sidebars = {
 		{
 			label: "Getting Started",
 			type: "category",
+			collapsible: false,
+			className: "menu__list-item--category",
+
 			link: { type: "doc", id: "getting-started/index" },
 			items: [
 				"getting-started/index",
