@@ -54,11 +54,11 @@ export function Definition({
 					</>
 				</Button>
 			</HoverCardTrigger>
-			<HoverCardContent className="pb-0 w-80">
-				<div>
-					<p>{data.meaning}</p>
+			<HoverCardContent className="p-3 w-80 text-sm">
+				<div className="flex flex-col gap-3">
+					<span>{data.meaning}</span>
 					{Boolean(data.link) && (
-						<p className="flex">
+						<span className="flex">
 							<Link className="mb-0 flex gap-1 items-center" href={data.link}>
 								{data?.link?.includes("http") ? (
 									<Icon svg={<ArrowSquareOut />} />
@@ -67,7 +67,7 @@ export function Definition({
 								)}
 								Learn More
 							</Link>
-						</p>
+						</span>
 					)}
 				</div>
 			</HoverCardContent>
