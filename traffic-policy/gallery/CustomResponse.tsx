@@ -11,7 +11,7 @@ export const CustomResponse = () => (
 							type: "custom-response",
 							config: {
 								status_code: 401,
-								content: "Unauthorized",
+								body: "Unauthorized",
 							},
 						},
 					],

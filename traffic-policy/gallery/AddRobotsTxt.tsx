@@ -12,7 +12,7 @@ export const AddRobotsTxt = () => (
 							type: "custom-response",
 							config: {
 								status_code: 200,
-								content: "User-agent: *\r\nDisallow: /",
+								body: "User-agent: *\r\nDisallow: /",
 								headers: {
 									"content-type": "text/plain",
 								},
