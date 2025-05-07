@@ -282,7 +282,7 @@ Ingresses](/docs/k8s/guides/using-ingresses/#using-ngroktrafficpolicy-with-ingre
            actions:
              - type: custom-response
                config:
-                 content: Hey, no auth for you ${actions.ngrok.oauth.identity.name}!
+                 body: "Hey, no auth for you ${actions.ngrok.oauth.identity.name}!"
                  status_code: 400
    ```
 

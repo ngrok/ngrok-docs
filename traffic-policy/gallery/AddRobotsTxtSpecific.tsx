@@ -12,7 +12,7 @@ export const AddRobotsTxtSpecific = () => (
 							type: "custom-response",
 							config: {
 								status_code: 200,
-								content: "User-agent: ChatGPT-User\\r\\nDisallow: /",
+								body: "User-agent: ChatGPT-User\\r\\nDisallow: /",
 								headers: {
 									"content-type": "text/plain",
 								},

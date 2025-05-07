@@ -12,7 +12,7 @@ export const EnforceTLS = () => (
 							type: "custom-response",
 							config: {
 								status_code: 401,
-								content: "Unauthorized: TLS version too old",
+								body: "Unauthorized: TLS version too old",
 							},
 						},
 					],

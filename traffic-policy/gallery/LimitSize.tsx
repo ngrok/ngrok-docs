@@ -15,7 +15,7 @@ export const LimitSize = () => (
 							type: "custom-response",
 							config: {
 								status_code: 400,
-								content: "Error: content length",
+								body: "Error: content length",
 							},
 						},
 					],
