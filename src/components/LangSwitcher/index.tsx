@@ -1,5 +1,6 @@
 import BrowserOnly from "@docusaurus/BrowserOnly";
 import { Button } from "@ngrok/mantle/button";
+import clsx from "clsx";
 import { useContext } from "react";
 import { CodeBlockWithInfo } from "../CodeBlockWithInfo";
 import { CodeBlockFallback } from "../code-block";
@@ -7,7 +8,6 @@ import LangSwitcherContext, {
 	type LangSwitcherContextType,
 } from "./LangSwitcherContext";
 import { getCodeBlocks, languagesAreSynonyms } from "./utils";
-import clsx from "clsx";
 
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>
 export function LangSwitcher({ children, className, ...props }: any) {
