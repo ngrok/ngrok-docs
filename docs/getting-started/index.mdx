@@ -5,6 +5,8 @@ pagination_next: universal-gateway/http
 
 import TabItem from "@theme/TabItem";
 import Tabs from "@theme/Tabs";
+import ConfigExample from "/src/components/ConfigExample.tsx";
+import SecureYourApp from "./_secure-your-app.mdx"
 
 # Quickstart
 
@@ -12,7 +14,7 @@ This quickstart will use the [ngrok agent](/agent/) to put your application on
 the internet and secure it so that only you can access it. It assumes you already have your
 own application running locally.
 
-## Step 1: Install
+## 1. Install ngrok
 
 <Tabs groupId="os" queryString="os">
 <TabItem value="macos" label="Mac OS" default>
@@ -58,7 +60,7 @@ following command in your terminal and confirm that ngrok prints its help text.
 ngrok help
 ```
 
-## Step 2: Connect your account
+## 2. Connect your account
 
 Next, connect your ngrok agent to your ngrok account. If you haven't already,
 [sign up for an ngrok account](https://dashboard.ngrok.com). Copy your [ngrok
@@ -74,7 +76,7 @@ ngrok config add-authtoken <TOKEN>
 
 Going to the [Setup & Installation page in the dashboard](https://dashboard.ngrok.com/get-started/setup) will also provide a configuration command specific to your account.
 
-## Step 3: Put your app online
+## 3. Put your app online
 
 Start ngrok by running the following command.
 
@@ -110,7 +112,7 @@ Open the Forwarding URL in your browser and you will see your web application.
 - Your app is available over HTTPS (notice the 🔒 in your browser window) with
   a valid certificate that ngrok automatically manages for you.
 
-## Step 4: Always use the same domain
+## 4. Always use the same domain
 
 If you want to keep the same URL each time you use ngrok, [create a static
 domain on your dashboard](https://dashboard.ngrok.com/domains) and
@@ -121,32 +123,64 @@ ngrok with `Ctrl+C` and then run ngrok again:
 ngrok http 8080 --url https://jumpy-red-mollusk.ngrok-free.app
 ```
 
-## Step 5: Secure your app
+## 5. Secure your app
 
 You may not want everyone to be able to access your application. ngrok can
-quickly add authentication to your app without any changes. If your Google
-account is `alan@example.com`, you can restrict access only for yourself by
-running ngrok with:
+quickly add authentication to your app without any changes.
 
+In general, [Traffic Policy](/traffic-policy/) is the recommended way to secure your app.
+
+<SecureYourApp firstTabValue="google-oauth" firstTabLabel="Google OAuth" secondTabLabel="Basic Auth" secondTabValue="basic-auth">
+
+The following example demonstrates how to use [the `basic-auth` Traffic Policy action](/traffic-policy/actions/basic-auth/) to only allow visitors with the credentials `user:password1` or `admin:password2` to access your app.
+
+<ConfigExample
+	snippetText={null}
+	showLineNumbers={true}
+	jsonMetastring="{5-51}"
+	yamlMetastring="{4-28}"
+	config={{
+		on_http_request: [
+			{
+				actions: [
+					{
+						type: "basic-auth",
+						config: {
+							realm: "sample-realm",
+							credentials: ["user:password1", "admin:password2"],
+							enforce: true,
+						},
+					}
+				],
+			},
+		],
+	}}
+/>
+
+You can test your traffic policy by sending the following request to your app.
+
+```shell
+$ curl --request GET \
+  --url http://example-api.ngrok.app/ \
+  --header 'Authorization: Basic dXNlcjpwYXNzd29yZDE=`'
 ```
-ngrok http http://localhost:8080 --oauth google --oauth-allow-email alan@example.com
+
+:::note
+This example uses `dXNlcjpwYXNzd29yZDE=`, which is a [base64 encoded](https://en.wikipedia.org/wiki/Base64) version of `user:password1`.
+:::
+
+You should get the following response:
+
+```http
+HTTP/2 200 OK
+content-type: text/html
+Successfully Authenticated!
+...
 ```
 
-Anyone accessing your app will be prompted to log in with Google and only your
-account will be allowed to access it. Keep in mind that when you restart ngrok,
-if you don't specify the `--url` flag that your app's URL changed, so make
-sure to visit the new one.
+If you send the same request without the `Authorization` header, you should receive a `401 Unauthorized` response.
 
-<img width="400" height="400" src="/docs/img/docs/ngrok-oauth.png" />
-
-If you don't have a Google account or you want a simpler form of auth, you can
-protect your app with a username and password like so:
-
-```
-ngrok http http://localhost:8080 --basic-auth 'username:a-very-secure-password'
-```
-
-<img width="450" height="450" src="/docs/img/docs/ngrok-basic-auth.png" />
+</SecureYourApp>
 
 ngrok supports many forms of authentication including:
 

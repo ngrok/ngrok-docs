@@ -118,10 +118,6 @@ const config = {
 			async: true,
 		},
 		{
-			src: "/docs/scripts/anchor-scroll-to.js",
-			async: true,
-		},
-		{
 			src: "https://tag.clearbitscripts.com/v1/pk_1caf9e9fb3222466245fb17c8f807837/tags.js",
 		},
 	],

@@ -76,7 +76,7 @@ GET/api/tunnels
             "proto": "https",
             "config": {
                 "addr": "localhost:80",
-                "inspect": true,
+                "inspect": true
             },
             "metrics": {
                 "conns": {
@@ -101,8 +101,7 @@ GET/api/tunnels
                     "p99": 0
                 }
             }
-        },
-        ...
+        }
     ],
     "uri": "/api/tunnels"
 }
@@ -144,7 +143,7 @@ Parameter names and behaviors are identical to those those defined in the config
     "proto": "tcp",
     "config": {
         "addr": "localhost:22",
-        "inspect": false,
+        "inspect": false
     },
     "metrics": {
         "conns": {
@@ -192,7 +191,7 @@ GET/api/tunnels/:name
     "proto": "https",
     "config": {
         "addr": "localhost:80",
-        "inspect": true,
+        "inspect": true
     },
     "metrics": {
         "conns": {
@@ -307,10 +306,9 @@ curl http://localhost:4040/api/requests/http?limit=50
                         "1716"
                     ]
                 },
-                "raw": "<BASE64 ENCODED BYTES>",
+                "raw": "<BASE64 ENCODED BYTES>"
             }
-        },
-        ...
+        }
     ]
 }
 ```
@@ -407,7 +405,7 @@ GET/api/requests/http/:request_id
                 "1716"
             ]
         },
-        "raw": "<BASE64 ENCODED BYTES>",
+        "raw": "<BASE64 ENCODED BYTES>"
     }
 }
 ```

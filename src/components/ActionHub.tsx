@@ -104,7 +104,7 @@ export default function ActionHub({ actions }: Props) {
 				</Input>
 
 				<div className="flex gap-2">
-					<Select value={protocolFilter} onChange={setProtocolFilter}>
+					<Select value={protocolFilter} onValueChange={setProtocolFilter}>
 						<SelectTrigger className="w-[180px]">
 							<SelectValue placeholder="Filter by Phase" />
 						</SelectTrigger>
@@ -120,7 +120,7 @@ export default function ActionHub({ actions }: Props) {
 						</SelectContent>
 					</Select>
 
-					<Select value={phaseFilter} onChange={setPhaseFilter}>
+					<Select value={phaseFilter} onValueChange={setPhaseFilter}>
 						<SelectTrigger className="w-[180px]">
 							<SelectValue placeholder="Filter by Phase" />
 						</SelectTrigger>
