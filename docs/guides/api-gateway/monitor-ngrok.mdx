@@ -15,42 +15,6 @@ This guide assumes you've already shipped ngrok as an API gateway using one of t
 - [Deploy an API gateway with Kubernetes](https://ngrok.com/docs/guides/api-gateway/kubernetes/)
 - [Deploy a multicloud API gateway](https://ngrok.com/docs/guides/api-gateway/multicloud/)
 
-You'll use the [ngrok sample API](https://github.com/ngrok-samples/api-demo) in this tutorial. Even if you have an existing API you want to monitor, you can test the sample before making changes to your real API. If you have no interest in running the sample app and immediately want to work on your live app, jump ahead to the [Monitor your API](#monitor-your-api) section.
-
-## Start the sample API to monitor
-
-Let's start the sample API. Open a terminal and run the commands below.
-
-```sh
-docker network create ngrokTest
-
-docker run --init --platform=linux/amd64 --rm -p 4000:80 --network=ngrokTest --name="api" -e PORT=80 joelatngrok/api-demo
-```
-
-This command runs the Docker sample API container, exposing the API locally on port 4000, names the Docker container `api`, and removes the container with `--rm` upon exiting. You can now browse to http://localhost:4000 to test the API.
-
-:::note
-The API uses a named network, `ngrokTest`, so that in the next section, you can start the ngrok Agent on the same network as the API.
-:::
-
-![Simple web API](img/monitor-ngrok/simple-web-api.png)
-
-## Publish your API with ngrok
-
-Now that the API is running locally, you can expose it on a public URL, using the [Docker image for the ngrok agent](https://hub.docker.com/r/ngrok/ngrok).
-
-- Replace the authentication token in the command below with your token from the [ngrok dashboard](https://dashboard.ngrok.com/get-started/your-authtoken), and run the command in a new terminal.
-
-  ```sh
-  docker run -it --rm --platform=linux/amd64 --network=ngrokTest -e NGROK_AUTHTOKEN=Y0urS3cr3tK3y ngrok/ngrok:3.22.0-alpine-amd64 http http://api
-  ```
-
-  This command starts the ngrok agent locally and connects it to the API running on the `api` container.
-
-- Browse to the URL labeled `Forwarding`, which should look like this in your terminal: `https://eb45-79-127-145-72.ngrok-free.app`.
-- You can now see your request going from the browser to the ngrok agent you're running in one terminal window and then to the API in your other terminal window.
-
-![Published API](img/monitor-ngrok/api-gent.png)
 
 ## Monitor your API
 
@@ -75,7 +39,7 @@ In this section, you'll learn to use the Traffic Inspector and work through an e
   ![Traffic Inspector](img/monitor-ngrok/trafficInspector.png)
 
 :::note
-Requests made to the API at http://localhost:4000 will not be displayed in the inspector. Only requests that pass through the ngrok endpoint, and therefore the ngrok agent running in Docker, will be known to ngrok.
+Requests made to the API at http://localhost:4000 will not be displayed in the inspector. Only requests that pass through the ngrok endpoint, and therefore the ngrok agent, will be known to ngrok.
 :::
 
 To see more details about a request or to replay it, you need to enable full capture, which permits ngrok to store up to 10 KB of your request data.
@@ -111,43 +75,7 @@ You can use policies to request passwords, block malicious traffic, route reques
 
 Let's look at rate limiting as an example of a Traffic Policy. Rate limiting is one of the many [Traffic Policy actions](https://ngrok.com/docs/traffic-policy/actions/rate-limit) available. You can rate limit your login page to make password guessing tedious for hackers, or rate limit SMS requests to prevent automated attacks that try to incur massive costs to your business.
 
-At this stage of the guide, you could send unlimited requests to the test API you've created. Let's change that to allow only one request a minute.
-
-In order to test policies, you need to be able to reuse the same URL, which isn't possible if you keep using the temporary URLs that ngrok generates each time you restart an agent. So let's create a permanent URL:
-
-- Browse to the **Domains** page in the ngrok sidebar. If you're using a free account, register for your free domain with a random name, like `massive-pelican-arguably.ngrok-free.app`. If you're using a paid account, create a new domain for this test.
-- Next, you need to stop and restart the ngrok container using a traffic policy.
-- Stop the ngrok Docker container in the terminal with <kbd>Ctrl</kbd><kbd>+</kbd><kbd>C</kbd>.
-- Create a file named `policy.yml` with the code below.
-
-  ```yml
-  on_http_request:
-    - actions:
-      - type: rate-limit
-        config:
-          name: 1 request per minute
-          algorithm: sliding_window
-          capacity: 1
-          rate: 1m
-          bucket_key:
-            - "hasReqHeader('host') ? getReqHeader('host')[0] : 'unknown'"
-  ```
-
-- Run the agent again with the command below. Replace the authentication token and the URL with your token and URL (using `https`, not `http`).
-
-  ```sh
-  docker run -it --rm --platform=linux/amd64 --network=ngrokTest -v ".:/app" -w "/app" -e NGROK_AUTHTOKEN=Y0urS3cr3t ngrok/ngrok:3.22.0-alpine-amd64 http http://api --traffic-policy-file policy.yml --url https://massive-pelican-arguably.ngrok-free.app
-  ```
-
-- Browse to the API URL and refresh the page a few times. Notice that the page stops responding.
-- On the ngrok Traffic Inspector page, note that the error code **`429`** (rate limit) was returned and that the duration of the request was instant and caused no load on your API.
-
-  ![Rate limit](img/monitor-ngrok/rateLimit.png)
-
-- Edit the `policy.yml` file and change `capacity` to `10`, then restart the ngrok container.
-- In the Traffic Inspector, click on one of the **`429`** events, then click **Replay**. Note that the request now responds without error because the rate limit has been increased.
-
-  ![Replay after rate limit adjustment](img/monitor-ngrok/replayLimit.png)
+You can observe the effect of the rate limiting traffic policy by following the steps [here](https://ngrok.com/docs/guides/api-gateway/get-started/#5-rate-limit-specific-api-services).
 
 ## Monitor API gateway traffic with Datadog
 
@@ -175,7 +103,7 @@ Before adding an event subscription, you need somewhere to send events:
   ```
 
 - Note which Datadog site you're using by following the instructions in the [guide to getting started with Datadog sites](https://docs.datadoghq.com/getting_started/site/#access-the-datadog-site).
-- Take note of your Datadog API key, which you can access by clicking your username at the bottom left of the sidebar and clicking **API Keys** in the menu that opens.
+- Take note of your Datadog API key, which you can access by clicking your username at the bottom left of the sidebar and clicking **API Keys** in the **Organization Settings** menu that opens or you can add one by following the steps mentioned [here](https://docs.datadoghq.com/account_management/api-app-keys/#add-an-api-key-or-client-token).
 
   ![Datadog API key](img/monitor-ngrok/datadogKey.png)
 
