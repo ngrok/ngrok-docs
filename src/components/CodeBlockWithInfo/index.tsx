@@ -49,12 +49,12 @@ export function CodeBlockWithInfo({
 	return (
 		<div className="flex flex-col">
 			<CodeBlock className={className} {...codeBlockProps}>
-				<CodeBlockHeader className="flex w-[100%] justify-start p-1">
+				<CodeBlockHeader className="flex w-[100%] justify-start p-2">
 					{headerContent}
 				</CodeBlockHeader>
 				<CodeBlockBody>
 					{meta?.title && (
-						<div className="mx-2 mt-3.5 flex w-[100%] items-end justify-start gap-1.5">
+						<div className="mx-2 mt-3.5 flex w-[100%] items-end justify-start gap-1">
 							<>
 								{meta?.mode ? (
 									<CodeBlockIcon preset={meta.mode} />

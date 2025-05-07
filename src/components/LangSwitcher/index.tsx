@@ -7,6 +7,7 @@ import LangSwitcherContext, {
 	type LangSwitcherContextType,
 } from "./LangSwitcherContext";
 import { getCodeBlocks, languagesAreSynonyms } from "./utils";
+import clsx from "clsx";
 
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>
 export function LangSwitcher({ children, className, ...props }: any) {
@@ -58,11 +59,13 @@ export function LangSwitcher({ children, className, ...props }: any) {
 									onClick={() => updateSelectedLanguage(child.language)}
 									type="button"
 									priority="neutral"
-									appearance={
+									appearance="ghost"
+									className={clsx(
+										"text-xs h-6 px-1.5",
 										matchingBlock?.language === child.language
-											? "filled"
-											: "outlined"
-									}
+											? "bg-neutral-500/10 text-neutral-800"
+											: "text-neutral-500",
+									)}
 								>
 									{child.meta.tabName || child.language.toUpperCase()}
 								</Button>
