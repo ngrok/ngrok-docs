@@ -4,7 +4,6 @@ import {
 	CodeBlockBody,
 	CodeBlockCode,
 	CodeBlockCopyButton,
-	CodeBlockExpanderButton,
 	CodeBlockHeader,
 	CodeBlockIcon,
 	CodeBlockTitle,
@@ -77,8 +76,6 @@ function DocsCodeBlock({
 	const hasHeader = title || mode || _icon;
 	const indentation = _indentation ?? meta.indentation;
 
-	const collapsible = meta.collapsible && children.split("\n").length > 20;
-
 	return (
 		<CodeBlock className={className} {...props}>
 			{hasHeader && (
@@ -94,7 +91,6 @@ function DocsCodeBlock({
 					language={language}
 					value={fmtCode`${children}`}
 				/>
-				{collapsible && <CodeBlockExpanderButton />}
 			</CodeBlockBody>
 		</CodeBlock>
 	);

@@ -563,6 +563,14 @@
     </tr>
     <tr>
       <td>
+        <a id="ERR_NGROK_248" href="/docs/errors/err_ngrok_248">ERR_NGROK_248</a>
+      </td>
+      <td class="pre-wrapped">
+        The endpoint create request passed an invalid type of <code>&lt;TYPE&gt;</code>. Currently we only support creation of cloud endpoints on this route.
+      </td>
+    </tr>
+    <tr>
+      <td>
         <a id="ERR_NGROK_300" href="/docs/errors/err_ngrok_300">ERR_NGROK_300</a>
       </td>
       <td class="pre-wrapped">
@@ -927,7 +935,7 @@
         <a id="ERR_NGROK_336" href="/docs/errors/err_ngrok_336">ERR_NGROK_336</a>
       </td>
       <td class="pre-wrapped">
-        Could not find an account while creating this tunnel. This is either an internal server error or you deleted your account.
+        Could not find an account while creating this endpoint. This is either an internal server error or you deleted your account.
       </td>
     </tr>
     <tr>
@@ -1298,7 +1306,7 @@
         <a id="ERR_NGROK_382" href="/docs/errors/err_ngrok_382">ERR_NGROK_382</a>
       </td>
       <td class="pre-wrapped">
-        The account "<code>&lt;NAME&gt;</code>" may not start a tunnel until the admin's email address is verified. Verify your email at <a href="https://dashboard.ngrok.com/user/settings">https://dashboard.ngrok.com/user/settings</a>
+        The account "<code>&lt;NAME&gt;</code>" may not start an endpoint until the admin's email address is verified. Verify your email at <a href="https://dashboard.ngrok.com/user/settings">https://dashboard.ngrok.com/user/settings</a>
       </td>
     </tr>
     <tr>
@@ -2452,7 +2460,7 @@
         <a id="ERR_NGROK_736" href="/docs/errors/err_ngrok_736">ERR_NGROK_736</a>
       </td>
       <td class="pre-wrapped">
-        This ngrok account has reached its Basic traffic policy request limit for the month. Please log into https://dashboard.ngrok.com to view your options.
+        This ngrok account has reached its Basic traffic policy request limit for the month. Please purchase a pay-as-you-go plan with a Basic Traffic Policy add-on.
       </td>
     </tr>
     <tr>
@@ -2460,7 +2468,7 @@
         <a id="ERR_NGROK_737" href="/docs/errors/err_ngrok_737">ERR_NGROK_737</a>
       </td>
       <td class="pre-wrapped">
-        This ngrok account has reached its Enterprise traffic policy request limit for the month. Please log into https://dashboard.ngrok.com to view your options.
+        This ngrok account has reached its Enterprise traffic policy request limit for the month. Please purchase a pay-as-you-go plan with an Enterprise Traffic Policy add-on.
       </td>
     </tr>
     <tr>
@@ -2468,7 +2476,7 @@
         <a id="ERR_NGROK_738" href="/docs/errors/err_ngrok_738">ERR_NGROK_738</a>
       </td>
       <td class="pre-wrapped">
-        This ngrok account has reached its Advanced traffic policy request limit for the month. Please log into https://dashboard.ngrok.com to view your options.
+        This ngrok account has reached its Advanced traffic policy request limit for the month. Please purchase a pay-as-you-go plan with an Advanced Traffic Policy add-on.
       </td>
     </tr>
     <tr>
@@ -2476,7 +2484,7 @@
         <a id="ERR_NGROK_739" href="/docs/errors/err_ngrok_739">ERR_NGROK_739</a>
       </td>
       <td class="pre-wrapped">
-        This ngrok account has reached its Basic traffic policy connection limit for the month. Please log into https://dashboard.ngrok.com to view your options.
+        This ngrok account has reached its Basic traffic policy connection limit for the month. Please purchase a pay-as-you-go plan with a Basic Traffic Policy add-on.
       </td>
     </tr>
     <tr>
@@ -2484,7 +2492,7 @@
         <a id="ERR_NGROK_740" href="/docs/errors/err_ngrok_740">ERR_NGROK_740</a>
       </td>
       <td class="pre-wrapped">
-        This ngrok account has reached its Enterprise traffic policy connection limit for the month. Please log into https://dashboard.ngrok.com to view your options.
+        This ngrok account has reached its Enterprise traffic policy connection limit for the month. Please purchase a pay-as-you-go plan with an Enterprise Traffic Policy add-on.
       </td>
     </tr>
     <tr>
@@ -3318,6 +3326,14 @@
       </td>
       <td class="pre-wrapped">
         We do not allow sign ups from anonymous proxies such as Tor.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_1233" href="/docs/errors/err_ngrok_1233">ERR_NGROK_1233</a>
+      </td>
+      <td class="pre-wrapped">
+        The email address <code>&lt;EMAIL&gt;</code> is already associated with an SSO Identity Provider connection. Please contact support: support@ngrok.com
       </td>
     </tr>
     <tr>
@@ -5281,6 +5297,39 @@
     </tr>
     <tr>
       <td>
+        <a id="ERR_NGROK_2253" href="/docs/errors/err_ngrok_2253">ERR_NGROK_2253</a>
+      </td>
+      <td class="pre-wrapped">
+        Failed to evaluate CEL expression: <code>&lt;EXPRESSION&gt;</code> for <code>&lt;ACTION&gt;</code> at runtime: <code>&lt;ERR&gt;</code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_2254" href="/docs/errors/err_ngrok_2254">ERR_NGROK_2254</a>
+      </td>
+      <td class="pre-wrapped">
+        Failed to resolve CEL expression. The expression was: <code>&lt;CEL&gt;</code>
+        ERROR: <code>&lt;ERROR&gt;</code>}
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_2255" href="/docs/errors/err_ngrok_2255">ERR_NGROK_2255</a>
+      </td>
+      <td class="pre-wrapped">
+        Invalid configuration for <code>&lt;ACTION&gt;</code>: Maximum <code>&lt;ELEMENT&gt;</code> allowed per action is <code>&lt;MAX&gt;</code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_2256" href="/docs/errors/err_ngrok_2256">ERR_NGROK_2256</a>
+      </td>
+      <td class="pre-wrapped">
+        The action <code>&lt;ACTION&gt;</code> is not available for your current plan. Please upgrade to <code>&lt;PLANS&gt;</code> to use this action.
+      </td>
+    </tr>
+    <tr>
+      <td>
         <a id="ERR_NGROK_3002" href="/docs/errors/err_ngrok_3002">ERR_NGROK_3002</a>
       </td>
       <td class="pre-wrapped">
@@ -5791,6 +5840,22 @@
     </tr>
     <tr>
       <td>
+        <a id="ERR_NGROK_3213" href="/docs/errors/err_ngrok_3213">ERR_NGROK_3213</a>
+      </td>
+      <td class="pre-wrapped">
+        Upgrade request origin forbidden
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_3214" href="/docs/errors/err_ngrok_3214">ERR_NGROK_3214</a>
+      </td>
+      <td class="pre-wrapped">
+        exceeded maximum number of redirects <code>&lt;MAX&gt;</code>: <code>&lt;URLS&gt;</code>
+      </td>
+    </tr>
+    <tr>
+      <td>
         <a id="ERR_NGROK_3300" href="/docs/errors/err_ngrok_3300">ERR_NGROK_3300</a>
       </td>
       <td class="pre-wrapped">
@@ -6011,6 +6076,38 @@
       </td>
       <td class="pre-wrapped">
         The configured http-request timeout was reached before a successful request could be made.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_3603" href="/docs/errors/err_ngrok_3603">ERR_NGROK_3603</a>
+      </td>
+      <td class="pre-wrapped">
+        Request rejected, A loop was detected.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_3700" href="/docs/errors/err_ngrok_3700">ERR_NGROK_3700</a>
+      </td>
+      <td class="pre-wrapped">
+        The request was blocked by the WAF.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_3701" href="/docs/errors/err_ngrok_3701">ERR_NGROK_3701</a>
+      </td>
+      <td class="pre-wrapped">
+        Something went wrong with the WAF.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_3702" href="/docs/errors/err_ngrok_3702">ERR_NGROK_3702</a>
+      </td>
+      <td class="pre-wrapped">
+        The response was blocked by the WAF.
       </td>
     </tr>
     <tr>
@@ -6471,6 +6568,14 @@
       </td>
       <td class="pre-wrapped">
         The email address being verified, <code>&lt;EMAIL&gt;</code>, belongs to another user.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_4453" href="/docs/errors/err_ngrok_4453">ERR_NGROK_4453</a>
+      </td>
+      <td class="pre-wrapped">
+        A similar email address to the one being verified, <code>&lt;EMAIL&gt;</code>, belongs to another user.
       </td>
     </tr>
     <tr>
@@ -7635,6 +7740,14 @@
       </td>
       <td class="pre-wrapped">
         The Endpoint <code>&lt;HOSTPORT&gt;</code> has both a Cloud Endpoint (<code>&lt;CLEPID&gt;</code>) and Endpoint Configuration (<code>&lt;TUNID&gt;</code>) configured.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_6029" href="/docs/errors/err_ngrok_6029">ERR_NGROK_6029</a>
+      </td>
+      <td class="pre-wrapped">
+        The traffic policy configured for cloud endpoint <code>&lt;CLEPID&gt;</code> is non-terminating.
       </td>
     </tr>
     <tr>
@@ -9618,6 +9731,17 @@
     </tr>
     <tr>
       <td>
+        <a id="ERR_NGROK_7196" href="/docs/errors/err_ngrok_7196">ERR_NGROK_7196</a>
+      </td>
+      <td class="pre-wrapped">
+        Your account has read-only access to Edges.
+        Edges are deprecated, and write access (including creating, updating, or deleting) is no longer supported for your account.
+        For guidance on alternatives, see our migration guide: <a href="https://ngrok.com/docs/universal-gateway/edges">https://ngrok.com/docs/universal-gateway/edges</a>/#migration-guide
+        .If you believe you should still have write access to Edges, please contact support@ngrok.com for help.
+      </td>
+    </tr>
+    <tr>
+      <td>
         <a id="ERR_NGROK_8000" href="/docs/errors/err_ngrok_8000">ERR_NGROK_8000</a>
       </td>
       <td class="pre-wrapped">
@@ -10990,6 +11114,22 @@
     </tr>
     <tr>
       <td>
+        <a id="ERR_NGROK_18018" href="/docs/errors/err_ngrok_18018">ERR_NGROK_18018</a>
+      </td>
+      <td class="pre-wrapped">
+        Supported protocols for kubernetes-bound endpoints are http, tls, and tcp. You provided <code>&lt;PROTO&gt;</code>.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_18019" href="/docs/errors/err_ngrok_18019">ERR_NGROK_18019</a>
+      </td>
+      <td class="pre-wrapped">
+        This account does not have access to Endpoint pooling. Upgrade or switch to a pay-as-you-go plan for access.
+      </td>
+    </tr>
+    <tr>
+      <td>
         <a id="ERR_NGROK_19000" href="/docs/errors/err_ngrok_19000">ERR_NGROK_19000</a>
       </td>
       <td class="pre-wrapped">
@@ -11082,6 +11222,110 @@
       </td>
       <td class="pre-wrapped">
         Failed to lookup IP <code>&lt;IP&gt;</code>: <code>&lt;ERR&gt;</code>.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_23000" href="/docs/errors/err_ngrok_23000">ERR_NGROK_23000</a>
+      </td>
+      <td class="pre-wrapped">
+        The vault name "<code>&lt;VAULT&gt;</code>" is invalid. Must only contain the characters "a-zA-Z0-9_/.".
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_23001" href="/docs/errors/err_ngrok_23001">ERR_NGROK_23001</a>
+      </td>
+      <td class="pre-wrapped">
+        The vault name cannot be empty.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_23002" href="/docs/errors/err_ngrok_23002">ERR_NGROK_23002</a>
+      </td>
+      <td class="pre-wrapped">
+        Your vault name must be less than <code>&lt;LENGTH&gt;</code> characters.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_23003" href="/docs/errors/err_ngrok_23003">ERR_NGROK_23003</a>
+      </td>
+      <td class="pre-wrapped">
+        A Vault must be empty before it can be deleted. Please remove all secrets from the vault and try again.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_23004" href="/docs/errors/err_ngrok_23004">ERR_NGROK_23004</a>
+      </td>
+      <td class="pre-wrapped">
+        Vault names must be unique within an account.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_24000" href="/docs/errors/err_ngrok_24000">ERR_NGROK_24000</a>
+      </td>
+      <td class="pre-wrapped">
+        The secret name "<code>&lt;SECRET&gt;</code>" is invalid. Must only contain the characters "a-zA-Z0-9_/.".
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_24001" href="/docs/errors/err_ngrok_24001">ERR_NGROK_24001</a>
+      </td>
+      <td class="pre-wrapped">
+        The secret name cannot be empty.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_24002" href="/docs/errors/err_ngrok_24002">ERR_NGROK_24002</a>
+      </td>
+      <td class="pre-wrapped">
+        Your secret name must be less than <code>&lt;LENGTH&gt;</code> characters.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_24003" href="/docs/errors/err_ngrok_24003">ERR_NGROK_24003</a>
+      </td>
+      <td class="pre-wrapped">
+        The secret value cannot be empty.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_24004" href="/docs/errors/err_ngrok_24004">ERR_NGROK_24004</a>
+      </td>
+      <td class="pre-wrapped">
+        Your secret value must be less than <code>&lt;LENGTH&gt;</code> bytes.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_24005" href="/docs/errors/err_ngrok_24005">ERR_NGROK_24005</a>
+      </td>
+      <td class="pre-wrapped">
+        Secret names must be unique within a vault.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_24006" href="/docs/errors/err_ngrok_24006">ERR_NGROK_24006</a>
+      </td>
+      <td class="pre-wrapped">
+        Vault with ID <code>&lt;ID&gt;</code> not found.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_25000" href="/docs/errors/err_ngrok_25000">ERR_NGROK_25000</a>
+      </td>
+      <td class="pre-wrapped">
+        Domain controls with redirect_blocked_signups_to_sso enabled cannot have an empty or null sso account IDs list.
       </td>
     </tr>
   </tbody>

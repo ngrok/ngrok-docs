@@ -304,6 +304,8 @@ const sidebars = {
 							},
 							items: [
 								"k8s/guides/how-to/request-routing",
+								"k8s/guides/how-to/tls-routing",
+								"k8s/guides/how-to/tcp-routing",
 								"k8s/guides/how-to/manipulate-headers",
 								"k8s/guides/how-to/redirects",
 								"k8s/guides/how-to/rewrite-url",
@@ -345,7 +347,7 @@ const sidebars = {
 					items: [
 						"k8s/integrations/argo-cd",
 						"k8s/integrations/aws-eks",
-						"k8s/integrations/azure-ad",
+						"k8s/integrations/microsoft-entra-id",
 						"k8s/integrations/azure-aks",
 						"k8s/integrations/consul",
 						"k8s/integrations/digital-ocean",
@@ -615,6 +617,7 @@ const sidebars = {
 			type: "category",
 			items: [
 				"guides/api-gateway/get-started",
+				"guides/api-gateway/monitor-ngrok",
 				"guides/api-gateway/kubernetes",
 				"guides/api-gateway/multicloud",
 			],

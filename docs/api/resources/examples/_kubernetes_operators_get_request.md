@@ -7,5 +7,5 @@ curl \
 -X GET \
 -H "Authorization: Bearer {API_KEY}" \
 -H "Ngrok-Version: 2" \
-https://api.ngrok.com/kubernetes_operators/k8sop_2uqkjOsOYHQvYPwOOL5Lok5lefH
+https://api.ngrok.com/kubernetes_operators/k8sop_2wgPaGI5bXqaQUHAg9K69D7AiuT
 ```

@@ -1,0 +1,91 @@
+## Behavior
+
+The `http-request` action issues an outbound HTTP request during either the `on_http_request` or `on_http_response` phase of policy execution. It can include dynamic headers, query parameters, and a request body.
+
+Only specific HTTP methods are supported: `GET`, `POST`, `PUT`, `PATCH`, `DELETE`, and `OPTIONS`. If no method is specified, `GET` is used by default.
+
+### Internal Endpoint Behavior
+
+By default, the `http-request` action only supports requests to internal ngrok endpoints. Requests to internal endpoints (those with `.internal` domains) are treated differently from public (or external) requests, these requests must resolve to an internal ngrok endpoint running on your account.
+
+These requests also use a direct connection over ngrok's control plane and do not rely on the public internet. If the request targets an internal agent endpoint (e.g., your self-hosted ngrok agent), it will exit the control plane and traverse the public internet to reach your agent running locally.
+
+### Retry Logic
+
+You can use a condition to automatically retry failed requests. This is useful for handling transient errors, like a `500` response. The condition is written using an expression language and has access to:
+
+- `attempts`: number of attempts so far
+- `last_attempt.req`: the most recent request
+- `last_attempt.res`: the most recent response
+- `last_attempt.error`: any error that occurred
+
+```js
+last_attempt.res.statusCode == 500
+```
+
+The request will retry up to **3 times**.
+
+### Timeout Behavior
+
+The `timeout` setting defines the **maximum total time** allowed for the entire `http-request` action, including **all** retry attempts. This prevents long-running or stalled requests from delaying policy evaluation.
+
+The default timeout is `3s`. You can configure any duration between **1 second** and **30 seconds** using standard duration formats like `5s` or `10s`.
+
+#### Timeout Error Handling
+
+Whether a timeout causes the policy to fail or continue depends on the `on_error` setting:
+
+- `halt` will treat the timeout as a hard failure.
+- `continue` will move forward even if the request timed out.
+
+### Loop Protection
+
+To prevent endless loops between services, ngrok tracks internal hops. If the same request loops more than 3 times internally, it will be stopped automatically.
+
+### Redirect Behavior
+
+By default, the `http-request` action does not follow HTTP redirects. You can enable redirect handling by setting the `max_redirects` field. The allowed range is `0` to `5`. By default it is set to `0`.
+
+If the number of redirects exceeds `max_redirects`, the action fails. Redirect handling only applies to `3xx` responses from the target server.
+
+### Response Body Size Limits
+
+The response body returned by the `http-request` action is limited to **256 KB**. If the body size exceeds this limit, the action fails and returns a `response size exceeded` error.
+
+This limit applies to the decoded body after any decompression and before retries are evaluated.
+
+Each retry is also subject to the **256 KB** response size limit. If the response body exceeds this limit, the attempt fails and the error is included in the `retry_condition` evaluation.
+
+### Error Handling
+
+Set `on_error` to control what happens if the request fails:
+
+- `continue`: Policy continues even if the request fails.
+- `halt`: Policy stops immediately on failure.
+
+This gives you control over how critical the request is to your policy logic.
+
+### Automatically Injected Headers
+
+ngrok automatically injects some headers into your request to help with debugging, tracing and abuse:
+
+| Header               | Purpose                                      |
+| -------------------- | -------------------------------------------- |
+| `Ngrok-Report-Abuse` | Static URL for reporting abuse               |
+| `Ngrok-Req-Type`     | Always set to `http-request`                 |
+| `Ngrok-Req-Id`       | Unique request identifier                    |
+| `X-Forwarded-For`    | Original client IP address                   |
+| `User-Agent`         | Identifies the request as from `ngrok/cloud` |
+
+### CEL Interpolation
+
+Certain fields in the `http-request` action support CEL (Common Expression Language) interpolation, allowing dynamic values based on the request context.
+
+The following fields support CEL expressions:
+
+- `url`
+- `headers` (values only)
+- `query_params` (values only)
+- `body`
+
+Expressions must be wrapped in `${...}` and are evaluated at runtime using the current request data.
