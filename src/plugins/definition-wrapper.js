@@ -15,11 +15,17 @@ module.exports = function remarkWordWrapper(stuff) {
 				parent?.tagName === "a" ||
 				parent?.tagName === "Link"
 			) {
-				// Don't wrap terms in headings or links
+				// Skip terms in headings or links
 				return;
 			}
 			let matchingTitle = "";
 			const matchingTerm = terms.find((term) => {
+				/**
+				 * Find the first term that matches the node value
+				 * and is not already found in the foundTerms array.
+				 * We use indexOf so we can pull the exact term out
+				 * of the node value.
+				 */
 				let termIndex;
 				const nodeValue = term.caseSensitive
 					? node.value
@@ -49,6 +55,10 @@ module.exports = function remarkWordWrapper(stuff) {
 			}
 
 			const parts = node.value.split(matchingTitle);
+			if (parts.length < 2) {
+				// If the term is not found in the text, return
+				return;
+			}
 			foundTerms.push(matchingTerm);
 
 			return parent.children.splice(
