@@ -858,9 +858,22 @@ const redirects = [
 	[fromExact("/docs/using-ngrok-with/k8s/"), "/docs/k8s"],
 
 	// Load balancing guides
-	[fromExact("/docs/guides/other-guides/how-to-round-robin-load-balance-with-ngrok-cloud-edges"), "/docs/guides/other-guides/load-balancing-multiple-clouds/"],
-	[fromExact("/docs/guides/other-guides/how-to-do-weighted-load-balancing-with-ngrok-cloud-edges/"), "/docs/guides/other-guides/load-balancing-multiple-clouds/"],
-	[fromExact("/docs/guides/other-guides/load-balancing-with-cloud-edges/"), "/docs/guides/other-guides/load-balancing-multiple-clouds/"],
+	[
+		fromExact(
+			"/docs/guides/other-guides/how-to-round-robin-load-balance-with-ngrok-cloud-edges",
+		),
+		"/docs/guides/other-guides/load-balancing-multiple-clouds/",
+	],
+	[
+		fromExact(
+			"/docs/guides/other-guides/how-to-do-weighted-load-balancing-with-ngrok-cloud-edges/",
+		),
+		"/docs/guides/other-guides/load-balancing-multiple-clouds/",
+	],
+	[
+		fromExact("/docs/guides/other-guides/load-balancing-with-cloud-edges/"),
+		"/docs/guides/other-guides/load-balancing-multiple-clouds/",
+	],
 ];
 
 // get current href from window
