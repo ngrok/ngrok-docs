@@ -7,13 +7,17 @@ toc_max_heading_level: 3
 
 ## Introduction
 
-This guide explains how to monitor your API or web app with ngrok by viewing traffic reports, using error request replays, and exporting logs and events to an external dashboard.
+This guide explains how to monitor your API gateway and the traffic passing through it with ngrok by viewing traffic reports, using error request replays, and exporting logs and events to an external dashboard.
 
 Whether you're an existing ngrok user looking to make your API more robust or a new user wondering whether ngrok meets your needs, this tutorial will demonstrate monitoring in detail.
 
-## Prerequisites
+## What you'll need
 
-This guide assumes you already have [an ngrok account](https://dashboard.ngrok.com/signup) (a free account is sufficient) and have [Docker installed](https://docs.docker.com/get-started/get-docker) on your computer.
+This guide assumes you've already shipped ngrok as an API gateway using one of these guides:
+
+- [Get started with ngrok's API gateway](https://ngrok.com/docs/guides/api-gateway/get-started/)
+- [Deploy an API gateway with Kubernetes](https://ngrok.com/docs/guides/api-gateway/kubernetes/)
+- [Deploy a multicloud API gateway](https://ngrok.com/docs/guides/api-gateway/multicloud/)
 
 You'll use the [ngrok sample API](https://github.com/ngrok-samples/api-demo) in this tutorial. Even if you have an existing API you want to monitor, you can test the sample before making changes to your real API. If you have no interest in running the sample app and immediately want to work on your live app, jump ahead to the [Monitor your API](#monitor-your-api) section.
 
@@ -62,7 +66,7 @@ An event is the data that ngrok provides about a request, which is exported to a
 
 At the time of writing, ngrok allows you to export events only to AWS, Azure, and Datadog. We do not support event exports to OpenTelemetry or custom URLs, such as self-hosted servers, so you have to use a paid cloud service. You can't perform custom processing or use Elastic, Prometheus, Splunk, or alternative monitoring apps.
 
-## Use the Traffic Inspector
+## Observe API traffic with Traffic Inspector
 
 In this section, you'll learn to use the Traffic Inspector and work through an example of using the Traffic Inspector for rate limiting.
 
@@ -103,7 +107,7 @@ To see more details about a request or to replay it, you need to enable full cap
 
 Replaying requests is useful for debugging. For example, you could find the request that caused an error in your API, deploy a fix for the API, and replay the request to confirm you've fixed the issue.
 
-### Traffic Policy example
+### Observe and debug Traffic Policy rules with request replay
 
 You can also replay requests to test new [Traffic Policies](https://ngrok.com/docs/traffic-policy). ngrok applies the Traffic Policy rules in effect at the current time of replay, which may be different from the rules that were in effect when the original request was received.
 
@@ -149,7 +153,7 @@ In order to test policies, you need to be able to reuse the same URL, which isn'
 
   ![Replay after rate limit adjustment](./img/replayLimit.png)
 
-## Monitor events
+## Monitor API gateway traffic with Datadog
 
 In this section, you'll learn how to export ngrok events to the Datadog monitoring service.
 
@@ -197,7 +201,7 @@ Before adding an event subscription, you need somewhere to send events:
 
 - Refresh your ngrok API page a few times so that new requests are logged in Datadog.
 
-## Create a dashboard
+### Create a dashboard
 
 Now that events are being sent to Datadog, you can set up visualizations and notifications to allow your support team to monitor your API's performance.
 
@@ -232,7 +236,7 @@ Since the sample API never returns errors, an easy way to test the `Errors in th
 
 If you want to create widgets for other log information, you can see which fields are available by reading the JSON of any event you click on in the log inspector.
 
-## Create a notification
+### Create a notification
 
 To complete your monitoring system, you need to set up an alert that is pushed to your email or mobile app when an error occurs by adding a webhook integration to Datadog. This allows your support team to receive error notifications instead of having to check the dashboard repeatedly. Webhooks provide a way for you to send POST requests to https://ntfy.sh, a free notification service.
 
