@@ -1,4 +1,3 @@
-import { Button } from "@ngrok/mantle/button";
 import type {
 	CodeBlockCode,
 	Mode,
@@ -6,7 +5,6 @@ import type {
 } from "@ngrok/mantle/code-block";
 import { CodeBlock, parseLanguage } from "@ngrok/mantle/code-block";
 import type { WithStyleProps } from "@ngrok/mantle/types";
-import clsx from "clsx";
 import type { ComponentProps, ReactNode } from "react";
 import { CodeBlockWithInfo } from "./CodeBlockWithInfo";
 import { LangTab } from "./LangSwitcher/LangTab";

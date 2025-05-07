@@ -1,5 +1,4 @@
 import BrowserOnly from "@docusaurus/BrowserOnly";
-import { Button } from "@ngrok/mantle/button";
 import clsx from "clsx";
 import { useContext } from "react";
 import { CodeBlockWithInfo } from "../CodeBlockWithInfo";
