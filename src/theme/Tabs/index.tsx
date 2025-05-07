@@ -109,7 +109,7 @@ function TabList({
 			defaultValue={defaultTab}
 			value={tabToShow}
 		>
-			<TabsList>
+			<TabsList className="overflow-y-hidden pr-4">
 				{tabValues.map(({ value, label, attributes }) => (
 					<TabsTrigger
 						value={label || value}

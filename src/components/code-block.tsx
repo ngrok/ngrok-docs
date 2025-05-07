@@ -9,6 +9,8 @@ import type { WithStyleProps } from "@ngrok/mantle/types";
 import type { ComponentProps, ReactNode } from "react";
 import { CodeBlockWithInfo } from "./CodeBlockWithInfo";
 import { getLanguageInfo, getMetaData } from "./LangSwitcher/utils";
+import clsx from "clsx";
+import { LangTab } from "./LangSwitcher/LangTab";
 
 type WithIndentation = Pick<
 	ComponentProps<typeof CodeBlockCode>,
@@ -71,17 +73,14 @@ function DocsCodeBlock({
 			content={children}
 			language={language}
 			collapseLineNumber={20}
-			meta={getMetaData(metastring)}
+			meta={getMetaData(className)}
 			className={className}
 			headerContent={
-				<Button
+				<LangTab
 					disabled
-					type="button"
-					priority="neutral"
-					appearance={"outlined"}
-				>
-					{language.toUpperCase()}
-				</Button>
+					className="text-xs h-6 px-1.5 bg-neutral-500/10 text-neutral-800"
+					tabText={language.toUpperCase()}
+				/>
 			}
 			info={getLanguageInfo(language)}
 			codeBlockProps={props}

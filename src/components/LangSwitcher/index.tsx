@@ -8,6 +8,7 @@ import LangSwitcherContext, {
 	type LangSwitcherContextType,
 } from "./LangSwitcherContext";
 import { getCodeBlocks, languagesAreSynonyms } from "./utils";
+import { LangTab } from "./LangTab";
 
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>
 export function LangSwitcher({ children, className, ...props }: any) {
@@ -37,6 +38,8 @@ export function LangSwitcher({ children, className, ...props }: any) {
 				languagesAreSynonyms(child.language, selectedLanguage),
 		) || codeBlocks[0];
 
+	const content = matchingBlock?.content.toString();
+
 	return (
 		<BrowserOnly
 			fallback={
@@ -45,7 +48,7 @@ export function LangSwitcher({ children, className, ...props }: any) {
 		>
 			{() => (
 				<CodeBlockWithInfo
-					content={matchingBlock?.content.toString()}
+					content={content}
 					language={matchingBlock?.language || matchingBlock?.meta.language}
 					collapseLineNumber={10}
 					meta={matchingBlock?.meta}
@@ -53,23 +56,40 @@ export function LangSwitcher({ children, className, ...props }: any) {
 					headerContent={
 						<div className="flex w-[100%] gap-1.5">
 							{/* biome-ignore lint/suspicious/noExplicitAny: <explanation> */}
-							{codeBlocks.map((child: any) => (
-								<Button
-									key={child.language + child.content}
-									onClick={() => updateSelectedLanguage(child.language)}
-									type="button"
-									priority="neutral"
-									appearance="ghost"
-									className={clsx(
-										"text-xs h-6 px-1.5",
-										matchingBlock?.language === child.language
-											? "bg-neutral-500/10 text-neutral-800"
-											: "text-neutral-500",
-									)}
-								>
-									{child.meta.tabName || child.language.toUpperCase()}
-								</Button>
-							))}
+							{codeBlocks.map((child: any) => {
+								const tabText =
+									child?.meta.tabName || content?.startsWith("ssh")
+										? "SSH"
+										: child?.language.toUpperCase();
+								return (
+									<LangTab
+										key={child.language + child.content}
+										onClick={() => updateSelectedLanguage(child.language)}
+										className={clsx(
+											"text-xs h-6 px-1.5",
+											matchingBlock?.language === child.language
+												? "bg-neutral-500/10 text-neutral-800"
+												: "text-neutral-500",
+										)}
+										tabText={tabText || ""}
+									/>
+									// <Button
+									// 	key={child.language + child.content}
+									// 	onClick={() => updateSelectedLanguage(child.language)}
+									// 	type="button"
+									// 	priority="neutral"
+									// 	appearance="ghost"
+									// 	className={clsx(
+									// 		"text-xs h-6 px-1.5",
+									// 		matchingBlock?.language === child.language
+									// 			? "bg-neutral-500/10 text-neutral-800"
+									// 			: "text-neutral-500",
+									// 	)}
+									// >
+									// 	{child.meta.tabName || child.language.toUpperCase()}
+									// </Button>
+								);
+							})}
 						</div>
 					}
 					info={matchingBlock?.info}
