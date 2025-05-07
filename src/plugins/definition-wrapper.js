@@ -6,13 +6,33 @@ module.exports = function remarkWordWrapper(stuff) {
 	return (tree) => {
 		const foundTerms = [];
 		visit(tree, "text", (node, index, parent) => {
+			if (!node?.value) {
+				return;
+			}
+
+			if (
+				parent?.tagName?.startsWith("h") ||
+				parent?.tagName === "a" ||
+				parent?.tagName === "Link"
+			) {
+				// Don't wrap terms in headings or links
+				return;
+			}
 			let matchingTitle = "";
 			const matchingTerm = terms.find((term) => {
-				matchingTitle = term.titles.find((title) =>
-					// Case-insensitive check
-					node.value
-						?.toLowerCase()
-						.includes(title?.toLowerCase()),
+				let termIndex;
+				const nodeValue = term.caseSensitive
+					? node.value
+					: node.value.toLowerCase();
+				const foundTitle = term.titles.find((title) => {
+					const titleValue = term.caseSensitive ? title : title.toLowerCase();
+					termIndex = nodeValue.indexOf(titleValue);
+					return Boolean(termIndex !== -1);
+				});
+				if (!foundTitle) return false;
+				matchingTitle = node.value.slice(
+					termIndex,
+					termIndex + foundTitle.length,
 				);
 				return Boolean(matchingTitle);
 			});
