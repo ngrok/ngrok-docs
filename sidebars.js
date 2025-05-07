@@ -20,6 +20,12 @@ const sidebars = {
 		"why-ngrok",
 		"whats-new",
 		{
+			label: "Pricing & Limits",
+			type: "category",
+			link: { type: "doc", id: "pricing-limits/index" },
+			items: ["pricing-limits/free-plan-limits"],
+		},
+		{
 			label: "Getting Started",
 			type: "category",
 			collapsible: false,
@@ -32,12 +38,6 @@ const sidebars = {
 				"getting-started/rust",
 				"getting-started/kubernetes",
 			],
-		},
-		{
-			label: "Pricing & Limits",
-			type: "category",
-			link: { type: "doc", id: "pricing-limits/index" },
-			items: ["pricing-limits/free-plan-limits"],
 		},
 		{
 			label: "Universal Gateway",
