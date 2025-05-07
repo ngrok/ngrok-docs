@@ -10,10 +10,10 @@ import {
 	CodeBlockTitle,
 	fmtCode,
 } from "@ngrok/mantle/code-block";
+import clsx from "clsx";
 import type { ReactNode } from "react";
 import { SdkButton } from "../LangSwitcher/SdkButton";
 import type { LanguageInfo } from "../LangSwitcher/data";
-import clsx from "clsx";
 
 type CodeBlockWithInfoProps = {
 	content: string | undefined;

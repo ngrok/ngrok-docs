@@ -1,7 +1,7 @@
-import type { LanguageInfo } from "./data";
-import { BookOpenText } from "@phosphor-icons/react";
 import { IconButton } from "@ngrok/mantle/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@ngrok/mantle/popover";
+import { BookOpenText } from "@phosphor-icons/react";
+import type { LanguageInfo } from "./data";
 
 export function SdkButton({
 	data,
