@@ -7,8 +7,8 @@ import { CodeBlockFallback } from "../code-block";
 import LangSwitcherContext, {
 	type LangSwitcherContextType,
 } from "./LangSwitcherContext";
-import { getCodeBlocks, languagesAreSynonyms } from "./utils";
 import { LangTab } from "./LangTab";
+import { getCodeBlocks, languagesAreSynonyms } from "./utils";
 
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>
 export function LangSwitcher({ children, className, ...props }: any) {
