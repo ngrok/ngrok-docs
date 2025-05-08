@@ -39,7 +39,7 @@ const sidebars = {
 				{
 					type: "link",
 					label: "Kubernetes Operator",
-					href: "k8s/installation/install",
+					href: "/docs/k8s/installation/install",
 				},
 			],
 		},
