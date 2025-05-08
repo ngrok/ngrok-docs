@@ -82,7 +82,10 @@ export function Definition({
 					<span>{data.meaning}</span>
 					{Boolean(data?.link) && (
 						<span className="flex">
-							<Link className="mb-0 flex gap-1 items-center" href={data.link}>
+							<Link
+								className="mb-0 flex gap-1 text-sm items-center"
+								href={data.link}
+							>
 								{linkType === "external" ? (
 									<Icon svg={<ArrowSquareOut />} />
 								) : (
