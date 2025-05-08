@@ -54,7 +54,11 @@ export function Definition({
 		meaning: meaning || match?.meaning,
 		// If link is to the current page, don't use it. No need to
 		// link to the same page.
-		link: !link ? null : pathname?.includes(link) ? null : link || match?.link,
+		link: !link
+			? undefined
+			: pathname?.includes(link)
+				? undefined
+				: link || match?.link,
 	};
 
 	return (
@@ -76,7 +80,7 @@ export function Definition({
 			<HoverCardContent className="p-3 w-80 text-sm">
 				<div className="flex flex-col gap-3">
 					<span>{data.meaning}</span>
-					{Boolean(data.link) && (
+					{Boolean(data?.link) && (
 						<span className="flex">
 							<Link className="mb-0 flex gap-1 items-center" href={data.link}>
 								{linkType === "external" ? (
