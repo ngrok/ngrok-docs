@@ -1,4 +1,5 @@
 import Link from "@docusaurus/Link";
+import { useLocation } from "@docusaurus/router";
 import { Button } from "@ngrok/mantle/button";
 import {
 	HoverCard,
@@ -11,10 +12,9 @@ import {
 	LinkSimpleHorizontal,
 	QuestionMark,
 } from "@phosphor-icons/react";
+import clsx from "clsx";
 import type React from "react";
 import { terms } from "./data";
-import clsx from "clsx";
-import { useLocation } from "@docusaurus/router";
 
 type DefinitionProps = {
 	children: React.ReactNode;
