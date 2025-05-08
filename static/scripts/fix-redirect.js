@@ -946,6 +946,10 @@ const redirects = [
 		fromExact("/docs/universal-gateway/http/"),
 		"/docs/universal-gateway/http-s/",
 	],
+	[
+		fromExact("/docs/guides/other-guides/how-to-set-up-a-custom-domain/"),
+		"/docs/universal-gateway/domains/bring-your-own-domain/",
+	],
 ];
 
 // get current href from window
