@@ -1,5 +1,3 @@
-import { match } from "assert";
-
 const { visit } = require("unist-util-visit");
 const { terms } = require("../components/Definition/data");
 
