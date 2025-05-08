@@ -1,3 +1,5 @@
+import { match } from "assert";
+
 const { visit } = require("unist-util-visit");
 const { terms } = require("../components/Definition/data");
 
@@ -13,13 +15,20 @@ module.exports = function remarkWordWrapper(stuff) {
 			if (
 				parent?.tagName?.startsWith("h") ||
 				parent?.tagName === "a" ||
-				parent?.tagName === "Link"
+				parent?.tagName === "Link" ||
+				parent?.tagName === "Definition" ||
+				parent?.tagName === "code" ||
+				parent?.tagName === "pre"
 			) {
-				// Skip terms in headings or links
+				// Skip terms in certain tags
 				return;
 			}
 			let matchingTitle = "";
 			const matchingTerm = terms.find((term) => {
+				// We only want to match the first instance of this term on the page
+				if (foundTerms.some((fTerm) => fTerm.titles[0] === term.titles[0])) {
+					return;
+				}
 				/**
 				 * Find the first term that matches the node value
 				 * and is not already found in the foundTerms array.
@@ -27,11 +36,10 @@ module.exports = function remarkWordWrapper(stuff) {
 				 * of the node value.
 				 */
 				let termIndex;
-				const nodeValue = term.caseSensitive
-					? node.value
-					: node.value.toLowerCase();
+				const { caseSensitive } = term;
+				const nodeValue = caseSensitive ? node.value : node.value.toLowerCase();
 				const foundTitle = term.titles.find((title) => {
-					const titleValue = term.caseSensitive ? title : title.toLowerCase();
+					const titleValue = caseSensitive ? title : title.toLowerCase();
 					termIndex = nodeValue.indexOf(titleValue);
 					return Boolean(termIndex !== -1);
 				});
@@ -43,14 +51,11 @@ module.exports = function remarkWordWrapper(stuff) {
 				return Boolean(matchingTitle);
 			});
 
-			if (!matchingTerm) {
-				return;
+			if (node.value.includes("unified ingress platform")) {
+				console.log("Found it", matchingTerm);
 			}
 
-			// We only want to match the first instance of this term on the page
-			if (
-				foundTerms.some((term) => term.titles[0] === matchingTerm.titles[0])
-			) {
+			if (!matchingTerm) {
 				return;
 			}
 
@@ -60,6 +65,18 @@ module.exports = function remarkWordWrapper(stuff) {
 				return;
 			}
 			foundTerms.push(matchingTerm);
+
+			let styles = "";
+			if (parent?.properties?.className) {
+				styles += `${parent.properties.className} `;
+			}
+			if (parent.tagName === "strong") {
+				styles += "font-bold ";
+			}
+
+			if (parent.tagName === "em") {
+				styles += "italic ";
+			}
 
 			return parent.children.splice(
 				index,
@@ -75,6 +92,7 @@ module.exports = function remarkWordWrapper(stuff) {
 						properties: {
 							meaning: matchingTerm.meaning,
 							link: matchingTerm.link,
+							className: styles,
 						},
 						children: [
 							{

@@ -13,17 +13,20 @@ import {
 } from "@phosphor-icons/react";
 import type React from "react";
 import { terms } from "./data";
+import clsx from "clsx";
 
 type DefinitionProps = {
 	children: React.ReactNode;
 	meaning?: string;
 	link?: string;
+	className?: string;
 };
 
 export function Definition({
 	children,
 	meaning,
 	link,
+	className,
 }: DefinitionProps): React.ReactElement {
 	if (!children) throw new Error("<Definition/> requires children");
 
@@ -48,7 +51,7 @@ export function Definition({
 					appearance="link"
 				>
 					<>
-						<span className=" mr-[-5px]">{children}</span>
+						<span className={clsx("mr-[-5px]", className)}>{children}</span>
 
 						<QuestionMark size={8} className="mb-2" />
 					</>

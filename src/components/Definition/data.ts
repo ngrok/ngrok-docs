@@ -56,4 +56,16 @@ export const terms: Term[] = [
 		meaning: "v2 is shorthand for the second major version of the ngrok Agent.",
 		link: "/docs/agent/config/v2",
 	},
+	{
+		titles: ["OWASP"],
+		meaning:
+			"OWASP: The Open Web Application Security Project. This non-profit organization is dedicated to improving software security through providing resources, tools, and community support.",
+		link: "https://owasp.org/about/",
+	},
+	{
+		titles: ["Helm"],
+		meaning:
+			"Helm is a package manager for Kubernetes that simplifies the deployment and management of applications on Kubernetes clusters.",
+		link: "https://helm.sh/docs/",
+	},
 ];
