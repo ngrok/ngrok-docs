@@ -131,6 +131,7 @@ const config = {
 				docs: {
 					sidebarPath: require.resolve("./sidebars.js"),
 					routeBasePath: "/",
+					rehypePlugins: [require("./src/plugins/definition-wrapper")],
 					editUrl: `${docsRepo}/edit/main`,
 					showLastUpdateAuthor: true,
 					showLastUpdateTime: true,
