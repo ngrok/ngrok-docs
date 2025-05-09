@@ -36,7 +36,11 @@ const sidebars = {
 				"getting-started/index",
 				"getting-started/go",
 				"getting-started/rust",
-				"getting-started/kubernetes",
+				{
+					type: "link",
+					label: "Kubernetes Operator",
+					href: "/docs/k8s/installation/install",
+				},
 			],
 		},
 		{
@@ -266,19 +270,19 @@ const sidebars = {
 			link: { type: "doc", id: "k8s/index" },
 			items: [
 				"k8s/index",
-				"k8s/how-it-works",
+				"k8s/installation/install",
 				"k8s/guides/quickstart",
 				{
-					label: "Install & Manage",
+					label: "How It Works",
 					type: "category",
-					link: { type: "doc", id: "k8s/installation/install" },
-					items: [
-						"k8s/installation/install",
-						"k8s/installation/update",
-						"k8s/installation/architecture",
-						"k8s/installation/helm",
-						"k8s/installation/uninstall",
-					],
+					link: { type: "doc", id: "k8s/how-it-works" },
+					items: ["k8s/installation/architecture"],
+				},
+				{
+					label: "Manage",
+					type: "category",
+					link: { type: "doc", id: "k8s/installation/update" },
+					items: ["k8s/installation/helm", "k8s/installation/uninstall"],
 				},
 				{
 					label: "Usage Guides",

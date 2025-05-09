@@ -874,6 +874,10 @@ const redirects = [
 		fromExact("/docs/guides/other-guides/load-balancing-with-cloud-edges/"),
 		"/docs/guides/other-guides/load-balancing-multiple-clouds/",
 	],
+	[
+		fromExact("/docs/getting-started/kubernetes/"),
+		"/docs/k8s/installation/install",
+	],
 ];
 
 // get current href from window

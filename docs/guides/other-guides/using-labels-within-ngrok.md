@@ -14,7 +14,7 @@ When using the ngrok agent, or any one of our agent SDKs, the way to get include
 
 This guide will discuss the usage of labels and provide considerations for deterministically defining the tunnel group membership as your Cloud Edge deployment grows and some best practices to consider.
 
-Reference the [following article](/guides/other-guides/how-to-round-robin-load-balance-with-ngrok-cloud-edges/) for an example on configuring edges and backends.
+Reference the [following article](/docs/guides/other-guides/load-balancing-multiple-clouds/) for an example on configuring edges and backends.
 
 ## Label Usage
 
