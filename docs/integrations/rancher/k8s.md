@@ -4,7 +4,7 @@ description: Set up a local installation of Rancher to deploy a new RKE2 cluster
 ---
 
 The ngrok [Operator for Kubernetes](https://ngrok.com/blog-post/ngrok-k8s) is the official controller for
-adding secure public ingress and middleware execution to your Kubernetes applications with ngrok's Cloud Edge. With
+adding secure public ingress and middleware execution to your Kubernetes applications with ngrok's Cloud Endpoint. With
 ngrok, you can manage and secure traffic to your applications at every stage of the development lifecycle while also
 benefitting from simpler configurations, security, and edge acceleration.
 
@@ -143,7 +143,7 @@ connected one or more Linux nodes to Rancher for handling future workloads.
 ## Install a sample application {#install-a-sample-application}
 
 Now that you have the ngrok Kubernetes Operator running and authenticated with your credentials, you're ready to add a
-sample application to your cluster. The ngrok Kubernetes Operator will connect this application to the ngrok cloud edge,
+sample application to your cluster. The ngrok Kubernetes Operator will connect this application to the ngrok cloud endpoint,
 simplifying how you route external traffic through your Rancher-managed cluster.
 
 1. Create a ngrok static subdomain for ingress if you don't have one already. Navigate to the [**Domains**
@@ -233,7 +233,7 @@ Controller in several directions.
 ### Backup and/or migrate to a high-availability Rancher installation
 
 Backups are always a good idea to prevent data loss, and are also the best way to convert your Docker-based installation
-of Rancher into a production-grade environment that leverages the ngrok cloud edge to handle ingress with no additional
+of Rancher into a production-grade environment that leverages the ngrok cloud endpoint to handle ingress with no additional
 configuration.
 
 1. [Back up your Rancher installation](https://ranchermanager.docs.rancher.com/how-to-guides/new-user-guides/backup-restore-and-disaster-recovery/back-up-docker-installed-rancher)

@@ -8,11 +8,11 @@ tags:
   - labels
 ---
 
-Tunnel group backends are used in conjunction with ngrok Cloud Edges for defining which ngrok tunnels application requests will be forwarded to. Tunnel groups use labels (key=value pairs) to specify which tunnels are members of the tunnel group backend and will be active for the Cloud Edge.
+Tunnel group backends are used in conjunction with ngrok Cloud Endpoints for defining which ngrok tunnels application requests will be forwarded to. Tunnel groups use labels (key=value pairs) to specify which tunnels are members of the tunnel group backend and will be active for the Cloud Endpoint.
 
 When using the ngrok agent, or any one of our agent SDKs, the way to get included into a tunnel group is to start a Labeled Tunnel using the `ngrok tunnel` command. These labeled tunnels can include any number of labels and can be included in zero, one, or many different tunnel groups. A labeled tunnel that is not part of any tunnel group will not be accessible.
 
-This guide will discuss the usage of labels and provide considerations for deterministically defining the tunnel group membership as your Cloud Edge deployment grows and some best practices to consider.
+This guide will discuss the usage of labels and provide considerations for deterministically defining the tunnel group membership as your Cloud Endpoint deployment grows and some best practices to consider.
 
 Reference the [following article](/docs/guides/other-guides/load-balancing-multiple-clouds/) for an example on configuring edges and backends.
 
