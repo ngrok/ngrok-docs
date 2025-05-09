@@ -4,7 +4,7 @@ description: Set up a local installation of Rancher to deploy a new RKE2 cluster
 ---
 
 The ngrok [Operator for Kubernetes](https://ngrok.com/blog-post/ngrok-k8s) is the official controller for
-adding secure public ingress and middleware execution to your Kubernetes applications with ngrok's Cloud Endpoint. With
+adding secure public ingress and middleware execution to your Kubernetes applications with ngrok's cloud service. With
 ngrok, you can manage and secure traffic to your applications at every stage of the development lifecycle while also
 benefitting from simpler configurations, security, and edge acceleration.
 
