@@ -1,6 +1,9 @@
-# Internal Contribution Guide
+* [Creating code blocks](#creating-code-blocks)
+	+ [Valid properties](#valid-properties)
+		- [`tabName`](#-tabname-)
 
-This guide outlines useful info specifically for folks within the ngrok team who want to contribute to the docs.
+
+This guide is for internal ngrok teammates who want to use the codeblock and LangSwitcher components to render code snippets in the docs.
 
 ## Creating code blocks
 
