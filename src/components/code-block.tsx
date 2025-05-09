@@ -66,18 +66,22 @@ function DocsCodeBlock({
 		: "";
 	const language = _language || parseLanguage(langInClassName);
 
+	const meta = getMetaData(
+		metastring ? `${className} ${metastring}` : className,
+	);
+
 	return (
 		<CodeBlockWithInfo
 			content={children}
 			language={language}
 			collapseLineNumber={20}
-			meta={getMetaData(className)}
+			meta={meta}
 			className={className}
 			headerContent={
 				<LangTab
 					disabled
 					className="text-xs h-6 px-1.5 bg-neutral-500/10 text-neutral-800"
-					tabText={language.toUpperCase()}
+					tabText={meta?.tabName || language.toUpperCase()}
 				/>
 			}
 			info={getLanguageInfo(language)}

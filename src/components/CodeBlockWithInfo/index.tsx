@@ -40,6 +40,7 @@ export function CodeBlockWithInfo({
 	info,
 	codeBlockProps,
 }: CodeBlockWithInfoProps) {
+	console.log("Meta", meta);
 	const collapsible = !meta
 		? false
 		: meta.collapsible &&
