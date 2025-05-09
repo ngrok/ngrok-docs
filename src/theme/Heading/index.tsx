@@ -18,7 +18,6 @@ export default function HeadingWrapper(props: Props): ReactNode {
 				}
 				const element = document.getElementById(id);
 				if (element) {
-					console.log("Scrolling to element:", element);
 					element.scrollIntoView();
 				}
 				// Delay the scroll until after any layout shift occurs
