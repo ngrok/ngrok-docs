@@ -65,7 +65,7 @@ openssl \
 
 ## **Enable mTLS**
 
-With the prerequisites being met, let's see how simple it is to enable mTLS with ngrok. Examples for using either the Agent CLI or ngrok Cloud Edges are provided below.
+With the prerequisites being met, let's see how simple it is to enable mTLS with ngrok. Examples for using either the Agent CLI or ngrok Cloud Endpoints are provided below.
 
 ### Agent CLI
 
@@ -77,9 +77,9 @@ ngrok http 80 --mutual-tls-cas ca.crt
 
 The command starts a ngrok HTTPs endpoint forwarding traffic to port 80 on your localhost. The specified CA cert is uploaded to the ngrok SaaS platform securing the endpoint with mTLS protection. When the agent is stopped, the endpoint is removed and the uploaded CA cert will be purged from ngrok.
 
-### Cloud Edges
+### Cloud Endpoints
 
-If using the Cloud Edges product, we'll need to upload the CA certificate creating a [Certificate Authority](/api/resources/certificate-authorities/) object that will be referenced by the Cloud Edge mTLS module.
+If using the Cloud Endpoints product, we'll need to upload the CA certificate creating a [Certificate Authority](/api/resources/certificate-authorities/) object that will be referenced by the Cloud Endpoint mTLS module.
 From within the [ngrok dashboard](https://dashboard.ngrok.com) follow the next steps.
 
 #### Upload CA cert
