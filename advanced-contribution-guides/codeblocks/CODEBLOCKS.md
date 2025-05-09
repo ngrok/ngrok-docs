@@ -37,6 +37,34 @@ openssl req -new -newkey rsa:4096 -x509 -sha256 -days 365 -noenc -out your-cert.
 Result:
 ![Screenshot of a language tab after tabName has been applied](./img/tabName/after.png)
 
+### `title`
+
+Use `title` to add a file name to a code block component.
+
+Example:
+
+````txt
+```bash title="Example file"
+openssl req -new -newkey rsa:4096 -x509 -sha256 -days 365 -noenc -out your-cert.crt -keyout your-key.key
+```
+````
+
+Result:
+![An example codeblock with a title prop](./img/title/result.png)
+
+### `titleLink`
+
+After defining a `title`, use `titleLink` wrap a link around the file name of a codeblock.
+
+Example:
+
+````txt
+```bash title="Example file" titleLink=https://ngrok.com/pricing
+openssl req -new -newkey rsa:4096 -x509 -sha256 -days 365 -noenc -out your-cert.crt -keyout your-key.key
+```
+````
+
+![An example codeblock with title and titleLink props](./img/titleLink/result.png)
 
 
 

@@ -23,6 +23,10 @@ export function getMetaDataWithQuotes(
 	return tabNameSubstring.substring(1, tabNameValueEnd);
 }
 
+// The properties that take string values, e.g. tabName="foo bar"
+// rather than non-string values, e.g. tabName=foo
+const stringMetaProperties = ["tabName", "title"];
+
 export function getMetaData(metastring: string | undefined) {
 	if (!metastring) {
 		return {};
@@ -38,7 +42,7 @@ export function getMetaData(metastring: string | undefined) {
 	});
 	// Add the properties that use quotes to the metaData object
 	// biome-ignore lint/complexity/noForEach: <explanation>
-	["tabName", "title"].forEach((property) => {
+	stringMetaProperties.forEach((property) => {
 		const quotedData = getMetaDataWithQuotes(property, metastring);
 		if (quotedData) {
 			metaData[property] = quotedData;
