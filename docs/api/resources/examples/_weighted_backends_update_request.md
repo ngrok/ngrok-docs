@@ -9,5 +9,5 @@ curl \
 -H "Content-Type: application/json" \
 -H "Ngrok-Version: 2" \
 -d '{"metadata":"{\"environment\": \"production\"}"}' \
-https://api.ngrok.com/backends/weighted/bkdwd_2wgPZcAFfRq0ZLqDoF1Fkqygw4U
+https://api.ngrok.com/backends/weighted/bkdwd_2wtrGAeFEmpdvtb3CQi3UC5ulUl
 ```

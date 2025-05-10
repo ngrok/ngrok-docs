@@ -4,17 +4,17 @@
 
 ```json
 {
-  "created_at": "2025-05-05T15:51:38Z",
+  "created_at": "2025-05-10T10:06:51Z",
   "hostnames": [
     {
       "hostname": "legit-facebook-login.ngrok.io",
       "status": "PENDING"
     }
   ],
-  "id": "abrp_2wgPZOGoHYPgoznj4BtDQ3nhwPx",
+  "id": "abrp_2wtrG0jjkZoSCgMMVn2bEgFCVlO",
   "metadata": "{\"incident_id\":1233122}",
   "status": "PENDING",
-  "uri": "https://api.ngrok.com/abuse_reports/abrp_2wgPZOGoHYPgoznj4BtDQ3nhwPx",
+  "uri": "https://api.ngrok.com/abuse_reports/abrp_2wtrG0jjkZoSCgMMVn2bEgFCVlO",
   "urls": [
     "http://legit-facebook-login.ngrok.io/login"
   ]

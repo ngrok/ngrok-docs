@@ -3559,7 +3559,7 @@
         <a id="ERR_NGROK_1608" href="/docs/errors/err_ngrok_1608">ERR_NGROK_1608</a>
       </td>
       <td class="pre-wrapped">
-        Endpoint Configurations are deprecated. Please use Cloud Edges instead.
+        Endpoint Configurations are deprecated. Please use Cloud Endpoints instead.
       </td>
     </tr>
     <tr>
@@ -3735,7 +3735,7 @@
         <a id="ERR_NGROK_1631" href="/docs/errors/err_ngrok_1631">ERR_NGROK_1631</a>
       </td>
       <td class="pre-wrapped">
-        Endpoint Configurations are deprecated. Please use Cloud Edges instead.
+        Endpoint Configurations are deprecated. Please use Cloud Endpoints instead.
       </td>
     </tr>
     <tr>
@@ -3815,7 +3815,7 @@
         <a id="ERR_NGROK_1641" href="/docs/errors/err_ngrok_1641">ERR_NGROK_1641</a>
       </td>
       <td class="pre-wrapped">
-        Endpoint Configurations are deprecated. Please use Cloud Edges instead.
+        Endpoint Configurations are deprecated. Please use Cloud Endpoints instead.
       </td>
     </tr>
     <tr>
