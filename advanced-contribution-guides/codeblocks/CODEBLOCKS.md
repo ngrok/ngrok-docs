@@ -1,8 +1,8 @@
 Table of Contents
-* [Creating code blocks](#creating-code-blocks)
-	+ [Valid properties](#valid-properties)
-		- [`tabName`](#-tabname-)
 
+- [Creating code blocks](#creating-code-blocks)
+  - [Valid properties](#valid-properties)
+    - [`tabName`](#-tabname-)
 
 This guide is for internal ngrok teammates who want to use the codeblock and LangSwitcher components to render code snippets in the docs.
 
@@ -67,7 +67,6 @@ openssl req -new -newkey rsa:4096 -x509 -sha256 -days 365 -noenc -out your-cert.
 
 ![An example codeblock with title and titleLink props](./img/titleLinkResult.png)
 
-
 ### `mode`
 
 Define which file icon appears next to the `title` of a codeblock.
@@ -82,8 +81,6 @@ openssl req -new -newkey rsa:4096 -x509 -sha256 -days 365 -noenc -out your-cert.
 
 ![An example codeblock with title and titleLink props](./img/modeResult.png)
 
-
-
 ### `disableCopy`
 
 Boolean. Decide if the "copy code" button will appear in the codeblock
@@ -97,7 +94,6 @@ openssl req -new -newkey rsa:4096 -x509 -sha256 -days 365 -noenc -out your-cert.
 ````
 
 ![An example codeblock using the disableCopy prop](./img/disableCopyResult.png)
-
 
 ### `collapsible`
 
