@@ -1,8 +1,9 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@ngrok/mantle/tabs";
 import type { ReactNode } from "react";
 import YAML, { type ToStringOptions } from "yaml";
 import { LangSwitcher } from "./LangSwitcher";
 import DocsCodeBlock from "./code-block";
+import TabItem from "@theme/TabItem";
+import Tabs from "@theme/Tabs";
 
 const showExample = (
 	defaultTitle: string,
@@ -108,23 +109,17 @@ export default function ConfigExample({
 			"At least one of hideAgentConfig or hideTrafficPolicy must be false",
 		);
 	return (
-		<Tabs
-			orientation="horizontal"
-			defaultValue={hideTrafficPolicy ? "agent-config" : "traffic-policy"}
-		>
-			<TabsList>
-				{hideTrafficPolicy ? null : (
-					<TabsTrigger value="traffic-policy">Traffic Policy</TabsTrigger>
-				)}
-				{hideAgentConfig ? null : (
-					<TabsTrigger value="agent-config">Agent Config</TabsTrigger>
-				)}
-			</TabsList>
+		<Tabs groupId="config-example" queryString="config-example">
 			{hideTrafficPolicy ? null : (
-				<TabsContent value="traffic-policy">{policySnippet}</TabsContent>
+				<TabItem value="traffic-policy" label="Traffic Policy">
+					{policySnippet}
+				</TabItem>
 			)}
+
 			{hideAgentConfig ? null : (
-				<TabsContent value="agent-config">{agentConfigSnippet}</TabsContent>
+				<TabItem value="agent-config" label="Agent Config">
+					{agentConfigSnippet}
+				</TabItem>
 			)}
 		</Tabs>
 	);
