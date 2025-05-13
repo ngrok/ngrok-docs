@@ -1,9 +1,9 @@
+import TabItem from "@theme/TabItem";
+import Tabs from "@theme/Tabs";
 import type { ReactNode } from "react";
 import YAML, { type ToStringOptions } from "yaml";
 import { LangSwitcher } from "./LangSwitcher";
 import DocsCodeBlock from "./code-block";
-import TabItem from "@theme/TabItem";
-import Tabs from "@theme/Tabs";
 
 const showExample = (
 	defaultTitle: string,
