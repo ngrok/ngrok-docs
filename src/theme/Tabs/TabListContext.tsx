@@ -1,9 +1,11 @@
 import { createContext } from "react";
 
+export type TabItem = { item?: string; groupId?: string };
+
 export type TabListContextType = {
-	localStorageTab: string | null;
-	selectedTabItem: string | null;
-	updateSelectedTabItem: null | ((newTabItem: string | undefined) => void);
+	localStorageTab: TabItem | null;
+	selectedTabItem: TabItem | null;
+	updateSelectedTabItem: null | ((newTabItem: TabItem | undefined) => void);
 };
 
 const TabListContext = createContext<TabListContextType>({

@@ -65,14 +65,19 @@ function TabList({
 			| React.MouseEvent<HTMLButtonElement>
 			| React.KeyboardEvent<HTMLButtonElement>,
 	) => {
+		// Check the queryString value
+		// If it doesn't match the tabs component being modified, return early
 		const newTab = event.currentTarget;
 		const newTabIndex = tabRefs.indexOf(newTab);
 		const newTabValue =
 			tabValues[newTabIndex]?.label || tabValues[newTabIndex]?.value;
 
-		if (newTabValue !== selectedTabItem && updateSelectedTabItem) {
+		if (newTabValue !== selectedTabItem?.item && updateSelectedTabItem) {
 			blockElementScrollPositionUntilNextRender(newTab);
-			updateSelectedTabItem(newTabValue);
+			updateSelectedTabItem({
+				item: newTabValue,
+				groupId: props.groupId,
+			});
 		}
 	};
 
@@ -101,7 +106,7 @@ function TabList({
 		focusElement?.focus();
 	};
 
-	const defaultTab = getValidDefaultTab(tabValues, localStorageTab);
+	const defaultTab = getValidDefaultTab(tabValues, localStorageTab?.item);
 	const tabToShow = getValidTabToShow(tabValues, selectedValue, defaultTab);
 	return (
 		<MantleTabs
@@ -114,7 +119,7 @@ function TabList({
 					<TabsTrigger
 						value={label || value}
 						role="tab"
-						aria-selected={selectedTabItem === label}
+						aria-selected={selectedTabItem?.item === label}
 						key={value}
 						ref={(tabControl) => {
 							tabRefs.push(tabControl);
@@ -154,7 +159,9 @@ function TabContent({ children }: Props & ReturnType<typeof useTabs>) {
 	});
 }
 
-function TabsComponent(props: Props): ReactNode {
+type TabsComponentProps = Props & { unAlphabetized: boolean };
+
+function TabsComponent(props: TabsComponentProps): ReactNode {
 	const tabs = useTabs(props);
 	const alphabetizedTabs = {
 		...tabs,
@@ -164,14 +171,15 @@ function TabsComponent(props: Props): ReactNode {
 				a.label && b.label ? a.label.localeCompare(b.label) : -1,
 			),
 	};
+
 	return (
 		<div className={clsx("tabs-container", styles.tabList)}>
-			<TabList {...alphabetizedTabs} {...props} />
+			<TabList {...tabs} {...props} />
 		</div>
 	);
 }
 
-export default function Tabs(props: Props): ReactNode {
+export default function Tabs(props: TabsComponentProps): ReactNode {
 	const isBrowser = useIsBrowser();
 	return (
 		<TabsComponent

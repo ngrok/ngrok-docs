@@ -115,13 +115,16 @@ export function languagesAreSynonyms(
 export const langParamName = "defaultTabLang";
 export const tabParamName = "defaultTabItem";
 
-export const getStorageLanguageAndTab = (): {
-	defaultLanguage: string | null;
-	defaultTabItem: string | null;
-} => {
+export const getStorageLanguageAndTab = () => {
 	function getStorageItem(key: string) {
 		if (localStorage) {
-			return localStorage.getItem(key);
+			const unParsedItem = localStorage.getItem(key);
+			if (!unParsedItem) return null;
+			try {
+				return JSON.parse(unParsedItem);
+			} catch (error) {
+				return unParsedItem?.toString();
+			}
 		}
 		return null;
 	}
@@ -131,5 +134,8 @@ export const getStorageLanguageAndTab = (): {
 	const tempTab =
 		searchParams.get(tabParamName) || getStorageItem(tabParamName);
 
-	return { defaultLanguage: tempLang ?? null, defaultTabItem: tempTab ?? null };
+	return {
+		defaultLanguage: tempLang,
+		defaultTabItem: tempTab,
+	};
 };

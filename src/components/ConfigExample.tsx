@@ -108,10 +108,11 @@ export default function ConfigExample({
 		throw new Error(
 			"At least one of hideAgentConfig or hideTrafficPolicy must be false",
 		);
+
 	return (
 		<Tabs groupId="config-example" queryString="config-example">
 			{hideTrafficPolicy ? null : (
-				<TabItem value="traffic-policy" label="Traffic Policy">
+				<TabItem value="traffic-policy" label="Traffic Policy" default>
 					{policySnippet}
 				</TabItem>
 			)}

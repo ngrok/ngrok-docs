@@ -11,6 +11,7 @@ import Content from "@theme-original/DocItem/Content";
 import type ContentType from "@theme/DocItem/Content";
 import { type ReactNode, useState } from "react";
 import TabListContext from "../../Tabs/TabListContext";
+import type { TabItem } from "../../Tabs/TabListContext";
 
 type Props = WrapperProps<typeof ContentType>;
 
@@ -21,9 +22,9 @@ export default function ContentWrapper(props: Props): ReactNode {
 	const [selectedLanguage, setSelectedLanguage] = useState(
 		storageData?.defaultLanguage ?? null,
 	);
-	const [selectedTabItem, setSelectedTabItem] = useState(
-		storageData?.defaultLanguage ?? null,
-	);
+	const [selectedTabItem, setSelectedTabItem] = useState<TabItem>({
+		item: storageData?.defaultTabItem,
+	});
 	const updateSelectedLanguage = (
 		newLang: string | SupportedLanguage | undefined,
 	) => {
@@ -33,10 +34,10 @@ export default function ContentWrapper(props: Props): ReactNode {
 		}
 		setSelectedLanguage(newLang);
 	};
-	const updateSelectedTabItem = (newItem: string | undefined) => {
+	const updateSelectedTabItem = (newItem: TabItem | undefined) => {
 		if (!newItem) return;
 		if (isBrowser) {
-			localStorage.setItem(tabParamName, newItem);
+			localStorage.setItem(tabParamName, JSON.stringify(newItem));
 		}
 		setSelectedTabItem(newItem);
 	};
@@ -44,7 +45,7 @@ export default function ContentWrapper(props: Props): ReactNode {
 	return (
 		<TabListContext.Provider
 			value={{
-				localStorageTab: storageData?.defaultTabItem ?? null,
+				localStorageTab: storageData?.defaultTabItem,
 				selectedTabItem,
 				updateSelectedTabItem,
 			}}
