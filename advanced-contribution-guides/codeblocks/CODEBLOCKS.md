@@ -1,8 +1,14 @@
 Table of Contents
-
 - [Creating code blocks](#creating-code-blocks)
-  - [Valid properties](#valid-properties)
-    - [`tabName`](#-tabname-)
+  * [Valid properties](#valid-properties)
+    + [`tabName`](#-tabname-)
+    + [`title`](#-title-)
+      - [`titleLink`](#-titlelink-)
+    + [`mode`](#-mode-)
+    + [`disableCopy`](#-disablecopy-)
+    + [`collapsible`](#-collapsible-)
+      - [`collapseLineNumber`](#-collapselinenumber-)
+  * [`indentation`](#-indentation-)
 
 This guide is for internal ngrok teammates who want to use the codeblock and LangSwitcher components to render code snippets in the docs.
 
