@@ -97,28 +97,41 @@ openssl req -new -newkey rsa:4096 -x509 -sha256 -days 365 -noenc -out your-cert.
 
 ### `collapsible`
 
-Default `false`. Decide if a codeblock will be collapsible.
+Default `false`. Decide if a codeblock will start off collapsed, truncating what's shown. The user can then expand the codeblock to see the rest.
 
 Example:
 
 ````txt
-```bash title="Example file" titleLink=https://ngrok.com/pricing
+```bash collapsible
 openssl req -new -newkey rsa:4096 -x509 -sha256 -days 365 -noenc -out your-cert.crt -keyout your-key.key
 ```
 ````
-
-![An example codeblock with title and titleLink props](./img/titleLinkResult.png)
 
 #### `collapseLineNumber`
 
-Default `false`. Decide if a codeblock will be collapsible.
+Choose which line number codeblock will be collapsed at.
 
 Example:
 
 ````txt
-```bash title="Example file" titleLink=https://ngrok.com/pricing
+```bash title="Example file" collapsible collapseLine=20
 openssl req -new -newkey rsa:4096 -x509 -sha256 -days 365 -noenc -out your-cert.crt -keyout your-key.key
 ```
 ````
 
-![An example codeblock with title and titleLink props](./img/titleLinkResult.png)
+
+## `indentation`
+
+Default `undefined`. Choose whether the code block should be indented with `tabs` or `spaces`.
+
+In general, don't use this property unless you have a specific reason. The codeblock automatically chooses the appropriate indentation based on the language.
+
+Example: 
+
+````txt
+```js indendation=spaces
+function example(){
+	return console.log("example");
+}
+```
+````
