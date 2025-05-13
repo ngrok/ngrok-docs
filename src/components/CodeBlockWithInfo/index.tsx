@@ -46,7 +46,6 @@ export function CodeBlockWithInfo({
 		: meta.collapsible &&
 			content &&
 			content.split("\n").length > collapseLineNumber;
-	const indentation = meta?.indentation === "tabs" ? "tabs" : "spaces";
 
 	return (
 		<div className="flex flex-col">
@@ -78,7 +77,7 @@ export function CodeBlockWithInfo({
 					)}
 					{!meta?.disableCopy && <CodeBlockCopyButton />}
 					<CodeBlockCode
-						indentation={indentation}
+						indentation={meta?.indentation}
 						language={language}
 						value={fmtCode`${content}`}
 					/>
