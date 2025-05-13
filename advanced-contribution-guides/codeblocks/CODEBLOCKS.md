@@ -1,14 +1,15 @@
 Table of Contents
+
 - [Creating code blocks](#creating-code-blocks)
-  * [Valid properties](#valid-properties)
-    + [`tabName`](#-tabname-)
-    + [`title`](#-title-)
+  - [Valid properties](#valid-properties)
+    - [`tabName`](#-tabname-)
+    - [`title`](#-title-)
       - [`titleLink`](#-titlelink-)
-    + [`mode`](#-mode-)
-    + [`disableCopy`](#-disablecopy-)
-    + [`collapsible`](#-collapsible-)
+    - [`mode`](#-mode-)
+    - [`disableCopy`](#-disablecopy-)
+    - [`collapsible`](#-collapsible-)
       - [`collapseLineNumber`](#-collapselinenumber-)
-  * [`indentation`](#-indentation-)
+  - [`indentation`](#-indentation-)
 
 This guide is for internal ngrok teammates who want to use the codeblock and LangSwitcher components to render code snippets in the docs.
 
@@ -125,14 +126,13 @@ openssl req -new -newkey rsa:4096 -x509 -sha256 -days 365 -noenc -out your-cert.
 ```
 ````
 
-
 ## `indentation`
 
 Default `undefined`. Choose whether the code block should be indented with `tabs` or `spaces`.
 
 In general, don't use this property unless you have a specific reason. The codeblock automatically chooses the appropriate indentation based on the language.
 
-Example: 
+Example:
 
 ````txt
 ```js indendation=spaces
