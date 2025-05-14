@@ -12,12 +12,12 @@ import {
 	TabsList,
 	TabsTrigger,
 } from "@ngrok/mantle/tabs";
+import { getStorageTab } from "@site/src/components/LangSwitcher/utils";
 import type { Props } from "@theme/Tabs";
 import clsx from "clsx";
 import { type ReactElement, type ReactNode, useContext } from "react";
 import TabListContext, { type TabItem } from "./TabListContext";
 import styles from "./styles.module.css";
-import { getStorageTab } from "@site/src/components/LangSwitcher/utils";
 
 function getValidTabToShow(
 	tabValues: readonly TabValue[],

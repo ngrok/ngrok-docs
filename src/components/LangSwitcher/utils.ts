@@ -4,8 +4,8 @@ import {
 	parseLanguage,
 } from "@ngrok/mantle/code-block";
 import type { ReactElement, ReactNode } from "react";
-import { type LanguageInfo, languageInfo } from "./data";
 import type { TabItem } from "../../theme/Tabs/TabListContext";
+import { type LanguageInfo, languageInfo } from "./data";
 export function getMetaDataWithQuotes(
 	propertyName: string,
 	metastring: string,
