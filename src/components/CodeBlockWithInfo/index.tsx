@@ -46,6 +46,10 @@ export function CodeBlockWithInfo({
 			content &&
 			content.split("\n").length > collapseLineNumber;
 
+	if (collapsible) {
+		console.log("Collapsible code block", meta);
+	}
+
 	return (
 		<div className="flex flex-col">
 			<CodeBlock className={className} {...codeBlockProps}>

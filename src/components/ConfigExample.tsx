@@ -70,14 +70,14 @@ export type ConfigExampleProps = {
 	jsonMetastring?: string;
 	title?: string;
 	icon?: ReactNode;
-	hideAgentConfig?: boolean;
-	hideTrafficPolicy?: boolean;
+	showAgentConfig?: boolean;
+	showTrafficPolicy?: boolean;
 };
 
 export default function ConfigExample({
 	// Show the agent config by default
-	hideAgentConfig = false,
-	hideTrafficPolicy = false,
+	showAgentConfig = false,
+	showTrafficPolicy = true,
 	...props
 }: ConfigExampleProps) {
 	const yamlOptions = {
@@ -104,24 +104,24 @@ export default function ConfigExample({
 		agentConfig.yamlConfig,
 		agentConfig.jsonConfig,
 	);
-	if (hideAgentConfig && hideTrafficPolicy)
+	if (!showTrafficPolicy && !showAgentConfig)
 		throw new Error(
-			"At least one of hideAgentConfig or hideTrafficPolicy must be false",
+			"ConfigExample error: One of showTrafficPolicy or showAgentConfig must be true",
 		);
 
 	return (
 		<Tabs groupId="config-example" queryString="config-example">
-			{hideTrafficPolicy ? null : (
+			{showTrafficPolicy ? (
 				<TabItem value="traffic-policy" label="Traffic Policy" default>
 					{policySnippet}
 				</TabItem>
-			)}
+			) : null}
 
-			{hideAgentConfig ? null : (
+			{showAgentConfig ? (
 				<TabItem value="agent-config" label="Agent Config">
 					{agentConfigSnippet}
 				</TabItem>
-			)}
+			) : null}
 		</Tabs>
 	);
 }

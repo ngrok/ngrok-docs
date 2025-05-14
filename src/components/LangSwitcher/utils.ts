@@ -77,8 +77,7 @@ export const getCodeBlocks = (children: ReactElement[]): CodeBlockData[] => {
 			content: children,
 			meta: {
 				...meta,
-				// Make it collapsible by default
-				collapsible: true,
+				collapsible: false,
 				titleLink: meta.titleLink,
 				tabName: meta.tabName,
 				title,

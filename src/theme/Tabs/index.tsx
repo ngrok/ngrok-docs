@@ -183,18 +183,22 @@ type TabsComponentProps = Props & { unAlphabetized: boolean };
 
 function TabsComponent(props: TabsComponentProps): ReactNode {
 	const tabs = useTabs(props);
-	const alphabetizedTabs = {
-		...tabs,
-		tabValues: tabs.tabValues
-			.slice(0)
-			.sort((a, b) =>
-				a.label && b.label ? a.label.localeCompare(b.label) : -1,
-			),
-	};
+	const finalTabs = props.unAlphabetized
+		? tabs
+		: {
+				...tabs,
+				tabValues: tabs.tabValues.slice(0).sort((a, b) => {
+					// If the default prop is defined, sort it to the front
+					if (a.default) return -1;
+					if (b.default) return 1;
+					// Otherwise compare the labels
+					return a.label && b.label ? a.label.localeCompare(b.label) : -1;
+				}),
+			};
 
 	return (
 		<div className={clsx("tabs-container", styles.tabList)}>
-			<TabList {...tabs} {...props} />
+			<TabList {...finalTabs} {...props} />
 		</div>
 	);
 }

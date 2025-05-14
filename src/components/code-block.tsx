@@ -74,7 +74,7 @@ function DocsCodeBlock({
 		<CodeBlockWithInfo
 			content={children}
 			language={language}
-			collapseLineNumber={20}
+			collapseLineNumber={100}
 			meta={meta}
 			className={className}
 			headerContent={
