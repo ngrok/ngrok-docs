@@ -8,6 +8,7 @@ import LangSwitcherContext, {
 } from "./LangSwitcherContext";
 import { LangTab } from "./LangTab";
 import { getCodeBlocks, languagesAreSynonyms } from "./utils";
+import capitalize from "capitalize";
 
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>
 export function LangSwitcher({ children, className, ...props }: any) {
@@ -66,9 +67,7 @@ export function LangSwitcher({ children, className, ...props }: any) {
 												? "bg-neutral-500/10 text-neutral-800"
 												: "text-neutral-500",
 										)}
-										tabText={
-											child?.meta.tabName || child?.language.toUpperCase()
-										}
+										tabText={child?.meta.tabName || capitalize(child?.language)}
 									/>
 								);
 							})}
