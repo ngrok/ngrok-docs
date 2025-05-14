@@ -1,4 +1,5 @@
 import BrowserOnly from "@docusaurus/BrowserOnly";
+import capitalize from "capitalize";
 import clsx from "clsx";
 import { useContext } from "react";
 import { CodeBlockWithInfo } from "../CodeBlockWithInfo";
@@ -8,7 +9,6 @@ import LangSwitcherContext, {
 } from "./LangSwitcherContext";
 import { LangTab } from "./LangTab";
 import { getCodeBlocks, languagesAreSynonyms } from "./utils";
-import capitalize from "capitalize";
 
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>
 export function LangSwitcher({ children, className, ...props }: any) {
