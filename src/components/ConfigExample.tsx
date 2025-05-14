@@ -104,10 +104,21 @@ export default function ConfigExample({
 		agentConfig.yamlConfig,
 		agentConfig.jsonConfig,
 	);
-	if (!showTrafficPolicy && !showAgentConfig)
+
+	// if both false, throw error;
+	if (!showTrafficPolicy && !showAgentConfig) {
 		throw new Error(
 			"ConfigExample error: One of showTrafficPolicy or showAgentConfig must be true",
 		);
+	}
+
+	// if only one is true, no need for <Tabs></Tabs>
+	if (!showAgentConfig) {
+		return policySnippet;
+	}
+	if (!showTrafficPolicy) {
+		return agentConfigSnippet;
+	}
 
 	return (
 		<Tabs groupId="config-example" queryString="config-example">
