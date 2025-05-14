@@ -5,7 +5,7 @@ import {
 } from "@ngrok/mantle/code-block";
 import type { ReactElement, ReactNode } from "react";
 import { type LanguageInfo, languageInfo } from "./data";
-
+import type { TabItem } from "../../theme/Tabs/TabListContext";
 export function getMetaDataWithQuotes(
 	propertyName: string,
 	metastring: string,
@@ -111,31 +111,26 @@ export function languagesAreSynonyms(
 }
 
 // The name of the query param or localstorage item to search for
-// to get the default tab value
+// to get the default language switcher value
 export const langParamName = "defaultTabLang";
+
+export const getStorageLanguage = () => {
+	return localStorage.getItem(langParamName);
+};
+
 export const tabParamName = "defaultTabItem";
+export const getStorageTab = (tabGroupId?: string) => {
+	let tabItem: TabItem | undefined = undefined;
 
-export const getStorageLanguageAndTab = () => {
-	function getStorageItem(key: string) {
-		if (localStorage) {
-			const unParsedItem = localStorage.getItem(key);
-			if (!unParsedItem) return null;
-			try {
-				return JSON.parse(unParsedItem);
-			} catch (error) {
-				return unParsedItem?.toString();
+	if (localStorage) {
+		const unParsedTabItem = localStorage.getItem(tabGroupId || tabParamName);
+		try {
+			if (unParsedTabItem) {
+				tabItem = JSON.parse(unParsedTabItem);
 			}
+		} catch (error) {
+			console.error("Error parsing data for tabs and lang switcher:", error);
 		}
-		return null;
 	}
-	const searchParams = new URLSearchParams(window?.location?.search);
-	const tempLang =
-		searchParams.get(langParamName) || getStorageItem(langParamName);
-	const tempTab =
-		searchParams.get(tabParamName) || getStorageItem(tabParamName);
-
-	return {
-		defaultLanguage: tempLang,
-		defaultTabItem: tempTab,
-	};
+	return tabItem;
 };

@@ -15,16 +15,19 @@ import {
 import type { Props } from "@theme/Tabs";
 import clsx from "clsx";
 import { type ReactElement, type ReactNode, useContext } from "react";
-import TabListContext from "./TabListContext";
+import TabListContext, { type TabItem } from "./TabListContext";
 import styles from "./styles.module.css";
+import { getStorageTab } from "@site/src/components/LangSwitcher/utils";
 
 function getValidTabToShow(
 	tabValues: readonly TabValue[],
-	selectedValue: string | undefined,
+	selectedTabItem: TabItem | null | undefined,
 	defaultTab: string | undefined,
 ) {
-	if (selectedValue) {
-		const selectedTab = tabValues.find((tab) => tab.label === selectedValue);
+	if (selectedTabItem) {
+		const selectedTab = tabValues.find(
+			(tab) => tab.label === selectedTabItem.item,
+		);
 		if (selectedTab) {
 			return selectedTab.label;
 		}
@@ -34,15 +37,28 @@ function getValidTabToShow(
 
 function getValidDefaultTab(
 	tabValues: readonly TabValue[],
-	localStorageTab: string | null | undefined,
+	localStorageTab: TabItem | null | undefined,
+	groupId: string | undefined,
 ) {
-	const defaultTab = tabValues.find(
-		(tab) => tab.label === localStorageTab || tab.value === localStorageTab,
-	);
-	if (defaultTab) {
-		return defaultTab.label;
+	// Check if the localStorageTab is set and matches the groupId
+	if (localStorageTab) {
+		let itemValue = localStorageTab.item;
+		if (groupId) {
+			const storageTab = getStorageTab(groupId);
+			if (!storageTab) {
+				console.error(
+					`Default tab neither matches groupId nor localStorageTab\n${localStorageTab}\n${groupId}`,
+				);
+			}
+			itemValue = storageTab?.item || localStorageTab.item;
+		}
+		const defaultTab = tabValues.find((tab) => tab.label === itemValue);
+		if (defaultTab) {
+			return defaultTab.label;
+		}
 	}
-	return tabValues[0]?.label;
+	const manualDefaultTab = tabValues.find((tab) => tab.default);
+	return manualDefaultTab?.label || tabValues[0]?.label;
 }
 
 function TabList({
@@ -106,8 +122,12 @@ function TabList({
 		focusElement?.focus();
 	};
 
-	const defaultTab = getValidDefaultTab(tabValues, localStorageTab?.item);
-	const tabToShow = getValidTabToShow(tabValues, selectedValue, defaultTab);
+	const defaultTab = getValidDefaultTab(
+		tabValues,
+		localStorageTab,
+		props.groupId,
+	);
+	const tabToShow = getValidTabToShow(tabValues, selectedTabItem, defaultTab);
 	return (
 		<MantleTabs
 			orientation="horizontal"
