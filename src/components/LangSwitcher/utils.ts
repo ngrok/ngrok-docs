@@ -125,15 +125,16 @@ export const getStorageTab = (tabGroupId?: string) => {
 		const unParsedTabItem = localStorage.getItem(tabGroupId || tabParamName);
 		try {
 			if (unParsedTabItem) {
-				tabItem = JSON.parse(unParsedTabItem);
+				return JSON.parse(unParsedTabItem);
 			}
-		} catch (error) {
 			tabItem = {
 				item: unParsedTabItem?.toString() || "",
 				groupId: tabGroupId || tabParamName,
 			};
+		} catch (error) {
 			console.error("Error parsing data for tabs and lang switcher:", error);
 		}
 	}
+
 	return tabItem;
 };
