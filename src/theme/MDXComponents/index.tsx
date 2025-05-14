@@ -1,4 +1,5 @@
 import Head from "@docusaurus/Head";
+import { Definition } from "@site/src/components/Definition";
 import Admonition from "@theme/Admonition";
 import type { MDXComponentsObject } from "@theme/MDXComponents";
 import MDXA from "@theme/MDXComponents/A";
@@ -30,6 +31,7 @@ const MDXComponents: MDXComponentsObject = {
 	h6: (props: ComponentProps<"h6">) => <MDXHeading as="h6" {...props} />,
 	admonition: Admonition,
 	mermaid: Mermaid,
+	Definition,
 };
 
 export default MDXComponents;

@@ -12,7 +12,7 @@ export default function CodeBlock({ className, ...props }: Props) {
 				<CodeBlockFallback className="mb-4">Loading…</CodeBlockFallback>
 			}
 		>
-			{() => <DocsCodeBlock className={cx("mb-4", className)} {...props} />}
+			{() => <DocsCodeBlock className={className} {...props} />}
 		</BrowserOnly>
 	);
 }
