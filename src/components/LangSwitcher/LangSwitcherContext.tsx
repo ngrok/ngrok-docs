@@ -2,14 +2,16 @@ import type { SupportedLanguage } from "@ngrok/mantle/code-block";
 import { createContext } from "react";
 
 export type LangSwitcherContextType = {
-	tabLanguage: string | SupportedLanguage | null;
+	selectedLanguage: string | SupportedLanguage | null;
 	defaultLanguage: string | null;
-	updateTab: null | ((newLang: string | SupportedLanguage) => void);
+	updateSelectedLanguage:
+		| null
+		| ((newLang: string | SupportedLanguage | undefined) => void);
 };
 
 const LangSwitcherContext = createContext<LangSwitcherContextType>({
-	tabLanguage: "",
-	updateTab: null,
+	selectedLanguage: null,
+	updateSelectedLanguage: null,
 	defaultLanguage: null,
 });
 
