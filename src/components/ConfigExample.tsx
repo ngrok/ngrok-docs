@@ -1,4 +1,5 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@ngrok/mantle/tabs";
+import TabItem from "@theme/TabItem";
+import Tabs from "@theme/Tabs";
 import type { ReactNode } from "react";
 import YAML, { type ToStringOptions } from "yaml";
 import { LangSwitcher } from "./LangSwitcher";
@@ -69,14 +70,14 @@ export type ConfigExampleProps = {
 	jsonMetastring?: string;
 	title?: string;
 	icon?: ReactNode;
-	hideAgentConfig?: boolean;
-	hideTrafficPolicy?: boolean;
+	showAgentConfig?: boolean;
+	showTrafficPolicy?: boolean;
 };
 
 export default function ConfigExample({
 	// Show the agent config by default
-	hideAgentConfig = false,
-	hideTrafficPolicy = false,
+	showAgentConfig = false,
+	showTrafficPolicy = true,
 	...props
 }: ConfigExampleProps) {
 	const yamlOptions = {
@@ -103,29 +104,35 @@ export default function ConfigExample({
 		agentConfig.yamlConfig,
 		agentConfig.jsonConfig,
 	);
-	if (hideAgentConfig && hideTrafficPolicy)
+
+	// if both false, throw error;
+	if (!showTrafficPolicy && !showAgentConfig) {
 		throw new Error(
-			"At least one of hideAgentConfig or hideTrafficPolicy must be false",
+			"ConfigExample error: One of showTrafficPolicy or showAgentConfig must be true",
 		);
+	}
+
+	// if only one is true, no need for <Tabs></Tabs>
+	if (!showAgentConfig) {
+		return policySnippet;
+	}
+	if (!showTrafficPolicy) {
+		return agentConfigSnippet;
+	}
+
 	return (
-		<Tabs
-			orientation="horizontal"
-			defaultValue={hideTrafficPolicy ? "agent-config" : "traffic-policy"}
-		>
-			<TabsList>
-				{hideTrafficPolicy ? null : (
-					<TabsTrigger value="traffic-policy">Traffic Policy</TabsTrigger>
-				)}
-				{hideAgentConfig ? null : (
-					<TabsTrigger value="agent-config">Agent Config</TabsTrigger>
-				)}
-			</TabsList>
-			{hideTrafficPolicy ? null : (
-				<TabsContent value="traffic-policy">{policySnippet}</TabsContent>
-			)}
-			{hideAgentConfig ? null : (
-				<TabsContent value="agent-config">{agentConfigSnippet}</TabsContent>
-			)}
+		<Tabs groupId="config-example" queryString="config-example">
+			{showTrafficPolicy ? (
+				<TabItem value="traffic-policy" label="Traffic Policy" default>
+					{policySnippet}
+				</TabItem>
+			) : null}
+
+			{showAgentConfig ? (
+				<TabItem value="agent-config" label="Agent Config">
+					{agentConfigSnippet}
+				</TabItem>
+			) : null}
 		</Tabs>
 	);
 }

@@ -1,18 +1,14 @@
-import type { Mode, SupportedLanguage } from "@ngrok/mantle/code-block";
-import {
-	CodeBlock,
-	CodeBlockBody,
+import type {
 	CodeBlockCode,
-	CodeBlockCopyButton,
-	CodeBlockHeader,
-	CodeBlockIcon,
-	CodeBlockTitle,
-	fmtCode,
-	parseLanguage,
-	parseMetastring,
+	Mode,
+	SupportedLanguage,
 } from "@ngrok/mantle/code-block";
+import { CodeBlock, parseLanguage } from "@ngrok/mantle/code-block";
 import type { WithStyleProps } from "@ngrok/mantle/types";
 import type { ComponentProps, ReactNode } from "react";
+import { CodeBlockWithInfo } from "./CodeBlockWithInfo";
+import { LangTab } from "./LangSwitcher/LangTab";
+import { getLanguageInfo, getMetaData } from "./LangSwitcher/utils";
 
 type WithIndentation = Pick<
 	ComponentProps<typeof CodeBlockCode>,
@@ -24,10 +20,6 @@ type Props = WithStyleProps & {
 	 * The code content inside the block. This contains the raw code to display as a string.
 	 */
 	children: string;
-	/**
-	 * The array of children to show in the codeblock if the switcher functionality is active
-	 */
-	switcherChildren?: string[];
 	/**
 	 * Specifies the language of the code block (e.g., language-js, language-python).
 	 */
@@ -66,33 +58,35 @@ function DocsCodeBlock({
 	metastring,
 	mode: _mode,
 	title: _title,
-	switcherChildren,
 	...props
 }: Props) {
-	const language = _language ?? parseLanguage(className);
-	const meta = parseMetastring(metastring);
-	const title = _title || meta.title;
-	const mode = _mode || meta.mode;
-	const hasHeader = title || mode || _icon;
-	const indentation = _indentation ?? meta.indentation;
+	const langMatchesInClassName = className?.match(/language-(\w+)/);
+	const langInClassName = langMatchesInClassName
+		? langMatchesInClassName[0]?.split("-")[1]
+		: "";
+	const language = _language || parseLanguage(langInClassName);
+
+	const meta = getMetaData(
+		metastring ? `${className} ${metastring}` : className,
+	);
 
 	return (
-		<CodeBlock className={className} {...props}>
-			{hasHeader && (
-				<CodeBlockHeader>
-					{mode ? <CodeBlockIcon preset={mode} /> : _icon}
-					{title && <CodeBlockTitle>{title}</CodeBlockTitle>}
-				</CodeBlockHeader>
-			)}
-			<CodeBlockBody>
-				{!meta.disableCopy && <CodeBlockCopyButton />}
-				<CodeBlockCode
-					indentation={indentation}
-					language={language}
-					value={fmtCode`${children}`}
+		<CodeBlockWithInfo
+			content={children}
+			language={language}
+			collapseLineNumber={100}
+			meta={meta}
+			className={className}
+			headerContent={
+				<LangTab
+					disabled
+					className="text-xs h-6 px-1.5 bg-neutral-500/10 text-neutral-800"
+					tabText={meta?.tabName || language.toUpperCase()}
 				/>
-			</CodeBlockBody>
-		</CodeBlock>
+			}
+			info={getLanguageInfo(language)}
+			codeBlockProps={props}
+		/>
 	);
 }
 

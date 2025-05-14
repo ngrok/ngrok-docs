@@ -21,6 +21,9 @@ export default function DocSidebarItemLink({
 	const isActive = isActiveSidebarItem(item, activePath);
 	const isInternalLink = isInternalUrl(href);
 	const itemRef = useRef<HTMLLIElement | null>(null);
+	// Check if the item is just a link to another page.
+	// We don't want to highlight link items in the sidebar.
+	const isLinkItem = item.type === "link" && !item.docId;
 
 	useEffect(() => {
 		if (isActive && itemRef.current) {
@@ -47,11 +50,11 @@ export default function DocSidebarItemLink({
 					"menu__link",
 					!isInternalLink && styles.menuExternalLink,
 					{
-						"menu__link--active": isActive,
+						"menu__link--active": isActive && !isLinkItem,
 					},
 				)}
 				autoAddBaseUrl={autoAddBaseUrl}
-				aria-current={isActive ? "page" : undefined}
+				aria-current={isActive && !isLinkItem ? "page" : undefined}
 				to={href}
 				{...(isInternalLink && {
 					onClick: onItemClick ? () => onItemClick(item) : undefined,
