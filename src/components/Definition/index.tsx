@@ -61,6 +61,8 @@ export function Definition({
 				: link || match?.link,
 	};
 
+	const iconSize = 4;
+
 	return (
 		<HoverCard>
 			<HoverCardTrigger className="m-0" asChild>
@@ -83,14 +85,19 @@ export function Definition({
 					{Boolean(data?.link) && (
 						<span className="flex">
 							<Link
-								className="mb-0 flex gap-1 text-sm items-center"
+								className="mb-0 flex gap-1 text-xs items-center"
 								href={data.link}
 							>
-								{linkType === "external" ? (
-									<Icon svg={<ArrowSquareOut />} />
-								) : (
-									<Icon svg={<LinkSimpleHorizontal />} />
-								)}
+								<div className="max-w-[16px]">
+									{linkType === "external" ? (
+										<Icon className="max-w-[100%]" svg={<ArrowSquareOut />} />
+									) : (
+										<Icon
+											className="max-w-[100%]"
+											svg={<LinkSimpleHorizontal size={iconSize} />}
+										/>
+									)}
+								</div>
 								Learn More
 							</Link>
 						</span>
