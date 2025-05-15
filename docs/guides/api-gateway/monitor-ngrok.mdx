@@ -111,7 +111,25 @@ to set up the [`rate-limit` action](/docs/traffic-policy/actions/rate-limit).
 Now you can not only observe what happens to rate-limited requests, but use
 Traffic Inspector to dial in your threshold.
 
-***TK ADD SOMETHING BACK IN HERE***
+- Hit your endpoint a few more times with a loop of the `curl` command:
+
+	```bash mode="cli"
+	for i in `seq 1 50`; do curl -X GET -w '%{http_code}' https://<YOUR_NGROK_DOMAIN>/abc ; done`.
+	```
+
+- On the ngrok Traffic Inspector page, note that the error code `429` (rate
+	limit) was returned and that the duration of the request was instant and
+	caused no load on your API.
+
+  ![Rate limit](img/monitor-ngrok/rateLimit.png)
+
+- Edit the `policy.yml` file and change `capacity` to `100` or another threshold
+	you deem appropriate and restart your agent(s) based on your form factor.
+- In the Traffic Inspector, click on one of the `429` events, then click
+	**Replay**. Note that the request now responds without error because the rate
+	limit has been increased for the given IP address of that request.
+
+  ![Replay after rate limit adjustment](./img/monitor-ngrok/replayLimit.png)
 
 ## Monitor your API gateway traffic with Datadog
 
@@ -165,7 +183,7 @@ Before adding an event subscription, you need somewhere to send events:
 
 - In the **New Event Subscription** sidebar, enter `traffic` as the
 	**Description** and then **Add** a new source (event type). Choose
-	**`http_request_complete`**.
+	`http_request_complete`.
 
   ![Add source](img/monitor-ngrok/addEventType.png)
 
@@ -180,8 +198,7 @@ Before adding an event subscription, you need somewhere to send events:
 
 - In ngrok, click **Done** and **Save**.
 
-- Refresh your ngrok API page a few times so that new requests are logged in
-	Datadog.
+- Hit your API services a few times so that new requests are logged in Datadog.
 
 ### Create a dashboard
 
@@ -282,7 +299,7 @@ email, Slack, Discord, WhatsApp, Threema, or Webhook.site.
 ## Next steps: What to monitor?
 
 Now that you've seen how to connect your API traffic to Datadog, explore logs,
-create a dashboard with custom widgets, and send yourself alerts, let's discuss
+create a dashboard with custom widgets, and send  alerts, let's discuss
 what exactly you should be monitoring.
 
 There are three categories to consider: security, errors, and performance.
@@ -342,17 +359,18 @@ addition to averages. Even if an endpoint has a quick average response time, if
 the duration is highly variable—with many lower- and higher-than-average
 durations—your users will probably get annoyed.
 
-## Further reading
+## What's next?
 
-To learn more about any of the concepts in this guide, consult the following
-articles:
+You've now not only set up ngrok as an API gateway with the agent or Kubernetes
+Operator, but also established fundamentals for observing it as a holistic
+system. 
 
-- The [Get Docker](https://docs.docker.com/get-started/get-docker) guide
-- The guide to [getting started with Docker for ngrok](https://dashboard.ngrok.com/get-started/setup/docker)
-- The complete [Docker ngrok agent](https://ngrok.com/docs/using-ngrok-with/docker) documentation
-- The [ngrok Traffic Policy](https://ngrok.com/docs/traffic-policy) documentation
-- The [ngrok Traffic Policy actions](https://ngrok.com/docs/traffic-policy/actions/rate-limit) documentation
-- The [ngrok Cloud Endpoints](https://ngrok.com/docs/universal-gateway/cloud-endpoints) documentation
-- The [ngrok Agent Endpoints](https://ngrok.com/docs/universal-gateway/agent-endpoints) documentation
-- The [ngrok Events](https://ngrok.com/docs/obs/events) documentation
-- [Datadog](https://www.datadoghq.com)
+You're ready for production, but you still haven't reached the end of what's
+possible with Traffic Policy—explore the [Traffic Policy
+examples](/docs/traffic-policy/examples) for even more ways you can filter,
+manage, and orchestrate traffic.
+
+Looking for even more resilience? [Endpoint
+Pooling](/docs/universal-gateway/endpoint-pooling) offers a dead-simple path to
+load balancing across environments, clusters, and clouds.
+
