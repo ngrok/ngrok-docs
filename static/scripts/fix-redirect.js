@@ -878,6 +878,10 @@ const redirects = [
 		fromExact("/docs/getting-started/kubernetes/"),
 		"/docs/k8s/installation/install",
 	],
+	[
+		fromExact("/docs/guides/other-guides/how-to-set-up-a-custom-domain"),
+		"/docs/universal-gateway/custom-domains",
+	],
 ];
 
 // get current href from window
