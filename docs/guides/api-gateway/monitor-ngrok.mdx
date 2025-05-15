@@ -15,6 +15,7 @@ these guides:
 - [Get started with ngrok's API gateway](https://ngrok.com/docs/guides/api-gateway/get-started/)
 - [Deploy an API gateway with Kubernetes](https://ngrok.com/docs/guides/api-gateway/kubernetes/)
 - [Deploy a multicloud API gateway](https://ngrok.com/docs/guides/api-gateway/multicloud/)
+- A [Datadog account](https://www.datadoghq.com/) and API key
 
 ## Options for monitoring your API gateway and services
 
@@ -26,16 +27,23 @@ like structured logs in a human-readable format, available on the ngrok
 dashboard. The Traffic Inspector is useful for viewing error details and for
 replaying requests to test new policies and bug fixes.
 
-Request data is kept for three days (or for 90 days as a paid extra).
+ngrok keeps this request data for three days (or for 90 days as a paid extra).
 
-An event is the data that ngrok provides about a request, which is exported to a
-dedicated monitoring platform. Events offer an automated means of monitoring
+An event is the data that ngrok aggregates about a request, which you can then
+export to a dedicated monitoring platform. Events offer an automated means of
+monitoring
 your API. Events are also the only way for your team to get automatic error
 alerts (notifications) instead of constantly having to check for errors on a
 dashboard.
 
 At the time of writing, ngrok allows you to export events to AWS, Azure,
-and Datadog, with 10,000 free events per month. 
+and Datadog. While this guide focused on exporting to Dataog, we also have
+quickstarts for [AWS
+CloudWatch](/docs/integrations/amazon-cloudwatch/event-destination/), [AWS
+Firehose](/docs/integrations/amazon-firehose/event-destination/), [AWS
+Kinesis](/docs/integrations/amazon-kinesis/event-destination/), and [Azure
+Logs](/docs/integrations/azure-logs-ingestion/event-destination/). Every
+accounts 10,000 free events per month, with more available for additional cost.
 
 ## Observe API traffic with Traffic Inspector
 
@@ -53,12 +61,6 @@ example of using the Traffic Inspector for rate limiting.
 
 - You can filter requests by these fields, for instance, to show only server
 	error responses and not successes.
-
-:::note
-Requests made to the API at http://localhost:4000 will not be displayed in the
-inspector. Only requests that pass through the ngrok endpoint, and therefore the
-ngrok agent, will be known to ngrok.
-:::
 
 To see more details about a request or to replay it, you need to enable full
 capture, which permits ngrok to store up to 10 KB of your request data.
@@ -81,7 +83,7 @@ capture, which permits ngrok to store up to 10 KB of your request data.
 	the full capture details don't appear, you may need to restart your ngrok
 	agent in the terminal.
 
-- Click the **Replay** button and notice that the request is resent from the
+- Click the **Replay** button and notice that the request is replayed from the
 	ngrok host.
 
   ![Replay request](img/monitor-ngrok/replay.png)
@@ -117,17 +119,17 @@ Traffic Inspector to dial in your threshold.
 	for i in `seq 1 50`; do curl -X GET -w '%{http_code}' https://<YOUR_NGROK_DOMAIN>/abc ; done`.
 	```
 
-- On the ngrok Traffic Inspector page, note that the error code `429` (rate
-	limit) was returned and that the duration of the request was instant and
-	caused no load on your API.
+- In Traffic Inspector, note that ngrok returned the error code `429` (rate
+	limit) and that the duration of the request was instant, meaning it created no
+	load on your API.
 
   ![Rate limit](img/monitor-ngrok/rateLimit.png)
 
 - Edit the `policy.yml` file and change `capacity` to `100` or another threshold
 	you deem appropriate and restart your agent(s) based on your form factor.
 - In the Traffic Inspector, click on one of the `429` events, then click
-	**Replay**. Note that the request now responds without error because the rate
-	limit has been increased for the given IP address of that request.
+	**Replay**. Note that the request now responds without error because you
+	increased the rate limit for the given IP address of that request.
 
   ![Replay after rate limit adjustment](./img/monitor-ngrok/replayLimit.png)
 
