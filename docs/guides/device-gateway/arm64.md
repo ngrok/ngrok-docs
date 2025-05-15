@@ -152,7 +152,7 @@ Now that you have SSH tunneling and service ingress handled via ngrok, you may a
       </TabItem>
     </Tabs>
 
-1.  When you re-establish your TLS or HTTP tunnels, ngrok will proxy requests from your allowed IP/CIDR through to your ARM64 device and reject all others _at its network edge_, preventing your device from being constantly bombarded with automated and malicious attacks.
+1.  When you re-establish your TLS or HTTP tunnels, ngrok will proxy requests from your allowed IP/CIDR through to your ARM64 device and reject all others _at its cloud service_, preventing your device from being constantly bombarded with automated and malicious attacks.
 
 ## What's next?
 
