@@ -158,6 +158,6 @@ Now that you have SSH tunneling and service ingress handled via ngrok, you may a
 
 Now that you can create ngrok tunnels on your Linux ARM64 device and understand the fundamentals of managing traffic with policies, you can extend your usage to make your device—or even a fleet of them—ready for production usage.
 
-- Bring a [custom domain](/guides/other-guides/how-to-set-up-a-custom-domain/) to ngrok to create static endpoints.
+- Bring a [custom domain](/universal-gateway/custom-domains/) to ngrok to create static endpoints.
 - Learn how to write an [agent configuration file](/agent/config/v3/) to define and create multiple tunnels from a single command line.
 - Install [ngrok as a service](/agent/#background-service) to start after your ARM64 device boots and automatically restart after crashes.
