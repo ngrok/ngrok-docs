@@ -51,37 +51,37 @@ In this section, you'll learn to use the Traffic Inspector and work through an
 example of using the Traffic Inspector for rate limiting.
 
 - Browse to the ngrok [Traffic
-	Inspector](https://dashboard.ngrok.com/traffic-inspector) on your ngrok
-	account dashboard.
+  Inspector](https://dashboard.ngrok.com/traffic-inspector) on your ngrok
+  account dashboard.
 
-	The list of recent requests provides you with basic information, such as the
-	time, origin, destination, duration, and response code of calls to your API.
+  The list of recent requests provides you with basic information, such as the
+  time, origin, destination, duration, and response code of calls to your API.
 
   ![Traffic Inspector](img/monitor-ngrok/trafficInspector.png)
 
 - You can filter requests by these fields, for instance, to show only server
-	error responses and not successes.
+  error responses and not successes.
 
 To see more details about a request or to replay it, you need to enable full
 capture, which permits ngrok to store up to 10 KB of your request data.
 
 - Click a request in the Traffic Inspector list, then click **Enable full
-	capture** in the sidebar.
+  capture** in the sidebar.
 
   ![Enable full capture](img/monitor-ngrok/enableFullCapture.png)
 
 - This button takes you to your account settings, where you can enable full
-	capture under **Observability**.
+  capture under **Observability**.
 
   ![Enable full capture settings](img/monitor-ngrok/enableFullCaptureAccount.png)
 
 - Then, return to your published API URL and refresh the browser page a few
-	times to send fresh requests through ngrok.
+  times to send fresh requests through ngrok.
 - In the ngrok Traffic Inspector, click on the event at the top of the list.
 
-	The event should now show all the request and response details and content. If
-	the full capture details don't appear, you may need to restart your ngrok
-	agent in the terminal.
+  The event should now show all the request and response details and content. If
+  the full capture details don't appear, you may need to restart your ngrok
+  agent in the terminal.
 
 - Click the **Replay** button and notice that the request is replayed from the
 	ngrok host.
@@ -89,7 +89,7 @@ capture, which permits ngrok to store up to 10 KB of your request data.
   ![Replay request](img/monitor-ngrok/replay.png)
 
 - You can also replay a request with changes to alter any of the headers or POST
-	data.
+  data.
 
   ![Replay with changes](img/monitor-ngrok/replayChanges2.png)
 
@@ -115,9 +115,9 @@ Traffic Inspector to dial in your threshold.
 
 - Hit your endpoint a few more times with a loop of the `curl` command:
 
-	```bash mode="cli"
-	for i in `seq 1 50`; do curl -X GET -w '%{http_code}' https://<YOUR_NGROK_DOMAIN>/abc ; done`.
-	```
+  ```bash mode="cli"
+  for i in `seq 1 50`; do curl -X GET -w '%{http_code}' https://<YOUR_NGROK_DOMAIN>/abc ; done`.
+  ```
 
 - In Traffic Inspector, note that ngrok returned the error code `429` (rate
 	limit) and that the duration of the request was instant, meaning it created no
@@ -126,7 +126,7 @@ Traffic Inspector to dial in your threshold.
   ![Rate limit](img/monitor-ngrok/rateLimit.png)
 
 - Edit the `policy.yml` file and change `capacity` to `100` or another threshold
-	you deem appropriate and restart your agent(s) based on your form factor.
+  you deem appropriate and restart your agent(s) based on your form factor.
 - In the Traffic Inspector, click on one of the `429` events, then click
 	**Replay**. Note that the request now responds without error because you
 	increased the rate limit for the given IP address of that request.
@@ -145,20 +145,20 @@ secret keys and URLs). For this simple example, you'll monitor a traffic event.
 Before adding an event subscription, you need somewhere to send events:
 
 - Sign up for a [Datadog](https://www.datadoghq.com) trial account. (You will
-	eventually need a paid Datadog plan to continue using logs and monitors.)
+  eventually need a paid Datadog plan to continue using logs and monitors.)
 
-	You also can't skip the third step of the sign-up process, in which you create
-	a Datadog agent somewhere.
+  You also can't skip the third step of the sign-up process, in which you create
+  a Datadog agent somewhere.
 
 - In Step 3 of the Datadog sign-up, click on **Docker** in the sidebar. Copy and
-	paste the given command into a terminal and run it.
+  paste the given command into a terminal and run it.
 
   ![Join Datadog](img/monitor-ngrok/joinDatadog.png)
 
 - Once the Datadog site notices your agent is running, click **Finish** at the
-	bottom of the page.
+  bottom of the page.
 - You now no longer need the agent running locally and can remove the Datadog
-	container with the command below.
+  container with the command below.
 
   ```sh
   docker stop dd-agent
@@ -167,34 +167,34 @@ Before adding an event subscription, you need somewhere to send events:
   ```
 
 - Note which Datadog site you're using by following the instructions in the
-	[guide to getting started with Datadog
-	sites](https://docs.datadoghq.com/getting_started/site/#access-the-datadog-site).
+  [guide to getting started with Datadog
+  sites](https://docs.datadoghq.com/getting_started/site/#access-the-datadog-site).
 - Take note of your Datadog API key, which you can access by clicking your
-	username at the bottom left of the sidebar and clicking **API Keys** in the
-	**Organization Settings** menu that opens or you can add one by following the
-	steps mentioned
-	[here](https://docs.datadoghq.com/account_management/api-app-keys/#add-an-api-key-or-client-token).
+  username at the bottom left of the sidebar and clicking **API Keys** in the
+  **Organization Settings** menu that opens or you can add one by following the
+  steps mentioned
+  [here](https://docs.datadoghq.com/account_management/api-app-keys/#add-an-api-key-or-client-token).
 
   ![Datadog API key](img/monitor-ngrok/datadogKey.png)
 
 - In the ngrok navigation panel, browse to the [**Events
-	Stream**](https://dashboard.ngrok.com/event-subscriptions) and add a new
-	subscription.
+  Stream**](https://dashboard.ngrok.com/event-subscriptions) and add a new
+  subscription.
 
   ![Add event subscription](img/monitor-ngrok/makeSubscription.png)
 
 - In the **New Event Subscription** sidebar, enter `traffic` as the
-	**Description** and then **Add** a new source (event type). Choose
-	`http_request_complete`.
+  **Description** and then **Add** a new source (event type). Choose
+  `http_request_complete`.
 
   ![Add source](img/monitor-ngrok/addEventType.png)
 
 - Add Datadog as a destination, add the Datadog site and API key you noted
-	earlier, and send a test event.
+  earlier, and send a test event.
 
 - Open the Datadog site and browse to the **Log Explorer** page from the
-	navigation panel. Enable logs. You should see that the event from ngrok has
-	appeared.
+  navigation panel. Enable logs. You should see that the event from ngrok has
+  appeared.
 
   ![Datadog logs](img/monitor-ngrok/datadogLog.png)
 
@@ -208,8 +208,8 @@ Now that events are being sent to Datadog, you can set up visualizations and
 notifications to allow your support team to monitor your API's performance.
 
 - In the Datadog site, browse to the **Dashboards > Dashboard List** page from
-	the navigation panel. Click the **ngrok HTTP Events** item to view the default
-	dashboard.
+  the navigation panel. Click the **ngrok HTTP Events** item to view the default
+  dashboard.
 
   ![Datadog dashboard list](img/monitor-ngrok/datadogDashboardList.png)
 
@@ -227,8 +227,8 @@ Configure the widget as follows.
 
 - **Step 1:** Choose **Query value** as your visualization.
 - **Step 2:** Change **Metrics** to **Logs** (ngrok does not export metrics) and
-	enter the log filter, `@http.status_code:500`, so that Datadog only counts
-	errors.
+  enter the log filter, `@http.status_code:500`, so that Datadog only counts
+  errors.
 - **Step 3:** Set the time preference to **Past 1 Hour**.
 - **Step 4:** Name the widget `Errors in the last hour`.
 
@@ -260,17 +260,17 @@ send POST requests to https://ntfy.sh, a free notification service.
   ![Datadog add integration](img/monitor-ngrok/datadogAddIntegration.png)
 
 - Under **Webhooks**, at the bottom of the configuration page, click **New**.
-	Set the **Name** to `ntfy`, the **URL** to `https://ntfy.sh/ngrokTest`, and
-	the **Payload** to **Blank**. Click **Save**.
+  Set the **Name** to `ntfy`, the **URL** to `https://ntfy.sh/ngrokTest`, and
+  the **Payload** to **Blank**. Click **Save**.
 
   ![Datadog add webhook](img/monitor-ngrok/datadogAddWebhook.png)
 
 - In the Datadog navigation panel, browse to the **Monitors > New monitor**.
-	Choose **Logs**.
+  Choose **Logs**.
 
 - In the monitor configuration, choose **Query** for your monitor scope, set the
-	search query to `@http.status_code:500`, the time to the **last 1 hour**, and
-	the notification message:
+  search query to `@http.status_code:500`, the time to the **last 1 hour**, and
+  the notification message:
 
   ```
   @webhook-ntfy Your API has errors. Investigate at https://app.datadoghq.eu/dashboard.
@@ -278,22 +278,22 @@ send POST requests to https://ntfy.sh, a free notification service.
 
   ![Datadog add webhook](img/monitor-ngrok/datadogConfigureMonitor.png)
 
-	It's important that the `@webhook` name matches the webhook integration you
-	created earlier. If the names don't match, the notification won't arrive.
+  It's important that the `@webhook` name matches the webhook integration you
+  created earlier. If the names don't match, the notification won't arrive.
 
 - Browse to the [ngrok test channel on the ntfy
-	website](https://ntfy.sh/ngrokTest).
+  website](https://ntfy.sh/ngrokTest).
 
 - Click **Test notifications** at the bottom of the Datadog page and send an
-	alert with **Run tests**.
+  alert with **Run tests**.
 
 - Notice that the alert appears on the ntfy page. You can install ntfy as a
-	mobile app so that you are always aware of whether your API has errors.
+  mobile app so that you are always aware of whether your API has errors.
 
   ![Datadog notify](img/monitor-ngrok/datadogNotify.png)
 
 - Save the monitor. Now, after a delay and once you've refreshed the ngrok
-	endpoint for your API, you will receive a notification if an error occurs.
+  endpoint for your API, you will receive a notification if an error occurs.
 
 If you want to use a different notification system to ntfy, consider using
 email, Slack, Discord, WhatsApp, Threema, or Webhook.site.
@@ -301,7 +301,7 @@ email, Slack, Discord, WhatsApp, Threema, or Webhook.site.
 ## Next steps: What to monitor?
 
 Now that you've seen how to connect your API traffic to Datadog, explore logs,
-create a dashboard with custom widgets, and send  alerts, let's discuss
+create a dashboard with custom widgets, and send alerts, let's discuss
 what exactly you should be monitoring.
 
 There are three categories to consider: security, errors, and performance.
@@ -365,7 +365,7 @@ durations—your users will probably get annoyed.
 
 You've now not only set up ngrok as an API gateway with the agent or Kubernetes
 Operator, but also established fundamentals for observing it as a holistic
-system. 
+system.
 
 You're ready for production, but you still haven't reached the end of what's
 possible with Traffic Policy—explore the [Traffic Policy
@@ -375,4 +375,3 @@ manage, and orchestrate traffic.
 Looking for even more resilience? [Endpoint
 Pooling](/docs/universal-gateway/endpoint-pooling) offers a dead-simple path to
 load balancing across environments, clusters, and clouds.
-
