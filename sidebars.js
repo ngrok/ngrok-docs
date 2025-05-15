@@ -62,6 +62,8 @@ const sidebars = {
 							label: "TCP Addresses",
 						},
 						"universal-gateway/tls-certificates",
+						// Commented out edges here as they're deprecated.
+						// "universal-gateway/edges",
 					],
 				},
 				{
