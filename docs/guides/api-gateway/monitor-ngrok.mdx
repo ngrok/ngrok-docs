@@ -142,42 +142,7 @@ There are two [types of events](/docs/obs/events/reference):
 standard traffic events (requests to your API) and audit events (changes to
 secret keys and URLs). For this simple example, you'll monitor a traffic event.
 
-Before adding an event subscription, you need somewhere to send events:
-
-- Sign up for a [Datadog](https://www.datadoghq.com) trial account. (You will
-  eventually need a paid Datadog plan to continue using logs and monitors.)
-
-  You also can't skip the third step of the sign-up process, in which you create
-  a Datadog agent somewhere.
-
-- In Step 3 of the Datadog sign-up, click on **Docker** in the sidebar. Copy and
-  paste the given command into a terminal and run it.
-
-  ![Join Datadog](img/monitor-ngrok/joinDatadog.png)
-
-- Once the Datadog site notices your agent is running, click **Finish** at the
-  bottom of the page.
-- You now no longer need the agent running locally and can remove the Datadog
-  container with the command below.
-
-  ```sh
-  docker stop dd-agent
-  docker remove dd-agent
-  docker image rm gcr.io/datadoghq/agent:7
-  ```
-
-- Note which Datadog site you're using by following the instructions in the
-  [guide to getting started with Datadog
-  sites](https://docs.datadoghq.com/getting_started/site/#access-the-datadog-site).
-- Take note of your Datadog API key, which you can access by clicking your
-  username at the bottom left of the sidebar and clicking **API Keys** in the
-  **Organization Settings** menu that opens or you can add one by following the
-  steps mentioned
-  [here](https://docs.datadoghq.com/account_management/api-app-keys/#add-an-api-key-or-client-token).
-
-  ![Datadog API key](img/monitor-ngrok/datadogKey.png)
-
-- In the ngrok navigation panel, browse to the [**Events
+- In the ngrok dashboard, browse to the [**Events
   Stream**](https://dashboard.ngrok.com/event-subscriptions) and add a new
   subscription.
 
@@ -200,7 +165,8 @@ Before adding an event subscription, you need somewhere to send events:
 
 - In ngrok, click **Done** and **Save**.
 
-- Hit your API services a few times so that new requests are logged in Datadog.
+- Hit your API services a few times so that ngrok has sent new events over to
+	Datadog.
 
 ### Create a dashboard
 
@@ -213,7 +179,7 @@ notifications to allow your support team to monitor your API's performance.
 
   ![Datadog dashboard list](img/monitor-ngrok/datadogDashboardList.png)
 
-To add a new widget to the dashboard, you need to clone the default dashboard.
+You need to clone the default dashboard to add a new widget to the dashboard.
 
 - Click **Clone** at the top right of the page.
 
@@ -249,18 +215,22 @@ inspector.
 
 ### Create a notification
 
-To complete your monitoring system, you need to set up an alert that is pushed
-to your email or mobile app when an error occurs by adding a webhook integration
-to Datadog. This allows your support team to receive error notifications instead
-of having to check the dashboard repeatedly. Webhooks provide a way for you to
-send POST requests to https://ntfy.sh, a free notification service.
+To complete your monitoring system, you need to set up an alert pushed to your
+email or mobile app when an error occurs by adding a webhook integration to
+Datadog. This allows your support team to receive error notifications instead of
+repeatedly checking the dashboard. 
+
+Let's set up webhooks with [ntfy.sh](https://ntfy.sh), a free notification
+service, as a quick demonstration. For production workloads, consider using
+email, Slack, mobile push notifications, or incident management tools like
+PagerDuty.
 
 - In Datadog, browse to **Integrations > Add integration > Webhooks**.
 
   ![Datadog add integration](img/monitor-ngrok/datadogAddIntegration.png)
 
 - Under **Webhooks**, at the bottom of the configuration page, click **New**.
-  Set the **Name** to `ntfy`, the **URL** to `https://ntfy.sh/ngrokTest`, and
+  Set the **Name** to `ntfy`, the **URL** to `https://ntfy.sh/$YOUR_COMPANY`, and
   the **Payload** to **Blank**. Click **Save**.
 
   ![Datadog add webhook](img/monitor-ngrok/datadogAddWebhook.png)
@@ -295,9 +265,6 @@ send POST requests to https://ntfy.sh, a free notification service.
 - Save the monitor. Now, after a delay and once you've refreshed the ngrok
   endpoint for your API, you will receive a notification if an error occurs.
 
-If you want to use a different notification system to ntfy, consider using
-email, Slack, Discord, WhatsApp, Threema, or Webhook.site.
-
 ## Next steps: What to monitor?
 
 Now that you've seen how to connect your API traffic to Datadog, explore logs,
@@ -308,8 +275,8 @@ There are three categories to consider: security, errors, and performance.
 
 ### Security
 
-You need to monitor the security of your own infrastructure, as well as any
-attempts to hack users' accounts.
+You need to monitor the security of your infrastructure and any attempts to hack
+users' accounts.
 
 As mentioned earlier, ngrok emits [audit
 events](/docs/obs/events/reference/#audit-events) for any
@@ -326,23 +293,26 @@ In terms of user security, you need to monitor anything that indicates attackers
 might be accessing a user's account. This includes multiple requests from IP
 addresses in different countries in a short time span (though this has become
 common with the increasing use of VPNs), a high rate of failed login attempts,
-or an anomalous pattern of request access. In order to make a monitoring rule
+or an anomalous pattern of request access. To make a monitoring rule
 that recognizes anomalies, you first need to track the average number of
-requests that the average user makes to various endpoints in your API.
+requests the average user makes to various endpoints in your API.
 
 ### Errors
 
 Errors are the simplest category to monitor. Generally, if your API returns
-status codes in the `500` range instead of the `200` range, it needs fixing.
-Using Datadog monitoring, create an alert that is sent to ntfy or Slack for all
-errors. If a `500` error occurs, use the ngrok replay function to see whether it
-can be reproduced on a QA server, and send the bug to your developers to fix it.
+status codes in the `500` range instead of the `200` range, you have some
+debugging and remedation to attend to.
+
+Using Datadog monitoring, create an alert to send notificiations to ntfy or
+Slack for all errors. If a `500` error occurs, use the ngrok replay function to
+see whether it can be reproduced on a QA server, and send the bug to your
+developers to fix it.
 
 ### Performance
 
-Performance metrics need monitoring, but they don't need to trigger alerts
-unless your service experiences a sudden spike in usage or growth. The most
-important things to monitor are uptime, latency (response time), and throughput.
+Performance metrics need monitoring but don't need to trigger alerts unless your
+service experiences a sudden spike in usage or growth. The most important things
+to monitor are uptime, latency (response time), and throughput.
 
 Unlike with audit events, there is only one traffic event to monitor: [HTTP
 Request
@@ -353,13 +323,13 @@ is enough to construct any metrics you need.
 General statistics practices apply to metric monitoring. Use medians instead of
 arithmetic averages, because extreme values disproportionately affect averages.
 
-For latency, keep an eye on the median duration of a request, as well as
-outliers. Separate requests by endpoint to identify which endpoints take
+For latency, keep an eye on the median duration of a request and
+outliers—separate requests by endpoint to identify which endpoints take
 excessive time and could be improved. For throughput, look at the median number
 of requests per minute. For both metrics, also consider monitoring variance in
 addition to averages. Even if an endpoint has a quick average response time, if
-the duration is highly variable—with many lower- and higher-than-average
-durations—your users will probably get annoyed.
+the duration is highly variable, with many lower- and higher-than-average
+durations, your users will probably get annoyed.
 
 ## What's next?
 
