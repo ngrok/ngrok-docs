@@ -1,0 +1,115 @@
+---
+title: Using ngrok with n8n to make your workflow public 
+description: Learn how to use ngrok to make your n8n workflow accessible from anywhere, not just your local host. 
+---
+
+import TabItem from "@theme/TabItem";
+import Tabs from "@theme/Tabs";
+
+[n8n allows you to self-host](https://docs.n8n.io/hosting/?) which is great when you're testing workflows, but when you're ready to turn your instance into a production-ready automation and don't want to buy a domain or pay for hosting, you might feel lost. This tutorial walks you through how to get your self-hosted n8n instance running in Docker live on the internet. We'll show you how to set everything up in Docker, get your free static domain, and how to protect your endpoint, all for free with ngrok. 
+
+
+## Set up your local server with n8n
+
+Follow the steps listed in [n8n's docs](https://docs.n8n.io/hosting/installation/docker/) to self-host n8n in Docker. 
+
+### 1. Install ngrok
+
+[Download and install](https://ngrok.com/download) the ngrok CLI.
+
+**For Docker**
+Install ngrok via Docker with the following command: 
+```
+docker pull ngrok/ngrok
+```
+Run ngrok via Docker:
+```
+docker run -it -e NGROK_AUTHTOKEN=<token> ngrok/ngrok http 80
+```
+
+### 2. Connect ngrok to your account
+
+Sign up for an account at [ngrok.com](https://ngrok.com/) and run:
+
+```bash
+ngrok config add-authtoken YOUR_NGROK_AUTH_TOKEN
+```
+
+### 3. Claim your free static domain 
+Head over to https://dashboard.ngrok.com/domains to claim your free static domain. It should look something like happy-rabbit-partially.ngrok.free.app. Remember it, as that's your free ngrok domain. 
+
+Copy this domain to use in the next step. 
+
+### 4. Launch a new container in Docker with updated environment variables including your ngrok domain
+Create a new container in Docker.
+
+Important: Reuse the same volume or bind mount for the data folder in your old n8n container. The host path must stay the same. This will ensure that your n8n workflows,credentials, or execution history are not impacted. 
+
+Create a new container, select port 5555. 
+Create an enviroment variable of
+
+```
+N8N_EDITOR_BASE_URL
+```
+and paste in your ngrok URL as the value. Make sure it is https. 
+
+Next, create another enviroment variable of
+```
+WEBHOOK_URL
+```
+and paste in your ngrok URL as the value. Make sure it is https. 
+
+Lastly, add 
+
+```
+N8N-DEFAULT_BINARY_DATA_MODE
+```
+and set the value to filesystem so that n8n saves large files as binary data during workflow runs so your processes run quickly. 
+
+Once this is done and the new container with your ngrok domain is launched, delete the old one and hit the run button to create your new container running on ngrok.
+
+
+### 5. Test your integration
+
+Open your localhost and go to port 5555. Log in with your credentials. You should see everything you had locally. 
+
+
+### 6. Expose your server with ngrok 
+
+Start a tunnel to your app's port:
+```bash
+ngrok http 5555 
+```
+and add the `--url https://<your_static_domain_here>` flag to use your ngrok domain. 
+
+Navigate to your ngrok domain. You should be able to access it from anywhere now. 
+
+## Deny traffic from malicious IPs 
+
+Let's limit access to your n8n server from malicious IPs by utilizing ngrok's [Traffic Policy](https://ngrok.com/docs/traffic-policy/) and [IP Intel](https://ngrok.com/docs/traffic-policy/variables/ip-intel/_=)
+
+### 1. Create a Traffic Policy
+
+Locally, save this file as `policy.yml`:
+
+```bash
+on_http_request:
+  - actions:
+      - type: restrict-ip-reputation
+        config:
+          deny:
+            - tor_exit_node
+```
+
+### 2. Restart the agent
+
+Then, restart your ngrok agent, but this time use:
+
+```bash
+ngrok http 3000 --traffic-policy-file policy.yml
+```
+
+## Done!
+
+Your n8n server is now locked down from anonymous internet traffic.
+
