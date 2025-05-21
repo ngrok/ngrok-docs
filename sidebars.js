@@ -37,9 +37,15 @@ const sidebars = {
 				"getting-started/go",
 				"getting-started/rust",
 				{
-					type: "link",
-					label: "Kubernetes Operator",
-					href: "/docs/k8s/installation/install",
+				  label: "Kubernetes",
+					type: "category",
+					link: { type: "doc", id: "getting-started/kubernetes/ingress" },
+					items: [
+						"getting-started/kubernetes/ingress",
+						"getting-started/kubernetes/gateway-api",
+						"getting-started/kubernetes/crds",
+						"getting-started/kubernetes/endpoints",
+					],
 				},
 			],
 		},

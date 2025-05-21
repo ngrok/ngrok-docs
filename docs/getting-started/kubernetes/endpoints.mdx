@@ -1,0 +1,87 @@
+---
+title: "Quickstart: Kubernetes Endpoints"
+sidebar_label: Endpoints
+pagination_next: k8s/guides/using-ingresses
+---
+
+import TabItem from "@theme/TabItem";
+import Tabs from "@theme/Tabs";
+import ConfigExample from "/src/components/ConfigExample.tsx";
+
+import K8sSetup from "./_setup.mdx";
+import K8sInstall from "./_install.mdx";
+
+This quickstart uses the [ngrok Kubernetes Operator](/docs/k8s) and a
+
+Benefits:
+
+- TK
+
+Example use cases:
+
+- TK
+- TK
+
+## What you'll need
+
+- An ngrok account and a [reserved domain](https://dashboard.ngrok.com/domains)
+- A running K8s cluster with `kubectl` access with at least one service
+- [`kubectl`](https://kubernetes.io/docs/reference/kubectl/) and
+	[Helm](https://helm.sh/docs/intro/install/) 3.0.0 or later installed locally
+
+## 1. Install the ngrok Kubernetes Operator
+
+<K8sSetup />
+
+### Install the Operator
+
+While you can pass the credential values directly via helm values like the below simple example shows, we do not recommend this for production scenarios.
+Instead, we recommend creating a Kubernetes secret and passing the secret name to the helm chart.
+This allows for easier infrastructure as code and prevents users with access to the cluster from viewing the API key and auth token using commands like `helm get values`.
+Select one of the below options based on which method you are comfortable with.
+
+<Tabs groupId="k8s" queryString="k8s-install">
+	<TabItem value="simple" label="Simple Method" default>
+		```bash
+		helm install ngrok-operator ngrok/ngrok-operator \
+		--namespace $NAMESPACE \
+		--create-namespace \
+		--set credentials.apiKey=$NGROK_API_KEY \
+		--set credentials.authtoken=$NGROK_AUTHTOKEN \
+		--set bindings.enabled=true
+		```
+	</TabItem>
+	<TabItem value="secure" label="More Secure Method">
+		First, prepare the Secret for your credentials
+
+		```bash
+		export ENCODED_NGROK_AUTHTOKEN=$(echo -n "$NGROK_AUTHTOKEN" | base64)
+		export ENCODED_NGROK_API_KEY=$(echo -n "$NGROK_API_KEY" | base64)
+		kubectl apply -f -<<EOF
+		apiVersion: v1
+		kind: Secret
+		metadata:
+			name: ngrok-operator-credentials
+			namespace: $NAMESPACE
+		data:
+			API_KEY: "$ENCODED_NGROK_API_KEY"
+			AUTHTOKEN: "$ENCODED_NGROK_AUTHTOKEN"
+		EOF
+		```
+
+		Next, install the operator
+
+		```bash
+		helm install ngrok-operator ngrok/ngrok-operator \
+		--namespace $NAMESPACE \
+		--create-namespace \
+		--set credentials.secret.name=ngrok-operator-credentials \
+		--set bindings.enabled=true
+		```
+		</TabItem>
+
+</Tabs>
+
+## What's next?
+
+TK
