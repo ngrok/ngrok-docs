@@ -37,7 +37,7 @@ const sidebars = {
 				"getting-started/go",
 				"getting-started/rust",
 				{
-				  label: "Kubernetes",
+					label: "Kubernetes",
 					type: "category",
 					link: { type: "doc", id: "getting-started/kubernetes/ingress" },
 					items: [
