@@ -21,12 +21,12 @@ function YouTubeEmbed({ className, title, videoId, ...props }: Props) {
 				src={`https://www.youtube.com/embed/${videoId}`}
 				allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
 				allowFullScreen
-				className="absolute inset-0 w-full h-full"
+				className="absolute inset-0 w-full h-full mb-3"
 				title={title}
 			/>
 		</div>
 	);
-}
+} 
 
 export {
 	//,
