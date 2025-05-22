@@ -1,0 +1,150 @@
+import ConfigExample from "/src/components/ConfigExample.tsx";
+
+# Using ngrok with Ollama
+
+Ollama is a locally deployed AI model runner, designed to allow users to download and execute large language models (LLMs) locally on your machine. A perfect pairing for ngrok. By combining Ollama with ngrok, you can give your local Ollama an endpoint on the internet, enabling remote access and integration with other applications.
+
+## Prerequisites
+
+- [Install ngrok](https://ngrok.com/download)
+- [Install Ollama](https://ollama.com/)
+- An [ngrok account](https://ngrok.com/signup)
+
+---
+
+## 1. Install ngrok
+
+Download and install the ngrok CLI from the [official website](https://ngrok.com/download) for your OS.
+
+For macOS using Homebrew:
+
+````bash
+brew install ngrok
+
+### 2. Connect ngrok to your account
+
+Sign up for an account at [ngrok.com](https://ngrok.com/) and run:
+
+```bash
+ngrok config add-authtoken YOUR_NGROK_AUTH_TOKEN
+````
+
+### 3. Install and run Ollama on your machine
+
+Install Ollama by following the instructions on the Ollama website.
+
+Once installed, start the Ollama server:
+
+```bash
+ollama serve
+```
+
+By default, Ollama will start on
+
+```
+  http://localhost:11434
+```
+
+### 4. Create an endpoint for your Ollama server using ngrok to create an endpoint
+
+In a new terminal window, start an ngrok tunnel to your local Ollama port:
+
+```bash
+ngrok http 11434
+```
+
+ngrok will generate a public forwarding URL like:
+
+```
+  https://12093485.ngrok.io
+```
+
+This URL now provides internet access to your local Ollama instance.
+
+### 5. Use your Ollama instance from anywhere
+
+You can now send requests to your Ollama server from anywhere using the ngrok URL. For example:
+
+```bash
+curl https://abcd1234.ngrok.io/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -d '{
+        "model": "mistral",
+        "messages": [
+          {
+            "role": "system",
+            "content": "You are a helpful assistant."
+          },
+          {
+            "role": "user",
+            "content": "Hello!"
+          }
+        ]
+      }'
+```
+
+Be sure to replace
+
+```
+https://12093485.ngrok.io
+```
+
+with your actual ngrok URL.
+
+Last thing, you now have a public endpoint for your Ollama instance, which means anyone on the internet could find it and use it.
+
+### 6. Protect your Ollama instance with basic auth
+
+You may not want everyone to be able to access your LLM. ngrok can quickly add authentication to your LLM without any changes. Explore Traffic Policy to understand all the ways ngrok can protect your endpoint.
+
+The following example demonstrates how to use [the `basic-auth` Traffic Policy action](/traffic-policy/actions/basic-auth/) to only allow visitors with the credentials `user:password1` or `admin:password2` to access your app.
+
+<ConfigExample
+	snippetText={null}
+	showLineNumbers={true}
+	jsonMetastring="{5-51}"
+	yamlMetastring="{4-28}"
+	config={{
+		on_http_request: [
+			{
+				actions: [
+					{
+						type: "basic-auth",
+						config: {
+							realm: "sample-realm",
+							credentials: ["user:password1", "admin:password2"],
+							enforce: true,
+						},
+					}
+				],
+			},
+		],
+	}}
+/>
+
+You can test your traffic policy by sending the following request to your app.
+
+```shell
+$ curl --request GET \
+  --url http://example-api.ngrok.app/ \
+  --header 'Authorization: Basic dXNlcjpwYXNzd29yZDE=`'
+```
+
+:::note
+This example uses `dXNlcjpwYXNzd29yZDE=`, which is a [base64 encoded](https://en.wikipedia.org/wiki/Base64) version of `user:password1`.
+:::
+
+You should get the following response:
+
+```http
+HTTP/2 200 OK
+content-type: text/html
+Successfully Authenticated!
+...
+```
+
+If you send the same request without the `Authorization` header, you should receive a `401 Unauthorized` response.
+
+### Done!
+
+Your personal LLM is now locked down to only accept authenticated users.
