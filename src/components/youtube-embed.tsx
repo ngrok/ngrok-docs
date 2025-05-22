@@ -26,7 +26,7 @@ function YouTubeEmbed({ className, title, videoId, ...props }: Props) {
 			/>
 		</div>
 	);
-} 
+}
 
 export {
 	//,
