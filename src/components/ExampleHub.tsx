@@ -119,7 +119,7 @@ export default function ActionHub({ actions, categories }: Props) {
 											.sort((a, b) => a.localeCompare(b))
 											.map((category) => {
 												return (
-													<Badge appearance="muted" color="pink">
+													<Badge key={category} appearance="muted" color="pink">
 														{category}
 													</Badge>
 												);
