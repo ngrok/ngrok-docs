@@ -28,7 +28,8 @@ Example use cases:
 
 ## What you'll need
 
-- An ngrok account and a [reserved domain](https://dashboard.ngrok.com/domains)
+- An ngrok account and a [reserved domain](https://dashboard.ngrok.com/domains),
+	which we'll refer to as `$YOUR_DOMAIN`
 - A running K8s cluster with `kubectl` access with at least one service
 - [`kubectl`](https://kubernetes.io/docs/reference/kubectl/) and
   [Helm](https://helm.sh/docs/intro/install/) 3.0.0 or later installed locally
@@ -40,13 +41,102 @@ Example use cases:
 
 ## 2. Create or edit your Ingress manifest
 
-TK
+This manifest exposes a Kubernetes Service named `hello-world` listening on port
+`80` on `$YOUR_DOMAIN`. You'll need to change these three values based on your
+deployment.
 
-The ngrok Kubernetes operator watches for these and provisions ngrok endpoints
+```yaml title="ingress.yaml"
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: hello-world
+  namespace: default
+spec:
+  ingressClassName: ngrok
+  rules:
+    - host: $YOUR_DOMAIN
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: hello-world
+                port:
+                  number: 80
+```
+
+Apply the manifest with `kubectl apply -f ingress.yaml`.
+
+The ngrok Kubernetes Operator watches your clusters for `Ingress` resources with
+the `ngrok` ingress class, and will immedaitely provision a new agent endpoint
+based on this manifest.
+
+You can now send a request to `$NGROK_DOMAIN` with your browser or `curl`. Your
+Kubernetes service is now available to anyone on the public internet!
 
 ## 3. Secure your app with Traffic Policy
 
-TK
+In cases where you need to restrict access to your app, ngrok's [Traffic Policy
+engine](/docs/traffic-policy) and the [`oauth`
+action](/docs/traffic-policy/actions/oauth) let you quickly add authentication
+to your service without changing it.
+
+For example, you can require users to authenticate with Google, then restrict or
+grant access based on the rules you configure. The rule below requires login
+with Google OAuth, but then grants access only to a single email:
+`you@example.com`.
+
+To add the rule, create a new `NgrokTrafficPolicy` resource	and add it to your
+Ingress as an annotation. You can also choose to add it as the backend for a
+specific rule or the default backend—see our [Ingresses
+doc](/docs/k8s/guides/using-ingresses/#using-ngroktrafficpolicy-with-ingress)
+for details and why you would choose option over another.
+
+```yaml title="ingress.yaml"
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: NgrokTrafficPolicy
+metadata:
+  name: oauth
+  namespace: default
+spec:
+  policy:
+    on_http_request:
+      - actions:
+          - type: oauth
+            config:
+              provider: google
+      - expressions:
+          - "actions.ngrok.oauth.identity.email == 'you@example.com'"
+        actions:
+          - type: custom-response
+            config:
+              body: Hey, no auth for you ${actions.ngrok.oauth.identity.name}!
+              status_code: 400
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: hello-world
+  namespace: default
+  annotations:
+    k8s.ngrok.com/traffic-policy: oauth
+spec:
+  ingressClassName: ngrok
+  rules:
+    - host: $YOUR_DOMAIN
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: hello-world
+                port:
+                  number: 80
+```
+
+Re-apply the manifest with `kubectl apply -f ingress.yaml`.
 
 ## What's next?
 
