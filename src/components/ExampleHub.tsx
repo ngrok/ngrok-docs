@@ -14,9 +14,7 @@ import { MagnifyingGlass } from "@phosphor-icons/react";
 import { useState } from "react";
 
 const DefaultCategoryValue = "any";
-
 const DefaultPhaseValue = "any";
-const DefaultProtocolValue = "any";
 
 type Action = {
 	id?: string;
@@ -39,9 +37,6 @@ type Props = {
 };
 
 export default function ActionHub({ actions, categories }: Props) {
-	const [protocolFilter, setProtocolFilter] = useState(DefaultProtocolValue);
-	const [phaseFilter, setPhaseFilter] = useState(DefaultPhaseValue);
-
 	const [categoryFilter, setCategoryFilter] = useState(DefaultCategoryValue);
 	const [actionSearch, setActionSearch] = useState("");
 
@@ -54,35 +49,10 @@ export default function ActionHub({ actions, categories }: Props) {
 
 	let filteredActions = sortedActions;
 
-	if (protocolFilter !== DefaultProtocolValue) {
-		filteredActions = filteredActions.filter((action) => {
-			const protocols = Protocols[protocolFilter];
-			let exists = 0;
-			if (protocols) {
-				for (let index = 0; index < protocols.length; index++) {
-					const protocol = protocols[index];
-					if (protocol && action.phases.includes(protocol)) {
-						exists++;
-					}
-				}
-			}
-			return exists;
-		});
-	}
-
 	if (categoryFilter !== DefaultCategoryValue) {
-		console.log(categoryFilter)
 		filteredActions = filteredActions.filter((action) =>
 			// Filter by phase if set
 			action.categories.includes(categoryFilter),
-		);
-	}
-
-
-	if (phaseFilter !== DefaultPhaseValue) {
-		filteredActions = filteredActions.filter((action) =>
-			// Filter by phase if set
-			action.phases.includes(phaseFilter),
 		);
 	}
 
@@ -90,7 +60,7 @@ export default function ActionHub({ actions, categories }: Props) {
 		filteredActions = filteredActions.filter(
 			(action) =>
 				// Filter by name or description if actionSearch is set
-				action.type.toLowerCase().includes(actionSearch.toLowerCase()) ||
+				action.slug.toLowerCase().includes(actionSearch.toLowerCase()) ||
 				action.name.toLowerCase().includes(actionSearch.toLowerCase()) ||
 				action.description.toLowerCase().includes(actionSearch.toLowerCase()),
 		);
@@ -115,7 +85,9 @@ export default function ActionHub({ actions, categories }: Props) {
 							<SelectValue placeholder="Filter by Category" />
 						</SelectTrigger>
 						<SelectContent width="trigger">
-							<SelectItem value={DefaultCategoryValue}>All categories</SelectItem>
+							<SelectItem value={DefaultCategoryValue}>
+								All categories
+							</SelectItem>
 							{categories.map((category) => (
 								<SelectItem key={category.id} value={category.id}>
 									{category.name}
@@ -150,9 +122,8 @@ export default function ActionHub({ actions, categories }: Props) {
 													<Badge appearance="muted" color="pink">
 														{category}
 													</Badge>
-												)
-											})
-										}
+												);
+											})}
 									</div>
 								</CardFooter>
 							</Card>
@@ -163,7 +134,7 @@ export default function ActionHub({ actions, categories }: Props) {
 			{!filteredActions.length && (
 				<div className="flex flex-col justify-center p-4 text-center">
 					<p>
-						No examples found with the phrase <b>{actionSearch}</b> in the {" "}
+						No examples found with the phrase <b>{actionSearch}</b> in the{" "}
 						<b>{categoryFilter}</b> category.
 					</p>
 					<div>
