@@ -16,7 +16,7 @@ type Props = Omit<ComponentProps<"div">, "children"> & {
 
 function YouTubeEmbed({ className, title, videoId, ...props }: Props) {
 	return (
-		<div className={cx("relative aspect-video", className)} {...props}>
+		<div className={cx("relative aspect-video mb-3", className)} {...props}>
 			<iframe
 				src={`https://www.youtube.com/embed/${videoId}`}
 				allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
