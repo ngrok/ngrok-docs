@@ -48,7 +48,7 @@ ngrok config add-authtoken YOUR_NGROK_AUTH_TOKEN
 
 ### 3. Claim your free static domain
 
-Head over to https://dashboard.ngrok.com/domains to claim your free static domain. It should look something like happy-rabbit-partially.ngrok.free.app. Remember it, as that's your free ngrok domain.
+Head over to https://dashboard.ngrok.com/domains to claim your free static domain. It should look something like `happy-rabbit-partially.ngrok.free.app`.
 
 Copy this domain to use in the next step.
 
@@ -59,21 +59,12 @@ Create a new container in Docker.
 Important: Reuse the same volume or bind mount for the data folder in your old n8n container. The host path must stay the same. This will ensure that your n8n workflows, credentials, or execution history are not impacted.
 
 Create a new container, select port 5555.
-Create an enviroment variable of
+Create two environment variables, pasting in your ngrok URL as the value, making sure it starts with `https://`.
 
 ```bash
 export N8N_EDITOR_BASE_URL=<your_static_domain_here>
-```
-
-and paste in your ngrok URL as the value. Make sure it is https.
-
-Next, create another enviroment variable of
-
-```bash
 export WEBHOOK_URL=<your_webhook_url_here>
 ```
-
-and paste in your ngrok URL as the value. Make sure it is https.
 
 Lastly, add the following environment variable:
 
@@ -101,7 +92,7 @@ Navigate to your ngrok domain. You should be able to access it from anywhere now
 
 ## Deny traffic from malicious IPs
 
-Let's limit access to your n8n server from malicious IPs by utilizing ngrok's [Traffic Policy](https://ngrok.com/docs/traffic-policy/) and [IP Intel](https://ngrok.com/docs/traffic-policy/variables/ip-intel/_=)
+Let's limit access to your n8n server from IPs associated with Tor exit nodes by utilizing ngrok's [Traffic Policy](/docs/traffic-policy/) and [IP Intel](/docs/traffic-policy/variables/ip-intel/).
 
 ### 1. Create a Traffic Policy
 
@@ -117,7 +108,7 @@ on_http_request:
 
 ### 2. Restart the agent
 
-Then, restart your ngrok agent, but this time use:
+Restart your ngrok agent with the `--traffic-policy-file` argument.
 
 ```bash
 ngrok http 5555 --url https://<your_static_domain_here> --traffic-policy-file policy.yml
