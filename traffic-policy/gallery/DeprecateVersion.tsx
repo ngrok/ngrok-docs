@@ -12,8 +12,7 @@ export const DeprecateVersion = () => (
 							type: "custom-response",
 							config: {
 								status_code: 400,
-								content:
-									'{"error":{"message":"Version 2 of the API is no longer supported. Use Version 3 instead."}}',
+								body: '{"error":{"message":"Version 2 of the API is no longer supported. Use Version 3 instead."}}',
 							},
 						},
 					],

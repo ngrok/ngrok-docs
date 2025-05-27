@@ -2460,7 +2460,7 @@
         <a id="ERR_NGROK_736" href="/docs/errors/err_ngrok_736">ERR_NGROK_736</a>
       </td>
       <td class="pre-wrapped">
-        This ngrok account has reached its Basic traffic policy request limit for the month. Please log into https://dashboard.ngrok.com to view your options.
+        This ngrok account has reached its Basic traffic policy request limit for the month. Please purchase a pay-as-you-go plan with a Basic Traffic Policy add-on.
       </td>
     </tr>
     <tr>
@@ -2468,7 +2468,7 @@
         <a id="ERR_NGROK_737" href="/docs/errors/err_ngrok_737">ERR_NGROK_737</a>
       </td>
       <td class="pre-wrapped">
-        This ngrok account has reached its Enterprise traffic policy request limit for the month. Please log into https://dashboard.ngrok.com to view your options.
+        This ngrok account has reached its Enterprise traffic policy request limit for the month. Please purchase a pay-as-you-go plan with an Enterprise Traffic Policy add-on.
       </td>
     </tr>
     <tr>
@@ -2476,7 +2476,7 @@
         <a id="ERR_NGROK_738" href="/docs/errors/err_ngrok_738">ERR_NGROK_738</a>
       </td>
       <td class="pre-wrapped">
-        This ngrok account has reached its Advanced traffic policy request limit for the month. Please log into https://dashboard.ngrok.com to view your options.
+        This ngrok account has reached its Advanced traffic policy request limit for the month. Please purchase a pay-as-you-go plan with an Advanced Traffic Policy add-on.
       </td>
     </tr>
     <tr>
@@ -2484,7 +2484,7 @@
         <a id="ERR_NGROK_739" href="/docs/errors/err_ngrok_739">ERR_NGROK_739</a>
       </td>
       <td class="pre-wrapped">
-        This ngrok account has reached its Basic traffic policy connection limit for the month. Please log into https://dashboard.ngrok.com to view your options.
+        This ngrok account has reached its Basic traffic policy connection limit for the month. Please purchase a pay-as-you-go plan with a Basic Traffic Policy add-on.
       </td>
     </tr>
     <tr>
@@ -2492,7 +2492,7 @@
         <a id="ERR_NGROK_740" href="/docs/errors/err_ngrok_740">ERR_NGROK_740</a>
       </td>
       <td class="pre-wrapped">
-        This ngrok account has reached its Enterprise traffic policy connection limit for the month. Please log into https://dashboard.ngrok.com to view your options.
+        This ngrok account has reached its Enterprise traffic policy connection limit for the month. Please purchase a pay-as-you-go plan with an Enterprise Traffic Policy add-on.
       </td>
     </tr>
     <tr>
@@ -3559,7 +3559,7 @@
         <a id="ERR_NGROK_1608" href="/docs/errors/err_ngrok_1608">ERR_NGROK_1608</a>
       </td>
       <td class="pre-wrapped">
-        Endpoint Configurations are deprecated. Please use Cloud Edges instead.
+        Endpoint Configurations are deprecated. Please use Cloud Endpoints instead.
       </td>
     </tr>
     <tr>
@@ -3735,7 +3735,7 @@
         <a id="ERR_NGROK_1631" href="/docs/errors/err_ngrok_1631">ERR_NGROK_1631</a>
       </td>
       <td class="pre-wrapped">
-        Endpoint Configurations are deprecated. Please use Cloud Edges instead.
+        Endpoint Configurations are deprecated. Please use Cloud Endpoints instead.
       </td>
     </tr>
     <tr>
@@ -3815,7 +3815,7 @@
         <a id="ERR_NGROK_1641" href="/docs/errors/err_ngrok_1641">ERR_NGROK_1641</a>
       </td>
       <td class="pre-wrapped">
-        Endpoint Configurations are deprecated. Please use Cloud Edges instead.
+        Endpoint Configurations are deprecated. Please use Cloud Endpoints instead.
       </td>
     </tr>
     <tr>
@@ -11122,6 +11122,14 @@
     </tr>
     <tr>
       <td>
+        <a id="ERR_NGROK_18019" href="/docs/errors/err_ngrok_18019">ERR_NGROK_18019</a>
+      </td>
+      <td class="pre-wrapped">
+        This account does not have access to Endpoint pooling. Upgrade or switch to a pay-as-you-go plan for access.
+      </td>
+    </tr>
+    <tr>
+      <td>
         <a id="ERR_NGROK_19000" href="/docs/errors/err_ngrok_19000">ERR_NGROK_19000</a>
       </td>
       <td class="pre-wrapped">
@@ -11258,6 +11266,14 @@
     </tr>
     <tr>
       <td>
+        <a id="ERR_NGROK_23005" href="/docs/errors/err_ngrok_23005">ERR_NGROK_23005</a>
+      </td>
+      <td class="pre-wrapped">
+        You've reached the maximum number of vaults (<code>&lt;MAX&gt;</code>) under your current plan. To increase your limit, please upgrade your plan or contact support.
+      </td>
+    </tr>
+    <tr>
+      <td>
         <a id="ERR_NGROK_24000" href="/docs/errors/err_ngrok_24000">ERR_NGROK_24000</a>
       </td>
       <td class="pre-wrapped">
@@ -11310,6 +11326,22 @@
       </td>
       <td class="pre-wrapped">
         Vault with ID <code>&lt;ID&gt;</code> not found.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_24007" href="/docs/errors/err_ngrok_24007">ERR_NGROK_24007</a>
+      </td>
+      <td class="pre-wrapped">
+        You've reached the maximum number of secrets (<code>&lt;MAX&gt;</code>) allowed for vault <code>&lt;VID&gt;</code> under your current plan. To increase your limit, please upgrade your plan or contact support.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_25000" href="/docs/errors/err_ngrok_25000">ERR_NGROK_25000</a>
+      </td>
+      <td class="pre-wrapped">
+        Domain controls with redirect_blocked_signups_to_sso enabled cannot have an empty or null sso account IDs list.
       </td>
     </tr>
   </tbody>

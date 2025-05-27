@@ -77,14 +77,18 @@ ngrok http 80 --mutual-tls-cas ca.crt
 
 The command starts a ngrok HTTPs endpoint forwarding traffic to port 80 on your localhost. The specified CA cert is uploaded to the ngrok SaaS platform securing the endpoint with mTLS protection. When the agent is stopped, the endpoint is removed and the uploaded CA cert will be purged from ngrok.
 
-### Cloud Edges
+### Using Edges (deprecated)
 
-If using the Cloud Edges product, we'll need to upload the CA certificate creating a [Certificate Authority](/api/resources/certificate-authorities/) object that will be referenced by the Cloud Edge mTLS module.
+:::warning
+Edges will be deprecated after 2025. See [the migration guide](https://ngrok.com/docs/universal-gateway/edges/#migration-guide) to transition to using Cloud Endpoints.
+:::
+
+If using the Edges product, we'll need to upload the CA certificate creating a [Certificate Authority](/api/resources/certificate-authorities/) object that will be referenced by the Cloud Edge mTLS module.
 From within the [ngrok dashboard](https://dashboard.ngrok.com) follow the next steps.
 
 #### Upload CA cert
 
-- Navigate to [**Security** --> **TLS Certfiicate Authorities**](https://dashboard.ngrok.com/security/tls/cert-authorities) and click + Add a Certificate Authority.
+- Navigate to [**Traffic Policy** --> **TLS Certfiicate Authorities**](https://dashboard.ngrok.com/security/tls/cert-authorities) and click + Add a Certificate Authority.
 - Upload or Paste in the contents of the CA certificate and click Continue.
 
 #### Enable mTLS on Edge

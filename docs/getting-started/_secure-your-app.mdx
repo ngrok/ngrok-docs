@@ -1,0 +1,52 @@
+import TabItem from "@theme/TabItem";
+import Tabs from "@theme/Tabs";
+import ConfigExample from "/src/components/ConfigExample.tsx";
+
+<Tabs groupId="auth-method" queryString="auth-method">
+<TabItem value={props.firstTabValue || "traffic-policy"} label={props.firstTabLabel || "Using Traffic Policy"} default>
+
+When you restrict access to your app using [Traffic Policy and Google OAuth](/traffic-policy/examples/add-authentication/#sending-an-oidc-identity-token-over-headers), first your users will have to authenticate with Google, then your traffic policy will grant them access based on the rules you configure.
+
+This example uses ngrok's default managed google application to authenticate users. To configure your own Google OAuth application, see the [Google OAuth guide](/docs/integrations/google/oauth/).
+
+<ConfigExample
+	config={{
+		on_http_request: [
+			{
+				name: "OAuth",
+				actions: [
+					{
+						type: "oauth",
+						config: {
+							auth_id: "oauth",
+							provider: "google",
+						},
+					},
+				],
+			},
+			{
+				name: "bad email",
+				expressions: [
+					"actions.ngrok.oauth.identity.email != 'alan@example.com'",
+				],
+				actions: [
+					{
+						type: "custom-response",
+						config: {
+							body:
+								"Hey, no auth for you ${actions.ngrok.oauth.identity.name}!",
+							status_code: 400,
+						},
+					},
+				],
+			},
+		],
+	}}
+/>
+
+</TabItem>
+<TabItem value={props.secondTabValue || "using-code"} label={props.secondTabLabel || "Using Code"}>
+{props.children}
+</TabItem>
+
+</Tabs>

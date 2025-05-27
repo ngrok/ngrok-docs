@@ -10,7 +10,7 @@ export const GettingStarted = () => (
 							type: "custom-response",
 							config: {
 								status_code: 200,
-								content: "Hello, World!",
+								body: "Hello, World!",
 							},
 						},
 					],
