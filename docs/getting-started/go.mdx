@@ -149,7 +149,6 @@ import (
 	"net/http"
 
 	"golang.ngrok.com/ngrok/v2"
-	"golang.ngrok.com/ngrok/v2/config"
 )
 
 func main() {
@@ -158,32 +157,40 @@ func main() {
 	}
 }
 
-func example(ctx context.Context) error {
-	listener, err := ngrok.Listen(ctx,
-		config.HTTPEndpoint(
-			// highlight-start
-			config.WithOAuth("google",
-				config.WithAllowOAuthEmail("alan@example.com"),
-			),
-			// highlight-end
-		),
-		ngrok.WithAuthtokenFromEnv(),
+const trafficPolicy = `
+on_http_request:
+  - name: OAuth
+    actions:
+      - type: oauth
+        config:
+          auth_id: oauth
+          provider: google
+  - name: bad email
+    expressions:
+      - actions.ngrok.oauth.identity.email != 'alan@example.com'
+    actions:
+      - type: custom-response
+        config:
+          body: Hey, no auth for you ${actions.ngrok.oauth.identity.name}!
+          status_code: 400
+`
+
+func run(ctx context.Context) error {
+	// Create an HTTP listener with the traffic policy
+	ln, err := ngrok.Listen(ctx,
+		ngrok.WithTrafficPolicy(trafficPolicy),
+		ngrok.WithDescription("traffic policy example"),
 	)
 	if err != nil {
 		return err
 	}
-
-	log.Println("App URL", listener.URL())
-	return http.Serve(listener, http.HandlerFunc(handler))
+	// Serve HTTP traffic on the ngrok endpoint
+	log.Println("Endpoint online", ln.URL())
+	return http.Serve(ln, http.HandlerFunc(handler))
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w,
-		"<h1>Hello from ngrok-go, %s.</h1>",
-		// highlight-start
-		r.Header.Values("ngrok-auth-oauth-email"),
-		// highlight-end
-	)
+	fmt.Fprintf(w, "Hello, %s\n", r.Header.Get("authenticated-user"))
 }
 ```
 
