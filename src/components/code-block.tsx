@@ -5,6 +5,7 @@ import type {
 } from "@ngrok/mantle/code-block";
 import { CodeBlock, parseLanguage } from "@ngrok/mantle/code-block";
 import type { WithStyleProps } from "@ngrok/mantle/types";
+import capitalize from "capitalize";
 import type { ComponentProps, ReactNode } from "react";
 import { CodeBlockWithInfo } from "./CodeBlockWithInfo";
 import { LangTab } from "./LangSwitcher/LangTab";
@@ -70,19 +71,26 @@ function DocsCodeBlock({
 		metastring ? `${className} ${metastring}` : className,
 	);
 
+	if (className?.includes("mb")) {
+		console.log("Classname", className);
+	}
+
 	return (
 		<CodeBlockWithInfo
 			content={children}
 			language={language}
 			collapseLineNumber={100}
 			meta={meta}
-			className={className}
+			className={`mb-4 ${className}`}
 			headerContent={
-				<LangTab
-					disabled
-					className="text-xs h-6 px-1.5 bg-neutral-500/10 text-neutral-800"
-					tabText={meta?.tabName || language.toUpperCase()}
-				/>
+				<>
+					{meta.title && <span>{meta.title}</span>}
+					<LangTab
+						disabled
+						className="text-xs h-6 px-1.5 bg-neutral-500/10 text-neutral-800"
+						tabText={meta?.tabName || capitalize(language)}
+					/>
+				</>
 			}
 			info={getLanguageInfo(language)}
 			codeBlockProps={props}
