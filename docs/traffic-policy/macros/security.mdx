@@ -1,0 +1,458 @@
+---
+title: Core Macros
+---
+
+# Core Macros
+
+Common Expression Language (CEL) provides powerful built-in macros that let you simplify handling lists, objects, strings, and logical conditions. With these macros, you can create concise, readable expressions, making it easier to manage complex logic.
+
+## Objects
+
+Applies to both lists and maps.
+
+| **Name**                                    | **Return Type** | **Description**                                                                                          |
+| ------------------------------------------- | --------------- | -------------------------------------------------------------------------------------------------------- |
+| [`has`](#hasfield---bool)                   | `bool`          | Checks whether a field or property exists in a list or map.                                              |
+| [`obj.all`](#objallxp---bool)               | `bool`          | Checks if a predicate holds for **all** elements of a collection (either a list or a map).               |
+| [`obj.exists`](#objexistsxp---bool)         | `bool`          | Checks if a predicate holds for **at least one** element of a collection (either a list or a map).       |
+| [`obj.exists_one`](#objexists_onexp---bool) | `bool`          | Checks if a predicate holds for **exactly one** element of a collection (either a list or a map).        |
+| [`obj.map`](#objmapxt---list)               | `list`          | Transforms each element in a list or each key in a map by applying the given function.                   |
+| [`obj.map`](#objmapxpt---list)              | `list`          | Transforms each element in a list or each key in a map by applying a given predicate and transformation. |
+| [`obj.filter`](#objfilterxp---list)         | `list`          | Filters a list or map to include only elements that satisfy a condition.                                 |
+| [`obj.size`](#objsize---int)                | `int`           | Determines the number of entries in a map or elements in a list.                                         |
+
+### `has(field) -> bool`
+
+Checks whether a field or property exists in a list or map.
+
+#### Example
+
+```go
+has(req.headers['x-custom-header'])
+```
+
+Checks if the `x-custom-header` is present in the request headers.
+
+### `obj.all(x,p) -> bool`
+
+Checks if a predicate `p` holds for **all** elements of a collection `obj` (either a list or a map).
+
+Where `x` is a variable name to be used in `p` as a reference the element or key.
+
+#### How it works
+
+If **any** predicate for an element evaluates to `false`, the entire expression will return `false`. If **all** predicates evaluate to `true`, the entire expression evaluates to `true`. If one predicate fails (evaluates to `false`), the `all()` macro will stop evaluating the remaining elements and return `false` immediately.
+
+Errors in predicates are ignored.
+
+#### Example
+
+```go
+[1, 2, 3].all(x, x > 0) // true
+```
+
+Checks if **all elements** in the list `[1, 2, 3]` are greater than `0`.
+
+### `obj.exists(x,p) -> bool`
+
+Checks if a predicate `p` holds for **at least one** element of a collection `obj` (either a list or a map).
+
+Where `x` is a variable name to be used in `p` as a reference the element or key.
+
+#### How it works
+
+If **any** element satisfies the condition (predicate evaluates to `true`), the entire expression will return `true`. If **none** of the elements satisfy the condition, the result will be `false`. Evaluation will stop as soon as a predicate evaluates to `true`. If none of the predicates evaluate to `true`, the result will be `false`.
+
+Like `all()`, errors in predicates are ignored.
+
+#### Example
+
+```go
+[1, -2, 3].exists(x, x > 0) // true
+```
+
+Checks if **any element** in the list `[1, -2, 3]` is greater than `0`.
+
+### `obj.exists_one(x,p) -> bool`
+
+Checks if a predicate `p` holds for **exactly one** element of a collection `obj` (either a list or a map).
+
+Where `x` is a variable name to be used in `p` as a reference the element or key.
+
+#### How it works
+
+The macro evaluates each element against the predicate and returns `true` only if exactly **one** element satisfies the condition. If there are multiple elements that satisfy the predicate, or none at all, the result will be `false`. If there are multiple matches or none, it will return `false`.
+
+Unlike `all()` and `exists()`, errors in predicates are **not** ignored.
+
+#### Example
+
+```go
+[1, 2, 3].exists_one(x, x == 2) // true
+```
+
+Checks if exactly **one element** is equal to `2`.
+
+### `obj.map(x,t) -> list`
+
+Transforms each element in a list or each key in a map `obj` by applying the function defined in the expression `t`.
+
+Where `x` is a variable name to be used in `p` as a reference the element or key.
+
+#### How it works
+
+Evaluates each element in the list or each key in the map with the expression `t`. For a list, it applies `t` to each element and returns a new list with the transformed elements. For a map, it applies `t` to each key and returns a new list of keys.
+
+#### Example
+
+```go
+[1, 2, 3].map(n, n * n) // [1, 4, 9]
+{'one': 1, 'two': 2}.map(k, k) // ['one', 'two']
+```
+
+### `obj.map(x,p,t) -> list`
+
+Transforms each element in a list or each key in a map or list `obj` by applying the function defined in the expression `t`.
+
+Where `x` is a variable name to be used in `p` as a reference the element or key.
+
+#### Example
+
+```go
+[1, 2, 3, 4].map(num, num % 2 == 0, num * 2) // [4, 8]
+```
+
+Returns a list of numbers that are divisible by `2` and multiplies them by two.
+
+### `obj.filter(x,p) -> list`
+
+Filters a list or map `obj` to include only elements that satisfy a condition `p`.
+
+Where `x` is a variable name to be used in `p` as a reference the element or key.
+
+#### Example
+
+```go
+[1, 2, 3].filter(x, x > 1) // [2, 3]
+```
+
+Returns a list containing only the elements that are greater than `1`.
+
+### `obj.size() -> int`
+
+Determines the number of entries in a map or elements in a list.
+
+#### Signatures
+
+- `map.size() -> int`
+- `size(map) -> int`
+- `list.size() -> int`
+- `size(list) -> int`
+
+#### Example
+
+```go
+{'hello': 'world'}.size() // 1
+size({1: true, 2: false}) // 2
+
+['hello', 'world'].size() // 2
+size(['hello', 'world'])  // 2
+```
+
+## Bytes
+
+| **Name**                         | **Return Type** | **Description**                               |
+| -------------------------------- | --------------- | --------------------------------------------- |
+| [`bytes.size`](#bytessize---int) | `int`           | Determines the number of bytes in a sequence. |
+
+### `bytes.size() -> int`
+
+Determines the number of bytes in a sequence.
+
+#### Signatures
+
+- `bytes.size() -> int`
+- `size(bytes) -> int`
+
+#### Example
+
+```go
+b'hello'.size() // 5
+size(b'world!') // 6
+```
+
+## Strings
+
+| **Name**                                        | **Return Type** | **Description**                                                                 |
+| ----------------------------------------------- | --------------- | ------------------------------------------------------------------------------- |
+| [`string.matches`](#stringmatches---bool)       | `bool`          | Tests whether a string matches a given RE2 regular expression.                  |
+| [`string.startsWith`](#stringstartswith---bool) | `bool`          | Tests whether a string starts with the specified prefix.                        |
+| [`string.endsWith`](#stringendswith---bool)     | `bool`          | Tests whether a string ends with the specified suffix.                          |
+| [`string.contains`](#stringcontains---bool)     | `bool`          | Tests whether a string contains the specified substring.                        |
+| [`string.size`](#stringsize---int)              | `int`           | Determines the length of a string in terms of the number of Unicode codepoints. |
+
+### `string.matches() -> bool`
+
+Tests whether a string matches a given RE2 regular expression. This function provides a simple way to validate patterns in strings.
+
+#### Signatures
+
+- `matches(string, regex) -> bool`
+- `string.matches(regex) -> bool`
+
+#### Example
+
+```go
+matches("foobar", "foo.*")  // true
+"foobar".matches("foo.*")  // true
+
+matches("hello", "^h.*o$") // true
+"hello".matches("^h.*o$") // true
+
+matches("test", "fail")    // false
+"test".matches("fail")    // false
+```
+
+### `string.startsWith() -> bool`
+
+Tests whether a string starts with the specified prefix.
+
+#### Signatures
+
+- `string.startsWith(prefix) -> bool`
+
+#### Example
+
+```go
+"hello world".startsWith("hello") // true
+"foobar".startsWith("foo")        // true
+"ngrok".startsWith("rocks")       // false
+"test".startsWith("")             // true
+```
+
+### `string.endsWith() -> bool`
+
+Tests whether a string ends with the specified suffix.
+
+#### Signatures
+
+- `string.endsWith(suffix) -> bool`
+
+#### Example
+
+```go
+"hello world".endsWith("world") // true
+"foobar".endsWith("bar")        // true
+"ngrok".endsWith("rocks")       // false
+"test".endsWith("")             // true
+```
+
+### `string.contains() -> bool`
+
+Tests whether a string contains the specified substring.
+
+#### Signatures
+
+- `string.contains(substring) -> bool`
+
+#### Example
+
+```go
+"hello world".contains("world") // true
+"foobar".contains("baz")        // false
+"ngrok".contains("gro")         // true
+"test".contains("")             // true
+```
+
+### `string.size() -> int`
+
+Determines the length of a string in terms of the number of Unicode codepoints.
+
+#### Signatures
+
+- `string.size() -> int`
+- `size(string) -> int`
+
+#### Example
+
+```go
+"hello".size() // 5
+size("world!") // 6
+```
+
+## Timestamps
+
+| **Name**                                         | **Return Type** | **Description**                                                                         |
+| ------------------------------------------------ | --------------- | --------------------------------------------------------------------------------------- |
+| [`ts.getDate`](#tsgetdate---int)                 | `int`           | Extracts the day of the month (1-based indexing) from a timestamp.                      |
+| [`ts.getDayOfMonth`](#tsgetdayofmonth---int)     | `int`           | Returns the day of the month from a timestamp, using zero-based indexing.               |
+| [`ts.getDayOfWeek`](#tsgetdayofweek---int)       | `int`           | Returns the day of the week from a timestamp, using zero-based indexing (0 for Sunday). |
+| [`ts.getDayOfYear`](#tsgetdayofyear---int)       | `int`           | Returns the day of the year from a timestamp, using zero-based indexing.                |
+| [`ts.getFullYear`](#tsgetfullyear---int)         | `int`           | Returns the year from a timestamp.                                                      |
+| [`ts.getHours`](#tsgethours---int)               | `int`           | Returns the hour from a timestamp or converts a duration to hours.                      |
+| [`ts.getMilliseconds`](#tsgetmilliseconds---int) | `int`           | Returns the milliseconds from a timestamp or the milliseconds portion of a duration.    |
+| [`ts.getMinutes`](#tsgetminutes---int)           | `int`           | Returns the minutes from a timestamp or converts a duration to minutes.                 |
+| [`ts.getMonth`](#tsgetmonth---int)               | `int`           | Returns the month from a timestamp, using zero-based indexing (0 for January).          |
+| [`ts.getSeconds`](#tsgetseconds---int)           | `int`           | Returns the seconds from a timestamp or converts a duration to seconds.                 |
+
+### `ts.getDate() -> int`
+
+Extracts the day of the month (1-based indexing) from a timestamp.
+
+#### Signatures
+
+- `Timestamp.getDate() -> int` (in UTC)
+- `Timestamp.getDate(string) -> int` (with timezone)
+
+#### Example
+
+```go
+timestamp("2023-12-25T00:00:00Z").getDate()                      // 25
+timestamp("2023-12-25T00:00:00Z").getDate("America/Los_Angeles") // 24
+timestamp("2024-01-01T10:00:00Z").getDate()                      // 1
+timestamp("2024-01-01T10:00:00Z").getDate("Asia/Tokyo")          // 1
+```
+
+### `ts.getDayOfMonth() -> int`
+
+Returns the day of the month from a timestamp, using zero-based indexing.
+
+#### Signatures
+
+- `Timestamp.getDayOfMonth() -> int` (in UTC)
+- `Timestamp.getDayOfMonth(string) -> int` (with timezone)
+
+#### Example
+
+```go
+timestamp("2023-12-25T00:00:00Z").getDayOfMonth()                   // 24
+timestamp("2023-12-25T00:00:00Z").getDayOfMonth("America/Los_Angeles") // 23
+```
+
+### `ts.getDayOfWeek() -> int`
+
+Returns the day of the week from a timestamp, using zero-based indexing (0 for Sunday).
+
+#### Signatures
+
+- `Timestamp.getDayOfWeek() -> int` (in UTC)
+- `Timestamp.getDayOfWeek(string) -> int` (with timezone)
+
+#### Example
+
+```go
+timestamp("2023-12-25T12:00:00Z").getDayOfWeek() // 1 (Monday)
+```
+
+### `ts.getDayOfYear() -> int`
+
+Returns the day of the year from a timestamp, using zero-based indexing.
+
+#### Signatures
+
+- `Timestamp.getDayOfYear() -> int` (in UTC)
+- `Timestamp.getDayOfYear(string) -> int` (with timezone)
+
+#### Example
+
+```go
+timestamp("2023-12-25T12:00:00Z").getDayOfYear() // 358
+```
+
+### `ts.getFullYear() -> int`
+
+Returns the year from a timestamp.
+
+#### Signatures
+
+- `Timestamp.getFullYear() -> int` (in UTC)
+- `Timestamp.getFullYear(string) -> int` (with timezone)
+
+#### Example
+
+```go
+timestamp("2023-12-25T12:00:00Z").getFullYear() // 2023
+```
+
+### `ts.getHours() -> int`
+
+Returns the hour from a timestamp or converts a duration to hours.
+
+#### Signatures
+
+- `Timestamp.getHours() -> int` (in UTC)
+- `Timestamp.getHours(string) -> int` (with timezone)
+- `Duration.getHours() -> int` (convert the duration to hours)
+
+#### Example
+
+```go
+timestamp("2023-12-25T12:00:00Z").getHours() // 12
+duration("3h").getHours()                    // 3
+```
+
+### `ts.getMilliseconds() -> int`
+
+Returns the milliseconds from a timestamp or the milliseconds portion of a duration.
+
+#### Signatures
+
+- `Timestamp.getMilliseconds() -> int` (in UTC)
+- `Timestamp.getMilliseconds(string) -> int` (with timezone)
+- `Duration.getMilliseconds() -> int` (extracts the milliseconds portion)
+
+#### Example
+
+```go
+timestamp("2023-12-25T12:00:00.500Z").getMilliseconds() // 500
+duration("1.234s").getMilliseconds()                   // 234
+```
+
+### `ts.getMinutes() -> int`
+
+Returns the minutes from a timestamp or converts a duration to minutes.
+
+#### Signatures
+
+- `Timestamp.getMinutes() -> int` (in UTC)
+- `Timestamp.getMinutes(string) -> int` (with timezone)
+- `Duration.getMinutes() -> int` (convert the duration to minutes)
+
+#### Example
+
+```go
+timestamp("2023-12-25T12:30:00Z").getMinutes() // 30
+duration("1h30m").getMinutes()                 // 90
+```
+
+### `ts.getMonth() -> int`
+
+Returns the month from a timestamp, using zero-based indexing (0 for January).
+
+#### Signatures
+
+- `Timestamp.getMonth() -> int` (in UTC)
+- `Timestamp.getMonth(string) -> int` (with timezone)
+
+#### Example
+
+```go
+timestamp("2023-12-25T12:00:00Z").getMonth() // 11 (December)
+```
+
+### `ts.getSeconds() -> int`
+
+Returns the seconds from a timestamp or converts a duration to seconds.
+
+#### Signatures
+
+- `Timestamp.getSeconds() -> int` (in UTC)
+- `Timestamp.getSeconds(string) -> int` (with timezone)
+- `Duration.getSeconds() -> int` (convert the duration to seconds)
+
+#### Example
+
+```go
+timestamp("2023-12-25T12:30:30Z").getSeconds() // 30
+duration("1m30s").getSeconds()                 // 90
+```
