@@ -17,28 +17,28 @@ By verifying the clients, the server owner is able to restrict access only to ve
 
 ![](img/mtls-diag.png)
 
-This guide will walk you through enabling mTLS on your ngrok hosted endpoints using [the `terminate-tls` Traffic Policy action](/docs/traffic-policy/actions/terminate-tls/).
+This guide walks you through enabling mTLS on your ngrok hosted endpoints using [the `terminate-tls` Traffic Policy action](/docs/traffic-policy/actions/terminate-tls/).
 
 ## What you'll need
 
-Although ngrok can [automatically provision](/universal-gateway/tls-certificates) your certificates when you use standard TLS, you'll have to provide your own certificate authority (CA) for mTLS. The CA is responsible for issuing, digitally signing, and verifying the authenticity of client certificates.
+Although ngrok can [automatically provision your certificates](/universal-gateway/tls-certificates) when you use standard TLS, you'll have to provide your own certificate authority (CA) for mTLS. 
+The CA is responsible for issuing, digitally signing, and verifying the authenticity of client certificates.
 
 Keep in mind:
 
 1. ngrok uses the CA certificate to verify the client certificate.
 2. Once the CA signs a client certificate, the client certificate is used to grant the client access your endpoints.
-3. ngrok will not generate CA and client certificates for you when you use mTLS; you must generate them yourself.
-4. Though your CA certificate must be uploaded and hosted on the ngrok SaaS platform, your client certificates will need to be distributed to any client/device that needs access to your endpoints.
+3. ngrok does not generate CA and client certificates for you when you use mTLS; you must generate them yourself.
+4. Though your CA certificate must be uploaded and hosted on the ngrok SaaS platform, your client certificates need to be distributed to any client or device that needs access to your endpoints.
 
 ### Generate your own certificates
 
 :::note
-This step is optional if you already have a CA and client certificates.
+Most organizations have their own certificate management infrastructure, so this step is optional if you already have a CA and client certificates to work with.
 :::
 
-Most organizations will have their own certificate mangement infrastructure, but this section will walk you through creating CA and client certificates for this quickstart.
-
-We will create a new CA that will be used to sign the client certificate. This allows you to generate multiple client certificates that are trusted by the CA if needed.
+To begin, create a new CA that will be used to sign the client certificate, as shown below.
+With this approach you can generate multiple client certificates that are trusted by the CA if needed.
 
 ```bash
 # 1. Generate CA private key (ca.key)
@@ -57,9 +57,10 @@ openssl req -new -key client.key -out client.csr -subj "/CN=ExampleClient"
 openssl x509 -req -in client.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out client.crt -days 365 -sha256
 ```
 
-These commands will result in five new files: `ca.key`, `ca.crt`, `client.key`, `client.csr`, and `client.key`. You will use the contents of `ca.crt` in your traffic policy to validate requests via `curl` which will use `client.key` and `client.crt`.
+These commands result in five new files: `ca.key`, `ca.crt`, `client.key`, `client.csr`, and `client.key`. 
+You will use the contents of `ca.crt` in your traffic policy to validate requests via `curl`, which, in turn, uses `client.key` and `client.crt`.
 
-## 1. Create a Traffic Policy
+## 1. Create a traffic policy
 
 Using the CA certificate generated in the previous step, you can specify the `mutual_tls_certificate_authorities` field in a traffic policy to trust the CA that issued the client certificate.
 
@@ -88,7 +89,7 @@ Using the CA certificate generated in the previous step, you can specify the `mu
 
 You may also optionally [upload the CA certificate](https://dashboard.ngrok.com/tls-cert-authorities) in the ngrok dashboard and use its ID in the `mutual_tls_certificate_authorities` array.
 
-## 2. Start an endpoint with the Traffic Policy
+## 2. Start an endpoint with the traffic policy
 
 ```bash
 ngrok http 8080 --url terminate-tls-example.ngrok.app --traffic-policy-file /path/to/policy.yml
@@ -104,4 +105,5 @@ curl --cert client.crt --key client.key https://terminate-tls-example.ngrok.app
 
 ## Setting up mTLS with Edges
 
-Edges are deprecated. It is not recommended to set up mTLS with Edges.
+Edges are deprecated. 
+We do not recommend setting up mTLS with Edges.

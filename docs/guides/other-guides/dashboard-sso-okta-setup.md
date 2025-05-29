@@ -1,6 +1,7 @@
 # Configuring Okta Single Sign-On (SSO)
 
-This guide will walk you through configuring the ngrok dashboard to use Okta as an identity provider and enable single sign-on for your ngrok account. This should not be confused with [configuring an ngrok endpoint to allow your application users to log in using Okta](/integrations/okta/sso-oidc).
+This guide walks you through configuring the ngrok dashboard to use Okta as an identity provider and enable single sign-on for your ngrok account. 
+This should not be confused with configuring an ngrok endpoint so [application users can log in using Okta](/integrations/okta/sso-oidc).
 
 The requirements for completing this guide are:
 
