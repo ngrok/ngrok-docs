@@ -1,5 +1,6 @@
 import type { Config } from "@docusaurus/types";
 import dotenv from "dotenv";
+import webpackAliasesPlugin from "./src/plugins/webpack-aliases";
 
 dotenv.config();
 
@@ -54,6 +55,7 @@ const config = {
 	// },
 
 	plugins: [
+		webpackAliasesPlugin,
 		"./src/plugins/ngrok-parse-integrations",
 		"@stackql/docusaurus-plugin-hubspot",
 		"@docusaurus/theme-mermaid",
