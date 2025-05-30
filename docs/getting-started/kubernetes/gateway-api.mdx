@@ -23,9 +23,15 @@ Example use cases:
 - TK
 - TK
 
+:::note
+The ngrok Kubernetes Operator is available to all ngrok users at no additional charge.
+You only incur costs if the resources provisioned by the controller incur a cost.
+More details can be found on our [pricing page](https://ngrok.com/pricing).
+:::
+
 ## What you'll need
 
-- An ngrok account and a [reserved domain](https://dashboard.ngrok.com/domains)
+- An ngrok account
 - A running K8s cluster with `kubectl` access with at least one service
 - [`kubectl`](https://kubernetes.io/docs/reference/kubectl/) and [Helm](https://helm.sh/docs/intro/install/) 3.0.0 or later installed locally
 
@@ -35,16 +41,160 @@ Example use cases:
 <K8sGWAPI />
 <K8sInstall />
 
-## 2. Define your `Gateway` and `HTTPSRoute` resources
+## 2. Get your domain
 
-TK
+Head over to the [**Domains** section](https://dashboard.ngrok.com/domains) and click **+ New Domain** to grab a new domain.
+You can choose between a static domain with an ngrok-branded TLD like `.ngrok.app` or `.ngrok.io`, or you can [bring a custom domain](/docs/universal-gateway/custom-domains/).
 
-The ngrok Kubernetes operator watches for these and provisions ngrok endpoints
+We'll refer to this as `$YOUR_DOMAIN` from here on out.
 
-## 3. Secure your app with Traffic Policy
+## 3. Define your `Gateway` and `HTTPSRoute` resources
 
-TK
+This manifest exposes a Kubernetes Service named `hello-world` listening on port `80` on `$YOUR_DOMAIN`.
+You'll need to change these three values based on your deployment.
+
+```yaml title="gwapi.yaml"
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: ngrok-gateway
+  namespace: default
+spec:
+  gatewayClassName: ngrok
+  listeners:
+    - name: http
+      protocol: HTTP
+      port: 80
+      hostname: "$NGROK_DOMAIN"
+      allowedRoutes:
+        namespaces:
+          from: Same
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: hello-world
+  namespace: default
+spec:
+  parentRefs:
+  - group: gateway.networking.k8s.io
+    kind: Gateway
+    name: ngrok-gateway
+    namespace: default
+  hostnames:
+  - "$NGROK_DOMAIN"
+  rules:
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /
+    backendRefs:
+    - name: hello-world
+      port: 80
+```
+
+Apply the manifest with `kubectl apply -f gwapi.yaml`.
+
+The ngrok Kubernetes Operator watches your cluster for `Gateway` and `HTTPRoute` resources that reference the `ngrok` GatewayClass, and immediately provisions a new agent endpoint.
+
+You can now send a request to `$NGROK_DOMAIN` with your browser or `curl`.
+Your Kubernetes service is now available to anyone on the public internet!
+
+## 4. Secure your app with Traffic Policy
+
+In cases where you need to restrict access to your app, ngrok's [Traffic Policy engine](/docs/traffic-policy) and the [`oauth` action](/docs/traffic-policy/actions/oauth) let you quickly add authentication to your service without changing it.
+
+For example, you can require users to authenticate with Google, then restrict or grant access based on the rules you configure.
+The rule below requires login with Google OAuth, but then grants access only to a single email: `you@example.com`.
+
+To add the rule, create a new `NgrokTrafficPolicy` resource and add it to your `Gateway` resource as an annotation.
+This way, the rule runs on all requests matching any of the hostnames from the listeners on your `Gateway`.
+You can also add Traffic Policy as an [`ExtensionRef` filter](/docs/k8s/guides/using-gwapi/#use-ngroktrafficpolicy-on-httproutes) if you want to run certain rules only on a single route.
+
+```yaml title="gwapi.yaml"
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: NgrokTrafficPolicy
+metadata:
+  name: oauth
+  namespace: default
+spec:
+  policy:
+    on_http_request:
+      - actions:
+          - type: oauth
+            config:
+              provider: google
+      - expressions:
+          - "actions.ngrok.oauth.identity.email != 'you@example.com'"
+        actions:
+          - type: custom-response
+            config:
+              body: Hey, no auth for you ${actions.ngrok.oauth.identity.name}!
+              status_code: 400
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: ngrok-gateway
+  namespace: default
+  annotations:
+    k8s.ngrok.com/traffic-policy: oauth
+spec:
+  gatewayClassName: ngrok
+  listeners:
+    - name: http
+      protocol: HTTP
+      port: 80
+      hostname: "$NGROK_DOMAIN"
+      allowedRoutes:
+        namespaces:
+          from: Same
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: hello-world
+  namespace: default
+spec:
+  parentRefs:
+  - group: gateway.networking.k8s.io
+    kind: Gateway
+    name: ngrok-gateway
+    namespace: default
+  hostnames:
+  - "$NGROK_DOMAIN"
+  rules:
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /
+    backendRefs:
+    - name: hello-world
+      port: 80
+```
+
+Re-apply the manifest with `kubectl apply -f gwapi.yaml`.
+
+## 5. Start sending requests
+
+If you set up Traffic Policy, you can now verify that your rules are working and your Kubernetes service is accessible from the public internet.
+
+- In your browser: `https://$YOUR_DOMAIN`
+- In your terminal: `curl https://$YOUR_DOMAIN`
 
 ## What's next?
 
-TK
+Learn more about using ngrok with your Kubernetes deployments:
+
+- [Route requests to many upstream services](/docs/k8s/guides/how-to/request-routing/) based on the path, headers, and query parameters
+- Explore [TLS](/docs/k8s/guides/how-to/tls-routing/) or [TCP](/docs/k8s/guides/how-to/tcp-routing/) routing with Gateway API
+- Deploy an [API gateway](/docs/guides/api-gateway/kubernetes/) in one or [multiple clouds](/docs/guides/api-gateway/multicloud/)
+
+For more ways to filter and manage traffic:
+
+- [Traffic Policy overview](/docs/traffic-policy)
+- [Traffic Policy concepts](/docs/traffic-policy/concepts/)
+- All our [available actions](/docs/traffic-policy/actions/)
+
+Finally, explore the [Traffic Inspector in your dashboard](https://dashboard.ngrok.com/traffic-inspector) for real-time observability of traffic flowing through your endpoint.
+

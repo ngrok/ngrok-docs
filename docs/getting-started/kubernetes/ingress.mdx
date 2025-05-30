@@ -22,17 +22,31 @@ Example use cases:
 - TK
 - TK
 
+:::note
+The ngrok Kubernetes Operator is available to all ngrok users at no additional charge.
+You only incur costs if the resources provisioned by the controller incur a cost.
+More details can be found on our [pricing page](https://ngrok.com/pricing).
+:::
+
 ## What you'll need
 
-- An ngrok account and a [reserved domain](https://dashboard.ngrok.com/domains), which we'll refer to as `$YOUR_DOMAIN`
-- A running K8s cluster with `kubectl` access with at least one service [`kubectl`](https://kubernetes.io/docs/reference/kubectl/) and [Helm](https://helm.sh/docs/intro/install/) 3.0.0 or later installed locally
+- An ngrok account
+- A running K8s cluster with `kubectl` access with at least one service
+- [`kubectl`](https://kubernetes.io/docs/reference/kubectl/) and [Helm](https://helm.sh/docs/intro/install/) 3.0.0 or later installed locally
 
 ## 1. Install the ngrok Kubernetes Operator
 
 <K8sSetup />
 <K8sInstall />
 
-## 2. Create or edit your Ingress manifest
+## 2. Get your domain
+
+Head over to the [**Domains** section](https://dashboard.ngrok.com/domains) and click **+ New Domain** to grab a new domain.
+You can choose between a static domain with an ngrok-branded TLD like `.ngrok.app` or `.ngrok.io`, or you can [bring a custom domain](/docs/universal-gateway/custom-domains/)
+
+We'll refer to this as `$YOUR_DOMAIN` from here on out.
+
+## 3. Create or edit your Ingress manifest
 
 This manifest exposes a Kubernetes Service named `hello-world` listening on port `80` on `$YOUR_DOMAIN`.
 You'll need to change these three values based on your deployment.
@@ -46,7 +60,7 @@ metadata:
 spec:
   ingressClassName: ngrok
   rules:
-    - host: $YOUR_DOMAIN
+    - host: "$YOUR_DOMAIN"
       http:
         paths:
           - path: /
@@ -60,11 +74,12 @@ spec:
 
 Apply the manifest with `kubectl apply -f ingress.yaml`.
 
-The ngrok Kubernetes Operator watches your clusters for `Ingress` resources with the `ngrok` ingress class, and will immedaitely provision a new agent endpoint based on this manifest.
+The ngrok Kubernetes Operator watches your cluster for `Ingress` resources with the `ngrok` ingress class, and immediately provisions a new agent endpoint based on this manifest.
 
-You can now send a request to `$NGROK_DOMAIN` with your browser or `curl`. Your Kubernetes service is now available to anyone on the public internet!
+You can now send a request to `$NGROK_DOMAIN` with your browser or `curl`.
+Your Kubernetes service is now available to anyone on the public internet!
 
-## 3. Secure your app with Traffic Policy
+## 4. Secure your app with Traffic Policy
 
 In cases where you need to restrict access to your app, ngrok's [Traffic Policy engine](/docs/traffic-policy) and the [`oauth` action](/docs/traffic-policy/actions/oauth) let you quickly add authentication to your service without changing it.
 
@@ -88,7 +103,7 @@ spec:
             config:
               provider: google
       - expressions:
-          - "actions.ngrok.oauth.identity.email == 'you@example.com'"
+          - "actions.ngrok.oauth.identity.email != 'you@example.com'"
         actions:
           - type: custom-response
             config:
@@ -105,7 +120,7 @@ metadata:
 spec:
   ingressClassName: ngrok
   rules:
-    - host: $YOUR_DOMAIN
+    - host: "$YOUR_DOMAIN"
       http:
         paths:
           - path: /
@@ -119,6 +134,24 @@ spec:
 
 Re-apply the manifest with `kubectl apply -f ingress.yaml`.
 
+## 5. Start sending requests
+
+If you set up Traffic Policy, you can now verify that your rules are working and your Kubernetes service is accessible from the public internet.
+
+- In your browser: `https://$YOUR_DOMAIN`
+- In your terminal: `curl https://$YOUR_DOMAIN`rt sending requests
+
 ## What's next?
 
-TK
+Learn more about using ngrok with your Kubernetes deployments:
+
+- [Route requests to many upstream services](/docs/k8s/guides/how-to/request-routing/) based on the path, headers, and query parameters
+- Deploy an [API gateway](/docs/guides/api-gateway/kubernetes/) in one or [multiple clouds](/docs/guides/api-gateway/multicloud/)
+
+For more ways to filter and manage traffic:
+
+- [Traffic Policy overview](/docs/traffic-policy)
+- [Traffic Policy concepts](/docs/traffic-policy/concepts/)
+- All our [available actions](/docs/traffic-policy/actions/)
+
+Finally, explore the [Traffic Inspector in your dashboard](https://dashboard.ngrok.com/traffic-inspector) for real-time observability of traffic flowing through your endpoint.
