@@ -55,7 +55,12 @@ const sidebars = {
 					label: "Concepts",
 					type: "category",
 					items: [
-						{ id: "universal-gateway/domains", type: "doc", label: "Domains" },
+						{
+							link: { type: "doc", id: "universal-gateway/domains" },
+							type: "category",
+							label: "Domains",
+							items: ["universal-gateway/custom-domains"],
+						},
 						{
 							id: "universal-gateway/tcp-addresses",
 							type: "doc",
