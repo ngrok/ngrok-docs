@@ -60,6 +60,16 @@ const config = {
 		"@stackql/docusaurus-plugin-hubspot",
 		"@docusaurus/theme-mermaid",
 		"./src/plugins/tailwindcss",
+		[
+			'@docusaurus/plugin-sitemap',
+			{
+				changefreq: 'weekly',
+				priority: 0.5,
+				filename: 'sitemap.xml',
+				// Add robots.txt options here
+				trailingSlash: false,
+			},
+		],
 	],
 	headTags: [
 		{
