@@ -61,11 +61,11 @@ const config = {
 		"@docusaurus/theme-mermaid",
 		"./src/plugins/tailwindcss",
 		[
-			'@docusaurus/plugin-sitemap',
+			"@docusaurus/plugin-sitemap",
 			{
-				changefreq: 'weekly',
+				changefreq: "weekly",
 				priority: 0.5,
-				filename: 'sitemap.xml',
+				filename: "sitemap.xml",
 				// Add robots.txt options here
 				trailingSlash: false,
 			},
