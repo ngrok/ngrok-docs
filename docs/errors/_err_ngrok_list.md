@@ -5330,6 +5330,22 @@
     </tr>
     <tr>
       <td>
+        <a id="ERR_NGROK_2257" href="/docs/errors/err_ngrok_2257">ERR_NGROK_2257</a>
+      </td>
+      <td class="pre-wrapped">
+        Invalid basic auth credential. Username <code>&lt;USERNAME&gt;</code> fails to meet requirements of RFC 7617 #2.1: <code>&lt;ERR&gt;</code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_2258" href="/docs/errors/err_ngrok_2258">ERR_NGROK_2258</a>
+      </td>
+      <td class="pre-wrapped">
+        Invalid basic auth credential. The password of user <code>&lt;USERNAME&gt;</code> fails to meet requirements of RFC 7617 #2.1: <code>&lt;ERR&gt;</code>
+      </td>
+    </tr>
+    <tr>
+      <td>
         <a id="ERR_NGROK_3002" href="/docs/errors/err_ngrok_3002">ERR_NGROK_3002</a>
       </td>
       <td class="pre-wrapped">
@@ -10164,7 +10180,7 @@
         <a id="ERR_NGROK_9035" href="/docs/errors/err_ngrok_9035">ERR_NGROK_9035</a>
       </td>
       <td class="pre-wrapped">
-        Invalid port for reserve domains with scheme <code>&lt;CURRENTSCHEME&gt;</code>, allowed ports are <code>&lt;WANTPORT&gt;</code>.
+        Invalid port for for URL with scheme <code>&lt;CURRENTSCHEME&gt;</code>, allowed ports are <code>&lt;WANTPORT&gt;</code>.
       </td>
     </tr>
     <tr>
@@ -10933,6 +10949,22 @@
       </td>
       <td class="pre-wrapped">
         The binding <code>&lt;BINDING&gt;</code> refers to a k8s operator that does not exist.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_15011" href="/docs/errors/err_ngrok_15011">ERR_NGROK_15011</a>
+      </td>
+      <td class="pre-wrapped">
+        Invalid basic auth credential. Username <code>&lt;USERNAME&gt;</code> fails to meet requirements of RFC 7617 #2.1: <code>&lt;ERROR&gt;</code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_15012" href="/docs/errors/err_ngrok_15012">ERR_NGROK_15012</a>
+      </td>
+      <td class="pre-wrapped">
+        Invalid basic auth credential. The password of user <code>&lt;USERNAME&gt;</code> fails to meet requirements of RFC 7617 #2.1: <code>&lt;ERROR&gt;</code>
       </td>
     </tr>
     <tr>
