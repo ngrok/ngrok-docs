@@ -11,16 +11,20 @@ import ConfigExample from "/src/components/ConfigExample.tsx";
 import K8sSetup from "./_setup.mdx";
 import K8sInstallBindings from "./_install-bindings.mdx";
 
-This quickstart uses the [ngrok Kubernetes Operator](/docs/k8s) and a
+This quickstart uses the [ngrok Kubernetes Operator](/docs/k8s) and the ngrok agent to create a [Kubernetes-bound Endpoint](/docs/universal-gateway/kubernetes-endpoints/), which is accessible to other pods in your cluster as a native Service. ngrok then handles all routing to the upstream service, which can be running anywhere, like your development laptop or a cloud-based developer environment.
 
 Benefits:
 
-- TK
+- No need to expose your local services to the public internet
+- No modifications or ingress rules required to your clusters
+- Works with both cloud and agent endpoints
 
 Example use cases:
 
-- TK
-- TK
+- [Project your local development environment](https://ngrok.com/blog-post/kubernetes-dev-loop-projection) into a remote development or staging cluster
+- Create a cross-cluster service mesh without firewalls, VPNs, or port forwarding
+- Connect your services to a customer's APIs or databases (aka [site-to-site connectivity](/docs/guides/site-to-site-connectivity/apis/)
+- Allow your Kubernetes-deployed services to call a webhook URL exposed with ngrok
 
 :::note
 The ngrok Kubernetes Operator is available to all ngrok users at no additional charge.
@@ -31,6 +35,7 @@ More details can be found on our [pricing page](https://ngrok.com/pricing).
 ## What you'll need
 
 - An ngrok account
+- The [ngrok CLI](/docs/getting-started/#1-install-ngrok) installed on your local machine
 - A running K8s cluster with `kubectl` access with at least one service
 - [`kubectl`](https://kubernetes.io/docs/reference/kubectl/) and [Helm](https://helm.sh/docs/intro/install/) 3.0.0 or later installed locally
 
@@ -39,6 +44,82 @@ More details can be found on our [pricing page](https://ngrok.com/pricing).
 <K8sSetup />
 <K8sInstallBindings />
 
+## 2. Start an Agent Endpoint
+
+On your local machine, start a new agent endpoint, replacing `$PORT` with the port your upstream service listens on.
+
+```bash
+ngrok http $PORT --url http://hello-world.default --binding kubernetes
+```
+
+The URL of a Kubernetes Endpoint has three parts, which determine how ngrok exposes it inside your cluster: the scheme (`http`, `tcp`, or `tls`), the service name, and the namespace.
+In this example, ngrok provisions the `http://hello-world.default` URL into a Kubernetes service named `hello-world` in the `default` namespace.
+
+Behind the scenes, your ngrok Kubernetes Operator continuously polls the ngrok API for new endpoints with the `kubernetes` binding.
+When it detects your new `http://hello-world.default` endpoint, it provisions a `ClusterIP` Kubernetes service that routes directly to that endpoint.
+
+:::tip
+You can also start agent-based Kubernetes Endpoints from our [SDKs](/docs/agent-sdks/) or a second cluster, or as Cloud Endpoints with the [ngrok dashboard](https://dashboard.ngrok.com/endpoints) or our [API](/docs/api/).
+:::
+
+## 3. Add Traffic Policy to manipulate requests (optional)
+
+Kubernetes Endpoints also support the entire breadth of the [Traffic Policy engine](/docs/traffic-policy), which lets you filter, manage, and orchestrate traffic as it passes between your local service and your cluster.
+
+Because a Kubernetes Endpoint is only accessible inside of clusters where you've installed the ngrok Kubernetes Operator with your account's credentials, you don't need to add authentication.
+
+Instead, you can add a header to your local service's response to demo how it works.
+
+```yaml title="hello-world.yaml"
+on_http_respons:
+  - actions:
+      - type: add-header
+        config:
+          headers:
+           x-hello-world: Hello, world!
+```
+
+Run your Agent Endpoint again with the new Traffic Policy file.
+
+```bash
+ngrok http $PORT --url http://hello-world.default --binding kubernetes --traffic-policy-file hello-world.yaml
+```
+
+## 4. Start making requests!
+
+You can now access your non-Kubernetes service from within your cluster!
+
+You can test it out by running a temporary `curl` image on your cluster:
+
+```bash
+kubectl run -i --tty --rm debug --restart=Never --image=appropriate/curl -- /bin/sh
+```
+
+From within that new pod, `curl` your endpoint to get a response from your service.
+
+```bash
+curl -i http://hello-world.default
+```
+
+The `-i` flag outputs response headers, which will show the header you added through Traffic Policy if you chose to.
+
 ## What's next?
 
-TK
+First, read up on the rest of our Kubernetes Endpoints docs:
+
+- [Kubernetes Endpoints](/docs/universal-gateway/kubernetes-endpoints/)
+- [Using Endpoint Bindings with the Operator](/docs/k8s/guides/bindings/)
+
+Ready to replace Telepresence with ngrok's Kubernetes Endpoints?
+Read our [blog post](https://ngrok.com/blog-post/kubernetes-dev-loop-projection) on the process and *why* it's easier for both platform engineers and API/app developers.
+
+Kubernetes Endpoints also support our [Traffic Policy](/docs/traffic-policy) engine:
+
+- [Traffic Policy overview](/docs/traffic-policy)
+- [Traffic Policy concepts](/docs/traffic-policy/concepts/)
+- All our [available actions](/docs/traffic-policy/actions/), including a few most relevant to these types of endpoints:
+  - [`add-headers`](/docs/traffic-policy/actions/add-headers/)
+  - [`rate-limit`](/docs/traffic-policy/actions/rate-limit/)
+  - [`verify-webhook`](/docs/traffic-policy/actions/verify-webhook/)
+
+Finally, explore the [Traffic Inspector in your dashboard](https://dashboard.ngrok.com/traffic-inspector) for real-time observability of traffic flowing through your endpoint.
