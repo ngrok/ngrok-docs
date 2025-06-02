@@ -102,35 +102,30 @@ Your Kubernetes service is now available to anyone on the public internet!
 
 ## 4. Secure your app with Traffic Policy
 
-In cases where you need to restrict access to your app, ngrok's [Traffic Policy engine](/docs/traffic-policy) and the [`oauth` action](/docs/traffic-policy/actions/oauth) let you quickly add authentication to your service without changing it.
+In cases where you need to restrict access to your API or app, ngrok's [Traffic Policy engine](/docs/traffic-policy) and the [`restrict-ips`](/docs/traffic-policy/actions/restrict-ips) let you quickly allow only certain addresses to access your endpoint.
 
-For example, you can require users to authenticate with Google, then restrict or grant access based on the rules you configure.
-The rule below requires login with Google OAuth, but then grants access only to a single email: `you@example.com`.
+First, copy your public IP address via our [`ip4v.ngrok.com` mini-app](https://ipv4.ngrok.com/).
 
 To add the rule, create a new `NgrokTrafficPolicy` resource and add it to your `Gateway` resource as an annotation.
 This way, the rule runs on all requests matching any of the hostnames from the listeners on your `Gateway`.
-You can also add Traffic Policy as an [`ExtensionRef` filter](/docs/k8s/guides/using-gwapi/#use-ngroktrafficpolicy-on-httproutes) if you want to run certain rules only on a single route.
+Be sure to replace `$YOUR_PUBLIC_IP` with the value you just copied.
+
 
 ```yaml title="gwapi.yaml"
 apiVersion: ngrok.k8s.ngrok.com/v1alpha1
 kind: NgrokTrafficPolicy
 metadata:
-  name: oauth
+  name: restrict-ips
   namespace: default
 spec:
   policy:
     on_http_request:
       - actions:
-          - type: oauth
+          - type: restrict-ips
             config:
-              provider: google
-      - expressions:
-          - "actions.ngrok.oauth.identity.email != 'you@example.com'"
-        actions:
-          - type: custom-response
-            config:
-              body: Hey, no auth for you ${actions.ngrok.oauth.identity.name}!
-              status_code: 400
+              enforce: true
+							allow:
+								- $YOUR_PUBLIC_IP
 ---
 apiVersion: gateway.networking.k8s.io/v1
 kind: Gateway
@@ -138,7 +133,7 @@ metadata:
   name: ngrok-gateway
   namespace: default
   annotations:
-    k8s.ngrok.com/traffic-policy: oauth
+    k8s.ngrok.com/traffic-policy: restrict-ips
 spec:
   gatewayClassName: ngrok
   listeners:
@@ -174,6 +169,8 @@ spec:
 ```
 
 Re-apply the manifest with `kubectl apply -f gwapi.yaml`.
+
+You can also add Traffic Policy as an [`ExtensionRef` filter](/docs/k8s/guides/using-gwapi/#use-ngroktrafficpolicy-on-httproutes) if you want to run certain rules only on a single route.
 
 ## 5. Start sending requests
 

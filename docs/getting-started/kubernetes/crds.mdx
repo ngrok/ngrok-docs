@@ -113,10 +113,9 @@ Your Kubernetes service is now available to anyone on the public internet!
 
 ## 4. Secure your app with Traffic Policy
 
-In cases where you need to restrict access to your app, ngrok's [Traffic Policy engine](/docs/traffic-policy) and the [`oauth` action](/docs/traffic-policy/actions/oauth) let you quickly add authentication to your service without changing it.
+In cases where you need to restrict access to your API or app, ngrok's [Traffic Policy engine](/docs/traffic-policy) and the [`restrict-ips`](/docs/traffic-policy/actions/restrict-ips) let you quickly allow only certain addresses to access your endpoint.
 
-For example, you can require users to authenticate with Google, then restrict or grant access based on the rules you configure.
-The rule below requires login with Google OAuth, but then grants access only to a single email: `you@example.com`.
+First, copy your public IP address via our [`ip4v.ngrok.com` mini-app](https://ipv4.ngrok.com/).
 
 <Tabs groupId="crds" queryString="crd-option">
   <TabItem value="agent-endpoint" label="AgentEndpoint" default>
@@ -134,19 +133,14 @@ spec:
     url: http://hello-world.default:80
   trafficPolicy:
     inline:
-      on_http_request:
-        - actions:
-            - type: oauth
-              config:
-                provider: google
-        - expressions:
-            - "actions.ngrok.oauth.identity.email != 'you@example.com'"
-          actions:
-            - type: custom-response
-              config:
-                body: Hey, no auth for you ${actions.ngrok.oauth.identity.name}!
-                status_code: 400
-```
+			on_http_request:
+				- actions:
+						- type: restrict-ips
+							config:
+								enforce: true
+								allow:
+									- $YOUR_PUBLIC_IP
+	```
 
   </TabItem>
   <TabItem value="cloud-agent-endpoint" label="CloudEndpoint + AgentEndpoint">
@@ -163,17 +157,12 @@ spec:
 trafficPolicy:
   policy:
     on_http_request:
-      - actions:
-          - type: oauth
-            config:
-              provider: google
-        - expressions:
-            - "actions.ngrok.oauth.identity.email != 'you@example.com'"
-          actions:
-            - type: custom-response
-              config:
-                body: Hey, no auth for you ${actions.ngrok.oauth.identity.name}!
-                status_code: 400
+			- actions:
+					- type: restrict-ips
+						config:
+							enforce: true
+							allow:
+								- $YOUR_PUBLIC_IP
       - actions:
         - type: forward-internal
           config:
