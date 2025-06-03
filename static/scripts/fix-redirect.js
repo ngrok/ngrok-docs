@@ -882,6 +882,27 @@ const redirects = [
 		fromExact("/docs/guides/other-guides/how-to-set-up-a-custom-domain"),
 		"/docs/universal-gateway/custom-domains",
 	],
+	[
+		fromExact("/docs/guides/other-guides/"),
+		"/docs/guides/other-guides/security-dev-productivity/",
+	],
+	[
+		fromExact("/docs/guides/using-ngrok-with/"),
+		"/docs/using-ngrok-with/minecraft/",
+	],
+	[
+		fromExact("/docs/guides/device-gateway/"),
+		"/docs/guides/device-gateway/agent/",
+	],
+	[fromIncludes("/docs/guides/developer-preview/"), "/docs/"],
+	[
+		fromExact("/docs/guides/identity-aware-proxy/"),
+		"/docs/guides/identity-aware-proxy/securing-with-oauth/",
+	],
+	[
+		fromExact("/docs/guides/site-to-site-connectivity/"),
+		"/docs/guides/guides/site-to-site-connectivity/apis/",
+	],
 ];
 
 // get current href from window
