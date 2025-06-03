@@ -50,12 +50,8 @@ export function CodeBlockWithInfo({
 		<div className="flex flex-col">
 			<CodeBlock className={className} {...codeBlockProps}>
 				<CodeBlockHeader className={clsx("flex w-[100%]  justify-start p-2")}>
-					{headerContent}
-					{info && <SdkButton className="ml-auto mr-0.5" data={info} />}
-				</CodeBlockHeader>
-				<CodeBlockBody>
 					{meta?.title && (
-						<div className="mx-2 mt-3.5 flex w-[100%] items-end justify-start gap-1">
+						<div className="flex w-[100%] items-end justify-start gap-1">
 							<>
 								{meta?.mode ? (
 									<CodeBlockIcon preset={meta.mode} />
@@ -74,6 +70,10 @@ export function CodeBlockWithInfo({
 							</>
 						</div>
 					)}
+					<span className="justify-end mr-0.5 ml-auto">{headerContent}</span>
+					{info && <SdkButton className="mr-0.5" data={info} />}
+				</CodeBlockHeader>
+				<CodeBlockBody>
 					{!meta?.disableCopy && <CodeBlockCopyButton />}
 					<CodeBlockCode
 						indentation={meta?.indentation}
