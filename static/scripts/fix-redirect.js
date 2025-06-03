@@ -901,7 +901,7 @@ const redirects = [
 	],
 	[
 		fromExact("/docs/guides/site-to-site-connectivity/"),
-		"/docs/guides/guides/site-to-site-connectivity/apis/",
+		"/docs/guides/site-to-site-connectivity/apis/",
 	],
 ];
 
