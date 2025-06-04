@@ -5,17 +5,17 @@ sidebar_position: 3
 toc_max_heading_level: 2
 ---
 
-Organizations and enterprises must ensure robust security for their endpoints without causing any interruptions to their developers’ experience and productivity. 
+Organizations and enterprises must ensure robust security for their endpoints without causing any interruptions to their developers’ experience and productivity.
 
 This guide describes the best practices and features organizations can apply to consistently secure developers using ngrok.
 
 ### The “Front Door” Method
 
-Instead of exposing individual developer endpoints publicly, let’s implement a more secure approach: create a single, centralized cloud endpoint managed by security teams. This endpoint can be fortified with customizable, comprehensive traffic policies while keeping developer endpoints private and protected. 
+Instead of exposing individual developer endpoints publicly, let’s implement a more secure approach: create a single, centralized cloud endpoint managed by security teams. This endpoint can be fortified with customizable, comprehensive traffic policies while keeping developer endpoints private and protected.
 
 ### Architectural Reference
 
-![dev prod (cloud_internal endpoints).png](attachment:0d18e46a-4296-4979-8e03-aa37f6cfe004:dev_prod_(cloud_internal_endpoints).png)
+![dev prod (cloud_internal endpoints).png](<attachment:0d18e46a-4296-4979-8e03-aa37f6cfe004:dev_prod_(cloud_internal_endpoints).png>)
 
 Create one ngrok account, managed by security or DevOps. Management of cloud endpoint traffic policies, authtokens and ACL restrictions, users, and access control happens centrally at this account’s dashboard.
 
@@ -33,8 +33,6 @@ Create a tunnel authtoken for each developer. This authtoken will be specific to
 
 ![Screenshot 2025-06-03 at 12.52.50 PM.png](attachment:2b9c7b2b-1e37-4782-92fb-cef6ae3dc94d:Screenshot_2025-06-03_at_12.52.50_PM.png)
 
-
-
 ### **Developer installs ngrok agent and defines an internal endpoint in ngrok.yml**
 
 Have the developer [install the ngrok agent](https://dashboard.ngrok.com/get-started/setup/) and then have them run the command below in order to ensure their agent uses the proper authtoken you provisioned for them in the previous step.
@@ -42,8 +40,6 @@ Have the developer [install the ngrok agent](https://dashboard.ngrok.com/get-sta
 ```bash
 ngrok config add-authtoken <AUTHTOKEN_CREATED_ABOVE>
 ```
-
-
 
 **Internal Endpoints** are private endpoints that only receive traffic when forwarded through the [forward-internal traffic policy action](https://ngrok.com/docs/traffic-policy/actions/forward-internal/). This allows you to route traffic to an application through ngrok without making it publicly addressable.
 
@@ -65,8 +61,6 @@ endpoints:
       url: {port serving alias1's local application}
 ```
 
-
-
 Within this configuration file, developers have the ability to add any further traffic policy actions that may aid them in their testing.
 
 In this way, developers only handle private endpoints and don’t have permissions to alter any configurations on public endpoints.
@@ -77,13 +71,11 @@ Creating a custom wildcard domain is the first step in creating a public cloud e
 
 ![Screenshot 2025-06-03 at 1.01.33 PM.png](attachment:ba84cd02-44ac-4b67-bb23-0ebab07e494a:Screenshot_2025-06-03_at_1.01.33_PM.png)
 
-
-
 ### **Create a public cloud endpoint and traffic policy**
 
 Cloud Endpoints are persistent, always-on endpoints whose creation, deletion and configuration is managed centrally via the Dashboard or API. They exist permanently until they are explicitly deleted. Cloud Endpoints do not forward their traffic to an agent by default and instead only use their attached Traffic Policy to handle connections.
 
-This cloud endpoint will multiplex across several internal endpoints which point to their corresponding local development environments. 
+This cloud endpoint will multiplex across several internal endpoints which point to their corresponding local development environments.
 
 You can use traffic policy to forward traffic from your cloud endpoint to the correct internal endpoint based on the hostname of the cloud endpoint that developers make requests to. Since the cloud endpoint is set up as a wildcard URL, any text placed where the wildcard is will forward to its corresponding internal endpoint.
 
@@ -101,10 +93,6 @@ on_http_request:
           url: https://${req.host.split(".devtest.example.com")[0]}.internal
 ```
 
-
-
-
-
 ### **Secure your cloud endpoint**
 
 Now that traffic is forwarded correctly from the cloud endpoint to its corresponding internal endpoints, you can layer on security to the public cloud endpoint. There are a variety of traffic policy actions to choose from to achieve this. Listed below are YAML snippets and curl commands below for how to enable IP Restrictions, JWT Validation, and mTLS. There are many other actions to choose from which can be found in [Traffic Policy Actions](https://ngrok.com/docs/traffic-policy/actions/). These actions will be added to your existing traffic policy config, preceding the forward-internal action.
@@ -119,7 +107,7 @@ on_http_request:
       - type: restrict-ips
         config:
           enforce: true
-          allow: 
+          allow:
             - e680:5791:be4c:5739:d959:7b94:6d54:d4b4/128
             - 203.0.113.42/32
 
@@ -127,8 +115,6 @@ on_http_request:
         config:
           url: https://${req.host.split(".devtest.example.com")[0]}.internal
 ```
-
-
 
 **JWT Validation**
 
@@ -168,14 +154,12 @@ on_http_request:
           url: https://${req.host.split(".devtest.example.com")[0]}.internal
 ```
 
-
-
 **mTLS**
 
 If you would rather use a CA or PEM version in this scenario, you can also enable mTLS where TLS termination will happen at the ngrok cloud edge.
 
 ```yaml
-on_tcp_connect:  
+on_tcp_connect:
   - actions:
       - type: terminate-tls
         config:
@@ -192,15 +176,11 @@ on_http_request:
           url: https://${req.host.split(".devtest.example.com")[0]}.internal
 ```
 
-
-
-For all of these options, you can either use one or layer multiple actions onto the cloud endpoint. 
-
-
+For all of these options, you can either use one or layer multiple actions onto the cloud endpoint.
 
 ### Create a custom connect URL
 
-Custom connect URLs are available with ngrok’s pay-as-you-go plan. This provides a white-labeling capability so that your ngrok agents will connect to *connect.example.com* instead of the default connection hostname (connect.ngrok-agent.com). Dedicated IPs that are unique for your account which your agents will connect to are also available.  This takes away any danger of rogue agents in your network trying to call home and adds an additional layer of security by specializing your ngrok connectivity.
+Custom connect URLs are available with ngrok’s pay-as-you-go plan. This provides a white-labeling capability so that your ngrok agents will connect to _connect.example.com_ instead of the default connection hostname (connect.ngrok-agent.com). Dedicated IPs that are unique for your account which your agents will connect to are also available.  This takes away any danger of rogue agents in your network trying to call home and adds an additional layer of security by specializing your ngrok connectivity.
 
 ```yaml
 curl \
@@ -212,8 +192,6 @@ curl \
 https://api.ngrok.com/agent_ingresses
 ```
 
-
-
 Once you have created the custom connect url, specify this field within the agent configuration file. Add this section to your agent configuration file to specify the custom connect url:
 
 ```yaml
@@ -221,8 +199,6 @@ version: 3
 agent:
 	connect_url: connect.example.com:443
 ```
-
-
 
 ### Recap
 
