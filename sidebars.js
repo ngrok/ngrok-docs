@@ -282,8 +282,6 @@ const sidebars = {
 			link: { type: "doc", id: "k8s/index" },
 			items: [
 				"k8s/index",
-				"k8s/installation/install",
-				"k8s/guides/quickstart",
 				{
 					label: "How It Works",
 					type: "category",
