@@ -5,208 +5,232 @@ sidebar_position: 3
 toc_max_heading_level: 2
 ---
 
-While developers use ngrok for productivity, organizations must ensure security controls such as single sign-on, MFA, network security, auditing, shadow IT policies, and more, are consistently applied across all networks, including ngrok communications.
+Organizations and enterprises must ensure robust security for their endpoints without causing any interruptions to their developers’ experience and productivity. 
 
-This guide describes the best practices and features organizations can apply to consistently secure developers using ngrok while leveraging their existing security investments.
+This guide describes the best practices and features organizations can apply to consistently secure developers using ngrok.
 
-## Why do developers use ngrok?
+### The “Front Door” Method
 
-Developers use ngrok to increase their productivity while building and validating software in a few ways.
+Instead of exposing individual developer endpoints publicly, let’s implement a more secure approach: create a single, centralized cloud endpoint managed by security teams. This endpoint can be fortified with customizable, comprehensive traffic policies while keeping developer endpoints private and protected. 
 
-### Delivering APIs and applications to production
+### Architectural Reference
 
-With a [self-service
-platform](https://ngrok.com/blog-post/developer-self-service-composability),
-created by a DevOps or platform engineering team, developers can create [internal
-endpoints](/docs/universal-gateway/internal-endpoints) for their upstream
-services and make them publicly available using an environment-agnostic
-configuration&mdash; without needing to wire-up complex networks.
+![dev prod (cloud_internal endpoints).png](attachment:0d18e46a-4296-4979-8e03-aa37f6cfe004:dev_prod_(cloud_internal_endpoints).png)
 
-### Exposing localhost apps to the internet for user access and collaboration
+Create one ngrok account, managed by security or DevOps. Management of cloud endpoint traffic policies, authtokens and ACL restrictions, users, and access control happens centrally at this account’s dashboard.
 
-In this use-case, developers expose localhost apps for public access so other peers — i.e., product designers, product managers, contractors, and users — can review and validate their work.
+### **Add developers as team members to your ngrok account**
 
-### Exposing local environments, APIs, and webhooks for SaaS services and API clients
+This will allow you to add each developer using ngrok to your central ngrok account. With RBAC (available on ngrok’s pay-as-you-go plan), you also have the option to restrict their access to read-only.
 
-In this use-case, developers expose webhooks and APIs running on localhost for integration tests with SaaS services — i.e., Slack & MS Team bots, Twilio webhook listeners, Zoom apps — and APIs clients — i.e., mobile apps, desktop apps, B2B services.
+![Screenshot 2025-06-03 at 12.50.31 PM.png](attachment:87a2f390-6232-4e53-ab4a-2f151d8fd950:Screenshot_2025-06-03_at_12.50.31_PM.png)
 
-By using ngrok as a universal gateway to their APIs and apps, developers eliminate the repetitive tasks and time spent packaging and deploying their apps while testing and tweaking their apps for production usage, saving up to 90% time on each integrated test and review cycle:
+Once the invite is sent, have the developer go to their email and sign up for their account which will be registered under the master account.
 
-![development and test cycle with ngrok](img/1.png)
+### **Create an authtoken for each developer**
 
-## How does ngrok secure traffic orchestration?
+Create a tunnel authtoken for each developer. This authtoken will be specific to each user and will be their key to setting up internal endpoints. Next, we will assign it an ACL rule. By assigning an ACL rule, you can ensure that this user with this authtoken may only create one internal endpoint bound to their alias. Navigate to the authtokens section on your dashboard and click “new authtoken” and set the description, set the owner to the developer email, and assign it an ACL rule as shown below:
 
-While most developers begin and end their ngrok usage with simple connectivity, ngrok makes it easy to secure your network traffic with [Traffic Policy](/docs/traffic-policy/), a flexible configuration language to filter, manage, and orchestrate traffic exactly as you need.
+![Screenshot 2025-06-03 at 12.52.50 PM.png](attachment:2b9c7b2b-1e37-4782-92fb-cef6ae3dc94d:Screenshot_2025-06-03_at_12.52.50_PM.png)
 
-With Traffic Policy, you can validate incoming traffic, enforce authentication,
-block malicious requests, and choose between multiple forms of TLS termination,
-including mTLS.
 
-![ngrok security controls - 7 layers](img/2.png)
 
-Leveraging and combining edge components allows you to meet your security requirements fast and without rearchitecting your services.
+### **Developer installs ngrok agent and defines an internal endpoint in ngrok.yml**
 
-## Secure developer productivity
+Have the developer [install the ngrok agent](https://dashboard.ngrok.com/get-started/setup/) and then have them run the command below in order to ensure their agent uses the proper authtoken you provisioned for them in the previous step.
 
-Many organizations allow developers to use ngrok at an individual level. In this deployment model, each developer owns and manages their ngrok tenants and decides which security policies, from ngrok settings to Traffic Policy rules, to apply to their agents and endpoints:
+```bash
+ngrok config add-authtoken <AUTHTOKEN_CREATED_ABOVE>
+```
 
-This leads to three challenges:
 
-- **Security inconsistency**: Each developer applies ngrok security based on their own needs and discretion, making security controls inconsistent.
-- **No reuse of security investments**: Developers don't have access and bandwidth to appropriately leverage your company's security investments — such as MFA, SSO, and SIEM systems.
-- **Difficulty for security oversight**: Security teams have multiple tenants to monitor and secure to keep developers productive and safe.
 
-By following the best practices, organizations manage the ngrok usage in a single tenant, leveraging their security stack and the security team expertise while keeping developer developers happy and productive:
+**Internal Endpoints** are private endpoints that only receive traffic when forwarded through the [forward-internal traffic policy action](https://ngrok.com/docs/traffic-policy/actions/forward-internal/). This allows you to route traffic to an application through ngrok without making it publicly addressable.
 
-![All developers on the same ngrok tenant with best practices applied](img/4.png)
+Internal endpoint URLs must:
 
-## Elect a tenant for team usage
+- End with the .internal domain extension
+- Use the internal [binding](https://ngrok.com/docs/universal-gateway/bindings/)
 
-To implement security best practices consistently and enable security operations at scale, we recommend using a unified tenant for the team, with a limited number of administrators.
+Each developer will have their own configuration file for their agent installed on their machine. As shown below, each config file will contain an internal endpoint unique to that developer’s alias. The configuration file can be found at `/path/to/ngrok/ngrok.yml`. Have the developer add their internal endpoint in their configuration file. The final config file should look like this:
 
-The process of electing and setting up a single tenant involves the following steps:
+```yaml
+version: 3
+agent:
+  authtoken: <AUTHTOKEN_CREATED_ABOVE>
+endpoints:
+  - name: Internal Endpoint for alias1
+    url: https://alias1.internal
+    upstream:
+      url: {port serving alias1's local application}
+```
 
-1. Subscribe to the team tenant and sign up as an administrator.
-1. Create administrative accounts for your security and management teams.
-1. Invite developers to use ngrok with limited access.
 
-Developers will receive an invitation in their emails to the unified tenant. On sign-in, developers can enter the setup command to reassociate their ngrok agent(s) with your team tenant with `ngrok config add-authtoken ...`.
 
-## Add authentication to public-facing URLs
+Within this configuration file, developers have the ability to add any further traffic policy actions that may aid them in their testing.
 
-With OAuth and SAML SSO, you can leverage your company's identity solution (SSO/MFA) or social providers to restrict access to specific public endpoints. ngrok enforces the authentication at the edge and block unauthorized calls before they reach your APIs/apps, providing authentication, authorization, and auditing events while preventing reconnaissance campaigns and DDoS attacks.
+In this way, developers only handle private endpoints and don’t have permissions to alter any configurations on public endpoints.
 
-ngrok lets you configure authentication in different ways:
+### **Reserve a custom wildcard domain for your public cloud endpoint**
 
-### Enterprise authentication and MFA
+Creating a custom wildcard domain is the first step in creating a public cloud endpoint to receive traffic on any subdomain of your domain. Navigate to the [domains](https://dashboard.ngrok.com/domains) section in your dashboard and click “new domain”. Any naming convention you use for this domain will require proper DNS and CNAME records. These targets are returned after domain creation and can take 5-10 mins for ssl to be established.
 
-Use any OIDC-compliant provider—such as Okta, Microsoft Entra ID or AD
-FS, Ping, and Auth0—to control access to public endpoints.
+![Screenshot 2025-06-03 at 1.01.33 PM.png](attachment:ba84cd02-44ac-4b67-bb23-0ebab07e494a:Screenshot_2025-06-03_at_1.01.33_PM.png)
 
-With the [`openid-connect` Traffic Policy
-action](/docs/traffic-policy/actions/oidc), you can enforce strong
-authentication mechanisms and policies defined in your identity solution, such
-as Okta Verify, ThreatInsights, and FastPass, Azure
-Conditional Access, PingID's MFA, WebAuthn, and Yubikeys.
+
+
+### **Create a public cloud endpoint and traffic policy**
+
+Cloud Endpoints are persistent, always-on endpoints whose creation, deletion and configuration is managed centrally via the Dashboard or API. They exist permanently until they are explicitly deleted. Cloud Endpoints do not forward their traffic to an agent by default and instead only use their attached Traffic Policy to handle connections.
+
+This cloud endpoint will multiplex across several internal endpoints which point to their corresponding local development environments. 
+
+You can use traffic policy to forward traffic from your cloud endpoint to the correct internal endpoint based on the hostname of the cloud endpoint that developers make requests to. Since the cloud endpoint is set up as a wildcard URL, any text placed where the wildcard is will forward to its corresponding internal endpoint.
+
+                            *alias1.devtest.example.com → alias1.internal → alias1’s local env*
+
+So, all alias1 has to do is go to that cloud endpoint URL in their browser and they will be able to access their local environment. Same goes for alias2, alias3, and aliasN.
+
+To achieve this dynamic routing, replace the default traffic policy on the cloud endpoint in the dashboard with the following:
 
 ```yaml
 on_http_request:
   - actions:
-      - type: openid-connect
+      - type: forward-internal
         config:
-          issuer_url: "<ISSUER_URL>"
-          client_id: "<YOUR_APP_CLIIENT_ID>"
-          client_secret: "<YOUR_APP_CLIENT_SECRET>"
-          scopes:
-            - openid
-            - profile
-            - email
+          url: https://${req.host.split(".devtest.example.com")[0]}.internal
 ```
 
-### Social authentication
 
-In addition to enterprise identity, you can use the [`oauth` Traffic Policy Action](/docs/traffic-policy/actions/oauth/) configure your endpoints to use social providers, such as GitHub and Google, for authentication. Social identity providers deliver a lightweight option for securing contractors or temp workers without onboarding them in your enterprise SSO solution.
+
+
+
+### **Secure your cloud endpoint**
+
+Now that traffic is forwarded correctly from the cloud endpoint to its corresponding internal endpoints, you can layer on security to the public cloud endpoint. There are a variety of traffic policy actions to choose from to achieve this. Listed below are YAML snippets and curl commands below for how to enable IP Restrictions, JWT Validation, and mTLS. There are many other actions to choose from which can be found in [Traffic Policy Actions](https://ngrok.com/docs/traffic-policy/actions/). These actions will be added to your existing traffic policy config, preceding the forward-internal action.
+
+**IP Restrictions**
+
+For developers with a designated source IP, you can use the restrict-ips action to allowlist trusted source IPs where only these IPs will be able to access this cloud endpoint.
 
 ```yaml
 on_http_request:
   - actions:
-      - type: oauth
+      - type: restrict-ips
         config:
-          provider: github
+          enforce: true
+          allow: 
+            - e680:5791:be4c:5739:d959:7b94:6d54:d4b4/128
+            - 203.0.113.42/32
+
+      - type: forward-internal
+        config:
+          url: https://${req.host.split(".devtest.example.com")[0]}.internal
 ```
 
-To ensure only specific individuals or organizations can access your endpoints, restrict the social authentication based on the user email address or email domain. For example, the following rule enforces an OAuth login with GitHub, and then validates the email used. If the email _does not_ end in `example.com` or _is not exactly_ `john@external.com`, then ngrok denies the request.
 
-```yaml
-on_http_request:
-- actions:
-  - type: oauth
-    config:
-      provider: github
-  - expressions:
-      - "!(actions.ngrok.oauth.identity.email.endsWith('@example.com')"
-      - "!(actions.ngrok.oauth.identity.email == 'john@external.com')"
-    actions:
-      - type: deny
-```
 
-## Secure webhook communications
+**JWT Validation**
 
-With the [`verify-webhook` Traffic Policy action](/docs/traffic-policy/actions/verify-webhook), you can ensure only legitimate webhook calls are sent to your endpoints. For example, the following rule would verify all incoming PagerDuty webhooks against the secret value `secret!`, which you set when creating a [generic webhook](/docs/integrations/pagerduty/webhooks.mdx#setup-webhook).
+You also have the option to send a JWT to ngrok, specify an allowlist of issuers/JWKS URLs, and ngrok will validate the JWT.
 
 ```yaml
 on_http_request:
   - actions:
-      - type: verify-webhook
+      - type: jwt-validation
         config:
-          provider: pagerduty
-          secret: secret!
+          issuer:
+            allow_list:
+              - value: https://example.com/issuer
+          audience:
+            allow_list:
+              - value: urn:example:api
+          http:
+            tokens:
+              - type: access_token
+                method: header
+                name: Authorization
+                prefix: "Bearer "
+              - type: it+jwt
+                method: body
+                name: _id_token
+          jws:
+            allowed_algorithms:
+              - RS256
+              - ES256
+            keys:
+              sources:
+                additional_jkus:
+                - https://example.com/issuer/jku
+
+      - type: forward-internal
+        config:
+          url: https://${req.host.split(".devtest.example.com")[0]}.internal
 ```
 
-With webhook verification, ngrok authenticates webhook request authenticity and message integrity at the edge. As a result, unauthorized calls are blocked even before they even reach your developer's apps, providing authentication and integrity while preventing reconnaissance campaigns and DDoS attacks. To learn more, check our [webhook verification](/docs/traffic-policy/actions/verify-webhook) docs and documentation of providers such as [GitHub](/docs/integrations/github/webhooks/), [Okta](/docs/integrations/okta/webhooks/), and [Twilio](/docs/integrations/twilio/webhooks/).
 
-## Enable IP Policies
 
-[IP Policies](https://dashboard.ngrok.com/ip-policies/) allow companies to restrict access to ngrok based on IPs on all ngrok network communications, including:
+**mTLS**
 
-- Public access to your endpoints
-- The ngrok dashboard
-- The ngrok API
-- Where ngrok agents are launched (includes the ngrok agent and Docker container)
+If you would rather use a CA or PEM version in this scenario, you can also enable mTLS where TLS termination will happen at the ngrok cloud edge.
 
-An ngrok tenant can have multiple policies set for different communications. Each policy may contain multiple deny and allow rules to specific IPv4 and IPv6 addresses:
+```yaml
+on_tcp_connect:  
+  - actions:
+      - type: terminate-tls
+        config:
+          mutual_tls_certificate_authorities:
+            - |-
+              -----BEGIN CERTIFICATE-----
+              ...your CA certificate PEM...
+              -----END CERTIFICATE-----
 
-<img
-src={require('./img/ip-policies.png').default}
-alt="Restrict access to approved IPs"
-className="border rounded"
-/>
+on_http_request:
+  - actions:
+      - type: forward-internal
+        config:
+          url: https://${req.host.split(".devtest.example.com")[0]}.internal
+```
 
-#### Combining IP Policies and other security controls
 
-IP Policies can be combined with other security controls, such as network, identity, authentication, and device security, for a multi-layered security approach. Examples:
 
-- Combining **IP Policies and SSO/MFA** helps ensure that **only authenticated users on approved networks** can access ngrok endpoints.
-- Combining **IP Policies and webhook verification** helps ensure that **only webhook calls from expected IPs** — i.e., [Brex](https://developer.brex.com/docs/webhooks/#ip-whitelisting), [Castle](https://docs.castle.io/docs/webhooks#allowlisting-castle-ips), and [Zoom](https://developers.zoom.us/docs/api/rest/webhook-reference/#ip-addresses), **authenticated and with message integrity** can reach your developer environment.
+For all of these options, you can either use one or layer multiple actions onto the cloud endpoint. 
 
-## Enforce and restrict ngrok agents with ACLs
 
-After implementing access control, webhook security, and IP restrictions, companies must ensure developers launch only endpoints that adhere to security-defined policies. This enforcement can be achieved by using tunnel authtokens with ACLs.
 
-Tunnel authtokens are the secret key used by ngrok agents to connect to the edge and enable remote access. By using ACLs at the authtoken level, security administrators can make sure endpoints are launched only if bound to specific policies, delivering consistent security:
+### Create a custom connect URL
 
-<img
-src={require('./img/acls.png').default}
-alt="Use ACLs to restrict access to specific configurations and domains"
-className="border rounded"
-/>
+Custom connect URLs are available with ngrok’s pay-as-you-go plan. This provides a white-labeling capability so that your ngrok agents will connect to *connect.example.com* instead of the default connection hostname (connect.ngrok-agent.com). Dedicated IPs that are unique for your account which your agents will connect to are also available.  This takes away any danger of rogue agents in your network trying to call home and adds an additional layer of security by specializing your ngrok connectivity.
 
-## Track and block unauthorized activity
+```yaml
+curl \
+-X POST \
+-H "Authorization: Bearer {API_KEY}" \
+-H "Content-Type: application/json" \
+-H "Ngrok-Version: 2" \
+-d '{"description":"Custom connect URL","domain":"connect.example.com"}' \
+https://api.ngrok.com/agent_ingresses
+```
 
-To ensure ngrok endpoints leverage right security policies, many organizations want to identify and block the use of independent ngrok accounts — using free plans and without the enterprise security controls — inside their networks. Organizations can accomplish that by defining custom ingress domains within ngrok while blocking free ngrok traffic.
 
-With custom ingress domains, ngrok customers can define their own URLs for ngrok traffic within their networks — i.e., `tunnels.example.com`. This definition ensures that sanctioned ngrok traffic uses a dedicated URL, known and approved by IT. Any non-sanctioned traffic on `tunnel.ngrok.com` or `connect.ngrok-agent.com` can be blocked by the firewall at the URL level, without causing outages on approved endpoints:
 
-<img
-src={require('./img/tunnel-create.png').default}
-alt="Define a custom ingress by picking an address"
-className="border rounded"
-/>
-<img
-src={require('./img/tunnel-dns.png').default}
-alt="Define a custom ingress with records for your DNS server"
-className="border rounded"
-/>
+Once you have created the custom connect url, specify this field within the agent configuration file. Add this section to your agent configuration file to specify the custom connect url:
 
-## Add SSO and MFA to the admin UI
+```yaml
+version: 3
+agent:
+	connect_url: connect.example.com:443
+```
 
-With Dashboard SSO, you can restrict access to the ngrok administrative interface only for users authenticated in your identity providers — such as Okta, Microsoft Entra ID, Ping, AD FS, and Auth0. The ngrok dashboard SSO works with any SAML provider, and can be used with your identity provider MFA — i.e., Windows Hello, Okta Verify, FIDO, and PingID — to ensure two-factor authentication (2FA) in compliance with your security requirements.
 
-<img
-src={require('./img/mfa-sso.png').default}
-alt="Enable both MFA for all accounts and SSO for new developer accounts"
-className="border rounded"
-/>
+
+### Recap
+
+You have now integrated a system that allows your security team to centrally manage and secure a cloud endpoint which developers can seamlessly use to access applications running in their local environments. Let's recap what what you've built:
+
+1. One ngrok agent per developer machine - ACL restricted authtokens provisioned by security specialists for developers.
+2. Local, uninterrupted development and testing for engineers, made securely available via cloud and internal endpoints.
+3. Granular access with a composable traffic policy offering refined and robust security measures for a singular public cloud endpoint.
 
 ## What's next?
 
