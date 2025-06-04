@@ -55,14 +55,20 @@ const sidebars = {
 					label: "Concepts",
 					type: "category",
 					items: [
-						{ id: "universal-gateway/domains", type: "doc", label: "Domains" },
+						{
+							link: { type: "doc", id: "universal-gateway/domains" },
+							type: "category",
+							label: "Domains",
+							items: ["universal-gateway/custom-domains"],
+						},
 						{
 							id: "universal-gateway/tcp-addresses",
 							type: "doc",
 							label: "TCP Addresses",
 						},
 						"universal-gateway/tls-certificates",
-						"universal-gateway/edges",
+						// Commented out edges here as they're deprecated.
+						// "universal-gateway/edges",
 					],
 				},
 				{
