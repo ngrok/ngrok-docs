@@ -12,43 +12,43 @@ This example uses ngrok's default managed google application to authenticate use
 1. Create a new file called `traffic-policy.yml` in the root of your project.
 1. Copy the following code into `traffic-policy.yml`:
       <ConfigExample
-	config={{
-		on_http_request: [
-			{
-				name: "OAuth",
-				actions: [
-					{
-						type: "oauth",
-						config: {
-							auth_id: "oauth",
-							provider: "google",
+				config={{
+					on_http_request: [
+						{
+							name: "OAuth",
+							actions: [
+								{
+									type: "oauth",
+									config: {
+										auth_id: "oauth",
+										provider: "google",
+									},
+								},
+							],
 						},
-					},
-				],
-			},
-			{
-				name: "bad email",
-				expressions: [
-					"actions.ngrok.oauth.identity.email != 'alan@example.com'",
-				],
-				actions: [
-					{
-						type: "custom-response",
-						config: {
-							body:
-								"Hey, no auth for you ${actions.ngrok.oauth.identity.name}!",
-							status_code: 400,
+						{
+							name: "bad email",
+							expressions: [
+								"actions.ngrok.oauth.identity.email != 'alan@example.com'",
+							],
+							actions: [
+								{
+									type: "custom-response",
+									config: {
+										body:
+											"Hey, no auth for you ${actions.ngrok.oauth.identity.name}!",
+										status_code: 400,
+									},
+								},
+							],
 						},
-					},
-				],
-			},
-		],
-	}}
-/>
+					],
+				}}
+			/>
 1. Start your endpoint with the traffic policy:
-   `bash
-ngrok http 80 --traffic-policy-file /path/to/traffic-policy.yml 
-	`
+  ```bash
+	ngrok http 80 --traffic-policy-file /path/to/traffic-policy.yml 
+	```
 
 </TabItem>
 <TabItem value={props.secondTabValue || "using-code"} label={props.secondTabLabel || "Using Code"}>
