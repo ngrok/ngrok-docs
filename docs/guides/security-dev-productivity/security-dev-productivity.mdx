@@ -26,7 +26,7 @@ Create one ngrok account, managed by security or DevOps. The following can be ma
 
 This will allow you to add each developer using ngrok to your central ngrok account. With RBAC (available on ngrok's pay-as-you-go plan), you also have the option to restrict their access to read-only.
 
-![Screenshot 2025-06-03 at 12.50.31 PM.png](attachment:87a2f390-6232-4e53-ab4a-2f151d8fd950:Screenshot_2025-06-03_at_12.50.31_PM.png)
+![The UI for inviting team members to your ngrok account.](./img/invite.png)
 
 Once the invite is sent, have the developer go to their email and sign up for their account which will be registered under the master account.
 
@@ -34,7 +34,7 @@ Once the invite is sent, have the developer go to their email and sign up for th
 
 Create a tunnel authtoken for each developer. This authtoken will be specific to each user and will be their key to setting up internal endpoints. Next, we will assign it an ACL rule. By assigning an ACL rule, you can ensure that this user with this authtoken may only create one internal endpoint bound to their alias. Navigate to the authtokens section on your dashboard and click "new authtoken" and set the description, set the owner to the developer email, and assign it an ACL rule as shown below:
 
-![Screenshot 2025-06-03 at 12.52.50 PM.png](attachment:2b9c7b2b-1e37-4782-92fb-cef6ae3dc94d:Screenshot_2025-06-03_at_12.52.50_PM.png)
+![The UI for creating an ACL rule.](./img/aclrules.png)
 
 ## Developer installs ngrok agent and defines an internal endpoint in ngrok.yml
 
@@ -44,12 +44,12 @@ Have the developer [install the ngrok agent](https://dashboard.ngrok.com/get-sta
 ngrok config add-authtoken <AUTHTOKEN_CREATED_ABOVE>
 ```
 
-Internal Endpoints are private endpoints that only receive traffic when forwarded through the [forward-internal traffic policy action](https://ngrok.com/docs/traffic-policy/actions/forward-internal/). This allows you to route traffic to an application through ngrok without making it publicly addressable.
+Internal Endpoints are private endpoints that only receive traffic when forwarded through the [forward-internal traffic policy action](/traffic-policy/actions/forward-internal/). This allows you to route traffic to an application through ngrok without making it publicly addressable.
 
 Internal endpoint URLs must:
 
 - End with the .internal domain extension
-- Use the internal [binding](https://ngrok.com/docs/universal-gateway/bindings/)
+- Use the internal [binding](/universal-gateway/bindings/)
 
 Each developer will have their own configuration file for their agent installed on their machine. As shown below, each config file will contain an internal endpoint unique to that developer's alias. The configuration file can be found at `/path/to/ngrok/ngrok.yml`. Have the developer add their internal endpoint in their configuration file. The final config file should look like this:
 
@@ -72,7 +72,7 @@ In this way, developers only handle private endpoints and don't have permissions
 
 Creating a custom wildcard domain is the first step in creating a public cloud endpoint to receive traffic on any subdomain of your domain. Navigate to the [domains](https://dashboard.ngrok.com/domains) section in your dashboard and click "new domain". Any naming convention you use for this domain will require proper DNS and CNAME records. These targets are returned after domain creation and can take 5-10 mins for ssl to be established.
 
-![Screenshot 2025-06-03 at 1.01.33 PM.png](attachment:ba84cd02-44ac-4b67-bb23-0ebab07e494a:Screenshot_2025-06-03_at_1.01.33_PM.png)
+![The UI for reserving a custom domain.](./img/newdomain.png)
 
 ## Create a public cloud endpoint and traffic policy
 
@@ -82,7 +82,7 @@ This cloud endpoint will multiplex across several internal endpoints which point
 
 You can use traffic policy to forward traffic from your cloud endpoint to the correct internal endpoint based on the hostname of the cloud endpoint that developers make requests to. Since the cloud endpoint is set up as a wildcard URL, any text placed where the wildcard is will forward to its corresponding internal endpoint.
 
-                            *alias1.devtest.example.com → alias1.internal → alias1's local env*
+`alias1.devtest.example.com → alias1.internal → alias1's local env`
 
 So, all alias1 has to do is go to that cloud endpoint URL in their browser and they will be able to access their local environment. Same goes for alias2, alias3, and aliasN.
 
@@ -98,7 +98,7 @@ on_http_request:
 
 ## Secure your cloud endpoint
 
-Now that traffic is forwarded correctly from the cloud endpoint to its corresponding internal endpoints, you can layer on security to the public cloud endpoint. There are a variety of traffic policy actions to choose from to achieve this. Listed below are YAML snippets and curl commands below for how to enable IP Restrictions, JWT Validation, and mTLS. There are many other actions to choose from which can be found in [Traffic Policy Actions](https://ngrok.com/docs/traffic-policy/actions/). These actions will be added to your existing traffic policy config, preceding the forward-internal action.
+Now that traffic is forwarded correctly from the cloud endpoint to its corresponding internal endpoints, you can layer on security to the public cloud endpoint. There are a variety of traffic policy actions to choose from to achieve this. Listed below are YAML snippets and curl commands below for how to enable IP Restrictions, JWT Validation, and mTLS. There are many other actions to choose from which can be found in [Traffic Policy Actions](/traffic-policy/actions/). These actions will be added to your existing traffic policy config, preceding the forward-internal action.
 
 ### IP Restrictions
 
@@ -171,7 +171,6 @@ on_tcp_connect:
               -----BEGIN CERTIFICATE-----
               ...your CA certificate PEM...
               -----END CERTIFICATE-----
-
 on_http_request:
   - actions:
       - type: forward-internal
@@ -210,18 +209,3 @@ You have now integrated a system that allows your security team to centrally man
 1. One ngrok agent per developer machine - ACL restricted authtokens provisioned by security specialists for developers.
 2. Local, uninterrupted development and testing for engineers, made securely available via cloud and internal endpoints.
 3. Granular access with a composable traffic policy offering refined and robust security measures for a singular public cloud endpoint.
-
-## What's next?
-
-Developers use ngrok to increase productivity, whether that's bringing APIs and
-apps to production or sharing in-development services running on `localhost`
-with peers for collaboration and testing during development.
-
-By following the best practices in this document, you can secure ngrok usage by leveraging your security stack and team's expertise, while keeping developer developers happy and productive.
-
-![All developers on the same ngrok tenant with best practices applied](img/4.png)
-
-- Visit our [Universal Gateway docs](/docs/universal-gateway) to explore more of
-  ngrok's interfaces and what you can do with them.
-- Learn more about filtering, managing, and taking action on traffic with our
-  [Traffic Policy system](/docs/traffic-policy).
