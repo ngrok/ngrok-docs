@@ -656,6 +656,7 @@ const sidebars = {
 				},
 			],
 		},
+		"/guides/security-dev-productivity/security-dev-productivity",
 		{
 			label: "Other guides",
 			type: "category",
