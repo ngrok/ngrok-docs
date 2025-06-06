@@ -15,6 +15,7 @@ import K8sGWAPI from "./_gateway-api.mdx";
 import K8sInstall from "./_install.mdx";
 import Domain from "./_domain.mdx";
 import K8sSample from "./_sample.mdx";
+import Request from "./_request.mdx";
 
 This quickstart uses the [ngrok Kubernetes Operator](/docs/k8s) and [Gateway API resources](https://gateway-api.sigs.k8s.io/) to make the services you've deployed to Kubernetes available on the public internet.
 
@@ -50,8 +51,8 @@ Find more details on our [pricing page](https://ngrok.com/pricing), or, if you'r
 
 ## 4. Define your `Gateway` and `HTTPSRoute` resources
 
-This manifest exposes a Kubernetes service named `openchat-cpu` listening on port `80` on `$YOUR_DOMAIN`.
-Change these three values according to your specific deployment.
+This manifest exposes the `tinyllama` sample service on `$YOUR_DOMAIN`.
+If you already have a different deployment on your cluster, you'll need to change the `backendRefs` name and port.
 
 ```yaml title="gwapi.yaml"
 apiVersion: gateway.networking.k8s.io/v1
@@ -72,24 +73,25 @@ spec:
 ---
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
-metadata: name: hello-world
+metadata: 
+  name: tinyllama-route
   namespace: default
 spec:
   parentRefs:
-  - group: gateway.networking.k8s.io
-    kind: Gateway
-    name: ngrok-gateway
-    namespace: default
+		- group: gateway.networking.k8s.io
+			kind: Gateway
+			name: ngrok-gateway
+			namespace: default
   hostnames:
-  - "$NGROK_DOMAIN"
+		- "$NGROK_DOMAIN"
   rules:
-  - matches:
-    - path:
-        type: PathPrefix
-        value: /
-    backendRefs:
-    - name: openchat-cpu
-      port: 80
+		- matches:
+			- path:
+					type: PathPrefix
+					value: /
+			backendRefs:
+				- name: tinyllama
+					port: 80
 ```
 
 Apply the manifest with `kubectl apply -f gwapi.yaml`.
@@ -146,24 +148,24 @@ spec:
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
-  name: hello-world
+  name: tinyllama-route
   namespace: default
 spec:
   parentRefs:
-  - group: gateway.networking.k8s.io
-    kind: Gateway
-    name: ngrok-gateway
-    namespace: default
+		- group: gateway.networking.k8s.io
+			kind: Gateway
+			name: ngrok-gateway
+			namespace: default
   hostnames:
-  - "$NGROK_DOMAIN"
+		- "$NGROK_DOMAIN"
   rules:
-  - matches:
-    - path:
-        type: PathPrefix
-        value: /
-    backendRefs:
-    - name: openchat-cpu
-      port: 80
+		- matches:
+			- path:
+					type: PathPrefix
+					value: /
+			backendRefs:
+				- name: tinyllama
+					port: 80
 ```
 
 Re-apply the manifest with `kubectl apply -f gwapi.yaml`.
@@ -172,10 +174,7 @@ You can also add Traffic Policy as an [`ExtensionRef` filter](/docs/k8s/guides/u
 
 ## 5. Start sending requests
 
-If you set up Traffic Policy, you can now verify that your rules are working and your Kubernetes service is accessible from the public internet.
-
-- In your browser: `https://$YOUR_DOMAIN`
-- In your terminal: `curl https://$YOUR_DOMAIN`
+<Request />
 
 ## What's next?
 

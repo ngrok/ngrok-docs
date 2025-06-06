@@ -14,6 +14,7 @@ import K8sSetup from "./_setup.mdx";
 import K8sInstall from "./_install.mdx";
 import Domain from "./_domain.mdx";
 import K8sSample from "./_sample.mdx";
+import Request from "./_request.mdx";
 
 This quickstart uses the [ngrok Kubernetes Operator](/docs/k8s) and [ngrok's custom resources](/docs/k8s/crds) (CRs) to make the services you've deployed to Kubernetes available on the public internet.
 
@@ -52,8 +53,8 @@ You have two options to expose your Kubernetes service with ngrok's CRDs:
 1. A single `AgentEndpoint` resource: This option is simplest, but is typically limited to exposing one service on a hostname.
 2. A pair of `CloudEndpoint` and `AgentEndpoint` resources: This option allows you to route traffic to any number of Kubernetes services from a single hostname depending on their path, headers, and more using [expressions](/docs/traffic-policy/concepts/expressions/) and the [`forward-internal` Traffic Policy action](/docs/traffic-policy/actions/forward-internal).
 
-This manifest exposes a Kubernetes Service named `hello-world` listening on port `80` on `$YOUR_DOMAIN`.
-Change these three values according to your specific deployment.
+This manifest exposes a Kubernetes service named `tinyllama` listening on port `80` on `$YOUR_DOMAIN`.
+If you already have a different deployment on your cluster, you'll need to change the backend service name and port.
 
 <Tabs groupId="crds" queryString="crd-option">
   <TabItem value="agent-endpoint" label="AgentEndpoint" default>
@@ -62,11 +63,11 @@ Change these three values according to your specific deployment.
 apiVersion: ngrok.k8s.ngrok.com/v1alpha1
 kind: AgentEndpoint
 metadata:
-  name: openchat-cpu-endpoint
+  name: tinyllama-endpoint
 spec:
   url: https://$YOUR_DOMAIN
   upstream:
-    url: http://openchat-cpu.default:80
+    url: http://tinyllama.default:80
 ```
 
   </TabItem>
@@ -76,7 +77,7 @@ spec:
 apiVersion: ngrok.k8s.ngrok.com/v1alpha1
 kind: CloudEndpoint
 metadata:
-  name: openchat-cpu-cloud-endpoint
+  name: tinyllama-cloud-endpoint
 spec:
   url: $YOUR_DOMAIN
 trafficPolicy:
@@ -85,16 +86,16 @@ trafficPolicy:
       - actions:
         - type: forward-internal
           config:
-            url: http://openchat.internal
+            url: http://tinyllama.internal
 ---
 apiVersion: ngrok.k8s.ngrok.com/v1alpha1
 kind: AgentEndpoint
 metadata:
-  name: openchat-cpu-endpoint
+  name: tinyllama-endpoint
 spec:
-  url: http://openchat.internal
+  url: http://tinyllama.internal
   upstream:
-    url: http://openchat-cpu.default:80
+    url: http://tinyllama.default:80
 ```
 
   </TabItem>
@@ -122,11 +123,11 @@ Add a `trafficPolicy.inline` field followed by the Traffic Policy rule itself.
 apiVersion: ngrok.k8s.ngrok.com/v1alpha1
 kind: AgentEndpoint
 metadata:
-  name: openchat-cpu-endpoint
+  name: tinyllama-endpoint
 spec:
   url: https://$YOUR_DOMAIN
   upstream:
-    url: http://openchat-cpu.default:80
+    url: http://tinyllama.default:80
   trafficPolicy:
     inline:
       on_http_request:
@@ -147,7 +148,7 @@ Insert the new rule above your existing `forward-internal` action to require aut
 apiVersion: ngrok.k8s.ngrok.com/v1alpha1
 kind: CloudEndpoint
 metadata:
-  name: openchat-cpu-cloud-endpoint
+  name: tinyllama-cloud-endpoint
 spec:
   url: $YOUR_DOMAIN
 trafficPolicy:
@@ -162,16 +163,16 @@ trafficPolicy:
       - actions:
         - type: forward-internal
           config:
-            url: http://openchat.internal
+            url: http://tinyllama.internal
 ---
 apiVersion: ngrok.k8s.ngrok.com/v1alpha1
 kind: AgentEndpoint
 metadata:
-  name: openchat-cpu-endpoint
+  name: tinyllama-endpoint
 spec:
-  url: http://openchat.internal
+  url: http://tinyllama.internal
   upstream:
-    url: http://openchat-cpu.default:80
+    url: http://tinyllama.default:80
 ````
 
   </TabItem>
@@ -181,10 +182,7 @@ Re-apply the manifest with `kubectl apply -f gwapi.yaml`.
 
 ## 5. Start sending requests
 
-If you set up Traffic Policy, you can now verify that your rules are working and your Kubernetes service is accessible from the public internet.
-
-- In your browser: `https://$YOUR_DOMAIN`
-- In your terminal: `curl https://$YOUR_DOMAIN`
+<Request />
 
 ## What's next?
 
