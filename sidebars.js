@@ -288,6 +288,7 @@ const sidebars = {
 					link: { type: "doc", id: "k8s/how-it-works" },
 					items: ["k8s/installation/architecture"],
 				},
+				"k8s/guides/quickstart",
 				{
 					label: "Manage",
 					type: "category",
