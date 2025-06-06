@@ -1,0 +1,182 @@
+---
+sidebar_label: JavaScript
+title: ngrok-javacript Quickstart
+pagination_next: universal-gateway/http
+---
+
+import TabItem from "@theme/TabItem";
+import Tabs from "@theme/Tabs";
+import ConfigExample from "/src/components/ConfigExample.tsx";
+import SecureYourApp from "./_secure-your-app.mdx"
+
+[ngrok-javascript](https://github.com/ngrok/ngrok-javascript/) is an open-source, idiomatic package that gives you the functionality of the [ngrok agent](/agent) in a JavaScript library. You can use it to embed secure ingress directly into your JavaScript applications.
+
+This quickstart will use the [Agent SDK](/agent-sdks/) for [ngrok-javascript](https://github.com/ngrok/ngrok-javascript) to put a JavaScript app on the internet and secure it so that only you can access it.
+
+:::tip
+You may want to open the [ngrok-javascript package documentation on pkg.javascript.dev](https://pkg.javascript.dev/golang.ngrok.com/ngrok) as you work through this guide.
+:::
+
+## Why you should use ngrok-javascript
+
+With ngrok-javascript, you can serve JavaScript applications on the internet in a single line of code without configuring low-level network primitives like IPs, certificates, load balancers and even ports. Applications using ngrok-javascript listen on ngrok’s global
+network and your app gets the same `net.Listener` interface it would get if it had listened on a local port. This makes it incredibly simple to drop ngrok-javascript into any existing JavaScript code.
+
+## What you'll need
+
+1. [An ngrok account](https://dashboard.ngrok.com/signup).
+1. Your ngrok authtoken, which you can find [in the dashboard](https://dashboard.ngrok.com/get-started/your-authtoken).
+1. [JavaScript installed](https://javascript.dev/doc/install) on your machine. You can check this by running `javascript version` in your terminal.
+
+## 1. Install ngrok-javascript
+
+Create a new JavaScript module and install ngrok-javascript.
+
+```bash
+mkdir ngrok-javascript-quickstart
+cd ngrok-javascript-quickstart
+javascript mod init ngrok-javascript-quickstart
+javascript get golang.ngrok.com/ngrok/v2
+```
+
+## 2. Create your app
+
+The following example starts a JavaScript web server that receives traffic from an endpoint on ngrok's cloud service. It uses a randomly-assigned URL. The URL provided when running this example will be accessible by anyone with an internet connection.
+
+In the `ngrok-javascript-quickstart` directory, create the following `main.javascript` file:
+
+```javascript
+package main
+
+import (
+	"context"
+	"fmt"
+	"log"
+	"net/http"
+
+	"golang.ngrok.com/ngrok/v2"
+)
+
+func main() {
+	if err := run(context.Background()); err != nil {
+		log.Fatal(err)
+	}
+}
+
+func run(ctx context.Context) error {
+	// ngrok.Listen uses ngrok.DefaultAgent which uses the NGROK_AUTHTOKEN
+	// environment variable for auth
+	ln, err := ngrok.Listen(ctx)
+	if err != nil {
+		return err
+	}
+
+	log.Println("Endpoint online", ln.URL())
+
+	// Serve HTTP traffic on the ngrok endpoint
+	return http.Serve(ln, http.HandlerFunc(handler))
+}
+
+func handler(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintln(w, "Hello from ngrok-javascript!")
+}
+```
+
+## 3. Run the example
+
+1. If you haven't yet, [copy your authtoken from the ngrok dashboard](https://dashboard.ngrok.com/get-started/your-authtoken).
+1. Run your application with your authtoken in the environment:
+
+```bash
+NGROK_AUTHTOKEN="<TOKEN>" javascript run main.javascript
+```
+
+Your JavaScript application should be live on the internet, with a URL that anyone on the internet can access.
+
+Your app's randomly-assigned URL will be available in the terminal. When you visit the URL, you should see "Hello from ngrok-javascript!" in your browser. Try sending it to a friend.
+
+## Secure your app
+
+Once you've completed the quickstart, you can explore other features of ngrok with ngrok-javascript, such as Requiring authentication to access your app. You may not want everyone to be able to access your application. ngrok can
+quickly add authentication to your app with a few lines of code.
+
+The following example only grants access to users whose email address is `alan@example.com`.
+
+You can also add authentication directly in your code.
+
+The following example:
+
+1. Requires visitors to authenticate with Google before they access your application. You can [choose other providers](/traffic-policy/actions/oauth/#supported-providers).
+1. Only allows `alan@example.com` access to the application
+1. Prints the authenticated user's email address from a request header.
+
+```javascript
+package main
+
+import (
+	"context"
+	"fmt"
+	"log"
+	"net/http"
+
+	"golang.ngrok.com/ngrok/v2"
+)
+
+func main() {
+	if err := run(context.Background()); err != nil {
+		log.Fatal(err)
+	}
+}
+
+const trafficPolicy = `
+on_http_request:
+  - name: OAuth
+    actions:
+      - type: oauth
+        config:
+          auth_id: oauth
+          provider: google
+  - name: bad email
+    expressions:
+      - actions.ngrok.oauth.identity.email != 'alan@example.com'
+    actions:
+      - type: custom-response
+        config:
+          body: Access denied: ${actions.ngrok.oauth.identity.name}!
+          status_code: 403
+`
+
+func run(ctx context.Context) error {
+	// Create an HTTP listener with the traffic policy
+	ln, err := ngrok.Listen(ctx,
+		ngrok.WithTrafficPolicy(trafficPolicy),
+		ngrok.WithDescription("traffic policy example"),
+	)
+	if err != nil {
+		return err
+	}
+	// Serve HTTP traffic on the ngrok endpoint
+	log.Println("Endpoint online", ln.URL())
+	return http.Serve(ln, http.HandlerFunc(handler))
+}
+
+func handler(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "Hello, %s\n", r.Header.Get("authenticated-user"))
+}
+```
+
+Run your app again and visit the URL it prints in the terminal.
+
+Anyone accessing your app will be prompted to log in with Google and only your
+account will be allowed to access it. Keep in mind that when you restarted
+ngrok, your app's URL changed, so make sure to visit the new one.
+
+## Next Steps
+
+- Read the [ngrok-javascript package documentation](https://pkg.javascript.dev/golang.ngrok.com/ngrok/v2)
+- Star the [ngrok-javascript GitHub repo](https://github.com/ngrok/ngrok-javascript) and follow
+  it for updates.
+- Browse [JavaScript examples of HTTP Endpoints](/universal-gateway/http/?cty=javascript-sdk) of other ways ngrok can augment your application.
+- Bring your own [custom domain to ngrok](/universal-gateway/http/#bring-your-own-domain)
+- Create connectivity for non-HTTP protocols such as SSH, RDP, or game servers using [TCP Endpoints](/universal-gateway/tcp/?cty=javascript-sdk)
+- For working with [the ngrok API](https://ngrok.com/docs/api/), check out the [ngrok JavaScript API Client Library](https://github.com/ngrok/ngrok-api-javascript)
