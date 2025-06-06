@@ -834,10 +834,12 @@ const redirects = [
 	// Kubernetes Operator Revamp
 	[
 		fromExact("/docs/k8s/advanced-deployments/"),
-		"/docs/k8s/installation/install/",
+		"/docs/k8s",
 	],
-	[fromExact("/docs/k8s/deployment-guide/"), "/docs/k8s/installation/install/"],
-	[fromExact("/docs/k8s/developer-guide/"), "/docs/k8s/installation/install/"],
+	[fromExact("/docs/k8s/deployment-guide/"), "/docs/k8s"],
+	[fromExact("/docs/k8s/developer-guide/"), "/docs/k8s"],
+	[fromExact("/docs/k8s/installation/install/"), "/docs/k8s"],
+	[fromExact('/docs/k8s/guides/quickstart/", "/docs/getting-started/kubernetes/ingress"],
 	[
 		fromExact("/docs/k8s/developer-guide/architecture/"),
 		"/docs/k8s/installation/architecture/",
