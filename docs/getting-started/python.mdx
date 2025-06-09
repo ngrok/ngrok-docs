@@ -32,45 +32,9 @@ Create a new Python module and install ngrok-python.
 pip install ngrok
 ```
 
-## 2. Start your service
+## 2. Export your authtoken to your environment
 
-Before you start an endpoint, you need something for the endpoint to forward traffic to. If you already have a local app or service that you want to send traffic to, you should use that. Otherwise, you can create a Python file with the following code to set up a basic HTTP server at port `8080`.
-
-```python filename="service.py"
-from http.server import BaseHTTPRequestHandler, HTTPServer
-
-class MyHandler(BaseHTTPRequestHandler):
-    def do_GET(self):
-        self.send_response(200)
-        self.send_header("Content-type", "text/html")
-        self.end_headers()
-        html = b"""
-        <html>
-        <head><title>Test Page</title></head>
-        <body><h1>Hello from Python HTTP Server!</h1></body>
-        </html>
-        """
-        self.wfile.write(html)
-
-def run(server_class=HTTPServer, handler_class=MyHandler, port=8080):
-    server_address = ('', port)
-    httpd = server_class(server_address, handler_class)
-    print(f"Serving custom HTML at http://localhost:{port}")
-    httpd.serve_forever()
-
-if __name__ == "__main__":
-    run()
-```
-
-You can run this code by opening a terminal in the same directory as the file and running:
-
-```bash
-python service.py
-```
-
-## 3. Export your authtoken to your environment
-
-For the example in this quickstart, you'll need to export your ngrok authtoken as an environment variable in the terminal. If you're running your service already, make sure you open a new terminal window or tab to run the following commands.
+For the example in this quickstart, you'll need to export your [ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) as an environment variable in the terminal. If you're running your service already, make sure you open a new terminal window or tab to run the following commands.
 
 <Tabs groupId="os" queryString="os">
 <TabItem value="macos" label="Mac OS" default>
@@ -126,6 +90,42 @@ $env:NGROK_AUTHTOKEN = "$YOUR_AUTHTOKEN"
 </TabItem>
 </Tabs>
 
+## 3. Start your service
+
+Before you start an endpoint, you need something for the endpoint to forward traffic to. If you already have a local app or service that you want to send traffic to, you should use that. Otherwise, you can create a Python file with the following code to set up a basic HTTP server at port `8080`.
+
+```python filename="service.py"
+from http.server import BaseHTTPRequestHandler, HTTPServer
+
+class MyHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.send_header("Content-type", "text/html")
+        self.end_headers()
+        html = b"""
+        <html>
+        <head><title>Test Page</title></head>
+        <body><h1>Hello from Python HTTP Server!</h1></body>
+        </html>
+        """
+        self.wfile.write(html)
+
+def run(server_class=HTTPServer, handler_class=MyHandler, port=8080):
+    server_address = ('', port)
+    httpd = server_class(server_address, handler_class)
+    print(f"Serving custom HTML at http://localhost:{port}")
+    httpd.serve_forever()
+
+if __name__ == "__main__":
+    run()
+```
+
+You can run this code by opening a terminal in the same directory as the file and running:
+
+```bash
+python service.py
+```
+
 ## 4. Start your endpoint
 
 First:
@@ -172,6 +172,8 @@ except KeyboardInterrupt:
     print("Closing listener")
 ```
 
+## 5. Test your endpoint
+
 Run your app with the following command:
 
 ```bash
@@ -184,3 +186,6 @@ When you visit the URL, you should be prompted to log in with Google. After logg
 
 ## What's next?
 
+- Traffic policy enables you to [send custom headers](/traffic-policy/actions/add-headers/#examples), [terminate TLS](/traffic-policy/actions/terminate-tls/#examples),  [rewrite URLs](/traffic-policy/actions/url-rewrite/#examples), and more. Learn how to [secure your app with traffic policy](/docs/traffic-policy/).
+- Read [the full Python SDK documentation](https://ngrok.github.io/ngrok-python/) for more code examples.
+- Explore [Cloud Endpoints](/universal-gateway/cloud-endpoints/quickstart/), which enable you to manage traffic for multiple endpoints centrally in the cloud. 
