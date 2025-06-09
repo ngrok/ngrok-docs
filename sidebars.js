@@ -288,6 +288,7 @@ const sidebars = {
 					link: { type: "doc", id: "k8s/how-it-works" },
 					items: ["k8s/installation/architecture"],
 				},
+				"k8s/guides/local-cluster",
 				"k8s/guides/quickstart",
 				{
 					label: "Manage",
@@ -311,7 +312,6 @@ const sidebars = {
 						"k8s/guides/annotations",
 						"k8s/guides/managed-resources",
 						"k8s/guides/finalizers",
-						"k8s/guides/local-cluster",
 						"k8s/guides/troubleshooting",
 						{
 							label: "How do I?",
