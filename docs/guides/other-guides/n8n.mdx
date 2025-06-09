@@ -1,0 +1,120 @@
+---
+sidebar_label: Using ngrok with n8n
+title: Using ngrok with n8n to make your workflow public 
+description: Learn how to use ngrok to make your n8n workflow accessible from anywhere, not just your local host. 
+---
+
+import TabItem from "@theme/TabItem";
+import Tabs from "@theme/Tabs";
+
+[n8n allows you to self-host](https://docs.n8n.io/hosting/), which is great when you're testing workflows; but when you're ready to turn your instance into a production-ready automation and don't want to buy a domain or pay for hosting, you might feel lost.
+
+This guide walks you through how to get your self-hosted n8n instance running in Docker live on the internet. We'll show you how to set up ngrok with Docker or or with the agent CLI, get your static domain, and protect your endpoint, all for free with ngrok.
+
+## Set up your local server with n8n
+
+Follow the steps listed in [n8n's docs](https://docs.n8n.io/hosting/installation/docker/) to self-host n8n in Docker.
+
+### 1. Connect ngrok to your account
+
+Sign up for an account at [ngrok.com](https://ngrok.com/) and [get your auth token](https://dashboard.ngrok.com/get-started/your-authtoken).
+
+### 2. Install ngrok
+
+<Tabs groupId="user-type" queryString="user-type">
+<TabItem value="Docker" label="Docker" default>
+
+Install ngrok via Docker with the following command:
+
+```bash
+docker pull ngrok/ngrok
+```
+
+Run ngrok via Docker:
+
+```bash
+docker run -it -e NGROK_AUTHTOKEN=<token> ngrok/ngrok http 80
+```
+
+</TabItem>
+<TabItem value="CLI" label="CLI">
+[Download and install](https://ngrok.com/download) the ngrok CLI. Then connect ngrok to your account by running the following command in your terminal:
+
+```bash
+ngrok config add-authtoken YOUR_NGROK_AUTH_TOKEN
+```
+
+</TabItem>
+</Tabs>
+
+### 3. Claim your free static domain
+
+Claim your free static domain [in the dashboard](https://dashboard.ngrok.com/domains). It should look something like `happy-rabbit-partially.ngrok.free.app`.
+
+Copy this domain to use in the next step.
+
+### 4. Launch a new container in Docker
+
+Launch a new container in Docker with updated environment variables including your ngrok domain.
+
+- Create a new container in Docker, and assign it to port `5678`.
+  :::tip
+  Reuse the same volume or bind mount for the data folder in your old n8n container. The host path must stay the same. This will ensure that your n8n workflows, credentials, or execution history are not impacted.
+  :::
+- Create two environment variables, pasting in your ngrok URL as the value, and making sure it starts with `https://`.
+
+```bash
+export N8N_EDITOR_BASE_URL=<your_static_domain_here>
+export WEBHOOK_URL=<your_webhook_url_here>
+```
+
+- Lastly, add the following environment variable:
+
+```bash
+export N8N-DEFAULT_BINARY_DATA_MODE=filesystem
+```
+
+When you set the value to filesystem, n8n saves large files as binary data during workflow runs so your processes executes quickly.
+
+Once this is done and the new container with your ngrok domain is launched:
+
+1. Delete the old container
+1. Hit the run button to create your new container running on ngrok
+
+### 5. Test your integration
+
+Open `http://localhost:5678` and log in with your credentials. You should see everything you had locally.
+
+### 6. Expose your server with ngrok
+
+Start an endpoint at your app's port:
+
+```bash
+ngrok http 5678 --url https://<your_static_domain_here>
+```
+
+Navigate to your ngrok domain. You should be able to access it from anywhere now.
+
+## Example use case
+
+This example will teach you how to limit access to your n8n server from IPs associated with Tor exit nodes using ngrok's [Traffic Policy](/docs/traffic-policy/) and [IP Intel](/docs/traffic-policy/variables/ip-intel/).
+
+### 1. Create a Traffic Policy
+
+Locally, save this file as `policy.yml`:
+
+```bash
+on_http_request:
+  - expressions:
+    - "('proxy.anonymous.tor' in conn.client_ip.categories)"
+  - actions:
+      - type: deny
+```
+
+### 2. Restart the agent
+
+Restart your ngrok agent with the `--traffic-policy-file` argument.
+
+```bash
+ngrok http 5678 --url https://<your_static_domain_here> --traffic-policy-file policy.yml
+```

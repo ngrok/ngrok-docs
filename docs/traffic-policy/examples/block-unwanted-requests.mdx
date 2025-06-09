@@ -97,7 +97,7 @@ You can also take action on incoming requests that contain specific strings in [
 			{
 				name: "Block specific bots by user agent",
 				expressions: [
-					"req.user_agent.matches('(?i).*(chatgpt-user|gptbot)/\\\\d+.*')",
+					"req.user_agent.name in ('ChatGPT-User', 'GPTBot', 'OAI-SearchBot')",
 				],
 				actions: [
 					{
@@ -218,6 +218,32 @@ This rule demonstrates how to prevent excessively large user uploads, like text 
 						config: {
 							status_code: 400,
 							body: "Error: You can't upload content larger than 1MB.",
+						},
+					},
+				],
+			},
+		],
+	}}
+/>
+
+## Exempt specific traffic from rate limits
+
+In this example, the Algolia web crawler is exempted from any rate limiting we have on our site. See [the IP Intelligence docs](/traffic-policy/variables/ip-intel/#ip-categories) for other bots and crawlers that are available.
+
+<ConfigExample
+	config={{
+		on_http_request: [
+			{
+				expressions: ["!('com.algolia.crawler' in conn.client_ip.categories)"],
+				actions: [
+					{
+						name: "Only allow 30 requests per minute",
+						type: "rate-limit",
+						config: {
+							algorithm: "sliding_window",
+							capacity: 30,
+							rate: "60s",
+							bucket_key: ["conn.client_ip"],
 						},
 					},
 				],
