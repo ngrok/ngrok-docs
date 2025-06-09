@@ -1,6 +1,6 @@
 ---
 sidebar_label: Python
-title: ngrok-go Quickstart
+title: ngrok-python Quickstart
 pagination_next: universal-gateway/overview
 ---
 
@@ -9,77 +9,65 @@ import Tabs from "@theme/Tabs";
 import ConfigExample from "/src/components/ConfigExample.tsx";
 import SecureYourApp from "./_secure-your-app.mdx"
 
-[ngrok-go](https://github.com/ngrok/ngrok-go/) is an open-source, idiomatic package that gives you the functionality of the [ngrok agent](/agent) in a Go library. You can use it to embed secure ingress directly into your Go applications.
+[ngrok-python](https://ngrok.github.io/ngrok-python/index.html) is the official Python SDK for ngrok. It enables you to serve Python applications on the internet in a single line of code without configuring low-level network primitives like IPs, certificates, load balancers, or ports.
 
-This quickstart will use the [Agent SDK](/agent-sdks/) for [ngrok-go](https://github.com/ngrok/ngrok-go) to put a Go app on the internet and secure it so that only you can access it.
-
-:::tip
-You may want to open the [ngrok-go package documentation on pkg.go.dev](https://pkg.go.dev/golang.ngrok.com/ngrok) as you work through this guide.
-:::
-
-## Why you should use ngrok-go
-
-With ngrok-go, you can serve Go applications on the internet in a single line of code without configuring low-level network primitives like IPs, certificates, load balancers and even ports. Applications using ngrok-go listen on ngrok’s global
-network and your app gets the same `net.Listener` interface it would get if it had listened on a local port. This makes it incredibly simple to drop ngrok-go into any existing Go code.
+This quickstart will use the [Agent SDK](/agent-sdks/) for ngrok-python to put a Python app on the internet and secure it so only you can access it.
 
 ## What you'll need
 
 1. [An ngrok account](https://dashboard.ngrok.com/signup).
 1. Your ngrok authtoken, which you can find [in the dashboard](https://dashboard.ngrok.com/get-started/your-authtoken).
-1. [Go installed](https://go.dev/doc/install) on your machine. You can check this by running `go version` in your terminal.
+1. [Python installed](https://www.python.org/downloads/) on your machine. You can check this by running `python -v` in your terminal.
 
-## 1. Install ngrok-go
+## 1. Install ngrok-python
 
-Create a new Go module and install ngrok-go.
+Create a new Go module and install ngrok-python.
 
 ```bash
-mkdir ngrok-go-quickstart
-cd ngrok-go-quickstart
-go mod init ngrok-go-quickstart
-go get golang.ngrok.com/ngrok/v2
+python3 -m pip install ngrok
 ```
 
 ## 2. Create your app
 
-The following example starts a Go web server that receives traffic from an endpoint on ngrok's cloud service. It uses a randomly-assigned URL. The URL provided when running this example will be accessible by anyone with an internet connection.
+First, create a new directory for your app, navigate into it, and create a new Python file.
 
-In the `ngrok-go-quickstart` directory, create the following `main.go` file:
+```bash
+mkdir hello-ngrok && cd hello-ngrok
+touch example.py
+```
 
-```go
-package main
 
-import (
-	"context"
-	"fmt"
-	"log"
-	"net/http"
 
-	"golang.ngrok.com/ngrok/v2"
-)
+```python
+#!/usr/bin/env python
 
-func main() {
-	if err := run(context.Background()); err != nil {
-		log.Fatal(err)
-	}
-}
+from http.server import HTTPServer, BaseHTTPRequestHandler
+import logging, ngrok
 
-func run(ctx context.Context) error {
-	// ngrok.Listen uses ngrok.DefaultAgent which uses the NGROK_AUTHTOKEN
-	// environment variable for auth
-	ln, err := ngrok.Listen(ctx)
-	if err != nil {
-		return err
-	}
 
-	log.Println("Endpoint online", ln.URL())
+class HelloHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        body = bytes("Hello", "utf-8")
+        self.protocol_version = "HTTP/1.1"
+        self.send_response(200)
+        self.send_header("Content-Length", len(body))
+        self.end_headers()
+        self.wfile.write(body)
 
-	// Serve HTTP traffic on the ngrok endpoint
-	return http.Serve(ln, http.HandlerFunc(handler))
-}
+logging.basicConfig(level=logging.INFO)
 
-func handler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "Hello from ngrok-go!")
-}
+# Create the server and attach ngrok
+server = HTTPServer(("localhost", 0), HelloHandler)
+ngrok.listen(server)
+
+try:
+    logging.info("Starting server. Press Ctrl+C to stop.")
+    server.serve_forever()
+except KeyboardInterrupt:
+    logging.info("Shutting down server...")
+    server.server_close()  
+    ngrok.kill()  
+    logging.info("Server stopped cleanly.")
 ```
 
 ## 3. Run the example
@@ -93,11 +81,11 @@ NGROK_AUTHTOKEN="<TOKEN>" go run main.go
 
 Your Go application should be live on the internet, with a URL that anyone on the internet can access.
 
-Your app's randomly-assigned URL will be available in the terminal. When you visit the URL, you should see "Hello from ngrok-go!" in your browser. Try sending it to a friend.
+Your app's randomly-assigned URL will be available in the terminal. When you visit the URL, you should see "Hello from ngrok-python!" in your browser. Try sending it to a friend.
 
 ## Secure your app
 
-Once you've completed the quickstart, you can explore other features of ngrok with ngrok-go, such as Requiring authentication to access your app. You may not want everyone to be able to access your application. ngrok can
+Once you've completed the quickstart, you can explore other features of ngrok with ngrok-python, such as Requiring authentication to access your app. You may not want everyone to be able to access your application. ngrok can
 quickly add authentication to your app with a few lines of code.
 
 The following example only grants access to users whose email address is `alan@example.com`.
@@ -173,8 +161,8 @@ ngrok, your app's URL changed, so make sure to visit the new one.
 
 ## Next Steps
 
-- Read the [ngrok-go package documentation](https://pkg.go.dev/golang.ngrok.com/ngrok/v2)
-- Star the [ngrok-go GitHub repo](https://github.com/ngrok/ngrok-go) and follow
+- Read the [ngrok-python package documentation](https://pkg.go.dev/golang.ngrok.com/ngrok/v2)
+- Star the [ngrok-python GitHub repo](https://github.com/ngrok/ngrok-python) and follow
   it for updates.
 - Browse [Go examples of HTTP Endpoints](/universal-gateway/http/?cty=go-sdk) of other ways ngrok can augment your application.
 - Bring your own [custom domain to ngrok](/universal-gateway/http/#bring-your-own-domain)
