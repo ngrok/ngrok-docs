@@ -18,151 +18,170 @@ This quickstart will use the [Agent SDK](/agent-sdks/) for ngrok-python to put a
 1. [An ngrok account](https://dashboard.ngrok.com/signup).
 1. Your ngrok authtoken, which you can find [in the dashboard](https://dashboard.ngrok.com/get-started/your-authtoken).
 1. [Python installed](https://www.python.org/downloads/) on your machine. You can check this by running `python -v` in your terminal.
+1. A domain connected to your ngrok account. We'll refer to this as `$YOUR_DOMAIN` from here on out.
 
-## 1. Install ngrok-python
+### Get your domain
 
-Create a new Go module and install ngrok-python.
+In the dashboard, visit [the **Domains** section](https://dashboard.ngrok.com/domains) and select **+ New Domain** to get started. ngrok offers free static domains, or you can [bring your own custom domain](/docs/universal-gateway/custom-domains/).
+
+## 1. Install `ngrok-python`
+
+Create a new Python module and install ngrok-python.
 
 ```bash
-python3 -m pip install ngrok
+pip install ngrok
 ```
 
-## 2. Create your app
+## 2. Start your service
 
-First, create a new directory for your app, navigate into it, and create a new Python file.
+Before you start an endpoint, you need something for the endpoint to forward traffic to. If you already have a local app or service that you want to send traffic to, you should use that. Otherwise, you can create a Python file with the following code to set up a basic HTTP server at port `8080`.
+
+```python filename="service.py"
+from http.server import BaseHTTPRequestHandler, HTTPServer
+
+class MyHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.send_header("Content-type", "text/html")
+        self.end_headers()
+        html = b"""
+        <html>
+        <head><title>Test Page</title></head>
+        <body><h1>Hello from Python HTTP Server!</h1></body>
+        </html>
+        """
+        self.wfile.write(html)
+
+def run(server_class=HTTPServer, handler_class=MyHandler, port=8000):
+    server_address = ('', port)
+    httpd = server_class(server_address, handler_class)
+    print(f"Serving custom HTML at http://localhost:{port}")
+    httpd.serve_forever()
+
+if __name__ == "__main__":
+    run()
+```
+
+You can run this code by opening a terminal in the same directory as the file and running:
+
+```bash
+python service.py
+```
+
+## 3. Export your auth token to your environment
+
+For the example in this quickstart, you'll need to export your ngrok auth token as an environment variable in the terminal. If you're running your service already, make sure you open a new terminal window or tab to run the following commands.
+
+<Tabs groupId="os" queryString="os">
+<TabItem value="macos" label="Mac OS" default>
+
+First, in the terminal run:
+
+```bash
+touch ~/.zshrc
+```
+
+Then add the following line to your `~/.zshrc` file:
+
+```bash
+export NGROK_AUTHTOKEN = $YOUR_AUTHTOKEN
+```
+
+Save the file and run the following command to apply the changes:
+
+```bash
+source ~/.zshrc
+```
+
+</TabItem>
+<TabItem value="linux" label="Debian Linux">
+
+First, in the terminal run:
+
+```bash
+touch ~/.bashrc
+```
+
+Then add the following line to your `~/.bashrc` file:
+
+```bash
+export NGROK_AUTHTOKEN = $YOUR_AUTHTOKEN
+```
+
+Save the file and run the following command to apply the changes:
+
+```bash
+source ~/.bashrc
+```
+</TabItem>
+<TabItem value="windows" label="Windows">
+
+In PowerShell, run the following command to set your authtoken as an environment variable:
+
+```bash
+$env:NGROK_AUTHTOKEN = "$YOUR_AUTHTOKEN"
+```
+
+</TabItem>
+</Tabs>
+
+
+## 4. Start your endpoint
+
+First:
+
+1. Create a new directory for the app that you'll start your endpoint from.
+1. Navigate to it.
+1. Create a new Python file there.
 
 ```bash
 mkdir hello-ngrok && cd hello-ngrok
 touch example.py
 ```
 
-```python
-#!/usr/bin/env python
+Then add the following code to your file. This example:
 
-from http.server import HTTPServer, BaseHTTPRequestHandler
-import logging, ngrok
+1. Starts an Agent endpoint that points to your service running on port `8080`. 
+1. Secures the endpoint with a traffic policy that requires authentication via Google OAuth.
 
+:::note
+This example uses ngrok's default Google OAuth application. To use your own, see [the OAuth Traffic Policy Action documentation](/docs/traffic-policy/actions/oauth/#google-example). 
+:::
 
-class HelloHandler(BaseHTTPRequestHandler):
-    def do_GET(self):
-        body = bytes("Hello", "utf-8")
-        self.protocol_version = "HTTP/1.1"
-        self.send_response(200)
-        self.send_header("Content-Length", len(body))
-        self.end_headers()
-        self.wfile.write(body)
+```python filename="example.py"
+# import ngrok python sdk
+import ngrok
+import time
 
-logging.basicConfig(level=logging.INFO)
-
-# Create the server and attach ngrok
-server = HTTPServer(("localhost", 0), HelloHandler)
-ngrok.listen(server)
-
-try:
-    logging.info("Starting server. Press Ctrl+C to stop.")
-    server.serve_forever()
-except KeyboardInterrupt:
-    logging.info("Shutting down server...")
-    server.server_close()
-    ngrok.kill()
-    logging.info("Server stopped cleanly.")
-```
-
-## 3. Run the example
-
-1. If you haven't yet, [copy your authtoken from the ngrok dashboard](https://dashboard.ngrok.com/get-started/your-authtoken).
-1. Run your application with your authtoken in the environment:
-
-```bash
-NGROK_AUTHTOKEN="<TOKEN>" go run main.go
-```
-
-Your Go application should be live on the internet, with a URL that anyone on the internet can access.
-
-Your app's randomly-assigned URL will be available in the terminal. When you visit the URL, you should see "Hello from ngrok-python!" in your browser. Try sending it to a friend.
-
-## Secure your app
-
-Once you've completed the quickstart, you can explore other features of ngrok with ngrok-python, such as Requiring authentication to access your app. You may not want everyone to be able to access your application. ngrok can
-quickly add authentication to your app with a few lines of code.
-
-The following example only grants access to users whose email address is `alan@example.com`.
-
-You can also add authentication directly in your code.
-
-The following example:
-
-1. Requires visitors to authenticate with Google before they access your application. You can [choose other providers](/traffic-policy/actions/oauth/#supported-providers).
-1. Only allows `alan@example.com` access to the application
-1. Prints the authenticated user's email address from a request header.
-
-```go
-package main
-
-import (
-	"context"
-	"fmt"
-	"log"
-	"net/http"
-
-	"golang.ngrok.com/ngrok/v2"
+# Establish connectivity
+listener = ngrok.forward(
+  8080, 
+  authtoken_from_env=True,
+	# Secure your endpoint with a traffic policy.
+	# This could also be a path to a traffic policy file. 
+  traffic_policy='{"on_http_request": [{"actions": [{"type": "oauth","config": {"provider": "google"}}]}]}'
 )
 
-func main() {
-	if err := run(context.Background()); err != nil {
-		log.Fatal(err)
-	}
-}
+# Output ngrok url to console
+print(f"Ingress established at {listener.url()}")
 
-const trafficPolicy = `
-on_http_request:
-  - name: OAuth
-    actions:
-      - type: oauth
-        config:
-          auth_id: oauth
-          provider: google
-  - name: bad email
-    expressions:
-      - actions.ngrok.oauth.identity.email != 'alan@example.com'
-    actions:
-      - type: custom-response
-        config:
-          body: Access denied: ${actions.ngrok.oauth.identity.name}!
-          status_code: 403
-`
-
-func run(ctx context.Context) error {
-	// Create an HTTP listener with the traffic policy
-	ln, err := ngrok.Listen(ctx,
-		ngrok.WithTrafficPolicy(trafficPolicy),
-		ngrok.WithDescription("traffic policy example"),
-	)
-	if err != nil {
-		return err
-	}
-	// Serve HTTP traffic on the ngrok endpoint
-	log.Println("Endpoint online", ln.URL())
-	return http.Serve(ln, http.HandlerFunc(handler))
-}
-
-func handler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hello, %s\n", r.Header.Get("authenticated-user"))
-}
+# Keep the listener alive
+try:
+while True:
+    time.sleep(1)
+except KeyboardInterrupt:
+    print("Closing listener")
 ```
 
-Run your app again and visit the URL it prints in the terminal.
+Run your app with the following command:
 
-Anyone accessing your app will be prompted to log in with Google and only your
-account will be allowed to access it. Keep in mind that when you restarted
-ngrok, your app's URL changed, so make sure to visit the new one.
+```bash
+python example.py
+```
 
-## Next Steps
+Your endpoint URL will be printed to the terminal. Your application or service will be live on the internet at the URL printed in the terminal, and you can access it from any browser or tool that can make HTTP requests.
 
-- Read the [ngrok-python package documentation](https://pkg.go.dev/golang.ngrok.com/ngrok/v2)
-- Star the [ngrok-python GitHub repo](https://github.com/ngrok/ngrok-python) and follow
-  it for updates.
-- Browse [Go examples of HTTP Endpoints](/universal-gateway/http/?cty=go-sdk) of other ways ngrok can augment your application.
-- Bring your own [custom domain to ngrok](/universal-gateway/http/#bring-your-own-domain)
-- Create connectivity for non-HTTP protocols such as SSH, RDP, or game servers using [TCP Endpoints](/universal-gateway/tcp/?cty=go-sdk)
-- For working with [the ngrok API](https://ngrok.com/docs/api/), check out the [ngrok Go API Client Library](https://github.com/ngrok/ngrok-api-go)
+When you visit the URL, you should be prompted to log in with Google. After logging in, you should see the message "Hello from Python HTTP Server!" displayed in your browser.
+
+## What's next?
+
