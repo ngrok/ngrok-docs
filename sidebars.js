@@ -37,9 +37,15 @@ const sidebars = {
 				"getting-started/go",
 				"getting-started/rust",
 				{
-					type: "link",
-					label: "Kubernetes Operator",
-					href: "/docs/k8s/installation/install",
+					label: "Kubernetes",
+					type: "category",
+					link: { type: "doc", id: "getting-started/kubernetes/ingress" },
+					items: [
+						"getting-started/kubernetes/ingress",
+						"getting-started/kubernetes/gateway-api",
+						"getting-started/kubernetes/crds",
+						"getting-started/kubernetes/endpoints",
+					],
 				},
 			],
 		},
@@ -276,8 +282,6 @@ const sidebars = {
 			link: { type: "doc", id: "k8s/index" },
 			items: [
 				"k8s/index",
-				"k8s/installation/install",
-				"k8s/guides/quickstart",
 				{
 					label: "How It Works",
 					type: "category",
@@ -656,6 +660,7 @@ const sidebars = {
 				},
 			],
 		},
+		"guides/security-dev-productivity/security-dev-productivity",
 		{
 			label: "Other guides",
 			type: "category",

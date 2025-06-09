@@ -832,12 +832,14 @@ const redirects = [
 	[fromExact("/docs/tls/"), "/docs/universal-gateway/tls/"],
 
 	// Kubernetes Operator Revamp
+	[fromExact("/docs/k8s/advanced-deployments/"), "/docs/k8s"],
+	[fromExact("/docs/k8s/deployment-guide/"), "/docs/k8s"],
+	[fromExact("/docs/k8s/developer-guide/"), "/docs/k8s"],
+	[fromExact("/docs/k8s/installation/install/"), "/docs/k8s"],
 	[
-		fromExact("/docs/k8s/advanced-deployments/"),
-		"/docs/k8s/installation/install/",
+		fromExact("/docs/k8s/guides/quickstart/"),
+		"/docs/getting-started/kubernetes/ingress",
 	],
-	[fromExact("/docs/k8s/deployment-guide/"), "/docs/k8s/installation/install/"],
-	[fromExact("/docs/k8s/developer-guide/"), "/docs/k8s/installation/install/"],
 	[
 		fromExact("/docs/k8s/developer-guide/architecture/"),
 		"/docs/k8s/installation/architecture/",
@@ -884,7 +886,7 @@ const redirects = [
 	],
 	[
 		fromExact("/docs/guides/other-guides/"),
-		"/docs/guides/other-guides/security-dev-productivity/",
+		"/docs/guides/security-dev-productivity/",
 	],
 	[
 		fromExact("/docs/guides/using-ngrok-with/"),
@@ -902,6 +904,10 @@ const redirects = [
 	[
 		fromExact("/docs/guides/site-to-site-connectivity/"),
 		"/docs/guides/site-to-site-connectivity/apis/",
+	],
+	[
+		fromExact("/docs/guides/other-guides/security-dev-productivity/"),
+		"/docs/guides/security-dev-productivity/",
 	],
 ];
 
