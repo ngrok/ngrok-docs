@@ -289,7 +289,17 @@ const sidebars = {
 					items: ["k8s/installation/architecture"],
 				},
 				"k8s/guides/local-cluster",
-				"k8s/guides/quickstart",
+				{
+					label: "Quickstarts",
+					type: "category",
+					link: { type: "doc", id: "getting-started/kubernetes/ingress" },
+					items: [
+						"getting-started/kubernetes/ingress",
+						"getting-started/kubernetes/gateway-api",
+						"getting-started/kubernetes/crds",
+						"getting-started/kubernetes/endpoints",
+					],
+				},
 				{
 					label: "Manage",
 					type: "category",
