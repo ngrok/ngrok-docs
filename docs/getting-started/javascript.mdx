@@ -1,56 +1,93 @@
 ---
 sidebar_label: JavaScript
-title: ngrok-javascript Quickstart
+title: ngrok JavaScript SDK Quickstart
 pagination_next: universal-gateway/overview
 ---
 
-## Overview
+import TabItem from "@theme/TabItem";
+import Tabs from "@theme/Tabs";
+import ConfigExample from "/src/components/ConfigExample.tsx";
+import SecureYourApp from "./_secure-your-app.mdx"
 
-// What are we doing
+[The ngrok JavaScript (Node.js) SDK](https://ngrok.github.io/ngrok-javascript/) enables you to quickly and efficiently serve Node.js applications on the internet without the need to configure low-level network primitives like IPs, certificates, load balancers, or ports.
 
-// What are the benefits of this
+This quickstart uses ngrok's JavaScript SDK to put a Node.js app on the internet and secure it so only you can access it.
 
-// What are the use-cases this serves
+## What you'll need
 
-ngrok-javascript is the official Node.js SDK for ngrok that requires no binaries. Quickly enable secure production-ready connectivity to your applications and services directly from your code.
+1. [An ngrok account](https://dashboard.ngrok.com/signup).
+1. Your ngrok auth token, which you can find [in the dashboard](https://dashboard.ngrok.com/get-started/your-authtoken).
+1. [Python installed](https://www.python.org/downloads/) on your machine. You can check this by running `python -v` in your terminal.
+1. A domain connected to your ngrok account. We'll refer to this as `$YOUR_DOMAIN` from here on out.
+   - In the dashboard, visit [the **Domains** section](https://dashboard.ngrok.com/domains) and select **+ New Domain** to get started. ngrok offers free static domains, or you can [bring your own custom domain](/docs/universal-gateway/custom-domains/).
 
-With ngrok-javascript, you can serve Node.js applications on the internet in a single line of code without configuring low-level network primitives like IPs, certificates, load balancers, and ports. 
+## 1. Start your service
 
-## Prerequisites
+Start up the app or service you'd like to forward traffic to.
 
-// ngrok account
+If you don't already have a local app you'd like to work with, you can create a JavaScript file with the following code to set up a basic HTTP server at port `8080`.
 
-// API Key or Authtoken
+TK
 
-// Required tools installed (CLI, SDK, Helm, etc.)
+Navigate to the directory where this file is located and run the following command to start the server:
 
-// Environment setup (e.g. K8s cluster)
+TK
 
-## 1. Get your domain
+## 2. Install the JavaScript SDK
 
-// Static Domain
+Use the following terminal command to install the JavaScript SDK.
 
-// ngrok TLD
+TK
 
-// BYO
+## 3. Create a .env file
 
-## 2. Setup
+Create a `.env` file and add [your ngrok auth token](https://dashboard.ngrok.com/get-started/your-authtoken) to it.
+This file needs to be in a new directory with the JavaScript file we'll create in the next step that'll use ngrok's SDK to create an endpoint.
+Create this directory within your existing project directory, navigate into it, and add the `.env` file there.
 
-// Install / Authenticate
+```bash
+mkdir hello-ngrok && cd hello-ngrok
+touch .env
+```
 
-// Create endpoint(s)
+```txt filename=".env"
+NGROK_AUTHTOKEN=your_authtoken_here
+```
 
-// Apply basic Traffic Policy (IP allowlist, OAuth, etc.)
+:::tip
+If you don't want to use a `.env` file, you can instead [export your auth token as an environment variable](https://support.apple.com/en-il/guide/terminal/apd382cc5fa-4f58-4449-b20a-41c53c006f8f/mac) in your terminal session, or [call `ngrok.set_auth_token("your-token")`](https://ngrok.github.io/ngrok-python/index.html#authentication) in your code.
+:::
 
-## 3. Validate
+## 4. Start your endpoint
 
-// Test via curl or browser
+Start your agent endpoint by adding the following code to your file.
+This example:
 
-// Confirm endpoint behavior and policies
+- Starts an Agent endpoint that points to your service running on port `8080`.
+- Secures the endpoint with a Traffic Policy that requires authentication via Google OAuth. Traffic policies allow you to control how traffic is handled by your endpoint, including authentication, headers, and more.
 
-## 4. What's next
+:::note
+This example uses ngrok's default Google OAuth application.
+To use your own, see [the OAuth Traffic Policy Action documentation](/docs/traffic-policy/actions/oauth/#google-example).
+:::
 
-// More Traffic Policy
+TK
 
-// Other things for the specific topic
+## 5. Test your endpoint
 
+Test your endpoint by running the following terminal command:
+
+TK
+
+Assuming everything is set up correctly, this should print your endpoint URL to the terminal.
+Your app is now live on the internet at this URL, and you can access it from any browser or tool that can make HTTP requests.
+
+When you visit the URL, you should be prompted to log in with Google.
+After logging in, you will either see your app or service, or, if you used the example app in this quickstart, you'll see "Hello from Node.js HTTP Server!" displayed in your browser.
+
+## What's next?
+
+- [Traffic policy](/docs/traffic-policy/) enables you to [send custom headers](/traffic-policy/actions/add-headers/#examples), [terminate TLS](/traffic-policy/actions/terminate-tls/#examples), [rewrite URLs](/traffic-policy/actions/url-rewrite/#examples), and more.
+- Learn about the [Agent SDK](/agent-sdks/) to understand how the Python SDK works under the hood.
+- Read [the full JavaScript SDK documentation](https://ngrok.github.io/ngrok-javascript/) for more code examples.
+- Explore [Cloud Endpoints](/universal-gateway/cloud-endpoints/quickstart/), which enable you to manage traffic for multiple endpoints centrally in the cloud.
