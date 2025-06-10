@@ -49,7 +49,7 @@ export default function ActionHub({ actions, categories }: Props) {
 
 	let filteredActions = actions;
 
-	console.log(sortedActions)
+	console.log(sortedActions);
 
 	if (categoryFilter !== DefaultCategoryValue) {
 		filteredActions = filteredActions.filter((action) =>
