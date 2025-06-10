@@ -47,7 +47,9 @@ export default function ActionHub({ actions, categories }: Props) {
 
 	const sortedActions = actions.sort((a, b) => a.slug.localeCompare(b.slug));
 
-	let filteredActions = sortedActions;
+	let filteredActions = actions;
+
+	console.log(sortedActions)
 
 	if (categoryFilter !== DefaultCategoryValue) {
 		filteredActions = filteredActions.filter((action) =>
@@ -111,7 +113,7 @@ export default function ActionHub({ actions, categories }: Props) {
 									{action.name}
 								</h3>
 								<CardBody className="flex-grow p-0 px-4">
-									<p className="m-0 p-0">{action.description}</p>
+									<p className="text-sm m-0 p-0">{action.description}</p>
 								</CardBody>
 								<CardFooter className="px-4 pb-4">
 									<div className="flex flex-wrap gap-2">

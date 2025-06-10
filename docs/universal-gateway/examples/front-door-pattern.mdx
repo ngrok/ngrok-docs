@@ -1,38 +1,44 @@
 ---
-title: "'Front door' pattern"
-description: TK
+title: "Implement the 'Front Door' Pattern"
+description: By using Cloud Endpoint and internal Agent Endpoints together, you loosely double your gateway and services for extra flexibility.
+displayed_sidebar: docs
 ---
 
-# Implement the 'front door' pattern
+import Back from "./snippets/_back-to-examples.mdx";
 
-TK
+The "front door" pattern involves using a Cloud Endpoint, the forward-internal Traffic Policy action, and an internal Agent Endpoint to route traffic from the public internet to your service(s). 
 
-## How to use this example
+With this pattern, you can:
 
-### 1. Create an internal Agent Endpoint
+- Host any number of services under a single hostname (e.g. `your-company.com`).
+- Decouple gateway configuration from per-service traffic management policies.
+- Prevent any driect exposure of your services or their host systems to the public internet.
+- Route traffic and add authentication to microservices with a single API gateway configuration.
+- Authenticate developer environments or CI preview builds behind a single endpoint.
 
-Start an ngrok agent, replacing `$PORT` based on where you service listens.
+## 1. Create an endpoint for your service
+
+Start an internal [Agent Endpoint](/docs/universal-gateway/agent-endpoints/), replacing `$PORT` based on where your service listens.
+You can also use one of our [SDKs](/docs/agent/sdks) or the [Kubernetes Operator](/docs/k8s).
 
 ```bash
 ngrok http $PORT --url https://service.internal
 ```
 
-### 2. Reserve a domain
+## 2. Reserve a domain
 
 Navigate to the [**Domains** section](https://dashboard.ngrok.com/domains) of
 the ngrok dashboard and click **New +** to reserve a domain like
-`https://your-api.ngrok.app`.
+`https://your-api.ngrok.app` or a [custom domain](docs/universal-gateway/custom-domains/) you already own.
 
-### 3. Create a Cloud Endpoint
+## 3. Create a Cloud Endpoint
 
-Navigate to the [**Endpoints**
-section](https://dashboard.ngrok.com/endpoints?sortBy=updatedAt&orderBy=desc) of
-the ngrok dashboard, then click **New +** and **Cloud Endpoint** to create a new
-cloud endpoint with the URL `https://your-api.ngrok.app`.
+Navigate to the [**Endpoints** section](https://dashboard.ngrok.com/endpoints?sortBy=updatedAt&orderBy=desc) of the ngrok dashboard, then click **New +** and **Cloud Endpoint**.
+Now you have a [Cloud Endpoint](/docs/universal-gateway/cloud-endpoints/) with the URL like `https://your-service.ngrok.app`.
 
-### 4. Apply Traffic Policy rule to your Cloud Endpoint
+## 4. Add routing to your service with Traffic Policy
 
-Copy and paste the YAML into the ngrok dashboard.
+Copy and paste the policy below into your new Cloud Endpoint in the ngrok dashboard.
 
 ```yaml
 on_http_request:
@@ -47,11 +53,43 @@ on_http_request:
 On every HTTP request, the Traffic Policy engine forwards the traffic to the
 internal agent endpoint you created at `https://service.internal`.
 
-### 5. Try out your endpoint!
+## 5. Add a second service and routing (optional)
 
-- In your browser: https://your-api.ngrok.app
-- In your terminal: `curl https://your-api-ngrok.app`
+If you have another service to host under the front door pattern, start another agent.
+
+```bash
+ngrok http $PORT --url https://service-two.internal
+```
+
+## 5a. Update your routing based on paths
+
+Copy and paste the policy below into the ngrok dashboard, replacing `/one` and `/two` with the paths you'd like to use for routing traffic to each service.
+
+```yaml
+on_http_request:
+  - expressions:
+      - "req.url.includes('/one')"
+    actions:
+      - type: forward-internal
+        config:
+          url: http://service.internal
+- expressions:
+      - "req.url.includes('/two')"
+    actions:
+      - type: forward-internal
+        config:
+          url: http://service-two.internal
+```
+
+## 6. Try out your endpoint!
+
+- In your browser: https://your-service.ngrok.app
+- In your terminal: `curl https://your-service.ngrok.app`
 
 ## What's next?
 
-TK
+- Read more about [Traffic Policy](/docs/traffic-policy) and its [core concepts](/docs/traffic-policy/concepts).
+- Add authentication to your endpoint with the [`oauth` action](/docs/traffic-policy/actions/oauth) action or [`basic-auth` action](/docs/traffic-policy/actions/basic-auth).
+- View your traffic in [Traffic Inspector](https://dashboard.ngrok.com/traffic-inspector).
+
+<Back />
