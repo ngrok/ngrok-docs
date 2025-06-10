@@ -1887,6 +1887,14 @@
     </tr>
     <tr>
       <td>
+        <a id="ERR_NGROK_458" href="/docs/errors/err_ngrok_458">ERR_NGROK_458</a>
+      </td>
+      <td class="pre-wrapped">
+        A singleton reserved domain with the name <code>&lt;NAME&gt;</code> already exists. You may only have one singleton reserved domain per account.
+      </td>
+    </tr>
+    <tr>
+      <td>
         <a id="ERR_NGROK_500" href="/docs/errors/err_ngrok_500">ERR_NGROK_500</a>
       </td>
       <td class="pre-wrapped">
@@ -5326,6 +5334,22 @@
       </td>
       <td class="pre-wrapped">
         The action <code>&lt;ACTION&gt;</code> is not available for your current plan. Please upgrade to <code>&lt;PLANS&gt;</code> to use this action.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_2257" href="/docs/errors/err_ngrok_2257">ERR_NGROK_2257</a>
+      </td>
+      <td class="pre-wrapped">
+        Invalid basic auth credential. Username <code>&lt;USERNAME&gt;</code> fails to meet requirements of RFC 7617 #2.1: <code>&lt;ERR&gt;</code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_2258" href="/docs/errors/err_ngrok_2258">ERR_NGROK_2258</a>
+      </td>
+      <td class="pre-wrapped">
+        Invalid basic auth credential. The password of user <code>&lt;USERNAME&gt;</code> fails to meet requirements of RFC 7617 #2.1: <code>&lt;ERR&gt;</code>
       </td>
     </tr>
     <tr>
@@ -10164,7 +10188,7 @@
         <a id="ERR_NGROK_9035" href="/docs/errors/err_ngrok_9035">ERR_NGROK_9035</a>
       </td>
       <td class="pre-wrapped">
-        Invalid port for reserve domains with scheme <code>&lt;CURRENTSCHEME&gt;</code>, allowed ports are <code>&lt;WANTPORT&gt;</code>.
+        Invalid port for for URL with scheme <code>&lt;CURRENTSCHEME&gt;</code>, allowed ports are <code>&lt;WANTPORT&gt;</code>.
       </td>
     </tr>
     <tr>
@@ -10937,6 +10961,22 @@
     </tr>
     <tr>
       <td>
+        <a id="ERR_NGROK_15011" href="/docs/errors/err_ngrok_15011">ERR_NGROK_15011</a>
+      </td>
+      <td class="pre-wrapped">
+        Invalid basic auth credential. Username <code>&lt;USERNAME&gt;</code> fails to meet requirements of RFC 7617 #2.1: <code>&lt;ERROR&gt;</code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_15012" href="/docs/errors/err_ngrok_15012">ERR_NGROK_15012</a>
+      </td>
+      <td class="pre-wrapped">
+        Invalid basic auth credential. The password of user <code>&lt;USERNAME&gt;</code> fails to meet requirements of RFC 7617 #2.1: <code>&lt;ERROR&gt;</code>
+      </td>
+    </tr>
+    <tr>
+      <td>
         <a id="ERR_NGROK_16000" href="/docs/errors/err_ngrok_16000">ERR_NGROK_16000</a>
       </td>
       <td class="pre-wrapped">
@@ -11126,6 +11166,14 @@
       </td>
       <td class="pre-wrapped">
         This account does not have access to Endpoint pooling. Upgrade or switch to a pay-as-you-go plan for access.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_18020" href="/docs/errors/err_ngrok_18020">ERR_NGROK_18020</a>
+      </td>
+      <td class="pre-wrapped">
+        The maximum number of endpoints allowed in this pool has been exceeded. Your account is limited to <code>&lt;LIMIT&gt;</code> endpoints per pool.
       </td>
     </tr>
     <tr>

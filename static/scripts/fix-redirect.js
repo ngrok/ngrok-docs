@@ -886,7 +886,7 @@ const redirects = [
 	],
 	[
 		fromExact("/docs/guides/other-guides/"),
-		"/docs/guides/other-guides/security-dev-productivity/",
+		"/docs/guides/security-dev-productivity/",
 	],
 	[
 		fromExact("/docs/guides/using-ngrok-with/"),
@@ -904,6 +904,10 @@ const redirects = [
 	[
 		fromExact("/docs/guides/site-to-site-connectivity/"),
 		"/docs/guides/site-to-site-connectivity/apis/",
+	],
+	[
+		fromExact("/docs/guides/other-guides/security-dev-productivity/"),
+		"/docs/guides/security-dev-productivity/",
 	],
 ];
 
