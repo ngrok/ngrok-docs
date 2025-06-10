@@ -1,6 +1,6 @@
 ---
 sidebar_label: Python
-title: ngrok-python Quickstart
+title: ngrok Python SDK Quickstart
 pagination_next: universal-gateway/overview
 ---
 
@@ -11,7 +11,7 @@ import SecureYourApp from "./_secure-your-app.mdx"
 
 It enables you to quickly and efficiently serve Python applications on the internet without the need to configure low-level network primitives like IPs, certificates, load balancers, or ports.
 
-This quickstart uses the ngrok-python [Agent SDK](/agent-sdks/) to put a Python app on the internet and secure it so only you can access it.
+This quickstart uses ngrok's Python SDK to put a Python app on the internet and secure it so only you can access it.
 
 ## What you'll need
 
@@ -19,81 +19,14 @@ This quickstart uses the ngrok-python [Agent SDK](/agent-sdks/) to put a Python 
 1. Your ngrok authtoken, which you can find [in the dashboard](https://dashboard.ngrok.com/get-started/your-authtoken).
 1. [Python installed](https://www.python.org/downloads/) on your machine. You can check this by running `python -v` in your terminal.
 1. A domain connected to your ngrok account. We'll refer to this as `$YOUR_DOMAIN` from here on out.
+	- In the dashboard, visit [the **Domains** section](https://dashboard.ngrok.com/domains) and select **+ New Domain** to get started. ngrok offers free static domains, or you can [bring your own custom domain](/docs/universal-gateway/custom-domains/).
 
-### Get your domain
 
-In the dashboard, visit [the **Domains** section](https://dashboard.ngrok.com/domains) and select **+ New Domain** to get started. ngrok offers free static domains, or you can [bring your own custom domain](/docs/universal-gateway/custom-domains/).
+## 1. Start your service
 
-## 1. Install the Python SDK`
+Start up the app or service you'd like to forward traffic to.
 
-Create a new Python module and install ngrok-python.
-
-```bash
-pip install ngrok
-```
-
-## 2. Export your auth token to your environment
-
-Export your [ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) as an environment variable in the terminal. 
-If you're running your service already, make sure you open a new terminal window or tab to run the following commands.
-
-<Tabs groupId="os" queryString="os">
-<TabItem value="macos" label="Mac OS" default>
-
-First, in the terminal run:
-
-```bash
-touch ~/.zshrc
-```
-
-Then add the following line to your `~/.zshrc` file:
-
-```bash
-export NGROK_AUTHTOKEN = $YOUR_AUTHTOKEN
-```
-
-Save the file and run the following command to apply the changes:
-
-```bash
-source ~/.zshrc
-```
-
-</TabItem>
-<TabItem value="linux" label="Debian Linux">
-
-First, in the terminal run:
-
-```bash
-touch ~/.bashrc
-```
-
-Then add the following line to your `~/.bashrc` file:
-
-```bash
-export NGROK_AUTHTOKEN = $YOUR_AUTHTOKEN
-```
-
-Save the file and run the following command to apply the changes:
-
-```bash
-source ~/.bashrc
-```
-
-</TabItem>
-<TabItem value="windows" label="Windows">
-
-In PowerShell, run the following command to set your authtoken as an environment variable:
-
-```bash
-$env:NGROK_AUTHTOKEN = "$YOUR_AUTHTOKEN"
-```
-
-</TabItem>
-</Tabs>
-
-## 3. Start your service
-
-Before you start an endpoint, you need something for the endpoint to forward traffic to. If you already have a local app or service that you want to send traffic to, you should use that. Otherwise, you can create a Python file with the following code to set up a basic HTTP server at port `8080`.
+If you don't already have a local app you'd like to work with, you can create a Python file with the following code to set up a basic HTTP server at port `8080`.
 
 ```python filename="service.py"
 from http.server import BaseHTTPRequestHandler, HTTPServer
@@ -127,38 +60,65 @@ You can run this code by opening a terminal in the same directory as the file an
 python service.py
 ```
 
-## 4. Start your endpoint
 
-First:
+## 2. Install the python SDK
 
-1. Create a new directory for the app that you'll start your endpoint from.
-1. Navigate to it.
-1. Create a new Python file there.
+Use the following terminal command to install the Python SDK.
+
+```bash
+pip install ngrok
+```
+
+## Create a `.env` file
+
+Create a `.env` file and add [your ngrok auth token](https://dashboard.ngrok.com/get-started/your-authtoken) to it.
+This file will be in the same directory as the Python script that will use ngrok's SDK to create an endpoint, so start by creating a directory for both files and navigating to it.
 
 ```bash
 mkdir hello-ngrok && cd hello-ngrok
-touch example.py
+touch .env
 ```
 
-Then add the following code to your file. This example:
+```txt filename=".env"
+NGROK_AUTHTOKEN=your_authtoken_here
+```
 
-1. Starts an Agent endpoint that points to your service running on port `8080`.
-1. Secures the endpoint with a traffic policy that requires authentication via Google OAuth.
+You'll also need to install [the `python-dotenv` package](https://pypi.org/project/python-dotenv/) to access your environment variable.
+
+```bash
+pip install python-dotenv
+```
+
+:::tip
+If you don't want to a `.env` file, you can also [export your authtoken as an environment variable](https://support.apple.com/en-il/guide/terminal/apd382cc5fa-4f58-4449-b20a-41c53c006f8f/mac) in your terminal session instead of using a `.env` file, or [call `ngrok.set_auth_token("your-token")`](https://ngrok.github.io/ngrok-python/index.html#authentication) in your code.
+:::
+
+## 4. Start your endpoint
+
+Start your agent endpoint by adding the following code to your file.
+This example:
+
+- Starts an Agent endpoint that points to your service running on port `8080`.
+- Secures the endpoint with a Traffic Policy that requires authentication via Google OAuth. Traffic policies allow you to control how traffic is handled by your endpoint, including authentication, headers, and more.
 
 :::note
-This example uses ngrok's default Google OAuth application. To use your own, see [the OAuth Traffic Policy Action documentation](/docs/traffic-policy/actions/oauth/#google-example).
+This example uses ngrok's default Google OAuth application.
+To use your own, see [the OAuth Traffic Policy Action documentation](/docs/traffic-policy/actions/oauth/#google-example).
 :::
 
 ```python filename="example.py"
+from dotenv import load_dotenv
+import os
 import ngrok
 import time
 
-# Establish connectivity
+load_dotenv()
+
 listener = ngrok.forward(
-  8080, # Port your service is running on
-  authtoken_from_env=True,
+  8080, 
+  authtoken=os.getenv("NGROK_AUTHTOKEN"),
 	# Secure your endpoint with a traffic policy.
-	# This could also be a path to a traffic policy file.
+	# This could also be a path to a traffic policy file. 
   traffic_policy='{"on_http_request": [{"actions": [{"type": "oauth","config": {"provider": "google"}}]}]}'
 )
 
@@ -167,15 +127,15 @@ print(f"Ingress established at {listener.url()}")
 
 # Keep the listener alive
 try:
-while True:
-    time.sleep(1)
+    while True:
+        time.sleep(1)
 except KeyboardInterrupt:
     print("Closing listener")
 ```
 
 ## 5. Test your endpoint
 
-Run your app with the following command:
+Test your endpoint. Start by running the following terminal command:
 
 ```bash
 python example.py
@@ -188,6 +148,7 @@ When you visit the URL, you should be prompted to log in with Google. After logg
 
 ## What's next?
 
-- Traffic policy enables you to [send custom headers](/traffic-policy/actions/add-headers/#examples), [terminate TLS](/traffic-policy/actions/terminate-tls/#examples), [rewrite URLs](/traffic-policy/actions/url-rewrite/#examples), and more. Learn how to [secure your app with traffic policy](/docs/traffic-policy/).
+- [Traffic policy](/docs/traffic-policy/) enables you to [send custom headers](/traffic-policy/actions/add-headers/#examples), [terminate TLS](/traffic-policy/actions/terminate-tls/#examples), [rewrite URLs](/traffic-policy/actions/url-rewrite/#examples), and more.
+- Learn about the [Agent SDK](/agent-sdks/) to understand how the Python SDK works under the hood.
 - Read [the full Python SDK documentation](https://ngrok.github.io/ngrok-python/) for more code examples.
 - Explore [Cloud Endpoints](/universal-gateway/cloud-endpoints/quickstart/), which enable you to manage traffic for multiple endpoints centrally in the cloud.
