@@ -41,10 +41,26 @@ const sidebars = {
 					type: "category",
 					link: { type: "doc", id: "getting-started/kubernetes/ingress" },
 					items: [
-						"getting-started/kubernetes/ingress",
-						"getting-started/kubernetes/gateway-api",
-						"getting-started/kubernetes/crds",
-						"getting-started/kubernetes/endpoints",
+						{
+							type: "link",
+							label: "Ingress",
+							href: "/docs/getting-started/kubernetes/ingress",
+						},
+						{
+							type: "link",
+							label: "Gateway API",
+							href: "/docs/getting-started/kubernetes/gateway-api",
+						},
+						{
+							type: "link",
+							label: "Custom Resources",
+							href: "/docs/getting-started/kubernetes/crds",
+						},
+						{
+							type: "link",
+							label: "Endpoints",
+							href: "/docs/getting-started/kubernetes/endpoints",
+						},
 					],
 				},
 			],
