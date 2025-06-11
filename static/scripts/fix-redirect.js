@@ -913,6 +913,10 @@ const redirects = [
 		fromExact("/docs/using-ngrok-with/python/"),
 		"/docs/getting-started/python/",
 	],
+		[
+		fromExact("/docs/using-ngrok-with/node-js/"),
+		"/docs/getting-started/javascript/",
+	],
 ];
 
 // get current href from window
