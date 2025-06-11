@@ -1,0 +1,91 @@
+---
+title: "Offload Analytics to a Secondary Service"
+description: "With http-request, you can capture observability data from your gateway and send it to a self-hosted analytics service securely and without instrumenting your code."
+---
+
+import ReserveDomain from "./snippets/_reserve-domain.mdx";
+import CloudEndpoint from "./snippets/_cloud-endpoint.mdx";
+import Back from "./snippets/_back-to-examples.mdx";
+
+ngrok and Traffic Policy let you integrate your ["front door" gateway](/docs/universal-gateway/examples/front-door-pattern) with an analytics service you host within your network to capture vital information about your traffic as a part of the request-response lifecycle.
+
+With this gateway setup and the http-request action, you can:
+
+- Host your analytics service in any network, region, or cloud.
+- Leave your analytics service completely unexposed to the public internet.
+- Simplify your upstream services by removing libraries and code for instrumenting them directly.
+- Configure for exactly the timeout and retry conditions your services require.
+
+## 1. Create endpoints for your services
+
+First, start an internal Agent Endpoint for your upstream service, replacing $PORT based on where it listens. You can also use one of our SDKs or the Kubernetes Operator.
+
+```bash
+ngrok http $PORT --url https://service.internal
+```
+
+Start a second ngrok agent for your analytics service.
+
+```bash
+ngrok http $PORT --url https://analytics.internal
+```
+
+## 2. Reserve a domain
+
+<ReserveDomain />
+
+## 3. Create a Cloud Endpoint
+
+<CloudEndpoint />
+
+## 4. Request customer data from your CRM and apply rate limiting with Traffic Policy
+
+Copy and paste the policy below into your new Cloud Endpoint in the ngrok dashboard.
+
+```yaml
+on_http_request:
+  - actions:
+      - type: forward-internal
+        config:
+          url: https://service.internal
+
+on_http_response:
+  - actions:
+      # Send authenticated request to analytics service
+      - type: http-request
+        config:
+          url: https://analytics.internal/api/request
+          method: POST
+          headers:
+            Authorization: "Bearer <ANALYTICS_API_TOKEN>"
+            Content-Type: "application/json"
+          body: |
+            { 
+              "path": "${req.url.path}",
+              "method": "${req.method}",
+              "status_code": "${res.status_code}",
+              "country_code": "${conn.geo.country_code}",
+              "region": "${conn.server_region}",
+            }
+          timeout: 1s
+```
+
+### What's happening here?
+
+Traffic Policy sends all requests directly to your upstream service at `https://service.internal`.
+
+As part of the response lifecycle, Traffic Policy sends an authenticated request to your analytics service with a body containing attributes, injected with CEL interpolation, about the user's request and your server's response. 
+The `http-request` action is purposely given a short timeout and no retry logic to ensure this analytics request doesn't add unnecessarily slow your service's response time.
+
+## 5. Try out your endpoint
+
+- In your browser: https://your-service.ngrok.app
+- In your terminal: `curl https://your-service.ngrok.app`
+
+## What's next?
+
+- Read more about [Traffic Policy](/docs/traffic-policy) and its [core concepts](/docs/traffic-policy/concepts).
+- View your traffic in [Traffic Inspector](https://dashboard.ngrok.com/traffic-inspector).
+- Add even more logging flexibility, plus access to our entire [eventing system](/docs/obs/), with the [`logs` action](/docs/traffic-policy/actions/log/).
+
+<Back />
