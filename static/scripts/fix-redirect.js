@@ -909,6 +909,10 @@ const redirects = [
 		fromExact("/docs/guides/other-guides/security-dev-productivity/"),
 		"/docs/guides/security-dev-productivity/",
 	],
+	[
+		fromExact("/docs/using-ngrok-with/python/"),
+		"/docs/getting-started/python/",
+	],
 ];
 
 // get current href from window
