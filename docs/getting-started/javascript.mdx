@@ -11,23 +11,46 @@ import SecureYourApp from "./_secure-your-app.mdx"
 
 [The ngrok JavaScript (Node.js) SDK](https://ngrok.github.io/ngrok-javascript/) enables you to quickly and efficiently serve Node.js applications on the internet without the need to configure low-level network primitives like IPs, certificates, load balancers, or ports.
 
-This quickstart uses ngrok's JavaScript SDK to put a Node.js app on the internet and secure it so only you can access it.
+This quickstart uses ngrok's JavaScript SDK to put a Node.js app running on your local device online and secure it so only you can access it.
 
 ## What you'll need
 
 1. [An ngrok account](https://dashboard.ngrok.com/signup).
 1. Your ngrok auth token, which you can find [in the dashboard](https://dashboard.ngrok.com/get-started/your-authtoken).
 1. [Node.js installed](https://www.nodejs.org/) on your machine. You can check this by running `node -v` in your terminal.
-1. A domain connected to your ngrok account. We'll refer to this as `$YOUR_DOMAIN` from here on out.
-   - In the dashboard, visit [the **Domains** section](https://dashboard.ngrok.com/domains) and select **+ New Domain** to get started. ngrok offers free static domains, or you can [bring your own custom domain](/docs/universal-gateway/custom-domains/).
 
 ## 1. Start your service
 
-Start up the app or service you'd like to forward traffic to.
+Start up the app or service you'd like to put online. 
+This is the app that your agent endpoint will forward online traffic to.
 
 If you don't already have a local app you'd like to work with, you can create a minimal Node.js app with the following code to set up a basic HTTP server at port `8080`.
 
-TK
+```javascript filename="service.js"
+const http = require('http');
+
+const server = http.createServer((req, res) => {
+    res.writeHead(200, { 'Content-Type': 'text/html' });
+    const html = `
+    <html>
+    <head><title>Test Page</title></head>
+    <body><h1>Hello from Node.js HTTP Server!</h1></body>
+    </html>
+    `;
+    res.end(html);
+});
+
+const port = 8080;
+server.listen(port, () => {
+    console.log(`Serving custom HTML at http://localhost:${port}`);
+});
+```
+
+Navigate to the directory where this file is located and run the following command to start the server:
+
+```bash
+node service.js
+```
 
 Navigate to the directory where this file is located and run the following command to start the server:
 
@@ -48,7 +71,7 @@ This file needs to be in a new directory with the JavaScript file we'll create i
 Create this directory within your existing project directory, navigate into it, and add the `.env` file there.
 
 ```bash
-mkdir hello-ngrok && cd hello-ngrok
+mkdir ngrok-nodejs-demo && cd ngrok-nodejs-demo
 touch .env
 ```
 
@@ -56,8 +79,14 @@ touch .env
 NGROK_AUTHTOKEN=your_authtoken_here
 ```
 
+You'll need to install [the `dotenv` package](https://www.npmjs.com/package/dotenv) to access your environment variable.
+
+```bash
+npm install dotenv
+```
+
 :::tip
-If you don't want to use a `.env` file, you can instead [export your auth token as an environment variable](https://support.apple.com/en-il/guide/terminal/apd382cc5fa-4f58-4449-b20a-41c53c006f8f/mac) in your terminal session, or [call `ngrok.set_auth_token("your-token")`](https://ngrok.github.io/ngrok-python/index.html#authentication) in your code.
+If you don't want to use a `.env` file, you can instead [export your auth token as an environment variable](https://support.apple.com/en-il/guide/terminal/apd382cc5fa-4f58-4449-b20a-41c53c006f8f/mac) in your terminal session, or [call `TK`](TK) in your code.
 :::
 
 ## 4. Start your endpoint
@@ -73,13 +102,32 @@ This example uses ngrok's default Google OAuth application.
 To use your own, see [the OAuth Traffic Policy Action documentation](/docs/traffic-policy/actions/oauth/#google-example).
 :::
 
-TK
+```javascript filename="example.js"
+require('dotenv').config();
+const ngrok = require('@ngrok/ngrok');
+
+(async function() {
+    const listener = await ngrok.forward({
+        addr: 8080,
+        authtoken: process.env.NGROK_AUTHTOKEN,
+        oauth_provider: "google"
+    });
+
+    // Output ngrok url to console
+    console.log(`Ingress established at ${listener.url()}`);
+})();
+
+// Keep the process alive
+process.stdin.resume();
+```
 
 ## 5. Test your endpoint
 
 Test your endpoint by running the following terminal command:
 
-TK
+```bash
+node example.js
+```
 
 Assuming everything is set up correctly, this should print your endpoint URL to the terminal.
 Your app is now live on the internet at this URL, and you can access it from any browser or tool that can make HTTP requests.
