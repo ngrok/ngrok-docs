@@ -18,6 +18,8 @@ This quickstart uses ngrok's Python SDK to put a Python app running on your loca
 1. [An ngrok account](https://dashboard.ngrok.com/signup).
 1. Your ngrok auth token, which you can find [in the dashboard](https://dashboard.ngrok.com/get-started/your-authtoken).
 1. [Python installed](https://www.python.org/downloads/) on your machine. You can check this by running `python -v` in your terminal.
+1. A domain connected to your ngrok account. We'll refer to this as `your-reserved-domain` from here on out.
+   - In the dashboard, visit [the **Domains** section](https://dashboard.ngrok.com/domains) and select **+ New Domain** to get started. ngrok offers free static domains, or you can [bring your own custom domain](/docs/universal-gateway/custom-domains/).
 
 ## 1. Start your app or service
 
@@ -103,7 +105,7 @@ Start your agent endpoint, which will forward public traffic to your app.
 Create a new file named `example.py` in the same directory as your `.env` file and add the following code.
 This example:
 
-- Starts an Agent endpoint that points to your service running on port `8080`.
+- Starts an Agent endpoint that forwards from your reserved domain to your service running on port `8080`.
 	- If your app is running on a different port, change the example code to reflect that.
 - Secures the endpoint with a Traffic Policy that requires authentication via Google OAuth.
 	- Traffic policies allow you to control how traffic is handled by your endpoint, including authentication, headers, and more.
@@ -125,6 +127,8 @@ listener = ngrok.forward(
 	# The port your app is running on.
   8080,
   authtoken=os.getenv("NGROK_AUTHTOKEN"),
+  # If you haven't reserved a domain, omit this
+  domain="your-reserved-domain.com",
 	# Secure your endpoint with a traffic policy.
 	# This could also be a path to a traffic policy file.
   traffic_policy='{"on_http_request": [{"actions": [{"type": "oauth","config": {"provider": "google"}}]}]}'
