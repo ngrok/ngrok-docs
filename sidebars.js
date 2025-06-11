@@ -36,6 +36,7 @@ const sidebars = {
 				"getting-started/index",
 				"getting-started/javascript",
 				"getting-started/go",
+				"getting-started/python",
 				"getting-started/rust",
 				{
 					label: "Kubernetes",
