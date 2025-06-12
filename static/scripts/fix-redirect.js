@@ -901,6 +901,12 @@ const redirects = [
 		"/docs/guides/security-dev-productivity/",
 	],
 	[
+		fromExact(
+			"/docs/guides/other-guides/security-dev-productivity/security-dev-productivity/",
+		),
+		"/docs/guides/security-dev-productivity/",
+	],
+	[
 		fromExact("/docs/using-ngrok-with/python/"),
 		"/docs/getting-started/python/",
 	],
