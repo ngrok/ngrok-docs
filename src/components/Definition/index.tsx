@@ -71,6 +71,7 @@ export function Definition({
 					type="button"
 					priority="neutral"
 					appearance="link"
+					aria-label={children.toString()}
 				>
 					<>
 						<span className={clsx("mr-[-5px]", className)}>{children}</span>
