@@ -919,7 +919,10 @@ const redirects = [
 	],
 	[fromExact("/docs/using-ngrok-with/go/"), "/docs/getting-started/go/"],
 	[fromExact("/docs/using-ngrok-with/rust/"), "/docs/getting-started/rust/"],
-	[fromExact("/docs/using-ngrok-with/django/"), "/docs/getting-started/python/"],
+	[
+		fromExact("/docs/using-ngrok-with/django/"),
+		"/docs/getting-started/python/",
+	],
 ];
 
 // get current href from window
