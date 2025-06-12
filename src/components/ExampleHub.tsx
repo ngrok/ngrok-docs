@@ -1,7 +1,7 @@
 import Link from "@docusaurus/Link";
 import { Badge } from "@ngrok/mantle/badge";
 import { Button } from "@ngrok/mantle/button";
-import { Card, CardBody, CardFooter } from "@ngrok/mantle/card";
+import { Card, CardHeader, CardTitle, CardBody, CardFooter } from "@ngrok/mantle/card";
 import { Input, InputCapture } from "@ngrok/mantle/input";
 import {
 	Select,
@@ -108,14 +108,14 @@ export default function ActionHub({ actions, categories }: Props) {
 							to={`/universal-gateway/examples/${action.slug}`}
 							className="col-span-1"
 						>
-							<Card className="flex h-full flex-col divide-y-0 hover:bg-card-hover">
-								<h3 className="m-0 flex items-baseline gap-2 px-4 pb-2 pt-4">
-									{action.name}
-								</h3>
-								<CardBody className="flex-grow p-0 px-4">
-									<p className="text-sm m-0 p-0">{action.description}</p>
+							<Card className="flex h-full flex-col hover:bg-card-hover">
+								<CardHeader>
+									<CardTitle className="mb-0">{action.name}</CardTitle>
+								</CardHeader>
+								<CardBody className="flex-grow py-4 px-6">
+									<p className="m-0 p-0">{action.description}</p>
 								</CardBody>
-								<CardFooter className="px-4 pb-4">
+								<CardFooter className="px-6">
 									<div className="flex flex-wrap gap-2">
 										{action.categories
 											.sort((a, b) => a.localeCompare(b))
