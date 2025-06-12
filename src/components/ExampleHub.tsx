@@ -8,6 +8,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@ngrok/mantle/card";
+import type { Color } from "@ngrok/mantle/color";
 import { Input, InputCapture } from "@ngrok/mantle/input";
 import {
 	Select,
@@ -35,7 +36,7 @@ type Category = {
 	id: string;
 	name: string;
 	description: string;
-	color: string;
+	color: Color;
 };
 
 type Props = {
