@@ -28,7 +28,7 @@ type Action = {
 	slug: string;
 	name: string;
 	description: string;
-	categories: string[];
+	categories: [string, ...string[]];
 	phases: string[];
 };
 
@@ -80,6 +80,18 @@ export default function ActionHub({ actions, categories }: Props) {
 		);
 	}
 
+  const actionsWithPrimary = filteredActions.map((action) => ({
+    ...action,
+    primaryCategoryId: action.categories[0],
+  }));
+
+  const groupedActions = new Map<string, Action[]>();
+  actionsWithPrimary.forEach((action) => {
+    const group = groupedActions.get(action.primaryCategoryId) ?? [];
+    group.push(action);
+    groupedActions.set(action.primaryCategoryId, group);
+  });
+
 	return (
 		<>
 			<div className="mb-4 flex flex-wrap justify-between gap-4">
@@ -112,60 +124,70 @@ export default function ActionHub({ actions, categories }: Props) {
 				</div>
 			</div>
 
-			{!!filteredActions.length && (
-				<div className="ngrok--cards grid grid-cols-2 gap-4">
-					{filteredActions.map((action) => (
-						<Link
-							key={action.name}
-							to={`/universal-gateway/examples/${action.slug}`}
-							className="col-span-1"
-						>
-							<Card className="flex h-full flex-col hover:bg-card-hover">
-								<CardHeader>
-									<CardTitle className="mb-0">{action.name}</CardTitle>
-								</CardHeader>
-								<CardBody className="flex-grow py-4 px-6">
-									<p className="m-0 p-0">{action.description}</p>
-								</CardBody>
-								<CardFooter className="px-6">
-									<div className="flex flex-wrap gap-2">
-										{action.categories
-											.sort((a, b) => a.localeCompare(b))
-											.map((categoryId) => {
-												const meta = categoryMap[categoryId] ?? {
-													name: categoryId,
-													color: "gray",
-												};
-												return (
-													<Badge
-														key={categoryId}
-														appearance="muted"
-														color={meta.color}
-													>
-														{meta.name}
-													</Badge>
-												);
-											})}
-									</div>
-								</CardFooter>
-							</Card>
-						</Link>
-					))}
-				</div>
-			)}
-			{!filteredActions.length && (
-				<div className="flex flex-col justify-center p-4 text-center">
-					<p>
-						No examples found with the phrase <b>{actionSearch}</b> in the{" "}
-						<b>{categoryFilter}</b> category.
-					</p>
-					<div>
-						<Button type="button" onClick={clearFilters}>
-							Clear Filters
-						</Button>
-					</div>
-				</div>
-			)}
+      {categories.map((cat) => {
+        const actionsInGroup = groupedActions.get(cat.id);
+        if (!actionsInGroup || !actionsInGroup.length) return null;
+
+        return (
+          <section key={cat.id} className="my-8">
+            <h2 className="text-xl font-bold mb-2">{cat.name}</h2>
+            <div className="ngrok--cards grid grid-cols-2 gap-4">
+              {actionsInGroup.map((action) => (
+                <Link
+                  key={action.name}
+                  to={`/universal-gateway/examples/${action.slug}`}
+                  className="col-span-1"
+                >
+                  <Card className="flex h-full flex-col hover:bg-card-hover">
+                    <CardHeader>
+                      <CardTitle className="mb-0">{action.name}</CardTitle>
+                    </CardHeader>
+                    <CardBody className="flex-grow py-4 px-6">
+                      <p className="m-0 p-0">{action.description}</p>
+                    </CardBody>
+                    <CardFooter className="px-6">
+                      <div className="flex flex-wrap gap-2">
+                        {action.categories
+                          .sort((a, b) => a.localeCompare(b))
+                          .map((categoryId) => {
+                            const meta = categoryMap[categoryId] ?? {
+                              name: categoryId,
+                              color: "gray",
+                            };
+                            return (
+                              <Badge
+                                key={categoryId}
+                                appearance="muted"
+                                color={meta.color}
+                              >
+                                {meta.name}
+                              </Badge>
+                            );
+                          })}
+                      </div>
+                    </CardFooter>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          </section>
+        );
+      })}
+
+      {!filteredActions.length && (
+        <div className="flex flex-col justify-center p-4 text-center">
+          <p>
+            No examples found with the phrase <b>{actionSearch}</b> in the{' '}
+            <b>{categoryFilter}</b> category.
+          </p>
+          <div>
+            <Button type="button" onClick={clearFilters}>
+              Clear Filters
+            </Button>
+          </div>
+        </div>
+      )}
+
 		</>
 	);
 }
