@@ -74,19 +74,19 @@ endpoints:
  - name: Internal Endpoint for Device 1
   url: tcp://device1.gateway1.internal:443
   upstream:
-   url: 22 
+   url: 22
  - name: Internal Endpoint for Device 2
   url: tcp://device2.gateway1.internal:443
   upstream:
-   url: 22 
+   url: 22
  - name: Internal Endpoint for Device N
   url: tcp://deviceN.gateway1.internal:443
   upstream:
-   url: 22 
+   url: 22
  - name: Internal Endpoint for RDP Server
   url: tcp://rdp-server.gateway1.internal:443
   upstream:
-   url: 3389 
+   url: 3389
 ```
 
 :::
@@ -109,7 +109,7 @@ curl \
 https://api.ngrok.com/reserved_addrs
 ```
 
-Repeat the above command for each device/server you need remote access to. 
+Repeat the above command for each device/server you need remote access to.
 
 ### 4. Create your TCP cloud endpoint and attach a Traffic Policy
 
@@ -130,7 +130,7 @@ curl \
 - H "Authorization: Bearer <NGROK_API_KEY>" \
 - H "Content-Type: application/json" \
 - H "Ngrok-Version: 2" \
-- d '{ "bindings": ["public"], "description": "TCP cloud endpoint for Device 1", "metadata": "{\"environment\\": \"staging\"}", "traffic_policy": "{\"on_tcp_connect\":[{\"actions\":[{\"type\":\"forward-internal\",\"config\":{\"url\":\"tcp://device1.gateway1.internal:443\"}}]}]}", "type": "cloud", "url": "<YOUR_RESERVED_ADDR_FROM_STEP_3>"}' 
+- d '{ "bindings": ["public"], "description": "TCP cloud endpoint for Device 1", "metadata": "{\"environment\\": \"staging\"}", "traffic_policy": "{\"on_tcp_connect\":[{\"actions\":[{\"type\":\"forward-internal\",\"config\":{\"url\":\"tcp://device1.gateway1.internal:443\"}}]}]}", "type": "cloud", "url": "<YOUR_RESERVED_ADDR_FROM_STEP_3>"}'
 \ https://api.ngrok.com/endpoints
 ```
 
@@ -142,9 +142,9 @@ Navigate to your newly created cloud endpoint in the [endpoints](https://dashboa
 on_tcp_connect:
  - actions:
   - type: restrict-ips
-   config: 
+   config:
     enforce: true
-    allow: 
+    allow:
      - e680:5791:be4c:5739:d959:7b94:6d54:d4b4/128
      - 203.0.113.42/32
   - type: forward-internal
@@ -168,13 +168,13 @@ curl -X POST https://api.ngrok.com/endpoints \
 
 ### 6. Use your ngrok TCP endpoints with your SSH/RDP Clients
 
-Now that you have created and secured your tcp cloud endpoints and they forward to the correct upstream devices, you can use these TCP endpoints in your existing SSH/RDP client setups to test your remote connectivity. 
+Now that you have created and secured your tcp cloud endpoints and they forward to the correct upstream devices, you can use these TCP endpoints in your existing SSH/RDP client setups to test your remote connectivity.
 
 ## Additional ngrok Features
 
 ### Enable endpoint pooling
 
-You can use endpoint pooling with multiple internal agent endpoints to achieve redundancy and high availability for services inside your network. If desired, you can install a second agent within the remote network as a failover in case agents in the wild go offline. 
+You can use endpoint pooling with multiple internal agent endpoints to achieve redundancy and high availability for services inside your network. If desired, you can install a second agent within the remote network as a failover in case agents in the wild go offline.
 
 Configure each agent endpoint to use the same ngrok internal URL. This automatically forms an endpoint pool. Incoming traffic to the pooled URL is automatically distributed among all healthy endpoints in the pool. If one endpoint goes offline, traffic is seamlessly routed to the remaining endpoints, ensuring redundancy and failover
 
@@ -198,7 +198,7 @@ agent:
 
 ### Create a custom connect URL
 
-This provides a white-labeling capability so that your ngrok agents will connect to *connect.example.com* instead of the default connection hostname (connect.ngrok-agent.com). Dedicated IPs that are unique for your account which your agents will connect to are also available. This takes away any danger of rogue agents in your network trying to call home and adds an additional layer of security by specializing your ngrok connectivity. Custom connect URLs are available with ngrok's pay-as-you-go plan as an additional paid feature. 
+This provides a white-labeling capability so that your ngrok agents will connect to _connect.example.com_ instead of the default connection hostname (connect.ngrok-agent.com). Dedicated IPs that are unique for your account which your agents will connect to are also available. This takes away any danger of rogue agents in your network trying to call home and adds an additional layer of security by specializing your ngrok connectivity. Custom connect URLs are available with ngrok's pay-as-you-go plan as an additional paid feature.
 
 ```yaml
 curl \
