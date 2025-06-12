@@ -49,7 +49,10 @@ export default function ActionHub({ actions, categories }: Props) {
 
 	// Create a map of category ID to name
 	const categoryMap = Object.fromEntries(
-    categories.map((cat) => [cat.id, { name: cat.name, color: cat.color ?? "gray" }]),
+		categories.map((cat) => [
+			cat.id,
+			{ name: cat.name, color: cat.color ?? "gray" },
+		]),
 	);
 
 	const clearFilters = () => {
@@ -128,12 +131,19 @@ export default function ActionHub({ actions, categories }: Props) {
 										{action.categories
 											.sort((a, b) => a.localeCompare(b))
 											.map((categoryId) => {
-													const meta = categoryMap[categoryId] ?? { name: categoryId, color: "gray" };
-													return (
-														<Badge key={categoryId} appearance="muted" color={meta.color}>
-															{meta.name}
-														</Badge>
-													);
+												const meta = categoryMap[categoryId] ?? {
+													name: categoryId,
+													color: "gray",
+												};
+												return (
+													<Badge
+														key={categoryId}
+														appearance="muted"
+														color={meta.color}
+													>
+														{meta.name}
+													</Badge>
+												);
 											})}
 									</div>
 								</CardFooter>
