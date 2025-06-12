@@ -48,10 +48,10 @@ Create an authtoken assigned to this specific bot user. Apply an ACL rule to ens
 
 ```bash
 curl -X POST \
-  -H "Authorization: Bearer <NGROK_API_KEY>" \
-  -H "Content-Type: application/json" \
-  -d '{"description":"Authtoken for Gateway 1", "owner_id":"<BOT_USER_ID>", "acl": ["bind:*.gateway1.internal"]}' \
-  "https://api.ngrok.com/tunnel_credentials"
+ -H "Authorization: Bearer <NGROK_API_KEY>" \
+ -H "Content-Type: application/json" \
+ -d '{"description":"Authtoken for Gateway 1", "owner_id":"<BOT_USER_ID>", "acl": ["bind:*.gateway1.internal"]}' \
+ "https://api.ngrok.com/tunnel_credentials"
 ```
 
 ### 2. Define internal endpoints in ngrok.yml for privatized device access
@@ -68,25 +68,25 @@ After installing the ngrok agent, define all required internal endpoints inside 
 version: 3
 
 agent:
-  authtoken: AUTHTOKEN_CREATED_IN_STEP_1
+ authtoken: AUTHTOKEN_CREATED_IN_STEP_1
 
 endpoints:
-  - name: Internal Endpoint for Device 1
-    url: tcp://device1.gateway1.internal:443
-    upstream:
-      url: 22 
-  - name: Internal Endpoint for Device 2
-    url: tcp://device2.gateway1.internal:443
-    upstream:
-      url: 22 
-  - name: Internal Endpoint for Device N
-    url: tcp://deviceN.gateway1.internal:443
-    upstream:
-      url: 22 
-  - name: Internal Endpoint for RDP Server
-    url: tcp://rdp-server.gateway1.internal:443
-    upstream:
-      url: 3389 
+ - name: Internal Endpoint for Device 1
+  url: tcp://device1.gateway1.internal:443
+  upstream:
+   url: 22 
+ - name: Internal Endpoint for Device 2
+  url: tcp://device2.gateway1.internal:443
+  upstream:
+   url: 22 
+ - name: Internal Endpoint for Device N
+  url: tcp://deviceN.gateway1.internal:443
+  upstream:
+   url: 22 
+ - name: Internal Endpoint for RDP Server
+  url: tcp://rdp-server.gateway1.internal:443
+  upstream:
+   url: 3389 
 ```
 
 :::
@@ -140,30 +140,30 @@ Navigate to your newly created cloud endpoint in the [endpoints](https://dashboa
 
 ```yaml
 on_tcp_connect:
-  - actions:
-    - type: restrict-ips
-      config: 
-        enforce: true
-        allow: 
-          - e680:5791:be4c:5739:d959:7b94:6d54:d4b4/128
-          - 203.0.113.42/32
-    - type: forward-internal
-      config:
-        url: tcp://device1.gateway1.internal:443
+ - actions:
+  - type: restrict-ips
+   config: 
+    enforce: true
+    allow: 
+     - e680:5791:be4c:5739:d959:7b94:6d54:d4b4/128
+     - 203.0.113.42/32
+  - type: forward-internal
+   config:
+    url: tcp://device1.gateway1.internal:443
 ```
 
 You can also create the TCP endpoint and attach its traffic policy with the forward-internal and restrict-ips actions all in one API call:
 
 ```bash
 curl -X POST https://api.ngrok.com/endpoints \
-  -H "Authorization: Bearer <NGROK_API_KEY>" \
-  -H "Content-Type: application/json" \
-  -H "Ngrok-Version: 2" \
-  -d '{
-    "type": "cloud",
-    "url": "RESERVED_TCP_ADDR_FROM_STEP_3",
-    "traffic_policy": "{ \"on_tcp_connect\": [ { \"actions\": [ { \"type\": \"restrict-ips\", \"config\": { \"enforce\": true, \"allow\": [ \"e680:5791:be4c:5739:d959:7b94:6d54:d4b4/128\", \"203.0.113.42/32\" ] } }, { \"type\": \"forward-internal\", \"config\": { \"url\": \"tcp://device1.gateway1.internal:443\" } } ] } ] }"
-  }'
+ -H "Authorization: Bearer <NGROK_API_KEY>" \
+ -H "Content-Type: application/json" \
+ -H "Ngrok-Version: 2" \
+ -d '{
+  "type": "cloud",
+  "url": "RESERVED_TCP_ADDR_FROM_STEP_3",
+  "traffic_policy": "{ \"on_tcp_connect\": [ { \"actions\": [ { \"type\": \"restrict-ips\", \"config\": { \"enforce\": true, \"allow\": [ \"e680:5791:be4c:5739:d959:7b94:6d54:d4b4/128\", \"203.0.113.42/32\" ] } }, { \"type\": \"forward-internal\", \"config\": { \"url\": \"tcp://device1.gateway1.internal:443\" } } ] } ] }"
+ }'
 ```
 
 ### 6. Use your ngrok TCP endpoints with your SSH/RDP Clients
@@ -182,18 +182,18 @@ Configure each agent endpoint to use the same ngrok internal URL. This automatic
 version: 3
 
 agent:
-  authtoken: <YOUR_NGROK_AUTHTOKEN>
-  endpoints:
-    - name: service-a
-      url: tcp://service.internal
-      pooling_enabled: true
-      upstream:
-        url: 8080
-    - name: service-b
-      url: tcp://service.internal
-      pooling_enabled: true
-      upstream:
-        url: 8081
+ authtoken: <YOUR_NGROK_AUTHTOKEN>
+ endpoints:
+  - name: service-a
+   url: tcp://service.internal
+   pooling_enabled: true
+   upstream:
+    url: 8080
+  - name: service-b
+   url: tcp://service.internal
+   pooling_enabled: true
+   upstream:
+    url: 8081
 ```
 
 ### Create a custom connect URL
@@ -202,12 +202,12 @@ This provides a white-labeling capability so that your ngrok agents will connect
 
 ```yaml
 curl \
-  -X POST \
-  -H "Authorization: Bearer {API_KEY}" \
-  -H "Content-Type: application/json" \
-  -H "Ngrok-Version: 2" \
-  -d '{"description":"Custom connect URL","domain":"connect.example.com"}' \
-  https://api.ngrok.com/agent_ingresses
+ -X POST \
+ -H "Authorization: Bearer {API_KEY}" \
+ -H "Content-Type: application/json" \
+ -H "Ngrok-Version: 2" \
+ -d '{"description":"Custom connect URL","domain":"connect.example.com"}' \
+ https://api.ngrok.com/agent_ingresses
 ```
 
 Once you have created the custom connect url, specify this field within the agent configuration file. Add this section to your agent configuration file to specify the custom connect url:
@@ -215,7 +215,7 @@ Once you have created the custom connect url, specify this field within the agen
 ```yaml
 version: 3
 agent:
-  connect_url: connect.example.com:443
+ connect_url: connect.example.com:443
 ```
 
 ### Install ngrok as a background service
