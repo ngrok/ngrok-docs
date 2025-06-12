@@ -12,6 +12,6 @@ you’ve used the ngrok agent before, you can think of ngrok-go as the agent
 packaged as a Go library.
 
 - [Quickstart Guide](/getting-started/go/)
-- [API Reference Documentation](https://pkg.go.dev/golang.ngrok.com/ngrok)
+- [API Reference Documentation](https://pkg.go.dev/golang.ngrok.com/ngrok/v2)
 - [Open-Source GitHub Repository](http://github.com/ngrok/ngrok-go)
 - [HTTP Examples](/universal-gateway/http/?cty=go-sdk)

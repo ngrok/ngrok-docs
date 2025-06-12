@@ -1,6 +1,7 @@
 ---
-title: Go
-pagination_next: universal-gateway/http
+sidebar_label: Go
+title: ngrok-go Quickstart
+pagination_next: universal-gateway/overview
 ---
 
 import TabItem from "@theme/TabItem";
@@ -8,46 +9,43 @@ import Tabs from "@theme/Tabs";
 import ConfigExample from "/src/components/ConfigExample.tsx";
 import SecureYourApp from "./_secure-your-app.mdx"
 
-# Quickstart: ngrok-go
+[ngrok-go](https://github.com/ngrok/ngrok-go/) is an open-source, idiomatic package that gives you the functionality of the [ngrok agent](/agent) in a Go library. You can use it to embed secure ingress directly into your Go applications.
 
-This quickstart will use the [ngrok-go Agent SDK](/agent-sdks/) to put a Go app
-on the internet and secure it so that only you can access it.
+This quickstart will use the [Agent SDK](/agent-sdks/) for [ngrok-go](https://github.com/ngrok/ngrok-go) to put a Go app on the internet and secure it so that only you can access it.
 
-## What is ngrok-go?
+:::tip
+You may want to open the [ngrok-go package documentation on pkg.go.dev](https://pkg.go.dev/golang.ngrok.com/ngrok) as you work through this guide.
+:::
 
-ngrok-go is an [open-source, idiomatic Go
-package](https://github.com/ngrok/ngrok-go) for embedding secure ingress
-directly into your Go applications. If you’ve used the ngrok agent before, you
-can think of ngrok-go as the agent packaged as a Go library.
+## Why you should use ngrok-go
 
-ngrok-go enables you to serve Go applications on the internet in a single line
-of code without configuring network minutia like routing, load balancers,
-certificates, or ports. Applications using ngrok-go listen on ngrok’s global
-network and your app gets the same `net.Listener` interface it would get if it
-had listened on a local port. This makes it incredibly simple to drop ngrok-go
-into any existing Go code.
+With ngrok-go, you can serve Go applications on the internet in a single line of code without configuring low-level network primitives like IPs, certificates, load balancers and even ports. Applications using ngrok-go listen on ngrok’s global
+network and your app gets the same `net.Listener` interface it would get if it had listened on a local port. This makes it incredibly simple to drop ngrok-go into any existing Go code.
 
-You may want to open the [ngrok-go package documentation on
-pkg.go.dev](https://pkg.go.dev/golang.ngrok.com/ngrok) as you work through this
-guide.
+## What you'll need
+
+1. [An ngrok account](https://dashboard.ngrok.com/signup).
+1. Your ngrok authtoken, which you can find [in the dashboard](https://dashboard.ngrok.com/get-started/your-authtoken).
+1. [Go installed](https://go.dev/doc/install) on your machine. You can check this by running `go version` in your terminal.
 
 ## 1. Install ngrok-go
 
-Create a new Go module and install ngrok-go. This guide assumes you [already
-have Go installed](https://go.dev/doc/install).
+Create a new Go module and install ngrok-go.
 
 ```bash
 mkdir ngrok-go-quickstart
 cd ngrok-go-quickstart
 go mod init ngrok-go-quickstart
-go get golang.ngrok.com/ngrok
+go get golang.ngrok.com/ngrok/v2
 ```
 
 ## 2. Create your app
 
+The following example starts a Go web server that receives traffic from an endpoint on ngrok's cloud service. It uses a randomly-assigned URL. The URL provided when running this example will be accessible by anyone with an internet connection.
+
 In the `ngrok-go-quickstart` directory, create the following `main.go` file:
 
-```go showLineNumbers
+```go
 package main
 
 import (
@@ -56,8 +54,7 @@ import (
 	"log"
 	"net/http"
 
-	"golang.ngrok.com/ngrok"
-	"golang.ngrok.com/ngrok/config"
+	"golang.ngrok.com/ngrok/v2"
 )
 
 func main() {
@@ -67,81 +64,53 @@ func main() {
 }
 
 func run(ctx context.Context) error {
-	// highlight-start
-	listener, err := ngrok.Listen(ctx,
-		config.HTTPEndpoint(),
-		ngrok.WithAuthtokenFromEnv(),
-	)
-	// highlight-end
+	// ngrok.Listen uses ngrok.DefaultAgent which uses the NGROK_AUTHTOKEN
+	// environment variable for auth
+	ln, err := ngrok.Listen(ctx)
 	if err != nil {
 		return err
 	}
 
-	log.Println("App URL", listener.URL())
-	// highlight-next-line
-	return http.Serve(listener, http.HandlerFunc(handler))
+	log.Println("Endpoint online", ln.URL())
+
+	// Serve HTTP traffic on the ngrok endpoint
+	return http.Serve(ln, http.HandlerFunc(handler))
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "<h1>Hello from ngrok-go!</h1>")
+	fmt.Fprintln(w, "Hello from ngrok-go!")
 }
 ```
 
-:::note In this code
+## 3. Run the example
 
-- **Lines 20-23**: connect to ngrok and create a net.Listener for a randomly-assigned HTTP endpoint URL
-- **Line 22**: use the value of the `NGROK_AUTHTOKEN` environment variable to auth with ngrok
-- **Line 29**. serve a simple http handler using Go's `net/http.Serve` function
-
-:::
-
-## 3. Run it!
-
-Copy [the ngrok authtoken on your
-dashboard](https://dashboard.ngrok.com/get-started/your-authtoken). You may
-need to [sign up for ngrok](https://dashboard.ngrok.com/signup) if you haven't already.
-
-Run your application with your authtoken in the environment:
+1. If you haven't yet, [copy your authtoken from the ngrok dashboard](https://dashboard.ngrok.com/get-started/your-authtoken).
+1. Run your application with your authtoken in the environment:
 
 ```bash
 NGROK_AUTHTOKEN="<TOKEN>" go run main.go
 ```
 
-Your terminal will print out your app's URL. Visit the URL in a browser and
-confirm you see "Hello from ngrok-go!". Your Go application is now live on the
-internet, with a URL that anyone on the internet can access. Test it out by
-sending it to a friend!
+Your Go application should be live on the internet, with a URL that anyone on the internet can access.
 
-## 4. Always use the same domain
+Your app's randomly-assigned URL will be available in the terminal. When you visit the URL, you should see "Hello from ngrok-go!" in your browser. Try sending it to a friend.
 
-If you want to keep the same URL each time you run your app, [create a static
-domain on your dashboard](https://dashboard.ngrok.com/domains) and
-then update your `ngrok.Listen` function call to use it. Stop your app with
-`Ctrl+C`, update your code and then rerun it:
+## Secure your app
 
-```go showLineNumbers
-	listener, err := ngrok.Listen(ctx,
-		config.HTTPEndpoint(
-			// highlight-start
-			config.WithDomain("jumpy-red-mollusk.ngrok-free.app"),
-			// highlight-end
-		),
-		ngrok.WithAuthtokenFromEnv(),
-	)
-```
-
-## 5. Secure your app
-
-You may not want everyone to be able to access your application. ngrok can
+Once you've completed the quickstart, you can explore other features of ngrok with ngrok-go, such as Requiring authentication to access your app. You may not want everyone to be able to access your application. ngrok can
 quickly add authentication to your app with a few lines of code.
 
 The following example only grants access to users whose email address is `alan@example.com`.
 
-<SecureYourApp>
-
 You can also add authentication directly in your code.
 
-```go showLineNumbers
+The following example:
+
+1. Requires visitors to authenticate with Google before they access your application. You can [choose other providers](/traffic-policy/actions/oauth/#supported-providers).
+1. Only allows `alan@example.com` access to the application
+1. Prints the authenticated user's email address from a request header.
+
+```go
 package main
 
 import (
@@ -150,8 +119,7 @@ import (
 	"log"
 	"net/http"
 
-	"golang.ngrok.com/ngrok"
-	"golang.ngrok.com/ngrok/config"
+	"golang.ngrok.com/ngrok/v2"
 )
 
 func main() {
@@ -160,44 +128,42 @@ func main() {
 	}
 }
 
+const trafficPolicy = `
+on_http_request:
+  - name: OAuth
+    actions:
+      - type: oauth
+        config:
+          auth_id: oauth
+          provider: google
+  - name: bad email
+    expressions:
+      - actions.ngrok.oauth.identity.email != 'alan@example.com'
+    actions:
+      - type: custom-response
+        config:
+          body: Access denied: ${actions.ngrok.oauth.identity.name}!
+          status_code: 403
+`
+
 func run(ctx context.Context) error {
-	listener, err := ngrok.Listen(ctx,
-		config.HTTPEndpoint(
-			// highlight-start
-			config.WithOAuth("google",
-				config.WithAllowOAuthEmail("alan@example.com"),
-			),
-			// highlight-end
-		),
-		ngrok.WithAuthtokenFromEnv(),
+	// Create an HTTP listener with the traffic policy
+	ln, err := ngrok.Listen(ctx,
+		ngrok.WithTrafficPolicy(trafficPolicy),
+		ngrok.WithDescription("traffic policy example"),
 	)
 	if err != nil {
 		return err
 	}
-
-	log.Println("App URL", listener.URL())
-	return http.Serve(listener, http.HandlerFunc(handler))
+	// Serve HTTP traffic on the ngrok endpoint
+	log.Println("Endpoint online", ln.URL())
+	return http.Serve(ln, http.HandlerFunc(handler))
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w,
-		"<h1>Hello from ngrok-go, %s.</h1>",
-		// highlight-start
-		r.Header.Values("ngrok-auth-oauth-email"),
-		// highlight-end
-	)
+	fmt.Fprintf(w, "Hello, %s\n", r.Header.Get("authenticated-user"))
 }
 ```
-
-:::note In this code
-
-- **Line 22**: Require visitors to authenticate with Google before they access your application. You can [choose other providers](/traffic-policy/actions/oauth/#supported-providers).
-- **Line 23**: Only allow `alan@example.com` access to the application
-- **Line 39**: Print the authenticated user's email address from a request header. [See what headers are populated by the OAuth Module.](/universal-gateway/http/#upstream-headers)
-
-:::
-
-</SecureYourApp>
 
 Run your app again and visit the URL it prints in the terminal.
 
@@ -205,16 +171,12 @@ Anyone accessing your app will be prompted to log in with Google and only your
 account will be allowed to access it. Keep in mind that when you restarted
 ngrok, your app's URL changed, so make sure to visit the new one.
 
-Here's the full result:
-
-![ngrok go in action](/img/howto/ngrok-go/ngrok-go-small.gif)
-
 ## Next Steps
 
-- Read the [ngrok-go package documentation on
-  pkg.go.dev](https://pkg.go.dev/golang.ngrok.com/ngrok)
+- Read the [ngrok-go package documentation](https://pkg.go.dev/golang.ngrok.com/ngrok/v2)
 - Star the [ngrok-go GitHub repo](https://github.com/ngrok/ngrok-go) and follow
   it for updates.
 - Browse [Go examples of HTTP Endpoints](/universal-gateway/http/?cty=go-sdk) of other ways ngrok can augment your application.
 - Bring your own [custom domain to ngrok](/universal-gateway/http/#bring-your-own-domain)
 - Create connectivity for non-HTTP protocols such as SSH, RDP, or game servers using [TCP Endpoints](/universal-gateway/tcp/?cty=go-sdk)
+- For working with [the ngrok API](https://ngrok.com/docs/api/), check out the [ngrok Go API Client Library](https://github.com/ngrok/ngrok-api-go)

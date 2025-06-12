@@ -9,7 +9,7 @@ export const languageInfo: LanguageInfo[] = [
 	{
 		name: "go",
 		displayName: "Go",
-		links: ["https://pkg.go.dev/golang.ngrok.com/ngrok"],
+		links: ["https://pkg.go.dev/golang.ngrok.com/ngrok/v2"],
 	},
 	{
 		name: "rust",
