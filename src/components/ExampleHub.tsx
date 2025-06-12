@@ -35,6 +35,7 @@ type Category = {
 	id: string;
 	name: string;
 	description: string;
+	color: string;
 };
 
 type Props = {
@@ -46,16 +47,17 @@ export default function ActionHub({ actions, categories }: Props) {
 	const [categoryFilter, setCategoryFilter] = useState(DefaultCategoryValue);
 	const [actionSearch, setActionSearch] = useState("");
 
+	// Create a map of category ID to name
+	const categoryMap = Object.fromEntries(
+    categories.map((cat) => [cat.id, { name: cat.name, color: cat.color ?? "gray" }]),
+	);
+
 	const clearFilters = () => {
 		setCategoryFilter(DefaultPhaseValue);
 		setActionSearch("");
 	};
 
-	const sortedActions = actions.sort((a, b) => a.slug.localeCompare(b.slug));
-
 	let filteredActions = actions;
-
-	console.log(sortedActions);
 
 	if (categoryFilter !== DefaultCategoryValue) {
 		filteredActions = filteredActions.filter((action) =>
@@ -125,12 +127,13 @@ export default function ActionHub({ actions, categories }: Props) {
 									<div className="flex flex-wrap gap-2">
 										{action.categories
 											.sort((a, b) => a.localeCompare(b))
-											.map((category) => {
-												return (
-													<Badge key={category} appearance="muted" color="pink">
-														{category}
-													</Badge>
-												);
+											.map((categoryId) => {
+													const meta = categoryMap[categoryId] ?? { name: categoryId, color: "gray" };
+													return (
+														<Badge key={categoryId} appearance="muted" color={meta.color}>
+															{meta.name}
+														</Badge>
+													);
 											})}
 									</div>
 								</CardFooter>
