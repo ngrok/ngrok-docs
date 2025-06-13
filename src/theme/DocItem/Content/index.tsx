@@ -8,12 +8,12 @@ import {
 	langParamName,
 	tabParamName,
 } from "@site/src/components/LangSwitcher/utils";
+import { ViewAsMarkDown } from "@site/src/components/ViewAsMarkdown";
 import Content from "@theme-original/DocItem/Content";
 import type ContentType from "@theme/DocItem/Content";
 import { type ReactNode, useState } from "react";
 import TabListContext from "../../Tabs/TabListContext";
 import type { TabItem } from "../../Tabs/TabListContext";
-import { ViewAsMarkDown } from "@site/src/components/ViewAsMarkdown";
 
 type Props = WrapperProps<typeof ContentType>;
 
