@@ -13,6 +13,7 @@ import type ContentType from "@theme/DocItem/Content";
 import { type ReactNode, useState } from "react";
 import TabListContext from "../../Tabs/TabListContext";
 import type { TabItem } from "../../Tabs/TabListContext";
+import { ViewAsMarkDown } from "@site/src/components/ViewAsMarkdown";
 
 type Props = WrapperProps<typeof ContentType>;
 
@@ -62,6 +63,7 @@ export default function ContentWrapper(props: Props): ReactNode {
 					updateSelectedLanguage,
 				}}
 			>
+				<ViewAsMarkDown />
 				<Content {...props} />
 			</LangSwitcherContext.Provider>
 		</TabListContext.Provider>
