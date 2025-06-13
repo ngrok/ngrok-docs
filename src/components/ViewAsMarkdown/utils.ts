@@ -4,7 +4,9 @@ export function exportPageAsMarkdown() {
 	const turndownService = new TurndownService();
 
 	// You can narrow the scope if needed (e.g., just main content)
-	const content = document.querySelector("main")?.innerHTML;
+	const content = document.querySelector(
+		'div[class^="theme-doc-markdown"]',
+	)?.innerHTML;
 	if (!content) {
 		alert("Unable to find page content to convert.");
 		return;
