@@ -21,59 +21,51 @@ This quickstart uses ngrok's Go SDK to put a Go app running on your local device
 1. A domain connected to your ngrok account. We'll refer to this as `your-reserved-domain` from here on out.
    - In the dashboard, visit [the **Domains** section](https://dashboard.ngrok.com/domains) and select **+ New Domain** to get started. ngrok offers free static domains, or you can [bring your own custom domain](/docs/universal-gateway/custom-domains/).
 
-## 1. Install ngrok-go
+## 1. Start your app or service
 
-Create a new Go module and install ngrok-go.
+Start up the app or service you'd like to put online.
+This is the app that your agent endpoint will forward online traffic to.
 
-```bash
-mkdir ngrok-go-quickstart
-cd ngrok-go-quickstart
-go mod init ngrok-go-quickstart
-go get golang.ngrok.com/ngrok/v2
-```
+If you don't have an app to work with, you can create a minimal a Python app using the following code to set up a basic HTTP server at port `8080`.
 
-## 2. Create your app
-
-The following example starts a Go web server that receives traffic from an endpoint on ngrok's cloud service. It uses a randomly-assigned URL. The URL provided when running this example will be accessible by anyone with an internet connection.
-
-In the `ngrok-go-quickstart` directory, create the following `main.go` file:
-
-```go
+```go filename="service.go"
 package main
 
 import (
-	"context"
 	"fmt"
-	"log"
 	"net/http"
-
-	"golang.ngrok.com/ngrok/v2"
 )
 
-func main() {
-	if err := run(context.Background()); err != nil {
-		log.Fatal(err)
-	}
-}
-
-func run(ctx context.Context) error {
-	// ngrok.Listen uses ngrok.DefaultAgent which uses the NGROK_AUTHTOKEN
-	// environment variable for auth
-	ln, err := ngrok.Listen(ctx)
-	if err != nil {
-		return err
-	}
-
-	log.Println("Endpoint online", ln.URL())
-
-	// Serve HTTP traffic on the ngrok endpoint
-	return http.Serve(ln, http.HandlerFunc(handler))
-}
-
 func handler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "Hello from ngrok-go!")
+	fmt.Fprintf(w, "Hello, world!")
+}
+
+func main() {
+	http.HandleFunc("/", handler)
+
+	fmt.Println("Starting server at http://localhost:8080")
+	err := http.ListenAndServe(":8080", nil)
+	if err != nil {
+		fmt.Println("Server failed:", err)
+	}
 }
 ```
+
+Navigate to the directory where this file is located and run the following command to start the server:
+
+```bash
+go run service.go
+```
+
+## 2. Install the Go SDK
+
+Create a new Go module and use the following terminal command to install the Go SDK.
+
+:::note
+If your terminal is already running an app or service, you'll need to open a new terminal window or tab to follow this step.
+:::
+
+
 
 ## 3. Run the example
 
