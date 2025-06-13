@@ -23,7 +23,8 @@ import { useState } from "react";
 const DefaultCategoryValue = "any";
 const DefaultPhaseValue = "any";
 
-type Action = {
+// Renamed from Action to Example for clearer domain context
+type Example = {
 	id?: string;
 	slug: string;
 	name: string;
@@ -40,15 +41,15 @@ type Category = {
 };
 
 type Props = {
-	actions: Action[];
+	examples: Example[];
 	categories: Category[];
 };
 
-export default function ActionHub({ actions, categories }: Props) {
+export default function ExampleHub({ examples, categories }: Props) {
 	const [categoryFilter, setCategoryFilter] = useState(DefaultCategoryValue);
-	const [actionSearch, setActionSearch] = useState("");
+	const [exampleSearch, setExampleSearch] = useState("");
 
-	// Create a map of category ID to name
+	// Enhanced: Map category ID to display name and color from YAML
 	const categoryMap = Object.fromEntries(
 		categories.map((cat) => [
 			cat.id,
@@ -58,38 +59,38 @@ export default function ActionHub({ actions, categories }: Props) {
 
 	const clearFilters = () => {
 		setCategoryFilter(DefaultPhaseValue);
-		setActionSearch("");
+		setExampleSearch("");
 	};
 
-	let filteredActions = actions;
+	let filteredExamples = examples;
 
 	if (categoryFilter !== DefaultCategoryValue) {
-		filteredActions = filteredActions.filter((action) =>
-			// Filter by phase if set
-			action.categories.includes(categoryFilter),
+		filteredExamples = filteredExamples.filter((example) =>
+			example.categories.includes(categoryFilter),
 		);
 	}
 
-	if (actionSearch) {
-		filteredActions = filteredActions.filter(
-			(action) =>
-				// Filter by name or description if actionSearch is set
-				action.slug.toLowerCase().includes(actionSearch.toLowerCase()) ||
-				action.name.toLowerCase().includes(actionSearch.toLowerCase()) ||
-				action.description.toLowerCase().includes(actionSearch.toLowerCase()),
+	if (exampleSearch) {
+		filteredExamples = filteredExamples.filter(
+			(example) =>
+				example.slug.toLowerCase().includes(exampleSearch.toLowerCase()) ||
+				example.name.toLowerCase().includes(exampleSearch.toLowerCase()) ||
+				example.description.toLowerCase().includes(exampleSearch.toLowerCase()),
 		);
 	}
 
-	const actionsWithPrimary = filteredActions.map((action) => ({
-		...action,
-		primaryCategoryId: action.categories[0],
+	// Added: Assign primary category for grouping
+	const examplesWithPrimary = filteredExamples.map((example) => ({
+		...example,
+		primaryCategoryId: example.categories[0],
 	}));
 
-	const groupedActions = new Map<string, Action[]>();
-	for (const action of actionsWithPrimary) {
-		const group = groupedActions.get(action.primaryCategoryId) ?? [];
-		group.push(action);
-		groupedActions.set(action.primaryCategoryId, group);
+	// Added: Group examples by primary category
+	const groupedExamples = new Map<string, Example[]>();
+	for (const example of examplesWithPrimary) {
+		const group = groupedExamples.get(example.primaryCategoryId) ?? [];
+		group.push(example);
+		groupedExamples.set(example.primaryCategoryId, group);
 	}
 
 	return (
@@ -98,8 +99,8 @@ export default function ActionHub({ actions, categories }: Props) {
 				<Input
 					className="max-w-64 font-sans"
 					placeholder="Filter..."
-					value={actionSearch}
-					onChange={(event) => setActionSearch(event.target.value)}
+					value={exampleSearch}
+					onChange={(event) => setExampleSearch(event.target.value)}
 				>
 					<MagnifyingGlass />
 					<InputCapture />
@@ -125,29 +126,29 @@ export default function ActionHub({ actions, categories }: Props) {
 			</div>
 
 			{categories.map((cat) => {
-				const actionsInGroup = groupedActions.get(cat.id);
-				if (!actionsInGroup || !actionsInGroup.length) return null;
+				const examplesInGroup = groupedExamples.get(cat.id);
+				if (!examplesInGroup || !examplesInGroup.length) return null;
 
 				return (
 					<section key={cat.id} className="my-8">
 						<h2 className="text-xl font-bold mb-2">{cat.name}</h2>
 						<div className="ngrok--cards grid grid-cols-2 gap-4">
-							{actionsInGroup.map((action) => (
+							{examplesInGroup.map((example) => (
 								<Link
-									key={action.name}
-									to={`/universal-gateway/examples/${action.slug}`}
+									key={example.name}
+									to={`/universal-gateway/examples/${example.slug}`}
 									className="col-span-1"
 								>
 									<Card className="flex h-full flex-col hover:bg-card-hover">
 										<CardHeader>
-											<CardTitle className="mb-0">{action.name}</CardTitle>
+											<CardTitle className="mb-0">{example.name}</CardTitle>
 										</CardHeader>
 										<CardBody className="flex-grow py-4 px-6">
-											<p className="m-0 p-0">{action.description}</p>
+											<p className="m-0 p-0">{example.description}</p>
 										</CardBody>
 										<CardFooter className="px-6">
 											<div className="flex flex-wrap gap-2">
-												{action.categories
+												{example.categories
 													.sort((a, b) => a.localeCompare(b))
 													.map((categoryId) => {
 														const meta = categoryMap[categoryId] ?? {
@@ -174,10 +175,10 @@ export default function ActionHub({ actions, categories }: Props) {
 				);
 			})}
 
-			{!filteredActions.length && (
+			{!filteredExamples.length && (
 				<div className="flex flex-col justify-center p-4 text-center">
 					<p>
-						No examples found with the phrase <b>{actionSearch}</b> in the{" "}
+						No examples found with the phrase <b>{exampleSearch}</b> in the{" "}
 						<b>{categoryFilter}</b> category.
 					</p>
 					<div>
