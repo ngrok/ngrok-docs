@@ -13,7 +13,9 @@ The "front door" pattern involves using a Cloud Endpoint, the forward-internal T
 
 With this pattern, you can:
 
-- Host any number of services under a single hostname (e.g. `your-company.com`).
+- Host any number of services under a single hostname (e.g. `your-company.com`) and route to them by path, subdomain, headers, or more.
+- Configure certain gateway policies across multiple services and 
+
 - Decouple gateway configuration from per-service traffic management policies.
 - Prevent your services or their host systems from being exposed to the public internet.
 - Route traffic and add authentication to microservices with a single API gateway configuration.
@@ -38,7 +40,7 @@ ngrok http $PORT --url https://service.internal
 
 ## 4. Add routing to your service with Traffic Policy
 
-Copy and paste the policy below into your new Cloud Endpoint in the ngrok dashboard.
+While still viewing your new cloud endpoint in the dashboard, copy and paste the policy below into the Traffic Policy editor.
 
 ```yaml
 on_http_request:
@@ -50,10 +52,13 @@ on_http_request:
 
 ### What's happening here?
 
-On every HTTP request, the Traffic Policy engine forwards the traffic to the
-internal agent endpoint you created at `https://service.internal`.
+The traffic policy engine forwards all HTTP requests to the internal agent endpoint you created at `https://service.internal`.
 
-## 5. Add a second service and routing (optional)
+## 5. Try out your endpoint
+
+<TryOut />
+
+## Add a second service and routing (optional)
 
 If you have another service to host under the front door pattern, start another agent.
 
@@ -61,7 +66,7 @@ If you have another service to host under the front door pattern, start another 
 ngrok http $PORT --url https://service-two.internal
 ```
 
-## 5a. Update your routing based on paths
+### Update your routing based on paths
 
 Copy and paste the policy below into the ngrok dashboard, replacing `/one` and `/two` with the paths you'd like to use for routing traffic to each service.
 
@@ -81,9 +86,9 @@ on_http_request:
           url: http://service-two.internal
 ```
 
-## 6. Try out your endpoint
+### What's happening here?
 
-<TryOut />
+The traffic policy engine forwards all HTTP requests to the `/one` path to the internal agent endpoint at `https://service.internal` and requests to the `/two` path to `https://service-two.internal`.
 
 ## What's next?
 
