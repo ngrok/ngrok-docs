@@ -8,10 +8,10 @@
     {
       "certificate_management_policy": null,
       "certificate_management_status": null,
-      "created_at": "2025-06-10T10:10:43Z",
+      "created_at": "2025-06-14T10:07:00Z",
       "description": "acme devices",
       "domain": "connect.acme.com",
-      "id": "agin_2yJQYUnY67BdI1GkWf5KLxc8vfx",
+      "id": "agin_2yUib5NtSuWliKwpXOgFsdiB191",
       "ns_targets": [
         "1.kube-dns.kube-system.svc.cluster.local.",
         "2.kube-dns.kube-system.svc.cluster.local.",
@@ -21,7 +21,7 @@
       "region_domains": [
         "tunnel.us.connect.acme.com"
       ],
-      "uri": "/agent_ingresses/agin_2yJQYUnY67BdI1GkWf5KLxc8vfx"
+      "uri": "/agent_ingresses/agin_2yUib5NtSuWliKwpXOgFsdiB191"
     }
   ],
   "next_page_uri": null,

@@ -5354,6 +5354,22 @@
     </tr>
     <tr>
       <td>
+        <a id="ERR_NGROK_2259" href="/docs/errors/err_ngrok_2259">ERR_NGROK_2259</a>
+      </td>
+      <td class="pre-wrapped">
+        No tunnels exist in this account
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_2260" href="/docs/errors/err_ngrok_2260">ERR_NGROK_2260</a>
+      </td>
+      <td class="pre-wrapped">
+        No tunnels could be found matching the supplied combination of labels
+      </td>
+    </tr>
+    <tr>
+      <td>
         <a id="ERR_NGROK_3002" href="/docs/errors/err_ngrok_3002">ERR_NGROK_3002</a>
       </td>
       <td class="pre-wrapped">

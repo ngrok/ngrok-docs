@@ -9,5 +9,5 @@ curl \
 -H "Content-Type: application/json" \
 -H "Ngrok-Version: 2" \
 -d '{"allow":["(Pingdom\\.com_bot_version_)(\\d+)\\.(\\d+)"],"deny":["(made_up_bot)/(\\d+)\\.(\\d+)"],"enabled":true}' \
-https://api.ngrok.com/edges/https/edghts_2yJQYoy00v6D9TxthSTSl6O0YEO/routes/edghtsrt_2yJQYsJOPcnFeA7mCAuacMd6YBF/user_agent_filter
+https://api.ngrok.com/edges/https/edghts_2yUibTW0cx35EmYBpl6BpAAw9Q3/routes/edghtsrt_2yUibPxVG9vUeMIcXer1EqveV8d/user_agent_filter
 ```
