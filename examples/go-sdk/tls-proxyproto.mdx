@@ -3,20 +3,19 @@ import (
 	"context"
 	"net"
 
-	"golang.ngrok.com/ngrok"
-	"golang.ngrok.com/ngrok/config"
+	"golang.ngrok.com/ngrok/v2"
 )
 
 func ngrokListener(ctx context.Context) (net.Listener, error) {
-	return ngrok.Listen(ctx,
-		config.TLSEndpoint(
-			config.WithProxyProto(2),
+	return ngrok.Forward(ctx,
+		ngrok.WithUpstream("tls://localhost:8443", 
+			ngrok.WithUpstreamProxyProto(ngrok.ProxyProtoV2),
 		),
-		ngrok.WithAuthtokenFromEnv(),
+		ngrok.WithURL("tls://"),
 	)
 }
 ```
 
 Go Package Docs:
 
-- [https://pkg.go.dev/golang.ngrok.com/ngrok/config#WithProxyProto](https://pkg.go.dev/golang.ngrok.com/ngrok/config#WithProxyProto)
+- [https://pkg.go.dev/golang.ngrok.com/ngrok/v2#WithUpstreamProxyProto](https://pkg.go.dev/golang.ngrok.com/ngrok/v2#WithUpstreamProxyProto)

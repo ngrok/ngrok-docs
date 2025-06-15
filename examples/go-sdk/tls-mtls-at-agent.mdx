@@ -1,5 +1,45 @@
-:::info
+```go
+import (
+	"context"
+	"crypto/tls"
+	"crypto/x509"
+	"encoding/pem"
+	"net"
+	"os"
 
-The Go SDK does not support Zero-Knowledge Mutual TLS enforcement at the SDK.
+	"golang.ngrok.com/ngrok/v2"
+)
 
-:::
+func ngrokListener(ctx context.Context) (net.Listener, error) {
+	// Load server certificate and key
+	cert, err := tls.LoadX509KeyPair("/path/to/cert.pem", "/path/to/key.pem")
+	if err != nil {
+		return nil, err
+	}
+
+	// Load CA certificate for client verification
+	caBytes, _ := os.ReadFile("/path/to/cas.pem")
+	der, _ := pem.Decode(caBytes)
+	certs, _ := x509.ParseCertificates(der.Bytes)
+
+	caCertPool := x509.NewCertPool()
+	for _, cert := range certs {
+		caCertPool.AddCert(cert)
+	}
+
+	tlsConfig := &tls.Config{
+		Certificates: []tls.Certificate{cert},
+		ClientCAs:    caCertPool,
+		ClientAuth:   tls.RequireAndVerifyClientCert,
+	}
+
+	return ngrok.Listen(ctx,
+		ngrok.WithURL("tls://"),
+		ngrok.WithAgentTLSTermination(tlsConfig),
+	)
+}
+```
+
+Go Package Docs:
+
+- [https://pkg.go.dev/golang.ngrok.com/ngrok/v2#WithAgentTLSTermination](https://pkg.go.dev/golang.ngrok.com/ngrok/v2#WithAgentTLSTermination)
