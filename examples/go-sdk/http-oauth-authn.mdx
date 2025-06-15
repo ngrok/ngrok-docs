@@ -8,15 +8,8 @@ import (
 	"golang.ngrok.com/ngrok/v2"
 )
 
-func main() {
-	if err := run(context.Background()); err != nil {
-		log.Fatal(err)
-	}
-}
-
 const trafficPolicy = `
 on_http_request:
-  - actions:
   - name: OAuth
     actions:
       - type: oauth
@@ -24,31 +17,32 @@ on_http_request:
           auth_id: oauth
           provider: google
       - type: add-headers
-         config:
-           headers:
-             authenticated-user: "${actions.ngrok.oauth.identity.email}"
+        config:
+          headers:
+            authenticated-user: "${actions.ngrok.oauth.identity.email}"
   - name: bad email
     expressions:
       - actions.ngrok.oauth.identity.email != 'alan@example.com'
     actions:
       - type: custom-response
         config:
-          body: Access denied: ${actions.ngrok.oauth.identity.name}!
+          body: "Access denied: ${actions.ngrok.oauth.identity.name}!"
           status_code: 403
 `
 
-func run(ctx context.Context) error {
-	// Create an HTTP listener with the traffic policy
+func main() {
+	ctx := context.Background()
+
 	ln, err := ngrok.Listen(ctx,
 		ngrok.WithTrafficPolicy(trafficPolicy),
 		ngrok.WithDescription("traffic policy example"),
 	)
 	if err != nil {
-		return err
+		log.Fatal(err)
 	}
-	// Serve HTTP traffic on the ngrok endpoint
-	log.Println("Endpoint online", ln.URL())
-	return http.Serve(ln, http.HandlerFunc(handler))
+
+	log.Println("Endpoint online:", ln.URL())
+	log.Fatal(http.Serve(ln, http.HandlerFunc(handler)))
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
