@@ -16,12 +16,17 @@ func main() {
 
 const trafficPolicy = `
 on_http_request:
+  - actions:
   - name: OAuth
     actions:
       - type: oauth
         config:
           auth_id: oauth
           provider: google
+      - type: add-headers
+         config:
+           headers:
+             authenticated-user: "${actions.ngrok.oauth.identity.email}"
   - name: bad email
     expressions:
       - actions.ngrok.oauth.identity.email != 'alan@example.com'
