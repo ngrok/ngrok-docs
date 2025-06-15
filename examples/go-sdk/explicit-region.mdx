@@ -2,20 +2,20 @@
 import (
 	"context"
 	"net"
+	"os"
 
-	"golang.ngrok.com/ngrok"
-	"golang.ngrok.com/ngrok/config"
+	"golang.ngrok.com/ngrok/v2"
 )
 
 func ngrokListener(ctx context.Context) (net.Listener, error) {
-	return ngrok.Listen(ctx,
-		config.HTTPEndpoint(),
-		ngrok.WithRegion("eu"),
-		ngrok.WithAuthtokenFromEnv(),
+	agent, _ := ngrok.NewAgent(
+		ngrok.WithAuthtoken(os.Getenv("NGROK_AUTHTOKEN")),
+		ngrok.WithAgentConnectURL("connect.eu.ngrok-agent.com:443"),
 	)
+	return agent.Listen(ctx)
 }
 ```
 
 Go Package Docs:
 
-- [https://pkg.go.dev/golang.ngrok.com/ngrok#WithRemoteAddr](https://pkg.go.dev/golang.ngrok.com/ngrok#WithRemoteAddr)
+- [https://pkg.go.dev/golang.ngrok.com/ngrok/v2#WithAgentConnectURL](https://pkg.go.dev/golang.ngrok.com/ngrok/v2#WithAgentConnectURL)

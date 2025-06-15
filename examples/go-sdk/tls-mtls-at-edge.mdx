@@ -1,33 +1,33 @@
 ```go
 import (
 	"context"
-	"crypto/x509"
-	"encoding/pem"
 	"net"
-	"os"
 
-	"golang.ngrok.com/ngrok"
-	"golang.ngrok.com/ngrok/config"
+	"golang.ngrok.com/ngrok/v2"
 )
 
-func ngrokListener(ctx context.Context) (net.Listener, error) {
-	caBytes, _ := os.ReadFile("/path/to/cas.pem")
-	der, _ := pem.Decode(caBytes)
-	certs, _ := x509.ParseCertificates(der.Bytes)
+trafficPolicy := `
+on_tls_request:
+  - actions:
+      - type: terminate-tls
+        config:
+          mutual_tls:
+            certificate_authorities:
+              - |
+                -----BEGIN CERTIFICATE-----
+                MIIDXTCCAkWgAwIBAgIJAKLdQVPy90jjMA0GCSqGSIb3DQEBCwUAMEUxCzAJBgNV
+                ...
+                -----END CERTIFICATE-----
+`
 
+func ngrokListener(ctx context.Context) (net.Listener, error) {
 	return ngrok.Listen(ctx,
-		config.TLSEndpoint(
-			config.WithDomain("app.example.com"),
-			config.WithTLSTermination(
-				config.WithTLSTerminationAt(config.TLSAtEdge),
-			),
-			config.WithMutualTLSCA(certs...),
-		),
-		ngrok.WithAuthtokenFromEnv(),
+		ngrok.WithURL("tls://app.example.com"),
+		ngrok.WithTrafficPolicy(trafficPolicy),
 	)
 }
 ```
 
 Go Package Docs:
 
-- [https://pkg.go.dev/golang.ngrok.com/ngrok/config#WithMutualTLSCA](https://pkg.go.dev/golang.ngrok.com/ngrok/config#WithMutualTLSCA)
+- [https://pkg.go.dev/golang.ngrok.com/ngrok/v2#WithTrafficPolicy](https://pkg.go.dev/golang.ngrok.com/ngrok/v2#WithTrafficPolicy)
