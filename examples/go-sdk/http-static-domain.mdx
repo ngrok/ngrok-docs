@@ -3,22 +3,13 @@ import (
 	"context"
 	"net"
 
-	"golang.ngrok.com/ngrok"
-	"golang.ngrok.com/ngrok/config"
+	"golang.ngrok.com/ngrok/v2"
 )
 
 func ngrokListener(ctx context.Context) (net.Listener, error) {
-	upstreamURL, _ := url.Parse("http://localhost:8080")
-	return ngrok.ListenAndForward(ctx,
-		upstreamURL,
-		config.HTTPEndpoint(
-			config.WithURL("https://example.ngrok.app"),
-		),
-		ngrok.WithAuthtokenFromEnv(),
+	return ngrok.Forward(ctx,
+		ngrok.WithUpstream("http://localhost:8080"),
+		ngrok.WithURL("https://example.ngrok.app"),
 	)
 }
 ```
-
-Go Package Docs:
-
-- [https://pkg.go.dev/golang.ngrok.com/ngrok/config#WithURL](https://pkg.go.dev/golang.ngrok.com/ngrok/config#WithURL)
