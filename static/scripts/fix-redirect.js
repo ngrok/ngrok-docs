@@ -914,6 +914,8 @@ const redirects = [
 		fromExact("/docs/using-ngrok-with/node-js/"),
 		"/docs/getting-started/javascript/",
 	],
+	[fromExact("/docs/using-ngrok-with/rdp/"), "/docs/guides/ssh-rdp"],
+	[fromExact("/docs/using-ngrok-with/ssh/"), "/docs/guides/ssh-rdp"],
 	//site-to-site redirects
 	[
 		fromExact("/docs/guides/site-to-site-connectivity/dbs/"),
