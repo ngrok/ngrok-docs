@@ -14,159 +14,182 @@ This quickstart uses ngrok's Rust SDK to put a Rust app running on your local de
 1. [An ngrok account](https://dashboard.ngrok.com/signup).
 1. Your ngrok auth token, which you can find [in the dashboard](https://dashboard.ngrok.com/get-started/your-authtoken).
 1. [Rust installed](https://www.rust-lang.org/tools/install) on your machine. You can check this by running `rustc --version` in your terminal.
-1. A domain connected to your ngrok account. We'll refer to this as `your-reserved-domain` from here on out.
-   - In the dashboard, visit [the **Domains** section](https://dashboard.ngrok.com/domains) and select **+ New Domain** to get started. ngrok offers free static domains, or you can [bring your own custom domain](/docs/universal-gateway/custom-domains/).
 
-## 1. Install ngrok-rust
+## 1. Reserve your domain
 
-First, create a new Rust app and install the `ngrok`, `axum` and `tokio`
-crates. This guide assumes you [already have Rust
-installed](https://www.rust-lang.org/tools/install).
+A new URL is generated for you every time you start an endpoint. To maintain a consistent URL, you can reserve a free static domain connected to your ngrok account.
 
-```bash
-mkdir ngrok-rust-quickstart
-cd ngrok-rust-quickstart
-cargo init
-cargo add ngrok -F axum
-cargo add axum
-cargo add tokio -F rt-multi-thread -F macros
-```
+To do so, navigate to the dashboard, visit [the **Domains** section](https://dashboard.ngrok.com/domains), and select **+ New Domain**. You can choose a free static domain, or you can use a custom domain you already own.
 
-## 2. Create your app
+## 2. Start your app or service
 
-In the `ngrok-rust-quickstart` directory, create the following `main.rs` file:
+Start up the app or service you'd like to put online.
+This is the app that your agent endpoint will forward online traffic to.
 
-```rust showLineNumbers
-use axum::{routing::get, Router};
-use ngrok::prelude::*;
-use std::error::Error;
+If you don't have an app to work with, you can create a minimal a Rust app using the following code to set up a basic HTTP server at port `8080`.
 
-#[tokio::main]
-async fn main() -> Result<(), Box<dyn Error>> {
-    // build our application with a route
-    let app = Router::new().route("/", get(|| async { "Hello from ngrok-rust!" }));
+```go filename="service.go"
+package main
 
-    // listen on ngrok ingress (i.e. https://myapp.ngrok.app)
-    let listener = ngrok::Session::builder()
-        .authtoken_from_env()
-        .connect()
-        .await?
-        .http_endpoint()
-        .listen()
-        .await?;
-    println!("App URL: {:?}", listener.url());
-    axum::Server::builder(listener)
-        .serve(app.into_make_service())
-        .await?;
-    Ok(())
+import (
+	"fmt"
+	"net/http"
+)
+
+func handler(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "Hello from Go HTTP Server!")
+}
+
+func main() {
+	http.HandleFunc("/", handler)
+
+	fmt.Println("Starting server at http://localhost:8080")
+	err := http.ListenAndServe(":8080", nil)
+	if err != nil {
+		fmt.Println("Server failed:", err)
+	}
 }
 ```
 
-:::note In this code
-
-- **Lines 11-17**: connect to ngrok and listen for HTTP traffic on a randomly-assigned endpoint URL
-- **Line 18**: print your app's endpoint url
-- **Line 19-21**: start an axum web server handling connections from the ngrok listener
-
-:::
-
-## 3. Run it!
-
-Copy [the ngrok authtoken on your
-dashboard](https://dashboard.ngrok.com/get-started/your-authtoken). You may
-need to [sign up for ngrok](https://ngrok.com) if you haven't already.
-
-Run your application with your authtoken in the environment:
+Navigate to the directory where this file is located and run the following command to start the server:
 
 ```bash
-NGROK_AUTHTOKEN="<TOKEN>" cargo r
+rustc main.rs
+./main
 ```
 
-Your terminal will print out your app's URL. Visit the URL in a browser and
-confirm you see "Hello from ngrok-rust!". Your Rust application is now live on
-the internet, with a URL that anyone on the internet can access. Test it out by
-sending it to a friend!
+## 3. Install the Rust SDK
 
-## 4. Always use the same domain
+Create a new Go module and use the following terminal command to install the Go SDK.
 
-If you want to keep the same URL each time you run your app, [create a static
-domain on your dashboard](https://dashboard.ngrok.com/domains) and
-then update your `Session::builder` chain to use it. Stop your app with
-`Ctrl+C`, update your code and then rerun it:
-
-```rust showLineNumbers
-    let listener = ngrok::Session::builder()
-        .authtoken_from_env()
-        .connect()
-        .await?
-        .http_endpoint()
-        .domain("jumpy-red-mollusk.ngrok-free.app")
-        .listen()
-        .await?;
-```
-
-## 5. Secure your app
-
-You may not want everyone to be able to access your application. ngrok can
-quickly add authentication to your app with a few lines of code.
-
-If your Google account is `alan@example.com`, you can restrict access only for
-yourself by modifying your `main.rs` file to:
-
-<SecureYourApp>
-```rust showLineNumbers
-use axum::{routing::get, Router};
-use ngrok::prelude::*;
-use ngrok::config::*;
-use std::error::Error;
-
-#[tokio::main]
-async fn main() -> Result<(), Box<dyn Error>> {
-// build our application with a route
-let app = Router::new().route("/", get(|| async { "Hello World!" }));
-
-    // listen on ngrok ingress (i.e. https://my-rust-app.ngrok.app)
-    let listener = ngrok::Session::builder()
-        .authtoken_from_env()
-        .connect()
-        .await?
-        .http_endpoint()
-        // highlight-start
-        .oauth(OauthOptions::new("google").allow_email("alan@example.com"))
-        // highlight-end
-        .listen()
-        .await?;
-    println!("App URL: {:?}", listener.url());
-    axum::Server::builder(listener)
-        .serve(app.into_make_service())
-        .await?;
-    Ok(())
-
-}
-
-```
-
-:::note In this code
-
-- **Line 17**: Require visitors to authenticate with Google before they access your application. You can [choose other providers](/traffic-policy/actions/oauth/#supported-providers). Only allow `alan@example.com` access to the application
-
+:::note
+If your terminal is already running an app or service, you'll need to open a new terminal window or tab to follow this step.
 :::
 
-</SecureYourApp>
-
-Run your app again and visit the URL it prints in the terminal.
-
-Anyone accessing your app will be prompted to log in with Google and only your
-account will be allowed to access it. Keep in mind that when you restarted
-ngrok, your app's URL changed, so make sure to visit the new one.
-
-## Next Steps
-
-- Read the [ngrok-rust package documentation on
-  docs.rs](https://docs.rs/ngrok/latest/ngrok/)
-- Star the [ngrok-rust GitHub repo](https://github.com/ngrok/ngrok-rust) and follow
-  it for updates.
-- Browse [Rust examples of HTTP Endpoints](/universal-gateway/http/?cty=rust-sdk) of other ways ngrok can augment your application.
-- Bring your own [custom domain to ngrok](/universal-gateway/http/#bring-your-own-domain)
-- Create connectivity for non-HTTP protocols such as SSH, RDP, or game servers using [TCP Endpoints](/universal-gateway/tcp/?cty=rust-sdk)
+```bash
+mkdir ngrok-go-demo
+cd ngrok-go-demo
+go mod init ngrok-go-demo
+go get golang.ngrok.com/ngrok/v2
 ```
+
+## 4. Create a .env file
+
+Create a `.env` file and add [your ngrok auth token](https://dashboard.ngrok.com/get-started/your-authtoken) to it.
+This file needs to be in the same directory where you initialized your Go module in the previous step. 
+The following terminal command will create the `.env` file.
+
+```bash
+touch .env
+```
+
+Next, add your ngrok auth token to the file like this:
+
+```txt filename=".env"
+NGROK_AUTHTOKEN=your_authtoken_here
+```
+
+Finally, you'll need to install [the `godotenv` package](https://github.com/joho/godotenv?tab=readme-ov-file#godotenv--) to access your environment variable from your code.
+
+```bash
+go get github.com/joho/godotenv
+```
+
+:::tip
+If you don't want to use a `.env` file, you can instead [export your auth token as an environment variable](https://support.apple.com/en-il/guide/terminal/apd382cc5fa-4f58-4449-b20a-41c53c006f8f/mac) in your terminal session, or [call `ngrok.WithAuthToken("your-token")`](https://pkg.go.dev/golang.ngrok.com/ngrok/v2#WithAuthtoken) in your code.
+:::
+
+## 5. Start your endpoint
+
+Start your agent endpoint, which will forward public traffic to your app.
+
+Create a new file named `example.go` in the same directory as your `.env` file and add the following code.
+This example:
+
+- Starts an Agent endpoint that forwards from your reserved domain to your service running on port `8080`.
+  - If your app is running on a different port, change the example code to reflect that.
+- Secures the endpoint with a Traffic Policy that requires authentication via Google OAuth.
+  - Traffic policies allow you to control how traffic is handled by your endpoint, including authentication, headers, and more.
+
+:::note
+This example uses ngrok's default Google OAuth application.
+To use your own, see [the OAuth Traffic Policy Action documentation](/docs/traffic-policy/actions/oauth/#google-example).
+:::
+
+```go filename="example.go"
+package main
+
+import (
+	"context"
+	"fmt"
+	"log"
+	"os"
+
+	"github.com/joho/godotenv"
+	"golang.ngrok.com/ngrok/v2"
+)
+
+func main() {
+	if err := godotenv.Load(".env"); err != nil {
+		log.Fatal("Error loading .env file", err)
+	}
+	if err := run(context.Background()); err != nil {
+		log.Fatal(err)
+	}
+}
+
+const trafficPolicy = `
+on_http_request:
+  - actions:
+      - type: oauth
+        config:
+          provider: google
+`
+const address = "http://localhost:8080"
+
+func run(ctx context.Context) error {
+	agent, err := ngrok.NewAgent(ngrok.WithAuthtoken(os.Getenv("NGROK_AUTHTOKEN")))
+	if err != nil {
+	    return err
+	}
+
+	ln, err := agent.Forward(ctx,
+		ngrok.WithUpstream(address),
+		ngrok.WithURL("your-reserved-domain"),
+		ngrok.WithTrafficPolicy(trafficPolicy),
+	)
+
+	if err != nil {
+		fmt.Println("Error", err)
+		return err
+	}
+
+	fmt.Println("Endpoint online: forwarding from", ln.URL(), "to", address)
+
+	// Explicitly stop forwarding; otherwise it runs indefinitely 
+	<-ln.Done()
+	return nil
+}
+```
+
+## 6. Test your endpoint
+
+Test your endpoint by running the following terminal command:
+
+```bash
+go run example.go
+```
+
+Assuming everything is set up correctly, this should print your endpoint URL to the terminal.
+
+When you visit the URL, you should be prompted to log in with Google.
+After logging in, you see your app or service.
+
+If you used the example app in this quickstart, you'll see **"Hello from Go HTTP Server!"** displayed in your browser.
+
+## What's next?
+
+- Try out [traffic policy](/docs/traffic-policy/), which enables you to [grant conditional access](https://ngrok.com/docs/traffic-policy/examples/add-authentication/#conditional-access-using-oauth-variables), [send custom headers](/traffic-policy/actions/add-headers/#examples), [rewrite URLs](/traffic-policy/actions/url-rewrite/#examples), and more with your endpoints.
+- Learn about the [Agent SDK](/agent-sdks/) to understand how the JavaScript SDK works under the hood.
+- Check out [the ngrok GO SDK repo](https://github.com/ngrok/ngrok-go?tab=readme-ov-file#ngrok-go) for more code examples.
+- Explore [Cloud Endpoints](/universal-gateway/cloud-endpoints/quickstart/), which enable you to manage traffic for multiple endpoints centrally in the cloud.
