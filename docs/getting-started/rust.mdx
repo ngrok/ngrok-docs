@@ -26,51 +26,88 @@ To do so, navigate to the dashboard, visit [the **Domains** section](https://das
 Start up the app or service you'd like to put online.
 This is the app that your agent endpoint will forward online traffic to.
 
-If you don't have an app to work with, you can create a minimal a Rust app using the following code to set up a basic HTTP server at port `8080`.
+If you don't have an app to work with, you can create a minimal a Rust app to set up a basic HTTP server at port `8080`.
 
-```go filename="service.go"
-package main
+To do so, create a new Rust project using the following terminal commands:
 
-import (
-	"fmt"
-	"net/http"
-)
+```bash
+cargo new service
+cd service
+```
 
-func handler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hello from Go HTTP Server!")
+Then, replace the contents of `src/main.rs` with the following code.
+
+```rust filename="service/src/main.rs"
+use std::io::{Read, Write};
+use std::net::{TcpListener, TcpStream};
+
+fn handle_connection(mut stream: TcpStream) {
+    let mut buffer = [0; 512];
+
+    // Read from the stream
+    if let Ok(_) = stream.read(&mut buffer) {
+        let body = "Hello from Rust HTTP Server!";
+        let response = format!(
+            "HTTP/1.1 200 OK\r\n\
+             Content-Length: {}\r\n\
+             Content-Type: text/plain\r\n\
+             Connection: close\r\n\r\n\
+             {}",
+            body.len(),
+            body
+        );
+
+        if let Err(e) = stream.write_all(response.as_bytes()) {
+            eprintln!("Write error: {}", e);
+        }
+
+        // Flush to make sure the response is sent
+        if let Err(e) = stream.flush() {
+            eprintln!("Flush error: {}", e);
+        }
+    }
 }
 
-func main() {
-	http.HandleFunc("/", handler)
+fn main() -> std::io::Result<()> {
+    let listener = TcpListener::bind("127.0.0.1:8080")?;
+    println!("Server running at http://127.0.0.1:8080");
 
-	fmt.Println("Starting server at http://localhost:8080")
-	err := http.ListenAndServe(":8080", nil)
-	if err != nil {
-		fmt.Println("Server failed:", err)
-	}
+    for stream in listener.incoming() {
+        match stream {
+            Ok(stream) => handle_connection(stream),
+            Err(e) => eprintln!("Connection failed: {}", e),
+        }
+    }
+
+    Ok(())
 }
 ```
 
-Navigate to the directory where this file is located and run the following command to start the server:
+In the root `service`, execute the following command to start the server:
 
 ```bash
-rustc main.rs
-./main
+cargo run
 ```
 
 ## 3. Install the Rust SDK
 
-Create a new Go module and use the following terminal command to install the Go SDK.
+First, create a new Rust project in the terminal and navigate into it.
 
-:::note
+:::tip
 If your terminal is already running an app or service, you'll need to open a new terminal window or tab to follow this step.
 :::
 
 ```bash
-mkdir ngrok-go-demo
-cd ngrok-go-demo
-go mod init ngrok-go-demo
-go get golang.ngrok.com/ngrok/v2
+cargo new ngrok-rust-demo
+cd ngrok-rust-demo
+```
+
+Next, add the ngrok Rust SDK to your project by running the following commands:
+
+```bash
+cargo add ngrok -F axum
+cargo add axum
+cargo add tokio -F rt-multi-thread -F macros
 ```
 
 ## 4. Create a .env file
@@ -111,7 +148,7 @@ This example:
 - Secures the endpoint with a Traffic Policy that requires authentication via Google OAuth.
   - Traffic policies allow you to control how traffic is handled by your endpoint, including authentication, headers, and more.
 
-:::note
+:::tip
 This example uses ngrok's default Google OAuth application.
 To use your own, see [the OAuth Traffic Policy Action documentation](/docs/traffic-policy/actions/oauth/#google-example).
 :::
