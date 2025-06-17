@@ -199,29 +199,24 @@ const redirects = [
 		"/docs/guides/other-guides/using-labels-within-ngrok",
 	],
 
-	// /docs/guides -> /docs/guides/site-to-site-connectivity
-	// /docs/guides/site-to-site-dbs -> /docs/guides/site-to-site-connectivity/dbs
 	[
 		fromIncludes("/docs/guides/site-to-site-dbs"),
-		"/docs/guides/site-to-site-connectivity/dbs",
+		"/docs/guides/site-to-site-connectivity/",
 	],
 
-	// /docs/guides/site-to-site-apis -> /docs/guides/site-to-site-connectivity/apis
 	[
 		fromIncludes("/docs/guides/site-to-site-apis"),
-		"/docs/guides/site-to-site-connectivity/apis",
+		"/docs/guides/site-to-site-connectivity/",
 	],
 
-	// /docs/guides/site-to-site-apis-mtls -> /docs/guides/site-to-site-connectivity/apis-mtls
 	[
 		fromIncludes("/docs/guides/site-to-site-apis-mtls"),
-		"/docs/guides/site-to-site-connectivity/apis-mtls",
+		"/docs/guides/site-to-site-connectivity/",
 	],
 
-	// docs/guides/site-to-site-dbs-mtls -> /docs/guides/site-to-site-connectivity/dbs-mtls
 	[
 		fromIncludes("/docs/guides/site-to-site-dbs-mtls"),
-		"/docs/guides/site-to-site-connectivity/dbs-mtls",
+		"/docs/guides/site-to-site-connectivity/",
 	],
 
 	// /docs/guides -> /docs/guides/identity-aware-proxy
@@ -902,11 +897,13 @@ const redirects = [
 		"/docs/guides/identity-aware-proxy/securing-with-oauth/",
 	],
 	[
-		fromExact("/docs/guides/site-to-site-connectivity/"),
-		"/docs/guides/site-to-site-connectivity/apis/",
+		fromExact("/docs/guides/other-guides/security-dev-productivity/"),
+		"/docs/guides/security-dev-productivity/",
 	],
 	[
-		fromExact("/docs/guides/other-guides/security-dev-productivity/"),
+		fromExact(
+			"/docs/guides/other-guides/security-dev-productivity/security-dev-productivity/",
+		),
 		"/docs/guides/security-dev-productivity/",
 	],
 	[
@@ -922,6 +919,28 @@ const redirects = [
 	[
 		fromExact("/docs/using-ngrok-with/django/"),
 		"/docs/getting-started/python/",
+	[fromExact("/docs/using-ngrok-with/rdp/"), "/docs/guides/ssh-rdp"],
+	[fromExact("/docs/using-ngrok-with/ssh/"), "/docs/guides/ssh-rdp"],
+	//site-to-site redirects
+	[
+		fromExact("/docs/guides/site-to-site-connectivity/dbs/"),
+		"/docs/guides/site-to-site-connectivity/",
+	],
+	[
+		fromExact("/docs/guides/site-to-site-connectivity/dbs-mtls/"),
+		"/docs/guides/site-to-site-connectivity/",
+	],
+	[
+		fromExact("/docs/guides/site-to-site-connectivity/apis-mtls/"),
+		"/docs/guides/site-to-site-connectivity/",
+	],
+	[
+		fromExact("/docs/guides/site-to-site-connectivity/apis/"),
+		"/docs/guides/site-to-site-connectivity/",
+	],
+	[
+		fromExact("/docs/guides/site-to-site-connectivity/end-customers/"),
+		"/docs/guides/site-to-site-connectivity/",
 	],
 ];
 
