@@ -919,6 +919,7 @@ const redirects = [
 	[
 		fromExact("/docs/using-ngrok-with/django/"),
 		"/docs/getting-started/python/",
+	],
 	[fromExact("/docs/using-ngrok-with/rdp/"), "/docs/guides/ssh-rdp"],
 	[fromExact("/docs/using-ngrok-with/ssh/"), "/docs/guides/ssh-rdp"],
 	//site-to-site redirects
