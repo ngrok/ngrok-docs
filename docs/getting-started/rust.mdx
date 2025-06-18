@@ -1,184 +1,203 @@
 ---
-title: Rust
+sidebar_label: Rust
+title: ngrok Rust SDK Quickstart
 pagination_next: universal-gateway/overview
 ---
 
-import SecureYourApp from "./_secure-your-app.mdx"
+[The ngrok Rust SDK](https://docs.rs/ngrok/latest/ngrok/) enables you to quickly and efficiently serve Rust applications on the internet without the need to configure low-level network primitives like IPs, certificates, load balancers, or ports.
 
-# Quickstart: ngrok-rust
+This quickstart uses ngrok's Rust SDK to put a Rust app running on your local device online and secure it by requiring visitors to log in with a Google account to access it.
 
-This quickstart will use the [ngrok-rust Agent SDK](/agent-sdks/) to put a Rust
-app on the internet and secure it so that only you can access it.
+## What you'll need
 
-## What is ngrok-rust?
+1. [An ngrok account](https://dashboard.ngrok.com/signup).
+1. Your ngrok auth token, which you can find [in the dashboard](https://dashboard.ngrok.com/get-started/your-authtoken).
+1. [Rust installed](https://www.rust-lang.org/tools/install) on your machine. You can check this by running `rustc --version` in your terminal.
 
-ngrok-rust is an [open-source, idiomatic Rust
-crate](https://github.com/ngrok/ngrok-rust) for embedding secure ingress
-directly into your Rust applications. If you’ve used the ngrok agent before,
-you can think of ngrok-rust as the agent packaged as a Rust crate.
+## 1. Reserve your domain
 
-ngrok-rust enables you to serve Rust services on the internet in a single line
-of code without setting up low-level network primitives like IPs, certificates,
-load balancers, and ports. Applications using ngrok-rust listen on ngrok’s
-global ingress network and your app gets incoming streams with tokio’s
-`AsyncRead` and `AsyncWrite` traits — compatible with
-`axum::Server::builder()` and `hyper::Server::builder()`. This makes it
-incredibly easy to drop ngrok-rust into any application that uses the popular
-axum or hyper crates.
+A new URL is generated for you every time you start an endpoint. To maintain a consistent URL, you can reserve a free static domain connected to your ngrok account.
 
-You may want to open the [ngrok-rust package documentation on
-docs.rs](https://docs.rs/ngrok/latest/ngrok/) as you work through this guide.
+To do so, navigate to the dashboard, visit [the **Domains** section](https://dashboard.ngrok.com/domains), and select **+ New Domain**. You can choose a free static domain, or you can use a custom domain you already own.
 
-## 1. Install ngrok-rust
+## 2. Start your app or service
 
-First, create a new Rust app and install the `ngrok`, `axum` and `tokio`
-crates. This guide assumes you [already have Rust
-installed](https://www.rust-lang.org/tools/install).
+Start up the app or service you'd like to put online.
+This is the app that your agent endpoint will forward online traffic to.
+
+If you don't have an app to work with, you can set up a basic HTTP server at port `8080`.
+
+First, create a directory for your Rust project and navigate into it:
 
 ```bash
-mkdir ngrok-rust-quickstart
-cd ngrok-rust-quickstart
+mkdir ngrok-rust-server
+cd ngrok-rust-server
+```
+
+Next, create a new Rust project:
+
+```bash
 cargo init
-cargo add ngrok -F axum
-cargo add axum
-cargo add tokio -F rt-multi-thread -F macros
 ```
 
-## 2. Create your app
+Then, replace the contents of `src/main.rs` with the following code to set up a basic HTTP server:
 
-In the `ngrok-rust-quickstart` directory, create the following `main.rs` file:
+```rust title="ngrok-rust-server/src/main.rs"
+use std::io::{Read, Write};
+use std::net::{TcpListener, TcpStream};
 
-```rust showLineNumbers
-use axum::{routing::get, Router};
-use ngrok::prelude::*;
-use std::error::Error;
+fn handle_connection(mut stream: TcpStream) {
+    let mut buffer = [0; 512];
 
-#[tokio::main]
-async fn main() -> Result<(), Box<dyn Error>> {
-    // build our application with a route
-    let app = Router::new().route("/", get(|| async { "Hello from ngrok-rust!" }));
+    // Read from the stream
+    if let Ok(_) = stream.read(&mut buffer) {
+        let body = "Hello from Rust HTTP Server!";
+        let response = format!(
+            "HTTP/1.1 200 OK\r\n\
+             Content-Length: {}\r\n\
+             Content-Type: text/plain\r\n\
+             Connection: close\r\n\r\n\
+             {}",
+            body.len(),
+            body
+        );
 
-    // listen on ngrok ingress (i.e. https://myapp.ngrok.app)
-    let listener = ngrok::Session::builder()
-        .authtoken_from_env()
-        .connect()
-        .await?
-        .http_endpoint()
-        .listen()
-        .await?;
-    println!("App URL: {:?}", listener.url());
-    axum::Server::builder(listener)
-        .serve(app.into_make_service())
-        .await?;
+        if let Err(e) = stream.write_all(response.as_bytes()) {
+            eprintln!("Write error: {}", e);
+        }
+
+        // Flush to make sure the response is sent
+        if let Err(e) = stream.flush() {
+            eprintln!("Flush error: {}", e);
+        }
+    }
+}
+
+fn main() -> std::io::Result<()> {
+    let listener = TcpListener::bind("127.0.0.1:8080")?;
+    println!("Server running at http://127.0.0.1:8080");
+
+    for stream in listener.incoming() {
+        match stream {
+            Ok(stream) => handle_connection(stream),
+            Err(e) => eprintln!("Connection failed: {}", e),
+        }
+    }
+
     Ok(())
 }
 ```
 
-:::note In this code
-
-- **Lines 11-17**: connect to ngrok and listen for HTTP traffic on a randomly-assigned endpoint URL
-- **Line 18**: print your app's endpoint url
-- **Line 19-21**: start an axum web server handling connections from the ngrok listener
-
-:::
-
-## 3. Run it!
-
-Copy [the ngrok authtoken on your
-dashboard](https://dashboard.ngrok.com/get-started/your-authtoken). You may
-need to [sign up for ngrok](https://ngrok.com) if you haven't already.
-
-Run your application with your authtoken in the environment:
+To run the server, navigate to the root directory of the project (where the `Cargo.toml` file is located) and run the following command:
 
 ```bash
-NGROK_AUTHTOKEN="<TOKEN>" cargo r
+cargo run
 ```
 
-Your terminal will print out your app's URL. Visit the URL in a browser and
-confirm you see "Hello from ngrok-rust!". Your Rust application is now live on
-the internet, with a URL that anyone on the internet can access. Test it out by
-sending it to a friend!
+## 3. Install the Rust SDK
 
-## 4. Always use the same domain
+Create a new Rust project and use the following terminal commands to install the Rust SDK.
 
-If you want to keep the same URL each time you run your app, [create a static
-domain on your dashboard](https://dashboard.ngrok.com/domains) and
-then update your `Session::builder` chain to use it. Stop your app with
-`Ctrl+C`, update your code and then rerun it:
-
-```rust showLineNumbers
-    let listener = ngrok::Session::builder()
-        .authtoken_from_env()
-        .connect()
-        .await?
-        .http_endpoint()
-        .domain("jumpy-red-mollusk.ngrok-free.app")
-        .listen()
-        .await?;
-```
-
-## 5. Secure your app
-
-You may not want everyone to be able to access your application. ngrok can
-quickly add authentication to your app with a few lines of code.
-
-If your Google account is `alan@example.com`, you can restrict access only for
-yourself by modifying your `main.rs` file to:
-
-<SecureYourApp>
-```rust showLineNumbers
-use axum::{routing::get, Router};
-use ngrok::prelude::*;
-use ngrok::config::*;
-use std::error::Error;
-
-#[tokio::main]
-async fn main() -> Result<(), Box<dyn Error>> {
-// build our application with a route
-let app = Router::new().route("/", get(|| async { "Hello World!" }));
-
-    // listen on ngrok ingress (i.e. https://my-rust-app.ngrok.app)
-    let listener = ngrok::Session::builder()
-        .authtoken_from_env()
-        .connect()
-        .await?
-        .http_endpoint()
-        // highlight-start
-        .oauth(OauthOptions::new("google").allow_email("alan@example.com"))
-        // highlight-end
-        .listen()
-        .await?;
-    println!("App URL: {:?}", listener.url());
-    axum::Server::builder(listener)
-        .serve(app.into_make_service())
-        .await?;
-    Ok(())
-
-}
-
-```
-
-:::note In this code
-
-- **Line 17**: Require visitors to authenticate with Google before they access your application. You can [choose other providers](/traffic-policy/actions/oauth/#supported-providers). Only allow `alan@example.com` access to the application
-
+:::tip
+If your terminal is already running an app or service, you'll need to open a new terminal window or tab to follow this step.
 :::
 
-</SecureYourApp>
-
-Run your app again and visit the URL it prints in the terminal.
-
-Anyone accessing your app will be prompted to log in with Google and only your
-account will be allowed to access it. Keep in mind that when you restarted
-ngrok, your app's URL changed, so make sure to visit the new one.
-
-## Next Steps
-
-- Read the [ngrok-rust package documentation on
-  docs.rs](https://docs.rs/ngrok/latest/ngrok/)
-- Star the [ngrok-rust GitHub repo](https://github.com/ngrok/ngrok-rust) and follow
-  it for updates.
-- Browse [Rust examples of HTTP Endpoints](/universal-gateway/http/?cty=rust-sdk) of other ways ngrok can augment your application.
-- Bring your own [custom domain to ngrok](/universal-gateway/http/#bring-your-own-domain)
-- Create connectivity for non-HTTP protocols such as SSH, RDP, or game servers using [TCP Endpoints](/universal-gateway/tcp/?cty=rust-sdk)
+```bash
+mkdir ngrok-rust-demo
+cd ngrok-rust-demo
+cargo init
+cargo add ngrok
 ```
+
+Then, edit your `Cargo.toml` file to include the necessary dependencies:
+
+```toml title="ngrok-rust-demo/Cargo.toml"
+[package]
+name = "ngrok-rust-demo"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+ngrok = {version = "0.14.0"}
+tokio = { version = "1", features = [
+    "full"
+] }
+axum = { version = "0.7.4", features = ["tokio"] }
+async-trait = "0.1.59"
+hyper = {version = "1", features = ["full"]}
+hyper-util = { version = "0.1", features = [
+	"full"
+] }
+url = "2.5.4"
+```
+
+## 5. Create your endpoint
+
+Create your agent endpoint, which will forward public traffic to your app.
+
+In the `ngrok-rust-demo` directory you created in the previous step, add the following code to your `src/main.rs` file.
+
+This example:
+
+- Starts an Agent endpoint that forwards from your reserved domain to your service running on port `8080`.
+  - If your app is running on a different port, change the example code to reflect that.
+- Secures the endpoint with a Traffic Policy that requires authentication via Google OAuth.
+  - Traffic policies allow you to control how traffic is handled by your endpoint, including authentication, headers, and more.
+
+:::tip
+This example uses ngrok's default Google OAuth application.
+To use your own, see [the OAuth Traffic Policy Action documentation](/docs/traffic-policy/actions/oauth/#google-example).
+:::
+
+```rust title="ngrok-rust-demo/src/main.rs"
+#![deny(warnings)]
+use ngrok::config::ForwarderBuilder;
+use url::Url;
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+    // Set up ngrok tunnel
+    let session = ngrok::Session::builder()
+        .authtoken_from_env()
+        .connect()
+        .await?;
+
+    let domain = "your-reserved-domain";
+
+    // Forward HTTP traffic from ngrok to the local server
+    let _listener = session
+        .http_endpoint()
+        .domain(domain)
+        .traffic_policy(r#"{"on_http_request": [{"actions": [{"type": "oauth","config": {"provider": "google"}}]}]}"#)
+        .listen_and_forward(Url::parse("http://localhost:8080").unwrap())
+        .await?;
+
+    println!("Ngrok tunnel established at {}", domain);
+
+    // Wait indefinitely
+    tokio::signal::ctrl_c().await?;
+    Ok(())
+}
+```
+
+## 6. Test your endpoint
+
+Test your endpoint by running the following terminal command, swapping in [your authtoken](https://dashboard.ngrok.com/get-started/your-authtoken).
+
+```bash
+NGROK_AUTHTOKEN=YOUR_AUTHTOKEN_HERE cargo run
+```
+
+Assuming everything is set up correctly, this should print your reserved domain URL to the terminal.
+
+When you visit the URL, you should be prompted to log in with Google.
+After logging in, you see your app or service.
+
+If you used the example app in this quickstart, you'll see **"Hello from Rust HTTP Server!"** displayed in your browser.
+
+## What's next?
+
+- Try out [traffic policy](/docs/traffic-policy/), which enables you to [grant conditional access](https://ngrok.com/docs/traffic-policy/examples/add-authentication/#conditional-access-using-oauth-variables), [send custom headers](/traffic-policy/actions/add-headers/#examples), [rewrite URLs](/traffic-policy/actions/url-rewrite/#examples), and more with your endpoints.
+- Learn about the [Agent SDK](/agent-sdks/) to understand how the Rust SDK works under the hood.
+- Check out [the ngrok Rust SDK repo](https://github.com/ngrok/ngrok-rust/tree/main?tab=readme-ov-file#ngrok-rust) for more code examples.
+- Explore [Cloud Endpoints](/universal-gateway/cloud-endpoints/quickstart/), which enable you to manage traffic for multiple endpoints centrally in the cloud.

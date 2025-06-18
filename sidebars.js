@@ -33,11 +33,21 @@ const sidebars = {
 
 			link: { type: "doc", id: "getting-started/index" },
 			items: [
-				"getting-started/index",
-				"getting-started/javascript",
-				"getting-started/go",
-				"getting-started/python",
-				"getting-started/rust",
+				{
+					id: "getting-started/index",
+					type: "doc",
+					label: "CLI",
+				},
+				{
+					label: "SDKs",
+					type: "category",
+					items: [
+						"getting-started/javascript",
+						"getting-started/go",
+						"getting-started/python",
+						"getting-started/rust",
+					],
+				},
 				{
 					label: "Kubernetes",
 					type: "category",
