@@ -1,0 +1,81 @@
+---
+title: Security Quick Wins
+description: Learn some quick wins for using ngrok more securely.
+---
+
+This guide will walk you through recommendations to ensure you're using ngrok securely.
+
+## Agent tips
+
+- Do not run ngrok as root, as it should not be necessary.
+- Do not open any additional incoming ports in your firewall. ngrok only makes an outbound connection upon start.
+- Consider restricting the IPs that are able to start ngrok agent sessions.
+
+### Authtokens
+
+- Assign a [unique Authtoken to each ngrok agent](/agent/#authtokens) deployment to isolate issues if a specific Authtoken is compromised.
+- Set up a [minimum ACL per Authtoken](/agent/#authtoken-acls) to limit the endpoints each agent is able to start.
+
+### Encryption
+
+- If you're running the latest ngrok agent, your tunnels will use `scheme https` so that it only opens HTTPS endpoints and not HTTP endpoints. If you're running an older version that does not do this, be sure to configure this behavior yourself.
+- If your local service is not running on the same machine as the ngrok agent, we recommend you set up TLS encryption for the ngrok agent to the upstream service leg of the tunnel using our [local HTTPS feature](/universal-gateway/http/#https-forwarding).
+- For custom domains, use ngrok's [Automated TLS certificates](/universal-gateway/tls-certificates/#automated) to have ngrok automatically provision a TLS certificate for your endpoint from [Let's Encrypt](https://letsencrypt.org/about/).
+
+:::tip
+Certificates automatically provisioned from Let's Encrypt are securely managed, and their private keys are not accessible to the requester. This ensures the security and integrity of the certificate by preventing key exposure.
+:::
+
+### Using a custom ingress domain
+
+If your organization uses a custom ingress domain, your default ngrok configuration will not work. Edit your ngrok agent configuration to add a [`connect_url`](/agent/config/v3/#connect_url) parameter to use the custom ingress domain of your organization.
+
+## Tunnel Configuration
+
+### TLS termination
+
+TLS Encryption is terminated at different locations depending on the ngrok endpoint type and configuration.
+See [Terminating TLS Connections](/universal-gateway/tls-termination/) for more details.
+
+### Minimum TLS version
+
+It is possible to specify the minimum TLS version that clients are required to use to talk to the ngrok cloud service for your endpoint. See [the mTLS guide](https://ngrok.com/docs/guides/other-guides/using-tls-mutual-authentication/) for more details.
+
+### Observability
+
+ngrok provides functionality for consuming logs for events in the system. For more information, check out our [ngrok Event Subscriptions documentation](/obs/).
+
+### Blocking non-corporate accounts
+
+For a tighter security policy, most administrators will want to block ngrok accounts that are not a part of their organization. The fastest approach is to block DNS lookups to the URLs used by the agent to connect to the ngrok cloud. These are the DNS lookups to block:
+
+- `connect.ngrok-agent.com`
+- `connect.us.ngrok-agent.com`
+- `connect.eu.ngrok-agent.com`
+- `connect.ap.ngrok-agent.com`
+- `connect.au.ngrok-agent.com`
+- `connect.sa.ngrok-agent.com`
+- `connect.jp.ngrok-agent.com`
+- `connect.in.ngrok-agent.com`
+- `tunnel.ngrok.com`
+- `tunnel.us.ngrok.com`
+- `tunnel.eu.ngrok.com`
+- `tunnel.ap.ngrok.com`
+- `tunnel.au.ngrok.com`
+- `tunnel.sa.ngrok.com`
+- `tunnel.jp.ngrok.com`
+- `tunnel.in.ngrok.com`
+
+## API Configuration
+
+You need an API key to authenticate with [the ngrok REST API](/docs/api/). API keys are Base64 encoded strings that you can find [in the dashboard](https://dashboard.ngrok.com/get-started/your-authtoken) or from [an API endpoint](/docs/api/resources/api-keys/#list-api-keys), which makes it easy to rotate your API keys.
+
+Consider restricting the IPs permitted to access the API. You can do so [in the ngrok Dashboard](https://dashboard.ngrok.com/ip-restrictions).
+
+## Dashboard Configuration
+
+### Dashboard authentication
+
+- For authenticating access to the dashboard, ngrok has features for [role-based access control](https://dashboard.ngrok.com/team-members) (RBAC), [IP Policy](https://dashboard.ngrok.com/ip-policies), and [Single Sign-On](https://dashboard.ngrok.com/settings).
+  - With RBAC, you can configure permissions for groups of users within your team (for example admins and developers).
+- Consider restricting the IPs permitted to access the dashboard.
