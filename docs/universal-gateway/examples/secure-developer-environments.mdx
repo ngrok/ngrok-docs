@@ -1,6 +1,6 @@
 ---
 title: "Create Secure Public Developer Environments"
-description: "Expose multiple developer services to the internet using a shared wildcard domain, route requests to the right local service, and apply centralized traffic policies like auth or IP restrictions."
+description: "Use a shared wildcard domain to control exposing services, route requests to the right local service, and apply centralized traffic policies like auth or IP restrictions."
 sidebar_label: "Secure Developer Environments"
 ---
 
@@ -24,16 +24,17 @@ With this ["front door"](/universal-gateway/examples/front-door-pattern) setup, 
 
 ## 1. Let developers create endpoints for their services
 
-Each developer can run their own internal Agent Endpoint using a URL that's namespaced to your shared ngrok account, like `bob.internal`, replacing `$PORT` based on where their service listens.
+Each developer can start their own [Agent Endpoint](/docs/universal-gateway/agent-endpoints) using an internal URL that's namespaced to your shared ngrok account, like `bob.internal`, replacing `$PORT` based on where their service listens.
 They can also use one of our [SDKs](/docs/agent-sdks) or the [Kubernetes Operator](/docs/k8s).
 
 ```bash
-ngrok http 3000 --url http://bob.internal
+ngrok http $PORT --url http://bob.internal
 ```
 
 ## 2. Reserve a domain
 
-Navigate to the [**Domains** section](https://dashboard.ngrok.com/domains) of the ngrok dashboard and click **New +** to reserve a wildcard domain like `*.devtest.example.com`.
+Navigate to the [**Domains** section](https://dashboard.ngrok.com/domains) of the ngrok dashboard and click **New +** to reserve a [custom wildcard domain](/docs/universal-gateway/custom-domains/) like `*.devtest.example.com`.
+You'll then need to set up CNAME records with your DNS provider.
 
 ## 3. Create a Cloud Endpoint
 
@@ -43,4 +44,25 @@ In the **URL** field, enter the wildcard domain you just reserved to finish crea
 
 ## 4. Route traffic to developer environments with Traffic Policy
 
-TK
+While still viewing your new cloud endpoint in the dashboard, copy and paste the policy below into the Traffic Policy editor.
+
+```yaml
+on_http_request:
+  - actions:
+      - type: forward-internal
+        config:
+          url: https://${req.host.split(".devtest.example.com")[0]}.internal
+```
+
+**What's happening here?** This policy dynamically forwards every request to a specific internal endpoint based on the hostname of the request.
+
+For example, if someone sends a request to `bob.devtest.example.com`, this policy extracts `bob` from the hostname string and forwards it to `bob.internal`, which in turn connects to that developer's local environment. You can extend this to any number of developer environments by having them create new Agent Endpoints on internal URLs like `https://alice.internal` and so on.
+
+## Try out your endpoint
+
+<TryOut />
+
+## What's next?
+
+- Read our [best practices for developer productivity](/docs/guides/security-dev-productivity/) guide for ways to improve this example with developer-specific authtokens and custom connect URLs.
+- Explore other examples of using the [`forward-internal`](/docs/traffic-policy/actions/forward-internal/#examples) Traffic Policy actions.
