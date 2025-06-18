@@ -3,6 +3,10 @@ title: Security Macros
 description: Security Macros allow you to access sensitive information directly in your Traffic Policies. 
 ---
 
+:::tip Early Access
+This feature is currently in Early Access. To request access, [contact us](https://ngrok.com/support)
+:::
+
 Security Macros allow you to access sensitive information directly in your Traffic Policies. Your ngrok account has a Vault that can store Secrets. Any secrets that you add to your vault will be available across your account on all traffic policies. Updates to these secrets will be reflected across all traffic policies automatically.
 
 ## How secrets are secured
@@ -11,9 +15,59 @@ Security Macros allow you to access sensitive information directly in your Traff
 - ngrok's REST API does not return secrets as part of any of its response payloads
 - REST API traffic is encrypted in-transit using `HTTP/S` and `TLS 1.2+`
 
+## Get started
+
+To get started, first create a vault.
+
+:::note
+This example uses [the ngrok CLI's `api` command](/docs/agent/api/), but you can also use the REST API directly. [Install the ngrok CLI](/getting-started/).
+:::
+
+```bash
+ngrok api vaults create --name "example-vault" --description "example vault for my secrets"
+```
+
+You should get a response similar to the following:
+
+```json
+201 Created
+{
+  "created_at": "2026-06-11T21:05:23Z",
+  "created_by": "usr_abc123xyz456",
+  "description": "example vault for my secrets",
+  "id": "vault_xyz123abc456",
+  "last_updated_by": "usr_abc123xyz456",
+  "name": "example-vault",
+  "updated_at": "2026-06-11T21:05:23Z",
+  "uri": "https://api.ngrok.com/vaults/vault_abc123"
+}
+```
+
+Then, create your secret, using the `id` from the response as the `--vault-id`:
+
+```bash
+ngrok api secrets create --name "example-basic-auth" --description "example basic auth user pass" --value "admin:strongpassword" --vault-id "vault_xyz123abc456"
+```
+
+Then, you could use the secret in a [Traffic Policy](/traffic-policy/) like this:
+
+```yaml
+on_http_request:
+	- name: basic-auth-example
+		actions:
+			- type: basic-auth
+				config:
+					realm: sample-realm
+					credentials:
+						- \${secret('example-vault','example-basic-auth')}
+					enforce: true
+```
+
 ## Using secrets in you Kubernetes deployment
 
-TBD
+Vaults and secrets can be used in traffic policies in conjunction with Kubernetes Operator. Vaults and Secrets must be created using the ngrok API (either through REST or via the CLI).
+
+You can use your secrets with your Kubernetes deployment via Traffic Policy. See [the Kubernetes Operator quickstart](/getting-started/kubernetes/ingress) to learn more.
 
 ## Macros
 
@@ -26,6 +80,24 @@ Takes the vault name as the first argument and the secret name as the second arg
 ```yaml
 secret("vault-name", "secret-name")
 ```
+
+## Supported Traffic Policy Actions
+
+- [`set-vars`](/traffic-policy/actions/set-vars/)
+  - CEL is supported in the following fields:
+    - `vars`
+- [`verify-webhook`](/traffic-policy/actions/verify-webhook/)
+    - CEL is supported in the following fields:
+      - `secret`
+- [`basic-auth`](/traffic-policy/actions/basic-auth/)
+   - CEL is supported in the following fields:
+     - `credentials`
+- `[jwt-validation`](/traffic-policy/actions/jwt-validation/)
+  - CEL is supported in the following fields:
+    - `issuer.allow_list[*].value`
+    - `http.tokens[*].name`
+    - `http.tokens[*].prefix`
+    - `jws.keys[*].sources[*].additional_jkus`
 
 ## Pricing and limits
 
