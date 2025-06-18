@@ -941,6 +941,7 @@ const redirects = [
 		fromExact("/docs/guides/other-guides/securing-your-tunnels/"),
 		"/docs/guides/security-dev-productivity/securing-your-tunnels",
 	],
+	[fromExact("/docs/guides/other-guides/licensing"), "/docs/pricing-limits/"],
 ];
 
 // get current href from window
