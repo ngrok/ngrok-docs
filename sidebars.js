@@ -463,6 +463,7 @@ const sidebars = {
 					link: { type: "doc", id: "agent/index" },
 					items: [
 						"agent/index",
+						"agent/upgrade-v2-v3",
 						"agent/web-inspection-interface",
 						"agent/cli",
 						"agent/cli-api",
