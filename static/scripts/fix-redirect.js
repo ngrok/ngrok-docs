@@ -937,6 +937,10 @@ const redirects = [
 		fromExact("/docs/guides/site-to-site-connectivity/end-customers/"),
 		"/docs/guides/site-to-site-connectivity/",
 	],
+	[
+		fromExact("/docs/guides/other-guides/securing-your-tunnels/"),
+		"/docs/guides/security-dev-productivity/securing-your-tunnels",
+	],
 ];
 
 // get current href from window
