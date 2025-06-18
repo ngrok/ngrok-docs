@@ -43,7 +43,6 @@ This table shows ngrok's plan and overall platform limits. For pricing for on-de
 
 To see current pricing, click here [ngrok pricing](https://ngrok.com/pricing?ref=docs)
 
-
 ## What do I get for free on ngrok?
 
 Resources included for free:
@@ -86,4 +85,3 @@ If you run into a limit, you have two options:
 
 - You can wait for your cycle to refresh (limits refresh every 30 days per account)
 - Upgrade to a plan with higher limits. If you're using ngrok for testing webhooks, the Pro plan is probably the best fit. If you're using ngrok for production, try the Pay-as-you-go plan.
-
