@@ -8,8 +8,8 @@ import type { WithStyleProps } from "@ngrok/mantle/types";
 import type { ComponentProps, ReactNode } from "react";
 import { CodeBlockWithInfo } from "./CodeBlockWithInfo";
 import { LangTab } from "./LangSwitcher/LangTab";
-import { getLanguageInfo, getMetaData } from "./LangSwitcher/utils";
 import { languageInfo } from "./LangSwitcher/data";
+import { getLanguageInfo, getMetaData } from "./LangSwitcher/utils";
 
 type WithIndentation = Pick<
 	ComponentProps<typeof CodeBlockCode>,
