@@ -1,7 +1,11 @@
 import { Button } from "@ngrok/mantle/button";
 import capitalize from "capitalize";
 
-const langsToCapitalize = ["yaml", "json"];
+const langsToCapitalize = ["yaml", "json", "txt", "sh", "jsx", "tsx"];
+const langsToSwap = [
+	{ name: "js", swapName: "javascript" },
+	{ name: "ts", swapName: "typescript" },
+];
 
 export function LangTab({
 	tabText,
@@ -14,6 +18,8 @@ export function LangTab({
 	disabled?: boolean;
 	onClick?: () => void;
 }) {
+	const finalTabText =
+		langsToSwap.find((lang) => lang.name === tabText)?.swapName || tabText;
 	return (
 		<Button
 			disabled={disabled}
@@ -23,9 +29,9 @@ export function LangTab({
 			appearance="ghost"
 			className={className}
 		>
-			{langsToCapitalize.includes(tabText)
-				? tabText.toUpperCase()
-				: capitalize(tabText)}
+			{langsToCapitalize.includes(finalTabText)
+				? finalTabText.toUpperCase()
+				: capitalize(finalTabText)}
 		</Button>
 	);
 }

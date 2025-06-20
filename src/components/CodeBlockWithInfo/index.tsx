@@ -46,7 +46,7 @@ export function CodeBlockWithInfo({
 			content &&
 			content.split("\n").length > collapseLineNumber;
 
-	const finalTitle = meta?.title || "Example code";
+	const finalTitle = meta?.title || "Example";
 
 	return (
 		<div className="flex flex-col">
@@ -59,7 +59,7 @@ export function CodeBlockWithInfo({
 							) : (
 								<CodeBlockIcon preset="file" />
 							)}
-							<CodeBlockTitle>
+							<CodeBlockTitle className="font-sans">
 								{meta?.titleLink ? (
 									<a href={useBaseUrl(meta.titleLink)}>
 										<strong>{finalTitle}</strong>
@@ -71,7 +71,7 @@ export function CodeBlockWithInfo({
 						</>
 					</div>
 					<span className="justify-end mr-0.5 ml-auto">{headerContent}</span>
-					{info && <SdkButton className="mr-0.5" data={info} />}
+					{info && <SdkButton className="ml-4 mr-0.5" data={info} />}
 				</CodeBlockHeader>
 				<CodeBlockBody>
 					{!meta?.disableCopy && <CodeBlockCopyButton />}

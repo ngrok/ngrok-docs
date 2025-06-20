@@ -83,14 +83,11 @@ function DocsCodeBlock({
 			meta={meta}
 			className={`mb-4 ${className}`}
 			headerContent={
-				<>
-					{meta.title && <span>{meta.title}</span>}
-					<LangTab
-						disabled
-						className="text-xs h-6 px-1.5 bg-neutral-500/10 text-neutral-800"
-						tabText={meta?.tabName || capitalize(language)}
-					/>
-				</>
+				<LangTab
+					disabled
+					className="text-xs h-6 px-1.5 bg-neutral-500/10 text-neutral-800"
+					tabText={meta?.tabName || language}
+				/>
 			}
 			info={getLanguageInfo(language)}
 			codeBlockProps={props}
