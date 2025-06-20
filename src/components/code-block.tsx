@@ -9,6 +9,7 @@ import type { ComponentProps, ReactNode } from "react";
 import { CodeBlockWithInfo } from "./CodeBlockWithInfo";
 import { LangTab } from "./LangSwitcher/LangTab";
 import { getLanguageInfo, getMetaData } from "./LangSwitcher/utils";
+import { languageInfo } from "./LangSwitcher/data";
 
 type WithIndentation = Pick<
 	ComponentProps<typeof CodeBlockCode>,
@@ -64,15 +65,16 @@ function DocsCodeBlock({
 	const langInClassName = langMatchesInClassName
 		? langMatchesInClassName[0]?.split("-")[1]
 		: "";
-	const language = _language || parseLanguage(langInClassName);
+	const langToFind = langInClassName || parseLanguage(langInClassName);
+
+	const language =
+		languageInfo.find(
+			(lang) => lang.name === langToFind || lang.allNames?.includes(langToFind),
+		)?.name || langToFind;
 
 	const meta = getMetaData(
 		metastring ? `${className} ${metastring}` : className,
 	);
-
-	if (className?.includes("mb")) {
-		console.log("Classname", className);
-	}
 
 	return (
 		<CodeBlockWithInfo

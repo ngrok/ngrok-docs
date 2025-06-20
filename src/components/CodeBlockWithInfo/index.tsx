@@ -46,30 +46,30 @@ export function CodeBlockWithInfo({
 			content &&
 			content.split("\n").length > collapseLineNumber;
 
-	const finalTitle = meta?.title || "Example";
-
 	return (
 		<div className="flex flex-col">
 			<CodeBlock className={className} {...codeBlockProps}>
 				<CodeBlockHeader className={clsx("flex w-[100%]  justify-start p-2")}>
-					<div className="flex w-[100%] items-end justify-start gap-1">
-						<>
-							{meta?.mode ? (
-								<CodeBlockIcon preset={meta.mode} />
-							) : (
-								<CodeBlockIcon preset="file" />
-							)}
-							<CodeBlockTitle className="font-sans">
-								{meta?.titleLink ? (
-									<a href={useBaseUrl(meta.titleLink)}>
-										<strong>{finalTitle}</strong>
-									</a>
+					{meta?.title && (
+						<div className="flex w-[100%] items-end justify-start gap-1">
+							<>
+								{meta?.mode ? (
+									<CodeBlockIcon preset={meta.mode} />
 								) : (
-									<strong>{finalTitle}</strong>
+									<CodeBlockIcon preset="file" />
 								)}
-							</CodeBlockTitle>
-						</>
-					</div>
+								<CodeBlockTitle className="font-sans">
+									{meta?.titleLink ? (
+										<a href={useBaseUrl(meta.titleLink)}>
+											<strong>{meta.title}</strong>
+										</a>
+									) : (
+										<strong>{meta.title}</strong>
+									)}
+								</CodeBlockTitle>
+							</>
+						</div>
+					)}
 					<span className="justify-end mr-0.5 ml-auto">{headerContent}</span>
 					{info && <SdkButton className="ml-4 mr-0.5" data={info} />}
 				</CodeBlockHeader>
