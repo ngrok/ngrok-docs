@@ -1,0 +1,126 @@
+---
+title: "Quickstart: Kubernetes Endpoints"
+description: "Connect any API or app to your Kubernetes clusters for local service projection, cross-cluster communication, and much more."
+sidebar_label: Endpoints
+pagination_next: k8s/guides/using-ingresses
+---
+
+import TabItem from "@theme/TabItem";
+import Tabs from "@theme/Tabs";
+
+import K8sSetup from "./_setup.mdx";
+import K8sInstallBindings from "./_install-bindings.mdx";
+
+This quickstart uses the [ngrok Kubernetes Operator](/docs/k8s) and the ngrok agent to create a [Kubernetes-bound Endpoint](/docs/universal-gateway/kubernetes-endpoints/), which is accessible to other pods in your cluster as a native Service. ngrok then handles all routing to the upstream service, which can be running anywhere, like your development laptop or a cloud-based developer environment.
+
+When you use Kubernetes Endpoints, you can:
+
+- View changes to your local services immediately by [projecting your local development environment](https://ngrok.com/blog-post/kubernetes-dev-loop-projection) into a remote development or staging cluster.
+- Allow services in multiple clusters to communicate over a service mesh that doesn't require firewalls, VPNs, or port forwarding.
+- Securely access your customer's APIs or databases (aka [site-to-site connectivity](/docs/guides/site-to-site-connectivity/apis/)).
+- Allow your Kubernetes-deployed services to call a webhook URL exposed with ngrok to speed up local development or CI jobs.
+
+You also don't need to expose your local services to the public internet or modify the ingress rules to remote clusters.
+
+:::note
+The ngrok Kubernetes Operator is available to all ngrok users at no additional charge.
+You only incur costs if the resources provisioned by the controller incur a cost.
+Find more details on our [pricing page](https://ngrok.com/pricing), or, if you're a free user, the [free plan limits](/docs/pricing-limits/free-plan-limits/).
+:::
+
+## What you'll need
+
+- An ngrok account
+- The [ngrok CLI](/docs/getting-started/#1-install-ngrok) installed on your local machine
+- A running K8s cluster with `kubectl` access with at least one service
+  - If you don't have a cluster yet, see our [local cluster guide](/docs/k8s/guides/local-cluster/) for some options
+- [`kubectl`](https://kubernetes.io/docs/reference/kubectl/) and [Helm](https://helm.sh/docs/intro/install/) 3.0.0 or later installed locally
+
+## 1. Install the ngrok Kubernetes Operator
+
+<K8sSetup />
+<K8sInstallBindings />
+
+## 2. Start an Agent Endpoint
+
+On your local machine, start a new agent endpoint, replacing `$PORT` with the port your upstream service listens on.
+
+```bash
+ngrok http $PORT --url http://hello-world.default --binding kubernetes
+```
+
+The URL of a Kubernetes Endpoint has three parts, which determine how ngrok exposes it inside your cluster: the scheme (`http`, `tcp`, or `tls`), the service name, and the namespace.
+In this example, ngrok provisions the `http://hello-world.default` URL into a Kubernetes service named `hello-world` in the `default` namespace.
+
+Behind the scenes, your ngrok Kubernetes Operator continuously polls the ngrok API for new endpoints with the `kubernetes` binding.
+When it detects your new `http://hello-world.default` endpoint, it provisions a `ClusterIP` Kubernetes service that routes directly to that endpoint.
+
+:::tip
+You can also start agent-based Kubernetes Endpoints with:
+
+- Our [SDKs](/docs/agent-sdks/)
+- A second cluster
+- Cloud Endpoints with the [ngrok dashboard](https://dashboard.ngrok.com/endpoints)
+- Our [API](/docs/api)
+  :::
+
+## 3. Add Traffic Policy to manipulate requests (optional)
+
+Kubernetes Endpoints support the entire breadth of [Traffic Policy](/docs/traffic-policy), which lets you filter, manage, and orchestrate traffic as it passes between your local service and your cluster.
+
+Because a Kubernetes Endpoint is only accessible inside of clusters where you've installed the ngrok Kubernetes Operator with your account's credentials, you don't need to add authentication.
+Instead, you can add a header to your local service's response to demo how it works.
+
+```yaml title="hello-world.yaml"
+on_http_respons:
+  - actions:
+      - type: add-header
+        config:
+          headers:
+           x-hello-world: Hello, world!
+```
+
+Run your Agent Endpoint again with the new Traffic Policy file.
+
+```bash
+ngrok http $PORT --url http://hello-world.default --binding kubernetes --traffic-policy-file hello-world.yaml
+```
+
+## 4. Start making requests
+
+You can now access your non-Kubernetes service from within your cluster!
+
+You can test it out by running a temporary `curl` image on your cluster:
+
+```bash
+kubectl run -i --tty --rm debug --restart=Never --image=appropriate/curl -- /bin/sh
+```
+
+From within that new pod, `curl` your endpoint to get a response from your service.
+
+```bash
+curl -i http://hello-world.default
+```
+
+The `-i` flag outputs response headers, which will show any headers you added through your traffic policy.
+
+## What's next?
+
+First, read up on the rest of our Kubernetes Endpoints docs:
+
+- [Kubernetes Endpoints](/docs/universal-gateway/kubernetes-endpoints/)
+- [Using Endpoint Bindings with the Operator](/docs/k8s/guides/bindings/)
+
+Ready to replace Telepresence with ngrok's Kubernetes Endpoints?
+Read our [blog post](https://ngrok.com/blog-post/kubernetes-dev-loop-projection) on the process and _why_ it's easier for both platform engineers and API/app developers.
+
+Kubernetes Endpoints also support [Traffic Policy](/docs/traffic-policy):
+
+- [Traffic Policy overview](/docs/traffic-policy)
+- [Traffic Policy concepts](/docs/traffic-policy/concepts/)
+- All our [available actions](/docs/traffic-policy/actions/), including a few most relevant to these types of endpoints:
+  - [`add-headers`](/docs/traffic-policy/actions/add-headers/)
+  - [`rate-limit`](/docs/traffic-policy/actions/rate-limit/)
+  - [`verify-webhook`](/docs/traffic-policy/actions/verify-webhook/)
+
+Finally, explore the [Traffic Inspector in your dashboard](https://dashboard.ngrok.com/traffic-inspector) for real-time observability of traffic flowing through your endpoint.

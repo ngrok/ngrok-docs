@@ -1,32 +1,33 @@
 ## Behavior
 
-This action evaluates rules for request headers and body (when `process_body` is enabled), and each matching rule adds to the overall score of a request. If
-the score exceeds the set score threshhold, the action will block the request.
+This action evaluates rules for request headers and body (when `process_body` is enabled), and each matching rule adds to the overall score of a request. If the score exceeds the set score threshold, the action will block the request.
 
-The tallying process is called Anomaly Scoring, and is detailed on [the CoreRuleSet website.](https://coreruleset.org/docs/2-how-crs-works/2-1-anomaly_scoring/)
+The tallying process is called Anomaly Scoring, and is detailed on [the CRS website.](https://coreruleset.org/docs/2-how-crs-works/2-1-anomaly_scoring/)
 
-### Default Directives
+### Default Behavior
 
-The default behavior of the OWASP/CRS action includes the following [Coraza](https://coraza.io/) directives or sets of rules:
+The default behavior for this action is based on the following [Coraza](https://coraza.io/) directives and rules from v4.14.0 of the CRS:
 
 - [coraza.conf-recommended](https://github.com/corazawaf/coraza/blob/main/coraza.conf-recommended)
 - [crs-setup.conf.example](https://github.com/corazawaf/coraza-coreruleset/blob/main/rules/%40crs-setup.conf.example)
 - [@owasp_crs/\*.conf](https://github.com/corazawaf/coraza-coreruleset/tree/main/rules/%40owasp_crs)
-- SecRuleEngine On
-- SecRequestBodyInMemoryLimit 131072
-- SecRequestBodyLimit 131072
-- SecRequestBodyLimitAction ProcessPartial
-- SecResponseBodyLimit 131072
 
-Included in these defaults is an inbound anomaly score threshold of 5 and a [paranoia level](https://coreruleset.org/docs/2-how-crs-works/2-2-paranoia_levels/) of 1.
+Included in these rules is an inbound anomaly score threshold of 5 and a [paranoia level](https://coreruleset.org/docs/2-how-crs-works/2-2-paranoia_levels/) of 1.
 
 ### Body Processing
 
-When `process_body` is enabled, bodies will be partially processed and evaluated for their first 128KB.
-The rest of the body will not be processed and will be ignored.
+When `process_body` is enabled, we evaluate rules against the first 4kb of the body. If the body is larger than 4kb, we ignore the portion after the first 4kb.
 
 ### Managing Fallback Behavior (`on_error`) {#on-error}
 
 If `on_error` is set to `halt` (default) and the action encounters an error when forwarding traffic, the Traffic Policy chain will halt and no further actions will be executed. For example, if you have a `log` action after the `owasp-crs-request` action, the `log` action will not be run and the error will be returned.
 
 However, if `on_error` is set to `continue`, actions that appear after the `owasp-crs-request` action will still be executed even if the `owasp-crs-request` action encounters an error.
+
+### Inbound Anomaly Score Threshold Exceeded
+
+If the anomaly score accumulated from matching rules exceeds the threshold, ngrok blocks the request with a `HTTP 403` response. The request does not make it to your upstream.
+
+### Failure to process the body successfully
+
+If ngrok is unable to read the request body successfully, ngrok blocks the request with a `HTTP 500` response. The request does not make it to your upstream.

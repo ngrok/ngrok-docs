@@ -199,29 +199,24 @@ const redirects = [
 		"/docs/guides/other-guides/using-labels-within-ngrok",
 	],
 
-	// /docs/guides -> /docs/guides/site-to-site-connectivity
-	// /docs/guides/site-to-site-dbs -> /docs/guides/site-to-site-connectivity/dbs
 	[
 		fromIncludes("/docs/guides/site-to-site-dbs"),
-		"/docs/guides/site-to-site-connectivity/dbs",
+		"/docs/guides/site-to-site-connectivity/",
 	],
 
-	// /docs/guides/site-to-site-apis -> /docs/guides/site-to-site-connectivity/apis
 	[
 		fromIncludes("/docs/guides/site-to-site-apis"),
-		"/docs/guides/site-to-site-connectivity/apis",
+		"/docs/guides/site-to-site-connectivity/",
 	],
 
-	// /docs/guides/site-to-site-apis-mtls -> /docs/guides/site-to-site-connectivity/apis-mtls
 	[
 		fromIncludes("/docs/guides/site-to-site-apis-mtls"),
-		"/docs/guides/site-to-site-connectivity/apis-mtls",
+		"/docs/guides/site-to-site-connectivity/",
 	],
 
-	// docs/guides/site-to-site-dbs-mtls -> /docs/guides/site-to-site-connectivity/dbs-mtls
 	[
 		fromIncludes("/docs/guides/site-to-site-dbs-mtls"),
-		"/docs/guides/site-to-site-connectivity/dbs-mtls",
+		"/docs/guides/site-to-site-connectivity/",
 	],
 
 	// /docs/guides -> /docs/guides/identity-aware-proxy
@@ -832,12 +827,14 @@ const redirects = [
 	[fromExact("/docs/tls/"), "/docs/universal-gateway/tls/"],
 
 	// Kubernetes Operator Revamp
+	[fromExact("/docs/k8s/advanced-deployments/"), "/docs/k8s"],
+	[fromExact("/docs/k8s/deployment-guide/"), "/docs/k8s"],
+	[fromExact("/docs/k8s/developer-guide/"), "/docs/k8s"],
+	[fromExact("/docs/k8s/installation/install/"), "/docs/k8s"],
 	[
-		fromExact("/docs/k8s/advanced-deployments/"),
-		"/docs/k8s/installation/install/",
+		fromExact("/docs/k8s/guides/quickstart/"),
+		"/docs/getting-started/kubernetes/ingress",
 	],
-	[fromExact("/docs/k8s/deployment-guide/"), "/docs/k8s/installation/install/"],
-	[fromExact("/docs/k8s/developer-guide/"), "/docs/k8s/installation/install/"],
 	[
 		fromExact("/docs/k8s/developer-guide/architecture/"),
 		"/docs/k8s/installation/architecture/",
@@ -877,6 +874,82 @@ const redirects = [
 	[
 		fromExact("/docs/getting-started/kubernetes/"),
 		"/docs/k8s/installation/install",
+	],
+	[
+		fromExact("/docs/guides/other-guides/how-to-set-up-a-custom-domain"),
+		"/docs/universal-gateway/custom-domains",
+	],
+	[
+		fromExact("/docs/guides/other-guides/"),
+		"/docs/guides/security-dev-productivity/",
+	],
+	[
+		fromExact("/docs/guides/using-ngrok-with/"),
+		"/docs/using-ngrok-with/minecraft/",
+	],
+	[
+		fromExact("/docs/guides/device-gateway/"),
+		"/docs/guides/device-gateway/agent/",
+	],
+	[fromIncludes("/docs/guides/developer-preview/"), "/docs/"],
+	[
+		fromExact("/docs/guides/identity-aware-proxy/"),
+		"/docs/guides/identity-aware-proxy/securing-with-oauth/",
+	],
+	[
+		fromExact("/docs/guides/other-guides/security-dev-productivity/"),
+		"/docs/guides/security-dev-productivity/",
+	],
+	[
+		fromExact(
+			"/docs/guides/other-guides/security-dev-productivity/security-dev-productivity/",
+		),
+		"/docs/guides/security-dev-productivity/",
+	],
+	[
+		fromExact("/docs/using-ngrok-with/python/"),
+		"/docs/getting-started/python/",
+	],
+	[
+		fromExact("/docs/using-ngrok-with/node-js/"),
+		"/docs/getting-started/javascript/",
+	],
+	[
+		fromExact("/docs/using-ngrok-with/django/"),
+		"/docs/getting-started/python/",
+	],
+	[fromExact("/docs/using-ngrok-with/go/"), "/docs/getting-started/go/"],
+	[fromExact("/docs/using-ngrok-with/rust/"), "/docs/getting-started/rust/"],
+	[fromExact("/docs/using-ngrok-with/rdp/"), "/docs/guides/ssh-rdp"],
+	[fromExact("/docs/using-ngrok-with/ssh/"), "/docs/guides/ssh-rdp"],
+	//site-to-site redirects
+	[
+		fromExact("/docs/guides/site-to-site-connectivity/dbs/"),
+		"/docs/guides/site-to-site-connectivity/",
+	],
+	[
+		fromExact("/docs/guides/site-to-site-connectivity/dbs-mtls/"),
+		"/docs/guides/site-to-site-connectivity/",
+	],
+	[
+		fromExact("/docs/guides/site-to-site-connectivity/apis-mtls/"),
+		"/docs/guides/site-to-site-connectivity/",
+	],
+	[
+		fromExact("/docs/guides/site-to-site-connectivity/apis/"),
+		"/docs/guides/site-to-site-connectivity/",
+	],
+	[
+		fromExact("/docs/guides/site-to-site-connectivity/end-customers/"),
+		"/docs/guides/site-to-site-connectivity/",
+	],
+	[
+		fromExact("/docs/guides/other-guides/securing-your-tunnels/"),
+		"/docs/guides/security-dev-productivity/securing-your-tunnels",
+	],
+	[
+		fromExact("/docs/guides/other-guides/upgrade-v2-v3/"),
+		"/docs/agent/upgrade-v2-v3/",
 	],
 ];
 

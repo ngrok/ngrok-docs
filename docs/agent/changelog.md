@@ -6,6 +6,15 @@ title: Changelog
 
 ## v3
 
+### ngrok agent 3.23.1 \[2025-06-10\]
+
+- Correct names for vaults and secrets API commands.
+
+### ngrok agent 3.23.0 \[2025-06-05\]
+
+- Add API command support for vaults and secrets.
+- Add audit events to vaults and secrets.
+
 ### ngrok Agent 3.22.1 \[2025-03-20\]
 
 - Fix CLI help/descriptions for endpoints create command.

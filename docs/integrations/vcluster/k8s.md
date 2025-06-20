@@ -195,7 +195,7 @@ to the endpoint where your 2048 application is humming along.
 
 With our [Traffic Policy system](/docs/traffic-policy/) and the [`oauth`
 action](/docs/traffic-policy/actions/oauth), ngrok manages OAuth protection
-entirely at the cloud edge, which means you don't need to add any
+entirely at the ngrok cloud service, which means you don't need to add any
 additional services to your cluster, or alter routes, to ensure ngrok's edge
 authenticates and authorizes all requests before allowing ingress and access to
 your endpoint.

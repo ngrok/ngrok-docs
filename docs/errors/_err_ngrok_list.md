@@ -1887,6 +1887,14 @@
     </tr>
     <tr>
       <td>
+        <a id="ERR_NGROK_458" href="/docs/errors/err_ngrok_458">ERR_NGROK_458</a>
+      </td>
+      <td class="pre-wrapped">
+        A singleton reserved domain with the name <code>&lt;NAME&gt;</code> already exists. You may only have one singleton reserved domain per account.
+      </td>
+    </tr>
+    <tr>
+      <td>
         <a id="ERR_NGROK_500" href="/docs/errors/err_ngrok_500">ERR_NGROK_500</a>
       </td>
       <td class="pre-wrapped">
@@ -3559,7 +3567,7 @@
         <a id="ERR_NGROK_1608" href="/docs/errors/err_ngrok_1608">ERR_NGROK_1608</a>
       </td>
       <td class="pre-wrapped">
-        Endpoint Configurations are deprecated. Please use Cloud Edges instead.
+        Endpoint Configurations are deprecated. Please use Cloud Endpoints instead.
       </td>
     </tr>
     <tr>
@@ -3735,7 +3743,7 @@
         <a id="ERR_NGROK_1631" href="/docs/errors/err_ngrok_1631">ERR_NGROK_1631</a>
       </td>
       <td class="pre-wrapped">
-        Endpoint Configurations are deprecated. Please use Cloud Edges instead.
+        Endpoint Configurations are deprecated. Please use Cloud Endpoints instead.
       </td>
     </tr>
     <tr>
@@ -3815,7 +3823,7 @@
         <a id="ERR_NGROK_1641" href="/docs/errors/err_ngrok_1641">ERR_NGROK_1641</a>
       </td>
       <td class="pre-wrapped">
-        Endpoint Configurations are deprecated. Please use Cloud Edges instead.
+        Endpoint Configurations are deprecated. Please use Cloud Endpoints instead.
       </td>
     </tr>
     <tr>
@@ -5326,6 +5334,22 @@
       </td>
       <td class="pre-wrapped">
         The action <code>&lt;ACTION&gt;</code> is not available for your current plan. Please upgrade to <code>&lt;PLANS&gt;</code> to use this action.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_2257" href="/docs/errors/err_ngrok_2257">ERR_NGROK_2257</a>
+      </td>
+      <td class="pre-wrapped">
+        Invalid basic auth credential. Username <code>&lt;USERNAME&gt;</code> fails to meet requirements of RFC 7617 #2.1: <code>&lt;ERR&gt;</code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_2258" href="/docs/errors/err_ngrok_2258">ERR_NGROK_2258</a>
+      </td>
+      <td class="pre-wrapped">
+        Invalid basic auth credential. The password of user <code>&lt;USERNAME&gt;</code> fails to meet requirements of RFC 7617 #2.1: <code>&lt;ERR&gt;</code>
       </td>
     </tr>
     <tr>
@@ -10164,7 +10188,7 @@
         <a id="ERR_NGROK_9035" href="/docs/errors/err_ngrok_9035">ERR_NGROK_9035</a>
       </td>
       <td class="pre-wrapped">
-        Invalid port for reserve domains with scheme <code>&lt;CURRENTSCHEME&gt;</code>, allowed ports are <code>&lt;WANTPORT&gt;</code>.
+        Invalid port for for URL with scheme <code>&lt;CURRENTSCHEME&gt;</code>, allowed ports are <code>&lt;WANTPORT&gt;</code>.
       </td>
     </tr>
     <tr>
@@ -10937,6 +10961,22 @@
     </tr>
     <tr>
       <td>
+        <a id="ERR_NGROK_15011" href="/docs/errors/err_ngrok_15011">ERR_NGROK_15011</a>
+      </td>
+      <td class="pre-wrapped">
+        Invalid basic auth credential. Username <code>&lt;USERNAME&gt;</code> fails to meet requirements of RFC 7617 #2.1: <code>&lt;ERROR&gt;</code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_15012" href="/docs/errors/err_ngrok_15012">ERR_NGROK_15012</a>
+      </td>
+      <td class="pre-wrapped">
+        Invalid basic auth credential. The password of user <code>&lt;USERNAME&gt;</code> fails to meet requirements of RFC 7617 #2.1: <code>&lt;ERROR&gt;</code>
+      </td>
+    </tr>
+    <tr>
+      <td>
         <a id="ERR_NGROK_16000" href="/docs/errors/err_ngrok_16000">ERR_NGROK_16000</a>
       </td>
       <td class="pre-wrapped">
@@ -11130,6 +11170,14 @@
     </tr>
     <tr>
       <td>
+        <a id="ERR_NGROK_18020" href="/docs/errors/err_ngrok_18020">ERR_NGROK_18020</a>
+      </td>
+      <td class="pre-wrapped">
+        The maximum number of endpoints allowed in this pool has been exceeded. Your account is limited to <code>&lt;LIMIT&gt;</code> endpoints per pool.
+      </td>
+    </tr>
+    <tr>
+      <td>
         <a id="ERR_NGROK_19000" href="/docs/errors/err_ngrok_19000">ERR_NGROK_19000</a>
       </td>
       <td class="pre-wrapped">
@@ -11266,6 +11314,14 @@
     </tr>
     <tr>
       <td>
+        <a id="ERR_NGROK_23005" href="/docs/errors/err_ngrok_23005">ERR_NGROK_23005</a>
+      </td>
+      <td class="pre-wrapped">
+        You've reached the maximum number of vaults (<code>&lt;MAX&gt;</code>) under your current plan. To increase your limit, please upgrade your plan or contact support.
+      </td>
+    </tr>
+    <tr>
+      <td>
         <a id="ERR_NGROK_24000" href="/docs/errors/err_ngrok_24000">ERR_NGROK_24000</a>
       </td>
       <td class="pre-wrapped">
@@ -11318,6 +11374,14 @@
       </td>
       <td class="pre-wrapped">
         Vault with ID <code>&lt;ID&gt;</code> not found.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_24007" href="/docs/errors/err_ngrok_24007">ERR_NGROK_24007</a>
+      </td>
+      <td class="pre-wrapped">
+        You've reached the maximum number of secrets (<code>&lt;MAX&gt;</code>) allowed for vault <code>&lt;VID&gt;</code> under your current plan. To increase your limit, please upgrade your plan or contact support.
       </td>
     </tr>
     <tr>
