@@ -1,16 +1,24 @@
-# Upgrading to ngrok Agent v3
+---
+title: Upgrading to ngrok Agent v3
+sidebar_label: Upgrade to v3
+description: Learn the best way to upgrade from ngrok agent v2 to v3.
+---
 
 The latest ngrok agent is packed with a ton of new capability but because it is a major release of the agent, there are also some breaking changes to watch out for.
 
-### Breaking Changes
+## Breaking Changes
 
-**Configuration file** - The older configuration file is not compatible with the latest ngrok agent without a few changes. We've automated the process to upgrade so all you need to do is run the new upgrade command.
+### Configuration file
+
+The older configuration file is not compatible with the latest ngrok agent without a few changes. To automatically upgrade, run the following CLI command.
 
 ```bash
 ngrok config upgrade
 ```
 
-**Unrecognized configuration parameters** - The previous ngrok agent silently ignored any config parameters it didn't understand. This means that you could have a configuration file with parameters that you thought were doing something, but they really weren't. This is also true for the ngrok agent API. The latest ngrok agent will explicitly error when it sees a configuration parameter that it doesn't recognize. It's a good idea to run a check after upgrading to find incompatible arguments.
+### Unrecognized configuration parameters
+
+Both the previous ngrok agent silently ignored invalid config parameters. The latest ngrok agent will explicitly error when it sees a configuration parameter that it doesn't recognize. It's a good idea to run a check after upgrading to find incompatible arguments.
 
 ```bash
 ngrok config check
@@ -18,9 +26,13 @@ ngrok config check
 
 This will automatically add `version` and `region` options as well as convert the names of legacy options to their new format. If you're only using ngrok with a configuration file, there's nothing else to do. For more information about the changes to the config file, see the [following section](#upgrading-the-ngrok-agent-config).
 
-**Only HTTPS tunnels by default** - ngrok agent HTTP tunnels by default will only open a single HTTPS endpoint for your upstream service instead of both an HTTP and HTTPS endpoint. In order to setup both an HTTP and an HTTPS endpoint, configure multiple endpoints via the configuration file.
+### Only HTTPS tunnels by default
 
-**Automation using the ngrok agent** - If you have written any scripts or built wrappers around the ngrok agent using command line flags, there are additional changes you will need to make.
+ngrok agent HTTP tunnels by default will only open a single HTTPS endpoint for your upstream service instead of both an HTTP and HTTPS endpoint. In order to setup both an HTTP and an HTTPS endpoint, configure multiple endpoints via the configuration file.
+
+### Automation using the ngrok agent
+
+If you have written any scripts or built wrappers around the ngrok agent using command line flags, there are additional changes you will need to make.
 
 - Installing the Authtoken is now done with the command `ngrok config add-authtoken TOKEN`. Check out the [ngrok config reference documentation](/agent/cli#ngrok-config) for more information.
 - The ngrok agent only accepts long name flags prefixed with `--` and will error if a single hyphen is used. When updating your scripts, ensure flags like `--host-header` are using double hyphens.
@@ -32,11 +44,11 @@ This will automatically add `version` and `region` options as well as convert th
 
 For a full list of changes to the agent for v3, see the [changelog](/agent/changelog).
 
-### Changes to choosing a region
+## Changes to choosing a region
 
 The ngrok agent v3 changes the default region you connect to when opening a tunnel. Instead of choosing the us region, the ngrok agent will attempt to connect to the best region for you, usually the one geographically closest to you. If you run the `ngrok config upgrade` command, it will automatically add a `region: us` if your config file was missing it, since that was previously the default. Check out the [full list of supported regions](/universal-gateway/points-of-presence/).
 
-### Upgrading the ngrok Agent Configuration File {#upgrading-the-ngrok-agent-config}
+## Upgrading the ngrok Agent Configuration File
 
 If you configure ngrok to start with a configuration file, the ngrok agent v3 makes it extremely easy to upgrade by providing the `ngrok config upgrade` command. Running this command will automatically migrate your configuration file to the latest format.
 
@@ -80,7 +92,7 @@ The `ngrok config upgrade` command also includes a flag `--relocate` which will 
 
 Once you run that command, you should be ready to go with the latest ngrok agent v3.
 
-### Upgrading command line scripts
+## Upgrading command line scripts
 
 The latest version of the ngrok agent includes an updated command line argument parser which introduces a few breaking changes.
 
@@ -90,6 +102,6 @@ The latest version of the ngrok agent includes an updated command line argument 
   - `-auth` -> [`--basic-auth`](/agent/cli/#ngrok-http)
   - `-bind-tls` -> [`--url`](/agent/cli/#ngrok-http)
 
-### Next steps
+## Next steps
 
 Now that you've upgraded to the latest configuration file, you're ready to start the latest ngrok agent. There's a lot of new stuff in there, but your old commands should work as well (with the changes from above). Run `ngrok -h` for help or check out the [ngrok agent reference documentation](/agent/cli/).

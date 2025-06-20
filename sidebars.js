@@ -479,6 +479,7 @@ const sidebars = {
 						"agent/changelog",
 						"agent/version-support-policy",
 						"agent/diagnose",
+						"agent/upgrade-v2-v3",
 					],
 				},
 				{
