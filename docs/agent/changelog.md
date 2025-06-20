@@ -6,6 +6,10 @@ title: Changelog
 
 ## v3
 
+### ngrok agent 3.23.2 \[2025-06-20\]
+
+- Improve Windows diagnostics
+
 ### ngrok agent 3.23.1 \[2025-06-10\]
 
 - Correct names for vaults and secrets API commands.
