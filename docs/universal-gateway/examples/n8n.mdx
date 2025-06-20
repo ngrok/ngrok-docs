@@ -50,7 +50,7 @@ on_http_request:
 ```
 
 **What's happening here?**
-This policy applies the [`restrict-ips`](/docs/traffic-policy/actions/restrict-ips) Traffic Policy action and allows only 
+This policy applies the [`restrict-ips`](/docs/traffic-policy/actions/restrict-ips) Traffic Policy action and allows only
 devices with a matching IP address to access your n8n instance.
 All other requests are denied at ngrok's network without reaching your service.
 
@@ -69,16 +69,16 @@ Replace `$WORKFLOW_UUID` with your workflow's path and `$SECRET` with the secret
 
 ```yaml
 on_http_request:
-- expressions:
-		  - "req.url.path.contains('/webhook/$WORKFLOW_UUID')"
-		actions:
-			- type: verify-webhook
-				config:
-					provider: github
+  - expressions:
+      - "req.url.path.contains('/webhook/$WORKFLOW_UUID')"
+    actions:
+      - type: verify-webhook
+        config:
+          provider: github
           secret: $SECRET
 ```
 
-**What's happening here?** This policy filters for *only* traffic that contains the specific `/webhook/$WORKFLOW_UUID` path, then verfies that it both originates from GitHub (or another [supported provider](/docs/traffic-policy/actions/verify-webhook/#supported-providers)) and contains the appropriate secret.
+**What's happening here?** This policy filters for _only_ traffic that contains the specific `/webhook/$WORKFLOW_UUID` path, then verfies that it both originates from GitHub (or another [supported provider](/docs/traffic-policy/actions/verify-webhook/#supported-providers)) and contains the appropriate secret.
 
 Restart your ngrok agent to apply the new policy.
 
@@ -88,7 +88,7 @@ ngrok http 5678 --url https://$NGROK_DOMAIN --traffic-policy-file n8n.yaml
 
 ### Configure both IP restrictions and webhook verification
 
-If you configured IP restrictions earlier, and *then* set up webhook verification, you'll find that your webhooks won't work because you haven't added the provider's IP to your `restrict-ips` action to allow them.
+If you configured IP restrictions earlier, and _then_ set up webhook verification, you'll find that your webhooks won't work because you haven't added the provider's IP to your `restrict-ips` action to allow them.
 Because it's next to impossible to identify all the IPs where a provider's webhooks might come from, it's easier to disable IP restrictions on the `/webhooks/` path.
 
 Edit your `n8n.yaml` file with the policy below.
@@ -96,15 +96,15 @@ Edit your `n8n.yaml` file with the policy below.
 ```yaml
 on_http_request:
   - expressions:
-		  - "req.url.path.contains('/webhook/$WORKFLOW_UUID')"
-		actions:
-			- type: verify-webhook
-				config:
-					provider: github
+      - "req.url.path.contains('/webhook/$WORKFLOW_UUID')"
+    actions:
+      - type: verify-webhook
+        config:
+          provider: github
           secret: $SECRET
 
   - expressions:
-		  - "!req.url.path.contains('/webhook/')"
+      - "!req.url.path.contains('/webhook/')"
     actions:
       - type: restrict-ips
         config:
@@ -113,7 +113,7 @@ on_http_request:
             - "$YOUR_IP/32"
 ```
 
-**What's happening here?** This policy first verifies any incoming webhooks as before. Then, the policy applies IP restrictions to only traffic *not* to the `/webhook/` path, which allows your webhooks provider's request to reach n8n successfully.
+**What's happening here?** This policy first verifies any incoming webhooks as before. Then, the policy applies IP restrictions to only traffic _not_ to the `/webhook/` path, which allows your webhooks provider's request to reach n8n successfully.
 
 ## What's next?
 
