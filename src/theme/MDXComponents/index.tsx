@@ -1,5 +1,10 @@
 import Head from "@docusaurus/Head";
 import { Definition } from "@site/src/components/Definition";
+import TabItem from "@theme/TabItem";
+import Tabs from "@theme/Tabs";
+import ConfigExample from "@site/src/components/ConfigExample";
+import { YouTubeEmbed } from "@components/youtube-embed";
+import { LangSwitcher } from "./LangSwitcher";
 import Admonition from "@theme/Admonition";
 import type { MDXComponentsObject } from "@theme/MDXComponents";
 import MDXA from "@theme/MDXComponents/A";
@@ -32,6 +37,11 @@ const MDXComponents: MDXComponentsObject = {
 	admonition: Admonition,
 	mermaid: Mermaid,
 	Definition,
+	Tabs,
+	TabItem,
+	ConfigExample,
+	YouTubeEmbed,
+	LangSwitcher,
 };
 
 export default MDXComponents;
