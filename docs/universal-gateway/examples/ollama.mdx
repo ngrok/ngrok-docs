@@ -1,0 +1,124 @@
+---
+title: "Expose and Secure Your Self-Hosted Ollama API"
+description: "Use ngrok to create a public endpoint for your local LLM, enabling remote access and integration, while also adding authentication and access control."
+sidebar_label: "Expose Ollama API"
+---
+
+import ReserveDomain from "./snippets/_reserve-domain.mdx";
+import CloudEndpoint from "./snippets/_cloud-endpoint.mdx";
+import TryOut from "./snippets/_try-out.mdx";
+import Back from "./snippets/_back-to-examples.mdx";
+
+Ollama is a locally deployed AI model runner, designed to allow users to download and execute large language models (LLMs) locally on your machine.
+By combining Ollama with ngrok, you can give your local LLM an endpoint on the internet, enabling remote access and integration with other applications.
+
+But putting your entire Ollama API on the public internet might expose your LLM to abuse—instead, you can use Traffic Policy to add a layer of authentication to restrict access to only yourself or trusted colleagues.
+
+## 1. Reserve a domain
+
+<ReserveDomain domain="https://your-ollama-llm.ngrok.app" />
+
+## 2. Create a Traffic Policy file
+
+On the system where Ollama runs, create a file named `ollama.yaml` and paste in the following policy:
+
+```yaml
+on_http_request:
+  - actions:
+      - type: add-headers
+        config:
+          headers:
+            host: localhost
+```
+
+**What's happening here?** This policy rewrites the `Host` header of every HTTP request to `localhost` so that Ollama accepts the requests.
+
+## 3. Start your Ollama endpoint
+
+On the same system where Ollama runs, start the agent on port `11434`, which is the default for Ollama, and reference the `ollama.yaml` file you just created.
+Be sure to also change `$NGROK_URL` to the domain you reserved earlier.
+
+```bash
+ngrok http 11434 --url https://$NGROK_URL.ngrok.app --traffic-policy-file ollama.yaml
+```
+
+## 4. Try out your Ollama endpoint
+
+You can use `curl` in your terminal to send a prompt to your LLM through your `$NGROK_DOMAIN`, replacing `$MODEL` with the [Ollama model](https://ollama.com/library) you pulled.
+
+```bash
+curl https://$NGROK_DOMAIN/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -d '{
+        "model": "$MODEL",
+        "messages": [
+          {
+            "role": "system",
+            "content": "You are a helpful assistant."
+          },
+          {
+            "role": "user",
+            "content": "Hello!"
+          }
+        ]
+      }'
+```
+
+## Optional: Protect your Ollama instance with Basic Auth
+
+You may not want everyone to be able to access your LLM. ngrok can quickly add authentication to your LLM without any changes to your Ollama configuration.
+
+Edit your `ollama.yaml` file and add in the policy below.
+
+```yaml
+on_http_request:
+	- actions:
+      - type: basic-auth
+        config:
+          realm: sample-realm
+          credentials:
+            - user:password1
+            - admin:pasword2
+          enforce: true
+  - actions:
+      - type: add-headers
+        config:
+          headers:
+            host: localhost
+```
+
+**What's happening here?**
+This policy first checks whether the incoming HTTP request contains the appropriate `Authorization: Basic` header and a [base64-encoded](https://en.wikipedia.org/wiki/Base64) version of one of the `username:password` pairs you specified in `ollama.yaml`.
+Only requests with valid Basic Auth are passed through to your ngrok agent and forwarded to your Ollama API.
+
+You can test your policy by sending the same LLM prompt to Ollama's API with the `Authorization: Basic` header, once again replacing `$NGROK_DOMAIN` and `$MODEL`. 
+
+```bash
+curl https://$NGROK_DOMAIN/v1/chat/completions \
+  -H "Content-Type: application/json" \
+	-H 'Authorization: Basic dXNlcjpwYXNzd29yZDE=' \
+  -d '{
+        "model": "$MODEL",
+        "messages": [
+          {
+            "role": "system",
+            "content": "You are a helpful assistant."
+          },
+          {
+            "role": "user",
+            "content": "Hello!"
+          }
+        ]
+      }'
+```
+
+If you send the same request *without* the Authorization header, you should receive a `401 Unauthorized` response.
+
+Your personal LLM is now locked down to only accept authenticated users.
+
+## What's next?
+
+- Read more about [Traffic Policy](/docs/traffic-policy), [core concepts](/docs/traffic-policy/concepts), and [actions](/docs/traffic-policy/actions) you might want to implement next, like [IP restrictions](/docs/traffic-policy/actions/restrict-ips) instead of Basic Auth.
+- Explore other ways to [block unwanted requests](/docs/traffic-policy/examples/block-unwanted-requests/) from Tor users, search or AI bots, and more to protect your self-hosted LLM.
+- View your Ollama traffic in [Traffic Inspector](https://dashboard.ngrok.com/traffic-inspector).
+
