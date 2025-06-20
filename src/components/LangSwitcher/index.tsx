@@ -1,5 +1,4 @@
 import BrowserOnly from "@docusaurus/BrowserOnly";
-import capitalize from "capitalize";
 import clsx from "clsx";
 import { useContext } from "react";
 import { CodeBlockWithInfo } from "../CodeBlockWithInfo";
@@ -67,7 +66,7 @@ export function LangSwitcher({ children, className, ...props }: any) {
 												? "bg-neutral-500/10 text-neutral-800"
 												: "text-neutral-500",
 										)}
-										tabText={child?.meta.tabName || capitalize(child?.language)}
+										tabText={child?.meta.tabName || child?.language}
 									/>
 								);
 							})}

@@ -1,4 +1,7 @@
 import { Button } from "@ngrok/mantle/button";
+import capitalize from "capitalize";
+
+const langsToCapitalize = ["yaml", "json"];
 
 export function LangTab({
 	tabText,
@@ -20,7 +23,9 @@ export function LangTab({
 			appearance="ghost"
 			className={className}
 		>
-			{tabText}
+			{langsToCapitalize.includes(tabText)
+				? tabText.toUpperCase()
+				: capitalize(tabText)}
 		</Button>
 	);
 }

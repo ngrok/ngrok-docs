@@ -4,7 +4,7 @@ import TabItem from "@theme/TabItem";
 import Tabs from "@theme/Tabs";
 import ConfigExample from "@site/src/components/ConfigExample";
 import { YouTubeEmbed } from "@components/youtube-embed";
-import { LangSwitcher } from "./LangSwitcher";
+import { LangSwitcher } from "@components/LangSwitcher";
 import Admonition from "@theme/Admonition";
 import type { MDXComponentsObject } from "@theme/MDXComponents";
 import MDXA from "@theme/MDXComponents/A";
