@@ -1,7 +1,7 @@
+import { LangSwitcher } from "@components/LangSwitcher";
+import { YouTubeEmbed } from "@components/youtube-embed";
 import Head from "@docusaurus/Head";
 import ConfigExample from "@site/src/components/ConfigExample";
-import { YouTubeEmbed } from "@components/youtube-embed";
-import { LangSwitcher } from "@components/LangSwitcher";
 import Admonition from "@theme/Admonition";
 import type { MDXComponentsObject } from "@theme/MDXComponents";
 import MDXA from "@theme/MDXComponents/A";
