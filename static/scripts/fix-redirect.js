@@ -947,6 +947,10 @@ const redirects = [
 		fromExact("/docs/guides/other-guides/upgrade-v2-v3/"),
 		"/docs/agent/upgrade-v2-v3/",
 	],
+	[
+		fromExact("/docs/using-ngrok-with/wordpress/"),
+		"/docs/universal-gateway/examples/wordpress",
+	],
 ];
 
 // get current href from window
