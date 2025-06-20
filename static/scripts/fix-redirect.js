@@ -940,10 +940,6 @@ const redirects = [
 		"/docs/guides/site-to-site-connectivity/",
 	],
 	[
-		fromExact("/docs/guides/site-to-site-connectivity/end-customers/"),
-		"/docs/guides/site-to-site-connectivity/",
-	],
-	[
 		fromExact("/docs/guides/other-guides/securing-your-tunnels/"),
 		"/docs/guides/security-dev-productivity/securing-your-tunnels",
 	],
