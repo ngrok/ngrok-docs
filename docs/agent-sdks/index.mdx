@@ -23,20 +23,62 @@ ngrok's cloud service just as if you opened a socket to listen on a port.
 
 ## Example Usage
 
-<Tabs groupId="connectivity" queryString="cty">
-	<TabItem value="go-sdk" label="Go SDK">
-		<RandomGoSdkExample />
-	</TabItem>
-	<TabItem value="javascript-sdk" label="Javascript SDK">
-		<RandomJavascriptSdkExample />
-	</TabItem>
-	<TabItem value="python-sdk" label="Python SDK">
-		<RandomPythonSdkExample />
-	</TabItem>
-	<TabItem value="rust-sdk" label="Rust SDK">
-		<RandomRustSdkExample />
-	</TabItem>
-</Tabs>
+<LangSwitcher>
+```go
+import (
+	"context"
+	"net"
+  "golang.ngrok.com/ngrok/v2"
+)
+
+func ngrokListener(ctx context.Context) (net.Listener, error) {
+return ngrok.Listen(ctx)
+}
+
+````
+
+```javascript
+const ngrok = require("@ngrok/ngrok");
+
+(async function () {
+	const listener = await ngrok.forward({
+		addr: 8080,
+		authtoken_from_env: true,
+	});
+
+	console.log(`Ingress established at: ${listener.url()}`);
+})();
+````
+
+```python
+import ngrok
+
+listener = ngrok.forward("localhost:8080", authtoken_from_env=True)
+
+print(f"Ingress established at: {listener.url()}");
+```
+
+```rust
+use ngrok::prelude::*;
+
+async fn listen_ngrok() -> anyhow::Result<impl Tunnel> {
+    let sess = ngrok::Session::builder()
+        .authtoken_from_env()
+        .connect()
+        .await?;
+
+    let tun = sess
+        .http_endpoint()
+        .listen()
+        .await?;
+
+    println!("Listening on URL: {:?}", tun.url());
+
+    Ok(tun)
+}
+```
+
+</LangSwitcher>
 
 ## Supported Languages
 

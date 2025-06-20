@@ -1,4 +1,8 @@
+import { LangSwitcher } from "@components/LangSwitcher";
+import { YouTubeEmbed } from "@components/youtube-embed";
 import Head from "@docusaurus/Head";
+import ConfigExample from "@site/src/components/ConfigExample";
+import { Definition } from "@site/src/components/Definition";
 import Admonition from "@theme/Admonition";
 import type { MDXComponentsObject } from "@theme/MDXComponents";
 import MDXA from "@theme/MDXComponents/A";
@@ -10,6 +14,8 @@ import MDXLi from "@theme/MDXComponents/Li";
 import MDXPre from "@theme/MDXComponents/Pre";
 import MDXUl from "@theme/MDXComponents/Ul";
 import Mermaid from "@theme/Mermaid";
+import TabItem from "@theme/TabItem";
+import Tabs from "@theme/Tabs";
 import React, { type ComponentProps } from "react";
 
 const MDXComponents: MDXComponentsObject = {
@@ -30,6 +36,12 @@ const MDXComponents: MDXComponentsObject = {
 	h6: (props: ComponentProps<"h6">) => <MDXHeading as="h6" {...props} />,
 	admonition: Admonition,
 	mermaid: Mermaid,
+	Definition,
+	Tabs,
+	TabItem,
+	ConfigExample,
+	YouTubeEmbed,
+	LangSwitcher,
 };
 
 export default MDXComponents;
