@@ -1,5 +1,4 @@
 import BrowserOnly from "@docusaurus/BrowserOnly";
-import { cx } from "@ngrok/mantle/cx";
 import type { ComponentProps } from "react";
 import DocsCodeBlock, { CodeBlockFallback } from "../../components/code-block";
 
