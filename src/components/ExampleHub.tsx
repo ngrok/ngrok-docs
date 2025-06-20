@@ -20,7 +20,7 @@ import {
 import { MagnifyingGlass } from "@phosphor-icons/react";
 import { useState } from "react";
 
-import { usePluginData } from '@docusaurus/useGlobalData';
+import { usePluginData } from "@docusaurus/useGlobalData";
 
 const DefaultCategoryValue = "any";
 const DefaultPhaseValue = "any";
