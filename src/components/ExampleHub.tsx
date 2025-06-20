@@ -20,10 +20,11 @@ import {
 import { MagnifyingGlass } from "@phosphor-icons/react";
 import { useState } from "react";
 
+import { usePluginData } from '@docusaurus/useGlobalData';
+
 const DefaultCategoryValue = "any";
 const DefaultPhaseValue = "any";
 
-// Renamed from Action to Example for clearer domain context
 type Example = {
 	id?: string;
 	slug: string;
@@ -49,7 +50,6 @@ export default function ExampleHub({ examples, categories }: Props) {
 	const [categoryFilter, setCategoryFilter] = useState(DefaultCategoryValue);
 	const [exampleSearch, setExampleSearch] = useState("");
 
-	// Enhanced: Map category ID to display name and color from YAML
 	const categoryMap = Object.fromEntries(
 		categories.map((cat) => [
 			cat.id,
@@ -79,7 +79,6 @@ export default function ExampleHub({ examples, categories }: Props) {
 		);
 	}
 
-	// Added: Assign primary category for grouping
 	const examplesWithPrimary = filteredExamples.map((example) => ({
 		...example,
 		primaryCategoryId: example.categories[0],
@@ -141,7 +140,7 @@ export default function ExampleHub({ examples, categories }: Props) {
 								>
 									<Card className="flex h-full flex-col hover:bg-card-hover">
 										<CardHeader>
-											<CardTitle className="mb-0">{example.name}</CardTitle>
+											<CardTitle className="mb-0">{example.title}</CardTitle>
 										</CardHeader>
 										<CardBody className="flex-grow py-4 px-6">
 											<p className="m-0 p-0">{example.description}</p>
