@@ -1,5 +1,6 @@
 import { LangSwitcher } from "@components/LangSwitcher";
 import { YouTubeEmbed } from "@components/youtube-embed";
+import { Definition } from "@site/src/components/Definition";
 import Head from "@docusaurus/Head";
 import ConfigExample from "@site/src/components/ConfigExample";
 import Admonition from "@theme/Admonition";
