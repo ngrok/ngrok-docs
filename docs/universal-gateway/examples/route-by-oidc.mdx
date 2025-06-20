@@ -11,12 +11,13 @@ import Back from "./snippets/_back-to-examples.mdx";
 
 With ngrok, you can use OpenID Connect to do more than authenticate requests—you can also use the data returned by your OIDC provider to route requests to specific upstream services.
 
-This pattern allows you to run management UI or API services on your internal ngrok network, but allow speciifc users or remote devices to access them without having to establish and maintain a routing topology based on subdomains or paths.
+This pattern allows you to grant credentialed users and remote devices access to services on your internal ngrok network without maintaining a complex routing topology.
+Example use cases include internal management UIs or API services.
 
 ## 1. Set up your OIDC provider
 
 You can use any provider with the [`oidc` Traffic Policy action](/docs/traffic-policy/actions/oidc/#overview).
-You'll need the base URL of your Open ID provider, and in most cases, a client ID and secret.
+You'll need the base URL of your Open ID provider, and, in most cases, a client ID and secret.
 
 We'll refer to these as `$ISSUER_URL`, `$CLIENT_ID`, and `$CLIENT_SECRET`.
 
@@ -29,10 +30,10 @@ You can also use one of our [SDKs](/docs/agent-sdks) or the [Kubernetes Operator
 ngrok http $PORT --url https://service-one.internal
 ```
 
-Start a second agent endpoint for another service you want to route to.
+Start a second agent endpoint for another service you want to route to, replacing `$OTHER_PORT` with the port for this service.
 
 ```bash
-ngrok http $PORT --url https://service-two.internal
+ngrok http $OTHER_PORT --url https://service-two.internal
 ```
 
 Repeat the process for as many services as you need to route to.
@@ -47,7 +48,7 @@ Repeat the process for as many services as you need to route to.
 
 ## 5. Enforce OIDC authentication and routing with Traffic Policy
 
-While still viewing your new cloud endpoint in the dashboard, copy and paste the policy below into the Traffic Policy editor.
+While still viewing your new cloud endpoint in the dashboard, copy and paste the policy below into the Traffic Policy editor, replacing `$ISSUER_URL`, `$CLIENT_ID`, and `$CLIENT_SECRET` with the appropriate values.
 
 ```yaml
 on_http_request:
