@@ -947,6 +947,14 @@ const redirects = [
 		fromExact("/docs/guides/other-guides/upgrade-v2-v3/"),
 		"/docs/agent/upgrade-v2-v3/",
 	],
+	[
+		fromExact("/docs/guides/other-guides/n8n"),
+		"/docs/universal-gateway/examples/n8n",
+	],
+	[
+		fromExact("/docs/using-ngrok-with/ollama"),
+		"/docs/universal-gateway/examples/ollama",
+	],
 ];
 
 // get current href from window
