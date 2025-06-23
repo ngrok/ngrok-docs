@@ -24,6 +24,25 @@ type DefinitionProps = {
 	className?: string;
 };
 
+function foundDefinitionInUrl(
+	pathname: string,
+	children: React.ReactNode,
+	titles: string[] | undefined,
+): boolean {
+	if (!children) return false;
+	if (pathname.includes(children.toString())) {
+		return true;
+	}
+	if (titles) {
+		for (const title of titles) {
+			if (pathname.includes(title)) {
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
 export function Definition({
 	children,
 	meaning,
@@ -46,15 +65,6 @@ export function Definition({
 		);
 
 	const { pathname } = useLocation();
-	
-	if(dontShowIfInPageURL && pathname) {
-		// If the term is in the page URL, don't show the definition.
-		// This prevents showing definitions for terms on pages that
-		// already explain them.
-		if (pathname.includes(children.toString())) {
-			return <>{children}</>;
-		}
-	}
 
 	// Don't get the match if the meaning or link is provided
 	const match =
@@ -71,6 +81,17 @@ export function Definition({
 				? undefined
 				: link || match?.link,
 	};
+
+	// If this flag is set to true, don't show the definition component
+	// on a page that includes the term in the URL. This prevents adding
+	// the definition component to pages that already explain the term.
+	// For example if we have a page at /docs/ingress, we don't
+	// want to show the definition component for "ingress" on that page.
+	if (dontShowIfInPageURL) {
+		if (foundDefinitionInUrl(pathname, children, match?.titles)) {
+			return <>{children}</>;
+		}
+	}
 
 	const iconSize = 4;
 
