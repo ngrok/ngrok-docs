@@ -20,6 +20,7 @@ type DefinitionProps = {
 	children: React.ReactNode;
 	meaning?: string;
 	link?: string;
+	dontShowIfInPageURL?: boolean;
 	className?: string;
 };
 
@@ -28,6 +29,7 @@ export function Definition({
 	meaning,
 	link,
 	className,
+	dontShowIfInPageURL,
 }: DefinitionProps): React.ReactElement {
 	if (!children) throw new Error("<Definition/> requires children");
 	const linkType = link?.startsWith("http")
@@ -44,6 +46,15 @@ export function Definition({
 		);
 
 	const { pathname } = useLocation();
+	
+	if(dontShowIfInPageURL && pathname) {
+		// If the term is in the page URL, don't show the definition.
+		// This prevents showing definitions for terms on pages that
+		// already explain them.
+		if (pathname.includes(children.toString())) {
+			return <>{children}</>;
+		}
+	}
 
 	// Don't get the match if the meaning or link is provided
 	const match =

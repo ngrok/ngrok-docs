@@ -121,6 +121,7 @@ module.exports = function remarkWordWrapper(stuff) {
 							meaning: matchingTerm.meaning,
 							link: matchingTerm.link,
 							className: styles,
+							dontShowIfInPageURL: true,
 						},
 						children: [
 							{
