@@ -15,7 +15,6 @@ import {
 import clsx from "clsx";
 import type React from "react";
 import { terms } from "./data";
-import path from "node:path";
 
 type DefinitionProps = {
 	children: React.ReactNode;
@@ -72,7 +71,7 @@ export function Definition({
 	if (dontShowIfInPageURL) {
 		if (
 			pathname.includes(children.toString().toLowerCase()) ||
-			pathname.includes(meaning.toLowerCase())
+			(meaning && pathname.includes(meaning.toLowerCase()))
 		) {
 			return <>{children}</>;
 		}
