@@ -18,10 +18,29 @@ export const terms: Term[] = [
 		pluralEnding: "s",
 	},
 	{
-		titles: ["SCIM", "SCIM provisioning"],
+		titles: ["IP CIDR", "CIDR"],
 		meaning:
-			"SSO SCIM Provisioning refers to the combination of two identity management technologies: Single Sign-On (SSO) and System for Cross-domain Identity Management (SCIM). Together, they automate user account creation, updates, and removal across different systems.",
-		link: "https://en.wikipedia.org/wiki/System_for_Cross-domain_Identity_Management",
+			"Classless Inter-Domain Routing is a method used to allocate IP addresses more efficiently and route IP packets more flexibly than the older class-based system.",
+		link: "https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing",
+		pluralEnding: "s",
+	},
+	{
+		titles: ["shadow IT"],
+		meaning:
+			"Shadow IT refers IT systems, software, and cloud services used by individuals within an organization without the IT department's knowledge or approval",
+		link: "https://en.wikipedia.org/wiki/Shadow_IT",
+	},
+	{
+		titles: ["OpenID Connect", "OIDC"],
+		meaning:
+			"OpenID Connect (OIDC) is an authentication protocol that enables third-party applications to confirm a user's identity and access basic profile details through a single sign-on (SSO) process.",
+		link: "https://en.wikipedia.org/wiki/OpenID",
+	},
+	{
+		titles: ["Let’s Encrypt", "Let's Encrypt", "LetsEncrypt", "Lets encrypt"],
+		meaning:
+			"Let's Encrypt is a free, automated, and open certificate authority (CA) that provides digital certificates to enable HTTPS (SSL/TLS) for websites.",
+		link: "https://letsencrypt.org/about/",
 	},
 	{
 		titles: ["JIT provisioning"],
