@@ -914,6 +914,12 @@ const redirects = [
 		fromExact("/docs/using-ngrok-with/node-js/"),
 		"/docs/getting-started/javascript/",
 	],
+	[
+		fromExact("/docs/using-ngrok-with/django/"),
+		"/docs/getting-started/python/",
+	],
+	[fromExact("/docs/using-ngrok-with/go/"), "/docs/getting-started/go/"],
+	[fromExact("/docs/using-ngrok-with/rust/"), "/docs/getting-started/rust/"],
 	[fromExact("/docs/using-ngrok-with/rdp/"), "/docs/guides/ssh-rdp"],
 	[fromExact("/docs/using-ngrok-with/ssh/"), "/docs/guides/ssh-rdp"],
 	//site-to-site redirects
@@ -934,14 +940,26 @@ const redirects = [
 		"/docs/guides/site-to-site-connectivity/",
 	],
 	[
-		fromExact("/docs/guides/site-to-site-connectivity/end-customers/"),
-		"/docs/guides/site-to-site-connectivity/",
-	],
-	[
 		fromExact("/docs/guides/other-guides/securing-your-tunnels/"),
 		"/docs/guides/security-dev-productivity/securing-your-tunnels",
 	],
 	[fromExact("/docs/guides/other-guides/licensing"), "/docs/pricing-limits/"],
+	[
+		fromExact("/docs/guides/other-guides/upgrade-v2-v3/"),
+		"/docs/agent/upgrade-v2-v3/",
+	],
+	[
+		fromExact("/docs/using-ngrok-with/wordpress/"),
+		"/docs/universal-gateway/examples/wordpress",
+	],
+	[
+		fromExact("/docs/guides/other-guides/n8n"),
+		"/docs/universal-gateway/examples/n8n",
+	],
+	[
+		fromExact("/docs/using-ngrok-with/ollama"),
+		"/docs/universal-gateway/examples/ollama",
+	],
 ];
 
 // get current href from window
