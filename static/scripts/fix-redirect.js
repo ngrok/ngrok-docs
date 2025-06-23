@@ -951,6 +951,14 @@ const redirects = [
 		fromExact("/docs/using-ngrok-with/wordpress/"),
 		"/docs/universal-gateway/examples/wordpress",
 	],
+	[
+		fromExact("/docs/guides/other-guides/n8n"),
+		"/docs/universal-gateway/examples/n8n",
+	],
+	[
+		fromExact("/docs/using-ngrok-with/ollama"),
+		"/docs/universal-gateway/examples/ollama",
+	],
 ];
 
 // get current href from window
