@@ -943,6 +943,7 @@ const redirects = [
 		fromExact("/docs/guides/other-guides/securing-your-tunnels/"),
 		"/docs/guides/security-dev-productivity/securing-your-tunnels",
 	],
+	[fromExact("/docs/guides/other-guides/licensing"), "/docs/pricing-limits/"],
 	[
 		fromExact("/docs/guides/other-guides/upgrade-v2-v3/"),
 		"/docs/agent/upgrade-v2-v3/",

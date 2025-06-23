@@ -43,28 +43,6 @@ This table shows ngrok's plan and overall platform limits. For pricing for on-de
 
 To see current pricing, click here [ngrok pricing](https://ngrok.com/pricing?ref=docs)
 
-# How can I see how my account stacks up against my limits?
-
-The ngrok usage page at dashboard.ngrok.com/usage
-
-# How often do limits refresh?
-
-Your count of resources against a limit refreshes on the first day of each month.
-
-## How it works
-
-ngrok’s plans are designed to suit the use cases of individuals, teams, and organizations using ngrok to create secure ingress for development and production workloads. Each license at ngrok roughly represents a developer using an ngrok agent for building an application. It includes the ability to run an ngrok agent (or use the agent SDKs or ngrok Kubernetes Operator) with a custom domain or TCP Address.
-
-## What's the difference between the usage-based and free plans?
-
-ngrok services are and will always be offered on a limited free tier to the broader community.
-
-free plans are intended for developers, teams, and organizations using ngrok to test and share their apps publicly.
-
-Usage-based plans are intended for developers who have production workloads and services that they choose to front with ngrok.
-
-For details and to select a different plan, see [ngrok pricing](https://ngrok.com/pricing?ref=docs).
-
 ## What do I get for free on ngrok?
 
 Resources included for free:
