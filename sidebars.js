@@ -706,7 +706,12 @@ const sidebars = {
 			link: { type: "doc", id: "guides/security-dev-productivity/index" },
 			items: ["guides/security-dev-productivity/securing-your-tunnels"],
 		},
-		"guides/site-to-site-connectivity/index",
+		{
+			label: "Site-to-Site Connectivity",
+			type: "category",
+			link: { type: "doc", id: "guides/site-to-site-connectivity/index" },
+			items: ["guides/site-to-site-connectivity/end-customers"],
+		},
 		"guides/ssh-rdp/index",
 		{
 			label: "Other guides",
