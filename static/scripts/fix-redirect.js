@@ -948,6 +948,10 @@ const redirects = [
 		"/docs/agent/upgrade-v2-v3/",
 	],
 	[
+		fromExact("/docs/using-ngrok-with/wordpress/"),
+		"/docs/universal-gateway/examples/wordpress",
+	],
+	[
 		fromExact("/docs/guides/other-guides/n8n"),
 		"/docs/universal-gateway/examples/n8n",
 	],
