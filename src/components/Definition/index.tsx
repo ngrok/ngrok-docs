@@ -1,3 +1,4 @@
+import path from "node:path";
 import Link from "@docusaurus/Link";
 import { useLocation } from "@docusaurus/router";
 import { Button } from "@ngrok/mantle/button";
@@ -15,7 +16,6 @@ import {
 import clsx from "clsx";
 import type React from "react";
 import { terms } from "./data";
-import path from "node:path";
 
 type DefinitionProps = {
 	children: React.ReactNode;
