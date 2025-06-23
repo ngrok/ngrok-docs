@@ -15,6 +15,7 @@ import {
 import clsx from "clsx";
 import type React from "react";
 import { terms } from "./data";
+import path from "node:path";
 
 type DefinitionProps = {
 	children: React.ReactNode;
@@ -23,25 +24,6 @@ type DefinitionProps = {
 	dontShowIfInPageURL?: boolean;
 	className?: string;
 };
-
-function foundDefinitionInUrl(
-	pathname: string,
-	children: React.ReactNode,
-	titles: string[] | undefined,
-): boolean {
-	if (!children) return false;
-	if (pathname.includes(children.toString())) {
-		return true;
-	}
-	if (titles) {
-		for (const title of titles) {
-			if (pathname.includes(title)) {
-				return true;
-			}
-		}
-	}
-	return false;
-}
 
 export function Definition({
 	children,
@@ -88,7 +70,10 @@ export function Definition({
 	// For example if we have a page at /docs/ingress, we don't
 	// want to show the definition component for "ingress" on that page.
 	if (dontShowIfInPageURL) {
-		if (foundDefinitionInUrl(pathname, children, match?.titles)) {
+		if (
+			pathname.includes(children.toString().toLowerCase()) ||
+			pathname.includes(meaning.toLowerCase())
+		) {
 			return <>{children}</>;
 		}
 	}
