@@ -21,7 +21,6 @@ type DefinitionProps = {
 	children: React.ReactNode;
 	meaning?: string;
 	link?: string;
-	dontShowIfInPageURL?: boolean;
 	className?: string;
 };
 
@@ -30,7 +29,6 @@ export function Definition({
 	meaning,
 	link,
 	className,
-	dontShowIfInPageURL,
 }: DefinitionProps): React.ReactElement {
 	if (!children) throw new Error("<Definition/> requires children");
 	const linkType = link?.startsWith("http")
@@ -63,20 +61,6 @@ export function Definition({
 				? undefined
 				: link || match?.link,
 	};
-
-	// If this flag is set to true, don't show the definition component
-	// on a page that includes the term in the URL. This prevents adding
-	// the definition component to pages that already explain the term.
-	// For example if we have a page at /docs/ingress, we don't
-	// want to show the definition component for "ingress" on that page.
-	if (dontShowIfInPageURL) {
-		if (
-			pathname.includes(children.toString().toLowerCase()) ||
-			(meaning && pathname.includes(meaning.toLowerCase()))
-		) {
-			return <>{children}</>;
-		}
-	}
 
 	const iconSize = 4;
 
