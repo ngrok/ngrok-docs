@@ -1,5 +1,3 @@
-import { title } from "process";
-
 const { visit } = require("unist-util-visit");
 const { terms } = require("../components/Definition/data");
 
