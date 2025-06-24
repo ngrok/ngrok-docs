@@ -71,9 +71,10 @@ export function Definition({
 		// If the term is in the current URL path, don't show
 		// the definition. This prevents showing definitions
 		// for terms that are already explained on the page.
+		const pathWithoutHash = pathname.split("#")[0];
 		if (
 			term?.titles.some((title) =>
-				pathname.includes(title.split(" ").join("-").toLowerCase()),
+				pathWithoutHash?.includes(title.split(" ").join("-").toLowerCase()),
 			) ||
 			term?.link?.includes(pathname)
 		) {
@@ -93,7 +94,6 @@ export function Definition({
 				>
 					<>
 						<span className={clsx("mr-[-5px]", className)}>{children}</span>
-
 						<QuestionMark size={8} className="mb-2" />
 					</>
 				</Button>

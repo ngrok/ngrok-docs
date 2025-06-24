@@ -52,6 +52,7 @@ export const terms: Term[] = [
 		titles: ["K8"],
 		meaning: "K8s is an industry-standard abbreviation for Kubernetes.",
 		pluralEnding: "s",
+		link: "https://kubernetes.io/docs/concepts/overview/",
 	},
 	{
 		titles: ["Ingress"],
