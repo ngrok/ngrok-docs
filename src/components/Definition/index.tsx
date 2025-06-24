@@ -21,6 +21,9 @@ type DefinitionProps = {
 	meaning?: string;
 	link?: string;
 	className?: string;
+	// If true, the definition will not be rendered if the last
+	// path segment matches the link. This is useful to avoid
+	// rendering definitions that link to the current page.
 	hideIfInPath?: boolean;
 };
 
@@ -60,21 +63,14 @@ export function Definition({
 	};
 
 	if (data.link && hideIfInPath) {
-		console.log("here");
 		const pathSegments = pathname.split("/");
 		const lastPathSegment = pathSegments[pathSegments.length - 2];
-		console.log("pathSegments", pathSegments);
-		console.log("lastPathSegment", lastPathSegment);
 		if (lastPathSegment && data.link.includes(lastPathSegment)) {
 			// If the link is in the current path, don't render
-			// the definition component
+			// the definition component. Prevents showing
+			// definitions that link to the current page.
 			return <>{children}</>;
 		}
-	}
-
-	if (!data.link && hideIfInPath) {
-		// If there's no link and we're hiding if in path, don't render
-		return <>{children}</>;
 	}
 
 	const iconSize = 4;

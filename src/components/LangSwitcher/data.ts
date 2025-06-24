@@ -41,7 +41,7 @@ export const languageInfo: LanguageInfo[] = [
 	{
 		name: "bash",
 		displayName: "Bash",
-		allNames: ["sh", "bash", "shell", "http"],
+		allNames: ["sh", "bash", "shell", "http", "hcl"],
 	},
 	{
 		name: "yaml",

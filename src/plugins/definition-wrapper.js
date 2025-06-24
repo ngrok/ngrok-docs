@@ -26,6 +26,8 @@ function parentIsForbiddenTag(tagName) {
 		"Definition",
 		"code",
 		"pre",
+		"button",
+		"span",
 	];
 	return forbiddenTags.includes(tagName);
 }
