@@ -1,3 +1,5 @@
+import { title } from "process";
+
 const { visit } = require("unist-util-visit");
 const { terms } = require("../components/Definition/data");
 
@@ -118,7 +120,7 @@ module.exports = function remarkWordWrapper(stuff) {
 						type: "element",
 						tagName: "Definition",
 						properties: {
-							term: matchingTerm,
+							meaning: matchingTerm.meaning,
 							hideIfInPath: true,
 							link: matchingTerm.link,
 							className: styles,

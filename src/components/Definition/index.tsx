@@ -21,7 +21,6 @@ type DefinitionProps = {
 	meaning?: string;
 	link?: string;
 	className?: string;
-	term?: Term;
 	hideIfInPath?: boolean;
 };
 
@@ -30,7 +29,6 @@ export function Definition({
 	meaning,
 	link,
 	className,
-	term,
 	hideIfInPath,
 }: DefinitionProps): React.ReactElement {
 	if (!children) throw new Error("<Definition/> requires children");
@@ -58,29 +56,28 @@ export function Definition({
 		meaning: meaning || match?.meaning,
 		// If link is to the current page, don't use it. No need to
 		// link to the same page.
-		link: !link
-			? undefined
-			: pathname?.includes(link)
-				? undefined
-				: link || match?.link,
+		link: link || match?.link,
 	};
 
-	const iconSize = 4;
-
-	if (hideIfInPath) {
-		// If the term is in the current URL path, don't show
-		// the definition. This prevents showing definitions
-		// for terms that are already explained on the page.
-		const pathWithoutHash = pathname.split("#")[0];
-		if (
-			term?.titles.some((title) =>
-				pathWithoutHash?.includes(title.split(" ").join("-").toLowerCase()),
-			) ||
-			term?.link?.includes(pathname)
-		) {
+	if (data.link && hideIfInPath) {
+		console.log("here");
+		const pathSegments = pathname.split("/");
+		const lastPathSegment = pathSegments[pathSegments.length - 2];
+		console.log("pathSegments", pathSegments);
+		console.log("lastPathSegment", lastPathSegment);
+		if (lastPathSegment && data.link.includes(lastPathSegment)) {
+			// If the link is in the current path, don't render
+			// the definition component
 			return <>{children}</>;
 		}
 	}
+
+	if (!data.link && hideIfInPath) {
+		// If there's no link and we're hiding if in path, don't render
+		return <>{children}</>;
+	}
+
+	const iconSize = 4;
 
 	return (
 		<HoverCard>
