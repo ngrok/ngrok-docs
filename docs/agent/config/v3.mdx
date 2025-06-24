@@ -361,6 +361,7 @@ ngrok start --all
 | [`agent_tls_termination.server_private_key`](#agent_tls_terminationserver_private_key)                                 |          | The private key (provided as a file path or raw PEM data) corresponding to the server certificate, used for TLS termination by the ngrok agent. Available only for `tls://` URLs.                              |
 | [`name`](#name)                                                                                                        | Required | A unique name for this endpoint's configuration.                                                                                                                                                               |
 | [`url`](#url)                                                                                                          |          | The address you would like to use to forward traffic to your upstream service. Leave empty to get a randomly assigned address.                                                                                 |
+| [`bindings`](#bindings)																																																 |          | Allows you to configure the bindings for this endpoint. Currently only one binding may be provided.                                                                                                            |
 | [`metadata`](#metadata-1)                                                                                              |          | An arbitrary string of user-defined metadata for this endpoint.                                                                                                                                                |
 | [`description`](#description)                                                                                          |          | An arbitrary user-defined description about this endpoint.                                                                                                                                                     |
 | [`traffic_policy`](#traffic_policy)                                                                                    |          | Accepts a Traffic Policy configuration in YAML format.                                                                                                                                                         |
@@ -407,7 +408,7 @@ endpoints:
 
 #### `url`
 
-String. The address you would like to use to forward traffic to your upstream service.
+String[]. The address you would like to use to forward traffic to your upstream service.
 
 ##### Accepted formats:
 
@@ -427,6 +428,25 @@ String. The address you would like to use to forward traffic to your upstream se
 endpoints:
   - name: example
     url: https://example.ngrok.app
+# ...
+```
+
+#### `bindings`
+
+String[]. Allows you to configure the bindings for this endpoint. Currently only one binding may be provided.
+The allowed values are `internal`, `public`, and `kubernetes` which allow you to create [public](/docs/universal-gateway/public-endpoints/), [internal](/docs/universal-gateway/internal-endpoints/), and [kubernetes endpoints](/docs/universal-gateway/kubernetes-endpoints/).
+This field is mainly only truly necessary for creating kubernetes endpoints as the default for all endpoints is to have a `public` binding, and an `internal` binding is automatically inferred when the endpoint URL ends in `.internal`.
+To create a kubernetes endpoint (which projects the endpoint into one or more kubernetes clusters running the ngrok operator as a `Service` resource), set the `bindings` field to `["kubernetes"]`.
+
+##### Example
+
+```yaml {4}
+# ...
+endpoints:
+  - name: example
+    url: https://example-service.example-namespace
+		bindings:
+		- kubernetes
 # ...
 ```
 
