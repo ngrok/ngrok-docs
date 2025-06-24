@@ -83,7 +83,21 @@ export const terms: Term[] = [
 		link: "/docs/agent/config/v2",
 	},
 	{
+		titles: ["Traffic Policy", "Traffic Policies"],
+		meaning:
+			"Traffic Policy is a configuration language that offers you the flexibility to filter, match, manage and orchestrate traffic to your endpoints. For example, you can add authentication, send custom response, rate limit traffic, and more.",
+		link: "/docs/traffic-policy/",
+	},
+	{
+		titles: ["Endpoint pool", "Endpoint Pooling"],
+		meaning:
+			'When your create two endpoints with the same URL (and binding), those endpoints automatically form a "pool" and share incoming traffic.',
+		link: "/docs/universal-gateway/endpoint-pooling/",
+		pluralEnding: "s",
+	},
+	{
 		titles: ["OWASP"],
+		caseSensitive: true,
 		meaning:
 			"OWASP: The Open Web Application Security Project. This non-profit organization is dedicated to improving software security through providing resources, tools, and community support.",
 		link: "https://owasp.org/about/",
@@ -109,6 +123,7 @@ export const terms: Term[] = [
 	},
 	{
 		titles: ["CRD", "Custom Resource Definition"],
+		caseSensitive: true,
 		meaning:
 			"CustomResourceDefinitions allow users to extend the Kubernetes API by defining their own resource types.",
 		link: "https://kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/",
@@ -116,12 +131,14 @@ export const terms: Term[] = [
 	},
 	{
 		titles: ["ALPN"],
+		caseSensitive: true,
 		link: "https://en.wikipedia.org/wiki/Application-Layer_Protocol_Negotiation",
 		meaning:
 			"ALPN (Application-Layer Protocol Negotiation) allows a client and server to negotiate which application protocol (like HTTP/2 or HTTP/1.1) to use over a secure connection during the TLS handshake.",
 	},
 	{
 		titles: ["SNI"],
+		caseSensitive: true,
 		link: "https://en.wikipedia.org/wiki/Server_Name_Indication",
 		meaning:
 			"SNI (Server Name Indication) is a TLS extension that allows a client to specify the hostname it is trying to connect to during the TLS handshake, enabling servers to present the correct SSL/TLS certificate for that hostname.",

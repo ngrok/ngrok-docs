@@ -14,13 +14,15 @@ import {
 } from "@phosphor-icons/react";
 import clsx from "clsx";
 import type React from "react";
-import { terms } from "./data";
+import { terms, type Term } from "./data";
 
 type DefinitionProps = {
 	children: React.ReactNode;
 	meaning?: string;
 	link?: string;
 	className?: string;
+	term?: Term;
+	hideIfInPath?: boolean;
 };
 
 export function Definition({
@@ -28,6 +30,8 @@ export function Definition({
 	meaning,
 	link,
 	className,
+	term,
+	hideIfInPath,
 }: DefinitionProps): React.ReactElement {
 	if (!children) throw new Error("<Definition/> requires children");
 	const linkType = link?.startsWith("http")
@@ -62,6 +66,20 @@ export function Definition({
 	};
 
 	const iconSize = 4;
+
+	if (hideIfInPath) {
+		// If the term is in the current URL path, don't show
+		// the definition. This prevents showing definitions
+		// for terms that are already explained on the page.
+		if (
+			term?.titles.some((title) =>
+				pathname.includes(title.split(" ").join("-").toLowerCase()),
+			) ||
+			term?.link?.includes(pathname)
+		) {
+			return <>{children}</>;
+		}
+	}
 
 	return (
 		<HoverCard>
