@@ -14,7 +14,7 @@ import {
 } from "@phosphor-icons/react";
 import clsx from "clsx";
 import type React from "react";
-import { terms, type Term } from "./data";
+import { type Term, terms } from "./data";
 
 type DefinitionProps = {
 	children: React.ReactNode;
