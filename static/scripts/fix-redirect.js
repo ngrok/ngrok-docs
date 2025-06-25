@@ -960,6 +960,18 @@ const redirects = [
 		fromExact("/docs/using-ngrok-with/ollama"),
 		"/docs/universal-gateway/examples/ollama",
 	],
+	[
+		fromExact("/docs/guides/other-guides/load-balancing-multiple-clouds/"),
+		"/docs/universal-gateway/load-balancing-multiple-clouds/",
+	],
+	[
+		fromExact("/docs/guides/other-guides/load-balancing-kubernetes/"),
+		"/docs/k8s/load-balancing/load-balancing-kubernetes/",
+	],
+	[
+		fromExact("/docs/guides/other-guides/load-balancing-kubernetes-clusters/"),
+		"/docs/k8s/load-balancing/load-balancing-kubernetes-clusters/",
+	],
 ];
 
 // get current href from window

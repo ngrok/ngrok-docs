@@ -187,7 +187,7 @@ const sidebars = {
 					type: "category",
 					link: { type: "doc", id: "universal-gateway/endpoint-pooling", },
 						items: [								
-							"guides/other-guides/load-balancing-multiple-clouds"
+							"universal-gateway/load-balancing-multiple-clouds"
 						]
 						},
 					],
@@ -351,9 +351,9 @@ const sidebars = {
 				{
 					label: "Load Balancing",
 					type: "category",
-					link: { type: "doc", id: "guides/other-guides/load-balancing-kubernetes" },
+					link: { type: "doc", id: "k8s/load-balancing/load-balancing-kubernetes" },
 						items: [								
-							"guides/other-guides/load-balancing-kubernetes-clusters",
+							"k8s/load-balancing/load-balancing-kubernetes-clusters",
 							"k8s/guides/using-loadbalancers",
 						]
 				},
