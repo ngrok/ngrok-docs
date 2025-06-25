@@ -7,6 +7,11 @@ export type LanguageInfo = {
 
 export const languageInfo: LanguageInfo[] = [
 	{
+		// Leave this as the first item so it's the default
+		name: "txt",
+		displayName: "TXT",
+	},
+	{
 		name: "go",
 		displayName: "Go",
 		links: ["https://pkg.go.dev/golang.ngrok.com/ngrok/v2"],
@@ -51,9 +56,5 @@ export const languageInfo: LanguageInfo[] = [
 	{
 		name: "json",
 		displayName: "JSON",
-	},
-	{
-		name: "txt",
-		displayName: "TXT",
 	},
 ];
