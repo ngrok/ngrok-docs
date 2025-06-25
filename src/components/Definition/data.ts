@@ -116,6 +116,26 @@ export const terms: Term[] = [
 		link: "/docs/universal-gateway/tls-termination/",
 	},
 	{
+		titles: ["TLS Certificate"],
+		pluralEnding: "s",
+		link: "https://en.wikipedia.org/wiki/Transport_Layer_Security",
+		meaning:
+			"A TLS certificate (or SSL certificate) is a digital certificate that ensure your connection to a website or server is securly encrypted.",
+	},
+	{
+		titles: ["reverse proxy", "reverse proxies"],
+		link: "https://en.wikipedia.org/wiki/Reverse_proxy",
+		meaning:
+			"Reverse proxies are computer infrastructure, such as servers or cloud services, that intercept and then forward traffic to the upstream services. They are an extra security layer between public traffic and your internal services.",
+	},
+	{
+		titles: ["WAF"],
+		link: "https://en.wikipedia.org/wiki/Web_application_firewall",
+		caseSensitive: true,
+		meaning:
+			"A web application firewall (WAF) is a type of reverse proxy that protects web services by filtering and monitoring HTTP traffic.",
+	},
+	{
 		titles: ["Gateway API CRD", "Gateway API"],
 		link: "https://gateway-api.sigs.k8s.io/guides/",
 		meaning:
