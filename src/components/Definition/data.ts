@@ -123,7 +123,7 @@ export const terms: Term[] = [
 		pluralEnding: "s",
 	},
 	{
-		titles: ["CRD", "Custom Resource Definition"],
+		titles: ["CRD"],
 		caseSensitive: true,
 		meaning:
 			"CustomResourceDefinitions allow users to extend the Kubernetes API by defining their own resource types.",
