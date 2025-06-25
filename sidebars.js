@@ -182,9 +182,13 @@ const sidebars = {
 							],
 						},
 						{
-							id: "universal-gateway/endpoint-pooling",
-							type: "doc",
+							
 							label: "Pooling",
+					type: "category",
+					link: { type: "doc", id: "universal-gateway/endpoint-pooling", },
+						items: [								
+							"guides/other-guides/load-balancing-multiple-clouds"
+						]
 						},
 					],
 				},
@@ -345,6 +349,15 @@ const sidebars = {
 					items: ["k8s/installation/helm", "k8s/installation/uninstall"],
 				},
 				{
+					label: "Load Balancing",
+					type: "category",
+					link: { type: "doc", id: "guides/other-guides/load-balancing-kubernetes" },
+						items: [								
+							"guides/other-guides/load-balancing-kubernetes-clusters",
+							"k8s/guides/using-loadbalancers",
+						]
+				},
+				{
 					label: "Usage Guides",
 					type: "category",
 					link: { type: "doc", id: "k8s/guides/using-crds" },
@@ -356,7 +369,6 @@ const sidebars = {
 						"k8s/guides/using-crds",
 						"k8s/guides/using-gwapi",
 						"k8s/guides/using-ingresses",
-						"k8s/guides/using-loadbalancers",
 						"k8s/guides/annotations",
 						"k8s/guides/managed-resources",
 						"k8s/guides/finalizers",
