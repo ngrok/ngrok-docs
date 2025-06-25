@@ -3,6 +3,8 @@ title: Load Balancing Between Multiple Clouds
 description: Learn how to load balance traffic between multiple clouds with ngrok.
 ---
 
+import { LangSwitcher } from "/src/components/LangSwitcher";
+
 ngrok's [Endpoint Pooling](/docs/universal-gateway/endpoint-pooling) allows you to automatically load balance between replicas of your service across multiple clouds by creating two endpoints with the same URL.
 
 This guide will show you how to set up endpoint pooling with a few different methods.
@@ -37,79 +39,144 @@ Send a few requests to your domain to see responses balanced between those two e
 You can verify pooling works in a few ways:
 
 1. Check each agent's UI in the terminal that launched the process. You should see an increase in the number of recent requests.
-2. In [Traffic Inspector](https://dashboard.ngrok.com/traffic-inspector), select a request, then select the **Response** tab. Under **Ngrok-Agent-Ips** you should see that the IP for the responding agent changes from request to request with a similar frequency.
+2. In [Traffic Inspector](https://dashboard.ngrok.com/traffic-inspector), select a request, then select the **Response** tab.
+Under **Ngrok-Agent-Ips** you should see that the IP for the responding agent changes from request to request with a similar frequency.
 
 ## Using SDKs and other tools
 
-Pooling isn't limited to how you start a given service or its replicas. If
-you've already started up one agent endpoint with the CLI, you can start up
-another with one of our [SDKs](/docs/agent-sdks) or the [Kubernetes
-Operator](/docs/k8s) to load-balance between them.
+Pooling isn't limited to how you start a given service or its replicas. If you've already started up one agent endpoint with the CLI, you can start up another with one of our [SDKs](/docs/agent-sdks) or the [Kubernetes Operator](/docs/k8s) to load-balance between them.
 
-Here's an example of a Go app with the [ngrok Go
-SDK](https://github.com/ngrok/ngrok-go). Just as with the agent CLI examples in
-the previous step, this Go app starts up an agent endpoint at
-`$YOUR_DOMAIN.ngrok.app` with pooling enabled.
+The following is a simple example of enabling pooling with one of our SDKs.
 
-To try this example, save the following file as `main.go`.
-
-```go title="main.go"
+<LangSwitcher>
+```go title="example.go"
 package main
 
 import (
-  "context"
-  "fmt"
-  "log"
-  "net/http"
+	"context"
+	"fmt"
+	"log"
+	"os"
 
-  "golang.ngrok.com/ngrok"
-  "golang.ngrok.com/ngrok/config"
+	"github.com/joho/godotenv"
+	"golang.ngrok.com/ngrok/v2"
 )
 
 func main() {
-  if err := run(context.Background()); err != nil {
-    log.Fatal(err)
-  }
+	if err := godotenv.Load(".env"); err != nil {
+		log.Fatal("Error loading .env file", err)
+	}
+	if err := run(context.Background()); err != nil {
+		log.Fatal(err)
+	}
 }
+const address = "http://localhost:8000"
 
 func run(ctx context.Context) error {
-  listener, err := ngrok.Listen(ctx,
-    config.HTTPEndpoint(
-      config.WithDomain("$YOUR_DOMAIN.ngrok.app"),
-      config.WithPoolingEnabled(true),
-    ),
-    ngrok.WithAuthtokenFromEnv(),
-  )
-  if err != nil {
-    return err
-  }
+	agent, err := ngrok.NewAgent(ngrok.WithAuthtoken(os.Getenv("NGROK_AUTHTOKEN")))
+	if err != nil {
+	    return err
+	}
 
-  log.Println("App URL", listener.URL())
-  return http.Serve(listener, http.HandlerFunc(handler))
+	ln, err := agent.Forward(ctx,
+		ngrok.WithUpstream(address),
+		ngrok.WithURL("your-reserved-domain"),
+		ngrok.WithPoolingEnabled(true),
+	)
+
+	if err != nil {
+		fmt.Println("Error", err)
+		return err
+	}
+
+	fmt.Println("Endpoint online: forwarding from", ln.URL(), "to", address)
+
+	// Explicitly stop forwarding; otherwise it runs indefinitely
+	<-ln.Done()
+	return nil
 }
+```
 
-func handler(w http.ResponseWriter, r *http.Request) {
-  fmt.Fprintln(w, "<h1>Hello from ngrok-go!</h1>")
+```javascript title="example.js"
+require('dotenv').config();
+const ngrok = require('@ngrok/ngrok');
+
+(async function() {
+    const listener = await ngrok.forward({
+        // The port your app is running on.
+        addr: 8000,
+				domain: "your-reserved-domain",
+        authtoken: process.env.NGROK_AUTHTOKEN,
+				pooling_enabled: true,
+    });
+
+    // Output ngrok url to console
+    console.log(`Ingress established at ${listener.url()}`);
+})();
+
+// Keep the process alive
+process.stdin.resume();
+```
+
+```rust title="src/main.rs"
+#![deny(warnings)]
+use ngrok::config::ForwarderBuilder;
+use url::Url;
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+    // Set up ngrok tunnel
+    let session = ngrok::Session::builder()
+        .authtoken_from_env()
+        .connect()
+        .await?;
+
+    // Forward HTTP traffic from ngrok to the local server
+    let _listener = session
+        .http_endpoint()
+				.domain("your-reserved-domain")
+				.pooling_enabled(true)
+        .listen_and_forward(Url::parse("http://localhost:8000").unwrap())
+        .await?;
+
+    println!("Ngrok tunnel established at {}", domain);
+
+    // Wait indefinitely
+    tokio::signal::ctrl_c().await?;
+    Ok(())
 }
 ```
 
-Then, initialize the dependencies.
+```python title="example.py"
+from dotenv import load_dotenv
+import os
+import ngrok
+import time
 
-```bash mode="cli"
-go mod init ngrok-go-example
-go get golang.ngrok.com/ngrok
+load_dotenv()
+
+listener = ngrok.forward(
+	# The port your app is running on.
+  8000,
+  authtoken=os.getenv("NGROK_AUTHTOKEN"),
+	domain="your-reserved-domain",
+	pooling_enabled=True,
+)
+
+# Output ngrok url to console
+print(f"Ingress established at {listener.url()}")
+
+# Keep the listener alive
+try:
+    while True:
+        time.sleep(1)
+except KeyboardInterrupt:
+    print("Closing listener")
 ```
 
-Finally, start your app to fire up the ngrok Go SDK and add a new agent endpoint
-to your pool.
+</LangSwitcher>
 
-```bash mode="cli"
-NGROK_AUTHTOKEN="<TOKEN>" go run main.go
-```
-
-If you already have a pool of endpoints created by agent CLIs, make a few more
-requests to see responses from your Go app despite these services operating in
-entirely different clouds and deployment environments.
+If you already have a pool of endpoints created by agent CLIs, make a few requests to see responses from your app using an SDK.
 
 ## Using Endpoint Pooling with Cloud Endpoints for custom traffic management
 
