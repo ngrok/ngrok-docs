@@ -12,7 +12,7 @@ ngrok's core functionality is built around [Agent Endpoints](/universal-gateway/
 One of the most common use cases is to put an app running on your local device online—for example, to share a work in progress on the public internet without hosting and publishing it.
 
 The simplest way to accomplish this is to install the [ngrok Agent CLI](/agent/) and use it to create an agent endpoint that forwards traffic to your localhost.
-This quickstart walks you through this process, as well as how to implement basic security measures by requiring visitors to log in with a Google account to access your app.
+This quickstart walks you through that process, as well as how to implement basic security measures by requiring visitors to log in with a Google account to access your app.
 
 ## What you'll need
 
@@ -124,9 +124,35 @@ Open the forwarding URL in your browser to see your web application, which is no
 
 ## 6. Secure your app
 
-ngrok makes it simple to add authentication to your app with minimal configuration.
+ngrok makes it simple to add authentication to your app using a [Traffic Policy](/traffic-policy/).
 
-TK
+Create a new file in your project directory to define the policy—you can use YAML or JSON format.
+The policy below instructs the agent endpoint to redirect the user to Google OAuth when they visit the public URL.
+
+```JSON
+{
+    "on_http_request": [
+        {
+            "actions": [
+                {
+                    "type": "oauth",
+                    "config": {
+                    "provider": "google"
+                    }
+                }
+            ]
+        }
+    ]
+}
+```
+
+Terminate the agent endpoint that you started up in step 5, then restart it with the command below—replace `$PORT` as before, and replace `$YOUR_TRAFFIC_POLICY_FILE` with the corresponding file name (such as `policy.yml`).
+
+```bash
+ngrok http $PORT --traffic-policy-file $YOUR_TRAFFIC_POLICY_FILE
+```
+
+Now when you visit your public URL you should be prompted to authenticate by logging in with a Google account before you can access your app.
 
 ## What's next?
 
