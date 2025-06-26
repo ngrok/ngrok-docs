@@ -21,25 +21,14 @@ type DefinitionProps = {
 	meaning?: string;
 	link?: string;
 	className?: string;
-	// If true, the definition will not be rendered if the last
-	// path segment matches the link. This is useful to avoid
-	// rendering definitions that link to the current page.
-	hideIfInPath?: boolean;
+	// The stringified term provided by the definitionwrapper
+	wrapperTermString?: string;
+	// If true, the definition will not be rendered on pages
+	// where the content most likely already explains the term
+	hideIfRedundant?: boolean;
 };
 
-export function Definition({
-	children,
-	meaning,
-	link,
-	className,
-	hideIfInPath,
-}: DefinitionProps): React.ReactElement {
-	if (!children) throw new Error("<Definition/> requires children");
-	const linkType = link?.startsWith("http")
-		? "external"
-		: link?.startsWith("/")
-			? "internal"
-			: null;
+function verifyLink(link: string | undefined, linkType: string | null): void {
 	if (link && !linkType)
 		throw new Error(`<Definition/> link must be a valid URL. Received ${link}`);
 
@@ -47,28 +36,61 @@ export function Definition({
 		throw new Error(
 			`<Definition/> link must not be a localhost URL. Received ${link}`,
 		);
+}
+
+function findMatchingTerm(content: string) {
+	return terms.find((term) => term.titles.includes(content));
+}
+
+export function Definition({
+	children,
+	meaning,
+	link,
+	className,
+	hideIfRedundant,
+	wrapperTermString,
+}: DefinitionProps): React.ReactElement {
+	if (!children) throw new Error("<Definition/> requires children");
+	const linkType = link?.startsWith("http")
+		? "external"
+		: link?.startsWith("/")
+			? "internal"
+			: null;
+
+	verifyLink(link, linkType);
+
+	const parsedWrapperTerm = wrapperTermString
+		? JSON.parse(wrapperTermString)
+		: null;
+
+	// Don't get the match if the meaning is provided
+	const match =
+		parsedWrapperTerm || meaning ? null : findMatchingTerm(children.toString());
+
+	const data = match ||
+		parsedWrapperTerm || {
+			meaning,
+			link,
+		};
 
 	const { pathname } = useLocation();
 
-	// Don't get the match if the meaning or link is provided
-	const match =
-		meaning && link
-			? null
-			: terms.find((term) => term.titles.includes(children.toString()));
-	const data = {
-		meaning: meaning || match?.meaning,
-		// If link is to the current page, don't use it. No need to
-		// link to the same page.
-		link: link || match?.link,
-	};
-
-	if (data.link && hideIfInPath) {
+	if (data.link && hideIfRedundant) {
 		const pathSegments = pathname.split("/");
 		const lastPathSegment = pathSegments[pathSegments.length - 2];
+		// If the link is in the current path, don't render
+		// the definition component. Probably redundant.
 		if (lastPathSegment && data.link.includes(lastPathSegment)) {
-			// If the link is in the current path, don't render
-			// the definition component. Prevents showing
-			// definitions that link to the current page.
+			return <>{children}</>;
+		}
+
+		// If the last path segment matches any of the titles,
+		// don't render the definition component. Probably redundant.
+		if (
+			data.titles.some((title: string) =>
+				lastPathSegment?.includes(title.split(" ").join("-").toLowerCase()),
+			)
+		) {
 			return <>{children}</>;
 		}
 	}

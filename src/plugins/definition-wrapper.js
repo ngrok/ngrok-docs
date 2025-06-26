@@ -121,9 +121,10 @@ module.exports = function remarkWordWrapper(stuff) {
 						tagName: "Definition",
 						properties: {
 							meaning: matchingTerm.meaning,
-							hideIfInPath: true,
+							hideIfRedundant: true,
 							link: matchingTerm.link,
 							className: styles,
+							wrapperTermString: JSON.stringify(matchingTerm),
 						},
 						children: [
 							{
