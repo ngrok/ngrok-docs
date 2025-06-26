@@ -8,6 +8,7 @@ import type { WithStyleProps } from "@ngrok/mantle/types";
 import type { ComponentProps, ReactNode } from "react";
 import { CodeBlockWithInfo } from "./CodeBlockWithInfo";
 import { LangTab } from "./LangSwitcher/LangTab";
+import { languageInfo } from "./LangSwitcher/data";
 import { getLanguageInfo, getMetaData } from "./LangSwitcher/utils";
 
 type WithIndentation = Pick<
@@ -64,7 +65,12 @@ function DocsCodeBlock({
 	const langInClassName = langMatchesInClassName
 		? langMatchesInClassName[0]?.split("-")[1]
 		: "";
-	const language = _language || parseLanguage(langInClassName);
+	const langToFind = langInClassName || parseLanguage(langInClassName);
+
+	const language =
+		languageInfo.find(
+			(lang) => lang.name === langToFind || lang.allNames?.includes(langToFind),
+		)?.name || langToFind;
 
 	const meta = getMetaData(
 		metastring ? `${className} ${metastring}` : className,
@@ -76,12 +82,12 @@ function DocsCodeBlock({
 			language={language}
 			collapseLineNumber={100}
 			meta={meta}
-			className={className}
+			className={`mb-4 ${className}`}
 			headerContent={
 				<LangTab
 					disabled
 					className="text-xs h-6 px-1.5 bg-neutral-500/10 text-neutral-800"
-					tabText={meta?.tabName || language.toUpperCase()}
+					tabText={meta?.tabName || language}
 				/>
 			}
 			info={getLanguageInfo(language)}
