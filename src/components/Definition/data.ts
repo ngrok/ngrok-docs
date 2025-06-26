@@ -1,3 +1,6 @@
+/**
+ * Tip: When adding titles, make sure the longest variation is first in the array.
+ */
 export type Term = {
 	titles: string[];
 	meaning: string;
@@ -90,7 +93,7 @@ export const terms: Term[] = [
 		link: "/docs/traffic-policy/",
 	},
 	{
-		titles: ["Endpoint pool", "Endpoint Pooling"],
+		titles: ["Endpoint Pooling", "Endpoint pool"],
 		meaning:
 			'When your create two ngrok endpoints with the same URL (and binding), those endpoints automatically form a "pool" and share incoming traffic.',
 		link: "/docs/universal-gateway/endpoint-pooling/",
