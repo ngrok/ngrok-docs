@@ -126,32 +126,23 @@ Open the forwarding URL in your browser to see your web application, which is no
 
 ## 6. Secure your app
 
-ngrok makes it simple to add authentication to your app using the [Traffic Policy](/traffic-policy/) feature.
+ngrok makes it simple to add authentication to your app by implementing a [Traffic Policy](/traffic-policy/).
 
-Create a new file in your project directory to define the policy—you can use YAML or JSON format.
-The policy below says that whenever an HTTP/S request is made to the public URL, the agent endpoint should redirect the user to Google OAuth for authentication.
+Create a new file in your project directory called `policy.yml` and add the contents below.
+This policy states that whenever an HTTP/S request is made to the public URL, the agent endpoint should redirect the user to Google OAuth for authentication.
 
-```json
-{
-    "on_http_request": [
-        {
-            "actions": [
-                {
-                    "type": "oauth",
-                    "config": {
-                    "provider": "google"
-                    }
-                }
-            ]
-        }
-    ]
-}
+```yaml
+on_http_request:
+  - actions:
+      - type: oauth
+        config:
+          provider: google
 ```
 
-Terminate the agent endpoint that you started up in step 5, then restart it with the command below—replace `$PORT` as before, and replace `$YOUR_TRAFFIC_POLICY_FILE` with the corresponding file name (such as `policy.yml`) to let the agent know where to find it.
+Terminate the agent endpoint that you started up in step 5, then restart it with the command below (replacing `$PORT` as before) to enact the traffic policy.
 
 ```bash
-ngrok http $PORT --traffic-policy-file $YOUR_TRAFFIC_POLICY_FILE
+ngrok http $PORT --traffic-policy-file policy.yml
 ```
 
 Now when you visit your public URL you should be prompted to authenticate by logging in with a Google account before you can access your app.
