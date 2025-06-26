@@ -66,9 +66,7 @@ export function LangSwitcher({ children, className, ...props }: any) {
 												? "bg-neutral-500/10 text-neutral-800"
 												: "text-neutral-500",
 										)}
-										tabText={
-											child?.meta.tabName || child?.language.toUpperCase()
-										}
+										tabText={child?.meta.tabName || child?.language}
 									/>
 								);
 							})}

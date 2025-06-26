@@ -89,10 +89,19 @@ export const getCodeBlocks = (children: ReactElement[]): CodeBlockData[] => {
 };
 
 export const getLanguageInfo = (language: string) => {
-	return languageInfo.find(
+	const foundLang = languageInfo.find(
 		(item) =>
 			item.name === language || item?.allNames?.some((alt) => alt === language),
 	);
+
+	if (!foundLang) {
+		console.error("Language not valid for codeblocks:", language);
+		// If can't find it, return `txt` lang. This lang
+		// has no syntax highlighting, which will make it
+		// obvious something is wrong
+		return languageInfo[0];
+	}
+	return foundLang;
 };
 
 export function languagesAreSynonyms(

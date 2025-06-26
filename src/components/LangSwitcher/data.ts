@@ -2,10 +2,15 @@ export type LanguageInfo = {
 	name: string;
 	allNames?: string[];
 	displayName: string;
-	links: string[];
+	links?: string[];
 };
 
 export const languageInfo: LanguageInfo[] = [
+	{
+		// Leave this as the first item so it's the default
+		name: "txt",
+		displayName: "TXT",
+	},
 	{
 		name: "go",
 		displayName: "Go",
@@ -38,18 +43,18 @@ export const languageInfo: LanguageInfo[] = [
 		links: ["https://ngrok.github.io/ngrok-javascript/"],
 		allNames: ["typescript", "ts", "tsx"],
 	},
-];
-
-export type CustomLanguage = {
-	name: string;
-	// The language whose syntax should be used.
-	// For example, a "ssh" language could use "bash" syntax.
-	syntaxLanguage: string;
-};
-
-export const customLanguages: CustomLanguage[] = [
 	{
-		name: "ssh",
-		syntaxLanguage: "bash",
+		name: "bash",
+		displayName: "Bash",
+		allNames: ["sh", "bash", "shell", "http", "hcl", "toml", "cel", "curl"],
+	},
+	{
+		name: "yaml",
+		displayName: "YAML",
+		allNames: ["Yaml", "yaml", "yml"],
+	},
+	{
+		name: "json",
+		displayName: "JSON",
 	},
 ];

@@ -7,6 +7,9 @@ export function SdkButton({
 	data,
 	className,
 }: { data: LanguageInfo; className?: string }) {
+	if (!data.links || data.links.length === 0) {
+		return null;
+	}
 	const anchoredLinks = data.links.map((link) => {
 		return (
 			<a href={link} key={link} target="_blank" rel="noopener noreferrer">
@@ -21,7 +24,7 @@ export function SdkButton({
 			if (index === 0) {
 				return [prev, curr];
 			}
-			if (index === data.links.length - 1) {
+			if (data?.links && index === data.links.length - 1) {
 				return [prev, ", and ", curr];
 			}
 			return [prev, ", ", curr];
