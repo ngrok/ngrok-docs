@@ -6,6 +6,10 @@ title: Changelog
 
 ## v3
 
+### ngrok agent 3.23.3 \[2025-07-20\]
+
+- Updates and improvements to `--help` text
+
 ### ngrok agent 3.23.2 \[2025-06-20\]
 
 - Improve Windows diagnostics
