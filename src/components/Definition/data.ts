@@ -11,23 +11,23 @@ export type Term = {
 
 export const terms: Term[] = [
 	{
-		titles: ["IP CIDR", "CIDR"],
+		titles: ["MCP server", "MCP"],
 		meaning:
-			"Classless Inter-Domain Routing is a method used to allocate IP addresses more efficiently and route IP packets more flexibly than the older class-based system.",
-		link: "https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing",
+			"MCP (Model Context Protocol) is an open standard that allows AI models to access external data, tools, and services, and potentially use them to automate workflows.",
+		link: "https://en.wikipedia.org/wiki/Model_Context_Protocol",
 		pluralEnding: "s",
 	},
 	{
 		titles: ["IP CIDR", "CIDR"],
 		meaning:
-			"Classless Inter-Domain Routing is a method used to allocate IP addresses more efficiently and route IP packets more flexibly than the older class-based system.",
+			"Classless Inter-Domain Routing is a method used to allocate IP addresses more efficiently and route IP packets more flexibly than older class-based systems.",
 		link: "https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing",
 		pluralEnding: "s",
 	},
 	{
 		titles: ["shadow IT"],
 		meaning:
-			"Shadow IT refers IT systems, software, and cloud services used by individuals within an organization without the IT department's knowledge or approval",
+			"Shadow IT refers to IT systems, software, and cloud services used by individuals within an organization without the IT department's knowledge or approval",
 		link: "https://en.wikipedia.org/wiki/Shadow_IT",
 	},
 	{
@@ -86,13 +86,13 @@ export const terms: Term[] = [
 	{
 		titles: ["Traffic Policy", "Traffic Policies"],
 		meaning:
-			"Traffic Policy is a configuration language that offers you the flexibility to filter, match, manage and orchestrate traffic to your endpoints. For example, you can add authentication, send custom response, rate limit traffic, and more.",
+			"Traffic Policy is a configuration language that enables you to filter, match, manage and orchestrate traffic to your endpoints. For example, you can add authentication, send custom response, rate limit traffic, and more.",
 		link: "/docs/traffic-policy/",
 	},
 	{
 		titles: ["Endpoint pool", "Endpoint Pooling"],
 		meaning:
-			'When your create two endpoints with the same URL (and binding), those endpoints automatically form a "pool" and share incoming traffic.',
+			'When your create two ngrok endpoints with the same URL (and binding), those endpoints automatically form a "pool" and share incoming traffic.',
 		link: "/docs/universal-gateway/endpoint-pooling/",
 		pluralEnding: "s",
 	},
@@ -100,7 +100,7 @@ export const terms: Term[] = [
 		titles: ["OWASP"],
 		caseSensitive: true,
 		meaning:
-			"OWASP: The Open Web Application Security Project. This non-profit organization is dedicated to improving software security through providing resources, tools, and community support.",
+			"The Open Web Application Security Project is a non-profit organization dedicated to improving software security through providing resources, tools, and community support.",
 		link: "https://owasp.org/about/",
 	},
 	{
@@ -112,7 +112,7 @@ export const terms: Term[] = [
 	{
 		titles: ["TLS Termination"],
 		meaning:
-			"TLS termination is the process of decrypting incoming TLS (Transport Layer Security) traffic at a server or load balancer before passing the unencrypted traffic to internal systems.",
+			"TLS (Transport Layer Security) termination is the process of decrypting incoming TLS traffic at a server or load balancer before passing the unencrypted traffic to internal systems.",
 		link: "/docs/universal-gateway/tls-termination/",
 	},
 	{
@@ -126,20 +126,20 @@ export const terms: Term[] = [
 		titles: ["reverse proxy", "reverse proxies"],
 		link: "https://en.wikipedia.org/wiki/Reverse_proxy",
 		meaning:
-			"Reverse proxies are computer infrastructure, such as servers or cloud services, that intercept and then forward traffic to the upstream services. They are an extra security layer between public traffic and your internal services.",
+			"Reverse proxies are an extra security layer between public traffic and your internal services. They live on servers or cloud services, and they intercept and forward traffic to upstream services.",
 	},
 	{
 		titles: ["WAF"],
 		link: "https://en.wikipedia.org/wiki/Web_application_firewall",
 		caseSensitive: true,
 		meaning:
-			"A web application firewall (WAF) is a type of reverse proxy that protects web services by filtering and monitoring HTTP traffic.",
+			"A web application firewall (WAF) is an intermediary service in the cloud or on a server that protects web services by filtering and monitoring HTTP traffic.",
 	},
 	{
 		titles: ["Gateway API CRD", "Gateway API"],
 		link: "https://gateway-api.sigs.k8s.io/guides/",
 		meaning:
-			"Gateway API CRDs (Custom Resource Definitions) are a set of standardized, extensible resources that define and manage networking configurations like routing, gateways, and traffic policies in a more expressive and role-oriented way than Ingress.",
+			"Gateway API CRDs (Custom Resource Definitions) are a set of standardized, extensible resources that manage networking configurations like routing, gateways, and traffic policies.",
 		pluralEnding: "s",
 	},
 	{
