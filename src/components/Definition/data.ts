@@ -34,7 +34,7 @@ export const terms: Term[] = [
 		link: "https://en.wikipedia.org/wiki/Shadow_IT",
 	},
 	{
-		titles: ["OpenID Connect", "OIDC"],
+		titles: ["OIDC"],
 		meaning:
 			"OpenID Connect (OIDC) is an authentication protocol that enables third-party applications to confirm a user's identity and access basic profile details through a single sign-on (SSO) process.",
 		link: "https://en.wikipedia.org/wiki/OpenID",
