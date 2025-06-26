@@ -19,7 +19,7 @@ const showExample = (
 ) => {
 	const titleToUse = title || defaultTitle;
 	return (
-		<LangSwitcher>
+		<LangSwitcher className="mb-3">
 			<DocsCodeBlock
 				language="yaml"
 				metastring={yamlMetastring}
