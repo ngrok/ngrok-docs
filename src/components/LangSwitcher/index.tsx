@@ -7,8 +7,8 @@ import LangSwitcherContext, {
 	type LangSwitcherContextType,
 } from "./LangSwitcherContext";
 import { LangTab } from "./LangTab";
-import { getCodeBlocks, getLanguageInfo, languagesAreSynonyms } from "./utils";
 import { defaultLanguageInfo } from "./data";
+import { getCodeBlocks, getLanguageInfo, languagesAreSynonyms } from "./utils";
 
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>
 export function LangSwitcher({ children, className, ...props }: any) {
