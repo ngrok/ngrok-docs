@@ -36,7 +36,7 @@ const sidebars = {
 				{
 					id: "getting-started/index",
 					type: "doc",
-					label: "CLI",
+					label: "Agent CLI",
 				},
 				{
 					label: "SDKs",
