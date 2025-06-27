@@ -61,7 +61,7 @@ export type CodeBlockData = {
 		title?: string;
 		language?: string;
 	};
-	info?: LanguageInfo;
+	info?: LanguageInfo | null;
 };
 
 export const getCodeBlocks = (children: ReactElement[]): CodeBlockData[] => {
