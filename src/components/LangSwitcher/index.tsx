@@ -7,7 +7,7 @@ import LangSwitcherContext, {
 	type LangSwitcherContextType,
 } from "./LangSwitcherContext";
 import { LangTab } from "./LangTab";
-import { getCodeBlocks, languagesAreSynonyms } from "./utils";
+import { getCodeBlocks, getLanguageInfo, languagesAreSynonyms } from "./utils";
 
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>
 export function LangSwitcher({ children, className, ...props }: any) {
@@ -48,7 +48,15 @@ export function LangSwitcher({ children, className, ...props }: any) {
 			{() => (
 				<CodeBlockWithInfo
 					content={content}
-					language={matchingBlock?.language || matchingBlock?.meta.language}
+					language={
+						matchingBlock
+							? getLanguageInfo(
+									matchingBlock.language ||
+										matchingBlock.meta?.language ||
+										"txt",
+								).name
+							: "txt"
+					}
 					collapseLineNumber={10}
 					meta={matchingBlock?.meta}
 					className={className}

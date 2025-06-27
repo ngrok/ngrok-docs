@@ -88,7 +88,7 @@ export const getCodeBlocks = (children: ReactElement[]): CodeBlockData[] => {
 	});
 };
 
-export const getLanguageInfo = (language: string) => {
+export const getLanguageInfo = (language: string): LanguageInfo => {
 	const foundLang = languageInfo.find(
 		(item) =>
 			item.name === language || item?.allNames?.some((alt) => alt === language),

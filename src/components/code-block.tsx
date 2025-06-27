@@ -67,7 +67,7 @@ function DocsCodeBlock({
 		: "";
 	const langToFind = langInClassName || parseLanguage(langInClassName);
 
-	const language =
+	const providedLanguage =
 		languageInfo.find(
 			(lang) => lang.name === langToFind || lang.allNames?.includes(langToFind),
 		)?.name || langToFind;
@@ -76,10 +76,12 @@ function DocsCodeBlock({
 		metastring ? `${className} ${metastring}` : className,
 	);
 
+	const language = getLanguageInfo(providedLanguage);
+
 	return (
 		<CodeBlockWithInfo
 			content={children}
-			language={language}
+			language={language?.name}
 			collapseLineNumber={100}
 			meta={meta}
 			className={`mb-4 ${className}`}
@@ -87,10 +89,10 @@ function DocsCodeBlock({
 				<LangTab
 					disabled
 					className="text-xs h-6 px-1.5 bg-neutral-500/10 text-neutral-800"
-					tabText={meta?.tabName || language}
+					tabText={meta?.tabName || language?.name}
 				/>
 			}
-			info={getLanguageInfo(language)}
+			info={language}
 			codeBlockProps={props}
 		/>
 	);
