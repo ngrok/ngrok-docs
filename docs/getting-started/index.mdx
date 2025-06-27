@@ -114,11 +114,11 @@ node service.js
 
 ## 5. Put your app online
 
-Start the ngrok agent by running the following command—replace `$PORT` with the specific port where your app is running, such as `8080` or `3000`.
+Start the ngrok agent by running the following command—replace `8080` if your app is running on a different port.
 The optional `--url` flag connects your app to your reserved domain from step 1—replace `$YOUR_DOMAIN` with this—so it will always appear at this URL when you start up a new agent.
 
 ```bash
-ngrok http $PORT --url $YOUR_DOMAIN
+ngrok http 8080 --url $YOUR_DOMAIN
 ```
 
 The agent should print a console UI to your terminal to confirm that it's online and forwarding as intended.
@@ -127,25 +127,40 @@ Open the forwarding URL in your browser to see your web application, which is no
 ## 6. Secure your app
 
 ngrok makes it simple to add authentication to your app by implementing a [Traffic Policy](/traffic-policy/).
+Using the Agent CLI, you can add a traffic policy to your endpoint by editing your ngrok config file, which was automatically created when you provided your auth token in step 3.
 
-Create a new file in your project directory called `policy.yml` and add the contents below.
-This policy states that whenever an HTTP/S request is made to the public URL, the agent endpoint should redirect the user to Google OAuth for authentication.
-
-```yaml
-on_http_request:
-  - actions:
-      - type: oauth
-        config:
-          provider: google
-```
-
-Terminate the agent endpoint that you started up in step 5, then restart it with the command below (replacing `$PORT` as before) to enact the traffic policy.
+Terminate the agent endpoint that you started up in step 5, then run the following command in your terminal to open `ngrok.yml`:
 
 ```bash
-ngrok http $PORT --traffic-policy-file policy.yml
+ngrok config edit
 ```
 
-Now when you visit your public URL you should be prompted to authenticate by logging in with a Google account before you can access your app.
+You should see a new console UI with your config version and auth token already set.
+Below the auth token, paste the following snippet into the editor and then follow the instructions to exit and save the config file.
+This policy states that whenever an HTTP/S request is made to `$YOUR_DOMAIN`, the agent endpoint should redirect the user to Google OAuth for authentication before proceeding to the app running on port `8080`.
+
+```yaml title="ngrok.yml"
+endpoints:
+  - name: cli-quickstart
+    url: $YOUR_DOMAIN
+    traffic_policy:
+      on_http_request:
+        - actions:
+          - type: oauth
+            config:
+              provider: google
+    upstream:
+      url: 8080
+      protocol: http1
+```
+
+Now you can start up your endpoint using its name:
+
+```bash
+ngrok start cli-quickstart
+```
+
+When you visit your public URL you should be prompted to authenticate by logging in with a Google account before you can access your app.
 
 ## What's next?
 
