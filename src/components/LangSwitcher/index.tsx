@@ -8,6 +8,7 @@ import LangSwitcherContext, {
 } from "./LangSwitcherContext";
 import { LangTab } from "./LangTab";
 import { getCodeBlocks, getLanguageInfo, languagesAreSynonyms } from "./utils";
+import { defaultLanguageInfo } from "./data";
 
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>
 export function LangSwitcher({ children, className, ...props }: any) {
@@ -37,7 +38,19 @@ export function LangSwitcher({ children, className, ...props }: any) {
 				languagesAreSynonyms(child.language, selectedLanguage),
 		) || codeBlocks[0];
 
-	const content = matchingBlock?.content.toString();
+	if (!matchingBlock) {
+		return (
+			<CodeBlockFallback className="mb-4">
+				Loading codeblock for {selectedLanguage}
+			</CodeBlockFallback>
+		);
+	}
+
+	const finalLanguageInfo = getLanguageInfo(
+		matchingBlock?.language || matchingBlock.meta?.language,
+	);
+
+	const content = matchingBlock.content.toString();
 
 	return (
 		<BrowserOnly
@@ -48,17 +61,9 @@ export function LangSwitcher({ children, className, ...props }: any) {
 			{() => (
 				<CodeBlockWithInfo
 					content={content}
-					language={
-						matchingBlock
-							? getLanguageInfo(
-									matchingBlock.language ||
-										matchingBlock.meta?.language ||
-										"txt",
-								).name
-							: "txt"
-					}
+					language={finalLanguageInfo?.name || defaultLanguageInfo.name}
 					collapseLineNumber={10}
-					meta={matchingBlock?.meta}
+					meta={matchingBlock.meta}
 					className={className}
 					headerContent={
 						<div className="flex w-[100%] gap-1.5">
@@ -70,7 +75,7 @@ export function LangSwitcher({ children, className, ...props }: any) {
 										onClick={() => updateSelectedLanguage(child.language)}
 										className={clsx(
 											"text-xs h-6 px-1.5",
-											matchingBlock?.language === child.language
+											matchingBlock.language === child.language
 												? "bg-neutral-500/10 text-neutral-800"
 												: "text-neutral-500",
 										)}
@@ -80,7 +85,7 @@ export function LangSwitcher({ children, className, ...props }: any) {
 							})}
 						</div>
 					}
-					info={matchingBlock?.info}
+					info={matchingBlock.info}
 					codeBlockProps={props}
 				/>
 			)}

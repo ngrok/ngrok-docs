@@ -8,7 +8,7 @@ import type { WithStyleProps } from "@ngrok/mantle/types";
 import type { ComponentProps, ReactNode } from "react";
 import { CodeBlockWithInfo } from "./CodeBlockWithInfo";
 import { LangTab } from "./LangSwitcher/LangTab";
-import { languageInfo } from "./LangSwitcher/data";
+import { defaultLanguageInfo, languageInfo } from "./LangSwitcher/data";
 import { getLanguageInfo, getMetaData } from "./LangSwitcher/utils";
 
 type WithIndentation = Pick<
@@ -67,16 +67,11 @@ function DocsCodeBlock({
 		: "";
 	const langToFind = langInClassName || parseLanguage(langInClassName);
 
-	const providedLanguage =
-		languageInfo.find(
-			(lang) => lang.name === langToFind || lang.allNames?.includes(langToFind),
-		)?.name || langToFind;
+	const language = getLanguageInfo(langToFind) || defaultLanguageInfo;
 
 	const meta = getMetaData(
 		metastring ? `${className} ${metastring}` : className,
 	);
-
-	const language = getLanguageInfo(providedLanguage);
 
 	return (
 		<CodeBlockWithInfo

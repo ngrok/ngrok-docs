@@ -5,9 +5,26 @@ export type LanguageInfo = {
 	links?: string[];
 };
 
+export const defaultLanguageInfo = {
+	name: "bash",
+	displayName: "Bash",
+	allNames: [
+		"sh",
+		"bash",
+		"shell",
+		"http",
+		"hcl",
+		"toml",
+		"cel",
+		"curl",
+		"pem",
+	],
+};
+
 export const languageInfo: LanguageInfo[] = [
+	// Leave this as the first item so it's the default
+	{ ...defaultLanguageInfo },
 	{
-		// Leave this as the first item so it's the default
 		name: "txt",
 		displayName: "TXT",
 	},
@@ -42,21 +59,6 @@ export const languageInfo: LanguageInfo[] = [
 		displayName: "TypeScript",
 		links: ["https://ngrok.github.io/ngrok-javascript/"],
 		allNames: ["typescript", "ts", "tsx"],
-	},
-	{
-		name: "bash",
-		displayName: "Bash",
-		allNames: [
-			"sh",
-			"bash",
-			"shell",
-			"http",
-			"hcl",
-			"toml",
-			"cel",
-			"curl",
-			"pem",
-		],
 	},
 	{
 		name: "yaml",
