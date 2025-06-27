@@ -3,8 +3,10 @@ title: ngrok Agent CLI Quickstart
 pagination_next: universal-gateway/overview
 ---
 
+import { LangSwitcher } from "/src/components/LangSwitcher";
 import TabItem from "@theme/TabItem";
 import Tabs from "@theme/Tabs";
+
 
 ngrok's core functionality is built around [Agent Endpoints](/universal-gateway/agent-endpoints/): ephemeral tunnels that connect your locally running apps to the internet through the ngrok cloud service.
 Common use cases include granting remote access to IoT devices, enabling your Kubernetes clusters to communicate with each other, and allowing external connections to a local gaming server.
@@ -82,7 +84,9 @@ ngrok config add-authtoken $YOUR_TOKEN
 Start up the app or service you'd like to put online.
 This is the app that your agent endpoint will forward online traffic to.
 
-If you don't have an app to work with, you can create a minimal Node.js app using the following code to set up a basic HTTP server at port `8080`.
+If you don't have an app to work with, you can create a minimal app in your language of choice using the following code to set up a basic HTTP server at port `8080`.
+
+<LangSwitcher>
 
 ```javascript title="service.js"
 const http = require('http');
@@ -104,11 +108,58 @@ server.listen(port, () => {
 });
 ```
 
-Navigate to the directory where this file is located and run the following command to start the server:
+```go title="service.go"
+package main
 
-```bash
-node service.js
+import (
+	"fmt"
+	"net/http"
+)
+
+func handler(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "Hello from Go HTTP Server!")
+}
+
+func main() {
+	http.HandleFunc("/", handler)
+
+	fmt.Println("Starting server at http://localhost:8080")
+	err := http.ListenAndServe(":8080", nil)
+	if err != nil {
+		fmt.Println("Server failed:", err)
+	}
+}
 ```
+
+```python title="service.py"
+from http.server import BaseHTTPRequestHandler, HTTPServer
+
+class MyHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.send_header("Content-type", "text/html")
+        self.end_headers()
+        html = b"""
+        <html>
+        <head><title>Test Page</title></head>
+        <body><h1>Hello from Python HTTP Server!</h1></body>
+        </html>
+        """
+        self.wfile.write(html)
+
+def run(server_class=HTTPServer, handler_class=MyHandler, port=8080):
+    server_address = ('', port)
+    httpd = server_class(server_address, handler_class)
+    print(f"Serving custom HTML at http://localhost:{port}")
+    httpd.serve_forever()
+
+if __name__ == "__main__":
+    run()
+```
+
+</LangSwitcher>
+
+Navigate to the directory where this file is located and start the server.
 
 ## 5. Put your app online
 
