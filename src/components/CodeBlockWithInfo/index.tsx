@@ -27,7 +27,7 @@ type CodeBlockWithInfoProps = {
 	headerContent: ReactNode;
 	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 	codeBlockProps?: any;
-	info?: LanguageInfo | undefined;
+	info?: LanguageInfo | null;
 };
 
 export function CodeBlockWithInfo({
