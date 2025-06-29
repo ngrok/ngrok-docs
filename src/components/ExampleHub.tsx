@@ -132,7 +132,7 @@ export default function ExampleHub({ examples, categories }: Props) {
 				return (
 					<section key={cat.id} className="my-8">
 						<h2 className="text-xl font-bold mb-2">{cat.name}</h2>
-						<div className="ngrok--cards grid grid-cols-2 gap-4">
+						<div className="ngrok--cards grid md:grid-cols-2 gap-4">
 							{examplesInGroup.map((example) => (
 								<Link
 									key={example.name}
