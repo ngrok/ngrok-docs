@@ -12,12 +12,15 @@ the [ngrok agent CLI API page](../cli-api) for convenience. For more information
 
 ## ngrok
 
+ngrok puts network services, apps and APIs online.
+
 ngrok exposes local networked services behinds NATs and firewalls to the
 public internet over a secure tunnel. Share local websites, build/test
 webhook consumers and self-host personal services.
 Detailed help for each command is available by adding '--help' to any command or with
 the 'ngrok help' command.
-Open https://dashboard.ngrok.com/obs/traffic-inspector to inspect traffic.
+
+Open https://dashboard.ngrok.com/obs/traffic-inspector to inspect traffic through your endpoints.
 
 ### Usage
 
@@ -28,13 +31,39 @@ ngrok [command] [flags]
 ### Example
 
 ```sh
-ngrok http 80                           # secure public URL for port 80 web server
-ngrok http --url baz.ngrok.dev 8080     # port 8080 available at baz.ngrok.dev
-ngrok http foo.dev:80                   # tunnel to host:port instead of localhost
-ngrok http https://localhost            # expose a local https server
-ngrok tcp 22                            # tunnel arbitrary TCP traffic to port 22
-ngrok tls --url=foo.com 443             # TLS traffic for foo.com to port 443
-ngrok start foo bar baz                 # start tunnels from the configuration file
+# forward http traffic from assigned public URL to local port 80
+ngrok http 80
+
+# choose a URL instead of random assignment
+ngrok http 8080 --url https://baz.ngrok.dev
+
+# manipulate traffic to your endpoint with a traffic policy file
+ngrok http 8080 --url https://baz.ngrok.dev --traffic-policy-file tp.yml
+
+# forward to another address on the network instead of a local port
+ngrok http foo.local:3000
+
+# forward to a local https server
+ngrok http https://localhost:8443
+
+# forward TCP traffic (e.g. ssh) with an assigned public address
+ngrok tcp 22
+
+# load balance (in two terminals)
+ngrok http 80 --url https://api.example.com --pooling-enabled
+ngrok http 80 --url https://api.example.com --pooling-enabled
+
+# privately connect a service to the ngrok cloud.
+# then forward traffic from other endpoints in your account to it
+ngrok http 80 --url https://svc.internal
+ngrok tcp 5432 --url tcp://postgres.internal:5432
+
+# make your endpoint url addressable only from k8s clusters
+# where you've installed the ngrok k8s operator
+ngrok http 80 --url https://example.namespace --binding kubernetes
+
+# start multiple endpoints defined in the config file
+ngrok start foo bar baz
 ```
 
 ### SubCommands
@@ -321,7 +350,16 @@ ngrok credits [flags]
 
 ## ngrok diagnose
 
-Runs a series of tests to diagnose potential connectivity issues between the ngrok agent and the remote ngrok service.
+Run tests to diagnose issues establishing connectivity to the ngrok cloud service.
+
+Exits 0 if connectivity is OK, otherwise 1.
+
+OPTIONS:
+--config strings path to config files; they are merged if multiple
+-h, --help help for diagnose
+-6, --ipv6 Enable testing of IPV6 addresses
+-r, --region string ngrok server region [auto, us, eu, au, ap, sa, jp, in, us-cal-1, eu-lon-1, all]
+-w, --write-report string Write a JSON report
 
 ### Usage
 
@@ -340,14 +378,19 @@ ngrok diagnose [flags]
 
 ## ngrok http
 
-Starts a tunnel listening for HTTP/HTTPS traffic with a specific hostname.
-The HTTP Host header on incoming public requests is inspected to
-determine which tunnel it matches.
+Forward HTTP traffic from an ngrok endpoint URL to a local port, address
+or URL.
 
-HTTPS endpoints terminate TLS traffic at the ngrok server using the
-appropriate certificates. The decrypted, HTTP traffic is then forwarded
-through the secure tunnel and then to your local server. If you don't want
-your TLS traffic to terminate at the ngrok server, use a TLS or TCP tunnel.
+The ngrok agent creates secure TLS connections to the ngrok cloud gateway
+over which it creates an endpoint with a URL and forwards traffic received
+on that URL over the TLS connections to the agent and then on to your local
+service.
+
+Specify a Traffic Policy to configure the ngrok cloud service to apply auth,
+routing, security or other handling of the incoming HTTP traffic.
+
+If you are not forwarding traffic to an http(s) server, use
+`ngrok tcp` or `ngrok tls` instead.
 
 ### Usage
 
@@ -358,14 +401,30 @@ ngrok http [address:port | port] [flags]
 ### Example
 
 ```sh
-ngrok http 8080                             # forward ngrok subdomain to port 80
-ngrok http example.com:9000                 # forward traffic to example.com:9000
-ngrok http --url=bar.ngrok.dev 80           # request url name: 'bar.ngrok.dev'
-ngrok http --url=example.com 1234           # request endpoint 'example.com' (DNS CNAME)
-ngrok http --basic-auth='falken:joshua' 80  # enforce basic auth on tunnel endpoint
-ngrok http --host-header=example.com 80     # rewrite the Host header to 'example.com'
-ngrok http file:///var/log                  # serve local files in /var/log
-ngrok http https://localhost:8443           # forward to a local https server
+# forward traffic from a randomly assigned URL to port 8080
+ngrok http 8080
+
+# forward to another host on the network with a host:port address
+ngrok http servername.local:9000
+
+# forward to an https server
+ngrok http https://localhost:8443
+
+# choose your endpoint URL instead of it being assigned
+ngrok http 8080 --url htps://bar.ngrok.dev 80
+
+# choose an endpoint URL on your own domain (requires a DNS CNAME)
+ngrok http 3000 --url https://api.example.com
+
+# add Traffic Policy config for auth, security, routing + more
+ngrok http 80 --url https://example.ngrok.app --traffic-policy-file tp.yml
+
+# load balance between endpoints (run in two terminals)
+ngrok http 8081 --url https://your-api.ngrok.app --pooling-enabled
+ngrok http 8080 --url https://your-api.ngrok.app --pooling-enabled
+
+# forward to a file URL to serve files from a directory
+ngrok http file:///var/log
 ```
 
 ### Flags
@@ -458,9 +517,7 @@ ngrok service stop
 
 ## ngrok start
 
-Starts tunnels by name from the configuration file. You may specify any
-number of tunnel names. You may start all tunnels in the configuration
-file with the --all switch.
+start - start endpoints by name from the configuration file
 
 ### Usage
 
@@ -539,6 +596,8 @@ ngrok tcp --url=1.tcp.ngrok.io:27210 3389
 | `--config`                   | path to config files; they are merged if multiple                                   |
 
 ## ngrok tls
+
+tls - create a TLS endpoint and forward traffic from it to a local server
 
 Starts a tunnel listening for TLS traffic on port 443
 with a specific hostname. The TLS SNI (Server Name Indication)
@@ -650,14 +709,18 @@ ngrok tunnel --label app=foo --label dc=bar 80
 
 ## ngrok update
 
-Updates ngrok to the latest version. This command checks the ngrok web
-service for a newer versions of the ngrok agent. If a newer version is
-available, it will download it an replace the ngrok binary with the new
-version after cryptographically verifying the update is safe to apply.
+This command checks the ngrok cloud service for a newer version of the ngrok
+agent. If a newer version is available, it will download it and replace the
+ngrok binary with the new version after cryptographically verifying the update
+is signed by ngrok.
 
 In order to update successfully, the ngrok binary must be in a directory
 that is writable by your current user. If you placed ngrok in a system
 path, you may need to run this with root or Administrator privileges.
+
+Do not run this command if you installed ngrok with a package manager (i.e.
+homebrew, chocolatey, apt, snap, etc). Instead, update ngrok by using your
+package manager's update command.
 
 ### Usage
 
@@ -668,8 +731,8 @@ ngrok update [flags]
 ### Example
 
 ```sh
-ngrok update                     - update ngrok to the latest stable version
-ngrok update --channel=beta      - update ngrok to the latest beta version
+ngrok update                     # update ngrok to the latest stable version
+ngrok update --channel=beta      # update ngrok to the latest beta version
 ```
 
 ### Flags

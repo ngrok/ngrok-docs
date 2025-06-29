@@ -1887,14 +1887,6 @@
     </tr>
     <tr>
       <td>
-        <a id="ERR_NGROK_458" href="/docs/errors/err_ngrok_458">ERR_NGROK_458</a>
-      </td>
-      <td class="pre-wrapped">
-        A singleton reserved domain with the name <code>&lt;NAME&gt;</code> already exists. You may only have one singleton reserved domain per account.
-      </td>
-    </tr>
-    <tr>
-      <td>
         <a id="ERR_NGROK_500" href="/docs/errors/err_ngrok_500">ERR_NGROK_500</a>
       </td>
       <td class="pre-wrapped">
@@ -5354,6 +5346,22 @@
     </tr>
     <tr>
       <td>
+        <a id="ERR_NGROK_2259" href="/docs/errors/err_ngrok_2259">ERR_NGROK_2259</a>
+      </td>
+      <td class="pre-wrapped">
+        No tunnels exist in this account
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_2260" href="/docs/errors/err_ngrok_2260">ERR_NGROK_2260</a>
+      </td>
+      <td class="pre-wrapped">
+        No tunnels could be found matching the supplied combination of labels
+      </td>
+    </tr>
+    <tr>
+      <td>
         <a id="ERR_NGROK_3002" href="/docs/errors/err_ngrok_3002">ERR_NGROK_3002</a>
       </td>
       <td class="pre-wrapped">
@@ -6272,6 +6280,22 @@
       <td class="pre-wrapped">
         Your account does not have access to <code>&lt;FEATURE&gt;</code>.
         Contact us to get access to this feature: <a href="https://ngrok.com/enterprise/contact">https://ngrok.com/enterprise/contact</a>?ref=pricing-prod-custom
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_4024" href="/docs/errors/err_ngrok_4024">ERR_NGROK_4024</a>
+      </td>
+      <td class="pre-wrapped">
+        Your account plan cannot be downgraded: <code>&lt;REASON&gt;</code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_4025" href="/docs/errors/err_ngrok_4025">ERR_NGROK_4025</a>
+      </td>
+      <td class="pre-wrapped">
+        Your account plan cannot be upgraded: <code>&lt;REASON&gt;</code>
       </td>
     </tr>
     <tr>
@@ -11174,6 +11198,14 @@
       </td>
       <td class="pre-wrapped">
         The maximum number of endpoints allowed in this pool has been exceeded. Your account is limited to <code>&lt;LIMIT&gt;</code> endpoints per pool.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_18021" href="/docs/errors/err_ngrok_18021">ERR_NGROK_18021</a>
+      </td>
+      <td class="pre-wrapped">
+        You have exceeded the maximum number of concurrent endpoints allowed for this account. Please log into <a href="https://dashboard.ngrok.com/usage">https://dashboard.ngrok.com/usage</a> to review your historic usage and <a href="https://dashboard.ngrok.com/billing/subscription/select">https://dashboard.ngrok.com/billing/subscription/select</a> to view your subscription options.
       </td>
     </tr>
     <tr>
