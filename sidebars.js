@@ -49,6 +49,11 @@ const sidebars = {
 					],
 				},
 				{
+					id: "getting-started/cloud-endpoints-quickstart",
+					type: "doc",
+					label: "Cloud Endpoints",
+				},
+				{
 					label: "Kubernetes",
 					type: "category",
 					link: { type: "doc", id: "getting-started/kubernetes/ingress" },
@@ -122,13 +127,9 @@ const sidebars = {
 							link: { type: "doc", id: "universal-gateway/types" },
 							items: [
 								{
+									id: "universal-gateway/cloud-endpoints/index",
+									type: "doc",	
 									label: "Cloud Endpoints",
-									type: "category",
-									link: {
-										type: "doc",
-										id: "universal-gateway/cloud-endpoints/index",
-									},
-									items: ["universal-gateway/cloud-endpoints/quickstart"],
 								},
 								{
 									id: "universal-gateway/agent-endpoints",
