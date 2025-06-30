@@ -14,11 +14,52 @@ export type Term = {
 
 export const terms: Term[] = [
 	{
-		titles: ["MCP server", "MCP"],
+		titles: ["ALPN"],
+		caseSensitive: true,
+		link: "https://en.wikipedia.org/wiki/Application-Layer_Protocol_Negotiation",
 		meaning:
-			"MCP (Model Context Protocol) is an open standard that allows AI models to access external data, tools, and services, and potentially use them to automate workflows.",
-		link: "https://en.wikipedia.org/wiki/Model_Context_Protocol",
+			"ALPN (Application-Layer Protocol Negotiation) allows a client and server to negotiate which application protocol (like HTTP/2 or HTTP/1.1) to use over a secure connection during the TLS handshake.",
+	},
+	{
+		titles: ["CEL"],
+		caseSensitive: true,
+		link: "https://github.com/google/cel-spec/tree/master?tab=readme-ov-file#common-expression-language",
+		meaning:
+			"CEL (Common Expression Language) is a fast, safe, and portable expression language developed by Google for evaluating expressions in configuration, policy, and runtime environments.",
+	},
+	{
+		titles: ["CRD"],
+		caseSensitive: true,
+		meaning:
+			"CustomResourceDefinitions allow users to extend the Kubernetes API by defining their own resource types.",
+		link: "https://kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/",
 		pluralEnding: "s",
+	},
+	{
+		titles: ["Endpoint Pooling", "Endpoint pool"],
+		meaning:
+			'When your create two ngrok endpoints with the same URL (and binding), those endpoints automatically form a "pool" and share incoming traffic.',
+		link: "/docs/universal-gateway/endpoint-pooling/",
+		pluralEnding: "s",
+	},
+	{
+		titles: ["Gateway API CRD", "Gateway API"],
+		link: "https://gateway-api.sigs.k8s.io/guides/",
+		meaning:
+			"Gateway API CRDs (Custom Resource Definitions) are a set of standardized, extensible resources that manage networking configurations like routing, gateways, and traffic policies.",
+		pluralEnding: "s",
+	},
+	{
+		titles: ["Helm"],
+		meaning:
+			"Helm is a package manager for Kubernetes that simplifies the deployment and management of applications on Kubernetes clusters.",
+		link: "https://helm.sh/",
+	},
+	{
+		titles: ["Ingress"],
+		meaning:
+			"An ingress is an entry point into a network for traffic from outside of the network.",
+		pluralEnding: "es",
 	},
 	{
 		titles: ["IP CIDR", "CIDR"],
@@ -26,24 +67,6 @@ export const terms: Term[] = [
 			"Classless Inter-Domain Routing is a method used to allocate IP addresses more efficiently and route IP packets more flexibly than older class-based systems.",
 		link: "https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing",
 		pluralEnding: "s",
-	},
-	{
-		titles: ["shadow IT"],
-		meaning:
-			"Shadow IT refers to IT systems, software, and cloud services used by individuals within an organization without the IT department's knowledge or approval",
-		link: "https://en.wikipedia.org/wiki/Shadow_IT",
-	},
-	{
-		titles: ["OIDC"],
-		meaning:
-			"OpenID Connect (OIDC) is an authentication protocol that enables third-party applications to confirm a user's identity and access basic profile details through a single sign-on (SSO) process.",
-		link: "https://en.wikipedia.org/wiki/OpenID",
-	},
-	{
-		titles: ["Let’s Encrypt", "Let's Encrypt", "LetsEncrypt", "Lets encrypt"],
-		meaning:
-			"Let's Encrypt is a free, automated, and open certificate authority (CA) that provides digital certificates to enable HTTPS (SSL/TLS) for websites.",
-		link: "https://letsencrypt.org/about/",
 	},
 	{
 		titles: ["JIT provisioning"],
@@ -58,10 +81,49 @@ export const terms: Term[] = [
 		link: "https://kubernetes.io/docs/concepts/overview/",
 	},
 	{
-		titles: ["Ingress"],
+		titles: ["Let's Encrypt", "Let's Encrypt", "LetsEncrypt", "Lets encrypt"],
 		meaning:
-			"An ingress is an entry point into a network for traffic from outside of the network.",
-		pluralEnding: "es",
+			"Let's Encrypt is a free, automated, and open certificate authority (CA) that provides digital certificates to enable HTTPS (SSL/TLS) for websites.",
+		link: "https://letsencrypt.org/about/",
+	},
+	{
+		titles: ["MCP server", "MCP"],
+		meaning:
+			"MCP (Model Context Protocol) is an open standard that allows AI models to access external data, tools, and services, and potentially use them to automate workflows.",
+		link: "https://en.wikipedia.org/wiki/Model_Context_Protocol",
+		pluralEnding: "s",
+	},
+	{
+		titles: ["OIDC"],
+		meaning:
+			"OpenID Connect (OIDC) is an authentication protocol that enables third-party applications to confirm a user's identity and access basic profile details through a single sign-on (SSO) process.",
+		link: "https://en.wikipedia.org/wiki/OpenID",
+	},
+	{
+		titles: ["OWASP"],
+		caseSensitive: true,
+		meaning:
+			"The Open Web Application Security Project is a non-profit organization dedicated to improving software security through providing resources, tools, and community support.",
+		link: "https://owasp.org/about/",
+	},
+	{
+		titles: ["reverse proxy", "reverse proxies"],
+		link: "https://en.wikipedia.org/wiki/Reverse_proxy",
+		meaning:
+			"Reverse proxies are an extra security layer between public traffic and your internal services. They live on servers or cloud services, and they intercept and forward traffic to upstream services.",
+	},
+	{
+		titles: ["shadow IT"],
+		meaning:
+			"Shadow IT refers to IT systems, software, and cloud services used by individuals within an organization without the IT department's knowledge or approval",
+		link: "https://en.wikipedia.org/wiki/Shadow_IT",
+	},
+	{
+		titles: ["SNI"],
+		caseSensitive: true,
+		link: "https://en.wikipedia.org/wiki/Server_Name_Indication",
+		meaning:
+			"SNI (Server Name Indication) is a TLS extension that allows a client to specify the hostname it is trying to connect to during the TLS handshake, enabling servers to present the correct SSL/TLS certificate for that hostname.",
 	},
 	{
 		titles: [
@@ -75,42 +137,11 @@ export const terms: Term[] = [
 		link: "https://en.wikipedia.org/wiki/Keepalive",
 	},
 	{
-		titles: ["v3"],
-		caseSensitive: true,
-		meaning: "v3 is shorthand for the third major version of the ngrok Agent.",
-		link: "/docs/agent/config/v3",
-	},
-	{
-		titles: ["v2"],
-		caseSensitive: true,
-		meaning: "v2 is shorthand for the second major version of the ngrok Agent.",
-		link: "/docs/agent/config/v2",
-	},
-	{
-		titles: ["Traffic Policy", "Traffic Policies"],
-		meaning:
-			"Traffic Policy is a configuration language that enables you to filter, match, manage and orchestrate traffic to your endpoints. For example, you can add authentication, send custom response, rate limit traffic, and more.",
-		link: "/docs/traffic-policy/",
-	},
-	{
-		titles: ["Endpoint Pooling", "Endpoint pool"],
-		meaning:
-			'When your create two ngrok endpoints with the same URL (and binding), those endpoints automatically form a "pool" and share incoming traffic.',
-		link: "/docs/universal-gateway/endpoint-pooling/",
+		titles: ["TLS Certificate"],
 		pluralEnding: "s",
-	},
-	{
-		titles: ["OWASP"],
-		caseSensitive: true,
+		link: "https://en.wikipedia.org/wiki/Transport_Layer_Security",
 		meaning:
-			"The Open Web Application Security Project is a non-profit organization dedicated to improving software security through providing resources, tools, and community support.",
-		link: "https://owasp.org/about/",
-	},
-	{
-		titles: ["Helm"],
-		meaning:
-			"Helm is a package manager for Kubernetes that simplifies the deployment and management of applications on Kubernetes clusters.",
-		link: "https://helm.sh/",
+			"A TLS certificate (or SSL certificate) is a digital certificate that ensure your connection to a website or server is securly encrypted.",
 	},
 	{
 		titles: ["TLS Termination"],
@@ -119,17 +150,22 @@ export const terms: Term[] = [
 		link: "/docs/universal-gateway/tls-termination/",
 	},
 	{
-		titles: ["TLS Certificate"],
-		pluralEnding: "s",
-		link: "https://en.wikipedia.org/wiki/Transport_Layer_Security",
+		titles: ["Traffic Policy", "Traffic Policies"],
 		meaning:
-			"A TLS certificate (or SSL certificate) is a digital certificate that ensure your connection to a website or server is securly encrypted.",
+			"Traffic Policy is a configuration language that enables you to filter, match, manage and orchestrate traffic to your endpoints. For example, you can add authentication, send custom response, rate limit traffic, and more.",
+		link: "/docs/traffic-policy/",
 	},
 	{
-		titles: ["reverse proxy", "reverse proxies"],
-		link: "https://en.wikipedia.org/wiki/Reverse_proxy",
-		meaning:
-			"Reverse proxies are an extra security layer between public traffic and your internal services. They live on servers or cloud services, and they intercept and forward traffic to upstream services.",
+		titles: ["v2"],
+		caseSensitive: true,
+		meaning: "v2 is shorthand for the second major version of the ngrok Agent.",
+		link: "/docs/agent/config/v2",
+	},
+	{
+		titles: ["v3"],
+		caseSensitive: true,
+		meaning: "v3 is shorthand for the third major version of the ngrok Agent.",
+		link: "/docs/agent/config/v3",
 	},
 	{
 		titles: ["WAF"],
@@ -137,41 +173,5 @@ export const terms: Term[] = [
 		caseSensitive: true,
 		meaning:
 			"A web application firewall (WAF) is an intermediary service in the cloud or on a server that protects web services by filtering and monitoring HTTP traffic.",
-	},
-	{
-		titles: ["Gateway API CRD", "Gateway API"],
-		link: "https://gateway-api.sigs.k8s.io/guides/",
-		meaning:
-			"Gateway API CRDs (Custom Resource Definitions) are a set of standardized, extensible resources that manage networking configurations like routing, gateways, and traffic policies.",
-		pluralEnding: "s",
-	},
-	{
-		titles: ["CRD"],
-		caseSensitive: true,
-		meaning:
-			"CustomResourceDefinitions allow users to extend the Kubernetes API by defining their own resource types.",
-		link: "https://kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/",
-		pluralEnding: "s",
-	},
-	{
-		titles: ["ALPN"],
-		caseSensitive: true,
-		link: "https://en.wikipedia.org/wiki/Application-Layer_Protocol_Negotiation",
-		meaning:
-			"ALPN (Application-Layer Protocol Negotiation) allows a client and server to negotiate which application protocol (like HTTP/2 or HTTP/1.1) to use over a secure connection during the TLS handshake.",
-	},
-	{
-		titles: ["SNI"],
-		caseSensitive: true,
-		link: "https://en.wikipedia.org/wiki/Server_Name_Indication",
-		meaning:
-			"SNI (Server Name Indication) is a TLS extension that allows a client to specify the hostname it is trying to connect to during the TLS handshake, enabling servers to present the correct SSL/TLS certificate for that hostname.",
-	},
-	{
-		titles: ["CEL"],
-		caseSensitive: true,
-		link: "https://github.com/google/cel-spec/tree/master?tab=readme-ov-file#common-expression-language",
-		meaning:
-			"CEL (Common Expression Language) is a fast, safe, and portable expression language developed by Google for evaluating expressions in configuration, policy, and runtime environments.",
 	},
 ];
