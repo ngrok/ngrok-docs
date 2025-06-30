@@ -13,6 +13,7 @@ export type Term = {
 };
 
 export const terms: Term[] = [
+	// Please add new terms in alphabetical order.
 	{
 		titles: ["ALPN"],
 		caseSensitive: true,
