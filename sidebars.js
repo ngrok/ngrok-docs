@@ -51,7 +51,7 @@ const sidebars = {
 				{
 					id: "getting-started/cloud-endpoints-quickstart",
 					type: "doc",
-					label: "Cloud Endpoints",
+					label: "Cloud Endpoints Quickstart",
 				},
 				{
 					label: "Kubernetes",
