@@ -273,15 +273,8 @@ const sidebars = {
 				},
 				{
 					label: "Macros",
-					type: "category",
-					link: { type: "doc", id: "traffic-policy/macros/index" },
-					items: [
-						{
-							id: "traffic-policy/macros/index",
-							type: "doc",
-							label: "Reference",
-						},
-					],
+					type: "doc",
+					id: "traffic-policy/macros/index",
 				},
 				{
 					label: "Variables",
