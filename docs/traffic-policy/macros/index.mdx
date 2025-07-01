@@ -88,21 +88,21 @@ size(b'world!') // 6
 
 Available in [`on_http_request`](/docs/traffic-policy/concepts/phases/#on_http_request) and [`on_http_response`](/docs/traffic-policy/concepts/phases/#on_http_response) phases.
 
-### `hasReqHeader(string) -> bool`
+### `getReqCookie(string) -> cookie`
 
-Returns `true` or `false` if the provided header key is present on the request. Header keys must be written in canonical format.
+Returns the cookie struct for the specified cookie name, if it exists on the request. If there are multiple cookies of the same name, the first from the ordering specified in the Cookie header will be returned.
 
 ##### Example
 
 ```go
-hasReqHeader('Authorization')
+getReqCookie('session')
 ```
 
 ##### Example (Expression)
 
 <ConfigExample
 	config={{
-		expressions: ["hasReqHeader('X-Version-Id')"],
+		expressions: ["getReqCookie('session').secure"],
 	}}
 />
 
@@ -126,24 +126,6 @@ getReqHeader('User-Agent')
 	}}
 />
 
-### `hasQueryParam(string) -> bool`
-
-Returns `true` or `false` if the specified query parameter key is part of the request URL.
-
-##### Example
-
-```go
-hasQueryParam('query')
-```
-
-##### Example (Expression)
-
-<ConfigExample
-	config={{
-		expressions: ["hasQueryParam('q')"],
-	}}
-/>
-
 ### `getQueryParam(string) -> list`
 
 Returns a list of the query parameter values from the request URL for the specified key. Defaults to an empty list if the query param is not present.
@@ -159,6 +141,24 @@ getQueryParam('search')
 <ConfigExample
 	config={{
 		expressions: ["size(getQueryParam('q')) == 0"],
+	}}
+/>
+
+### `hasQueryParam(string) -> bool`
+
+Returns `true` or `false` if the specified query parameter key is part of the request URL.
+
+##### Example
+
+```go
+hasQueryParam('query')
+```
+
+##### Example (Expression)
+
+<ConfigExample
+	config={{
+		expressions: ["hasQueryParam('q')"],
 	}}
 />
 
@@ -180,21 +180,21 @@ hasReqCookie('session')
 	}}
 />
 
-### `getReqCookie(string) -> cookie`
+### `hasReqHeader(string) -> bool`
 
-Returns the cookie struct for the specified cookie name, if it exists on the request. If there are multiple cookies of the same name, the first from the ordering specified in the Cookie header will be returned.
+Returns `true` or `false` if the provided header key is present on the request. Header keys must be written in canonical format.
 
 ##### Example
 
 ```go
-getReqCookie('session')
+hasReqHeader('Authorization')
 ```
 
 ##### Example (Expression)
 
 <ConfigExample
 	config={{
-		expressions: ["getReqCookie('session').secure"],
+		expressions: ["hasReqHeader('X-Version-Id')"],
 	}}
 />
 
@@ -202,21 +202,21 @@ getReqCookie('session')
 
 Available in [`on_http_response`](/docs/traffic-policy/concepts/phases/#on_http_response) phase only.
 
-### `hasResHeader(string) -> bool`
+### `getResCookie(string) -> cookie`
 
-Returns `true` or `false` if the provided header key is present on the response. Header keys must be written in canonical format. Defaults to empty list if the header is not present.
+Returns the cookie struct for the specified cookie name, if it exists on the response. If there are multiple cookies of the same name, the cookie with the longest path will be returned.
 
 ##### Example
 
 ```go
-hasResHeader('Content-Type')
+getResCookie('_device_id')
 ```
 
 ##### Example (Expression)
 
 <ConfigExample
 	config={{
-		expressions: ["hasResHeader('Content-Type')"],
+		expressions: ["getResCookie('_device_id').value == 'mobile-phone-14'"],
 	}}
 />
 
@@ -258,25 +258,59 @@ hasResCookie('_device_id')
 	}}
 />
 
-### `getResCookie(string) -> cookie`
+### `hasResHeader(string) -> bool`
 
-Returns the cookie struct for the specified cookie name, if it exists on the response. If there are multiple cookies of the same name, the cookie with the longest path will be returned.
+Returns `true` or `false` if the provided header key is present on the response. Header keys must be written in canonical format. Defaults to empty list if the header is not present.
 
 ##### Example
 
 ```go
-getResCookie('_device_id')
+hasResHeader('Content-Type')
 ```
 
 ##### Example (Expression)
 
 <ConfigExample
 	config={{
-		expressions: ["getResCookie('_device_id').value == 'mobile-phone-14'"],
+		expressions: ["hasResHeader('Content-Type')"],
 	}}
 />
 
 ## Hash
+
+### `hash.crc32(string) -> string`
+
+Computes the CRC32 checksum of a string using the IEEE polynomial. Returns the checksum in hexadecimal format by default.
+
+##### Signatures
+
+- `hash.crc32(string) -> string` (returns hex)
+- `hash.crc32(string, format) -> string` (format: "hex" or "base64")
+
+##### Examples
+
+```go
+hash.crc32('hello')           // '3610a686'
+hash.crc32('hello', 'hex')    // '3610a686'
+hash.crc32('hello', 'base64') // 'NhCmhg=='
+```
+
+### `hash.crc64(string) -> string`
+
+Computes the CRC64 checksum of a string using the ISO polynomial. Returns the checksum in hexadecimal format by default.
+
+##### Signatures
+
+- `hash.crc64(string) -> string` (returns hex)
+- `hash.crc64(string, format) -> string` (format: "hex" or "base64")
+
+##### Examples
+
+```go
+hash.crc64('hello')           // '3c3eeee2d8100000'
+hash.crc64('hello', 'hex')    // '3c3eeee2d8100000'
+hash.crc64('hello', 'base64') // 'PD7u4tgQAAA='
+```
 
 ### `hash.md5(string) -> string`
 
@@ -354,40 +388,6 @@ hash.sha512('hello', 'hex')    // '9b71d224bd62f3785d96d46ad3ea3d73319bfbc2890ca
 hash.sha512('hello', 'base64') // 'm3HSJL1i83hdltRq0+o9czGb+8KJDKra4t/3JRlnPKcjI8PZm6XBHXx6zG4UuMXaDEZjR1wuXDre9G9zvN7AQw=='
 ```
 
-### `hash.crc32(string) -> string`
-
-Computes the CRC32 checksum of a string using the IEEE polynomial. Returns the checksum in hexadecimal format by default.
-
-##### Signatures
-
-- `hash.crc32(string) -> string` (returns hex)
-- `hash.crc32(string, format) -> string` (format: "hex" or "base64")
-
-##### Examples
-
-```go
-hash.crc32('hello')           // '3610a686'
-hash.crc32('hello', 'hex')    // '3610a686'
-hash.crc32('hello', 'base64') // 'NhCmhg=='
-```
-
-### `hash.crc64(string) -> string`
-
-Computes the CRC64 checksum of a string using the ISO polynomial. Returns the checksum in hexadecimal format by default.
-
-##### Signatures
-
-- `hash.crc64(string) -> string` (returns hex)
-- `hash.crc64(string, format) -> string` (format: "hex" or "base64")
-
-##### Examples
-
-```go
-hash.crc64('hello')           // '3c3eeee2d8100000'
-hash.crc64('hello', 'hex')    // '3c3eeee2d8100000'
-hash.crc64('hello', 'base64') // 'PD7u4tgQAAA='
-```
-
 ### `hash.xxhash64(string) -> string`
 
 Computes the XXHash64 hash of a string. XXHash is a fast, high-quality hash function. Returns the hash in hexadecimal format by default.
@@ -461,6 +461,16 @@ Where `x` is a variable name to be used in `p` as a reference to the element.
 
 ```go
 [1, 2, 3].all(x, x > 0) // true
+```
+
+### `list.encodeJson() -> string`
+
+Encodes the list as a JSON string.
+
+##### Example
+
+```go
+["a","b","c"].encodeJson()  // "[\"a\",\"b\",\"c\"]"
 ```
 
 ### `list.exists(x,p) -> bool`
@@ -571,16 +581,6 @@ Returns a new sub-list using the indexes provided.
 [1,2,3,4].slice(2, 4) // return [3 ,4]
 ```
 
-### `list.encodeJson() -> string`
-
-Encodes the list as a JSON string.
-
-##### Example
-
-```go
-["a","b","c"].encodeJson()  // "[\"a\",\"b\",\"c\"]"
-```
-
 ## Maps
 
 ### `map.all(x,p) -> bool`
@@ -593,6 +593,26 @@ Where `x` is a variable name to be used in `p` as a reference to the key.
 
 ```go
 {'one': 1, 'two': 2}.all(x, x.startsWith('o')) // false
+```
+
+### `map.encodeJson() -> string`
+
+Encodes the map as a JSON string.
+
+##### Example
+
+```go
+{a:"b",c:"d"}.encodeJson()  // "{\"a\":\"b\",\"c\":\"d\"}"
+```
+
+### `map.encodeQueryString() -> string`
+
+Encodes the map as a URL query string.
+
+##### Example
+
+```go
+{a:"b",c:"d"}.encodeQueryString()  // "a=b&c=d"
 ```
 
 ### `map.exists(x,p) -> bool`
@@ -669,26 +689,6 @@ Determines the number of entries in a map.
 ```go
 {'hello': 'world'}.size() // 1
 size({1: true, 2: false}) // 2
-```
-
-### `map.encodeJson() -> string`
-
-Encodes the map as a JSON string.
-
-##### Example
-
-```go
-{a:"b",c:"d"}.encodeJson()  // "{\"a\":\"b\",\"c\":\"d\"}"
-```
-
-### `map.encodeQueryString() -> string`
-
-Encodes the map as a URL query string.
-
-##### Example
-
-```go
-{a:"b",c:"d"}.encodeQueryString()  // "a=b&c=d"
 ```
 
 ## Query String
