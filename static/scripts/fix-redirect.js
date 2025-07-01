@@ -972,6 +972,28 @@ const redirects = [
 		fromExact("/docs/guides/other-guides/load-balancing-kubernetes-clusters/"),
 		"/docs/k8s/load-balancing/load-balancing-kubernetes-clusters/",
 	],
+
+	// Traffic Policy Macros consolidation (2025)
+	[
+		fromIncludes("/docs/traffic-policy/macros/core"),
+		"/docs/traffic-policy/macros/",
+	],
+	[
+		fromIncludes("/docs/traffic-policy/macros/ext"),
+		"/docs/traffic-policy/macros/",
+	],
+	[
+		fromIncludes("/docs/traffic-policy/macros/http"),
+		"/docs/traffic-policy/macros/",
+	],
+	[
+		fromIncludes("/docs/traffic-policy/macros/security"),
+		"/docs/traffic-policy/macros/",
+	],
+	[
+		fromIncludes("/docs/traffic-policy/macros/utility"),
+		"/docs/traffic-policy/macros/",
+	],
 ];
 
 // get current href from window
