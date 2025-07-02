@@ -921,7 +921,6 @@ const redirects = [
 	[fromExact("/docs/using-ngrok-with/go/"), "/docs/getting-started/go/"],
 	[fromExact("/docs/using-ngrok-with/rust/"), "/docs/getting-started/rust/"],
 	[fromExact("/docs/using-ngrok-with/rdp/"), "/docs/guides/ssh-rdp"],
-	[fromExact("/docs/using-ngrok-with/ssh/"), "/docs/guides/ssh-rdp"],
 	//site-to-site redirects
 	[
 		fromExact("/docs/guides/site-to-site-connectivity/dbs/"),
@@ -972,9 +971,30 @@ const redirects = [
 		fromExact("/docs/guides/other-guides/load-balancing-kubernetes-clusters/"),
 		"/docs/k8s/load-balancing/load-balancing-kubernetes-clusters/",
 	],
-		[
+	[
 		fromExact("/docs/universal-gateway/cloud-endpoints/quickstart/"),
 		"/docs/getting-started/cloud-endpoints-quickstart",
+  ],
+	// Traffic Policy Macros consolidation (2025)
+	[
+		fromIncludes("/docs/traffic-policy/macros/core"),
+		"/docs/traffic-policy/macros/",
+	],
+	[
+		fromIncludes("/docs/traffic-policy/macros/ext"),
+		"/docs/traffic-policy/macros/",
+	],
+	[
+		fromIncludes("/docs/traffic-policy/macros/http"),
+		"/docs/traffic-policy/macros/",
+	],
+	[
+		fromIncludes("/docs/traffic-policy/macros/security"),
+		"/docs/traffic-policy/macros/",
+	],
+	[
+		fromIncludes("/docs/traffic-policy/macros/utility"),
+		"/docs/traffic-policy/macros/",
 	],
 ];
 
