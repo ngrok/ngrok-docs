@@ -12,18 +12,13 @@ Cloud Endpoints provide an additional layer of traffic management above Agent En
 Unlike agent endpoints which are ephemeral and run locally, cloud endpoints are persistent and run in the ngrok cloud—as such, they exist indefinitely until deleted.
 
 :::note 
-This doc assumes you've already completed the [Agent CLI Quickstart](/getting-started/index)—if not, we highly recommend starting there before continuing here.
+This doc assumes you've already completed the [Agent CLI Quickstart](/getting-started/)—if not, we highly recommend starting there before continuing here.
 :::
 
 Using a Traffic Policy, a cloud endpoint can route traffic to multiple other endpoints based on criteria such as path, header, or IP.
 A common use case for this pattern is to create a public cloud endpoint that routes traffic to one or more internal agent endpoints.
 
-This guide walks you through that process using the Agent CLI to interact with the ngrok API.
-
-
-:::tip
-You can create Cloud Endpoints in the ngrok dashboard in the [**Endpoints**](https://dashboard.ngrok.com/endpoints) section.
-:::
+This guide walks you through how to accomplish this in two ways: first, through the ngrok dashboard, and second, by interacting with the ngrok API using the Agent CLI.
 
 
 ## What you'll need
@@ -185,54 +180,17 @@ ngrok http 8080 --url $YOUR_DOMAIN
 The agent should print a console UI to your terminal to confirm that it's online and forwarding as intended.
 Open the forwarding URL in your browser to see your web application, which is now available over HTTPS with a valid certificate that ngrok automatically manages for you.
 
-## 6. Secure your app
+## 6. Create your cloud endpoint
 
-ngrok makes it simple to add authentication to your app by implementing a [Traffic Policy](/traffic-policy/).
-Using the Agent CLI, you can add a traffic policy to your endpoint by editing your ngrok config file, which was automatically created when you provided your auth token in step 3.
+### In the dashboard
 
-Terminate the agent endpoint that you started up in step 5, then run the following command in your terminal to open `ngrok.yml`:
+TK 
 
-```bash
-ngrok config edit
-```
+### With the API 
 
-You should see a new console UI with your config version and auth token already set.
-Below the auth token, paste the following snippet into the editor and then save and exit the config file.
-This policy states that whenever an HTTP/S request is made to `$YOUR_DOMAIN`, the agent endpoint should redirect the user to Google OAuth for authentication before proceeding to the app running on port `8080`.
-
-```yaml title="ngrok.yml"
-endpoints:
-  - name: cli-quickstart
-    url: $YOUR_DOMAIN
-    traffic_policy:
-      on_http_request:
-        - actions:
-          - type: oauth
-            config:
-              provider: google
-    upstream:
-      url: 8080
-      protocol: http1
-```
-
-:::tip
-This example uses ngrok's default Google OAuth application.
-To use your own, see [the OAuth Traffic Policy Action documentation](https://ngrok-docs-git-sg-doc-326-agent-endpoints-cli-f7e245-ngrok-dev.vercel.app/docs/traffic-policy/actions/oauth/#google-example).
-:::
-
-Now you can start up your endpoint using its name:
-
-```bash
-ngrok start cli-quickstart
-```
-
-When you visit your public URL you should be prompted to authenticate by logging in with a Google account before you can access your app.
+TK
 
 ## What's next?
-
-In this guide, you learned how to create an agent endpoint to forward traffic from the internet to an app running on your local device using the ngrok agent CLI.
-You were introduced to some of the most common commands you should know, and you implemented a traffic policy, which can be used for many kinds of actions beyond the basic authentication example here.
-You also saw how to edit your config file to make your ephemeral endpoints repeatable and scalable by assigning a name you can refer back to with URLs, protocols, and actions already defined.
 
 - If you need to interact with ngrok agent endpoints programmatically, we recommend using one of our Agent SDKs which are available for [JavaScript (Node.js)](/getting-started/javascript/), [Go](/getting-started/go/), [Python](/getting-started/python/), and [Rust](/getting-started/rust/).
 - If your use case calls for a centrally managed, always-on endpoint that isn't tied to the ephemeral lifetime of an agent endpoint, you should proceed to [getting started with Cloud Endpoints](/universal-gateway/cloud-endpoints/quickstart/).
