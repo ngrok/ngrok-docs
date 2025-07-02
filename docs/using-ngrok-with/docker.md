@@ -44,6 +44,7 @@ If you are unable to view the web inspection interface typically available at `h
 ```bash
 docker run -p 4040:4040 -it -e NGROK_AUTHTOKEN=xyz ngrok/ngrok:latest http 80
 ```
+
 ::::
 
 # Using ngrok with Docker Compose
