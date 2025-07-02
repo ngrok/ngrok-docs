@@ -4,129 +4,99 @@ sidebar_label: mTLS Termination
 description: Learn how to enable Mutual TLS (mTLS) termination with your ngrok agents.
 ---
 
-The following instructions will guide you through setting up Agent TLS termination using [Mutual TLS (mTLS)](/guides/other-guides/using-tls-mutual-authentication/) with ngrok.
+Mutual TLS Authentication (mTLS) is a network security protocol that ensures both the client _and_ server authenticate each other using digital certificates, providing encrypted and trusted communication between both parties. This is in contrast to standard TLS, where only the server is authenticated by the client.
+
+By verifying the clients, the server owner is able to restrict access only to verified clients, strengthening security.
+
+![](img/mtls-diag.png)
+
+This guide walks you through enabling mTLS on your ngrok hosted endpoints using [the `terminate-tls` Traffic Policy action](/docs/traffic-policy/actions/terminate-tls/).
 
 ## What you'll need
 
 - Ensure you have [openssl](https://docs.openiam.com/docs-4.2.1.3/appendix/2-openssl) installed.
 
-## 1. Generate a root CA private key and certificate
+## 1. Provision your certificates and credentials
 
-```yaml
-openssl genpkey -algorithm RSA -out your-ca.key -pkeyopt rsa_keygen_bits:2048
-openssl req -x509 -new -nodes -key your-ca.key -sha256 -days 365 -out your-ca.crt -subj "/CN=YourDemoCA"
-```
+Although ngrok can [automatically provision your certificates](/universal-gateway/tls-certificates) when you use standard TLS, you'll have to provide your own certificate authority (CA) for mTLS.
+The CA is responsible for issuing, digitally signing, and verifying the authenticity of client certificates.
 
-## 2. Generate server credentials
+Keep in mind:
 
-The following terminal commands will generate these server credentials:
+1. ngrok uses the CA certificate to verify the client certificate.
+2. Once the CA signs a client certificate, the client certificate is used to grant the client access your endpoints.
+3. ngrok does not generate CA and client certificates for you when you use mTLS; you must generate them yourself.
+4. Though your CA certificate must be uploaded and hosted on the ngrok SaaS platform, your client certificates need to be distributed to any client or device that needs access to your endpoints.
 
-- A server private key
-- A CSR
-- A signed certificate
+### Generate your own certificates
 
-```bash
-openssl genpkey -algorithm RSA -out your-server.key -pkeyopt rsa_keygen_bits:2048
-openssl req -new -key your-server.key -out your-server.csr -subj "/CN=your-domain.ngrok.app"
-openssl x509 -req -in your-server.csr -CA your-ca.crt -CAkey your-ca.key -CAcreateserial -out your-server.crt -days 365 -sha256
-```
+:::note
+Most organizations have their own certificate management infrastructure, so this step is optional if you already have a CA and client certificates to work with.
+:::
 
-## 3. Generate client credentials
-
-The following terminal command will generate these client credentials:
-
-- A private key
-- A CSR
-- A signed certificate
-
-```yaml
-openssl genpkey -algorithm RSA -out your-client.key -pkeyopt rsa_keygen_bits:2048
-openssl req -new -key your-client.key -out your-client.csr -subj "/CN=YourDemoCA"
-openssl x509 -req -in your-client.csr -CA your-ca.crt -CAkey your-ca.key -CAcreateserial -out your-client.crt -days 365 -sha256
-```
-
-## 4. Configure your mTLS endpoint
-
-Use the following command to create an agent configuration file with your generated certificates:
+To begin, create a new CA that will be used to sign the client certificate, as shown below.
+With this approach you can generate multiple client certificates that are trusted by the CA if needed.
 
 ```bash
-ngrok config add-authtoken you-authtoken
+# 1. Generate CA private key (ca.key)
+openssl genpkey -algorithm RSA -out ca.key -pkeyopt rsa_keygen_bits:2048
+
+# 2. Generate CA certificate (ca.crt)
+openssl req -x509 -new -nodes -key ca.key -sha256 -days 365 -out ca.crt -subj "/CN=ExampleCA"
+
+# 3. Generate client private key (client.key)
+openssl genpkey -algorithm RSA -out client.key -pkeyopt rsa_keygen_bits:2048
+
+# 4. Generate client certificate signing request (CSR) (client.csr)
+openssl req -new -key client.key -out client.csr -subj "/CN=ExampleClient"
+
+# 5. Generate client certificate (client.crt)
+openssl x509 -req -in client.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out client.crt -days 365 -sha256
 ```
 
-Your generated configuration file should resemble the following:
+These commands result in five new files: `ca.key`, `ca.crt`, `client.key`, `client.csr`, and `client.key`.
+You will use the contents of `ca.crt` in your traffic policy to validate requests via `curl`, which, in turn, uses `client.key` and `client.crt`.
 
-```yaml
-version: 3
-agent:
-  authtoken: your-token
-endpoints:
-  - name: demo-mtls
-    url: "tls:/your-domain.ngrok.app"
-    upstream:
-      url: 8080
-    agent_tls_termination:
-      server_certificate: /path/to/your-cert.crt
-      server_private_key: /path/to/your-key.key
-      mutual_tls_certificate_authorities:
-        - /path/to/your-ca.crt
-```
+## 2. Create a traffic policy
 
-## 5. Start your mTLS endpoint
+Using the CA certificate generated in the previous step, you can specify the `mutual_tls_certificate_authorities` field in a traffic policy to trust the CA that issued the client certificate.
 
-Next, use `ngrok start endpoint_name_here` in the terminal to start an endpoint using the settings in your agent configuration file, as shown below:
+<ConfigExample
+	snippetText={null}
+	showLineNumbers={true}
+	jsonMetastring="{5-12}"
+	yamlMetastring="{4-10}"
+	config={{
+		on_tcp_connect: [
+			{
+				actions: [
+					{
+						type: "terminate-tls",
+						config: {
+							mutual_tls_certificate_authorities: [
+								"-----BEGIN CERTIFICATE-----\n... certificate ...\n-----END CERTIFICATE-----",
+							],
+						},
+					},
+				],
+			},
+		],
+	}}
+/>
+
+You may also optionally [upload the CA certificate](https://dashboard.ngrok.com/tls-cert-authorities) in the ngrok dashboard and use its ID in the `mutual_tls_certificate_authorities` array.
+
+## 3. Start an endpoint with the traffic policy
 
 ```bash
-ngrok start demo-mtls
+ngrok http 8080 --url your-reserved-domain-here --traffic-policy-file /path/to/policy.yml
 ```
 
-## 6. Start your upstream server
+## 4. Test your endpoint
 
-Start an upstream server on the specified port (e.g., `12345`) to handle incoming requests. The following example uses Python, but you can use any language or framework depending on your requirements.
-
-```python
-import socket
-
-host='127.0.0.1'
-port=12345
-server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server.bind((host, port))
-print(f"Server started on {host}:{port}")
-server.listen(1)
-
-while True:
-    client, client_address = server.accept()
-    print(f"Connection established with {client_address}")
-    client.sendall(b"hello, world!")
-    client.close()
-    print(f"Connection with {client_address} closed")
-```
-
-## 7. Try connecting to your mTLS endpoint
-
-The following example uses `openssl s_client` to initiate an SSL/TLS client connection to your upstream server without a certificate.
+Test out that everything works by making a request to your endpoint using the `--cert` and `--key` flags to specify the client certificate and private key.
 
 ```bash
-openssl s_client -quiet -connect your-domain.ngrok.app:443 -verify_return_error
+curl --cert client.crt --key client.key https://your-reserved-domain-here
 ```
 
-```bash
-Connecting to 2600:1f16:d83:1200::6e:3
-depth=0 CN=your-domain.ngrok.app
-verify error:num=20:unable to get local issuer certificate
-408FB6F801000000:error:0A000086:SSL routines:tls_post_process_server_certificate:certificate verify failed:ssl/statem/statem_clnt.c:2093
-```
-
-The following example uses `openssl s_client` to initiate an SSL/TLS client connection to your upstream server with a certificate.
-
-```bash
-openssl s_client -quiet -connect your-domain.ngrok.app:443 -verify_return_error -CAfile your-ca.crt
-```
-
-```bash
-Connecting to 2600:1f16:d83:1200::6e:3
-depth=1 CN=YourDemoCA
-verify return:1
-depth=0 CN=your-domain.ngrok.app
-verify return:1
-hello, world!%
-```

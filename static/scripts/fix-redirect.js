@@ -1000,6 +1000,10 @@ const redirects = [
 		),
 		"/docs/agent/agent-tls-termination/",
 	],
+	[
+		fromIncludes("/docs/guides/other-guides/using-tls-mutual-authentication"),
+		"/docs/agent/agent-mutual-tls-termination/",
+	],
 ];
 
 // get current href from window
