@@ -163,10 +163,21 @@ This is a quick step to add extra protection to your application.
 
 1. On the **Webhooks** page, click the eye icon near the **HTTP webhook signing key** text and copy the value that appears.
 
-1. Restart your ngrok agent by running the command, replacing `{webhook signing key}` with the value you have copied before:
+1. Create a traffic policy file named `mailgun_policy.yml`, replacing `{webhook signing key}` with the value you have copied before:
+
+   ```yaml
+   on_http_request:
+     - actions:
+         - type: verify-webhook
+           config:
+             provider: mailgun
+             secret: "{webhook signing key}"
+   ```
+
+1. Restart your ngrok agent by running the command:
 
    ```bash
-   ngrok http 3000 --verify-webhook mailgun --verify-webhook-secret {webhook signing key}
+   ngrok http 3000 --traffic-policy-file mailgun_policy.yml
    ```
 
 1. Access [Mailgun](https://app.mailgun.com/) and send a new email to an authorized recipient.

@@ -151,10 +151,21 @@ This is a quick step to add extra protection to your application.
 
 1. On the **Manage apps** page, click your app tile, click the eye icon to reveal the **Client secret** value, and then copy this value.
 
-1. Restart your ngrok agent by running the command, replacing `{your webhook secret}` with the value you copied before:
+1. Create a traffic policy file named `tiktok_policy.yml`, replacing `{your webhook secret}` with the value you copied before:
+
+   ```yaml
+   on_http_request:
+     - actions:
+         - type: verify-webhook
+           config:
+             provider: tiktok
+             secret: "{your webhook secret}"
+   ```
+
+1. Restart your ngrok agent by running the command:
 
    ```bash
-   ngrok http 3000 --verify-webhook tiktok --verify-webhook-secret {your webhook secret}
+   ngrok http 3000 --traffic-policy-file tiktok_policy.yml
    ```
 
 1. Access your [TikTok](https://www.tiktok.com/) account and use the app. See [Run Webhooks with TikTok and ngrok](#run-webhook).

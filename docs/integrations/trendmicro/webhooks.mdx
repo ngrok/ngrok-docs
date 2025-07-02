@@ -144,10 +144,21 @@ This is a quick step to add extra protection to your application.
 
 1. On the **Send notification to** popup, enter `12345` in the **Webhook Security Token** field and then click **Save**.
 
-1. Restart your ngrok agent by running the command, replacing `{your webhook token}` with the value of the **Webhook Security Token** field:
+1. Create a traffic policy file named `trendmicro_policy.yml`, replacing `{your webhook token}` with the value of the **Webhook Security Token** field:
+
+   ```yaml
+   on_http_request:
+     - actions:
+         - type: verify-webhook
+           config:
+             provider: trendmicro_conformity
+             secret: "{your webhook token}"
+   ```
+
+1. Restart your ngrok agent by running the command:
 
    ```bash
-   ngrok http 3000 --verify-webhook trendmicro_conformity --verify-webhook-secret {your webhook token}
+   ngrok http 3000 --traffic-policy-file trendmicro_policy.yml
    ```
 
 1. Access the [Trend Micro Cloud One home](https://cloudone.trendmicro.com/home) page, click the **Conformity** tile, and then run the Conformity bot again.

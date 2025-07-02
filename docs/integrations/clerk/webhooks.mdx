@@ -149,10 +149,21 @@ This is a quick step to add extra protection to your application.
 
 1. On the **Endpoint** page, click the eye icon under **Signing Secret** and copy the value that appears.
 
-1. Restart your ngrok agent by running the command, replacing `{endpoint signing secret}` with the value you copied before:
+1. Create a traffic policy file named `clerk_policy.yml`, replacing `{endpoint signing secret}` with the value you copied before:
+
+   ```yaml
+   on_http_request:
+     - actions:
+         - type: verify-webhook
+           config:
+             provider: clerk
+             secret: "{endpoint signing secret}"
+   ```
+
+1. Restart your ngrok agent by running the command:
 
    ```bash
-   ngrok http 3000 --verify-webhook clerk --verify-webhook-secret {endpoint signing secret}
+   ngrok http 3000 --traffic-policy-file clerk_policy.yml
    ```
 
 1. Click **Users** on the left menu and then create a new user.

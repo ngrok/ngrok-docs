@@ -141,10 +141,21 @@ This is a quick step to add extra protection to your application.
 
 1. On the **Webhook** page, click the **Settings** tab, and then enter `12345` in the **Secret Key** field.
 
-1. Restart your ngrok agent by running the command, replacing `{your webhook secret}` with the value of the **Secret Key** field:
+1. Create a traffic policy file named `sonatype_nexus_policy.yml`, replacing `{your webhook secret}` with the value of the **Secret Key** field:
+
+   ```yaml
+   on_http_request:
+     - actions:
+         - type: verify-webhook
+           config:
+             provider: sonatype_nexus
+             secret: "{your webhook secret}"
+   ```
+
+1. Restart your ngrok agent by running the command:
 
    ```bash
-   ngrok http 3000 --verify-webhook sonatype_nexus --verify-webhook-secret {your webhook secret}
+   ngrok http 3000 --traffic-policy-file sonatype_nexus_policy.yml
    ```
 
 1. On the **Sonatype Nexus Repository Manager** user interface, click **Repository** on the left menu and then click **Repositories**. In this example, click **apt (hosted)**.

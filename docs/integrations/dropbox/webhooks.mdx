@@ -143,10 +143,21 @@ This is a quick step to add extra protection to your application.
 
 1. Access the [Dropbox developer site](https://www.dropbox.com/developers/apps), click the name of the app you created in the [Integrate Dropbox](#setup-webhook) step, click **Show** for the **App secret** field of the **Settings** tab, and then copy the value that appears on the page.
 
-1. Restart your ngrok agent by running the command, replacing `{your app secret}` with the value you have copied before:
+1. Create a traffic policy file named `dropbox_policy.yml`, replacing `{your app secret}` with the value you have copied before:
+
+   ```yaml
+   on_http_request:
+     - actions:
+         - type: verify-webhook
+           config:
+             provider: dropbox
+             secret: "{your app secret}"
+   ```
+
+1. Restart your ngrok agent by running the command:
 
    ```bash
-   ngrok http 3000 --verify-webhook dropbox --verify-webhook-secret {your app secret}
+   ngrok http 3000 --traffic-policy-file dropbox_policy.yml
    ```
 
 1. Access the [Dropbox site](https://dropbox.com/), sign in using your Dropbox account, and then upload a new file to the app folder.

@@ -148,10 +148,23 @@ This is a quick step to add extra protection to your application.
 
 1. On the **Site** page, copy the value of the **Site Shared Key**.
 
-1. Restart your ngrok agent by running the command, replacing `{your site shared key}` with the value you have copied before:
+1. Create a traffic policy file named `chargify_policy.yml`:
+
+   ```yaml
+   on_http_request:
+     - actions:
+         - type: verify-webhook
+           config:
+             provider: chargify
+             secret: {your site shared key}
+   ```
+
+   **Note**: Replace `{your site shared key}` with the value you copied before.
+
+1. Restart your ngrok agent by running the command:
 
    ```bash
-   ngrok http 3000 --verify-webhook chargify --verify-webhook-secret {your site shared key}
+   ngrok http 3000 --traffic-policy-file chargify_policy.yml
    ```
 
 1. Access the **Webhook Testing** page and send a new test notification to your webhook.

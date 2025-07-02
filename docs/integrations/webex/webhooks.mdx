@@ -146,10 +146,21 @@ The ngrok signature webhook verification feature allows ngrok to assert that req
 
 This is a quick step to add extra protection to your application.
 
-1. Restart your ngrok agent by running the command, replacing `{your webhook secret}` the **SECRET_KEY** value you provided during the webhook registration (See [Integrate ngrok and Cisco Webex.](#setup-webhook)):
+1. Create a traffic policy file named `webex_policy.yml`, replacing `{your webhook secret}` with the **SECRET_KEY** value you provided during the webhook registration (See [Integrate ngrok and Cisco Webex.](#setup-webhook)):
+
+   ```yaml
+   on_http_request:
+     - actions:
+         - type: verify-webhook
+           config:
+             provider: webex
+             secret: "{your webhook secret}"
+   ```
+
+1. Restart your ngrok agent by running the command:
 
    ```bash
-   ngrok http 3000 --verify-webhook webex --verify-webhook-secret {your webhook secret}
+   ngrok http 3000 --traffic-policy-file webex_policy.yml
    ```
 
 1. Access [Cisco Webex](https://www.webex.com), sign in, and then click **Start a meeting**.

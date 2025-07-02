@@ -164,10 +164,23 @@ This is a quick step to add extra protection to your application.
 
 1. Copy the value of the **Webhooks key**.
 
-1. Restart your ngrok agent by running the command, replacing `{your webhook key}` with the value you have copied before:
+1. Create a traffic policy file named `xero_policy.yml`:
+
+   ```yaml
+   on_http_request:
+     - actions:
+         - type: verify-webhook
+           config:
+             provider: xero
+             secret: {your webhook key}
+   ```
+
+   **Note**: Replace `{your webhook key}` with the value you copied before.
+
+1. Restart your ngrok agent by running the command:
 
    ```bash
-   ngrok http 3000 --verify-webhook xero --verify-webhook-secret {your webhook key}
+   ngrok http 3000 --traffic-policy-file xero_policy.yml
    ```
 
 1. Access the [Xero dashboard](https://go.xero.com/) and create a new contact.

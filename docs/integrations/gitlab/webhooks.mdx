@@ -162,10 +162,21 @@ This is a quick step to add extra protection to your application.
 
 1. Enter a text for the **Secret token** field and click **Save changes**.
 
-1. Restart your ngrok agent by running the command, replacing `{your secret token}` with the value you have provided to the **Secret token** field (See [Integrate GitLab](#setup-webhook)):
+1. Create a traffic policy file named `gitlab_policy.yml`, replacing `{your secret token}` with the value you have provided to the **Secret token** field (See [Integrate GitLab](#setup-webhook)):
+
+   ```yaml
+   - on_http_request:
+       - actions:
+           - type: verify-webhook
+         config:
+           provider: gitlab
+           secret: "{your secret token}"
+   ```
+
+1. Restart your ngrok agent by running the command:
 
    ```bash
-   ngrok http 3000 --verify-webhook gitlab --verify-webhook-secret {your secret token}
+   ngrok http 3000 --traffic-policy-file gitlab_policy.yml
    ```
 
 1. In the **Project Hooks** section, click **Test** for your webhook, and then click **Push events**. Alternatively, push content to your repository.

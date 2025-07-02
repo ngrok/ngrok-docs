@@ -148,10 +148,21 @@ The ngrok signature webhook verification feature allows ngrok to assert that req
 
 This is a quick step to add extra protection to your application.
 
-1. Restart your ngrok agent by running the command, replacing `{your app secret}` with the **Security token** value you copied before (See [Integrate Microsoft Teams](#setup-webhook)):
+1. Create a traffic policy file named `teams_policy.yml` with the Microsoft Teams webhook verification configuration, replacing `{your app secret}` with the **Security token** value you copied before (See [Integrate Microsoft Teams](#setup-webhook)):
+
+   ```yaml
+   on_http_request:
+     - actions:
+         - type: verify-webhook
+           config:
+             provider: microsoft_teams
+             secret: "{your app secret}"
+   ```
+
+1. Restart your ngrok agent by running the command with the traffic policy:
 
    ```bash
-   ngrok http 3000 --url myexample.ngrok.app --verify-webhook microsoft_teams --verify-webhook-secret {your app secret}
+   ngrok http 3000 --traffic-policy-file teams_policy.yml
    ```
 
 1. Access the Microsoft Teams page you have assigned to your webhook and send a message to another Microsoft Teams user.

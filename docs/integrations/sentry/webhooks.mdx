@@ -146,10 +146,21 @@ This is a quick step to add extra protection to your application.
 
 1. On your Sentry organization page, click **Settings** on the left menu, click **Developer Settings** on the Organization sub-menu, click **My Local App Webhook**, and then copy the value of the **Client Secret** field under the **CREDENTIALS** section.
 
-1. Restart your ngrok agent by running the command, replacing `{your client secret}` with the value you have copied before (See [Integrate ngrok and Sentry.](#setup-webhook)):
+1. Create a traffic policy file named `sentry_policy.yml`, replacing `{your client secret}` with the value you have copied before (See [Integrate ngrok and Sentry.](#setup-webhook)):
+
+   ```yaml
+   on_http_request:
+     - actions:
+         - type: verify-webhook
+           config:
+             provider: sentry
+             secret: "{your client secret}"
+   ```
+
+1. Restart your ngrok agent by running the command:
 
    ```bash
-   ngrok http 3000 --verify-webhook sentry --verify-webhook-secret {your client secret}
+   ngrok http 3000 --traffic-policy-file sentry_policy.yml
    ```
 
 1. Repeat the steps in the [Run Webhooks with Sentry and ngrok](#run-webhook) section to create and resolve an issue.

@@ -188,10 +188,22 @@ This is a quick step to add extra protection to your application.
 
 1. In the **Basic Settings** page, click **Show** to reveal the **App secret** value and copy this value.
 
-1. Restart your ngrok agent by running the command, replacing `{your app secret}` with the value you have copied before:
+1. Create a traffic policy file named `messenger_policy.yml`, replacing `{your app secret}` with the value you have copied before:
+
+   ```yaml
+   on_http_request:
+     - name: "Facebook Messenger Webhooks"
+       actions:
+         - type: "webhook-validation"
+           config:
+             provider: "facebook_messenger"
+             secret: "{your app secret}"
+   ```
+
+2. Restart your ngrok agent by running the command:
 
    ```bash
-   ngrok http 3000 --url myexample.ngrok.app --verify-webhook facebook_messenger --verify-webhook-secret {your app secret}
+   ngrok http 3000 --traffic-policy-file messenger_policy.yml
    ```
 
 1. Access the Facebook page you have assigned to your webhook and send a message to another Facebook user.

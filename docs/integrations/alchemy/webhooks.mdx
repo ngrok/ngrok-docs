@@ -151,10 +151,21 @@ This is a quick step to add extra protection to your application.
 
 1. On the pop-up, copy the value of the **Signing key** field and click **Close**.
 
-1. Restart your ngrok agent by running the command, replacing `{your signing key}` with the value you have copied before:
+1. Create a traffic policy file named `alchemy_policy.yml`, replacing `{your signing key}` with the value you have copied before:
+
+   ```yaml
+   on_http_request:
+     - actions:
+         - type: verify-webhook
+           config:
+             provider: alchemy
+             secret: "{your signing key}"
+   ```
+
+1. Restart your ngrok agent by running the command:
 
    ```bash
-   ngrok http 3000 --verify-webhook alchemy --verify-webhook-secret {your signing key}
+   ngrok http 3000 --traffic-policy-file alchemy_policy.yml
    ```
 
 **Note**: After restarting the ngrok agent, the address of the agent will be modified.

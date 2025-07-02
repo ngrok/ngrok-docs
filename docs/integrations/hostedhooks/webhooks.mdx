@@ -177,10 +177,22 @@ This is a quick step to add extra protection to your application.
 
 1. On the **Endpoint** page, click **Reveal** in the **Signing Secret** field and copy the value that appears.
 
-1. Restart your ngrok agent by running the command, replacing `{app sign secret}` with the value you copied before:
+1. Create a traffic policy file named `hostedhooks_policy.yml`, replacing `{app sign secret}` with the value you copied before:
+
+   ```yaml
+   on_http_request:
+     - name: "Verify HostedHooks requests"
+       actions:
+         - type: verify-webhook
+           config:
+             provider: "hostedhooks"
+             secret: "{app sign secret}"
+   ```
+
+1. Restart your ngrok agent by running the command:
 
    ```bash
-   ngrok http 3000 --verify-webhook hostedhooks --verify-webhook-secret {app sign secret}
+   ngrok http 3000 --traffic-policy-file hostedhooks_policy.yml
    ```
 
 1. Post a new message to the message endpoint of HostedHooks by following the same procedure as the [Run Webhooks with HostedHooks and ngrok](#run-webhook) section.

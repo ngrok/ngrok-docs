@@ -147,10 +147,23 @@ This is a quick step to add extra protection to your application.
 1. On your application page, scroll down until you find **Access token**, click **Show** for this field, and then copy the **Access token** value.
    **Tip**: Depending on the environment you choose the name of the field is either **Sandbox Access token** or **Production Access token**.
 
-1. Restart your ngrok agent by running the command, replacing `{your access token}` with the value you copied before:
+1. Create a traffic policy file named `square_policy.yml`:
+
+   ```yaml
+   on_http_request:
+     - actions:
+         - type: verify-webhook
+           config:
+             provider: square
+             secret: {your access token}
+   ```
+
+   **Note**: Replace `{your access token}` with the value you copied before.
+
+1. Restart your ngrok agent by running the command:
 
    ```bash
-   ngrok http 3000 --verify-webhook square --verify-webhook-secret {your access token}
+   ngrok http 3000 --traffic-policy-file square_policy.yml
    ```
 
 1. Access the [Square Dashboard](https://squareup.com/dashboard/) page and create a new item.
