@@ -128,7 +128,7 @@ const sidebars = {
 							items: [
 								{
 									id: "universal-gateway/cloud-endpoints/index",
-									type: "doc",	
+									type: "doc",
 									label: "Cloud Endpoints",
 								},
 								{

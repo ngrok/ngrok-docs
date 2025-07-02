@@ -974,7 +974,7 @@ const redirects = [
 	[
 		fromExact("/docs/universal-gateway/cloud-endpoints/quickstart/"),
 		"/docs/getting-started/cloud-endpoints-quickstart",
-  ],
+	],
 	// Traffic Policy Macros consolidation (2025)
 	[
 		fromIncludes("/docs/traffic-policy/macros/core"),
