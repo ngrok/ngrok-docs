@@ -993,6 +993,13 @@ const redirects = [
 		fromIncludes("/docs/traffic-policy/macros/utility"),
 		"/docs/traffic-policy/macros/",
 	],
+
+	[
+		fromIncludes(
+			"/docs/guides/other-guides/how-to-terminate-traffic-with-ngrok-configs",
+		),
+		"/docs/agent/agent-tls-termination/",
+	],
 ];
 
 // get current href from window
