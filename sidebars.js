@@ -49,11 +49,6 @@ const sidebars = {
 					],
 				},
 				{
-					id: "getting-started/cloud-endpoints-quickstart",
-					type: "doc",
-					label: "Cloud Endpoints",
-				},
-				{
 					label: "Kubernetes",
 					type: "category",
 					link: { type: "doc", id: "getting-started/kubernetes/ingress" },
@@ -79,6 +74,11 @@ const sidebars = {
 							href: "/docs/getting-started/kubernetes/endpoints",
 						},
 					],
+				},
+				{
+					id: "getting-started/cloud-endpoints-quickstart",
+					type: "doc",
+					label: "Cloud Endpoints",
 				},
 			],
 		},
