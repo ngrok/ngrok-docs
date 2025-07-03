@@ -142,10 +142,22 @@ This is a quick step to add extra protection to your application.
 
 1. On the **Update Webhook** page, enter `12345` in the **Webhook Secret** field and click **Save Changes**.
 
-1. Restart your ngrok agent by running the command, replacing `{your webhook secret}` with the value from the previous step:
+1. Create a traffic policy file named `orbit_policy.yml`, replacing `{your webhook secret}` with the value from the previous step:
+
+   ```yaml
+   on_http_request:
+     - name: "Verify Orbit requests"
+       actions:
+         - type: verify-webhook
+           config:
+             provider: "orbit"
+             secret: "{your webhook secret}"
+   ```
+
+1. Restart your ngrok agent by running the command:
 
    ```bash
-   ngrok http 3000 --verify-webhook orbit --verify-webhook-secret {your webhook secret}
+   ngrok http 3000 --traffic-policy-file orbit_policy.yml
    ```
 
 1. Access [Orbit Home](https://app.orbit.love/) page, sign in, and add a new activity to a member.

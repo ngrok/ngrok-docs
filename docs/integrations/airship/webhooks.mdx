@@ -149,10 +149,21 @@ This is a quick step to add extra protection to your application.
 
 1. Select **Signature** in the **Authentication** field, enter `12345` in the **Secret Key** field, and then click **Update**.
 
-1. Restart your ngrok agent by running the command, replacing `{your webhook secret}` with the value of the **Secret Key** field:
+1. Create a traffic policy file named `airship_policy.yml`, replacing `{your webhook secret}` with the value of the **Secret Key** field:
+
+   ```yaml
+   on_http_request:
+     - actions:
+         - type: verify-webhook
+           config:
+             provider: airship
+             secret: "{your webhook secret}"
+   ```
+
+1. Restart your ngrok agent by running the command:
 
    ```bash
-   ngrok http 3000 --verify-webhook airship --verify-webhook-secret {your webhook secret}
+   ngrok http 3000 --traffic-policy-file airship_policy.yml
    ```
 
 1. Access your [Airship](https://www.airship.com) application and create a new message.

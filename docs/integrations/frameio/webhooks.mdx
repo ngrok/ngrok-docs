@@ -152,10 +152,22 @@ This is a quick step to add extra protection to your application.
 
 1. On the **Webhooks** page, click **Copy** to copy the **Secret** value.
 
-1. Restart your ngrok agent by running the command, replacing `{your webhook secret}` with the value you have copied before (See [Integrate ngrok and Frame.io.](#setup-webhook)):
+1. Create a traffic policy file named `frameio_policy.yml`, replacing `{your webhook secret}` with the value you have copied before (See [Integrate ngrok and Frame.io.](#setup-webhook)):
+
+   ```yaml
+   on_http_request:
+     - name: "Verify Frame.io requests"
+       actions:
+         - type: verify-webhook
+           config:
+             provider: "frameio"
+             secret: "{your webhook secret}"
+   ```
+
+1. Restart your ngrok agent by running the command:
 
    ```bash
-   ngrok http 3000 --verify-webhook frameio --verify-webhook-secret {your webhook secret}
+   ngrok http 3000 --traffic-policy-file frameio_policy.yml
    ```
 
 1. Access [Frame.io](https://frame.io/) and create a new project.

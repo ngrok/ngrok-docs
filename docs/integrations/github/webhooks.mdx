@@ -151,12 +151,21 @@ The ngrok signature webhook verification feature allows ngrok to assert that req
 
 This is a quick step to add extra protection to your application.
 
-1. In the **Add webhook** page, provide a value to the **Secret** field.
+1. Create a traffic policy file named `github_policy.yml`, replacing `{your secret}` with your **Secret** from GitHub:
 
-1. Restart your ngrok agent by running the command, replacing `{your secret}` with your **Secret** from GitHub:
+   ```yaml
+   on_http_request:
+     - actions:
+         - type: verify-webhook
+           config:
+             provider: github
+             secret: "{your secret}"
+   ```
+
+1. Restart your ngrok agent by running the command:
 
    ```bash
-   ngrok http 3000 --verify-webhook github --verify-webhook-secret {your secret}
+   ngrok http 3000 --traffic-policy-file github_policy.yml
    ```
 
 1. Resend one of the messages from your GitHub webhook.

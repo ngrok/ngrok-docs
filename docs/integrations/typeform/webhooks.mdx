@@ -142,10 +142,21 @@ The ngrok signature webhook verification feature allows ngrok to assert that req
 
 This is a quick step to add extra protection to your application.
 
-1. Restart your ngrok agent by running the command, replacing `{your webhook secret}` with the value of the **secret** attribute you provided in the webhook registration (See [Integrate ngrok and Typeform.](#setup-webhook)):
+1. Create a traffic policy file named `typeform_policy.yml`, replacing `{your webhook secret}` with the value of the **secret** attribute you provided in the webhook registration (See [Integrate ngrok and Typeform.](#setup-webhook)):
+
+   ```yaml
+   on_http_request:
+     - actions:
+         - type: verify-webhook
+           config:
+             provider: typeform
+             secret: "{your webhook secret}"
+   ```
+
+1. Restart your ngrok agent by running the command:
 
    ```bash
-   ngrok http 3000 --verify-webhook typeform --verify-webhook-secret {your webhook secret}
+   ngrok http 3000 --traffic-policy-file typeform_policy.yml
    ```
 
 1. Access your form URL, answer the questions of your typeform, and then click **Submit** at the end of the form flow.

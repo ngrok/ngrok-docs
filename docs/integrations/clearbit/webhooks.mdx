@@ -145,10 +145,21 @@ This is a quick step to add extra protection to your application.
 1. Copy the value of the **Secret API Key** field that appears on the screen.
    **Note**: Usually the secret key value starts with `sk_`.
 
-1. Restart your ngrok agent by running the command, replacing `{your api key}` with the value you copied before:
+1. Create a traffic policy file named `clearbit_policy.yml`, replacing `{your api key}` with the value you copied before:
+
+   ```yaml
+   on_http_request:
+     - actions:
+         - type: verify-webhook
+           config:
+             provider: clearbit
+             secret: "{your api key}"
+   ```
+
+1. Restart your ngrok agent by running the command:
 
    ```bash
-   ngrok http 3000 --verify-webhook clearbit --verify-webhook-secret {your api key}
+   ngrok http 3000 --traffic-policy-file clearbit_policy.yml
    ```
 
 1. Repeat the command to gather information about your account.

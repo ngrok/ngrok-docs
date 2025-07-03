@@ -194,10 +194,21 @@ This is a quick step to add extra protection to your application.
 
 1. Make sure the response from the above command is `HTTP/1.1 200`.
 
-1. Restart your ngrok agent by running the command, replacing `{your client secret}` with the value you copied before:
+1. Create a traffic policy file named `autodesk_policy.yml`, replacing `{your client secret}` with the value you copied before:
+
+   ```yaml
+   on_http_request:
+     - actions:
+         - type: verify-webhook
+           config:
+             provider: autodesk
+             secret: "{your client secret}"
+   ```
+
+1. Restart your ngrok agent by running the command:
 
    ```bash
-   ngrok http 3000 --verify-webhook autodesk --verify-webhook-secret {your client secret}
+   ngrok http 3000 --traffic-policy-file autodesk_policy.yml
    ```
 
 1. Access the folder you assigned to your webhook, upload a text file, and confirm your localhost app receives a notification and logs both headers and body in the terminal.

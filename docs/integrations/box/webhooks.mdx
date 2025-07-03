@@ -146,10 +146,21 @@ This is a quick step to add extra protection to your application.
 
 1. On the **Manage Signature Keys** page, click **Generate Key** in the **Primary Key** section and then click **COPY** to copy the value of the generated primary key.
 
-1. Restart your ngrok agent by running the command, replacing `{your primary key}` with the value you have copied before:
+1. Create a traffic policy file named `box_policy.yml`, replacing `{your primary key}` with the value you have copied before:
+
+   ```yaml
+   on_http_request:
+     - actions:
+         - type: verify-webhook
+           config:
+             provider: box
+             secret: "{your primary key}"
+   ```
+
+1. Restart your ngrok agent by running the command:
 
    ```bash
-   ngrok http 3000 --verify-webhook BOX --verify-webhook-secret {your primary key}
+   ngrok http 3000 --traffic-policy-file box_policy.yml
    ```
 
 1. Access [Box](https://box.com/), sign in using your Box account, and then upload a file from your desktop to the folder you selected during the webhook registration. See [Integrate Box](#setup-webhook).

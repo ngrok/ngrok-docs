@@ -143,10 +143,21 @@ This is a quick step to add extra protection to your application.
 
 1. On the **ngrok** notification page, enter `'12345` in the **Token** field and then click **Update notification**.
 
-1. Restart your ngrok agent by running the command, replacing `{your webhook token}` with the value you have copied before (See [Integrate ngrok and Terraform Cloud.](#setup-webhook)):
+1. Create a traffic policy file named `terraform_policy.yml`, replacing `{your webhook token}` with the value you have copied before (See [Integrate ngrok and Terraform Cloud.](#setup-webhook)):
+
+   ```yaml
+   on_http_request:
+     - actions:
+         - type: verify-webhook
+           config:
+             provider: terraform
+             secret: "{your webhook token}"
+   ```
+
+1. Restart your ngrok agent by running the command:
 
    ```bash
-   ngrok http 3000 --verify-webhook terraform --verify-webhook-secret {your webhook token}
+   ngrok http 3000 --traffic-policy-file terraform_policy.yml
    ```
 
 1. On the top of the page, click **Actions** and then click **Start new run**.

@@ -155,10 +155,22 @@ This is a quick step to add extra protection to your application.
 
 1. On your webhook page, copy the value of the **Webhook Key** field.
 
-1. Restart your ngrok agent by running the command, replacing `{your webhook key}` with the value you have copied before (See [Integrate ngrok and Modern Treasury.](#setup-webhook)):
+1. Create a traffic policy file named `modern_treasury_policy.yml`, replacing `{your webhook key}` with the value you have copied before (See [Integrate ngrok and Modern Treasury.](#setup-webhook)):
+
+   ```yaml
+   on_http_request:
+     - name: "Verify Modern Treasury requests"
+       actions:
+         - type: verify-webhook
+           config:
+             provider: modern_treasury
+             secret: "{your webhook key}"
+   ```
+
+1. Restart your ngrok agent by running the command:
 
    ```bash
-   ngrok http 3000 --verify-webhook MODERN_TREASURY --verify-webhook-secret {your webhook key}
+   ngrok http 3000 --traffic-policy-file modern_treasury_policy.yml
    ```
 
 1. Access the [Modern Treasury site](https://app.moderntreasury.com/) and create a new payment order.

@@ -91,10 +91,21 @@ The webhook verification module allows ngrok to assert requests to your endpoint
 
 1. Login to [Twilio Console](https://console.twilio.com/) and copy your Auth Token value.<br />
    **Note:** ngrok Webhook Verification ensures traffic from your Twilio account is the **only traffic allowed** to make calls to your app. Because Twilio signs all Webhooks using the Primary Auth Token, ngrok can verifies the signature of every request and only authorizing requests originating from your Twilio account.
-2. Restart ngrok by running the command, replacing \{your auth token\} with your Twilio Auth Token:
+2. Create a traffic policy file named `twilio_policy.yml`:
+
+```yaml
+on_http_request:
+  - actions:
+      - type: verify-webhook
+        config:
+          provider: twilio
+          secret: "{your auth token}"
+```
+
+3. Restart ngrok by running the command:
 
 ```bash
-   ngrok http 3000 --verify-webhook twilio --verify-webhook-secret {your auth token}
+   ngrok http 3000 --traffic-policy-file twilio_policy.yml
 ```
 
 ### Inspecting requests

@@ -142,10 +142,21 @@ This is a quick step to add extra protection to your application.
 
 1. On the [Pusher dashboard](https://dashboard.pusher.com/), click **App keys** on the left menu, and then copy the value of the **secret** field that appears on the screen.
 
-1. Restart your ngrok agent by running the command, replacing `{your webhook secret}` with the value you have copied before:
+1. Create a traffic policy file named `pusher_policy.yml`, replacing `{your webhook secret}` with the value you have copied before:
+
+   ```yaml
+   on_http_request:
+     - actions:
+         - type: verify-webhook
+           config:
+             provider: pusher
+             secret: "{your webhook secret}"
+   ```
+
+1. Restart your ngrok agent by running the command:
 
    ```bash
-   ngrok http 3000 --verify-webhook pusher --verify-webhook-secret {your webhook secret}
+   ngrok http 3000 --traffic-policy-file pusher_policy.yml
    ```
 
 1. Repeat the steps described in the [Run Webhooks with Pusher and ngrok](#run-webhook) section.

@@ -138,10 +138,21 @@ The ngrok signature webhook verification feature allows ngrok to assert that req
 
 This is a quick step to add extra protection to your application.
 
-1. Restart your ngrok agent by running the command, replacing `{your webhook secret}` with the value you have copied before (See [Integrate ngrok and LaunchDarkly.](#setup-webhook)):
+1. Create a traffic policy file named `launchdarkly_policy.yml`, replacing `{your webhook secret}` with the value you have copied before (See [Integrate ngrok and LaunchDarkly.](#setup-webhook)):
+
+   ```yaml
+   on_http_request:
+     - actions:
+         - type: verify-webhook
+           config:
+             provider: launch_darkly
+             secret: "{your webhook secret}"
+   ```
+
+1. Restart your ngrok agent by running the command:
 
    ```bash
-   ngrok http 3000 --verify-webhook LAUNCH_DARKLY --verify-webhook-secret {your webhook secret}
+   ngrok http 3000 --traffic-policy-file launchdarkly_policy.yml
    ```
 
 1. Access the [LaunchDarkly App](https://app.launchdarkly.com/) and create a new segment.

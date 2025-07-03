@@ -150,10 +150,21 @@ The ngrok signature webhook verification feature allows ngrok to assert that req
 
 This is a quick step to add extra protection to your application.
 
-1. Restart your ngrok agent by running the command, replacing `{your api secret}` with the value of the API Secret you copied before (See [Integrate Pinwheel](#setup-webhook)):
+1. Create a traffic policy file named `pinwheel_policy.yml`, replacing `{your api secret}` with the value of the API Secret you copied before (See [Integrate Pinwheel](#setup-webhook)):
+
+   ```yaml
+   on_http_request:
+     - actions:
+         - type: verify-webhook
+           config:
+             provider: pinwheel
+             secret: "{your api secret}"
+   ```
+
+1. Restart your ngrok agent by running the command:
 
    ```bash
-   ngrok http 3000 --verify-webhook pinwheel --verify-webhook-secret {your api secret}
+   ngrok http 3000 --traffic-policy-file pinwheel_policy.yml
    ```
 
 1. Request users to log into their payroll account by using Pinwheel API.

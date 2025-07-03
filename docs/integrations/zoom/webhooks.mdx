@@ -159,10 +159,23 @@ This is a quick step to add extra protection to your application.
 
 1. Make sure you have copied the **Secret Token** value when you were configuring your Webhook app in Zoom.
 
-1. Restart your ngrok agent by running the command, replacing `{your secret token}` with your **Secret Token** from Zoom:
+1. Create a traffic policy file named `zoom_policy.yml`:
+
+   ```yaml
+   on_http_request:
+     - actions:
+         - type: verify-webhook
+           config:
+             provider: zoom
+             secret: "{your secret token}"
+   ```
+
+   **Note**: Replace `{your secret token}` with your **Secret Token** from Zoom.
+
+1. Restart your ngrok agent by running the command:
 
    ```bash
-   ngrok http 3000 --verify-webhook zoom --verify-webhook-secret {your secret token}
+   ngrok http 3000 --traffic-policy-file zoom_policy.yml
    ```
 
 1. In your Zoom dashboard, start a new meeting, and after a few seconds end the meeting.

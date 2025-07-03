@@ -135,10 +135,21 @@ This is a quick step to add extra protection to your application.
 
 1. On the **Webhook** page, click the eye icon to reveal the **secret key** value and then copy this value.
 
-1. Restart your ngrok agent by running the command, replacing `{your webhook secret}` with the value you have copied before:
+1. Create a traffic policy file named `signalsciences_policy.yml`, replacing `{your webhook secret}` with the value you have copied before:
+
+   ```yaml
+   on_http_request:
+     - actions:
+         - type: verify-webhook
+           config:
+             provider: signalsciences
+             secret: "{your webhook secret}"
+   ```
+
+1. Restart your ngrok agent by running the command:
 
    ```bash
-   ngrok http 3000 --verify-webhook signalsciences --verify-webhook-secret {your webhook secret}
+   ngrok http 3000 --traffic-policy-file signalsciences_policy.yml
    ```
 
 1. Access the [Signal Sciences Dashboard](https://dashboard.signalsciences.net/), sign in, and change your site display name.

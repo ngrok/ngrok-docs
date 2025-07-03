@@ -138,10 +138,22 @@ The ngrok signature webhook verification feature allows ngrok to assert that req
 
 This is a quick step to add extra protection to your application.
 
-1. Restart your ngrok agent by running the command, replacing `{your webhook secret}` with the value of the **Webhook Secret** field you copied during the webhook registration (See [Integrate ngrok and MongoDB.](#setup-webhook)):
+1. Create a traffic policy file named `mongodb_policy.yml`, replacing `{your webhook secret}` with the value of the **Webhook Secret** field you copied during the webhook registration (See [Integrate ngrok and MongoDB.](#setup-webhook)):
+
+   ```yaml
+   on_http_request:
+     - name: "Verify MongoDB requests"
+       actions:
+         - type: verify-webhook
+           config:
+             provider: "mongodb"
+             secret: "{your webhook secret}"
+   ```
+
+1. Restart your ngrok agent by running the command:
 
    ```bash
-   ngrok http 3000 --verify-webhook mongodb --verify-webhook-secret {your webhook secret}
+   ngrok http 3000 --traffic-policy-file mongodb_policy.yml
    ```
 
 1. Access your project home page and invite a new person to your project.

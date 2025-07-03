@@ -135,10 +135,23 @@ The ngrok signature webhook verification feature allows ngrok to assert that req
 
 This is a quick step to add extra protection to your application.
 
-1. Restart your ngrok agent by replacing `{your api secret}` with the value you copied during the webhook registration and running the following command:
+1. Create a traffic policy file named `coinbase_policy.yml`:
+
+   ```yaml
+   on_http_request:
+     - actions:
+         - type: verify-webhook
+           config:
+             provider: coinbase
+             secret: {your api secret}
+   ```
+
+   **Note**: Replace `{your api secret}` with the value you copied during the webhook registration.
+
+1. Restart your ngrok agent by running the following command:
 
    ```bash
-   ngrok http 3000 --verify-webhook coinbase --verify-webhook-secret {your api secret}
+   ngrok http 3000 --traffic-policy-file coinbase_policy.yml
    ```
 
 1. Access [Coinbase](https://www.coinbase.com/) and buy an asset.

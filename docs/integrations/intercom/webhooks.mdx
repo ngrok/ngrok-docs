@@ -153,10 +153,21 @@ This is a quick step to add extra protection to your application.
 
 1. In the **Basic information** page, copy the **Client secret** value.
 
-1. Restart your ngrok agent by running the command, replacing `{your client secret}` with the value you copied before:
+1. Create a traffic policy file named `intercom_policy.yml`, replacing `{your client secret}` with the value you copied before:
+
+   ```yaml
+   on_http_request:
+     - actions:
+         - type: verify-webhook
+           config:
+             provider: intercom
+             secret: "{your client secret}"
+   ```
+
+1. Restart your ngrok agent by running the command:
 
    ```bash
-   ngrok http 3000 --verify-webhook intercom --verify-webhook-secret {your client secret}
+   ngrok http 3000 --traffic-policy-file intercom_policy.yml
    ```
 
 1. Access the [Intercom Home](https://app.intercom.com/) page and create a new contact.

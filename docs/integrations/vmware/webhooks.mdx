@@ -157,10 +157,21 @@ This is a quick step to add extra protection to your application.
 
 1. On the **Edit Event Notification** page, enter a username in the **Username** field, enter a password in the **Password**, enter the same password in the **Confirm Password** field, and then click **SAVE**.
 
-1. Restart your ngrok agent by running the command, replacing `{username}` and `{password}` with the corresponding values you provided before:
+1. Create a traffic policy file named `vmware_policy.yml`, replacing `{username}` and `{password}` with the corresponding values you provided before:
+
+   ```yaml
+   on_http_request:
+     - actions:
+         - type: verify-webhook
+           config:
+             provider: vmware_workspace
+             secret: "{username}::{password}"
+   ```
+
+1. Restart your ngrok agent by running the command:
 
    ```bash
-   ngrok http 3000 --verify-webhook vmware_workspace --verify-webhook-secret {username}::{password}
+   ngrok http 3000 --traffic-policy-file vmware_policy.yml
    ```
 
 1. Access [VMware Workspace ONE](https://console.cloud.vmware.com/), register a new user to your device, and ask the user to enroll the device.

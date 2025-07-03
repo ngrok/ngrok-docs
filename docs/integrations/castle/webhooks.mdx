@@ -142,10 +142,21 @@ This is a quick step to add extra protection to your application.
 
 1. On the **Application** page, copy the value of the **API SECRET** field.
 
-1. Restart your ngrok agent by running the command, replacing `{your api secret}` with the value you have copied before:
+1. Create a traffic policy file named `castle_policy.yml`, replacing `{your api secret}` with the value you have copied before:
+
+   ```yaml
+   on_http_request:
+     - actions:
+         - type: verify-webhook
+           config:
+             provider: castle
+             secret: "{your api secret}"
+   ```
+
+1. Restart your ngrok agent by running the command:
 
    ```bash
-   ngrok http 3000 --verify-webhook castle --verify-webhook-secret {your api secret}
+   ngrok http 3000 --traffic-policy-file castle_policy.yml
    ```
 
 1. Access the [Castle dashboard](https://dashboard.castle.io/) and test the webhook endpoint or create an event by using the Castle SDK.

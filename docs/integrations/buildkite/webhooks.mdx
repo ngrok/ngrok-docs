@@ -147,10 +147,21 @@ This is a quick step to add extra protection to your application.
 
 1. On the **Notification Services** page, click the **My LocalHost App** webhook tile, copy the value of the **Token** field, select **Send an HMAC signature**, and then click **Save Webhook Settings**.
 
-1. Restart your ngrok agent by running the command, replacing `{your token}` with the value you have copied before:
+1. Create a traffic policy file named `buildkite_policy.yml`, replacing `{your token}` with the value you have copied before:
+
+   ```yaml
+   on_http_request:
+     - actions:
+         - type: verify-webhook
+           config:
+             provider: buildkite
+             secret: "{your token}"
+   ```
+
+1. Restart your ngrok agent by running the command:
 
    ```bash
-   ngrok http 3000 --verify-webhook buildkite --verify-webhook-secret {your token}
+   ngrok http 3000 --traffic-policy-file buildkite_policy.yml
    ```
 
 1. Click **Pipelines** on the top menu, select one of your pipelines and create a new build.
