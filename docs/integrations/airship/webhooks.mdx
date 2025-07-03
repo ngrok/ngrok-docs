@@ -106,34 +106,38 @@ You can trigger new calls from Airship to your application by following the inst
 
 ### Inspecting requests
 
-When you launch the ngrok agent on your local machine, you can see two links:
+ngrok's [Traffic Inspector](https://dashboard.ngrok.com/traffic-inspector) captures all requests made through your ngrok endpoint to your localhost app.
+Click on any request to view detailed information about both the request and response.
 
-- The URL to your app (it ends with `ngrok-free.app` for free accounts or `ngrok.app` for paid accounts when not using custom domains)
-- A local URL for the Web Interface (a.k.a **Request Inspector**).
+:::info
+By default, accounts only collect traffic metadata to avoid exposing secrets.
+You must enable full capture in the Observability section of [your account settings](https://dashboard.ngrok.com/settings) to capture complete request and response data.
+:::
 
-The Request Inspector shows all the requests made through your ngrok tunnel to your localhost app. When you click on a request, you can see details of both the request and the response.
+Use the traffic inspector to:
 
-Seeing requests is an excellent way of validating the data sent to and retrieved by your app via the ngrok tunnel. That alone can save you some time dissecting and logging HTTP request and response headers, methods, bodies, and response codes within your app just to confirm you are getting what you expect.
-
-To inspect Airship's webhooks call, launch the ngrok web interface (i.e. `http://127.0.0.1:4040`), and then click one of the requests sent by Airship.
-
-From the results, review the response body, header, and other details:
-
-![ngrok Request Inspector](img/ngrok_introspection_airship_webhooks.png)
+- Validate webhook payloads and response data
+- Debug request headers, methods, and status codes
+- Troubleshoot integration issues without adding logging to your app
 
 ### Replaying requests
 
-The ngrok Request Inspector provides a replay function that you can use to test your code without the need to trigger new events from Airship. To replay a request:
+Test your webhook handling code without triggering new events from Airship using the Traffic Inspector's replay feature:
 
-1. In the ngrok inspection interface (i.e. `http://localhost:4040`), select a request from Airship.
+1. Send a test webhook from Airship to generate traffic in your Traffic Inspector.
 
-1. Click **Replay** to execute the same request to your application or select **Replay with modifications** to modify the content of the original request before sending the request.
+1. Select the request you want to replay in the traffic inspector.
 
-1. If you choose to **Replay with modifications**, you can modify any content from the original request. For example, you can modify the **device_type** field inside the body of the request.
+1. Choose your replay option:
 
-1. Click **Replay**.
+   - Click **Replay** to send the exact same request again
+   - Select **Replay with modifications** to edit the request before sending
 
-Verify that your local application receives the request and logs the corresponding information to the terminal.
+1. Modify the request (optional): Edit any part of the original request, such as changing the `device_type` field in the request body.
+
+1. Send the request by clicking **Replay**.
+
+Your local application will receive the replayed request and log the data to the terminal.
 
 ## Secure webhook requests {#security}
 
