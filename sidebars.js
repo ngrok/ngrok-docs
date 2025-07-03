@@ -128,7 +128,10 @@ const sidebars = {
 										type: "doc",
 										id: "universal-gateway/cloud-endpoints/index",
 									},
-									items: ["universal-gateway/cloud-endpoints/quickstart", "universal-gateway/cloud-endpoints/change-domain-endpoint"],
+									items: [
+										"universal-gateway/cloud-endpoints/quickstart",
+										"universal-gateway/cloud-endpoints/change-domain-endpoint",
+									],
 								},
 								{
 									id: "universal-gateway/agent-endpoints",
