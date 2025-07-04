@@ -8,10 +8,10 @@ import { LangSwitcher } from "/src/components/LangSwitcher";
 import TabItem from "@theme/TabItem";
 import Tabs from "@theme/Tabs";
 
+Cloud Endpoints are a persistent way to service traffic. 
+Unlike Agent Endpoints, which are ephemeral and run locally, cloud endpoints are persistent and run on ngrok's cloud service—allowing you to accept public traffic even if your internal apps or services are down.
 
-Cloud Endpoints provide an additional layer of traffic management above Agent Endpoints and can be used to extend their functionality in several key ways.
-Unlike agent endpoints, which are ephemeral and run locally, cloud endpoints are persistent and run on ngrok's cloud service—allowing you to accept public traffic even if your internal apps or services are down.
-
+Cloud endpoints provide an additional layer of traffic management above agent endpoints and can be used to extend their functionality in several key ways.
 Using a Traffic Policy, a cloud endpoint can route traffic to multiple other endpoints based on criteria such as path, header, IP, and more.
 A common use case for this pattern is to create a cloud endpoint that accepts public traffic, authenticates the visitor, then routes them to one or more internal agent endpoints running on machines that should only be accessed by privileged members of your organization.
 
@@ -31,9 +31,9 @@ This doc assumes you've already completed the [Agent CLI Quickstart](/getting-st
 
 ### 1. Reserve your domain
 
-Public cloud endpoints (which are what you'll create in this guide) require a reserved domain.
+To establish connectivity for the public cloud endpoint you'll create in this guide, you must first reserve a domain.
 
-To reserve a domain, navigate to the dashboard, visit [the **Domains** section](https://dashboard.ngrok.com/domains), and select **+ New Domain**.
+Navigate to the dashboard, visit [the **Domains** section](https://dashboard.ngrok.com/domains), and select **+ New Domain**.
 You can choose a free static domain, or you can use a custom domain you already own.
 We'll come back to this in later steps.
 
@@ -90,13 +90,24 @@ ngrok config add-authtoken $YOUR_TOKEN
 
 ### 4. Create your cloud endpoint in the dashboard
 
-1. In the menu on the left side, [navigate to Universal Gateway > Endpoints](https://dashboard.ngrok.com/endpoints).
-1. Select the **+ New** button, then select **Cloud Endpoint** in the modal that appears.
-1. Select a **[binding](/universal-gateway/bindings)**. For this example, you can choose **public**.
-1. Enter the URL you want to use for your endpoint. For example, for a public Cloud Endpoint that serves traffic over HTTPS you might use `https://my-app.ngrok.dev`.
-1. Select **Create Cloud Endpoint**.
+[Click here to create a new cloud endpoint](https://dashboard.ngrok.com/endpoints/new/cloud) in your dashboard.
 
-After completing these steps, you'll be taken to a page where you can manage your Cloud Endpoint's [Traffic Policy](/traffic-policy/). Visit the URL you specified to ensure that it's online. You should see a default landing page that says "This is your new Cloud Endpoint!"
+There are three bindings to choose from: for this example, select **Public**.
+In the **URL** field, enter the domain you reserved in step 1. 
+Then click **Create Cloud Endpoint**.
+
+Next you'll be taken to a page where you can manage your new endpoint's [Traffic Policy](/traffic-policy/).
+You can leave all of the default settings in place for now.
+
+:::tip 
+Traffic policies are optional for agent endpoints but required for cloud endpoints, which is why the dashboard generates one for you automatically.
+:::
+
+Visit the URL you specified to confirm that it's online. 
+You should see a default landing page that says "This is your new Cloud Endpoint!"
+
+There are many different things you could do with your cloud endpoint from here.
+Let's put it to work servicing an app running on your local device.
 
 ### 5. Start your app or service
 
@@ -179,23 +190,26 @@ if __name__ == "__main__":
 
 Navigate to the directory where this file is located and start the server.
 
-### 6. Put your app online
+### 6. Start your agent endpoint
 
-Start the ngrok agent by running the following command (replace `8080` if your app is running on a different port).
-The `--url` flag connects your agent endpoint to your cloud endpoint—the default URL is `https://default.internal`, but if you changed this in the traffic policy in step 4 then you should use that URL here instead.
+Start the ngrok agent by running the following command (replace `8080` if your app is running on a different port):
 
 ```bash
 ngrok http 8080 --url https://default.internal
 ```
 
-### 7. Test your endpoint 
+The `--url` flag connects your agent endpoint to your cloud endpoint, so when requests are made to your reserved domain they'll be routed here.
+The default URL for this is `https://default.internal`, which was defined in the traffic policy when you created the cloud endpoint in step 4.
+
+### 7. Test your cloud endpoint 
 
 Your endpoint should now be online. 
 Visit your reserved domain URL to see the app that's running on your local device.
 
 ## Part two: creating cloud endpoints via the ngrok API
 
-Now that you're familiar with the key concepts necessary to work with cloud endpoints, try creating another one using the ngrok API, which you can access via the Agent CLI.
+Now that you're familiar with the key concepts necessary to work with cloud endpoints, let's create another one using the ngrok API, which you can access via the Agent CLI.
+(You can use any HTTP client you prefer for interacting with the ngrok API, but the Agent CLI provides a simple and direct access point for getting started.)
 
 Keep your local app and agent endpoint from part one running.
 If you only have one reserved domain to work with, delete the cloud endpoint you created in the dashboard before continuing so you can reuse the domain in the steps below.
@@ -249,7 +263,7 @@ You should see the custom message defined in `policy.yml.`
 
 ## What's next?
 
-- See [the cloud endpoints overview](/universal-gateway/cloud-endpoints/) to learn about use cases, how they compare to agent endpoints, and more.
-- If you need to interact with cloud endpoints programmatically, we recommend using one of our API client libraries which are available for [Go](/), [Python](/), and [Rust](/).
-- This quickstart only barely scratches the surface of what's possible with a traffic policy—check out the [Actions overview](/traffic-policy/actions/) to see what else you can do.
-- Check out [the guide on load balancing with Cloud Endpoints](/guides/other-guides/forwarding-and-load-balancing-with-cloud-endpoints) to learn how to distribute traffic across multiple internal endpoints.
+- See [the cloud endpoints overview](/universal-gateway/cloud-endpoints/) to learn more about use cases, how they compare to agent endpoints, and more.
+- If you need to interact with cloud endpoints programmatically, you should consider using one of ngrok's API client libraries which are available for [Go](/), [Python](/), and [Rust](/).
+- See [Load Balancing with Cloud Endpoints](/guides/other-guides/forwarding-and-load-balancing-with-cloud-endpoints) to learn how to distribute traffic across multiple internal endpoints.
+- This quickstart only scratches the surface of what's possible with a traffic policy—check out the [Actions overview](/traffic-policy/actions/) to see what else you can do.
