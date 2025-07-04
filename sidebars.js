@@ -39,6 +39,11 @@ const sidebars = {
 					label: "Agent CLI",
 				},
 				{
+					id: "getting-started/cloud-endpoints-quickstart",
+					type: "doc",
+					label: "Cloud Endpoints",
+				},
+				{
 					label: "SDKs",
 					type: "category",
 					items: [
@@ -74,11 +79,6 @@ const sidebars = {
 							href: "/docs/getting-started/kubernetes/endpoints",
 						},
 					],
-				},
-				{
-					id: "getting-started/cloud-endpoints-quickstart",
-					type: "doc",
-					label: "Cloud Endpoints",
 				},
 			],
 		},
