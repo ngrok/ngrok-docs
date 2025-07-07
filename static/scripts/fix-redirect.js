@@ -1006,7 +1006,7 @@ const redirects = [
 	],
 	[
 		fromIncludes("/docs/guides/other-guides/using-mcp/"),
-		"/docs/guides/other-guides/using-mcp/",
+		"/docs/using-ngrok-with/using-mcp/",
 	],
 ];
 
