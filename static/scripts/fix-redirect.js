@@ -1004,6 +1004,10 @@ const redirects = [
 		fromIncludes("/docs/guides/other-guides/using-tls-mutual-authentication"),
 		"/docs/agent/agent-mutual-tls-termination/",
 	],
+	[
+		fromIncludes("/docs/guides/other-guides/using-mcp/"),
+		"/docs/using-ngrok-with/using-mcp/",
+	],
 ];
 
 // get current href from window
