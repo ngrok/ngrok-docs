@@ -1008,6 +1008,10 @@ const redirects = [
 		fromIncludes("/docs/guides/other-guides/using-mcp/"),
 		"/docs/using-ngrok-with/using-mcp/",
 	],
+	[
+		fromIncludes("/docs/guides/other-guides/running-behind-firewalls/"),
+		"/docs/guides/running-behind-firewalls/",
+	],
 ];
 
 // get current href from window
