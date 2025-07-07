@@ -48,16 +48,16 @@ You'll need to change:
 
 ```yaml
 on_http_request:
-  - actions:
-      - type: http-request
-        config:
-          url: https://id.internal/api/user
+  - actions:
+      - type: http-request
+        config:
+          url: https://id.internal/api/user
           method: POST
           headers:
-            Authorization: "Bearer $ID_API_KEY"
-            Content-Type: "application/json"
-          body: |
-            { "token": "${req.headers['Authorization']}" }
+            Authorization: "Bearer $ID_API_KEY"
+            Content-Type: "application/json"
+          body: |
+            { "token": "${req.headers['Authorization']}" }
 
   # If the request failed, short-circuit the request with an error response.
   - expressions:
@@ -75,47 +75,47 @@ on_http_request:
   - expressions:
       - "actions.ngrok.http_request.res.status_code == 200"
     actions:
-      - type: set-vars
-        config:
-          vars:
-            tier: json.decode(actions.ngrok.http_request.res.body).tier.value
+      - type: set-vars
+        config:
+          vars:
+            tier: json.decode(actions.ngrok.http_request.res.body).tier.value
 
   # Check the user's tier based on the variable and apply the rate limit.
-  - expressions:
-      - "vars.tier == 'bronze'"
-    actions:
-      - type: rate-limit
-        config:
-          name: BronzeLimit
-          algorithm: sliding_window
-          capacity: 30
-          rate: 60s
-          bucket_key:
-            - conn.client_ip
+  - expressions:
+      - "vars.tier == 'bronze'"
+    actions:
+      - type: rate-limit
+        config:
+          name: BronzeLimit
+          algorithm: sliding_window
+          capacity: 30
+          rate: 60s
+          bucket_key:
+            - conn.client_ip
 
-  - expressions:
-      - "vars.tier == 'silver'"
-    actions:
-      - type: rate-limit
-        config:
-          name: SilverLimit
-          algorithm: sliding_window
-          capacity: 100
-          rate: 60s
-          bucket_key:
-            - conn.client_ip
+  - expressions:
+      - "vars.tier == 'silver'"
+    actions:
+      - type: rate-limit
+        config:
+          name: SilverLimit
+          algorithm: sliding_window
+          capacity: 100
+          rate: 60s
+          bucket_key:
+            - conn.client_ip
 
-  - expressions:
-      - "vars.tier == 'gold'"
-    actions:
-      - type: rate-limit
-        config:
-          name: GoldLimit
-          algorithm: sliding_window
-          capacity: 1000
-          rate: 60s
-          bucket_key:
-            - conn.client_ip
+  - expressions:
+      - "vars.tier == 'gold'"
+    actions:
+      - type: rate-limit
+        config:
+          name: GoldLimit
+          algorithm: sliding_window
+          capacity: 1000
+          rate: 60s
+          bucket_key:
+            - conn.client_ip
 
   - actions:
       - type: forward-internal
