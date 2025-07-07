@@ -484,7 +484,12 @@ const sidebars = {
 						"agent/api",
 						"agent/ssh-reverse-tunnel-agent",
 						"agent/ingress",
-						"agent/agent-tls-termination",
+						{
+							label: "Agent TLS Termination",
+							type: "category",
+							link: { type: "doc", id: "agent/agent-tls-termination" },
+							items: ["agent/agent-mutual-tls-termination"],
+						},
 						"agent/changelog",
 						"agent/version-support-policy",
 						"agent/diagnose",

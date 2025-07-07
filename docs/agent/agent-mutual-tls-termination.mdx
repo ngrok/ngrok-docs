@@ -1,25 +1,22 @@
 ---
-title: Using Mutual TLS (mTLS) Authentication
-description: Protecting your endpoints with mutual TLS authentication (mTLS)
-tags:
-  - guides
-  - mtls
-  - tls
-  - mutual authentication
-  - security
+title: Agent TLS Termination with Mutual TLS (mTLS)
+sidebar_label: mTLS Termination
+description: Learn how to enable Mutual TLS (mTLS) termination with your ngrok agents.
 ---
-
-import ConfigExample from "/src/components/ConfigExample.tsx";
 
 Mutual TLS Authentication (mTLS) is a network security protocol that ensures both the client _and_ server authenticate each other using digital certificates, providing encrypted and trusted communication between both parties. This is in contrast to standard TLS, where only the server is authenticated by the client.
 
 By verifying the clients, the server owner is able to restrict access only to verified clients, strengthening security.
 
-![](img/mtls-diag.png)
+![](./img/mtls-diag.png)
 
 This guide walks you through enabling mTLS on your ngrok hosted endpoints using [the `terminate-tls` Traffic Policy action](/docs/traffic-policy/actions/terminate-tls/).
 
 ## What you'll need
+
+- Ensure you have [openssl](https://docs.openiam.com/docs-4.2.1.3/appendix/2-openssl) installed.
+
+## 1. Provision your certificates and credentials
 
 Although ngrok can [automatically provision your certificates](/universal-gateway/tls-certificates) when you use standard TLS, you'll have to provide your own certificate authority (CA) for mTLS.
 The CA is responsible for issuing, digitally signing, and verifying the authenticity of client certificates.
@@ -60,7 +57,7 @@ openssl x509 -req -in client.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out c
 These commands result in five new files: `ca.key`, `ca.crt`, `client.key`, `client.csr`, and `client.key`.
 You will use the contents of `ca.crt` in your traffic policy to validate requests via `curl`, which, in turn, uses `client.key` and `client.crt`.
 
-## 1. Create a traffic policy
+## 2. Create a traffic policy
 
 Using the CA certificate generated in the previous step, you can specify the `mutual_tls_certificate_authorities` field in a traffic policy to trust the CA that issued the client certificate.
 
@@ -89,21 +86,16 @@ Using the CA certificate generated in the previous step, you can specify the `mu
 
 You may also optionally [upload the CA certificate](https://dashboard.ngrok.com/tls-cert-authorities) in the ngrok dashboard and use its ID in the `mutual_tls_certificate_authorities` array.
 
-## 2. Start an endpoint with the traffic policy
+## 3. Start an endpoint with the traffic policy
 
 ```bash
-ngrok http 8080 --url terminate-tls-example.ngrok.app --traffic-policy-file /path/to/policy.yml
+ngrok http 8080 --url $YOUR_RESERVED_DOMAIN --traffic-policy-file /path/to/policy.yml
 ```
 
-## 3. Test your endpoint
+## 4. Test your endpoint
 
 Test out that everything works by making a request to your endpoint using the `--cert` and `--key` flags to specify the client certificate and private key.
 
 ```bash
-curl --cert client.crt --key client.key https://terminate-tls-example.ngrok.app
+curl --cert client.crt --key client.key https://$YOUR_RESERVED_DOMAIN
 ```
-
-## Setting up mTLS with Edges
-
-Edges are deprecated.
-We do not recommend setting up mTLS with Edges.
