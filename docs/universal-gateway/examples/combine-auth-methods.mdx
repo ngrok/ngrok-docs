@@ -46,7 +46,7 @@ You will need to change:
 
 ```yaml
 on_http_request:
-  # Check whether a request's IP matches your allow list
+  # Check whether a request's IP matches your allow list.
   - actions:
       - type: restrict-ips
         config:
@@ -58,7 +58,7 @@ on_http_request:
             - $TRUSTED_IP_FOO
             - $TRUSTED_IP_BAR
 
-  # Accept the request if its IP matches your allow list
+  # Accept the request if its IP matches your allow list.
   - expressions:
       - actions.ngrok.restrict_ips.action == "allow"
     actions:
@@ -97,7 +97,7 @@ on_http_request:
         config:
           url: https://service.internal
 
-  # Catch-all custom response for any unauthenticated requests
+  # Catch-all custom response for any unauthenticated requests.
   - actions:
       - type: custom-response
         config:
@@ -126,11 +126,11 @@ on_http_request:
 This policy has three logical sections, where the first two allow traffic to reach your upstream after authenticating with one method `OR` another, and the third is a catch-all error response for requests that fail to authenticate against any method.
 
 The first section checks every HTTP request to see if its source IP matches one on your `allow` list for `restrict-ips`, but doesn't actually enforce the restriction there.
-Instead, the following expression checks whether the [`restrict-ips` action result variable](/docs/traffic-policy/actions/restrict-ips/#action-result-variables) `actions.ngrok.restrict_ips.action` is `allow`, which means that it would have allow the request directly if you had set `enforce: true`.
-If that expression is true, then the policy forwards the request to your upstream service.
+Instead, the expression that follows the first action checks whether the [`restrict-ips` action result variable](/docs/traffic-policy/actions/restrict-ips/#action-result-variables) `actions.ngrok.restrict_ips.action` is set to `allow`, which means that it would've allowed the request directly if you had set `enforce: true`.
+If this expression is true, then the policy forwards the request to your upstream service.
 
-The second section begins the `OR` logic for all requests that did not match the IP `allow` list.
-If these requests contain a valid JWT token, then the policy forwards them to your upstream service.
+If it's false—the request didn't match the IP `allow` list—then it's instead forwarded based on whether or not it contains a valid JWT token (which may come from a couple different places).
+If it does, then the policy forwards the request to your upstream service.
 
 Finally, the policy denies all requests that did not authenticate either by IP or JWT and delivers a custom HTML response.
 
