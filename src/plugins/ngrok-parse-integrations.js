@@ -11,6 +11,10 @@ export default (context, options) => ({
 
 		const dir = await fs.promises.opendir(integrationsDir);
 		for await (const dirent of dir) {
+			if (dirent.name.includes("shared")) {
+				// Skip the shared directory
+				continue;
+			}
 			const integrationDir = path.join(integrationsDir, dirent.name);
 
 			const isFile = fs.lstatSync(integrationDir).isFile();
@@ -31,9 +35,9 @@ export default (context, options) => ({
 			fs.readdirSync(integrationDir).flatMap(async (x) => {
 				const filePath = path.join(integrationDir, x);
 
-				// Ignore index files, folders and non-markdown files
+				// Ignore index files, folders, files that start with _, and non-markdown files
 				const isFile = fs.lstatSync(filePath).isFile();
-				if (!isFile || x.indexOf(".md") < 0) {
+				if (!isFile || x.indexOf(".md") < 0 || x.startsWith("_")) {
 					return;
 				}
 
@@ -58,7 +62,6 @@ export default (context, options) => ({
 					...fileMarkdown,
 				});
 			});
-
 			integrations.push(integration);
 		}
 
