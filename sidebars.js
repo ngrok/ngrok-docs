@@ -38,7 +38,7 @@ const sidebars = {
 					type: "doc",
 					label: "Agent CLI",
 				},
-				{
+							{
 					id: "getting-started/cloud-endpoints-quickstart",
 					type: "doc",
 					label: "Cloud Endpoints",
@@ -127,8 +127,6 @@ const sidebars = {
 							link: { type: "doc", id: "universal-gateway/types" },
 							items: [
 								{
-									id: "universal-gateway/cloud-endpoints/index",
-									type: "doc",	
 									label: "Cloud Endpoints",
 									type: "category",
 									link: {
@@ -136,7 +134,6 @@ const sidebars = {
 										id: "universal-gateway/cloud-endpoints/index",
 									},
 									items: [
-										"universal-gateway/cloud-endpoints/quickstart",
 										"universal-gateway/cloud-endpoints/change-domain-endpoint",
 									],
 								},
