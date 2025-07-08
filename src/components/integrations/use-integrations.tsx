@@ -5,7 +5,6 @@ const pluginKey = "ngrok-parse-integrations" as const;
 
 export function useIntegrations() {
 	const rawData = usePluginData(pluginKey);
-	console.log("Raw Data:", rawData);
 	return parseIntegrations(rawData);
 }
 
