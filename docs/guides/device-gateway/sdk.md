@@ -94,7 +94,7 @@ Add a CNAME record for the wildcard subdomain you just created.
 
 Then add another record for the
 [ACME (Automated Certificate Management Environment)](https://venafi.com/blog/what-acme-protocol-and-how-has-it-changed-pki/)
-validation. For the record, enter `_acme-challenge.{SUBDOMAIN}`, and use the value of the `acme_challenge_cname_target` property from from previous response for the value. For the example above, the record name would be
+validation. For the record, enter `_acme-challenge.{SUBDOMAIN}`, and use the value of the `acme_challenge_cname_target` property from previous response for the value. For the example above, the record name would be
 `_acme-challenge.sitea`.
 
 ### Verify DNS
