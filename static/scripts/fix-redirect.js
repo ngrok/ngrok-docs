@@ -971,10 +971,10 @@ const redirects = [
 		fromExact("/docs/guides/other-guides/load-balancing-kubernetes-clusters/"),
 		"/docs/k8s/load-balancing/load-balancing-kubernetes-clusters/",
 	],
-		[
+	[
 		fromExact("/docs/getting-started/cloud-endpoints-quickstart/"),
 		"/docs/getting-started/cloud-endpoints-quickstart",
-
+	],
 	// Traffic Policy Macros consolidation (2025)
 	[
 		fromIncludes("/docs/traffic-policy/macros/core"),

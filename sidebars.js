@@ -38,7 +38,7 @@ const sidebars = {
 					type: "doc",
 					label: "Agent CLI",
 				},
-							{
+				{
 					id: "getting-started/cloud-endpoints-quickstart",
 					type: "doc",
 					label: "Cloud Endpoints",
