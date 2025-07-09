@@ -19,5 +19,5 @@ You can then use the ngrok TCP address and port for any tool that you'd like to 
 The following guides offer step-by-step instructions for configuring site-to-site connectivity with your database.
 
 - [Configure Site-to-Site Connectivity for
-  Databases](/guides/site-to-site-connectivity/dbs/)
-- [Configure Site-to-Site Connectivity for Databases with mTLS](/guides/site-to-site-connectivity/dbs-mtls/)
+  Databases](/docs/guides/site-to-site-connectivity/)
+- [Configure Site-to-Site Connectivity for Databases with mTLS](/docs/guides/site-to-site-connectivity/)
