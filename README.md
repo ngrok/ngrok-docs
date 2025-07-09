@@ -98,5 +98,5 @@ pnpm run test:watch
 
 ## Looking for support?
 
-For bug reports, feature request, questions and community support please ooen an issue or discussion in our [ngrok Community](https://github.com/ngrok/ngrok).
+For bug reports, feature request, questions and community support please open an issue or discussion in our [ngrok Community](https://github.com/ngrok/ngrok).
 To report a problem with our documentation, please open a new [Github issue](https://github.com/ngrok/ngrok-docs/issues).
