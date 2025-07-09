@@ -730,6 +730,7 @@ const sidebars = {
 			link: { type: "doc", id: "guides/site-to-site-connectivity/index" },
 			items: ["guides/site-to-site-connectivity/end-customers"],
 		},
+		"guides/running-behind-firewalls",
 		"guides/ssh-rdp/index",
 		{
 			label: "Other guides",
