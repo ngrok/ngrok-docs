@@ -972,7 +972,7 @@ const redirects = [
 		"/docs/k8s/load-balancing/load-balancing-kubernetes-clusters/",
 	],
 		[
-		fromExact("/docs/universal-gateway/cloud-endpoints/quickstart/"),
+		fromExact("/docs/getting-started/cloud-endpoints-quickstart/"),
 		"/docs/getting-started/cloud-endpoints-quickstart",
 
 	// Traffic Policy Macros consolidation (2025)
