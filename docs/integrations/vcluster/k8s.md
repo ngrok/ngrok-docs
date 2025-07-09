@@ -31,7 +31,7 @@ demo application to the ngrok platform to route traffic to your vcluster.
 - [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) and [Helm
   3.0.0+](https://helm.sh/docs/intro/install/) installed on your local
   workstation.
-- The [ngrok Kubernetes Operator](/docs/k8s/installation/install/) installed on
+- The [ngrok Kubernetes Operator](/docs/k8s/) installed on
   your cluster.
 - A reserved domain, which you can get in the ngrok
   [dashboard](https://dashboard.ngrok.com/domains) or with the [ngrok
@@ -44,7 +44,7 @@ demo application to the ngrok platform to route traffic to your vcluster.
 
 To follow along with this guide, you need a remote or local Kubernetes cluster with vcluster installed. If you have an
 existing cluster with vcluster set up, you can skip this step and proceed to
-[Step 2: Install the ngrok Kubernetes Operator](#install-the-ngrok-kubernetes-operator).
+[Step 2: Install a sample application](#install-a-sample-application).
 
 If you don't have a cluster already, create one locally with minikube and install vcluster.
 
@@ -307,5 +307,5 @@ vcluster delete my-vcluster
 For next steps, explore our [Kubernetes docs](/docs/k8s/) for more details on
 how the Operator works, different ways you can integrate ngrok with an existing
 production cluster, or use more advanced features like
-[bindings](docs/k8s/guides/bindings/) or [endpoint
+[bindings](/docs/k8s/guides/bindings/) or [endpoint
 pooling](/docs/k8s/guides/pooling/).
