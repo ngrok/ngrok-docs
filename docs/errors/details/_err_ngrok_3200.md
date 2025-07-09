@@ -5,5 +5,5 @@ This error means that your endpoint wasn't found. This usually happens when the 
 ### Troubleshooting ERR_NGROK_3200
 
 1. Make sure the ngrok agent is running on your local device. You can start the ngrok agent with the CLI command `ngrok http [port]`.
-2. If you're using a custom domain, make sure you add the domain to the agent start command: `ngrok http [port] --url=[your-url]`.
+2. If you're using a custom domain, make sure you add the domain to the agent start command: `ngrok http [port] --url [your-url]`.
 3. Once you've confirmed that the ngrok agent is running, check for your endpoint in your ngrok dashboard at https://dashboard.ngrok.com/endpoints. Your ngrok dashboard will show all of the active endpoints under your account.
