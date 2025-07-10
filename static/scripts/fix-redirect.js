@@ -410,7 +410,6 @@ const redirects = [
 	],
 	[fromIncludes("/docs/cloud-edge/"), "/docs/universal-gateway/overview/"],
 	[
-		// https://linear.app/ngrok/issue/EPD-1286
 		fromExact("/docs/integrations/home-assistant/home-assistant"),
 		"/docs/integrations/home-assistant/home-assistant-with-ngrok",
 	],
