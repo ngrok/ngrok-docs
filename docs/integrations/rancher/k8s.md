@@ -32,7 +32,7 @@ to ngrok using Rancher's Chart repository, and deploy a demo application, which 
 - [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) and [Helm
   3.0.0+](https://helm.sh/docs/intro/install/) installed on your local
   workstation.
-- The [ngrok Kubernetes Operator](/docs/k8s/installation/install/) installed on
+- The [ngrok Kubernetes Operator](/docs/k8s/) installed on
   your cluster. While you _can_ install the Operator via Rancher directly, we
   recommend using our official Helm chart.
 - A reserved domain, which you can get in the ngrok
@@ -45,8 +45,7 @@ to ngrok using Rancher's Chart repository, and deploy a demo application, which 
 ## Install Rancher via Docker {#install-rancher-via-docker}
 
 To follow along with this guide, you need Rancher installed on a local or remote Kubernetes cluster. If you already have
-an existing cluster running Rancher, you can skip this step and proceed to [Step 2: Install the ngrok Ingress
-Controller](#install-the-ngrok-ingress-controller).
+an existing cluster running Rancher, you can skip this step and proceed to [Install a sample application](#install-a-sample-application).
 
 In the following steps, you'll run Rancher, and create the Kubernetes cluster it runs on, within a Docker container.
 This simple, local-only installation option should be used only for [test and demonstration
@@ -60,7 +59,7 @@ new Kubernetes cluster managed by Rancher.
 
 :::note
 Another viable option is to launch a single Linux virtual machine on your local workstation or with a cloud provider to host a K3s cluster for [installing Rancher with Helm](https://ranchermanager.docs.rancher.com/getting-started/quick-start-guides/deploy-rancher-manager/helm-cli). If you choose that option, you can skip ahead to [Step 2: Install the ngrok Ingress
-Controller](#install-the-ngrok-ingress-controller) once you’ve finalized your K3s cluster.
+Controller](#install-a-sample-application) once you’ve finalized your K3s cluster.
 :::
 
 1. Launch the Rancher server in a detached, privileged Docker container. With this configuration, you'll access Rancher on `localhost` using a specific port.
