@@ -410,7 +410,7 @@ const redirects = [
 	],
 	[fromIncludes("/docs/cloud-edge/"), "/docs/universal-gateway/overview/"],
 	[
-		fromIncludes("/docs/integrations/home-assistant/home-assistant"),
+		fromExact("/docs/integrations/home-assistant/home-assistant"),
 		"/docs/integrations/home-assistant/home-assistant-with-ngrok",
 	],
 
