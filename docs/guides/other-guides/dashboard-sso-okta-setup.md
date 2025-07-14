@@ -9,7 +9,7 @@ This should not be confused with configuring an ngrok endpoint so [application u
 - Admin access to edit your ngrok account settings
 - An [ngrok Enterprise](https://ngrok.com/pricing) account
 
-## Create a new SAML App Integration in Okta
+## 1. Create a new SAML App Integration in Okta
 
 1. From the "Applications" menu, click the blue "Create App Integration" button.
    ![](/img/howto/dash-sso/okta-create-app.png)
@@ -21,7 +21,7 @@ This should not be confused with configuring an ngrok endpoint so [application u
    ![](/img/howto/dash-sso/okta-nameid-format.png)
 1. Select "This is an internal app that we have created" and click "Finish".
 
-## Download your SAML App metadata XML
+## 2. Download your SAML App metadata XML
 
 1. Navigate to the "Sign On" Tab on the new app and click on "Actions" under the Active SHA-2 certificate
 1. Click "View IdP metadata".
@@ -29,7 +29,7 @@ This should not be confused with configuring an ngrok endpoint so [application u
 1. In that new window, Select "Save As" from the File menu to save your metadata.xml file for uploading into ngrok in a later step.  
    ![](/img/howto/dash-sso/okta-save-as-xml.png)
 
-## Configure Single Sign-On (SSO) for your ngrok account
+## 3. Configure Single Sign-On (SSO) for your ngrok account
 
 1. Log into your ngrok dashboard and navigate to the ["Settings > Account"](https://dashboard.ngrok.com/settings) section in the left navigation menu.
    ![](/img/howto/dash-sso/okta-ngrok-account-settings.png)
@@ -40,7 +40,7 @@ This should not be confused with configuring an ngrok endpoint so [application u
 1. Click "Save". Clicking Save will create the integration and generate the required URLs for your Okta Application.
    ![](/img/howto/dash-sso/okta-ngrok-required-urls.png)
 
-## Add the ngrok generated URLs to your Okta SAML application
+## 4. Add the ngrok generated URLs to your Okta SAML application
 
 1. Back in your Okta account, on the "General" tab of your Okta app, click on "Edit" under "SAML Settings"
    ![](/img/howto/dash-sso/okta-edit-app.png)
