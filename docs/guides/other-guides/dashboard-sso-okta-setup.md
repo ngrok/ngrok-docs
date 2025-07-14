@@ -3,7 +3,7 @@
 This guide walks you through configuring the ngrok dashboard to use Okta as an identity provider and enable single sign-on for your ngrok account.
 This should not be confused with configuring an ngrok endpoint so [application users can log in using Okta](/integrations/okta/sso-oidc).
 
-The requirements for completing this guide are:
+## What you'll need
 
 - Admin access to create new applications in Okta
 - Admin access to edit your ngrok account settings
@@ -49,6 +49,6 @@ The requirements for completing this guide are:
    ![](/img/howto/dash-sso/okta-temp-urls.png)
 1. Click "Next". Click "Finish".
 
-Congratulations, you should now be configured property to log into your ngrok account using Okta!
+You should now be configured to log into your ngrok account using Okta.
 
 By default, your ngrok account will still allow users to log in with their existing credentials as well as through Okta ("Mixed Mode"). Once you verify that everything is working properly with your integration, you can enable "SSO Enforced" in the ngrok Dashboard which will require all new users to log in through Okta for their ngrok account.
