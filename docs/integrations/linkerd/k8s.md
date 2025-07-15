@@ -24,7 +24,7 @@ Using this guide, you will launch a local cluster (or use an existing local/remo
 - [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) and [Helm
   3.0.0+](https://helm.sh/docs/intro/install/) installed on your local
   workstation.
-- The [ngrok Kubernetes Operator](/docs/k8s/installation/install/) installed on
+- The [ngrok Kubernetes Operator](/docs/k8s/) installed on
   your cluster.
 - A reserved domain, which you can get in the ngrok
   [dashboard](https://dashboard.ngrok.com/domains) or with the [ngrok

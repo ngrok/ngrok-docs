@@ -2,6 +2,9 @@
 description: Develop and test Hygraph webhooks from localhost
 ---
 
+import InspectingRequests from "../shared/_inspecting-requests.mdx";
+import ReplayingRequests from "../shared/_replaying-requests.mdx";
+
 # Hygraph Webhooks
 
 :::tip TL;DR
@@ -97,37 +100,9 @@ You can trigger new calls from Hygraph to your application by following the inst
    1. On the left menu, click **Webhooks** and then click **View Logs** for your webhook, and then click one of the messages.
       ![Webhook Logs](img/ngrok_logs_hygraph.png)
 
-### Inspecting requests
+<InspectingRequests />
 
-When you launch the ngrok agent on your local machine, you can see two links:
-
-- The URL to your app (it ends with `ngrok-free.app` for free accounts or `ngrok.app` for paid accounts when not using custom domains)
-- A local URL for the Web Interface (a.k.a **Request Inspector**).
-
-The Request Inspector shows all the requests made through your ngrok tunnel to your localhost app. When you click on a request, you can see details of both the request and the response.
-
-Seeing requests is an excellent way of validating the data sent to and retrieved by your app via the ngrok tunnel. That alone can save you some time dissecting and logging HTTP request and response headers, methods, bodies, and response codes within your app just to confirm you are getting what you expect.
-
-To inspect Hygraph's webhooks call, launch the ngrok web interface (i.e. `http://127.0.0.1:4040`), and then click one of the requests sent by Hygraph.
-
-From the results, review the response body, header, and other details:
-
-![ngrok Request Inspector](img/ngrok_introspection_hygraph_webhooks.png)
-
-### Replaying requests
-
-The ngrok Request Inspector provides a replay function that you can use to test your code without the need to trigger new events from Hygraph. To replay a request:
-
-1. In the ngrok inspection interface (i.e. `http://localhost:4040`), select a request from Hygraph.
-
-1. Click **Replay** to execute the same request to your application or select **Replay with modifications** to modify the content of the original request before sending the request.
-
-1. If you choose to **Replay with modifications**, you can modify any content from the original request. For example, you can modify the **operation** field inside the body of the request.
-
-1. Click **Replay**.
-
-Verify that your local application receives the request and logs the corresponding information to the terminal.
-
+<ReplayingRequests />
 ## Secure webhook requests {#security}
 
 The ngrok signature webhook verification feature allows ngrok to assert that requests from your Hygraph webhook are the only traffic allowed to make calls to your localhost app.
@@ -142,10 +117,22 @@ This is a quick step to add extra protection to your application.
 
 1. On the popup, enter a secret key that is at least 32 characters long in the **Secret key** field, and then click **Update** at the top of the popup screen.
 
-1. Restart your ngrok agent by running the command, replacing `{your secret key}` with the value you used in the **Secret key** field:
+1. Create a traffic policy file named `hygraph_policy.yml`, replacing `{your secret key}` with the value you used in the **Secret key** field:
+
+   ```yaml
+   on_http_request:
+     - name: "Verify Hygraph requests"
+       actions:
+         - type: verify-webhook
+           config:
+             provider: "graphcms"
+             secret: "{your secret key}"
+   ```
+
+1. Restart your ngrok agent by running the command:
 
    ```bash
-   ngrok http 3000 --verify-webhook graphcms --verify-webhook-secret {your secret key}
+   ngrok http 3000 --traffic-policy-file hygraph_policy.yml
    ```
 
 1. On the Hygraph home page, create a new asset.

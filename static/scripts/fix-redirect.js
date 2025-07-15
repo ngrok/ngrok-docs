@@ -410,7 +410,7 @@ const redirects = [
 	],
 	[fromIncludes("/docs/cloud-edge/"), "/docs/universal-gateway/overview/"],
 	[
-		fromIncludes("/docs/integrations/home-assistant/home-assistant"),
+		fromExact("/docs/integrations/home-assistant/home-assistant"),
 		"/docs/integrations/home-assistant/home-assistant-with-ngrok",
 	],
 
@@ -971,7 +971,10 @@ const redirects = [
 		fromExact("/docs/guides/other-guides/load-balancing-kubernetes-clusters/"),
 		"/docs/k8s/load-balancing/load-balancing-kubernetes-clusters/",
 	],
-
+	[
+		fromExact("/docs/getting-started/cloud-endpoints-quickstart/"),
+		"/docs/getting-started/cloud-endpoints-quickstart",
+	],
 	// Traffic Policy Macros consolidation (2025)
 	[
 		fromIncludes("/docs/traffic-policy/macros/core"),
@@ -992,6 +995,25 @@ const redirects = [
 	[
 		fromIncludes("/docs/traffic-policy/macros/utility"),
 		"/docs/traffic-policy/macros/",
+	],
+
+	[
+		fromIncludes(
+			"/docs/guides/other-guides/how-to-terminate-traffic-with-ngrok-configs",
+		),
+		"/docs/agent/agent-tls-termination/",
+	],
+	[
+		fromIncludes("/docs/guides/other-guides/using-tls-mutual-authentication"),
+		"/docs/agent/agent-mutual-tls-termination/",
+	],
+	[
+		fromIncludes("/docs/guides/other-guides/using-mcp/"),
+		"/docs/using-ngrok-with/using-mcp/",
+	],
+	[
+		fromIncludes("/docs/guides/other-guides/running-behind-firewalls/"),
+		"/docs/guides/running-behind-firewalls/",
 	],
 ];
 

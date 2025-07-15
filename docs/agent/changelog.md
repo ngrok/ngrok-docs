@@ -212,7 +212,7 @@ title: Changelog
 
 ### ngrok Agent 3.3.0 - \[2023-05-09\]
 
-- Added new default tunnel ingress names: the agent now connects to [`connect.ngrok-agent.com`](/docs/guides/other-guides/security-dev-productivity/#track-and-block-unauthorized-activity) when starting a session
+- Added new default tunnel ingress names: the agent now connects to [`connect.ngrok-agent.com`](/docs/guides/security-dev-productivity/securing-your-tunnels/#blocking-non-corporate-accounts) when starting a session
 - Improved `ngrok diagnose` output to check that the DNS entry for `localhost` resolves
 - Added the command `ngrok config add-server-addr` for configuring custom agent ingresses
 - Re-wrote the tunnel and session backend to use the `ngrok-go` library
@@ -281,7 +281,7 @@ title: Changelog
 
 ### ngrok Agent 3.0.0 - \[2022-03-28\]
 
-For more information about upgrading from previous versions of the agent to v3.0, see our [upgrade guide](/guides/other-guides/upgrade-v2-v3/).
+For more information about upgrading from previous versions of the agent to v3.0, see our [upgrade guide](/docs/agent/upgrade-v2-v3/).
 
 - Fixed an issue where an agent would not reconnect after removing a reserved domain from your account.
 - Added `ngrok completion` to enable autocomplete for the cli.

@@ -39,6 +39,11 @@ const sidebars = {
 					label: "Agent CLI",
 				},
 				{
+					id: "getting-started/cloud-endpoints-quickstart",
+					type: "doc",
+					label: "Cloud Endpoints",
+				},
+				{
 					label: "SDKs",
 					type: "category",
 					items: [
@@ -128,7 +133,9 @@ const sidebars = {
 										type: "doc",
 										id: "universal-gateway/cloud-endpoints/index",
 									},
-									items: ["universal-gateway/cloud-endpoints/quickstart"],
+									items: [
+										"universal-gateway/cloud-endpoints/change-domain-endpoint",
+									],
 								},
 								{
 									id: "universal-gateway/agent-endpoints",
@@ -481,7 +488,12 @@ const sidebars = {
 						"agent/api",
 						"agent/ssh-reverse-tunnel-agent",
 						"agent/ingress",
-						"agent/agent-tls-termination",
+						{
+							label: "Agent TLS Termination",
+							type: "category",
+							link: { type: "doc", id: "agent/agent-tls-termination" },
+							items: ["agent/agent-mutual-tls-termination"],
+						},
 						"agent/changelog",
 						"agent/version-support-policy",
 						"agent/diagnose",
@@ -718,6 +730,7 @@ const sidebars = {
 			link: { type: "doc", id: "guides/site-to-site-connectivity/index" },
 			items: ["guides/site-to-site-connectivity/end-customers"],
 		},
+		"guides/running-behind-firewalls",
 		"guides/ssh-rdp/index",
 		{
 			label: "Other guides",
