@@ -1,4 +1,9 @@
 /**
+ * Because of the nature of docusaurus, to test changes here you have to
+ * stop the dev server, run `pnpm clear-cache` or `pnpm clear-cache-win` depending on your OS,
+ * and then restart the dev server.
+ */
+/**
  * Tip: When adding titles, make sure the longest variation is first in the array.
  */
 export type Term = {

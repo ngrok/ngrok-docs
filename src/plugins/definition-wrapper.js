@@ -1,3 +1,12 @@
+/**
+ * Because of the nature of docusaurus, to test changes here you have to
+ * stop the dev server, run `pnpm clear-cache` or `pnpm clear-cache-win` depending on your OS,
+ * and then restart the dev server.
+ */
+
+// Hypothesis: If the term is already on the page, but a pluralized version of it
+// is found later, it should not be wrapped again. This is causing errors.
+
 const { visit } = require("unist-util-visit");
 const { terms } = require("../components/Definition/data");
 
@@ -46,23 +55,22 @@ function getStyles(parent) {
 }
 
 module.exports = function remarkWordWrapper(stuff) {
-	const remainingTerms = terms;
 	return (tree) => {
 		const foundTerms = [];
 		visit(tree, "text", (node, index, parent) => {
 			if (!node?.value) {
-				return;
+				return parent.children;
 			}
 
 			if (parentIsForbiddenTag(parent.tagName)) {
 				// Skip terms in certain tags
-				return;
+				return parent.children;
 			}
 			let matchingTitle = "";
 			const matchingTerm = terms.find((term) => {
 				// We only want to match the first instance of this term on the page
 				if (foundTerms.some((fTerm) => fTerm.titles[0] === term.titles[0])) {
-					return;
+					return false;
 				}
 				/**
 				 * Find the first term that matches the node value
@@ -96,13 +104,19 @@ module.exports = function remarkWordWrapper(stuff) {
 			});
 
 			if (!matchingTerm) {
-				return;
+				return parent.children;
 			}
 
 			const parts = node.value.split(matchingTitle);
 			if (parts.length < 2) {
 				// If the term is not found in the text, return
-				return;
+				return parent.children;
+			}
+			const firstPart = parts[0];
+			let secondPart = parts[1];
+			if (parts.length > 2) {
+				// If there are more than two parts, join them back together
+				secondPart = parts.slice(1).join(matchingTitle);
 			}
 			foundTerms.push(matchingTerm);
 
@@ -114,7 +128,7 @@ module.exports = function remarkWordWrapper(stuff) {
 				...[
 					{
 						type: "text",
-						value: parts[0],
+						value: firstPart,
 					},
 					{
 						type: "element",
@@ -135,7 +149,7 @@ module.exports = function remarkWordWrapper(stuff) {
 					},
 					{
 						type: "text",
-						value: parts[1],
+						value: secondPart,
 					},
 				],
 			);
