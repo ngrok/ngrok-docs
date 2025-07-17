@@ -6,7 +6,16 @@ title: Changelog
 
 ## v3
 
-### ngrok agent 3.23.3 \[2025-07-20\]
+### ngrok agent 3.24.0 \[2025-07-17\]
+
+This version includes critical security fixes for users of mTLS that exists in
+agent version 3.19 through 3.23. ngrok **strongly** encourages anyone who uses
+mTLS to upgrade immediately.
+
+- Allow for configuring maximum and minimum TLS versions
+- Allow enforcing mTLS certificate checks
+
+### ngrok agent 3.23.3 \[2025-06-26\]
 
 - Updates and improvements to `--help` text
 

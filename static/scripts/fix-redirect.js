@@ -31,6 +31,7 @@ const toReplace = (to) => (path, from) => path.replace(from, to); // abc/x -> xy
 const redirects = [
 	[fromIncludes("/docs/1"), "/docs/"],
 	[fromIncludes("/docs/2"), "/docs/"],
+	[fromIncludes("/docs/overview"), "/docs/"],
 	[fromIncludes("/docs/ngrok-link"), "/docs/universal-gateway/overview/"],
 	[fromIncludes("/docs/api/api-clients"), "/docs/api/#client-libraries"],
 	[fromIncludes("/docs/api/client-libraries"), "/docs/api/#client-libraries"],
