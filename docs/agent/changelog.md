@@ -6,7 +6,12 @@ title: Changelog
 
 ## v3
 
-### ngrok agent 3.23.3 \[2025-07-20\]
+### ngrok agent 3.24.0 \[2025-07-17\]
+
+- Allow for configuring maximum and minimum TLS versions
+- Allow enforcing mTLS certificate checks
+
+### ngrok agent 3.23.3 \[2025-06-26\]
 
 - Updates and improvements to `--help` text
 
