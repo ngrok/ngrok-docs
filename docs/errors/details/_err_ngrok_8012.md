@@ -1,6 +1,6 @@
 ### Overview
 
-This error occurs when the ngrok agent successfully receives traffic but fails to establish a connection with your local service (the "upstream" service). While the tunnel is created successfully, ngrok cannot forward the traffic to your application.
+This error occurs when the ngrok agent successfully receives traffic but fails to establish a connection with your local service (the "upstream" service). While the tunnel is created successfully, ngrok cannot forward the traffic to your application. This can happen with a Agent Endpoint or when using a Cloud Endpoint that forwards traffic to an agent.
 
 ### Common Issues and Solutions
 
@@ -29,3 +29,9 @@ This error occurs when the ngrok agent successfully receives traffic but fails t
 1. Verify local service accessibility without ngrok.
 2. Ensure the latest ngrok version is installed.
 3. Restart the ngrok agent.
+
+## Preventing Downtime
+
+1. Use a Cloud Endpoint with a Traffic Policy to provide a better user experience. Instead of showing an error, you can detect the connection failure and serve a custom maintenance page. [Learn more about Cloud Endpoints and Traffic Policy](/docs/universal-gateway/cloud-endpoints/)
+
+2. Use Endpoint Pooling to achieve high availability. By load balancing across multiple agents, traffic is automatically routed away from any agent experiencing this error, preventing any impact on your users. [Learn more about Endpoint Pooling](/docs/universal-gateway/endpoint-pooling/)
