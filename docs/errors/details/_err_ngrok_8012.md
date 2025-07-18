@@ -30,7 +30,7 @@ This error occurs when the ngrok agent successfully receives traffic but fails t
 2. Ensure the latest ngrok version is installed.
 3. Restart the ngrok agent.
 
-## Preventing Downtime
+### Preventing Downtime
 
 1. Use a Cloud Endpoint with a Traffic Policy to provide a better user experience. Instead of showing an error, you can detect the connection failure and serve a custom maintenance page. [Learn more about Cloud Endpoints and Traffic Policy](/docs/universal-gateway/cloud-endpoints/)
 
