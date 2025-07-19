@@ -7,5 +7,5 @@ curl \
 -X GET \
 -H "Authorization: Bearer {API_KEY}" \
 -H "Ngrok-Version: 2" \
-https://api.ngrok.com/edges/https/edghts_2yJQYiIvKSQCmkPQ4qSjooi2CXo/routes/edghtsrt_2yJQYhqBBu2ckjpcjdRofQZ6zzl/request_headers
+https://api.ngrok.com/edges/https/edghts_305a4ekRSaK9H46jCx05It7YKyM/routes/edghtsrt_305a4gtc4tUTVPJVwRDJYCo4dFd/request_headers
 ```
