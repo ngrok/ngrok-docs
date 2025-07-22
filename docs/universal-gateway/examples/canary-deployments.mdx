@@ -2,6 +2,7 @@
 title: "Distribute Traffic Between Canary Deployments"
 description: "Use ngrok to validate how features or versions of your services behave by distributing production traffic randomly or via a specific header."
 sidebar_label: "Canary Deployments"
+sidebar_position: 4
 ---
 
 import ReserveDomain from "./snippets/_reserve-domain.mdx";
@@ -70,7 +71,8 @@ While still viewing your new Cloud Endpoint in the dashboard, copy and paste one
 		```yaml
 		on_http_request:
 			- expressions:
-			    - "req.headers.exists_one(x, x == 'x-canary') && req.headers['x-canary'].join(',') == 'true'"
+			    - "req.headers.exists_one(x, x == 'x-canary')"
+					- "req.headers['x-canary'].join(',') == 'true'"
 				actions:
 					- type: forward-internal
 						config:
@@ -129,11 +131,16 @@ on_http_request:
 					url: https://service-canary.internal
 ```
 
-If you want to maintain `https://service.internal` as the canonical name for the stable production deployment, you can start another agent pointing to your new version with this canonical name, edit your policy, and shut down the agent for `https://service-canary.internal`.
+If you want to maintain `https://service.internal` as the canonical name for the stable production deployment, you can:
+
+1. Start another agent forwarding to your new version at this canonical internal URL.
+2. Edit your policy to route to it.
+3. Shut down the agent forwarding to `https://service-canary.internal`.
 
 ## What's next?
 
 - View your [Traffic
-	Inspector](https://dashboard.ngrok.com/traffic-inspector) to see how your canary behaves with production traffic, which may signal that you pause or roll-back the deployment entirely.
+	Inspector](https://dashboard.ngrok.com/traffic-inspector) to see how your canary behaves with production traffic, which may signal that you pause or roll back the deployment entirely.
+- Learn how to implement [blue-green deployments](/docs/universal-gateway/examples/blue-green-deployments) if you prefer faster rollouts at the expense of maintaining two production environments.
 - Explore other common gateway setups, like [multiplexing to many
 	services](/docs/universal-gateway/examples/multiplex) or shipping a [custom "maintenance mode"](/docs/universal-gateway/examples/maintenance-mode/) during an outage or planned downtime a canary deployment can't help with.
