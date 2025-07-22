@@ -44,51 +44,51 @@ ngrok http $PORT --url https://service-canary.internal
 While still viewing your new Cloud Endpoint in the dashboard, copy and paste one of the two policies below into the Traffic Policy editor, depending on whether you want to distribute traffic randomly or by a header like `x-canary`.
 
 <Tabs>
-	<TabItem value="random" label="Random distribution" default>
-		```yaml
-		on_http_request:
-			- expressions:
-					- "rand.double() <= 0.2"
-				actions:
-					- type: forward-internal
-						config:
-							url: https://service-canary.internal
+  <TabItem value="random" label="Random distribution" default>
+    ```yaml
+    on_http_request:
+      - expressions:
+          - "rand.double() <= 0.2"
+        actions:
+          - type: forward-internal
+            config:
+              url: https://service-canary.internal
 
-    		- actions:
-    				- type: forward-internal
-    					config:
-    						url: https://service.internal
-    	```
+        - actions:
+            - type: forward-internal
+              config:
+                url: https://service.internal
+      ```
 
-    	**What's happening here?**
-    	This policy first returns a random `double` between `0` and `1`.
-    	If that double is less than or equal to `0.2`, it routes the request to your canary deployment, effectively routing 20% of incoming traffic to the canary.
+      **What's happening here?**
+      This policy first returns a random `double` between `0` and `1`.
+      If that double is less than or equal to `0.2`, it routes the request to your canary deployment, effectively routing 20% of incoming traffic to the canary.
 
-    	The policy then routes the remaining 80% of traffic to your stable version.
+      The policy then routes the remaining 80% of traffic to your stable version.
 
     </TabItem>
     <TabItem value="header" label="By header">
-    	```yaml
-    	on_http_request:
-    		- expressions:
-    		    - "req.headers.exists_one(x, x == 'x-canary')"
-    				- "req.headers['x-canary'].join(',') == 'true'"
-    			actions:
-    				- type: forward-internal
-    					config:
-    						url: https://service-canary.internal
+      ```yaml
+      on_http_request:
+        - expressions:
+            - "req.headers.exists_one(x, x == 'x-canary')"
+            - "req.headers['x-canary'].join(',') == 'true'"
+          actions:
+            - type: forward-internal
+              config:
+                url: https://service-canary.internal
 
-    		- actions:
-    				- type: forward-internal
-    					config:
-    						url: https://service.internal
-    	```
+        - actions:
+            - type: forward-internal
+              config:
+                url: https://service.internal
+      ```
 
-    	**What's happening here?**
-    	This policy checks the incoming request for the presence of the `x-canary` and validates that its value is `true`.
-    	If both are true, then the policy routes the request to your canary deployment.
+      **What's happening here?**
+      This policy checks the incoming request for the presence of the `x-canary` and validates that its value is `true`.
+      If both are true, then the policy routes the request to your canary deployment.
 
-    	In the absence of an `x-canary: true` header, the policy route traffic to your stable version.
+      In the absence of an `x-canary: true` header, the policy route traffic to your stable version.
 
     </TabItem>
 
@@ -107,17 +107,17 @@ For example, to split traffic evenly between your two versions:
 
 ```yaml
 on_http_request:
-	- expressions:
-			- "rand.double() <= 0.5"
-		actions:
-			- type: forward-internal
-				config:
-					url: https://service-canary.internal
+  - expressions:
+      - "rand.double() <= 0.5"
+    actions:
+      - type: forward-internal
+        config:
+          url: https://service-canary.internal
 
-	- actions:
-			- type: forward-internal
-				config:
-					url: https://service.internal
+  - actions:
+      - type: forward-internal
+        config:
+          url: https://service.internal
 ```
 
 ## 7. Cut over to the new version and clean up
@@ -126,10 +126,10 @@ When you promote your canary deployment to stable, you can edit your policy to r
 
 ```yaml
 on_http_request:
-	- actions:
-			- type: forward-internal
-				config:
-					url: https://service-canary.internal
+  - actions:
+      - type: forward-internal
+        config:
+          url: https://service-canary.internal
 ```
 
 If you want to maintain `https://service.internal` as the canonical name for the stable production deployment, you can:
