@@ -54,43 +54,44 @@ While still viewing your new Cloud Endpoint in the dashboard, copy and paste one
 						config:
 							url: https://service-canary.internal
 
-			- actions:
-					- type: forward-internal
-						config:
-							url: https://service.internal
-		```
-	
-		**What's happening here?**
-		This policy first returns a random `double` between `0` and `1`.
-		If that double is less than or equal to `0.2`, it routes the request to your canary deployment, effectively routing 20% of incoming traffic to the canary.
+    		- actions:
+    				- type: forward-internal
+    					config:
+    						url: https://service.internal
+    	```
 
-		The policy then routes the remaining 80% of traffic to your stable version.
+    	**What's happening here?**
+    	This policy first returns a random `double` between `0` and `1`.
+    	If that double is less than or equal to `0.2`, it routes the request to your canary deployment, effectively routing 20% of incoming traffic to the canary.
 
-	</TabItem>
-	<TabItem value="header" label="By header">
-		```yaml
-		on_http_request:
-			- expressions:
-			    - "req.headers.exists_one(x, x == 'x-canary')"
-					- "req.headers['x-canary'].join(',') == 'true'"
-				actions:
-					- type: forward-internal
-						config:
-							url: https://service-canary.internal
+    	The policy then routes the remaining 80% of traffic to your stable version.
 
-			- actions:
-					- type: forward-internal
-						config:
-							url: https://service.internal
-		```
+    </TabItem>
+    <TabItem value="header" label="By header">
+    	```yaml
+    	on_http_request:
+    		- expressions:
+    		    - "req.headers.exists_one(x, x == 'x-canary')"
+    				- "req.headers['x-canary'].join(',') == 'true'"
+    			actions:
+    				- type: forward-internal
+    					config:
+    						url: https://service-canary.internal
 
-		**What's happening here?**
-		This policy checks the incoming request for the presence of the `x-canary` and validates that its value is `true`.
-		If both are true, then the policy routes the request to your canary deployment.
+    		- actions:
+    				- type: forward-internal
+    					config:
+    						url: https://service.internal
+    	```
 
-		In the absence of an `x-canary: true` header, the policy route traffic to your stable version.
+    	**What's happening here?**
+    	This policy checks the incoming request for the presence of the `x-canary` and validates that its value is `true`.
+    	If both are true, then the policy routes the request to your canary deployment.
 
-	</TabItem>
+    	In the absence of an `x-canary: true` header, the policy route traffic to your stable version.
+
+    </TabItem>
+
 </Tabs>
 
 ## 5. Try out your endpoints
@@ -140,8 +141,8 @@ If you want to maintain `https://service.internal` as the canonical name for the
 ## What's next?
 
 - View your [Traffic
-	Inspector](https://dashboard.ngrok.com/traffic-inspector) to see how your canary behaves with production traffic, which may signal that you pause or roll back the deployment entirely.
+  Inspector](https://dashboard.ngrok.com/traffic-inspector) to see how your canary behaves with production traffic, which may signal that you pause or roll back the deployment entirely.
 - Learn how to implement [blue-green deployments](/docs/universal-gateway/examples/blue-green-deployments) if you prefer faster rollouts at the expense of maintaining two production environments.
 - Explore other common gateway setups, like [multiplexing to many
-	services](/docs/universal-gateway/examples/multiplex) or shipping a [custom "maintenance mode"](/docs/universal-gateway/examples/maintenance-mode/) during an outage or planned downtime.
+  services](/docs/universal-gateway/examples/multiplex) or shipping a [custom "maintenance mode"](/docs/universal-gateway/examples/maintenance-mode/) during an outage or planned downtime.
 - Start automating your deployment strategies with the ngrok [API](/docs/api/) or our [Kubernetes Operator](/docs/k8s/).
