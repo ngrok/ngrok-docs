@@ -1015,6 +1015,18 @@ const redirects = [
 		fromIncludes("/docs/guides/other-guides/running-behind-firewalls/"),
 		"/docs/guides/running-behind-firewalls/",
 	],
+	[
+		fromIncludes(
+			"/docs/guides/other-guides/path-based-routing-and-policy-decentralization-with-cloud-endpoints",
+		),
+		"/docs/universal-gateway/cloud-endpoints/routing-and-policy-decentralization/",
+	],
+	[
+		fromIncludes(
+			"/docs/guides/other-guides/forwarding-and-load-balancing-with-cloud-endpoints",
+		),
+		"/docs/universal-gateway/cloud-endpoints/forwarding-and-load-balancing/",
+	],
 ];
 
 // get current href from window
