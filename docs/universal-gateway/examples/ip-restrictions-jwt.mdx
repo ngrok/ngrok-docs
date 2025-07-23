@@ -1,7 +1,7 @@
 ---
-title: "Combine Authentication Methods"
+title: "Enforce IP Restrictions or JWT Validation"
 description: "Support multiple ways for your users to connect to upstream services with a flexible OR operator pattern."
-sidebar_label: "Combine Authentication Methods"
+sidebar_label: "IP Restrictions or JWT Validation"
 categories:
   - authn-authz
   - traffic-control
@@ -42,7 +42,7 @@ While still viewing your new Cloud Endpoint in the dashboard, copy and paste the
 You will need to change:
 
 - `$TRUSTED_IP_FOO`/`$TRUSTED_IP_BAR`: Replace with public IPs of those who should have access to your service or an [IP policy](https://dashboard.ngrok.com/ip-restrictions) in your ngrok dashboard.
-- `$YOUR_JWT_DOMAIN`: The domain name for your tenant at your JWT provider—for example, with Auth0, it looks something like `https://example.us.auth0`.
+- `$JWT_DOMAIN`: The domain name for your tenant at your JWT provider—for example, with Auth0, it looks something like `https://example.us.auth0`.
 
 ```yaml
 on_http_request:
@@ -55,18 +55,10 @@ on_http_request:
           # allow you to more precisely customize how your policy responds.
           enforce: false
           allow:
-            - $TRUSTED_IP_FOO
-            - $TRUSTED_IP_BAR
+            - $TRUSTED_IP_FOO/32
+            - $TRUSTED_IP_BAR/32
 
-  # Accept the request if its IP matches your allow list.
-  - expressions:
-      - actions.ngrok.restrict_ips.action == "allow"
-    actions:
-      - type: forward-internal
-        config:
-          url: https://service.internal
-
-  # Validate a JWT token if one exists on an `Authorization` header.
+  # Validate a JWT token if one exists on an `Authorization` header, 
   - expressions:
       - actions.ngrok.restrict_ips.action == "deny"
     actions:
@@ -74,24 +66,27 @@ on_http_request:
         config:
           issuer:
             allow_list:
-              - value: "https://$YOUR_JWT_DOMAIN"
+              - value: $JWT_DOMAIN
+          audience:
+            allow_list:
+              - value: $NGROK_DOMAIN
           http:
             tokens:
-              - type: "jwt"
-                method: "header"
-                name: "Authorization"
+              - type: access_token
+                method: header
+                name: Authorization
                 prefix: "Bearer "
           jws:
             allowed_algorithms:
-              - "RS256"
+              - RS256
             keys:
               sources:
                 additional_jkus:
-                  - "https://$YOUR_JWT_DOMAIN/.well-known/jwks.json"
+                  - $JWT_DOMAIN/.well-known/jwks.json
 
-  # Allow the request if the JWT token is verified by your provider.
+  # Forward the request if either the IP restriction OR the JWT validation actions were successful.
   - expressions:
-      - actions.ngrok.jwt_validation.tokens[0].verified
+      - "actions.ngrok.restrict_ips.action == 'allow' || actions.ngrok.jwt_validation.tokens[0].verified == true"
     actions:
       - type: forward-internal
         config:
@@ -123,16 +118,14 @@ on_http_request:
 ```
 
 **What's happening here?**
-This policy has three logical sections, where the first two allow traffic to reach your upstream after authenticating with one method `OR` another, and the third is a catch-all error response for requests that fail to authenticate against any method.
-
-The first section checks every HTTP request to see if its source IP matches one on your `allow` list for `restrict-ips`, but doesn't actually enforce the restriction there.
+The first section of this policy checks every HTTP request to see if its source IP matches one on your `allow` list for `restrict-ips`, but doesn't actually enforce the restriction there.
 Instead, the expression that follows the first action checks whether the [`restrict-ips` action result variable](/docs/traffic-policy/actions/restrict-ips/#action-result-variables) `actions.ngrok.restrict_ips.action` is set to `allow`, which means that it would've allowed the request directly if you had set `enforce: true`.
-If this expression is true, then the policy forwards the request to your upstream service.
 
-If it's false—the request didn't match the IP `allow` list—then it's instead forwarded based on whether or not it contains a valid JWT token (which may come from a couple different places).
-If it does, then the policy forwards the request to your upstream service.
+If it's false—the request didn't match the IP `allow` list—then the policy then validates whether it contains a valid JWT token.
 
-Finally, the policy denies all requests that did not authenticate either by IP or JWT and delivers a custom HTML response.
+Next, the policy checks whether either IP restrictions `OR` JWT validation were successful, and if so, farwards to your upstream service.
+
+A catch-all rule then sends a custom error response to all other requests.
 
 ## 6. Try out your endpoint
 

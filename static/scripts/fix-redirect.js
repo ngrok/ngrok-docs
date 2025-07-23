@@ -1016,6 +1016,10 @@ const redirects = [
 		fromIncludes("/docs/guides/other-guides/running-behind-firewalls/"),
 		"/docs/guides/running-behind-firewalls/",
 	],
+	[
+		fromIncludes("/docs/universal-gateway/examples/combine-auth-methods/"),
+		"/docs/universal-gateway/examples/ip-restrictions-jwt/",
+	],
 ];
 
 // get current href from window
