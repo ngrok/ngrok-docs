@@ -1018,7 +1018,7 @@ const redirects = [
 	],
 	[
 		fromIncludes("/docs/universal-gateway/examples/combine-auth-methods/"),
-		"/docs/universal-gateway/examples/ip-restrictions-jwt/",
+		"/docs/universal-gateway/examples/ip-restrictions-basic-auth/",
 	],
 ];
 
