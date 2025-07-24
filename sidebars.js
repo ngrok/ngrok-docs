@@ -90,7 +90,6 @@ const sidebars = {
 			link: { type: "doc", id: "universal-gateway/overview" },
 			items: [
 				"universal-gateway/overview",
-
 				{
 					label: "Concepts",
 					type: "category",
@@ -135,6 +134,17 @@ const sidebars = {
 									},
 									items: [
 										"universal-gateway/cloud-endpoints/change-domain-endpoint",
+										{
+											label: "Forwarding Traffic",
+											type: "category",
+											link: {
+												type: "doc",
+												id: "universal-gateway/cloud-endpoints/forwarding-and-load-balancing",
+											},
+											items: [
+												"universal-gateway/cloud-endpoints/routing-and-policy-decentralization",
+											],
+										},
 									],
 								},
 								{
