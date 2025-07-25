@@ -8,7 +8,7 @@ title: Changelog
 
 ### ngrok agent 3.25.0 \[2025-07-24\]
 
-- Our build system now supports the creation of an .msix artifact to support Windows application packaging via the Microsoft Store and other deployment mechanisms.
+- Debian Bookworm support added.
 - This release is functionally identical to 3.24.0.
 
 ### ngrok agent 3.24.0 \[2025-07-17\]
