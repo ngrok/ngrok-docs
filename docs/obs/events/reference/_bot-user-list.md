@@ -7,5 +7,5 @@
 | name          | string  | human-readable name used to identify the bot            |
 | active        | boolean | whether or not the bot is active                        |
 | created_at    | string  | timestamp when the api key was created, RFC 3339 format |
-| uri           | string  | URI of the bot users list API resource                  |
+| uri           | string  | URI of the service users list API resource              |
 | next_page_uri | string  | URI of the next page, or null if there is no next page  |
