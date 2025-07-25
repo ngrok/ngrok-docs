@@ -129,7 +129,11 @@ const redirects = [
 	// /docs/guides/how-to-set-up-a-custom-domain -> /docs/guides/other-guides/how-to-set-up-a-custom-domain
 	[
 		fromIncludes("/docs/guides/how-to-set-up-a-custom-domain"),
-		"/docs/guides/other-guides/how-to-set-up-a-custom-domain",
+		"/docs/universal-gateway/custom-domains/",
+	],
+	[
+		fromIncludes("/docs/guides/other-guides/how-to-set-up-a-custom-domain"),
+		"/docs/universal-gateway/custom-domains/",
 	],
 
 	[fromIncludes("/docs/guides/limits"), "/docs/pricing-limits"],
@@ -166,10 +170,10 @@ const redirects = [
 		"/docs/guides/other-guides/using-tls-mutual-authentication",
 	],
 
-	// /docs/guides/dashboard-sso-okta-setup -> /docs/guides/other-guides/dashboard-sso-okta-setup
+	// /docs/guides/dashboard-sso-okta-setup -> /docs/integrations/okta/dashboard-sso-okta-setup
 	[
 		fromIncludes("/docs/guides/dashboard-sso-okta-setup"),
-		"/docs/guides/other-guides/dashboard-sso-okta-setup",
+		"/docs/integrations/okta/dashboard-sso-okta-setup",
 	],
 
 	// /docs/guides/load-balancing-with-cloud-edges -> /docs/guides/other-guides/load-balancing-with-cloud-edges
@@ -1027,6 +1031,16 @@ const redirects = [
 			"/docs/guides/other-guides/forwarding-and-load-balancing-with-cloud-endpoints",
 		),
 		"/docs/universal-gateway/cloud-endpoints/forwarding-and-load-balancing/",
+	],
+	[
+		fromIncludes(
+			"/docs/guides/other-guides/how-to-set-up-auth-on-your-endpoint-using-traffic-policy",
+		),
+		"/docs/traffic-policy/examples/oauth-protection",
+	],
+	[
+		fromIncludes("/docs/guides/other-guides/dashboard-sso-okta-setup/"),
+		"/docs/integrations/okta/dashboard-sso-okta-setup",
 	],
 ];
 
