@@ -136,7 +136,7 @@ export default function ExampleHub({ examples, categories }: Props) {
 							{examplesInGroup.map((example) => (
 								<Link
 									key={example.name}
-									to={`/universal-gateway/examples/${example.slug}`}
+									to={`/traffic-policy/examples/${example.slug}`}
 									className="col-span-1"
 								>
 									<Card className="flex h-full flex-col hover:bg-card-hover">
