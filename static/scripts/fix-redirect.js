@@ -1021,6 +1021,10 @@ const redirects = [
 		"/docs/guides/running-behind-firewalls/",
 	],
 	[
+		fromIncludes("/docs/universal-gateway/examples/combine-auth-methods/"),
+		"/docs/universal-gateway/examples/ip-restrictions-basic-auth/",
+	],
+	[
 		fromIncludes(
 			"/docs/guides/other-guides/path-based-routing-and-policy-decentralization-with-cloud-endpoints",
 		),
