@@ -1046,6 +1046,8 @@ const redirects = [
 		fromIncludes("/docs/guides/other-guides/dashboard-sso-okta-setup/"),
 		"/docs/integrations/okta/dashboard-sso-okta-setup",
 	],
+	// Just a redirect so the top-level guides path goes somewhere (there's no guides/index)
+	[fromIncludes("/docs/guides/"), "/docs/guides/api-gateway/get-started/"],
 ];
 
 // get current href from window
