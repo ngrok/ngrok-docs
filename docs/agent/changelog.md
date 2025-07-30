@@ -6,6 +6,11 @@ title: Changelog
 
 ## v3
 
+### ngrok agent 3.25.0 \[2025-07-24\]
+
+- Debian Bookworm support added.
+- This release is functionally identical to 3.24.0.
+
 ### ngrok agent 3.24.0 \[2025-07-17\]
 
 This version includes critical security fixes for users of mTLS that exists in
