@@ -47,7 +47,7 @@ on_http_request:
         config:
           provider: google
   - expressions:
-      - "!(actions.ngrok.oauth.identity.email.endsWith('acme.com') || actions.ngrok.oauth.identity.email.endsWith('doe.com'))"
+      - "!(actions.ngrok.oauth.identity.email.endsWith('@acme.com') || actions.ngrok.oauth.identity.email.endsWith('@doe.com'))"
     actions:
       - type: deny
 ```
