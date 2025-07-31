@@ -733,9 +733,12 @@ const sidebars = {
 			label: "Security Best Practices",
 			type: "category",
 			link: { type: "doc", id: "guides/security-dev-productivity/index" },
-			items: ["guides/security-dev-productivity/securing-your-tunnels", "guides/security-dev-productivity/hipaa-compliance"],
+			items: [
+				"guides/security-dev-productivity/securing-your-tunnels",
+				"guides/security-dev-productivity/hipaa-compliance",
+			],
 		},
-		
+
 		{
 			label: "Site-to-Site Connectivity",
 			type: "category",
