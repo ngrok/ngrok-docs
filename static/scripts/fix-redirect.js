@@ -982,72 +982,72 @@ const redirects = [
 	],
 	// Traffic Policy Macros consolidation (2025)
 	[
-		fromIncludes("/docs/traffic-policy/macros/core"),
+		fromExact("/docs/traffic-policy/macros/core"),
 		"/docs/traffic-policy/macros/",
 	],
 	[
-		fromIncludes("/docs/traffic-policy/macros/ext"),
+		fromExact("/docs/traffic-policy/macros/ext"),
 		"/docs/traffic-policy/macros/",
 	],
 	[
-		fromIncludes("/docs/traffic-policy/macros/http"),
+		fromExact("/docs/traffic-policy/macros/http"),
 		"/docs/traffic-policy/macros/",
 	],
 	[
-		fromIncludes("/docs/traffic-policy/macros/security"),
+		fromExact("/docs/traffic-policy/macros/security"),
 		"/docs/traffic-policy/macros/",
 	],
 	[
-		fromIncludes("/docs/traffic-policy/macros/utility"),
+		fromExact("/docs/traffic-policy/macros/utility"),
 		"/docs/traffic-policy/macros/",
 	],
 
 	[
-		fromIncludes(
+		fromExact(
 			"/docs/guides/other-guides/how-to-terminate-traffic-with-ngrok-configs",
 		),
 		"/docs/agent/agent-tls-termination/",
 	],
 	[
-		fromIncludes("/docs/guides/other-guides/using-tls-mutual-authentication"),
+		fromExact("/docs/guides/other-guides/using-tls-mutual-authentication"),
 		"/docs/agent/agent-mutual-tls-termination/",
 	],
 	[
-		fromIncludes("/docs/guides/other-guides/using-mcp/"),
+		fromExact("/docs/guides/other-guides/using-mcp/"),
 		"/docs/using-ngrok-with/using-mcp/",
 	],
 	[
-		fromIncludes("/docs/guides/other-guides/running-behind-firewalls/"),
+		fromExact("/docs/guides/other-guides/running-behind-firewalls/"),
 		"/docs/guides/running-behind-firewalls/",
 	],
 	[
-		fromIncludes("/docs/universal-gateway/examples/combine-auth-methods/"),
+		fromExact("/docs/universal-gateway/examples/combine-auth-methods/"),
 		"/docs/universal-gateway/examples/ip-restrictions-basic-auth/",
 	],
 	[
-		fromIncludes(
+		fromExact(
 			"/docs/guides/other-guides/path-based-routing-and-policy-decentralization-with-cloud-endpoints",
 		),
 		"/docs/universal-gateway/cloud-endpoints/routing-and-policy-decentralization/",
 	],
 	[
-		fromIncludes(
+		fromExact(
 			"/docs/guides/other-guides/forwarding-and-load-balancing-with-cloud-endpoints",
 		),
 		"/docs/universal-gateway/cloud-endpoints/forwarding-and-load-balancing/",
 	],
 	[
-		fromIncludes(
+		fromExact(
 			"/docs/guides/other-guides/how-to-set-up-auth-on-your-endpoint-using-traffic-policy",
 		),
 		"/docs/traffic-policy/examples/oauth-protection",
 	],
 	[
-		fromIncludes("/docs/guides/other-guides/dashboard-sso-okta-setup/"),
+		fromExact("/docs/guides/other-guides/dashboard-sso-okta-setup/"),
 		"/docs/integrations/okta/dashboard-sso-okta-setup",
 	],
 	// Just a redirect so the top-level guides path goes somewhere (there's no guides/index)
-	[fromIncludes("/docs/guides/"), "/docs/guides/api-gateway/get-started/"],
+	[fromExact("/docs/guides/"), "/docs/guides/api-gateway/get-started/"],
 ];
 
 // get current href from window
