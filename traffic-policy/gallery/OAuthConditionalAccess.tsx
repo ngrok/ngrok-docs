@@ -19,7 +19,7 @@ export const OAuthConditionalAccess = () => (
 				{
 					name: "good email",
 					expressions: [
-						"actions.ngrok.oauth.identity.email.endsWith('ngrok.com')",
+						"actions.ngrok.oauth.identity.email.endsWith('@ngrok.com')",
 					],
 					actions: [
 						{
@@ -34,7 +34,7 @@ export const OAuthConditionalAccess = () => (
 				{
 					name: "bad email",
 					expressions: [
-						"!actions.ngrok.oauth.identity.email.endsWith('ngrok.com')",
+						"!actions.ngrok.oauth.identity.email.endsWith('@ngrok.com')",
 					],
 					actions: [
 						{
