@@ -62,6 +62,77 @@ docker run -it -e NGROK_AUTHTOKEN=xyz ngrok/ngrok:latest tls --url foo.com 443  
 docker run -it -e NGROK_AUTHTOKEN=xyz ngrok/ngrok:latest start foo bar baz                  # start tunnels from the configuration file
 ```
 
+### Basic Usage
+
+The ngrok docker image wraps the ngrok agent executable. Read the documentation for the [ngrok agent CLI docs](https://ngrok.com/docs/agent/cli/) for all commands.
+
+#### Run an ngrok agent pointed at localhost:80
+
+```bash
+docker run -it -e NGROK_AUTHTOKEN=your_token ngrok/ngrok http host.docker.internal:80
+```
+
+### Choose a URL
+
+If you don't choose a URL, ngrok will assign one for you.
+
+```bash
+docker run -it -e NGROK_AUTHTOKEN=your_token ngrok/ngrok http host.docker.internal:80 --url https://your-url-here.ngrok.app
+```
+
+### Add a Traffic Policy
+
+[Traffic Policy](https://ngrok.com/docs/traffic-policy/) is a configuration language that offers you the flexibility to filter, match, manage and orchestrate traffic to your endpoints.
+
+```bash
+docker run -it -v $(pwd)/traffic-policy.yml:/etc/traffic-policy.yml ngrok/ngrok:alpine http host.docker.internal:80 --traffic-policy-file /etc/traffic-policy.yml
+```
+
+##### `traffic-policy.yml`
+
+```yaml
+on_http_request:
+  - actions:
+      - type: basic-auth
+        config:
+          credentials:
+            - user:password123
+```
+
+#### Run in the background
+
+```bash
+docker run -d --restart unless-stopped -e NGROK_AUTHTOKEN=your_token --name ngrok-agent ngrok/ngrok http host.docker.internal:80
+```
+
+### Use a configuration file
+
+Run the ngrok agent with the config file `./ngrok.yml` from the host machine:
+
+```bash
+docker run -it -v $(pwd)/ngrok.yml:/etc/ngrok.yml -e NGROK_CONFIG=/etc/ngrok.yml ngrok/ngrok:alpine http host.docker.internal:80
+```
+
+#### Pull the ngrok container image
+
+```bash
+docker pull ngrok/ngrok
+```
+
+## Traffic Inspection
+
+#### Traffic Inspector
+
+Use [Traffic Inspector](https://dashboard.ngrok.com/ac_aHNlbPD0YUEUrqWbr9xZQJUflCx/traffic-inspector) on your ngrok dashboard
+
+#### Local Web Inspection on localhost:4040 (Legacy)
+
+The agent serves this web interface on port 4040 so you'll need to publish it as well with `-p 4040:4040`
+
+```bash
+docker run -it -p 4040:4040 ngrok/ngrok http host.docker.internal:80
+```
+
 # Using ngrok with Docker Compose
 
 If you're more comfortable using Docker Compose, you can use the following as a starting point. Copy the contents below into a new file named `docker-compose.yaml`, then run `docker compose up` in that directory. This Docker compose file assumes that you have an `ngrok.yml` file in the same directory with at least one tunnel defined. Check out the [ngrok agent config file documentation](/agent/config/) for help creating a configuration file with a tunnel definition. If you want to use the same configuration file as your local ngrok agent, you can view the location of the default config file using `ngrok config check`.
