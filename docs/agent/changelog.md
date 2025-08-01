@@ -6,6 +6,10 @@ title: Changelog
 
 ## v3
 
+### ngrok agent 3.25.1 \[2025-08-01\]
+
+- Allow specifying a file for secrets, rather than requiring them to be passed on the command line
+
 ### ngrok agent 3.25.0 \[2025-07-24\]
 
 - Debian Bookworm support added.
