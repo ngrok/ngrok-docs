@@ -1,0 +1,365 @@
+---
+title: Cloud Endpoints Quickstart
+sidebar_label: Cloud Endpoints
+description: Set up your first ngrok Cloud Endpoint to start managing traffic to your services.
+---
+
+import TabItem from "@theme/TabItem";
+import Tabs from "@theme/Tabs";
+
+Cloud Endpoints provide a persistent way to service traffic.
+Unlike Agent Endpoints, which are ephemeral and run locally, cloud endpoints run on ngrok's cloud service, allowing you to accept public traffic even if your internal apps or services are down.
+
+Cloud endpoints provide an additional layer of traffic management above agent endpoints and can be used to extend their functionality in several key ways.
+Using a Traffic Policy, a cloud endpoint can route traffic to multiple other endpoints based on criteria such as path, header, IP, and more.
+
+A common use case for this pattern is to create a cloud endpoint that accepts public traffic, authenticates it, then routes it to one of several internal agent endpoints running on machines that require privileged access.
+
+This guide walks you through creating cloud endpoints in two ways: first, through the ngrok dashboard, and second, using the Agent CLI to interact with the ngrok API.
+
+## What you'll need
+
+- An [ngrok account](https://dashboard.ngrok.com/signup).
+- Your [ngrok auth token](https://dashboard.ngrok.com/get-started/your-authtoken).
+- An [ngrok API key](https://dashboard.ngrok.com/api-keys).
+
+:::note
+This doc assumes you've already completed the [Agent CLI Quickstart](/getting-started/)—if not, you should start there to learn about some of ngrok's fundamental features before continuing here.
+:::
+
+## Part one: your first cloud endpoint
+
+The best way to familiarize yourself with cloud endpoints is to create one in your ngrok dashboard.
+
+### 1. Reserve your domain
+
+To establish connectivity for the public cloud endpoint you'll create in this guide, you must first reserve a domain.
+
+Navigate to the dashboard, visit [the **Domains** section](https://dashboard.ngrok.com/domains), and select **+ New Domain**.
+You can choose a free static domain, or you can use a custom domain you already own.
+We'll come back to this in later steps.
+
+### 2. Install the ngrok Agent CLI
+
+If this is your first time using ngrok, run the command that corresponds to your operating system to install the Agent CLI:
+
+<Tabs groupId="os" queryString="os">
+<TabItem value="macos" label="Mac OS" default>
+
+```bash
+brew install ngrok
+```
+
+</TabItem>
+<TabItem value="linux" label="Debian Linux">
+
+```bash
+curl -sSL https://ngrok-agent.s3.amazonaws.com/ngrok.asc \
+  | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null \
+  && echo "deb https://ngrok-agent.s3.amazonaws.com buster main" \
+  | sudo tee /etc/apt/sources.list.d/ngrok.list \
+  && sudo apt update \
+  && sudo apt install ngrok
+```
+
+</TabItem>
+<TabItem value="windows" label="Windows">
+
+Install via the <a href="ms-windows-store://pdp/?ProductId=9mvs1j51gmk6">Windows App Store</a>
+
+</TabItem>
+</Tabs>
+
+Or [follow the direct installation guide](https://download.ngrok.com?tab=download) if you can't use one of the options above.
+
+To test that it's been installed correctly, run the following command in your terminal and confirm that ngrok prints its help text.
+
+```bash
+ngrok help
+```
+
+### 3. Connect your account
+
+Connect your agent to your ngrok account by providing your auth token as shown below—replace `$YOUR_TOKEN` with the string given to you [in the dashboard](https://dashboard.ngrok.com/get-started/your-authtoken).
+
+```bash
+ngrok config add-authtoken $YOUR_TOKEN
+```
+
+### 4. Create your cloud endpoint in the dashboard
+
+[Click here to create a new cloud endpoint](https://dashboard.ngrok.com/endpoints/new/cloud) in your dashboard.
+
+There are three bindings to choose from: for this example, select **Public**.
+In the **URL** field, enter the domain you reserved in step 1.
+Then click **Create Cloud Endpoint**.
+
+This takes you to a page where you can manage your new endpoint's [traffic policy](/traffic-policy/).
+You can leave all of the default settings in place for now.
+
+:::info
+Traffic policies are optional for agent endpoints but required for cloud endpoints, which is why the dashboard generates one for you automatically.
+:::
+
+Visit the URL you specified to confirm that it's online.
+You should see a default landing page that says "This is your new Cloud Endpoint!"
+
+There are many different things you could do with this endpoint from here.
+Let's put it to work forwarding traffic to an app running on your local device.
+
+### 5. Start your app or service
+
+Start up the app or service you'd like to put online.
+
+If you don't have an app to work with, you can create a minimal app in your language of choice using the following code to set up a basic HTTP server at port `8080`.
+
+<Tabs groupId="language" queryString="language">
+<TabItem value="javascript" label="JavaScript" default>
+```javascript
+const http = require('http');
+
+const server = http.createServer((req, res) => {
+res.writeHead(200, { 'Content-Type': 'text/html' });
+const html = `     <html>
+    <head><title>Test Page</title></head>
+    <body><h1>Hello from Node.js HTTP Server!</h1></body>
+    </html>
+    `;
+res.end(html);
+});
+
+const port = 8080;
+server.listen(port, () => {
+console.log(`Serving custom HTML at http://localhost:${port}`);
+});
+
+````
+
+Navigate to the directory where this file is located and run the following command to start the server:
+
+```bash
+node service.js
+````
+
+</TabItem>
+<TabItem value="go" label="Go">
+
+```go title="service.go"
+package main
+
+import (
+	"fmt"
+	"net/http"
+)
+
+func handler(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "Hello from Go HTTP Server!")
+}
+
+func main() {
+	http.HandleFunc("/", handler)
+
+	fmt.Println("Starting server at http://localhost:8080")
+	err := http.ListenAndServe(":8080", nil)
+	if err != nil {
+		fmt.Println("Server failed:", err)
+	}
+}
+
+```
+
+Navigate to the directory where this file is located and run the following command to start the server:
+
+```bash
+go run service.go
+```
+
+</TabItem>
+<TabItem value="python" label="Python">
+
+```python title="service.py"
+from http.server import BaseHTTPRequestHandler, HTTPServer
+
+class MyHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.send_header("Content-type", "text/html")
+        self.end_headers()
+        html = b"""
+        <html>
+        <head><title>Test Page</title></head>
+        <body><h1>Hello from Python HTTP Server!</h1></body>
+        </html>
+        """
+        self.wfile.write(html)
+
+def run(server_class=HTTPServer, handler_class=MyHandler, port=8080):
+    server_address = ('', port)
+    httpd = server_class(server_address, handler_class)
+    print(f"Serving custom HTML at http://localhost:{port}")
+    httpd.serve_forever()
+
+if __name__ == "__main__":
+    run()
+```
+
+Navigate to the directory where this file is located and run the following command to start the server:
+
+```bash
+python service.py
+```
+
+</TabItem>
+<TabItem value="rust" label="Rust">
+
+First, create a directory for your Rust project and navigate into it:
+
+```bash
+mkdir ngrok-rust-server
+cd ngrok-rust-server
+```
+
+Next, create a new Rust project:
+
+```bash
+cargo init
+```
+
+Then, replace the contents of `src/main.rs` with the following code to set up a basic HTTP server:
+
+```rust title="ngrok-rust-server/src/main.rs"
+use std::io::{Read, Write};
+use std::net::{TcpListener, TcpStream};
+
+fn handle_connection(mut stream: TcpStream) {
+    let mut buffer = [0; 512];
+
+    // Read from the stream
+    if let Ok(_) = stream.read(&mut buffer) {
+        let body = "Hello from Rust HTTP Server!";
+        let response = format!(
+            "HTTP/1.1 200 OK\r\n\
+             Content-Length: {}\r\n\
+             Content-Type: text/plain\r\n\
+             Connection: close\r\n\r\n\
+             {}",
+            body.len(),
+            body
+        );
+
+        if let Err(e) = stream.write_all(response.as_bytes()) {
+            eprintln!("Write error: {}", e);
+        }
+
+        // Flush to make sure the response is sent
+        if let Err(e) = stream.flush() {
+            eprintln!("Flush error: {}", e);
+        }
+    }
+}
+
+fn main() -> std::io::Result<()> {
+    let listener = TcpListener::bind("127.0.0.1:8080")?;
+    println!("Server running at http://127.0.0.1:8080");
+
+    for stream in listener.incoming() {
+        match stream {
+            Ok(stream) => handle_connection(stream),
+            Err(e) => eprintln!("Connection failed: {}", e),
+        }
+    }
+
+    Ok(())
+}
+```
+
+To run the server, navigate to the root directory of the project (where the `Cargo.toml` file is located) and run the following command:
+
+```bash
+cargo run
+```
+
+</TabItem>
+</Tabs>
+
+### 6. Start your agent endpoint
+
+Start the ngrok agent by running the following command (replace `8080` if your app is running on a different port):
+
+```bash
+ngrok http 8080 --url https://default.internal
+```
+
+The `--url` flag connects your agent endpoint to your cloud endpoint, so when requests are made to your reserved domain they'll be routed here.
+The default URL for this is `https://default.internal`, which was defined in the traffic policy when you created the cloud endpoint in step 4.
+
+### 7. Test your cloud endpoint
+
+Your endpoint should now be online.
+Visit your reserved domain URL to see the app that's running on your local device.
+
+## Part two: creating cloud endpoints via the ngrok API
+
+Now that you're familiar with the key concepts necessary to work with cloud endpoints, let's create another one using the ngrok API, which you can access via the Agent CLI.
+(You can use any HTTP client you prefer for interacting with the ngrok API, but the Agent CLI provides a simple and direct access point for getting started.)
+
+Keep your local app and agent endpoint from part one running.
+If you only have one reserved domain to work with, delete the cloud endpoint you created in the dashboard before continuing so you can reuse the domain in the steps below.
+
+### 1. Create your traffic policy
+
+Create a `policy.yml` on your local machine and add the code snippet below.
+This policy states that incoming HTTP requests should be forwarded to your internal agent endpoint at `https://default.internal`; if that endpoint's not reachable, then it falls back on a custom response to indicate that the app is offline.
+
+```yaml title="policy.yml"
+on_http_request:
+  - actions:
+      - type: "forward-internal"
+        config:
+          url: "https://default.internal"
+         on_error: continue
+      - type: custom-response
+        config:
+          status_code: 200
+          headers:
+            content-type: text/html
+          body: |
+             <b>Agent offline!</b>
+             <p>Run <code>ngrok http 80 --url https://default.internal</code> to put your application online!</p>
+
+```
+
+### 2. Create your cloud endpoint
+
+Create your cloud endpoint by running the following command—replace `$YOUR_API_KEY` and `$YOUR_DOMAIN` with their respective values:
+
+```bash
+ngrok api endpoints create \
+ --api-key $YOUR_API_KEY \
+ --description "Cloud endpoint for my API" \
+ --type cloud \
+ --bindings public \
+ --url `$YOUR_DOMAIN` \
+ --traffic-policy-file policy.yml
+```
+
+This command contains all of the configuration steps you worked through in the dashboard to create a cloud endpoint in part one.
+
+### 3. Test your endpoint
+
+Your endpoint should now be online.
+Visit your reserved domain URL to see the app that's running on your local device.
+
+To see the fallback response, terminate your local app or agent endpoint and then visit your cloud endpoint URL again.
+You should see the custom message defined in `policy.yml.`
+
+## What's next?
+
+In this guide, you learned how to create a Cloud Endpoint using both the dashboard and the ngrok API.
+You configured a basic traffic policy to forward requests from one endpoint to another, and you saw how cloud endpoints can be layered on top of agent endpoints to route traffic to different services and fallback responses based on the criteria you define.
+What else can you do with these features?
+
+- See [the cloud endpoints overview](/universal-gateway/cloud-endpoints/#use-cases) to learn more about use cases, how they compare to agent endpoints, and more.
+- If you need to interact with cloud endpoints programmatically, check out ngrok's [API client libraries](https://ngrok.com/docs/api/#client-libraries).
+- See [Load Balancing with Cloud Endpoints](/universal-gateway/cloud-endpoints/forwarding-and-load-balancing/) to learn how to distribute traffic across multiple internal endpoints.
+- This quickstart barely scratches the surface of what's possible with a traffic policy—check out the [Actions overview](/traffic-policy/actions/) to see what else you can do.

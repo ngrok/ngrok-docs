@@ -6,7 +6,7 @@ description: Set up a local cluster to demonstrate how to use the ngrok Kubernet
 
 ---
 
-The ngrok Kubernetes Operator is the official controller for adding secure public ingress and middleware execution to your Kubernetes applications with ngrok's Cloud Edge. With ngrok, you can manage and secure traffic to your applications at every stage of the development lifecycle while also benefiting from simpler configurations, security, and edge acceleration.
+The ngrok Kubernetes Operator is the official controller for adding secure public ingress and middleware execution to your Kubernetes applications with ngrok's cloud service. With ngrok, you can manage and secure traffic to your applications at every stage of the development lifecycle while also benefiting from simpler configurations, security, and edge acceleration.
 
 Linkerd is an open source [service mesh](https://linkerd.io/what-is-a-service-mesh/#), which is a set of network proxies that handle communications between microservices to add in observability, security, and reliability at the platform level, rather than the application level, of your cloud native infrastructure. For example, Linkerd enables mutual TLS (mTLS) between microservices, which ensures confidentiality (encryption) and authenticity (identity validation) on both sides of the connection. After you deploy Linkerd's control plane, you can then install extensions for additional functionality, like a dashboard for debugging errors, exploring workloads, and more.
 
@@ -24,7 +24,7 @@ Using this guide, you will launch a local cluster (or use an existing local/remo
 - [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) and [Helm
   3.0.0+](https://helm.sh/docs/intro/install/) installed on your local
   workstation.
-- The [ngrok Kubernetes Operator](/docs/k8s/installation/install/) installed on
+- The [ngrok Kubernetes Operator](/docs/k8s/) installed on
   your cluster.
 - A reserved domain, which you can get in the ngrok
   [dashboard](https://dashboard.ngrok.com/domains) or with the [ngrok
@@ -177,7 +177,7 @@ To demonstrate how Linkerd and the ngrok Kubernetes Operator integrate to add ad
    kubectl apply -f emojivoto-ingress.yaml
    ```
 
-   Give your cluster a few moments to launch the necessary resources and for ngrok's Cloud Edge to pick up the new tunnel created by the ngrok Kubernetes Operator.
+   Give your cluster a few moments to launch the necessary resources and for ngrok's cloud service to pick up the new tunnel created by the ngrok Kubernetes Operator.
 
    :::tip
 
@@ -246,6 +246,6 @@ rm -rf $HOME/.linkerd2
 
 To bring this integration to a production-grade Kubernetes environment and a real-world application, you will want to explore [installing Linkerd with Helm](https://linkerd.io/2.14/tasks/install-helm/) and Buoyant's official [Linkerd Production Handbook](https://docs.buoyant.io/runbook/getting-started/).
 
-Even in more complex scenarios, you can follow the same procedures listed above to install the ngrok Kubernetes Operator and configure an Ingress service, letting ngrok's Cloud Edge handle routing and middleware execution for simplicity, global load balancing, and automatic encryption.
+Even in more complex scenarios, you can follow the same procedures listed above to install the ngrok Kubernetes Operator and configure an Ingress service, letting ngrok's cloud service handle routing and middleware execution for simplicity, global load balancing, and automatic encryption.
 
 Learn more about the ngrok Kubernetes Operator, or contribute to its ongoing development, by checking out the [GitHub repository](https://github.com/ngrok/ngrok-operator) and the [project-specific documentation](https://github.com/ngrok/ngrok-operator/tree/main/docs).

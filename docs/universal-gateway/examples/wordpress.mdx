@@ -1,0 +1,91 @@
+---
+title: "Accelerate and Secure your Wordpress Installation"
+description: "ngrok improves your existing Wordpress installation by managing your TLS certificates, accelerating your blog on our global load balancer, and protecting it from DDoS attacks."
+sidebar_label: "Secure Wordpress Installations"
+---
+
+import ReserveDomain from "./snippets/_reserve-domain.mdx";
+import CloudEndpoint from "./snippets/_cloud-endpoint.mdx";
+import TryOut from "./snippets/_try-out.mdx";
+import Back from "./snippets/_back-to-examples.mdx";
+
+ngrok works out of the box with any up-to-date Wordpress installation where you have access to the host machine's terminal and filesystem.
+
+ngrok improves your existing Wordpress installation by:
+
+- Managing and auto-renewing your TLS certificates
+- Distributing and accelerating your blog on a global content delivery network
+- Protecting your blog from DDoS attacks with our firewall
+
+## 1. Reserve a domain
+
+<ReserveDomain domain="https://your-blog.ngrok.app" />
+
+## 2. Create a Traffic Policy file
+
+On the system where Wordpress runs, create a file named `wordpress.yaml` and paste in the following policy:
+
+```yaml
+on_http_request:
+  - actions:
+      - type: add-headers
+        config:
+          headers:
+            host: localhost
+```
+
+**What's happening here?** This policy rewrites the `Host` header of every HTTP request to `localhost` so that Wordpress accepts the requests.
+
+## 3. Start your Wordpress endpoint
+
+On the same system where Wordpress runs, start the agent on port `80`, which is the default for Wordpress, and referencing the `wordpress.yaml` file you just created.
+
+```bash
+ngrok http 80 --url https://your-service.ngrok.app --traffic-policy-file wordpress.yaml
+```
+
+## 4. Try out your Wordpress endpoint
+
+<TryOut />
+
+## Optional: Restrict access to the admin dashboard
+
+The WP Admin dashboard is protected by a username and password, but is often subjected to attacks.
+You can use the [`restrict-ips` Traffic Policy action](/docs/traffic-policy/actions/restrict-ips/) to allow only yours or other trusted IPs.
+
+Edit your `wordpress.yaml` file with the following policy, replacing `$YOUR_IP`.
+
+```yaml
+on_http_request:
+  - expressions:
+      - "req.url.includes('/wp-admin')"
+    actions:
+      - type: restrict-ips
+        config:
+          enforce: true
+          allow:
+            - $YOUR_IP/32
+
+  - actions:
+      - type: add-headers
+        config:
+          headers:
+            host: localhost
+```
+
+**What's happening here?** This policy first checks whether an HTTP request's URL contains the `/wp-admin` path. If it does, then it applies the `restrict-ips` action to allow only the addresses you explicitly added.
+Then, as before, the policy rewrites the `Host` header of every HTTP request to `localhost` so that Wordpress accepts the requests.
+
+Finally, restart your ngrok agent to apply the new policy.
+
+```bash
+ngrok http 80 --url https://your-service.ngrok.app --traffic-policy-file wordpress.yaml
+```
+
+## What's next?
+
+- Read more about [Traffic Policy](/docs/traffic-policy) and its [core concepts](/docs/traffic-policy/concepts).
+- View your Wordpress traffic in [Traffic Inspector](https://dashboard.ngrok.com/traffic-inspector).
+- Use the [`rewrite` action](/docs/traffic-policy/actions/redirect) to create ["pretty" blog URLs](/docs/traffic-policy/examples/url-rewrites/).
+
+<Back />

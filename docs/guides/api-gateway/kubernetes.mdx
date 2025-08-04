@@ -27,7 +27,7 @@ ngrok Kubernetes Operator.
   dashboard](https://dashboard.ngrok.com/domains) or with the [ngrok
   API](/docs/api/resources/reserved-domains/#create-reserved-domain).
   - You can choose from an ngrok subdomain or bring your own [custom branded
-    domain](/docs/guides/other-guides/how-to-set-up-a-custom-domain), like
+    domain](/docs/universal-gateway/custom-domains), like
     `https://api.example.com`.
   - We'll refer to this domain as `<YOUR_NGROK_DOMAIN>`.
 - An [**Auth0
@@ -134,11 +134,11 @@ Apply these with `kubectl apply -f ...` into your cluster.
 
 ## 1. Deploy the ngrok Kubernetes Operator
 
-You can check out our [installation doc](/docs/k8s/install) for more details and
+You can check out our [installation doc](/docs/k8s/installation/helm) for more details and
 options on this process, but as a quickstart, add the ngrok Kubernetes Operator
 repo to Helm.
 
-```shell
+```bash
 helm repo add ngrok https://charts.ngrok.com
 helm repo update
 ```
@@ -152,14 +152,14 @@ Set up a few environment variables to help apply the ngrok Kubernetes Operator.
   dashboard](https://dashboard.ngrok.com/api-keys) to associate with your
   deployment.
 
-```shell
+```bash
 export NGROK_AUTHTOKEN=<AUTHTOKEN>
 export NGROK_API_KEY=<API_KEY>
 ```
 
 Install the ngrok Kubernetes Operator into a new `ngrok-operator` namespace.
 
-```shell
+```bash
 helm install ngrok-operator ngrok/ngrok-operator \
   --namespace ngrok-operator \
   --create-namespace \
@@ -174,7 +174,7 @@ forwarded with the `forward-internal` Traffic Policy action, which means they're
 never publicly accessible.
 
 The ngrok Kubernetes Operator comes with an `AgentEndpoint` CRD that helps you
-quickly map specific upstream services to ngrok endponits.
+quickly map specific upstream services to ngrok endpoints.
 
 If you're bringing your own API services instead of using the demo API, you'll
 need to change the `url` and `upstream.url` fields based on your architecture.
@@ -251,14 +251,14 @@ configured and managed in different ways.
     			- actions:
     					- type: custom-response
     						config:
-    							content: 'Pong!'
+    							body: 'Pong!'
     							status_code: 200
     		```
 
     		Create a cloud endpoint on `<YOUR_NGROK_DOMAIN>`, passing your
     		`policy.yaml` file as an option.
 
-    	```shell
+    	```bash
     	ngrok api endpoints create \
     	  --bindings public \
     	  --url https://<YOUR_NGROK_DOMAIN>
@@ -354,7 +354,7 @@ headers.
 
     	Update your cloud endpoint.
 
-    	```shell
+    	```bash
     	ngrok api endpoints update <CLOUD_ENDPOINT_ID> \
     		--traffic-policy "$(cat policy.yaml)"
     	```
@@ -366,7 +366,7 @@ headers.
 You can now `curl` different paths to see your requests routed to the
 appropriate upstream API service.
 
-```shell
+```bash
 curl https://<YOUR_NGROK_DOMAIN>/abc
 ```
 
@@ -529,7 +529,7 @@ Apply the updated manifest with `kubectl apply -f ...`.
 Ready to test your rate limit in action? Run the below command after replacing
 `<YOUR_NGROK_DOMAIN>` and the path, if relevant.
 
-```shell
+```bash
 for i in `seq 1 50`; do curl -X GET -w '%{http_code}' https://<YOUR_NGROK_DOMAIN>/abc ; done
 ```
 

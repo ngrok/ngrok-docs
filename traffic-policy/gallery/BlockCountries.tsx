@@ -14,7 +14,7 @@ export const BlockCountries = () => (
 							type: "custom-response",
 							config: {
 								status_code: 401,
-								content: "Unauthorized request due to country of origin",
+								body: "Unauthorized request due to country of origin",
 							},
 						},
 					],

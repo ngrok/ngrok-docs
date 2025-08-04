@@ -31,6 +31,7 @@ const toReplace = (to) => (path, from) => path.replace(from, to); // abc/x -> xy
 const redirects = [
 	[fromIncludes("/docs/1"), "/docs/"],
 	[fromIncludes("/docs/2"), "/docs/"],
+	[fromIncludes("/docs/overview"), "/docs/"],
 	[fromIncludes("/docs/ngrok-link"), "/docs/universal-gateway/overview/"],
 	[fromIncludes("/docs/api/api-clients"), "/docs/api/#client-libraries"],
 	[fromIncludes("/docs/api/client-libraries"), "/docs/api/#client-libraries"],
@@ -128,7 +129,11 @@ const redirects = [
 	// /docs/guides/how-to-set-up-a-custom-domain -> /docs/guides/other-guides/how-to-set-up-a-custom-domain
 	[
 		fromIncludes("/docs/guides/how-to-set-up-a-custom-domain"),
-		"/docs/guides/other-guides/how-to-set-up-a-custom-domain",
+		"/docs/universal-gateway/custom-domains/",
+	],
+	[
+		fromIncludes("/docs/guides/other-guides/how-to-set-up-a-custom-domain"),
+		"/docs/universal-gateway/custom-domains/",
 	],
 
 	[fromIncludes("/docs/guides/limits"), "/docs/pricing-limits"],
@@ -165,10 +170,10 @@ const redirects = [
 		"/docs/guides/other-guides/using-tls-mutual-authentication",
 	],
 
-	// /docs/guides/dashboard-sso-okta-setup -> /docs/guides/other-guides/dashboard-sso-okta-setup
+	// /docs/guides/dashboard-sso-okta-setup -> /docs/integrations/okta/dashboard-sso-okta-setup
 	[
 		fromIncludes("/docs/guides/dashboard-sso-okta-setup"),
-		"/docs/guides/other-guides/dashboard-sso-okta-setup",
+		"/docs/integrations/okta/dashboard-sso-okta-setup",
 	],
 
 	// /docs/guides/load-balancing-with-cloud-edges -> /docs/guides/other-guides/load-balancing-with-cloud-edges
@@ -199,29 +204,24 @@ const redirects = [
 		"/docs/guides/other-guides/using-labels-within-ngrok",
 	],
 
-	// /docs/guides -> /docs/guides/site-to-site-connectivity
-	// /docs/guides/site-to-site-dbs -> /docs/guides/site-to-site-connectivity/dbs
 	[
 		fromIncludes("/docs/guides/site-to-site-dbs"),
-		"/docs/guides/site-to-site-connectivity/dbs",
+		"/docs/guides/site-to-site-connectivity/",
 	],
 
-	// /docs/guides/site-to-site-apis -> /docs/guides/site-to-site-connectivity/apis
 	[
 		fromIncludes("/docs/guides/site-to-site-apis"),
-		"/docs/guides/site-to-site-connectivity/apis",
+		"/docs/guides/site-to-site-connectivity/",
 	],
 
-	// /docs/guides/site-to-site-apis-mtls -> /docs/guides/site-to-site-connectivity/apis-mtls
 	[
 		fromIncludes("/docs/guides/site-to-site-apis-mtls"),
-		"/docs/guides/site-to-site-connectivity/apis-mtls",
+		"/docs/guides/site-to-site-connectivity/",
 	],
 
-	// docs/guides/site-to-site-dbs-mtls -> /docs/guides/site-to-site-connectivity/dbs-mtls
 	[
 		fromIncludes("/docs/guides/site-to-site-dbs-mtls"),
-		"/docs/guides/site-to-site-connectivity/dbs-mtls",
+		"/docs/guides/site-to-site-connectivity/",
 	],
 
 	// /docs/guides -> /docs/guides/identity-aware-proxy
@@ -415,7 +415,7 @@ const redirects = [
 	],
 	[fromIncludes("/docs/cloud-edge/"), "/docs/universal-gateway/overview/"],
 	[
-		fromIncludes("/docs/integrations/home-assistant/home-assistant"),
+		fromExact("/docs/integrations/home-assistant/home-assistant"),
 		"/docs/integrations/home-assistant/home-assistant-with-ngrok",
 	],
 
@@ -832,12 +832,14 @@ const redirects = [
 	[fromExact("/docs/tls/"), "/docs/universal-gateway/tls/"],
 
 	// Kubernetes Operator Revamp
+	[fromExact("/docs/k8s/advanced-deployments/"), "/docs/k8s"],
+	[fromExact("/docs/k8s/deployment-guide/"), "/docs/k8s"],
+	[fromExact("/docs/k8s/developer-guide/"), "/docs/k8s"],
+	[fromExact("/docs/k8s/installation/install/"), "/docs/k8s"],
 	[
-		fromExact("/docs/k8s/advanced-deployments/"),
-		"/docs/k8s/installation/install/",
+		fromExact("/docs/k8s/guides/quickstart/"),
+		"/docs/getting-started/kubernetes/ingress",
 	],
-	[fromExact("/docs/k8s/deployment-guide/"), "/docs/k8s/installation/install/"],
-	[fromExact("/docs/k8s/developer-guide/"), "/docs/k8s/installation/install/"],
 	[
 		fromExact("/docs/k8s/developer-guide/architecture/"),
 		"/docs/k8s/installation/architecture/",
@@ -856,6 +858,196 @@ const redirects = [
 	[fromExact("/docs/k8s/user-guide/"), "/docs/k8s/"],
 	[fromExact("/docs/k8s/with-edges/"), "/docs/k8s/guides/using-ingresses/"],
 	[fromExact("/docs/using-ngrok-with/k8s/"), "/docs/k8s"],
+
+	// Load balancing guides
+	[
+		fromExact(
+			"/docs/guides/other-guides/how-to-round-robin-load-balance-with-ngrok-cloud-edges",
+		),
+		"/docs/guides/other-guides/load-balancing-multiple-clouds/",
+	],
+	[
+		fromExact(
+			"/docs/guides/other-guides/how-to-do-weighted-load-balancing-with-ngrok-cloud-edges/",
+		),
+		"/docs/guides/other-guides/load-balancing-multiple-clouds/",
+	],
+	[
+		fromExact("/docs/guides/other-guides/load-balancing-with-cloud-edges/"),
+		"/docs/guides/other-guides/load-balancing-multiple-clouds/",
+	],
+	[
+		fromExact("/docs/getting-started/kubernetes/"),
+		"/docs/k8s/installation/install",
+	],
+	[
+		fromExact("/docs/guides/other-guides/how-to-set-up-a-custom-domain"),
+		"/docs/universal-gateway/custom-domains",
+	],
+	[
+		fromExact("/docs/guides/other-guides/"),
+		"/docs/guides/security-dev-productivity/",
+	],
+	[
+		fromExact("/docs/guides/using-ngrok-with/"),
+		"/docs/using-ngrok-with/minecraft/",
+	],
+	[
+		fromExact("/docs/guides/device-gateway/"),
+		"/docs/guides/device-gateway/agent/",
+	],
+	[fromIncludes("/docs/guides/developer-preview/"), "/docs/"],
+	[
+		fromExact("/docs/guides/identity-aware-proxy/"),
+		"/docs/guides/identity-aware-proxy/securing-with-oauth/",
+	],
+	[
+		fromExact("/docs/guides/other-guides/security-dev-productivity/"),
+		"/docs/guides/security-dev-productivity/",
+	],
+	[
+		fromExact(
+			"/docs/guides/other-guides/security-dev-productivity/security-dev-productivity/",
+		),
+		"/docs/guides/security-dev-productivity/",
+	],
+	[
+		fromExact("/docs/using-ngrok-with/python/"),
+		"/docs/getting-started/python/",
+	],
+	[
+		fromExact("/docs/using-ngrok-with/node-js/"),
+		"/docs/getting-started/javascript/",
+	],
+	[
+		fromExact("/docs/using-ngrok-with/django/"),
+		"/docs/getting-started/python/",
+	],
+	[fromExact("/docs/using-ngrok-with/go/"), "/docs/getting-started/go/"],
+	[fromExact("/docs/using-ngrok-with/rust/"), "/docs/getting-started/rust/"],
+	[fromExact("/docs/using-ngrok-with/rdp/"), "/docs/guides/ssh-rdp"],
+	//site-to-site redirects
+	[
+		fromExact("/docs/guides/site-to-site-connectivity/dbs/"),
+		"/docs/guides/site-to-site-connectivity/",
+	],
+	[
+		fromExact("/docs/guides/site-to-site-connectivity/dbs-mtls/"),
+		"/docs/guides/site-to-site-connectivity/",
+	],
+	[
+		fromExact("/docs/guides/site-to-site-connectivity/apis-mtls/"),
+		"/docs/guides/site-to-site-connectivity/",
+	],
+	[
+		fromExact("/docs/guides/site-to-site-connectivity/apis/"),
+		"/docs/guides/site-to-site-connectivity/",
+	],
+	[
+		fromExact("/docs/guides/other-guides/securing-your-tunnels/"),
+		"/docs/guides/security-dev-productivity/securing-your-tunnels",
+	],
+	[fromExact("/docs/guides/other-guides/licensing"), "/docs/pricing-limits/"],
+	[
+		fromExact("/docs/guides/other-guides/upgrade-v2-v3/"),
+		"/docs/agent/upgrade-v2-v3/",
+	],
+	[
+		fromExact("/docs/using-ngrok-with/wordpress/"),
+		"/docs/universal-gateway/examples/wordpress",
+	],
+	[
+		fromExact("/docs/guides/other-guides/n8n"),
+		"/docs/universal-gateway/examples/n8n",
+	],
+	[
+		fromExact("/docs/using-ngrok-with/ollama"),
+		"/docs/universal-gateway/examples/ollama",
+	],
+	[
+		fromExact("/docs/guides/other-guides/load-balancing-multiple-clouds/"),
+		"/docs/universal-gateway/load-balancing-multiple-clouds/",
+	],
+	[
+		fromExact("/docs/guides/other-guides/load-balancing-kubernetes/"),
+		"/docs/k8s/load-balancing/load-balancing-kubernetes/",
+	],
+	[
+		fromExact("/docs/guides/other-guides/load-balancing-kubernetes-clusters/"),
+		"/docs/k8s/load-balancing/load-balancing-kubernetes-clusters/",
+	],
+	[
+		fromExact("/docs/getting-started/cloud-endpoints-quickstart/"),
+		"/docs/getting-started/cloud-endpoints-quickstart",
+	],
+	// Traffic Policy Macros consolidation (2025)
+	[
+		fromExact("/docs/traffic-policy/macros/core"),
+		"/docs/traffic-policy/macros/",
+	],
+	[
+		fromExact("/docs/traffic-policy/macros/ext"),
+		"/docs/traffic-policy/macros/",
+	],
+	[
+		fromExact("/docs/traffic-policy/macros/http"),
+		"/docs/traffic-policy/macros/",
+	],
+	[
+		fromExact("/docs/traffic-policy/macros/security"),
+		"/docs/traffic-policy/macros/",
+	],
+	[
+		fromExact("/docs/traffic-policy/macros/utility"),
+		"/docs/traffic-policy/macros/",
+	],
+
+	[
+		fromExact(
+			"/docs/guides/other-guides/how-to-terminate-traffic-with-ngrok-configs",
+		),
+		"/docs/agent/agent-tls-termination/",
+	],
+	[
+		fromExact("/docs/guides/other-guides/using-tls-mutual-authentication"),
+		"/docs/agent/agent-mutual-tls-termination/",
+	],
+	[
+		fromExact("/docs/guides/other-guides/using-mcp/"),
+		"/docs/using-ngrok-with/using-mcp/",
+	],
+	[
+		fromExact("/docs/guides/other-guides/running-behind-firewalls/"),
+		"/docs/guides/running-behind-firewalls/",
+	],
+	[
+		fromExact("/docs/universal-gateway/examples/combine-auth-methods/"),
+		"/docs/universal-gateway/examples/ip-restrictions-basic-auth/",
+	],
+	[
+		fromExact(
+			"/docs/guides/other-guides/path-based-routing-and-policy-decentralization-with-cloud-endpoints",
+		),
+		"/docs/universal-gateway/cloud-endpoints/routing-and-policy-decentralization/",
+	],
+	[
+		fromExact(
+			"/docs/guides/other-guides/forwarding-and-load-balancing-with-cloud-endpoints",
+		),
+		"/docs/universal-gateway/cloud-endpoints/forwarding-and-load-balancing/",
+	],
+	[
+		fromExact(
+			"/docs/guides/other-guides/how-to-set-up-auth-on-your-endpoint-using-traffic-policy",
+		),
+		"/docs/traffic-policy/examples/oauth-protection",
+	],
+	[
+		fromExact("/docs/guides/other-guides/dashboard-sso-okta-setup/"),
+		"/docs/integrations/okta/dashboard-sso-okta-setup",
+	],
+	// Just a redirect so the top-level guides path goes somewhere (there's no guides/index)
+	[fromExact("/docs/guides/"), "/docs/guides/api-gateway/get-started/"],
 ];
 
 // get current href from window

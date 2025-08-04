@@ -9,5 +9,5 @@ curl \
 -H "Content-Type: application/json" \
 -H "Ngrok-Version: 2" \
 -d '{"description":"acme edge route","match":"/","match_type":"path_prefix","metadata":"{\"environment\": \"staging\"}"}' \
-https://api.ngrok.com/edges/https/edghts_2wgPZZRhYe0C6RU5Q57XZsAQasC/routes
+https://api.ngrok.com/edges/https/edghts_2yJQYUTBoUXpJ2VS8w9CCct6e7A/routes
 ```

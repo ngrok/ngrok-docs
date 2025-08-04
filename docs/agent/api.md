@@ -48,6 +48,12 @@ The ngrok agent API guarantees that breaking changes to the API will never be ma
 - The addition of new fields on existing resource representations
 - Bug fixes which change the API to match documented behavior
 
+:::note
+
+The ngrok agent API accessible at `http://localhost:4040/api` supports only the v2 agent configuration format. If you are using or planning to use configuration version 3, refer to the [Agent Config Version 3](https://ngrok.com/docs/agent/config/v3/) documentation for guidance.
+
+:::
+
 ## List Tunnels
 
 Returns a list of running tunnels with status and metrics information.

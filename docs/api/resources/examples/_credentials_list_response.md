@@ -6,34 +6,34 @@
 {
   "credentials": [
     {
+      "acl": [],
+      "created_at": "2025-06-10T10:10:19Z",
+      "description": "credential for \"api-examples-d22cddd0534855c7@example.com\"",
+      "id": "cr_2yJQVV2eDbJK24sDTpaDhiF3jCT",
+      "owner_id": "usr_2yJQVTxrDKuERXvnUxYIyX8PH0W",
+      "token": null,
+      "uri": "https://api.ngrok.com/credentials/cr_2yJQVV2eDbJK24sDTpaDhiF3jCT"
+    },
+    {
+      "acl": [],
+      "created_at": "2025-06-10T10:10:21Z",
+      "description": "development cred for alan@example.com",
+      "id": "cr_2yJQVhIwc6qNaFec9DlMx338PW8",
+      "owner_id": "usr_2yJQVTxrDKuERXvnUxYIyX8PH0W",
+      "token": null,
+      "uri": "https://api.ngrok.com/credentials/cr_2yJQVhIwc6qNaFec9DlMx338PW8"
+    },
+    {
       "acl": [
         "bind:1.tcp.ngrok.io:20002",
         "bind:132.devices.company.com"
       ],
-      "created_at": "2025-05-05T15:51:17Z",
+      "created_at": "2025-06-10T10:10:21Z",
       "description": "for device #132",
-      "id": "cr_2wgPWkoS4a4VDe9eT5aP9RLoH73",
-      "owner_id": "usr_2wgPWhlx5LFDD961rx9Be56QUMt",
+      "id": "cr_2yJQVfFdR7Vd97db63P4yXnfBcT",
+      "owner_id": "usr_2yJQVTxrDKuERXvnUxYIyX8PH0W",
       "token": null,
-      "uri": "https://api.ngrok.com/credentials/cr_2wgPWkoS4a4VDe9eT5aP9RLoH73"
-    },
-    {
-      "acl": [],
-      "created_at": "2025-05-05T15:51:17Z",
-      "description": "development cred for alan@example.com",
-      "id": "cr_2wgPWkGntvuyvCVB8FzuG1afzFN",
-      "owner_id": "usr_2wgPWhlx5LFDD961rx9Be56QUMt",
-      "token": null,
-      "uri": "https://api.ngrok.com/credentials/cr_2wgPWkGntvuyvCVB8FzuG1afzFN"
-    },
-    {
-      "acl": [],
-      "created_at": "2025-05-05T15:51:16Z",
-      "description": "credential for \"api-examples-35a99f5623e3227d@example.com\"",
-      "id": "cr_2wgPWdSh3KZWhGrOW0IK9JIkvWP",
-      "owner_id": "usr_2wgPWhlx5LFDD961rx9Be56QUMt",
-      "token": null,
-      "uri": "https://api.ngrok.com/credentials/cr_2wgPWdSh3KZWhGrOW0IK9JIkvWP"
+      "uri": "https://api.ngrok.com/credentials/cr_2yJQVfFdR7Vd97db63P4yXnfBcT"
     }
   ],
   "next_page_uri": null,

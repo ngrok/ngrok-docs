@@ -14,7 +14,7 @@ export const UserAgentFilter = () => (
 							type: "custom-response",
 							config: {
 								status_code: 200,
-								content: "Hello Edge User!",
+								body: "Hello Edge User!",
 							},
 						},
 					],
