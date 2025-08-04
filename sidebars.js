@@ -715,6 +715,7 @@ const sidebars = {
 				"guides/api-gateway/get-started",
 				"guides/api-gateway/kubernetes",
 				"guides/api-gateway/multicloud",
+				"guides/api-gateway/monitor-ngrok",
 			],
 		},
 		{
