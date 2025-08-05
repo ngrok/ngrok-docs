@@ -1,19 +1,20 @@
-import type { Mode, SupportedLanguage } from "@ngrok/mantle/code-block";
-import {
-	CodeBlock,
-	CodeBlockBody,
+import type {
 	CodeBlockCode,
-	CodeBlockCopyButton,
-	CodeBlockExpanderButton,
-	CodeBlockHeader,
-	CodeBlockIcon,
-	CodeBlockTitle,
-	fmtCode,
-	parseLanguage,
-	parseMetastring,
+	Mode,
+	SupportedLanguage,
 } from "@ngrok/mantle/code-block";
+import { CodeBlock, parseLanguage } from "@ngrok/mantle/code-block";
 import type { WithStyleProps } from "@ngrok/mantle/types";
 import type { ComponentProps, ReactNode } from "react";
+import { CodeBlockWithInfo } from "./CodeBlockWithInfo";
+import { LangTab } from "./LangSwitcher/LangTab";
+import { defaultLanguageInfo } from "./LangSwitcher/data";
+import { getLanguageInfo, getMetaData } from "./LangSwitcher/utils";
+
+type WithIndentation = Pick<
+	ComponentProps<typeof CodeBlockCode>,
+	"indentation"
+>;
 
 type Props = WithStyleProps & {
 	/**
@@ -44,7 +45,7 @@ type Props = WithStyleProps & {
 	 * The title of the code block. This is displayed in the header of the code block.
 	 */
 	title?: string;
-};
+} & WithIndentation;
 
 /**
  * A code block component that support
@@ -53,34 +54,42 @@ function DocsCodeBlock({
 	children,
 	className,
 	icon: _icon,
+	indentation: _indentation,
 	language: _language,
 	metastring,
 	mode: _mode,
 	title: _title,
 	...props
 }: Props) {
-	const language = _language ?? parseLanguage(className);
-	const meta = parseMetastring(metastring);
-	const title = _title || meta.title;
-	const mode = _mode || meta.mode;
-	const hasHeader = title || mode || _icon;
+	const langMatchesInClassName = className?.match(/language-(\w+)/);
+	const langInClassName = langMatchesInClassName
+		? langMatchesInClassName[0]?.split("-")[1]
+		: "";
+	const langToFind = langInClassName || parseLanguage(langInClassName);
 
-	const collapsible = meta.collapsible && children.split("\n").length > 20;
+	const language = getLanguageInfo(langToFind) || defaultLanguageInfo;
+
+	const meta = getMetaData(
+		metastring ? `${className} ${metastring}` : className,
+	);
 
 	return (
-		<CodeBlock className={className} {...props}>
-			{hasHeader && (
-				<CodeBlockHeader>
-					{mode ? <CodeBlockIcon preset={mode} /> : _icon}
-					{title && <CodeBlockTitle>{title}</CodeBlockTitle>}
-				</CodeBlockHeader>
-			)}
-			<CodeBlockBody>
-				{!meta.disableCopy && <CodeBlockCopyButton />}
-				<CodeBlockCode language={language} value={fmtCode`${children}`} />
-				{collapsible && <CodeBlockExpanderButton />}
-			</CodeBlockBody>
-		</CodeBlock>
+		<CodeBlockWithInfo
+			content={children}
+			language={language?.name}
+			collapseLineNumber={100}
+			meta={meta}
+			className={`mb-4 ${className}`}
+			headerContent={
+				<LangTab
+					disabled
+					className="text-xs h-6 px-1.5 bg-neutral-500/10 text-neutral-800"
+					tabText={meta?.tabName || language?.name}
+				/>
+			}
+			info={language}
+			codeBlockProps={props}
+		/>
 	);
 }
 

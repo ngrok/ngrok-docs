@@ -1,0 +1,120 @@
+---
+title: Domain
+---
+
+## Domain Custom Resource
+
+### **apiVersion:** `ingress.k8s.ngrok.com/v1alpha1`
+
+### **kind:** `Domain`
+
+Domains define the hostnames that should be reserved for your ngrok endpoints.
+They are automatically created by the controller based on the `Ingress`, `Gateway`, `CloudEndpoint` and `AgentEndpoint` custom resources you create.
+Standard ngrok subdomains will automatically be created and reserved for you.
+Custom domains will also be created and reserved, but will be up to you to configure the DNS records for them.
+See the [custom domain](/k8s/guides/custom-domain) guide for more details.
+
+If you delete all the `Ingress`/`Gateway`/`CloudEndpoint`/`AgentEndpoint` objects for a particular host, as a safety precaution, the Operator does _NOT_ delete the domains and thus does not unregister them.
+This ensures you don't lose domains while modifying or recreating ingress objects.
+You can still manually delete a domain CRD via `kubectl delete domain <name>` if you want to unregister it.
+
+## Domain Structure and Types
+
+The following outlines the high level structure and typings of a `Domain`
+
+```yaml
+apiVersion: ingress.k8s.ngrok.com/v1alpha1
+kind: Domain
+metadata:
+  name: <string>
+  namespace: <string>
+spec:
+  description: <string>       # optional, default: "Created by the ngrok-operator"
+  metadata: <string>          # optional, default: "{"owned-by":"ngrok-operator"}"
+  domain: <string>            # required
+  region: <string>            # required
+```
+
+## Domain Fields
+
+The following sections outline each field of the `Domain` custom resource, whether they are required, what their default values are (if applicable), and a description of their purpose/constraints.
+
+### `spec`
+
+`spec` defines the desired state of the `Domain`
+
+**Type:** `Object`
+
+**Required:** yes
+
+**Default:** none
+
+**Fields:**
+
+| Field Name                             | Type            | Required | Default                           | Description                                                                    |
+| -------------------------------------- | --------------- | -------- | --------------------------------- | ------------------------------------------------------------------------------ |
+| [`spec.description`](#specdescription) | `string`        | no       | `"Created by the ngrok-operator"` | Human-readable description for this `Domain` to help identify/describe it      |
+| [`spec.metadata`](#specmetadata)       | `string`        | no       | `"{"owned-by":"ngrok-operator"}"` | String of arbitrary data associated with the object in the ngrok API/Dashboard |
+| [`spec.domain`](#specdomain)           | `string`        | yes      | none                              | The domain name to reserve                                                     |
+| [`spec.region`](#specregion)           | `string` (enum) | no       | none                              | (Deprecated) The region in which to reserve the domain                         |
+
+### `spec.description`
+
+Human-readable description of this domain that can be used to help identify/describe it.
+
+**Type:** `string`
+
+**Required:** no
+
+**Default:** `"Created by the ngrok-operator"`
+
+### `spec.metadata`
+
+String of arbitrary data associated with the object in the ngrok API/Dashboard.
+
+**Type:** `string`
+
+**Required:** no
+
+**Default:** `"{"owned-by":"ngrok-operator"}"`
+
+### `spec.domain`
+
+The domain name to reserve. example: `example-domain.ngrok.io`
+
+**Type:** `string`
+
+**Required:** no
+
+**Default:** none
+
+### `spec.region`
+
+The region in which to reserve domains
+
+With the launch of the ngrok Global Network domains traffic is now handled globally.
+Note that agents may still connect to specific regions.
+
+**Warning:** `spec.region` is deprecated
+
+**Type:** `string (enum)`
+
+**Required:** no
+
+**Default:** `"global"`
+
+**Allowed Values:** `"au"`, `"eu"`, `"ap"`, `"us"`, `"jp"`, `"in"`, `"sa"`, `"global"`
+
+## Example Domain
+
+```yaml
+apiVersion: ingress.k8s.ngrok.com/v1alpha1
+kind: Domain
+metadata:
+  name: example-domain
+  namespace: default
+spec:
+  description: Created by kubernetes-ingress-controller
+  domain: example-domain.ngrok.io
+  metadata: '{"owned-by":"kubernetes-gateway-api"}'
+```

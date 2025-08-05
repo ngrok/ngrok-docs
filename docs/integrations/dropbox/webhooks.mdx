@@ -2,6 +2,9 @@
 description: Develop and test Dropbox webhooks from localhost
 ---
 
+import InspectingRequests from "../shared/_inspecting-requests.mdx";
+import ReplayingRequests from "../shared/_replaying-requests.mdx";
+
 # Dropbox Webhooks
 
 :::tip TL;DR
@@ -102,37 +105,9 @@ After the file upload process is completed, Dropbox sends a post request to your
 
 **Note**: The payload of this post request doesn't include any actual file/folder changes. It only informs your app of which users have changes. To gather information about the file uploaded your app will need to call Dropbox API to get the latest changes for each user in the notification.
 
-### Inspecting requests
+<InspectingRequests />
 
-When you launch the ngrok agent on your local machine, you can see two links:
-
-- The URL to your app (it ends with `ngrok-free.app` for free accounts or `ngrok.app` for paid accounts when not using custom domains)
-- A local URL for the Web Interface (a.k.a **Request Inspector**).
-
-The Request Inspector shows all the requests made through your ngrok tunnel to your localhost app. When you click on a request, you can see details of both the request and the response.
-
-Seeing requests is an excellent way of validating the data sent to and retrieved by your app via the ngrok tunnel. That alone can save you some time dissecting and logging HTTP request and response headers, methods, bodies, and response codes within your app just to confirm you are getting what you expect.
-
-To inspect Dropbox's webhooks call, launch the ngrok web interface (i.e. `http://127.0.0.1:4040`) and then click one of the requests sent by Dropbox.
-
-From the results, review the response body, header, and other details:
-
-![ngrok Request Inspector](img/ngrok_introspection_dropbox_webhooks.png)
-
-### Replaying requests
-
-The ngrok Request Inspector provides a replay function that you can use to test your code without the need to trigger new events from Dropbox. To replay a request:
-
-1. In the ngrok inspection interface (i.e. `http://localhost:4040`), select a request from Dropbox.
-
-1. Click **Replay** to execute the same request to your application or select **Replay with modifications** to modify the content of the original request before sending the request.
-
-1. If you choose to **Replay with modifications**, you can modify any content from the original request. For example, you can modify the **users** field inside the body of the request.
-
-1. Click **Replay**.
-
-Verify that your local application receives the request and logs the corresponding information to the terminal.
-
+<ReplayingRequests />
 ## Secure webhook requests {#security}
 
 The ngrok signature webhook verification feature allows ngrok to assert that requests from your Dropbox webhook are the only traffic allowed to make calls to your localhost app.
@@ -143,10 +118,21 @@ This is a quick step to add extra protection to your application.
 
 1. Access the [Dropbox developer site](https://www.dropbox.com/developers/apps), click the name of the app you created in the [Integrate Dropbox](#setup-webhook) step, click **Show** for the **App secret** field of the **Settings** tab, and then copy the value that appears on the page.
 
-1. Restart your ngrok agent by running the command, replacing `{your app secret}` with the value you have copied before:
+1. Create a traffic policy file named `dropbox_policy.yml`, replacing `{your app secret}` with the value you have copied before:
+
+   ```yaml
+   on_http_request:
+     - actions:
+         - type: verify-webhook
+           config:
+             provider: dropbox
+             secret: "{your app secret}"
+   ```
+
+1. Restart your ngrok agent by running the command:
 
    ```bash
-   ngrok http 3000 --verify-webhook dropbox --verify-webhook-secret {your app secret}
+   ngrok http 3000 --traffic-policy-file dropbox_policy.yml
    ```
 
 1. Access the [Dropbox site](https://dropbox.com/), sign in using your Dropbox account, and then upload a new file to the app folder.

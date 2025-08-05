@@ -12,7 +12,7 @@ ngrok-python and FastAPI libraries used in this example are sensitive to version
 
 ```sh
 # requirements.txt
-ngrok==1.3.0
+ngrok==1.4.0
 uvicorn==0.29.0
 fastapi==0.111.0
 loguru==0.7.2
@@ -33,7 +33,6 @@ from fastapi import FastAPI
 from loguru import logger
 
 NGROK_AUTH_TOKEN = getenv("NGROK_AUTH_TOKEN", "")
-NGROK_EDGE = getenv("NGROK_EDGE", "edge:edghts_")
 APPLICATION_PORT = 5000
 
 # ngrok free tier only allows one agent. So we tear down the tunnel on application termination
@@ -43,8 +42,6 @@ async def lifespan(app: FastAPI):
     ngrok.set_auth_token(NGROK_AUTH_TOKEN)
     ngrok.forward(
         addr=APPLICATION_PORT,
-        labels=NGROK_EDGE,
-        proto="labeled",
     )
     yield
     logger.info("Tearing Down Ngrok Tunnel")

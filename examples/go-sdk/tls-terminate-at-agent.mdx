@@ -1,5 +1,25 @@
-:::info
+```go
+import (
+	"context"
+	"crypto/tls"
+	"net"
 
-The Go SDK does not support TLS termination at the SDK
+	"golang.ngrok.com/ngrok/v2"
+)
 
-:::
+func ngrokListener(ctx context.Context) (net.Listener, error) {
+	cert, err := tls.LoadX509KeyPair("/path/to/cert.pem", "/path/to/key.pem")
+	if err != nil {
+		return nil, err
+	}
+
+	tlsConfig := &tls.Config{
+		Certificates: []tls.Certificate{cert},
+	}
+
+	return ngrok.Listen(ctx,
+		ngrok.WithURL("tls://"),
+		ngrok.WithAgentTLSTermination(tlsConfig),
+	)
+}
+```

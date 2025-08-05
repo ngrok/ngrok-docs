@@ -1,5 +1,6 @@
 ---
-title: Overview
+title: Errors
+sidebar_label: Overview
 pagination_next: errors/reference
 ---
 

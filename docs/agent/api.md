@@ -48,6 +48,12 @@ The ngrok agent API guarantees that breaking changes to the API will never be ma
 - The addition of new fields on existing resource representations
 - Bug fixes which change the API to match documented behavior
 
+:::note
+
+The ngrok agent API accessible at `http://localhost:4040/api` supports only the v2 agent configuration format. If you are using or planning to use configuration version 3, refer to the [Agent Config Version 3](https://ngrok.com/docs/agent/config/v3/) documentation for guidance.
+
+:::
+
 ## List Tunnels
 
 Returns a list of running tunnels with status and metrics information.
@@ -76,7 +82,7 @@ GET/api/tunnels
             "proto": "https",
             "config": {
                 "addr": "localhost:80",
-                "inspect": true,
+                "inspect": true
             },
             "metrics": {
                 "conns": {
@@ -101,8 +107,7 @@ GET/api/tunnels
                     "p99": 0
                 }
             }
-        },
-        ...
+        }
     ],
     "uri": "/api/tunnels"
 }
@@ -144,7 +149,7 @@ Parameter names and behaviors are identical to those those defined in the config
     "proto": "tcp",
     "config": {
         "addr": "localhost:22",
-        "inspect": false,
+        "inspect": false
     },
     "metrics": {
         "conns": {
@@ -192,7 +197,7 @@ GET/api/tunnels/:name
     "proto": "https",
     "config": {
         "addr": "localhost:80",
-        "inspect": true,
+        "inspect": true
     },
     "metrics": {
         "conns": {
@@ -307,10 +312,9 @@ curl http://localhost:4040/api/requests/http?limit=50
                         "1716"
                     ]
                 },
-                "raw": "<BASE64 ENCODED BYTES>",
+                "raw": "<BASE64 ENCODED BYTES>"
             }
-        },
-        ...
+        }
     ]
 }
 ```
@@ -407,7 +411,7 @@ GET/api/requests/http/:request_id
                 "1716"
             ]
         },
-        "raw": "<BASE64 ENCODED BYTES>",
+        "raw": "<BASE64 ENCODED BYTES>"
     }
 }
 ```

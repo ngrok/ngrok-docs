@@ -53,9 +53,9 @@ function CardHeading({ icon, size, title }: CardHeadingProps) {
 
 type Props = {
 	description?: string | undefined;
-	descriptionLink?: string | undefined;
 	icon?: React.ReactNode;
 	img?: string;
+	imgAlt?: string;
 	note?: boolean;
 	size?: CardSize;
 	title: string;
@@ -64,9 +64,9 @@ type Props = {
 
 export default function NgrokCard({
 	description,
-	descriptionLink,
 	icon,
 	img,
+	imgAlt,
 	note = false,
 	size,
 	title,
@@ -80,15 +80,14 @@ export default function NgrokCard({
 			<div
 				className={clsx("ngrok--card h-full", {
 					"ngrok--card-note": note,
-					"ngrok--card-sm": size == "sm",
-					"ngrok--card-lg": size == "lg",
-					"ngrok--card-xl": size == "xl",
+					"ngrok--card-sm": size === "sm",
+					"ngrok--card-lg": size === "lg",
+					"ngrok--card-xl": size === "xl",
 				})}
 			>
-				{img && <img src={img} />}
+				{img && <img alt={imgAlt} src={img} />}
 				<CardHeading size={size} title={title} icon={icon} />
 				{description && <p>{description}</p>}
-				{descriptionLink && <a>{descriptionLink}</a>}
 			</div>
 		</Link>
 	);

@@ -1,10 +1,9 @@
-import BrowserOnly from "@docusaurus/BrowserOnly";
-import { useMDXComponents } from "@mdx-js/react";
 import TabItem from "@theme/TabItem";
 import Tabs from "@theme/Tabs";
-import { createElement, type ReactNode } from "react";
+import type { ReactNode } from "react";
 import YAML, { type ToStringOptions } from "yaml";
-import DocsCodeBlock, { CodeBlockFallback } from "./code-block";
+import { LangSwitcher } from "./LangSwitcher";
+import DocsCodeBlock from "./code-block";
 
 const showExample = (
 	defaultTitle: string,
@@ -20,44 +19,24 @@ const showExample = (
 ) => {
 	const titleToUse = title || defaultTitle;
 	return (
-		<Tabs className="mb-4" groupId="config_example" queryString="config">
-			<TabItem value="YAML" label="YAML">
-				<BrowserOnly
-					fallback={
-						<CodeBlockFallback className="mb-4">Loading…</CodeBlockFallback>
-					}
-				>
-					{() => (
-						<DocsCodeBlock
-							language="yaml"
-							metastring={yamlMetastring}
-							title={titleToUse + ".yml"}
-							icon={icon}
-						>
-							{snippetText ? `# ${snippetText}\n` + yamlConfig : yamlConfig}
-						</DocsCodeBlock>
-					)}
-				</BrowserOnly>
-			</TabItem>
-			<TabItem value="JSON" label="JSON">
-				<BrowserOnly
-					fallback={
-						<CodeBlockFallback className="mb-4">Loading…</CodeBlockFallback>
-					}
-				>
-					{() => (
-						<DocsCodeBlock
-							language="json"
-							metastring={jsonMetastring}
-							title={titleToUse + ".json"}
-							icon={icon}
-						>
-							{snippetText ? `// ${snippetText}\n` + jsonConfig : jsonConfig}
-						</DocsCodeBlock>
-					)}
-				</BrowserOnly>
-			</TabItem>
-		</Tabs>
+		<LangSwitcher className="mb-3">
+			<DocsCodeBlock
+				language="yaml"
+				metastring={yamlMetastring}
+				title={`${titleToUse}.yml`}
+				icon={icon}
+			>
+				{snippetText ? `# ${snippetText}\n${yamlConfig}` : yamlConfig}
+			</DocsCodeBlock>
+			<DocsCodeBlock
+				language="json"
+				metastring={jsonMetastring}
+				title={`${titleToUse}.json`}
+				icon={icon}
+			>
+				{snippetText ? `// ${snippetText}\n${jsonConfig}` : jsonConfig}
+			</DocsCodeBlock>
+		</LangSwitcher>
 	);
 };
 
@@ -92,63 +71,68 @@ export type ConfigExampleProps = {
 	title?: string;
 	icon?: ReactNode;
 	showAgentConfig?: boolean;
+	showTrafficPolicy?: boolean;
 };
 
-export default function ConfigExample(props: ConfigExampleProps) {
-	const { config, showAgentConfig } = props;
-	const components = useMDXComponents();
-
+export default function ConfigExample({
+	// Show the agent config by default
+	showAgentConfig = false,
+	showTrafficPolicy = true,
+	...props
+}: ConfigExampleProps) {
 	const yamlOptions = {
 		indent: 2,
 		directives: true,
 		defaultKeyType: "PLAIN",
-		// I'm removing the initial --- because having it there
-		// makes it annoying to copy/paste this in the dashboard
 	} as ToStringOptions;
-	const policyYamlConfig = YAML.stringify(config, yamlOptions).slice(4); // Remove the initial `---\n` from the YAML output
-	const policyJsonConfig = JSON.stringify(config, null, 2);
+	// This removes the initial --- because having it there
+	// makes it annoying to copy/paste this in the dashboard
+	const policyYamlConfig = YAML.stringify(props.config, yamlOptions).slice(4);
+	const policyJsonConfig = JSON.stringify(props.config, null, 2);
 
-	let defaultTitle = "traffic-policy";
 	const policySnippet = showExample(
-		defaultTitle,
+		"traffic-policy",
 		props,
 		policyYamlConfig,
 		policyJsonConfig,
 	);
 
-	/**
-	 * Make showExample generic, accepting:
-	 * - props
-	 * - yamlConfig,
-	 * - jsonConfig
-	 * Returns the tabs component
-	 * Then we can pass in the policy content and the agent config content
-	 */
-
-	const agentConfig = getAgentConfig(config, yamlOptions);
-	defaultTitle = "config";
+	const agentConfig = getAgentConfig(props.config, yamlOptions);
 	const agentConfigSnippet = showExample(
-		defaultTitle,
+		"config",
 		props,
 		agentConfig.yamlConfig,
 		agentConfig.jsonConfig,
 	);
-	if (!components.h3) return <p>Error rendering config example.</p>;
+
+	// if both false, throw error;
+	if (!showTrafficPolicy && !showAgentConfig) {
+		throw new Error(
+			"ConfigExample error: One of showTrafficPolicy or showAgentConfig must be true",
+		);
+	}
+
+	// if only one is true, no need for <Tabs></Tabs>
+	if (!showAgentConfig) {
+		return policySnippet;
+	}
+	if (!showTrafficPolicy) {
+		return agentConfigSnippet;
+	}
+
 	return (
-		<>
-			{showAgentConfig && (
-				<>
-					<p>You can use one of the following:</p>
-					{createElement(components.h3, { id: "policy" }, "Policy")}
-				</>
-			)}
-			{policySnippet}
-			{showAgentConfig ? (
-				<>
-					{createElement(components.h3, { id: "agent-config" }, "Agent Config")}
-					{agentConfigSnippet}
-				</>
+		<Tabs groupId="config-example" queryString="config-example">
+			{showTrafficPolicy ? (
+				<TabItem value="traffic-policy" label="Traffic Policy" default>
+					{policySnippet}
+				</TabItem>
 			) : null}
-		</>
+
+			{showAgentConfig ? (
+				<TabItem value="agent-config" label="Agent Config">
+					{agentConfigSnippet}
+				</TabItem>
+			) : null}
+		</Tabs>
 	);
 }

@@ -1,5 +1,6 @@
 import type { Config } from "@docusaurus/types";
 import dotenv from "dotenv";
+import webpackAliasesPlugin from "./src/plugins/webpack-aliases";
 
 dotenv.config();
 
@@ -54,6 +55,7 @@ const config = {
 	// },
 
 	plugins: [
+		webpackAliasesPlugin,
 		"./src/plugins/ngrok-parse-integrations",
 		"@stackql/docusaurus-plugin-hubspot",
 		"@docusaurus/theme-mermaid",
@@ -118,10 +120,6 @@ const config = {
 			async: true,
 		},
 		{
-			src: "/docs/scripts/anchor-scroll-to.js",
-			async: true,
-		},
-		{
 			src: "https://tag.clearbitscripts.com/v1/pk_1caf9e9fb3222466245fb17c8f807837/tags.js",
 		},
 	],
@@ -135,6 +133,7 @@ const config = {
 				docs: {
 					sidebarPath: require.resolve("./sidebars.js"),
 					routeBasePath: "/",
+					rehypePlugins: [require("./src/plugins/definition-wrapper")],
 					editUrl: `${docsRepo}/edit/main`,
 					showLastUpdateAuthor: true,
 					showLastUpdateTime: true,

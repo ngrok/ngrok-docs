@@ -4,17 +4,19 @@
 
 ```json
 {
-	"backends": [
-		{
-			"backends": ["bkdhr_2sJsSiXYgzWBmxJu82JGj81Bvcl"],
-			"created_at": "2025-01-29T21:10:13Z",
-			"description": "acme failover",
-			"id": "bkdfo_2sJsSiMn8cQGc77gmeHerdxETiP",
-			"metadata": "{\"environment\": \"staging\"}",
-			"uri": "https://api.ngrok.com/backends/failover/bkdfo_2sJsSiMn8cQGc77gmeHerdxETiP"
-		}
-	],
-	"next_page_uri": null,
-	"uri": "https://api.ngrok.com/backends/failover"
+  "backends": [
+    {
+      "backends": [
+        "bkdhr_2yJQYRTqfmaRiGgrPr1m4kqrjt5"
+      ],
+      "created_at": "2025-06-10T10:10:43Z",
+      "description": "acme failover",
+      "id": "bkdfo_2yJQYSKvgpYlCqcfhiWuXDQQcta",
+      "metadata": "{\"environment\": \"staging\"}",
+      "uri": "https://api.ngrok.com/backends/failover/bkdfo_2yJQYSKvgpYlCqcfhiWuXDQQcta"
+    }
+  ],
+  "next_page_uri": null,
+  "uri": "https://api.ngrok.com/backends/failover"
 }
 ```

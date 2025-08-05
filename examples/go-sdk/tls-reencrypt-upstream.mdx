@@ -1,5 +1,21 @@
-:::info
+```go
+import (
+	"context"
+	"crypto/tls"
 
-Re-encrypting the connection to your upstream service with TLS is not supported in the Go SDK.
+	"golang.ngrok.com/ngrok/v2"
+)
 
-:::
+func ngrokListener(ctx context.Context) (ngrok.EndpointForwarder, error) {
+	// TLS config is optional - can be nil for default settings
+	tlsConfig := &tls.Config{
+		// Add your upstream TLS configuration here
+	}
+
+	return ngrok.Forward(ctx,
+		ngrok.WithUpstream("tls://localhost:8443",
+			ngrok.WithUpstreamTLSClientConfig(tlsConfig),
+		),
+	)
+}
+```

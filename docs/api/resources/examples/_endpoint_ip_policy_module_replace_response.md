@@ -4,12 +4,12 @@
 
 ```json
 {
-	"enabled": true,
-	"ip_policies": [
-		{
-			"id": "ipp_2sJsSZkfV8sYk8rJfm36pcSM60V",
-			"uri": "https://api.ngrok.com/ip_policies/ipp_2sJsSZkfV8sYk8rJfm36pcSM60V"
-		}
-	]
+  "enabled": true,
+  "ip_policies": [
+    {
+      "id": "ipp_2yJQYC0ojHPAh4SN1m8ayIcJ0bX",
+      "uri": "https://api.ngrok.com/ip_policies/ipp_2yJQYC0ojHPAh4SN1m8ayIcJ0bX"
+    }
+  ]
 }
 ```

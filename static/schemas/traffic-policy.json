@@ -1,0 +1,1112 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://ngrok.com/traffic-policy-schema",
+  "title": "ngrok Traffic Policy Schema",
+  "description": "JSON Schema for ngrok Traffic Policy configuration",
+  "type": "object",
+  "properties": {
+    "on_tcp_connect": {
+      "type": "array",
+      "description": "Phase rules for the on_tcp_connect phase - triggered when a new TCP connection is established",
+      "items": {
+        "$ref": "#/definitions/PhaseRule"
+      }
+    },
+    "on_http_request": {
+      "type": "array", 
+      "description": "Phase rules for the on_http_request phase - triggered when ngrok receives an HTTP request",
+      "items": {
+        "$ref": "#/definitions/PhaseRule"
+      }
+    },
+    "on_http_response": {
+      "type": "array",
+      "description": "Phase rules for the on_http_response phase - triggered after ngrok receives a response from upstream",
+      "items": {
+        "$ref": "#/definitions/PhaseRule"
+      }
+    }
+  },
+  "additionalProperties": false,
+  "definitions": {
+    "PhaseRule": {
+      "type": "object",
+      "description": "A phase rule containing expressions and actions",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Optional name for this rule for identification purposes"
+        },
+        "expressions": {
+          "type": "array",
+          "description": "CEL expressions that must evaluate to true for actions to execute. All expressions are combined with AND logic.",
+          "items": {
+            "type": "string",
+            "description": "A CEL expression for evaluating traffic attributes"
+          }
+        },
+        "actions": {
+          "type": "array",
+          "description": "Actions to execute when expressions evaluate to true",
+          "items": {
+            "$ref": "#/definitions/Action"
+          },
+          "minItems": 1
+        }
+      },
+      "required": ["actions"],
+      "additionalProperties": false
+    },
+    "Action": {
+      "description": "A traffic policy action, must be one of the following: add-headers, basic-auth, circuit-breaker, compress-response, custom-response, deny, forward-internal, http-request, jwt-validation, log, oauth, openid-connect, owasp-crs-request, owasp-crs-response, rate-limit, redirect, remove-headers, restrict-ips, saml, set-vars, terminate-tls, url-rewrite, verify-webhook",
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "type": { "const": "add-headers" },
+            "config": { "$ref": "#/definitions/AddHeadersConfig" }
+          },
+          "required": ["type", "config"],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": { "const": "basic-auth" },
+            "config": { "$ref": "#/definitions/BasicAuthConfig" }
+          },
+          "required": ["type", "config"],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": { "const": "circuit-breaker" },
+            "config": { "$ref": "#/definitions/CircuitBreakerConfig" }
+          },
+          "required": ["type", "config"],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": { "const": "compress-response" },
+            "config": { "$ref": "#/definitions/CompressResponseConfig" }
+          },
+          "required": ["type"],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": { "const": "custom-response" },
+            "config": { "$ref": "#/definitions/CustomResponseConfig" }
+          },
+          "required": ["type"],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": { "const": "deny" },
+            "config": { "$ref": "#/definitions/DenyConfig" }
+          },
+          "required": ["type"],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": { "const": "forward-internal" },
+            "config": { "$ref": "#/definitions/ForwardInternalConfig" }
+          },
+          "required": ["type", "config"],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": { "const": "http-request" },
+            "config": { "$ref": "#/definitions/HttpRequestConfig" }
+          },
+          "required": ["type", "config"],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": { "const": "jwt-validation" },
+            "config": { "$ref": "#/definitions/JwtValidationConfig" }
+          },
+          "required": ["type", "config"],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": { "const": "log" },
+            "config": { "$ref": "#/definitions/LogConfig" }
+          },
+          "required": ["type"],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": { "const": "oauth" },
+            "config": { "$ref": "#/definitions/OauthConfig" }
+          },
+          "required": ["type", "config"],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": { "const": "openid-connect" },
+            "config": { "$ref": "#/definitions/OidcConfig" }
+          },
+          "required": ["type", "config"],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": { "const": "owasp-crs-request" },
+            "config": { "$ref": "#/definitions/OwaspCrsRequestConfig" }
+          },
+          "required": ["type"],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": { "const": "owasp-crs-response" },
+            "config": { "$ref": "#/definitions/OwaspCrsResponseConfig" }
+          },
+          "required": ["type"],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": { "const": "rate-limit" },
+            "config": { "$ref": "#/definitions/RateLimitConfig" }
+          },
+          "required": ["type", "config"],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": { "const": "redirect" },
+            "config": { "$ref": "#/definitions/RedirectConfig" }
+          },
+          "required": ["type", "config"],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": { "const": "remove-headers" },
+            "config": { "$ref": "#/definitions/RemoveHeadersConfig" }
+          },
+          "required": ["type", "config"],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": { "const": "restrict-ips" },
+            "config": { "$ref": "#/definitions/RestrictIpsConfig" }
+          },
+          "required": ["type"],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": { "const": "saml" },
+            "config": { "$ref": "#/definitions/SamlConfig" }
+          },
+          "required": ["type", "config"],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": { "const": "set-vars" },
+            "config": { "$ref": "#/definitions/SetVarsConfig" }
+          },
+          "required": ["type", "config"],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": { "const": "terminate-tls" },
+            "config": { "$ref": "#/definitions/TerminateTlsConfig" }
+          },
+          "required": ["type"],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": { "const": "url-rewrite" },
+            "config": { "$ref": "#/definitions/UrlRewriteConfig" }
+          },
+          "required": ["type", "config"],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": { "const": "verify-webhook" },
+            "config": { "$ref": "#/definitions/VerifyWebhookConfig" }
+          },
+          "required": ["type", "config"],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "AddHeadersConfig": {
+      "type": "object",
+      "description": "Configuration for add-headers action",
+      "properties": {
+        "headers": {
+          "type": "object",
+          "description": "Map of header key to header value to be added. Supports CEL interpolation in values.",
+          "patternProperties": {
+            "^[a-zA-Z0-9_-]+$": {
+              "type": "string",
+              "description": "Header value, supports CEL interpolation"
+            }
+          },
+          "minProperties": 1,
+          "maxProperties": 10,
+          "additionalProperties": false
+        }
+      },
+      "required": ["headers"],
+      "additionalProperties": false
+    },
+    "BasicAuthConfig": {
+      "type": "object",
+      "description": "Configuration for basic-auth action",
+      "properties": {
+        "credentials": {
+          "type": "array",
+          "description": "A list of up to 10 allowed username:password credential pairs",
+          "items": {
+            "type": "string",
+            "description": "username:password pair"
+          },
+          "minItems": 1,
+          "maxItems": 10
+        },
+        "realm": {
+          "type": "string",
+          "description": "The HTTP realm of the request as per RFC 7235",
+          "default": "ngrok"
+        },
+        "enforce": {
+          "type": "boolean",
+          "description": "Default true. If false, continue to the next action even if basic authentication failed. This is useful for handling fall-through, debugging, and testing purposes",
+          "default": true
+        }
+      },
+      "required": ["credentials"],
+      "additionalProperties": false
+    },
+    "CircuitBreakerConfig": {
+      "type": "object",
+      "description": "Configuration for circuit-breaker action",
+      "properties": {
+        "error_threshold": {
+          "type": "number",
+          "description": "Threshold percentage of errors that must be met before requests are rejected. Must be a value between 0.0 and 1.0",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "default": 0.5
+        },
+        "volume_threshold": {
+          "type": "integer",
+          "description": "Number of requests in a rolling window before checking the error threshold. Must be a number between 1 and 2,000,000,000",
+          "minimum": 1,
+          "maximum": 2000000000,
+          "default": 10
+        },
+        "window_duration": {
+          "type": "string",
+          "description": "Number of seconds in the rolling window that metrics are retained for. Must be a value between 1s and 2m",
+          "pattern": "^[0-9]+(s|m)$",
+          "default": "10s"
+        },
+        "tripped_duration": {
+          "type": "string",
+          "description": "Number of seconds the system waits after rejecting a request before re-evaluating upstream health. Must be a value between 1s and 2m",
+          "pattern": "^[0-9]+(s|m)$",
+          "default": "10s"
+        },
+        "num_buckets": {
+          "type": "integer",
+          "description": "Number of buckets that metrics are divided into within the rolling window. Fixed at 10",
+          "const": 10
+        },
+        "enforce": {
+          "type": "boolean",
+          "description": "Determines if the circuit breaker is active. If false, the circuit breaker never trips, and no requests are rejected",
+          "default": true
+        }
+      },
+      "required": ["error_threshold"],
+      "additionalProperties": false
+    },
+    "CompressResponseConfig": {
+      "type": "object",
+      "description": "Configuration for compress-response action",
+      "properties": {
+        "algorithms": {
+          "type": "array",
+          "description": "A list of allowed compression algorithms to be considered during encoding type negotiation. Each element must be unique",
+          "items": {
+            "type": "string",
+            "enum": ["br", "compress", "deflate", "gzip"]
+          },
+          "uniqueItems": true,
+          "default": ["gzip", "deflate", "br", "compress"]
+        }
+      },
+      "additionalProperties": false
+    },
+    "CustomResponseConfig": {
+      "type": "object",
+      "description": "Configuration for custom-response action",
+      "properties": {
+        "status_code": {
+          "type": "integer",
+          "description": "Status code of the custom response being sent back",
+          "minimum": 100,
+          "maximum": 599,
+          "default": 200
+        },
+        "body": {
+          "type": "string",
+          "description": "Body of the custom response being sent back. Supports CEL Interpolation"
+        },
+        "headers": {
+          "type": "object",
+          "description": "Map of key-value headers of the custom response to be sent back. If content-type is not included in headers, this action will attempt to infer the correct content-type. Supports CEL Interpolation",
+          "patternProperties": {
+            "^[a-zA-Z0-9_-]+$": {
+              "type": "string"
+            }
+          },
+          "maxProperties": 10,
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "DenyConfig": {
+      "type": "object",
+      "description": "Configuration for deny action",
+      "properties": {
+        "status_code": {
+          "type": "integer",
+          "description": "HTTP status code to return when denying",
+          "minimum": 400,
+          "maximum": 599,
+          "default": 403
+        }
+      },
+      "additionalProperties": false
+    },
+    "ForwardInternalConfig": {
+      "type": "object",
+      "description": "Configuration for forward-internal action",
+      "properties": {
+        "url": {
+          "type": "string",
+          "description": "The endpoint to forward to, such as http://my-internal-endpoint.internal:1234. Supports CEL Interpolation"
+        },
+        "on_error": {
+          "type": "string",
+          "description": "Whether or not further actions in the Traffic Policy should run if there is an error",
+          "enum": ["halt", "continue"],
+          "default": "halt"
+        }
+      },
+      "required": ["url"],
+      "additionalProperties": false
+    },
+    "HttpRequestConfig": {
+      "type": "object",
+      "description": "Configuration for http-request action",
+      "properties": {
+        "url": {
+          "type": "string",
+          "description": "URL to make HTTP request to, supports CEL interpolation",
+          "format": "uri"
+        },
+        "method": {
+          "type": "string",
+          "description": "HTTP method to use",
+          "enum": ["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"],
+          "default": "GET"
+        },
+        "headers": {
+          "type": "object",
+          "description": "Headers to include in the request",
+          "patternProperties": {
+            "^[a-zA-Z0-9_-]+$": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "string",
+          "description": "Request body, supports CEL interpolation"
+        },
+        "timeout": {
+          "type": "string",
+          "description": "Request timeout",
+          "pattern": "^[0-9]+(s|m|h)$",
+          "default": "30s"
+        }
+      },
+      "required": ["url"],
+      "additionalProperties": false
+    },
+    "JwtValidationConfig": {
+      "type": "object",
+      "description": "Configuration for jwt-validation action",
+      "properties": {
+        "issuer": {
+          "type": "object",
+          "description": "Configuration object for the Issuer(s) of the JWTs",
+          "properties": {
+            "allow_list": {
+              "type": "array",
+              "description": "List of allowed issuers",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "value": {
+                    "type": "string",
+                    "description": "Issuer URL. This can be found in the iss claim after decoding the JWT"
+                  }
+                },
+                "required": ["value"],
+                "additionalProperties": false
+              },
+              "minItems": 1
+            }
+          },
+          "required": ["allow_list"],
+          "additionalProperties": false
+        },
+        "audience": {
+          "type": "object",
+          "description": "Configuration object for the Audience(s) of the JWTs",
+          "properties": {
+            "allow_list": {
+              "type": "array",
+              "description": "List of allowed audiences",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "value": {
+                    "type": "string",
+                    "description": "Audience claim value. This can be found in the aud claim after decoding the JWT"
+                  }
+                },
+                "required": ["value"],
+                "additionalProperties": false
+              },
+              "minItems": 1
+            }
+          },
+          "additionalProperties": false
+        },
+        "http": {
+          "type": "object",
+          "description": "Configuration object for the HTTP requests containing JWTs",
+          "properties": {
+            "tokens": {
+              "type": "array",
+              "description": "List of tokens to validate",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "description": "Type of the JWT, which acts as a hint about how ngrok should parse the token",
+                    "enum": ["id_token", "access_token", "at+jwt", "it+jwt", "plain", "jwt"]
+                  },
+                  "method": {
+                    "type": "string",
+                    "description": "Location in the request to expect the JWT",
+                    "enum": ["header", "body"]
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "Name of the header or body field where the JWT is expected (Example: 'Authorization'). This is not case sensitive"
+                  },
+                  "prefix": {
+                    "type": "string",
+                    "description": "Any prefix to strip from the header or body field before parsing the JWT (Example: 'Bearer ')"
+                  }
+                },
+                "required": ["type", "method", "name"],
+                "additionalProperties": false
+              },
+              "minItems": 1
+            }
+          },
+          "required": ["tokens"],
+          "additionalProperties": false
+        },
+        "jws": {
+          "type": "object",
+          "description": "Configuration object for signed JWTs (JWS)",
+          "properties": {
+            "allowed_algorithms": {
+              "type": "array",
+              "description": "List of allowed signing algorithms. We do not support 'none' as a value here because it is insecure",
+              "items": {
+                "type": "string"
+              },
+              "minItems": 1
+            },
+            "keys": {
+              "type": "array",
+              "description": "Configuration for the JWT signing keys",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "identification": {
+                    "type": "array",
+                    "description": "JWT metadata",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "token_claims": {
+                          "type": "array",
+                          "description": "List of claims present in this token. Supported values: ['kid']",
+                          "items": {
+                            "type": "string",
+                            "enum": ["kid"]
+                          }
+                        }
+                      },
+                      "additionalProperties": false
+                    }
+                  },
+                  "sources": {
+                    "type": "array",
+                    "description": "Configuration for the key material used to verify the signed JWTs",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "additional_jkus": {
+                          "type": "array",
+                          "description": "List of URLs which serve the possible signing keys in JWKS format. These URLs are cached and refreshed roughly every 15 minutes",
+                          "items": {
+                            "type": "string",
+                            "format": "uri"
+                          }
+                        }
+                      },
+                      "required": ["additional_jkus"],
+                      "additionalProperties": false
+                    }
+                  }
+                },
+                "required": ["sources"],
+                "additionalProperties": false
+              }
+            }
+          },
+          "required": ["allowed_algorithms", "keys"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["issuer", "http", "jws"],
+      "additionalProperties": false
+    },
+    "LogConfig": {
+      "type": "object",
+      "description": "Configuration for log action",
+      "properties": {
+        "metadata": {
+          "type": "object",
+          "description": "Metadata to include in log entries, supports CEL interpolation",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "OauthConfig": {
+      "type": "object",
+      "description": "Configuration for oauth action",
+      "properties": {
+        "provider": {
+          "type": "string",
+          "description": "OAuth provider",
+          "enum": ["google", "github", "facebook", "microsoft", "linkedin", "gitlab", "amazon", "twitch"]
+        },
+        "auth_id": {
+          "type": "string",
+          "description": "Unique authentication identifier for this provider. This value will be used for the cookie, redirect, authentication and logout purposes"
+        },
+        "client_id": {
+          "type": "string",
+          "description": "OAuth client ID. Leave empty to use ngrok's managed application"
+        },
+        "client_secret": {
+          "type": "string",
+          "description": "OAuth client secret. Leave empty to use ngrok's managed application"
+        },
+        "scopes": {
+          "type": "array",
+          "description": "A list of additional scopes to request when users authenticate with the identity provider",
+          "items": {
+            "type": "string"
+          }
+        },
+        "authz_url_params": {
+          "type": "object",
+          "description": "A map of additional URL parameters to apply to the authorization endpoint URL",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "max_session_duration": {
+          "type": "string",
+          "description": "Defines the maximum lifetime of a session regardless of activity",
+          "pattern": "^[0-9]+(s|m|h)$"
+        },
+        "idle_session_timeout": {
+          "type": "string",
+          "description": "Defines the period of inactivity after which a user's session is automatically ended, requiring re-authentication",
+          "pattern": "^[0-9]+(s|m|h)$"
+        },
+        "userinfo_refresh_interval": {
+          "type": "string",
+          "description": "How often should ngrok refresh data about the authenticated user from the identity provider",
+          "pattern": "^[0-9]+(s|m|h)$"
+        },
+        "allow_cors_preflight": {
+          "type": "boolean",
+          "description": "Allow CORS preflight requests to bypass authentication checks. Enable if the endpoint needs to be accessible via CORS",
+          "default": false
+        },
+        "auth_cookie_domain": {
+          "type": "string",
+          "description": "Sets the allowed domain for the auth cookie"
+        },
+        "email_addresses": {
+          "type": "array",
+          "description": "Allowed email addresses",
+          "items": {
+            "type": "string",
+            "format": "email"
+          }
+        },
+        "email_domains": {
+          "type": "array",
+          "description": "Allowed email domains",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": ["provider"],
+      "additionalProperties": false
+    },
+    "OidcConfig": {
+      "type": "object", 
+      "description": "Configuration for openid-connect action",
+      "properties": {
+        "issuer_url": {
+          "type": "string",
+          "description": "The base URL of the Open ID provider that serves an OpenID Provider Configuration Document at /.well-known/openid-configuration",
+          "format": "uri"
+        },
+        "auth_id": {
+          "type": "string",
+          "description": "Unique authentication identifier for this provider"
+        },
+        "client_id": {
+          "type": "string",
+          "description": "Your OpenID Connect app's client ID"
+        },
+        "client_secret": {
+          "type": "string",
+          "description": "Your OpenID Connect app's client secret"
+        },
+        "scopes": {
+          "type": "array",
+          "description": "A list of additional scopes to request when users authenticate with the identity provider",
+          "items": {
+            "type": "string"
+          }
+        },
+        "authz_url_params": {
+          "type": "object",
+          "description": "A map of additional URL parameters to apply to the authorization endpoint URL",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "max_session_duration": {
+          "type": "string",
+          "description": "Defines the maximum lifetime of a session regardless of activity",
+          "pattern": "^[0-9]+(s|m|h)$"
+        },
+        "idle_session_duration": {
+          "type": "string",
+          "description": "Defines the period of inactivity after which a user's session is automatically ended, requiring re-authentication",
+          "pattern": "^[0-9]+(s|m|h)$"
+        },
+        "userinfo_refresh_interval": {
+          "type": "string",
+          "description": "How often should ngrok refresh data about the authenticated user from the identity provider",
+          "pattern": "^[0-9]+(s|m|h)$"
+        },
+        "allow_cors_preflight": {
+          "type": "boolean",
+          "description": "Allow CORS preflight requests to bypass authentication checks. Enable if the endpoint needs to be accessible via CORS"
+        },
+        "auth_cookie_domain": {
+          "type": "string",
+          "description": "Sets the allowed domain for the auth cookie"
+        }
+      },
+      "required": ["issuer_url"],
+      "additionalProperties": false
+    },
+    "OwaspCrsRequestConfig": {
+      "type": "object",
+      "description": "Configuration for owasp-crs-request action",
+      "properties": {
+        "on_error": {
+          "type": "string",
+          "description": "Behavior if there is an error. Must be one of either 'continue' or 'halt'",
+          "enum": ["continue", "halt"],
+          "default": "halt"
+        },
+        "process_body": {
+          "type": "boolean",
+          "description": "If false, we do not process rules for the request body",
+          "default": false
+        },
+        "exclude_rule_ids": {
+          "type": "array",
+          "description": "List of OWASP CRS rule IDs to exclude from evaluation",
+          "items": {
+            "type": "integer",
+            "minimum": 900000,
+            "maximum": 999999
+          }
+        }
+      },
+      "required": ["on_error"],
+      "additionalProperties": false
+    },
+    "OwaspCrsResponseConfig": {
+      "type": "object",
+      "description": "Configuration for owasp-crs-response action", 
+      "properties": {
+        "on_error": {
+          "type": "string",
+          "description": "Behavior if there is an error. Must be one of either 'continue' or 'halt'",
+          "enum": ["continue", "halt"],
+          "default": "halt"
+        },
+        "process_body": {
+          "type": "boolean",
+          "description": "If false, we do not process rules for the response body",
+          "default": false
+        },
+        "exclude_rule_ids": {
+          "type": "array",
+          "description": "List of OWASP CRS rule IDs to exclude from evaluation",
+          "items": {
+            "type": "integer",
+            "minimum": 900000,
+            "maximum": 999999
+          }
+        }
+      },
+      "required": ["on_error"],
+      "additionalProperties": false
+    },
+    "RateLimitConfig": {
+      "type": "object",
+      "description": "Configuration for rate-limit action",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Name for this rate limit configuration",
+          "maxLength": 1024
+        },
+        "algorithm": {
+          "type": "string",
+          "description": "Rate limiting algorithm",
+          "enum": ["sliding_window"],
+          "default": "sliding_window"
+        },
+        "capacity": {
+          "type": "integer",
+          "description": "Maximum number of requests allowed",
+          "minimum": 1,
+          "maximum": 2000000000
+        },
+        "rate": {
+          "type": "string",
+          "description": "The duration in which events may be limited based on the current capacity. Must be specified as a time duration that is a multiple of ten seconds (e.g., '90s', '10m')",
+          "pattern": "^([0-9]+0s|[0-9]+m|[0-9]+h)$"
+        },
+        "bucket_key": {
+          "type": "array",
+          "description": "CEL expression that defines how to bucket and rate limit the request. Each bucket key is a CEL expression which supports all valid traffic policy variables and macros for the current phase. Example bucket keys: `req.host` - Rate limit based on the host of the request. `conn.client_ip` - Rate limit based on the client IP address. `getReqHeader('X-Example-Header-Name')` - Rate limit based on the value of the specified header key, if it exists. Up to ten bucket keys can be specified. For multiple buckets, the action will rate limit by each unique combination of buckets.",
+          "items": {
+            "type": "string",
+            "description": "CEL expression for bucket key. See bucket_key description for examples."
+          },
+          "minItems": 1,
+          "maxItems": 10
+        }
+      },
+      "required": ["name", "capacity", "rate", "bucket_key"],
+      "additionalProperties": false
+    },
+    "RedirectConfig": {
+      "type": "object",
+      "description": "Configuration for redirect action",
+      "properties": {
+        "status_code": {
+          "type": "integer",
+          "description": "HTTP redirect status code",
+          "enum": [301, 302, 303, 307, 308],
+          "default": 302
+        },
+        "to": {
+          "type": "string",
+          "description": "URL to redirect to, supports CEL interpolation"
+        },
+        "headers": {
+          "type": "object",
+          "description": "Additional headers to include in redirect response",
+          "patternProperties": {
+            "^[a-zA-Z0-9_-]+$": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "required": ["to"],
+      "additionalProperties": false
+    },
+    "RemoveHeadersConfig": {
+      "type": "object",
+      "description": "Configuration for remove-headers action",
+      "properties": {
+        "headers": {
+          "type": "array",
+          "description": "Header names to remove",
+          "items": {
+            "type": "string",
+            "description": "Header name to remove"
+          },
+          "minItems": 1,
+          "maxItems": 10
+        }
+      },
+      "required": ["headers"],
+      "additionalProperties": false
+    },
+    "RestrictIpsConfig": {
+      "type": "object",
+      "description": "Configuration for restrict-ips action",
+      "properties": {
+        "enforce": {
+          "type": "boolean",
+          "description": "Default true. If false, continue to the next action even if the IP is not permitted",
+          "default": true
+        },
+        "allow": {
+          "type": "array",
+          "description": "IP addresses or CIDR blocks to allow",
+          "items": {
+            "type": "string",
+            "description": "IP address or CIDR block"
+          }
+        },
+        "deny": {
+          "type": "array",
+          "description": "IP addresses or CIDR blocks to deny",
+          "items": {
+            "type": "string",
+            "description": "IP address or CIDR block"
+          }
+        },
+        "ip_policies": {
+          "type": "array",
+          "description": "IP Policy identifiers to be checked",
+          "items": {
+            "type": "string",
+            "pattern": "^ipp_[a-zA-Z0-9]+$"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "SamlConfig": {
+      "type": "object",
+      "description": "Configuration for saml action",
+      "properties": {
+        "idp_metadata": {
+          "type": "string",
+          "description": "SAML IdP metadata XML"
+        },
+        "idp_metadata_url": {
+          "type": "string",
+          "description": "URL to fetch SAML IdP metadata",
+          "format": "uri"
+        },
+        "force_authn": {
+          "type": "boolean",
+          "description": "Force authentication on each request",
+          "default": false
+        },
+        "allow_idp_initiated": {
+          "type": "boolean",
+          "description": "Allow IdP-initiated SSO",
+          "default": false
+        },
+        "authorized_groups": {
+          "type": "array",
+          "description": "Authorized SAML groups",
+          "items": {
+            "type": "string"
+          }
+        },
+        "entity_id": {
+          "type": "string",
+          "description": "SAML entity ID"
+        },
+        "assertion_consumer_service_url": {
+          "type": "string",
+          "description": "Assertion consumer service URL",
+          "format": "uri"
+        }
+      },
+      "oneOf": [
+        {"required": ["idp_metadata"]},
+        {"required": ["idp_metadata_url"]}
+      ],
+      "additionalProperties": false
+    },
+    "SetVarsConfig": {
+      "type": "object",
+      "description": "Configuration for set-vars action",
+      "properties": {
+        "vars": {
+          "type": "array",
+          "description": "vars is a list of maps that have a key of string and a value of any valid CEL type. Each map must be of exactly size 1, and represents one variable where the key is the name of the variable",
+          "items": {
+            "type": "object",
+            "description": "A single variable definition",
+            "minProperties": 1,
+            "maxProperties": 1,
+            "additionalProperties": {
+              "description": "Variable value, supports CEL interpolation"
+            }
+          }
+        }
+      },
+      "required": ["vars"],
+      "additionalProperties": false
+    },
+    "TerminateTlsConfig": {
+      "type": "object",
+      "description": "Configuration for terminate-tls action",
+      "properties": {
+        "min_version": {
+          "type": "string",
+          "description": "The minimum TLS version to support. Must be one of 1.0, 1.1, 1.2, or 1.3",
+          "enum": ["1.0", "1.1", "1.2", "1.3"],
+          "default": "1.2"
+        },
+        "max_version": {
+          "type": "string", 
+          "description": "The maximum TLS version to support. Must be one of 1.0, 1.1, 1.2, or 1.3",
+          "enum": ["1.0", "1.1", "1.2", "1.3"],
+          "default": "1.3"
+        },
+        "server_private_key": {
+          "type": "string",
+          "description": "The PEM-encoded private key for the server if using a custom certificate (must be specified with server_certificate)"
+        },
+        "server_certificate": {
+          "type": "string",
+          "description": "The PEM-encoded certificate for the server if using a custom certificate (must be specified with server_private_key)"
+        },
+        "mutual_tls_certificate_authorities": {
+          "type": "array",
+          "description": "A list of PEM-encoded Certificate Authority certificates and/or Certificate Authority IDs that are trusted for mutual TLS authentication",
+          "items": {
+            "type": "string"
+          }
+        },
+        "mutual_tls_verification_strategy": {
+          "type": "string",
+          "description": "The strategy to use for mutual TLS verification",
+          "enum": ["require-and-verify", "require-any", "request"],
+          "default": "require-and-verify"
+        }
+      },
+      "additionalProperties": false
+    },
+    "UrlRewriteConfig": {
+      "type": "object",
+      "description": "Configuration for url-rewrite action",
+      "properties": {
+        "from": {
+          "type": "string",
+          "description": "Regular expression to match URL path"
+        },
+        "to": {
+          "type": "string",
+          "description": "Replacement URL path, supports capture groups and CEL interpolation"
+        }
+      },
+      "required": ["from", "to"],
+      "additionalProperties": false
+    },
+    "VerifyWebhookConfig": {
+      "type": "object",
+      "description": "Configuration for verify-webhook action",
+      "properties": {
+        "provider": {
+          "type": "string",
+          "description": "Webhook provider",
+          "enum": ["github", "gitlab", "bitbucket", "shopify", "stripe", "slack", "zoom", "twilio", "intercom", "sendgrid", "pagerduty"]
+        },
+        "secret": {
+          "type": "string",
+          "description": "Webhook secret for verification"
+        }
+      },
+      "required": ["provider", "secret"],
+      "additionalProperties": false
+    }
+  }
+}

@@ -13,4 +13,4 @@ If you are attempting to access an endpoint programmatically and are still encou
 
 For more information and examples, please see the interstitial explanation [here](https://ngrok.com/docs/guides/limits/#why-is-there-an-interstitial-in-front-of-my-html-content).
 
-If you are the Administrator for this account, and none of these steps work for you or you have additional questions, drop us a note at at [support@ngrok.com](mailto:support@ngrok.com?subject=Help%20with%20ngrok%203200%20error).
+If you are the Administrator for this account, and none of these steps work for you or you have additional questions, drop us a note at [support@ngrok.com](mailto:support@ngrok.com?subject=Help%20with%20ngrok%203200%20error).

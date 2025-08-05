@@ -1,0 +1,133 @@
+---
+title: "Authenticate and Route API vs. App Traffic Based on User Agent"
+description: "Automatically enforce the right type of AuthN and route requests to the appropriate upstream service from the same hostname and path."
+sidebar_label: Route by User Agent
+---
+
+import ReserveDomain from "./snippets/_reserve-domain.mdx";
+import CloudEndpoint from "./snippets/_cloud-endpoint.mdx";
+import TryOut from "./snippets/_try-out.mdx";
+import Back from "./snippets/_back-to-examples.mdx";
+
+If you're serving both web app and API services from the same hostname, you can use ngrok and the Traffic Policy engine to:
+
+1. Automatically enforce OAuth or JWT validation on browser or curl/machine-to-machine traffic, respectively.
+2. Route only authenticated requests to your upstream app and API services.
+
+This way, your users can hit the same hostname, authenticate themselves, and get the response they expect, while you know that all your services are protected.
+
+## 1. Set up your JWT provider
+
+You can use any provider/issuer, but we have a guide for defining an API and [generating tokens with Auth0](/docs/integrations/auth0/jwt-action/).
+
+## 2. Start internal endpoints for your services
+
+Start an internal [Agent Endpoint](/docs/universal-gateway/agent-endpoints/), replacing `$PORT` based on where your app service listens.
+You can also use one of our [SDKs](/docs/agent-sdks) or the [Kubernetes Operator](/docs/k8s).
+
+```bash
+ngrok http 8080 --url https://web-service.internal
+```
+
+Start a second endpoint for your API service.
+
+```bash
+ngrok http 8081 --url https://api-service.internal
+```
+
+## 3. Reserve a domain
+
+<ReserveDomain />
+
+## 4. Create a Cloud Endpoint
+
+<CloudEndpoint />
+
+## 5. Add JWT validation, OAuth, and routing with Traffic Policy
+
+While still viewing your new cloud endpoint in the dashboard, copy and paste the policy below into the Traffic Policy editor.
+You may need to change:
+
+- `$YOUR_JWT_DOMAIN`: The domain name for your tenant at your JWT provider—for example, with Auth0, it looks something like `https://example.us.auth0`.
+- `$YOUR_EMAIL_DOMAIN`: The domain name associated with your organization's Google accounts for OAuth checks.
+
+```yaml
+on_http_request:
+  - expressions:
+      # Check if the client's user agent does not contain 'Mozilla', which means they are an API user
+      - "!(req.user_agent.contains('Mozilla'))"
+    actions:
+      # If true, apply the `jwt-validation` action
+      - type: "jwt-validation"
+        config:
+          issuer:
+            allow_list:
+              - value: "https://$YOUR_JWT_DOMAIN"
+          http:
+            tokens:
+              - type: "jwt"
+                method: "header"
+                name: "Authorization"
+                prefix: "Bearer "
+          jws:
+            allowed_algorithms:
+              - "RS256"
+            keys:
+              sources:
+                additional_jkus:
+                  - "https://$YOUR_JWT_DOMAIN/.well-known/jwks.json"
+      - type: "forward-internal"
+        config:
+          url: https://api-service.internal
+
+  - expressions:
+      # Check if the client's user agent contains 'Mozilla', which means they are a browser user
+      - "req.user_agent.contains('Mozilla')"
+    actions:
+      # If true, apply the oauth action
+      - type: oauth
+        config:
+          provider: google
+
+  - expressions:
+      # Check again whether the client's user agent contains 'Mozilla,' then also check whether the email they used in the OAuth flow matches <YOUR_DOMAIN>, and if both are `true`, then forward to your
+      - "req.user_agent.contains('Mozilla')"
+      - "actions.ngrok.oauth.identity != null && actions.ngrok.oauth.identity.email.endsWith('@$YOUR_EMAIL_DOMAIN')"
+    actions:
+      - type: "forward-internal"
+        config:
+          url: https://web-service.internal
+
+  - expressions:
+      # In all other situations, use `custom-response` to respond with a generaic unauthorized error
+      - type: "custom-response"
+        config:
+          status_code: 403
+```
+
+**What's happening here?** In the first section, this policy checks whether the request's user agent comes from an API user, then applies the `jwt-validation` action.
+If the request has the appropriate `Authorization: Bearer …` header, then ngrok forwards it to your API service.
+
+In the second section, it then checks whether the user agent is from a human/browser, then asks them to authenticate with Google's OAuth.
+If the account they sign into matches `$YOUR_EMAIL_DOMAIN`, then ngrok forwards it to your web app service.
+
+In all other cases, the policy returns a `403 Forbidden` response because the request was not properly authenticated.
+
+## 6. Try out your endpoint
+
+<TryOut />
+
+In your terminal, make sure you add your JWT as a header:
+
+```bash
+curl https://your-service.ngrok.app \
+	--header 'Authorization: Bearer $JWT_FROM_PROVIDER'
+```
+
+## What's next?
+
+- Read more about [Traffic Policy](/docs/traffic-policy) and its [core concepts](/docs/traffic-policy/concepts).
+- Explore all the configuration options in the [`jwt-validate`](/docs/traffic-policy/actions/jwt-validation) and [`oauth`](/docs/traffic-policy/actions/oauth) actions.
+- View your traffic in [Traffic Inspector](https://dashboard.ngrok.com/traffic-inspector).
+
+<Back />

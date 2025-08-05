@@ -1,0 +1,172 @@
+---
+title: Using Gateway API
+---
+
+# Gateway API with the ngrok Operator
+
+The following guide will help give an overview of using Gateway API resources to configure the ngrok Kubernetes operator.
+This guide aims to offer a few high-level examples and explanations about how the operator uses Gateway API resources, but more specific examples of using the Gateway API resources can be found in the various other guides for the specific actions you are looking to perform.
+
+This guide assumes that you have already installed the operator and the Gateway API CRDs following the [installation guide](/k8s/installation/helm).
+If you've already installed the operator without Gateway API support and would like to enable it, simply install the Gateway API CRDs and ngrok `GatewayClass` following the installation guide and restart the ngrok Kubernetes operator so that it can detect the newly installed Gateway API CRDs.
+
+:::note
+
+Request mirror filters are not yet supported with the ngrok Kubernetes Operator.
+
+:::
+
+## How does the ngrok Operator Use Gateway API?
+
+The ngrok Kubernetes operator consumes Gateway API resources and translates them into the native ngrok `CloudEndpoint` and `AgentEndpoint` custom resources.
+Each hostname from the listeners on the `Gateway` resources you configure will cause the operator to create a `CloudEndpoint` for the listener's hostname.
+Each unique upstream service you reference using `HTTPRoute` resources will cause the operator to create an `AgentEndpoint` with an `internal` binding so that it is not accessible directly on the internet.
+The operator then generates ngrok [traffic policy](/traffic-policy/) configuration on those `CloudEndpoint` to perform all the routing and actions specified in your Gateway API configuration and route to the internal `AgentEndpoint` resources that handle forwarding traffic to your upstream services.
+When you create/update/delete Gateway API resources, the operator will automatically handle creating/updating/deleting the `CloudEndpoint` and `AgentEndpoint` resources as needed.
+
+## Using `NgrokTrafficPolicy` with Gateway API Resources
+
+The operator will consume `Gateway` and `HTTPRoute` resources as necessary and build endpoints to provide the desired routing behaviour.
+The Gateway API filters on the `HTTPRoute` resources can be used to configure commonly used features such as redirecting requests and manipulating headers, but there may still be other use-cases and features
+that are not natively supported by the Gateway API that you would like to use. This is where you can take advantage of ngrok's traffic policy system to extend the functionality of your Gateway API resources.
+
+### Using `NgrokTrafficPolicy` on `Gateways`
+
+You can supply an `NgrokTrafficPolicy` custom resource on your `Gateway` resources using an annotation.
+When configured this way, the rules from your traffic policy will run for all requests matching any of the hostnames from the listeners on your `Gateway`.
+The traffic policy may "terminate" the request by sending back a response or forwarding the request to another endpoint using the `forward-internal` action, but if this happens then the request will not be processed further and will not be routed using any configuration from any matching `HTTPRoutes`.
+This is most commonly done to enforce policy across an entire `Gateway` such as enforcing authentication or manipulating headers where you do not care which `HTTPRoute` the request matches.
+
+The following example showcases using a `Gateway` with an `NgrokTrafficPolicy` supplied via annotation.
+The `NgrokTrafficPolicy` must be in the same namespace as the `Gateway`
+
+```yaml
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: NgrokTrafficPolicy
+metadata:
+  name: remove-header
+  namespace: default
+spec:
+  policy:
+    on_http_request:
+      - name: Remove Bad Header
+        actions:
+          - type: remove-headers
+            config:
+              headers:
+                - "X-Removed-Header"
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: example-gateway
+  namespace: default
+  annotations:
+    k8s.ngrok.com/traffic-policy: remove-header
+spec:
+  gatewayClassName: ngrok
+  listeners:
+    - name: example-hostname
+      hostname: "example-hostname.ngrok.io"
+      port: 443
+      protocol: HTTPS
+```
+
+### Use `NgrokTrafficPolicy` on `HTTPRoutes`
+
+You can also use `NgrokTrafficPolicy` on `HTTPRoute` resources as an external ref filter if you have traffic policies that should only be run for certain routes.
+
+The following example showcases using an `HTTPRoute` with an `NgrokTrafficPolicy` filter.
+They can also be used at the backend filter level which is useful if you have more than one upstream service in a group and you would like to run different traffic policy configurations depending on which backend was selected.
+The `NgrokTrafficPolicy` must be in the same namespace as the `Gateway`.
+While redundant, this example showcases both methods.
+
+```yaml
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: NgrokTrafficPolicy
+metadata:
+  name: basic-auth
+  namespace: default
+spec:
+  policy:
+    on_http_request:
+      - actions:
+          - type: basic-auth
+            config:
+              realm: sample-realm
+              credentials:
+                - user:password1
+                - admin:password2
+              enforce: true
+          - type: custom-response
+            config:
+              status_code: 200
+              headers:
+                content-type: text/plain
+              body: Successfully Authenticated!
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: example-route
+  namespace: default
+spec:
+  hostnames:
+  - example-hostname.ngrok.io
+  parentRefs:
+  - group: gateway.networking.k8s.io
+    kind: Gateway
+    name: example-gateway
+    namespace: default
+  rules:
+  - matches:
+      - path:
+          type: PathPrefix
+          value: /
+    backendRefs:
+      - group: ""
+        kind: Service
+        name: example-service
+        port: 80
+        weight: 1
+        filters:
+        - type: ExtensionRef
+          extensionRef:
+            group: "ngrok.k8s.ngrok.com"
+            kind: "NgrokTrafficPolicy"
+            name: basic-auth
+    filters:
+    - type: ExtensionRef
+      extensionRef:
+        group: "ngrok.k8s.ngrok.com"
+        kind: "NgrokTrafficPolicy"
+        name: basic-auth
+```
+
+## Gateway API HTTPS Upstreams
+
+If you have an `HTTPRoute` that routes to a Service that expects HTTPS instead of HTTP, you can specify this using the `k8s.ngrok.com/app-protocols` annotation on your `Service`.
+For example, the following `Service` uses the annotation to let the operator know which ports use HTTPS
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: example-service
+  labels:
+    app: example-app
+  annotations:
+    k8s.ngrok.com/app-protocols: '{"https-port":"https","http-port":"http"}'
+spec:
+  ports:
+    - name: https-port
+      port: 443
+      protocol: TCP
+      targetPort: 8443
+    - name: http-port
+      port: 80
+      protocol: TCP
+      targetPort: 8080
+  selector:
+    app: example-app
+```

@@ -4,10 +4,10 @@
 
 ```json
 {
-	"details": {
-		"operation_id": "op_2sJsRodkyHsLmRw4IoEGUBTlbdW"
-	},
-	"msg": "Resource not found",
-	"status_code": 404
+  "details": {
+    "operation_id": "op_2yJQXeEDgQAbCcLmKKCcqS6gZaV"
+  },
+  "msg": "Resource not found",
+  "status_code": 404
 }
 ```

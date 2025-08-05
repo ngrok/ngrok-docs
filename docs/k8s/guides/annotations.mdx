@@ -1,0 +1,207 @@
+---
+title: Custom Annotations
+---
+
+# Custom ngrok Annotations
+
+The following custom annotations can be used with the ngrok Kubernetes operator to extend the functionality of various resources.
+
+## `k8s.ngrok.com/traffic-policy`
+
+Allows you to supply an `NgrokTrafficPolicy` to an `Ingress` or `Gateway` resource.
+
+For more information about using traffic policies with `Ingresses` and Gateway API, see [the using Ingresses page](/k8s/guides/using-ingresses) and [the using Gateway API page](/k8s/guides/using-gwapi).
+
+**Usable On:** `Ingress`/`Gateway`
+
+**Example:**
+
+```yaml
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: NgrokTrafficPolicy
+metadata:
+  name: custom-response-example
+  namespace: default
+spec:
+  policy:
+    on_http_request:
+      - name: custom-response-example
+        expressions:
+          - req.url.path.startsWith('/custom-response')
+        actions:
+          - type: custom-response
+            config:
+              status_code: 200
+              body: "Custom response from your traffic policy"
+              headers:
+                content-type: text/plain
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    k8s.ngrok.com/traffic-policy: "custom-response-example"
+  name: example-ingress
+  namespace: default
+spec:
+  ingressClassName: ngrok
+  rules:
+    - host: example-ingresses.ngrok.io
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: example-service
+                port:
+                  number: 80
+```
+
+## `k8s.ngrok.com/mapping-strategy`
+
+Allows you to control the way that the operator translates `Ingress`, `Gateway` and `LoadBalancer` type `Services` into ngrok custom resources.
+By default, these resources will be translated into `CloudEndpoint` and `AgentEndpoint` custom resources, but you can opt to use the deprecated translation into `HTTPSEdge` resources
+before those are removed.
+
+For more information about how the operator translates resources, see [the using Ingresses page](/k8s/guides/using-ingresses) and [the using Gateway API page](/k8s/guides/using-gwapi).
+
+**Usable On:** `Ingress`/`Gateway`
+
+**Allowed Values:** `"endpoints"`/`"edges"`
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    k8s.ngrok.com/mapping-strategy: "edges"
+  name: example-ingress
+  namespace: default
+spec:
+  ingressClassName: ngrok
+  rules:
+    - host: example-ingresses.ngrok.io
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: example-service
+                port:
+                  number: 80
+```
+
+## `k8s.ngrok.com/pooling-enabled`
+
+Allows you to configure whether pooling should be enabled/disabled when the operator translates `Ingress` and `Gateway` resources into `CloudEndpoints`.
+By default, translated `CloudEndpoint` resources will have `poolingEnabled` set to `false`, but this annotation allows you to enable it.
+
+For more information about endpoint pooling, see [the pooling page](/k8s/guides/pooling)
+
+**Usable On:** `Ingress`/`Gateway`
+
+**Allowed Values:** `"true"`/`"false"`
+
+**Example:**
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    k8s.ngrok.com/pooling-enabled: "true"
+  name: example-ingress
+  namespace: default
+spec:
+  ingressClassName: ngrok
+  rules:
+    - host: example-ingresses.ngrok.io
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: example-service
+                port:
+                  number: 80
+```
+
+:::note
+
+Due to how Kubernetes handles annotation values, the value of k8s.ngrok.com/pooling-enabled must be a string ("true"). Setting the value to true without surrounding it with quotes will not work.
+
+:::
+
+## `k8s.ngrok.com/bindings`
+
+Allows you to specify the binding that should be used when the operator translates `Ingress` and `Gateway` resources into `CloudEndpoints`.
+By default, a binding of `"public"` will be used, but this annotation allows you to create internal or Kubernetes bound `CloudEndpoints` instead.
+
+For more information about bindings, see [the bindings page](/k8s/guides/bindings)
+
+**Usable On:** `Ingress`/`Gateway`
+
+**Allowed Values:** `"internal"`/`"public"`/`"kubernetes"`
+
+**Example:**
+
+```yaml
+  apiVersion: networking.k8s.io/v1
+  kind: Ingress
+  metadata:
+    name: example-ingress
+    namespace: default
+    annotations:
+      k8s.ngrok.com/bindings: "internal"
+  spec:
+    ingressClassName: ngrok
+    rules:
+      - host: example-domain.ngrok.io
+        http:
+          paths:
+            - path: /
+              pathType: Prefix
+              backend:
+                service:
+                  name: example-service
+                  port:
+                    number: 80
+```
+
+## `k8s.ngrok.com/app-protocols`
+
+Allows you to specify the protocol of ports on your service. Accepts a value that is a json string which maps the name of the
+ports on your `Service` to `http` or `https`. This annotation is optional, and when not used or a named port is not included in the annotation's value
+then the ngrok Kubernetes operator will default to using `http` for that port.
+
+**Usable On:** `Service`
+
+**Example:**
+
+The following example will mark the following service as having one port that is `https` and one port that is `http`.
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: example-service
+  labels:
+    app: example-app
+  annotations:
+    k8s.ngrok.com/app-protocols: '{"https-port":"https","http-port":"http"}'
+spec:
+  ports:
+    - name: https-port
+      port: 443
+      protocol: TCP
+      targetPort: 8443
+    - name: http-port
+      port: 80
+      protocol: TCP
+      targetPort: 8080
+  selector:
+    app: example-app
+```

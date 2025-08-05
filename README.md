@@ -10,6 +10,14 @@ See our [Contribution Guidelines](CONTRIBUTING.md) for detailed instructions on 
 
 ngrok is built using [Docusaurus 3](https://docusaurus.io/).
 
+The fastest and safest (isolated) way to run the documentation is with the Docker command below, then browse to http://localhost:3000/docs.
+
+```sh
+docker run --rm -p 3000:3000 -it --name=ngrokDocs -v "./:/app" -w "/app" --platform=linux/amd64 guergeiro/pnpm:20-8-alpine sh -c "apk add direnv; direnv allow; pnpm install; pnpm run start"
+```
+
+Otherwise, you can install and run everything on your local host.
+
 Prerequisites required:
 
 - [Node 20](https://nodejs.org/en/download)
@@ -69,10 +77,26 @@ To ensure your changes work before submitting a pr, please run the following bef
 ```
 cd ngrok-docs
 pnpm run fmt
+pnpm run test
+pnpm run typecheck
 pnpm run build
+```
+
+## Testing
+
+We use [Vitest](https://vitest.dev/) for testing. To run the tests, use:
+
+```sh
+pnpm run test
+```
+
+To run tests in watch mode during development:
+
+```sh
+pnpm run test:watch
 ```
 
 ## Looking for support?
 
-For bug reports, feature request, questions and community support please ooen an issue or discussion in our [ngrok Community](https://github.com/ngrok/ngrok).
+For bug reports, feature request, questions and community support please open an issue or discussion in our [ngrok Community](https://github.com/ngrok/ngrok).
 To report a problem with our documentation, please open a new [Github issue](https://github.com/ngrok/ngrok-docs/issues).

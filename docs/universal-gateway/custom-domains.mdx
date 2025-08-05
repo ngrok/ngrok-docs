@@ -1,0 +1,75 @@
+---
+title: How Do I Use A Custom Domain?
+sidebar_label: Using Custom Domains
+description: Learn how to use your own custom domain with ngrok.
+---
+
+This guide shows you how to use any domain name you already own, such as `app.your-domain.com`, with ngrok.
+
+:::note
+ngrok is not a domain registrar; you must already own a domain name to use it with ngrok.
+:::
+
+## 1. Add your domain in ngrok
+
+On your dashboard's [Domain page](https://dashboard.ngrok.com/domains), click the **New Domain** button to add your domain to your ngrok account.
+After it's been added, you'll be given a `CNAME` value such as `exampledata.otherdata.ngrok-cname.com`.
+Copy this for the next step.
+
+:::info
+You can also add a domain via the [ngrok API](/api/resources/reserved-domains/#request).
+The `CNAME` will be in the `"cname_target"` field of [the response object](/api/resources/reserved-domains/#response).
+:::
+
+## 2. Add the CNAME record to your domain
+
+In a new browser tab, navigate to your domain hosting provider's dashboard and create a CNAME record.
+(Check your provider's support content if you're unsure how to do this.)
+When configuring the record, use the following values:
+
+- **type**: `CNAME`
+- **name**: `@`
+- **value**: the `CNAME` value you copied from ngrok
+
+:::tip Test your CNAME record
+Using a tool like [`dig`](https://www.digwebinterface.com/) or [`nslookup`](https://www.nslookup.io/), you can test your CNAME record in the terminal.
+:::
+
+## 3. Start an endpoint using your domain
+
+To start an agent endpoint at your domain, run the following command in your terminal, replacing `your-domain-here.example.com` with the domain you added in the ngrok dashboard:
+
+```bash
+ngrok http --url your-domain-here.example.com 8080
+```
+
+## Wildcard domains
+
+If you bring your own [wildcard domain](/universal-gateway/domains#wildcard-domains) (such as`*.example.com`), you must create a second `CNAME` record with your domain host for [wildcard TLS Certificate provisioning](/universal-gateway/tls-certificates/#wildcard-domains).
+
+## Apex domains
+
+Because it's not possible to create `CNAME` records for apex domains (such as `example.com`), if you want to use an apex domain, you must use a DNS provider that supports an `ALIAS` record or `CNAME` flattening.
+
+Due to how `ALIAS`/`CNAME` flattening is implemented, apex domains cannot take advantage of the [Global Load Balancer](/universal-gateway/global-load-balancer/).
+If you're trying to create your apex domain because you need to create endpoints for multiple subdomains, use a [wildcard domain](#wildcard-domains) instead.
+
+## Using custom domains with TCP endpoints
+
+Public TCP endpoints are assigned randomly on an ngrok-controlled hostname with a randomly assigned port.
+You cannot choose the hostname or select the port.
+
+However, you can simulate a customized hostname by creating a `CNAME` record to the hostname of your assigned TCP address.
+If you do so, be aware that all ports on that hostname—even those provisioned to other accounts—will then be available on your domain.
+
+For example, if your TCP address is `5.tcp.ngrok.io:12345`, you could create the following `CNAME` record:
+
+```bash
+CNAME tcp.mydomain.com -> 5.tcp.ngrok.io
+```
+
+Then you can access that TCP endpoint with:
+
+```bash
+telnet tcp.mydomain.com 12345
+```

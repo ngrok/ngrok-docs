@@ -1,14 +1,13 @@
 import { Badge } from "@ngrok/mantle/badge";
 import { Button } from "@ngrok/mantle/button";
-import { useState, type PropsWithChildren } from "react";
+import { type PropsWithChildren, useState } from "react";
 
-interface ConfigItemProps {
+type ConfigItemProps = PropsWithChildren & {
 	title: string;
 	type: string;
 	cel: boolean;
 	required: boolean;
-	children: any;
-}
+};
 
 type ConfigChildrenProps = PropsWithChildren & {
 	open: boolean;
@@ -20,7 +19,7 @@ type ConfigEnumProps = PropsWithChildren & {
 
 export const Config = ({ children }: PropsWithChildren) => {
 	return (
-		<ul className="m-0 flex flex-shrink-0 list-none flex-col divide-y divide-gray-200 self-start border-b border-t border-gray-200 p-0 dark:divide-gray-800 dark:border-gray-800 [&_li+li]:mt-0 [&_p]:w-2/3">
+		<ul className="m-0 flex flex-shrink-0 list-none flex-col divide-y divide-gray-200 self-start border-b border-t border-gray-200 p-0 dark:divide-gray-800 dark:border-gray-800 [&_li+li]:mt-0">
 			{children}
 		</ul>
 	);
@@ -33,9 +32,13 @@ export const ConfigItem = ({
 	required = false,
 	children,
 }: ConfigItemProps) => {
+	const id = title.replace(/\.|\s|\*/g, "_");
 	return (
 		<li className="space-y-2 p-4 px-2 pb-3">
-			<h4 className="m-0 flex gap-2 self-baseline p-0 text-sm font-normal leading-none">
+			<h4
+				className="m-0 flex gap-2 self-baseline p-0 text-sm font-normal leading-none"
+				id={id}
+			>
 				<span className="font-mono font-semibold text-strong">{title}</span>
 				<span className="self-base flex gap-1.5 self-baseline text-xs text-muted">
 					<span>{type}</span>
@@ -67,8 +70,8 @@ export const ConfigChildren = ({
 				priority="neutral"
 				onClick={() => setIsOpen(!isOpen)}
 			>
-				{!isOpen && <>Show Child Properties</>}
-				{isOpen && <>Hide Child Properties</>}
+				{!isOpen && "Show Child Properties"}
+				{isOpen && "Hide Child Properties"}
 			</Button>
 			{isOpen && (
 				<ul className="m-0 mt-2 flex flex-shrink-0 list-none flex-col divide-y divide-gray-200 self-start rounded-md border border-gray-200 p-0 dark:divide-gray-800 dark:border-gray-800 [&_li]:p-4">
@@ -83,7 +86,7 @@ export const ConfigEnum = ({ label, children }: ConfigEnumProps) => {
 	return (
 		<ul className="m-0 flex flex-shrink-0 list-none flex-col divide-y divide-gray-200 self-start rounded-md border border-gray-200 p-0 dark:divide-gray-800 dark:border-gray-800 [&_li+li]:mt-0 [&_li]:py-2">
 			<li className="px-4 font-semibold">
-				{label ? label : `Possible enum values`}
+				{label ? label : "Possible enum values"}
 			</li>
 			{children}
 		</ul>

@@ -1,26 +1,16 @@
 ```go
 import (
 	"context"
-	"net/url"
 
-	"golang.ngrok.com/ngrok"
-	"golang.ngrok.com/ngrok/config"
+	"golang.ngrok.com/ngrok/v2"
 )
 
-func ngrokForwarder(ctx context.Context) (ngrok.Forwarder, error) {
-	backendUrl, err := url.Parse("tcp://192.168.1.2:80")
-	if err != nil {
-		return nil, err
-	}
-
-	return ngrok.ListenAndForward(ctx,
-		backendUrl,
-		config.TCPEndpoint(),
-		ngrok.WithAuthtokenFromEnv(),
+func ngrokForwarder(ctx context.Context) (ngrok.EndpointForwarder, error) {
+	return ngrok.Forward(ctx,
+		ngrok.WithUpstream("tcp://192.168.1.2:3306"),
+		ngrok.WithURL("tcp://"),
 	)
 }
 ```
 
-Go Package Docs:
-
-- [https://pkg.go.dev/golang.ngrok.com/ngrok#ListenAndForward](https://pkg.go.dev/golang.ngrok.com/ngrok#ListenAndForward)
+- [https://pkg.go.dev/golang.ngrok.com/ngrok/v2#WithUpstream](https://pkg.go.dev/golang.ngrok.com/ngrok/v2#WithUpstream)

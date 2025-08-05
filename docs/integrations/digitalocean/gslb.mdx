@@ -67,7 +67,7 @@ curl \
 
 :::tip Custom domains within ngrok
 
-Using CNAMEs, ngrok can host an endpoint on your dowmain while also managing the complete TLS certificate lifecycle on your behalf. If you'd prefer to use a custom domain rather than an ngrok-managed one, [follow our guide](/guides/other-guides/how-to-set-up-a-custom-domain/) to set up your DNS and replace your custom domain in the `export` command above.
+Using CNAMEs, ngrok can host an endpoint on your domain while also managing the complete TLS certificate lifecycle on your behalf. If you'd prefer to use a custom domain rather than an ngrok-managed one, [follow our guide](/universal-gateway/custom-domains/) to set up your DNS and replace your custom domain in the `export` command above.
 
 :::
 
@@ -225,7 +225,7 @@ for i in `seq 1 20`; do \
 
 You should see each VM respond with similar frequency:
 
-```json
+```json skip-validation
 [{"id":"c46bdbd9-b588-4ffa-8018-d299d0918bbc","dc":"sydney"}]
 [{"id":"dce5a46e-15af-4479-a073-8fbc7f0097c5","dc":"nyc"}]
 [{"id":"ecc6451c-bc25-43bd-8cb6-a162f019adf3","dc":"frankfurt"}]
@@ -266,7 +266,7 @@ You have two options:
     -H "Authorization: Bearer ${NGROK_API_KEY}" \
     -H "Content-Type: application/json" \
     -H "Ngrok-Version: 2" \
-    -d '{"enabled":true,"on_http_response":[{"actions":[{"type":"add-headers","config":{"headers": {"is-ngrok": "1","country": "${.ngrok.geo.country_code}"}}}],"name":"Add ngrok headers"}]}'
+    -d '{"enabled":true,"on_http_response":[{"actions":[{"type":"add-headers","config":{"headers": {"is-ngrok": "1","country": "${conn.client_ip.geo.location.country_code}"}}}],"name":"Add ngrok headers"}]}'
   ```
 
 - In the Traffic Policy module section of your [Edge](https://dashboard.ngrok.com/edges) in the ngrok dashboard, click the **Edit Traffic Policy** button and then the **YAML** button and add the YAML below.
@@ -280,7 +280,7 @@ You have two options:
         - type: add-headers
           config:
             headers:
-              country: ${.ngrok.geo.country_code}
+              country: ${conn.client_ip.geo.location.country_code}
               is-ngrok: "1"
   ```
 

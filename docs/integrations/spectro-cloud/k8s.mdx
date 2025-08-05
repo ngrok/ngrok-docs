@@ -21,7 +21,7 @@ Palette, from [Spectro Cloud](https://www.spectrocloud.com/), is a profile-based
 
 Together, the ngrok Kubernetes Operator and Palette integrate to provide secure public ingress for apps running on Kubernetes clusters managed on their platform. You get all the [benefits](https://www.spectrocloud.com/why-palette) of declarative management and lifecycle controls in Palette while simplifying and securing how you move public traffic into your Kubernetes cluster.
 
-With this guide, you'll define cluster and add-on profiles in Palette, create a cluster with your cloud provider, and integrate the ngrok Kubernetes Operator with either an example app or a custom app you're ready to make public via ngrok's Cloud Edge.
+With this guide, you'll define cluster and add-on profiles in Palette, create a cluster with your cloud provider, and integrate the ngrok Kubernetes Operator with either an example app or a custom app you're ready to make public via ngrok's cloud service.
 
 :::caution This tutorial requires:
 
@@ -120,7 +120,6 @@ For the former, Palette has a [ready-to-apply pack](https://docs.spectrocloud.co
    kind: Deployment
    metadata:
      name: game-2048
-     namespace: ngrok-ingress-controller
    spec:
      replicas: 1
      selector:
@@ -146,7 +145,6 @@ For the former, Palette has a [ready-to-apply pack](https://docs.spectrocloud.co
    kind: Service
    metadata:
      name: game-2048
-     namespace: ngrok-ingress-controller
    spec:
      ports:
        - name: http
@@ -158,18 +156,18 @@ For the former, Palette has a [ready-to-apply pack](https://docs.spectrocloud.co
 
    Click **Confirm & Create** to save the deployment.
 
-1. Add another manifest to create a Kubernetes ingress service, which will inform the ngrok Kubernetes Operator to create a new Edge for your app. Name it `2048-ingress` and create an `ingress` manifest with the following YAML content, replacing the `NGROK_DOMAIN` variable with the subdomain you created, which should look like `one-two-three.ngrok.app`.
+1. Add another manifest to create a Kubernetes ingress service, which will inform the ngrok Kubernetes Operator to create a new Edge for your app. Name it `2048-ingress` and create an `ingress` manifest with the following YAML content, replacing the `<NGROK_DOMAIN>` variable with the subdomain you created, which should look like `one-two-three.ngrok.app`.
 
    ```yaml showLineNumbers
    apiVersion: networking.k8s.io/v1
    kind: Ingress
    metadata:
      name: game-2048-ingress
-     namespace: ngrok-ingress-controller
+     namespace: ngrok-operator
    spec:
      ingressClassName: ngrok
      rules:
-       - host: NGROK_DOMAIN
+       - host: <NGROK_DOMAIN>
          http:
            paths:
              - path: /
@@ -256,9 +254,4 @@ ngrok will automatically delete your Edge upon the deletion of your cluster.
 
 ### Extend your ngrok Kubernetes Operator and Palette integration
 
-You can use the ngrok Kubernetes Operator and Palette to manage multiple routes on a single Edge using [name-based virtual hosting](https://github.com/ngrok/ngrok-operator/blob/main/docs/user-guide/ingress-to-edge-relationship.md#name-based-virtual-hosting) or [route
-modules](https://github.com/ngrok/ngrok-operator/blob/main/docs/user-guide/route-modules.md). [Custom domains](https://github.com/ngrok/ngrok-operator/blob/main/docs/user-guide/custom-domain.md) and a [circuit breaker](/traffic-policy/actions/circuit-breaker/) are also good next steps to make your integration production-ready.
-
-Learn more about the ngrok Kubernetes Operator, or contribute, by checking out the [GitHub
-repository](https://github.com/ngrok/ngrok-operator) and the [project-specific
-documentation](https://github.com/ngrok/ngrok-operator/tree/main/docs).
+Read our [Kubernetes Operator docs](/docs/k8s/) for more details, including [how it works](/docs/k8s/how-it-works/) and details on how to [apply an `NgrokTrafficPolicy` resource](/docs/k8s/guides/using-ingresses/#using-ngroktrafficpolicy-with-ingress) to your `Ingress` to start using our [Traffic Policy system](/docs/traffic-policy).

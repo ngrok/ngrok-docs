@@ -10,7 +10,11 @@ Internal endpoint URLs must:
 - End with the `.internal` domain extension
 - Use the `internal` [binding](/docs/universal-gateway/bindings/)
 
-A common practice is to use a [public](/docs/universal-gateway/public-endpoints) [cloud endpoints](/docs/universal-gateway/cloud-endpoints/) to manage a centralized Traffic Policy, then forward traffic to one or more internal [endpoints](/docs/universal-gateway/endpoints/). See [the guide on using cloud endpoints with internal endpoints](/docs/guides/other-guides/forwarding-and-load-balancing-with-cloud-endpoints/) to learn more.
+:::note
+Internal domains are [namespaced](#namespacing) to the accounts that create them. Even if another user has the same internal endpoint URL as you, your traffic will never flow to their endpoint.
+:::
+
+A common practice is to use a [public](/docs/universal-gateway/public-endpoints) [cloud endpoints](/docs/universal-gateway/cloud-endpoints/) to manage a centralized Traffic Policy, then forward traffic to one or more internal [endpoints](/docs/universal-gateway/endpoints/). See [the guide on using cloud endpoints with internal endpoints](/docs/universal-gateway/cloud-endpoints/forwarding-and-load-balancing//) to learn more.
 
 ## Quickstart
 
@@ -47,7 +51,7 @@ on_http_request:
           status_code: 200
           headers:
             content-type: text/plain
-          content: "Hello world!"
+          body: "Hello world!"
 ```
 
 ### Forwarding
@@ -89,11 +93,14 @@ ngrok http 8080 --url "https://example.internal"
 
 ## URLs
 
-- **Scheme** - Internal endpoints support all [Endpoint Protocols](/universal-gateway/endpoints/#protocol) (`http`, `https`, `tcp` and `tls`).
+- **Scheme** - Internal endpoints support all [Endpoint Protocols](/universal-gateway/protocols) (`http`, `https`, `tcp` and `tls`).
 - **Hostname** - Hostnames **must** end with `.internal` and may contain up to 5 subdomains. You must specify a URL with a hostname, randomly-assigned hostnames are not supported. You may specify wildcard hostnames.
 - **Port** - All port numbers [1-65535] are valid. For `tcp` endpoints, you **must** specify a port.
-- **Namespacing** - Internal endpoints are namespaced on a per-account basis.
-  This means that, two different accounts may have internal endpoints with the same URL (e.g. `https://api.internal`) without conflict or interference in [endpoint pooling](/universal-gateway/endpoint-pooling).
+
+## Namespacing
+
+Internal endpoints are namespaced on a per-account basis.
+This means that, two different accounts may have internal endpoints with the same URL (e.g. `https://api.internal`) without conflict or interference in [endpoint pooling](/universal-gateway/endpoint-pooling). As a result, there is no need to reserve an internal domain.
 
 #### Examples
 
@@ -106,7 +113,7 @@ ngrok http 8080 --url "https://example.internal"
 
 ## Type and Pooling
 
-- Internal endpoints support both [Endpoint Types](/universal-gateway/endpoints/#type): `agent` and `cloud`.
+- Internal endpoints support both [Endpoint Types](/universal-gateway/types): `agent` and `cloud`.
 - Internal endpoints support [Endpoint Pooling](/universal-gateway/endpoint-pooling).
 
 ## HTTP/S `on_tcp_connect` phase
@@ -118,7 +125,7 @@ This is because when you use the [`forward-internal` action](/docs/traffic-polic
 ## API
 
 Internal endpoints can be managed programatically. To get started, consult the
-[Endpoints API documentation](/universal-gateway/endpoints/#api).
+[Endpoints API documentation](/api/resources/endpoints/).
 
 ## Pricing
 

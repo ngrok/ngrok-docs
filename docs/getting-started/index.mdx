@@ -1,18 +1,35 @@
 ---
-title: Quickstart
-pagination_next: universal-gateway/http
+title: ngrok Agent CLI Quickstart
+pagination_next: getting-started/cloud-endpoints-quickstart
 ---
 
+import { LangSwitcher } from "/src/components/LangSwitcher";
 import TabItem from "@theme/TabItem";
 import Tabs from "@theme/Tabs";
 
-# Quickstart
+ngrok's core functionality is built around [Agent Endpoints](/universal-gateway/agent-endpoints/): ephemeral tunnels that connect your locally running apps to the internet through the ngrok cloud service.
+Common use cases include granting remote access to IoT devices, enabling your Kubernetes clusters to communicate with each other, and allowing external connections to a local gaming server.
 
-This quickstart will use the [ngrok agent](/agent/) to put your application on
-the internet and secure it so that only you can access it. It assumes you already have your
-own application running locally.
+The simplest way to get started is to create an agent endpoint that forwards public traffic to your localhost using the [ngrok Agent CLI](/agent/).
+This quickstart walks you through that process, as well as how to implement basic security measures by requiring visitors to log in with a Google account to access your app.
 
-## Step 1: Install
+## What you'll need
+
+- An [ngrok account](https://dashboard.ngrok.com/signup).
+- Your [ngrok auth token](https://dashboard.ngrok.com/get-started/your-authtoken).
+
+## 1. Reserve your domain
+
+A new URL is generated for you every time you start an agent endpoint.
+To maintain a consistent URL, you can reserve a free static domain connected to your ngrok account.
+
+Navigate to the dashboard, visit [the **Domains** section](https://dashboard.ngrok.com/domains), and select **+ New Domain**.
+You can choose a free static domain, or you can use a custom domain you already own.
+We'll come back to this in later steps.
+
+## 2. Install the ngrok Agent CLI
+
+Run the command that corresponds to your operating system to install the Agent CLI:
 
 <Tabs groupId="os" queryString="os">
 <TabItem value="macos" label="Mac OS" default>
@@ -36,151 +53,172 @@ curl -sSL https://ngrok-agent.s3.amazonaws.com/ngrok.asc \
 </TabItem>
 <TabItem value="windows" label="Windows">
 
-```bash
-choco install ngrok
-```
-
-Run this in an Administrator Command Prompt.
+Install via the <a href="ms-windows-store://pdp/?ProductId=9mvs1j51gmk6">Windows App Store</a>
 
 </TabItem>
 </Tabs>
 
-Or [download the ngrok agent from our Download
-page](https://download.ngrok.com) if you can't use one of the options above.
+Or [follow the direct installation guide](https://download.ngrok.com?tab=download) if you can't use one of the options above.
 
-Going to the [Setup & Installation page in the dashboard](https://dashboard.ngrok.com/get-started/setup) will also provide installation directions and commands specific to your platform.
-
-The ngrok agent is a zero-dependency CLI program that runs on all major
-operating systems. Test that you installed it correctly by running the
-following command in your terminal and confirm that ngrok prints its help text.
+To test that it's been installed correctly, run the following command in your terminal and confirm that ngrok prints its help text.
 
 ```bash
 ngrok help
 ```
 
-## Step 2: Connect your account
+## 3. Connect your account
 
-Next, connect your ngrok agent to your ngrok account. If you haven't already,
-[sign up for an ngrok account](https://dashboard.ngrok.com). Copy your [ngrok
-authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) from your
-ngrok dashboard.
-
-Run the following command in your terminal to install the authtoken and connect
-the ngrok agent to your account.
+Connect your agent to your ngrok account by providing your auth token as shown below—replace `$YOUR_TOKEN` with the string given to you [in the dashboard](https://dashboard.ngrok.com/get-started/your-authtoken).
 
 ```bash
-ngrok config add-authtoken <TOKEN>
+ngrok config add-authtoken $YOUR_TOKEN
 ```
 
-Going to the [Setup & Installation page in the dashboard](https://dashboard.ngrok.com/get-started/setup) will also provide a configuration command specific to your account.
+## 4. Start your app or service
 
-## Step 3: Put your app online
+Start up the app or service you'd like to put online.
+This is the app that your agent endpoint will forward online traffic to.
 
-Start ngrok by running the following command.
+If you don't have an app to work with, you can create a minimal app in your language of choice using the following code to set up a basic HTTP server at port `8080`.
+
+<LangSwitcher>
+
+```javascript title="service.js"
+const http = require('http');
+
+const server = http.createServer((req, res) => {
+    res.writeHead(200, { 'Content-Type': 'text/html' });
+    const html = `
+    <html>
+    <head><title>Test Page</title></head>
+    <body><h1>Hello from Node.js HTTP Server!</h1></body>
+    </html>
+    `;
+    res.end(html);
+});
+
+const port = 8080;
+server.listen(port, () => {
+    console.log(`Serving custom HTML at http://localhost:${port}`);
+});
+```
+
+```go title="service.go"
+package main
+
+import (
+	"fmt"
+	"net/http"
+)
+
+func handler(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "Hello from Go HTTP Server!")
+}
+
+func main() {
+	http.HandleFunc("/", handler)
+
+	fmt.Println("Starting server at http://localhost:8080")
+	err := http.ListenAndServe(":8080", nil)
+	if err != nil {
+		fmt.Println("Server failed:", err)
+	}
+}
+```
+
+```python title="service.py"
+from http.server import BaseHTTPRequestHandler, HTTPServer
+
+class MyHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.send_header("Content-type", "text/html")
+        self.end_headers()
+        html = b"""
+        <html>
+        <head><title>Test Page</title></head>
+        <body><h1>Hello from Python HTTP Server!</h1></body>
+        </html>
+        """
+        self.wfile.write(html)
+
+def run(server_class=HTTPServer, handler_class=MyHandler, port=8080):
+    server_address = ('', port)
+    httpd = server_class(server_address, handler_class)
+    print(f"Serving custom HTML at http://localhost:{port}")
+    httpd.serve_forever()
+
+if __name__ == "__main__":
+    run()
+```
+
+</LangSwitcher>
+
+Navigate to the directory where this file is located and start the server.
+
+## 5. Put your app online
+
+Start the ngrok agent by running the following command (replace `8080` if your app is running on a different port).
+The optional `--url` flag connects your app to your reserved domain from step 1—replace `$YOUR_DOMAIN` with this.
 
 ```bash
-ngrok http http://localhost:8080
+ngrok http 8080 --url $YOUR_DOMAIN
 ```
 
-We're assuming that you have a working web application listening on
-http://localhost:8080. If your app is listening on a different URL, change the
-above command to match.
+The agent should print a console UI to your terminal to confirm that it's online and forwarding as intended.
+Open the forwarding URL in your browser to see your web application, which is now available over HTTPS with a valid certificate that ngrok automatically manages for you.
 
-You will see something similar to the following console UI in your terminal.
+## 6. Secure your app
+
+ngrok makes it simple to add authentication to your app by implementing a [Traffic Policy](/traffic-policy/).
+Using the Agent CLI, you can add a traffic policy to your endpoint by editing your ngrok config file, which was automatically created when you provided your auth token in step 3.
+
+Terminate the agent endpoint that you started up in step 5, then run the following command in your terminal to open `ngrok.yml`:
 
 ```bash
-ngrok                                                                   (Ctrl+C to quit)
-
-Session Status                online
-Account                       inconshreveable (Plan: Free)
-Version                       3.0.0
-Region                        United States (us)
-Latency                       78ms
-Web Interface                 http://127.0.0.1:4040
-Forwarding                    https://84c5df474.ngrok-free.dev -> http://localhost:8080
-
-Connections                   ttl     opn     rt1     rt5     p50     p90
-                              0       0       0.00    0.00    0.00    0.00
+ngrok config edit
 ```
 
-Open the Forwarding URL in your browser and you will see your web application.
+You should see a new console UI with your config version and auth token already set.
+Below the auth token, paste the following snippet into the editor and then save and exit the config file.
+This policy states that whenever an HTTP/S request is made to `$YOUR_DOMAIN`, the agent endpoint should redirect the user to Google OAuth for authentication before proceeding to the app running on port `8080`.
 
-- This URL is available to anyone on the internet. Test it out by sending it to
-  a friend!
-- Your app is available over HTTPS (notice the 🔒 in your browser window) with
-  a valid certificate that ngrok automatically manages for you.
-
-## Step 4: Always use the same domain
-
-If you want to keep the same URL each time you use ngrok, [create a static
-domain on your dashboard](https://dashboard.ngrok.com/domains) and
-then use the `--url` flag to ask the ngrok agent to use it. First, stop
-ngrok with `Ctrl+C` and then run ngrok again:
-
-```
-ngrok http 8080 --url https://jumpy-red-mollusk.ngrok-free.app
-```
-
-## Step 5: Secure your app
-
-You may not want everyone to be able to access your application. ngrok can
-quickly add authentication to your app without any changes. If your Google
-account is `alan@example.com`, you can restrict access only for yourself by
-running ngrok with:
-
-```
-ngrok http http://localhost:8080 --oauth google --oauth-allow-email alan@example.com
+```yaml title="ngrok.yml"
+endpoints:
+  - name: cli-quickstart
+    url: $YOUR_DOMAIN
+    traffic_policy:
+      on_http_request:
+        - actions:
+          - type: oauth
+            config:
+              provider: google
+    upstream:
+      url: 8080
+      protocol: http1
 ```
 
-Anyone accessing your app will be prompted to log in with Google and only your
-account will be allowed to access it. Keep in mind that when you restart ngrok,
-if you don't specify the `--url` flag that your app's URL changed, so make
-sure to visit the new one.
+:::note
+This example uses ngrok's default Google OAuth application.
+To use your own, see [the OAuth Traffic Policy Action documentation](https://ngrok-docs-git-sg-doc-326-agent-endpoints-cli-f7e245-ngrok-dev.vercel.app/docs/traffic-policy/actions/oauth/#google-example).
+:::
 
-<img width="400" height="400" src="/docs/img/docs/ngrok-oauth.png" />
+Now you can start up your endpoint using its name:
 
-If you don't have a Google account or you want a simpler form of auth, you can
-protect your app with a username and password like so:
-
-```
-ngrok http http://localhost:8080 --basic-auth 'username:a-very-secure-password'
+```bash
+ngrok start cli-quickstart
 ```
 
-<img width="450" height="450" src="/docs/img/docs/ngrok-basic-auth.png" />
-
-ngrok supports many forms of authentication including:
-
-- [OAuth](/traffic-policy/actions/oauth/) (what we just used)
-- [Basic Auth](/traffic-policy/actions/basic-auth/) (what we just used)
-- [IP Restrictions](/traffic-policy/actions/restrict-ips/)
-- [Webhook Verification](/traffic-policy/actions/verify-webhook/)
-- [Mutual TLS](/traffic-policy/actions/terminate-tls/)
-- [OpenID Connect](/traffic-policy/actions/oidc/)
-- [JWT Validation](/traffic-policy/actions/jwt-validation/)
-- [SAML](/traffic-policy/actions/saml/)
-
-## Running ngrok Persistently
-
-While this guide gets you started with ngrok, you might want your tunnel to keep running even after you close your terminal window. Here are a few options to achieve this:
-
-- Using Docker: Docker allows you to containerize ngrok for easy deployment and management. See the documentation for [Docker configuration](/using-ngrok-with/docker/).
-
-- Systemd service (Linux): For systemd-based systems, you can create a systemd service to automatically start and manage ngrok. Refer to the documentation for [Systemd service creation](/agent/#background-service).
-- Windows service (Windows): For Windows systems, you can create a Windows service to automatically start and manage ngrok. Refer to the documentation for [Background Service](/agent/#background-service).
-- Detaching a Tmux session (optional): If you're familiar with Tmux, you can detach your ngrok session from your terminal window. (Note: This is an advanced option). Refer to a guide on using [Tmux](https://www.digitalocean.com/community/tutorials/how-to-configure-tmux-on-a-cloud-server) for more information:
+When you visit your public URL you should be prompted to authenticate by logging in with a Google account before you can access your app.
 
 ## What's next?
 
-- Browse examples in the [HTTP documentation](/universal-gateway/http/?cty=agent-cli) of other ways ngrok can augment your application
-- Bring your own [custom domain to ngrok](/universal-gateway/http/#bring-your-own-domain)
-- Create connectivity to non-HTTP services such as SSH, RDP, or game servers using [TCP Endpoints](/universal-gateway/tcp/)
-- Embed ngrok in your app programmatically without the agent with our [Agent SDKs](/agent-sdks/)
-- Add your [API key and automate via the `ngrok api` command](/api/#quickstart)
+In this guide, you learned how to create an agent endpoint to forward traffic from the internet to an app running on your local device using the ngrok agent CLI.
+You were introduced to some of the most common commands you should know, and you implemented a traffic policy, which can be used for many kinds of actions beyond the basic authentication example here.
+You also saw how to edit your config file to make your ephemeral endpoints repeatable and scalable by assigning a name you can refer back to with URLs, protocols, and actions already defined.
+What else can you do with these features?
 
-:::tip Have more questions not answered here?
-Reserve your spot in our monthly [Office
-Hours](https://ngrok.com/resources/office-hours) sessions, where you can have
-your questions about using ngrok answered live by folks in our Developer
-Education and Product teams, and learn about production use cases alongside your
-fellow engineers.
-:::
+- If you need to interact with ngrok agent endpoints programmatically, we recommend using one of our Agent SDKs which are available for [JavaScript (Node.js)](/getting-started/javascript/), [Go](/getting-started/go/), [Python](/getting-started/python/), and [Rust](/getting-started/rust/).
+- If your use case calls for a centrally managed, always-on endpoint that isn't tied to the ephemeral lifetime of an agent endpoint, you should proceed to [getting started with Cloud Endpoints](/getting-started/cloud-endpoints-quickstart/).
+- This quickstart barely scratches the surface of what's possible with a traffic policy—check out the [Actions overview](/traffic-policy/actions/) to see what else you can do.
+- Visit the [Agent CLI command reference](/agent/cli/) for a complete list of available commands.

@@ -4,16 +4,19 @@
 
 ```json
 {
-	"certificate": "ecdsa-sha2-nistp256-cert-v01@openssh.com AAAAKGVjZHNhLXNoYTItbmlzdHAyNTYtY2VydC12MDFAb3BlbnNzaC5jb20AAAAg2EzNdc5CFFjMsDVBolW8KRnGiSYKXNHySHwXGzdg11MAAAAIbmlzdHAyNTYAAABBBI3oSgxrOEJ+tIJ/n6VYtxQIFvynqlOHpfOAJ4x4OfmMYDkbf8dr6RAuUSf+ZC2HMCujta7EjZ9t+6v08Ue+CgkAAAAAAAAAAAAAAAIAAAAhc2hjcnRfMnNKc1NsT1BVZHFoUmF1VlBndVM0TmY1Z2VvAAAAJAAAABNpbmNvbnNocmV2ZWFibGUuY29tAAAACTEwLjIuNDIuOQAAAABnmpk1AAAAAGgRQDUAAAAAAAAAAAAAAAAAAAAzAAAAC3NzaC1lZDI1NTE5AAAAIJg0HkT6h5yTE7cyxeE0mBWJ/woeL+83Unrqm7Ltlt2zAAAAUwAAAAtzc2gtZWQyNTUxOQAAAECFWSvTeqTFF/PuIlbzq4z911cZAFm6eD/fu6Gl/i6IHr2924aLEdT5khyRJBEir6veWvIZtmEzfFPI63q8rc4M shcrt_2sJsSlOPUdqhRauVPguS4Nf5geo",
-	"created_at": "2025-01-29T21:10:13Z",
-	"description": "personal server",
-	"id": "shcrt_2sJsSlOPUdqhRauVPguS4Nf5geo",
-	"key_type": "ecdsa",
-	"principals": ["inconshreveable.com", "10.2.42.9"],
-	"public_key": "ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBI3oSgxrOEJ+tIJ/n6VYtxQIFvynqlOHpfOAJ4x4OfmMYDkbf8dr6RAuUSf+ZC2HMCujta7EjZ9t+6v08Ue+Cgk= inconshreveable.com",
-	"ssh_certificate_authority_id": "sshca_2sJsSmow0U0iFBuBEN3y6PvCjBO",
-	"uri": "https://api.ngrok.com/ssh_host_certificates/shcrt_2sJsSlOPUdqhRauVPguS4Nf5geo",
-	"valid_after": "2025-01-29T21:10:13Z",
-	"valid_until": "2025-04-29T21:10:13Z"
+  "certificate": "ecdsa-sha2-nistp256-cert-v01@openssh.com AAAAKGVjZHNhLXNoYTItbmlzdHAyNTYtY2VydC12MDFAb3BlbnNzaC5jb20AAAAgi8P00NqFQrzRvN68/bhjGXdztFPgqdPzP27HCY5Qe40AAAAIbmlzdHAyNTYAAABBBI3oSgxrOEJ+tIJ/n6VYtxQIFvynqlOHpfOAJ4x4OfmMYDkbf8dr6RAuUSf+ZC2HMCujta7EjZ9t+6v08Ue+CgkAAAAAAAAAAAAAAAIAAAAhc2hjcnRfMnlKUVlOVlhTTGE3VlprM1RxaFpYWVZZZmRFAAAAJAAAABNpbmNvbnNocmV2ZWFibGUuY29tAAAACTEwLjIuNDIuOQAAAABoSASiAAAAAGi+q6IAAAAAAAAAAAAAAAAAAAAzAAAAC3NzaC1lZDI1NTE5AAAAIHa8j7wx9Nrbyj2Kln3gQY+IPujsbiY9msrjf1926B4aAAAAUwAAAAtzc2gtZWQyNTUxOQAAAEDxbL2hiHIBqLckmcIAsHDSoLbtiuBF6qiDPVRNv6Xx5SENH/zB5cZV0gj/Gp7GGQq6HhIhAmN5wFFtFZ93yDQD shcrt_2yJQYNVXSLa7VZk3TqhZXYVYfdE",
+  "created_at": "2025-06-10T10:10:42Z",
+  "description": "personal server",
+  "id": "shcrt_2yJQYNVXSLa7VZk3TqhZXYVYfdE",
+  "key_type": "ecdsa",
+  "principals": [
+    "inconshreveable.com",
+    "10.2.42.9"
+  ],
+  "public_key": "ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBI3oSgxrOEJ+tIJ/n6VYtxQIFvynqlOHpfOAJ4x4OfmMYDkbf8dr6RAuUSf+ZC2HMCujta7EjZ9t+6v08Ue+Cgk= inconshreveable.com",
+  "ssh_certificate_authority_id": "sshca_2yJQYM1V4QfZjcyNFeO4322sDtX",
+  "uri": "https://api.ngrok.com/ssh_host_certificates/shcrt_2yJQYNVXSLa7VZk3TqhZXYVYfdE",
+  "valid_after": "2025-06-10T10:10:42Z",
+  "valid_until": "2025-09-08T10:10:42Z"
 }
 ```

@@ -178,7 +178,7 @@ which returns a `Hello world!` 200 OK response.
 <Tabs groupId="connectivity" queryString="cty">
 	<TabItem value="agent-api" label="Agent CLI" default>
 
-```sh title="Command line"
+```bash title="Command line"
 ngrok api endpoints create \
   --url https://example.ngrok.app \
   --traffic-policy "$(<traffic-policy.yml)"
@@ -192,7 +192,7 @@ on_http_request:
           status_code: 200
           headers:
             content-type: text/plain
-          content: "Hello world!"
+          body: "Hello world!"
 ```
 
     </TabItem>
@@ -202,7 +202,7 @@ on_http_request:
 ## URL
 
 URLs are validated differently depending on their
-[binding](/universal-gateway/endpoints/#binding). Consult the
+[binding](/universal-gateway/bindings). Consult the
 following documentation for details on valid URLs for TCP endpoints:
 
 - [Public Endpoint URLs](/universal-gateway/public-endpoints/#urls)
@@ -368,6 +368,28 @@ will receive traffic for `https://foo.example.com` and
 		<WildcardKubernetesExample />
 	</TabItem>
 </Tabs>
+
+### Use multiple endpoints with wildcard subdomains
+
+With the [Agent CLI](/agent/cli), you can create separate public endpoints for subdomains of a wildcard domain no matter where the upstream services are running. See [the Domains docs](/docs/universal-gateway/domains/#wildcard-domains) for more information.
+
+For example, if you reserve `*.example.com` and want to route requests to `api1.example.com` and `api2.example.com`, you can specify subdomains via the CLI. ngrok will handle routing requests to the correct endpoint, even if they're on different ports.
+
+The first one might be at port `80`:
+
+```bash
+ngrok http 80 --url https://api1.example.com
+```
+
+While the second is at port `81`:
+
+```bash
+ngrok http 81 --url https://api2.example.com
+```
+
+:::tip
+This is only necessary for creating _public_ endpoints to subdomains. Internal endpoints don't require a domain.
+:::
 
 ### Randomly assigned hostnames
 
@@ -835,7 +857,7 @@ TLS termination and certificiate management:
 - [TLS Certificates](/universal-gateway/tls-certificates)
 - [TLS Termination](/universal-gateway/tls-termination)
 
-## Upstream Headers {#upstream-headers}
+## Upstream Headers
 
 ngrok adds headers to each HTTP request with information about the original
 client IP, request scheme and request `host` header value.
@@ -915,7 +937,7 @@ ngrok may return an error under the following conditions:
 ## API
 
 HTTP/S Endpoints can be created programatically. Consult the documentation on
-[Endpoint APIs](/universal-gateway/endpoints/#api).
+[Endpoint APIs](/api/resources/endpoints/).
 
 ## Pricing
 
