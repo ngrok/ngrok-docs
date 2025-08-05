@@ -89,7 +89,7 @@
       </td>
       <td class="pre-wrapped">
         The authentication payload you specified is not valid.
-        This usually indiciates a bug in the client's protocol implementation.
+        This usually indicates a bug in the client's protocol implementation.
         The parsing error encountered was:
         <code>&lt;ERR&gt;</code>
       </td>
@@ -100,7 +100,7 @@
       </td>
       <td class="pre-wrapped">
         The session cookie you specified is not valid.
-        This usually indiciates a bug in the client's protocol implementation.
+        This usually indicates a bug in the client's protocol implementation.
       </td>
     </tr>
     <tr>
@@ -203,7 +203,7 @@
       </td>
       <td class="pre-wrapped">
         The analytics payload you specified is not valid.
-        This usually indiciates a bug in the client's protocol implementation.
+        This usually indicates a bug in the client's protocol implementation.
         The parsing error encountered was:
         <code>&lt;ERR&gt;</code>
       </td>
@@ -584,7 +584,7 @@
       </td>
       <td class="pre-wrapped">
         The bind payload you specified is not valid.
-        This usually indiciates a bug in the client's protocol implementation.
+        This usually indicates a bug in the client's protocol implementation.
         The parsing error encountered was:
         <code>&lt;ERR&gt;</code>
       </td>
@@ -1890,7 +1890,7 @@
         <a id="ERR_NGROK_458" href="/docs/errors/err_ngrok_458">ERR_NGROK_458</a>
       </td>
       <td class="pre-wrapped">
-        A singleton reserved domain with the name <code>&lt;NAME&gt;</code> already exists. You may only have one singleton reserved domain per account.
+        You are not allowed to delete your dev domain.
       </td>
     </tr>
     <tr>
@@ -2517,7 +2517,7 @@
       </td>
       <td class="pre-wrapped">
         Unknown stream type: <code>&lt;TYPE&gt;</code>.
-        This usually indiciates a bug in the client's protocol implementation.
+        This usually indicates a bug in the client's protocol implementation.
       </td>
     </tr>
     <tr>
@@ -2526,7 +2526,7 @@
       </td>
       <td class="pre-wrapped">
         The request payload you specified is not valid.
-        This usually indiciates a bug in the client's protocol implementation.
+        This usually indicates a bug in the client's protocol implementation.
         The parsing error encountered was:
         <code>&lt;ERR&gt;</code>
       </td>
@@ -3098,6 +3098,14 @@
     </tr>
     <tr>
       <td>
+        <a id="ERR_NGROK_1125" href="/docs/errors/err_ngrok_1125">ERR_NGROK_1125</a>
+      </td>
+      <td class="pre-wrapped">
+        HIPAA-enabled accounts cannot use SSH tunneling.
+      </td>
+    </tr>
+    <tr>
+      <td>
         <a id="ERR_NGROK_1200" href="/docs/errors/err_ngrok_1200">ERR_NGROK_1200</a>
       </td>
       <td class="pre-wrapped">
@@ -3131,6 +3139,14 @@
     <tr>
       <td>
         <a id="ERR_NGROK_1205" href="/docs/errors/err_ngrok_1205">ERR_NGROK_1205</a>
+      </td>
+      <td class="pre-wrapped">
+        You failed to solve the CAPTCHA, please try again.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_1206" href="/docs/errors/err_ngrok_1206">ERR_NGROK_1206</a>
       </td>
       <td class="pre-wrapped">
         You failed to solve the CAPTCHA, please try again.
@@ -5354,6 +5370,32 @@
     </tr>
     <tr>
       <td>
+        <a id="ERR_NGROK_2259" href="/docs/errors/err_ngrok_2259">ERR_NGROK_2259</a>
+      </td>
+      <td class="pre-wrapped">
+        No tunnels exist in this account
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_2260" href="/docs/errors/err_ngrok_2260">ERR_NGROK_2260</a>
+      </td>
+      <td class="pre-wrapped">
+        No tunnels could be found matching the supplied combination of labels
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_2261" href="/docs/errors/err_ngrok_2261">ERR_NGROK_2261</a>
+      </td>
+      <td class="pre-wrapped">
+        Failed to parse the configuration for policy action type <code>&lt;TYP&gt;</code>.
+        Field <code>&lt;FIELD&gt;</code> is not a valid regular expression.
+        ERROR: <code>&lt;ERR&gt;</code>.
+      </td>
+    </tr>
+    <tr>
+      <td>
         <a id="ERR_NGROK_3002" href="/docs/errors/err_ngrok_3002">ERR_NGROK_3002</a>
       </td>
       <td class="pre-wrapped">
@@ -6112,6 +6154,14 @@
     </tr>
     <tr>
       <td>
+        <a id="ERR_NGROK_3604" href="/docs/errors/err_ngrok_3604">ERR_NGROK_3604</a>
+      </td>
+      <td class="pre-wrapped">
+        HTTP Status Code <code>&lt;CODE&gt;</code> does not allow including a response body.
+      </td>
+    </tr>
+    <tr>
+      <td>
         <a id="ERR_NGROK_3700" href="/docs/errors/err_ngrok_3700">ERR_NGROK_3700</a>
       </td>
       <td class="pre-wrapped">
@@ -6132,6 +6182,64 @@
       </td>
       <td class="pre-wrapped">
         The response was blocked by the WAF.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_3800" href="/docs/errors/err_ngrok_3800">ERR_NGROK_3800</a>
+      </td>
+      <td class="pre-wrapped">
+        The request could not be proxied to the AI provider successfully
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_3900" href="/docs/errors/err_ngrok_3900">ERR_NGROK_3900</a>
+      </td>
+      <td class="pre-wrapped">
+        CEL interpolation was unsuccessful in action <code>&lt;ACTIONTYPE&gt;</code> field <code>&lt;FIELD&gt;</code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_3901" href="/docs/errors/err_ngrok_3901">ERR_NGROK_3901</a>
+      </td>
+      <td class="pre-wrapped">
+        CEL interpolation in action <code>&lt;ACTIONTYPE&gt;</code> field <code>&lt;FIELD&gt;</code> did not result in a valid regex.
+        ERROR: <code>&lt;ERROR&gt;</code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_3902" href="/docs/errors/err_ngrok_3902">ERR_NGROK_3902</a>
+      </td>
+      <td class="pre-wrapped">
+        Buffering for the body was not successfully initialized for action type <code>&lt;ACTIONTYPE&gt;</code>.
+        ERROR: <code>&lt;ERROR&gt;</code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_3903" href="/docs/errors/err_ngrok_3903">ERR_NGROK_3903</a>
+      </td>
+      <td class="pre-wrapped">
+        The body could not be successfully buffered for action type <code>&lt;ACTIONTYPE&gt;</code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_3904" href="/docs/errors/err_ngrok_3904">ERR_NGROK_3904</a>
+      </td>
+      <td class="pre-wrapped">
+        The body content could not be successfully modified for action type <code>&lt;ACTIONTYPE&gt;</code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_3905" href="/docs/errors/err_ngrok_3905">ERR_NGROK_3905</a>
+      </td>
+      <td class="pre-wrapped">
+        The content-length header could not be successfully updated for action type <code>&lt;ACTIONTYPE&gt;</code>
       </td>
     </tr>
     <tr>
@@ -6272,6 +6380,30 @@
       <td class="pre-wrapped">
         Your account does not have access to <code>&lt;FEATURE&gt;</code>.
         Contact us to get access to this feature: <a href="https://ngrok.com/enterprise/contact">https://ngrok.com/enterprise/contact</a>?ref=pricing-prod-custom
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_4024" href="/docs/errors/err_ngrok_4024">ERR_NGROK_4024</a>
+      </td>
+      <td class="pre-wrapped">
+        Your account plan cannot be downgraded: <code>&lt;REASON&gt;</code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_4025" href="/docs/errors/err_ngrok_4025">ERR_NGROK_4025</a>
+      </td>
+      <td class="pre-wrapped">
+        Your account plan cannot be upgraded: <code>&lt;REASON&gt;</code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_4026" href="/docs/errors/err_ngrok_4026">ERR_NGROK_4026</a>
+      </td>
+      <td class="pre-wrapped">
+        Your account has run out of credit, please upgrade to continue using paid actions, or use your dev domain and remove all paid traffic policy from it.
       </td>
     </tr>
     <tr>
@@ -7588,6 +7720,30 @@
     </tr>
     <tr>
       <td>
+        <a id="ERR_NGROK_5537" href="/docs/errors/err_ngrok_5537">ERR_NGROK_5537</a>
+      </td>
+      <td class="pre-wrapped">
+        Encountered an error while resolving client secret CEL expression.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_5538" href="/docs/errors/err_ngrok_5538">ERR_NGROK_5538</a>
+      </td>
+      <td class="pre-wrapped">
+        Encountered an error while encrypting the client secret.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_5539" href="/docs/errors/err_ngrok_5539">ERR_NGROK_5539</a>
+      </td>
+      <td class="pre-wrapped">
+        Encountered an error while decrypting the client secret.
+      </td>
+    </tr>
+    <tr>
+      <td>
         <a id="ERR_NGROK_6000" href="/docs/errors/err_ngrok_6000">ERR_NGROK_6000</a>
       </td>
       <td class="pre-wrapped">
@@ -7780,6 +7936,14 @@
       </td>
       <td class="pre-wrapped">
         The url <code>&lt;URL&gt;</code> has multiple endpoints, but they do not all have pooling enabled.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_6031" href="/docs/errors/err_ngrok_6031">ERR_NGROK_6031</a>
+      </td>
+      <td class="pre-wrapped">
+        HTTP endpoints are disabled for HIPAA-enabled plans
       </td>
     </tr>
     <tr>
@@ -10188,7 +10352,7 @@
         <a id="ERR_NGROK_9035" href="/docs/errors/err_ngrok_9035">ERR_NGROK_9035</a>
       </td>
       <td class="pre-wrapped">
-        Invalid port for for URL with scheme <code>&lt;CURRENTSCHEME&gt;</code>, allowed ports are <code>&lt;WANTPORT&gt;</code>.
+        Invalid port for URL with scheme <code>&lt;CURRENTSCHEME&gt;</code>, allowed ports are <code>&lt;WANTPORT&gt;</code>.
       </td>
     </tr>
     <tr>
@@ -10237,6 +10401,22 @@
       </td>
       <td class="pre-wrapped">
         Supported protocols for kubernetes-bound endpoints are http, tls, and tcp. You provided <code>&lt;PROTO&gt;</code>.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_9042" href="/docs/errors/err_ngrok_9042">ERR_NGROK_9042</a>
+      </td>
+      <td class="pre-wrapped">
+        TLS endpoints cannot be created on this version of the ngrok agent due to a vulnerability. Upgrade your agent to version 3.24.0 or later
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_9043" href="/docs/errors/err_ngrok_9043">ERR_NGROK_9043</a>
+      </td>
+      <td class="pre-wrapped">
+        HTTP endpoints are restricted for HIPAA-compliant accounts. Use HTTPS instead!
       </td>
     </tr>
     <tr>
@@ -10977,6 +11157,14 @@
     </tr>
     <tr>
       <td>
+        <a id="ERR_NGROK_15013" href="/docs/errors/err_ngrok_15013">ERR_NGROK_15013</a>
+      </td>
+      <td class="pre-wrapped">
+        Your account is requesting a dev domain that does not exist. Please visit <a href="https://dashboard.ngrok.com/domains">https://dashboard.ngrok.com/domains</a> to allocate a domain today.
+      </td>
+    </tr>
+    <tr>
+      <td>
         <a id="ERR_NGROK_16000" href="/docs/errors/err_ngrok_16000">ERR_NGROK_16000</a>
       </td>
       <td class="pre-wrapped">
@@ -11174,6 +11362,14 @@
       </td>
       <td class="pre-wrapped">
         The maximum number of endpoints allowed in this pool has been exceeded. Your account is limited to <code>&lt;LIMIT&gt;</code> endpoints per pool.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_18021" href="/docs/errors/err_ngrok_18021">ERR_NGROK_18021</a>
+      </td>
+      <td class="pre-wrapped">
+        You have exceeded the maximum number of concurrent endpoints allowed for this account. Please log into <a href="https://dashboard.ngrok.com/usage">https://dashboard.ngrok.com/usage</a> to review your historic usage and <a href="https://dashboard.ngrok.com/billing/subscription/select">https://dashboard.ngrok.com/billing/subscription/select</a> to view your subscription options.
       </td>
     </tr>
     <tr>
