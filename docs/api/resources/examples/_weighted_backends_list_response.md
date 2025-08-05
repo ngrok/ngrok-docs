@@ -7,14 +7,14 @@
   "backends": [
     {
       "backends": {
-        "bkdhr_2yJQYQfmCR8f61YQKximZz29CgE": 0,
-        "bkdhr_2yJQYSyjfZJ3CyuLiVDYrubnLWa": 1
+        "bkdhr_30si8xft3mmrLP44BILS6me0A5R": 0,
+        "bkdhr_30si8zD749CVK8vmJbRHNPJudn8": 1
       },
-      "created_at": "2025-06-10T10:10:43Z",
+      "created_at": "2025-08-05T19:35:25Z",
       "description": "acme weighted",
-      "id": "bkdwd_2yJQYRumnlvmunXNRAuZC02vAHv",
+      "id": "bkdwd_30si8wbi2DhtzX6bgfsbTAxKTVP",
       "metadata": "{\"environment\": \"staging\"}",
-      "uri": "https://api.ngrok.com/backends/weighted/bkdwd_2yJQYRumnlvmunXNRAuZC02vAHv"
+      "uri": "https://api.ngrok.com/backends/weighted/bkdwd_30si8wbi2DhtzX6bgfsbTAxKTVP"
     }
   ],
   "next_page_uri": null,
