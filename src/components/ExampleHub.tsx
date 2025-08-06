@@ -43,9 +43,10 @@ type Category = {
 type Props = {
 	examples: Example[];
 	categories: Category[];
+	parentDir?: string;
 };
 
-export default function ExampleHub({ examples, categories }: Props) {
+export default function ExampleHub({ examples, categories, parentDir }: Props) {
 	const [categoryFilter, setCategoryFilter] = useState(DefaultCategoryValue);
 	const [exampleSearch, setExampleSearch] = useState("");
 
@@ -136,7 +137,7 @@ export default function ExampleHub({ examples, categories }: Props) {
 							{examplesInGroup.map((example) => (
 								<Link
 									key={example.name}
-									to={`/traffic-policy/examples/${example.slug}`}
+									to={`/${parentDir}/examples/${example.slug}`}
 									className="col-span-1"
 								>
 									<Card className="flex h-full flex-col hover:bg-card-hover">
