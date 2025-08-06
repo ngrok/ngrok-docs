@@ -293,7 +293,7 @@ const sidebars = {
 					type: "doc",
 					id: "traffic-policy/macros/index",
 				},
-								{
+				{
 					label: "Secrets",
 					type: "doc",
 					id: "traffic-policy/secrets",
