@@ -1,16 +1,12 @@
 import Link from "@docusaurus/Link";
 import { useLocation } from "@docusaurus/router";
 import { Button } from "@ngrok/mantle/button";
-import {
-	HoverCard,
-	HoverCardContent,
-	HoverCardTrigger,
-} from "@ngrok/mantle/hover-card";
+import { HoverCard } from "@ngrok/mantle/hover-card";
 import { Icon } from "@ngrok/mantle/icon";
 import {
-	ArrowSquareOut,
-	LinkSimpleHorizontal,
-	QuestionMark,
+	ArrowSquareOutIcon,
+	LinkSimpleHorizontalIcon,
+	QuestionMarkIcon,
 } from "@phosphor-icons/react";
 import clsx from "clsx";
 import type React from "react";
@@ -98,8 +94,8 @@ export function Definition({
 	const iconSize = 4;
 
 	return (
-		<HoverCard>
-			<HoverCardTrigger className="m-0" asChild>
+		<HoverCard.Root>
+			<HoverCard.Trigger className="m-0" asChild>
 				<Button
 					className="mx-[-4px]"
 					type="button"
@@ -109,11 +105,11 @@ export function Definition({
 				>
 					<>
 						<span className={clsx("mr-[-5px]", className)}>{children}</span>
-						<QuestionMark size={8} className="mb-2" />
+						<QuestionMarkIcon size={8} className="mb-2" />
 					</>
 				</Button>
-			</HoverCardTrigger>
-			<HoverCardContent className="p-3 w-80 text-sm">
+			</HoverCard.Trigger>
+			<HoverCard.Content className="p-3 w-80 text-sm">
 				<div className="flex flex-col gap-3">
 					<span>{data.meaning}</span>
 					{Boolean(data?.link) && (
@@ -124,11 +120,14 @@ export function Definition({
 							>
 								<div className="max-w-[16px]">
 									{linkType === "external" ? (
-										<Icon className="max-w-[100%]" svg={<ArrowSquareOut />} />
+										<Icon
+											className="max-w-[100%]"
+											svg={<ArrowSquareOutIcon />}
+										/>
 									) : (
 										<Icon
 											className="max-w-[100%]"
-											svg={<LinkSimpleHorizontal size={iconSize} />}
+											svg={<LinkSimpleHorizontalIcon size={iconSize} />}
 										/>
 									)}
 								</div>
@@ -137,7 +136,7 @@ export function Definition({
 						</span>
 					)}
 				</div>
-			</HoverCardContent>
-		</HoverCard>
+			</HoverCard.Content>
+		</HoverCard.Root>
 	);
 }

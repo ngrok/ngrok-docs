@@ -1,22 +1,10 @@
 import Link from "@docusaurus/Link";
 import { Badge } from "@ngrok/mantle/badge";
 import { Button } from "@ngrok/mantle/button";
-import {
-	Card,
-	CardBody,
-	CardFooter,
-	CardHeader,
-	CardTitle,
-} from "@ngrok/mantle/card";
+import { Card } from "@ngrok/mantle/card";
 import type { Color } from "@ngrok/mantle/color";
 import { Input, InputCapture } from "@ngrok/mantle/input";
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "@ngrok/mantle/select";
+import { Select } from "@ngrok/mantle/select";
 import { MagnifyingGlass } from "@phosphor-icons/react";
 import { useState } from "react";
 
@@ -108,21 +96,21 @@ export default function ExampleHub({ examples, categories, parentDir }: Props) {
 				</Input>
 
 				<div className="flex gap-2">
-					<Select value={categoryFilter} onValueChange={setCategoryFilter}>
-						<SelectTrigger className="w-[180px]">
-							<SelectValue placeholder="Filter by Category" />
-						</SelectTrigger>
-						<SelectContent width="trigger">
-							<SelectItem value={DefaultCategoryValue}>
+					<Select.Root value={categoryFilter} onValueChange={setCategoryFilter}>
+						<Select.Trigger className="w-[180px]">
+							<Select.Value placeholder="Filter by Category" />
+						</Select.Trigger>
+						<Select.Content width="trigger">
+							<Select.Item value={DefaultCategoryValue}>
 								All categories
-							</SelectItem>
+							</Select.Item>
 							{categories.map((category) => (
-								<SelectItem key={category.id} value={category.id}>
+								<Select.Item key={category.id} value={category.id}>
 									{category.name}
-								</SelectItem>
+								</Select.Item>
 							))}
-						</SelectContent>
-					</Select>
+						</Select.Content>
+					</Select.Root>
 				</div>
 			</div>
 
@@ -140,14 +128,14 @@ export default function ExampleHub({ examples, categories, parentDir }: Props) {
 									to={`/${parentDir}/examples/${example.slug}`}
 									className="col-span-1"
 								>
-									<Card className="flex h-full flex-col hover:bg-card-hover">
-										<CardHeader>
-											<CardTitle className="mb-0">{example.name}</CardTitle>
-										</CardHeader>
-										<CardBody className="flex-grow py-4 px-6">
+									<Card.Root className="flex h-full flex-col hover:bg-card-hover">
+										<Card.Header>
+											<Card.Title className="mb-0">{example.name}</Card.Title>
+										</Card.Header>
+										<Card.Body className="flex-grow py-4 px-6">
 											<p className="m-0 p-0">{example.description}</p>
-										</CardBody>
-										<CardFooter className="px-6">
+										</Card.Body>
+										<Card.Footer className="px-6">
 											<div className="flex flex-wrap gap-2">
 												{example.categories
 													.sort((a, b) => a.localeCompare(b))
@@ -167,8 +155,8 @@ export default function ExampleHub({ examples, categories, parentDir }: Props) {
 														);
 													})}
 											</div>
-										</CardFooter>
-									</Card>
+										</Card.Footer>
+									</Card.Root>
 								</Link>
 							))}
 						</div>
