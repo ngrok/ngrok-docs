@@ -1,6 +1,6 @@
 import { IconButton } from "@ngrok/mantle/button";
-import { Popover, PopoverContent, PopoverTrigger } from "@ngrok/mantle/popover";
-import { BookOpenText } from "@phosphor-icons/react";
+import { Popover } from "@ngrok/mantle/popover";
+import { BookOpenTextIcon } from "@phosphor-icons/react";
 import type { LanguageInfo } from "./data";
 
 export function SdkButton({
@@ -33,20 +33,20 @@ export function SdkButton({
 
 	return (
 		<div className={className}>
-			<Popover>
-				<PopoverTrigger asChild>
+			<Popover.Root>
+				<Popover.Trigger asChild>
 					<IconButton
 						type="button"
 						label={`See the ngrok ${data.displayName} package docs ${linkText}.`}
-						icon={<BookOpenText />}
+						icon={<BookOpenTextIcon />}
 						size="sm"
 						appearance="ghost"
 					/>
-				</PopoverTrigger>
-				<PopoverContent className="p-2 text-sm">
+				</Popover.Trigger>
+				<Popover.Content className="p-2 text-sm">
 					See the ngrok {data.displayName} package docs {linkText}.
-				</PopoverContent>
-			</Popover>
+				</Popover.Content>
+			</Popover.Root>
 		</div>
 	);
 }
