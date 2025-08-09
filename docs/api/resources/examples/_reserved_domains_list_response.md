@@ -8,25 +8,6 @@
   "reserved_domains": [
     {
       "acme_challenge_cname_target": null,
-      "certificate": {
-        "id": "cert_30si5vV5lWJytO0b51acZFGuzYl",
-        "uri": "https://api.ngrok.com/tls_certificates/cert_30si5vV5lWJytO0b51acZFGuzYl"
-      },
-      "certificate_management_policy": null,
-      "certificate_management_status": null,
-      "cname_target": "2udamkamcl8pjmrff.h2tyio8n1uy1x7hi.local-ngrok-cname.com",
-      "created_at": "2025-08-05T19:35:01Z",
-      "domain": "myapp.mydomain.com",
-      "error_redirect_url": null,
-      "http_endpoint_configuration": null,
-      "https_endpoint_configuration": null,
-      "id": "rd_30si66U1nbzxlNVRNqwA9P01LOY",
-      "is_dev": false,
-      "region": "",
-      "uri": "https://api.ngrok.com/reserved_domains/rd_30si66U1nbzxlNVRNqwA9P01LOY"
-    },
-    {
-      "acme_challenge_cname_target": null,
       "certificate": null,
       "certificate_management_policy": {
         "authority": "letsencrypt",
@@ -37,22 +18,41 @@
           "error_code": null,
           "msg": "Managed certificate provisioning in progress.",
           "retries_at": null,
-          "started_at": "2025-08-05T19:35:02Z"
+          "started_at": "2025-08-09T10:14:50Z"
         },
         "renews_at": null
       },
-      "cname_target": "4knqktdwka2umyjjc.h2tyio8n1uy1x7hi.local-ngrok-cname.com",
-      "created_at": "2025-08-05T19:35:02Z",
+      "cname_target": "4knqktdwka2umyjjc.3hf1dd1mp2fxyljpr.local-ngrok-cname.com",
+      "created_at": "2025-08-09T10:14:50Z",
       "description": "Device 0001 Dashboard",
       "domain": "manage-0002.app.example.com",
       "error_redirect_url": null,
       "http_endpoint_configuration": null,
       "https_endpoint_configuration": null,
-      "id": "rd_30si64bhw7QTDcbMd2VxwvhYo3V",
+      "id": "rd_312uSqoAC98XH19oBoCk9ujbryC",
       "is_dev": false,
       "metadata": "{\"service\": \"dashboard\"}",
       "region": "",
-      "uri": "https://api.ngrok.com/reserved_domains/rd_30si64bhw7QTDcbMd2VxwvhYo3V"
+      "uri": "https://api.ngrok.com/reserved_domains/rd_312uSqoAC98XH19oBoCk9ujbryC"
+    },
+    {
+      "acme_challenge_cname_target": null,
+      "certificate": {
+        "id": "cert_312uShtWVG54TA5wX0jyKpzLwGw",
+        "uri": "https://api.ngrok.com/tls_certificates/cert_312uShtWVG54TA5wX0jyKpzLwGw"
+      },
+      "certificate_management_policy": null,
+      "certificate_management_status": null,
+      "cname_target": "2udamkamcl8pjmrff.3hf1dd1mp2fxyljpr.local-ngrok-cname.com",
+      "created_at": "2025-08-09T10:14:49Z",
+      "domain": "myapp.mydomain.com",
+      "error_redirect_url": null,
+      "http_endpoint_configuration": null,
+      "https_endpoint_configuration": null,
+      "id": "rd_312uSksfosqBUYPQNHXN60SrRY7",
+      "is_dev": false,
+      "region": "",
+      "uri": "https://api.ngrok.com/reserved_domains/rd_312uSksfosqBUYPQNHXN60SrRY7"
     },
     {
       "acme_challenge_cname_target": null,
@@ -60,16 +60,16 @@
       "certificate_management_policy": null,
       "certificate_management_status": null,
       "cname_target": null,
-      "created_at": "2025-08-05T19:34:31Z",
+      "created_at": "2025-08-09T10:14:19Z",
       "description": "Your dev domain",
-      "domain": "crayfish-wealthy-hound.ngrok-free.dev",
+      "domain": "hedgehog-funny-firstly.ngrok-free.dev",
       "error_redirect_url": null,
       "http_endpoint_configuration": null,
       "https_endpoint_configuration": null,
-      "id": "rd_30si2FJDjQRNJFfSJz00f57gLX4",
+      "id": "rd_312uOq3dCjISJXbf7B22VxcDq2R",
       "is_dev": true,
       "region": "",
-      "uri": "https://api.ngrok.com/reserved_domains/rd_30si2FJDjQRNJFfSJz00f57gLX4"
+      "uri": "https://api.ngrok.com/reserved_domains/rd_312uOq3dCjISJXbf7B22VxcDq2R"
     }
   ],
   "uri": "https://api.ngrok.com/reserved_domains"
