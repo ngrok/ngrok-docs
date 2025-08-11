@@ -32,7 +32,7 @@
 | bindings          | List&lt;string&gt; | the bindings associated with this endpoint                                                                                                                |
 | id                | string             | a resource identifier                                                                                                                                     |
 | uri               | string             | a uri for locating a resource                                                                                                                             |
-| uri               | string             | URI of the clep API resource                                                                                                                              |
+| uri               | string             | URI of the Cloud Endpoint API resource                                                                                                                    |
 | name              | string             | user supplied name for the endpoint                                                                                                                       |
 | pooling_enabled   | boolean            | whether the endpoint allows pooling                                                                                                                       |
 | uri               | string             | URI of the endpoints list API resource                                                                                                                    |
