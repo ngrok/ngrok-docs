@@ -13,14 +13,14 @@ ngrok is built using [Docusaurus 3](https://docusaurus.io/).
 The fastest and safest (isolated) way to run the documentation is with the Docker command below, then browse to http://localhost:3000/docs.
 
 ```sh
-docker run --rm -p 3000:3000 -it --name=ngrokDocs -v "./:/app" -w "/app" --platform=linux/amd64 guergeiro/pnpm:20-8-alpine sh -c "apk add direnv; direnv allow; pnpm install; pnpm run start"
+docker run --rm -p 3000:3000 -it --name=ngrokDocs -v "./:/app" -w "/app" --platform=linux/amd64 guergeiro/pnpm:22-9-alpine sh -c "apk add direnv; direnv allow; pnpm install; pnpm run start"
 ```
 
 Otherwise, you can install and run everything on your local host.
 
 Prerequisites required:
 
-- [Node 20](https://nodejs.org/en/download)
+- [Node 22](https://nodejs.org/en/download)
 - [pnpm 9](https://pnpm.io/installation#using-npm)
 - [nvm](https://github.com/nvm-sh/nvm)
 
@@ -30,7 +30,7 @@ We use [direnv](https://direnv.net/) to assist you with setting up all of the re
   <summary>Prefer to install and manage the tooling yourself?</summary>
 
 1. Install [nvm](https://github.com/nvm-sh/nvm?tab=readme-ov-file#installing-and-updating) or your node version manager of choice.
-2. Ensure that `node 20` is installed. With `nvm`, run `nvm install`.
+2. Ensure that `node 22` is installed. With `nvm`, run `nvm install`.
 3. Enable `pnpm` with `corepack`: `corepack enable pnpm`
 4. Install `pnpm` with `corepack`: `corepack install`
 5. Install project dependencies with `pnpm`: `pnpm install`
