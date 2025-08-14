@@ -5,9 +5,8 @@ export default async function myPlugin(context, options) {
 	return {
 		name: "docusaurus-tailwindcss",
 		configurePostCss(postcssOptions) {
-			// Appends TailwindCSS and AutoPrefixer.
-			postcssOptions.plugins.push(require("tailwindcss"));
-			postcssOptions.plugins.push(require("autoprefixer"));
+			// Appends TailwindCSS.
+			postcssOptions.plugins.push(require("@tailwindcss/postcss"));
 			return postcssOptions;
 		},
 	};
