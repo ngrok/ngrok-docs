@@ -1,15 +1,9 @@
 import Link from "@docusaurus/Link";
 import { Badge } from "@ngrok/mantle/badge";
 import { Button } from "@ngrok/mantle/button";
-import { Card, CardBody, CardFooter } from "@ngrok/mantle/card";
+import { Card } from "@ngrok/mantle/card";
 import { Input, InputCapture } from "@ngrok/mantle/input";
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "@ngrok/mantle/select";
+import { Select } from "@ngrok/mantle/select";
 import { MagnifyingGlass } from "@phosphor-icons/react";
 import { useState } from "react";
 
@@ -104,35 +98,35 @@ export default function ActionHub({ actions }: Props) {
 				</Input>
 
 				<div className="flex gap-2">
-					<Select value={protocolFilter} onValueChange={setProtocolFilter}>
-						<SelectTrigger className="w-[180px]">
-							<SelectValue placeholder="Filter by Phase" />
-						</SelectTrigger>
-						<SelectContent width="trigger">
-							<SelectItem value={DefaultProtocolValue}>
+					<Select.Root value={protocolFilter} onValueChange={setProtocolFilter}>
+						<Select.Trigger className="w-[180px]">
+							<Select.Value placeholder="Filter by Phase" />
+						</Select.Trigger>
+						<Select.Content width="trigger">
+							<Select.Item value={DefaultProtocolValue}>
 								All Protocols
-							</SelectItem>
+							</Select.Item>
 							{Object.keys(Protocols).map((protocol) => (
-								<SelectItem key={protocol} value={protocol}>
+								<Select.Item key={protocol} value={protocol}>
 									{protocol}
-								</SelectItem>
+								</Select.Item>
 							))}
-						</SelectContent>
-					</Select>
+						</Select.Content>
+					</Select.Root>
 
-					<Select value={phaseFilter} onValueChange={setPhaseFilter}>
-						<SelectTrigger className="w-[180px]">
-							<SelectValue placeholder="Filter by Phase" />
-						</SelectTrigger>
-						<SelectContent width="trigger">
-							<SelectItem value={DefaultPhaseValue}>All Phases</SelectItem>
+					<Select.Root value={phaseFilter} onValueChange={setPhaseFilter}>
+						<Select.Trigger className="w-[180px]">
+							<Select.Value placeholder="Filter by Phase" />
+						</Select.Trigger>
+						<Select.Content width="trigger">
+							<Select.Item value={DefaultPhaseValue}>All Phases</Select.Item>
 							{Phases.map((phase) => (
-								<SelectItem key={phase} value={phase}>
+								<Select.Item key={phase} value={phase}>
 									{phase}
-								</SelectItem>
+								</Select.Item>
 							))}
-						</SelectContent>
-					</Select>
+						</Select.Content>
+					</Select.Root>
 				</div>
 			</div>
 
@@ -144,14 +138,14 @@ export default function ActionHub({ actions }: Props) {
 							to={`/traffic-policy/actions/${action.type}`}
 							className="col-span-1"
 						>
-							<Card className="flex h-full flex-col divide-y-0 hover:bg-card-hover">
+							<Card.Root className="flex h-full flex-col divide-y-0 hover:bg-card-hover">
 								<h3 className="m-0 flex items-baseline gap-2 px-4 pb-2 pt-4">
 									{action.type}
 								</h3>
-								<CardBody className="flex-grow p-0 px-4">
+								<Card.Body className="flex-grow p-0 px-4">
 									<p className="m-0 p-0">{action.description}</p>
-								</CardBody>
-								<CardFooter className="px-4 pb-4">
+								</Card.Body>
+								<Card.Footer className="px-4 pb-4">
 									<div className="flex flex-wrap gap-2">
 										{action.phases
 											.sort((a, b) => a.localeCompare(b))
@@ -178,8 +172,8 @@ export default function ActionHub({ actions }: Props) {
 												}
 											})}
 									</div>
-								</CardFooter>
-							</Card>
+								</Card.Footer>
+							</Card.Root>
 						</Link>
 					))}
 				</div>

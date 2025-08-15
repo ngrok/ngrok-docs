@@ -6,12 +6,7 @@ import {
 	useTabs,
 } from "@docusaurus/theme-common/internal";
 import useIsBrowser from "@docusaurus/useIsBrowser";
-import {
-	Tabs as MantleTabs,
-	TabsContent,
-	TabsList,
-	TabsTrigger,
-} from "@ngrok/mantle/tabs";
+import { Tabs as MantleTabs } from "@ngrok/mantle/tabs";
 import { getStorageTab } from "@site/src/components/LangSwitcher/utils";
 import type { Props } from "@theme/Tabs";
 import clsx from "clsx";
@@ -129,14 +124,14 @@ function TabList({
 	);
 	const tabToShow = getValidTabToShow(tabValues, selectedTabItem, defaultTab);
 	return (
-		<MantleTabs
+		<MantleTabs.Root
 			orientation="horizontal"
 			defaultValue={defaultTab}
 			value={tabToShow}
 		>
-			<TabsList className="overflow-y-hidden pr-4">
+			<MantleTabs.List className="overflow-y-hidden pr-4">
 				{tabValues.map(({ value, label, attributes }) => (
-					<TabsTrigger
+					<MantleTabs.Trigger
 						value={label || value}
 						role="tab"
 						aria-selected={selectedTabItem?.item === label}
@@ -149,9 +144,9 @@ function TabList({
 						{...attributes}
 					>
 						{label || value}
-					</TabsTrigger>
+					</MantleTabs.Trigger>
 				))}
-			</TabsList>
+			</MantleTabs.List>
 			<TabContent
 				tabValues={tabValues}
 				selectValue={selectValue}
@@ -159,7 +154,7 @@ function TabList({
 				// biome-ignore lint/correctness/noChildrenProp:
 				children={props.children}
 			/>
-		</MantleTabs>
+		</MantleTabs.Root>
 	);
 }
 
@@ -169,12 +164,12 @@ function TabContent({ children }: Props & ReturnType<typeof useTabs>) {
 	) as ReactElement<TabItemProps>[];
 	return childTabs.map((tabItem, i) => {
 		return (
-			<TabsContent
+			<MantleTabs.Content
 				value={tabItem.props.label || tabItem.props.value}
 				key={`${tabItem.props.value}${i}`}
 			>
 				{tabItem.props.children}
-			</TabsContent>
+			</MantleTabs.Content>
 		);
 	});
 }

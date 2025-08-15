@@ -9,5 +9,5 @@ curl \
 -H "Content-Type: application/json" \
 -H "Ngrok-Version: 2" \
 -d '{"description":"Sample Cloud Endpoint"}' \
-https://api.ngrok.com/endpoints/ep_2yJQYEPSHOrsl9B8WVYY8itqspV
+https://api.ngrok.com/endpoints/ep_315inJnmvKjYxsylQcrXD0Tg8E8
 ```
