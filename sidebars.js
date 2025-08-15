@@ -294,6 +294,11 @@ const sidebars = {
 					id: "traffic-policy/macros/index",
 				},
 				{
+					label: "Secrets",
+					type: "doc",
+					id: "traffic-policy/secrets",
+				},
+				{
 					label: "Variables",
 					type: "category",
 					link: { type: "doc", id: "traffic-policy/variables/index" },
