@@ -27,8 +27,8 @@ export default function NavbarColorModeToggle({ className }: Props): ReactNode {
 			type="button"
 			className={cx(
 				"text-muted hover:text-body",
-				"cursor-pointer bg-transparent focus:outline-hidden",
-				"flex shrink-0 cursor-pointer items-center justify-center rounded-full p-1.5 ring-focus-accent focus:outline-hidden focus-visible:ring-4",
+				"cursor-pointer bg-transparent focus:outline-none",
+				"flex shrink-0 cursor-pointer items-center justify-center rounded-full p-1.5 ring-focus-accent focus:outline-none focus-visible:ring-4",
 				"size-9 dark-high-contrast:text-black dark-high-contrast:hover:text-white",
 				className,
 			)}
