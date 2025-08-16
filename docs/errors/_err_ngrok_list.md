@@ -11582,6 +11582,14 @@
     </tr>
     <tr>
       <td>
+        <a id="ERR_NGROK_24008" href="/docs/errors/err_ngrok_24008">ERR_NGROK_24008</a>
+      </td>
+      <td class="pre-wrapped">
+        Required parameter 'VaultID' is missing.
+      </td>
+    </tr>
+    <tr>
+      <td>
         <a id="ERR_NGROK_25000" href="/docs/errors/err_ngrok_25000">ERR_NGROK_25000</a>
       </td>
       <td class="pre-wrapped">
