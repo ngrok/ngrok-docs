@@ -45,7 +45,7 @@ Service Users facts and limitations:
 - Service Users have limited functionality:
   - Service Users cannot log into the ngrok Dashboard
   - Service Users cannot be assigned or shared among multiple accounts
-- Benefits of service users:
+- Benefits of Service Users:
   - Credentials that are unique to a specific service or function can be connected to a service user instead of being connected to a person. A standard user may leave the account or want to rotate their credentials, and these actions should not impact production services running in ngrok.
   - Events are attributed to a service user and can help you better understand what a specific production service in ngrok is doing, even when there are multiple production services in the same account.
   - Service users can be deactivated to temporarily suspend all credentials associated with it—making ngrok more secure.
