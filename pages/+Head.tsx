@@ -10,6 +10,17 @@ export default function Head() {
 			<script
 				// biome-ignore lint/security/noDangerouslySetInnerHtml: Theme script requires dynamic content
 				dangerouslySetInnerHTML={{
+					__html: `(() => {
+	window.semaphore = window.semaphore || [];
+	window.ketch = (...args) => {
+		window.semaphore.push(args);
+	};
+})();`,
+				}}
+			/>
+			<script
+				// biome-ignore lint/security/noDangerouslySetInnerHtml: Theme script requires dynamic content
+				dangerouslySetInnerHTML={{
 					__html: `(function() {
 	const themes = ["system","light","dark","light-high-contrast","dark-high-contrast"];
 	const isTheme = (value) => typeof value === "string" && themes.includes(value);
