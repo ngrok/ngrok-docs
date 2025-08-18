@@ -75,7 +75,7 @@ When you delete a Service User, all credentials owned the user are immediately r
 
 ### What does it mean for a Service User to be inactive? {#service-user-inactive}
 
-When a service user is marked as inactive, they remain in the account, but their credentials can no longer be used. This is a good way to test what might break if the service user is completely removed.
+When a Service User is marked as inactive, they remain in the account, but their credentials can no longer be used. This is a good way to test what might break if the service user is completely removed.
 
 ### Can I move my former employees credentials (API keys, authtokens, SSH keys) to a service user? {#service-user-existing-credentials}
 
