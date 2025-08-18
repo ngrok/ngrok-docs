@@ -39,7 +39,7 @@ Service Users differ from Users in a few important ways:
 - Service Users may not be a member of more than one Account.
 - Service Users do not count against any seat counts or limits.
 
-Service users facts and limitations:
+Service Users facts and limitations:
 
 - Service users may be attached to services that consume ngrok platform resources and can trigger overages. These areas include metrics like bandwidth, total sessions and endpoints, authtokens, API tokens, and more.
 - Service users have limited functionality:
