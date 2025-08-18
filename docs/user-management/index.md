@@ -77,6 +77,6 @@ When you delete a Service User, all credentials owned the user are immediately r
 
 When a Service User is marked as inactive, they remain in the account, but their credentials can no longer be used. This is a good way to test what might break if the service user is completely removed.
 
-### Can I move my former employees credentials (API keys, authtokens, SSH keys) to a service user? {#service-user-existing-credentials}
+### Can I move my former employees credentials (API keys, authtokens, SSH keys) to a Service User? {#service-user-existing-credentials}
 
 Credentials are assigned an owner when they are created and the owner cannot be changed. Access the [ngrok Dashboard](https://dashboard.ngrok.com/users/bots) to create a new service user.
