@@ -63,7 +63,7 @@ Using the API, you can POST to the [`/bot_users` endpoint](/api/resources/bot-us
 
 A Service User is the best suited to own the credentials of shipped products, devices, and integrations in production. The ideal flow is a credential you can associate with a specific task, keep active, and can rotate on a predictable schedule because it is unique to that integration, service, or function.
 
-Service users are available on all ngrok free and paid plans.
+Service Users are available on all ngrok free and paid plans.
 
 ### When should I not use a service user? {#service-user-vs-user}
 
