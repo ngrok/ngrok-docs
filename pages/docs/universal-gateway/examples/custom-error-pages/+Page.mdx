@@ -1,0 +1,95 @@
+---
+title: "Deploy Custom Error Pages"
+description: "Instead of a blank page or HTTP error code, ensure your services automatically failover to error pages with clear details and instructions."
+sidebar_label: "Custom Error Pages"
+sidebar_position: 3
+---
+
+import ReserveDomain from "../_snippets/_reserve-domain.mdx";
+import CloudEndpoint from "../_snippets/_cloud-endpoint.mdx";
+import TryOut from "../_snippets/_try-out.mdx";
+import Back from "../_snippets/_back-to-examples.mdx";
+
+When your upstream nodes or services go offline, you don't want your users to see a blank page, a standalone HTTP error code, or an ngrok-branded error page.
+A custom error page gives you the chance to communicate clearly and reinforce your brand even during downtime.
+
+With ngrok’s Traffic Policy engine, you can define exactly what your users see when your upstream service fails. This example walks you through how to route requests to your internal service, and then fall back to a branded error page if that service is unavailable.
+
+## 1. Create an endpoint for your service
+
+Start an internal [Agent Endpoint](/docs/universal-gateway/agent-endpoints/), replacing `$PORT` based on where your service listens.
+You can also use one of our [SDKs](/docs/agent-sdks) or the [Kubernetes Operator](/docs/k8s).
+
+```bash
+ngrok http $PORT --url https://service.internal
+```
+
+## 2. Reserve a domain
+
+<ReserveDomain />
+
+## 3. Create a Cloud Endpoint
+
+<CloudEndpoint />
+
+## 4. Add routing to your service and error handling with Traffic Policy
+
+While still viewing your new Cloud Endpoint in the dashboard, copy and paste the policy below into the Traffic Policy editor.
+
+```yaml
+on_http_request:
+  - actions:
+      - type: forward-internal
+        config:
+          url: https://service.internal
+          on_error: continue
+      - type: custom-response
+        config:
+          status_code: 503
+          headers:
+            content-type: text/html
+          body: |
+            <!doctype html>
+            <html>
+            <head>
+              <meta charset="UTF-8" />
+              <meta name="viewport" content="width=device-width, initial-scale=1" />
+              <title>Error at ${req.host}!</title>
+              <style>
+                body { font-family: system-ui, sans-serif; padding: 2rem; background: #fff; }
+                code { font-family: monospace; background: #eee; padding: 0.2em 0.4em; border-radius: 4px; }
+                .container { max-width: 600px; margin: 0 auto; }
+              </style>
+            </head>
+            <body>
+              <div class="container">
+                <h1>Sorry, something went wrong!</h1>
+                <p>We're having trouble reaching <strong>${req.host}</strong>.</p>
+                <ul>
+                  <li>Time: <code>${timestamp(time.now)}</code></li>
+                  <li>Path: <code>${req.url.path}</code></li>
+                  <li>Method: <code>${req.method}</code></li>
+                  <li>Region: <code>${conn.server_region}</code></li>
+                </ul>
+              </div>
+            </body>
+            </html>
+```
+
+**What's happening here?** This policy forwards all HTTP requests to the internal agent endpoint you created at `https://service.internal`.
+
+If forwarding to `https://service.internal` fails, the `on_error: continue` configuration on your `forward-internal` action means that the policy continues to the next rule, which sends a custom `503` error response with the HTML specified in the `body`.
+
+## 5. Try out your endpoint
+
+<TryOut />
+
+If you take down either your upstream service or the internal Agent Endpoint, you'll see your custom error message.
+
+## What's next?
+
+- See other examples of using the [`custom-response`](/docs/traffic-policy/actions/custom-response/#examples) to create error pages or messages, such as a JSON-based response for an API service.
+- View your traffic in [Traffic Inspector](https://dashboard.ngrok.com/traffic-inspector) to see who and when users hit your custom error page.
+- Add the [`log` action](/docs/traffic-policy/actions/log) before the `custom-response` to send error events over to your observability platform for enriched debugging.
+
+<Back />

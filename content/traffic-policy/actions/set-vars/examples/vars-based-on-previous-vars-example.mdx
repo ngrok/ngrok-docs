@@ -1,0 +1,46 @@
+import ConfigExample from "@components/ConfigExample.tsx";
+
+### Setting Vars based on Previous Vars Example
+
+The following [Traffic Policy](/docs/traffic-policy/) configuration is an example of setting vars based on previous vars with the `set-vars` action.
+Variables are determined in the order in which they are listed in the configuration list.
+
+#### Example Traffic Policy Document
+
+<ConfigExample
+	snippetText={null}
+	showLineNumbers={true}
+	jsonMetastring="{5-51}"
+	yamlMetastring="{4-28}"
+	config={{
+		on_http_request: [
+			{
+				actions: [
+					{
+						type: "set-vars",
+						config: {
+							vars: [
+								{
+									accepted_models: ["openai/o1", "openai/4o", "openai/4o-mini"],
+								},
+								{
+									models: "${actions.ngrok.http_request.res.body}",
+								},
+								{
+									models:
+										"${vars.models.filter(model, model.id in vars.accepted_models)}",
+								},
+								{
+									models: "${vars.models.filter(model, model.latency < 100)}",
+								},
+								{
+									models: "${vars.models.sort(x, y, x.latency < y.latency)}",
+								},
+							],
+						},
+					},
+				],
+			},
+		],
+	}}
+/>

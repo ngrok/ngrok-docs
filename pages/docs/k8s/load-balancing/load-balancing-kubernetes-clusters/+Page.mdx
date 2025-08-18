@@ -1,0 +1,172 @@
+---
+title: Load Balancing Between Multiple Kubernetes Clusters
+sidebar_label: For Kubernetes Clusters
+description: Use Endpoint Pooling to split traffic between any number of clusters without needing to deploy external services. 
+---
+
+import TabItem from "@components/Tabs/TabItem";
+import Tabs from "@components/Tabs";
+import { YouTubeEmbed } from "@components/youtube-embed";
+
+Let's say you have three services, `foo`, `bar`, and `baz`, deployed in a single
+Kubernetes cluster, but eventually decide you need to extend to multiple
+clusters for reasons like:
+
+- Redundancy and failover
+- Load distribution and scalability
+- Hosting services close to your customers in different regions
+- Deploying some clusters on-premises and others with a cloud provider
+
+<YouTubeEmbed videoId="xD1hZ84uEJs" title="Multi-cluster (and multi-cloud!) ingress in 60 seconds with ngrok" />
+
+With ngrok, you don't need to provision new load balancers or other complex
+networking tools—[Endpoint
+Pooling](/docs/universal-gateway/endpoint-pooling/) lets you share traffic between
+replicas of your services on any number of clusters by deploying them on the same
+[internal](/docs/universal-gateway/internal-endpoints/) URL. With the addition
+of a [Cloud Endpoint](/docs/universal-gateway/cloud-endpoints) and [Traffic
+Policy](/docs/traffic-policy), you'll have a single "front door" for all your
+load-balanced K8s services behind a single hostname, like
+`https://api.example.com`.
+
+:::tip
+We have another guide for load balancing to
+[individual K8s
+services](/docs/k8s/load-balancing/load-balancing-kubernetes) with
+ngrok custom resources, Ingress objects, or Gateway API resources. This guide uses our [custom
+resources](/docs/k8s/guides/using-crds) to create endpoints for your services.
+:::
+
+## 1. Install the ngrok Kubernetes Operator
+
+Check out our [installation instructions](/docs/k8s/installation/helm/) for
+details on how to use Helm to deploy the open-source Operator to each cluster
+you'd like to load-balance between.
+
+## 2. Create internal Agent Endpoints on your first cluster
+
+The following YAML manifest creates three internal agent endpoints, each of which
+will proxy traffic to your `foo`, `bar`, and `baz` pods, respectively. When you
+use our custom resources to create agent endpoints, pooling is [enabled
+automatically](/docs/k8s/guides/pooling/#endpoint-pooling-with-agentendpoints).
+
+```yaml
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: AgentEndpoint
+metadata:
+	name: foo
+	namespace: default
+spec:
+	upstream:
+		url: http://foo.default:8001
+	url: https://foo.internal
+---
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: AgentEndpoint
+metadata:
+	name: bar
+	namespace: default
+spec:
+	upstream:
+		url: http://bar.default:8002
+	url: https://bar.internal
+---
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: AgentEndpoint
+metadata:
+	name: baz
+	namespace: default
+spec:
+	upstream:
+		url: http://baz.default:8003
+	url: https://baz.internal
+```
+
+Save it to your local workstation as `ingress.yaml` and apply to your cluster
+with `kubectl apply -f ingress.yaml`.
+
+These internal agent endpoints won't yet be available to public traffic, because
+they are only accessible through other ngrok endpoints in your account, but
+you'll fix that in the next two steps.
+
+Repeat the process on any other clusters you want to load balance traffic
+between.
+
+## 4. Create a Cloud Endpoint and add routing with Traffic Policy
+
+If you don't yet have a reserved domain, go ahead and [reserve
+one](https://dashboard.ngrok.com/domains) in the dashboard.
+
+The easiest way to create a cloud endpoint is in the [**Endpoint**
+section](https://dashboard.ngrok.com/endpoints) of your ngrok dashboard.
+
+Click **New**, then **Cloud Endpoint**. Leave the binding as **Public** and
+fill in the full URL of the domain you reserved, then click **Create Cloud
+Endpoint**.
+
+The following traffic policy example:
+
+1. Uses the [`forward-internal`
+   action](/docs/traffic-policy/actions/forward-internal/) to route all requests to
+   the `/foo` path to the pool you created at `https://foo.internal`. - The pooled endpoints then proxy requests proxies the request to the `foo`
+   Service/Deployment in your cluster.
+2. Does the same for the paths `/bar` and `/baz`.
+3. Denies all traffic to paths that don't (yet) have a service.
+
+```yaml
+on_http_request:
+  - expressions:
+      - req.url.path.startsWith('/foo')
+    actions:
+      - type: forward-internal
+        config:
+          url: https://foo.internal
+  - expressions:
+      - req.url.path.startsWith('/bar')
+    actions:
+      - type: forward-internal
+        config:
+          url: https://bar.internal
+  - expressions:
+      - req.url.path.startsWith('/baz')
+    actions:
+      - type: forward-internal
+        config:
+          url: https://baz.internal
+  - actions:
+      - type: deny
+        config:
+          status_code: 404
+```
+
+Paste the YAML above into the dashboard and click **Save**.
+
+Now, when you request `https://api.example.com/foo` or any other route, your
+traffic will be automatically load-balanced between replicas of your services on
+multiple Kubernetes clusters.
+
+## What's next?
+
+With load balancing solved for, you can now add new services or entire
+Kubernetes clusters by adding new endpoints to existing pools or configuring new
+routes with traffic policy.
+
+Speaking of traffic policy, here are a few common ways folks filter, manage, and
+orchestrate requests:
+
+- [Route requests by subdomain or
+  header](/docs/traffic-policy/examples/route-requests/) instead of paths.
+- Add authentication with the
+  [`basic-auth`](/docs/traffic-policy/actions/basic-auth/),
+  [`oauth`](/docs/traffic-policy/actions/oauth/), or
+  [`jwt-validation`](/docs/traffic-policy/actions/jwt-validation/) Traffic
+  Policy actions.
+- [Rate limit requests](/docs/traffic-policy/actions/rate-limit/) to prevent
+  abuse and ensure fairness.
+
+Or, if you're looking for a more step-by-step experience for deploying ngrok as
+an API gateway, check out our guides:
+
+- [Deploy an API gateway with Kubernetes](/docs/guides/api-gateway/kubernetes/)
+- [Deploy a multicloud API
+  gateway](/docs/k8s/load-balancing/load-balancing-kubernetes-clusters/)

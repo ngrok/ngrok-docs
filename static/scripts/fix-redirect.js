@@ -1055,7 +1055,7 @@ const currentPath = window.location.pathname;
 
 // set new path to current path
 let newPath = currentPath;
-let val = "";
+let _val = "";
 // iterate over each redirect, when a match is found, update newPath
 // we do this until the list is finished letting us stack redirects:
 // redirect A (2018) -> redirect B (2020) -> redirect C (current year)
@@ -1074,7 +1074,7 @@ for (const redirect of redirects) {
 	}
 
 	const [from, fromResult] = fromFn(newPath);
-	val = { from, fromResult };
+	_val = { from, fromResult };
 	if (fromResult) {
 		newPath = toFn(newPath, from);
 	}

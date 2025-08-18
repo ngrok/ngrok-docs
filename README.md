@@ -6,81 +6,108 @@ Source code for [ngrok docs](https://ngrok.com/docs); feel free to suggest chang
 
 See our [Contribution Guidelines](CONTRIBUTING.md) for detailed instructions on how to help improve ngrok documentation.
 
-## Getting Started
+Our docs use [markdown](https://www.markdownguide.org/getting-started/#what-is-markdown) and [MDX](https://mdxjs.com/docs/what-is-mdx/) for content. The site is build with [Vite](https://vite.dev/) using [Vike](https://vike.dev/).
 
-ngrok is built using [Docusaurus 3](https://docusaurus.io/).
-
-The fastest and safest (isolated) way to run the documentation is with the Docker command below, then browse to http://localhost:3000/docs.
-
-```sh
-docker run --rm -p 3000:3000 -it --name=ngrokDocs -v "./:/app" -w "/app" --platform=linux/amd64 guergeiro/pnpm:22-9-alpine sh -c "apk add direnv; direnv allow; pnpm install; pnpm run start"
-```
-
-Otherwise, you can install and run everything on your local host.
-
-Prerequisites required:
+## Prerequisites
 
 - [Node 22](https://nodejs.org/en/download)
-- [pnpm 9](https://pnpm.io/installation#using-npm)
+- [pnpm 10](https://pnpm.io/installation#using-npm)
 - [nvm](https://github.com/nvm-sh/nvm)
+- `corepack` is included with node by default, no need to install
 
-We use [direnv](https://direnv.net/) to assist you with setting up all of the required tooling.
-
-<details>
-  <summary>Prefer to install and manage the tooling yourself?</summary>
+## Setup
 
 1. Install [nvm](https://github.com/nvm-sh/nvm?tab=readme-ov-file#installing-and-updating) or your node version manager of choice.
 2. Ensure that `node 22` is installed. With `nvm`, run `nvm install`.
 3. Enable `pnpm` with `corepack`: `corepack enable pnpm`
 4. Install `pnpm` with `corepack`: `corepack install`
 5. Install project dependencies with `pnpm`: `pnpm install`
-</details>
 
-First, install `direnv`:
+## Running the site locally
 
-| OS     | command                 |
-| ------ | ----------------------- |
-| macOS  | brew install direnv     |
-| ubuntu | sudo apt install direnv |
+This site runs locally at `http://localhost:5173/`
 
-For all other OSes, see the [direnv installation guide](https://direnv.net/docs/installation.html).
+- `vercel env pull`: Pull all the env vars. Might have to run `vercel link` to link the project first.
 
-Don't forget to [set up direnv integration with your shell](https://direnv.net/docs/hook.html).
+- `pnpm run dev`: Runs build scripts and starts the dev server
+- `pnpm run quick-dev`: Just starts the dev server, re-using the existing generated output from the build scripts
+- `pnpm run build`: Runs build scripts and builds the site
+- `pnpm run quick-build`: Just builds the site, re-using the existing generated output from the build scripts
 
-Next, clone the repo and move into the directory:
+## Creating content
 
-```sh
-git clone https://github.com/ngrok/ngrok-docs.git
-cd ngrok-docs
+Every page must have its own directory, and the content must live in a `+Page` file, with a `.mdx` or `.md` extension. TS/TSX and JS/JSX extensions are also allowed.
+
+To create a page at the path `/docs/example-path/example-file/`, you must create a file at:
+
+```bash
+/pages/docs/example-path/example-file/+Page.mdx
 ```
 
-Next, run:
+## Metadata and frontmatter
 
-```sh
-direnv allow
+When you add a title and description to a page's frontmatter, it's automatically added to the metadata.
+
+```md
+---
+title: Example
+description: Example description
+---
 ```
 
-This will install `nvm` (if not already installed) as well as set the correct `node` and `pnpm` versions for you.
+### Accessing frontmatter within a page
 
-Once you have the pre-requisites installed, local development happens by running:
+You can access a page's frontmatter from within that page, such as the following example:
 
-```sh
-pnpm run start
+```md
+---
+title: Example Title
+description: Example description
+---
+
+<h1>{frontmatter.title}</h1>
+
+<p>{frontmatter.description</p>
 ```
 
-Our docs mostly use markdown and MDX, you can make yourself familiar with docusaurus [documentation](https://docusaurus.io/docs/en/installation) for more significant features / changes.
+## Redirects
 
-## Building ngrok-docs
+To create a redirect quickly, add it to `pages/utils/redirects/data/general.ts`.
 
-To ensure your changes work before submitting a pr, please run the following before submission:
+For more structured redirects, you can:
 
-```
-cd ngrok-docs
-pnpm run fmt
-pnpm run test
-pnpm run typecheck
-pnpm run build
-```
+1. Create a new `.ts` file in `pages/utils/redirects/data` that exports an object containing your redirects, for example `universalGatewayRedirects.ts`:
+
+ ```js
+ export const universalGatewayRedirects = {
+  "/docs/source" : "/docs/destination"
+ };
+ ```
+
+2. Then, import that object in `pages/utils/redirects/redirectAggregator.ts`, and add it to the object exported there.
+
+  ```js
+  import { generalRedirects } from "./data/general";
+  import { universalGatewayRedirects } from "./data/universalGatewayRedirects";
+  
+  export const allRedirects = { 
+   ...generalRedirects,
+   ...universalGatewayRedirects
+  };
+  ```
+
+### Server vs Client-side redirects
+
+- Hash redirects, i.e. redirects from `/docs/starting-path/#hash` to `/docs/destination-path`, are executed on the client.
+- All route-level redirects are executed server-side.
+
+Why? Because the server doesn't have access to the hash (`#this-part`) of a URL, so only the client can execute these redirects.
+
+## Technical questions
+
+### Why is everything in the `pages` directory?
+
+Some stuff that might normally be in a `src` directory is in `pages`, such as `components`, `utils`, etc. Because of how vike works, if you want to access the [`pageContext`](https://vike.dev/pageContext#) object, your code needs to live within the `pages` directory. We could pass this data around, use some sort of context, or do other things, but for now everything lives in `pages`.
 
 ## Testing
 
@@ -99,4 +126,4 @@ pnpm run test:watch
 ## Looking for support?
 
 For bug reports, feature request, questions and community support please open an issue or discussion in our [ngrok Community](https://github.com/ngrok/ngrok).
-To report a problem with our documentation, please open a new [Github issue](https://github.com/ngrok/ngrok-docs/issues).
+To report a problem with our documentation, please open a new [Github issue](https://github.com/ngrok/ngrok-docs-v2/issues).

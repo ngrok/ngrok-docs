@@ -1,0 +1,52 @@
+import ConfigExample from "@components/ConfigExample.tsx";
+
+### Removing headers from all requests
+
+We have been getting a lot of requests with `x-client-version` and `x-trace-id`
+and it is starting to overwhelm our logging system. We want to remove these headers
+from all requests. The following example demonstrates how to remove these headers
+using the `remove-headers` action.
+
+#### Example Traffic Policy Document
+
+<ConfigExample
+	snippetText={null}
+	showLineNumbers={true}
+	jsonMetastring="{5-13}"
+	yamlMetastring="{4-8}"
+	config={{
+		on_http_request: [
+			{
+				actions: [
+					{
+						type: "remove-headers",
+						config: {
+							headers: ["x-client-version", "x-trace-id"],
+						},
+					},
+				],
+			},
+		],
+	}}
+/>
+
+For this example, we are assuming that ngrok is pointing at the upstream service
+https://httpbin.org.
+
+#### Example Request
+
+```bash
+$ curl -H "x-client-version: 3.1" -H "x-trace-id: abc123" https://httpbin.ngrok.app/get
+< HTTP/2 200
+
+{
+...
+  "headers": {
+    "Date": "2024-06-24T15:30:00Z",
+  }
+...
+}
+```
+
+In this example even though we sent the `x-client-version` and `x-trace-id` headers,
+they were not present on the request that was sent upstream.

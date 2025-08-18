@@ -1,0 +1,193 @@
+---
+title: OpenID Connect (OIDC)
+---
+
+import TabItem from "@components/Tabs/TabItem";
+import Tabs from "@components/Tabs";
+
+# Authenticating Users with OpenID Connect (OIDC)
+
+OpenID Connect (OIDC) is an identity verification protocol that allows users to securely sign in to applications using trusted identity providers (IdPs) such as Google, Microsoft, Okta, and Auth0.
+OIDC is built on top of OAuth 2.0, adding an authentication layer that enables applications to verify user identities while also obtaining authorization tokens.
+
+By enforcing OIDC authentication at the network edge, you can:
+
+🔐 Ensure only authenticated users can access your services. <br />
+⚡ Offload authentication to a trusted provider, simplifying backend logic. <br />
+🛡 Enhance security by requiring identity verification before forwarding requests. <br />
+
+## 🔍 What are the Benefits of Using OIDC for Authentication?
+
+OIDC provides secure, standardized authentication that integrates seamlessly with modern identity providers.
+It enables single sign-on (SSO), multi-factor authentication (MFA), and user identity verification.
+
+Key Benefits:
+
+- **User Authentication & Identity Verification:** Verify who is accessing your service, not just what permissions they have.
+- **Seamless Single Sign-On (SSO):** Allow users to sign in once and access multiple applications.
+- **Supports Major Identity Providers:** Works with Google, Microsoft, Okta, Auth0, and other IdPs.
+- **Enhances Security:** Enforces secure login flows, multi-factor authentication (MFA), and token-based verification.
+- **Reduces Backend Complexity:** Authentication happens before requests reach your application, eliminating the need for custom auth logic.
+
+## OIDC Examples
+
+The following examples show how to provide your app with an authentication step.
+
+When you create your own OIDC app, you must specify a 'Callback URL' or 'Redirect URL' to the OIDC provider. When using ngrok's OIDC action, that Callback URL is always:
+
+```bash
+https://idp.ngrok.com/oauth2/callback
+```
+
+Check out the [OIDC traffic policy action](/traffic-policy/actions/oidc/) page for more details about how it functions and the parameters it accepts.
+Consult the list of [supported providers](/traffic-policy/actions/oidc/#supported-providers) for step-by-step integration guides for each.
+
+<Tabs groupId="kind" queryString="kind">
+	<TabItem value="agent-endpoint" label="AgentEndpoint" default>
+	```yaml
+  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+  kind: AgentEndpoint
+  metadata:
+    name: example-agent-endpoint
+  spec:
+    url: https://example-hostname.ngrok.io
+    upstream:
+      url: http://my-service.my-namespace:8080
+    trafficPolicy:
+      inline:
+        on_http_request:
+          - actions:
+              - type: openid-connect
+                config:
+                  issuer_url: "{your issuer url}"
+                  client_id: "{your app's oauth client id}"
+                  client_secret: "{your app's oauth client secret}"
+                  scopes:
+                    - openid
+                    - profile
+                    - email
+	```
+	</TabItem>
+	<TabItem value="cloud-endpoint" label="CloudEndpoint">
+	```yaml
+  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+  kind: CloudEndpoint
+  metadata:
+    name: example-cloud-endpoint
+  spec:
+    url: https://example-hostname.ngrok.io
+    trafficPolicy:
+      policy:
+        on_http_request:
+          - actions:
+              - type: openid-connect
+                config:
+                  issuer_url: "{your issuer url}"
+                  client_id: "{your app's oauth client id}"
+                  client_secret: "{your app's oauth client secret}"
+                  scopes:
+                    - openid
+                    - profile
+                    - email
+	```
+	</TabItem>
+	<TabItem value="ingress" label="Ingress">
+	💡 `Ingress` resources do not natively support OIDC authentication, but they can be extended using a traffic policy.
+
+	### 1. Create an `NgrokTrafficPolicy`
+
+	```yaml
+  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+  kind: NgrokTrafficPolicy
+  metadata:
+    name: example-tp
+    namespace: default
+  spec:
+    policy:
+      on_http_request:
+        - actions:
+            - type: openid-connect
+              config:
+                issuer_url: "{your issuer url}"
+                client_id: "{your app's oauth client id}"
+                client_secret: "{your app's oauth client secret}"
+                scopes:
+                  - openid
+                  - profile
+                  - email
+	```
+
+	### 2. Use the `NgrokTrafficPolicy` on an `Ingress`
+
+	```yaml
+  apiVersion: networking.k8s.io/v1
+  kind: Ingress
+  metadata:
+    annotations:
+      k8s.ngrok.com/traffic-policy: example-tp
+    name: example-ingress
+    namespace: default
+  spec:
+    ingressClassName: ngrok
+    rules:
+      - host: example-hostname.ngrok.io
+        http:
+          paths:
+            - path: /
+              pathType: Prefix
+              backend:
+                service:
+                  name: example-service
+                  port:
+                    number: 80
+	```
+	</TabItem>
+	<TabItem value="gateway-api" label="Gateway API">
+	💡 Gateway API resources do not natively support OIDC authentication, but they can be extended using a traffic policy.
+
+	### 1. Create an `NgrokTrafficPolicy`
+
+	```yaml
+  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+  kind: NgrokTrafficPolicy
+  metadata:
+    name: example-tp
+    namespace: default
+  spec:
+    policy:
+      on_http_request:
+        - actions:
+            - type: openid-connect
+              config:
+                issuer_url: "{your issuer url}"
+                client_id: "{your app's oauth client id}"
+                client_secret: "{your app's oauth client secret}"
+                scopes:
+                  - openid
+                  - profile
+                  - email
+	```
+
+	### 2. Use the `NgrokTrafficPolicy` on a `Gateway`
+
+	The following example showcases supplying the `NgrokTrafficPolicy` on a `Gateway` resource. All requests to the `Gateway` will run the traffic policy.
+	If you prefer, `NgrokTrafficPolicy` can also be used on the route level by using an `externalRef` filter on an `HTTPRoute`. See the [using Gateway API guide](/k8s/guides/using-gwapi) for examples.
+
+	```yaml
+  apiVersion: gateway.networking.k8s.io/v1
+  kind: Gateway
+  metadata:
+    name: example-gateway
+    namespace: default
+    annotations:
+      k8s.ngrok.com/traffic-policy: example-tp
+  spec:
+    gatewayClassName: ngrok
+    listeners:
+      - name: example-hostname
+        hostname: "example-hostname.ngrok.io"
+        port: 443
+        protocol: HTTPS
+	```
+	</TabItem>
+</Tabs>

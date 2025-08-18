@@ -1,0 +1,187 @@
+---
+title: Ingress Address
+---
+
+import TabItem from "@components/Tabs/TabItem";
+import Tabs from "@components/Tabs";
+
+import CustomIngressAgentCliExample from "@content/examples/agent-cli/custom-agent-ingress.mdx";
+import CustomIngressAgentConfigExample from "@content/examples/agent-config/custom-agent-ingress.mdx";
+import CustomIngressGoSdkExample from "@content/examples/go-sdk/custom-agent-ingress.mdx";
+import CustomIngressJavascriptSdkExample from "@content/examples/javascript-sdk/custom-agent-ingress.mdx";
+import CustomIngressKubernetesExample from "@content/examples/k8s/custom-agent-ingress.mdx";
+import CustomIngressPythonSdkExample from "@content/examples/python-sdk/custom-agent-ingress.mdx";
+import CustomIngressRustSdkExample from "@content/examples/rust-sdk/custom-agent-ingress.mdx";
+import CustomIngressSshExample from "@content/examples/ssh/custom-agent-ingress.mdx";
+
+# Agent Ingress Address
+
+## Overview
+
+The Agent Ingress Address is the network address that the ngrok agent and agent
+SDKs use to connect to the ngrok service. The default agent ingress address is
+`connect.ngrok-agent.com:443`. This is defined in your agent configuration file
+under the [`connect_url`](/agent/config/v3/#connect_url) parameter.
+
+## Customize Agent Ingress Address
+
+You can customize the ingress address by creating your own Agent Ingress. You
+do this by delegating control of a DNS subdomain. ngrok will then populate the
+A/AAAA records and issue the certificates for your new agent ingress address.
+Lastly, you must update the `ngrok.yml` [config file](/agent/config/) to instruct
+your ngrok agent to connect to the new address. You can use the helper command
+[`ngrok config add-connect-url`](/agent/cli/#ngrok-config-add-connect-url) to do this.
+
+Agents authenticating to your agent ingress address must authenticate to your
+ngrok account. Agents attempting to authenticate with credentials for other
+accounts through your ingress address are disallowed.
+
+### Create the Agent Ingress
+
+When you create a new agent ingress, you specify the domain you wish to use.
+You must own this domain yourself and have the ability to create `NS` records
+on it via your DNS provider.
+
+- **[Create a new Agent Ingress on the ngrok
+  Dashboard](https://dashboard.ngrok.com/tunnels/ingress)**
+- **[Create a new Agent Ingress via API](/api/resources/agent-ingresses/)**
+
+:::note
+
+When creating a new custom agent ingress, there is an option to configure the
+Certificate Issuer from either ngrok or Let's Encrypt. Some networks do not
+trust traffic encrypted with our privately issued certificate and will require
+a public issuer such as Let's Encrypt and this allows you to choose which one is needed.
+
+:::
+
+### Delegate DNS records
+
+After you create a new Agent Ingress, you will be prompted to create `NS`
+records on the domain you chose.
+
+### Update agent configuration
+
+Finally, you must reconfigure your ngrok agent or agent SDKs to use your new
+agent ingress address by adding the [`connect_url`](/agent/config/v3/#connect_url)
+option to your ngrok agent's configuration file. You can use the helper command
+[`ngrok config add-connect-url`](/agent/cli/#ngrok-config-add-connect-url) to do this.
+
+For example, if the domain of your custom agent ingress is
+`ingress.example.com` then you might add the following line to the agent's
+configuration file:
+
+<Tabs groupId="connectivity" queryString="cty">
+	<TabItem value="agent-cli" label="Agent CLI">
+		<CustomIngressAgentCliExample />
+	</TabItem>
+	<TabItem value="agent-config" label="Agent Config" default>
+		<CustomIngressAgentConfigExample />
+	</TabItem>
+	<TabItem value="ssh" label="SSH" default>
+		<CustomIngressSshExample />
+	</TabItem>
+	<TabItem value="go-sdk" label="Go">
+		<CustomIngressGoSdkExample />
+	</TabItem>
+	<TabItem value="javascript-sdk" label="Javascript">
+		<CustomIngressJavascriptSdkExample />
+	</TabItem>
+	<TabItem value="python-sdk" label="Python">
+		<CustomIngressPythonSdkExample />
+	</TabItem>
+	<TabItem value="rust-sdk" label="Rust">
+		<CustomIngressRustSdkExample />
+	</TabItem>
+	<TabItem value="k8s" label="Kubernetes Controller">
+		<CustomIngressKubernetesExample />
+	</TabItem>
+</Tabs>
+
+## Incompatibility with GSLB
+
+:::note
+
+Custom agent ingress requires the you choose a particular region that your
+agent connects to. It does not yet support [Global Server Load
+Balancing](/universal-gateway/global-load-balancer/) which allows the agent to connect to the closest
+ngrok point of presence.
+
+Endpoints created by agents using custom agent ingress are still delivered with
+Global Server Load Balancing.
+
+:::
+
+## Dedicated IPs
+
+When you create a custom agent ingress, the DNS, certificates and hostnames are
+all custom branded but your address will still resolve to ngrok's shared set of
+IP addresses. Dedicated IPs that are unique for your account are also available
+at additional cost. [Contact us](mailto:support@ngrok.com?subject=Dedicated+Ingress+IPs) to get in touch for
+additional details.
+
+## Certificate Issuer
+
+When you create a custom agent ingress, you have the option to choose between
+two certificate issuer options: ngrok's internal CA and a public one from
+[Let's Encrypt](https://letsencrypt.org/).
+
+![](/img/docs/new-ingress.png)
+
+### ngrok's Internal CA
+
+With this option, the agent uses a private cert minted from ngrok. This is the default option and the agent trusts
+automatically. This cert is provisioned immediately, but may require additional
+configuration if you are using 3rd party security tools as they most likely won't trust the ngrok-issued
+certificate.
+
+### Let's Encrypt Cert Issuer
+
+This option will request a certificate from Let's Encrypt. This is not automatically trusted by the agent and
+requires the `root_cas` option to be set to `host`, or the Let's Encrypt root
+cert. In most cases, the host that runs the agent will trust a standard set of
+public CAs. You will also need this when using any ngrok agent SDK or SSH Reverse Tunnel agent.
+
+This certificate is not immediately provisioned and after provision, could take up to 48 hours if propagation is
+slow. An ngrok certificate is provisioned and used in the meantime to secure any communication. Note that
+even if the DNS "Check Status" succeeds in the ngrok dashboard, it may not have
+propagated to Let's Encrypt yet.
+
+This option is useful if getting an outbound proxy to trust `ngrok` CA is
+challenging due to either technical or organizational constraints.
+
+If Let's Encrypt is selected, the agent ingress drawer will show the following
+card while the certificate is provisioning:
+
+![](/img/docs/certificate-provisioning-delayed.png)
+
+:::note
+
+Certificates automatically provisioned from Let's Encrypt are securely managed, and their private keys are
+not accessible to the requester. This ensures the security and integrity of the certificate by preventing
+key exposure.
+
+:::
+
+## Why customize the ingress address?
+
+### Branded Connectivity
+
+If you are using ngrok for production connectivity to your devices in the field
+or APIs inside of your customers' networks, a custom ingress address allows you
+to brand ngrok's connectivity as your own.
+
+### Policy Enforcement
+
+If you are using ngrok for development and testing, you can use your own
+ingress address to ensure everyone at your org does not use their personal
+accounts and instead uses a shared ngrok account with appropriate observability
+and security controls set up. You can do this by blocking ngrok's default
+ingress address of from your machines and networks, but allowing traffic to
+your custom ingress address.
+
+## Pricing
+
+Creating your own Agent Ingress is not available on any self-serve plan.
+[Contact us](mailto:support@ngrok.com?subject=Custom+Agent+Ingress) to get in touch about using custom agent
+ingress.

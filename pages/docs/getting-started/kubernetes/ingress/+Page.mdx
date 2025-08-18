@@ -1,0 +1,153 @@
+---
+title: "Quickstart: Kubernetes Ingress"
+description: "Set up an ngrok Ingress Controller to expose Kubernetes services using standard Ingress resources for simple, drop-in HTTP routing."
+sidebar_label: Ingress
+pagination_next: k8s/guides/using-ingresses
+---
+
+import TabItem from "@components/Tabs/TabItem";
+import Tabs from "@components/Tabs";
+import ConfigExample from "@components/ConfigExample.tsx";
+
+import K8sPrereq from "../_prereq.mdx";
+import K8sSetup from "../_setup.mdx";
+import K8sInstall from "../_install.mdx";
+import Domain from "../_domain.mdx";
+import K8sSample from "../_sample.mdx";
+import Request from "../_request.mdx";
+
+This quickstart uses the [ngrok Kubernetes Operator](/docs/k8s) and a [Kubernetes Ingress object](https://kubernetes.io/docs/concepts/services-networking/ingress/) to make the services you've deployed to Kubernetes available on the public internet.
+
+Use this method if you:
+
+- Want a drop-in, familiar ingress experience for your K8s apps.
+- Already using `Ingress` resources across your clusters and don't want to adopt new APIs.
+- You're looking for basic L7 routing and don't need the sophistication of [Gateway API](/docs/getting-started/kubernetes/gateway-api) or customization of [custom resources](/docs/getting-started/kubernetes/crds).
+
+:::note
+The ngrok Kubernetes Operator is available to all ngrok users at no additional charge.
+You only incur costs if the resources provisioned by the controller incur a cost.
+Find more details on our [pricing page](https://ngrok.com/pricing), or, if you're a free user, the [free plan limits](/docs/pricing-limits/free-plan-limits/).
+:::
+
+## What you'll need
+
+<K8sPrereq />
+
+## 1. Install the ngrok Kubernetes Operator
+
+<K8sSetup />
+<K8sInstall />
+
+## 2. Get your domain
+
+<Domain />
+
+## 3. Deploy a sample service
+
+<K8sSample />
+
+## 4. Create your Ingress manifest
+
+This manifest exposes the `tinyllama` sample service on `$YOUR_DOMAIN`.
+If you already have a different deployment on your cluster, you'll need to change the backend service name and port.
+
+```yaml title="ingress.yaml"
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: tinyllama
+  namespace: default
+spec:
+  ingressClassName: ngrok
+  rules:
+    - host: "$YOUR_DOMAIN"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: tinyllama
+                port:
+                  number: 80
+```
+
+Apply the manifest with `kubectl apply -f ingress.yaml`.
+
+The ngrok Kubernetes Operator watches your cluster for `Ingress` resources with the `ngrok` ingress class, and immediately provisions a new agent endpoint based on this manifest.
+
+You can now send a request to `$NGROK_DOMAIN` with your browser or `curl`.
+Your Kubernetes service is now available to anyone on the public internet.
+
+## 4. Secure your app with Traffic Policy
+
+In cases where you need to restrict access to your API or app, [Traffic Policy](/docs/traffic-policy) and the [`restrict-ips`](/docs/traffic-policy/actions/restrict-ips) let you quickly allow only certain addresses to access your endpoint.
+
+First, copy your public IP address via our [`ip4v.ngrok.com` mini-app](https://ipv4.ngrok.com/).
+
+To add the rule, create a new `NgrokTrafficPolicy` resource and add it to your Ingress as an annotation.
+Replace `$YOUR_PUBLIC_IP` with the value you just copied.
+
+```yaml title="ingress.yaml"
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: NgrokTrafficPolicy
+metadata:
+  name: restrict-ips
+  namespace: default
+spec:
+  policy:
+    on_http_request:
+      - actions:
+          - type: restrict-ips
+            config:
+              enforce: true
+              allow:
+                - $YOUR_PUBLIC_IP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: hello-world
+  namespace: default
+  annotations:
+    k8s.ngrok.com/traffic-policy: restrict-ips
+spec:
+  ingressClassName: ngrok
+  rules:
+    - host: "$YOUR_DOMAIN"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: tinyllama
+                port:
+                  number: 80
+```
+
+Re-apply the manifest with `kubectl apply -f ingress.yaml`.
+
+You can also choose to add it as the backend for a specific rule or the default backend.
+See our [Ingresses doc](/docs/k8s/guides/using-ingresses/#using-ngroktrafficpolicy-with-ingress) for details and why you would choose option over another.
+
+## 5. Start sending requests
+
+<Request />
+
+## What's next?
+
+Learn more about using ngrok with your Kubernetes deployments:
+
+- Read the [guide to using Ingress](/docs/k8s/guides/using-ingresses) with ngrok
+- [Route requests to many upstream services](/docs/k8s/guides/how-to/request-routing/) based on the path, headers, and query parameters
+- Deploy an [API gateway](/docs/guides/api-gateway/kubernetes/) in one or [multiple clouds](/docs/guides/api-gateway/multicloud/)
+
+For more ways to filter and manage traffic:
+
+- [Traffic Policy overview](/docs/traffic-policy)
+- [Traffic Policy concepts](/docs/traffic-policy/concepts/)
+- All our [available actions](/docs/traffic-policy/actions/)
+
+Finally, explore the [Traffic Inspector in your dashboard](https://dashboard.ngrok.com/traffic-inspector) for real-time observability of traffic flowing through your endpoint.

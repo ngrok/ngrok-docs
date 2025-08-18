@@ -1,0 +1,433 @@
+import EdgesTLSCreateRequest from '@docs/api/resources/examples/_edges_tls_create_request.md';
+import EdgesTLSCreateResponse from '@docs/api/resources/examples/_edges_tls_create_response.md';
+import EdgesTLSGetRequest from '@docs/api/resources/examples/_edges_tls_get_request.md';
+import EdgesTLSGetResponse from '@docs/api/resources/examples/_edges_tls_get_response.md';
+import EdgesTLSListRequest from '@docs/api/resources/examples/_edges_tls_list_request.md';
+import EdgesTLSListResponse from '@docs/api/resources/examples/_edges_tls_list_response.md';
+import EdgesTLSUpdateRequest from '@docs/api/resources/examples/_edges_tls_update_request.md';
+import EdgesTLSUpdateResponse from '@docs/api/resources/examples/_edges_tls_update_response.md';
+import EdgesTLSDeleteRequest from '@docs/api/resources/examples/_edges_tls_delete_request.md';
+import EdgesTLSDeleteResponse from '@docs/api/resources/examples/_edges_tls_delete_response.md';
+
+# Edges TLS
+
+## Create TLS Edge
+
+Create a TLS Edge
+
+### Request
+
+POST /edges/tls
+
+<EdgesTLSCreateRequest />
+
+#### Parameters
+
+| Name              | Type                                                           | Description                                                                             |
+| ----------------- | -------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| `description`     | string                                                         | human-readable description of what this edge will be used for; optional, max 255 bytes. |
+| `metadata`        | string                                                         | arbitrary user-defined machine-readable data of this edge. Optional, max 4096 bytes.    |
+| `hostports`       | List&lt;string&gt;                                             | hostports served by this edge                                                           |
+| `backend`         | [EndpointBackendMutate](#endpointbackendmutate-parameters)     | edge modules                                                                            |
+| `ip_restriction`  | [EndpointIPPolicyMutate](#endpointippolicymutate-parameters)   |                                                                                         |
+| `mutual_tls`      | [EndpointMutualTLSMutate](#endpointmutualtlsmutate-parameters) |                                                                                         |
+| `tls_termination` | [EndpointTLSTermination](#endpointtlstermination-parameters)   |                                                                                         |
+| `traffic_policy`  | [EndpointTrafficPolicy](#endpointtrafficpolicy-parameters)     | the traffic policy associated with this edge or null                                    |
+
+#### EndpointBackendMutate parameters
+
+| Name         | Type    | Description                                                                                        |
+| ------------ | ------- | -------------------------------------------------------------------------------------------------- |
+| `enabled`    | boolean | `true` if the module will be applied to traffic, `false` to disable. default `true` if unspecified |
+| `backend_id` | string  | backend to be used to back this endpoint                                                           |
+
+#### EndpointIPPolicyMutate parameters
+
+| Name            | Type               | Description                                                                                         |
+| --------------- | ------------------ | --------------------------------------------------------------------------------------------------- |
+| `enabled`       | boolean            | `true` if the module will be applied to traffic, `false` to disable. default `true` if unspecified  |
+| `ip_policy_ids` | List&lt;string&gt; | list of all IP policies that will be used to check if a source IP is allowed access to the endpoint |
+
+#### EndpointMutualTLSMutate parameters
+
+| Name                        | Type               | Description                                                                                                                               |
+| --------------------------- | ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `enabled`                   | boolean            | `true` if the module will be applied to traffic, `false` to disable. default `true` if unspecified                                        |
+| `certificate_authority_ids` | List&lt;string&gt; | list of certificate authorities that will be used to validate the TLS client certificate presented by the initiator of the TLS connection |
+
+#### EndpointTLSTermination parameters
+
+| Name           | Type    | Description                                                                                                                                                                                                                                                                                                                 |
+| -------------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `enabled`      | boolean | `true` if the module will be applied to traffic, `false` to disable. default `true` if unspecified                                                                                                                                                                                                                          |
+| `terminate_at` | string  | `edge` if the ngrok edge should terminate TLS traffic, `upstream` if TLS traffic should be passed through to the upstream ngrok agent / application server for termination. if `upstream` is chosen, most other modules will be disallowed because they rely on the ngrok edge being able to access the underlying traffic. |
+| `min_version`  | string  | The minimum TLS version used for termination and advertised to the client during the TLS handshake. if unspecified, ngrok will choose an industry-safe default. This value must be null if `terminate_at` is set to `upstream`.                                                                                             |
+
+#### EndpointTrafficPolicy parameters
+
+| Name      | Type    | Description                                                                                        |
+| --------- | ------- | -------------------------------------------------------------------------------------------------- |
+| `enabled` | boolean | `true` if the module will be applied to traffic, `false` to disable. default `true` if unspecified |
+| `value`   | string  | the traffic policy that should be applied to the traffic on your endpoint.                         |
+
+### Response
+
+Returns a 201 response on success
+
+<EdgesTLSCreateResponse />
+
+#### Fields
+
+| Name              | Type                                                     | Description                                                                             |
+| ----------------- | -------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| `id`              | string                                                   | unique identifier of this edge                                                          |
+| `description`     | string                                                   | human-readable description of what this edge will be used for; optional, max 255 bytes. |
+| `metadata`        | string                                                   | arbitrary user-defined machine-readable data of this edge. Optional, max 4096 bytes.    |
+| `created_at`      | string                                                   | timestamp when the edge configuration was created, RFC 3339 format                      |
+| `uri`             | string                                                   | URI of the edge API resource                                                            |
+| `hostports`       | List&lt;string&gt;                                       | hostports served by this edge                                                           |
+| `backend`         | [EndpointBackend](#endpointbackend-fields)               | edge modules                                                                            |
+| `ip_restriction`  | [EndpointIPPolicy](#endpointippolicy-fields)             |                                                                                         |
+| `mutual_tls`      | [EndpointMutualTLS](#endpointmutualtls-fields)           |                                                                                         |
+| `tls_termination` | [EndpointTLSTermination](#endpointtlstermination-fields) |                                                                                         |
+| `traffic_policy`  | [EndpointTrafficPolicy](#endpointtrafficpolicy-fields)   | the traffic policy associated with this edge or null                                    |
+
+#### EndpointBackend fields
+
+| Name      | Type               | Description                                                                                        |
+| --------- | ------------------ | -------------------------------------------------------------------------------------------------- |
+| `enabled` | boolean            | `true` if the module will be applied to traffic, `false` to disable. default `true` if unspecified |
+| `backend` | [Ref](#ref-fields) | backend to be used to back this endpoint                                                           |
+
+#### Ref fields
+
+| Name  | Type   | Description                   |
+| ----- | ------ | ----------------------------- |
+| `id`  | string | a resource identifier         |
+| `uri` | string | a uri for locating a resource |
+
+#### EndpointIPPolicy fields
+
+| Name          | Type               | Description                                                                                         |
+| ------------- | ------------------ | --------------------------------------------------------------------------------------------------- |
+| `enabled`     | boolean            | `true` if the module will be applied to traffic, `false` to disable. default `true` if unspecified  |
+| `ip_policies` | [Ref](#ref-fields) | list of all IP policies that will be used to check if a source IP is allowed access to the endpoint |
+
+#### EndpointMutualTLS fields
+
+| Name                      | Type               | Description                                                                                                             |
+| ------------------------- | ------------------ | ----------------------------------------------------------------------------------------------------------------------- |
+| `enabled`                 | boolean            | `true` if the module will be applied to traffic, `false` to disable. default `true` if unspecified                      |
+| `certificate_authorities` | [Ref](#ref-fields) | PEM-encoded CA certificates that will be used to validate. Multiple CAs may be provided by concatenating them together. |
+
+#### EndpointTLSTermination fields
+
+| Name           | Type    | Description                                                                                                                                                                                                                                                                                                                 |
+| -------------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `enabled`      | boolean | `true` if the module will be applied to traffic, `false` to disable. default `true` if unspecified                                                                                                                                                                                                                          |
+| `terminate_at` | string  | `edge` if the ngrok edge should terminate TLS traffic, `upstream` if TLS traffic should be passed through to the upstream ngrok agent / application server for termination. if `upstream` is chosen, most other modules will be disallowed because they rely on the ngrok edge being able to access the underlying traffic. |
+| `min_version`  | string  | The minimum TLS version used for termination and advertised to the client during the TLS handshake. if unspecified, ngrok will choose an industry-safe default. This value must be null if `terminate_at` is set to `upstream`.                                                                                             |
+
+#### EndpointTrafficPolicy fields
+
+| Name      | Type    | Description                                                                                        |
+| --------- | ------- | -------------------------------------------------------------------------------------------------- |
+| `enabled` | boolean | `true` if the module will be applied to traffic, `false` to disable. default `true` if unspecified |
+| `value`   | string  | the traffic policy that should be applied to the traffic on your endpoint.                         |
+
+## Get TLS Edge
+
+Get a TLS Edge by ID
+
+### Request
+
+GET /edges/tls/\{id\}
+
+<EdgesTLSGetRequest />
+
+### Response
+
+Returns a 200 response on success
+
+<EdgesTLSGetResponse />
+
+#### Fields
+
+| Name              | Type                                                     | Description                                                                             |
+| ----------------- | -------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| `id`              | string                                                   | unique identifier of this edge                                                          |
+| `description`     | string                                                   | human-readable description of what this edge will be used for; optional, max 255 bytes. |
+| `metadata`        | string                                                   | arbitrary user-defined machine-readable data of this edge. Optional, max 4096 bytes.    |
+| `created_at`      | string                                                   | timestamp when the edge configuration was created, RFC 3339 format                      |
+| `uri`             | string                                                   | URI of the edge API resource                                                            |
+| `hostports`       | List&lt;string&gt;                                       | hostports served by this edge                                                           |
+| `backend`         | [EndpointBackend](#endpointbackend-fields)               | edge modules                                                                            |
+| `ip_restriction`  | [EndpointIPPolicy](#endpointippolicy-fields)             |                                                                                         |
+| `mutual_tls`      | [EndpointMutualTLS](#endpointmutualtls-fields)           |                                                                                         |
+| `tls_termination` | [EndpointTLSTermination](#endpointtlstermination-fields) |                                                                                         |
+| `traffic_policy`  | [EndpointTrafficPolicy](#endpointtrafficpolicy-fields)   | the traffic policy associated with this edge or null                                    |
+
+#### EndpointBackend fields
+
+| Name      | Type               | Description                                                                                        |
+| --------- | ------------------ | -------------------------------------------------------------------------------------------------- |
+| `enabled` | boolean            | `true` if the module will be applied to traffic, `false` to disable. default `true` if unspecified |
+| `backend` | [Ref](#ref-fields) | backend to be used to back this endpoint                                                           |
+
+#### Ref fields
+
+| Name  | Type   | Description                   |
+| ----- | ------ | ----------------------------- |
+| `id`  | string | a resource identifier         |
+| `uri` | string | a uri for locating a resource |
+
+#### EndpointIPPolicy fields
+
+| Name          | Type               | Description                                                                                         |
+| ------------- | ------------------ | --------------------------------------------------------------------------------------------------- |
+| `enabled`     | boolean            | `true` if the module will be applied to traffic, `false` to disable. default `true` if unspecified  |
+| `ip_policies` | [Ref](#ref-fields) | list of all IP policies that will be used to check if a source IP is allowed access to the endpoint |
+
+#### EndpointMutualTLS fields
+
+| Name                      | Type               | Description                                                                                                             |
+| ------------------------- | ------------------ | ----------------------------------------------------------------------------------------------------------------------- |
+| `enabled`                 | boolean            | `true` if the module will be applied to traffic, `false` to disable. default `true` if unspecified                      |
+| `certificate_authorities` | [Ref](#ref-fields) | PEM-encoded CA certificates that will be used to validate. Multiple CAs may be provided by concatenating them together. |
+
+#### EndpointTLSTermination fields
+
+| Name           | Type    | Description                                                                                                                                                                                                                                                                                                                 |
+| -------------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `enabled`      | boolean | `true` if the module will be applied to traffic, `false` to disable. default `true` if unspecified                                                                                                                                                                                                                          |
+| `terminate_at` | string  | `edge` if the ngrok edge should terminate TLS traffic, `upstream` if TLS traffic should be passed through to the upstream ngrok agent / application server for termination. if `upstream` is chosen, most other modules will be disallowed because they rely on the ngrok edge being able to access the underlying traffic. |
+| `min_version`  | string  | The minimum TLS version used for termination and advertised to the client during the TLS handshake. if unspecified, ngrok will choose an industry-safe default. This value must be null if `terminate_at` is set to `upstream`.                                                                                             |
+
+#### EndpointTrafficPolicy fields
+
+| Name      | Type    | Description                                                                                        |
+| --------- | ------- | -------------------------------------------------------------------------------------------------- |
+| `enabled` | boolean | `true` if the module will be applied to traffic, `false` to disable. default `true` if unspecified |
+| `value`   | string  | the traffic policy that should be applied to the traffic on your endpoint.                         |
+
+## List TLS Edges
+
+Returns a list of all TLS Edges on this account
+
+### Request
+
+GET /edges/tls
+
+<EdgesTLSListRequest />
+
+### Response
+
+Returns a 200 response on success
+
+<EdgesTLSListResponse />
+
+#### Fields
+
+| Name            | Type                       | Description                                            |
+| --------------- | -------------------------- | ------------------------------------------------------ |
+| `tls_edges`     | [TLSEdge](#tlsedge-fields) | the list of all TLS Edges on this account              |
+| `uri`           | string                     | URI of the TLS Edge list API resource                  |
+| `next_page_uri` | string                     | URI of the next page, or null if there is no next page |
+
+#### TLSEdge fields
+
+| Name              | Type                                                     | Description                                                                             |
+| ----------------- | -------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| `id`              | string                                                   | unique identifier of this edge                                                          |
+| `description`     | string                                                   | human-readable description of what this edge will be used for; optional, max 255 bytes. |
+| `metadata`        | string                                                   | arbitrary user-defined machine-readable data of this edge. Optional, max 4096 bytes.    |
+| `created_at`      | string                                                   | timestamp when the edge configuration was created, RFC 3339 format                      |
+| `uri`             | string                                                   | URI of the edge API resource                                                            |
+| `hostports`       | List&lt;string&gt;                                       | hostports served by this edge                                                           |
+| `backend`         | [EndpointBackend](#endpointbackend-fields)               | edge modules                                                                            |
+| `ip_restriction`  | [EndpointIPPolicy](#endpointippolicy-fields)             |                                                                                         |
+| `mutual_tls`      | [EndpointMutualTLS](#endpointmutualtls-fields)           |                                                                                         |
+| `tls_termination` | [EndpointTLSTermination](#endpointtlstermination-fields) |                                                                                         |
+| `traffic_policy`  | [EndpointTrafficPolicy](#endpointtrafficpolicy-fields)   | the traffic policy associated with this edge or null                                    |
+
+#### EndpointBackend fields
+
+| Name      | Type               | Description                                                                                        |
+| --------- | ------------------ | -------------------------------------------------------------------------------------------------- |
+| `enabled` | boolean            | `true` if the module will be applied to traffic, `false` to disable. default `true` if unspecified |
+| `backend` | [Ref](#ref-fields) | backend to be used to back this endpoint                                                           |
+
+#### Ref fields
+
+| Name  | Type   | Description                   |
+| ----- | ------ | ----------------------------- |
+| `id`  | string | a resource identifier         |
+| `uri` | string | a uri for locating a resource |
+
+#### EndpointIPPolicy fields
+
+| Name          | Type               | Description                                                                                         |
+| ------------- | ------------------ | --------------------------------------------------------------------------------------------------- |
+| `enabled`     | boolean            | `true` if the module will be applied to traffic, `false` to disable. default `true` if unspecified  |
+| `ip_policies` | [Ref](#ref-fields) | list of all IP policies that will be used to check if a source IP is allowed access to the endpoint |
+
+#### EndpointMutualTLS fields
+
+| Name                      | Type               | Description                                                                                                             |
+| ------------------------- | ------------------ | ----------------------------------------------------------------------------------------------------------------------- |
+| `enabled`                 | boolean            | `true` if the module will be applied to traffic, `false` to disable. default `true` if unspecified                      |
+| `certificate_authorities` | [Ref](#ref-fields) | PEM-encoded CA certificates that will be used to validate. Multiple CAs may be provided by concatenating them together. |
+
+#### EndpointTLSTermination fields
+
+| Name           | Type    | Description                                                                                                                                                                                                                                                                                                                 |
+| -------------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `enabled`      | boolean | `true` if the module will be applied to traffic, `false` to disable. default `true` if unspecified                                                                                                                                                                                                                          |
+| `terminate_at` | string  | `edge` if the ngrok edge should terminate TLS traffic, `upstream` if TLS traffic should be passed through to the upstream ngrok agent / application server for termination. if `upstream` is chosen, most other modules will be disallowed because they rely on the ngrok edge being able to access the underlying traffic. |
+| `min_version`  | string  | The minimum TLS version used for termination and advertised to the client during the TLS handshake. if unspecified, ngrok will choose an industry-safe default. This value must be null if `terminate_at` is set to `upstream`.                                                                                             |
+
+#### EndpointTrafficPolicy fields
+
+| Name      | Type    | Description                                                                                        |
+| --------- | ------- | -------------------------------------------------------------------------------------------------- |
+| `enabled` | boolean | `true` if the module will be applied to traffic, `false` to disable. default `true` if unspecified |
+| `value`   | string  | the traffic policy that should be applied to the traffic on your endpoint.                         |
+
+## Update TLS Edge
+
+Updates a TLS Edge by ID. If a module is not specified in the update, it will not be modified. However, each module configuration that is specified will completely replace the existing value. There is no way to delete an existing module via this API, instead use the delete module API.
+
+### Request
+
+PATCH /edges/tls/\{id\}
+
+<EdgesTLSUpdateRequest />
+
+#### Parameters
+
+| Name              | Type                                                           | Description                                                                             |
+| ----------------- | -------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| `id`              | string                                                         | unique identifier of this edge                                                          |
+| `description`     | string                                                         | human-readable description of what this edge will be used for; optional, max 255 bytes. |
+| `metadata`        | string                                                         | arbitrary user-defined machine-readable data of this edge. Optional, max 4096 bytes.    |
+| `hostports`       | List&lt;string&gt;                                             | hostports served by this edge                                                           |
+| `backend`         | [EndpointBackendMutate](#endpointbackendmutate-parameters)     | edge modules                                                                            |
+| `ip_restriction`  | [EndpointIPPolicyMutate](#endpointippolicymutate-parameters)   |                                                                                         |
+| `mutual_tls`      | [EndpointMutualTLSMutate](#endpointmutualtlsmutate-parameters) |                                                                                         |
+| `tls_termination` | [EndpointTLSTermination](#endpointtlstermination-parameters)   |                                                                                         |
+| `traffic_policy`  | [EndpointTrafficPolicy](#endpointtrafficpolicy-parameters)     | the traffic policy associated with this edge or null                                    |
+
+#### EndpointBackendMutate parameters
+
+| Name         | Type    | Description                                                                                        |
+| ------------ | ------- | -------------------------------------------------------------------------------------------------- |
+| `enabled`    | boolean | `true` if the module will be applied to traffic, `false` to disable. default `true` if unspecified |
+| `backend_id` | string  | backend to be used to back this endpoint                                                           |
+
+#### EndpointIPPolicyMutate parameters
+
+| Name            | Type               | Description                                                                                         |
+| --------------- | ------------------ | --------------------------------------------------------------------------------------------------- |
+| `enabled`       | boolean            | `true` if the module will be applied to traffic, `false` to disable. default `true` if unspecified  |
+| `ip_policy_ids` | List&lt;string&gt; | list of all IP policies that will be used to check if a source IP is allowed access to the endpoint |
+
+#### EndpointMutualTLSMutate parameters
+
+| Name                        | Type               | Description                                                                                                                               |
+| --------------------------- | ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `enabled`                   | boolean            | `true` if the module will be applied to traffic, `false` to disable. default `true` if unspecified                                        |
+| `certificate_authority_ids` | List&lt;string&gt; | list of certificate authorities that will be used to validate the TLS client certificate presented by the initiator of the TLS connection |
+
+#### EndpointTLSTermination parameters
+
+| Name           | Type    | Description                                                                                                                                                                                                                                                                                                                 |
+| -------------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `enabled`      | boolean | `true` if the module will be applied to traffic, `false` to disable. default `true` if unspecified                                                                                                                                                                                                                          |
+| `terminate_at` | string  | `edge` if the ngrok edge should terminate TLS traffic, `upstream` if TLS traffic should be passed through to the upstream ngrok agent / application server for termination. if `upstream` is chosen, most other modules will be disallowed because they rely on the ngrok edge being able to access the underlying traffic. |
+| `min_version`  | string  | The minimum TLS version used for termination and advertised to the client during the TLS handshake. if unspecified, ngrok will choose an industry-safe default. This value must be null if `terminate_at` is set to `upstream`.                                                                                             |
+
+#### EndpointTrafficPolicy parameters
+
+| Name      | Type    | Description                                                                                        |
+| --------- | ------- | -------------------------------------------------------------------------------------------------- |
+| `enabled` | boolean | `true` if the module will be applied to traffic, `false` to disable. default `true` if unspecified |
+| `value`   | string  | the traffic policy that should be applied to the traffic on your endpoint.                         |
+
+### Response
+
+Returns a 200 response on success
+
+<EdgesTLSUpdateResponse />
+
+#### Fields
+
+| Name              | Type                                                     | Description                                                                             |
+| ----------------- | -------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| `id`              | string                                                   | unique identifier of this edge                                                          |
+| `description`     | string                                                   | human-readable description of what this edge will be used for; optional, max 255 bytes. |
+| `metadata`        | string                                                   | arbitrary user-defined machine-readable data of this edge. Optional, max 4096 bytes.    |
+| `created_at`      | string                                                   | timestamp when the edge configuration was created, RFC 3339 format                      |
+| `uri`             | string                                                   | URI of the edge API resource                                                            |
+| `hostports`       | List&lt;string&gt;                                       | hostports served by this edge                                                           |
+| `backend`         | [EndpointBackend](#endpointbackend-fields)               | edge modules                                                                            |
+| `ip_restriction`  | [EndpointIPPolicy](#endpointippolicy-fields)             |                                                                                         |
+| `mutual_tls`      | [EndpointMutualTLS](#endpointmutualtls-fields)           |                                                                                         |
+| `tls_termination` | [EndpointTLSTermination](#endpointtlstermination-fields) |                                                                                         |
+| `traffic_policy`  | [EndpointTrafficPolicy](#endpointtrafficpolicy-fields)   | the traffic policy associated with this edge or null                                    |
+
+#### EndpointBackend fields
+
+| Name      | Type               | Description                                                                                        |
+| --------- | ------------------ | -------------------------------------------------------------------------------------------------- |
+| `enabled` | boolean            | `true` if the module will be applied to traffic, `false` to disable. default `true` if unspecified |
+| `backend` | [Ref](#ref-fields) | backend to be used to back this endpoint                                                           |
+
+#### Ref fields
+
+| Name  | Type   | Description                   |
+| ----- | ------ | ----------------------------- |
+| `id`  | string | a resource identifier         |
+| `uri` | string | a uri for locating a resource |
+
+#### EndpointIPPolicy fields
+
+| Name          | Type               | Description                                                                                         |
+| ------------- | ------------------ | --------------------------------------------------------------------------------------------------- |
+| `enabled`     | boolean            | `true` if the module will be applied to traffic, `false` to disable. default `true` if unspecified  |
+| `ip_policies` | [Ref](#ref-fields) | list of all IP policies that will be used to check if a source IP is allowed access to the endpoint |
+
+#### EndpointMutualTLS fields
+
+| Name                      | Type               | Description                                                                                                             |
+| ------------------------- | ------------------ | ----------------------------------------------------------------------------------------------------------------------- |
+| `enabled`                 | boolean            | `true` if the module will be applied to traffic, `false` to disable. default `true` if unspecified                      |
+| `certificate_authorities` | [Ref](#ref-fields) | PEM-encoded CA certificates that will be used to validate. Multiple CAs may be provided by concatenating them together. |
+
+#### EndpointTLSTermination fields
+
+| Name           | Type    | Description                                                                                                                                                                                                                                                                                                                 |
+| -------------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `enabled`      | boolean | `true` if the module will be applied to traffic, `false` to disable. default `true` if unspecified                                                                                                                                                                                                                          |
+| `terminate_at` | string  | `edge` if the ngrok edge should terminate TLS traffic, `upstream` if TLS traffic should be passed through to the upstream ngrok agent / application server for termination. if `upstream` is chosen, most other modules will be disallowed because they rely on the ngrok edge being able to access the underlying traffic. |
+| `min_version`  | string  | The minimum TLS version used for termination and advertised to the client during the TLS handshake. if unspecified, ngrok will choose an industry-safe default. This value must be null if `terminate_at` is set to `upstream`.                                                                                             |
+
+#### EndpointTrafficPolicy fields
+
+| Name      | Type    | Description                                                                                        |
+| --------- | ------- | -------------------------------------------------------------------------------------------------- |
+| `enabled` | boolean | `true` if the module will be applied to traffic, `false` to disable. default `true` if unspecified |
+| `value`   | string  | the traffic policy that should be applied to the traffic on your endpoint.                         |
+
+## Delete TLS Edge
+
+Delete a TLS Edge by ID
+
+### Request
+
+DELETE /edges/tls/\{id\}
+
+<EdgesTLSDeleteRequest />
+
+### Response
+
+Returns a 204 response with no body on success
