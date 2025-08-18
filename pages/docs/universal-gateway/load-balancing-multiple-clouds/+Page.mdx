@@ -1,0 +1,269 @@
+---
+title: Load Balancing Between Multiple Clouds
+description: Learn how to load balance traffic between multiple clouds with ngrok.
+---
+
+import { LangSwitcher } from "@components/LangSwitcher";
+import TabItem from "@components/Tabs/TabItem";
+import Tabs from "@components/Tabs";
+
+ngrok's [Endpoint Pooling](/docs/universal-gateway/endpoint-pooling) allows you to automatically load balance between replicas of your service across multiple clouds by creating two endpoints with the same URL.
+
+This guide will show you how to set up endpoint pooling with a few different methods.
+
+:::tip
+This guide will reference reserved domains frequently. You can reserve a free domain in the [dashboard](https://dashboard.ngrok.com/domains) or use a custom domain you own.
+:::
+
+## Why use Endpoint Pooling?
+
+ngrok's Endpoint Pooling:
+
+- Works with the [agent CLI](/docs/agent),
+  [SDKs](/docs/agent-sdks/) and our [Kubernetes Operator](/docs/k8s). You can even use all these tools in a single pool.
+- Lets you migrate from one deployment strategy to another without hard cut-overs, like moving from using the agent for ingress to embedding ngrok directly in your app/API with an SDK.
+- Works with [Traffic Policy](/docs/traffic-policy), enabling you to manage traffic identically across all your replicas from a single "front door," or enforce different policies for each replica.
+
+## Using the CLI
+
+Start with a single [agent endpoint](/docs/universal-gateway/agent-endpoints/) on an ngrok URL, or a [reserved domain](https://dashboard.ngrok.com/domains), with the `--pooling-enabled` flag on.
+
+```bash mode="cli"
+ngrok http 8000 --url your-reserved-domain --pooling-enabled true
+```
+
+Repeat the same steps on another cloud where you've deployed a replica of your service. This will start a second internal agent endpoint on the same URL.
+
+```bash mode="cli"
+ngrok http 8000 --url your-reserved-domain --pooling-enabled true
+```
+
+### Test your pool
+
+Send a few requests to your domain to see responses balanced between those two endpoints, even though they're running in multiple clouds.
+
+You can verify pooling works in a few ways:
+
+1. Check each agent's UI in the terminal that launched the process. You should see an increase in the number of recent requests.
+2. In [Traffic Inspector](https://dashboard.ngrok.com/traffic-inspector), select a request, then select the **Response** tab.
+   Under **Ngrok-Agent-Ips** you should see that the IP for the responding agent changes from request to request with a similar frequency.
+
+## Using SDKs and other tools
+
+Pooling isn't limited to how you start a given service or its replicas.
+If you've already started up one agent endpoint with the CLI, you can start up another with one of our [SDKs](/docs/agent-sdks) or the [Kubernetes Operator](/docs/k8s) to load-balance between them.
+
+The following is a simple example of enabling pooling with one of our SDKs.
+
+<LangSwitcher>
+```go title="example.go"
+package main
+
+import (
+	"context"
+	"fmt"
+	"log"
+	"os"
+
+    "github.com/joho/godotenv"
+    "golang.ngrok.com/ngrok/v2"
+
+)
+
+func main() {
+if err := godotenv.Load(".env"); err != nil {
+log.Fatal("Error loading .env file", err)
+}
+if err := run(context.Background()); err != nil {
+log.Fatal(err)
+}
+}
+const address = "http://localhost:8000"
+
+func run(ctx context.Context) error {
+agent, err := ngrok.NewAgent(ngrok.WithAuthtoken(os.Getenv("NGROK_AUTHTOKEN")))
+if err != nil {
+return err
+}
+
+    ln, err := agent.Forward(ctx,
+    	ngrok.WithUpstream(address),
+    	ngrok.WithURL("your-reserved-domain"),
+    	ngrok.WithPoolingEnabled(true),
+    )
+
+    if err != nil {
+    	fmt.Println("Error", err)
+    	return err
+    }
+
+    fmt.Println("Endpoint online: forwarding from", ln.URL(), "to", address)
+
+    // Explicitly stop forwarding; otherwise it runs indefinitely
+    <-ln.Done()
+    return nil
+
+}
+
+````
+
+```javascript title="example.js"
+require('dotenv').config();
+const ngrok = require('@ngrok/ngrok');
+
+(async function() {
+    const listener = await ngrok.forward({
+        // The port your app is running on.
+        addr: 8000,
+				domain: "your-reserved-domain",
+        authtoken: process.env.NGROK_AUTHTOKEN,
+				pooling_enabled: true,
+    });
+
+    // Output ngrok url to console
+    console.log(`Ingress established at ${listener.url()}`);
+})();
+
+// Keep the process alive
+process.stdin.resume();
+````
+
+```rust title="src/main.rs"
+#![deny(warnings)]
+use ngrok::config::ForwarderBuilder;
+use url::Url;
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+    // Set up ngrok tunnel
+    let session = ngrok::Session::builder()
+        .authtoken_from_env()
+        .connect()
+        .await?;
+
+    // Forward HTTP traffic from ngrok to the local server
+    let _listener = session
+        .http_endpoint()
+				.domain("your-reserved-domain")
+				.pooling_enabled(true)
+        .listen_and_forward(Url::parse("http://localhost:8000").unwrap())
+        .await?;
+
+    println!("Ngrok tunnel established at {}", domain);
+
+    // Wait indefinitely
+    tokio::signal::ctrl_c().await?;
+    Ok(())
+}
+```
+
+```python title="example.py"
+from dotenv import load_dotenv
+import os
+import ngrok
+import time
+
+load_dotenv()
+
+listener = ngrok.forward(
+	# The port your app is running on.
+  8000,
+  authtoken=os.getenv("NGROK_AUTHTOKEN"),
+	domain="your-reserved-domain",
+	pooling_enabled=True,
+)
+
+# Output ngrok url to console
+print(f"Ingress established at {listener.url()}")
+
+# Keep the listener alive
+try:
+    while True:
+        time.sleep(1)
+except KeyboardInterrupt:
+    print("Closing listener")
+```
+
+</LangSwitcher>
+
+Run your app.
+If you already have a pool of endpoints created by agent CLIs, make a few requests to see responses from your app using an SDK.
+
+## Using Cloud Endpoints
+
+You can use Endpoint Pooling with Cloud Endpoints for custom traffic management.
+Pooling works with [internal Agent Endpoints](/docs/universal-gateway/internal-endpoints/), which can only receive traffic from other endpoints associated with your ngrok account.
+
+A [Cloud Endpoint](/docs/universal-gateway/cloud-endpoints/) is a persistent public endpoint where you can manage a traffic policy for any upstream endpoints it forwards traffic to.
+Forwarding traffic from a cloud endpoint to a pool of internal endpoints gives you a single "front door" for your multicloud load-balanced services.
+
+### 1. Set up your internal Agent Endpoints
+
+First, set up your internal Agent Endpoints. To pool traffic with a cloud endpoint, you must:
+
+1. Stop any agents you've already created associated with the URL you want to use.
+1. Restart those agents as internal endpoints by giving them any URL with a TLD of `.internal`.
+
+```bash title="Create an internal agent endpoint"
+ngrok http 8080 --url "https://example.internal"
+```
+
+### 2. Set up your Cloud Endpoint
+
+Next, set up your cloud endpoint:
+
+1. Navigate to the [**Endpoint** section](https://dashboard.ngrok.com/endpoints) of your ngrok dashboard and select **New**, then **Cloud Endpoint**.
+1. Leave the binding as **Public** and enter `your-reserved-domain` for the domain.
+1. Select **Create Cloud Endpoint**.
+
+### 3. Add a Traffic Policy
+
+Now you can add a Traffic Policy.
+While viewing your Cloud Endpoint in the dashboard, add the following traffic policy.
+It uses the `forward-internal` action to route all requests to your pool of internal agent endpoints.
+
+```yaml
+on_http_request:
+  - actions:
+      - type: forward-internal
+        config:
+          url: https://example.internal
+```
+
+Be sure to select the **Save** button to apply the policy.
+
+Now when you make a request to your URL, your traffic is first routed through the cloud endpoint before being shared among your pooled internal agent endpoints.
+
+:::info
+
+Custom load balancing strategies are not yet generally available, but you can
+request early access to the developer preview in your [ngrok
+dashboard](https://dashboard.ngrok.com/developer-preview).
+
+With custom load balancing strategies, you'll be able to decide exactly what happens to load-balanced traffic in certain scenarios, like:
+
+- Balance randomly among endpoints in a single cloud provider, then fall back to
+  a secondary cloud if they all become unavailable.
+- Prioritize endpoints with the most memory regardless of which cloud they were
+  deployed from.
+- Route traffic to specific cloud providers depending on where the request
+  originated from.
+
+:::
+
+## What's next?
+
+If you opted for a Cloud Endpoint that routes traffic to a pool of internal
+Agent Endpoints, you can now filter, manage, and orchestrate traffic from that
+single endpoint using Traffic Policy. Here's a few of our most popular actions:
+
+- [`oauth`](/docs/traffic-policy/actions/oauth)
+- [`url-redirect`](/docs/traffic-policy/actions/redirect)
+- [`set-vars`](/docs/traffic-policy/actions/set-vars)
+- [`add-headers`](/docs/traffic-policy/actions/add-headers)
+
+We didn't cover Kubernetes deployments in this guide, but we have a similar
+quickstart guide for [load-balancing K8s
+services](/docs/k8s/load-balancing/load-balancing-kubernetes). If you're
+interested in a more production-ready deployment, take a look at our [multicloud
+API gateway setup tutorial](/docs/guides/api-gateway/multicloud).

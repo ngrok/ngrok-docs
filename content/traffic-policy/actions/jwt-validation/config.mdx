@@ -1,0 +1,121 @@
+import {
+	Config,
+	ConfigChildren,
+	ConfigEnum,
+	ConfigEnumOption,
+	ConfigItem,
+} from "@components/ConfigTable.tsx";
+
+## Configuration Reference
+
+The [Traffic Policy](/traffic-policy/) configuration
+reference for this action.
+
+### Supported Phases
+
+`on_http_request`
+
+### Type
+
+`jwt-validation`
+
+### Configuration Fields
+
+<Config>
+    <ConfigItem title="issuer" type="object" required={true}>
+        <p>Configuration object for the Issuer(s) of the JWTs.</p>
+        <ConfigChildren>
+            <ConfigItem title="allow_list" type="array of objects" required={true}>
+                <p>List of allowed issuers. Minimum `1`.</p>
+                <ConfigChildren>
+                    <ConfigItem title="allow_list[*].value" type="string" required={true}>
+                        <p>Issuer URL. This can be found in the <code>iss</code> claim after decoding the JWT or from the <code>/.well-known/openid-configuration</code> endpoint in your Identity Provider.</p>
+                    </ConfigItem>
+                </ConfigChildren>
+            </ConfigItem>
+        </ConfigChildren>
+    </ConfigItem>
+
+    <ConfigItem title="audience" type="object" required={false}>
+        <p>Configuration object for the Audience(s) of the JWTs.</p>
+        <ConfigChildren>
+            <ConfigItem title="allow_list" type="array of objects" required={false}>
+                <p>List of allowed audiences. Minimum `1`.</p>
+                <ConfigChildren>
+                    <ConfigItem title="allow_list[*].value" type="string" required={false}>
+                        <p>Audience claim value. This can be found in the <code>aud</code> claim after decoding the JWT or from the request used to create the token in the first place.</p>
+                    </ConfigItem>
+                </ConfigChildren>
+            </ConfigItem>
+        </ConfigChildren>
+    </ConfigItem>
+
+    <ConfigItem title="http" type="object" required={true}>
+        <p>Configuration object for the HTTP requests containing JWTs.</p>
+        <ConfigChildren>
+            <ConfigItem title="tokens" type="array of objects" required={true}>
+                <p>List of tokens to validate. Minimum `1`.</p>
+                <ConfigChildren>
+                    <ConfigItem title="tokens[*].type" type="enum" required={true}>
+                        <p>Type of the JWT, which acts as a hint about how ngrok should parse the token.</p>
+                        <ConfigEnum>
+                            <ConfigEnumOption>`id_token`</ConfigEnumOption>
+                            <ConfigEnumOption>`access_token`</ConfigEnumOption>
+                            <ConfigEnumOption>`at+jwt`</ConfigEnumOption>
+                            <ConfigEnumOption>`it+jwt`</ConfigEnumOption>
+                            <ConfigEnumOption>`plain`</ConfigEnumOption>
+                            <ConfigEnumOption>`jwt`</ConfigEnumOption>
+                        </ConfigEnum>
+                    </ConfigItem>
+                    <ConfigItem title="tokens[*].method" type="enum" required={true}>
+                        <p>Location in the request to expect the JWT.</p>
+                        <ConfigEnum>
+                            <ConfigEnumOption>`header`</ConfigEnumOption>
+                            <ConfigEnumOption>`body`</ConfigEnumOption>
+                        </ConfigEnum>
+                        <p>When choosing `header`, the <code>content-type</code> header must be set to either <code>application/json</code> or <code>application/x-www-form-urlencoded</code>.</p>
+                        <p>When choosing <code>body</code>, the method must be <code>POST</code>, <code>PUT</code>, or <code>PATCH</code></p>
+                        <p>We do not support including a token as a URL query parameter.</p>
+                    </ConfigItem>
+                    <ConfigItem title="tokens[*].name" type="string" required={true}>
+                        <p>Name of the header or body field where the JWT is expected (Example: <code>"Authorization"</code>). This is not case sensitive.</p>
+                    </ConfigItem>
+                    <ConfigItem title="tokens[*].prefix" type="string">
+                        <p>Any prefix to strip from the header or body field before parsing the JWT (Example: <code>"Bearer "</code>).</p>
+                    </ConfigItem>
+                </ConfigChildren>
+            </ConfigItem>
+        </ConfigChildren>
+    </ConfigItem>
+
+    <ConfigItem title="jws" type="object" required={true}>
+        <p>Configuration object for signed JWTs (JWS).</p>
+        <ConfigChildren>
+            <ConfigItem title="allowed_algorithms" type="array of strings" required={true}>
+                <p>List of allowed signing algorithms. We do not support <code>none</code> as a value here because it is insecure. Minimum `1`.</p>
+            </ConfigItem>
+            <ConfigItem title="keys" type="array of objects" required={true}>
+                <p>Configuration for the JWT signing keys.</p>
+                <ConfigChildren>
+                    <ConfigItem title="keys[*].identification" type="array of objects" required={false}>
+                        <p>JWT metadata.</p>
+                        <ConfigChildren>
+                            <ConfigItem title="keys[*].identification[*].token_claims" type="array of strings" required={false}>
+                                <p>List of claims present in this token. Supported values: ['kid']</p>
+                            </ConfigItem>
+                        </ConfigChildren>
+                    </ConfigItem>
+                    <ConfigItem title="keys[*].sources" type="array of objects" required={true}>
+                        <p>Configuration for the key material used to verify the signed JWTs.</p>
+                        <ConfigChildren>
+                            <ConfigItem title="keys[*].sources[*].additional_jkus" type="array of strings" required={true}>
+                                <p>List of URLs which serve the possible signing keys in JWKS format. These URLs are cached and refreshed roughly every 15 minutes.</p>
+                            </ConfigItem>
+                        </ConfigChildren>
+                    </ConfigItem>
+                </ConfigChildren>
+            </ConfigItem>
+        </ConfigChildren>
+    </ConfigItem>
+
+</Config>

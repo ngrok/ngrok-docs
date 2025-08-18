@@ -1,0 +1,39 @@
+import ConfigExample from "@components/ConfigExample.tsx";
+
+### Follow redirects
+
+This example demonstrates how to follow up to 2 redirects using the `http-request` action.
+
+To simulate this behavior, we'll use [httpbin.org/redirect](https://httpbin.org/redirect) behind an internal `.internal` endpoint.
+
+#### Start an Internal Agent Endpoint
+
+Run the following command to expose `https://httpbin.internal` as a simulated internal service:
+
+```bash
+ngrok http https://httpbin.org --host-header rewrite --url https://httpbin.internal
+```
+
+#### Example
+
+<ConfigExample
+	snippetText="Follow up to 2 redirects from httpbin.internal"
+	showLineNumbers={true}
+	config={{
+		"on_http_request": [
+			{
+				"name": "FollowRedirects",
+				"actions": [
+					{
+						"type": "http-request",
+						"config": {
+							"url": "https://httpbin.internal/redirect/2",
+							"method": "GET",
+							"max_redirects": 2
+						}
+					}
+				]
+			}
+		]
+	}}
+/>

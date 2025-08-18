@@ -9,7 +9,7 @@ const config = {
 	useTabs: true,
 	overrides: [
 		{
-			files: ["docs/guides/**/*.md", "docs/guides/**/*.mdx"],
+			files: ["pages/docs/guides/**/*.md", "pages/docs/guides/**/*.mdx"],
 			options: {
 				bracketSpacing: false,
 			},

@@ -1,0 +1,49 @@
+import ConfigExample from "@components/ConfigExample.tsx";
+
+### Restricting Access with Allow and Deny Lists
+
+The following [Traffic Policy](/traffic-policy)
+configuration demonstrates how to restrict access to specific IP addresses
+using the `restrict-ips` action.
+
+#### Example Traffic Policy Document
+
+<ConfigExample
+	snippetText={null}
+	showLineNumbers={true}
+	yamlMetastring="{4-10}"
+	jsonMetastring="{5-16}"
+	config={{
+		on_tcp_connect: [
+			{
+				actions: [
+					{
+						type: "restrict-ips",
+						config: {
+							enforce: true,
+							allow: ["1.1.1.1/32"],
+							deny: ["e680:5791:be4c:5739:d959:7b94:6d54:d4b4/128"],
+						},
+					},
+				],
+			},
+		],
+	}}
+/>
+
+This configuration will ensure that only requests from the IP `1.1.1.1` are
+allowed, while requests from the IP `e680:5791:be4c:5739:d959:7b94:6d54:d4b4`
+are denied.
+
+#### Example Request
+
+If the request comes from an allowed IP, the response will proceed as normal. If
+the request comes from a denied IP, the connection will be closed:
+
+```bash
+$ telnet 5.tcp.ngrok.io 22984
+
+Trying...
+Connected to 5.tcp.ngrok.io.
+Connection closed by foreign host.
+```

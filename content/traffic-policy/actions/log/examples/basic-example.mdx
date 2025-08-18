@@ -1,0 +1,62 @@
+import ConfigExample from "@components/ConfigExample.tsx";
+
+### Logging with CEL Interpolation
+
+The following [Traffic Policy](/docs/traffic-policy/)
+configuration will log a message with the endpoint identifier for every request.
+
+#### Example Traffic Policy Document
+
+<ConfigExample
+	snippetText={null}
+	showLineNumbers={true}
+	yamlMetastring="{4-10}"
+	jsonMetastring="{5-13}"
+	config={{
+		on_http_request: [
+			{
+				actions: [
+					{
+						type: "log",
+						config: {
+							metadata: {
+								message: "Log action executed.",
+								endpoint_id: "${endpoint.id}",
+							},
+						},
+					},
+				],
+			},
+		],
+	}}
+/>
+
+#### Example Request
+
+```bash
+$ curl https://example.ngrok.app
+```
+
+Once the request has completed, and you have properly configured an
+event destination, you should see an event appear with the following payload:
+
+```jsx
+{
+  "event_id": "ev_25X3yFS6TDkig1KDJWIc4nnJO0c",
+  "event_type": "http_request_complete.v0",
+  "event_timestamp": "2024-06-23T23:44:16Z",
+  "account_id": "ac_2OtNvAlhso10Gx6a7eupzX3F98q",
+  "object": {
+    "traffic_policy": {
+      "logs": [
+        {
+          "metadata": {
+            "message": "Log action executed.",
+            "endpoint_id": "ep_2bhsN2VP8W4pTkaMSrhyj0SRf8J"
+          }
+        }
+      ]
+    }
+  }
+}
+```

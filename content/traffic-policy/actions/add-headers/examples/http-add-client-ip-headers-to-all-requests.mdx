@@ -1,0 +1,54 @@
+import ConfigExample from "@components/ConfigExample.tsx";
+
+#### Adding Client IP Headers to all HTTP requests
+
+The following [Traffic Policy](/docs/traffic-policy/)
+configuration will add the client IP address to all HTTP requests.
+
+##### Example Traffic Policy Document
+
+<ConfigExample
+	snippetText={null}
+	showLineNumbers={true}
+	yamlMetastring="{4-7}"
+	jsonMetastring="{5-12}"
+	config={{
+		on_http_request: [
+			{
+				actions: [
+					{
+						type: "add-headers",
+						config: {
+							headers: {
+								"x-client-ip": "${conn.client_ip}",
+							},
+						},
+					},
+				],
+			},
+		],
+	}}
+/>
+
+For this example, we are assuming that ngrok is pointing at the upstream service
+https://httpbin.org and we are adding the following header to all requests:
+
+- `x-client-ip` with the value `${conn.client_ip}` to demonstrate the use of
+  CEL interpolation to include the client IP address.
+
+#### Example Request
+
+```bash
+$ curl -i https://httpbin.ngrok.app/get
+```
+
+```http
+HTTP/2 200 OK
+content-type: application/json
+
+{
+  "headers": {
+    "X-Client-Ip": "2600:1700:4fa6:1a00:2051:938:7373:5563",
+  }
+}
+```

@@ -1,0 +1,64 @@
+import TabItem from "@components/Tabs/TabItem"
+import Tabs from "@components/Tabs";
+
+### Install the Operator
+
+We recommend installing the Operator into the default `ngrok-operator` namespace.
+You can change this depending in the commands blow based on your cluster configuration, but by default, the Operator works with `Gateway` and routing resources in all namespaces.
+
+You can choose between passing your credentials directly with Helm or creating a Kubernetes `Secret` resource that you pass to the Helm chart.
+The simple method only takes one command, but with the secure method, you:
+
+- Prevent anyone with `kubectl` access to the cluster from viewing your API key and authtoken with `helm get values`.
+- Integrate more cleanly with infrastructure as code (IaC) tools and processes.
+
+<Tabs groupId="k8s" queryString="k8s-install">
+	<TabItem value="simple" label="Simple" default>
+
+```bash
+helm install ngrok-operator ngrok/ngrok-operator \
+--namespace ngrok-operator \
+--create-namespace \
+--set credentials.apiKey=$NGROK_API_KEY \
+--set credentials.authtoken=$NGROK_AUTHTOKEN \
+--set bindings.enabled=true
+```
+
+    </TabItem>
+    <TabItem value="secure" label="More secure">
+
+First, prepare new environment variables.
+
+```bash
+export ENCODED_NGROK_AUTHTOKEN=$(echo -n "$NGROK_AUTHTOKEN" | base64)
+export ENCODED_NGROK_API_KEY=$(echo -n "$NGROK_API_KEY" | base64)
+```
+
+Apply a `Secret` resource with your encoded credentials.
+
+```bash
+kubectl apply -f -<<EOF
+apiVersion: v1
+kind: Secret
+metadata:
+	name: ngrok-operator-credentials
+	namespace: ngrok-operator
+data:
+	API_KEY: "$ENCODED_NGROK_API_KEY"
+	AUTHTOKEN: "$ENCODED_NGROK_AUTHTOKEN"
+EOF
+```
+
+Next, install the Operator and reference the `Secret` resource.
+
+```bash
+helm install ngrok-operator ngrok/ngrok-operator \
+--namespace ngrok-operator \
+--create-namespace \
+--set credentials.secret.name=ngrok-operator-credentials \
+--set bindings.enabled=true
+```
+
+    	</TabItem>
+
+</Tabs>

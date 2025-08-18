@@ -1,21 +1,47 @@
-import { createRequire } from "node:module";
-import {
-	mantlePreset,
-	resolveMantleContentGlob,
-} from "@ngrok/mantle/tailwind-preset";
 import type { Config } from "tailwindcss";
 
-const require = createRequire(import.meta.url);
+const {
+	mantlePreset,
+	resolveMantleContentGlob,
+} = require("@ngrok/mantle/tailwind-preset");
 
-export default {
+module.exports = {
 	presets: [mantlePreset],
 	content: [
 		resolveMantleContentGlob(require),
-		"./src/**/*.{js,jsx,ts,tsx}",
-		"./docs/**/*.{md,mdx}",
-		"./traffic-policy/**/*.{md,mdx}",
+		"./pages/**/*.{js,jsx,ts,tsx,mdx}",
 	],
-	corePlugins: {
-		preflight: false,
+	theme: {
+		extend: {
+			fontFamily: {
+				sans: [
+					"Inter",
+					"ui-sans-serif",
+					"system-ui",
+					"sans-serif",
+					"Apple Color Emoji",
+					"Segoe UI Emoji",
+					"Segoe UI Symbol",
+					"Noto Color Emoji",
+				],
+			},
+			colors: {
+				background: "hsl(var(--background))",
+				foreground: "hsl(var(--foreground))",
+				"foreground-lighter": "hsl(var(--foreground-lighter))",
+				"foreground-muted": "hsl(var(--foreground-muted))",
+				border: "hsl(var(--border))",
+				"border-strong": "hsl(var(--border-strong))",
+				brand: "hsl(var(--brand))",
+				"brand-link": "hsl(var(--brand-link))",
+				accent: "hsl(var(--accent))",
+				"accent-foreground": "hsl(var(--accent-foreground))",
+				"surface-100": "hsl(var(--surface-100))",
+				"surface-300": "hsl(var(--surface-300))",
+				"border-input": "hsl(var(--border-input))",
+				ring: "hsl(var(--ring))",
+			},
+		},
 	},
+	plugins: [require("@tailwindcss/typography")],
 } satisfies Config;

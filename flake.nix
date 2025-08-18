@@ -18,7 +18,7 @@
         };
         pnpm-shim = pkgs.writeShellScriptBin "pnpm" ''
           #!${pkgs.bash}/bin/bash
-          exec ${pkgs.lib.getBin pkgs.nodejs_22}/bin/node ${pkgs.lib.getBin pkgs.nodejs_22}/bin/corepack pnpm "$@"
+          exec ${pkgs.lib.getBin pkgs.nodejs_20}/bin/node ${pkgs.lib.getBin pkgs.nodejs_20}/bin/corepack pnpm "$@"
         '';
       in
       {
@@ -27,8 +27,8 @@
             export PATH="$PATH:$(git rev-parse --show-toplevel)/node_modules/.bin"
           '';
           buildInputs = with pkgs; [
-            nodejs_22
-            corepack_22
+            nodejs_20
+            corepack_20
             pnpm-shim
           ];
         };

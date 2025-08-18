@@ -1,0 +1,57 @@
+import ConfigExample from "@components/ConfigExample.tsx";
+
+### Compressing API Responses Based on URL Path
+
+The following [Traffic Policy](/docs/traffic-policy/)
+configuration demonstrates how to set this up using the `compress-response`
+action with an expression to compress traffic on specific URL paths.
+
+#### Example Traffic Policy Document
+
+<ConfigExample
+	snippetText={null}
+	showLineNumbers={true}
+	jsonMetastring="{8-18}"
+	yamlMetastring="{6-12}"
+	config={{
+		on_http_response: [
+			{
+				expressions: ["req.url.path.startsWith('/api/')"],
+				actions: [
+					{
+						type: "compress-response",
+						config: {
+							algorithms: ["gzip", "br", "deflate", "compress"],
+						},
+					},
+				],
+			},
+		],
+	}}
+/>
+
+For this example, we are assuming that an ngrok agent is pointing at the
+upstream service https://jsonplaceholder.typicode.com.
+
+#### Example Request
+
+```bash
+$ curl -i https://jsonplaceholder.ngrok.app/api/posts
+```
+
+```http
+HTTP/2 200 OK
+content-encoding: gzip
+content-type: application/json; charset=utf-8
+
+<compressed-body-here>
+```
+
+In this example, when a request is made to `/api/posts`,
+ngrok compresses the response using one of the specified algorithms
+(e.g., `gzip`). The response includes the `content-encoding: gzip` header, and
+the body is compressed accordingly.
+
+This setup ensures that only API responses
+for paths starting with `/api/` are compressed, enhancing performance and
+responsiveness for only those endpoints.

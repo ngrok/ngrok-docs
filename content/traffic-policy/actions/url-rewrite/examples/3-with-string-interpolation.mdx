@@ -1,0 +1,60 @@
+import ConfigExample from "@components/ConfigExample.tsx";
+
+### Rewrite using CEL Interpolation
+
+The following [Traffic Policy](/docs/traffic-policy/)
+configuration demonstrates how to use the `url-rewrite` action to transparently
+rewrite the request URL from `/products/*` to `/products.php` using a global
+policy rule (no expression) by leveraging [CEL Interpolation](/docs/traffic-policy/concepts/cel-interpolation).
+
+#### Example Traffic Policy Document
+
+<ConfigExample
+	snippetText={null}
+	showLineNumbers={true}
+	jsonMetastring="{5,8-14}"
+	yamlMetastring="{4-13}"
+	config={{
+		on_http_request: [
+			{
+				actions: [
+					{
+						type: "url-rewrite",
+						config: {
+							from: "${req.url.authority}/products/?([.*]+)?",
+							to: "/products.php?query=$1",
+						},
+					},
+				],
+			},
+		],
+	}}
+/>
+
+This configuration will rewrite any request urls that start with `/products/*`
+to `/products.php?query=$1` without changing the URL seen by the client. It does
+this by leveraging [CEL Interpolation](/docs/traffic-policy/concepts/cel-interpolation) to replace the
+`from` value with the request URL authority. This is useful for hiding away the
+underlying implementation details of your service.
+
+#### Example Request
+
+```bash
+$ curl -i https://example.ngrok.app/products/123
+```
+
+```http
+HTTP/2 200 OK
+```
+
+##### Example Server Logs
+
+```http
+GET /product.php?query=123          200 OK
+```
+
+#### Conclusion
+
+In this example, a request to `/products` is internally routed to
+`/products.php?query=123`, and the response is served from `products.php` while
+the client remains unaware of the URL rewrite.

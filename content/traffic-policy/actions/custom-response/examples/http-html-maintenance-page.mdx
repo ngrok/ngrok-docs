@@ -1,0 +1,58 @@
+import ConfigExample from "@components/ConfigExample.tsx";
+
+### Custom HTML Maintenance Page
+
+The following [Traffic Policy](/docs/traffic-policy/)
+configuration demonstrates how to use the `custom-response` action to return a
+custom HTML maintenance page back for all requests to your endpoint.
+
+#### Example Traffic Policy Document
+
+<ConfigExample
+	snippetText={null}
+	showLineNumbers={true}
+	jsonMetastring="{5-14}"
+	yamlMetastring="{4-10}"
+	config={{
+		on_http_request: [
+			{
+				actions: [
+					{
+						type: "custom-response",
+						config: {
+							status_code: 503,
+							body:
+								"<html><body><h1>Service Unavailable</h1><p>Our servers are currently down for maintenance. Please check back later.</p></body></html>",
+							headers: {
+								"content-type": "text/html",
+							},
+						},
+					},
+				],
+			},
+		],
+	}}
+/>
+
+#### Example Request
+
+```bash
+$ curl -i https://example.ngrok.app/dashboard
+```
+
+```http
+HTTP/2 503
+content-type: text/html
+
+<html>
+  <body>
+    <h1>Service Unavailable</h1>
+    <p>Our servers are currently down for maintenance. Please check back later.</p>
+  </body>
+</html>
+```
+
+In this example, when a request is made to any page on your endpoint, ngrok
+returns back the custom HTML maintenance page.
+
+This setup is useful for when you want to temporarily disable your endpoint.
