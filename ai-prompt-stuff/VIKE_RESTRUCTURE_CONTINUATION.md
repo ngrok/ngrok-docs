@@ -10,7 +10,7 @@ This project is migrating the `new-content/docs` directory structure to comply w
 
 - ✅ how-ngrok-works.mdx → how-ngrok-works/+Page.mdx
 - ✅ what-is-ngrok.mdx → what-is-ngrok/+Page.mdx
-- ✅ whats-new.mdx → whats-new/+Page.mdx  
+- ✅ whats-new.mdx → whats-new/+Page.mdx
 - ✅ why-ngrok.mdx → why-ngrok/+Page.mdx
 
 ### Completed directories
@@ -44,7 +44,8 @@ This project is migrating the `new-content/docs` directory structure to comply w
 ### Phase 2: Next Priority 📋
 
 **errors/** (1,423 files) - ⏳ PROCESS NEXT
-- **Include**: All root-level files and subdirectories 
+
+- **Include**: All root-level files and subdirectories
 - **Exclude**: `errors/details/` subdirectory (skip entirely)
 - **Note**: This is a large directory requiring careful batch processing
 
@@ -156,12 +157,14 @@ After each directory, verify the structure matches Vike's requirements:
 4. **Special considerations**: Many files likely follow `err_ngrok_XXX.mdx` naming pattern
 
 ### Phase 1 Achievements ✅
+
 - Processed 1,647+ files across 20 directories
 - Maintained 100% compliance with Vike file-based routing rules
 - Used automated PowerShell scripts for efficient batch processing
 - Successfully handled complex nested directory structures
 
 ### Phase 2 Achievements ✅
+
 - **errors/ directory processing COMPLETED**
 - **Files processed**: 1425 files → 1423 files after restructuring
 - **Exclusion**: `errors/details/` subdirectory successfully excluded from processing
@@ -173,6 +176,7 @@ After each directory, verify the structure matches Vike's requirements:
 **VIKE FILE-BASED ROUTING RESTRUCTURE: COMPLETE**
 
 All major directories have been successfully processed for Vike file-based routing compatibility. The restructure now includes:
+
 - **Total files processed**: 3,048+ files across all directories
 - **Phase 1**: 20 directories (1,647+ files)
 - **Phase 2**: errors/ directory (1,425 files → 1,423 files)

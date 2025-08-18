@@ -3,10 +3,7 @@ import { Link } from "@components/Link";
 import React from "react";
 import { usePageContext } from "vike-react/usePageContext";
 import { useActiveNavCategory } from "~/contexts/ActiveNavCategory";
-import {
-	findInNestedArray,
-	ProcessedSidebarData,
-} from "~/utils/sidebarGeneration";
+import { findInNestedArray } from "~/utils/sidebarGeneration";
 
 interface BreadcrumbItem {
 	label: string;

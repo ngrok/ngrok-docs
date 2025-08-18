@@ -1,19 +1,19 @@
 import {
+	ArticleIcon,
+	BookOpenIcon,
+	CloudArrowUpIcon,
+	CodeIcon,
 	CubeIcon,
-	ShieldCheckIcon,
+	CurrencyDollarIcon,
+	EyeIcon,
+	FileCodeIcon,
 	GearIcon,
 	GlobeIcon,
 	RocketLaunchIcon,
-	CloudArrowUpIcon,
-	EyeIcon,
-	UsersIcon,
-	BookOpenIcon,
-	CodeIcon,
+	ShieldCheckIcon,
 	TerminalIcon,
+	UsersIcon,
 	WrenchIcon,
-	FileCodeIcon,
-	ArticleIcon,
-	CurrencyDollarIcon,
 } from "@phosphor-icons/react";
 import type { SidebarItemData } from "./sidebarGeneration";
 

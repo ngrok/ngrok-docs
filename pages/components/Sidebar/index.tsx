@@ -10,21 +10,12 @@ import { CaretDownIcon, X } from "@phosphor-icons/react";
 import clsx from "clsx";
 import { useEffect, useMemo, useRef } from "react";
 import scrollIntoView from "scroll-into-view-if-needed";
-import { navigate } from "vike/client/router";
 import { usePageContext } from "vike-react/usePageContext";
-import { useIsPathActive } from "~/hooks/useIsPathActive";
-import { logError } from "~/utils/errorLogging";
-import {
-	doesIncludeNormalizedPath,
-	doNormalizedPathsMatch,
-} from "~/utils/redirects/pathMethods";
-import {
-	getActiveNavCategory,
-	type ProcessedSidebarData,
-} from "~/utils/sidebarGeneration";
-import { catchAllSidebars, navData } from "~/utils/navData";
-import { useMobileSidebar } from "~/contexts/MobileSidebarContext";
 import { useActiveNavCategory } from "~/contexts/ActiveNavCategory";
+import { useMobileSidebar } from "~/contexts/MobileSidebarContext";
+import { useIsPathActive } from "~/hooks/useIsPathActive";
+import { doNormalizedPathsMatch } from "~/utils/redirects/pathMethods";
+import type { ProcessedSidebarData } from "~/utils/sidebarGeneration";
 
 const SidebarChildItem = ({
 	item,
@@ -261,9 +252,9 @@ function SidebarItem({
 	// Get current accordion value based on URL matching
 	const accordionValue = shouldBeOpen ? mainItem.label : undefined;
 
-	const isSubcategory =
+	const _isSubcategory =
 		mainItem.type === "subcategory" || parentItem?.type === "subcategory";
-	const parentIsCategory = parentItem?.type === "category";
+	const _parentIsCategory = parentItem?.type === "category";
 
 	const isActive = doNormalizedPathsMatch(mainItem.link?.id, urlPathname);
 

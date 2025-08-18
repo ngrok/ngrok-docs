@@ -45,7 +45,7 @@ describe("Code Block Validator", () => {
 		const expectedInvalidFiles = ["invalid.md"];
 
 		const result = await validateCodeblocks({
-			paths: testFiles.map(file => path.join(TEST_DIR, file)),
+			paths: testFiles.map((file) => path.join(TEST_DIR, file)),
 			verbose: false,
 		});
 

@@ -2,7 +2,7 @@ import "dotenv/config";
 import path from "node:path";
 import chalk from "chalk";
 import express from "express";
-import { renderPage, createDevMiddleware } from "vike/server";
+import { createDevMiddleware, renderPage } from "vike/server";
 
 const isProduction = process.env.NODE_ENV === "production";
 

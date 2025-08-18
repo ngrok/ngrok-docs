@@ -1,6 +1,5 @@
 import clsx from "clsx";
 import type React from "react";
-import { useEffect } from "react";
 import { usePageContext } from "vike-react/usePageContext";
 import { useMobileSidebar } from "~/contexts/MobileSidebarContext";
 
@@ -24,12 +23,10 @@ function resolveRelativePath(
 		.filter((segment) => segment !== "");
 
 	// Start from the current directory
-	let resolvedSegments = [...currentSegments];
+	const resolvedSegments = [...currentSegments];
 
 	for (const segment of relativeSegments) {
 		if (segment === ".") {
-			// Current directory - do nothing
-			continue;
 		} else if (segment === "..") {
 			// Parent directory - remove last segment
 			resolvedSegments.pop();
@@ -40,7 +37,7 @@ function resolveRelativePath(
 	}
 
 	// Return with /docs prefix
-	return "/docs/" + resolvedSegments.join("/");
+	return `/docs/${resolvedSegments.join("/")}`;
 }
 
 interface LinkProps {

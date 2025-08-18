@@ -78,23 +78,23 @@ For more structured redirects, you can:
 
 1. Create a new `.ts` file in `pages/utils/redirects/data` that exports an object containing your redirects, for example `universalGatewayRedirects.ts`:
 
- ```js
- export const universalGatewayRedirects = {
-  "/docs/source" : "/docs/destination"
- };
- ```
+```js
+export const universalGatewayRedirects = {
+ "/docs/source" : "/docs/destination"
+};
+```
 
 2. Then, import that object in `pages/utils/redirects/redirectAggregator.ts`, and add it to the object exported there.
 
-  ```js
-  import { generalRedirects } from "./data/general";
-  import { universalGatewayRedirects } from "./data/universalGatewayRedirects";
-  
-  export const allRedirects = { 
-   ...generalRedirects,
-   ...universalGatewayRedirects
-  };
-  ```
+```js
+import { generalRedirects } from "./data/general";
+import { universalGatewayRedirects } from "./data/universalGatewayRedirects";
+
+export const allRedirects = {
+ ...generalRedirects,
+ ...universalGatewayRedirects
+};
+```
 
 ### Server vs Client-side redirects
 

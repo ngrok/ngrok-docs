@@ -1,13 +1,13 @@
 import { Link } from "@components/Link";
 import { Icon } from "@ngrok/mantle/icon";
-import { 
-	QuestionIcon, 
-	LightbulbIcon, 
+import {
+	BracketsSquareIcon,
 	CheckCircleIcon,
-	FileJsIcon,
 	CodeIcon,
+	FileJsIcon,
 	GearIcon,
-	BracketsSquareIcon
+	LightbulbIcon,
+	QuestionIcon,
 } from "@phosphor-icons/react";
 import type { ComponentType } from "react";
 
@@ -80,9 +80,7 @@ export default function GettingStartedSection() {
 			{/* Quick Setup */}
 			<section className="mb-16">
 				<div className="mb-8">
-					<h2 className="text-2xl font-bold text-gray-900 mb-4">
-						Quick Setup
-					</h2>
+					<h2 className="text-2xl font-bold text-gray-900 mb-4">Quick Setup</h2>
 					<p className="text-gray-600">
 						Choose your language to get up and running quickly
 					</p>
@@ -98,21 +96,23 @@ export default function GettingStartedSection() {
 							<div className="flex items-start space-x-3">
 								<div className="flex-shrink-0">
 									<Icon svg={<item.icon />} className="text-gray-700" />
-									</div>
-									<div>
-										<h3 className="font-medium text-gray-900 group-hover:text-blue-600">
-											{item.name}
-										</h3>
-										{item.description && (
-											<p className="text-sm text-gray-500 mt-1">{item.description}</p>
-										)}
-									</div>
+								</div>
+								<div>
+									<h3 className="font-medium text-gray-900 group-hover:text-blue-600">
+										{item.name}
+									</h3>
+									{item.description && (
+										<p className="text-sm text-gray-500 mt-1">
+											{item.description}
+										</p>
+									)}
+								</div>
 							</div>
 						</Link>
 					))}
 				</div>
 			</section>
-	
+
 			{/* New to ngrok? */}
 			<section className="mb-16">
 				<div className="mb-8">

@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import remarkHeadings from "@vcarl/remark-headings";
+import type { ComponentType } from "react";
 import { remark } from "remark";
 import remarkFrontmatter from "remark-frontmatter";
 import remarkParseFrontmatter from "remark-parse-frontmatter";
@@ -11,13 +12,12 @@ import {
 	logError,
 	logWarning,
 } from "./errorLogging";
-import { catchAllSidebars, NavCategory, navData } from "./navData";
+import { catchAllSidebars, type NavCategory, navData } from "./navData";
 import { getFullUrlPath } from "./pathSanitization";
 import {
 	doesIncludeNormalizedPath,
 	doNormalizedPathsMatch,
 } from "./redirects/pathMethods";
-import { ComponentType } from "react";
 
 export type BaseSidebarItemData = {
 	type?:
@@ -209,7 +209,7 @@ export async function getItemsFromDir(
 			const markdown = await fs.readFile(entityPath, "utf8");
 			const fileOfRemark = getRemarkData(markdown);
 
-			const finalData = itemsList.push({
+			const _finalData = itemsList.push({
 				link: {
 					type: "doc",
 					id: getFullUrlPath(`/docs/${dirName}/${dirent.name}`),

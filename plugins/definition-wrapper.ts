@@ -1,6 +1,7 @@
 /** biome-ignore-all lint/suspicious/noExplicitAny: <explanation> */
-import { visit, type Action, type VisitorResult } from "unist-util-visit";
+
 import type { Node } from "mdast";
+import { type Action, type VisitorResult, visit } from "unist-util-visit";
 import { terms } from "../pages/components/Definition/data";
 
 function findSpecialIndex(str: string, text: string) {
@@ -61,7 +62,7 @@ export default function rehypeWordWrapper() {
 				index: any,
 				parent: {
 					children: [
-						(void | Action | null | undefined)?,
+						(undefined | Action | null | undefined)?,
 						(number | null | undefined)?,
 					];
 					tagName: any;

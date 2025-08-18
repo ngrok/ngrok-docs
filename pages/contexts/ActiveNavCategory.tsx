@@ -1,10 +1,10 @@
 import type React from "react";
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext } from "react";
 import { usePageContext } from "vike-react/usePageContext";
 import { logError } from "~/utils/errorLogging";
 import {
 	getActiveNavCategory,
-	ProcessedSidebarData,
+	type ProcessedSidebarData,
 } from "~/utils/sidebarGeneration";
 
 const ActiveNavCategoryContext = createContext<

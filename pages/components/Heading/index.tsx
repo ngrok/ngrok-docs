@@ -36,7 +36,7 @@ export const Heading = ({ as: Tag, children, ...props }: HeadingProps) => {
 				title: "Heading/index.tsx error",
 				message: "Error generating heading ID",
 				error,
-			})
+			});
 		}
 	}
 

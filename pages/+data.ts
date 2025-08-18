@@ -2,12 +2,12 @@
 import "dotenv/config";
 import sidebarData from "@root/generated/sidebar/autogenSidebarData.json";
 import type { PageContextServer } from "vike/types";
-import type { ProcessedSidebarData } from "./utils/sidebarGeneration";
 import {
 	ALGOLIA_APP_ID,
 	ALGOLIA_INDEX_NAME,
 	ALGOLIA_PUBLIC_API_KEY,
 } from "./utils/globals/config";
+import type { ProcessedSidebarData } from "./utils/sidebarGeneration";
 
 export async function data(_pageContext: PageContextServer) {
 	// Use global variable for instant updates

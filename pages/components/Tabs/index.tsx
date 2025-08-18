@@ -19,9 +19,9 @@ import {
 } from "@ngrok/mantle/tabs";
 import type React from "react";
 import { useContext, useEffect, useState } from "react";
+import { logWarning } from "~/utils/errorLogging";
 import type { TabItemData } from "./TabItem";
 import TabListContext, { type TabsData } from "./TabListContext";
-import { logWarning } from "~/utils/errorLogging";
 
 type TabsProps = {
 	groupId?: string;

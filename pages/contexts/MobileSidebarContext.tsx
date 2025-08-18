@@ -1,14 +1,14 @@
 import type React from "react";
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 interface MobileSidebarContextType {
 	isMobileSidebarOpen: boolean;
 	setIsMobileSidebarOpen: (open: boolean) => void;
 }
 
-const MobileSidebarContext = createContext<MobileSidebarContextType | undefined>(
-	undefined,
-);
+const MobileSidebarContext = createContext<
+	MobileSidebarContextType | undefined
+>(undefined);
 
 export function useMobileSidebar() {
 	const context = useContext(MobileSidebarContext);
@@ -24,7 +24,9 @@ interface MobileSidebarProviderProps {
 	children: React.ReactNode;
 }
 
-export function MobileSidebarProvider({ children }: MobileSidebarProviderProps) {
+export function MobileSidebarProvider({
+	children,
+}: MobileSidebarProviderProps) {
 	const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
 	// Handle escape key and body scroll lock for mobile sidebar

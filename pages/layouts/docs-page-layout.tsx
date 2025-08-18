@@ -10,7 +10,6 @@ import type React from "react";
 import { usePageContext } from "vike-react/usePageContext";
 import { getActiveNavCategory } from "~/utils/sidebarGeneration";
 import { useMobileSidebar } from "../contexts/MobileSidebarContext";
-import { useEffect } from "react";
 
 interface DocsPageLayoutProps {
 	children: React.ReactNode;

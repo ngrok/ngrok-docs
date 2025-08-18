@@ -1,6 +1,6 @@
 import { Link } from "@components/Link";
 import { Icon } from "@ngrok/mantle/icon";
-import { CubeIcon, CodeIcon, GearIcon } from "@phosphor-icons/react";
+import { CodeIcon, CubeIcon, GearIcon } from "@phosphor-icons/react";
 import type { ComponentType } from "react";
 
 interface ResourceCategory {
@@ -18,30 +18,78 @@ const resourceCategories: ResourceCategory[] = [
 		title: "Kubernetes & Orchestration",
 		icon: CubeIcon,
 		items: [
-			{ name: "Kubernetes Operator", href: "/docs/k8s", description: "Native K8s integration" },
-			{ name: "Kubernetes Guide", href: "/docs/getting-started/kubernetes", description: "Setup and deployment" },
-			{ name: "Using with Docker", href: "/docs/using-ngrok-with/docker", description: "Docker integration" },
+			{
+				name: "Kubernetes Operator",
+				href: "/docs/k8s",
+				description: "Native K8s integration",
+			},
+			{
+				name: "Kubernetes Guide",
+				href: "/docs/getting-started/kubernetes",
+				description: "Setup and deployment",
+			},
+			{
+				name: "Using with Docker",
+				href: "/docs/using-ngrok-with/docker",
+				description: "Docker integration",
+			},
 		],
 	},
 	{
 		title: "Developer Tools & APIs",
 		icon: CodeIcon,
 		items: [
-			{ name: "Agent SDKs", href: "/docs/agent-sdks", description: "Client libraries for all languages" },
-			{ name: "REST API", href: "/docs/api", description: "Complete API reference" },
-			{ name: "CLI Reference", href: "/docs/agent/cli", description: "Command line interface docs" },
-			{ name: "Examples & Samples", href: "/docs/integrations", description: "Code samples and examples" },
+			{
+				name: "Agent SDKs",
+				href: "/docs/agent-sdks",
+				description: "Client libraries for all languages",
+			},
+			{
+				name: "REST API",
+				href: "/docs/api",
+				description: "Complete API reference",
+			},
+			{
+				name: "CLI Reference",
+				href: "/docs/agent/cli",
+				description: "Command line interface docs",
+			},
+			{
+				name: "Examples & Samples",
+				href: "/docs/integrations",
+				description: "Code samples and examples",
+			},
 		],
 	},
 	{
 		title: "Administration & Support",
 		icon: GearIcon,
 		items: [
-			{ name: "User Management", href: "/docs/user-management", description: "Team and user administration" },
-			{ name: "Configuration", href: "/docs/agent/config", description: "Configuration reference" },
-			{ name: "Error Codes", href: "/docs/errors", description: "HTTP and API error codes" },
-			{ name: "Pricing & Limits", href: "/docs/pricing-limits", description: "Plan details and limits" },
-			{ name: "FAQ", href: "/docs/faq", description: "Frequently asked questions" },
+			{
+				name: "User Management",
+				href: "/docs/user-management",
+				description: "Team and user administration",
+			},
+			{
+				name: "Configuration",
+				href: "/docs/agent/config",
+				description: "Configuration reference",
+			},
+			{
+				name: "Error Codes",
+				href: "/docs/errors",
+				description: "HTTP and API error codes",
+			},
+			{
+				name: "Pricing & Limits",
+				href: "/docs/pricing-limits",
+				description: "Plan details and limits",
+			},
+			{
+				name: "FAQ",
+				href: "/docs/faq",
+				description: "Frequently asked questions",
+			},
 		],
 	},
 ];
@@ -54,7 +102,8 @@ export default function ResourcesSection() {
 					Advanced Use Cases
 				</h2>
 				<p className="text-gray-600">
-					Deep dive into specialized deployments, developer tools, and administration
+					Deep dive into specialized deployments, developer tools, and
+					administration
 				</p>
 			</div>
 

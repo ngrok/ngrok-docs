@@ -15,6 +15,7 @@ import {
 	langParamName,
 	tabParamName,
 } from "@components/LangSwitcher/utils";
+import { SidebarLoading } from "@components/SidebarLoading";
 import TabListContext, { type TabsData } from "@components/Tabs/TabListContext";
 import { MDXProvider } from "@mdx-js/react";
 import type { SupportedLanguage } from "@ngrok/mantle/code-block";
@@ -22,13 +23,12 @@ import { isBrowser } from "is-in-browser";
 import { navigate } from "vike/client/router";
 import type { PageContext } from "vike/types";
 import { HeaderSearch } from "./components/HeaderSearch";
+import { ActiveNavCategoryProvider } from "./contexts/ActiveNavCategory";
+import { MobileSidebarProvider } from "./contexts/MobileSidebarContext";
 import DocsPageLayout from "./layouts/docs-page-layout";
 import HomepageLayout from "./layouts/homepage-layout";
 import { globalComponents } from "./utils/componentsToImport";
 import { checkForHashRedirects } from "./utils/redirects/redirectMethods";
-import { MobileSidebarProvider } from "./contexts/MobileSidebarContext";
-import { ActiveNavCategoryProvider } from "./contexts/ActiveNavCategory";
-import { SidebarLoading } from "@components/SidebarLoading";
 
 async function processClientSideRedirects(
 	location: Location | PageContext["urlParsed"],

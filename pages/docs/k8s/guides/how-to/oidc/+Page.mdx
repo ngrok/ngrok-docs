@@ -94,100 +94,92 @@ Consult the list of [supported providers](/traffic-policy/actions/oidc/#supporte
 	<TabItem value="ingress" label="Ingress">
 	💡 `Ingress` resources do not natively support OIDC authentication, but they can be extended using a traffic policy.
 
-	### 1. Create an `NgrokTrafficPolicy`
+    ### 1. Create an `NgrokTrafficPolicy`
 
-	```yaml
-  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-  kind: NgrokTrafficPolicy
-  metadata:
-    name: example-tp
-    namespace: default
-  spec:
-    policy:
-      on_http_request:
-        - actions:
-            - type: openid-connect
-              config:
-                issuer_url: "{your issuer url}"
-                client_id: "{your app's oauth client id}"
-                client_secret: "{your app's oauth client secret}"
-                scopes:
-                  - openid
-                  - profile
-                  - email
-	```
+    ```yaml
 
-	### 2. Use the `NgrokTrafficPolicy` on an `Ingress`
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: NgrokTrafficPolicy
+metadata:
+name: example-tp
+namespace: default
+spec:
+policy:
+on_http_request: - actions: - type: openid-connect
+config:
+issuer_url: "{your issuer url}"
+client_id: "{your app's oauth client id}"
+client_secret: "{your app's oauth client secret}"
+scopes: - openid - profile - email
+```
 
-	```yaml
-  apiVersion: networking.k8s.io/v1
-  kind: Ingress
-  metadata:
-    annotations:
-      k8s.ngrok.com/traffic-policy: example-tp
-    name: example-ingress
-    namespace: default
-  spec:
-    ingressClassName: ngrok
-    rules:
-      - host: example-hostname.ngrok.io
-        http:
-          paths:
-            - path: /
-              pathType: Prefix
-              backend:
-                service:
-                  name: example-service
-                  port:
-                    number: 80
-	```
-	</TabItem>
-	<TabItem value="gateway-api" label="Gateway API">
-	💡 Gateway API resources do not natively support OIDC authentication, but they can be extended using a traffic policy.
+    ### 2. Use the `NgrokTrafficPolicy` on an `Ingress`
 
-	### 1. Create an `NgrokTrafficPolicy`
+    ```yaml
 
-	```yaml
-  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-  kind: NgrokTrafficPolicy
-  metadata:
-    name: example-tp
-    namespace: default
-  spec:
-    policy:
-      on_http_request:
-        - actions:
-            - type: openid-connect
-              config:
-                issuer_url: "{your issuer url}"
-                client_id: "{your app's oauth client id}"
-                client_secret: "{your app's oauth client secret}"
-                scopes:
-                  - openid
-                  - profile
-                  - email
-	```
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+annotations:
+k8s.ngrok.com/traffic-policy: example-tp
+name: example-ingress
+namespace: default
+spec:
+ingressClassName: ngrok
+rules: - host: example-hostname.ngrok.io
+http:
+paths: - path: /
+pathType: Prefix
+backend:
+service:
+name: example-service
+port:
+number: 80
+```
+</TabItem>
+<TabItem value="gateway-api" label="Gateway API">
+💡 Gateway API resources do not natively support OIDC authentication, but they can be extended using a traffic policy.
 
-	### 2. Use the `NgrokTrafficPolicy` on a `Gateway`
+    ### 1. Create an `NgrokTrafficPolicy`
 
-	The following example showcases supplying the `NgrokTrafficPolicy` on a `Gateway` resource. All requests to the `Gateway` will run the traffic policy.
-	If you prefer, `NgrokTrafficPolicy` can also be used on the route level by using an `externalRef` filter on an `HTTPRoute`. See the [using Gateway API guide](/k8s/guides/using-gwapi) for examples.
+    ```yaml
 
-	```yaml
-  apiVersion: gateway.networking.k8s.io/v1
-  kind: Gateway
-  metadata:
-    name: example-gateway
-    namespace: default
-    annotations:
-      k8s.ngrok.com/traffic-policy: example-tp
-  spec:
-    gatewayClassName: ngrok
-    listeners:
-      - name: example-hostname
-        hostname: "example-hostname.ngrok.io"
-        port: 443
-        protocol: HTTPS
-	```
-	</TabItem>
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: NgrokTrafficPolicy
+metadata:
+name: example-tp
+namespace: default
+spec:
+policy:
+on_http_request: - actions: - type: openid-connect
+config:
+issuer_url: "{your issuer url}"
+client_id: "{your app's oauth client id}"
+client_secret: "{your app's oauth client secret}"
+scopes: - openid - profile - email
+```
+
+    ### 2. Use the `NgrokTrafficPolicy` on a `Gateway`
+
+    The following example showcases supplying the `NgrokTrafficPolicy` on a `Gateway` resource. All requests to the `Gateway` will run the traffic policy.
+    If you prefer, `NgrokTrafficPolicy` can also be used on the route level by using an `externalRef` filter on an `HTTPRoute`. See the [using Gateway API guide](/k8s/guides/using-gwapi) for examples.
+
+    ```yaml
+
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+name: example-gateway
+namespace: default
+annotations:
+k8s.ngrok.com/traffic-policy: example-tp
+spec:
+gatewayClassName: ngrok
+listeners: - name: example-hostname
+hostname: "example-hostname.ngrok.io"
+port: 443
+protocol: HTTPS
+```
+</TabItem>
+
 </Tabs>

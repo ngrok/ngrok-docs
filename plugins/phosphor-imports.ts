@@ -1,6 +1,6 @@
-import type { Plugin } from "vite";
 import { init, parse } from "es-module-lexer";
 import MagicString from "magic-string";
+import type { Plugin } from "vite";
 
 export function phosphorImports(): Plugin {
 	const lib = "@phosphor-icons/react";
@@ -66,7 +66,7 @@ export function phosphorImports(): Plugin {
 						newImport = `import { ${keepNamed.join(", ")} } from "${lib}";\n`;
 					}
 
-					const finalBlock = newImport + replacementImports.join("\n") + "\n";
+					const finalBlock = `${newImport + replacementImports.join("\n")}\n`;
 
 					if (!s) s = new MagicString(code);
 					s.overwrite(imp.ss, imp.se, finalBlock.trimEnd());

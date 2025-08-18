@@ -1,6 +1,6 @@
+import { spawn } from "node:child_process";
 import fs from "node:fs/promises";
 import path from "node:path";
-import { spawn } from "node:child_process";
 import mdx from "@mdx-js/rollup";
 import sitemap from "@qalisa/vike-plugin-sitemap";
 import { recmaCodeHike, remarkCodeHike } from "codehike/mdx";
@@ -14,9 +14,7 @@ import { remarkMdxToc } from "remark-mdx-toc";
 import vike from "vike/plugin";
 import { defineConfig, type Plugin } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
-import { calloutWrapper } from "./plugins/callout-wrapper";
-import definitionWrapperPlugin from "./plugins/definition-wrapper";
-import remarkRemoveH1s from "./plugins/remove-h1s";
+import { logSuccess, logWarning } from "./pages/utils/errorLogging";
 import {
 	BASE_SITE_URL,
 	CONTENT_ROOT,
@@ -25,7 +23,9 @@ import {
 	PROJECT_ROOT,
 	ROBOTS_CONTENT,
 } from "./pages/utils/globals/config";
-import { logSuccess, logWarning } from "./pages/utils/errorLogging";
+import { calloutWrapper } from "./plugins/callout-wrapper";
+import definitionWrapperPlugin from "./plugins/definition-wrapper";
+import remarkRemoveH1s from "./plugins/remove-h1s";
 
 // Plugin to watch content directory for changes
 const contentWatcher = (): Plugin => ({

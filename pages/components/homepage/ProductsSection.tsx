@@ -1,12 +1,11 @@
 import { Link } from "@components/Link";
 import { Icon } from "@ngrok/mantle/icon";
-import { 
-	GlobeIcon, 
-	SubwayIcon, 
-	TrafficSignIcon, 
-	LinkIcon, 
-	CubeIcon, 
-	EyeIcon 
+import {
+	CubeIcon,
+	EyeIcon,
+	GlobeIcon,
+	SubwayIcon,
+	TrafficSignIcon,
 } from "@phosphor-icons/react";
 import type { ComponentType } from "react";
 
@@ -61,7 +60,8 @@ export default function ProductsSection() {
 			<div className="mb-8">
 				<h2 className="text-2xl font-bold text-gray-900 mb-4">Core Products</h2>
 				<p className="text-gray-600">
-					Explore ngrok's suite of products for secure ingress and API management
+					Explore ngrok's suite of products for secure ingress and API
+					management
 				</p>
 			</div>
 

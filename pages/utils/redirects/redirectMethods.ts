@@ -8,7 +8,7 @@ export const checkForHashRedirects = (
 	result: boolean;
 	newPath: string | (string | boolean)[];
 } => {
-	const slashPath = !path.endsWith("/") ? path + "/" : path;
+	const slashPath = !path.endsWith("/") ? `${path}/` : path;
 	const fullPathWithSlash = `${slashPath}#${hash}`;
 	const fullPathWithoutSlash = `${slashPath.slice(0, -1)}#${hash}`;
 	// cycle through allRedirects object checking for property key matches

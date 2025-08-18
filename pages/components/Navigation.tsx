@@ -9,7 +9,7 @@ import { Icon } from "@ngrok/mantle/icon";
 import { CaretDownIcon } from "@phosphor-icons/react";
 import clsx from "clsx";
 import { usePageContext } from "vike-react/usePageContext";
-import { navData, type NavCategory } from "~/utils/navData";
+import { type NavCategory, navData } from "~/utils/navData";
 import {
 	getActiveNavCategory,
 	type SidebarItemData,

@@ -1,13 +1,13 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import type { PageContextServer } from "vike/types";
+import { logWarning } from "~/utils/errorLogging";
 import { generateHeadingId } from "~/utils/getHeadings";
-import { data as parentData } from "../+data";
 import {
 	MAX_HEADING_LEVEL,
 	MIN_HEADING_LEVEL,
 } from "~/utils/globals/mdxSettings";
-import { logWarning } from "~/utils/errorLogging";
+import { data as parentData } from "../+data";
 
 interface Heading {
 	id: string;

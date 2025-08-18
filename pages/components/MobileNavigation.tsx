@@ -2,9 +2,9 @@ import { Link } from "@components/Link";
 import { Icon } from "@ngrok/mantle/icon";
 import { CaretDownIcon, ListIcon, XIcon } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
-import { navData, type NavCategory } from "~/utils/navData";
+import { type NavCategory, navData } from "~/utils/navData";
+import type { SidebarItemData } from "~/utils/sidebarGeneration";
 import { ThemeSwitcher } from "./ThemeSwitcher";
-import { SidebarItemData } from "~/utils/sidebarGeneration";
 
 export default function MobileNavigation() {
 	const [isOpen, setIsOpen] = useState(false);
