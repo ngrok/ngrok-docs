@@ -53,7 +53,7 @@ Service Users facts and limitations:
 
 ### How do I create a Service User? {#service-user-creation}
 
-You can create a service user via the dashboard or programmatically through the ngrok API.
+You can create a Service User via the dashboard or programmatically through the ngrok API.
 
 In the [ngrok Dashboard](https://dashboard.ngrok.com/users/bots), navigate to the "Users" section of the left hand navigation, and then "service users" to create a new service user.
 
