@@ -42,7 +42,7 @@ Service Users differ from Users in a few important ways:
 Service Users facts and limitations:
 
 - Service Users may be attached to services that consume ngrok platform resources and can trigger overages. These areas include metrics like bandwidth, total sessions and endpoints, authtokens, API tokens, and more.
-- Service users have limited functionality:
+- Service Users have limited functionality:
   - Service users cannot log into the ngrok Dashboard
   - Service users cannot be assigned or shared among multiple accounts
 - Benefits of service users:
