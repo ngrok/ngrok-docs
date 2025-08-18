@@ -33,7 +33,7 @@ starting ngrok Agents or making requests to the API.
 Other platforms you may interact with sometimes call this concept a _Service
 Account_.
 
-Service users differ from Users in a few important ways:
+Service Users differ from Users in a few important ways:
 
 - Service users may not log into the Dashboard.
 - Service users may not be a member of more than one Account.
