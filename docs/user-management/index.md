@@ -51,7 +51,7 @@ Service Users facts and limitations:
   - Service Users can be deactivated to temporarily suspend all credentials associated with it—making ngrok more secure.
   - Service Users can be deleted to immediately revoke and delete all credentials associated with it—making ngrok more secure.
 
-### How do I create a service user? {#service-user-creation}
+### How do I create a Service User? {#service-user-creation}
 
 You can create a service user via the dashboard or programmatically through the ngrok API.
 
