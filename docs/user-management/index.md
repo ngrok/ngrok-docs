@@ -67,7 +67,7 @@ Service Users are available on all ngrok free and paid plans.
 
 ### When should I not use a service User? {#service-user-vs-user}
 
-A service user is very useful, but it is not a good substitute for a standard ngrok User. When a developer is building with ngrok they may need to rotate credentials after adding them to a build environment or accidentally committing them to a repository. The developer needs to be able to use the ngrok dashboard to see endpoint status, make configuration changes, and manage their own credentials, which a service user cannot do.
+A Service User is very useful, but it is not a good substitute for a standard ngrok User. When a developer is building with ngrok they may need to rotate credentials after adding them to a build environment or accidentally committing them to a repository. The developer needs to be able to use the ngrok dashboard to see endpoint status, make configuration changes, and manage their own credentials, which a Service User cannot do.
 
 ### What happens when I delete a service user? {#service-user-delete}
 
