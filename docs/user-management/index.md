@@ -79,4 +79,4 @@ When a Service User is marked as inactive, they remain in the account, but their
 
 ### Can I move my former employees credentials (API keys, authtokens, SSH keys) to a Service User? {#service-user-existing-credentials}
 
-Credentials are assigned an owner when they are created and the owner cannot be changed. Access the [ngrok Dashboard](https://dashboard.ngrok.com/users/bots) to create a new service user.
+Credentials are assigned an owner when they are created and the owner cannot be changed. Access the [ngrok Dashboard](https://dashboard.ngrok.com/users/bots) to create a new Service User.
