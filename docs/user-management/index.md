@@ -71,7 +71,7 @@ A Service User is very useful, but it is not a good substitute for a standard ng
 
 ### What happens when I delete a Service User? {#service-user-delete}
 
-When you delete a service user, all credentials owned the user are immediately revoked and deleted. You cannot restore deleted credentials and if this happens you should create new credentials under a new or existing service user.
+When you delete a Service User, all credentials owned the user are immediately revoked and deleted. You cannot restore deleted credentials and if this happens you should create new credentials under a new or existing service user.
 
 ### What does it mean for a service user to be inactive? {#service-user-inactive}
 
