@@ -36,7 +36,7 @@ Account_.
 Service Users differ from Users in a few important ways:
 
 - Service Users may not log into the Dashboard.
-- Service users may not be a member of more than one Account.
+- Service Users may not be a member of more than one Account.
 - Service users do not count against any seat counts or limits.
 
 Service users facts and limitations:
