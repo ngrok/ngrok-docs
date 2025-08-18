@@ -81,7 +81,7 @@ go get golang.ngrok.com/ngrok/v2
 
 ## 4. Create a .env file
 
-Create a `.env` file and add [your ngrok auth token](https://dashboard.ngrok.com/get-started/your-authtoken) to it.
+Create a `.env` file and add [your ngrok auth token](https://dashboard.ngrok.com/get-started/your-authtoken) and reserved domain to it.
 This file needs to be in the same directory where you initialized your Go module in the previous step.
 Run the following command to create the `.env` file:
 
@@ -89,13 +89,14 @@ Run the following command to create the `.env` file:
 touch .env
 ```
 
-Add your ngrok auth token to this file:
+Add your ngrok auth token and reserved domain to this file:
 
 ```txt title=".env"
-NGROK_AUTHTOKEN=$YOUR_AUTHTOKEN_HERE
+NGROK_AUTHTOKEN=your_actual_auth_token_here
+NGROK_RESERVED_DOMAIN=your_actual_domain_here
 ```
 
-Finally, you'll need to install [the `godotenv` package](https://github.com/joho/godotenv?tab=readme-ov-file#godotenv--) to access your environment variable from your code:
+Finally, you'll need to install [the `godotenv` package](https://github.com/joho/godotenv?tab=readme-ov-file#godotenv--) to access your environment variables from your code:
 
 ```bash
 go get github.com/joho/godotenv
@@ -103,6 +104,7 @@ go get github.com/joho/godotenv
 
 :::tip
 If you don't want to use a `.env` file, you can instead [export your auth token as an environment variable](https://support.apple.com/en-il/guide/terminal/apd382cc5fa-4f58-4449-b20a-41c53c006f8f/mac) in your terminal session, or [call `ngrok.WithAuthToken("your-token")`](https://pkg.go.dev/golang.ngrok.com/ngrok/v2#WithAuthtoken) in your code.
+You can define your reserved domain directly in your endpoint file below using `ngrok.WithURL()`.
 :::
 
 ## 5. Create your endpoint
@@ -159,7 +161,7 @@ func run(ctx context.Context) error {
 
 	ln, err := agent.Forward(ctx,
 		ngrok.WithUpstream(address),
-		ngrok.WithURL("your-reserved-domain"),
+		ngrok.WithURL(os.Getenv("NGROK_RESERVED_DOMAIN")),
 		ngrok.WithTrafficPolicy(trafficPolicy),
 	)
 
