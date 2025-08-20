@@ -53,6 +53,9 @@ created, updated, or deleted within your ngrok account.
 | [`ip_restriction_created.v0`](#ip_restriction_createdv0)                       | Triggers when an IP Restriction is created.            |
 | [`ip_restriction_deleted.v0`](#ip_restriction_deletedv0)                       | Triggers when an IP Restriction is deleted.            |
 | [`ip_restriction_updated.v0`](#ip_restriction_updatedv0)                       | Triggers when an IP Restriction is updated.            |
+| [`secret_created.v0`](#secret_createdv0)                                       | Triggered when a secret is created                     |
+| [`secret_deleted.v0`](#secret_deletedv0)                                       | Triggered when a secret is deleted                     |
+| [`secret_updated.v0`](#secret_updatedv0)                                       | Triggered when a secret is updated                     |
 | [`ssh_certificate_authority_created.v0`](#ssh_certificate_authority_createdv0) | Triggers when an SSH certificate authority is created. |
 | [`ssh_certificate_authority_deleted.v0`](#ssh_certificate_authority_deletedv0) | Triggers when an SSH certificate authority is deleted. |
 | [`ssh_certificate_authority_updated.v0`](#ssh_certificate_authority_updatedv0) | Triggers when an SSH certificate authority is updated. |
@@ -74,6 +77,9 @@ created, updated, or deleted within your ngrok account.
 | [`tunnel_credential_created.v0`](#tunnel_credential_createdv0)                 | Triggers when a tunnel credential is created.          |
 | [`tunnel_credential_deleted.v0`](#tunnel_credential_deletedv0)                 | Triggers when a tunnel credential is deleted.          |
 | [`tunnel_credential_updated.v0`](#tunnel_credential_updatedv0)                 | Triggers when a tunnel credential is updated.          |
+| [`vault_created.v0`](#vault_createdv0)                                         | Triggered when a vault is created                      |
+| [`vault_deleted.v0`](#vault_deletedv0)                                         | Triggered when a vault is deleted                      |
+| [`vault_updated.v0`](#vault_updatedv0)                                         | Triggered when a vault is updated (name, description, metadata) |
 
 ## Traffic Events
 
@@ -636,6 +642,61 @@ Triggers when an IP Restriction is updated
 | `ip_policies.id`  | string  | a resource identifier                                                                                                                                                                   |
 | `ip_policies.uri` | string  | a uri for locating a resource                                                                                                                                                           |
 
+You're absolutely right, I apologize. Let me use only the actual fields from the Go objects you provided:
+
+### Secrets
+
+#### secret_created.v0
+
+Triggered when a secret is created
+
+| Field              | Type   | Description                                                                           |
+| ------------------ | ------ | ------------------------------------------------------------------------------------- |
+| `id`               | string | unique identifier for this secret                                                    |
+| `account_id`       | string | unique identifier for the account                                                     |
+| `vault_id`         | string | unique identifier for the vault containing this secret                               |
+| `created_at`       | string | timestamp when the secret was created, RFC 3339 format                               |
+| `updated_at`       | string | timestamp when the secret was last updated, RFC 3339 format                          |
+| `description`      | string | human-readable description of this secret                                            |
+| `metadata`         | string | arbitrary user-defined machine-readable data of this secret                          |
+| `name`             | string | name of the secret                                                                    |
+| `created_by`       | string | unique identifier for the user who created this secret                               |
+| `last_updated_by`  | string | unique identifier for the user who last updated this secret                          |
+
+#### secret_deleted.v0
+
+Triggered when a secret is deleted
+
+| Field              | Type   | Description                                                                           |
+| ------------------ | ------ | ------------------------------------------------------------------------------------- |
+| `id`               | string | unique identifier for this secret                                                    |
+| `account_id`       | string | unique identifier for the account                                                     |
+| `vault_id`         | string | unique identifier for the vault containing this secret                               |
+| `created_at`       | string | timestamp when the secret was created, RFC 3339 format                               |
+| `updated_at`       | string | timestamp when the secret was last updated, RFC 3339 format                          |
+| `description`      | string | human-readable description of this secret                                            |
+| `metadata`         | string | arbitrary user-defined machine-readable data of this secret                          |
+| `name`             | string | name of the secret                                                                    |
+| `created_by`       | string | unique identifier for the user who created this secret                               |
+| `last_updated_by`  | string | unique identifier for the user who last updated this secret                          |
+
+#### secret_updated.v0
+
+Triggered when a secret is updated
+
+| Field              | Type   | Description                                                                           |
+| ------------------ | ------ | ------------------------------------------------------------------------------------- |
+| `id`               | string | unique identifier for this secret                                                    |
+| `account_id`       | string | unique identifier for the account                                                     |
+| `vault_id`         | string | unique identifier for the vault containing this secret                               |
+| `created_at`       | string | timestamp when the secret was created, RFC 3339 format                               |
+| `updated_at`       | string | timestamp when the secret was last updated, RFC 3339 format                          |
+| `description`      | string | human-readable description of this secret                                            |
+| `metadata`         | string | arbitrary user-defined machine-readable data of this secret                          |
+| `name`             | string | name of the secret                                                                    |
+| `created_by`       | string | unique identifier for the user who created this secret                               |
+| `last_updated_by`  | string | unique identifier for the user who last updated this secret                          |
+
 ### SSH Certificate Authority
 
 #### ssh_certificate_authority_created.v0
@@ -1024,3 +1085,56 @@ Triggers when a tunnel credential is updated
 | `metadata`    | string             | arbitrary user-defined machine-readable data of this credential. Optional, max 4096 bytes.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | `token`       | string             | the credential’s authtoken that can be used to authenticate an ngrok agent. **This value is only available one time, on the API response from credential creation, otherwise it is null.**                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | `acl`         | List&lt;string&gt; | optional list of ACL rules. If unspecified, the credential will have no restrictions. The only allowed ACL rule at this time is the `bind` rule. The `bind` rule allows the caller to restrict what domains and addresses the token is allowed to bind. For example, to allow the token to open a tunnel on example.ngrok.io your ACL would include the rule `bind:example.ngrok.io`. Bind rules may specify a leading wildcard to match multiple domains with a common suffix. For example, you may specify a rule of `bind:_.example.com` which will allow `x.example.com`, `y.example.com`, `_.example.com`, etc. A rule of `'\*'` is equivalent to no acl at all and will explicitly permit all actions. |
+
+### Vaults
+
+#### vault_created.v0
+
+Triggered when a vault is created
+
+| Field              | Type   | Description                                                                          |
+| ------------------ | ------ | ------------------------------------------------------------------------------------ |
+| `id`               | string | unique identifier for this vault                                                    |
+| `account_id`       | string | unique identifier for the account                                                    |
+| `created_at`       | string | timestamp when the vault was created, RFC 3339 format                               |
+| `updated_at`       | string | timestamp when the vault was last updated, RFC 3339 format                          |
+| `description`      | string | human-readable description of this vault                                            |
+| `metadata`         | string | arbitrary user-defined machine-readable data of this vault                          |
+| `name`             | string | name of the vault                                                                    |
+| `created_by`       | string | unique identifier for the user who created this vault                               |
+| `last_updated_by`  | string | unique identifier for the user who last updated this vault                          |
+| `key`              | []byte | encryption key for the vault                                                         |
+
+#### vault_deleted.v0
+
+Triggered when a vault is deleted
+
+| Field              | Type   | Description                                                                          |
+| ------------------ | ------ | ------------------------------------------------------------------------------------ |
+| `id`               | string | unique identifier for this vault                                                    |
+| `account_id`       | string | unique identifier for the account                                                    |
+| `created_at`       | string | timestamp when the vault was created, RFC 3339 format                               |
+| `updated_at`       | string | timestamp when the vault was last updated, RFC 3339 format                          |
+| `description`      | string | human-readable description of this vault                                            |
+| `metadata`         | string | arbitrary user-defined machine-readable data of this vault                          |
+| `name`             | string | name of the vault                                                                    |
+| `created_by`       | string | unique identifier for the user who created this vault                               |
+| `last_updated_by`  | string | unique identifier for the user who last updated this vault                          |
+| `key`              | []byte | encryption key for the vault                                                         |
+
+#### vault_updated.v0
+
+Triggered when a vault is updated (name, description, metadata)
+
+| Field              | Type   | Description                                                                          |
+| ------------------ | ------ | ------------------------------------------------------------------------------------ |
+| `id`               | string | unique identifier for this vault                                                    |
+| `account_id`       | string | unique identifier for the account                                                    |
+| `created_at`       | string | timestamp when the vault was created, RFC 3339 format                               |
+| `updated_at`       | string | timestamp when the vault was last updated, RFC 3339 format                          |
+| `description`      | string | human-readable description of this vault                                            |
+| `metadata`         | string | arbitrary user-defined machine-readable data of this vault                          |
+| `name`             | string | name of the vault                                                                    |
+| `created_by`       | string | unique identifier for the user who created this vault                               |
+| `last_updated_by`  | string | unique identifier for the user who last updated this vault                          |
+| `key`              | []byte | encryption key for the vault                                                         |
