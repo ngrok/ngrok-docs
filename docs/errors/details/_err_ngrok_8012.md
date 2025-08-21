@@ -9,7 +9,6 @@ This error occurs when the ngrok agent successfully receives traffic but fails t
    **Cause:** The web service or application on your local machine is not active or cannot be reached.
 
    **Resolution:**
-
    - Start your local service.
    - Confirm you can access it directly (e.g., http://localhost:8080).
    - Restart ngrok with the correct port number.
@@ -19,7 +18,6 @@ This error occurs when the ngrok agent successfully receives traffic but fails t
    **Cause:** The port in your ngrok command doesn't match your local service's port.
 
    **Resolution:**
-
    - Verify the port your local service is using.
    - Update your ngrok command to use the correct port.
    - Example: Use `ngrok http 3000` if your service runs on port 3000.

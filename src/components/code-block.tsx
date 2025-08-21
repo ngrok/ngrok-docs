@@ -1,8 +1,4 @@
-import type {
-	CodeBlockCode,
-	Mode,
-	SupportedLanguage,
-} from "@ngrok/mantle/code-block";
+import type { Mode, SupportedLanguage } from "@ngrok/mantle/code-block";
 import { CodeBlock, parseLanguage } from "@ngrok/mantle/code-block";
 import type { WithStyleProps } from "@ngrok/mantle/types";
 import type { ComponentProps, ReactNode } from "react";
@@ -12,7 +8,7 @@ import { defaultLanguageInfo } from "./LangSwitcher/data";
 import { getLanguageInfo, getMetaData } from "./LangSwitcher/utils";
 
 type WithIndentation = Pick<
-	ComponentProps<typeof CodeBlockCode>,
+	ComponentProps<typeof CodeBlock.Code>,
 	"indentation"
 >;
 
@@ -99,12 +95,12 @@ function DocsCodeBlock({
 const CodeBlockFallback = ({
 	children,
 	...props
-}: ComponentProps<typeof CodeBlock>) => (
-	<CodeBlock {...props}>
+}: ComponentProps<typeof CodeBlock.Root>) => (
+	<CodeBlock.Root {...props}>
 		<pre className="min-h-[3.25rem] p-4 pr-[3.375rem] font-mono text-mono">
 			{children}
 		</pre>
-	</CodeBlock>
+	</CodeBlock.Root>
 );
 
 export default DocsCodeBlock;

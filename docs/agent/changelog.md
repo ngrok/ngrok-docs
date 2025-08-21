@@ -6,6 +6,10 @@ title: Changelog
 
 ## v3
 
+### ngrok agent 3.26.0 \[2025-08-07\]
+
+- Added support for supplying a traffic policy to endpoints created with `ngrok http` and `ngrok api` using the `--traffic-policy-url` flag
+
 ### ngrok agent 3.25.1 \[2025-08-01\]
 
 - Allow specifying a file for secrets, rather than requiring them to be passed on the command line
@@ -164,7 +168,7 @@ mTLS to upgrade immediately.
 ### ngrok Agent 3.10.0 - \[2024-05-23\]
 
 - **ACTION MAY BE REQUIRED**: The domain used for Certificate Revocation List (CRL) checks is now `crl.ngrok-agent.com` to align it with the domain used for session connections. This may require changes to your firewall or proxy settings to allow this outbound connection on port 80, or setting `crl_noverify: true` in the agent config file.
-- Added CLI API support for [Bot Users](/iam/bot-users/).
+- Added CLI API support for [Service Users](/iam/bot-users/).
 
 ### ngrok Agent 3.9.0 - \[2024-04-24\]
 

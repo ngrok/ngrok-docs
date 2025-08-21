@@ -6,10 +6,10 @@
 {
   "certificate_management_policy": null,
   "certificate_management_status": null,
-  "created_at": "2025-08-05T19:35:24Z",
+  "created_at": "2025-08-10T10:08:21Z",
   "description": "ACME Co. Device Ingress",
   "domain": "connect.acme.com",
-  "id": "agin_30si8seTJxoGXweEC7dcRWgbEe9",
+  "id": "agin_315inY1A779llVRcgAKSb5Ib7SN",
   "metadata": "{\"device_sku\": \"824JS4RZ1F8X\"}",
   "ns_targets": [
     "1.kube-dns.kube-system.svc.cluster.local.",
@@ -20,6 +20,6 @@
   "region_domains": [
     "tunnel.us.connect.acme.com"
   ],
-  "uri": "/agent_ingresses/agin_30si8seTJxoGXweEC7dcRWgbEe9"
+  "uri": "/agent_ingresses/agin_315inY1A779llVRcgAKSb5Ib7SN"
 }
 ```
