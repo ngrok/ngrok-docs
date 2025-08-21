@@ -18,7 +18,6 @@ If you're the owner of the suspended account and believe this is an error:
 
 1. Review our [Terms of Service](https://ngrok.com/tos) to ensure your usage complies with all policies.
 2. Contact ngrok support at [support@ngrok.com](mailto:support@ngrok.com) with:
-
    - Your ngrok account email
    - A description of how you're using ngrok
    - Details about your project or application
