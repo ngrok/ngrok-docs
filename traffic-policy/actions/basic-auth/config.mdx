@@ -21,7 +21,21 @@ reference for this action.
         <p>Password must be at least <code>8</code> characters and no more than <code>128</code> characters.</p>
 
         :::warning
-            Unlike other traffic policy actions and fields, `basic-auth.credentials` cannot contain CEL.
+            Credentials use `username:password` format where username, password, or the entire credential can be CEL expressions. 
+            CEL expressions cannot embed the `:` delimiter within username or password components.
+
+            <br />
+            **Valid patterns:**
+
+            - `${CEL_EXPRESSION}:password` - CEL username, literal password (or vice versa)
+            - `${CEL_EXPRESSION}:${CEL_EXPRESSION}` - both username and password as separate CEL expressions
+            - `${CEL_EXPRESSION}` - entire credential as single CEL expression
+            - `user-prefix${CEL_EXPRESSION}:password` - partial CEL substitution within username (or password)
+            <br />
+            **Invalid patterns:**
+
+            - `${CEL_EXPRESSION}password` - CEL expression without proper boundaries
+            - `user-prefix${CEL_EXPRESSION}password-suffix` - CEL expression spanning username and password components
         :::
 
     </ConfigItem>
