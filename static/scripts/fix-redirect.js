@@ -53,7 +53,11 @@ const redirects = [
 	],
 	[
 		fromIncludes("/docs/best-practices/security-dev-productivity/"),
-		"/docs/guides/security-dev-productivity/",
+		"/docs/guides/security-best-practices/",
+	],
+	[
+		fromIncludes("/docs/guides/security-dev-productivity/"),
+		"/docs/guides/security-best-practices/",
 	],
 	[
 		fromIncludes("/docs/platform/ip-policies/"),
@@ -146,10 +150,10 @@ const redirects = [
 		"/docs/guides/other-guides/upgrade-v2-v3",
 	],
 
-	// /docs/guides/security-dev-productivity -> /docs/guides/other-guides/security-dev-productivity
+	// /docs/guides/security-dev-productivity -> /docs/guides/security-best-practices
 	[
 		fromIncludes("/docs/guides/security-dev-productivity"),
-		"/docs/guides/other-guides/security-dev-productivity",
+		"/docs/guides/security-best-practices",
 	],
 
 	// /docs/guides/securing-your-tunnels -> /docs/guides/other-guides/securing-your-tunnels
@@ -886,7 +890,7 @@ const redirects = [
 	],
 	[
 		fromExact("/docs/guides/other-guides/"),
-		"/docs/guides/security-dev-productivity/",
+		"/docs/guides/security-best-practices/",
 	],
 	[
 		fromExact("/docs/guides/using-ngrok-with/"),
@@ -903,13 +907,13 @@ const redirects = [
 	],
 	[
 		fromExact("/docs/guides/other-guides/security-dev-productivity/"),
-		"/docs/guides/security-dev-productivity/",
+		"/docs/guides/security-best-practices/",
 	],
 	[
 		fromExact(
 			"/docs/guides/other-guides/security-dev-productivity/security-dev-productivity/",
 		),
-		"/docs/guides/security-dev-productivity/",
+		"/docs/guides/security-best-practices/",
 	],
 	[
 		fromExact("/docs/using-ngrok-with/python/"),
@@ -945,7 +949,7 @@ const redirects = [
 	],
 	[
 		fromExact("/docs/guides/other-guides/securing-your-tunnels/"),
-		"/docs/guides/security-dev-productivity/securing-your-tunnels",
+		"/docs/guides/security-best-practices/securing-your-tunnels",
 	],
 	[fromExact("/docs/guides/other-guides/licensing"), "/docs/pricing-limits/"],
 	[
