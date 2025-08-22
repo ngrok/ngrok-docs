@@ -738,10 +738,10 @@ const sidebars = {
 		{
 			label: "Security Best Practices",
 			type: "category",
-			link: { type: "doc", id: "guides/security-dev-productivity/index" },
+			link: { type: "doc", id: "guides/security-best-practices/index" },
 			items: [
-				"guides/security-dev-productivity/securing-your-tunnels",
-				"guides/security-dev-productivity/hipaa-compliance",
+				"guides/security-best-practices/securing-your-tunnels",
+				"guides/security-best-practices/hipaa-compliance",
 			],
 		},
 

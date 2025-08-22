@@ -234,7 +234,7 @@ mTLS to upgrade immediately.
 
 ### ngrok Agent 3.3.0 - \[2023-05-09\]
 
-- Added new default tunnel ingress names: the agent now connects to [`connect.ngrok-agent.com`](/docs/guides/security-dev-productivity/securing-your-tunnels/#blocking-non-corporate-accounts) when starting a session
+- Added new default tunnel ingress names: the agent now connects to [`connect.ngrok-agent.com`](/docs/guides/security-best-practices/securing-your-tunnels/#blocking-non-corporate-accounts) when starting a session
 - Improved `ngrok diagnose` output to check that the DNS entry for `localhost` resolves
 - Added the command `ngrok config add-server-addr` for configuring custom agent ingresses
 - Re-wrote the tunnel and session backend to use the `ngrok-go` library
