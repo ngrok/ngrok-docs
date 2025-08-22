@@ -1048,6 +1048,18 @@ const redirects = [
 	],
 	// Just a redirect so the top-level guides path goes somewhere (there's no guides/index)
 	[fromExact("/docs/guides/"), "/docs/guides/api-gateway/get-started/"],
+	[
+		fromExact(
+			"/docs/using-ngrok-with/docker#video-demo---using-ngrok-with-docker-desktop",
+		),
+		"/docs/using-ngrok-with/docker/desktop/#video-demo---using-ngrok-with-docker-desktop",
+	],
+	[
+		fromExact(
+			"/docs/using-ngrok-with/docker#video-demo---using-ngrok-with-docker-desktop",
+		),
+		"/docs/using-ngrok-with/docker/desktop/#video-demo---using-ngrok-with-docker-desktop",
+	],
 ];
 
 // get current href from window
