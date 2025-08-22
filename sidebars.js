@@ -383,6 +383,7 @@ const sidebars = {
 						"k8s/guides/bindings",
 						"k8s/guides/pooling",
 						"k8s/guides/custom-domain",
+						"k8s/guides/customer-networks",
 						"k8s/guides/using-crds",
 						"k8s/guides/using-gwapi",
 						"k8s/guides/using-ingresses",
