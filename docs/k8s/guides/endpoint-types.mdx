@@ -4,6 +4,7 @@ title: Endpoint Types
 
 import TabItem from "@theme/TabItem";
 import Tabs from "@theme/Tabs";
+import ConfigExample from "/src/components/ConfigExample.tsx";
 
 The ngrok Kubernetes operator offers `CloudEndpoint` and `AgentEndpoint` as custom resource types that let you create endpoints in ngrok.
 The [using CRDs guide](/k8s/guides/using-crds) goes over the details and differences about how to configure each one.
@@ -17,39 +18,63 @@ The following examples showcase how you can create endpoints that accept `http:/
 	<TabItem value="agent-endpoint" label="AgentEndpoint" default>
 	The example showcases an upstream that accepts `http://` requests, but you can also use `https://` for the upstream.
 	For `AgentEndpoints`, the `upstream.url` scheme does not need to match the scheme of the public URL.
-	
-	```yaml
-  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-  kind: AgentEndpoint
-  metadata:
-    name: https-agent-endpoint
-    namespace: default
-  spec:
-    url: http://example-http-domain.ngrok.app
-    upstream:
-      url: http://example-service.default:8080
-    bindings:
-    - public
-	```
+
+	<ConfigExample		
+		title="ngrok-crds"
+		snippetText={null}
+		showLineNumbers={true}
+		hideJSON={true}
+		config={{
+			apiVersion: "ngrok.k8s.ngrok.com/v1alpha1",
+			kind: "AgentEndpoint",
+			metadata: {
+				name: "https-agent-endpoint",
+				namespace: "default",
+			},
+			spec: {
+				url: "http://example-http-domain.ngrok.app",
+				upstream: {
+					url: "http://example-service.default:8080",
+				},
+				bindings: ["public"],
+			},
+		}}
+	/>
 	</TabItem>
 	<TabItem value="cloud-endpoint" label="CloudEndpoint">
-	```yaml
-  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-  kind: CloudEndpoint
-  metadata:
-    name: http-cloud-endpoint
-  spec:
-    url: http://example-http-domain.ngrok.app
-    bindings:
-    - public
-    trafficPolicy:
-      policy:
-        on_http_request:
-        - actions:
-          - type: forward-internal
-            config:
-              url: http://example-service.internal:8080
-	```
+	<ConfigExample
+		title="ngrok-crds"
+		snippetText={null}
+		showLineNumbers={true}
+		hideJSON={true}
+		config={{
+			apiVersion: "ngrok.k8s.ngrok.com/v1alpha1",
+			kind: "CloudEndpoint",
+			metadata: {
+				name: "http-cloud-endpoint",
+			},
+			spec: {
+				url: "http://example-http-domain.ngrok.app",
+				bindings: ["public"],
+				trafficPolicy: {
+					policy: {
+						on_http_request: [
+							{
+								actions: [
+									{
+										type: "forward-internal",
+										config: {
+											url: "http://example-service.internal:8080",
+										},
+									},
+								],
+							},
+						],
+					},
+				},
+			},
+		}}
+	/>
 	</TabItem>
 </Tabs>
 

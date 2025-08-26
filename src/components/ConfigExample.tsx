@@ -13,29 +13,37 @@ const showExample = (
 		title,
 		icon,
 		snippetText,
+		hideJSON,
+		hideYAML,
 	}: ConfigExampleProps,
 	yamlConfig: string,
 	jsonConfig: string,
 ) => {
 	const titleToUse = title || defaultTitle;
+	const yamlBlock = <DocsCodeBlock
+		language="yaml"
+		metastring={yamlMetastring}
+		title={`${titleToUse}.yml`}
+		icon={icon}
+	>
+		{snippetText ? `# ${snippetText}\n${yamlConfig}` : yamlConfig}
+	</DocsCodeBlock>;
+
+	const jsonBlock = 
+	<DocsCodeBlock
+		language="json"
+		metastring={jsonMetastring}
+		title={`${titleToUse}.json`}
+		icon={icon}
+	>
+		{snippetText ? `// ${snippetText}\n${jsonConfig}` : jsonConfig}
+	</DocsCodeBlock>;
+	if(hideJSON) return yamlBlock;
+	if(hideYAML) return jsonBlock;
 	return (
 		<LangSwitcher className="mb-3">
-			<DocsCodeBlock
-				language="yaml"
-				metastring={yamlMetastring}
-				title={`${titleToUse}.yml`}
-				icon={icon}
-			>
-				{snippetText ? `# ${snippetText}\n${yamlConfig}` : yamlConfig}
-			</DocsCodeBlock>
-			<DocsCodeBlock
-				language="json"
-				metastring={jsonMetastring}
-				title={`${titleToUse}.json`}
-				icon={icon}
-			>
-				{snippetText ? `// ${snippetText}\n${jsonConfig}` : jsonConfig}
-			</DocsCodeBlock>
+			{yamlBlock}
+			{jsonBlock}
 		</LangSwitcher>
 	);
 };
@@ -68,6 +76,8 @@ export type ConfigExampleProps = {
 	showLineNumbers?: boolean;
 	yamlMetastring?: string;
 	jsonMetastring?: string;
+	hideJSON?: boolean;
+	hideYAML?: boolean;
 	title?: string;
 	icon?: ReactNode;
 	showAgentConfig?: boolean;
@@ -78,6 +88,7 @@ export default function ConfigExample({
 	// Show the agent config by default
 	showAgentConfig = false,
 	showTrafficPolicy = true,
+	title,
 	...props
 }: ConfigExampleProps) {
 	const yamlOptions = {
@@ -91,7 +102,7 @@ export default function ConfigExample({
 	const policyJsonConfig = JSON.stringify(props.config, null, 2);
 
 	const policySnippet = showExample(
-		"traffic-policy",
+		title || "traffic-policy",
 		props,
 		policyYamlConfig,
 		policyJsonConfig,
@@ -99,7 +110,7 @@ export default function ConfigExample({
 
 	const agentConfig = getAgentConfig(props.config, yamlOptions);
 	const agentConfigSnippet = showExample(
-		"config",
+		title || "ngrok",
 		props,
 		agentConfig.yamlConfig,
 		agentConfig.jsonConfig,

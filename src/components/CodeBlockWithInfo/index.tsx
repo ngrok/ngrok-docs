@@ -66,6 +66,7 @@ export function CodeBlockWithInfo({
 				<CodeBlock.Body>
 					{!meta?.disableCopy && <CodeBlock.CopyButton />}
 					<CodeBlock.Code
+						indentation={meta?.indentation}
 						language={language}
 						value={fmtCode`${content}`}
 					/>
