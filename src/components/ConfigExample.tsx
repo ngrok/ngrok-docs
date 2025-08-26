@@ -20,26 +20,29 @@ const showExample = (
 	jsonConfig: string,
 ) => {
 	const titleToUse = title || defaultTitle;
-	const yamlBlock = <DocsCodeBlock
-		language="yaml"
-		metastring={yamlMetastring}
-		title={`${titleToUse}.yml`}
-		icon={icon}
-	>
-		{snippetText ? `# ${snippetText}\n${yamlConfig}` : yamlConfig}
-	</DocsCodeBlock>;
+	const yamlBlock = (
+		<DocsCodeBlock
+			language="yaml"
+			metastring={yamlMetastring}
+			title={`${titleToUse}.yml`}
+			icon={icon}
+		>
+			{snippetText ? `# ${snippetText}\n${yamlConfig}` : yamlConfig}
+		</DocsCodeBlock>
+	);
 
-	const jsonBlock = 
-	<DocsCodeBlock
-		language="json"
-		metastring={jsonMetastring}
-		title={`${titleToUse}.json`}
-		icon={icon}
-	>
-		{snippetText ? `// ${snippetText}\n${jsonConfig}` : jsonConfig}
-	</DocsCodeBlock>;
-	if(hideJSON) return yamlBlock;
-	if(hideYAML) return jsonBlock;
+	const jsonBlock = (
+		<DocsCodeBlock
+			language="json"
+			metastring={jsonMetastring}
+			title={`${titleToUse}.json`}
+			icon={icon}
+		>
+			{snippetText ? `// ${snippetText}\n${jsonConfig}` : jsonConfig}
+		</DocsCodeBlock>
+	);
+	if (hideJSON) return yamlBlock;
+	if (hideYAML) return jsonBlock;
 	return (
 		<LangSwitcher className="mb-3">
 			{yamlBlock}

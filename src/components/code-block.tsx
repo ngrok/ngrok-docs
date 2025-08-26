@@ -61,7 +61,8 @@ function DocsCodeBlock({
 	const langInClassName = langMatchesInClassName
 		? langMatchesInClassName[0]?.split("-")[1]
 		: "";
-	const langToFind = langInClassName || parseLanguage(_language || langInClassName);
+	const langToFind =
+		langInClassName || parseLanguage(_language || langInClassName);
 
 	const language = getLanguageInfo(langToFind) || defaultLanguageInfo;
 
