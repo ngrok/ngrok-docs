@@ -9,7 +9,7 @@ title: Changelog
 ### ngrok agent 3.27.0 \[2025-08-28\]
 
 - Optimized agent ui.
-- Added get-secrets-by-vault path to valuts api 🤫
+- Added get-secrets-by-vault path to vaults api 🤫
 
 ### ngrok agent 3.26.0 \[2025-08-07\]
 
