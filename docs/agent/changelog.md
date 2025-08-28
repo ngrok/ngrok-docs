@@ -6,6 +6,11 @@ title: Changelog
 
 ## v3
 
+### ngrok agent 3.27.0 \[2025-08-28\]
+
+- Optimized agent ui.
+- Added get-secrets-by-vault path to valuts api 🤫
+
 ### ngrok agent 3.26.0 \[2025-08-07\]
 
 - Added support for supplying a traffic policy to endpoints created with `ngrok http` and `ngrok api` using the `--traffic-policy-url` flag
