@@ -8,40 +8,40 @@
   "tls_edges": [
     {
       "backend": null,
-      "created_at": "2025-08-10T10:08:25Z",
+      "created_at": "2025-08-30T10:08:07Z",
       "description": "acme tls edge",
       "hostports": [
         "example.com:443"
       ],
-      "id": "edgtls_315io0cUfxlVzA7zR3inHTCTIHX",
+      "id": "edgtls_320DEqenGlCc2ZwExezL928cAxK",
       "ip_restriction": null,
       "metadata": "{\"environment\": \"staging\"}",
       "mutual_tls": null,
       "policy": null,
       "tls_termination": null,
       "traffic_policy": null,
-      "uri": "https://api.ngrok.com/edges/tls/edgtls_315io0cUfxlVzA7zR3inHTCTIHX"
+      "uri": "https://api.ngrok.com/edges/tls/edgtls_320DEqenGlCc2ZwExezL928cAxK"
     },
     {
       "backend": {
         "backend": {
-          "id": "bkdhr_315imkF2PodnZ5e3OBjniJv2wcf",
-          "uri": "https://api.ngrok.com/backends/http_response/bkdhr_315imkF2PodnZ5e3OBjniJv2wcf"
+          "id": "bkdhr_320DDU98CbancKXERG0fi2CcNdV",
+          "uri": "https://api.ngrok.com/backends/http_response/bkdhr_320DDU98CbancKXERG0fi2CcNdV"
         },
         "enabled": true
       },
-      "created_at": "2025-08-10T10:08:14Z",
+      "created_at": "2025-08-30T10:07:56Z",
       "description": "acme tls edge",
       "hostports": [
         "endpoint-example2.com:443"
       ],
-      "id": "edgtls_315imdPewdmUKLuyNpxqIrt7V5D",
+      "id": "edgtls_320DDUw2Wj8Wn8ng7GIX4cjR2J2",
       "ip_restriction": null,
       "mutual_tls": null,
       "policy": null,
       "tls_termination": null,
       "traffic_policy": null,
-      "uri": "https://api.ngrok.com/edges/tls/edgtls_315imdPewdmUKLuyNpxqIrt7V5D"
+      "uri": "https://api.ngrok.com/edges/tls/edgtls_320DDUw2Wj8Wn8ng7GIX4cjR2J2"
     }
   ],
   "uri": "https://api.ngrok.com/edges/tls"

@@ -571,6 +571,14 @@
     </tr>
     <tr>
       <td>
+        <a id="ERR_NGROK_249" href="/docs/errors/err_ngrok_249">ERR_NGROK_249</a>
+      </td>
+      <td class="pre-wrapped">
+        The endpoint URL provided is not a valid URL: <code>&lt;URL&gt;</code>. Please ensure the URL has a proper scheme and domain.
+      </td>
+    </tr>
+    <tr>
+      <td>
         <a id="ERR_NGROK_300" href="/docs/errors/err_ngrok_300">ERR_NGROK_300</a>
       </td>
       <td class="pre-wrapped">
@@ -1891,6 +1899,14 @@
       </td>
       <td class="pre-wrapped">
         You are not allowed to delete your dev domain.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_459" href="/docs/errors/err_ngrok_459">ERR_NGROK_459</a>
+      </td>
+      <td class="pre-wrapped">
+        Cannot migrate to dev domains (flag 'AllowDevelopmentDomainAndEndpoints' is disabled).
       </td>
     </tr>
     <tr>
@@ -6194,6 +6210,22 @@
     </tr>
     <tr>
       <td>
+        <a id="ERR_NGROK_3801" href="/docs/errors/err_ngrok_3801">ERR_NGROK_3801</a>
+      </td>
+      <td class="pre-wrapped">
+        The request's body could not be parsed: <code>&lt;ERR&gt;</code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_3802" href="/docs/errors/err_ngrok_3802">ERR_NGROK_3802</a>
+      </td>
+      <td class="pre-wrapped">
+        No API key was provided in the request or in the provider configuration.
+      </td>
+    </tr>
+    <tr>
+      <td>
         <a id="ERR_NGROK_3900" href="/docs/errors/err_ngrok_3900">ERR_NGROK_3900</a>
       </td>
       <td class="pre-wrapped">
@@ -6475,7 +6507,7 @@
         <a id="ERR_NGROK_4109" href="/docs/errors/err_ngrok_4109">ERR_NGROK_4109</a>
       </td>
       <td class="pre-wrapped">
-        Bot name must not be empty.
+        Service User name must not be empty.
       </td>
     </tr>
     <tr>
@@ -6483,7 +6515,7 @@
         <a id="ERR_NGROK_4110" href="/docs/errors/err_ngrok_4110">ERR_NGROK_4110</a>
       </td>
       <td class="pre-wrapped">
-        Bot name exceeds max length, <code>&lt;LENGTH&gt;</code> bytes, max: <code>&lt;MAX&gt;</code>.
+        Service User name exceeds max length, <code>&lt;LENGTH&gt;</code> bytes, max: <code>&lt;MAX&gt;</code>.
       </td>
     </tr>
     <tr>
@@ -6499,7 +6531,7 @@
         <a id="ERR_NGROK_4112" href="/docs/errors/err_ngrok_4112">ERR_NGROK_4112</a>
       </td>
       <td class="pre-wrapped">
-        Bot names must be unique within an account.
+        Service User names must be unique within an account.
       </td>
     </tr>
     <tr>
@@ -11578,6 +11610,14 @@
       </td>
       <td class="pre-wrapped">
         You've reached the maximum number of secrets (<code>&lt;MAX&gt;</code>) allowed for vault <code>&lt;VID&gt;</code> under your current plan. To increase your limit, please upgrade your plan or contact support.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_24008" href="/docs/errors/err_ngrok_24008">ERR_NGROK_24008</a>
+      </td>
+      <td class="pre-wrapped">
+        Required parameter 'VaultID' is missing.
       </td>
     </tr>
     <tr>

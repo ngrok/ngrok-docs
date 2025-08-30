@@ -8,38 +8,38 @@
     {
       "action": "allow",
       "cidr": "132.2.19.0/24",
-      "created_at": "2025-08-10T10:08:19Z",
+      "created_at": "2025-08-30T10:08:01Z",
       "description": "sf office",
-      "id": "ipr_315inL62Vi2g4vJ9Zh9O8YskVbu",
+      "id": "ipr_320DE83QUPZ4vkkY6XKkm1EvtJ2",
       "ip_policy": {
-        "id": "ipp_315inId5ABkyeL9wiJHePjomu6d",
-        "uri": "https://api.ngrok.com/ip_policies/ipp_315inId5ABkyeL9wiJHePjomu6d"
+        "id": "ipp_320DEAIvTAEJQrfoGfPLv4CmUmu",
+        "uri": "https://api.ngrok.com/ip_policies/ipp_320DEAIvTAEJQrfoGfPLv4CmUmu"
       },
-      "uri": "https://api.ngrok.com/ip_policy_rules/ipr_315inL62Vi2g4vJ9Zh9O8YskVbu"
-    },
-    {
-      "action": "allow",
-      "cidr": "2.2.2.2/32",
-      "created_at": "2025-08-10T10:08:19Z",
-      "description": "alan laptop",
-      "id": "ipr_315inKGxNIrYGHlyNStcvGsXqui",
-      "ip_policy": {
-        "id": "ipp_315inId5ABkyeL9wiJHePjomu6d",
-        "uri": "https://api.ngrok.com/ip_policies/ipp_315inId5ABkyeL9wiJHePjomu6d"
-      },
-      "uri": "https://api.ngrok.com/ip_policy_rules/ipr_315inKGxNIrYGHlyNStcvGsXqui"
+      "uri": "https://api.ngrok.com/ip_policy_rules/ipr_320DE83QUPZ4vkkY6XKkm1EvtJ2"
     },
     {
       "action": "allow",
       "cidr": "212.3.14.0/24",
-      "created_at": "2025-08-10T10:08:19Z",
+      "created_at": "2025-08-30T10:08:01Z",
       "description": "nyc office",
-      "id": "ipr_315inFlql5ppd82LjOKKvsNuhSB",
+      "id": "ipr_320DE7CXULpgx3XjLRJEaOEVixN",
       "ip_policy": {
-        "id": "ipp_315inId5ABkyeL9wiJHePjomu6d",
-        "uri": "https://api.ngrok.com/ip_policies/ipp_315inId5ABkyeL9wiJHePjomu6d"
+        "id": "ipp_320DEAIvTAEJQrfoGfPLv4CmUmu",
+        "uri": "https://api.ngrok.com/ip_policies/ipp_320DEAIvTAEJQrfoGfPLv4CmUmu"
       },
-      "uri": "https://api.ngrok.com/ip_policy_rules/ipr_315inFlql5ppd82LjOKKvsNuhSB"
+      "uri": "https://api.ngrok.com/ip_policy_rules/ipr_320DE7CXULpgx3XjLRJEaOEVixN"
+    },
+    {
+      "action": "allow",
+      "cidr": "2.2.2.2/32",
+      "created_at": "2025-08-30T10:08:01Z",
+      "description": "alan laptop",
+      "id": "ipr_320DE6eBFWkIYHryvXnyQeiszYT",
+      "ip_policy": {
+        "id": "ipp_320DEAIvTAEJQrfoGfPLv4CmUmu",
+        "uri": "https://api.ngrok.com/ip_policies/ipp_320DEAIvTAEJQrfoGfPLv4CmUmu"
+      },
+      "uri": "https://api.ngrok.com/ip_policy_rules/ipr_320DE6eBFWkIYHryvXnyQeiszYT"
     }
   ],
   "next_page_uri": null,
