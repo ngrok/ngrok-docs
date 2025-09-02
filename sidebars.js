@@ -297,6 +297,11 @@ const sidebars = {
 					id: "traffic-policy/macros/index",
 				},
 				{
+					label: "Secrets",
+					type: "doc",
+					id: "traffic-policy/secrets",
+				},
+				{
 					label: "Variables",
 					type: "category",
 					link: { type: "doc", id: "traffic-policy/variables/index" },
@@ -381,6 +386,7 @@ const sidebars = {
 						"k8s/guides/bindings",
 						"k8s/guides/pooling",
 						"k8s/guides/custom-domain",
+						"k8s/guides/customer-networks",
 						"k8s/guides/using-crds",
 						"k8s/guides/using-gwapi",
 						"k8s/guides/using-ingresses",
@@ -737,8 +743,12 @@ const sidebars = {
 			label: "Security Best Practices",
 			type: "category",
 			link: { type: "doc", id: "guides/security-dev-productivity/index" },
-			items: ["guides/security-dev-productivity/securing-your-tunnels"],
+			items: [
+				"guides/security-dev-productivity/securing-your-tunnels",
+				"guides/security-dev-productivity/hipaa-compliance",
+			],
 		},
+
 		{
 			label: "Site-to-Site Connectivity",
 			type: "category",

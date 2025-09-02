@@ -146,12 +146,6 @@ const redirects = [
 		"/docs/guides/other-guides/upgrade-v2-v3",
 	],
 
-	// /docs/guides/security-dev-productivity -> /docs/guides/other-guides/security-dev-productivity
-	[
-		fromIncludes("/docs/guides/security-dev-productivity"),
-		"/docs/guides/other-guides/security-dev-productivity",
-	],
-
 	// /docs/guides/securing-your-tunnels -> /docs/guides/other-guides/securing-your-tunnels
 	[
 		fromIncludes("/docs/guides/securing-your-tunnels"),
@@ -1048,6 +1042,18 @@ const redirects = [
 	],
 	// Just a redirect so the top-level guides path goes somewhere (there's no guides/index)
 	[fromExact("/docs/guides/"), "/docs/guides/api-gateway/get-started/"],
+	[
+		fromExact(
+			"/docs/using-ngrok-with/docker#video-demo---using-ngrok-with-docker-desktop",
+		),
+		"/docs/using-ngrok-with/docker/desktop/#video-demo---using-ngrok-with-docker-desktop",
+	],
+	[
+		fromExact(
+			"/docs/using-ngrok-with/docker#video-demo---using-ngrok-with-docker-desktop",
+		),
+		"/docs/using-ngrok-with/docker/desktop/#video-demo---using-ngrok-with-docker-desktop",
+	],
 ];
 
 // get current href from window
