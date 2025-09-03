@@ -24,8 +24,8 @@ const sidebars = {
 			type: "category",
 			link: { type: "doc", id: "pricing-limits/index" },
 			items: ["pricing-limits/free-plan-limits",
-				"pricing-limits/free-plan-limits",
 				"pricing-limits/traffic-policy-unit-pricing",
+				"pricing-limits/how-ngrok-charges",
 			],
 		},
 		{
