@@ -540,7 +540,7 @@ const sidebars = {
 					type: "category",
 					label: "Principals",
 					link: { type: "doc", id: "iam/users" },
-					items: ["iam/users", "iam/bot-users"],
+					items: ["iam/users", "iam/service-users"],
 				},
 				{
 					type: "category",
