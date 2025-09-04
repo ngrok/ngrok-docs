@@ -59,10 +59,7 @@ const redirects = [
 		fromIncludes("/docs/platform/ip-policies/"),
 		"/docs/api/resources/ip-policies/",
 	],
-	[
-		fromIncludes("/docs/platform/botusers/"),
-		"/docs/iam/service-users/",
-	],
+	[fromIncludes("/docs/platform/botusers/"), "/docs/iam/service-users/"],
 	[fromIncludes("/docs/platform/dashboard/"), "/docs/user-management/#sso"],
 	[
 		fromIncludes("/docs/cloud-edge/modules/webhook/"),
@@ -448,7 +445,10 @@ const redirects = [
 	],
 
 	// /docs/user-management/* -> /docs/iam/*
-	[fromIncludes("/docs/user-management/#bot-users"), "/docs/iam/service-users/"],
+	[
+		fromIncludes("/docs/user-management/#bot-users"),
+		"/docs/iam/service-users/",
+	],
 	[
 		fromIncludes("/docs/user-management/#sso"),
 		"/docs/iam/users/#dashboard-access",
