@@ -19,57 +19,54 @@ import CustomIngressSshExample from "/examples/ssh/custom-agent-ingress.mdx";
 
 ## Overview
 
-The Connect URL is the network address that the ngrok agent and agent
-SDKs use to connect to the ngrok service. The default Connect URL is
-`connect.ngrok-agent.com:443`. This is defined in your agent configuration file
-under the [`connect_url`](/agent/config/v3/#connect_url) parameter.
+The Connect URL is the hostname and port the ngrok agent (and agent SDKs) use to
+establish its control connection to the ngrok service. By default, agents use
+`connect.ngrok-agent.com:443`. You can change this per agent by setting the
+[`connect_url`](/agent/config/v3/#connect_url) field in your configuration file.
 
 ## Custom Connect URL {#custom-connect-url}
 
-You can customize the Connect URL by creating your own Connect URL. You
-do this by delegating control of a DNS subdomain. ngrok will then populate the
-A/AAAA records and issue the certificates for your new Connect URL.
-Lastly, you must update the `ngrok.yml` [config file](/agent/config/) to instruct
-your ngrok agent to connect to the new address. You can use the helper command
-[`ngrok config add-connect-url`](/agent/cli/#ngrok-config-add-connect-url) to do this.
+Create a custom Connect URL to customize how your agents connect (for example
+`connect.example.com:443`). This involves delegating a DNS subdomain and
+configuring certificates for the new address.
 
-Agents authenticating to your Connect URL must authenticate to your
-ngrok account. Agents attempting to authenticate with credentials for other
-accounts through your ingress address are disallowed.
+Key points:
 
-### Create the Connect URL
+- Agents connecting via your custom Connect URL must authenticate to your
+  ngrok account; connections using credentials from other accounts are rejected.
+- Custom Connect URLs support both ngrok‑issued and Let’s Encrypt certificates.
 
-When you create a new Connect URL, you specify the domain you wish to use.
-You must own this domain yourself and have the ability to create `NS` records
-on it via your DNS provider.
+### Create a custom Connect URL
 
-- **[Create a new Connect URL on the ngrok
-  Dashboard](https://dashboard.ngrok.com/tunnels/ingress)**
-- **[Create a new Connect URL via API](/api/resources/agent-ingresses/)**
+1. Choose a domain you own
 
-:::note
+- You will delegate a subdomain via `NS` records to ngrok so we can manage the
+  required DNS (A/AAAA) and certificates.
 
-When creating a new custom Connect URL, there is an option to configure the
-Certificate Issuer from either ngrok or Let's Encrypt. Some networks do not
-trust traffic encrypted with our privately issued certificate and will require
-a public issuer such as Let's Encrypt and this allows you to choose which one is needed.
+2. Create the Connect URL entry
 
-:::
+- In the Dashboard: https://dashboard.ngrok.com/ingress
+- Or via API: [/api/resources/agent-ingresses/](/api/resources/agent-ingresses/)
+
+3. Pick a certificate issuer
+
+- ngrok Internal CA (fast, private CA, may require trust in some networks)
+- Let’s Encrypt (public CA, may require additional provisioning time)
 
 ### Delegate DNS records
 
-After you create a new Connect URL, you will be prompted to create `NS`
-records on the domain you chose.
+After creation, the Dashboard prompts you to add `NS` records for the selected
+subdomain at your DNS provider.
 
 ### Update agent configuration
 
-Finally, you must reconfigure your ngrok agent or agent SDKs to use your new
-Connect URL by adding the [`connect_url`](/agent/config/v3/#connect_url)
-option to your ngrok agent's configuration file. You can use the helper command
-[`ngrok config add-connect-url`](/agent/cli/#ngrok-config-add-connect-url) to do this.
+Point your agents at the new address by setting
+[`connect_url`](/agent/config/v3/#connect_url). The helper command
+[`ngrok config add-connect-url`](/agent/cli/#ngrok-config-add-connect-url) can
+update your config for you.
 
 For example, if the domain of your custom Connect URL is
-`ingress.example.com` then you might add the following line to the agent's
+`connect.example.com` then you might add the following line to the agent's
 configuration file:
 
 <Tabs groupId="connectivity" queryString="cty">
@@ -99,89 +96,72 @@ configuration file:
 	</TabItem>
 </Tabs>
 
-## Incompatibility with GSLB
+## Regional scope and GSLB
 
-:::note
-
-Custom Connect URLs require that you choose a particular region that your
-agent connects to. It does not yet support [Global Server Load
-Balancing](/universal-gateway/global-load-balancer/) which allows the agent to connect to the closest
-ngrok point of presence.
-
-Endpoints created by agents using custom Connect URLs are still delivered with
-Global Server Load Balancing.
-
-:::
+Custom Connect URLs are pinned to a specific region for the agent’s control
+connection and do not use
+[Global Server Load Balancing](/universal-gateway/global-load-balancer/) for that
+connection. End-user traffic to your endpoints is still delivered using GSLB.
 
 ## Dedicated IPs
 
-When you create a custom Connect URL, the DNS, certificates and hostnames are
-all custom branded but your address will still resolve to ngrok's shared set of
-IP addresses. Dedicated IPs that are unique for your account are also available
-at additional cost. [Contact us](mailto:support@ngrok.com?subject=Dedicated+Ingress+IPs) to get in touch for
-additional details.
+When you create a custom Connect URL, DNS and certificates are branded to your
+domain, but the address still resolves to ngrok’s shared IPs. If you need
+static, account‑unique addresses, Dedicated IPs are available. [Contact us](mailto:sales@ngrok.com?subject=Dedicated+Ingress+IPs)
+for details.
 
 ## Certificate Issuer
 
-When you create a custom Connect URL, you have the option to choose between
-two certificate issuer options: ngrok's internal CA and a public one from
-[Let's Encrypt](https://letsencrypt.org/).
+When you create a custom Connect URL, choose one of two certificate issuers:
+
+- ngrok’s internal CA
+- [Let’s Encrypt](https://letsencrypt.org/)
 
 ![](/img/docs/new-ingress.png)
 
-### ngrok's Internal CA
+### ngrok Internal CA
 
-With this option, the agent uses a private cert minted from ngrok. This is the default option and the agent trusts
-automatically. This cert is provisioned immediately, but may require additional
-configuration if you are using 3rd party security tools as they most likely won't trust the ngrok-issued
-certificate.
+- Default option; provisioned immediately.
+- Trusted by the ngrok agent out of the box.
+- Some enterprise inspection tools may not trust this private CA without
+  additional configuration.
 
-### Let's Encrypt Cert Issuer
+### Let’s Encrypt
 
-This option will request a certificate from Let's Encrypt. This is not automatically trusted by the agent and
-requires the `root_cas` option to be set to `host`, or the Let's Encrypt root
-cert. In most cases, the host that runs the agent will trust a standard set of
-public CAs. You will also need this when using any ngrok agent SDK or SSH Reverse Tunnel agent.
+- Public CA; useful when corporate proxies or network devices cannot trust
+  a private CA.
+- May require setting `root_cas: host` (or providing the Let’s Encrypt root)
+  for some SDKs and for the SSH Reverse Tunnel agent.
+- Provisioning can take time (DNS propagation). ngrok issues a temporary
+  certificate until Let’s Encrypt is ready. Even if DNS checks pass in the
+  Dashboard, Let’s Encrypt may still be propagating.
 
-This certificate is not immediately provisioned and after provision, could take up to 48 hours if propagation is
-slow. An ngrok certificate is provisioned and used in the meantime to secure any communication. Note that
-even if the DNS "Check Status" succeeds in the ngrok dashboard, it may not have
-propagated to Let's Encrypt yet.
-
-This option is useful if getting an outbound proxy to trust `ngrok` CA is
-challenging due to either technical or organizational constraints.
-
-If Let's Encrypt is selected, the Connect URL drawer will show the following
-card while the certificate is provisioning:
+If you select Let’s Encrypt, the Connect URL drawer shows a status card while
+the certificate is provisioning:
 
 ![](/img/docs/certificate-provisioning-delayed.png)
 
 :::note
-
-Certificates automatically provisioned from Let's Encrypt are securely managed, and their private keys are
-not accessible to the requester. This ensures the security and integrity of the certificate by preventing
-key exposure.
-
+Certificates issued by Let’s Encrypt through ngrok are securely managed.
+Private keys are not exposed to requesters.
 :::
 
 ## Why customize the Connect URL?
 
 ### Branded Connectivity
 
-If you are using ngrok for production connectivity to your devices in the field
-or APIs inside of your customers' networks, a custom Connect URL allows you
-to brand ngrok's connectivity as your own.
+If you use ngrok for production connectivity (devices in the field or customer
+environments), a custom Connect URL lets you brand connectivity with your
+domain.
 
 ### Policy Enforcement
 
-If you are using ngrok for development and testing, you can use your own
-Connect URL to ensure everyone at your org does not use their personal
-accounts and instead uses a shared ngrok account with appropriate observability
-and security controls set up. You can do this by blocking ngrok's default
-Connect URLs from your machines and networks, but allowing traffic to
-your custom Connect URL.
+For development and testing, a custom Connect URL helps enforce policy:
+
+- Ensure developers use a shared ngrok account (not personal accounts).
+- Block default Connect URLs on corp networks while allowing your custom URL.
 
 ## Pricing
 
-Creating your own Connect URL is not available on any self-serve plan.
-[Contact us](mailto:support@ngrok.com?subject=Custom+Connect+URL) to get in touch about using custom Connect URLs.
+Custom Connect URLs are not available on self‑serve plans.
+[Contact us](mailto:sales@ngrok.com?subject=Custom+Connect+URL) to discuss options.
