@@ -71,7 +71,7 @@ ngrok has three primitives: the **cloud service**, the [**agent**](/agent/), and
 In a generic site-to-site connectivity architecture, these pieces come together to do the following:
 
 1. The ngrok agent in your network connects to one or more of your upstream services.
-2. The ngrok agent connects out to the ngrok network at the default [agent ingress address](/agent/ingress/) at `connect.ngrok-agent.com` (or a custom one).
+2. The ngrok agent connects out to the ngrok network at the default [Connect URL](/agent/connect-url/) at `connect.ngrok-agent.com` (or a custom one).
 3. The ngrok network creates an endpoint like `your-company.your-vendor.com`, which then points to your upstream service.
 4. Your vendor sends requests from their services to the endpoint, which are then routed through to the agent and finally your upstream service.
 
@@ -177,8 +177,8 @@ few ways to enable this functionality. They can:
    ngrok network. You can then use a proxy for deep packet inspection.
 2. Require the outbound connection to `connect.ngrok-agent.com:443` go through a
    proxy capable of inspection.
-3. Set up a bypass rule for `connect.ngrok-agent.com:443` (or a custom agent ingress
-   address) to not perform TLS inspection.
+3. Set up a bypass rule for `connect.ngrok-agent.com:443` (or a custom Connect URL
+   hostname) to not perform TLS inspection.
 4. Help you set up software between the ngrok agent and your upstream service,
    or the ngrok agent and the ngrok network, to see what’s transmitted through
    ngrok.
@@ -188,13 +188,13 @@ strategies for your site-to-site architecture.
 
 ### How can I prevent ngrok from being used for any purpose other than in site-to-site connectivity with my vendor? {#how-can-i-prevent-ngrok-from-being-used-for-any-purpose-other-than-in-site-to-site-connectivity-with-my-vendor?}
 
-The best way to disallow other uses of ngrok on your network is working with your vendor to specify a [custom agent ingress address](/agent/ingress/#customize-agent-ingress-address).
+The best way to disallow other uses of ngrok on your network is working with your vendor to specify a [custom Connect URL](/agent/connect-url/#custom-connect-url).
 
-Your vendor will configure their DNS to issue certificates for the custom address, such as `your-company.us.connect.your-vendor.com:443`. Then they’ll work with you to [reconfigure your ngrok agents](/agent/ingress/) to utilize the custom ingress address.
+Your vendor will configure their DNS to issue certificates for the custom address, such as `your-company.us.connect.your-vendor.com:443`. Then they’ll work with you to [reconfigure your ngrok agents](/agent/connect-url/) to utilize the custom Connect URL.
 
-Your vendor can also work with ngrok to provision dedicated IPs for their custom ingress address.
+Your vendor can also work with ngrok to provision dedicated IPs for their custom Connect URL.
 
-At this point, you can block the default agent ingress address at `connect.ngrok-agent.com:443`, which all agents use by default to connect outbound to ngrok’s network. This address resolves to a dynamic set of IP addresses, and blocking it at your network prevents any usage outside of this site-to-site connectivity use case in partnership with your vendor, such as developers utilizing ngrok to tunnel local development environments to the public internet.
+At this point, you can block the default Connect URL at `connect.ngrok-agent.com:443`, which all agents use by default to connect outbound to ngrok’s network. This address resolves to a dynamic set of IP addresses, and blocking it at your network prevents any usage outside of this site-to-site connectivity use case in partnership with your vendor, such as developers utilizing ngrok to tunnel local development environments to the public internet.
 
 You should also block the [ngrok-managed public domains](/docs/universal-gateway/domains/#ngrok-managed-domains), e.g. `ngrok.app`, `ngrok.io`, etc.
 
@@ -327,7 +327,7 @@ Yes. There are two requirements in this case:
 
 ### How does the agent connect to the ngrok network?
 
-By default, the ngrok agent attempts to connect to the default agent ingress address at `connect.ngrok-agent.com:443`, which resolves to a dynamic list of IP addresses. You can view the full list of addresses and IPs available for the agent to connect to in our [AWS-hosted `tunnel.json` file](https://s3.amazonaws.com/dns.ngrok.com/tunnel.json).
+By default, the ngrok agent attempts to connect to the default Connect URL at `connect.ngrok-agent.com:443`, which resolves to a dynamic list of IP addresses. You can view the full list of addresses and IPs available for the agent to connect to in our [AWS-hosted `tunnel.json` file](https://s3.amazonaws.com/dns.ngrok.com/tunnel.json).
 
 This connection includes the following steps:
 

@@ -178,7 +178,7 @@ mTLS to upgrade immediately.
 ### ngrok Agent 3.9.0 - \[2024-04-24\]
 
 - Added a `/api/status` endpoint to the local agent API that returns the agent's current status
-- The agent will check the Certificate Revocation List (CRL) on Session initiation. If a custom agent ingress is being used that has an invalid CRL in the chain, the `crl_noverify: true` option can be used to override this check, if desired
+- The agent will check the Certificate Revocation List (CRL) on Session initiation. If a custom Connect URL is being used that has an invalid CRL in the chain, the `crl_noverify: true` option can be used to override this check, if desired
 - Certificate Revocation List (CRL) checking for certain Let's Encrypt certificate chains has been fixed
 
 ### ngrok Agent 3.8.0 - \[2024-03-14\]
@@ -241,7 +241,7 @@ mTLS to upgrade immediately.
 
 - Added new default tunnel ingress names: the agent now connects to [`connect.ngrok-agent.com`](/docs/guides/security-dev-productivity/securing-your-tunnels/#blocking-non-corporate-accounts) when starting a session
 - Improved `ngrok diagnose` output to check that the DNS entry for `localhost` resolves
-- Added the command `ngrok config add-server-addr` for configuring custom agent ingresses
+- Added the command `ngrok config add-server-addr` for configuring custom Connect URLs
 - Re-wrote the tunnel and session backend to use the `ngrok-go` library
 
 ### ngrok Agent 3.2.2 - \[2023-03-27\]
