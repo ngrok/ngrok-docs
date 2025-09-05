@@ -295,7 +295,10 @@ const redirects = [
 	],
 
 	// redirects for secure-tunnels
-	[fromIncludes("/docs/secure-tunnels/agent_ingress/"), "/docs/agent/connect-url/"],
+	[
+		fromIncludes("/docs/secure-tunnels/agent_ingress/"),
+		"/docs/agent/connect-url/",
+	],
 	[fromIncludes("/docs/agent/ingress/"), "/docs/agent/connect-url/"],
 	[
 		fromIncludes("/docs/secure-tunnels/agentless/"),
