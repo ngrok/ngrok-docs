@@ -5,24 +5,24 @@
 ```json
 {
   "account": {
-    "created_at": "2025-09-04T10:10:41Z",
+    "created_at": "2025-09-06T10:06:53Z",
     "enforce_sso": false,
-    "id": "ac_32ELAVclTeX3busm0OW1cc0JRhx",
+    "id": "ac_32Jyx9svoxRMes2wdNN4hioRVRu",
     "min_agent_version": "2.3.0",
     "min_api_version": 2,
-    "name": "api-examples-df5943e5c8f86c92@example.com",
+    "name": "api-examples-c7c8c0525a6445cf@example.com",
     "suspended": false,
     "traffic_full_capture": false,
     "user_mfa_required": false
   },
   "api_key": {
-    "created_at": "2025-09-04T10:11:14Z",
+    "created_at": "2025-09-06T10:07:27Z",
     "description": "api key for example generation",
-    "id": "ak_32ELEdtpgKaoc4HMgmUGOMB7mVm",
-    "owner_id": "usr_32ELAUA7XkJHRP2DgH2JjDRLp81",
+    "id": "ak_32Jz1QZExHUZllsT6W8RuRKZYpV",
+    "owner_id": "usr_32JyxEfchmUrDHWi734TQRyIxdk",
     "token": null,
-    "uri": "/api_keys/ak_32ELEdtpgKaoc4HMgmUGOMB7mVm"
+    "uri": "/api_keys/ak_32Jz1QZExHUZllsT6W8RuRKZYpV"
   },
-  "user": "api-examples-df5943e5c8f86c92@example.com"
+  "user": "api-examples-c7c8c0525a6445cf@example.com"
 }
 ```
