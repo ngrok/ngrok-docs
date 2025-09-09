@@ -295,7 +295,11 @@ const redirects = [
 	],
 
 	// redirects for secure-tunnels
-	[fromIncludes("/docs/secure-tunnels/agent_ingress/"), "/docs/agent/ingress/"],
+	[
+		fromExact("/docs/secure-tunnels/agent_ingress/"),
+		"/docs/agent/connect-url/",
+	],
+	[fromExact("/docs/agent/ingress/"), "/docs/agent/connect-url/"],
 	[
 		fromIncludes("/docs/secure-tunnels/agentless/"),
 		"/docs/agent/#using-ngrok-without-the-agent",

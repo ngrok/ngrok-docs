@@ -109,8 +109,8 @@ const sidebars = {
 							label: "TCP Addresses",
 						},
 						"universal-gateway/tls-certificates",
-						// Commented out edges here as they're deprecated.
-						// "universal-gateway/edges",
+						// They're deprecated but if they aren't in the sidebar, it isn't displayed on the page.
+						"universal-gateway/edges",
 					],
 				},
 				{
@@ -507,7 +507,7 @@ const sidebars = {
 						},
 						"agent/api",
 						"agent/ssh-reverse-tunnel-agent",
-						"agent/ingress",
+						"agent/connect-url",
 						{
 							label: "Agent TLS Termination",
 							type: "category",
