@@ -3,6 +3,8 @@ title: Ingress to Kubernetes apps and srevices with vcluster
 description: Setup a local virtual cluster to demonstrate how to use the ngrok Kubernetes Operator with vcluster.
 ---
 
+import TrafficPolicyGoogleOauthWithDomain from "../../../examples/k8s/trafficpolicy/oauth-google-domain.mdx";
+
 The ngrok [Operator for Kubernetes](https://ngrok.com/blog-post/ngrok-k8s) is the official controller for
 adding public and secure ingress traffic to your k8s services. This open source Operator works with any cloud,
 locally-hosted, or on-premises Kubernetes cluster to provide ingress to your applications, APIs, or other services while
@@ -264,27 +266,7 @@ Ingresses](/docs/k8s/guides/using-ingresses/#using-ngroktrafficpolicy-with-ingre
    `NgrokTrafficPolicy` portion of your manifest after changing `example.com` to
    your domain.
 
-   ```yaml
-   # Traffic Policy configuration for OAuth
-   apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-   kind: NgrokTrafficPolicy
-   metadata:
-     name: oauth
-     namespace: default
-   spec:
-     policy:
-       on_http_request:
-         - type: oauth
-           config:
-             provider: google
-         - expressions:
-             - "!actions.ngrok.oauth.identity.email.endsWith('@example.com')"
-           actions:
-             - type: custom-response
-               config:
-                 body: "Hey, no auth for you ${actions.ngrok.oauth.identity.name}!"
-                 status_code: 400
-   ```
+   <TrafficPolicyGoogleOauthWithDomain />
 
 1. Check out your deployed 2048 app once again. If you log in with an email that
    doesn't match your domain, ngrok rejects your request. Authentication... done!
