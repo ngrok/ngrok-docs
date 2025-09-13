@@ -5259,6 +5259,14 @@
     </tr>
     <tr>
       <td>
+        <a id="ERR_NGROK_2262" href="/docs/errors/err_ngrok_2262">ERR_NGROK_2262</a>
+      </td>
+      <td class="pre-wrapped">
+        Internal HTTP/HTTPS endpoints do not support the on_tcp_connect Traffic Policy phase. Consider using a TCP or TLS endpoint instead.
+      </td>
+    </tr>
+    <tr>
+      <td>
         <a id="ERR_NGROK_3002" href="/docs/errors/err_ngrok_3002">ERR_NGROK_3002</a>
       </td>
       <td class="pre-wrapped">
@@ -6419,6 +6427,14 @@
       </td>
       <td class="pre-wrapped">
         Sign ups are disallowed for the email provided "<code>&lt;EMAIL&gt;</code>". Please sign up with a different email address.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_4119" href="/docs/errors/err_ngrok_4119">ERR_NGROK_4119</a>
+      </td>
+      <td class="pre-wrapped">
+        This account does not have access to service users, please upgrade to a paid plan.
       </td>
     </tr>
     <tr>
@@ -7619,7 +7635,7 @@
         <a id="ERR_NGROK_5539" href="/docs/errors/err_ngrok_5539">ERR_NGROK_5539</a>
       </td>
       <td class="pre-wrapped">
-        Encountered an error while decrypting the client secret.
+        Encountered an error while decrypting the field `<code>&lt;FIELD&gt;</code>`.
       </td>
     </tr>
     <tr>

@@ -8,11 +8,47 @@
     {
       "backend": null,
       "basic_auth": null,
+      "circuit_breaker": {
+        "enabled": true,
+        "error_threshold_percentage": 0.2,
+        "num_buckets": 0,
+        "rolling_window": 0,
+        "tripped_duration": 0,
+        "volume_threshold": 0
+      },
+      "compression": {
+        "enabled": true
+      },
+      "created_at": "2025-09-13T10:08:26Z",
+      "description": "web servers",
+      "id": "ec_32dl0Uq4xMowCmQrmsC8QfyrRQ4",
+      "ip_policy": null,
+      "mutual_tls": null,
+      "oauth": null,
+      "oidc": null,
+      "request_headers": null,
+      "response_headers": {
+        "add": {
+          "content-security-policy": "script-src 'self'",
+          "x-frame-options": "DENY"
+        },
+        "enabled": true,
+        "remove": []
+      },
+      "saml": null,
+      "tls_termination": null,
+      "type": "https",
+      "uri": "https://api.ngrok.com/endpoint_configurations/ec_32dl0Uq4xMowCmQrmsC8QfyrRQ4",
+      "webhook_validation": null
+    },
+    {
+      "backend": null,
+      "basic_auth": null,
       "circuit_breaker": null,
       "compression": null,
-      "created_at": "2025-09-04T10:11:14Z",
+      "created_at": "2025-09-13T10:08:26Z",
       "description": "app servers",
-      "id": "ec_32ELEhtkHrzETDoKQOtCrHd2QhF",
+      "id": "ec_32dl0UKoaAKyNYYyYdR2VCFQrum",
       "ip_policy": null,
       "mutual_tls": null,
       "oauth": null,
@@ -30,43 +66,7 @@
       "saml": null,
       "tls_termination": null,
       "type": "https",
-      "uri": "https://api.ngrok.com/endpoint_configurations/ec_32ELEhtkHrzETDoKQOtCrHd2QhF",
-      "webhook_validation": null
-    },
-    {
-      "backend": null,
-      "basic_auth": null,
-      "circuit_breaker": {
-        "enabled": true,
-        "error_threshold_percentage": 0.2,
-        "num_buckets": 0,
-        "rolling_window": 0,
-        "tripped_duration": 0,
-        "volume_threshold": 0
-      },
-      "compression": {
-        "enabled": true
-      },
-      "created_at": "2025-09-04T10:11:14Z",
-      "description": "web servers",
-      "id": "ec_32ELEcSAccKfCXfSqsSybzcYfwF",
-      "ip_policy": null,
-      "mutual_tls": null,
-      "oauth": null,
-      "oidc": null,
-      "request_headers": null,
-      "response_headers": {
-        "add": {
-          "content-security-policy": "script-src 'self'",
-          "x-frame-options": "DENY"
-        },
-        "enabled": true,
-        "remove": []
-      },
-      "saml": null,
-      "tls_termination": null,
-      "type": "https",
-      "uri": "https://api.ngrok.com/endpoint_configurations/ec_32ELEcSAccKfCXfSqsSybzcYfwF",
+      "uri": "https://api.ngrok.com/endpoint_configurations/ec_32dl0UKoaAKyNYYyYdR2VCFQrum",
       "webhook_validation": null
     }
   ],
