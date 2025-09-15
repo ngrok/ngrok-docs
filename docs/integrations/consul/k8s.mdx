@@ -3,6 +3,8 @@ title: Kubernetes ingress to services in a Consul service mesh
 description: Setup a local Consul Service mesh to demonstrate how to use the ngrok Kubernetes Operator with Consul.
 ---
 
+import TrafficPolicyGoogleOauthWithDomain from '../../../examples/k8s/trafficpolicy/oauth-google-domain.mdx';
+
 The [ngrok Kubernetes Operator](https://github.com/ngrok/ngrok-operator) is our official open-source controller for adding public and secure ingress traffic to your k8s services. It works on any cloud, local, or on-prem Kubernetes cluster to provide ingress to your services no matter the network configuration, as long as it has outbound access to the ngrok service. This allows ngrok to be portable and work seamlessly across any type of infrastructure.
 
 [Consul](https://www.consul.io/) is a secure and resilient service mesh that provides service discovery, configuration, and segmentation functionality. Consul Connect provides service-to-service connection authorization and encryption using mutual TLS, automatically enabling TLS for all Connect services. Consul can be used with Kubernetes to provide a service mesh for your Kubernetes cluster.
@@ -338,27 +340,7 @@ Ingresses](/docs/k8s/guides/using-ingresses/#using-ngroktrafficpolicy-with-ingre
    `NgrokTrafficPolicy` portion of your manifest after changing `example.com` to
    your domain.
 
-   ```yaml
-    # Traffic Policy configuration for OAuth
-    apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-    kind: NgrokTrafficPolicy
-    metadata:
-      name: oauth
-      namespace: default
-    spec:
-      policy:
-        on_http_request:
-          - type: oauth
-            config:
-              provider: google
-          - expressions:
-              - "!actions.ngrok.oauth.identity.email.endsWith('@example.com')"
-            actions:
-              - type: custom-response
-                config:
-                  body: Hey, no auth for you ${actions.ngrok.oauth.identity.name}!
-                  status_code: 400
-   ```
+   <TrafficPolicyGoogleOauthWithDomain />
 
 1. Check out your deployed HashiCups app once again. If you log in with an email that
    doesn't match your domain, ngrok rejects your request. Authentication... done!

@@ -3,6 +3,8 @@ title: Ingress to Kubernetes apps on clusters managed by DigitalOcean
 description: Add Kubernetes ingress to any app running in a cluster managed by DigitalOcean using the ngrok Kubernetes Operator.
 ---
 
+import TrafficPolicyGoogleOauthWithDomain from '../../../examples/k8s/trafficpolicy/oauth-google-domain.mdx';
+
 Using this guide, you'll launch a new cluster on [DigitalOcean](https://digitalocean.com) and use the DigitalOcean Marketplace to provision the [ngrok Kubernetes Operator](https://marketplace.digitalocean.com/apps/ngrok-ingress-controller) to securely ingress public traffic to a demo app.
 
 In the end, you'll have learned enough to deploy your next production-ready Kubernetes app with Rafay, with the ngrok Kubernetes Operator giving you access to additional features, like observability and resiliency, with no extra configuration complexity.
@@ -226,27 +228,7 @@ To demonstrate how ingress configuration and [OAuth support](/traffic-policy/act
    `NgrokTrafficPolicy` portion of your manifest after changing `example.com` to
    your domain.
 
-   ```yaml
-   # Traffic Policy configuration for OAuth
-   apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-   kind: NgrokTrafficPolicy
-   metadata:
-     name: oauth
-     namespace: default
-   spec:
-     policy:
-       on_http_request:
-         - type: oauth
-           config:
-             provider: google
-         - expressions:
-             - "!actions.ngrok.oauth.identity.email.endsWith('@example.com')"
-           actions:
-             - type: custom-response
-               config:
-                 body: Hey, no auth for you ${actions.ngrok.oauth.identity.name}!
-                 status_code: 400
-   ```
+   <TrafficPolicyGoogleOauthWithDomain />
 
 1. Check out your deployed 2048 app once again. If you log in with an email that
    doesn't match your domain, ngrok rejects your request. Authentication... done!

@@ -6,6 +6,16 @@ title: Changelog
 
 ## v3
 
+### ngrok agent 3.28.0 \[2025-09-11\]
+
+- Updated Docker build base
+- Restored support for `PROXY` in TCP/TLS tunnels
+
+### ngrok agent 3.27.0 \[2025-08-28\]
+
+- Optimized agent ui.
+- Added get-secrets-by-vault path to vaults api 🤫
+
 ### ngrok agent 3.26.0 \[2025-08-07\]
 
 - Added support for supplying a traffic policy to endpoints created with `ngrok http` and `ngrok api` using the `--traffic-policy-url` flag
@@ -168,12 +178,12 @@ mTLS to upgrade immediately.
 ### ngrok Agent 3.10.0 - \[2024-05-23\]
 
 - **ACTION MAY BE REQUIRED**: The domain used for Certificate Revocation List (CRL) checks is now `crl.ngrok-agent.com` to align it with the domain used for session connections. This may require changes to your firewall or proxy settings to allow this outbound connection on port 80, or setting `crl_noverify: true` in the agent config file.
-- Added CLI API support for [Service Users](/iam/bot-users/).
+- Added CLI API support for [Service Users](/iam/service-users/).
 
 ### ngrok Agent 3.9.0 - \[2024-04-24\]
 
 - Added a `/api/status` endpoint to the local agent API that returns the agent's current status
-- The agent will check the Certificate Revocation List (CRL) on Session initiation. If a custom agent ingress is being used that has an invalid CRL in the chain, the `crl_noverify: true` option can be used to override this check, if desired
+- The agent will check the Certificate Revocation List (CRL) on Session initiation. If a custom Connect URL is being used that has an invalid CRL in the chain, the `crl_noverify: true` option can be used to override this check, if desired
 - Certificate Revocation List (CRL) checking for certain Let's Encrypt certificate chains has been fixed
 
 ### ngrok Agent 3.8.0 - \[2024-03-14\]
@@ -236,7 +246,7 @@ mTLS to upgrade immediately.
 
 - Added new default tunnel ingress names: the agent now connects to [`connect.ngrok-agent.com`](/docs/guides/security-dev-productivity/securing-your-tunnels/#blocking-non-corporate-accounts) when starting a session
 - Improved `ngrok diagnose` output to check that the DNS entry for `localhost` resolves
-- Added the command `ngrok config add-server-addr` for configuring custom agent ingresses
+- Added the command `ngrok config add-server-addr` for configuring custom Connect URLs
 - Re-wrote the tunnel and session backend to use the `ngrok-go` library
 
 ### ngrok Agent 3.2.2 - \[2023-03-27\]

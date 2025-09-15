@@ -59,10 +59,7 @@ const redirects = [
 		fromIncludes("/docs/platform/ip-policies/"),
 		"/docs/api/resources/ip-policies/",
 	],
-	[
-		fromIncludes("/docs/platform/botusers/"),
-		"/docs/user-management/#bot-users",
-	],
+	[fromIncludes("/docs/platform/botusers/"), "/docs/iam/service-users/"],
 	[fromIncludes("/docs/platform/dashboard/"), "/docs/user-management/#sso"],
 	[
 		fromIncludes("/docs/cloud-edge/modules/webhook/"),
@@ -144,12 +141,6 @@ const redirects = [
 	[
 		fromIncludes("/docs/guides/upgrade-v2-v3"),
 		"/docs/guides/other-guides/upgrade-v2-v3",
-	],
-
-	// /docs/guides/security-dev-productivity -> /docs/guides/other-guides/security-dev-productivity
-	[
-		fromIncludes("/docs/guides/security-dev-productivity"),
-		"/docs/guides/other-guides/security-dev-productivity",
 	],
 
 	// /docs/guides/securing-your-tunnels -> /docs/guides/other-guides/securing-your-tunnels
@@ -304,7 +295,11 @@ const redirects = [
 	],
 
 	// redirects for secure-tunnels
-	[fromIncludes("/docs/secure-tunnels/agent_ingress/"), "/docs/agent/ingress/"],
+	[
+		fromExact("/docs/secure-tunnels/agent_ingress/"),
+		"/docs/agent/connect-url/",
+	],
+	[fromExact("/docs/agent/ingress/"), "/docs/agent/connect-url/"],
 	[
 		fromIncludes("/docs/secure-tunnels/agentless/"),
 		"/docs/agent/#using-ngrok-without-the-agent",
@@ -454,7 +449,10 @@ const redirects = [
 	],
 
 	// /docs/user-management/* -> /docs/iam/*
-	[fromIncludes("/docs/user-management/#bot-users"), "/docs/iam/bot-users/"],
+	[
+		fromIncludes("/docs/user-management/#bot-users"),
+		"/docs/iam/service-users/",
+	],
 	[
 		fromIncludes("/docs/user-management/#sso"),
 		"/docs/iam/users/#dashboard-access",
@@ -976,10 +974,6 @@ const redirects = [
 		fromExact("/docs/guides/other-guides/load-balancing-kubernetes-clusters/"),
 		"/docs/k8s/load-balancing/load-balancing-kubernetes-clusters/",
 	],
-	[
-		fromExact("/docs/getting-started/cloud-endpoints-quickstart/"),
-		"/docs/getting-started/cloud-endpoints-quickstart",
-	],
 	// Traffic Policy Macros consolidation (2025)
 	[
 		fromExact("/docs/traffic-policy/macros/core"),
@@ -1060,6 +1054,7 @@ const redirects = [
 		),
 		"/docs/using-ngrok-with/docker/desktop/#video-demo---using-ngrok-with-docker-desktop",
 	],
+	[fromIncludes("/docs/iam/bot-users"), "/docs/iam/service-users/"],
 ];
 
 // get current href from window

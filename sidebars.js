@@ -23,7 +23,10 @@ const sidebars = {
 			label: "Pricing & Limits",
 			type: "category",
 			link: { type: "doc", id: "pricing-limits/index" },
-			items: ["pricing-limits/free-plan-limits"],
+			items: [
+				"pricing-limits/free-plan-limits",
+				"pricing-limits/traffic-policy-unit-pricing",
+			],
 		},
 		{
 			label: "Getting Started",
@@ -106,8 +109,8 @@ const sidebars = {
 							label: "TCP Addresses",
 						},
 						"universal-gateway/tls-certificates",
-						// Commented out edges here as they're deprecated.
-						// "universal-gateway/edges",
+						// They're deprecated but if they aren't in the sidebar, it isn't displayed on the page.
+						"universal-gateway/edges",
 					],
 				},
 				{
@@ -383,6 +386,7 @@ const sidebars = {
 						"k8s/guides/bindings",
 						"k8s/guides/pooling",
 						"k8s/guides/custom-domain",
+						"k8s/guides/customer-networks",
 						"k8s/guides/using-crds",
 						"k8s/guides/using-gwapi",
 						"k8s/guides/using-ingresses",
@@ -503,7 +507,7 @@ const sidebars = {
 						},
 						"agent/api",
 						"agent/ssh-reverse-tunnel-agent",
-						"agent/ingress",
+						"agent/connect-url",
 						{
 							label: "Agent TLS Termination",
 							type: "category",
@@ -536,7 +540,7 @@ const sidebars = {
 					type: "category",
 					label: "Principals",
 					link: { type: "doc", id: "iam/users" },
-					items: ["iam/users", "iam/bot-users"],
+					items: ["iam/users", "iam/service-users"],
 				},
 				{
 					type: "category",
@@ -739,8 +743,12 @@ const sidebars = {
 			label: "Security Best Practices",
 			type: "category",
 			link: { type: "doc", id: "guides/security-dev-productivity/index" },
-			items: ["guides/security-dev-productivity/securing-your-tunnels"],
+			items: [
+				"guides/security-dev-productivity/securing-your-tunnels",
+				"guides/security-dev-productivity/hipaa-compliance",
+			],
 		},
+
 		{
 			label: "Site-to-Site Connectivity",
 			type: "category",
