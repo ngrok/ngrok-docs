@@ -3,7 +3,8 @@ title: Ingress to Kubernetes apps and srevices with vcluster
 description: Setup a local virtual cluster to demonstrate how to use the ngrok Kubernetes Operator with vcluster.
 ---
 
-import TrafficPolicyGoogleOauthWithDomain from "../../../examples/k8s/trafficpolicy/oauth-google-domain.mdx";
+import TrafficPolicyGoogleOauth from "../../../examples/k8s/trafficpolicy/example.mdx";
+import TwentyFourtyEight from "../../../examples/k8s/apps/2048/example.mdx";
 
 The ngrok [Operator for Kubernetes](https://ngrok.com/blog-post/ngrok-k8s) is the official controller for
 adding public and secure ingress traffic to your k8s services. This open source Operator works with any cloud,
@@ -114,62 +115,7 @@ cluster, virtual cluster, and ultimately an exposed service or endpoint, you can
    network. Be sure to replace `<NGROK_DOMAIN>` with the domain you reserved a
    moment ago.
 
-   ```yaml
-   apiVersion: v1
-   kind: Service
-   metadata:
-     name: game-2048
-     namespace: default
-   spec:
-     ports:
-       - name: http
-         port: 80
-         targetPort: 80
-     selector:
-       app: game-2048
-   ---
-   apiVersion: apps/v1
-   kind: Deployment
-   metadata:
-     name: game-2048
-     namespace: default
-   spec:
-     replicas: 1
-     selector:
-       matchLabels:
-         app: game-2048
-     template:
-       metadata:
-         labels:
-           app: game-2048
-       spec:
-         containers:
-           - name: backend
-             image: alexwhen/docker-2048
-             ports:
-               - name: http
-                 containerPort: 80
-   ---
-   # ngrok Kubernetes Operator Configuration
-   apiVersion: networking.k8s.io/v1
-   kind: Ingress
-   metadata:
-     name: game-2048-ingress
-     namespace: default
-   spec:
-     ingressClassName: ngrok
-     rules:
-       - host: <NGROK_DOMAIN>
-         http:
-           paths:
-             - path: /
-               pathType: Prefix
-               backend:
-                 service:
-                   name: game-2048
-                   port:
-                     number: 80
-   ```
+   <TwentyFourtyEight deployment={true} service={true} ingress={true} />
 
 1. Apply the `2048.yaml` manifest to your vcluster.
 
@@ -212,44 +158,7 @@ Ingresses](/docs/k8s/guides/using-ingresses/#using-ngroktrafficpolicy-with-ingre
    `Service` and `Deployment` as they were. Note the new `annotations` field and
    the `NgrokTrafficPolicy` CR.
 
-   ```yaml
-    ...
-   ---
-   # Configuration for ngrok's Kubernetes Operator
-   apiVersion: networking.k8s.io/v1
-   kind: Ingress
-   metadata:
-     name: game-2048-ingress
-     namespace: default
-     annotations:
-       k8s.ngrok.com/traffic-policy: oauth
-   spec:
-     ingressClassName: ngrok
-     rules:
-       - host: <NGROK_DOMAIN>
-         http:
-           paths:
-             - path: /
-               pathType: Prefix
-               backend:
-                 service:
-                   name: game-2048
-                   port:
-                     number: 80
-   ---
-   # Traffic Policy configuration for OAuth
-   apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-   kind: NgrokTrafficPolicy
-   metadata:
-     name: oauth
-     namespace: default
-   spec:
-     policy:
-   	   on_http_request:
-   		   - type: oauth
-   			   config:
-   			     provider: google
-   ```
+    <TwentyFourtyEight withOauth={true} ingress={true} trafficPolicy={true} />
 
 1. Re-apply your `2048.yaml` configuration.
 
@@ -266,7 +175,7 @@ Ingresses](/docs/k8s/guides/using-ingresses/#using-ngroktrafficpolicy-with-ingre
    `NgrokTrafficPolicy` portion of your manifest after changing `example.com` to
    your domain.
 
-   <TrafficPolicyGoogleOauthWithDomain />
+   <TrafficPolicyGoogleOauth withDomain={true} />
 
 1. Check out your deployed 2048 app once again. If you log in with an email that
    doesn't match your domain, ngrok rejects your request. Authentication... done!

@@ -3,7 +3,8 @@ title: Ingress to Kubernetes apps deployed on Azure Kubernetes Service (AKS)
 description: Learn how to deploy a new Kubernetes cluster and demo app via AKS, then add ingress to applications with ngrok's Kubernetes Operator.
 ---
 
-import TrafficPolicyGoogleOauthWithDomain from '../../../examples/k8s/trafficpolicy/oauth-google-domain.mdx';
+import TrafficPolicyGoogleOauth from '../../../examples/k8s/trafficpolicy/example.mdx';
+import TwentyFourtyEight from "../../../examples/k8s/apps/2048/example.mdx";
 
 In this guide, you'll launch a new cluster with [Azure Kubernetes Service (AKS)](https://azure.microsoft.com/en-us/products/kubernetes-service) and a demo app. You'll then add the ngrok Kubernetes Operator to route public traffic directly to your demo app through an encrypted, feature-rich tunnel for a complete proof of concept.
 
@@ -371,44 +372,7 @@ Ingresses](/docs/k8s/guides/using-ingresses/#using-ngroktrafficpolicy-with-ingre
 1. Edit your existing ingress YAML with the following. Note the new `annotations` field and
    the `NgrokTrafficPolicy` CR.
 
-   ```yaml
-    ...
-   ---
-   # Configuration for ngrok's Kubernetes Operator
-   apiVersion: networking.k8s.io/v1
-   kind: Ingress
-   metadata:
-     name: game-2048-ingress
-     namespace: default
-     annotations:
-       k8s.ngrok.com/traffic-policy: oauth
-   spec:
-     ingressClassName: ngrok
-     rules:
-       - host: <NGROK_DOMAIN>
-         http:
-           paths:
-             - path: /
-               pathType: Prefix
-               backend:
-                 service:
-                   name: game-2048
-                   port:
-                     number: 80
-   ---
-   # Traffic Policy configuration for OAuth
-   apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-   kind: NgrokTrafficPolicy
-   metadata:
-     name: oauth
-     namespace: default
-   spec:
-     policy:
-   	   on_http_request:
-   		   - type: oauth
-   			   config:
-   			     provider: google
-   ```
+   <TwentyFourtyEight withOauth={true} ingress={true} trafficPolicy={true} />
 
 1. When you open your demo app again, you'll be asked to log in via Google.
    That's a start, but what if you want to authenticate only yourself or colleagues?
@@ -419,7 +383,7 @@ Ingresses](/docs/k8s/guides/using-ingresses/#using-ngroktrafficpolicy-with-ingre
    `NgrokTrafficPolicy` portion of your manifest after changing `example.com` to
    your domain.
 
-   <TrafficPolicyGoogleOauthWithDomain />
+   <TrafficPolicyGoogleOauth withDomain={true} />
 
 1. Check out your deployed app once again. If you log in with an email that
    doesn't match your domain, ngrok rejects your request. Authentication... done!
