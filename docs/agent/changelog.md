@@ -6,6 +6,11 @@ title: Changelog
 
 ## v3
 
+### ngrok agent 3.28.0 \[2025-09-11\]
+
+- Updated Docker build base
+- Restored support for `PROXY` in TCP/TLS tunnels
+
 ### ngrok agent 3.27.0 \[2025-08-28\]
 
 - Optimized agent ui.

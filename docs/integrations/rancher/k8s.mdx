@@ -3,6 +3,8 @@ title: Kubernetes ingress to applications and clusters managed by Rancher
 description: Set up a local installation of Rancher to deploy a new RKE2 cluster and add ingress to applications with ngrok's Kubernetes Operator.
 ---
 
+import TwentyFourtyEight from "../../../examples/k8s/apps/2048/example.mdx";
+
 The ngrok [Operator for Kubernetes](https://ngrok.com/blog-post/ngrok-k8s) is the official controller for
 adding secure public ingress and middleware execution to your Kubernetes applications with ngrok's cloud service. With
 ngrok, you can manage and secure traffic to your applications at every stage of the development lifecycle while also
@@ -151,68 +153,16 @@ simplifying how you route external traffic through your Rancher-managed cluster.
 
    Creating a subdomain on the ngrok network provides a public route to accept HTTP, HTTPS, and TLS traffic.
 
-1. Create a new Kubernetes manifest (`2048.yaml`) with the below contents. This manifest defines the 2048 application
+1. Create a new Kubernetes manifest (`ngrok-manifest.yaml`) with the below contents. This manifest defines the 2048 application
    service and deployment, then configures the ngrok Kubernetes Operator to connect the `game-2048` service to the ngrok
    edge via your `<NGROK_DOMAIN>`.
 
-   ```yaml showLineNumbers
-   apiVersion: v1
-   kind: Service
-   metadata:
-     name: game-2048
-   spec:
-     ports:
-       - name: http
-         port: 80
-         targetPort: 80
-     selector:
-       app: game-2048
-   ---
-   apiVersion: apps/v1
-   kind: Deployment
-   metadata:
-     name: game-2048
-   spec:
-     replicas: 1
-     selector:
-       matchLabels:
-         app: game-2048
-     template:
-       metadata:
-         labels:
-           app: game-2048
-       spec:
-         containers:
-           - name: backend
-             image: alexwhen/docker-2048
-             ports:
-               - name: http
-                 containerPort: 80
-   ---
-   # ngrok Kubernetes Operator configuration
-   apiVersion: networking.k8s.io/v1
-   kind: Ingress
-   metadata:
-     name: game-2048-ingress
-   spec:
-     ingressClassName: ngrok
-     rules:
-       - host: <NGROK_DOMAIN>
-         http:
-           paths:
-             - path: /
-               pathType: Prefix
-               backend:
-                 service:
-                   name: game-2048
-                   port:
-                     number: 80
-   ```
+    <TwentyFourtyEight deployment={true} service={true} ingress={true} />
 
-1. Apply the `2048.yaml` manifest to your RKE2 cluster.
+1. Apply the `ngrok-manifest.yaml` manifest to your RKE2 cluster.
 
    ```bash
-   kubectl apply -f 2048.yaml
+   kubectl apply -f ngrok-manifest.yaml
    ```
 
 1. Access your 2048 demo app by navigating to your ngrok subdomain, e.g. `https://one-two-three.ngrok.app`.

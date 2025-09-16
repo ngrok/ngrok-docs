@@ -1,0 +1,42 @@
+import CodeBlock from "@theme/CodeBlock";
+import Ingress from '!!raw-loader!./_ingress.yaml';
+import Service from '!!raw-loader!./_service.yaml';
+import Deployment from '!!raw-loader!./_deployment.yaml';
+import IngressWithOauth from '!!raw-loader!./_ingress_oauth.yaml';
+import TrafficPolicy from '!!raw-loader!../../trafficpolicy/oauth-google.yaml';
+import { joinYamlDocs } from './utils';
+
+export default function AllInOne(props) {
+	let docs = [];
+	const ingress = props.withOauth ? IngressWithOauth : Ingress;
+
+    if (props.ingress) {
+    		docs.push(ingress);
+    }
+
+    if (props.service) {
+    		docs.push(Service);
+    }
+
+    if (props.deployment) {
+    		docs.push(Deployment);
+    }
+
+    if (props.trafficPolicy) {
+    		docs.push(TrafficPolicy);
+    }
+
+    const content = docs.length > 1 ? joinYamlDocs(...docs) : docs[0];
+    return (
+    		<div>
+    			<CodeBlock
+    				language="yaml"
+    				title={props.title || "ngrok-manifest.yaml"}
+    				showLineNumbers={props.showLineNumbers ?? true}
+    			>
+    			{content}
+    			</CodeBlock>
+    		</div>
+    )
+
+}

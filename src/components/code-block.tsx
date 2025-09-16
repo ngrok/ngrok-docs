@@ -69,6 +69,10 @@ function DocsCodeBlock({
 		metastring ? `${className} ${metastring}` : className,
 	);
 
+	if (_title) {
+		meta.title = _title;
+	}
+
 	return (
 		<CodeBlockWithInfo
 			content={children}

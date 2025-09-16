@@ -1,0 +1,20 @@
+# Traffic Policy configuration for OAuth
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: NgrokTrafficPolicy
+metadata:
+  name: oauth
+  namespace: default
+spec:
+  policy:
+    on_http_request:
+    - actions:
+      - type: oauth
+        config:
+          provider: google
+    - expressions:
+      - "!actions.ngrok.oauth.identity.email.endsWith('@example.com')"
+      actions:
+      - type: custom-response
+        config:
+          body: Hey, no auth for you ${actions.ngrok.oauth.identity.name}!
+          status_code: 400
