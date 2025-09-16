@@ -1,21 +1,21 @@
 ---
 title: "Expose and Secure Your Self-Hosted Odoo Instance"
-description: "Use Odoo (an open-source ERP and business management suite) with ngrok when you want to securely expose Odoo's services to the internet without complex network setups."
+description: "Use Odoo with ngrok when you want to securely expose Odoo's services to the internet without complex network setups."
 sidebar_label: "Expose Odoo ERP Remotely"
 ---
 
 # Expose and Secure Your Self-Hosted Odoo with ngrok
 
-Odoo is great to self-host for development, demos, or integrations.
+[Odoo](https://www.odoo.com/) is an open-source ERP and business management suite  that you can self-host for development, demos, or integrations.
 When you need to share your instance over HTTPS or accept webhooks without deploying to the public internet, ngrok gives you a stable URL and powerful Traffic Policy controls to lock down access.
 
-This guide follows the style of our n8n example and adds Odoo-specific steps, including using a static domain and applying a Traffic Policy.
+This guide follows the style of our [n8n example](/universal-gateway/examples/n8n/) and adds Odoo-specific steps, including using a static domain and applying a Traffic Policy.
 
 ## What you'll need
 
 - An ngrok account.
 - The ngrok Agent CLI installed.
-- Odoo running locally (default: http://localhost:8069).
+- Odoo running locally (default: `http://localhost:8069`).
 - (Recommended) Admin access in Odoo to change System Parameters.
 
 ## 1. Reserve a static domain
@@ -23,7 +23,7 @@ This guide follows the style of our n8n example and adds Odoo-specific steps, in
 A static domain ensures your URL doesn't change across restarts (important for Odoo links, redirects, and webhooks).
 
 In the ngrok dashboard, go to **Domains** → **New +**.
-Reserve a domain (this example uses `your-odoo.ngrok.app`) and save it as an environment variable:
+Reserve a domain (this example uses `https://your-odoo.ngrok.app`) and save it as an environment variable:
 
 ```bash
 export NGROK_DOMAIN=your-odoo.ngrok.app
@@ -37,13 +37,13 @@ A stable host prevents broken links in emails, reports, and third-party callback
 
 ## 2. Start the ngrok endpoint for Odoo
 
-Expose Odoo on port 8069 at your static domain:
+Expose Odoo on port `8069` at your static domain:
 
 ```bash
 ngrok http --domain=$NGROK_DOMAIN 8069
 ```
 
-Open https://$NGROK_DOMAIN to see the Odoo login page (/web/login).
+Open `https://$NGROK_DOMAIN` to see the Odoo login page (`/web/login`).
 
 ## 3. (Recommended) Configure Odoo for a proxy and stable URLs
 
@@ -127,15 +127,14 @@ From a terminal:
 curl -I https://$NGROK_DOMAIN
 ```
 
-Expected: HTTP/2 200 and Odoo's login route (/web/login) when loaded in a browser.
 Expected: HTTP/2 200 and Odoo's login route (`/web/login`) when loaded in a browser.
 
 ## Troubleshooting
 
-- **Blank or mixed-content pages**: Ensure proxy_mode = True and you're visiting https://$NGROK_DOMAIN.
-- **Redirect loops or wrong links**: Verify web.base.url is exactly https://$NGROK_DOMAIN and web.base.url.freeze = True.
+- **Blank or mixed-content pages**: Ensure `proxy_mode = True` and you're visiting `https://$NGROK_DOMAIN`.
+- **Redirect loops or wrong links**: Verify `web.base.url` is exactly `https://$NGROK_DOMAIN` and `web.base.url.freeze = True`.
 - **403 when applying policy**: Confirm your IP/CIDR is correct or disable the policy while debugging.
-- **Port issues**: Odoo defaults to 8069; double-check the port if customized.
+- **Port issues**: Odoo defaults to `8069`; double-check the port if customized.
 
 ## What's next?
 
