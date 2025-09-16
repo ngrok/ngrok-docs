@@ -2,6 +2,8 @@
 description: Add ingress to any app running in a Kubernetes cluster managed by Spectro Cloud's Palette platform using the ngrok Kubernetes Operator.
 ---
 
+import TwentyFourtyEight from "../../../examples/k8s/apps/2048/example.mdx";
+
 # Ingress to Kubernetes apps deployed on Spectro Cloud Palette
 
 :::tip TL;DR
@@ -115,69 +117,17 @@ For the former, Palette has a [ready-to-apply pack](https://docs.spectrocloud.co
 
    Name the layer `2048`, then click **New manifest** and name it `deployment`. Copy the following YAML content to create a Kubernetes deployment named `game-2048`.
 
-   ```yaml showLineNumbers
-   apiVersion: apps/v1
-   kind: Deployment
-   metadata:
-     name: game-2048
-   spec:
-     replicas: 1
-     selector:
-       matchLabels:
-         app: game-2048
-     template:
-       metadata:
-         labels:
-           app: game-2048
-       spec:
-         containers:
-           - name: backend
-             image: alexwhen/docker-2048
-             ports:
-               - name: http
-                 containerPort: 80
-   ```
+   <TwentyFourtyEight title="2048-deployment.yaml" deployment={true} />
 
    Create a second manifest named `service` copy in the following YAML:
 
-   ```yaml showLineNumbers
-   apiVersion: v1
-   kind: Service
-   metadata:
-     name: game-2048
-   spec:
-     ports:
-       - name: http
-         port: 80
-         targetPort: 80
-     selector:
-       app: game-2048
-   ```
+    <TwentyFourtyEight title="2048-service.yaml" service={true} />
 
    Click **Confirm & Create** to save the deployment.
 
 1. Add another manifest to create a Kubernetes ingress service, which will inform the ngrok Kubernetes Operator to create a new Edge for your app. Name it `2048-ingress` and create an `ingress` manifest with the following YAML content, replacing the `<NGROK_DOMAIN>` variable with the subdomain you created, which should look like `one-two-three.ngrok.app`.
 
-   ```yaml showLineNumbers
-   apiVersion: networking.k8s.io/v1
-   kind: Ingress
-   metadata:
-     name: game-2048-ingress
-     namespace: ngrok-operator
-   spec:
-     ingressClassName: ngrok
-     rules:
-       - host: <NGROK_DOMAIN>
-         http:
-           paths:
-             - path: /
-               pathType: Prefix
-               backend:
-                 service:
-                   name: game-2048
-                   port:
-                     number: 80
-   ```
+   <TwentyFourtyEight title="2048-ingress.yaml" ingress={true} />
 
    Click **Confirm & Create** once again to add this layer before finishing the configuration.
 

@@ -3,6 +3,8 @@ title: Kubernetes ingress to apps/APIs on clusters managed by Canonical MicroK8s
 description: Add ingress to any app running in a Kubernetes cluster managed by Canonical Microk8s using the ngrok Kubernetes Operator.
 ---
 
+import TwentyFourtyEight from "../../../examples/k8s/apps/2048/example.mdx";
+
 Using this guide, you'll launch a new Kubernetes cluster with Canonical's open-source [MicroK8s](https://microk8s.io/) and use the [ngrok Kubernetes Operator](https://marketplace.digitalocean.com/apps/ngrok-ingress-controller) to securely ingress public traffic to an example app using the **new [Kubernetes Gateway API](https://kubernetes.io/docs/concepts/services-networking/gateway/)**.
 
 Along the way, you'll learn enough to leverage MicroK8s in your next Kubernetes deployment—local development, embedded in a CI environment, and production workloads—with simple and secure traffic ingress.
@@ -61,42 +63,7 @@ Now you need a domain and Kubernetes service to ingress traffic to!
 
 1. Create a new Kubernetes manifest (`2048.yaml`) with the YAML below. This manifest defines the 2048 application service and deployment, then configures the ngrok Kubernetes Operator to connect the `game-2048` service to the ngrok edge via your `NGROK_DOMAIN`.
 
-   ```yaml showLineNumbers
-   apiVersion: v1
-   kind: Service
-   metadata:
-     name: game-2048
-     namespace: default
-   spec:
-     ports:
-       - name: http
-         port: 80
-         targetPort: 80
-     selector:
-       app: game-2048
-   ---
-   apiVersion: apps/v1
-   kind: Deployment
-   metadata:
-     name: game-2048
-     namespace: default
-   spec:
-     replicas: 1
-     selector:
-       matchLabels:
-         app: game-2048
-     template:
-       metadata:
-         labels:
-           app: game-2048
-       spec:
-         containers:
-           - name: backend
-             image: alexwhen/docker-2048
-             ports:
-               - name: http
-                 containerPort: 80
-   ```
+   <TwentyFourtyEight title="2048.yaml" deployment={true} service={true} />
 
 1. Apply the `2048.yaml` manifest to your MicroK8s cluster.
 
