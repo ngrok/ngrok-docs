@@ -1,0 +1,141 @@
+---
+title: "Expose and Secure Your Self-Hosted Odoo Instance"
+description: "Use ngrok with Odoo when you want to securely expose Odoo's services to the internet without complex network setups."
+sidebar_label: "Expose Odoo ERP Remotely"
+---
+
+[Odoo](https://www.odoo.com/) is an open-source ERP and business management suite that you can self-host for development, demos, or integrations.
+When you need to share your instance over HTTPS or accept webhooks without deploying to the public internet, ngrok gives you a stable URL and powerful Traffic Policy controls to lock down access.
+
+This guide follows the style of our [n8n example](/universal-gateway/examples/n8n/) and adds Odoo-specific steps, including using a static domain and applying a Traffic Policy.
+
+## What you'll need
+
+- An ngrok account.
+- The ngrok Agent CLI installed.
+- Odoo running locally (default: `http://localhost:8069`).
+- (Recommended) Admin access in Odoo to change System Parameters.
+
+## 1. Reserve a static domain
+
+A static domain ensures your URL doesn't change across restarts (important for Odoo links, redirects, and webhooks).
+
+In the ngrok dashboard, go to **Domains** → **New +**.
+Reserve a domain (this example uses `https://your-odoo.ngrok.app`) and save it as an environment variable:
+
+```bash
+export NGROK_DOMAIN=your-odoo.ngrok.app
+```
+
+:::info
+Why a static domain?
+Odoo stores and uses absolute links.
+A stable host prevents broken links in emails, reports, and third-party callbacks.
+:::
+
+## 2. Start the ngrok endpoint for Odoo
+
+Expose Odoo on port `8069` at your static domain:
+
+```bash
+ngrok http --domain=$NGROK_DOMAIN 8069
+```
+
+Open `https://$NGROK_DOMAIN` to see the Odoo login page (`/web/login`).
+
+## 3. (Recommended) Configure Odoo for a proxy and stable URLs
+
+Make sure Odoo generates correct HTTPS links and doesn't rewrite your base URL.
+
+### Enable proxy mode
+
+If ngrok (or any reverse proxy) terminates TLS, enable Odoo's proxy mode:
+
+```ini title="odoo.conf"
+[options]
+proxy_mode = True
+```
+
+Restart Odoo after changing the config.
+
+### Freeze the base URL
+
+Odoo updates `web.base.url` based on the host used at login. To keep it stable:
+
+In Odoo, go to **Settings** → **Technical** → **System Parameters** (enable developer mode if needed).
+
+Create or update:
+
+- `web.base.url` → `https://$NGROK_DOMAIN`
+- `web.base.url.freeze` → `True`
+
+This prevents unexpected rewrites if someone visits via a different hostname.
+
+## 4. Apply a Traffic Policy (secure your admin)
+
+Protect sensitive paths like `/web` and `/web/login` using Traffic Policy.
+Create a policy file (such as `odoo-policy.yaml`) and run the agent with `--traffic-policy-file`.
+
+### Option A: Restrict admin to your IP
+
+```yaml title="odoo-policy.yaml"
+on_http_request:
+  - if: request.path.startsWith("/web")
+    actions:
+      - type: restrict-ips
+        config:
+          # Replace with your public IP/CIDR, such as "203.0.113.7/32"
+          allow: ["$YOUR_IP_CIDR"]
+```
+
+Run:
+
+```bash
+ngrok http --domain=$NGROK_DOMAIN 8069 \
+  --traffic-policy-file odoo-policy.yaml
+```
+
+Only the allowed IPs can reach `/web*`; other requests are blocked before they hit Odoo.
+
+### Option B: Require Basic Auth on admin
+
+```yaml title="odoo-policy.yaml"
+on_http_request:
+  - if: request.path.startsWith("/web")
+    actions:
+      - type: basic-auth
+        config:
+          realm: "Odoo Admin"
+          credentials:
+            - "admin:changeMeNow123"
+```
+
+Run with the same `--traffic-policy-file` flag.
+Visitors to `/web*` must pass HTTP Basic Auth before Odoo's own login.
+
+:::tip
+You can combine rules—for example, applying Basic Auth for `/web*` and providing unrestricted access for public website paths.
+:::
+
+## 5. Test your endpoint
+
+From a terminal:
+
+```bash
+curl -I https://$NGROK_DOMAIN
+```
+
+Expected: HTTP/2 200 and Odoo's login route (`/web/login`) when loaded in a browser.
+
+## Troubleshooting
+
+- **Blank or mixed-content pages**: Ensure `proxy_mode = True` and you're visiting `https://$NGROK_DOMAIN`.
+- **Redirect loops or wrong links**: Verify `web.base.url` is exactly `https://$NGROK_DOMAIN` and `web.base.url.freeze = True`.
+- **403 when applying policy**: Confirm your IP/CIDR is correct or disable the policy while debugging.
+- **Port issues**: Odoo defaults to `8069`; double-check the port if customized.
+
+## What's next?
+
+- Layer additional [policies](/traffic-policy/) (OAuth/OIDC, rate limits, IP allow/deny lists) as needed.
+- Use the ngrok dashboard's [Traffic Inspector](/obs/traffic-inspection/) to watch live requests and responses while testing.
+- Reserve a custom domain you own and enable HTTPS via ngrok for a branded URL.
