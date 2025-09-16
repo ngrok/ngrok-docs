@@ -1,0 +1,390 @@
+// ============================================================================
+// ||                OLINDA ESCUTA - ARQUIVO COMPLETO E ÚNICO                ||
+// ============================================================================
+// Para rodar:
+// 1. Instale as dependências: npm install express cors nanoid
+// 2. Execute o servidor:      node olinda_escuta.js
+// 3. Acesse no navegador:     http://localhost:3000
+// ============================================================================
+
+
+// ===== 1. IMPORTAÇÕES E CONFIGURAÇÃO INICIAL =====
+const express = require('express');
+const cors = require('cors');
+const { nanoid } = require('nanoid');
+
+
+const app = express();
+const PORT = 3000;
+const OLLAMA_API_URL = 'http://localhost:11434/api/generate';
+
+
+app.use(cors());
+app.use(express.json({ limit: '1mb' }));
+
+
+// ===== 2. CONFIGURAÇÃO EMBUTIDA (antes era o 'configuracao.json') =====
+const config = {
+  // ===== 2. CONFIGURAÇÃO EMBUTIDA (VERSÃO CORRIGIDA) =====
+const config = {
+  versao_parametros: "1.0",
+  descricao: "Parâmetros centralizados para o sistema de detecção Olinda Escuta.",
+  deteccao_crise: {
+    limiar_pico_percentual: 80,
+    janela_horas_comparacao: 2,
+    minimo_fontes_distintas: 3,
+    intensidade_minima_requerida: "média",
+    "impacto_minimo_afetados": 1000 // <<< LINHA CORRIGIDA
+  },
+  classificacao_ia: {
+    modelo_ollama: "llama3:8b",
+    "temas_validos": [ // <<< LINHA CORRIGIDA
+      "lixo", "buraco", "iluminação", "transporte", "saúde",
+      "segurança", "água", "educação", "chuva", "alagamento",
+      "ruído", "praça", "imposto", "obras", "outros"
+    ]
+  }
+};
+
+
+// ===== 3. GERENCIAMENTO DE CLIENTES (SSE) E DADOS EM MEMÓRIA =====
+let clients = [];
+const eventos = [];
+const volumes = {};
+
+
+// ===== 4. SERVIDOR DE STREAMING DE EVENTOS (/api/stream) =====
+app.get('/api/stream', (req, res) => {
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+  res.flushHeaders();
+
+
+  const clientId = nanoid();
+  const newClient = { id: clientId, res };
+  clients.push(newClient);
+  console.log(`[SSE] Cliente conectado: ${clientId}`);
+
+
+  req.on('close', () => {
+    clients = clients.filter(c => c.id !== clientId);
+    console.log(`[SSE] Cliente desconectado: ${clientId}`);
+  });
+});
+
+
+function broadcastEvent(evento) {
+  const data = `event: evento\ndata: ${JSON.stringify(evento)}\n\n`;
+  for (const client of clients) {
+    client.res.write(data);
+  }
+}
+
+
+// ===== 5. SERVIDOR DE INGESTÃO DE DADOS (/api/ingest) =====
+app.post('/api/ingest', async (req, res) => {
+  console.log('[INGEST] Recebido evento bruto:', req.body);
+  const eventoBruto = req.body;
+
+
+  const prompt = `
+    Você é um classificador da Prefeitura de Olinda.
+    Analise o seguinte texto: "${eventoBruto.texto}"
+    Baseado no texto, retorne um objeto JSON com as chaves "tema" (uma lista de strings), "local" (um objeto com a chave "bairro") e "sentimento" (um objeto com as chaves "classe" e "intensidade").
+    Use estes temas possíveis: ${JSON.stringify(config.classificacao_ia.temas_validos)}.
+    Responda APENAS com o objeto JSON.`;
+
+
+  let analiseIA = {};
+  try {
+    console.log('[OLLAMA] Enviando prompt para a IA...');
+    const respostaOllama = await fetch(OLLAMA_API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: config.classificacao_ia.modelo_ollama,
+        prompt: prompt,
+        format: "json",
+        stream: false,
+      }),
+    });
+
+
+    if (!respostaOllama.ok) throw new Error(`Erro na API do Ollama: ${respostaOllama.statusText}`);
+    const respostaJson = await respostaOllama.json();
+    analiseIA = JSON.parse(respostaJson.response);
+    console.log('[OLLAMA] Análise recebida:', analiseIA);
+  } catch (error) {
+    console.error('[ERRO OLLAMA] Não foi possível processar com a IA:', error.message);
+    analiseIA = { tema: ['outros'], local: { bairro: 'indefinido' }, sentimento: { classe: 'neutro', intensidade: 'baixa' } };
+  }
+
+
+  const eventoCompleto = {
+    id: `evt_${nanoid(8)}`,
+    timestamp: new Date().toISOString(),
+    fonte: eventoBruto.fonte || 'desconhecida',
+    tipo: eventoBruto.tipo || 'post',
+    texto: eventoBruto.texto,
+    ...analiseIA,
+  };
+
+
+  const chaveVolume = `${(eventoCompleto.tema || []).join('-')}::${eventoCompleto.local.bairro}`;
+  volumes[chaveVolume] = (volumes[chaveVolume] || 0) + 1;
+  if (eventoCompleto.sentimento.classe === 'negativo' && volumes[chaveVolume] > 1) {
+    eventoCompleto.crise = { ativa: true, titulo: `Pico de menções sobre ${eventoCompleto.tema.join(', ')}` };
+  }
+
+
+  eventos.push(eventoCompleto);
+  broadcastEvent(eventoCompleto);
+  res.status(201).json({ ok: true, id: eventoCompleto.id });
+});
+
+
+
+
+// ===== 6. SERVIDOR DO PAINEL HTML ('/') =====
+// Esta rota serve o painel completo quando você acessa a página principal.
+app.get('/', (req, res) => {
+    // O conteúdo do arquivo 'olinda_escuta_blueprint_v_2.html' está colado aqui.
+    const painelHTML = `
+    <!DOCTYPE html>
+    <html lang="pt-BR">
+    <head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Olinda Escuta • Blueprint v2 (Parâmetros)</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <style>
+    :root{--verde:#28a745;--amarelo:#ffc107;--vermelho:#dc3545;--azul:#0d6efd;--ciano:#1abc9c;
+    --bg:#0f1115;--bg-2:#12151c;--card:#171a21;--txt:#f5f7fb;--sub:#a8b0c0;--borda:#262b36}
+    [data-theme="light"]{--bg:#f7f9fc;--bg-2:#eef2f7;--card:#fff;--txt:#0f1115;--sub:#4c5566;--borda:#e6e9ee}
+    *{box-sizing:border-box}html,body{height:100%}body{margin:0;background:var(--bg);color:var(--txt);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial}
+    .container{max-width:1340px;margin:0 auto;padding:18px}
+    header{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}
+    h1{font-size:1.1rem;margin:0;font-weight:900}
+    .btn{display:inline-flex;gap:8px;align-items:center;padding:8px 12px;border-radius:10px;border:1px solid var(--borda);background:var(--card);color:var(--txt);cursor:pointer;font-weight:700}
+    .chip{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;background:var(--card);border:1px solid var(--borda);color:var(--sub);font-size:.85rem}
+    .grid{display:grid;gap:14px;grid-template-columns:320px 1fr}
+    .left{display:grid;gap:14px}
+    .right{display:grid;gap:14px;grid-template-columns:repeat(12,1fr)}
+    .card{background:var(--card);border:1px solid var(--borda);border-radius:16px;padding:14px}
+    .card h2{margin:0 0 10px;font-size:1rem;font-weight:900;display:flex;gap:8px;align-items:center}
+    .subtle{color:var(--sub);font-size:.9rem}
+    .param{display:grid;gap:8px}
+    .param-row{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center}
+    .param small{color:var(--sub)}
+    .range{width:100%}
+    .switch{display:flex;gap:8px;align-items:center}
+    .switch input{transform:scale(1.2)}
+    .sources-list{display:grid;gap:8px}
+    .src{display:flex;justify-content:space-between;align-items:center;padding:8px;border-radius:10px;border:1px dashed var(--borda);background:color-mix(in srgb,var(--bg) 60%, var(--card))}
+    .src b{font-size:.9rem}
+    .pipe{display:grid;gap:10px}
+    .stage{border:1px solid var(--borda);border-radius:12px;padding:10px;background:var(--bg-2)}
+    .stage h3{margin:0 0 6px;font-size:.95rem}
+    .badges{display:flex;flex-wrap:wrap;gap:6px}
+    .badge{padding:4px 8px;border:1px solid var(--borda);border-radius:999px;font-size:.8rem}
+    .farol{grid-column:1/-1;display:grid;place-items:center;padding:18px}
+    .farol-ring{width:160px;aspect-ratio:1;border-radius:50%;border:10px solid rgba(255,255,255,.08);position:relative}
+    .farol-dot{position:absolute;inset:6px;border-radius:50%;display:grid;place-items:center;font-weight:900;font-size:2.4rem;color:#fff}
+    .farol-dot.verde{background:var(--verde)}.farol-dot.amarelo{background:var(--amarelo);color:#111}.farol-dot.vermelho{background:var(--vermelho)}
+    .farol-status{font-weight:900;margin-top:8px}
+    .kpis{grid-column:1 / span 6;display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+    .kpi{border:1px dashed var(--borda);border-radius:12px;text-align:center;padding:10px}
+    .kpi .v{font-size:1.7rem;font-weight:900}.kpi .l{color:var(--sub);font-size:.85rem}
+    .map{grid-column:7 / -1;display:grid;grid-template-rows:auto 1fr}
+    .map .slot{height:160px;border:1px dashed var(--borda);border-radius:12px;display:grid;place-items:center;color:var(--sub)}
+    .detectors{grid-column:1 / -1;display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+    .det{border:1px solid var(--borda);border-radius:12px;padding:10px;background:color-mix(in srgb,var(--azul) 6%, transparent)}
+    .det h3{margin:0 0 6px;font-size:.95rem}
+    .det p{margin:0;color:var(--sub);font-size:.9rem}
+    .feed{grid-column:1 / span 8}
+    .filters{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 8px}
+    .filter{padding:6px 10px;border-radius:999px;border:1px solid var(--borda);background:var(--bg);color:var(--sub);cursor:pointer;font-weight:700}
+    .filter.active{background:var(--azul);color:#fff;border-color:transparent}
+    .feed-item{border-top:1px solid var(--borda);padding:10px 0}
+    .feed-src{font-size:.85rem;font-weight:800;margin-bottom:4px}
+    .sent.pos{color:var(--verde);font-weight:800}.sent.neg{color:var(--vermelho);font-weight:800}
+    .crise{grid-column:9 / -1;border-left:4px solid var(--vermelho)}
+    .crise h3{margin:0 0 8px}
+    .sol{background:color-mix(in srgb,var(--vermelho) 8%, transparent);border-left:4px solid var(--vermelho);padding:10px;border-radius:10px}
+    .footer{display:flex;justify-content:space-between;align-items:center;margin-top:10px}
+    small.note{color:var(--sub)}
+    .toggle{position:fixed;right:16px;bottom:16px}
+    @media (max-width:1100px){
+      .grid{grid-template-columns:1fr}
+      .kpis,.map,.detectors,.feed,.crise{grid-column:1 / -1}
+    }
+    </style>
+    </head>
+    <body>
+    <div class="container" data-theme="dark" id="app">
+      <header>
+        <h1><i class="bi bi-broadcast-pin"></i> Olinda Escuta • Painel ao Vivo</h1>
+        <div>
+          <span class="chip"><i class="bi bi-clock-history"></i> Ciclo: <span id="ciclo">—</span></span>
+          <span class="chip"><i class="bi bi-calendar-event"></i> Agora: <span id="clock">--:--:--</span></span>
+        </div>
+      </header>
+      <main class="grid">
+        <aside class="left">
+          <section class="card">
+            <h2><i class="bi bi-sliders2-vertical"></i> Parâmetros (via config)</h2>
+            <div class="param" id="paramForm">
+                <div id="params-display">Carregando...</div>
+            </div>
+          </section>
+          <section class="card">
+            <h2><i class="bi bi-diagram-3-fill"></i> Fontes conectadas</h2>
+            <div class="sources-list" id="sources">
+              <div class="src"><b>Redes sociais</b><span class="subtle">Twitter • Facebook • etc</span></div>
+              <div class="src"><b>Imprensa</b><span class="subtle">Rádios • Portais • Blogs</span></div>
+              <div class="src"><b>Ouvidoria</b><span class="subtle">Chamados • WhatsApp</span></div>
+            </div>
+          </section>
+        </aside>
+        <section class="right">
+          <section class="card farol" id="farolCard">
+            <div class="farol-ring"><div id="farol-dot" class="farol-dot amarelo"><span id="farol-nota">--</span></div></div>
+            <div id="farol-status" class="farol-status subtle">ANALISANDO...</div>
+          </section>
+          <section class="card kpis">
+            <div class="kpi"><div id="kpi-reclamacoes" class="v">0</div><div class="l">Reclamações</div></div>
+            <div class="kpi"><div id="kpi-elogios" class="v">0</div><div class="l">Elogios</div></div>
+          </section>
+          <section class="card feed">
+            <h2><i class="bi bi-chat-quote-fill"></i> Fluxo ao vivo</h2>
+            <div id="feed"></div>
+          </section>
+          <section class="card crise" id="crise-card" style="display:none">
+            <h3><i class="bi bi-lightning-charge-fill"></i> Alerta de crise</h3>
+            <p id="crise-titulo"></p>
+          </section>
+        </section>
+      </main>
+    </div>
+    <script>
+    /* ===== Estado e Funções Globais ===== */
+    const $ = (s,ctx=document)=>ctx.querySelector(s);
+    function fmt(n){return new Intl.NumberFormat('pt-BR').format(n)}
+
+
+    const estado = {
+      farol: {nota: 7.5, status: 'amarelo', texto: 'CIDADE EM ATENÇÃO'},
+      kpis: { recl: 0, elog: 0 },
+      feed: []
+    };
+
+
+    /* ===== Clock ===== */
+    function tick(){ $('#clock').textContent = new Date().toLocaleTimeString('pt-BR',{hour12:false}); }
+    setInterval(tick,1000); tick(); $('#ciclo').textContent = new Date().toLocaleString('pt-BR');
+    
+    /* ===== Renderização do Painel ===== */
+    function render(){
+      // Farol
+      $('#farol-nota').textContent = estado.farol.nota.toFixed(1);
+      $('#farol-dot').className = \`farol-dot \${estado.farol.status}\`;
+      $('#farol-status').textContent = estado.farol.texto;
+      // KPIs
+      $('#kpi-reclamacoes').textContent = fmt(estado.kpis.recl);
+      $('#kpi-elogios').textContent    = fmt(estado.kpis.elog);
+      // Feed
+      const feedContainer = $('#feed');
+      feedContainer.innerHTML = ''; // Limpa para evitar duplicatas
+      estado.feed.forEach(it => {
+        const sent = it.sentimento?.classe ==='positivo'?'pos':(it.sentimento?.classe==='negativo'?'neg':'');
+        const tags = [...(it.tema || []), it.local?.bairro || ''].filter(Boolean).join(', ');
+        const itemHTML = \`
+          <div class="feed-item">
+            <div class="feed-src">\${(it.tipo||'Interação').toUpperCase()} • \${it.fonte.toUpperCase()}</div>
+            <div>\${it.texto||''}</div>
+            <div class="sent \${sent}">Sentimento: \${it.sentimento?.classe || 'N/A'} (\${it.sentimento?.intensidade || 'N/A'})</div>
+            <div class="subtle">Tags: \${tags}</div>
+          </div>\`;
+        feedContainer.insertAdjacentHTML('afterbegin', itemHTML);
+      });
+    }
+
+
+    /* ===== Lógica de Processamento de Eventos ===== */
+    function onEvento(d){
+      // Atualiza KPIs
+      if(d.sentimento?.classe === 'negativo') estado.kpis.recl++;
+      if(d.sentimento?.classe === 'positivo') estado.kpis.elog++;
+
+
+      // Atualiza Feed
+      estado.feed.push(d);
+      if(estado.feed.length > 50) estado.feed.shift(); // Mantém o feed com no máximo 50 itens
+
+
+      // Atualiza Farol (lógica simples)
+      if (estado.kpis.recl > estado.kpis.elog + 2) {
+          estado.farol = {nota: 4.1, status: 'vermelho', texto: 'CIDADE EM ALERTA'};
+      } else if (estado.kpis.recl > estado.kpis.elog) {
+          estado.farol = {nota: 6.5, status: 'amarelo', texto: 'CIDADE EM ATENÇÃO'};
+      } else {
+          estado.farol = {nota: 8.2, status: 'verde', texto: 'CIDADE ESTÁVEL'};
+      }
+      
+      // Lógica de Crise
+      if (d.crise && d.crise.ativa) {
+          $('#crise-card').style.display = 'block';
+          $('#crise-titulo').textContent = d.crise.titulo;
+      }
+
+
+      render();
+    }
+
+
+    /* ===== Conexão SSE (Server-Sent Events) ===== */
+    function connectSSE(){
+      try {
+        // O servidor está na mesma origem, então o caminho relativo '/api/stream' funciona.
+        const es = new EventSource('/api/stream');
+        es.addEventListener('evento', (e) => {
+          console.log('Evento recebido:', e.data);
+          onEvento(JSON.parse(e.data));
+        });
+        es.onerror = () => { console.warn('SSE desconectado. Tentando reconectar...'); };
+      } catch(err) {
+        console.error('SSE indisponível.', err);
+      }
+    }
+
+
+    /* ===== Boot ===== */
+    document.addEventListener('DOMContentLoaded', () => {
+      // Como a config agora está no backend, removemos a lógica de carregar/salvar parâmetros aqui.
+      // O painel agora apenas reflete o estado que o backend envia.
+      $('#params-display').innerHTML = 'Parâmetros gerenciados pelo servidor.';
+      render();
+      connectSSE();
+    });
+    </script>
+    </body>
+    </html>
+    `;
+    res.setHeader('Content-Type', 'text/html');
+    res.send(painelHTML);
+});
+
+
+
+
+// ===== 7. INICIALIZAÇÃO DO SERVIDOR =====
+app.listen(PORT, () => {
+  console.log('====================================================');
+  console.log(`🚀 Olinda Escuta - Servidor Completo rodando!`);
+  console.log(`✅ Painel disponível em: http://localhost:${PORT}`);
+  console.log('====================================================');
+  console.log('Aguardando eventos para processar...');
+});
