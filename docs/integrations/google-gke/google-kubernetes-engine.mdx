@@ -10,7 +10,8 @@ tags:
   - ingress controller
 ---
 
-import TrafficPolicyGoogleOauthWithDomain from '../../../examples/k8s/trafficpolicy/oauth-google-domain.mdx';
+import TrafficPolicyGoogleOauth from '../../../examples/k8s/trafficpolicy/example.mdx';
+import TwentyFourtyEight from "../../../examples/k8s/apps/2048/example.mdx";
 
 The [ngrok Kubernetes Operator](https://github.com/ngrok/ngrok-operator) is our official open-source controller for adding public and secure ingress traffic to your k8s services. It works out of the box with Google Kubernetes Engine cluster to provide ingress to your services no matter the network configuration, as long as it has outbound access to the ngrok service. This allows ngrok to be portable and work seamlessly across any type of infrastructure.
 
@@ -72,62 +73,7 @@ Create a manifest file (for example `ngrok-manifest.yaml`) with the following co
 
 :::
 
-```yaml showLineNumbers
-apiVersion: v1
-kind: Service
-metadata:
-  name: game-2048
-spec:
-  ports:
-    - name: http
-      port: 80
-      targetPort: 80
-  selector:
-    app: game-2048
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: game-2048
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: game-2048
-  template:
-    metadata:
-      labels:
-        app: game-2048
-    spec:
-      containers:
-        - name: backend
-          image: alexwhen/docker-2048
-          ports:
-            - name: http
-              containerPort: 80
----
-# highlight-start
-# ngrok Kubernetes Operator Configuration
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: game-2048-ingress
-  namespace: ngrok-operator
-spec:
-  ingressClassName: ngrok
-  rules:
-    - host: <NGROK_DOMAIN>
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: game-2048
-                port:
-                  number: 80
-# highlight-end
-```
+<TwentyFourtyEight deployment={true} service={true} ingress={true} />
 
 1. Apply the manifest file to your k8s cluster.
 
@@ -156,53 +102,16 @@ apply the policy to just a specific backend or as the default backend for an
 `Ingress`—see our doc on using the [Operator with
 Ingresses](/docs/k8s/guides/using-ingresses/#using-ngroktrafficpolicy-with-ingress).
 
-1. Edit your existing `2048.yaml` manifest with the following, leaving the
+1. Edit your existing `ngrok-manifest.yaml` manifest with the following, leaving the
    `Service` and `Deployment` as they were. Note the new `annotations` field and
    the `NgrokTrafficPolicy` CR.
 
-   ```yaml
-    ...
-   ---
-   # Configuration for ngrok's Kubernetes Operator
-   apiVersion: networking.k8s.io/v1
-   kind: Ingress
-   metadata:
-     name: game-2048-ingress
-     namespace: default
-     annotations:
-       k8s.ngrok.com/traffic-policy: oauth
-   spec:
-     ingressClassName: ngrok
-     rules:
-       - host: <NGROK_DOMAIN>
-         http:
-           paths:
-             - path: /
-               pathType: Prefix
-               backend:
-                 service:
-                   name: game-2048
-                   port:
-                     number: 80
-   ---
-   # Traffic Policy configuration for OAuth
-   apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-   kind: NgrokTrafficPolicy
-   metadata:
-     name: oauth
-     namespace: default
-   spec:
-     policy:
-   	   on_http_request:
-   		   - type: oauth
-   			   config:
-   			     provider: google
-   ```
+    <TwentyFourtyEight withOauth={true} ingress={true} trafficPolicy={true} />
 
-1. Re-apply your `2048.yaml` configuration.
+1. Re-apply your `ngrok-manifest.yaml` configuration.
 
    ```bash
-   kubectl apply -f 2048.yaml
+   kubectl apply -f ngrok-manifest.yaml
    ```
 
 1. When you open your demo app again, you'll be asked to log in via Google.
@@ -214,7 +123,7 @@ Ingresses](/docs/k8s/guides/using-ingresses/#using-ngroktrafficpolicy-with-ingre
    `NgrokTrafficPolicy` portion of your manifest after changing `example.com` to
    your domain.
 
-   <TrafficPolicyGoogleOauthWithDomain />
+   <TrafficPolicyGoogleOauth withDomain={true} />
 
 1. Check out your deployed 2048 app once again. If you log in with an email that
    doesn't match your domain, ngrok rejects your request. Authentication... done!
