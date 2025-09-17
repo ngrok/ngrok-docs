@@ -6,6 +6,10 @@ title: Changelog
 
 ## v3
 
+### ngrok agent 3.29.0 \[2025-09-17\]
+
+- Do not allow creating tunnels with duplicate names via the agent HTTP API
+
 ### ngrok agent 3.28.0 \[2025-09-11\]
 
 - Updated Docker build base
