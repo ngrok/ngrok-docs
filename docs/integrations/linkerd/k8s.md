@@ -26,12 +26,12 @@ Using this guide, you will launch a local cluster (or use an existing local/remo
   workstation.
 - The [ngrok Kubernetes Operator](/docs/k8s/) installed on
   your cluster.
-- A reserved domain, which you can get in the ngrok
-  [dashboard](https://dashboard.ngrok.com/domains) or with the [ngrok
-  API](https://ngrok.com/docs/api/resources/reserved-domains/).
-  - You can choose from an ngrok subdomain or bring your own custom branded
-    domain, like `https://api.example.com`.
-  - We'll refer to this domain as `<NGROK_DOMAIN>`.
+- A domain: This can be your free dev domain, or if you're on a paid plan, one that you choose [in the ngrok
+  dashboard](https://dashboard.ngrok.com/domains) or with the [ngrok
+  API](/docs/api/resources/reserved-domains/#create-reserved-domain). Pay-as-you-go plans allow you to bring your own [custom branded
+  domain](/docs/universal-gateway/custom-domains), like
+  `https://api.example.com`.
+  - We'll refer to this domain as `$YOUR_DOMAIN`.
 
 ## Set up a local development cluster {#set-up-a-local-development-cluster}
 
@@ -115,7 +115,7 @@ To demonstrate how Linkerd and the ngrok Kubernetes Operator integrate to add ad
 
 1. Create an ngrok static subdomain for ingress if you don't have one already. Navigate to the [**Domains**
    section](https://dashboard.ngrok.com/domains) of the ngrok dashboard and click **Create Domain** or **New
-   Domain**. This static subdomain will be your `NGROK_DOMAIN` for the remainder of this guide.
+   Domain**. This static subdomain will be your `$NGROK_DOMAIN` for the remainder of this guide.
 
    By creating a subdomain on the ngrok Edge, you provide a public route to accept HTTP, HTTPS, and TLS traffic.
 
@@ -142,11 +142,11 @@ To demonstrate how Linkerd and the ngrok Kubernetes Operator integrate to add ad
    Status check results are √
    ```
 
-1. Create a new `emojivoto-ingress.yml` file and add the [following YAML content](https://linkerd.io/2.14/tasks/using-ingress/#ngrok), which defines the ngrok Kubernetes Operator for routing traffic arriving on your `NGROK_DOMAIN` to the `web-svc` deployment, which you created when deploying Emojivoto.
+1. Create a new `emojivoto-ingress.yml` file and add the [following YAML content](https://linkerd.io/2.14/tasks/using-ingress/#ngrok), which defines the ngrok Kubernetes Operator for routing traffic arriving on your `$NGROK_DOMAIN` to the `web-svc` deployment, which you created when deploying Emojivoto.
 
    :::tip
 
-   Make sure you edit line `9` of the manifest below, which contains the `NGROK_DOMAIN` variable, with your ngrok subdomain. It should look something like `one-two-three.ngrok.app`.
+   Make sure you edit line `9` of the manifest below, which contains the `$NGROK_DOMAIN` variable, with your ngrok subdomain. It should look something like `one-two-three.ngrok.app`.
 
    :::
 
@@ -159,7 +159,7 @@ To demonstrate how Linkerd and the ngrok Kubernetes Operator integrate to add ad
    spec:
      ingressClassName: ngrok
      rules:
-       - host: <NGROK_DOMAIN>
+       - host: $NGROK_DOMAIN
          http:
            paths:
              - path: /
@@ -181,7 +181,7 @@ To demonstrate how Linkerd and the ngrok Kubernetes Operator integrate to add ad
 
    :::tip
 
-   If you see an error when applying the manifest, double-check that you've updated the `NGROK_DOMAIN` value and try again.
+   If you see an error when applying the manifest, double-check that you've updated the `$NGROK_DOMAIN` value and try again.
 
    :::
 
