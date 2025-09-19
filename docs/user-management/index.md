@@ -6,7 +6,7 @@ title: User Management
 
 ## Role Based Access Control (RBAC) {#rbac}
 
-The ngrok dashboard allows many users to be invited to the same account. Each user in the account will have the same account type and be able to start tunnels under that account. The dashboard includes role based access control (RBAC) as a way to limit what users have access to in the account. You can manage these roles and add more users to your account in the [team members page](https://dashboard.ngrok.com/users/team-members) of the dashboard. This is only available for paid plans.
+The ngrok dashboard allows many users to be invited to the same account. Each user in the account will have the same account type and be able to start endpoints under that account. The dashboard includes role based access control (RBAC) as a way to limit what users have access to in the account. You can manage these roles and add more users to your account in the [team members page](https://dashboard.ngrok.com/users/team-members) of the dashboard. This is only available for paid plans.
 
 ## Single Sign-On (SSO) {#dashboard-sso}
 

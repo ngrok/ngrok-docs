@@ -18,7 +18,7 @@ Note: For users on the latest MacOS, there is an issue where the default port 50
 
 ### Python SDK
 
-You can also use the [ngrok Python SDK](https://github.com/ngrok/ngrok-python) to start a tunnel to the Flask dev server via [python code](https://github.com/ngrok/ngrok-python#frameworks), or using a [ngrok ASGI runner](https://github.com/ngrok/ngrok-python#asgi-runner---tunnels-to-uvicorn-gunicorn-django-and-more-with-no-code) with an [ASGI Wrapper](https://flask.palletsprojects.com/en/2.3.x/deploying/asgi/).
+You can also use the [ngrok Python SDK](https://github.com/ngrok/ngrok-python) to start an endpoint to the Flask dev server via [python code](https://github.com/ngrok/ngrok-python#frameworks), or using a [ngrok ASGI runner](https://github.com/ngrok/ngrok-python#asgi-runner---tunnels-to-uvicorn-gunicorn-django-and-more-with-no-code) with an [ASGI Wrapper](https://flask.palletsprojects.com/en/2.3.x/deploying/asgi/).
 
 - [ngrok SDK on PyPi](https://pypi.org/project/ngrok/)
 - [ngrok SDK on Github](https://github.com/ngrok/ngrok-python)
