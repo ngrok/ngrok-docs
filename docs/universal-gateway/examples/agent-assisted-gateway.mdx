@@ -15,7 +15,7 @@ With this setup, you can:
 
 - Expose local services securely to AI coding assistants and external tools
 - Test real OAuth flows, webhooks, and API integrations during development
-- Apply traffic transformations and header manipulation in your dev environment  
+- Apply traffic transformations and header manipulation in your dev environment
 - Debug production-like traffic patterns before deploying
 - Share work-in-progress with teammates and stakeholders securely
 
@@ -82,7 +82,7 @@ on_http_request:
               client_secret: "dev_oauth_client_secret_here"
               scopes: ["user:email"]
 
-  # API key authentication for external tools and AI assistants  
+  # API key authentication for external tools and AI assistants
   - expressions:
       - "req.url.path.startsWith('/api')"
       - "!hasReqHeader('authorization')"
@@ -112,7 +112,7 @@ on_http_request:
         config:
           url: https://api-dev.internal
 
-  # Route webhook requests to backend  
+  # Route webhook requests to backend
   - expressions:
       - "req.url.path.startsWith('/webhooks')"
     actions:
@@ -157,7 +157,7 @@ on_http_response:
             x-served-by: "ngrok-dev-gateway"
             x-upstream-service: "${upstream.url}"
             x-response-time: "${duration(time.start, time.now) / 1000000}ms"
-            
+
   # Enable CORS for development (be more restrictive in production)
   - actions:
       - type: add-headers
@@ -218,6 +218,7 @@ curl -u "dev-user:$YOUR_DEV_API_KEY" \
 ## Common development scenarios
 
 ### AI-assisted frontend development
+
 When using tools like Lovable, Cursor, or other AI coding assistants:
 
 1. They can access your API schema: `https://$NGROK_DOMAIN/api/schema`
@@ -225,17 +226,20 @@ When using tools like Lovable, Cursor, or other AI coding assistants:
 3. Receive webhooks for real-time collaboration: `https://$NGROK_DOMAIN/webhooks/ai-assist`
 
 ### Webhook development and testing
+
 Test webhooks from real services during development:
 
 ```bash
 # Configure webhook URLs in external services:
 # Stripe: https://$NGROK_DOMAIN/webhooks/stripe
-# GitHub: https://$NGROK_DOMAIN/webhooks/github  
+# GitHub: https://$NGROK_DOMAIN/webhooks/github
 # Slack: https://$NGROK_DOMAIN/webhooks/slack
 ```
 
 ### OAuth flow testing
+
 Test complete OAuth flows locally:
+
 1. Set your OAuth app's redirect URL to: `https://$NGROK_DOMAIN/auth/callback`
 2. Test login flow: `https://$NGROK_DOMAIN/admin/login`
 3. Verify protected routes work with real authentication

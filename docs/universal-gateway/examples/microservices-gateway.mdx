@@ -13,7 +13,7 @@ A microservices gateway coordinates traffic for distributed services without req
 
 With this setup, you can:
 
-- Handle public API traffic with JWT or API key authentication  
+- Handle public API traffic with JWT or API key authentication
 - Enable secure service-to-service communication with mTLS
 - Route requests to different microservices within your cluster
 - Deploy and test services independently without rewriting routing logic
@@ -28,6 +28,7 @@ Install the ngrok Kubernetes Operator in your cluster. For detailed installation
 Create `AgentEndpoint` CRDs to expose your microservices. These create internal endpoints that are not publicly accessible but can be routed through your gateway.
 
 **User service:**
+
 ```yaml
 apiVersion: ngrok.k8s.ngrok.com/v1alpha1
 kind: AgentEndpoint
@@ -42,6 +43,7 @@ spec:
 ```
 
 **Order service:**
+
 ```yaml
 apiVersion: ngrok.k8s.ngrok.com/v1alpha1
 kind: AgentEndpoint
@@ -56,6 +58,7 @@ spec:
 ```
 
 **Notification service:**
+
 ```yaml
 apiVersion: ngrok.k8s.ngrok.com/v1alpha1
 kind: AgentEndpoint
@@ -70,6 +73,7 @@ spec:
 ```
 
 Apply these configurations:
+
 ```bash
 kubectl apply -f user-service.yaml
 kubectl apply -f order-service.yaml
@@ -81,7 +85,8 @@ kubectl apply -f notification-service.yaml
 <ReserveDomain />
 
 For microservices, consider reserving multiple domains:
-- Public API gateway: `api.yourcompany.com`  
+
+- Public API gateway: `api.yourcompany.com`
 - Internal service mesh: `mesh.yourcompany.com`
 
 ## 4. Create Cloud Endpoints
@@ -89,6 +94,7 @@ For microservices, consider reserving multiple domains:
 <CloudEndpoint />
 
 Create separate Cloud Endpoints for:
+
 1. **Public API Gateway** - Handles north-south traffic from external clients
 2. **Service Mesh Gateway** - Handles east-west traffic between services
 
@@ -138,7 +144,7 @@ on_http_request:
           http:
             tokens:
               - type: "access_token"
-                method: "header" 
+                method: "header"
                 name: "Authorization"
                 prefix: "Bearer "
           jws:
@@ -165,7 +171,7 @@ on_http_request:
         config:
           url: https://user-service.internal
 
-  # Route to order service  
+  # Route to order service
   - expressions:
       - "req.url.path.startsWith('/api/orders')"
     actions:
@@ -249,6 +255,7 @@ on_http_response:
 <TryOut />
 
 Test the public API gateway:
+
 ```bash
 # Get a JWT token (replace with your auth provider)
 JWT_TOKEN="your_jwt_token_here"
@@ -267,6 +274,7 @@ curl -H "Authorization: Bearer $JWT_TOKEN" \
 ```
 
 Test service-to-service communication:
+
 ```bash
 # From within a service pod with mTLS certificates
 curl --cert service.crt --key service.key \
