@@ -10,7 +10,7 @@ The ngrok dashboard allows many users to be invited to the same account. Each us
 
 ## Single Sign-On (SSO) {#dashboard-sso}
 
-If you are an Enterprise customer, you have the option of enabling Single Sign-On (SSO) for your users logging into the ngrok Dashboard. Account admins can find the configuration options under the ["Settings > Account"](https://dashboard.ngrok.com/settings) in the left navigation once they log into the dashboard.
+If you are an Pay-as-you-go customer, you have the option of enabling Single Sign-On (SSO) for your users logging into the ngrok Dashboard and adding the SSO & RBAC add-on. Account admins can find the configuration options under the ["Settings > Account"](https://dashboard.ngrok.com/settings) in the left navigation once they log into the dashboard.
 
 ngrok supports most [SAML v2 compliant identity providers](https://en.wikipedia.org/wiki/SAML-based_products_and_services), including [Okta](https://help.okta.com/oie/en-us/Content/Topics/Apps/apps-about-saml.htm) and [Microsoft Entra ID](https://learn.microsoft.com/en-us/entra/architecture/auth-saml). To get started with the configuration, simply click on "+ New Identity Provider" and follow the instructions in the dashboard. ngrok supports multiple identity providers as well. If using multiple identity providers, the user will be prompted to choose one when logging in with SSO from the ngrok login page.
 
