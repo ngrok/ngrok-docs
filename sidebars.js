@@ -26,6 +26,7 @@ const sidebars = {
 			items: [
 				"pricing-limits/free-plan-limits",
 				"pricing-limits/traffic-policy-unit-pricing",
+				"pricing-limits/how-ngrok-charges",
 			],
 		},
 		{
