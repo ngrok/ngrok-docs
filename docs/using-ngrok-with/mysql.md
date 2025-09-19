@@ -4,7 +4,7 @@ title: MySQL
 
 # Using ngrok with MySQL
 
-To connect to a database using ngrok, you will need to use a TCP tunnel. Once you have your database up and running, you should be able to remotely connect to it using an ngrok TCP tunnel and the default port of `3306`.
+To connect to a database using ngrok, you will need to use a TCP endpoint. Once you have your database up and running, you should be able to remotely connect to it using an ngrok TCP endpoint and the default port of `3306`.
 
 ```bash
 ngrok tcp 3306

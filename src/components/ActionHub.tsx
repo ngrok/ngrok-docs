@@ -24,6 +24,7 @@ type Action = {
 	description: string;
 	categories: string[];
 	phases: string[];
+	tpu_cost: number;
 };
 
 type Category = {

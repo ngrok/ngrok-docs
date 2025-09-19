@@ -35,16 +35,16 @@ from loguru import logger
 NGROK_AUTH_TOKEN = getenv("NGROK_AUTH_TOKEN", "")
 APPLICATION_PORT = 5000
 
-# ngrok free tier only allows one agent. So we tear down the tunnel on application termination
+# We tear down the endpoint on application termination
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    logger.info("Setting up Ngrok Tunnel")
+    logger.info("Setting up Ngrok Endpoint")
     ngrok.set_auth_token(NGROK_AUTH_TOKEN)
     ngrok.forward(
         addr=APPLICATION_PORT,
     )
     yield
-    logger.info("Tearing Down Ngrok Tunnel")
+    logger.info("Tearing Down Ngrok Endpoint")
     ngrok.disconnect()
 
 

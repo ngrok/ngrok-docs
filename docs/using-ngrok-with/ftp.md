@@ -10,7 +10,7 @@ Because using FTP or FTPS (FTP over SSL) requires multiple dynamic ports for tra
 
 ## ngrok with SFTP
 
-You can use ngrok for SFTP communication by opening up a TCP tunnel on the port used by the SFTP server, usually port `22` (the same as SSH).
+You can use ngrok for SFTP communication by opening up a TCP endpoint on the port used by the SFTP server, usually port `22` (the same as SSH).
 
 ```bash
 ngrok tcp 22

@@ -23,12 +23,12 @@ Here is what you'll be building with:
   workstation.
 - The [ngrok Kubernetes Operator](/docs/k8s/) installed on
   your cluster.
-- A reserved domain, which you can get in the ngrok
-  [dashboard](https://dashboard.ngrok.com/domains) or with the [ngrok
-  API](https://ngrok.com/docs/api/resources/reserved-domains/).
-  - You can choose from an ngrok subdomain or bring your own custom branded
-    domain, like `https://api.example.com`.
-  - We'll refer to this domain as `<NGROK_DOMAIN>`.
+- A domain: This can be your free dev domain, or if you're on a paid plan, one that you choose [in the ngrok
+  dashboard](https://dashboard.ngrok.com/domains) or with the [ngrok
+  API](/docs/api/resources/reserved-domains/#create-reserved-domain). Pay-as-you-go plans allow you to bring your own [custom branded
+  domain](/docs/universal-gateway/custom-domains), like
+  `https://api.example.com`.
+  - We'll refer to this domain as `$YOUR_DOMAIN`.
 
 ## Provision a new cluster on DigitalOcean with `doctl` {#provision-a-new-cluster}
 
@@ -84,11 +84,11 @@ Your Bookinfo app is running, but you have no means of accessing it from your lo
 
 Instead, finish configuring the ngrok Kubernetes Operator to direct incoming requests directly to the container running the user-facing Bookinfo container. The [Bookinfo docs](https://github.com/digitalocean/kubernetes-sample-apps/tree/master/bookinfo-example) recommend port-forwarding to the `productpage` service, which runs on port `9080`—you can use that information to configure the ngrok Kubernetes Operator.
 
-1. Create a new file called `bookinfo-ingress.yaml` on your local workstation. This configuration defines how the ngrok Kubernetes Operator will route traffic arriving on `NGROK_DOMAIN` to the `store-front` service on port `80` as defined in the manifest.
+1. Create a new file called `bookinfo-ingress.yaml` on your local workstation. This configuration defines how the ngrok Kubernetes Operator will route traffic arriving on `$NGROK_DOMAIN` to the `store-front` service on port `80` as defined in the manifest.
 
    :::tip
 
-   Make sure you edit line `10` of the YAML below, which contains the `NGROK_DOMAIN` variable, with the ngrok domain you created earlier.
+   Make sure you edit line `10` of the YAML below, which contains the `$NGROK_DOMAIN` variable, with the ngrok domain you created earlier.
 
    :::
 
@@ -102,7 +102,7 @@ Instead, finish configuring the ngrok Kubernetes Operator to direct incoming req
    spec:
      ingressClassName: ngrok
      rules:
-       - host: <NGROK_DOMAIN>
+       - host: $NGROK_DOMAIN
          http:
            paths:
              - path: /
@@ -122,11 +122,11 @@ Instead, finish configuring the ngrok Kubernetes Operator to direct incoming req
 
    :::tip
 
-   **Note:** If you get an error when applying the manifest, double check that you've updated the `<NGROK_DOMAIN>` value and try again.
+   **Note:** If you get an error when applying the manifest, double check that you've updated the `$NGROK_DOMAIN` value and try again.
 
    :::
 
-1. Navigate to `https://<NGROK_DOMAIN>` in your browser to see your example Bookinfo app as managed, deployed, and publicly networked via DigitalOcean, Kubernetes, and ngrok! Click **Normal user** to see a little more—it's not much to look at, but it's a working Kubernetes app with functional, secure, and simple ingress with the ngrok Kubernetes Operator.
+1. Navigate to `https://$NGROK_DOMAIN` in your browser to see your example Bookinfo app as managed, deployed, and publicly networked via DigitalOcean, Kubernetes, and ngrok! Click **Normal user** to see a little more—it's not much to look at, but it's a working Kubernetes app with functional, secure, and simple ingress with the ngrok Kubernetes Operator.
 
    ![Successfully deployed Booklist app on DigitalOcean, Kubernetes, and ngrok](img/bookinfo-deployed.png)
 
@@ -140,7 +140,7 @@ To demonstrate how ingress configuration and [OAuth support](/traffic-policy/act
 
    In the background, DigitalOcean uses Helm to create a new integrated deployment for Prometheus, Grafana, and Alertmanager.
 
-1. Create a new domain in the [ngrok dashboard](https://dashboard.ngrok.com/domains) at `monitoring.<NGROK_DOMAIN>`.
+1. Create a new domain in the [ngrok dashboard](https://dashboard.ngrok.com/domains) at `monitoring.$NGROK_DOMAIN`.
 
 1. Edit your `ngrok_ingress.yaml` file you created in the previous step to include the highlighted configuration at the bottom, which will route all traffic arriving on `https://monitoring.NGROK_DOMAIN/` to the `kube-prometheus-stack-prometheus` service running on port `9090` in your cluster.
 
@@ -154,7 +154,7 @@ To demonstrate how ingress configuration and [OAuth support](/traffic-policy/act
    spec:
      ingressClassName: ngrok
      rules:
-       - host: monitoring.<NGROK_DOMAIN>
+       - host: monitoring.$NGROK_DOMAIN
          http:
            paths:
              - path: /
@@ -188,7 +188,7 @@ To demonstrate how ingress configuration and [OAuth support](/traffic-policy/act
    spec:
      ingressClassName: ngrok
      rules:
-       - host: monitoring.<NGROK_DOMAIN>
+       - host: monitoring.$NGROK_DOMAIN
          http:
            paths:
              - path: /

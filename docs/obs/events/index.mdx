@@ -1,48 +1,48 @@
 ---
-title: Events
+title: Log Exporting
 ---
 
-# Events
+# Log Exporting
 
 ## Overview
 
 Whenever changes occur in your ngrok account or when traffic transits through
-your endpoints, an event is fired. You may subscribe to these events and in some cases, filter
+your endpoints, a log is generated. You may export these logs and in some cases, filter
 them to those relevant to you and publish them to any number of destinations.
 
-ngrok's event system was designed for three primary use cases:
+ngrok's logging system was designed for three primary use cases:
 
 - Sending logs of your ngrok traffic to external services such as Datadog and
   Amazon CloudWatch Logs
 - Sending audit logs of ngrok configuration changes to your SIEM
 - Enabling you to programmatically respond to events on your ngrok account
 
-There are [over 40 event types published](/obs/events/reference) via ngrok at the time of writing.
-They break down into two important classes of event:
+There are [over 40 log sources published](/obs/events/reference) via ngrok at the time of writing.
+They break down into two important classes of logs:
 
-- **[Traffic Events](/obs/events/reference/#traffic-events)**: When traffic transits through your endpoints like processing an HTTP request or TCP connection
-- **[Audit Events](/obs/events/reference/#audit-events)**: Changes to your account like create/update/delete of Domains, API Keys, IP Policies, etc.
+- **[Traffic Logs](/obs/events/reference/#traffic-events)**: When traffic transits through your endpoints like processing an HTTP request or TCP connection
+- **[Audit Logs](/obs/events/reference/#audit-events)**: Changes to your account like create/update/delete of Domains, API Keys, IP Policies, etc.
 
 ## Concepts
 
-ngrok's event logging system is composed of three simple primitives. You create
-a **Log Export** to _subscribe_ to a set of **Event Sources** and
-_publish_ those events to one or more **Event Destinations**.
+ngrok's logging system is composed of three simple primitives. You create
+a **Log Export** to _subscribe_ to a set of **Log Sources** and
+_publish_ those logs to one or more **Log Destinations**.
 
-- **[Log Exporting](#log-exporting)**: Define which Event
-  Sources to capture and which Event Destinations to publish to.
-- **[Event Sources](#sources)**: The ngrok event types to capture and
+- **[Log Exporting](#log-exporting)**: Define which Log
+  Sources to capture and which Log Destinations to publish to.
+- **[Log Sources](#sources)**: The ngrok log types to capture and
   optionally a set of fields to record and a boolean filter expression.
-- **[Event Destinations](#destinations)**: Where events are sent, e.g.
+- **[Log Destinations](#destinations)**: Where logs are sent, e.g.
   Datadog, CloudWatch, Kinesis.
 
 ## Quickstart
 
-You can create your first Log Export on the [Events page of your ngrok
-Dashboard](https://dashboard.ngrok.com/observability/event-subscriptions) to begin capturing
-and publishing events.
+You can create your first Log Export on the [Log Exporting page of your ngrok
+Dashboard](https://dashboard.ngrok.com/log-exporting) to begin capturing
+and publishing logs.
 
-We also publish guides to get started with each of ngrok's Event Destinations:
+We also publish guides to get started with each of ngrok's Log Destinations:
 
 - **[AWS CloudWatch Logs](/integrations/amazon-cloudwatch/event-destination/)**
 - **[AWS Firehose](/integrations/amazon-firehose/event-destination/)**
@@ -52,81 +52,81 @@ We also publish guides to get started with each of ngrok's Event Destinations:
 
 ## Log Exporting {#log-exporting}
 
-Log Exporting defines which [Event Sources](/obs/events/reference/) to capture and which
-destinations to publish to. If you're familiar with other event systems, they may
+A Log Export defines which [Log Sources](/obs/events/reference/) to capture and which
+destinations to publish to. If you're familiar with other logging systems, they may
 call this a _listener_, a _hook_, a _probe_ or a _tap_.
 
 When you create a Log Export, you select:
 
-- One or more Event Sources to subscribe to
-- One or more Event Destinations to publish the subscribed events to
+- One or more Log Sources to subscribe to
+- One or more Log Destinations to publish the subscribed logs to
 
 Log Exports can be created on the [ngrok
 Dashboard](https://dashboard.ngrok.com/events/subscriptions) or via the [
 Log Exporting API Resource](/api/resources/event-subscriptions/#create-event-subscription).
 
-## Event Sources {#sources}
+## Log Sources {#sources}
 
-Event Sources choose which events a Log Export captures. Other event
+Log Sources choose which logs a Log Export captures. Other logging
 systems may call this a _selector_.
 
-The [ngrok Event Sources reference](/obs/events/reference) documents the full list
-of Event Sources and their fields.
+The [ngrok Log Sources reference](/obs/events/reference) documents the full list
+of Log Sources and their fields.
 
 ### Versioning and Payload Stability
 
-Event Sources include a version number in their name. Each Event Source ends
+Log Sources include a version number in their name. Each Log Source ends
 with a version string after a dot, e.g. `api_key_created.v0`.
 
-New fields may be added to the payloads of an Event Source without a version
-change. Any other change to the event representation will lead to the
-introduction of a new version of the Event Source.
+New fields may be added to the payloads of a Log Source without a version
+change. Any other change to the log representation will lead to the
+introduction of a new version of the Log Source.
 
-### Audit Events
+### Audit Logs
 
-ngrok emits [Audit Events](/obs/events/reference/#audit-events) when changes are made to
+ngrok emits [Audit Logs](/obs/events/reference/#audit-events) when changes are made to
 your account like create/update/delete of Domains, API Keys, IP Policies, etc.
 
-### Traffic Events
+### Traffic Logs
 
 When traffic transits through your endpoints, ngrok emits [Traffic
-Events](/obs/events/reference/#traffic-events) like processing an HTTP request or TCP
+Logs](/obs/events/reference/#traffic-events) like processing an HTTP request or TCP
 connection.
 
-Traffic Events support the ability to select exactly which fields you'd like to
-include in the captured event. This provides you with control over how much
+Traffic Logs support the ability to select exactly which fields you'd like to
+include in the captured log. This provides you with control over how much
 data is sent to the destinations.
 
-Traffic Events also support the ability to be **filtered**. As part of the Event Source
-definition you can specify a CEL expression which is evaluated against each event
+Traffic Logs also support the ability to be **filtered**. As part of the Log Source
+definition you can specify a CEL expression which is evaluated against each log
 to determine if it should be captured. See the [Filters](#filters) section
 for further detail.
 
 #### Filters {#filters}
 
 You may specify a filter on [Traffic
-Events](/obs/events/reference/#traffic-events) since the velocity of these events can be quite high. Filters are a boolean
+Logs](/obs/events/reference/#traffic-events) since the velocity of these logs can be quite high. Filters are a boolean
 expression defined in [Google's Common Expression Language
 (CEL)](https://github.com/google/cel-spec/blob/master/doc/langdef.md#standard).
-Filters are evaluated on each event as it is published to determine whether it
+Filters are evaluated on each log as it is published to determine whether it
 should be sent to the Log Export's destinations.
 
-Traffic Events are often high cardinality. We support filters because you may
+Traffic Logs are often high cardinality. We support filters because you may
 only interested in logging a subset of traffic (e.g. specific client IPs).
 Filters also enable you to control spend on downstream destinations where you
 incur costs based on the quantity of data processed and stored.
 
-The event object is made available to the CEL filter expression as the `ev`
-variable. `ev` corresponds to the `object` field of the captured event. Use
+The log object is made available to the CEL filter expression as the `ev`
+variable. `ev` corresponds to the `object` field of the captured log. Use
 standard [JSONPath](https://goessner.net/articles/JsonPath/) syntax to access
-the fields of the event you want to use in your filters.
+the fields of the log you want to use in your filters.
 
 Filter expressions have the following limitations:
 
-- Only some fields of an event are available in the `ev` object. The Event
+- Only some fields of an log are available in the `ev` object. The Log
   Source's reference documentation will specify whether a field may be evaluated
   in a filter expression.
-- Event metadata fields like `principal` or `event_timestamp` are not available
+- Log metadata fields like `principal` or `event_timestamp` are not available
 
 #### Filter Examples
 
@@ -150,12 +150,12 @@ ev.conn.client_ip != "2601:0:8200:0:4cd7:fd52:0:7823" &&
 ev.conn.server_name == "ngrok-docs-examples.ngrok.dev"
 ```
 
-## Event Destinations {#destinations}
+## Log Destinations {#destinations}
 
-An Event Destination encapsulates the configuration to publish events to other
-systems. Other event systems may call this a _sink_ or _output_.
+An Log Destination encapsulates the configuration to publish logs to other
+systems. Other logging systems may call this a _sink_ or _output_.
 
-Event Destinations are typically third-party logging aggregators. The following
+Log Destinations are typically third-party logging aggregators. The following
 destinations are currently supported:
 
 - [Amazon CloudWatch](/integrations/amazon-cloudwatch/event-destination/)
@@ -166,7 +166,7 @@ destinations are currently supported:
 - [Datadog Logs](/integrations/datadog/event-destination/)
 
 Each destination requires provider-specific configuration. If you create a
-destination in the ngrok dashboard, you'll be prompted to send a test event to
+destination in the ngrok dashboard, you'll be prompted to send a test log to
 verify the integration.
 
 ::::note
@@ -177,48 +177,48 @@ Console or tools like Terraform or Pulumi.
 ::::
 
 Amazon S3 is not a directly supported destination. Instead, configure Amazon Firehose to
-[deliver events into an S3
+[deliver logs into an S3
 bucket](https://docs.aws.amazon.com/firehose/latest/dev/create-destination.html#create-destination-s3).
 
-## Event Payloads
+## Log Payloads
 
-Events are serialized as JSON when they are published to a destination.
+Logs are serialized as JSON when they are published to a destination.
 
-All events include the following fields:
+All logs include the following fields:
 
-| Name              | Description                                                                 | Example                          |
-| ----------------- | --------------------------------------------------------------------------- | -------------------------------- |
-| `account_id`      | unique identifier for the account, always prefixed with ac\_                | `ac_2OtNvAlhso10Gx6s7eupzX3F98q` |
-| `event_id`        | unique identifier for this event, always prefixed with ev\_                 | `ev_1vPlyBW3OR44bpPphS4HIZyajDD` |
-| `event_type`      | identifies the object, action, and version of the event                     | `ip_policy_created.v0`           |
-| `event_timestamp` | timestamp of when the event fired in RFC 3339 format                        | `2021-07-16T21:44:37Z`           |
-| `object`          | the event object                                                            | See examples below               |
-| `principal`       | an object of the principal who actioned this event, null for traffic events | See example below                |
+| Name              | Description                                                            | Example                          |
+| ----------------- | ---------------------------------------------------------------------- | -------------------------------- |
+| `account_id`      | unique identifier for the account, always prefixed with ac\_           | `ac_2OtNvAlhso10Gx6s7eupzX3F98q` |
+| `event_id`        | unique identifier for this log, always prefixed with ev\_              | `ev_1vPlyBW3OR44bpPphS4HIZyajDD` |
+| `event_type`      | identifies the object, action, and version of the log                  | `ip_policy_created.v0`           |
+| `event_timestamp` | timestamp of when the log fired in RFC 3339 format                     | `2021-07-16T21:44:37Z`           |
+| `object`          | the log object                                                         | See examples below               |
+| `principal`       | an object of the principal who emitted this log, null for traffic logs | See example below                |
 
-The `object` property of the event is distinct for each Event Source and contain a JSON object with additional information about the event.
+The `object` property of the log is distinct for each Log Source and contain a JSON object with additional information about the log.
 
-For [Audit Events](/obs/events/reference#audit-events), the `object`
+For [Audit Logs](/obs/events/reference#audit-events), the `object`
 representation is identical to its API resource at the time of capture.
 
-[Traffic Events](/obs/events/reference#traffic-events) define their own `object`
+[Traffic Logs](/obs/events/reference#traffic-events) define their own `object`
 representation because they have no corresponding API resource definition.
 
 #### Principal Object
 
-The `principal` object in every event describe the user or bot user responsible
-for initiating the event. Principal is defined for all Audit Events
-and it is `null` for Traffic Events (since they do not include a credential).
+The `principal` object in every log describe the user or bot user responsible
+for initiating the log. Principal is defined for all Audit Logs
+and it is `null` for Traffic Logs (since they do not include a credential).
 
 | Name       | Description                                                                                       | Example                                                                                                           |
 | ---------- | ------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
 | id         | unique identifier for the principal, either a user or bot                                         | `usr_2OtNv9qH5Nk4NuNeszZ39gBxZ4H`                                                                                 |
 | subject    | human readable unique identifier for the principal, either a user email or a bot user name        | `foo@example.com`                                                                                                 |
-| source     | where the principal initiated the event, either 'Dashboard' or 'API'                              | `API`                                                                                                             |
+| source     | where the principal initiated the log, either 'Dashboard' or 'API'                                | `API`                                                                                                             |
 | credential | id and uri resource for the credential used for authentication, `null` if `source` is 'Dashboard' | `{"id": "ak_2Oxt94wYsBTLwFUoMZcJRvJTaub","uri": "https://api.ngrok.com/api_keys/ak_2Oxt94wYsBTLwFUoMZcJRvJTaub"}` |
 
 ### Example Payloads
 
-#### [ip_policy_created.v0](/obs/events/reference/#ip-policy) event
+#### [ip_policy_created.v0](/obs/events/reference/#ip-policy) log
 
 ```json
 {
@@ -246,7 +246,7 @@ and it is `null` for Traffic Events (since they do not include a credential).
 }
 ```
 
-#### [http_request_complete.v0](/obs/events/reference/#http-request-complete) event
+#### [http_request_complete.v0](/obs/events/reference/#http-request-complete) log
 
 ```json
 {
@@ -281,7 +281,7 @@ and it is `null` for Traffic Events (since they do not include a credential).
 }
 ```
 
-#### [tcp_connection_closed.v0](/obs/events/reference/#tcp-connection-closed) event
+#### [tcp_connection_closed.v0](/obs/events/reference/#tcp-connection-closed) log
 
 ```json
 {
@@ -305,9 +305,8 @@ and it is `null` for Traffic Events (since they do not include a credential).
 
 ## Pricing
 
-Events are available to all ngrok users with a free tier that
-includes the transmission of up to 10,000 events per month.
+Log Exports are available to free and Pay-as-you-go plans. For more details, see our [ngrok pricing](https://ngrok.com/pricing) page.
 
 The Traffic Inspector is included with all ngrok accounts with a
-retention period of 3 days. An additional 90 days can be purchased as
-an add-on to any production plan.
+retention period starting at 1 day and going up to 3 days. An additional 90 days can be purchased as
+an add-on to the Pay-as-you-go plan. For more details, see our [ngrok pricing](https://ngrok.com/pricing) page.

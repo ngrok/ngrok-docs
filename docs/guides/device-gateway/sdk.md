@@ -263,7 +263,7 @@ You should receive a `200` response similar to the following:
 ```
 
 You'll notice that the `policy` property is `null`. This is because the request didn't include
-any [policies](/traffic-policy/). However, this sample application applies the default polcies defined in `test.json`
+any [policies](/traffic-policy/). However, this sample application applies the default policies defined in `test.json`
 if no policies are included in the request.
 
 ### List tunnels

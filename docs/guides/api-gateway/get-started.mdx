@@ -34,13 +34,12 @@ these broad steps:
 
 ## What you'll need
 
-- **A reserved domain**, which you can get [in the ngrok
+- **A domain**: This can be your free dev domain, or if you're on a paid plan, one that you choose [in the ngrok
   dashboard](https://dashboard.ngrok.com/domains) or with the [ngrok
-  API](/docs/api/resources/reserved-domains/#create-reserved-domain).
-  - You can choose from an ngrok subdomain or bring your own [custom branded
-    domain](/docs/universal-gateway/custom-domains), like
-    `https://api.example.com`.
-  - We'll refer to this domain as `<YOUR_NGROK_DOMAIN>`.
+  API](/docs/api/resources/reserved-domains/#create-reserved-domain). Pay-as-you-go plans allow you to bring your own [custom branded
+  domain](/docs/universal-gateway/custom-domains), like
+  `https://api.example.com`.
+  - We'll refer to this domain as `$YOUR_DOMAIN`.
 - (optional) **An API key**: [Create an ngrok API
   key](https://dashboard.ngrok.com/api-keys/new) if you'd like to use the ngrok
   API to manage your cloud endpoints.
@@ -126,12 +125,12 @@ sync to ward off configuration drift.
     							url: https://abc.internal
     		```
 
-    	Create a cloud endpoint on `{YOUR_NGROK_DOMAIN}`, passing your `policy.yaml` file as an option.
+    	Create a cloud endpoint on `$YOUR_DOMAIN`, passing your `policy.yaml` file as an option.
 
     	```bash
     	ngrok api endpoints create \
     	--bindings public \
-    	--url https://<YOUR_NGROK_DOMAIN>
+    	--url https://$YOUR_DOMAIN
     		--traffic-policy "$(cat policy.yaml)"
     	```
 
@@ -144,7 +143,7 @@ sync to ward off configuration drift.
 At this point, your API gateway is ready for traffic. Send the following request to test it out:
 
 ```bash
-curl -X GET https://<YOUR_NGROK_DOMAIN>
+curl -X GET https://$YOUR_DOMAIN
 ```
 
 If you're using our demo API, you'll see a response like:
@@ -194,9 +193,9 @@ global network. Two important concepts of Traffic Policy to note:
 
 The rules below:
 
-1. Filter for requests arriving on _only_ `https://<YOUR_NGROK_DOMAIN>/abc` and
+1. Filter for requests arriving on _only_ `https://$YOUR_DOMAIN/abc` and
    forward them to your internal agent endpoint at `https://abc.internal`.
-2. Filter for requests arriving on _only_ `https://<YOUR_NGROK_DOMAIN>/xyz` and
+2. Filter for requests arriving on _only_ `https://$YOUR_DOMAIN/xyz` and
    forward them to your internal agent endpoint at `https://xyz.internal`.
 
 You can also [route by other
@@ -268,19 +267,19 @@ You can now `curl` different paths to see your requests routed to the
 appropriate upstream API service.
 
 ```bash
-curl https://<YOUR_NGROK_DOMAIN>/abc
+curl https://$YOUR_DOMAIN/abc
 ```
 
 You should get a response like:
 
 ```
-{"message":"Hello from service abc!","host":"<YOUR_NGROK_DOMAIN>","req_headers":{"host":"<YOUR_NGROK_DOMAIN>","user-agent":"curl/8.7.1","accept":"*/*","accept-encoding":"gzip"},"method":"GET","url":"/abc","time":"2025-03-04T01:10:25.812Z","status":200}
+{"message":"Hello from service abc!","host":"$YOUR_DOMAIN","req_headers":{"host":"$YOUR_DOMAIN","user-agent":"curl/8.7.1","accept":"*/*","accept-encoding":"gzip"},"method":"GET","url":"/abc","time":"2025-03-04T01:10:25.812Z","status":200}
 ```
 
-And when you run `curl https://<YOUR_NGROK_DOMAIN>/xyz`?
+And when you run `curl https://$YOUR_DOMAIN/xyz`?
 
 ```
-{"message":"Hello from service xyz!","host":"<YOUR_NGROK_DOMAIN>","req_headers":{"host":"<YOUR_NGROK_DOMAIN>","user-agent":"curl/8.7.1","accept":"*/*","accept-encoding":"gzip"},"method":"GET","url":"/xyz","time":"2025-03-04T01:10:25.812Z","status":200}
+{"message":"Hello from service xyz!","host":"$YOUR_DOMAIN","req_headers":{"host":"$YOUR_DOMAIN","user-agent":"curl/8.7.1","accept":"*/*","accept-encoding":"gzip"},"method":"GET","url":"/xyz","time":"2025-03-04T01:10:25.812Z","status":200}
 ```
 
 ## 4. Add traffic management policies
@@ -323,7 +322,7 @@ process with Auth0.
 - Log in to your [Auth0 tenant dashboard](https://manage.auth0.com/dashboard).
 - Select **Applications > APIs**, then **+ Create API**.
 - Name your API whatever you'd like.
-- Replace the value of the Identifier field with `<YOUR_NGROK_DOMAIN>`.
+- Replace the value of the Identifier field with `$YOUR_DOMAIN`.
 - Leave the default values for **JSON Web Token (JWT) Profile** and **JSON Web
   Token Signing Algorithm**.
 - Select **Create**.
@@ -352,7 +351,7 @@ on_http_request:
               - value: "https://<YOUR_AUTH0_TENANT_ID>.<YOUR_AUTH0_REGION>.auth0.com/"
           audience:
             allow_list:
-              - value: "https://<YOUR_NGROK_DOMAIN>"
+              - value: "https://$YOUR_DOMAIN"
           http:
             tokens:
               - type: "jwt"
@@ -421,10 +420,10 @@ ngrok http 4000 --url https://abc.internal --traffic-policy-file /path/to/abc-po
 ```
 
 Ready to test your rate limit in action? Run the below command after replacing
-`<YOUR_NGROK_DOMAIN>` and the path, if relevant.
+`$YOUR_DOMAIN` and the path, if relevant.
 
 ```bash
-for i in `seq 1 50`; do curl -X GET -w '%{http_code}' https://<YOUR_NGROK_DOMAIN>/abc ; done
+for i in `seq 1 50`; do curl -X GET -w '%{http_code}' https://$YOUR_DOMAIN/abc ; done
 ```
 
 You'll see a few normal responses until you hit the rate limit, and then you'll

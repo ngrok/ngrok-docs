@@ -4,7 +4,7 @@ title: PostgreSQL
 
 # Using ngrok with PostgreSQL
 
-After installing the database, you can connect to it using a standard ngrok TCP tunnel sending traffic to port `5432`.
+After installing the database, you can connect to it using a standard ngrok TCP endpoint sending traffic to port `5432`.
 
 ```bash
 ngrok tcp 5432
