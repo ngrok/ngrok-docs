@@ -1,0 +1,294 @@
+---
+title: "Microservices Gateway"
+description: "Coordinate ingress and cross-cluster communication for microservices without a full service mesh, using ngrok to handle both north-south and east-west traffic patterns."
+sidebar_label: "Microservices Gateway"
+---
+
+import ReserveDomain from "./snippets/_reserve-domain.mdx";
+import CloudEndpoint from "./snippets/_cloud-endpoint.mdx";
+import TryOut from "./snippets/_try-out.mdx";
+import Back from "./snippets/_back-to-examples.mdx";
+
+A microservices gateway coordinates traffic for distributed services without requiring a full service mesh. It handles north-south traffic (public internet to your services) with API authentication and east-west traffic (service-to-service communication) with mTLS, providing a central place to route, secure, and debug distributed microservices.
+
+With this setup, you can:
+
+- Handle public API traffic with JWT or API key authentication  
+- Enable secure service-to-service communication with mTLS
+- Route requests to different microservices within your cluster
+- Deploy and test services independently without rewriting routing logic
+- Debug distributed request flows from a central gateway
+
+## 1. Install the ngrok Kubernetes Operator
+
+Install the ngrok Kubernetes Operator in your cluster. For detailed installation instructions, see the [Kubernetes CRDs getting started guide](/docs/getting-started/kubernetes/crds).
+
+## 2. Create AgentEndpoints for your microservices
+
+Create `AgentEndpoint` CRDs to expose your microservices. These create internal endpoints that are not publicly accessible but can be routed through your gateway.
+
+**User service:**
+```yaml
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: AgentEndpoint
+metadata:
+  name: user-service
+  namespace: default
+spec:
+  url: https://user-service.internal
+  upstream:
+    url: http://user-service.default.svc.cluster.local:8080
+  description: "User service"
+```
+
+**Order service:**
+```yaml
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: AgentEndpoint
+metadata:
+  name: order-service
+  namespace: default
+spec:
+  url: https://order-service.internal
+  upstream:
+    url: http://order-service.default.svc.cluster.local:8080
+  description: "Order service"
+```
+
+**Notification service:**
+```yaml
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: AgentEndpoint
+metadata:
+  name: notification-service
+  namespace: default
+spec:
+  url: https://notification-service.internal
+  upstream:
+    url: http://notification-service.default.svc.cluster.local:8080
+  description: "Notification service"
+```
+
+Apply these configurations:
+```bash
+kubectl apply -f user-service.yaml
+kubectl apply -f order-service.yaml
+kubectl apply -f notification-service.yaml
+```
+
+## 3. Reserve domains for your gateway
+
+<ReserveDomain />
+
+For microservices, consider reserving multiple domains:
+- Public API gateway: `api.yourcompany.com`  
+- Internal service mesh: `mesh.yourcompany.com`
+
+## 4. Create Cloud Endpoints
+
+<CloudEndpoint />
+
+Create separate Cloud Endpoints for:
+1. **Public API Gateway** - Handles north-south traffic from external clients
+2. **Service Mesh Gateway** - Handles east-west traffic between services
+
+## 5. (Optional) Create secrets for authentication
+
+Store your JWT validation keys and mTLS certificates using [Traffic Policy Secrets](/docs/traffic-policy/secrets).
+
+```bash
+# Create vault for microservices auth
+ngrok api vaults create --name "microservices-auth" --description "Microservices authentication secrets"
+
+# Add JWT validation key
+ngrok api secrets create \
+  --name "jwt-public-key" \
+  --value "-----BEGIN PUBLIC KEY-----\nYour JWT validation public key here\n-----END PUBLIC KEY-----" \
+  --vault-id "$VAULT_ID"
+
+# Add mTLS CA certificate for service-to-service auth
+ngrok api secrets create \
+  --name "service-mesh-ca" \
+  --value "-----BEGIN CERTIFICATE-----\nYour service mesh CA certificate\n-----END CERTIFICATE-----" \
+  --vault-id "$VAULT_ID"
+```
+
+## 6. Apply Traffic Policy for Public API Gateway
+
+Configure the public-facing Cloud Endpoint with JWT authentication and routing to your microservices.
+You may need to change:
+
+- `https://your-jwt-issuer.com`: Replace with your JWT issuer URL
+- `your-api-audience`: Replace with your JWT audience claim
+- `$YOUR_JWT_PUBLIC_KEY_URL`: Replace with your JWKS endpoint URL
+- Service URLs: Replace with your actual internal service endpoints
+
+```yaml
+on_http_request:
+  # JWT validation for public API access
+  - actions:
+      - type: jwt-validation
+        config:
+          issuer:
+            allow_list:
+              - value: "https://your-jwt-issuer.com"
+          audience:
+            allow_list:
+              - value: "your-api-audience"
+          http:
+            tokens:
+              - type: "access_token"
+                method: "header" 
+                name: "Authorization"
+                prefix: "Bearer "
+          jws:
+            allowed_algorithms: ["RS256", "ES256"]
+            keys:
+              sources:
+                additional_jkus: ["$YOUR_JWT_PUBLIC_KEY_URL"]
+
+  # Rate limiting per JWT subject
+  - actions:
+      - type: rate-limit
+        config:
+          name: "API rate limiting per user"
+          algorithm: "sliding_window"
+          capacity: 1000
+          rate: "1h"
+          bucket_key: ["actions.ngrok.jwt_validation.token.claims.sub"]
+
+  # Route to user service
+  - expressions:
+      - "req.url.path.startsWith('/api/users')"
+    actions:
+      - type: forward-internal
+        config:
+          url: https://user-service.internal
+
+  # Route to order service  
+  - expressions:
+      - "req.url.path.startsWith('/api/orders')"
+    actions:
+      - type: forward-internal
+        config:
+          url: https://order-service.internal
+
+  # Route to notification service
+  - expressions:
+      - "req.url.path.startsWith('/api/notifications')"
+    actions:
+      - type: forward-internal
+        config:
+          url: https://notification-service.internal
+
+on_http_response:
+  # Add service tracing headers
+  - actions:
+      - type: add-headers
+        config:
+          headers:
+            x-service-version: "v1.0"
+            x-request-id: "${req.headers['ngrok-trace-id']}"
+            x-upstream-service: "${upstream.url}"
+```
+
+**What's happening here?** This policy validates JWT tokens for public API access, applies per-user rate limiting, and routes requests to appropriate microservices based on URL paths. It adds tracing information for debugging distributed requests across your services.
+
+## 7. Apply Traffic Policy for Service Mesh Gateway
+
+Configure the internal Cloud Endpoint for secure service-to-service communication using mTLS.
+
+```yaml
+on_tcp_connect:
+  # mTLS authentication for service-to-service communication
+  - actions:
+      - type: terminate-tls
+        config:
+          mutual_tls_certificate_authorities:
+            - "${secrets.get('microservices-auth', 'service-mesh-ca')}"
+          mutual_tls_verification_strategy: "require-and-verify"
+
+on_http_request:
+  # Service-to-service communication routing
+  - expressions:
+      - "req.url.path.startsWith('/internal/users')"
+    actions:
+      - type: forward-internal
+        config:
+          url: https://user-service.internal
+
+  - expressions:
+      - "req.url.path.startsWith('/internal/orders')"
+    actions:
+      - type: forward-internal
+        config:
+          url: https://order-service.internal
+
+  - expressions:
+      - "req.url.path.startsWith('/internal/notifications')"
+    actions:
+      - type: forward-internal
+        config:
+          url: https://notification-service.internal
+
+on_http_response:
+  # Add service mesh headers
+  - actions:
+      - type: add-headers
+        config:
+          headers:
+            x-mesh-version: "v1.0"
+            x-calling-service: "${actions.ngrok.terminate_tls.client.subject}"
+            x-target-service: "${upstream.url}"
+```
+
+**What's happening here?** This policy enforces mTLS authentication for all service-to-service communication, routes internal API requests to appropriate microservices, and adds service mesh tracing headers for observability.
+
+## 8. Try out your microservices gateway
+
+<TryOut />
+
+Test the public API gateway:
+```bash
+# Get a JWT token (replace with your auth provider)
+JWT_TOKEN="your_jwt_token_here"
+
+# Test user service
+curl -H "Authorization: Bearer $JWT_TOKEN" \
+     "https://$NGROK_DOMAIN/api/users/123"
+
+# Test order service
+curl -H "Authorization: Bearer $JWT_TOKEN" \
+     "https://$NGROK_DOMAIN/api/orders/456"
+
+# Test notification service
+curl -H "Authorization: Bearer $JWT_TOKEN" \
+     "https://$NGROK_DOMAIN/api/notifications/789"
+```
+
+Test service-to-service communication:
+```bash
+# From within a service pod with mTLS certificates
+curl --cert service.crt --key service.key \
+     "https://$MESH_NGROK_DOMAIN/internal/users/123"
+
+# Order service calling user service
+curl --cert order-service.crt --key order-service.key \
+     "https://$MESH_NGROK_DOMAIN/internal/users/profile/456"
+
+# Order service calling notification service
+curl --cert order-service.crt --key order-service.key \
+     "https://$MESH_NGROK_DOMAIN/internal/notifications/send" \
+     -d '{"user_id": "456", "message": "Order confirmed"}'
+```
+
+## What's next?
+
+- Read about [other gateway shapes](https://ngrok.com/blog-post/api-gateway-shapes-patterns-2025) you can build with ngrok
+- Learn about [AgentEndpoint CRDs](/docs/k8s/crds/agentendpoint) for more advanced Kubernetes configurations
+- Explore [JWT validation](/docs/traffic-policy/actions/jwt-validation) with different token sources and validation rules
+- Set up [mTLS certificate generation](/docs/traffic-policy/actions/terminate-tls/#enabling-mutual-tls) for your service mesh
+- Use [Traffic Inspector](https://dashboard.ngrok.com/traffic-inspector) to debug service-to-service request flows
+- Configure [endpoint pooling](/docs/k8s/guides/pooling) for high availability across multiple service replicas
+
+<Back />
