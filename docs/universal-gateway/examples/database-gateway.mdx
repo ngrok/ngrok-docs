@@ -1,24 +1,21 @@
 ---
-title: "Database gateway"
+title: "Database Gateway"
 description: "Securely expose databases to external clients with strict authentication, rate limiting, and query transformation to prevent runaway costs and data leaks."
-sidebar_label: "Database gateway"
+sidebar_label: "Database Gateway"
 ---
 
 import ReserveDomain from "./snippets/_reserve-domain.mdx";
 import CloudEndpoint from "./snippets/_cloud-endpoint.mdx";
 import TryOut from "./snippets/_try-out.mdx";
 import Back from "./snippets/_back-to-examples.mdx";
-import TabItem from "@theme/TabItem";
-import Tabs from "@theme/Tabs";
 
 A database gateway provides secure access to databases exposed to external clients. It enforces authentication, rate limiting, and logging before requests reach your database, while optionally transforming queries to prevent costly operations or data exposure.
 
 With this setup, you can:
 
-- Enforce strict authentication (API keys, mTLS) before any database access
+- Enforce strict mTLS certificate authentication before any database access
 - Rate limit requests per client to prevent abuse and runaway costs
-- Log all database access attempts with client attribution for compliance and debugging
-- Transform or block dangerous queries to protect sensitive data
+- Block dangerous queries to protect sensitive data
 - Support secure database replication across clouds without exposing credentials
 
 ## 1. Create an endpoint for your database service
@@ -44,106 +41,27 @@ For databases that don't natively support HTTP, consider using a database proxy 
 
 ## 4. (Optional) Create a vault and secrets
 
-For production environments, store your authentication secrets securely using [Traffic Policy Secrets](/docs/traffic-policy/secrets). This step is optional—you can also use plaintext credentials directly in your policy.
+For production environments, store your CA certificate securely using [Traffic Policy Secrets](/docs/traffic-policy/secrets). This step is optional—you can also include the certificate directly in your policy.
 
-Create a vault to store your authentication secrets:
+Create a vault to store your CA certificate:
 
 ```bash
-ngrok api vaults create --name "database-auth" --description "Database gateway authentication secrets"
+ngrok api vaults create --name "database-auth" --description "Database gateway CA certificate"
 ```
 
-Add your credentials to the vault, replacing the names and values, plus changing `$VAULT_ID` to match the vault ID from the response:
+Add your CA certificate to the vault using the vault ID from the response:
 
 ```bash
-# Add API keys for different clients (username:password format)
-ngrok api secrets create \
-  --name "customer-123-key" \
-  --value "sk_live_abc123" \
-  --vault-id "$VAULT_ID"
-
-ngrok api secrets create \
-  --name "partner-456-key" \
-  --value "sk_live_def456" \
-  --vault-id "$VAULT_ID"
-
-# Add CA certificate for mTLS (if using certificate authentication)
+# Add CA certificate for mTLS authentication
 ngrok api secrets create \
   --name "client-ca-certificate" \
   --value "-----BEGIN CERTIFICATE-----\nYour CA certificate content here\n-----END CERTIFICATE-----" \
-  --vault-id "$VAULT_ID"
+  --vault-id "vault_2yNPzuk6GjHrx3mlOCkJK42RsdR"
 ```
 
 ## 5. Apply Traffic Policy to your Cloud Endpoint
 
-While still viewing your new cloud endpoint in the dashboard, copy and paste one of the policies below into the Traffic Policy editor.
-
-<Tabs>
-<TabItem value="api-key" label="API key authentication" default>
-
-```yaml
-on_http_request:
-  # Authenticate using API keys (username:password format)
-  - actions:
-      - type: basic-auth
-        config:
-          credentials:
-            - "customer-123:${secrets.get('database-auth', 'customer-123-key')}"
-            - "customer-456:${secrets.get('database-auth', 'customer-456-key')}"
-
-  # Different rate limits per client tier
-  - expressions:
-      # Premium clients get higher limits
-      - "actions.ngrok.basic_auth.credentials.username == 'customer-123'"
-    actions:
-      - type: rate-limit
-        config:
-          name: "Premium client rate limit"
-          algorithm: "sliding_window"
-          capacity: 1000
-          rate: 1h
-          bucket_key:
-            - "actions.ngrok.basic_auth.credentials.username"
-
-  - expressions:
-      # Standard clients get lower limits
-      - "ngrok.auth.basic_auth.username == 'customer-456'"
-    actions:
-      - type: rate-limit
-        config:
-          name: "Standard client rate limit"
-          algorithm: "sliding_window"
-          capacity: 100
-          rate: "1h"
-          bucket_key:
-            - "actions.ngrok.basic_auth.credentials.username"
-
-  # Block dangerous SQL operations (example for HTTP-based SQL interfaces)
-  - expressions:
-      - "req.url.query.contains('DROP') || req.url.query.contains('DELETE') || req.url.query.contains('TRUNCATE')"
-    actions:
-      - type: custom-response
-        config:
-          status_code: 403
-          headers:
-            content-type: "application/json"
-          body: |
-            {
-              "error": "Forbidden operation detected",
-              "message": "DROP, DELETE, and TRUNCATE operations are not allowed through this gateway",
-              "timestamp": "${timestamp(time.now)}"
-            }
-
-  # Forward to database service
-  - actions:
-      - type: forward-internal
-        config:
-          url: https://database-service.internal
-```
-
-**What's happening here?** This policy uses API key authentication in username:password format with client-specific rate limiting tiers. Premium clients get higher request limits, dangerous SQL operations are blocked, and authenticated requests are forwarded to your database service.
-
-</TabItem>
-<TabItem value="mtls" label="mTLS certificate authentication">
+While still viewing your new cloud endpoint in the dashboard, copy and paste the policy below into the Traffic Policy editor.
 
 ```yaml
 on_tcp_connect:
@@ -153,6 +71,7 @@ on_tcp_connect:
         config:
           mutual_tls_certificate_authorities:
             - "${secrets.get('database-auth', 'client-ca-certificate')}"
+          mutual_tls_verification_strategy: "require-and-verify"
 
 on_http_request:
   # Rate limit per client certificate subject
@@ -162,9 +81,8 @@ on_http_request:
           name: "Database access rate limiting per certificate"
           algorithm: "sliding_window"
           capacity: 500
-          rate: 1h
-          bucket_key:
-            - "actions.ngrok.terminate_tls.client.subject"
+          rate: "1h"
+          bucket_key: ["actions.ngrok.terminate_tls.client.subject"]
 
   # Block dangerous SQL operations
   - expressions:
@@ -208,45 +126,28 @@ openssl x509 -req -in client.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out c
 Add the contents of `ca.crt` to your vault as `client-ca-certificate`.
 :::
 
-</TabItem>
-</Tabs>
-
 ## 6. Try out your endpoint
 
 <TryOut />
 
-Test the authentication and rate limiting:
-
-**For API key authentication:**
-
-```bash
-# Base64 encode your credentials first (customer-123:sk_live_abc123)
-echo -n "customer-123:sk_live_abc123" | base64
-# Returns: Y3VzdG9tZXItMTIzOnNrX2xpdmVfYWJjMTIz
-
-# Make requests with the Authorization header
-curl -H "Authorization: Basic Y3VzdG9tZXItMTIzOnNrX2xpdmVfYWJjMTIz" \
-     "https://$NGROK_DOMAIN/api/users?limit=10"
-
-# This should be rate limited after exceeding the configured threshold
-for i in {1..150}; do
-  curl -H "Authorization: Basic Y3VzdG9tZXItMTIzOnNrX2xpdmVfYWJjMTIz" \
-       "https://$NGROK_DOMAIN/api/users?limit=1"
-done
-```
-
-**For mTLS authentication:**
+Test the mTLS authentication and rate limiting:
 
 ```bash
 # Use client certificates (after generating them with the commands above)
 curl --cert client.crt --key client.key \
      "https://$NGROK_DOMAIN/api/users?limit=10"
+
+# This should be rate limited after exceeding the configured threshold
+for i in {1..600}; do
+  curl --cert client.crt --key client.key \
+       "https://$NGROK_DOMAIN/api/users?limit=1"
+done
 ```
 
 ## What's next?
 
-- Learn more about [basic authentication](/docs/traffic-policy/actions/basic-auth) including credential management and security best practices
-- Explore [mTLS certificate authentication](/docs/traffic-policy/actions/terminate-tls) for high-security environments
+- Learn more about [mTLS certificate authentication](/docs/traffic-policy/actions/terminate-tls) for high-security environments
+- For token-based authentication, explore [JWT validation](/docs/traffic-policy/actions/jwt-validation) as a scalable alternative to basic authentication
 - Set up [comprehensive logging](/docs/traffic-policy/actions/log) to send database access events to your SIEM or monitoring platform
 - Use [URL rewriting](/docs/traffic-policy/actions/url-rewrite) to transform database queries or add security constraints
 - View database access patterns in [Traffic Inspector](https://dashboard.ngrok.com/traffic-inspector) to identify potential security issues
