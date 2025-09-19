@@ -148,7 +148,7 @@ ssh -p NGROK_PORT user@NGROK_TCP_ADDRESS
 
 Now that your device is integrated to ngrok, you can ​​execute tasks at the ngrok dashboard to operationalize your fleet:
 
-### Logging Traffic Events from ngrok
+### Logging Traffic from ngrok
 
 Each action that happens in ngrok is published as an event, and [Log Exporting](/obs/) allows you to subscribe to the events that are relevant to you and write them to one or more destinations.
 

@@ -19,7 +19,7 @@ This guide explains how to monitor your API gateway and the traffic passing thro
 
 ## Options for monitoring your API gateway and services
 
-You can monitor API services in two ways in ngrok: with the [Traffic Inspector](/docs/obs/traffic-inspection/) and with [Events](/docs/obs/events).
+You can monitor API services in two ways in ngrok: with the [Traffic Inspector](/docs/obs/traffic-inspection/) and with [Logs](/docs/obs/events).
 
 <Tabs groupId="monitoring" queryString="type">
 	<TabItem value="traffic-inspector" label="Traffic Inspector">
@@ -30,14 +30,14 @@ The Traffic Inspector is useful for viewing error details and for replaying requ
 ngrok keeps this request data for three days (or for 90 days as a paid extra).
 
 </TabItem>
-<TabItem value="events" label="Events">
+<TabItem value="logs" label="Logs">
 
-An event is the data that ngrok aggregates about a request, which you can then export to a dedicated monitoring platform.
-Events offer an automated means of monitoring your API. Events are also the only way for your team to get automatic error alerts (notifications) instead of manually checking for errors on a dashboard.
+A traffic log is the data that ngrok aggregates about a request, which you can then export to a dedicated monitoring platform.
+Traffic logs offer an automated means of monitoring your API. They are also the only way for your team to get automatic error alerts (notifications) instead of manually checking for errors on a dashboard.
 
-At the time of writing, ngrok allows you to export events to AWS, Azure, and Datadog.
+At the time of writing, ngrok allows you to export logs to AWS, Azure, and Datadog.
 While this guide focuses on exporting to Datadog, we also have quickstarts for [AWS CloudWatch](/docs/integrations/amazon-cloudwatch/event-destination/), [AWS Firehose](/docs/integrations/amazon-firehose/event-destination/), [AWS Kinesis](/docs/integrations/amazon-kinesis/event-destination/), and [Azure Logs](/docs/integrations/azure-logs-ingestion/event-destination/).
-Every accounts 10,000 free events per month, with more available for additional cost.
+Check out the [pricing page](https://ngrok.com/pricing) for information about pricing and availability of log exporting.
 
 </TabItem>
 
@@ -116,26 +116,26 @@ In this section, you'll learn how to export ngrok events to the Datadog monitori
 There are two [types of events](/docs/obs/events/reference): standard traffic events (requests to your API) and audit events (changes to secret keys and URLs).
 For this simple example, you'll monitor a traffic event.
 
-- In the ngrok dashboard, browse to the [**Events Stream**](https://dashboard.ngrok.com/event-subscriptions) and add a new subscription.
+- In the ngrok dashboard, browse to [**Log Exporting**](https://dashboard.ngrok.com/log-exporting) and add a new Log Export.
 
   ![Add event subscription](img/monitor-ngrok/makeSubscription.png)
 
-- In the **New Event Subscription** sidebar, enter `traffic` as the **Description** and then **Add** a new source (event type).
+- In the **New Log Export** sidebar, enter `traffic` as the **Description** and then **Add** a new log source.
   Choose `http_request_complete`.
 
-  ![Add source](img/monitor-ngrok/addEventType.png)
+  ![Add log source](img/monitor-ngrok/addEventType.png)
 
-- Add Datadog as a destination, add the Datadog site and API key you noted earlier, and send a test event.
+- Add Datadog as a destination, add the Datadog site and API key you noted earlier, and send a test log.
 
 - Open the Datadog site and browse to the **Log Explorer** page from the navigation panel.
   Enable logs.
-  You should see that the event from ngrok has appeared.
+  You should see that the log from ngrok has appeared.
 
   ![Datadog logs](img/monitor-ngrok/datadogLog.png)
 
 - In ngrok, click **Done** and **Save**.
 
-- Hit your API services a few times so that ngrok has sent new events over to Datadog.
+- Hit your API services a few times so that ngrok has sent new logs over to Datadog.
 
 ### Create a dashboard
 
@@ -226,9 +226,9 @@ There are three categories to consider: security, errors, and performance.
 You need to monitor the security of your infrastructure and any attempts to hack
 users' accounts.
 
-As mentioned earlier, ngrok emits [audit events](/docs/obs/events/reference/#audit-events) for any security changes.
+As mentioned earlier, ngrok emits [audit logs](/docs/obs/events/reference/#audit-events) for any security changes.
 You should set up alerts for any changes to API keys, domains, and SSH certificates—anything that indicates attackers might gain access to your infrastructure.
-Events like stopping and starting agents and tunnels are likely to happen frequently, so they don't need alerts (especially when running Kubernetes and multiple containers).
+Events like stopping and starting agents and endpoints are likely to happen frequently, so they don't need alerts (especially when running Kubernetes and multiple containers).
 You still might want to add widgets to monitor these events on a dashboard, however, because surges in activity might indicate problems with your system
 Additionally, you can add monitors that trigger alerts when activity passes a certain threshold.
 
