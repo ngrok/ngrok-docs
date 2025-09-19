@@ -14,7 +14,7 @@ To share a local Flask development server with someone else, simply run: `ngrok 
 
 You may also need to update your [`SERVER_NAME`](https://flask.palletsprojects.com/en/3.0.x/config/#SERVER_NAME) and [`APPLICATION_ROOT`](https://flask.palletsprojects.com/en/3.0.x/config/#APPLICATION_ROOT) in your Flask app configuration to the values provided by ngrok. See the [Flask docs](https://flask.palletsprojects.com/en/3.0.x/config/#builtin-configuration-values) for more information.
 
-Note: For users on the latest MacOS, there is an issue where the default port 5000 (and 7000) is used by Apple AirPlay Receiver. You can use a different port for your Flask app or disable the Apple AirPlay reciever by disabling it in `System Settings > General > AirDrop & Handoff > AirPlay Receiver`.
+Note: For users on the latest MacOS, there is an issue where the default port 5000 (and 7000) is used by Apple AirPlay Receiver. You can use a different port for your Flask app or disable the Apple AirPlay receiver by disabling it in `System Settings > General > AirDrop & Handoff > AirPlay Receiver`.
 
 ### Python SDK
 
