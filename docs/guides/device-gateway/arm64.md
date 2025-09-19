@@ -114,7 +114,7 @@ If you already established a TCP tunnel for SSH access, you'll either need to cr
 
 Now that you have SSH tunneling and service ingress handled via ngrok, you may also want to protect those services from unknown and untrusted users. You'll use the [Restrict IPs](/traffic-policy/actions/restrict-ips) traffic policy action.
 
-1.  Create a new file on your ARM64 device, where you create ngrok tunnels, named `policy.yml`.
+1.  Create a new file on your ARM64 device, where you create ngrok endpoints, named `policy.yml`.
 
 1.  Open the file for editing and paste in the following contents, replacing `1.1.1.1` with the public IP of the workstation you use to access your ARM64 device:
 
@@ -156,7 +156,7 @@ Now that you have SSH tunneling and service ingress handled via ngrok, you may a
 
 ## What's next?
 
-Now that you can create ngrok tunnels on your Linux ARM64 device and understand the fundamentals of managing traffic with policies, you can extend your usage to make your device—or even a fleet of them—ready for production usage.
+Now that you can create ngrok endpoints on your Linux ARM64 device and understand the fundamentals of managing traffic with policies, you can extend your usage to make your device—or even a fleet of them—ready for production usage.
 
 - Bring a [custom domain](/universal-gateway/custom-domains/) to ngrok to create static endpoints.
 - Learn how to write an [agent configuration file](/agent/config/v3/) to define and create multiple tunnels from a single command line.
