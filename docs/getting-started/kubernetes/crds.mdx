@@ -105,7 +105,7 @@ spec:
   </TabItem>
 </Tabs>
 
-Apply the manifest with `kubectl apply -f ngrok-crds.yaml`.
+Apply the manifest with `kubectl -n ngrok-operator apply -f ngrok-crds.yaml`.
 
 The ngrok Kubernetes Operator watches your cluster for `AgentEndpoint` and `CloudEndpoint` resources you create, and provisions a new agent endpoint to forward traffic into your Service.
 
@@ -123,7 +123,7 @@ First, copy your public IP address via our [`ip4v.ngrok.com` mini-app](https://i
 
 Add a `trafficPolicy.inline` field followed by the Traffic Policy rule itself.
 
-````yaml title="ngrok-crds.yaml"
+```yaml title="ngrok-crds.yaml"
 apiVersion: ngrok.k8s.ngrok.com/v1alpha1
 kind: AgentEndpoint
 metadata:
@@ -141,7 +141,7 @@ spec:
                 enforce: true
                 allow:
                   - $YOUR_PUBLIC_IP
-  ```
+```
 
   </TabItem>
   <TabItem value="cloud-agent-endpoint" label="CloudEndpoint + AgentEndpoint">
@@ -155,19 +155,19 @@ metadata:
   name: tinyllama-cloud-endpoint
 spec:
   url: $YOUR_DOMAIN
-trafficPolicy:
-  policy:
-    on_http_request:
-      - actions:
-          - type: restrict-ips
+  trafficPolicy:
+    policy:
+      on_http_request:
+        - actions:
+            - type: restrict-ips
+              config:
+                enforce: true
+                allow:
+                  - $YOUR_PUBLIC_IP
+        - actions:
+          - type: forward-internal
             config:
-              enforce: true
-              allow:
-                - $YOUR_PUBLIC_IP
-      - actions:
-        - type: forward-internal
-          config:
-            url: http://tinyllama.internal
+              url: http://tinyllama.internal
 ---
 apiVersion: ngrok.k8s.ngrok.com/v1alpha1
 kind: AgentEndpoint
@@ -177,12 +177,12 @@ spec:
   url: http://tinyllama.internal
   upstream:
     url: http://tinyllama.default:80
-````
+```
 
   </TabItem>
 </Tabs>
 
-Re-apply the manifest with `kubectl apply -f gwapi.yaml`.
+Re-apply the manifest with `kubectl apply -f ngrok-crds.yaml`.
 
 ## 5. Start sending requests
 
@@ -204,3 +204,7 @@ For more ways to filter and manage traffic:
 - All our [available actions](/docs/traffic-policy/actions/)
 
 Finally, explore the [Traffic Inspector in your dashboard](https://dashboard.ngrok.com/traffic-inspector) for real-time observability of traffic flowing through your endpoint.
+
+```
+
+```
