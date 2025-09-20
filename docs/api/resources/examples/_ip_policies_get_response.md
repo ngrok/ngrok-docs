@@ -4,10 +4,10 @@
 
 ```json
 {
-  "created_at": "2025-09-04T10:11:14Z",
+  "created_at": "2025-09-20T10:07:31Z",
   "description": "API Outbound Gateway",
-  "id": "ipp_32ELEgHfuPaCCgAL6TAb7B2Fq3e",
+  "id": "ipp_32xWl6F18vkilZXcUdh4AgpBAdS",
   "metadata": "metadata={\"pod-id\": \"b3d9c464-4f48-4783-a741-d7d7d5db310f\"}",
-  "uri": "https://api.ngrok.com/ip_policies/ipp_32ELEgHfuPaCCgAL6TAb7B2Fq3e"
+  "uri": "https://api.ngrok.com/ip_policies/ipp_32xWl6F18vkilZXcUdh4AgpBAdS"
 }
 ```
