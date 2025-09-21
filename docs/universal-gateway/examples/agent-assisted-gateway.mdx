@@ -29,20 +29,13 @@ ngrok http $BACKEND_PORT --url https://api-dev.internal
 
 # Frontend development server (e.g., React, Vue, Next.js)
 ngrok http $FRONTEND_PORT --url https://app-dev.internal
-
-# Database admin interface (optional)
-ngrok http $DB_ADMIN_PORT --url https://db-admin-dev.internal
 ```
-
-:::tip
-Internal endpoints are private by default - they're only accessible through your gateway's traffic policy. This keeps your development services secure while allowing controlled public access.
-:::
 
 ## 2. Reserve a domain
 
 <ReserveDomain />
 
-For development, consider using a subdomain like `dev.yourcompany.com` or `staging.yourproject.com` to clearly distinguish from production.
+Consider using a subdomain like `dev.yourcompany.com` or `staging.yourproject.com` to clearly distinguish from production.
 
 ## 3. Create a Cloud Endpoint
 
@@ -53,7 +46,8 @@ For development, consider using a subdomain like `dev.yourcompany.com` or `stagi
 While still viewing your new cloud endpoint in the dashboard, copy and paste the policy below into the Traffic Policy editor.
 You may need to change:
 
-- `$YOUR_GITHUB_OAUTH_CLIENT_ID`: Replace with your GitHub OAuth app client ID for development
+- `$GITHUB_OAUTH_CLIENT_ID`: Replace with your GitHub OAuth app client ID for development
+- `$GIBHUB_OAUTH_CLIENT_SECRET`: Replace with your GitHub OAuth app secret for development
 - `$YOUR_DEV_API_KEY`: Replace with an API key for development access
 - Internal service URLs: Replace with your actual internal endpoint URLs
 
@@ -65,7 +59,6 @@ on_http_request:
         config:
           headers:
             x-environment: "development"
-            x-request-id: "${req.headers['ngrok-trace-id']}"
             x-client-ip: "${conn.client_ip}"
             x-client-location: "${conn.geo.city}, ${conn.geo.country}"
             x-forwarded-host: "${req.host}"
@@ -76,11 +69,11 @@ on_http_request:
     actions:
       - type: oauth
         config:
-          provider:
-            github_oauth_app:
-              client_id: "$YOUR_GITHUB_OAUTH_CLIENT_ID"
-              client_secret: "dev_oauth_client_secret_here"
-              scopes: ["user:email"]
+          provider: google
+					client_id: "$GITHUB_OAUTH_CLIENT_ID"
+					client_secret: "$GITHUB_OAUTH_CLIENT_SECRET"
+					scopes:
+						- https://www.googleapis.com/auth/userinfo.email
 
   # API key authentication for external tools and AI assistants
   - expressions:
@@ -91,7 +84,6 @@ on_http_request:
         config:
           credentials:
             - "dev-user:$YOUR_DEV_API_KEY"
-          realm: "Development API"
 
   # Allow webhook testing without auth (for development only)
   - expressions:
@@ -131,16 +123,7 @@ on_http_request:
             x-auth-provider: "github"
       - type: forward-internal
         config:
-          url: https://api-dev.internal
-
-  # Route database admin (restrict to local IPs for safety)
-  - expressions:
-      - "req.url.path.startsWith('/db-admin')"
-      - "conn.client_ip.startsWith('192.168.') || conn.client_ip.startsWith('10.') || conn.client_ip == '127.0.0.1'"
-    actions:
-      - type: forward-internal
-        config:
-          url: https://db-admin-dev.internal
+          url: https://app-dev.internal
 
   # Default route everything else to frontend
   - actions:
@@ -155,8 +138,7 @@ on_http_response:
         config:
           headers:
             x-served-by: "ngrok-dev-gateway"
-            x-upstream-service: "${upstream.url}"
-            x-response-time: "${duration(time.start, time.now) / 1000000}ms"
+            x-processing-timestamp: "${time.now}"
 
   # Enable CORS for development (be more restrictive in production)
   - actions:
@@ -166,24 +148,12 @@ on_http_response:
             access-control-allow-origin: "*"
             access-control-allow-methods: "GET, POST, PUT, DELETE, OPTIONS, PATCH"
             access-control-allow-headers: "Content-Type, Authorization, X-API-Key"
-            access-control-expose-headers: "X-Request-ID, X-Response-Time"
-
-  # Log all requests for development debugging
-  - actions:
-      - type: log
-        config:
-          metadata:
-            method: "${req.method}"
-            path: "${req.url.path}"
-            status: "${res.status_code}"
-            user_agent: "${req.user_agent}"
-            client_ip: "${conn.client_ip}"
-            upstream: "${upstream.url}"
-            response_time_ms: "${duration(time.start, time.now) / 1000000}"
-            authenticated_user: "${actions.ngrok.oauth.identity.email}"
+            access-control-expose-headers: "X-Processing-Timestamp"
 ```
 
-**What's happening here?** This development gateway adds debugging headers to every request, handles OAuth authentication for admin routes, provides API key auth for external tools, allows webhook testing without authentication, routes requests to appropriate local services, adds CORS headers for frontend development, and logs everything for debugging. The policy creates a production-like environment locally while maintaining development-friendly features.
+**What's happening here?** On every HTTP request, the policy adds environment identification headers for tracing, enforces OAuth authentication for admin/dashboard routes, requires API key authentication for API routes accessed by external tools and AI assistants, and allows webhook testing without authentication for easy debugging.
+
+The gateway routes traffic based on URL paths—API requests go to your backend service, admin routes go to the backend with authentication headers, and everything else goes to your frontend. On responses, it adds development-specific headers for debugging, enables permissive CORS for local development, and timestamps responses for request tracking.
 
 ## 5. Try out your development gateway
 
@@ -195,29 +165,15 @@ Test different aspects of your development setup:
 # Test your frontend application
 curl "https://$NGROK_DOMAIN/"
 
-# Test API with authentication
-curl -u "dev-user:$YOUR_DEV_API_KEY" \
+# Test API with authentication (basic auth with base64 encoded API key)
+# First, base64 encode the dev-user:$YOUR_DEV_API_KEY pair
+# Example: dev-user:my-api-key becomes ZGV2LXVzZXI6bXktYXBpLWtleQ==
+curl -H "Authorization: Basic ZGV2LXVzZXI6bXktYXBpLWtleQ==" \
      "https://$NGROK_DOMAIN/api/users"
-
-# Test webhook endpoint (simulate external service)
-curl -X POST \
-     -H "Content-Type: application/json" \
-     -H "X-Signature: test-signature" \
-     -d '{"event": "test", "data": {"user_id": 123}}' \
-     "https://$NGROK_DOMAIN/webhooks/stripe"
 
 # Test OAuth protected admin route (will redirect to GitHub)
 curl "https://$NGROK_DOMAIN/admin/dashboard"
-
-# Test from an AI coding assistant (simulated)
-curl -u "dev-user:$YOUR_DEV_API_KEY" \
-     -H "User-Agent: Lovable-AI-Assistant/1.0" \
-     "https://$NGROK_DOMAIN/api/schema"
 ```
-
-## Common development scenarios
-
-### AI-assisted frontend development
 
 When using tools like Lovable, Cursor, or other AI coding assistants:
 
@@ -225,32 +181,12 @@ When using tools like Lovable, Cursor, or other AI coding assistants:
 2. Test frontend builds against your real backend: `https://$NGROK_DOMAIN/api/*`
 3. Receive webhooks for real-time collaboration: `https://$NGROK_DOMAIN/webhooks/ai-assist`
 
-### Webhook development and testing
-
-Test webhooks from real services during development:
-
-```bash
-# Configure webhook URLs in external services:
-# Stripe: https://$NGROK_DOMAIN/webhooks/stripe
-# GitHub: https://$NGROK_DOMAIN/webhooks/github
-# Slack: https://$NGROK_DOMAIN/webhooks/slack
-```
-
-### OAuth flow testing
-
-Test complete OAuth flows locally:
-
-1. Set your OAuth app's redirect URL to: `https://$NGROK_DOMAIN/auth/callback`
-2. Test login flow: `https://$NGROK_DOMAIN/admin/login`
-3. Verify protected routes work with real authentication
-
 ## What's next?
 
 - Read about [other gateway shapes](https://ngrok.com/blog-post/api-gateway-shapes-patterns-2025) you can build with ngrok
 - Learn about [securing developer environments](/docs/universal-gateway/examples/secure-developer-environments) for team-wide development workflows
 - Explore [webhook integrations](/docs/integrations) for testing with real services during development
 - Set up [Traffic Inspector](https://dashboard.ngrok.com/traffic-inspector) to debug request flows and authentication issues
-- Use [header manipulation](/docs/traffic-policy/examples/add-and-remove-headers) for more sophisticated debugging and testing
 - Configure [custom domains](/docs/universal-gateway/custom-domains) for more professional development URLs
 
 <Back />

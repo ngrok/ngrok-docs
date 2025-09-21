@@ -25,15 +25,17 @@ With this setup, you can:
 Start multiple [Agent Endpoints](/docs/universal-gateway/agent-endpoints/) with the same URL to create an endpoint pool for automatic load balancing. Replace `$PORT` with your application ports.
 You can also use one of our [SDKs](/docs/agent-sdks) or the [Kubernetes Operator](/docs/k8s).
 
+If you only have one instance now, you can add additional replicas later for redundancy through load balancing.
+
 ```bash
 # Instance 1
-ngrok http $PORT --url https://app-pool.internal --pooling-enabled
+ngrok http $PORT --url https://service.internal --pooling-enabled
 
-# Instance 2
-ngrok http $PORT --url https://app-pool.internal --pooling-enabled
+# Instance 2 (optional)
+ngrok http $PORT --url https://service.internal --pooling-enabled
 
 # Instance 3 (optional)
-ngrok http $PORT --url https://app-pool.internal --pooling-enabled
+ngrok http $PORT --url https://service.internal --pooling-enabled
 ```
 
 :::tip
@@ -92,7 +94,7 @@ on_http_request:
   - actions:
       - type: owasp-crs-request
         config:
-          enforce: true
+          on_error: halt
 
   # Rate limiting for DDoS protection
   - actions:
@@ -114,7 +116,7 @@ on_http_request:
 
   # Block specific AI crawlers
   - expressions:
-      - "req.user_agent.name in ('ChatGPT-User', 'GPTBot', 'OAI-SearchBot', 'Claude-Web')"
+      - "('com.anthropic' in conn.client_ip.categories) || ('com.openai' in conn.client_ip.categories) || ('com.perplexity' in conn.client_ip.categories)"
     actions:
       - type: deny
         config:
@@ -126,11 +128,11 @@ on_http_request:
     actions:
       - type: oauth
         config:
-          provider:
-            github_oauth_app:
-              client_id: "$GITHUB_CLIENT_ID"
-              client_secret: "${secrets.get('paas-gateway', 'oauth-client-secret')}"
-              scopes: ["user:email"]
+          provider: google
+					client_id: "$GITHUB_CLIENT_ID"
+					client_secret: "${secrets.get('paas-gateway', 'oauth-client-secret')}"
+					scopes:
+					  - https://www.googleapis.com/auth/userinfo.email
 
   # Restrict admin access to specific email
   - expressions:
@@ -158,14 +160,14 @@ on_http_request:
   - actions:
       - type: forward-internal
         config:
-          url: https://app-pool.internal
+          url: https://service.internal
 
 on_http_response:
   # OWASP protection for responses
   - actions:
       - type: owasp-crs-response
         config:
-          enforce: true
+          on_error: halt
 
   # Add security headers (based on OWASP recommendations)
   - actions:
@@ -182,8 +184,6 @@ on_http_response:
             strict-transport-security: "max-age=31536000; includeSubDomains"
             # Cross-origin isolation (modern browsers)
             cross-origin-opener-policy: "same-origin"
-            # Example request tracking for debugging
-            x-request-id: "${req.headers['ngrok-trace-id']}"
 ```
 
 **What's happening here?** This policy creates a production-ready PaaS alternative. On every HTTP request, the policy enforces OWASP WAF protection, DDoS mitigation via rate limiting, bot blocking for unwanted crawlers and Tor traffic, and authentication for admin/API routes, before forwarding your request to the pool of upstream services.
@@ -194,30 +194,24 @@ On every HTTP response, the policy enforces WAF rules on the headers and body, t
 
 <TryOut />
 
-Test the various features:
+Test a few of the features you added with Traffic Policy:
 
 ```bash
-# Test load balancing (should hit different instances automatically)
-for i in {1..10}; do
-  curl -w "Response time: %{time_total}s\n" "https://$NGROK_DOMAIN/"
-done
+# Test WAF with a potentially malicious request
+curl https://$NGROK_DOMAIN/files?name=../../../../etc/passwd"
 
 # Test admin authentication (will redirect to OAuth)
 curl "https://$NGROK_DOMAIN/admin/dashboard"
 
-# Test API authentication
-curl -u "$YOUR_ADMIN_USERNAME:your_admin_api_key_here" \
+# Test API authentication (basic auth with base64 encoded credentials)
+# First, base64 encode the $YOUR_ADMIN_USERNAME:your_admin_api_key_here pair
+# Example: admin:secret-api-key becomes YWRtaW46c2VjcmV0LWFwaS1rZXk=
+curl -H "Authorization: Basic YWRtaW46c2VjcmV0LWFwaS1rZXk=" \
      "https://$NGROK_DOMAIN/api/stats"
 
 # Test bot blocking (should get 404)
 curl -H "User-Agent: GPTBot" \
      "https://$NGROK_DOMAIN/"
-
-# Test rate limiting (should get 429 after hitting limits)
-for i in {1..1200}; do
-  curl -w "%{http_code}\n" -o /dev/null -s \
-       "https://$NGROK_DOMAIN/"
-done
 ```
 
 ## What's next?
@@ -225,9 +219,7 @@ done
 - Read about [other gateway shapes](https://ngrok.com/blog-post/api-gateway-shapes-patterns-2025) you can build with ngrok
 - Learn about [Endpoint Pooling](/docs/universal-gateway/endpoint-pooling) for simpler automatic load balancing
 - Explore [custom domains](/docs/universal-gateway/custom-domains) to use your own domain instead of ngrok subdomains
-- Set up [OWASP CRS protection](/docs/traffic-policy/actions/owasp-crs-request) with customized rules for your application
 - Use [Traffic Inspector](https://dashboard.ngrok.com/traffic-inspector) to monitor performance and debug issues
-- Configure [IP Policies](/docs/api/resources/ip-policies/) for more sophisticated IP-based access control
 - Add [circuit breaker protection](/docs/traffic-policy/actions/circuit-breaker) to handle upstream failures gracefully
 
 <Back />
