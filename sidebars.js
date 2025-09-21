@@ -291,9 +291,7 @@ const sidebars = {
 						{
 							label: "Site-to-Site Connectivity",
 							type: "category",
-							items: [
-								"universal-gateway/examples/rewrite-headers-redirects",
-							],
+							items: ["universal-gateway/examples/rewrite-headers-redirects"],
 						},
 					],
 				},
