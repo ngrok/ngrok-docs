@@ -9,5 +9,5 @@ curl \
 -H "Content-Type: application/json" \
 -H "Ngrok-Version: 2" \
 -d '{"enabled":true,"idp_metadata":"\n<EntityDescriptor xmlns=\"urn:oasis:names:tc:SAML:2.0:metadata\" validUntil=\"2020-09-14T12:53:23.691Z\" cacheDuration=\"PT1M\" entityID=\"http://127.0.0.1:12345/metadata\"><IDPSSODescriptor xmlns=\"urn:oasis:names:tc:SAML:2.0:metadata\" protocolSupportEnumeration=\"urn:oasis:names:tc:SAML:2.0:protocol\"><NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:transient</NameIDFormat><SingleSignOnService Binding=\"urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect\" Location=\"http://127.0.0.1:12345/sso\"></SingleSignOnService><SingleSignOnService Binding=\"urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST\" Location=\"http://127.0.0.1:12345/sso\"></SingleSignOnService></IDPSSODescriptor></EntityDescriptor>\n"}' \
-https://api.ngrok.com/edges/https/edghts_333B3LvINL4sdhKFYHd2ClmlxlT/routes/edghtsrt_333B3GRJPEfYI2EqA3MQulLG8hE/saml
+https://api.ngrok.com/edges/https/edghts_334AgHS2aoMRRGM2Nq8GgsnfQcR/routes/edghtsrt_334AgCzOo5JT9yVDkmV9G29FLjM/saml
 ```
