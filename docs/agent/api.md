@@ -18,7 +18,7 @@ The ngrok agent exposes an HTTP API that enables programmatic access of:
 
 - Collect status and metrics information
 - Collect and replay captured requests
-- Start and stop tunnels dynamically
+- Start and stop endpoints dynamically
 
 ## Base URL and Authentication
 
