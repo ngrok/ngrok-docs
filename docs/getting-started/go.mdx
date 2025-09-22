@@ -24,15 +24,7 @@ In that case, you'll just need to reserve a domain and add your auth token as de
 - Your [ngrok auth token](https://dashboard.ngrok.com/get-started/your-authtoken).
 - [Go installed](https://go.dev/doc/install) on your machine. You can check this by running `go version` in your terminal.
 
-## 1. Reserve your domain
-
-A new URL is generated for you every time you start an endpoint.
-To maintain a consistent URL, you can reserve a free static domain connected to your ngrok account.
-
-Navigate to the dashboard, visit [the **Domains** section](https://dashboard.ngrok.com/domains), and select **+ New Domain**.
-You can choose a free static domain, or you can use a custom domain you already own.
-
-## 2. Start your app or service
+## 1. Start your app or service
 
 Start up the app or service you'd like to put online.
 This is the app that your agent endpoint will forward online traffic to.
@@ -68,7 +60,7 @@ Navigate to the directory where this file is located and run the following comma
 go run service.go
 ```
 
-## 3. Install the Go SDK
+## 2. Install the Go SDK
 
 Open a new terminal, then run the following commands to create a new Go module and install the SDK:
 
@@ -79,7 +71,7 @@ go mod init ngrok-go-demo
 go get golang.ngrok.com/ngrok/v2
 ```
 
-## 4. Create a .env file
+## 3. Create a .env file
 
 Create a `.env` file and add [your ngrok auth token](https://dashboard.ngrok.com/get-started/your-authtoken) and reserved domain to it.
 This file needs to be in the same directory where you initialized your Go module in the previous step.
@@ -93,7 +85,7 @@ Add your ngrok auth token and reserved domain to this file:
 
 ```txt title=".env"
 NGROK_AUTHTOKEN=your_actual_auth_token_here
-NGROK_RESERVED_DOMAIN=your_actual_domain_here
+NGROK_DOMAIN=your_actual_domain_here
 ```
 
 Finally, you'll need to install [the `godotenv` package](https://github.com/joho/godotenv?tab=readme-ov-file#godotenv--) to access your environment variables from your code:
@@ -108,7 +100,7 @@ If you don't want to use a `.env` file, you can instead [export your auth token 
 You can set your reserved domain directly in your endpoint file below using `ngrok.WithURL()`.
 :::
 
-## 5. Create your endpoint
+## 4. Create your endpoint
 
 Create your agent endpoint, which will forward public traffic to your app.
 
@@ -162,7 +154,7 @@ func run(ctx context.Context) error {
 
 	ln, err := agent.Forward(ctx,
 		ngrok.WithUpstream(address),
-		ngrok.WithURL(os.Getenv("NGROK_RESERVED_DOMAIN")),
+		ngrok.WithURL(os.Getenv("NGROK_DOMAIN")),
 		ngrok.WithTrafficPolicy(trafficPolicy),
 	)
 
@@ -179,7 +171,7 @@ func run(ctx context.Context) error {
 }
 ```
 
-## 6. Test your endpoint
+## 5. Test your endpoint
 
 Test your endpoint by running the following terminal command:
 
@@ -202,4 +194,4 @@ What else can you do with these features?
 - Dig deeper into [traffic policies](/docs/traffic-policy/), which enable you to [grant conditional access](https://ngrok.com/docs/traffic-policy/examples/add-authentication/#conditional-access-using-oauth-variables), [send custom headers](/traffic-policy/actions/add-headers/#examples), [rewrite URLs](/traffic-policy/actions/url-rewrite/#examples), and more with your endpoints.
 - Learn more about the [Agent SDKs](/agent-sdks/) to understand how the Go SDK works under the hood.
 - Check out [the ngrok Go SDK repo](https://github.com/ngrok/ngrok-go?tab=readme-ov-file#ngrok-go) for more code examples.
-- If your use case calls for a centrally managed, always-on endpoint that isn't tied to the ephemeral lifetime of an agent endpoint, you should proceed to [getting started with Cloud Endpoints](/getting-started/cloud-endpoints-quickstart/).
+- If your use case calls for a centrally managed, always-on endpoint instead of one that's only available when an agent is running, you should proceed to [getting started with Cloud Endpoints](/getting-started/cloud-endpoints-quickstart/).

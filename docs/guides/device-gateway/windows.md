@@ -150,15 +150,15 @@ Start-Process "$env:windir\system32\mstsc.exe" -ArgumentList "/v:NGROK_TCP_ADDRE
 
 Now that your device is integrated to ngrok, you can ​​execute tasks at the ngrok dashboard to operationalize your fleet:
 
-### Logging Traffic Events from ngrok
+### Logging Traffic from ngrok
 
-Each action that happens in ngrok is published as an event, and [Log Exporting](/obs/) allows you to subscribe to the events that are relevant to you and write them to one or more destinations.
+Each action that happens in ngrok is published as a log, and [Log Exporting](/obs/) allows you to subscribe to the logs that are relevant to you and write them to one or more destinations.
 
-A Log Export is made up of a set of event sources (some of which can be filtered), and event destinations. Each export can send events to one or more destinations, such as Amazon CloudWatch Logs, Amazon Kinesis (as a data stream), or Amazon Kinesis Firehose (as a delivery stream).
+A Log Export is made up of a set of log sources (some of which can be filtered), and log destinations. Each export can send logs to one or more destinations, such as Amazon CloudWatch Logs, Amazon Kinesis (as a data stream), or Amazon Kinesis Firehose (as a delivery stream).
 
 Log Exports can be configured through the [ngrok Dashboard](https://dashboard.ngrok.com/observability/event-subscriptions) or the [ngrok API](/api/resources/event-destinations/).
 
-You can also forward all or some of your traffic events from [ngrok to your preferred logging tool](/obs/).
+You can also forward all or some of your traffic logs from [ngrok to your preferred logging tool](/obs/).
 
 ### Remote checks, stop, start, and updates
 

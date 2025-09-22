@@ -6,11 +6,11 @@ title: User Management
 
 ## Role Based Access Control (RBAC) {#rbac}
 
-The ngrok dashboard allows many users to be invited to the same account. Each user in the account will have the same account type and be able to start tunnels under that account. The dashboard includes role based access control (RBAC) as a way to limit what users have access to in the account. You can manage these roles and add more users to your account in the [team members page](https://dashboard.ngrok.com/users/team-members) of the dashboard. This is only available for paid plans.
+The ngrok dashboard allows many users to be invited to the same account. Each user in the account will have the same account type and be able to start endpoints under that account. The dashboard includes role based access control (RBAC) as a way to limit what users have access to in the account. You can manage these roles and add more users to your account in the [team members page](https://dashboard.ngrok.com/users/team-members) of the dashboard. This is only available for paid plans.
 
 ## Single Sign-On (SSO) {#dashboard-sso}
 
-If you are an Enterprise customer, you have the option of enabling Single Sign-On (SSO) for your users logging into the ngrok Dashboard. Account admins can find the configuration options under the ["Settings > Account"](https://dashboard.ngrok.com/settings) in the left navigation once they log into the dashboard.
+If you are an Pay-as-you-go customer, you have the option of enabling Single Sign-On (SSO) for your users logging into the ngrok Dashboard and adding the SSO & RBAC add-on. Account admins can find the configuration options under the ["Settings > Account"](https://dashboard.ngrok.com/settings) in the left navigation once they log into the dashboard.
 
 ngrok supports most [SAML v2 compliant identity providers](https://en.wikipedia.org/wiki/SAML-based_products_and_services), including [Okta](https://help.okta.com/oie/en-us/Content/Topics/Apps/apps-about-saml.htm) and [Microsoft Entra ID](https://learn.microsoft.com/en-us/entra/architecture/auth-saml). To get started with the configuration, simply click on "+ New Identity Provider" and follow the instructions in the dashboard. ngrok supports multiple identity providers as well. If using multiple identity providers, the user will be prompted to choose one when logging in with SSO from the ngrok login page.
 
@@ -47,7 +47,7 @@ Service Users facts and limitations:
   - Service Users cannot be assigned or shared among multiple accounts
 - Benefits of Service Users:
   - Credentials that are unique to a specific service or function can be connected to a Service User instead of being connected to a person. A standard user may leave the account or want to rotate their credentials, and these actions should not impact production services running in ngrok.
-  - Events are attributed to a Service User and can help you better understand what a specific production service in ngrok is doing, even when there are multiple production services in the same account.
+  - Logs are attributed to a Service User and can help you better understand what a specific production service in ngrok is doing, even when there are multiple production services in the same account.
   - Service Users can be deactivated to temporarily suspend all credentials associated with it—making ngrok more secure.
   - Service Users can be deleted to immediately revoke and delete all credentials associated with it—making ngrok more secure.
 
