@@ -6,6 +6,6 @@
 {
   "next_page_uri": null,
   "secrets": [],
-  "uri": "https://api.ngrok.com/vaults/vault_32ELIL9nzEhwlvjSpNSI6xXGNcE/secrets"
+  "uri": "https://api.ngrok.com/vaults/vault_333B3hybrXv9nURYIvdNQom4vsD/secrets"
 }
 ```

@@ -7,39 +7,39 @@
   "ip_policy_rules": [
     {
       "action": "allow",
-      "cidr": "132.2.19.0/24",
-      "created_at": "2025-09-04T10:11:35Z",
-      "description": "sf office",
-      "id": "ipr_32ELHMDdCC3h1HtuuYF99ev31CK",
-      "ip_policy": {
-        "id": "ipp_32ELHI4zOitQxIqDFNmlTmyTbTk",
-        "uri": "https://api.ngrok.com/ip_policies/ipp_32ELHI4zOitQxIqDFNmlTmyTbTk"
-      },
-      "uri": "https://api.ngrok.com/ip_policy_rules/ipr_32ELHMDdCC3h1HtuuYF99ev31CK"
-    },
-    {
-      "action": "allow",
       "cidr": "2.2.2.2/32",
-      "created_at": "2025-09-04T10:11:35Z",
+      "created_at": "2025-09-22T10:07:50Z",
       "description": "alan laptop",
-      "id": "ipr_32ELHHHS4SnhfOXSSdMFsW3EeQI",
+      "id": "ipr_333B2lROVFbn6nX7KqZeBRhroAR",
       "ip_policy": {
-        "id": "ipp_32ELHI4zOitQxIqDFNmlTmyTbTk",
-        "uri": "https://api.ngrok.com/ip_policies/ipp_32ELHI4zOitQxIqDFNmlTmyTbTk"
+        "id": "ipp_333B2maIv6yIFqLH4uGhgu0uapR",
+        "uri": "https://api.ngrok.com/ip_policies/ipp_333B2maIv6yIFqLH4uGhgu0uapR"
       },
-      "uri": "https://api.ngrok.com/ip_policy_rules/ipr_32ELHHHS4SnhfOXSSdMFsW3EeQI"
+      "uri": "https://api.ngrok.com/ip_policy_rules/ipr_333B2lROVFbn6nX7KqZeBRhroAR"
     },
     {
       "action": "allow",
       "cidr": "212.3.14.0/24",
-      "created_at": "2025-09-04T10:11:35Z",
+      "created_at": "2025-09-22T10:07:50Z",
       "description": "nyc office",
-      "id": "ipr_32ELHGRtWDjKkbeBYdXf2J02oFo",
+      "id": "ipr_333B2lEZ50iU6YIcFw4CZlUAImf",
       "ip_policy": {
-        "id": "ipp_32ELHI4zOitQxIqDFNmlTmyTbTk",
-        "uri": "https://api.ngrok.com/ip_policies/ipp_32ELHI4zOitQxIqDFNmlTmyTbTk"
+        "id": "ipp_333B2maIv6yIFqLH4uGhgu0uapR",
+        "uri": "https://api.ngrok.com/ip_policies/ipp_333B2maIv6yIFqLH4uGhgu0uapR"
       },
-      "uri": "https://api.ngrok.com/ip_policy_rules/ipr_32ELHGRtWDjKkbeBYdXf2J02oFo"
+      "uri": "https://api.ngrok.com/ip_policy_rules/ipr_333B2lEZ50iU6YIcFw4CZlUAImf"
+    },
+    {
+      "action": "allow",
+      "cidr": "132.2.19.0/24",
+      "created_at": "2025-09-22T10:07:50Z",
+      "description": "sf office",
+      "id": "ipr_333B2ldpQo8UzMiM7osIc3hye96",
+      "ip_policy": {
+        "id": "ipp_333B2maIv6yIFqLH4uGhgu0uapR",
+        "uri": "https://api.ngrok.com/ip_policies/ipp_333B2maIv6yIFqLH4uGhgu0uapR"
+      },
+      "uri": "https://api.ngrok.com/ip_policy_rules/ipr_333B2ldpQo8UzMiM7osIc3hye96"
     }
   ],
   "next_page_uri": null,

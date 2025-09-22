@@ -7,5 +7,5 @@ curl \
 -X DELETE \
 -H "Authorization: Bearer {API_KEY}" \
 -H "Ngrok-Version: 2" \
-https://api.ngrok.com/edges/https/edghts_32ELI7FnOjhMwWLQoEu5g8dATEd/mutual_tls
+https://api.ngrok.com/edges/https/edghts_333B3axCzPX18iDD1RoldGiOo5P/mutual_tls
 ```
