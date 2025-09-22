@@ -9,7 +9,8 @@ import CloudEndpoint from "./snippets/_cloud-endpoint.mdx";
 import TryOut from "./snippets/_try-out.mdx";
 import Back from "./snippets/_back-to-examples.mdx";
 
-A self-hosted PaaS alternative gateway provides the developer experience and features of managed platforms without surrendering control of your infrastructure. It handles TLS termination, custom domains, load balancing, authentication, observability, and security—perfect for teams migrating from Heroku or Vercel while keeping the operational polish.
+A self-hosted PaaS alternative gateway provides the developer experience and features of managed platforms without surrendering control of your infrastructure.
+It handles TLS termination, custom domains, load balancing, authentication, observability, and security—perfect for teams migrating from Heroku or Vercel while keeping the operational polish.
 
 With this setup, you can:
 
@@ -46,7 +47,9 @@ By using the same URL with `--pooling-enabled`, ngrok automatically creates an [
 
 <ReserveDomain />
 
+:::tip
 For a production PaaS alternative, consider using a [custom domain](/docs/universal-gateway/custom-domains/) you own instead of an ngrok subdomain.
+:::
 
 ## 3. Create a Cloud Endpoint
 
@@ -56,13 +59,13 @@ For a production PaaS alternative, consider using a [custom domain](/docs/univer
 
 Store your authentication and API secrets securely using [Traffic Policy Secrets](/docs/traffic-policy/secrets).
 
-Create a vault for your application secrets:
+First, create a vault to store your application secrets:
 
 ```bash
 ngrok api vaults create --name "paas-gateway" --description "PaaS gateway authentication and API secrets"
 ```
 
-Add your secrets using the vault ID from the response:
+Then add your secrets using the vault ID from the response:
 
 ```bash
 # OAuth client secret for app authentication
@@ -81,7 +84,7 @@ ngrok api secrets create \
 ## 5. Apply Traffic Policy to your Cloud Endpoint
 
 While still viewing your new cloud endpoint in the dashboard, copy and paste the policy below into the Traffic Policy editor.
-You may need to change:
+Make sure you change each of the following values:
 
 - `$GITHUB_CLIENT_ID`: Replace with your GitHub OAuth app client ID
 - `$YOUR_ADMIN_EMAIL`: Replace with your admin email address for OAuth access
@@ -186,7 +189,9 @@ on_http_response:
             cross-origin-opener-policy: "same-origin"
 ```
 
-**What's happening here?** This policy creates a production-ready PaaS alternative. On every HTTP request, the policy enforces OWASP WAF protection, DDoS mitigation via rate limiting, bot blocking for unwanted crawlers and Tor traffic, and authentication for admin/API routes, before forwarding your request to the pool of upstream services.
+**What's happening here?**
+This policy creates a production-ready PaaS alternative.
+On every HTTP request, the policy enforces OWASP WAF protection, DDoS mitigation via rate limiting, bot blocking for unwanted crawlers and Tor traffic, and authentication for admin/API routes, before forwarding your request to the pool of upstream services.
 
 On every HTTP response, the policy enforces WAF rules on the headers and body, then adds [common security headers](https://cheatsheetseries.owasp.org/cheatsheets/HTTP_Headers_Cheat_Sheet.html) to the response.
 

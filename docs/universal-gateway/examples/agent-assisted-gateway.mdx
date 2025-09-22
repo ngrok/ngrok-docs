@@ -9,7 +9,8 @@ import CloudEndpoint from "./snippets/_cloud-endpoint.mdx";
 import TryOut from "./snippets/_try-out.mdx";
 import Back from "./snippets/_back-to-examples.mdx";
 
-An agent-assisted gateway bridges your localhost development environment with the public internet, enabling AI coding tools, webhook testing, and real authentication flows without waiting for production deployment. Instead of port forwarding and localhost limitations, you get a production-like environment for testing traffic patterns, auth flows, and integrations.
+An agent-assisted gateway bridges your localhost development environment with the public internet, enabling AI coding tools, webhook testing, and real authentication flows without waiting for production deployment.
+Instead of port forwarding and localhost limitations, you get a production-like environment for testing traffic patterns, auth flows, and integrations.
 
 With this setup, you can:
 
@@ -35,7 +36,9 @@ ngrok http $FRONTEND_PORT --url https://app-dev.internal
 
 <ReserveDomain />
 
+:::tip
 Consider using a subdomain like `dev.yourcompany.com` or `staging.yourproject.com` to clearly distinguish from production.
+:::
 
 ## 3. Create a Cloud Endpoint
 
@@ -44,7 +47,7 @@ Consider using a subdomain like `dev.yourcompany.com` or `staging.yourproject.co
 ## 4. Apply Traffic Policy for development gateway
 
 While still viewing your new cloud endpoint in the dashboard, copy and paste the policy below into the Traffic Policy editor.
-You may need to change:
+Make sure you change each of the following values:
 
 - `$GITHUB_OAUTH_CLIENT_ID`: Replace with your GitHub OAuth app client ID for development
 - `$GIBHUB_OAUTH_CLIENT_SECRET`: Replace with your GitHub OAuth app secret for development
@@ -151,9 +154,11 @@ on_http_response:
             access-control-expose-headers: "X-Processing-Timestamp"
 ```
 
-**What's happening here?** On every HTTP request, the policy adds environment identification headers for tracing, enforces OAuth authentication for admin/dashboard routes, requires API key authentication for API routes accessed by external tools and AI assistants, and allows webhook testing without authentication for easy debugging.
+**What's happening here?**
+On every HTTP request, the policy adds environment identification headers for tracing, enforces OAuth authentication for admin/dashboard routes, requires API key authentication for API routes accessed by external tools and AI assistants, and allows webhook testing without authentication for easy debugging.
 
-The gateway routes traffic based on URL paths—API requests go to your backend service, admin routes go to the backend with authentication headers, and everything else goes to your frontend. On responses, it adds development-specific headers for debugging, enables permissive CORS for local development, and timestamps responses for request tracking.
+The gateway routes traffic based on URL paths—API requests go to your backend service, admin routes go to the backend with authentication headers, and everything else goes to your frontend.
+On responses, it adds development-specific headers for debugging, enables permissive CORS for local development, and timestamps responses for request tracking.
 
 ## 5. Try out your development gateway
 
