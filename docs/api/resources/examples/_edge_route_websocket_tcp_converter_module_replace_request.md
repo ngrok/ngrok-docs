@@ -9,5 +9,5 @@ curl \
 -H "Content-Type: application/json" \
 -H "Ngrok-Version: 2" \
 -d '{"enabled":true}' \
-https://api.ngrok.com/edges/https/edghts_333B3Qzd1Xeq6wYOwThQg7uille/routes/edghtsrt_333B3OrpwhIdPCnDZVDccyHP4sr/websocket_tcp_converter
+https://api.ngrok.com/edges/https/edghts_334AgOoAEYarX6PEUe3XQDaWKl0/routes/edghtsrt_334AgN0zcInzfd6qUtg3qpC2Shh/websocket_tcp_converter
 ```

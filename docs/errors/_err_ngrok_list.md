@@ -39,7 +39,7 @@
         <a id="ERR_NGROK_105" href="/docs/errors/err_ngrok_105">ERR_NGROK_105</a>
       </td>
       <td class="pre-wrapped">
-        The authtoken you specified does not look like a proper ngrok tunnel authtoken.
+        The authtoken you specified does not look like a proper ngrok authtoken.
         Your authtoken: <code>&lt;TOKEN&gt;</code>
         Instructions to install your authtoken are on your ngrok dashboard:
         <a href="https://dashboard.ngrok.com/get-started/your-authtoken">https://dashboard.ngrok.com/get-started/your-authtoken</a>
@@ -126,7 +126,7 @@
         <a id="ERR_NGROK_115" href="/docs/errors/err_ngrok_115">ERR_NGROK_115</a>
       </td>
       <td class="pre-wrapped">
-        Your IP <code>&lt;IP&gt;</code> does not match the IP Policies specified by the Agent IP Restriction for this account. Please authenticate from an IP in the correct range or update your Agent IP Restrictions from the ngrok dashboard. <a href="https://dashboard.ngrok.com/ip-restrictions">https://dashboard.ngrok.com/ip-restrictions</a>
+        Your IP <code>&lt;IP&gt;</code> does not match the IP Policies specified by the Agent IP Restriction for this account. Authenticate from an IP in the correct range or update your Agent IP Restrictions from the ngrok dashboard. <a href="https://dashboard.ngrok.com/ip-restrictions">https://dashboard.ngrok.com/ip-restrictions</a>
       </td>
     </tr>
     <tr>
@@ -134,7 +134,7 @@
         <a id="ERR_NGROK_116" href="/docs/errors/err_ngrok_116">ERR_NGROK_116</a>
       </td>
       <td class="pre-wrapped">
-        Your IP <code>&lt;IP&gt;</code> does not match the IP ACL policy specified for your credentials. Please authenticate from an IP in the correct range or make sure you are using the correct credentials
+        Your IP <code>&lt;IP&gt;</code> does not match the IP ACL policy specified for your credentials. Authenticate from an IP in the correct range or make sure you are using the correct credentials
       </td>
     </tr>
     <tr>
@@ -158,7 +158,7 @@
         <a id="ERR_NGROK_121" href="/docs/errors/err_ngrok_121">ERR_NGROK_121</a>
       </td>
       <td class="pre-wrapped">
-        Your <code>&lt;PRODUCT&gt;</code> version "<code>&lt;VERSION&gt;</code>" is too old. The minimum supported agent version for your account is "<code>&lt;MINVERSION&gt;</code>". Please update to a newer version with `ngrok update`, by downloading from <a href="https://ngrok.com/download">https://ngrok.com/download</a>, or by updating your SDK version. Paid accounts are currently excluded from minimum agent version requirements. To begin handling traffic immediately without updating your agent, upgrade to a paid plan: <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a>.
+        Your <code>&lt;PRODUCT&gt;</code> version "<code>&lt;VERSION&gt;</code>" is too old. The minimum supported agent version for your account is "<code>&lt;MINVERSION&gt;</code>". Update to a newer version with 'ngrok update', by downloading from <a href="https://ngrok.com/download">https://ngrok.com/download</a>, or by updating your SDK version. Paid accounts are currently excluded from minimum agent version requirements. To begin handling traffic immediately without updating your agent, upgrade to a paid plan: <a href="https://dashboard.ngrok.com/billing/choose-a-plan">https://dashboard.ngrok.com/billing/choose-a-plan</a>.
       </td>
     </tr>
     <tr>
@@ -266,7 +266,7 @@
         <a id="ERR_NGROK_206" href="/docs/errors/err_ngrok_206">ERR_NGROK_206</a>
       </td>
       <td class="pre-wrapped">
-        The authentication you specified is actually a tunnel credential. Your credential: <code>&lt;TOKEN&gt;</code>. Please check your records for an API key. API keys and instructions are available on your dashboard: <a href="https://dashboard.ngrok.com/api-keys">https://dashboard.ngrok.com/api-keys</a>
+        The authentication you specified is actually an authtoken. Your credential: <code>&lt;TOKEN&gt;</code>. Check your records for an API key. API keys and instructions are available on your dashboard: <a href="https://dashboard.ngrok.com/api-keys">https://dashboard.ngrok.com/api-keys</a>
       </td>
     </tr>
     <tr>
@@ -274,7 +274,7 @@
         <a id="ERR_NGROK_207" href="/docs/errors/err_ngrok_207">ERR_NGROK_207</a>
       </td>
       <td class="pre-wrapped">
-        The authentication you specified is actually a tunnel credential, not an API key token. Your key: <code>&lt;TOKEN&gt;</code>. Please check your records for an API key with the form FIRSTPART_SECONDPART. API keys and instructions are available on your dashboard: <a href="https://dashboard.ngrok.com/api-keys">https://dashboard.ngrok.com/api-keys</a>
+        The authentication you specified is actually an authtoken, not an API key token. Your key: <code>&lt;TOKEN&gt;</code>. Check your records for an API key with the form FIRSTPART_SECONDPART. API keys and instructions are available on your dashboard: <a href="https://dashboard.ngrok.com/api-keys">https://dashboard.ngrok.com/api-keys</a>
       </td>
     </tr>
     <tr>
@@ -282,7 +282,7 @@
         <a id="ERR_NGROK_208" href="/docs/errors/err_ngrok_208">ERR_NGROK_208</a>
       </td>
       <td class="pre-wrapped">
-        The authentication you specified is actually an API key ID, not an API key token. Your credential: <code>&lt;TOKEN&gt;</code>. Please check your records for an API key with the form FIRSTPART_SECONDPART. API keys and instructions are available on your dashboard: <a href="https://dashboard.ngrok.com/api-keys">https://dashboard.ngrok.com/api-keys</a>
+        The authentication you specified is actually an API key ID, not an API key token. Your credential: <code>&lt;TOKEN&gt;</code>. Check your records for an API key with the form FIRSTPART_SECONDPART. API keys and instructions are available on your dashboard: <a href="https://dashboard.ngrok.com/api-keys">https://dashboard.ngrok.com/api-keys</a>
       </td>
     </tr>
     <tr>
@@ -290,7 +290,7 @@
         <a id="ERR_NGROK_210" href="/docs/errors/err_ngrok_210">ERR_NGROK_210</a>
       </td>
       <td class="pre-wrapped">
-        The content type you specified <code>&lt;CTYPE&gt;</code> is not supported by the API. Please check your API client implementation and see the list of supported content types: <a href="https://ngrok.com/docs/api">https://ngrok.com/docs/api</a>#content-types
+        The content type you specified <code>&lt;CTYPE&gt;</code> is not supported by the API. Check your API client implementation and see the list of supported content types: <a href="https://ngrok.com/docs/api">https://ngrok.com/docs/api</a>#content-types
       </td>
     </tr>
     <tr>
@@ -298,7 +298,7 @@
         <a id="ERR_NGROK_211" href="/docs/errors/err_ngrok_211">ERR_NGROK_211</a>
       </td>
       <td class="pre-wrapped">
-        The <code>&lt;METHOD&gt;</code> request you made does not expect a body, but you provided one. Please check your API client implementation and review the API documentation: <a href="https://ngrok.com/docs/api">https://ngrok.com/docs/api</a>#service-api.
+        The <code>&lt;METHOD&gt;</code> request you made does not expect a body, but you provided one. Check your API client implementation and review the API documentation: <a href="https://ngrok.com/docs/api">https://ngrok.com/docs/api</a>#service-api.
       </td>
     </tr>
     <tr>
@@ -306,7 +306,7 @@
         <a id="ERR_NGROK_212" href="/docs/errors/err_ngrok_212">ERR_NGROK_212</a>
       </td>
       <td class="pre-wrapped">
-        The server was unable to read the complete request body. Please check your API client implementation and review the API documentation: <a href="https://ngrok.com/docs/api">https://ngrok.com/docs/api</a>#service-api.
+        The server was unable to read the complete request body. Check your API client implementation and review the API documentation: <a href="https://ngrok.com/docs/api">https://ngrok.com/docs/api</a>#service-api.
       </td>
     </tr>
     <tr>
@@ -314,7 +314,7 @@
         <a id="ERR_NGROK_213" href="/docs/errors/err_ngrok_213">ERR_NGROK_213</a>
       </td>
       <td class="pre-wrapped">
-        The <code>&lt;CTYPE&gt;</code> request body could not be parsed. Please check your API client implementation and review the API documentation: <a href="https://ngrok.com/docs/api">https://ngrok.com/docs/api</a>#service-api.
+        The <code>&lt;CTYPE&gt;</code> request body could not be parsed. Check your API client implementation and review the API documentation: <a href="https://ngrok.com/docs/api">https://ngrok.com/docs/api</a>#service-api.
       </td>
     </tr>
     <tr>
@@ -322,7 +322,7 @@
         <a id="ERR_NGROK_214" href="/docs/errors/err_ngrok_214">ERR_NGROK_214</a>
       </td>
       <td class="pre-wrapped">
-        The request parameter <code>&lt;NAME&gt;</code> is unknown and not expected. The supported fields are: <code>&lt;SUPPORTED&gt;</code>. Please check your API client implementation and review the API documentation: <a href="https://ngrok.com/docs/api">https://ngrok.com/docs/api</a>#service-api.
+        The request parameter <code>&lt;NAME&gt;</code> is unknown and not expected. The supported fields are: <code>&lt;SUPPORTED&gt;</code>. Check your API client implementation and review the API documentation: <a href="https://ngrok.com/docs/api">https://ngrok.com/docs/api</a>#service-api.
       </td>
     </tr>
     <tr>
@@ -330,7 +330,7 @@
         <a id="ERR_NGROK_215" href="/docs/errors/err_ngrok_215">ERR_NGROK_215</a>
       </td>
       <td class="pre-wrapped">
-        The value provided for the request parameter <code>&lt;NAME&gt;</code> is invalid. Please check your request and review the API documentation: <a href="https://ngrok.com/docs/api">https://ngrok.com/docs/api</a>#service-api.
+        The value provided for the request parameter <code>&lt;NAME&gt;</code> is invalid. Check your request and review the API documentation: <a href="https://ngrok.com/docs/api">https://ngrok.com/docs/api</a>#service-api.
       </td>
     </tr>
     <tr>
@@ -338,7 +338,7 @@
         <a id="ERR_NGROK_216" href="/docs/errors/err_ngrok_216">ERR_NGROK_216</a>
       </td>
       <td class="pre-wrapped">
-        You did not provide a Content-Type with your request. Please check your API client implementation and use one of the supported content types: <a href="https://ngrok.com/docs/api">https://ngrok.com/docs/api</a>#content-types
+        You did not provide a Content-Type with your request. Check your API client implementation and use one of the supported content types: <a href="https://ngrok.com/docs/api">https://ngrok.com/docs/api</a>#content-types
       </td>
     </tr>
     <tr>
@@ -346,7 +346,7 @@
         <a id="ERR_NGROK_217" href="/docs/errors/err_ngrok_217">ERR_NGROK_217</a>
       </td>
       <td class="pre-wrapped">
-        The provided API version <code>&lt;VERSION&gt;</code> is invalid or unsupported. Supported versions: <code>&lt;SUPPORTED&gt;</code>. Please check your API client implementation.
+        The provided API version <code>&lt;VERSION&gt;</code> is invalid or unsupported. Supported versions: <code>&lt;SUPPORTED&gt;</code>. Check your API client implementation.
       </td>
     </tr>
     <tr>
@@ -354,7 +354,7 @@
         <a id="ERR_NGROK_218" href="/docs/errors/err_ngrok_218">ERR_NGROK_218</a>
       </td>
       <td class="pre-wrapped">
-        Your request has not specified an API version. Please include the version you wish to use in the Ngrok-Version header. Supported versions: <code>&lt;SUPPORTED&gt;</code>.
+        Your request has not specified an API version. Include the version you wish to use in the Ngrok-Version header. Supported versions: <code>&lt;SUPPORTED&gt;</code>.
       </td>
     </tr>
     <tr>
@@ -370,7 +370,7 @@
         <a id="ERR_NGROK_220" href="/docs/errors/err_ngrok_220">ERR_NGROK_220</a>
       </td>
       <td class="pre-wrapped">
-        Your IP does not match the IP Policy for this Account.  Please authenticate from an IP in the correct range or update your IP Restrictions from the ngrok dashboard. <a href="https://dashboard.ngrok.com/ip-restrictions">https://dashboard.ngrok.com/ip-restrictions</a>
+        Your IP does not match the IP Policy for this Account.  Authenticate from an IP in the correct range or update your IP Restrictions from the ngrok dashboard. <a href="https://dashboard.ngrok.com/ip-restrictions">https://dashboard.ngrok.com/ip-restrictions</a>
       </td>
     </tr>
     <tr>
@@ -442,7 +442,7 @@
         <a id="ERR_NGROK_230" href="/docs/errors/err_ngrok_230">ERR_NGROK_230</a>
       </td>
       <td class="pre-wrapped">
-        The query part of the requested URI is invalid: <code>&lt;ERR&gt;</code>. Please check your API client implementation and review the API documentation: <a href="https://ngrok.com/docs/api">https://ngrok.com/docs/api</a>#service-api.
+        The query part of the requested URI is invalid: <code>&lt;ERR&gt;</code>. Check your API client implementation and review the API documentation: <a href="https://ngrok.com/docs/api">https://ngrok.com/docs/api</a>#service-api.
       </td>
     </tr>
     <tr>
@@ -450,7 +450,7 @@
         <a id="ERR_NGROK_231" href="/docs/errors/err_ngrok_231">ERR_NGROK_231</a>
       </td>
       <td class="pre-wrapped">
-        The query part of the requested URI includes unknown parameters: <code>&lt;UNKNOWN&gt;</code>. The supported parameters are: <code>&lt;SUPPORTED&gt;</code>. Please check your API client implementation and review the API documentation: <a href="https://ngrok.com/docs/api">https://ngrok.com/docs/api</a>#service-api.
+        The query part of the requested URI includes unknown parameters: <code>&lt;UNKNOWN&gt;</code>. The supported parameters are: <code>&lt;SUPPORTED&gt;</code>. Check your API client implementation and review the API documentation: <a href="https://ngrok.com/docs/api">https://ngrok.com/docs/api</a>#service-api.
       </td>
     </tr>
     <tr>
@@ -458,7 +458,7 @@
         <a id="ERR_NGROK_232" href="/docs/errors/err_ngrok_232">ERR_NGROK_232</a>
       </td>
       <td class="pre-wrapped">
-        The request must specify only a single value for the <code>&lt;NAME&gt;</code> parameter but got <code>&lt;COUNT&gt;</code>: <code>&lt;VALUES&gt;</code>. Please check your API client implementation and review the API documentation: <a href="https://ngrok.com/docs/api">https://ngrok.com/docs/api</a>#service-api.
+        The request must specify only a single value for the <code>&lt;NAME&gt;</code> parameter but got <code>&lt;COUNT&gt;</code>: <code>&lt;VALUES&gt;</code>. Check your API client implementation and review the API documentation: <a href="https://ngrok.com/docs/api">https://ngrok.com/docs/api</a>#service-api.
       </td>
     </tr>
     <tr>
@@ -546,7 +546,7 @@
         <a id="ERR_NGROK_247" href="/docs/errors/err_ngrok_247">ERR_NGROK_247</a>
       </td>
       <td class="pre-wrapped">
-        The account <code>&lt;ACCOUNT&gt;</code> has been suspended for non-payment. Update your payment method to pay your oustanding bill and resume service: <a href="https://dashboard.ngrok.com/billing/payment-method">https://dashboard.ngrok.com/billing/payment-method</a>
+        The account <code>&lt;ACCOUNT&gt;</code> has been suspended for non-payment. Update your payment method to pay your outstanding bill and resume service: <a href="https://dashboard.ngrok.com/billing/payment-method">https://dashboard.ngrok.com/billing/payment-method</a>
       </td>
     </tr>
     <tr>
@@ -562,7 +562,7 @@
         <a id="ERR_NGROK_249" href="/docs/errors/err_ngrok_249">ERR_NGROK_249</a>
       </td>
       <td class="pre-wrapped">
-        The endpoint URL provided is not a valid URL: <code>&lt;URL&gt;</code>. Please ensure the URL has a proper scheme, domain, and if a TCP url, port.
+        The endpoint URL provided is not a valid URL: <code>&lt;URL&gt;</code>. Ensure the URL has a proper scheme, domain, and if a TCP url, port.
       </td>
     </tr>
     <tr>
@@ -628,7 +628,7 @@
         This account is on the <code>&lt;PLAN&gt;</code> plan.
         This usually only happens if you downgraded your ngrok account and it no
         longer has permission to use reserved addresses.
-        Upgrade your account at: <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a>
+        Upgrade your account at: <a href="https://dashboard.ngrok.com/billing/choose-a-plan">https://dashboard.ngrok.com/billing/choose-a-plan</a>
       </td>
     </tr>
     <tr>
@@ -650,7 +650,7 @@
         Failed to create a TLS endpoint for the account <code>&lt;ACCOUNT&gt;</code>.
         Only Pay-as-you-go plans may create TLS endpoints.
         This account is on the <code>&lt;PLAN&gt;</code> plan.
-        Upgrade to a Pay-as-you-go plan at: <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a>
+        Upgrade to a Pay-as-you-go plan at: <a href="https://dashboard.ngrok.com/billing/choose-a-plan">https://dashboard.ngrok.com/billing/choose-a-plan</a>?plan=paygo
       </td>
     </tr>
     <tr>
@@ -658,10 +658,10 @@
         <a id="ERR_NGROK_313" href="/docs/errors/err_ngrok_313">ERR_NGROK_313</a>
       </td>
       <td class="pre-wrapped">
-        Only paid plans may create endpoints with custom subdomins.
+        Only paid plans may create endpoints with custom subdomains.
         Failed to create an endpoint with the custom subdomain <code>&lt;SUBDOMAIN&gt;</code> for the account <code>&lt;ACCOUNT&gt;</code>.
         This account is on the <code>&lt;PLAN&gt;</code> plan.
-        Upgrade to a paid plan at: <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a>
+        Upgrade to a paid plan at: <a href="https://dashboard.ngrok.com/billing/choose-a-plan">https://dashboard.ngrok.com/billing/choose-a-plan</a>
       </td>
     </tr>
     <tr>
@@ -672,7 +672,7 @@
         Only paid plans may create endpoints with custom hostnames.
         Failed to create an endpoint with the custom hostname <code>&lt;HOSTNAME&gt;</code> for the account <code>&lt;ACCOUNT&gt;</code>.
         This account is on the <code>&lt;PLAN&gt;</code> plan.
-        Upgrade to a paid plan at: <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a>
+        Upgrade to a paid plan at: <a href="https://dashboard.ngrok.com/billing/choose-a-plan">https://dashboard.ngrok.com/billing/choose-a-plan</a>
       </td>
     </tr>
     <tr>
@@ -683,7 +683,7 @@
         Wildcard domains are a feature reserved for ngrok's Pay-as-you-go plan.
         Failed to create an endpoint with the wildcard domain <code>&lt;DOMAIN&gt;</code> for the account <code>&lt;ACCOUNT&gt;</code>.
         This account is on the <code>&lt;PLAN&gt;</code> plan.
-        Upgrade to a Pay-as-you-go plan at: <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a>
+        Upgrade to a Pay-as-you-go plan at: <a href="https://dashboard.ngrok.com/billing/choose-a-plan">https://dashboard.ngrok.com/billing/choose-a-plan</a>?plan=paygo
       </td>
     </tr>
     <tr>
@@ -767,10 +767,9 @@
       </td>
       <td class="pre-wrapped">
         Your account may not run more than <code>&lt;MAX&gt;</code> endpoints over a single ngrok agent session.
-        Please upgrade to a Pay-as-you-go plan to increase this limit.
-         The endpoints already running on this session are:
-        <code>&lt;URLS&gt;</code>
-        
+        The endpoints already running on this session are:
+        <code>&lt;URLS&gt;</code>.
+        Upgrade to a Pay-as-you-go plan at: <a href="https://dashboard.ngrok.com/billing/choose-a-plan">https://dashboard.ngrok.com/billing/choose-a-plan</a>?plan=paygo
       </td>
     </tr>
     <tr>
@@ -1166,7 +1165,7 @@
         <a id="ERR_NGROK_380" href="/docs/errors/err_ngrok_380">ERR_NGROK_380</a>
       </td>
       <td class="pre-wrapped">
-        The resource <code>&lt;ID&gt;</code> was referenced, but not found. Please retry, and contact support if this error persists.
+        The resource <code>&lt;ID&gt;</code> was referenced, but not found. Retry, and contact support if this error persists.
       </td>
     </tr>
     <tr>
@@ -1328,7 +1327,7 @@
         <a id="ERR_NGROK_400" href="/docs/errors/err_ngrok_400">ERR_NGROK_400</a>
       </td>
       <td class="pre-wrapped">
-        The region you specified, <code>&lt;REGION&gt;</code> is invalid. Please use one of the following acceptable values: <code>&lt;VALID&gt;</code>
+        The region you specified, <code>&lt;REGION&gt;</code> is invalid. Use one of the following acceptable values: <code>&lt;VALID&gt;</code>
       </td>
     </tr>
     <tr>
@@ -1338,7 +1337,7 @@
       <td class="pre-wrapped">
         Only accounts on paid plans can reserve domains.
         Your account can't reserve domains. 
-        Upgrade to a paid plan at: <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a>
+        Upgrade to a paid plan at: <a href="https://dashboard.ngrok.com/billing/choose-a-plan">https://dashboard.ngrok.com/billing/choose-a-plan</a>
       </td>
     </tr>
     <tr>
@@ -1362,7 +1361,7 @@
         <a id="ERR_NGROK_404" href="/docs/errors/err_ngrok_404">ERR_NGROK_404</a>
       </td>
       <td class="pre-wrapped">
-        You may not reserve names on ngrok.com. Please use an ngrok.io suffix. Failed to reserve <code>&lt;DOMAIN&gt;</code>.
+        You may not reserve names on ngrok.com. Use an ngrok.io suffix. Failed to reserve <code>&lt;DOMAIN&gt;</code>.
       </td>
     </tr>
     <tr>
@@ -1428,7 +1427,7 @@
       <td class="pre-wrapped">
         Only accounts on paid plans can reserve endpoints on custom domains.
         Your account cannot reserve endpoints on custom domains (<code>&lt;DOMAIN&gt;</code> is not a subdomain of <code>&lt;BASE&gt;</code>).
-        Upgrade to a paid plan at: <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a>
+        Upgrade to a paid plan at: <a href="https://dashboard.ngrok.com/billing/choose-a-plan">https://dashboard.ngrok.com/billing/choose-a-plan</a>
       </td>
     </tr>
     <tr>
@@ -1452,7 +1451,7 @@
         <a id="ERR_NGROK_415" href="/docs/errors/err_ngrok_415">ERR_NGROK_415</a>
       </td>
       <td class="pre-wrapped">
-        Your account is limited to <code>&lt;MAX&gt;</code> reserved domains. If you need more domains, upgrade to the Pay-as-you-go plan at: <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a>.
+        Your account is limited to <code>&lt;MAX&gt;</code> reserved domains. If you need more domains, upgrade to the Pay-as-you-go plan at: <a href="https://dashboard.ngrok.com/billing/choose-a-plan">https://dashboard.ngrok.com/billing/choose-a-plan</a>?plan=paygo.
       </td>
     </tr>
     <tr>
@@ -1485,7 +1484,7 @@
       </td>
       <td class="pre-wrapped">
         Only Pay-as-you-go accounts can reserve wildcard domains.
-        Upgrade to a Pay-as-you-go plan at <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a>
+        Upgrade to a Pay-as-you-go plan at <a href="https://dashboard.ngrok.com/billing/choose-a-plan">https://dashboard.ngrok.com/billing/choose-a-plan</a>?plan=paygo
       </td>
     </tr>
     <tr>
@@ -1582,7 +1581,7 @@
         <a id="ERR_NGROK_431" href="/docs/errors/err_ngrok_431">ERR_NGROK_431</a>
       </td>
       <td class="pre-wrapped">
-        Your account is limited to <code>&lt;MAX&gt;</code> reserved domains. If you need more domains, you can upgrade to a Pay-as-you-go plan at: <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a>.
+        Your account is limited to <code>&lt;MAX&gt;</code> reserved domains. If you need more domains, you can upgrade to a Pay-as-you-go plan at: <a href="https://dashboard.ngrok.com/billing/choose-a-plan">https://dashboard.ngrok.com/billing/choose-a-plan</a>?plan=paygo.
       </td>
     </tr>
     <tr>
@@ -1598,7 +1597,7 @@
         <a id="ERR_NGROK_433" href="/docs/errors/err_ngrok_433">ERR_NGROK_433</a>
       </td>
       <td class="pre-wrapped">
-        Your account is limited to <code>&lt;MAX&gt;</code> reserved wildcard domains. If you need more domains, you can upgrade to a Pay-as-you-go plan at: <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a>.
+        Your account is limited to <code>&lt;MAX&gt;</code> reserved wildcard domains. If you need more domains, you can upgrade to a Pay-as-you-go plan at: <a href="https://dashboard.ngrok.com/billing/choose-a-plan">https://dashboard.ngrok.com/billing/choose-a-plan</a>?plan=paygo.
       </td>
     </tr>
     <tr>
@@ -1782,7 +1781,7 @@
         <a id="ERR_NGROK_500" href="/docs/errors/err_ngrok_500">ERR_NGROK_500</a>
       </td>
       <td class="pre-wrapped">
-        The region you specified, <code>&lt;REGION&gt;</code> is invalid. Please use one of the following acceptable values: <code>&lt;VALID&gt;</code>
+        The region you specified, <code>&lt;REGION&gt;</code> is invalid. Use one of the following acceptable values: <code>&lt;VALID&gt;</code>
       </td>
     </tr>
     <tr>
@@ -1792,7 +1791,7 @@
       <td class="pre-wrapped">
         Only paid accounts can reserve addresses.
         Your account can't reserve addresses. 
-        Upgrade to a paid plan at <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a>
+        Upgrade to a paid plan at <a href="https://dashboard.ngrok.com/billing/choose-a-plan">https://dashboard.ngrok.com/billing/choose-a-plan</a>
       </td>
     </tr>
     <tr>
@@ -1800,7 +1799,7 @@
         <a id="ERR_NGROK_502" href="/docs/errors/err_ngrok_502">ERR_NGROK_502</a>
       </td>
       <td class="pre-wrapped">
-        Your account is limited to <code>&lt;MAX&gt;</code> reserved addresses. If you need more addresses, you can upgrade to a Pay-as-you-go plan at: <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a>.
+        Your account is limited to <code>&lt;MAX&gt;</code> reserved addresses. If you need more addresses, you can upgrade to a Pay-as-you-go plan at: <a href="https://dashboard.ngrok.com/billing/choose-a-plan">https://dashboard.ngrok.com/billing/choose-a-plan</a>?plan=paygo.
       </td>
     </tr>
     <tr>
@@ -1848,7 +1847,7 @@
         <a id="ERR_NGROK_508" href="/docs/errors/err_ngrok_508">ERR_NGROK_508</a>
       </td>
       <td class="pre-wrapped">
-        Your account is limited to <code>&lt;MAX&gt;</code> reserved addresses. If you need more addresses, you can upgrade to a Pay-as-you-go plan at: <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a>.
+        Your account is limited to <code>&lt;MAX&gt;</code> reserved addresses. If you need more addresses, you can upgrade to a Pay-as-you-go plan at: <a href="https://dashboard.ngrok.com/billing/choose-a-plan">https://dashboard.ngrok.com/billing/choose-a-plan</a>?plan=paygo.
       </td>
     </tr>
     <tr>
@@ -1938,7 +1937,7 @@
         <a id="ERR_NGROK_602" href="/docs/errors/err_ngrok_602">ERR_NGROK_602</a>
       </td>
       <td class="pre-wrapped">
-        Your account is limited to <code>&lt;MAX&gt;</code> authtokens. Please upgrade your account or contact support@ngrok.com to increase the limit.
+        Your account is limited to <code>&lt;MAX&gt;</code> authtokens. Upgrade your account at <a href="https://dashboard.ngrok.com/billing">https://dashboard.ngrok.com/billing</a>.
       </td>
     </tr>
     <tr>
@@ -1946,7 +1945,7 @@
         <a id="ERR_NGROK_603" href="/docs/errors/err_ngrok_603">ERR_NGROK_603</a>
       </td>
       <td class="pre-wrapped">
-        Your account is limited to <code>&lt;MAX&gt;</code> API keys. Please upgrade your account or contact support@ngrok.com to increase the limit.
+        Your account is limited to <code>&lt;MAX&gt;</code> API keys. Upgrade your account at <a href="https://dashboard.ngrok.com/billing">https://dashboard.ngrok.com/billing</a>.
       </td>
     </tr>
     <tr>
@@ -1986,7 +1985,7 @@
         <a id="ERR_NGROK_608" href="/docs/errors/err_ngrok_608">ERR_NGROK_608</a>
       </td>
       <td class="pre-wrapped">
-        Your account is limited to <code>&lt;MAX&gt;</code> SSH keys. Please upgrade your account or contact support@ngrok.com to increase the limit.
+        Your account is limited to <code>&lt;MAX&gt;</code> SSH keys. Upgrade your account at <a href="https://dashboard.ngrok.com/billing">https://dashboard.ngrok.com/billing</a>.
       </td>
     </tr>
     <tr>
@@ -2068,7 +2067,7 @@
       <td class="pre-wrapped">
         Only Pay-as-you-go plans can use tunnel ACL rules.
         Your account is not authorized to use tunnel ACL rules.
-        Upgrade to a Pay-as-you-go plan at: <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a>
+        Upgrade to a Pay-as-you-go plan at: <a href="https://dashboard.ngrok.com/billing/choose-a-plan">https://dashboard.ngrok.com/billing/choose-a-plan</a>?plan=paygo
       </td>
     </tr>
     <tr>
@@ -2078,7 +2077,7 @@
       <td class="pre-wrapped">
         Only Pay-as-you-go plans can use SSH ACL rules.
         Your account is not authorized to use SSH ACL rules.
-        Upgrade to a Pay-as-you-go plan at: <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a>
+        Upgrade to a Pay-as-you-go plan at: <a href="https://dashboard.ngrok.com/billing/choose-a-plan">https://dashboard.ngrok.com/billing/choose-a-plan</a>?plan=paygo
       </td>
     </tr>
     <tr>
@@ -2184,7 +2183,7 @@
         <a id="ERR_NGROK_702" href="/docs/errors/err_ngrok_702">ERR_NGROK_702</a>
       </td>
       <td class="pre-wrapped">
-        Too many connections! The tunnel session <code>&lt;SESSION&gt;</code> has violated the rate-limit policy of <code>&lt;THRESHOLD&gt;</code> connections per minute by initiating <code>&lt;COUNT&gt;</code> connections in the last <code>&lt;SECONDS&gt;</code> seconds. Please decrease your inbound connection volume or upgrade to a paid plan for additional capacity.
+        Too many connections! The tunnel session <code>&lt;SESSION&gt;</code> has violated the rate-limit policy of <code>&lt;THRESHOLD&gt;</code> connections per minute by initiating <code>&lt;COUNT&gt;</code> connections in the last <code>&lt;SECONDS&gt;</code> seconds. Decrease your inbound connection volume or upgrade to a paid plan for additional capacity.
       </td>
     </tr>
     <tr>
@@ -2192,7 +2191,7 @@
         <a id="ERR_NGROK_703" href="/docs/errors/err_ngrok_703">ERR_NGROK_703</a>
       </td>
       <td class="pre-wrapped">
-        Too many connections! The account hosting this endpoint has violated the rate-limit policy of <code>&lt;THRESHOLD&gt;</code> connections per minute by initiating <code>&lt;COUNT&gt;</code> connections in the last <code>&lt;SECONDS&gt;</code> seconds. Please decrease your inbound connection volume or upgrade your account plan for additional capacity.
+        Too many connections! The account hosting this endpoint has violated the rate-limit policy of <code>&lt;THRESHOLD&gt;</code> connections per minute by initiating <code>&lt;COUNT&gt;</code> connections in the last <code>&lt;SECONDS&gt;</code> seconds. Decrease your inbound connection volume or upgrade your account plan for additional capacity.
       </td>
     </tr>
     <tr>
@@ -2200,7 +2199,7 @@
         <a id="ERR_NGROK_708" href="/docs/errors/err_ngrok_708">ERR_NGROK_708</a>
       </td>
       <td class="pre-wrapped">
-        This URL has expired. Please sign up for a free ngrok account to create URLs that do not expire. You can also restart the ngrok agent which will create a new URL that will expire after the same amount of time.
+        This URL has expired. Sign up for a free ngrok account to create URLs that do not expire. You can also restart the ngrok agent which will create a new URL that will expire after the same amount of time.
       </td>
     </tr>
     <tr>
@@ -2208,7 +2207,7 @@
         <a id="ERR_NGROK_714" href="/docs/errors/err_ngrok_714">ERR_NGROK_714</a>
       </td>
       <td class="pre-wrapped">
-        This ngrok account has reached its simultaneous connections limit. Please log into https://dashboard.ngrok.com to view your options.
+        This ngrok account has reached its simultaneous connections limit. Log into <a href="https://dashboard.ngrok.com/billing">https://dashboard.ngrok.com/billing</a> to view your options.
       </td>
     </tr>
     <tr>
@@ -2224,7 +2223,7 @@
         <a id="ERR_NGROK_716" href="/docs/errors/err_ngrok_716">ERR_NGROK_716</a>
       </td>
       <td class="pre-wrapped">
-        This unauthenticated ngrok session has reached its simultaneous connections limit. Please sign up for a free account at https://ngrok.com for a higher limit. 
+        This unauthenticated ngrok session has reached its simultaneous connections limit. Sign up for a free account at https://ngrok.com for a higher limit. 
       </td>
     </tr>
     <tr>
@@ -2232,7 +2231,7 @@
         <a id="ERR_NGROK_717" href="/docs/errors/err_ngrok_717">ERR_NGROK_717</a>
       </td>
       <td class="pre-wrapped">
-        This unauthenticated ngrok session has reached its connection rate limit. Please sign up for a free account at https://ngrok.com for a higher limit.
+        This unauthenticated ngrok session has reached its connection rate limit. Sign up for a free account at https://ngrok.com for a higher limit.
       </td>
     </tr>
     <tr>
@@ -2272,7 +2271,7 @@
         <a id="ERR_NGROK_725" href="/docs/errors/err_ngrok_725">ERR_NGROK_725</a>
       </td>
       <td class="pre-wrapped">
-        This ngrok account has reached its network bandwidth limit for the month. Please log into https://dashboard.ngrok.com to view your options.
+        This ngrok account has reached its network bandwidth limit for the month. Log into <a href="https://dashboard.ngrok.com/billing">https://dashboard.ngrok.com/billing</a> to view your options.
       </td>
     </tr>
     <tr>
@@ -2280,7 +2279,7 @@
         <a id="ERR_NGROK_726" href="/docs/errors/err_ngrok_726">ERR_NGROK_726</a>
       </td>
       <td class="pre-wrapped">
-        This ngrok account has reached its connections limit for the month. Please log into https://dashboard.ngrok.com to view your options.
+        This ngrok account has reached its connections limit for the month. Log into <a href="https://dashboard.ngrok.com/billing">https://dashboard.ngrok.com/billing</a> to view your options.
       </td>
     </tr>
     <tr>
@@ -2288,7 +2287,7 @@
         <a id="ERR_NGROK_727" href="/docs/errors/err_ngrok_727">ERR_NGROK_727</a>
       </td>
       <td class="pre-wrapped">
-        This ngrok account has reached its HTTP requests limit for the month. Please log into https://dashboard.ngrok.com to view your options.
+        This ngrok account has reached its HTTP requests limit for the month. Log into <a href="https://dashboard.ngrok.com/billing">https://dashboard.ngrok.com/billing</a> to view your options.
       </td>
     </tr>
     <tr>
@@ -2296,7 +2295,7 @@
         <a id="ERR_NGROK_728" href="/docs/errors/err_ngrok_728">ERR_NGROK_728</a>
       </td>
       <td class="pre-wrapped">
-        This ngrok account has reached its HTTP connections limit for the month. Please log into https://dashboard.ngrok.com to view your options.
+        This ngrok account has reached its HTTP connections limit for the month. Log into <a href="https://dashboard.ngrok.com/billing">https://dashboard.ngrok.com/billing</a> to view your options.
       </td>
     </tr>
     <tr>
@@ -2304,7 +2303,7 @@
         <a id="ERR_NGROK_729" href="/docs/errors/err_ngrok_729">ERR_NGROK_729</a>
       </td>
       <td class="pre-wrapped">
-        This ngrok account has reached its TCP connections limit for the month. Please log into https://dashboard.ngrok.com to view your options.
+        This ngrok account has reached its TCP connections limit for the month. Log into <a href="https://dashboard.ngrok.com/billing">https://dashboard.ngrok.com/billing</a> to view your options.
       </td>
     </tr>
     <tr>
@@ -2312,7 +2311,7 @@
         <a id="ERR_NGROK_730" href="/docs/errors/err_ngrok_730">ERR_NGROK_730</a>
       </td>
       <td class="pre-wrapped">
-        This ngrok account has reached its TLS connections limit for the month. Please log into https://dashboard.ngrok.com to view your options.
+        This ngrok account has reached its TLS connections limit for the month. Log into <a href="https://dashboard.ngrok.com/billing">https://dashboard.ngrok.com/billing</a> to view your options.
       </td>
     </tr>
     <tr>
@@ -2320,7 +2319,7 @@
         <a id="ERR_NGROK_731" href="/docs/errors/err_ngrok_731">ERR_NGROK_731</a>
       </td>
       <td class="pre-wrapped">
-        This ngrok account has reached its HTTPS connections limit for the month. Please log into https://dashboard.ngrok.com to view your options.
+        This ngrok account has reached its HTTPS connections limit for the month. Log into <a href="https://dashboard.ngrok.com/billing">https://dashboard.ngrok.com/billing</a> to view your options.
       </td>
     </tr>
     <tr>
@@ -2328,7 +2327,7 @@
         <a id="ERR_NGROK_732" href="/docs/errors/err_ngrok_732">ERR_NGROK_732</a>
       </td>
       <td class="pre-wrapped">
-        This ngrok account has reached its traffic policy request limit for the month. Please log into https://dashboard.ngrok.com to view your options.
+        This ngrok account has reached its traffic policy request limit for the month. Log into <a href="https://dashboard.ngrok.com/billing">https://dashboard.ngrok.com/billing</a> to view your options.
       </td>
     </tr>
     <tr>
@@ -2336,7 +2335,7 @@
         <a id="ERR_NGROK_733" href="/docs/errors/err_ngrok_733">ERR_NGROK_733</a>
       </td>
       <td class="pre-wrapped">
-        This ngrok account has reached its traffic policy connection limit for the month. Please log into https://dashboard.ngrok.com to view your options.
+        This ngrok account has reached its traffic policy connection limit for the month. Log into <a href="https://dashboard.ngrok.com/billing">https://dashboard.ngrok.com/billing</a> to view your options.
       </td>
     </tr>
     <tr>
@@ -2352,7 +2351,7 @@
         <a id="ERR_NGROK_735" href="/docs/errors/err_ngrok_735">ERR_NGROK_735</a>
       </td>
       <td class="pre-wrapped">
-        This ngrok account has reached its Advanced traffic policy request limit for the month. Please log into https://dashboard.ngrok.com to view your options.
+        This ngrok account has reached its Advanced traffic policy request limit for the month. Log into <a href="https://dashboard.ngrok.com/billing">https://dashboard.ngrok.com/billing</a> to view your options.
       </td>
     </tr>
     <tr>
@@ -2360,7 +2359,7 @@
         <a id="ERR_NGROK_736" href="/docs/errors/err_ngrok_736">ERR_NGROK_736</a>
       </td>
       <td class="pre-wrapped">
-        This ngrok account has reached its Basic traffic policy request limit for the month. Please purchase a pay-as-you-go plan with a Basic Traffic Policy add-on.
+        This ngrok account has reached its Basic traffic policy request limit for the month. Upgrade to a Pay-as-you-go plan at <a href="https://dashboard.ngrok.com/billing/choose-a-plan">https://dashboard.ngrok.com/billing/choose-a-plan</a>?plan=paygo.
       </td>
     </tr>
     <tr>
@@ -2368,7 +2367,7 @@
         <a id="ERR_NGROK_737" href="/docs/errors/err_ngrok_737">ERR_NGROK_737</a>
       </td>
       <td class="pre-wrapped">
-        This ngrok account has reached its Enterprise traffic policy request limit for the month. Please purchase a pay-as-you-go plan with an Enterprise Traffic Policy add-on.
+        This ngrok account has reached its Enterprise traffic policy request limit for the month. Upgrade to a Pay-as-you-go plan at <a href="https://dashboard.ngrok.com/billing/choose-a-plan">https://dashboard.ngrok.com/billing/choose-a-plan</a>?plan=paygo.
       </td>
     </tr>
     <tr>
@@ -2376,7 +2375,7 @@
         <a id="ERR_NGROK_738" href="/docs/errors/err_ngrok_738">ERR_NGROK_738</a>
       </td>
       <td class="pre-wrapped">
-        This ngrok account has reached its Advanced traffic policy request limit for the month. Please purchase a pay-as-you-go plan with an Advanced Traffic Policy add-on.
+        This ngrok account has reached its Advanced traffic policy request limit for the month. Upgrade to a Pay-as-you-go plan at <a href="https://dashboard.ngrok.com/billing/choose-a-plan">https://dashboard.ngrok.com/billing/choose-a-plan</a>?plan=paygo.
       </td>
     </tr>
     <tr>
@@ -2384,7 +2383,7 @@
         <a id="ERR_NGROK_739" href="/docs/errors/err_ngrok_739">ERR_NGROK_739</a>
       </td>
       <td class="pre-wrapped">
-        This ngrok account has reached its Basic traffic policy connection limit for the month. Please purchase a pay-as-you-go plan with a Basic Traffic Policy add-on.
+        This ngrok account has reached its Basic traffic policy connection limit for the month. Upgrade to a pay-as-you-go plan at <a href="https://dashboard.ngrok.com/billing/choose-a-plan">https://dashboard.ngrok.com/billing/choose-a-plan</a>?plan=paygo.
       </td>
     </tr>
     <tr>
@@ -2392,7 +2391,7 @@
         <a id="ERR_NGROK_740" href="/docs/errors/err_ngrok_740">ERR_NGROK_740</a>
       </td>
       <td class="pre-wrapped">
-        This ngrok account has reached its Enterprise traffic policy connection limit for the month. Please purchase a pay-as-you-go plan with an Enterprise Traffic Policy add-on.
+        This ngrok account has reached its Enterprise traffic policy connection limit for the month. Upgrade to a Pay-as-you-go plan at <a href="https://dashboard.ngrok.com/billing/choose-a-plan">https://dashboard.ngrok.com/billing/choose-a-plan</a>?plan=paygo.
       </td>
     </tr>
     <tr>
@@ -2636,7 +2635,7 @@
         <a id="ERR_NGROK_1015" href="/docs/errors/err_ngrok_1015">ERR_NGROK_1015</a>
       </td>
       <td class="pre-wrapped">
-        You are on an old custom subscription. Please contact support@ngrok.com for help with changing your subscription.
+        You are on a legacy custom subscription. Contact support@ngrok.com for help with changing your subscription.
       </td>
     </tr>
     <tr>
@@ -2764,7 +2763,7 @@
         <a id="ERR_NGROK_1031" href="/docs/errors/err_ngrok_1031">ERR_NGROK_1031</a>
       </td>
       <td class="pre-wrapped">
-        Tax information is incomplete: Missing Type for Tax ID. Please update or remove your tax information before making any changes to your account's subscription.
+        Tax information is incomplete: Missing Type for Tax ID. Update or remove your tax information before making any changes to your account's subscription.
       </td>
     </tr>
     <tr>
@@ -3072,7 +3071,7 @@
         <a id="ERR_NGROK_1211" href="/docs/errors/err_ngrok_1211">ERR_NGROK_1211</a>
       </td>
       <td class="pre-wrapped">
-        Warning: Your IP does not match the IP Policy for this Account. When IP Restrictions are enforced you will not be able to access the dashboard.  Please authenticate from an IP in the correct range or update your IP Restrictions.
+        Warning: Your IP does not match the IP Policy for this Account. When IP Restrictions are enforced you will not be able to access the dashboard. Authenticate from an IP in the correct range or update your IP Restrictions.
       </td>
     </tr>
     <tr>
@@ -3080,7 +3079,7 @@
         <a id="ERR_NGROK_1212" href="/docs/errors/err_ngrok_1212">ERR_NGROK_1212</a>
       </td>
       <td class="pre-wrapped">
-        Your IP does not match the IP Policy for this Account.  Please authenticate from an IP in the correct range or update your IP Restrictions from the ngrok dashboard. <a href="https://dashboard.ngrok.com/ip-restrictions">https://dashboard.ngrok.com/ip-restrictions</a>
+        Your IP does not match the IP Policy for this Account. Authenticate from an IP in the correct range or update your IP Restrictions from the ngrok dashboard. <a href="https://dashboard.ngrok.com/ip-restrictions">https://dashboard.ngrok.com/ip-restrictions</a>
       </td>
     </tr>
     <tr>
@@ -3088,7 +3087,7 @@
         <a id="ERR_NGROK_1213" href="/docs/errors/err_ngrok_1213">ERR_NGROK_1213</a>
       </td>
       <td class="pre-wrapped">
-        A new version of the ngrok dashboard is required to continue. Please refresh the page to update.
+        A new version of the ngrok dashboard is required to continue. Refresh the page to update.
       </td>
     </tr>
     <tr>
@@ -3248,7 +3247,7 @@
         <a id="ERR_NGROK_1233" href="/docs/errors/err_ngrok_1233">ERR_NGROK_1233</a>
       </td>
       <td class="pre-wrapped">
-        The email address <code>&lt;EMAIL&gt;</code> is already associated with an SSO Identity Provider connection. Please contact support: support@ngrok.com
+        The email address <code>&lt;EMAIL&gt;</code> is already associated with an SSO Identity Provider connection. Contact support: support@ngrok.com
       </td>
     </tr>
     <tr>
@@ -3288,7 +3287,7 @@
         <a id="ERR_NGROK_1405" href="/docs/errors/err_ngrok_1405">ERR_NGROK_1405</a>
       </td>
       <td class="pre-wrapped">
-        Required parameter is missing. Please specify <code>&lt;PARAM&gt;</code>
+        Required parameter is missing. Specify <code>&lt;PARAM&gt;</code>
       </td>
     </tr>
     <tr>
@@ -3345,7 +3344,7 @@
       </td>
       <td class="pre-wrapped">
         Your legacy account is not authorized to use per-tunnel IP policies.
-        Upgrade to a new paid plan at: <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a>
+        Upgrade to a new paid plan at: <a href="https://dashboard.ngrok.com/billing/choose-a-plan">https://dashboard.ngrok.com/billing/choose-a-plan</a>
       </td>
     </tr>
     <tr>
@@ -3361,7 +3360,7 @@
         <a id="ERR_NGROK_1414" href="/docs/errors/err_ngrok_1414">ERR_NGROK_1414</a>
       </td>
       <td class="pre-wrapped">
-        The provided ip_policy_id is invalid. Please check the value given with your request.
+        The provided ip_policy_id is invalid. Check the value given with your request.
       </td>
     </tr>
     <tr>
@@ -3385,7 +3384,7 @@
         <a id="ERR_NGROK_1419" href="/docs/errors/err_ngrok_1419">ERR_NGROK_1419</a>
       </td>
       <td class="pre-wrapped">
-        Cannot delete only rule (<code>&lt;RULEID&gt;</code>) in use by dashboard IP Restriction (<code>&lt;RESTRICTIONID&gt;</code>). Please detach this IP Policy from IP Restriction before deleting this rule.
+        Cannot delete only rule (<code>&lt;RULEID&gt;</code>) in use by dashboard IP Restriction (<code>&lt;RESTRICTIONID&gt;</code>). Detach this IP Policy from IP Restriction before deleting this rule.
       </td>
     </tr>
     <tr>
@@ -3393,7 +3392,7 @@
         <a id="ERR_NGROK_1420" href="/docs/errors/err_ngrok_1420">ERR_NGROK_1420</a>
       </td>
       <td class="pre-wrapped">
-        Cannot delete IP Policy (<code>&lt;POLICYID&gt;</code>) because it is referenced by one or more IP Restrictions: (<code>&lt;RESTRICTIONIDS&gt;</code>). Please detach this IP Policy from all IP Restrictions before deleting it.
+        Cannot delete IP Policy (<code>&lt;POLICYID&gt;</code>) because it is referenced by one or more IP Restrictions: (<code>&lt;RESTRICTIONIDS&gt;</code>). Detach this IP Policy from all IP Restrictions before deleting it.
       </td>
     </tr>
     <tr>
@@ -3417,7 +3416,7 @@
         <a id="ERR_NGROK_1423" href="/docs/errors/err_ngrok_1423">ERR_NGROK_1423</a>
       </td>
       <td class="pre-wrapped">
-        An action should now be specified on the IP Policy Rule, not IP Policy. Please contact ngrok support if you need additional time to migrate.
+        An action should now be specified on the IP Policy Rule, not IP Policy. Contact ngrok support if you need additional time to migrate.
       </td>
     </tr>
     <tr>
@@ -3473,7 +3472,7 @@
         <a id="ERR_NGROK_1608" href="/docs/errors/err_ngrok_1608">ERR_NGROK_1608</a>
       </td>
       <td class="pre-wrapped">
-        Endpoint Configurations are deprecated. Please use Cloud Endpoints instead.
+        Endpoint Configurations are deprecated. Use Cloud Endpoints instead.
       </td>
     </tr>
     <tr>
@@ -3649,7 +3648,7 @@
         <a id="ERR_NGROK_1631" href="/docs/errors/err_ngrok_1631">ERR_NGROK_1631</a>
       </td>
       <td class="pre-wrapped">
-        Endpoint Configurations are deprecated. Please use Cloud Endpoints instead.
+        Endpoint Configurations are deprecated. Use Cloud Endpoints instead.
       </td>
     </tr>
     <tr>
@@ -3729,7 +3728,7 @@
         <a id="ERR_NGROK_1641" href="/docs/errors/err_ngrok_1641">ERR_NGROK_1641</a>
       </td>
       <td class="pre-wrapped">
-        Endpoint Configurations are deprecated. Please use Cloud Endpoints instead.
+        Endpoint Configurations are deprecated. Use Cloud Endpoints instead.
       </td>
     </tr>
     <tr>
@@ -4138,7 +4137,7 @@
       </td>
       <td class="pre-wrapped">
         Your legacy account is not authorized to use session operations. 
-        Upgrade to a new paid plan at <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a>
+        Upgrade to a new paid plan at <a href="https://dashboard.ngrok.com/billing/choose-a-plan">https://dashboard.ngrok.com/billing/choose-a-plan</a>
       </td>
     </tr>
     <tr>
@@ -4147,7 +4146,7 @@
       </td>
       <td class="pre-wrapped">
         Your legacy account is not authorized to stop or restart the agent. 
-        Upgrade to a new paid plan at <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a>
+        Upgrade to a new paid plan at <a href="https://dashboard.ngrok.com/billing/choose-a-plan">https://dashboard.ngrok.com/billing/choose-a-plan</a>
       </td>
     </tr>
     <tr>
@@ -4156,7 +4155,7 @@
       </td>
       <td class="pre-wrapped">
         Your legacy account is not authorized to update the agent. 
-        Upgrade to a new paid plan at <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a>
+        Upgrade to a new paid plan at <a href="https://dashboard.ngrok.com/billing/choose-a-plan">https://dashboard.ngrok.com/billing/choose-a-plan</a>
       </td>
     </tr>
     <tr>
@@ -4204,9 +4203,9 @@
         <a id="ERR_NGROK_1805" href="/docs/errors/err_ngrok_1805">ERR_NGROK_1805</a>
       </td>
       <td class="pre-wrapped">
-        Only Pay-as-you-go accounts with the Account Goverance add-on can use dashboard IP restrictions.
+        Only Pay-as-you-go accounts with the Account Governance add-on can use dashboard IP restrictions.
         Your account is not authorized to use dashboard IP restrictions.  
-        Upgrade to a Pay-as-you-go plan with the Account Goverance add-on at: <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a>
+        Upgrade to a Pay-as-you-go plan with the Account Governance add-on at: <a href="https://dashboard.ngrok.com/billing/choose-a-plan">https://dashboard.ngrok.com/billing/choose-a-plan</a>?plan=paygo
       </td>
     </tr>
     <tr>
@@ -4214,9 +4213,9 @@
         <a id="ERR_NGROK_1806" href="/docs/errors/err_ngrok_1806">ERR_NGROK_1806</a>
       </td>
       <td class="pre-wrapped">
-        Only Pay-as-you-go accounts with the Account Goverance add-on can use API IP restrictions.
+        Only Pay-as-you-go accounts with the Account Governance add-on can use API IP restrictions.
         Your account is not authorized to use API IP restrictions.  
-        Upgrade to a Pay-as-you-go plan with the Account Goverance add-on at: <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a>
+        Upgrade to a Pay-as-you-go plan with the Account Governance add-on at: <a href="https://dashboard.ngrok.com/billing/choose-a-plan">https://dashboard.ngrok.com/billing/choose-a-plan</a>?plan=paygo
       </td>
     </tr>
     <tr>
@@ -4224,9 +4223,9 @@
         <a id="ERR_NGROK_1807" href="/docs/errors/err_ngrok_1807">ERR_NGROK_1807</a>
       </td>
       <td class="pre-wrapped">
-        Only Pay-as-you-go accounts with the Account Goverance add-on can use agent IP restrictions.
+        Only Pay-as-you-go accounts with the Account Governance add-on can use agent IP restrictions.
         Your account is not authorized to use agent IP restrictions.  
-        Upgrade to a Pay-as-you-go plan with the Account Goverance add-on at: <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a>
+        Upgrade to a Pay-as-you-go plan with the Account Governance add-on at: <a href="https://dashboard.ngrok.com/billing/choose-a-plan">https://dashboard.ngrok.com/billing/choose-a-plan</a>?plan=paygo
       </td>
     </tr>
     <tr>
@@ -4236,7 +4235,7 @@
       <td class="pre-wrapped">
         Only Pay-as-you-go accounts with the Account Governance add-on can use endpoints IP restrictions.
         Your account is not authorized to use endpoints IP restrictions.  
-        Upgrade to a Pay-as-you-go plan with the Account Goverance add-on at: <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a>
+        Upgrade to a Pay-as-you-go plan with the Account Governance add-on at: <a href="https://dashboard.ngrok.com/billing/choose-a-plan">https://dashboard.ngrok.com/billing/choose-a-plan</a>?plan=paygo
       </td>
     </tr>
     <tr>
@@ -5236,7 +5235,7 @@
         <a id="ERR_NGROK_2256" href="/docs/errors/err_ngrok_2256">ERR_NGROK_2256</a>
       </td>
       <td class="pre-wrapped">
-        The action <code>&lt;ACTION&gt;</code> is not available for your current plan. Please upgrade to <code>&lt;PLANS&gt;</code> to use this action.
+        The action <code>&lt;ACTION&gt;</code> is not available for your current plan. Upgrade to <code>&lt;PLANS&gt;</code> to use this action.
       </td>
     </tr>
     <tr>
@@ -5294,7 +5293,7 @@
         <a id="ERR_NGROK_2263" href="/docs/errors/err_ngrok_2263">ERR_NGROK_2263</a>
       </td>
       <td class="pre-wrapped">
-        This policy includes paid traffic policy features that are not allowed on your current plan. Please upgrade to use this policy.
+        This policy includes paid traffic policy features that are not allowed on your current plan. Upgrade to use this policy.
       </td>
     </tr>
     <tr>
@@ -5415,7 +5414,7 @@
       </td>
       <td class="pre-wrapped">
         <code>&lt;PROVIDER&gt;</code> requires that you correct an issue with your account prior to using this website.
-        Please log in to <code>&lt;PROVIDER&gt;</code>, correct the issue, and then refresh this page.
+        Log in to <code>&lt;PROVIDER&gt;</code>, correct the issue, and then refresh this page.
       </td>
     </tr>
     <tr>
@@ -5434,7 +5433,7 @@
       </td>
       <td class="pre-wrapped">
         The email "<code>&lt;EMAIL&gt;</code>" associated with your <code>&lt;PROVIDER&gt;</code> account is not valid.
-        Please correct your email with <code>&lt;PROVIDER&gt;</code> and then refresh this page.
+        Correct your email with <code>&lt;PROVIDER&gt;</code> and then refresh this page.
       </td>
     </tr>
     <tr>
@@ -5460,7 +5459,7 @@
       </td>
       <td class="pre-wrapped">
         The state parameter used to validate your request is missing.
-        Please close this page and try again.
+        Close this page and try again.
       </td>
     </tr>
     <tr>
@@ -5469,7 +5468,7 @@
       </td>
       <td class="pre-wrapped">
         The state parameter used to validate your request cannot be read.
-        Please close this page and try again.
+        Close this page and try again.
       </td>
     </tr>
     <tr>
@@ -5486,7 +5485,7 @@
         <a id="ERR_NGROK_3110" href="/docs/errors/err_ngrok_3110">ERR_NGROK_3110</a>
       </td>
       <td class="pre-wrapped">
-        The email permission from <code>&lt;PROVIDER&gt;</code> was not granted but is required. Please ensure that the email permission is granted.
+        The email permission from <code>&lt;PROVIDER&gt;</code> was not granted but is required. Ensure that the email permission is granted.
       </td>
     </tr>
     <tr>
@@ -5528,7 +5527,7 @@
       </td>
       <td class="pre-wrapped">
         The redirect_uri configured for this application is not properly configured or whitelisted with <code>&lt;PROVIDER&gt;</code>.
-        Please contact the owner of this application in order to fix this error.
+        Contact the owner of this application in order to fix this error.
       </td>
     </tr>
     <tr>
@@ -5537,7 +5536,7 @@
       </td>
       <td class="pre-wrapped">
         <code>&lt;PROVIDER&gt;</code> denied access to your data when attempting to authorize you.
-        Please contact the owner of this application to ensure it is properly installed for your organization.
+        Contact the owner of this application to ensure it is properly installed for your organization.
       </td>
     </tr>
     <tr>
@@ -5554,7 +5553,7 @@
       </td>
       <td class="pre-wrapped">
         <code>&lt;PROVIDER&gt;</code> denied access to your data.
-        Please contact the owner of this application to ensure it is properly installed for your organization.
+        Contact the owner of this application to ensure it is properly installed for your organization.
       </td>
     </tr>
     <tr>
@@ -5563,7 +5562,7 @@
       </td>
       <td class="pre-wrapped">
         Logging in with <code>&lt;PROVIDER&gt;</code> took more than 15 minutes and was rejected for security.
-        Please try again.
+        Try again.
       </td>
     </tr>
     <tr>
@@ -5572,7 +5571,7 @@
       </td>
       <td class="pre-wrapped">
         The state parameter required to finish authorization with <code>&lt;PROVIDER&gt;</code> is missing.
-        Please start over to try again.
+        Start over to try again.
       </td>
     </tr>
     <tr>
@@ -5581,7 +5580,7 @@
       </td>
       <td class="pre-wrapped">
         The nonce cookie required to finish authorization with <code>&lt;PROVIDER&gt;</code> is missing.
-        Please start over to try again.
+        Start over to try again.
       </td>
     </tr>
     <tr>
@@ -5590,7 +5589,7 @@
       </td>
       <td class="pre-wrapped">
         The access code from <code>&lt;PROVIDER&gt;</code> has expired and cannot be used.
-        Please try again and finish authorization more quickly.
+        Try again and finish authorization more quickly.
       </td>
     </tr>
     <tr>
@@ -5599,7 +5598,7 @@
       </td>
       <td class="pre-wrapped">
         The access code from <code>&lt;PROVIDER&gt;</code> has already been used.
-        Please remove any bookmarks to this page and start reauthorization again.
+        Remove any bookmarks to this page and start reauthorization again.
       </td>
     </tr>
     <tr>
@@ -5608,7 +5607,7 @@
       </td>
       <td class="pre-wrapped">
         The state parameter required to finish authorization with <code>&lt;PROVIDER&gt;</code> does not match this host.
-        Please try again.
+        Try again.
       </td>
     </tr>
     <tr>
@@ -5644,7 +5643,7 @@
       </td>
       <td class="pre-wrapped">
         An error occurred when retrieving your session.
-        Please refresh the page to log in and try again.
+        Refresh the page to log in and try again.
       </td>
     </tr>
     <tr>
@@ -5677,7 +5676,7 @@
       </td>
       <td class="pre-wrapped">
         <code>&lt;PROVIDER&gt;</code> has throttled this application and cannot be reached right now.
-        Please try again in a few minutes.
+        Try again in a few minutes.
       </td>
     </tr>
     <tr>
@@ -5686,7 +5685,7 @@
       </td>
       <td class="pre-wrapped">
         <code>&lt;PROVIDER&gt;</code> has throttled this application and cannot be reached right now.
-        Please try again in about an hour.
+        Try again in about an hour.
       </td>
     </tr>
     <tr>
@@ -5695,7 +5694,7 @@
       </td>
       <td class="pre-wrapped">
         An error occurred when finishing authorization with <code>&lt;PROVIDER&gt;</code>. This is likely caused by authorization taking too long.
-        Please try again.
+        Try again.
       </td>
     </tr>
     <tr>
@@ -5720,7 +5719,7 @@
         <a id="ERR_NGROK_3166" href="/docs/errors/err_ngrok_3166">ERR_NGROK_3166</a>
       </td>
       <td class="pre-wrapped">
-        <code>&lt;PROVIDER&gt;</code> enountered an error and authorization cannot be completed at this time.
+        <code>&lt;PROVIDER&gt;</code> encountered an error and authorization cannot be completed at this time.
       </td>
     </tr>
     <tr>
@@ -5884,7 +5883,7 @@
         <a id="ERR_NGROK_3305" href="/docs/errors/err_ngrok_3305">ERR_NGROK_3305</a>
       </td>
       <td class="pre-wrapped">
-        This request has expired. Please try again.
+        This request has expired. Try again.
       </td>
     </tr>
     <tr>
@@ -6140,7 +6139,7 @@
         <a id="ERR_NGROK_3804" href="/docs/errors/err_ngrok_3804">ERR_NGROK_3804</a>
       </td>
       <td class="pre-wrapped">
-        No models are available from configured providers with valid API keys. Please check your provider configuration.
+        No models are available from configured providers with valid API keys. Check your provider configuration.
       </td>
     </tr>
     <tr>
@@ -6148,7 +6147,7 @@
         <a id="ERR_NGROK_3805" href="/docs/errors/err_ngrok_3805">ERR_NGROK_3805</a>
       </td>
       <td class="pre-wrapped">
-        All model selection strategy expressions resulted in an empty set after filtering by configured providers. Please check your model selection strategy and provider configuration.
+        All model selection strategy expressions resulted in an empty set after filtering by configured providers. Check your model selection strategy and provider configuration.
       </td>
     </tr>
     <tr>
@@ -6263,7 +6262,7 @@
       </td>
       <td class="pre-wrapped">
         Your account does not have access to <code>&lt;FEATURE&gt;</code>.
-        Upgrade to get access: <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a>
+        Upgrade to get access: <a href="https://dashboard.ngrok.com/billing/choose-a-plan">https://dashboard.ngrok.com/billing/choose-a-plan</a>
       </td>
     </tr>
     <tr>
@@ -6321,7 +6320,7 @@
         <a id="ERR_NGROK_4019" href="/docs/errors/err_ngrok_4019">ERR_NGROK_4019</a>
       </td>
       <td class="pre-wrapped">
-        This account cannot be deleted because it has an active billing subscription. Please contact support@ngrok.com for help deleting this account.
+        This account cannot be deleted because it has an active billing subscription. Contact support@ngrok.com for help deleting this account.
       </td>
     </tr>
     <tr>
@@ -6337,7 +6336,7 @@
         <a id="ERR_NGROK_4021" href="/docs/errors/err_ngrok_4021">ERR_NGROK_4021</a>
       </td>
       <td class="pre-wrapped">
-        This account cannot be deleted because it has an unpaid invoice. Please contact support@ngrok.com for help deleting this account.
+        This account cannot be deleted because it has an unpaid invoice. Contact support@ngrok.com for help deleting this account.
       </td>
     </tr>
     <tr>
@@ -6345,7 +6344,7 @@
         <a id="ERR_NGROK_4022" href="/docs/errors/err_ngrok_4022">ERR_NGROK_4022</a>
       </td>
       <td class="pre-wrapped">
-        You do not have permission to change the observability capture settings for this account. Please contact an admin for this account to change these settings.
+        You do not have permission to change the observability capture settings for this account. Contact an admin for this account to change these settings.
       </td>
     </tr>
     <tr>
@@ -6442,7 +6441,7 @@
         <a id="ERR_NGROK_4108" href="/docs/errors/err_ngrok_4108">ERR_NGROK_4108</a>
       </td>
       <td class="pre-wrapped">
-        Sign ups are disallowed for the email provider "<code>&lt;DOMAIN&gt;</code>". Please sign up with a different email provider.
+        Sign ups are disallowed for the email provider "<code>&lt;DOMAIN&gt;</code>". Sign up with a different email provider.
       </td>
     </tr>
     <tr>
@@ -6482,7 +6481,7 @@
         <a id="ERR_NGROK_4114" href="/docs/errors/err_ngrok_4114">ERR_NGROK_4114</a>
       </td>
       <td class="pre-wrapped">
-        The email domain "<code>&lt;DOMAIN&gt;</code>" does not allow self-serve user registrations. Please contact your ngrok administrator or support@ngrok.com for access.
+        The email domain "<code>&lt;DOMAIN&gt;</code>" does not allow self-serve user registrations. Contact your ngrok administrator or support@ngrok.com for access.
       </td>
     </tr>
     <tr>
@@ -6490,7 +6489,7 @@
         <a id="ERR_NGROK_4115" href="/docs/errors/err_ngrok_4115">ERR_NGROK_4115</a>
       </td>
       <td class="pre-wrapped">
-        The email domain "<code>&lt;DOMAIN&gt;</code>" does not allow account creation. Please contact your ngrok administrator or support@ngrok.com for access.
+        The email domain "<code>&lt;DOMAIN&gt;</code>" does not allow account creation. Contact your ngrok administrator or support@ngrok.com for access.
       </td>
     </tr>
     <tr>
@@ -6506,7 +6505,7 @@
         <a id="ERR_NGROK_4117" href="/docs/errors/err_ngrok_4117">ERR_NGROK_4117</a>
       </td>
       <td class="pre-wrapped">
-        The email address <code>&lt;EMAIL&gt;</code> already exists under a similar alias. Please use that email address to login.
+        The email address <code>&lt;EMAIL&gt;</code> already exists under a similar alias. Use that email address to login.
       </td>
     </tr>
     <tr>
@@ -6514,7 +6513,7 @@
         <a id="ERR_NGROK_4118" href="/docs/errors/err_ngrok_4118">ERR_NGROK_4118</a>
       </td>
       <td class="pre-wrapped">
-        Sign ups are disallowed for the email provided "<code>&lt;EMAIL&gt;</code>". Please sign up with a different email address.
+        Sign ups are disallowed for the email provided "<code>&lt;EMAIL&gt;</code>". Sign up with a different email address.
       </td>
     </tr>
     <tr>
@@ -6554,7 +6553,7 @@
         <a id="ERR_NGROK_4301" href="/docs/errors/err_ngrok_4301">ERR_NGROK_4301</a>
       </td>
       <td class="pre-wrapped">
-        You have not set a password for this account. Please login using Google or GitHub instead.
+        You have not set a password for this account. Login using Google or GitHub instead.
       </td>
     </tr>
     <tr>
@@ -6586,7 +6585,7 @@
         <a id="ERR_NGROK_4402" href="/docs/errors/err_ngrok_4402">ERR_NGROK_4402</a>
       </td>
       <td class="pre-wrapped">
-        The invited user would exceed your current team size limit of <code>&lt;TEAM_SIZE&gt;</code>. Add another seat at: <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a>. Then you'll be able to invite your team.
+        The invited user would exceed your current team size limit of <code>&lt;TEAM_SIZE&gt;</code>. Add another seat at: <a href="https://dashboard.ngrok.com/billing/choose-a-plan">https://dashboard.ngrok.com/billing/choose-a-plan</a>. Then you'll be able to invite your team.
       </td>
     </tr>
     <tr>
@@ -6594,7 +6593,7 @@
         <a id="ERR_NGROK_4403" href="/docs/errors/err_ngrok_4403">ERR_NGROK_4403</a>
       </td>
       <td class="pre-wrapped">
-        You cannot invite any more users. Please email support@ngrok.com if you believe this is an error.
+        You cannot invite any more users. Contact support@ngrok.com if you believe this is an error.
       </td>
     </tr>
     <tr>
@@ -6666,7 +6665,7 @@
         <a id="ERR_NGROK_4413" href="/docs/errors/err_ngrok_4413">ERR_NGROK_4413</a>
       </td>
       <td class="pre-wrapped">
-        Developer Read Write must set on a user if thier permissions include Invite.
+        Developer Read Write must be set on a user if their permissions include Invite.
       </td>
     </tr>
     <tr>
@@ -6722,7 +6721,7 @@
         <a id="ERR_NGROK_4500" href="/docs/errors/err_ngrok_4500">ERR_NGROK_4500</a>
       </td>
       <td class="pre-wrapped">
-        The URL <code>&lt;URL&gt;</code> is not a valid tcp address or URL.  Please use either hostname:port or a full URL including protocol for HTTP or TLS endpoints.
+        The URL <code>&lt;URL&gt;</code> is not a valid tcp address or URL. Use either hostname:port or a full URL including protocol for HTTP or TLS endpoints.
       </td>
     </tr>
     <tr>
@@ -6906,7 +6905,7 @@
         <a id="ERR_NGROK_5120" href="/docs/errors/err_ngrok_5120">ERR_NGROK_5120</a>
       </td>
       <td class="pre-wrapped">
-        The provided <code>&lt;FIELD&gt;</code> (<code>&lt;ARN&gt;</code>) is invalid. Please make sure it matches the ARN you obtained from Amazon exactly.
+        The provided <code>&lt;FIELD&gt;</code> (<code>&lt;ARN&gt;</code>) is invalid. Make sure it matches the ARN you obtained from Amazon exactly.
       </td>
     </tr>
     <tr>
@@ -7142,7 +7141,7 @@
         <a id="ERR_NGROK_5209" href="/docs/errors/err_ngrok_5209">ERR_NGROK_5209</a>
       </td>
       <td class="pre-wrapped">
-        The authentication flow was not completed in time. Please try authenticating again.
+        The authentication flow was not completed in time. Try authenticating again.
       </td>
     </tr>
     <tr>
@@ -7150,7 +7149,7 @@
         <a id="ERR_NGROK_5210" href="/docs/errors/err_ngrok_5210">ERR_NGROK_5210</a>
       </td>
       <td class="pre-wrapped">
-        The authentication flow was not completed in time. Please try authenticating again.
+        The authentication flow was not completed in time. Try authenticating again.
       </td>
     </tr>
     <tr>
@@ -7158,7 +7157,7 @@
         <a id="ERR_NGROK_5211" href="/docs/errors/err_ngrok_5211">ERR_NGROK_5211</a>
       </td>
       <td class="pre-wrapped">
-        The OIDC provider returned the error code "<code>&lt;ERROR&gt;</code>" with the additional details: "<code>&lt;DETAILS&gt;</code>". Please try authenticating again.
+        The OIDC provider returned the error code "<code>&lt;ERROR&gt;</code>" with the additional details: "<code>&lt;DETAILS&gt;</code>". Try authenticating again.
       </td>
     </tr>
     <tr>
@@ -7281,7 +7280,7 @@
         <a id="ERR_NGROK_5313" href="/docs/errors/err_ngrok_5313">ERR_NGROK_5313</a>
       </td>
       <td class="pre-wrapped">
-        The authentication flow was not completed in time. Please try authenticating again.
+        The authentication flow was not completed in time. Try authenticating again.
       </td>
     </tr>
     <tr>
@@ -7289,7 +7288,7 @@
         <a id="ERR_NGROK_5314" href="/docs/errors/err_ngrok_5314">ERR_NGROK_5314</a>
       </td>
       <td class="pre-wrapped">
-        The logout flow was not completed in time. Please try authenticating again.
+        The logout flow was not completed in time. Try authenticating again.
       </td>
     </tr>
     <tr>
@@ -7297,7 +7296,7 @@
         <a id="ERR_NGROK_5315" href="/docs/errors/err_ngrok_5315">ERR_NGROK_5315</a>
       </td>
       <td class="pre-wrapped">
-        The authentication flow was not completed in time. Please try authenticating again.
+        The authentication flow was not completed in time. Try authenticating again.
       </td>
     </tr>
     <tr>
@@ -7305,7 +7304,7 @@
         <a id="ERR_NGROK_5316" href="/docs/errors/err_ngrok_5316">ERR_NGROK_5316</a>
       </td>
       <td class="pre-wrapped">
-        The logout flow was not completed in time. Please try authenticating again.
+        The logout flow was not completed in time. Try authenticating again.
       </td>
     </tr>
     <tr>
@@ -7377,7 +7376,7 @@
         <a id="ERR_NGROK_5325" href="/docs/errors/err_ngrok_5325">ERR_NGROK_5325</a>
       </td>
       <td class="pre-wrapped">
-        Failed to complete IdP-initiated SAML login. Edge does not have any attached domains. Please ensure that at least one domain is configured as a hostport for "<code>&lt;EDGID&gt;</code>".
+        Failed to complete IdP-initiated SAML login. Edge does not have any attached domains. Ensure that at least one domain is configured as a hostport for "<code>&lt;EDGID&gt;</code>".
       </td>
     </tr>
     <tr>
@@ -7385,7 +7384,7 @@
         <a id="ERR_NGROK_5326" href="/docs/errors/err_ngrok_5326">ERR_NGROK_5326</a>
       </td>
       <td class="pre-wrapped">
-        Failed to complete IdP-initiated SAML login. The RelayState must be configured with the redirect URL for IdP-initiated logins when using a route selector match type of "<code>&lt;MATCHTYP&gt;</code>".
+        Failed to complete IdP-initiated SAML login. The RelayState must be configured with the redirect URL for IdP-initiated logins when using a route selector match type of "<code>&lt;MATCHTYPE&gt;</code>".
       </td>
     </tr>
     <tr>
@@ -7457,7 +7456,7 @@
         <a id="ERR_NGROK_5501" href="/docs/errors/err_ngrok_5501">ERR_NGROK_5501</a>
       </td>
       <td class="pre-wrapped">
-        The authentication flow was not completed in time. Please try authenticating again.
+        The authentication flow was not completed in time. Try authenticating again.
       </td>
     </tr>
     <tr>
@@ -7466,7 +7465,7 @@
       </td>
       <td class="pre-wrapped">
         Authorization with <code>&lt;PROVIDER&gt;</code> succeeded, but these required scopes not were granted: <code>&lt;SCOPES&gt;</code>.
-        Please reauthorize and grant all requested scopes to the application.
+        Reauthorize and grant all requested scopes to the application.
       </td>
     </tr>
     <tr>
@@ -7482,7 +7481,7 @@
         <a id="ERR_NGROK_5504" href="/docs/errors/err_ngrok_5504">ERR_NGROK_5504</a>
       </td>
       <td class="pre-wrapped">
-        The authentication flow was not completed in time. Please try authenticating again.
+        The authentication flow was not completed in time. Try authenticating again.
       </td>
     </tr>
     <tr>
@@ -7499,7 +7498,7 @@
       </td>
       <td class="pre-wrapped">
         Authorization with <code>&lt;PROVIDER&gt;</code> succeeded, but these required scopes not were granted: <code>&lt;SCOPES&gt;</code>.
-        Please reauthorize and grant all requested scopes to the application.
+        Reauthorize and grant all requested scopes to the application.
       </td>
     </tr>
     <tr>
@@ -7542,7 +7541,7 @@
       </td>
       <td class="pre-wrapped">
         <code>&lt;PROVIDER&gt;</code> denied access to your data during the final step of authorization: <code>&lt;DESCRIPTION&gt;</code>.
-        Please contact the owner of this application to ensure it is properly installed for your organization.
+        Contact the owner of this application to ensure it is properly installed for your organization.
       </td>
     </tr>
     <tr>
@@ -7585,7 +7584,7 @@
       </td>
       <td class="pre-wrapped">
         <code>&lt;PROVIDER&gt;</code> rejected authorization as the redirect URL for this application is improperly configured: <code>&lt;DESCRIPTION&gt;</code>.
-        Please contact the owner of this application in order to fix this error.
+        Contact the owner of this application in order to fix this error.
       </td>
     </tr>
     <tr>
@@ -7603,7 +7602,7 @@
       </td>
       <td class="pre-wrapped">
         <code>&lt;PROVIDER&gt;</code> has throttled this application and cannot be reached right now.
-        Please try again in a few minutes.
+        Try again in a few minutes.
       </td>
     </tr>
     <tr>
@@ -7629,7 +7628,7 @@
       </td>
       <td class="pre-wrapped">
         The access code from <code>&lt;PROVIDER&gt;</code> has expired and cannot be used.
-        Please authorize again more quickly.
+        Authorize again more quickly.
       </td>
     </tr>
     <tr>
@@ -7638,7 +7637,7 @@
       </td>
       <td class="pre-wrapped">
         <code>&lt;PROVIDER&gt;</code> denied access to your data during the final step of authorization.
-        Please contact the owner of this application to ensure it is properly installed for your organization.
+        Contact the owner of this application to ensure it is properly installed for your organization.
       </td>
     </tr>
     <tr>
@@ -7655,7 +7654,7 @@
       </td>
       <td class="pre-wrapped">
         <code>&lt;PROVIDER&gt;</code> denied access to your account as the correct account could not be chosen automatically.
-        Please try authorizing again or contacting the owner of this application if the issue persists.
+        Try authorizing again or contacting the owner of this application if the issue persists.
       </td>
     </tr>
     <tr>
@@ -7664,7 +7663,7 @@
       </td>
       <td class="pre-wrapped">
         <code>&lt;PROVIDER&gt;</code> denied access to your account as reauthentication is required.
-        Please try logging in again or contact the owner of this application if the issue persists.
+        Try logging in again or contact the owner of this application if the issue persists.
       </td>
     </tr>
     <tr>
@@ -7673,7 +7672,7 @@
       </td>
       <td class="pre-wrapped">
         <code>&lt;PROVIDER&gt;</code> had an internal server error when refreshing your information.
-        Please try again or contact the owner of this application if the issue persists.
+        Try again or contact the owner of this application if the issue persists.
       </td>
     </tr>
     <tr>
@@ -7879,7 +7878,7 @@
         <a id="ERR_NGROK_6025" href="/docs/errors/err_ngrok_6025">ERR_NGROK_6025</a>
       </td>
       <td class="pre-wrapped">
-        The tunnel <code>&lt;URL&gt;</code> is already bound to another tunnel session. Please start the ngrok agent with a different domain.
+        The tunnel <code>&lt;URL&gt;</code> is already bound to another tunnel session. Start the ngrok agent with a different domain.
       </td>
     </tr>
     <tr>
@@ -7935,7 +7934,7 @@
         <a id="ERR_NGROK_6032" href="/docs/errors/err_ngrok_6032">ERR_NGROK_6032</a>
       </td>
       <td class="pre-wrapped">
-        This ngrok account is not allowed to use the paid traffic policy features configured on this endpoint. Please upgrade your plan to enable this endpoint.
+        This ngrok account is not allowed to use the paid traffic policy features configured on this endpoint. Upgrade your plan to enable this endpoint.
       </td>
     </tr>
     <tr>
@@ -8064,7 +8063,7 @@
       </td>
       <td class="pre-wrapped">
         Tunnel Group Backend <code>&lt;ID&gt;</code> did not match any tunnels.
-        Please start tunnels matching its labels in order to serve traffic.
+        Start tunnels matching its labels in order to serve traffic.
       </td>
     </tr>
     <tr>
@@ -8171,7 +8170,7 @@
       </td>
       <td class="pre-wrapped">
         The account <code>&lt;NAME&gt;</code> has reached its team size limit and may not add additional users.
-        Please ask the account owner to upgrade your plan: <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a>
+        Ask the account owner to upgrade your plan: <a href="https://dashboard.ngrok.com/billing/choose-a-plan">https://dashboard.ngrok.com/billing/choose-a-plan</a>
       </td>
     </tr>
     <tr>
@@ -8227,7 +8226,7 @@
         <a id="ERR_NGROK_6607" href="/docs/errors/err_ngrok_6607">ERR_NGROK_6607</a>
       </td>
       <td class="pre-wrapped">
-        You may not change the account administrator. Only the current accont administrator may make this change.
+        You may not change the account administrator. Only the current account administrator may make this change.
       </td>
     </tr>
     <tr>
@@ -9742,7 +9741,7 @@
         <a id="ERR_NGROK_7177" href="/docs/errors/err_ngrok_7177">ERR_NGROK_7177</a>
       </td>
       <td class="pre-wrapped">
-        The <code>&lt;TYPE&gt;</code> algorithm is invalid. Please consult the documentation for valid algorithms.
+        The <code>&lt;TYPE&gt;</code> algorithm is invalid. Consult the documentation for valid algorithms.
       </td>
     </tr>
     <tr>
@@ -9886,7 +9885,7 @@
         <a id="ERR_NGROK_7195" href="/docs/errors/err_ngrok_7195">ERR_NGROK_7195</a>
       </td>
       <td class="pre-wrapped">
-        This edge module has exceeded its policy rule limit of <code>&lt;LIMIT&gt;</code>. Please log into https://dashboard.ngrok.com to view your options.
+        This edge module has exceeded its policy rule limit of <code>&lt;LIMIT&gt;</code>. Log into <a href="https://dashboard.ngrok.com/billing">https://dashboard.ngrok.com/billing</a> to view your options.
       </td>
     </tr>
     <tr>
@@ -10001,7 +10000,7 @@
         <a id="ERR_NGROK_8012" href="/docs/errors/err_ngrok_8012">ERR_NGROK_8012</a>
       </td>
       <td class="pre-wrapped">
-        Traffic was successfully tunneled to the ngrok agent, but the agent failed to establish a connection to the upstream web service at <code>&lt;ADDR&gt;</code>.
+        Traffic successfully made it to the ngrok agent, but the agent failed to establish a connection to the upstream web service at <code>&lt;ADDR&gt;</code>.
       </td>
     </tr>
     <tr>
@@ -10027,7 +10026,7 @@
       </td>
       <td class="pre-wrapped">
         An account is required to use basic authentication.
-        Please register for an ngrok account at: <a href="https://dashboard.ngrok.com/signup">https://dashboard.ngrok.com/signup</a> and install your authtoken.
+        Register for an ngrok account at: <a href="https://dashboard.ngrok.com/signup">https://dashboard.ngrok.com/signup</a> and install your authtoken.
       </td>
     </tr>
     <tr>
@@ -10052,7 +10051,7 @@
       </td>
       <td class="pre-wrapped">
         Your legacy account is not authorized to use request headers.
-        Upgrade to a new paid plan at: <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a>
+        Upgrade to a new paid plan at: <a href="https://dashboard.ngrok.com/billing/choose-a-plan">https://dashboard.ngrok.com/billing/choose-a-plan</a>
       </td>
     </tr>
     <tr>
@@ -10061,7 +10060,7 @@
       </td>
       <td class="pre-wrapped">
         Your legacy account is not authorized to use response headers.
-        Upgrade to a new paid plan at: <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a>
+        Upgrade to a new paid plan at: <a href="https://dashboard.ngrok.com/billing/choose-a-plan">https://dashboard.ngrok.com/billing/choose-a-plan</a>
       </td>
     </tr>
     <tr>
@@ -10070,7 +10069,7 @@
       </td>
       <td class="pre-wrapped">
         Your legacy account is not authorized to use OIDC.
-        Upgrade to a new paid plan at: <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a>
+        Upgrade to a new paid plan at: <a href="https://dashboard.ngrok.com/billing/choose-a-plan">https://dashboard.ngrok.com/billing/choose-a-plan</a>
       </td>
     </tr>
     <tr>
@@ -10079,7 +10078,7 @@
       </td>
       <td class="pre-wrapped">
         Your legacy account is not authorized to use SAML. 
-        Upgrade to a new paid plan at: <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a>
+        Upgrade to a new paid plan at: <a href="https://dashboard.ngrok.com/billing/choose-a-plan">https://dashboard.ngrok.com/billing/choose-a-plan</a>
       </td>
     </tr>
     <tr>
@@ -10088,7 +10087,7 @@
       </td>
       <td class="pre-wrapped">
         Your legacy account is not authorized to use TLS Termination.
-        Upgrade to a new paid plan at: <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a>
+        Upgrade to a new paid plan at: <a href="https://dashboard.ngrok.com/billing/choose-a-plan">https://dashboard.ngrok.com/billing/choose-a-plan</a>
       </td>
     </tr>
     <tr>
@@ -10097,7 +10096,7 @@
       </td>
       <td class="pre-wrapped">
         Your legacy account is not authorized to run the agent as a service.
-        Upgrade to a new plan at: <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a>
+        Upgrade to a new plan at: <a href="https://dashboard.ngrok.com/billing/choose-a-plan">https://dashboard.ngrok.com/billing/choose-a-plan</a>
       </td>
     </tr>
     <tr>
@@ -10106,7 +10105,7 @@
       </td>
       <td class="pre-wrapped">
         Running the agent with an http/s proxy is a paid feature. If this is unexpected, verify that there is no proxy_url value in your ngrok configuration file and that the http_proxy environment variable is not set.
-        If you need this capability, upgrade to new plan at: <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a>
+        If you need this capability, upgrade to new plan at: <a href="https://dashboard.ngrok.com/billing/choose-a-plan">https://dashboard.ngrok.com/billing/choose-a-plan</a>
       </td>
     </tr>
     <tr>
@@ -10115,7 +10114,7 @@
       </td>
       <td class="pre-wrapped">
         Your legacy account is not authorized to run the agent with socks5 proxy.
-        Upgrade to a new plan at: <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a>
+        Upgrade to a new plan at: <a href="https://dashboard.ngrok.com/billing/choose-a-plan">https://dashboard.ngrok.com/billing/choose-a-plan</a>
       </td>
     </tr>
     <tr>
@@ -10124,7 +10123,7 @@
       </td>
       <td class="pre-wrapped">
         Your legacy account is not authorized to run the agent on a custom network interface.
-        Upgrade to a new plan at: <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a>
+        Upgrade to a new plan at: <a href="https://dashboard.ngrok.com/billing/choose-a-plan">https://dashboard.ngrok.com/billing/choose-a-plan</a>
       </td>
     </tr>
     <tr>
@@ -10133,7 +10132,7 @@
       </td>
       <td class="pre-wrapped">
         Your legacy account is not authorized to run the agent with custom CAs.
-        Upgrade to a new paid plan at: <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a>
+        Upgrade to a new paid plan at: <a href="https://dashboard.ngrok.com/billing/choose-a-plan">https://dashboard.ngrok.com/billing/choose-a-plan</a>
       </td>
     </tr>
     <tr>
@@ -10142,7 +10141,7 @@
       </td>
       <td class="pre-wrapped">
         Your legacy account is not authorized to run the agent with mutual TLS.
-        Please contact us at: sales@ngrok.com
+        Contact us at: sales@ngrok.com
       </td>
     </tr>
     <tr>
@@ -10151,7 +10150,7 @@
       </td>
       <td class="pre-wrapped">
         Your legacy account is not authorized to run the agent with proxy proto.
-        Upgrade to a new Pay-as-you-go plan at: <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a>
+        Upgrade to a new Pay-as-you-go plan at: <a href="https://dashboard.ngrok.com/billing/choose-a-plan">https://dashboard.ngrok.com/billing/choose-a-plan</a>?plan=paygo
       </td>
     </tr>
     <tr>
@@ -10176,7 +10175,7 @@
       </td>
       <td class="pre-wrapped">
         Your legacy account is not authorized to use ip restrictions.
-        Upgrade to a new paid plan at: <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a>
+        Upgrade to a new paid plan at: <a href="https://dashboard.ngrok.com/billing/choose-a-plan">https://dashboard.ngrok.com/billing/choose-a-plan</a>
       </td>
     </tr>
     <tr>
@@ -10185,7 +10184,7 @@
       </td>
       <td class="pre-wrapped">
         An account is required to use host header rewrite.
-        Please register for an ngrok account at: <a href="https://dashboard.ngrok.com/signup">https://dashboard.ngrok.com/signup</a> and install your authtoken.
+        Register for an ngrok account at: <a href="https://dashboard.ngrok.com/signup">https://dashboard.ngrok.com/signup</a> and install your authtoken.
       </td>
     </tr>
     <tr>
@@ -10194,7 +10193,7 @@
       </td>
       <td class="pre-wrapped">
         Your legacy account is not authorized to use mutual TLS. 
-        Please contact us at: sales@ngrok.com
+        Contact us at: sales@ngrok.com
       </td>
     </tr>
     <tr>
@@ -10203,7 +10202,7 @@
       </td>
       <td class="pre-wrapped">
         Your legacy account is not authorized to use the websocket to TCP converter.
-        Upgrade to a new paid plan at: <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a>
+        Upgrade to a new paid plan at: <a href="https://dashboard.ngrok.com/billing/choose-a-plan">https://dashboard.ngrok.com/billing/choose-a-plan</a>
       </td>
     </tr>
     <tr>
@@ -10220,7 +10219,7 @@
       </td>
       <td class="pre-wrapped">
         Your legacy account is not authorized to use user agent filtering.
-        Please upgrade to a new paid plan at: <a href="https://dashboard.ngrok.com/billing/subscription">https://dashboard.ngrok.com/billing/subscription</a>
+        Upgrade to a new paid plan at: <a href="https://dashboard.ngrok.com/billing/choose-a-plan">https://dashboard.ngrok.com/billing/choose-a-plan</a>
       </td>
     </tr>
     <tr>
@@ -10396,7 +10395,7 @@
         <a id="ERR_NGROK_10000" href="/docs/errors/err_ngrok_10000">ERR_NGROK_10000</a>
       </td>
       <td class="pre-wrapped">
-        Internal Server Error. Please check our status page https://status.ngrok.com/ or contact support: support@ngrok.com
+        Internal Server Error. Check our status page https://status.ngrok.com/ or contact support: support@ngrok.com
       </td>
     </tr>
     <tr>
@@ -10404,7 +10403,7 @@
         <a id="ERR_NGROK_10001" href="/docs/errors/err_ngrok_10001">ERR_NGROK_10001</a>
       </td>
       <td class="pre-wrapped">
-        Something went wrong with our code. Please refresh the page and try again. If the problem persists, please contact support: support@ngrok.com
+        Something went wrong with our code. Refresh the page and try again. If the problem persists, please contact support: support@ngrok.com
       </td>
     </tr>
     <tr>
@@ -10412,7 +10411,7 @@
         <a id="ERR_NGROK_10002" href="/docs/errors/err_ngrok_10002">ERR_NGROK_10002</a>
       </td>
       <td class="pre-wrapped">
-        Could not read server rendered application data. Please refresh the page and try again. If the problem persists, please contact support: support@ngrok.com
+        Could not read server rendered application data. Refresh the page and try again. If the problem persists, please contact support: support@ngrok.com
       </td>
     </tr>
     <tr>
@@ -10420,7 +10419,7 @@
         <a id="ERR_NGROK_10003" href="/docs/errors/err_ngrok_10003">ERR_NGROK_10003</a>
       </td>
       <td class="pre-wrapped">
-        Something went wrong when communicating with Stripe. Please try again later. If the problem persists, please contact support: support@ngrok.com
+        Something went wrong when communicating with Stripe. Try again later. If the problem persists, please contact support: support@ngrok.com
       </td>
     </tr>
     <tr>
@@ -10604,7 +10603,7 @@
         <a id="ERR_NGROK_10030" href="/docs/errors/err_ngrok_10030">ERR_NGROK_10030</a>
       </td>
       <td class="pre-wrapped">
-        Failed to upload Certificate Authority. Please limit your file uploads to less than 16 KB.
+        Failed to upload Certificate Authority. Limit your file uploads to less than 16 KB.
       </td>
     </tr>
     <tr>
@@ -10612,7 +10611,7 @@
         <a id="ERR_NGROK_10031" href="/docs/errors/err_ngrok_10031">ERR_NGROK_10031</a>
       </td>
       <td class="pre-wrapped">
-        Failed to upload SAML IdP Metadata. Please limit your file uploads to less than 16 KB.
+        Failed to upload SAML IdP Metadata. Limit your file uploads to less than 16 KB.
       </td>
     </tr>
     <tr>
@@ -10620,7 +10619,7 @@
         <a id="ERR_NGROK_10032" href="/docs/errors/err_ngrok_10032">ERR_NGROK_10032</a>
       </td>
       <td class="pre-wrapped">
-        Failed to upload TLS Certificate. Please limit your file uploads to less than 16 KB.
+        Failed to upload TLS Certificate. Limit your file uploads to less than 16 KB.
       </td>
     </tr>
     <tr>
@@ -10628,7 +10627,7 @@
         <a id="ERR_NGROK_10033" href="/docs/errors/err_ngrok_10033">ERR_NGROK_10033</a>
       </td>
       <td class="pre-wrapped">
-        Failed to upload TLS Certificate Private Key. Please limit your file uploads to less than 16 KB.
+        Failed to upload TLS Certificate Private Key. Limit your file uploads to less than 16 KB.
       </td>
     </tr>
     <tr>
@@ -10636,7 +10635,7 @@
         <a id="ERR_NGROK_10034" href="/docs/errors/err_ngrok_10034">ERR_NGROK_10034</a>
       </td>
       <td class="pre-wrapped">
-        Could not copy the AuthToken to your clipboard. Please ensure that you have granted the browser permission "clipboard-write".
+        Could not copy the AuthToken to your clipboard. Ensure that you have granted the browser permission "clipboard-write".
       </td>
     </tr>
     <tr>
@@ -10660,7 +10659,7 @@
         <a id="ERR_NGROK_10064" href="/docs/errors/err_ngrok_10064">ERR_NGROK_10064</a>
       </td>
       <td class="pre-wrapped">
-        Encountered a type "never" value. Please refresh the page and try again. If the problem persists, please contact support: support@ngrok.com
+        Encountered a type "never" value. Refresh the page and try again. If the problem persists, please contact support: support@ngrok.com
       </td>
     </tr>
     <tr>
@@ -10668,7 +10667,7 @@
         <a id="ERR_NGROK_10065" href="/docs/errors/err_ngrok_10065">ERR_NGROK_10065</a>
       </td>
       <td class="pre-wrapped">
-        Encountered a type "never" value. Please refresh the page and try again. If the problem persists, please contact support: support@ngrok.com
+        Encountered a type "never" value. Refresh the page and try again. If the problem persists, please contact support: support@ngrok.com
       </td>
     </tr>
     <tr>
@@ -10676,7 +10675,7 @@
         <a id="ERR_NGROK_10066" href="/docs/errors/err_ngrok_10066">ERR_NGROK_10066</a>
       </td>
       <td class="pre-wrapped">
-        Encountered a type "never" value. Please refresh the page and try again. If the problem persists, please contact support: support@ngrok.com
+        Encountered a type "never" value. Refresh the page and try again. If the problem persists, please contact support: support@ngrok.com
       </td>
     </tr>
     <tr>
@@ -10684,7 +10683,7 @@
         <a id="ERR_NGROK_10067" href="/docs/errors/err_ngrok_10067">ERR_NGROK_10067</a>
       </td>
       <td class="pre-wrapped">
-        Encountered a type "never" value. Please refresh the page and try again. If the problem persists, please contact support: support@ngrok.com
+        Encountered a type "never" value. Refresh the page and try again. If the problem persists, please contact support: support@ngrok.com
       </td>
     </tr>
     <tr>
@@ -10692,7 +10691,7 @@
         <a id="ERR_NGROK_10068" href="/docs/errors/err_ngrok_10068">ERR_NGROK_10068</a>
       </td>
       <td class="pre-wrapped">
-        Encountered a type "never" value. Please refresh the page and try again. If the problem persists, please contact support: support@ngrok.com
+        Encountered a type "never" value. Refresh the page and try again. If the problem persists, please contact support: support@ngrok.com
       </td>
     </tr>
     <tr>
@@ -10700,7 +10699,7 @@
         <a id="ERR_NGROK_10069" href="/docs/errors/err_ngrok_10069">ERR_NGROK_10069</a>
       </td>
       <td class="pre-wrapped">
-        Encountered a type "never" value. Please refresh the page and try again. If the problem persists, please contact support: support@ngrok.com
+        Encountered a type "never" value. Refresh the page and try again. If the problem persists, please contact support: support@ngrok.com
       </td>
     </tr>
     <tr>
@@ -10708,7 +10707,7 @@
         <a id="ERR_NGROK_10072" href="/docs/errors/err_ngrok_10072">ERR_NGROK_10072</a>
       </td>
       <td class="pre-wrapped">
-        Encountered a type "never" value. Please refresh the page and try again. If the problem persists, please contact support: support@ngrok.com
+        Encountered a type "never" value. Refresh the page and try again. If the problem persists, please contact support: support@ngrok.com
       </td>
     </tr>
     <tr>
@@ -10716,7 +10715,7 @@
         <a id="ERR_NGROK_10073" href="/docs/errors/err_ngrok_10073">ERR_NGROK_10073</a>
       </td>
       <td class="pre-wrapped">
-        Encountered a type "never" value. Please refresh the page and try again. If the problem persists, please contact support: support@ngrok.com
+        Encountered a type "never" value. Refresh the page and try again. If the problem persists, please contact support: support@ngrok.com
       </td>
     </tr>
     <tr>
@@ -10724,7 +10723,7 @@
         <a id="ERR_NGROK_10074" href="/docs/errors/err_ngrok_10074">ERR_NGROK_10074</a>
       </td>
       <td class="pre-wrapped">
-        Encountered a type "never" value. Please refresh the page and try again. If the problem persists, please contact support: support@ngrok.com
+        Encountered a type "never" value. Refresh the page and try again. If the problem persists, please contact support: support@ngrok.com
       </td>
     </tr>
     <tr>
@@ -10732,7 +10731,7 @@
         <a id="ERR_NGROK_10075" href="/docs/errors/err_ngrok_10075">ERR_NGROK_10075</a>
       </td>
       <td class="pre-wrapped">
-        Encountered a type "never" value. Please refresh the page and try again. If the problem persists, please contact support: support@ngrok.com
+        Encountered a type "never" value. Refresh the page and try again. If the problem persists, please contact support: support@ngrok.com
       </td>
     </tr>
     <tr>
@@ -10740,7 +10739,7 @@
         <a id="ERR_NGROK_10076" href="/docs/errors/err_ngrok_10076">ERR_NGROK_10076</a>
       </td>
       <td class="pre-wrapped">
-        Encountered a type "never" value. Please refresh the page and try again. If the problem persists, please contact support: support@ngrok.com
+        Encountered a type "never" value. Refresh the page and try again. If the problem persists, please contact support: support@ngrok.com
       </td>
     </tr>
     <tr>
@@ -10860,7 +10859,7 @@
         <a id="ERR_NGROK_10091" href="/docs/errors/err_ngrok_10091">ERR_NGROK_10091</a>
       </td>
       <td class="pre-wrapped">
-        The usage page has timed out. Please refresh the page and try again.
+        The usage page has timed out. Refresh the page and try again.
       </td>
     </tr>
     <tr>
@@ -10868,7 +10867,7 @@
         <a id="ERR_NGROK_11000" href="/docs/errors/err_ngrok_11000">ERR_NGROK_11000</a>
       </td>
       <td class="pre-wrapped">
-        Internal Server Error. Please refresh the page and try again. If the problem persists, please check our status page https://status.ngrok.com/ or contact the frontend team.
+        Internal Server Error. Refresh the page and try again. If the problem persists, please check our status page https://status.ngrok.com/ or contact the frontend team.
       </td>
     </tr>
     <tr>
@@ -10876,7 +10875,7 @@
         <a id="ERR_NGROK_11001" href="/docs/errors/err_ngrok_11001">ERR_NGROK_11001</a>
       </td>
       <td class="pre-wrapped">
-        Something went wrong with our code. Please refresh the page and try again. If the problem persists, please contact the frontend team.
+        Something went wrong with our code. Refresh the page and try again. If the problem persists, please contact the frontend team.
       </td>
     </tr>
     <tr>
@@ -10884,7 +10883,7 @@
         <a id="ERR_NGROK_11002" href="/docs/errors/err_ngrok_11002">ERR_NGROK_11002</a>
       </td>
       <td class="pre-wrapped">
-        Could not read server rendered application data. Please refresh the page and try again. If the problem persists, please contact the frontend team.
+        Could not read server rendered application data. Refresh the page and try again. If the problem persists, please contact the frontend team.
       </td>
     </tr>
     <tr>
@@ -10892,7 +10891,7 @@
         <a id="ERR_NGROK_11003" href="/docs/errors/err_ngrok_11003">ERR_NGROK_11003</a>
       </td>
       <td class="pre-wrapped">
-        Something went wrong with our code. Please refresh the page and try again. If the problem persists, please contact the frontend team.
+        Something went wrong with our code. Refresh the page and try again. If the problem persists, please contact the frontend team.
       </td>
     </tr>
     <tr>
@@ -10916,7 +10915,7 @@
         <a id="ERR_NGROK_11006" href="/docs/errors/err_ngrok_11006">ERR_NGROK_11006</a>
       </td>
       <td class="pre-wrapped">
-        Encountered a type "never" value. Please refresh the page and try again. If the problem persists, please contact the frontend team.
+        Encountered a type "never" value. Refresh the page and try again. If the problem persists, please contact the frontend team.
       </td>
     </tr>
     <tr>
@@ -10924,7 +10923,7 @@
         <a id="ERR_NGROK_12000" href="/docs/errors/err_ngrok_12000">ERR_NGROK_12000</a>
       </td>
       <td class="pre-wrapped">
-        A new version of ngrok corp is required to continue. Please refresh the page to update.
+        A new version of ngrok corp is required to continue. Refresh the page to update.
       </td>
     </tr>
     <tr>
@@ -10932,7 +10931,7 @@
         <a id="ERR_NGROK_13001" href="/docs/errors/err_ngrok_13001">ERR_NGROK_13001</a>
       </td>
       <td class="pre-wrapped">
-        Encountered a type "never" value. Please refresh the page and try again. If the problem persists, please contact support: support@ngrok.com
+        Encountered a type "never" value. Refresh the page and try again. If the problem persists, please contact support: support@ngrok.com
       </td>
     </tr>
     <tr>
@@ -10940,7 +10939,7 @@
         <a id="ERR_NGROK_13002" href="/docs/errors/err_ngrok_13002">ERR_NGROK_13002</a>
       </td>
       <td class="pre-wrapped">
-        Encountered a type "never" value. Please refresh the page and try again. If the problem persists, please contact support: support@ngrok.com
+        Encountered a type "never" value. Refresh the page and try again. If the problem persists, please contact support: support@ngrok.com
       </td>
     </tr>
     <tr>
@@ -10948,7 +10947,7 @@
         <a id="ERR_NGROK_13003" href="/docs/errors/err_ngrok_13003">ERR_NGROK_13003</a>
       </td>
       <td class="pre-wrapped">
-        Encountered a type "never" value. Please refresh the page and try again. If the problem persists, please contact support: support@ngrok.com
+        Encountered a type "never" value. Refresh the page and try again. If the problem persists, please contact support: support@ngrok.com
       </td>
     </tr>
     <tr>
@@ -10956,7 +10955,7 @@
         <a id="ERR_NGROK_13004" href="/docs/errors/err_ngrok_13004">ERR_NGROK_13004</a>
       </td>
       <td class="pre-wrapped">
-        Encountered a type "never" value. Please refresh the page and try again. If the problem persists, please contact support: support@ngrok.com
+        Encountered a type "never" value. Refresh the page and try again. If the problem persists, please contact support: support@ngrok.com
       </td>
     </tr>
     <tr>
@@ -10964,7 +10963,7 @@
         <a id="ERR_NGROK_13005" href="/docs/errors/err_ngrok_13005">ERR_NGROK_13005</a>
       </td>
       <td class="pre-wrapped">
-        Encountered a type "never" value. Please refresh the page and try again. If the problem persists, please contact support: support@ngrok.com
+        Encountered a type "never" value. Refresh the page and try again. If the problem persists, please contact support: support@ngrok.com
       </td>
     </tr>
     <tr>
@@ -10972,7 +10971,7 @@
         <a id="ERR_NGROK_13006" href="/docs/errors/err_ngrok_13006">ERR_NGROK_13006</a>
       </td>
       <td class="pre-wrapped">
-        Encountered a type "never" value. Please refresh the page and try again. If the problem persists, please contact support: support@ngrok.com
+        Encountered a type "never" value. Refresh the page and try again. If the problem persists, please contact support: support@ngrok.com
       </td>
     </tr>
     <tr>
@@ -10980,7 +10979,7 @@
         <a id="ERR_NGROK_13007" href="/docs/errors/err_ngrok_13007">ERR_NGROK_13007</a>
       </td>
       <td class="pre-wrapped">
-        Encountered a type "never" value. Please refresh the page and try again. If the problem persists, please contact support: support@ngrok.com
+        Encountered a type "never" value. Refresh the page and try again. If the problem persists, please contact support: support@ngrok.com
       </td>
     </tr>
     <tr>
@@ -10988,7 +10987,7 @@
         <a id="ERR_NGROK_13008" href="/docs/errors/err_ngrok_13008">ERR_NGROK_13008</a>
       </td>
       <td class="pre-wrapped">
-        Encountered a type "never" value. Please refresh the page and try again. If the problem persists, please contact support: support@ngrok.com
+        Encountered a type "never" value. Refresh the page and try again. If the problem persists, please contact support: support@ngrok.com
       </td>
     </tr>
     <tr>
@@ -10996,7 +10995,7 @@
         <a id="ERR_NGROK_13009" href="/docs/errors/err_ngrok_13009">ERR_NGROK_13009</a>
       </td>
       <td class="pre-wrapped">
-        Encountered a type "never" value. Please refresh the page and try again. If the problem persists, please contact support: support@ngrok.com
+        Encountered a type "never" value. Refresh the page and try again. If the problem persists, please contact support: support@ngrok.com
       </td>
     </tr>
     <tr>
@@ -11044,7 +11043,7 @@
         <a id="ERR_NGROK_15002" href="/docs/errors/err_ngrok_15002">ERR_NGROK_15002</a>
       </td>
       <td class="pre-wrapped">
-        Your account is on the <code>&lt;PLAN&gt;</code> plan, which requires you to register a Domain or TCP Address through the ngrok Dashboard before starting an Endpoint. Visit <a href="https://dashboard.ngrok.com/domains">https://dashboard.ngrok.com/domains</a>, for HTTP and TLS endpoints, or <a href="https://dashboard.ngrok.com/tcp-addresses">https://dashboard.ngrok.com/tcp-addresses</a>, for TCP endpoints, to register a domain or address. Then use the `--domain` flag when starting an HTTP or TLS tunnel with your Agent. For TCP tunnels, use `--remote_addr`.
+        Your account is on the <code>&lt;PLAN&gt;</code> plan, which requires you to register a Domain or TCP Address through the ngrok Dashboard before starting an Endpoint. Visit <a href="https://dashboard.ngrok.com/domains">https://dashboard.ngrok.com/domains</a>, for HTTP and TLS endpoints, or <a href="https://dashboard.ngrok.com/tcp-addresses">https://dashboard.ngrok.com/tcp-addresses</a>, for TCP endpoints, to register a domain or address. Then use the `--url` flag when starting an HTTP, TLS, or TCP endpoint with your Agent.
       </td>
     </tr>
     <tr>
@@ -11060,7 +11059,7 @@
         <a id="ERR_NGROK_15004" href="/docs/errors/err_ngrok_15004">ERR_NGROK_15004</a>
       </td>
       <td class="pre-wrapped">
-        This agent has exceeded its policy rule limit of <code>&lt;LIMIT&gt;</code>. Please log into https://dashboard.ngrok.com to view your options.
+        This agent has exceeded its policy rule limit of <code>&lt;LIMIT&gt;</code>. Log into <a href="https://dashboard.ngrok.com/billing">https://dashboard.ngrok.com/billing</a> to view your options.
       </td>
     </tr>
     <tr>
@@ -11132,7 +11131,7 @@
         <a id="ERR_NGROK_15013" href="/docs/errors/err_ngrok_15013">ERR_NGROK_15013</a>
       </td>
       <td class="pre-wrapped">
-        Your account is requesting a dev domain that does not exist. Please visit <a href="https://dashboard.ngrok.com/domains">https://dashboard.ngrok.com/domains</a> to allocate a domain today.
+        Your account is requesting a dev domain that does not exist. Visit <a href="https://dashboard.ngrok.com/domains">https://dashboard.ngrok.com/domains</a> to request a dev domain.
       </td>
     </tr>
     <tr>
@@ -11260,7 +11259,7 @@
         <a id="ERR_NGROK_18010" href="/docs/errors/err_ngrok_18010">ERR_NGROK_18010</a>
       </td>
       <td class="pre-wrapped">
-        You have exceeded the maximum number of cloud endpoints allowed for this account. Please log into <a href="https://dashboard.ngrok.com/usage">https://dashboard.ngrok.com/usage</a> to review your historic usage and <a href="https://dashboard.ngrok.com/billing/subscription/select">https://dashboard.ngrok.com/billing/subscription/select</a> to view your subscription options.
+        You have exceeded the maximum number of cloud endpoints allowed for this account. Log into <a href="https://dashboard.ngrok.com/billing/choose-a-plan">https://dashboard.ngrok.com/billing/choose-a-plan</a> to view your subscription options.
       </td>
     </tr>
     <tr>
@@ -11341,7 +11340,7 @@
         <a id="ERR_NGROK_18021" href="/docs/errors/err_ngrok_18021">ERR_NGROK_18021</a>
       </td>
       <td class="pre-wrapped">
-        You have exceeded the maximum number of concurrent endpoints allowed for this account. Please log into <a href="https://dashboard.ngrok.com/usage">https://dashboard.ngrok.com/usage</a> to review your historic usage and <a href="https://dashboard.ngrok.com/billing/subscription/select">https://dashboard.ngrok.com/billing/subscription/select</a> to view your subscription options.
+        You have exceeded the maximum number of concurrent endpoints allowed for this account. Log into <a href="https://dashboard.ngrok.com/billing">https://dashboard.ngrok.com/billing</a> to review your usage and <a href="https://dashboard.ngrok.com/billing/choose-a-plan">https://dashboard.ngrok.com/billing/choose-a-plan</a> to view your subscription options.
       </td>
     </tr>
     <tr>
@@ -11469,7 +11468,7 @@
         <a id="ERR_NGROK_23003" href="/docs/errors/err_ngrok_23003">ERR_NGROK_23003</a>
       </td>
       <td class="pre-wrapped">
-        A Vault must be empty before it can be deleted. Please remove all secrets from the vault and try again.
+        A Vault must be empty before it can be deleted. Remove all secrets from the vault and try again.
       </td>
     </tr>
     <tr>
@@ -11485,7 +11484,7 @@
         <a id="ERR_NGROK_23005" href="/docs/errors/err_ngrok_23005">ERR_NGROK_23005</a>
       </td>
       <td class="pre-wrapped">
-        You've reached the maximum number of vaults (<code>&lt;MAX&gt;</code>) under your current plan. To increase your limit, please upgrade your plan or contact support.
+        You've reached the maximum number of vaults (<code>&lt;MAX&gt;</code>) under your current plan. To increase your limit, upgrade your plan at <a href="https://dashboard.ngrok.com/billing">https://dashboard.ngrok.com/billing</a>.
       </td>
     </tr>
     <tr>
