@@ -6,7 +6,7 @@ title: OpenVPN
 
 A community user has created a detailed guide for configuring [Tunneling an OpenVPN server out from behind CGNAT](https://forums.openvpn.net/viewtopic.php?p=116476#p116476).
 
-There are a lot more details in the linked post, but the summary of how to do it with ngrok is to open a TCP tunnel to port 443, and visit the resulting TCP address and port in your browser to download the `.ovpn` file needed by OpenVPN Connect.
+There are a lot more details in the linked post, but the summary of how to do it with ngrok is to open a TCP endpoint to port 443, and visit the resulting TCP address and port in your browser to download the `.ovpn` file needed by OpenVPN Connect.
 
 ```bash
 ngrok tcp 443
