@@ -1893,6 +1893,30 @@
     </tr>
     <tr>
       <td>
+        <a id="ERR_NGROK_515" href="/docs/errors/err_ngrok_515">ERR_NGROK_515</a>
+      </td>
+      <td class="pre-wrapped">
+        The domain <code>&lt;DOMAIN&gt;</code> is proxied by Cloudflare. While the record correctly resolves to Cloudflare's edge and may be working correctly, we cannot verify it. If you're experiencing issues with this domain, try disabling the Cloudflare proxy and verify again.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_516" href="/docs/errors/err_ngrok_516">ERR_NGROK_516</a>
+      </td>
+      <td class="pre-wrapped">
+        The wildcard <code>&lt;DOMAIN&gt;</code> is proxied by Cloudflare. While the wildcard's covered subdomains resolve to Cloudflare's edge and may be working correctly, we cannot verify the wildcard CNAME. If you're experiencing issues with this wildcard domain, try disabling the Cloudflare proxy on the <code>&lt;DOMAIN&gt;</code> record and verify again.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_517" href="/docs/errors/err_ngrok_517">ERR_NGROK_517</a>
+      </td>
+      <td class="pre-wrapped">
+        The ACME Challenge <code>&lt;RECORD&gt;</code> is proxied by Cloudflare. Proxying hides the CNAME needed for validation, so we cannot verify the ACME Challenge even though it may be working correctly. If you're experiencing issues with this domain, try disabling the Cloudflare proxy and verify again.
+      </td>
+    </tr>
+    <tr>
+      <td>
         <a id="ERR_NGROK_600" href="/docs/errors/err_ngrok_600">ERR_NGROK_600</a>
       </td>
       <td class="pre-wrapped">
@@ -1914,7 +1938,7 @@
         <a id="ERR_NGROK_602" href="/docs/errors/err_ngrok_602">ERR_NGROK_602</a>
       </td>
       <td class="pre-wrapped">
-        Your account is limited to <code>&lt;MAX&gt;</code> tunnel credentials. Please upgrade your account or contact support@ngrok.com to increase the limit.
+        Your account is limited to <code>&lt;MAX&gt;</code> authtokens. Please upgrade your account or contact support@ngrok.com to increase the limit.
       </td>
     </tr>
     <tr>
@@ -2018,7 +2042,7 @@
         <a id="ERR_NGROK_615" href="/docs/errors/err_ngrok_615">ERR_NGROK_615</a>
       </td>
       <td class="pre-wrapped">
-        Your account is limited to <code>&lt;MAX&gt;</code> tunnel credentials.
+        Your account is limited to <code>&lt;MAX&gt;</code> authtokens.
       </td>
     </tr>
     <tr>
@@ -2192,7 +2216,7 @@
         <a id="ERR_NGROK_715" href="/docs/errors/err_ngrok_715">ERR_NGROK_715</a>
       </td>
       <td class="pre-wrapped">
-        You have exceeded your limit on connections per minute. This limit will reset within 1 minute. If you expect to continually exceed these limits, please reach out to support (support@ngrok.com)
+        You have exceeded your limit on connections per minute. This limit will reset within 1 minute. If you expect to continually exceed these limits, please upgrade your plan at <a href="https://dashboard.ngrok.com/billing">https://dashboard.ngrok.com/billing</a>.
       </td>
     </tr>
     <tr>
@@ -2320,7 +2344,7 @@
         <a id="ERR_NGROK_734" href="/docs/errors/err_ngrok_734">ERR_NGROK_734</a>
       </td>
       <td class="pre-wrapped">
-        You have exceeded your limit of <code>&lt;MAX&gt;</code> requests per <code>&lt;INTERVAL&gt;</code>. This limit will reset within 1 minute. If you expect to continually exceed these limits, please reach out to support (support@ngrok.com)
+        You have exceeded your limit of <code>&lt;MAX&gt;</code> requests per <code>&lt;INTERVAL&gt;</code>. This limit will reset within 1 minute. If you expect to continually exceed these limits, please upgrade your plan at <a href="https://dashboard.ngrok.com/billing">https://dashboard.ngrok.com/billing</a>.
       </td>
     </tr>
     <tr>
@@ -5187,7 +5211,7 @@
         <a id="ERR_NGROK_2253" href="/docs/errors/err_ngrok_2253">ERR_NGROK_2253</a>
       </td>
       <td class="pre-wrapped">
-        Failed to evaluate CEL expression: <code>&lt;EXPRESSION&gt;</code> for <code>&lt;ACTION&gt;</code> at runtime: <code>&lt;ERR&gt;</code>
+        Failed to evaluate CEL expression on <code>&lt;FIELD&gt;</code> for <code>&lt;ACTION&gt;</code> at runtime: <code>&lt;ERR&gt;</code>
       </td>
     </tr>
     <tr>
@@ -5255,6 +5279,38 @@
         Failed to parse the configuration for policy action type <code>&lt;TYP&gt;</code>.
         Field <code>&lt;FIELD&gt;</code> is not a valid regular expression.
         ERROR: <code>&lt;ERR&gt;</code>.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_2262" href="/docs/errors/err_ngrok_2262">ERR_NGROK_2262</a>
+      </td>
+      <td class="pre-wrapped">
+        Internal HTTP/HTTPS endpoints do not support the on_tcp_connect Traffic Policy phase. Consider using a TCP or TLS endpoint instead.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_2263" href="/docs/errors/err_ngrok_2263">ERR_NGROK_2263</a>
+      </td>
+      <td class="pre-wrapped">
+        This policy includes paid traffic policy features that are not allowed on your current plan. Please upgrade to use this policy.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_2264" href="/docs/errors/err_ngrok_2264">ERR_NGROK_2264</a>
+      </td>
+      <td class="pre-wrapped">
+        Policy configuration has exceeded its rule per policy limit of <code>&lt;LIMIT&gt;</code>. Please check <a href="https://ngrok.com/features/traffic-policy">https://ngrok.com/features/traffic-policy</a> to view your options or contact us at support@ngrok.com.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_2265" href="/docs/errors/err_ngrok_2265">ERR_NGROK_2265</a>
+      </td>
+      <td class="pre-wrapped">
+        Policy configuration has exceeded its <code>&lt;TYP&gt;</code> per rule limit of <code>&lt;LIMIT&gt;</code> during <code>&lt;PHASE&gt;</code> at index <code>&lt;IDX&gt;</code>. Please check <a href="https://ngrok.com/features/traffic-policy">https://ngrok.com/features/traffic-policy</a> to view your options or contact us at support@ngrok.com.
       </td>
     </tr>
     <tr>
@@ -6073,6 +6129,46 @@
     </tr>
     <tr>
       <td>
+        <a id="ERR_NGROK_3803" href="/docs/errors/err_ngrok_3803">ERR_NGROK_3803</a>
+      </td>
+      <td class="pre-wrapped">
+        Model selection strategy failed: <code>&lt;ERR&gt;</code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_3804" href="/docs/errors/err_ngrok_3804">ERR_NGROK_3804</a>
+      </td>
+      <td class="pre-wrapped">
+        No models are available from configured providers with valid API keys. Please check your provider configuration.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_3805" href="/docs/errors/err_ngrok_3805">ERR_NGROK_3805</a>
+      </td>
+      <td class="pre-wrapped">
+        All model selection strategy expressions resulted in an empty set after filtering by configured providers. Please check your model selection strategy and provider configuration.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_3806" href="/docs/errors/err_ngrok_3806">ERR_NGROK_3806</a>
+      </td>
+      <td class="pre-wrapped">
+        Model selection strategy expression <code>&lt;EXPRESSION&gt;</code> returned an invalid type: expected AIModel or []AIModel, got <code>&lt;ACTUALTYPE&gt;</code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_3807" href="/docs/errors/err_ngrok_3807">ERR_NGROK_3807</a>
+      </td>
+      <td class="pre-wrapped">
+        All AI providers failed to respond successfully. The request could not be completed.
+      </td>
+    </tr>
+    <tr>
+      <td>
         <a id="ERR_NGROK_3900" href="/docs/errors/err_ngrok_3900">ERR_NGROK_3900</a>
       </td>
       <td class="pre-wrapped">
@@ -6419,6 +6515,14 @@
       </td>
       <td class="pre-wrapped">
         Sign ups are disallowed for the email provided "<code>&lt;EMAIL&gt;</code>". Please sign up with a different email address.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_4119" href="/docs/errors/err_ngrok_4119">ERR_NGROK_4119</a>
+      </td>
+      <td class="pre-wrapped">
+        This account does not have access to service users, please upgrade to a paid plan.
       </td>
     </tr>
     <tr>
@@ -7619,7 +7723,7 @@
         <a id="ERR_NGROK_5539" href="/docs/errors/err_ngrok_5539">ERR_NGROK_5539</a>
       </td>
       <td class="pre-wrapped">
-        Encountered an error while decrypting the client secret.
+        Encountered an error while decrypting the field `<code>&lt;FIELD&gt;</code>`.
       </td>
     </tr>
     <tr>
@@ -7824,6 +7928,14 @@
       </td>
       <td class="pre-wrapped">
         HTTP endpoints are disabled for HIPAA-enabled plans
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_6032" href="/docs/errors/err_ngrok_6032">ERR_NGROK_6032</a>
+      </td>
+      <td class="pre-wrapped">
+        This ngrok account is not allowed to use the paid traffic policy features configured on this endpoint. Please upgrade your plan to enable this endpoint.
       </td>
     </tr>
     <tr>
@@ -10332,7 +10444,7 @@
         <a id="ERR_NGROK_10006" href="/docs/errors/err_ngrok_10006">ERR_NGROK_10006</a>
       </td>
       <td class="pre-wrapped">
-        Failed to load the required reCAPTCHA script! Are you blocking it? It is required to continue.
+        Failed to load the required reCAPTCHA script. Are you blocking it? It is required to continue.
       </td>
     </tr>
     <tr>

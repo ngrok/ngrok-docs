@@ -5,11 +5,11 @@
 ```json
 {
   "acl": [],
-  "created_at": "2025-09-04T10:11:15Z",
+  "created_at": "2025-09-22T10:07:29Z",
   "description": "development cred for alan@example.com",
-  "id": "cr_32ELEkz2jOTMtPWtYLYm5yxBjvW",
-  "owner_id": "usr_32ELAUA7XkJHRP2DgH2JjDRLp81",
-  "token": "32ELEkz2jOTMtPWtYLYm5yxBjvW_714PgnmX8vJX5wufhtV57",
-  "uri": "https://api.ngrok.com/credentials/cr_32ELEkz2jOTMtPWtYLYm5yxBjvW"
+  "id": "cr_333B07sp72kzaahDzhXU0xluYIQ",
+  "owner_id": "usr_333AvsmXZfVtNVNaf7GLBrchhiL",
+  "token": "333B07sp72kzaahDzhXU0xluYIQ_2J9ZC2mFaidx3vU4sNT4G",
+  "uri": "https://api.ngrok.com/credentials/cr_333B07sp72kzaahDzhXU0xluYIQ"
 }
 ```
