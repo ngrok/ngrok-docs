@@ -6,7 +6,7 @@ title: Changelog
 
 ## v3
 
-### ngrok agent 3.30.0 \[2025-09-??\]
+### ngrok agent 3.30.0 \[2025-09-23\]
 
 - A new agent HTTP API, `/api/endpoints`, has been introduced that corresponds to the [agent config version 3 format](https://ngrok.com/docs/agent/config/v3/)
 - Endpoints and tunnels deleted via the agent API will be properly reflected in the Dashboard
