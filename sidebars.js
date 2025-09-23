@@ -246,6 +246,9 @@ const sidebars = {
 							items: [
 								"universal-gateway/examples/webhook-gateway",
 								"universal-gateway/examples/database-gateway",
+								"universal-gateway/examples/paas-alternative-gateway",
+								"universal-gateway/examples/microservices-gateway",
+								"universal-gateway/examples/agent-assisted-gateway",
 							],
 						},
 						{
