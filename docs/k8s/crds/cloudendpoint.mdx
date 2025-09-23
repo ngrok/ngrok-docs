@@ -266,3 +266,181 @@ spec:
   url: https://example-cloud-endpoint.ngrok.io
   trafficPolicyName: static-response
 ```
+
+## Status
+
+The `status` field contains the current state of the `CloudEndpoint` as reported by the ngrok operator.
+
+**Type:** `Object`
+
+**Fields:**
+
+| Field Name                                  | Type       | Description                                                                                                    |
+| ------------------------------------------- | ---------- | -------------------------------------------------------------------------------------------------------------- |
+| [`status.id`](#statusid)                    | `string`   | ID is the unique identifier for this endpoint                                                                  |
+| 🚧 [`status.domain`](#statusdomain)         | `Object`   | TODO: Reference to the Domain resource associated with this endpoint. For internal endpoints, this will be nil |
+| 🚧 [`status.conditions`](#statusconditions) | `[]Object` | TODO: Conditions describe the current conditions of the CloudEndpoint                                          |
+
+### `status.id`
+
+ID is the unique identifier for this endpoint.
+
+**Type:** `string`
+
+### 🚧 `status.domain`
+
+🚧 **TODO:** Reference to the Domain resource associated with this endpoint. For internal endpoints, this will be nil.
+
+**Type:** `Object`
+
+**Fields:**
+
+| Field Name                                          | Type     | Description                      |
+| --------------------------------------------------- | -------- | -------------------------------- |
+| [`status.domain.name`](#statusdomainname)           | `string` | Name of the Domain resource      |
+| [`status.domain.namespace`](#statusdomainnamespace) | `string` | Namespace of the Domain resource |
+
+### 🚧 `status.domain.name`
+
+🚧 **TODO:** Name of the Domain resource.
+
+**Type:** `string`
+
+### 🚧 `status.domain.namespace`
+
+🚧 **TODO:** Namespace of the Domain resource.
+
+**Type:** `string`
+
+## Conditions
+
+🚧 **TODO:** The ngrok operator will use several condition types to track the CloudEndpoint lifecycle and provide detailed status information.
+
+**Type:** `[]Object`
+
+### 🚧 Condition Types
+
+The ngrok operator will set the following condition types on CloudEndpoint resources:
+
+| Condition Type         | Description                                                         |
+| ---------------------- | ------------------------------------------------------------------- |
+| `Ready`                | Overall CloudEndpoint readiness status                              |
+| `CloudEndpointCreated` | Whether the CloudEndpoint was successfully created in the ngrok API |
+| `DomainReady`          | Whether the domain is ready for use                                 |
+| `TrafficPolicyApplied` | Whether the traffic policy was successfully applied                 |
+
+### 🚧 Common Condition Reasons
+
+| Reason                        | Description                             |
+| ----------------------------- | --------------------------------------- |
+| `CloudEndpointActive`         | CloudEndpoint is ready for use          |
+| `CloudEndpointCreated`        | CloudEndpoint was successfully created  |
+| `DomainReady`                 | Domain is ready for use                 |
+| `TrafficPolicyApplied`        | Traffic policy was successfully applied |
+| `TrafficPolicyError`          | Error applying traffic policy           |
+| `DomainCreating`              | Domain is being created                 |
+| `CloudEndpointCreationFailed` | CloudEndpoint creation failed           |
+
+## Status Examples
+
+### Successful CloudEndpoint
+
+A CloudEndpoint that is fully provisioned and ready for use:
+
+```yaml
+status:
+  id: ep_32tfTSf5Dcrb0gBev3UZdFUTghd
+  domain:
+    name: example-domain
+    namespace: default
+  conditions:
+  - lastTransitionTime: "2025-09-22T15:17:38Z"
+    message: CloudEndpoint successfully created
+    observedGeneration: 1
+    reason: CloudEndpointCreated
+    status: "True"
+    type: CloudEndpointCreated
+  - lastTransitionTime: "2025-09-22T15:17:38Z"
+    message: Domain is ready
+    observedGeneration: 1
+    reason: DomainReady
+    status: "True"
+    type: DomainReady
+  - lastTransitionTime: "2025-09-22T15:17:38Z"
+    message: Traffic policy successfully applied
+    observedGeneration: 1
+    reason: TrafficPolicyApplied
+    status: "True"
+    type: TrafficPolicyApplied
+  - lastTransitionTime: "2025-09-22T15:17:38Z"
+    message: CloudEndpoint ready for use
+    observedGeneration: 1
+    reason: CloudEndpointActive
+    status: "True"
+    type: Ready
+```
+
+### CloudEndpoint with Traffic Policy Error
+
+A CloudEndpoint that has an invalid traffic policy configuration:
+
+```yaml
+status:
+  id: ep_32tfTSf5Dcrb0gBev3UZdFUTghd
+  domain:
+    name: example-domain
+    namespace: default
+  conditions:
+  - lastTransitionTime: "2025-09-22T15:17:34Z"
+    message: CloudEndpoint successfully created
+    observedGeneration: 1
+    reason: CloudEndpointCreated
+    status: "True"
+    type: CloudEndpointCreated
+  - lastTransitionTime: "2025-09-22T15:17:34Z"
+    message: Domain is ready
+    observedGeneration: 1
+    reason: DomainReady
+    status: "True"
+    type: DomainReady
+  - lastTransitionTime: "2025-09-22T15:17:34Z"
+    message: Invalid policy action type 'rate-limit-fake'. ERR_NGROK_2201
+    observedGeneration: 1
+    reason: TrafficPolicyError
+    status: "False"
+    type: TrafficPolicyApplied
+  - lastTransitionTime: "2025-09-22T15:17:34Z"
+    message: CloudEndpoint created but traffic policy failed
+    observedGeneration: 1
+    reason: TrafficPolicyError
+    status: "False"
+    type: Ready
+```
+
+### CloudEndpoint Waiting for Domain
+
+A CloudEndpoint that is waiting for its domain to be ready:
+
+```yaml
+status:
+  id: ep_32tfTSf5Dcrb0gBev3UZdFUTghd
+  conditions:
+  - lastTransitionTime: "2025-09-22T15:17:32Z"
+    message: CloudEndpoint successfully created
+    observedGeneration: 1
+    reason: CloudEndpointCreated
+    status: "True"
+    type: CloudEndpointCreated
+  - lastTransitionTime: "2025-09-22T15:17:32Z"
+    message: Domain is being created
+    observedGeneration: 1
+    reason: DomainCreating
+    status: "False"
+    type: DomainReady
+  - lastTransitionTime: "2025-09-22T15:17:32Z"
+    message: Waiting for domain to be ready
+    observedGeneration: 1
+    reason: DomainCreating
+    status: "False"
+    type: Ready
+```
