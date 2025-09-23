@@ -387,3 +387,150 @@ spec:
   - name: my-client-cert
     namespace: default
 ```
+
+## Status
+
+The `status` field contains the current state of the `AgentEndpoint` as reported by the ngrok operator.
+
+**Type:** `Object`
+
+**Fields:**
+
+| Field Name                                    | Type              | Description                                                                                                                              |
+| --------------------------------------------- | ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| [`status.assignedURL`](#statusassignedurl)   | `string`          | The assigned URL. This will either be the user-supplied url, or the generated assigned url depending on the configuration of spec.url    |
+| [`status.conditions`](#statusconditions)     | `[]Object`        | Conditions describe the current conditions of the AgentEndpoint                                                                           |
+| [`status.trafficPolicy`](#statustrafficpolicy) | `string`          | Identifies any traffic policies attached to the AgentEndpoint ("inline", "none", or reference name)                                      |
+
+### `status.assignedURL`
+
+The assigned URL. This will either be the user-supplied url, or the generated assigned url depending on the configuration of spec.url.
+
+**Type:** `string`
+
+### `status.trafficPolicy`
+
+Identifies any traffic policies attached to the AgentEndpoint ("inline", "none", or reference name).
+
+**Type:** `string`
+
+### `status.conditions`
+
+Conditions describe the current conditions of the AgentEndpoint. The ngrok operator uses several condition types to track the endpoint lifecycle and provide detailed status information.
+
+**Type:** `[]Object`
+
+#### Condition Types
+
+The ngrok operator sets the following condition types on AgentEndpoint resources:
+
+| Condition Type | Description |
+| -------------- | ----------- |
+| `Ready` | Overall endpoint readiness status |
+| `DomainReady` | Whether the domain is ready for use |
+| `EndpointCreated` | Whether the endpoint was successfully created |
+| `TrafficPolicyApplied` | Whether the traffic policy was successfully applied |
+
+#### Common Condition Reasons
+
+| Reason | Description |
+| ------ | ----------- |
+| `EndpointActive` | Endpoint is active and ready |
+| `DomainReady` | Domain is ready for use |
+| `EndpointCreated` | Endpoint was successfully created |
+| `TrafficPolicyApplied` | Traffic policy was successfully applied |
+| `TrafficPolicyError` | Error applying traffic policy |
+| `DomainCreating` | Domain is being created |
+| `EndpointError` | Error creating endpoint |
+
+## Status Examples
+
+### Successful AgentEndpoint
+
+An AgentEndpoint that is fully provisioned and ready for use:
+
+```yaml
+status:
+  assignedURL: https://bezek-is-back.ngrok.app
+  conditions:
+  - lastTransitionTime: "2025-09-22T15:22:33Z"
+    message: AgentEndpoint is active and ready
+    observedGeneration: 1
+    reason: EndpointActive
+    status: "True"
+    type: Ready
+  - lastTransitionTime: "2025-09-22T15:17:46Z"
+    message: Domain is ready
+    observedGeneration: 1
+    reason: DomainReady
+    status: "True"
+    type: DomainReady
+  - lastTransitionTime: "2025-09-22T15:17:46Z"
+    message: Endpoint successfully created
+    observedGeneration: 1
+    reason: EndpointCreated
+    status: "True"
+    type: EndpointCreated
+  - lastTransitionTime: "2025-09-22T15:17:46Z"
+    message: Traffic policy successfully applied
+    observedGeneration: 1
+    reason: TrafficPolicyApplied
+    status: "True"
+    type: TrafficPolicyApplied
+  trafficPolicy: inline
+```
+
+### AgentEndpoint with Traffic Policy Error
+
+An AgentEndpoint that has an invalid traffic policy configuration:
+
+```yaml
+status:
+  conditions:
+  - lastTransitionTime: "2025-09-22T15:17:34Z"
+    message: Invalid policy action type 'rate-limit-fake'. ERR_NGROK_2201
+    observedGeneration: 1
+    reason: TrafficPolicyError
+    status: "False"
+    type: Ready
+  - lastTransitionTime: "2025-09-22T15:17:44Z"
+    message: Domain is ready
+    observedGeneration: 1
+    reason: DomainReady
+    status: "True"
+    type: DomainReady
+  - lastTransitionTime: "2025-09-22T15:17:44Z"
+    message: Invalid policy action type 'rate-limit-fake'. ERR_NGROK_2201
+    observedGeneration: 1
+    reason: TrafficPolicyError
+    status: "False"
+    type: EndpointCreated
+  - lastTransitionTime: "2025-09-22T15:17:44Z"
+    message: Invalid policy action type 'rate-limit-fake'. ERR_NGROK_2201
+    observedGeneration: 1
+    reason: TrafficPolicyError
+    status: "False"
+    type: TrafficPolicyApplied
+  trafficPolicy: inline
+```
+
+### AgentEndpoint Waiting for Domain
+
+An AgentEndpoint that is waiting for its domain to be ready:
+
+```yaml
+status:
+  conditions:
+  - lastTransitionTime: "2025-09-22T15:17:32Z"
+    message: Waiting for domain to be ready
+    observedGeneration: 1
+    reason: DomainCreating
+    status: "False"
+    type: Ready
+  - lastTransitionTime: "2025-09-22T15:17:32Z"
+    message: Domain is being created
+    observedGeneration: 1
+    reason: DomainCreating
+    status: "False"
+    type: DomainReady
+```

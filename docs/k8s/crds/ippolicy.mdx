@@ -1,0 +1,321 @@
+---
+title: IP Policy
+---
+
+## IP Policy Custom Resource
+
+### **apiVersion:** `ingress.k8s.ngrok.com/v1alpha1`
+
+### **kind:** `IPPolicy`
+
+The `IPPolicy` custom resource allows you to define IP-based access control policies that can be referenced by traffic policies. IP Policies are created in the ngrok API and can be shared across multiple traffic policies using the `restrict-ips` action.
+
+IP Policies provide a way to centrally manage IP allowlists and denylists that can be referenced by name in traffic policies, making it easier to maintain consistent IP-based access controls across your ngrok endpoints.
+
+## IP Policy Structure and Types
+
+The following outlines the high level structure and typings of an `IPPolicy`
+
+```yaml
+apiVersion: ingress.k8s.ngrok.com/v1alpha1
+kind: IPPolicy
+metadata:
+  name: <string>
+  namespace: <string>
+spec:
+  description: <string>       # optional
+  metadata: <string>          # optional
+  rules: <[]Object>           # required
+    - action: <string>        # required
+      cidr: <string>          # required
+      description: <string>   # optional
+      metadata: <string>      # optional
+```
+
+## IP Policy Fields
+
+The following sections outline each field of the `IPPolicy` custom resource, whether they are required, what their default values are (if applicable), and a description of their purpose/constraints.
+
+### `spec`
+
+`spec` defines the desired state of the `IPPolicy`
+
+**Type:** `Object`
+
+**Required:** yes
+
+**Default:** none
+
+**Fields:**
+
+| Field Name                             | Type              | Required | Default | Description                                                                              |
+| -------------------------------------- | ----------------- | -------- | ------- | ---------------------------------------------------------------------------------------- |
+| [`spec.description`](#specdescription) | `string`          | no       | none    | Human-readable description for this `IPPolicy` to help identify/describe it            |
+| [`spec.metadata`](#specmetadata)       | `string`          | no       | none    | String of arbitrary data associated with the object in the ngrok API/Dashboard           |
+| [`spec.rules`](#specrules)             | `[]Object`        | yes      | none    | List of IP rules that define the access control policy                                  |
+
+### `spec.description`
+
+Human-readable description of this IP Policy that can be used to help identify/describe it.
+
+**Type:** `string`
+
+**Required:** no
+
+**Default:** none
+
+### `spec.metadata`
+
+String of arbitrary data associated with the object in the ngrok API/Dashboard.
+
+**Type:** `string`
+
+**Required:** no
+
+**Default:** none
+
+### `spec.rules`
+
+List of IP rules that define the access control policy.
+
+**Type:** `[]Object`
+
+**Required:** yes
+
+**Default:** none
+
+**Fields:**
+
+| Field Name                        | Type     | Required | Default | Description                                                                              |
+| --------------------------------- | -------- | -------- | ------- | ---------------------------------------------------------------------------------------- |
+| [`spec.rules.action`](#specrulesaction) | `string` | yes      | none    | The action to take for this rule (`allow` or `deny`)                                     |
+| [`spec.rules.cidr`](#specrulescidr)   | `string` | yes      | none    | The CIDR block to match (e.g., `192.168.1.0/24` or `10.0.0.1/32`)                      |
+| [`spec.rules.description`](#specrulesdescription) | `string` | no       | none    | Human-readable description for this rule                                                 |
+| [`spec.rules.metadata`](#specrulesmetadata) | `string` | no       | none    | String of arbitrary data associated with this rule                                       |
+
+### `spec.rules.action`
+
+The action to take for this rule.
+
+**Type:** `string` (enum)
+
+**Required:** yes
+
+**Default:** none
+
+**Allowed Values:** `"allow"`, `"deny"`
+
+### `spec.rules.cidr`
+
+The CIDR block to match. Must be a valid CIDR notation (e.g., `192.168.1.0/24` or `10.0.0.1/32`).
+
+**Type:** `string`
+
+**Required:** yes
+
+**Default:** none
+
+### `spec.rules.description`
+
+Human-readable description for this rule.
+
+**Type:** `string`
+
+**Required:** no
+
+**Default:** none
+
+### `spec.rules.metadata`
+
+String of arbitrary data associated with this rule.
+
+**Type:** `string`
+
+**Required:** no
+
+**Default:** none
+
+## Example IP Policies
+
+### IP Policy with Allow Rules
+
+An IP Policy that allows access from specific IP addresses:
+
+```yaml
+apiVersion: ingress.k8s.ngrok.com/v1alpha1
+kind: IPPolicy
+metadata:
+  name: whitelist-specific-ip
+  namespace: default
+spec:
+  description: "IP Policy to whitelist specific IP address 162.236.158.182"
+  rules:
+    - cidr: "162.236.158.182/32"
+      action: "allow"
+      description: "Allow access from specific IP address"
+```
+
+### IP Policy with Deny Rules
+
+An IP Policy that denies access from specific IP ranges:
+
+```yaml
+apiVersion: ingress.k8s.ngrok.com/v1alpha1
+kind: IPPolicy
+metadata:
+  name: block-private-networks
+  namespace: default
+spec:
+  description: "IP Policy to block private network ranges"
+  rules:
+    - cidr: "10.0.0.0/8"
+      action: "deny"
+      description: "Block RFC 1918 private network range"
+    - cidr: "192.168.0.0/16"
+      action: "deny"
+      description: "Block RFC 1918 private network range"
+    - cidr: "172.16.0.0/12"
+      action: "deny"
+      description: "Block RFC 1918 private network range"
+```
+
+## Status
+
+The `status` field contains the current state of the `IPPolicy` as reported by the ngrok operator.
+
+**Type:** `Object`
+
+**Fields:**
+
+| Field Name                                    | Type              | Description                                                                                                                              |
+| --------------------------------------------- | ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| [`status.id`](#statusid)                     | `string`          | ID is the unique identifier for this IP Policy in the ngrok API                                                                         |
+| 🚧 [`status.conditions`](#statusconditions) | `[]Object`        | TODO: Conditions describe the current conditions of the IP Policy                                                                       |
+| 🚧 [`status.rules`](#statusrules)            | `[]Object`        | TODO: Status array of the different rules with a status for each rule                                                                   |
+
+### `status.id`
+
+ID is the unique identifier for this IP Policy in the ngrok API.
+
+**Type:** `string`
+
+### 🚧 `status.conditions`
+
+🚧 **TODO:** Conditions describe the current conditions of the IP Policy.
+
+**Type:** `[]Object`
+
+### 🚧 `status.rules`
+
+🚧 **TODO:** Status array of the different rules with a status for each rule.
+
+**Type:** `[]Object`
+
+## Conditions
+
+🚧 **TODO:** The ngrok operator will use several condition types to track the IP Policy lifecycle and provide detailed status information.
+
+**Type:** `[]Object`
+
+### 🚧 Condition Types
+
+The ngrok operator will set the following condition types on IP Policy resources:
+
+| Condition Type | Description |
+| -------------- | ----------- |
+| `Ready` | Overall IP Policy readiness status |
+| `IPPolicyCreated` | Whether the IP Policy was successfully created in the ngrok API |
+| `RulesConfigured` | Whether all rules were successfully configured |
+
+### 🚧 Common Condition Reasons
+
+| Reason | Description |
+| ------ | ----------- |
+| `IPPolicyActive` | IP Policy is ready for use |
+| `IPPolicyCreated` | IP Policy was successfully created |
+| `RulesConfigured` | All rules were successfully configured |
+| `RuleConfigurationError` | Error configuring one or more rules |
+| `InvalidCIDR` | Invalid CIDR block in rule configuration |
+| `IPPolicyCreationFailed` | IP Policy creation failed |
+
+## Status Examples
+
+### Successful IP Policy
+
+An IP Policy that is successfully created in the ngrok API:
+
+```yaml
+status:
+  id: ipp_333mi6k6P35Xbg0K5IlE6v3JU3o
+  # TODO: Will include conditions when implemented
+  # conditions:
+  # - lastTransitionTime: "2025-09-22T15:17:33Z"
+  #   message: IP Policy successfully created
+  #   observedGeneration: 1
+  #   reason: IPPolicyCreated
+  #   status: "True"
+  #   type: IPPolicyCreated
+  # - lastTransitionTime: "2025-09-22T15:17:33Z"
+  #   message: All rules successfully configured
+  #   observedGeneration: 1
+  #   reason: RulesConfigured
+  #   status: "True"
+  #   type: RulesConfigured
+  # - lastTransitionTime: "2025-09-22T15:17:33Z"
+  #   message: IP Policy ready for use
+  #   observedGeneration: 1
+  #   reason: IPPolicyActive
+  #   status: "True"
+  #   type: Ready
+```
+
+### IP Policy with Invalid Rules
+
+An IP Policy that was created but has invalid rules (note: the policy is still created in the ngrok API but with empty rules):
+
+```yaml
+status:
+  id: ipp_333mhwviQvMHUrx1BVNDrKnc9zC
+  # TODO: Will include conditions when implemented
+  # conditions:
+  # - lastTransitionTime: "2025-09-22T15:17:32Z"
+  #   message: IP Policy successfully created
+  #   observedGeneration: 1
+  #   reason: IPPolicyCreated
+  #   status: "True"
+  #   type: IPPolicyCreated
+  # - lastTransitionTime: "2025-09-22T15:17:32Z"
+  #   message: Invalid CIDR: 192.168.1.0/42 [ERR_NGROK_1406]
+  #   observedGeneration: 1
+  #   reason: RuleConfigurationError
+  #   status: "False"
+  #   type: RulesConfigured
+  # - lastTransitionTime: "2025-09-22T15:17:32Z"
+  #   message: IP Policy created but rules failed to configure
+  #   observedGeneration: 1
+  #   reason: RuleConfigurationError
+  #   status: "False"
+  #   type: Ready
+```
+
+## Using IP Policies with Traffic Policies
+
+IP Policies can be referenced in traffic policies using the `restrict-ips` action. However, you must use the IP Policy ID from the status field, not the name:
+
+```yaml
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: NgrokTrafficPolicy
+metadata:
+  name: ip-whitelist-tp
+  namespace: default
+spec:
+  policy:
+    on_http_request:
+      - actions:
+          - type: restrict-ips
+            config:
+              ip_policies:
+                - "ipp_333mi6k6P35Xbg0K5IlE6v3JU3o"  # Use the ID from IPPolicy status
+```
+
+🚧 **TODO:** Future enhancement will allow referencing IP Policies by name in traffic policies for a more Kubernetes-native experience.

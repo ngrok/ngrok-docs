@@ -228,3 +228,164 @@ spec:
   - bindings
   region: global
 ```
+
+## Status
+
+The `status` field contains the current state of the `KubernetesOperator` as reported by the ngrok operator.
+
+**Type:** `Object`
+
+**Fields:**
+
+| Field Name                                    | Type              | Description                                                                                                                              |
+| --------------------------------------------- | ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| [`status.id`](#statusid)                     | `string`          | ID is the unique identifier for this Kubernetes Operator                                                                                 |
+| [`status.uri`](#statusuri)                   | `string`          | URI is the URI for this Kubernetes Operator                                                                                              |
+| [`status.registrationStatus`](#statusregistrationstatus) | `string`          | RegistrationStatus is the status of the registration of this Kubernetes Operator with the ngrok API                                     |
+| [`status.enabledFeatures`](#statusenabledfeatures) | `string`          | EnabledFeatures is the string representation of the features enabled for this Kubernetes Operator                                        |
+| [`status.bindingsIngressEndpoint`](#statusbindingsingressendpoint) | `string`          | BindingsIngressEndpoint is the URL that the operator will use to talk to the ngrok edge when forwarding traffic for k8s-bound endpoints |
+| [`status.registrationErrorCode`](#statusregistrationerrorcode) | `string`          | RegistrationErrorCode is the returned ngrok error code                                                                                  |
+| [`status.errorMessage`](#statuserrormessage) | `string`          | RegistrationErrorMessage is a free-form error message if the status is error                                                             |
+| 🚧 [`status.conditions`](#statusconditions) | `[]Object`        | TODO: Conditions describe the current conditions of the KubernetesOperator                                                             |
+
+### `status.id`
+
+ID is the unique identifier for this Kubernetes Operator.
+
+**Type:** `string`
+
+### `status.uri`
+
+URI is the URI for this Kubernetes Operator.
+
+**Type:** `string`
+
+### `status.registrationStatus`
+
+RegistrationStatus is the status of the registration of this Kubernetes Operator with the ngrok API.
+
+**Type:** `string`
+
+### `status.enabledFeatures`
+
+EnabledFeatures is the string representation of the features enabled for this Kubernetes Operator.
+
+**Type:** `string`
+
+### `status.bindingsIngressEndpoint`
+
+BindingsIngressEndpoint is the URL that the operator will use to talk to the ngrok edge when forwarding traffic for k8s-bound endpoints.
+
+**Type:** `string`
+
+### `status.registrationErrorCode`
+
+RegistrationErrorCode is the returned ngrok error code.
+
+**Type:** `string`
+
+### `status.errorMessage`
+
+RegistrationErrorMessage is a free-form error message if the status is error.
+
+**Type:** `string`
+
+### 🚧 `status.conditions`
+
+🚧 **TODO:** Conditions describe the current conditions of the KubernetesOperator.
+
+**Type:** `[]Object`
+
+## Conditions
+
+🚧 **TODO:** The ngrok operator will use several condition types to track the KubernetesOperator lifecycle and provide detailed status information.
+
+**Type:** `[]Object`
+
+### 🚧 Condition Types
+
+The ngrok operator will set the following condition types on KubernetesOperator resources:
+
+| Condition Type | Description |
+| -------------- | ----------- |
+| `Ready` | Overall operator readiness status |
+| `Registered` | Whether the operator is successfully registered with the ngrok API |
+| `FeaturesEnabled` | Whether the requested features are enabled |
+
+### 🚧 Common Condition Reasons
+
+| Reason | Description |
+| ------ | ----------- |
+| `OperatorActive` | Operator is ready and registered |
+| `RegistrationSuccessful` | Operator successfully registered with ngrok API |
+| `FeaturesEnabled` | All requested features are enabled |
+| `RegistrationFailed` | Failed to register with ngrok API |
+| `InvalidAPIKey` | Invalid API key provided |
+| `NetworkError` | Network error during registration |
+
+## Status Examples
+
+### Successful KubernetesOperator
+
+A KubernetesOperator that is successfully registered with the ngrok API:
+
+```yaml
+status:
+  bindingsIngressEndpoint: connect.ngrok-endpoints.com:443
+  enabledFeatures: ingress
+  id: k8sop_32ngBNbyUJuizmW7nougUjFIPRn
+  registrationStatus: registered
+  uri: https://api.ngrok.com/kubernetes_operators/k8sop_32ngBNbyUJuizmW7nougUjFIPRn
+  # TODO: Will include conditions when implemented
+  # conditions:
+  # - lastTransitionTime: "2025-09-22T15:17:38Z"
+  #   message: Operator successfully registered with ngrok API
+  #   observedGeneration: 1
+  #   reason: RegistrationSuccessful
+  #   status: "True"
+  #   type: Registered
+  # - lastTransitionTime: "2025-09-22T15:17:38Z"
+  #   message: All requested features are enabled
+  #   observedGeneration: 1
+  #   reason: FeaturesEnabled
+  #   status: "True"
+  #   type: FeaturesEnabled
+  # - lastTransitionTime: "2025-09-22T15:17:38Z"
+  #   message: Operator is ready and active
+  #   observedGeneration: 1
+  #   reason: OperatorActive
+  #   status: "True"
+  #   type: Ready
+```
+
+### KubernetesOperator with Registration Error
+
+A KubernetesOperator that failed to register with the ngrok API:
+
+```yaml
+status:
+  registrationStatus: error
+  registrationErrorCode: ERR_NGROK_401
+  errorMessage: Invalid API key provided
+  enabledFeatures: ""
+  # TODO: Will include conditions when implemented
+  # conditions:
+  # - lastTransitionTime: "2025-09-22T15:17:32Z"
+  #   message: Failed to register with ngrok API: Invalid API key provided
+  #   observedGeneration: 1
+  #   reason: RegistrationFailed
+  #   status: "False"
+  #   type: Registered
+  # - lastTransitionTime: "2025-09-22T15:17:32Z"
+  #   message: Features cannot be enabled due to registration failure
+  #   observedGeneration: 1
+  #   reason: RegistrationFailed
+  #   status: "False"
+  #   type: FeaturesEnabled
+  # - lastTransitionTime: "2025-09-22T15:17:32Z"
+  #   message: Operator registration failed
+  #   observedGeneration: 1
+  #   reason: RegistrationFailed
+  #   status: "False"
+  #   type: Ready
+```

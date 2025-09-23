@@ -431,12 +431,12 @@ const sidebars = {
 					items: [
 						"k8s/crds/index",
 						"k8s/crds/agentendpoint",
-						"k8s/crds/cloudendpoint",
-						"k8s/crds/ngroktrafficpolicy",
 						"k8s/crds/boundendpoint",
+						"k8s/crds/cloudendpoint",
 						"k8s/crds/domain",
+						"k8s/crds/ippolicy",
 						"k8s/crds/kubernetesoperator",
-						"k8s/crds/tunnel",
+						"k8s/crds/ngroktrafficpolicy",
 					],
 				},
 				{
