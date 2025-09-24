@@ -1,0 +1,254 @@
+---
+title: Securing Your Endpoints with JWT Validation
+sidebarTitle: JWT Validation
+---
+
+
+
+
+By validating JWTs at the network edge, you can:
+
+🔒 Ensure only authenticated users can access your services. <br />
+⚡ Reduce backend load by rejecting unauthorized requests early. <br />
+🛡 Protect APIs from unauthorized access without modifying your upstream services. <br />
+
+## 🔍 What are the Benefits of Validating JWTs?
+
+JWTs are commonly used in OAuth 2.0, OpenID Connect (OIDC), and API authentication flows.
+
+However, simply including a JWT in a request does not improve security. It must be verified to ensure:
+
+- The token is properly signed by a trusted provider.
+- The token has not expired.
+- The token contains the correct claims (e.g., roles, permissions).
+
+By performing JWT validation at the edge, you can offload authentication tasks from your backend and prevent unauthorized access before requests reach your service.
+
+Key Benefits:
+
+- **Enforcing Authentication:** Ensure only authenticated users can access protected resources.
+- **API Security & Access Control:** Validate JWT claims to enforce role-based access (RBAC) or tenant restrictions.
+- **Single Sign-On (SSO) Support:** Accept tokens from OAuth, OpenID Connect (OIDC), or enterprise identity providers.
+- **Reducing Backend Load:** Offload JWT validation to the edge, reducing unnecessary authentication checks.
+
+## JWT Validation Examples
+
+The following Traffic Policy configuration is an example configuration of the jwt-validation action. For a more real-world example, check out our [Auth0](/integrations/auth0/jwt-action/) guide.
+
+A useful tool for working with JWTs is provided at [jwt.io](https://jwt.io/).
+
+Check out the [JWT validation traffic policy action](/traffic-policy/actions/jwt-validation/) page for more details about how it functions and the parameters it accepts.
+
+<Tabs>
+	<Tab title="AgentEndpoint">
+	```yaml
+  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+  kind: AgentEndpoint
+  metadata:
+    name: example-agent-endpoint
+  spec:
+    url: https://example-hostname.ngrok.io
+    upstream:
+      url: http://my-service.my-namespace:8080
+    trafficPolicy:
+      inline:
+        on_http_request:
+          - actions:
+              - type: jwt-validation
+                config:
+                  issuer:
+                    allow_list:
+                      - value: https://example.com/issuer
+                  audience:
+                    allow_list:
+                      - value: urn:example:api
+                  http:
+                    tokens:
+                      - type: access_token
+                        method: header
+                        name: Authorization
+                        prefix: "Bearer "
+                      - type: it+jwt
+                        method: body
+                        name: _id_token
+                  jws:
+                    allowed_algorithms:
+                      - RS256
+                      - ES256
+                    keys:
+                      sources:
+                        additional_jkus:
+                          - https://example.com/issuer/jku
+	```
+	</Tab>
+	<Tab title="CloudEndpoint">
+	```yaml
+  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+  kind: CloudEndpoint
+  metadata:
+    name: example-cloud-endpoint
+  spec:
+    url: https://example-hostname.ngrok.io
+    trafficPolicy:
+      policy:
+        on_http_request:
+          - actions:
+              - type: jwt-validation
+                config:
+                  issuer:
+                    allow_list:
+                      - value: https://example.com/issuer
+                  audience:
+                    allow_list:
+                      - value: urn:example:api
+                  http:
+                    tokens:
+                      - type: access_token
+                        method: header
+                        name: Authorization
+                        prefix: "Bearer "
+                      - type: it+jwt
+                        method: body
+                        name: _id_token
+                  jws:
+                    allowed_algorithms:
+                      - RS256
+                      - ES256
+                    keys:
+                      sources:
+                        additional_jkus:
+                          - https://example.com/issuer/jku
+	```
+	</Tab>
+	<Tab title="Ingress">
+	💡 `Ingress` resources do not natively support JWT validation, but they can be extended using a traffic policy.
+
+	### 1. Create an `NgrokTrafficPolicy`
+
+	```yaml
+  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+  kind: NgrokTrafficPolicy
+  metadata:
+    name: example-tp
+    namespace: default
+  spec:
+    policy:
+      on_http_request:
+        - actions:
+            - type: jwt-validation
+              config:
+                issuer:
+                  allow_list:
+                    - value: https://example.com/issuer
+                audience:
+                  allow_list:
+                    - value: urn:example:api
+                http:
+                  tokens:
+                    - type: access_token
+                      method: header
+                      name: Authorization
+                      prefix: "Bearer "
+                    - type: it+jwt
+                      method: body
+                      name: _id_token
+                jws:
+                  allowed_algorithms:
+                    - RS256
+                    - ES256
+                  keys:
+                    sources:
+                      additional_jkus:
+                        - https://example.com/issuer/jku
+	```
+
+	### 2. Use the `NgrokTrafficPolicy` on an `Ingress`
+
+	```yaml
+  apiVersion: networking.k8s.io/v1
+  kind: Ingress
+  metadata:
+    annotations:
+      k8s.ngrok.com/traffic-policy: example-tp
+    name: example-ingress
+    namespace: default
+  spec:
+    ingressClassName: ngrok
+    rules:
+      - host: example-hostname.ngrok.io
+        http:
+          paths:
+            - path: /
+              pathType: Prefix
+              backend:
+                service:
+                  name: example-service
+                  port:
+                    number: 80
+	```
+	</Tab>
+	<Tab title="Gateway API">
+	💡 Gateway API resources do not natively support JWT validation, but they can be extended using a traffic policy.
+
+	### 1. Create an `NgrokTrafficPolicy`
+
+	```yaml
+  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+  kind: NgrokTrafficPolicy
+  metadata:
+    name: example-tp
+    namespace: default
+  spec:
+    policy:
+      on_http_request:
+        - actions:
+            - type: jwt-validation
+              config:
+                issuer:
+                  allow_list:
+                    - value: https://example.com/issuer
+                audience:
+                  allow_list:
+                    - value: urn:example:api
+                http:
+                  tokens:
+                    - type: access_token
+                      method: header
+                      name: Authorization
+                      prefix: "Bearer "
+                    - type: it+jwt
+                      method: body
+                      name: _id_token
+                jws:
+                  allowed_algorithms:
+                    - RS256
+                    - ES256
+                  keys:
+                    sources:
+                      additional_jkus:
+                        - https://example.com/issuer/jku
+	```
+
+	### 2. Use the `NgrokTrafficPolicy` on a `Gateway`
+
+	The following example showcases supplying the `NgrokTrafficPolicy` on a `Gateway` resource. All requests to the `Gateway` will run the traffic policy.
+	If you prefer, `NgrokTrafficPolicy` can also be used on the route level by using an `externalRef` filter on an `HTTPRoute`. See the [using Gateway API guide](/k8s/guides/using-gwapi) for examples.
+
+	```yaml
+  apiVersion: gateway.networking.k8s.io/v1
+  kind: Gateway
+  metadata:
+    name: example-gateway
+    namespace: default
+    annotations:
+      k8s.ngrok.com/traffic-policy: example-tp
+  spec:
+    gatewayClassName: ngrok
+    listeners:
+      - name: example-hostname
+        hostname: "example-hostname.ngrok.io"
+        port: 443
+        protocol: HTTPS
+	```
+	</Tab>
+</Tabs>

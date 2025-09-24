@@ -1,0 +1,104 @@
+---
+title: Agent SDKs
+---
+
+import RandomGoSdkExample from "/snippets/examples/go-sdk/http-random.mdx";
+import RandomJavascriptSdkExample from "/snippets/examples/javascript-sdk/http-random.mdx";
+import RandomPythonSdkExample from "/snippets/examples/python-sdk/http-random.mdx";
+import RandomRustSdkExample from "/snippets/examples/rust-sdk/http-random.mdx";
+
+
+
+
+
+## Overview
+
+Agent SDKs enable you to embed ngrok directly into your application. They allow
+you to programmatically create ngrok endpoints. You handle connections from
+ngrok's cloud service just as if you opened a socket to listen on a port.
+
+## Example Usage
+
+<LangSwitcher>
+```go
+import (
+	"context"
+	"net"
+  "golang.ngrok.com/ngrok/v2"
+)
+
+func ngrokListener(ctx context.Context) (net.Listener, error) {
+return ngrok.Listen(ctx)
+}
+
+````
+
+```javascript
+const ngrok = require("@ngrok/ngrok");
+
+(async function () {
+	const listener = await ngrok.forward({
+		addr: 8080,
+		authtoken_from_env: true,
+	});
+
+	console.log(`Ingress established at: ${listener.url()}`);
+})();
+````
+
+```python
+import ngrok
+
+listener = ngrok.forward("localhost:8080", authtoken_from_env=True)
+
+print(f"Ingress established at: {listener.url()}");
+```
+
+```rust
+use ngrok::prelude::*;
+
+async fn listen_ngrok() -> anyhow::Result<impl Tunnel> {
+    let sess = ngrok::Session::builder()
+        .authtoken_from_env()
+        .connect()
+        .await?;
+
+    let tun = sess
+        .http_endpoint()
+        .listen()
+        .await?;
+
+    println!("Listening on URL: {:?}", tun.url());
+
+    Ok(tun)
+}
+```
+
+</LangSwitcher>
+
+## Supported Languages
+
+| Language   | Docs                                                               | Quickstart                                      | Repository                                                                     | Status |
+| ---------- | ------------------------------------------------------------------ | ----------------------------------------------- | ------------------------------------------------------------------------------ | ------ |
+| Go         | [ngrok-go docs](https://pkg.go.dev/golang.ngrok.com/ngrok/v2)      | [ngrok-go quickstart](/getting-started/go/)     | [github.com/ngrok/ngrok-go](https://github.com/ngrok/ngrok-go)                 | Stable |
+| Rust       | [ngrok-rust docs](https://docs.rs/ngrok/latest/ngrok/)             | [ngrok-rust quickstart](/getting-started/rust/) | [github.com/ngrok/ngrok-rust](https://github.com/ngrok/ngrok-rust)             | Stable |
+| Python     | [ngrok-python docs](https://ngrok.github.io/ngrok-python/)         |                                                 | [github.com/ngrok/ngrok-python](https://github.com/ngrok/ngrok-python)         | Stable |
+| JavaScript | [ngrok-javascript docs](https://ngrok.github.io/ngrok-javascript/) |                                                 | [github.com/ngrok/ngrok-javascript](https://github.com/ngrok/ngrok-javascript) | Stable |
+| Java       |                                                                    |                                                 | [github.com/ngrok/ngrok-java](https://github.com/ngrok/ngrok-java)             | Alpha  |
+
+## When should I use Agent SDKs?
+
+Agent SDKs are often a better fit for your use case over using the [ngrok
+agent](/agent/). This is especially true when running ngrok with
+production apps. Agent SDKs are a better choice if:
+
+- You don't want to manage the lifetime of a separate agent process
+- You don't want to bundle and distribute the ngrok agent
+- The ngrok agent doesn't run on your target platform
+- The ngrok agent's resource requirements are too high for your target platform
+- You want fine-grained programmatic control over the agent's functionality
+
+## Pricing
+
+The agent SDKs are available to all ngrok users at no additional charge. You
+only incur costs if the resources provisioned by the SDKs incur a cost. For more information, see the [ngrok Pricing page](https://ngrok.com/pricing).

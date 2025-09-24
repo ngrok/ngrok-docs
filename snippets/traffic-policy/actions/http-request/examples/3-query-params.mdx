@@ -1,0 +1,57 @@
+### Send query parameters
+
+This example sends a GET request with custom query parameters to an internal endpoint.
+
+To simulate this behavior, we'll use [httpbin.org/get](https://httpbin.org/get), which echoes query parameters in the response.
+
+#### Start an Internal Agent Endpoint
+
+```bash
+ngrok http https://httpbin.org --host-header rewrite --url https://httpbin.internal
+```
+
+#### Example
+
+<CodeGroup>
+```yaml policy.yml
+on_http_request:
+  - name: QueryParamsExample
+    actions:
+      - type: http-request
+        config:
+          url: https://httpbin.internal/get
+          query_params:
+            - key: trace
+              value: 'true'
+            - key: user
+              value: req.headers["x-user-id"]
+```
+
+```json policy.json
+{
+  "on_http_request": [
+    {
+      "name": "QueryParamsExample",
+      "actions": [
+        {
+          "type": "http-request",
+          "config": {
+            "url": "https://httpbin.internal/get",
+            "query_params": [
+              {
+                "key": "trace",
+                "value": "true"
+              },
+              {
+                "key": "user",
+                "value": "req.headers[\"x-user-id\"]"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+</CodeGroup>
