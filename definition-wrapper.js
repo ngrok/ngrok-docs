@@ -26,7 +26,7 @@ const terms = [
 		titles: ["Endpoint Pooling", "Endpoint pool"],
 		meaning:
 			'When your create two ngrok endpoints with the same URL (and binding), those endpoints automatically form a "pool" and share incoming traffic.',
-		link: "/docs/universal-gateway/endpoint-pooling/",
+		link: "/universal-gateway/endpoint-pooling/",
 		pluralEnding: "s",
 	},
 	{
@@ -134,25 +134,25 @@ const terms = [
 		titles: ["TLS Termination"],
 		meaning:
 			"TLS (Transport Layer Security) termination is the process of decrypting incoming TLS traffic at a server or load balancer before passing the unencrypted traffic to internal systems.",
-		link: "/docs/universal-gateway/tls-termination/",
+		link: "/universal-gateway/tls-termination/",
 	},
 	{
 		titles: ["Traffic Policy", "Traffic Policies"],
 		meaning:
 			"Traffic Policy is a configuration language that enables you to filter, match, manage and orchestrate traffic to your endpoints. For example, you can add authentication, send custom response, rate limit traffic, and more.",
-		link: "/docs/traffic-policy/",
+		link: "/traffic-policy/",
 	},
 	{
 		titles: ["v2"],
 		caseSensitive: true,
 		meaning: "v2 is shorthand for the second major version of the ngrok Agent.",
-		link: "/docs/agent/config/v2",
+		link: "/agent/config/v2",
 	},
 	{
 		titles: ["v3"],
 		caseSensitive: true,
 		meaning: "v3 is shorthand for the third major version of the ngrok Agent.",
-		link: "/docs/agent/config/v3",
+		link: "/agent/config/v3",
 	},
 	{
 		titles: ["WAF"],
@@ -403,14 +403,40 @@ function addTooltipBehavior(button) {
       `;
       
       const learnMoreLink = document.createElement('a');
-      learnMoreLink.textContent = 'Learn More';
       learnMoreLink.href = link;
       learnMoreLink.style.cssText = `
         color: #60a5fa !important;
-        text-decoration: underline !important;
+        text-decoration: none !important;
         cursor: pointer !important;
         font-size: 14px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 4px !important;
       `;
+      
+      // Add hover effects
+      learnMoreLink.addEventListener('mouseenter', () => {
+        learnMoreLink.style.textDecoration = 'underline';
+      });
+      learnMoreLink.addEventListener('mouseleave', () => {
+        learnMoreLink.style.textDecoration = 'none';
+      });
+      
+      // Determine if URL is absolute or relative
+      const isInternalLink = link.startsWith("/");
+      
+      // Create appropriate SVG icon
+      const iconSvg = document.createElement('span');
+      iconSvg.innerHTML = `
+			<div>
+			${isInternalLink 
+        ? `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-link2-icon lucide-link-2"><path d="M9 17H7A5 5 0 0 1 7 7h2"/><path d="M15 7h2a5 5 0 1 1 0 10h-2"/><line x1="8" x2="16" y1="12" y2="12"/></svg>`
+        : `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-external-link-icon lucide-external-link"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>`}
+				</div>`;
+      
+      // Add text and icon to the link
+      learnMoreLink.appendChild(document.createTextNode('Learn More'));
+      learnMoreLink.appendChild(iconSvg);
       
       // Handle link clicks
       learnMoreLink.addEventListener('click', (e) => {
