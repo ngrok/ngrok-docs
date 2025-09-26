@@ -1,0 +1,192 @@
+---
+title: Kubernetes Gateway API Quickstart
+sidebarTitle: Gateway API
+description: Use ngrok with the Kubernetes Gateway API for advanced routing, policy control, and future-proof ingress configuration.
+---
+
+import K8sPrereq from "/snippets/k8s/_prereq.mdx";
+import K8sSetup from "/snippets/k8s/_setup.mdx";
+import K8sGWAPI from "/snippets/k8s/_gateway-api.mdx";
+import K8sInstall from "/snippets/k8s/_install.mdx";
+import Domain from "/snippets/k8s/_domain.mdx";
+import K8sSample from "/snippets/k8s/_sample.mdx";
+import Request from "/snippets/k8s/_request.mdx";
+
+
+
+
+This quickstart uses the [ngrok Kubernetes Operator](/k8s) and [Gateway API resources](https://gateway-api.sigs.k8s.io/) to make the services you've deployed to Kubernetes available on the public internet.
+
+Use this method if you:
+
+- Want precise, Kubernetes-native control over routing behavior.
+- Are building on a multi-team platform where the separation of concerns between the [roles and personas](https://gateway-api.sigs.k8s.io/concepts/roles-and-personas/) (infrastructure provider, cluster operator, application developer) matters.
+- Want to align with the Kubernetes community's vision for the future of ingress.
+
+<Note>
+The ngrok Kubernetes Operator is available to all ngrok users at no additional charge.
+You only incur costs if the resources provisioned by the controller incur a cost.
+Find more details on our [pricing page](https://ngrok.com/pricing), or, if you're a free user, the [free plan limits](/pricing-limits/free-plan-limits/).
+</Note>
+
+## What you'll need
+
+<K8sPrereq />
+
+## 1. Install the ngrok Kubernetes Operator
+
+<K8sSetup />
+<K8sGWAPI />
+<K8sInstall />
+
+## 2. Get your domain
+
+<Domain />
+
+## 3. Deploy a sample service
+
+<K8sSample />
+
+## 4. Define your `Gateway` and `HTTPSRoute` resources
+
+This manifest exposes the `tinyllama` sample service on `$YOUR_DOMAIN`.
+If you already have a different deployment on your cluster, you'll need to change the `backendRefs` name and port.
+
+```yaml title="gwapi.yaml"
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: ngrok-gateway
+  namespace: default
+spec:
+  gatewayClassName: ngrok
+  listeners:
+    - name: http
+      protocol: HTTP
+      port: 80
+      hostname: "$NGROK_DOMAIN"
+      allowedRoutes:
+        namespaces:
+          from: All
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: tinyllama-route
+  namespace: default
+spec:
+  parentRefs:
+		- group: gateway.networking.k8s.io
+			kind: Gateway
+			name: ngrok-gateway
+			namespace: default
+  hostnames:
+		- "$NGROK_DOMAIN"
+  rules:
+		- matches:
+			- path:
+					type: PathPrefix
+					value: /
+			backendRefs:
+				- name: tinyllama
+					port: 80
+```
+
+Apply the manifest with `kubectl apply -f gwapi.yaml`.
+
+The ngrok Kubernetes Operator watches your cluster for `Gateway` and `HTTPRoute` resources that reference the `ngrok` GatewayClass, and immediately provisions a new agent endpoint.
+
+You can now send a request to `$NGROK_DOMAIN` with your browser or `curl`.
+Your Kubernetes service is now available to anyone on the public internet.
+
+## 4. Secure your app with Traffic Policy
+
+In cases where you need to restrict access to your API or app, [Traffic Policy](/traffic-policy) and the [`restrict-ips`](/traffic-policy/actions/restrict-ips) let you quickly allow only certain addresses to access your endpoint.
+
+First, copy your public IP address via our [`ip4v.ngrok.com` mini-app](https://ipv4.ngrok.com/).
+
+To add the rule, create a new `NgrokTrafficPolicy` resource and add it to your `Gateway` resource as an annotation.
+This way, the rule runs on all requests matching any of the hostnames from the listeners on your `Gateway`.
+Be sure to replace `$YOUR_PUBLIC_IP` with the value you just copied.
+
+```yaml title="gwapi.yaml"
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: NgrokTrafficPolicy
+metadata:
+  name: restrict-ips
+  namespace: default
+spec:
+  policy:
+    on_http_request:
+      - actions:
+          - type: restrict-ips
+            config:
+              enforce: true
+              allow:
+                - $YOUR_PUBLIC_IP
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: ngrok-gateway
+  namespace: default
+  annotations:
+    k8s.ngrok.com/traffic-policy: restrict-ips
+spec:
+  gatewayClassName: ngrok
+  listeners:
+    - name: http
+      protocol: HTTP
+      port: 80
+      hostname: "$NGROK_DOMAIN"
+      allowedRoutes:
+        namespaces:
+          from: Same
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: tinyllama-route
+  namespace: default
+spec:
+  parentRefs:
+		- group: gateway.networking.k8s.io
+			kind: Gateway
+			name: ngrok-gateway
+			namespace: default
+  hostnames:
+		- "$NGROK_DOMAIN"
+  rules:
+		- matches:
+			- path:
+					type: PathPrefix
+					value: /
+			backendRefs:
+				- name: tinyllama
+					port: 80
+```
+
+Re-apply the manifest with `kubectl apply -f gwapi.yaml`.
+
+You can also add Traffic Policy as an [`ExtensionRef` filter](/k8s/guides/using-gwapi/#use-ngroktrafficpolicy-on-httproutes) if you want to run certain rules only on a single route.
+
+## 5. Start sending requests
+
+<Request />
+
+## What's next?
+
+Learn more about using ngrok with your Kubernetes deployments:
+
+- Read the [guide to using Gateway API](/k8s/guides/using-gwapi) with ngrok
+- [Route requests to many upstream services](/k8s/guides/how-to/request-routing/) based on the path, headers, and query parameters
+- Explore [TLS](/k8s/guides/how-to/tls-routing/) or [TCP](/k8s/guides/how-to/tcp-routing/) routing with Gateway API
+- Deploy an [API gateway](/guides/api-gateway/kubernetes/) in one or [multiple clouds](/guides/api-gateway/multicloud/)
+
+For more ways to filter and manage traffic:
+
+- [Traffic Policy overview](/traffic-policy)
+- [Traffic Policy concepts](/traffic-policy/concepts/)
+- All our [available actions](/traffic-policy/actions/)
+
+Finally, explore the [Traffic Inspector in your dashboard](https://dashboard.ngrok.com/traffic-inspector) for real-time observability of traffic flowing through your endpoint.

@@ -1,0 +1,140 @@
+---
+title: Hygraph Webhooks
+sidebarTitle: Hygraph
+description: Develop and test Hygraph webhooks from localhost
+---
+import InspectingRequests from "/snippets/integrations/_inspecting-requests.mdx";
+import ReplayingRequests from "/snippets/integrations/_replaying-requests.mdx";
+
+<Tip>
+**TL;DR**
+
+
+
+To integrate Hygraph webhooks with ngrok:
+
+1. [Launch your local webhook.](#start-your-app) `npm start`
+1. [Launch ngrok.](#start-ngrok) `ngrok http 3000`
+1. [Configure Hygraph webhooks with your ngrok URL.](#setup-webhook)
+1. [Secure your webhook requests with verification.](#security)
+</Tip>
+
+This guide covers how to use ngrok to integrate your localhost app with Hygraph by using Webhooks.
+Hygraph webhooks can be used to notify an external application whenever specific events occur in your Hygraph account.
+
+By integrating ngrok with Hygraph, you can:
+
+- **Develop and test Hygraph webhooks locally**, eliminating the time in deploying your development code to a public environment and setting it up in HTTPS.
+- **Inspect and troubleshoot requests from Hygraph** in real-time via the inspection UI and API.
+- **Modify and Replay Hygraph Webhook requests** with a single click and without spending time reproducing events manually in your Hygraph account.
+- **Secure your app with Hygraph validation provided by ngrok**. Invalid requests are blocked by ngrok before reaching your app.
+
+## **Step 1**: Start your app 
+
+For this tutorial, we'll use the [sample NodeJS app available on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
+
+To install this sample, run the following commands in a terminal:
+
+```bash
+git clone https://github.com/ngrok/ngrok-webhook-nodejs-sample.git
+cd ngrok-webhook-nodejs-sample
+npm install
+```
+
+This will get the project installed locally.
+
+Now you can launch the app by running the following command:
+
+```bash
+npm start
+```
+
+The app runs by default on port 3000.
+
+You can validate that the app is up and running by visiting http://localhost:3000. The application logs request headers and body in the terminal and responds with a message in the browser.
+
+## **Step 2**: Launch ngrok 
+
+Once your app is running successfully on localhost, let's get it on the internet securely using ngrok!
+
+1. If you're not an ngrok user yet, just [sign up for ngrok for free](https://ngrok.com/signup).
+
+1. [Download the ngrok agent](https://download.ngrok.com).
+
+1. Go to the [ngrok dashboard](https://dashboard.ngrok.com) and copy your Authtoken. <br />
+   **Tip:** The ngrok agent uses the auth token to log into your account when you start a tunnel.
+1. Start ngrok by running the following command:
+
+   ```bash
+   ngrok http 3000
+   ```
+
+1. ngrok will display a URL where your localhost application is exposed to the internet (copy this URL for use with Hygraph).
+   ![ngrok agent running](../img/twilio/img/launch_ngrok_tunnel.png)
+
+## **Step 3**: Integrate Hygraph 
+
+To register a webhook on your Hygraph account follow the instructions below:
+
+1. Access [Hygraph](https://app.hygraph.com/) and sign in using your Hygraph account.
+
+1. On the left menu, click **Webhooks** and then click **Add Webhook**.
+
+1. On the webhook popup, enter a name in the **Name** field and enter the URL provided by the ngrok agent to expose your application to the internet in the **URL** field (i.e. `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`).
+   ![hygraph URL to Publish](../img/hygraph/img/ngrok_url_configuration_hygraph.png)
+
+1. Select **Asset** in the **Content Model** field and then click **Add** at the top of the popup screen.
+
+### Run Webhooks with Hygraph and ngrok
+
+Hygraph sends different request body contents depending on the event that is being triggered.
+You can trigger new calls from Hygraph to your application by following the instructions below.
+
+1. On the Hygraph home page, click **Assets** and then click **+ Add entry**.
+
+1. On the **Assets** page, click **Upload**, select a file from your desktop, click **Upload**, and then click **Save & Publish**.
+
+   Confirm your localhost app receives event notifications and logs both headers and body in the terminal.
+
+   Alternatively, you can verify the log of the webhook call in Hygraph:
+   1. On the left menu, click **Webhooks** and then click **View Logs** for your webhook, and then click one of the messages.
+      ![Webhook Logs](../img/hygraph/img/ngrok_logs_hygraph.png)
+
+<InspectingRequests />
+
+<ReplayingRequests />
+## Secure webhook requests 
+
+The ngrok signature webhook verification feature allows ngrok to assert that requests from your Hygraph webhook are the only traffic allowed to make calls to your localhost app.
+
+**Note:** This ngrok feature is limited to 500 validations per month on free ngrok accounts. For unlimited, upgrade to Pro or Enterprise.
+
+This is a quick step to add extra protection to your application.
+
+1. Access [Hygraph](https://app.hygraph.com/) and sign in using your Hygraph account.
+
+1. On the left menu, click **Webhooks**, and click the pencil icon in your webhook tile.
+
+1. On the popup, enter a secret key that is at least 32 characters long in the **Secret key** field, and then click **Update** at the top of the popup screen.
+
+1. Create a traffic policy file named `hygraph_policy.yml`, replacing `{your secret key}` with the value you used in the **Secret key** field:
+
+   ```yaml
+   on_http_request:
+     - name: "Verify Hygraph requests"
+       actions:
+         - type: verify-webhook
+           config:
+             provider: "graphcms"
+             secret: "{your secret key}"
+   ```
+
+1. Restart your ngrok agent by running the command:
+
+   ```bash
+   ngrok http 3000 --traffic-policy-file hygraph_policy.yml
+   ```
+
+1. On the Hygraph home page, create a new asset.
+
+Verify that your local application receives the request and logs information to the terminal.

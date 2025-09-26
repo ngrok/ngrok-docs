@@ -1,0 +1,134 @@
+---
+title: Remove Headers Action
+sidebarTitle: Remove Headers
+description: Remove headers from an HTTP request or response before it is delivered upstream or back to the client.
+---
+
+import ActionVariablesDescription from "/snippets/traffic-policy/common/action-variables-description.mdx";
+
+import { ConfigField } from "/snippets/ConfigTable.jsx";
+import { ConfigChildren } from "/snippets/ConfigChildren.jsx";
+
+The **Remove Headers** Traffic Policy action enables you to remove headers from
+an HTTP request before it is sent upstream or from an HTTP response before it is
+sent back to the client.
+
+## Configuration Reference
+
+The [Traffic Policy](/traffic-policy/) configuration
+reference for this action.
+
+### Supported Phases
+
+`on_http_request`, `on_http_response`
+
+### Type
+
+`remove-headers`
+
+### Configuration Fields
+
+<ConfigField title="headers" type="array of strings" required={true}>
+  List of header keys to remove from the request or response.
+
+  Minimum <code>1</code>, Maximum <code>10</code>.
+</ConfigField>
+
+## Behavior
+
+### During `on_http_request`
+
+When executed during the `on_http_request` phase, this action will remove the specified headers from incoming HTTP requests before reaching the upstream server.
+
+### During `on_http_response`
+
+When executed during the `on_http_response`, the configured headers are removed from HTTP responses returned from the upstream server before reaching the client.
+
+### Removal Only
+
+This action will only remove headers from the request or response.
+
+- If you want to add a header use the [`add-headers`](/traffic-policy/actions/add-headers) action.
+- If you want to replace a header, first use this action _then_ use the [`add-headers`](/traffic-policy/actions/add-headers) action.
+
+### Ordering
+
+Since actions are run in the order they are specified, to modify headers that have been added by other actions you must place this action
+after them in your traffic policy document.
+
+### Special Cases
+
+- You may not add or remove the `user-agent` header.
+
+## Examples
+
+### Removing headers from all requests
+
+We have been getting a lot of requests with `x-client-version` and `x-trace-id`
+and it is starting to overwhelm our logging system. We want to remove these headers
+from all requests. The following example demonstrates how to remove these headers
+using the `remove-headers` action.
+
+#### Example Traffic Policy Document
+
+<CodeGroup>
+```yaml policy.yml
+on_http_request:
+  - actions:
+      - type: remove-headers
+        config:
+          headers:
+            - x-client-version
+            - x-trace-id
+```
+
+```json policy.json
+{
+  "on_http_request": [
+    {
+      "actions": [
+        {
+          "type": "remove-headers",
+          "config": {
+            "headers": [
+              "x-client-version",
+              "x-trace-id"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+</CodeGroup>
+
+For this example, we are assuming that ngrok is pointing at the upstream service
+https://httpbin.org.
+
+#### Example Request
+
+```bash
+$ curl -H "x-client-version: 3.1" -H "x-trace-id: abc123" https://httpbin.ngrok.app/get
+< HTTP/2 200
+
+{
+...
+  "headers": {
+    "Date": "2024-06-24T15:30:00Z",
+  }
+...
+}
+```
+
+In this example even though we sent the `x-client-version` and `x-trace-id` headers,
+they were not present on the request that was sent upstream.
+
+
+## Action Result Variables
+
+<ActionVariablesDescription />
+
+<ConfigField title="actions.ngrok.remove_headers.headers_removed" type="array of strings">
+  A list of headers that were successfully removed by the action.
+</ConfigField>

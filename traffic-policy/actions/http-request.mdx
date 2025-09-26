@@ -1,0 +1,458 @@
+---
+title: HTTP Request Action
+sidebarTitle: HTTP Request
+description: The HTTP Request action performs an outbound HTTP request to a target URL.
+---
+
+import ActionVariablesDescription from "/snippets/traffic-policy/common/action-variables-description.mdx";
+
+import { YouTubeEmbed } from "/snippets/YouTubeEmbed.jsx";
+import { ConfigField } from "/snippets/ConfigTable.jsx";
+import { ConfigChildren } from "/snippets/ConfigChildren.jsx";
+
+The HTTP Request Traffic Policy action performs an outbound HTTP request to a target URL. You can use it to integrate with external services through internal endpoints or—if enabled—with external APIs.
+
+<Note>
+External requests are supported but disabled by default. [Contact ngrok support](https://ngrok.com/support) to enable external access.
+</Note>
+
+<YouTubeEmbed videoId="1VYtIOJsgic" title="Learn about ngrok's http-request action" />
+
+## Configuration Reference
+
+The [Traffic Policy](/traffic-policy/) configuration
+reference for this action.
+
+### Supported Phases
+
+`on_http_request`, `on_http_response`
+
+### Type
+
+`http-request`
+
+### Configuration Fields
+
+<ConfigField title="url" type="string" required={true} cel={true}>
+  The destination URL for the HTTP request.
+</ConfigField>
+<ConfigField title="method" type="enum">
+  The HTTP method to use for the request.
+
+  <ConfigEnum>
+    <ConfigEnumOption>`GET` (default)</ConfigEnumOption>
+    <ConfigEnumOption>`PUT`</ConfigEnumOption>
+    <ConfigEnumOption>`POST`</ConfigEnumOption>
+    <ConfigEnumOption>`PATCH`</ConfigEnumOption>
+    <ConfigEnumOption>`DELETE`</ConfigEnumOption>
+    <ConfigEnumOption>`OPTIONS`</ConfigEnumOption>
+  </ConfigEnum>
+</ConfigField>
+<ConfigField title="query_params" type="list of objects" cel={true}>
+  A list of query parameters to append to the URL. Each item is an object with the following structure:
+
+  ```yaml
+  - key: "parameter_name"
+    value: "parameter_value"
+  ```
+
+  Maximum: `32` entries. Key max length: `128` chars. Value max length: `8192` chars.
+</ConfigField>
+<ConfigField title="headers" type="object" cel={true}>
+  A map of HTTP headers to include in the request. Keys are header names and values are header values.
+
+  Maximum: `10` entries.
+</ConfigField>
+<ConfigField title="body" type="string" cel={true}>
+  The body of the HTTP request. Supported on methods like `POST`, `PUT`, or `PATCH`.
+</ConfigField>
+<ConfigField title="max_redirects" type="int" defaultValue="10">
+  The maximum number of HTTP redirects to follow.
+
+  The minimum allowed is `0`. The maximum allowed is `100`.
+</ConfigField>
+<ConfigField title="timeout" type="duration" defaultValue="3s">
+  The maximum duration as a duration string to wait for the entire request (including retries and redirects).
+
+  The minimum allowed is `1s`. The maximum allowed is `30s`.
+</ConfigField>
+<ConfigField title="retry_condition" type="string" cel={true} defaultValue="false">
+  A CEL expression evaluated after each failed attempt. If `true`, the request is retried (up to `3` times).
+
+  <ConfigEnum>
+    <ConfigEnumOption>`attempts` (`int`): Total number of attempts so far</ConfigEnumOption>
+    <ConfigEnumOption>`last_attempt.req`: The last request object</ConfigEnumOption>
+    <ConfigEnumOption>`last_attempt.res`: The last response object (if any)</ConfigEnumOption>
+    <ConfigEnumOption>`last_attempt.error`: The error string (if any)</ConfigEnumOption>
+  </ConfigEnum>
+
+</ConfigField>
+<ConfigField title="on_error" type="enum">
+  Determines how to proceed if the HTTP request fails.
+
+  <ConfigEnum>
+    <ConfigEnumOption>`continue` (default) – Proceed with remaining actions</ConfigEnumOption>
+    <ConfigEnumOption>`halt` – Stop processing the policy</ConfigEnumOption>
+  </ConfigEnum>
+</ConfigField>
+
+
+## Behavior
+
+The `http-request` action issues an outbound HTTP request during either the `on_http_request` or `on_http_response` phase of policy execution. It can include dynamic headers, query parameters, and a request body.
+
+Only specific HTTP methods are supported: `GET`, `POST`, `PUT`, `PATCH`, `DELETE`, and `OPTIONS`. If no method is specified, `GET` is used by default.
+
+### Internal Endpoint Behavior
+
+By default, the `http-request` action only supports requests to internal ngrok endpoints. Requests to internal endpoints (those with `.internal` domains) are treated differently from public (or external) requests, these requests must resolve to an internal ngrok endpoint running on your account.
+
+These requests also use a direct connection over ngrok's control plane and do not rely on the public internet. If the request targets an internal agent endpoint (e.g., your self-hosted ngrok agent), it will exit the control plane and traverse the public internet to reach your agent running locally.
+
+### Retry Logic
+
+You can use a condition to automatically retry failed requests. This is useful for handling transient errors, like a `500` response. The condition is written using an expression language and has access to:
+
+- `attempts`: number of attempts so far
+- `last_attempt.req`: the most recent request
+- `last_attempt.res`: the most recent response
+- `last_attempt.error`: any error that occurred
+
+```js
+last_attempt.res.statusCode == 500
+```
+
+The request will retry up to **3 times**.
+
+### Timeout Behavior
+
+The `timeout` setting defines the **maximum total time** allowed for the entire `http-request` action, including **all** retry attempts. This prevents long-running or stalled requests from delaying policy evaluation.
+
+The default timeout is `3s`. You can configure any duration between **1 second** and **30 seconds** using standard duration formats like `5s` or `10s`.
+
+#### Timeout Error Handling
+
+Whether a timeout causes the policy to fail or continue depends on the `on_error` setting:
+
+- `halt` will treat the timeout as a hard failure.
+- `continue` will move forward even if the request timed out.
+
+### Loop Protection
+
+To prevent endless loops between services, ngrok tracks internal hops. If the same request loops more than 3 times internally, it will be stopped automatically.
+
+### Redirect Behavior
+
+By default, the `http-request` action does not follow HTTP redirects. You can enable redirect handling by setting the `max_redirects` field. The allowed range is `0` to `5`. By default it is set to `0`.
+
+If the number of redirects exceeds `max_redirects`, the action fails. Redirect handling only applies to `3xx` responses from the target server.
+
+### Response Body Size Limits
+
+The response body returned by the `http-request` action is limited to **256 KB**. If the body size exceeds this limit, the action fails and returns a `response size exceeded` error.
+
+This limit applies to the decoded body after any decompression and before retries are evaluated.
+
+Each retry is also subject to the **256 KB** response size limit. If the response body exceeds this limit, the attempt fails and the error is included in the `retry_condition` evaluation.
+
+### Error Handling
+
+Set `on_error` to control what happens if the request fails:
+
+- `continue`: Policy continues even if the request fails.
+- `halt`: Policy stops immediately on failure.
+
+This gives you control over how critical the request is to your policy logic.
+
+### Automatically Injected Headers
+
+ngrok automatically injects some headers into your request to help with debugging, tracing and abuse:
+
+| Header               | Purpose                                      |
+| -------------------- | -------------------------------------------- |
+| `Ngrok-Report-Abuse` | Static URL for reporting abuse               |
+| `Ngrok-Req-Type`     | Always set to `http-request`                 |
+| `Ngrok-Req-Id`       | Unique request identifier                    |
+| `X-Forwarded-For`    | Original client IP address                   |
+| `User-Agent`         | Identifies the request as from `ngrok/cloud` |
+
+### CEL Interpolation
+
+Certain fields in the `http-request` action support CEL (Common Expression Language) interpolation, allowing dynamic values based on the request context.
+
+The following fields support CEL expressions:
+
+- `url`
+- `headers` (values only)
+- `query_params` (values only)
+- `body`
+
+Expressions must be wrapped in `${...}` and are evaluated at runtime using the current request data.
+
+## Examples
+
+### Make a GET request
+
+Performs a simple GET request to an internal endpoint.
+
+<CodeGroup>
+```yaml policy.yml
+on_http_request:
+  - name: BasicInternalRequest
+    actions:
+      - type: http-request
+        config:
+          url: https://upstream-service.internal/ping
+```
+
+```json policy.json
+{
+  "on_http_request": [
+    {
+      "name": "BasicInternalRequest",
+      "actions": [
+        {
+          "type": "http-request",
+          "config": {
+            "url": "https://upstream-service.internal/ping"
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+</CodeGroup>
+
+#### Send query parameters
+
+This example sends a GET request with custom query parameters to an internal endpoint.
+
+To simulate this behavior, we'll use [httpbin.org/get](https://httpbin.org/get), which echoes query parameters in the response.
+
+##### Start an Internal Agent Endpoint
+
+```bash
+ngrok http https://httpbin.org --host-header rewrite --url https://httpbin.internal
+```
+
+<CodeGroup>
+```yaml policy.yml {7-11}
+on_http_request:
+  - name: QueryParamsExample
+    actions:
+      - type: http-request
+        config:
+          url: https://httpbin.internal/get
+          query_params:
+            - key: trace
+              value: 'true'
+            - key: user
+              value: req.headers["x-user-id"]
+```
+
+```json policy.json {10-19}
+{
+  "on_http_request": [
+    {
+      "name": "QueryParamsExample",
+      "actions": [
+        {
+          "type": "http-request",
+          "config": {
+            "url": "https://httpbin.internal/get",
+            "query_params": [
+              {
+                "key": "trace",
+                "value": "true"
+              },
+              {
+                "key": "user",
+                "value": "req.headers[\"x-user-id\"]"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+</CodeGroup>
+
+
+### Make a POST request
+
+This example sends a POST request to an internal endpoint with a custom JSON body and headers.
+
+To simulate this behavior, we'll use [httpbin.org/post](https://httpbin.org/post) behind an internal `.internal` endpoint.
+
+#### Start an Internal Agent Endpoint
+
+```bash
+ngrok http https://httpbin.org --host-header rewrite --url https://httpbin.internal
+```
+
+#### Example
+
+<CodeGroup>
+```yaml policy.yml
+on_http_request:
+  - name: PostWithBody
+    actions:
+      - type: http-request
+        config:
+          url: https://httpbin.internal/post
+          method: POST
+          headers:
+            content-type: application/json
+            x-custom-header: abc123
+          body: '{ "user": "${req.headers[\"x-user-id\"]}" }'
+```
+
+```json policy.json
+{
+  "on_http_request": [
+    {
+      "name": "PostWithBody",
+      "actions": [
+        {
+          "type": "http-request",
+          "config": {
+            "url": "https://httpbin.internal/post",
+            "method": "POST",
+            "headers": {
+              "content-type": "application/json",
+              "x-custom-header": "abc123"
+            },
+            "body": "{ \"user\": \"${req.headers[\\\"x-user-id\\\"]}\" }"
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+</CodeGroup>
+
+### Follow redirects
+
+This example demonstrates how to follow up to 2 redirects using the `http-request` action.
+
+To simulate this behavior, we'll use [httpbin.org/redirect](https://httpbin.org/redirect) behind an internal `.internal` endpoint.
+
+#### Start an Internal Agent Endpoint
+
+Run the following command to expose `https://httpbin.internal` as a simulated internal service:
+
+```bash
+ngrok http https://httpbin.org --host-header rewrite --url https://httpbin.internal
+```
+
+#### Example
+
+<CodeGroup>
+```yaml policy.yml {8}
+on_http_request:
+  - name: FollowRedirects
+    actions:
+      - type: http-request
+        config:
+          url: https://httpbin.internal/redirect/2
+          method: GET
+          max_redirects: 2
+```
+
+```json policy.json {11}
+{
+  "on_http_request": [
+    {
+      "name": "FollowRedirects",
+      "actions": [
+        {
+          "type": "http-request",
+          "config": {
+            "url": "https://httpbin.internal/redirect/2",
+            "method": "GET",
+            "max_redirects": 2
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+</CodeGroup>
+
+
+## Action Result Variables
+
+<ActionVariablesDescription />
+
+<ConfigField title="actions.ngrok.http_request.error.code" type="string">
+  The ngrok error code for an error that occurred during the invocation of an action.
+</ConfigField>
+
+<ConfigField title="actions.ngrok.http_request.error.message" type="string">
+  The message for an error that occurred during the invocation of an action.
+</ConfigField>
+
+<ConfigField title="actions.ngrok.http_request.attempts" type="array of objects">
+  A list of HTTP responses for each request attempt.
+
+  <Expandable label="children variables">
+    <ConfigField title="attempts[i].resolved_ip" type="string">
+      The IP address of the host returning the response.
+    </ConfigField>
+    <ConfigField title="attempts[i].response_header" type="object">
+      A map of HTTP response headers.
+    </ConfigField>
+    <ConfigField title="attempts[i].response_status_code" type="int">
+      The HTTP Status code for the response attempt.
+    </ConfigField>
+    <ConfigField title="attempts[i].response_time_ms" type="string">
+      Time it took to recieve the response.
+    </ConfigField>
+  </Expandable>
+</ConfigField>
+
+<ConfigField title="actions.ngrok.http_request.req" type="object">
+  The HTTP request.
+
+  <Expandable label="children variables">
+    <ConfigField title="req.method" type="string">
+      The HTTP method of the request.
+    </ConfigField>
+    <ConfigField title="req.header" type="object">
+      A map of HTTP request headers.
+    </ConfigField>
+    <ConfigField title="req.url" type="string">
+      The request url.
+    </ConfigField>
+    <ConfigField title="req.body" type="string">
+      The request body.
+    </ConfigField>
+  </Expandable>
+</ConfigField>
+
+<ConfigField title="actions.ngrok.http_request.res" type="object">
+  The last attempted HTTP response. Unlike `actions.ngrok.attempts[i]` this variable also contains the response body.
+
+  <Expandable label="children variables">
+    <ConfigField title="res.resolved_ip" type="string">
+      The IP address of the host returning the response.
+    </ConfigField>
+    <ConfigField title="res.header" type="object">
+      A map of HTTP response headers.
+    </ConfigField>
+    <ConfigField title="res.status_code" type="int">
+      The HTTP Status code for the response.
+    </ConfigField>
+    <ConfigField title="res.time_ms" type="string">
+      Time it took to recieve the response.
+    </ConfigField>
+    <ConfigField title="res.body" type="string">
+      The response body
+    </ConfigField>
+  </Expandable>
+</ConfigField>

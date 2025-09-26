@@ -1,0 +1,393 @@
+---
+title: Terminate TLS Action
+sidebarTitle: Terminate TLS
+description: Control how TLS traffic is terminated by ngrok, including custom certificates and mutual TLS.
+---
+
+import ActionVariablesDescription from "/snippets/traffic-policy/common/action-variables-description.mdx";
+
+import { ConfigField, ConfigEnum, ConfigEnumOption } from "/snippets/ConfigTable.jsx";
+
+The **Terminate TLS** Traffic Policy action allows you to control how TLS traffic is terminated by ngrok. This action is useful for when you need to specify a custom certificate, control which TLS versions are supported, or enable mutual TLS authentication.
+
+## Configuration Reference
+
+This is the [Traffic Policy](/traffic-policy/) configuration reference for this action.
+
+### Action Type
+
+`terminate-tls`
+
+### Configuration Fields
+
+<ConfigField title="min_version" type="string" required={false} defaultValue="1.2">
+  The minimum TLS version to support. Must be one of `1.0`, `1.1`, `1.2`, or `1.3`.
+</ConfigField>
+
+<ConfigField title="max_version" type="string" required={false} defaultValue="1.3">
+  The maximum TLS version to support. Must be one of `1.0`, `1.1`, `1.2`, or `1.3`.
+</ConfigField>
+
+<ConfigField title="server_private_key" type="string" required={false} cel={true}>
+  The PEM-encoded private key for the server if using a custom certificate (must be specified with `server_certificate`).
+</ConfigField>
+
+<ConfigField title="server_certificate" type="string" required={false} cel={true}>
+  The PEM-encoded certificate for the server if using a custom certificate (must be specified with `server_private_key`).
+</ConfigField>
+
+<ConfigField title="mutual_tls_certificate_authorities" type="array of strings" required={false} cel={true}>
+  A list of PEM-encoded Certificate Authority certificates and/or Certificate Authority IDs that are trusted for mutual TLS authentication.
+</ConfigField>
+
+<ConfigField title="mutual_tls_verification_strategy" type="string" required={false} defaultValue="require-and-verify">
+  The strategy to use for mutual TLS verification.
+
+  <ConfigEnum>
+    <ConfigEnumOption value="require-and-verify">Require and verify</ConfigEnumOption>
+    <ConfigEnumOption value="require-any">Require any</ConfigEnumOption>
+    <ConfigEnumOption value="request">Request</ConfigEnumOption>
+  </ConfigEnum>
+</ConfigField>
+
+### Supported Phases
+
+- `on_tcp_connect`
+
+### Supported Schemes
+
+- `https`
+- `tls`
+
+## Behavior
+
+For HTTPS endpoints, ngrok will already terminate TLS connections for you even if you do not explicitly use this action in your Traffic Policy. If you specify this action in your Traffic Policy without any configuration, you will see no change in behavior for your endpoints.
+
+For TLS endpoints, ngrok will not terminate the TLS connection by default and it is up to you to handle TLS termination in your upstream service.
+
+### Changing Supported TLS Versions
+
+You can use this action to specify the minimum and maximum TLS versions that your endpoint will support for incoming connections. By default, your endpoint will support TLS versions 1.2 and 1.3. If you want to support different versions of TLS, you can use the `min_version` and `max_version` fields in the configuration. Clients using an unsupported version of TLS will receive a handshake error.
+
+## Examples
+
+### Minimum and Maximum TLS Versions
+
+This example sets the minimum and maximum TLS versions that the endpoint will support for incoming connections to TLS version 1.3. Clients can then only connect to the endpoint using TLS version 1.3 and will receive a handshake error if they attempt to connect using a different version.
+
+#### Example Traffic Policy Document
+
+<CodeGroup>
+```yaml policy.yml
+on_tcp_connect:
+  - actions:
+      - type: terminate-tls
+        config:
+          min_version: '1.3'
+          max_version: '1.3'
+```
+
+```json policy.json
+{
+  "on_tcp_connect": [
+    {
+      "actions": [
+        {
+          "type": "terminate-tls",
+          "config": {
+            "min_version": "1.3",
+            "max_version": "1.3"
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+</CodeGroup>
+
+#### Start an Endpoint with the Traffic Policy
+
+```bash
+ngrok http 8080 --url https://terminate-tls-example.ngrok.app --traffic-policy-file /path/to/policy.yml
+```
+
+#### Make a Request
+
+```bash
+curl https://terminate-tls-example.ngrok.app
+```
+
+If your curl was built with a version of OpenSSL that supports TLS 1.3, the request will succeed. However, we can verify that the endpoint only supports TLS 1.3 by telling curl to use a different version of TLS:
+
+```bash
+curl https://terminate-tls-example.ngrok.app --tlsv1.2 --tls-max 1.2
+```
+
+You should receive a "alert protocol version" error indicating that the endpoint only supports TLS 1.3.
+
+### Using a Custom Certificate
+
+If you want to specify a custom certificate for your endpoints instead of having ngrok manage the certificate for you, you can use the `server_private_key` and `server_certificate` fields in the configuration. This will allow you to have full control over which certificate is used for your endpoint.
+
+#### Generate Certificates
+
+We will create a new Certificate Authority (CA) that will be used to sign the 
+server certificate. This allows you to generate multiple server certificates 
+that are trusted by the CA if needed. 
+
+<Note>Note that this generates a self-signed 
+certificate, so if you would like to use a custom certificate that is trusted 
+by modern operating systems and browsers you will need to use a trusted CA 
+(e.g. LetsEncrypt).</Note>
+
+<Steps>
+  <Step title="Generate CA private key (ca.key)">
+    ```bash
+    openssl genpkey -algorithm RSA -out ca.key -pkeyopt rsa_keygen_bits:2048
+    ```
+  </Step>
+  <Step title="Generate CA certificate (ca.crt)">
+    ```bash
+    openssl req -x509 -new -nodes -key ca.key -sha256 -days 365 -out ca.crt -subj "/CN=ExampleCA"
+    ```
+  </Step>
+  <Step title="Generate server private key (server.key)">
+    ```bash
+    openssl genpkey -algorithm RSA -out server.key -pkeyopt rsa_keygen_bits:2048
+    ```
+  </Step>
+  <Step title="Generate server certificate signing request (CSR) (server.csr)">
+    ```bash
+    openssl req -new -key server.key -out server.csr -subj "/CN=terminate-tls-example.ngrok.app"
+    ```
+    <Note>Change `terminate-tls-example.ngrok.app` to the domain you are using with your endpoint</Note>
+  </Step>
+  <Step title="Generate server certificate (server.crt)">
+    ```bash
+    openssl x509 -req -in server.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out server.crt -days 365 -sha256
+    ```
+  </Step>
+</Steps>
+
+These commands will result in five new files: `ca.key`, `ca.crt`, `server.key`, 
+`server.csr`, and `server.key`. 
+
+#### Example Traffic Policy Document
+
+<CodeGroup>
+```yaml policy.yml
+on_tcp_connect:
+  - actions:
+      - type: terminate-tls
+        config:
+          server_private_key: |-
+            -----BEGIN PRIVATE KEY-----
+            ... private key ...
+            -----END PRIVATE KEY-----
+          server_certificate: |-
+            -----BEGIN CERTIFICATE-----
+            ... certificate ...
+            -----END CERTIFICATE-----
+```
+
+```json policy.json
+{
+  "on_tcp_connect": [
+    {
+      "actions": [
+        {
+          "type": "terminate-tls",
+          "config": {
+            "server_private_key": "-----BEGIN PRIVATE KEY-----\n... private key ...\n-----END PRIVATE KEY-----",
+            "server_certificate": "-----BEGIN CERTIFICATE-----\n... certificate ...\n-----END CERTIFICATE-----"
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+</CodeGroup>
+
+<Note>
+    Replace the contents of `server_private_key` with the contents of `server.key` and 
+    `server_certificate` with `server.crt` respectively in the traffic policy to enable your 
+    custom certificate on your endpoint and `ca.crt` to trust the 
+    certificate when using `curl`.
+</Note>
+
+#### Start an Endpoint with the Traffic Policy
+
+```bash
+ngrok http 8080 --url https://terminate-tls-example.ngrok.app --traffic-policy-file /path/to/policy.yml
+```
+
+#### Make a Request
+
+Now you can make a request to the endpoint with the `--cacert` flag to specify the CA certificate that we generated.
+
+```bash
+curl --cacert ca.crt https://terminate-tls-example.ngrok.app
+```
+
+If you have a service running on port `8080`, your request will be forwarded to that service. If you don't have any service running on that port, ngrok will return an error page but the certificate setup will have worked!
+
+### Enabling Mutual TLS
+
+This example demonstrates how to use mutual TLS (mTLS) with this action. mTLS requires both the client and server to present certificates to each other to establish a secure connection. This example will show you how to generate a custom Certificate Authority (CA) and client certificate to use.
+
+#### Generate Certificates
+
+We will create a new CA that will be used to sign the client certificate. This allows you to generate multiple client certificates that are trusted by the CA if needed.
+
+```bash
+# 1. Generate CA private key (ca.key)
+openssl genpkey -algorithm RSA -out ca.key -pkeyopt rsa_keygen_bits:2048
+
+# 2. Generate CA certificate (ca.crt)
+openssl req -x509 -new -nodes -key ca.key -sha256 -days 365 -out ca.crt -subj "/CN=ExampleCA"
+
+# 3. Generate client private key (client.key)
+openssl genpkey -algorithm RSA -out client.key -pkeyopt rsa_keygen_bits:2048
+
+# 4. Generate client certificate signing request (CSR) (client.csr)
+openssl req -new -key client.key -out client.csr -subj "/CN=ExampleClient"
+
+# 5. Generate client certificate (client.crt)
+openssl x509 -req -in client.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out client.crt -days 365 -sha256
+```
+
+These commands will result in five new files: `ca.key`, `ca.crt`, `client.key`, `client.csr`, and `client.key`. You will use the contents of `ca.crt` in your traffic policy to validate requests via `curl` which will use `client.key` and `client.crt`.
+
+#### Example Traffic Policy Document
+
+Using the CA certificate generated above, you can specify the `mutual_tls_certificate_authorities` field in the traffic policy to trust the CA that issued the client certificate.
+
+<CodeGroup>
+```yaml policy.yml
+on_tcp_connect:
+  - actions:
+      - type: terminate-tls
+        config:
+          mutual_tls_certificate_authorities:
+            - |-
+              -----BEGIN CERTIFICATE-----
+              ... certificate ...
+              -----END CERTIFICATE-----
+```
+
+```json policy.json
+{
+  "on_tcp_connect": [
+    {
+      "actions": [
+        {
+          "type": "terminate-tls",
+          "config": {
+            "mutual_tls_certificate_authorities": [
+              "-----BEGIN CERTIFICATE-----\n... certificate ...\n-----END CERTIFICATE-----"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+</CodeGroup>
+
+You may also optionally [upload the CA certificate](https://dashboard.ngrok.com/tls-cert-authorities) in the ngrok dashboard and use its ID the `mutual_tls_certificate_authorities` array.
+
+#### Start an Endpoint with the Traffic Policy
+
+```bash
+ngrok http 8080 --url terminate-tls-example.ngrok.app --traffic-policy-file /path/to/policy.yml
+```
+
+#### Make a Request
+
+Now you can make a request to the endpoint with the `--cert` and `--key` flags to specify the client certificate and private key.
+
+```bash
+curl --cert client.crt --key client.key https://terminate-tls-example.ngrok.app
+```
+
+## Action Result Variables
+
+<ActionVariablesDescription />
+
+| Name                                                             | Type          | Description                                                                                                         |
+| ---------------------------------------------------------------- | ------------- | ------------------------------------------------------------------------------------------------------------------- |
+| `actions.ngrok.terminate_tls.cipher_suite`                       | `string`      | The cipher suite selected during the TLS handshake.                                                                 |
+| `actions.ngrok.terminate_tls.client.extensions[i].critical`      | `bool`        | True if the extension is critical.                                                                                  |
+| `actions.ngrok.terminate_tls.client.extensions[i].id`            | `string`      | The identifier (OID) that specifies the type of extension.                                                          |
+| `actions.ngrok.terminate_tls.client.extensions[i].value`         | `[]byte`      | The data for the extension.                                                                                         |
+| `actions.ngrok.terminate_tls.client.extensions`                  | `[]Extension` | Additional information added to the certificate.                                                                    |
+| `actions.ngrok.terminate_tls.client.issuer.common_name`          | `string`      | Common name of the issuing authority, usually the domain name.                                                      |
+| `actions.ngrok.terminate_tls.client.issuer.country`              | `[]string`    | Country name(s) where the issuing authority is located.                                                             |
+| `actions.ngrok.terminate_tls.client.issuer.locality`             | `[]string`    | Locality or city of the issuing authority.                                                                          |
+| `actions.ngrok.terminate_tls.client.issuer.organization`         | `[]string`    | Name(s) of the organization that issued the certificate.                                                            |
+| `actions.ngrok.terminate_tls.client.issuer.organizational_unit`  | `[]string`    | Division of the organization responsible for the certificate.                                                       |
+| `actions.ngrok.terminate_tls.client.issuer.postal_code`          | `[]string`    | Postal code of the issuing authority.                                                                               |
+| `actions.ngrok.terminate_tls.client.issuer.province`             | `[]string`    | Province or state of the issuing authority.                                                                         |
+| `actions.ngrok.terminate_tls.client.issuer.street_address`       | `[]string`    | Street address of the issuing authority.                                                                            |
+| `actions.ngrok.terminate_tls.client.issuer`                      | `string`      | The issuing authority of the certificate as a string roughly following the RFC 2253 Distinguished Names syntax.     |
+| `actions.ngrok.terminate_tls.client.san.dns_names`               | `[]string`    | DNS names in the subject alternative names.                                                                         |
+| `actions.ngrok.terminate_tls.client.san.email_addresses`         | `[]string`    | Email addresses in the subject alternative names.                                                                   |
+| `actions.ngrok.terminate_tls.client.san.ip_addresses`            | `[]string`    | IP addresses in the subject alternative names.                                                                      |
+| `actions.ngrok.terminate_tls.client.san.uris`                    | `[]string`    | URIs in the subject alternative names.                                                                              |
+| `actions.ngrok.terminate_tls.client.san`                         | `string`      | Subject alternative names of the client certificate.                                                                |
+| `actions.ngrok.terminate_tls.client.serial_number`               | `string`      | Unique identifier for the certificate.                                                                              |
+| `actions.ngrok.terminate_tls.client.signature_algorithm`         | `string`      | Algorithm used to sign the certificate.                                                                             |
+| `actions.ngrok.terminate_tls.client.subject.common_name`         | `string`      | Common name of the subject, usually the domain name.                                                                |
+| `actions.ngrok.terminate_tls.client.subject.country`             | `[]string`    | Country name(s) where the subject of the certificate is located.                                                    |
+| `actions.ngrok.terminate_tls.client.subject.locality`            | `[]string`    | Locality or city where the subject is located.                                                                      |
+| `actions.ngrok.terminate_tls.client.subject.organization`        | `[]string`    | Name(s) of the organization to which the subject belongs.                                                           |
+| `actions.ngrok.terminate_tls.client.subject.organizational_unit` | `[]string`    | Division of the organization to which the subject belongs.                                                          |
+| `actions.ngrok.terminate_tls.client.subject.postal_code`         | `[]string`    | Postal code where the subject is located.                                                                           |
+| `actions.ngrok.terminate_tls.client.subject.province`            | `[]string`    | Province or state where the subject is located.                                                                     |
+| `actions.ngrok.terminate_tls.client.subject.street_address`      | `[]string`    | Street address where the subject is located.                                                                        |
+| `actions.ngrok.terminate_tls.client.subject`                     | `string`      | The entity to whom the certificate is issued as a string roughly following the RFC 2253 Distinguished Names syntax. |
+| `actions.ngrok.terminate_tls.client.validity.not_after`          | `timestamp`   | Expiration date and time when the certificate is no longer valid.                                                   |
+| `actions.ngrok.terminate_tls.client.validity.not_before`         | `timestamp`   | Start date and time when the certificate becomes valid.                                                             |
+| `actions.ngrok.terminate_tls.error_code`                         | `string`      | The error code if the action encountered any errors during its execution.                                           |
+| `actions.ngrok.terminate_tls.error_message`                      | `string`      | The error message if the action encountered any errors during its execution.                                        |
+| `actions.ngrok.terminate_tls.server.extensions[i].critical`      | `bool`        | True if the extension is critical.                                                                                  |
+| `actions.ngrok.terminate_tls.server.extensions[i].id`            | `string`      | The identifier that specifies the type of extension.                                                                |
+| `actions.ngrok.terminate_tls.server.extensions[i].value`         | `[]byte`      | The data for the extension.                                                                                         |
+| `actions.ngrok.terminate_tls.server.extensions`                  | `[]Extension` | Additional information added to the certificate.                                                                    |
+| `actions.ngrok.terminate_tls.server.issuer.common_name`          | `string`      | Common name of the issuing authority, usually the domain name.                                                      |
+| `actions.ngrok.terminate_tls.server.issuer.country`              | `[]string`    | Country name(s) where the issuing authority is located.                                                             |
+| `actions.ngrok.terminate_tls.server.issuer.locality`             | `[]string`    | Locality or city of the issuing authority.                                                                          |
+| `actions.ngrok.terminate_tls.server.issuer.organization`         | `[]string`    | Name(s) of the organization that issued the certificate.                                                            |
+| `actions.ngrok.terminate_tls.server.issuer.organizational_unit`  | `[]string`    | Division of the organization responsible for the certificate.                                                       |
+| `actions.ngrok.terminate_tls.server.issuer.postal_code`          | `[]string`    | Postal code of the issuing authority.                                                                               |
+| `actions.ngrok.terminate_tls.server.issuer.province`             | `[]string`    | Province or state of the issuing authority.                                                                         |
+| `actions.ngrok.terminate_tls.server.issuer.street_address`       | `[]string`    | Street address of the issuing authority.                                                                            |
+| `actions.ngrok.terminate_tls.server.issuer`                      | `string`      | The issuing authority of the certificate as a string roughly following the RFC 2253 Distinguished Names syntax.     |
+| `actions.ngrok.terminate_tls.server.san.dns_names`               | `[]string`    | DNS names in the subject alternative names of the ngrok server's leaf TLS certificate.                              |
+| `actions.ngrok.terminate_tls.server.san.email_addresses`         | `[]string`    | Email addresses in the subject alternative names of the ngrok server's leaf TLS certificate.                        |
+| `actions.ngrok.terminate_tls.server.san.ip_addresses`            | `[]string`    | IP addresses in the subject alternative names of the ngrok server's leaf TLS certificate.                           |
+| `actions.ngrok.terminate_tls.server.san.uris`                    | `[]string`    | URIs in the subject alternative names of the ngrok server's leaf TLS certificate.                                   |
+| `actions.ngrok.terminate_tls.server.san`                         | `string`      | Subject alternative names of the ngrok server's leaf TLS certificate.                                               |
+| `actions.ngrok.terminate_tls.server.serial_number`               | `string`      | Unique identifier for the certificate.                                                                              |
+| `actions.ngrok.terminate_tls.server.signature_algorithm`         | `string`      | Algorithm used to sign the certificate.                                                                             |
+| `actions.ngrok.terminate_tls.server.subject.common_name`         | `string`      | Common name of the subject, usually the domain name.                                                                |
+| `actions.ngrok.terminate_tls.server.subject.country`             | `[]string`    | Country name(s) where the subject of the certificate is located.                                                    |
+| `actions.ngrok.terminate_tls.server.subject.locality`            | `[]string`    | Locality or city where the subject is located.                                                                      |
+| `actions.ngrok.terminate_tls.server.subject.organization`        | `[]string`    | Name(s) of the organization to which the subject belongs.                                                           |
+| `actions.ngrok.terminate_tls.server.subject.organizational_unit` | `[]string`    | Division of the organization to which the subject belongs.                                                          |
+| `actions.ngrok.terminate_tls.server.subject.postal_code`         | `[]string`    | Postal code where the subject is located.                                                                           |
+| `actions.ngrok.terminate_tls.server.subject.province`            | `[]string`    | Province or state where the subject is located.                                                                     |
+| `actions.ngrok.terminate_tls.server.subject.street_address`      | `[]string`    | Street address where the subject is located.                                                                        |
+| `actions.ngrok.terminate_tls.server.subject`                     | `string`      | The entity to whom the certificate is issued as a string roughly following the RFC 2253 Distinguished Names syntax. |
+| `actions.ngrok.terminate_tls.server.validity.not_after`          | `timestamp`   | Expiration date and time when the certificate is no longer valid.                                                   |
+| `actions.ngrok.terminate_tls.server.validity.not_before`         | `timestamp`   | Start date and time when the certificate becomes valid.                                                             |
+| `actions.ngrok.terminate_tls.sni`                                | `string`      | The hostname included in the `ClientHello` message via the SNI extension.                                           |
+| `actions.ngrok.terminate_tls.version`                            | `string`      | The version of the TLS protocol used between the client and the ngrok edge.                                         |
+| `actions.ngrok.terminate_tls.warnings`                           | `[]string`    | A list of any warnings encountered during the parsing of Certificate Authority IDs.                                 |
+
+<Note>
+  These variables are also available on the `conn` object (see [HTTP Variables](/traffic-policy/variables) for examples).
+</Note>

@@ -1,0 +1,64 @@
+### Custom Plaintext Response with Multiple CEL Interpolations
+
+The following [Traffic Policy](/traffic-policy/)
+configuration demonstrates how to use the `custom-response` action to return a
+`text/plain` response with multiple CEL interpolations.
+
+#### Example Traffic Policy Document
+
+<CodeGroup>
+```yaml policy.yml {6-12}
+on_http_request:
+  - expressions:
+      - req.url.path == '/api/example'
+    actions:
+      - type: custom-response
+        config:
+          status_code: 418
+          body: connection began at ${conn.ts.start}, now ${timestamp(time.now)}
+          headers:
+            content-type: text/plain
+```
+
+```json policy.json {8-17}
+{
+  "on_http_request": [
+    {
+      "expressions": [
+        "req.url.path == '/api/example'"
+      ],
+      "actions": [
+        {
+          "type": "custom-response",
+          "config": {
+            "status_code": 418,
+            "body": "connection began at ${conn.ts.start}, now ${timestamp(time.now)}",
+            "headers": {
+              "content-type": "text/plain"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+</CodeGroup>
+
+#### Example Request
+
+```bash
+$ curl https://example.ngrok.app/api/example
+```
+
+```http
+HTTP/2 418 I'm a teapot
+content-type: text/plain
+
+connection began at 2024-06-24T15:30:00Z, now 2024-06-24T16:30:00Z
+```
+
+In this example, when a request is made to `/api/example`, ngrok returns a
+custom plain text response with a status code of `418`. The response includes a
+`content-type: text/plain` header and a body that uses multiple string
+interpolations to show the connection start time and the current time.

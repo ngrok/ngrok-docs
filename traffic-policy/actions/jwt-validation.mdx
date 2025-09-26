@@ -1,0 +1,364 @@
+---
+title: JWT Validation Action
+sidebarTitle: JWT Validation
+description: Validate JSON Web Tokens (JWT) on your endpoints before routing traffic to your upstream service.
+---
+
+import ActionVariablesDescription from "/snippets/traffic-policy/common/action-variables-description.mdx";
+import { ConfigField } from "/snippets/ConfigTable.jsx";
+import { ConfigChildren } from "/snippets/ConfigChildren.jsx";
+
+
+The **JWT Validation** Traffic Policy action enables you to validate JSON Web
+Tokens (JWT) on your endpoints before routing traffic to your upstream service.
+
+We have created guides for configuring this action with the following providers:
+
+- [Auth0](/integrations/jwt-validation/auth0/)
+
+A useful tool for working with JWTs is provided at [jwt.io](https://jwt.io).
+
+
+## Configuration Reference
+
+The [Traffic Policy](/traffic-policy/) configuration
+reference for this action.
+
+### Supported Phases
+
+`on_http_request`
+
+### Type
+
+`jwt-validation`
+
+### Configuration Fields
+
+<ConfigField title="issuer" type="object" required={true}>
+  Configuration object for the Issuer(s) of the JWTs.
+
+  <Expandable label="child properties">
+    <ConfigField title="allow_list" type="array of objects" required={true}>
+      List of allowed issuers. Minimum `1`.
+
+      <Expandable label="child properties">
+        <ConfigField title="allow_list[*].value" type="string" required={true} cel={true}>
+          Issuer URL. This can be found in the <code>iss</code> claim after decoding the JWT or from the <code>/.well-known/openid-configuration</code> endpoint in your Identity Provider.
+        </ConfigField>
+      </Expandable>
+    </ConfigField>
+  </Expandable>
+</ConfigField>
+  
+<ConfigField title="audience" type="object" required={false}>
+  Configuration object for the Audience(s) of the JWTs.
+
+  <Expandable label="child properties">
+    <ConfigField title="allow_list" type="array of objects" required={false}>
+      List of allowed audiences. Minimum `1`.
+
+      <Expandable label="child properties">
+        <ConfigField title="allow_list[*].value" type="string" required={false}>
+          Audience claim value. This can be found in the <code>aud</code> claim after decoding the JWT or from the request used to create the token in the first place.
+        </ConfigField>
+      </Expandable>
+    </ConfigField>
+  </Expandable>
+</ConfigField>
+
+<ConfigField title="http" type="object" required={true}>
+  Configuration object for the HTTP requests containing JWTs.
+
+  <Expandable label="child properties">
+    <ConfigField title="tokens" type="array of objects" required={true}>
+      List of tokens to validate. Minimum `1`.
+
+      <Expandable label="child properties">
+        <ConfigField title="tokens[*].type" type="enum" required={true}>
+          Type of the JWT, which acts as a hint about how ngrok should parse the token.
+
+          <ConfigEnum>
+            <ConfigEnumOption>`id_token`</ConfigEnumOption>
+            <ConfigEnumOption>`access_token`</ConfigEnumOption>
+            <ConfigEnumOption>`at+jwt`</ConfigEnumOption>
+            <ConfigEnumOption>`it+jwt`</ConfigEnumOption>
+            <ConfigEnumOption>`plain`</ConfigEnumOption>
+            <ConfigEnumOption>`jwt`</ConfigEnumOption>
+          </ConfigEnum>
+        </ConfigField>
+
+        <ConfigField title="tokens[*].method" type="enum" required={true}>
+          Location in the request to expect the JWT.
+
+          <ConfigEnum>
+            <ConfigEnumOption>`header`</ConfigEnumOption>
+            <ConfigEnumOption>`body`</ConfigEnumOption>
+          </ConfigEnum>
+
+          When choosing `header`, the <code>content-type</code> header must be set to either <code>application/json</code> or <code>application/x-www-form-urlencoded</code>.
+          
+          When choosing <code>body</code>, the method must be <code>POST</code>, <code>PUT</code>, or <code>PATCH</code>
+          
+          We do not support including a token as a URL query parameter.
+        </ConfigField>
+
+        <ConfigField title="tokens[*].name" type="string" required={true} cel={true}>
+          Name of the header or body field where the JWT is expected (Example: <code>"Authorization"</code>). This is not case sensitive.
+        </ConfigField>
+
+        <ConfigField title="tokens[*].prefix" type="string" cel={true}>
+          Any prefix to strip from the header or body field before parsing the JWT (Example: <code>"Bearer "</code>).
+        </ConfigField>
+      </Expandable>
+    </ConfigField>
+  </Expandable>
+</ConfigField>
+
+<ConfigField title="jws" type="object" required={true}>
+  Configuration object for signed JWTs (JWS).
+
+  <Expandable label="child properties">
+    <ConfigField title="allowed_algorithms" type="array of strings" required={true}>
+      List of allowed signing algorithms. We do not support <code>none</code> as a value here because it is insecure. Minimum `1`.
+    </ConfigField>
+
+    <ConfigField title="keys" type="array of objects" required={true}>
+      Configuration for the JWT signing keys.
+
+      <Expandable label="child properties">
+        <ConfigField title="keys[*].identification" type="array of objects" required={false}>
+          JWT metadata.
+
+          <Expandable label="child properties">
+            <ConfigField title="keys[*].identification[*].token_claims" type="array of strings" required={false}>
+              List of claims present in this token. Supported values: ['kid']
+            </ConfigField>
+          </Expandable>
+        </ConfigField>
+
+        <ConfigField title="keys[*].sources" type="array of objects" required={true}>
+          Configuration for the key material used to verify the signed JWTs.
+
+          <Expandable label="child properties">
+            <ConfigField title="keys[*].sources[*].additional_jkus" type="array of strings" required={true} cel={true}>
+              List of URLs which serve the possible signing keys in JWKS format. These URLs are cached and refreshed roughly every 15 minutes.
+            </ConfigField>
+          </Expandable>
+        </ConfigField>
+      </Expandable> 
+    </ConfigField>
+  </Expandable>
+</ConfigField>
+
+## Behavior
+
+### Request Validation
+
+The request is allowed only if it has been correctly signed by the issuer and
+the defined claims match.
+
+For efficient validation of tokens, it is recommended to include the optional
+`kid` claim in your JWTs and JWK payload.
+
+Custom validation can be implemented in Traffic Policies via the
+[`actions.ngrok.jwt_validation.tokens`](#action-result-variables) Action Result Variable and its
+corresponding properties.
+
+### Multiple Issuers
+
+You can specify multiple issuers for JWT validation. A request is
+considered validated if it presents a JWT signed by any of the specified
+issuers.
+
+The issuer **must** exactly match the one provided in the JWT, including
+any trailing slashes (`/`) present in the `iss` claim.
+
+### Multiple Audience Claims
+
+You can optionally specify one or more audience (`aud`) claims for JWT validation.
+
+If present, the `aud` claim **must** contain at least one of the specified audience claims and
+exactly match for validation to succeed.
+
+### Multiple Signing Keys
+
+You can provide multiple JSON Web Key Set (JWKS) URLs and signing algorithms.
+
+During JWT validation the list of JWKS and algorithms provided will be used in
+an attempt to validate the JWT. The list will be tried in order and is cached
+for performance. The cache is refreshed roughly every 15 minutes.
+
+### Multiple Tokens
+
+If multiple tokens are defined within the HTTP configuration parameter, all
+tokens **must** be present in the request. If all tokens are not present, a
+`401 Unauthorized` status code will be returned.
+
+## Examples
+
+### Basic Example
+
+The following [Traffic Policy](/traffic-policy/)
+configuration is an example configuration of the `jwt-validation` action. For a
+more real-world example, check out our [Auth0 guide](/integrations/jwt-validation/auth0/).
+
+#### Example Traffic Policy Document
+
+<CodeGroup>
+```yaml policy.yml
+on_http_request:
+  - actions:
+      - type: jwt-validation
+        config:
+          issuer:
+            allow_list:
+              - value: https://example.com/issuer
+          audience:
+            allow_list:
+              - value: urn:example:api
+          http:
+            tokens:
+              - type: access_token
+                method: header
+                name: Authorization
+                prefix: 'Bearer '
+              - type: it+jwt
+                method: body
+                name: _id_token
+          jws:
+            allowed_algorithms:
+              - RS256
+              - ES256
+            keys:
+              sources:
+                additional_jkus:
+                  - https://example.com/issuer/jku
+```
+
+```json policy.json
+{
+  "on_http_request": [
+    {
+      "actions": [
+        {
+          "type": "jwt-validation",
+          "config": {
+            "issuer": {
+              "allow_list": [
+                {
+                  "value": "https://example.com/issuer"
+                }
+              ]
+            },
+            "audience": {
+              "allow_list": [
+                {
+                  "value": "urn:example:api"
+                }
+              ]
+            },
+            "http": {
+              "tokens": [
+                {
+                  "type": "access_token",
+                  "method": "header",
+                  "name": "Authorization",
+                  "prefix": "Bearer "
+                },
+                {
+                  "type": "it+jwt",
+                  "method": "body",
+                  "name": "_id_token"
+                }
+              ]
+            },
+            "jws": {
+              "allowed_algorithms": [
+                "RS256",
+                "ES256"
+              ],
+              "keys": {
+                "sources": {
+                  "additional_jkus": [
+                    "https://example.com/issuer/jku"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+</CodeGroup>
+
+#### Example Request
+
+```bash
+$ curl --request GET \
+  --url http://example-api.ngrok.app/ \
+  --header 'authorization: Bearer <VALID-JWT>'
+```
+
+```http
+HTTP/2 200 OK
+content-type: text/html
+
+...
+```
+
+In this example, we are sending a request to our API with a valid JWT token in
+the `Authorization` header with the `Bearer` prefix and getting back a `200 OK`
+response.
+
+
+## Action Result Variables
+
+<ActionVariablesDescription />
+
+<ConfigField title="actions.ngrok.jwt_validation.tokens" type="array of objects">
+  The list of JSON Web Tokens (JWTs) processed by the action.
+
+  <Expandable label="child properties">
+    <ConfigField title="tokens[i].header" type="object">
+      The header portion of the JWT, parsed into a key-value map containing metadata about the token.
+    </ConfigField>
+
+    <ConfigField title="tokens[i].location" type="string">
+      The part of the HTTP request where the JWT was located (e.g.,{" "}
+      <code>header</code>, <code>body</code>).
+    </ConfigField>
+
+    <ConfigField title="tokens[i].location_property" type="string">
+      The specific header or body field that contained the JWT (e.g.,{" "}
+      <code>"Authorization"</code>).
+    </ConfigField>
+
+    <ConfigField title="tokens[i].payload" type="object">
+      The payload portion of the JWT, parsed into a key-value map
+      representing the claims.
+    </ConfigField>
+
+    <ConfigField title="tokens[i].signature" type="string">
+      The signature portion of the JWT, encoded in base64, used for
+      verifying token integrity.
+    </ConfigField>
+
+    <ConfigField title="tokens[i].verified" type="boolean">
+      Indicates whether the token passed verification. Returns{" "}
+      <code>true</code> if verified successfully.
+    </ConfigField>
+  </Expandable>
+</ConfigField>
+
+<ConfigField title="actions.ngrok.jwt_validation.error.code" type="string">
+  A machine-readable code describing an error that occurred during the
+  action's execution.
+</ConfigField>
+
+<ConfigField title="actions.ngrok.jwt_validation.error.message" type="string">
+  A human-readable message providing details about an error that occurred
+  during the action's execution.
+</ConfigField>

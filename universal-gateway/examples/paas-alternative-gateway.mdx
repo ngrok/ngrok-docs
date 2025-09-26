@@ -1,0 +1,229 @@
+---
+title: "Self-Hosted PaaS Alternative Gateway"
+description: "Get the polish of managed platforms like Heroku or Vercel while maintaining full control over your infrastructure with load balancing, security, and observability."
+sidebar_label: "Self-Hosted PaaS Alternative"
+---
+
+import ReserveDomain from "/snippets/universal-gateway/_reserve-domain.mdx";
+import CloudEndpoint from "/snippets/universal-gateway/_cloud-endpoint.mdx";
+import TryOut from "/snippets/universal-gateway/_try-out.mdx";
+
+
+A self-hosted PaaS alternative gateway provides the developer experience and features of managed platforms without surrendering control of your infrastructure.
+It handles TLS termination, custom domains, load balancing, authentication, observability, and security—perfect for teams migrating from Heroku or Vercel while keeping the operational polish.
+
+With this setup, you can:
+
+- Load balance across multiple app instances with automatic failover
+- Terminate TLS and use custom domains professionally
+- Add authentication and security without changing your application code
+- Monitor traffic and performance with comprehensive logging
+- Protect against attacks with WAF-like rules and rate limiting
+- Handle geo-aware routing and DDoS protection at the edge
+
+## 1. Create endpoints for your application instances
+
+Start multiple [Agent Endpoints](/universal-gateway/agent-endpoints/) with the same URL to create an endpoint pool for automatic load balancing. Replace `$PORT` with your application ports.
+You can also use one of our [SDKs](/agent-sdks) or the [Kubernetes Operator](/k8s).
+
+If you only have one instance now, you can add additional replicas later for redundancy through load balancing.
+
+```bash
+# Instance 1
+ngrok http $PORT --url https://service.internal --pooling-enabled
+
+# Instance 2 (optional)
+ngrok http $PORT --url https://service.internal --pooling-enabled
+
+# Instance 3 (optional)
+ngrok http $PORT --url https://service.internal --pooling-enabled
+```
+
+<Tip>
+By using the same URL with `--pooling-enabled`, ngrok automatically creates an [Endpoint Pool](/universal-gateway/endpoint-pooling) that distributes traffic round-robin across all healthy instances with automatic failover.
+</Tip>
+
+## 2. Reserve a domain
+
+<ReserveDomain />
+
+<Tip>
+For a production PaaS alternative, consider using a [custom domain](/universal-gateway/custom-domains/) you own instead of an ngrok subdomain.
+</Tip>
+
+## 3. Create a Cloud Endpoint
+
+<CloudEndpoint />
+
+## 4. Create a vault and secrets
+
+Store your authentication and API secrets securely using [Traffic Policy Secrets](/traffic-policy/secrets).
+
+First, create a vault to store your application secrets:
+
+```bash
+ngrok api vaults create --name "paas-gateway" --description "PaaS gateway authentication and API secrets"
+```
+
+Then add your secrets using the vault ID from the response:
+
+```bash
+# OAuth client secret for app authentication
+ngrok api secrets create \
+  --name "oauth-client-secret" \
+  --value "your_oauth_client_secret_here" \
+  --vault-id "$VAULT_ID"
+
+# API key for admin access
+ngrok api secrets create \
+  --name "admin-api-key" \
+  --value "your_admin_api_key_here" \
+  --vault-id "$VAULT_ID"
+```
+
+## 5. Apply Traffic Policy to your Cloud Endpoint
+
+While still viewing your new cloud endpoint in the dashboard, copy and paste the policy below into the Traffic Policy editor.
+Make sure you change each of the following values:
+
+- `$GITHUB_CLIENT_ID`: Replace with your GitHub OAuth app client ID
+- `$YOUR_ADMIN_EMAIL`: Replace with your admin email address for OAuth access
+- `$YOUR_ADMIN_USERNAME`: Replace with the username for API authentication
+- `https://service.internal`: Replace with your actual pooled endpoint URL
+
+```yaml
+on_http_request:
+  # WAF-like protection using OWASP CRS
+  - actions:
+      - type: owasp-crs-request
+        config:
+          on_error: halt
+
+  # Rate limiting for DDoS protection
+  - actions:
+      - type: rate-limit
+        config:
+          name: "Global rate limiting"
+          algorithm: "sliding_window"
+          capacity: 1000
+          rate: "1m"
+          bucket_key: ["conn.client_ip"]
+
+  # Block bot traffic and unwanted crawlers
+  - expressions:
+      - "req.user_agent.is_bot || 'proxy.anonymous.tor' in conn.client_ip.categories"
+    actions:
+      - type: deny
+        config:
+          status_code: 404
+
+  # Block specific AI crawlers
+  - expressions:
+      - "('com.anthropic' in conn.client_ip.categories) || ('com.openai' in conn.client_ip.categories) || ('com.perplexity' in conn.client_ip.categories)"
+    actions:
+      - type: deny
+        config:
+          status_code: 404
+
+  # Admin authentication for /admin paths
+  - expressions:
+      - "req.url.path.startsWith('/admin')"
+    actions:
+      - type: oauth
+        config:
+          provider: google
+          client_id: "$GITHUB_CLIENT_ID"
+          client_secret: "${secrets.get('paas-gateway', 'oauth-client-secret')}"
+          scopes:
+            - https://www.googleapis.com/auth/userinfo.email
+
+  # Restrict admin access to specific email
+  - expressions:
+      - "req.url.path.startsWith('/admin')"
+      - "actions.ngrok.oauth.identity.email != '$YOUR_ADMIN_EMAIL'"
+    actions:
+      - type: custom-response
+        config:
+          status_code: 403
+          headers:
+            content-type: "text/plain"
+          body: "Access denied. Contact your administrator."
+
+  # API authentication for /api paths
+  - expressions:
+      - "req.url.path.startsWith('/api')"
+    actions:
+      - type: basic-auth
+        config:
+          credentials:
+            - "$YOUR_ADMIN_USERNAME:${secrets.get('paas-gateway', 'admin-api-key')}"
+          realm: "API Access"
+
+  # Forward to your application pool (automatic load balancing)
+  - actions:
+      - type: forward-internal
+        config:
+          url: https://service.internal
+
+on_http_response:
+  # OWASP protection for responses
+  - actions:
+      - type: owasp-crs-response
+        config:
+          on_error: halt
+
+  # Add security headers (based on OWASP recommendations)
+  - actions:
+      - type: add-headers
+        config:
+          headers:
+            # Prevent clickjacking attacks
+            x-frame-options: "DENY"
+            # Prevent MIME-sniffing
+            x-content-type-options: "nosniff"
+            # Control referrer information
+            referrer-policy: "strict-origin-when-cross-origin"
+            # Enforce HTTPS (adjust max-age as needed)
+            strict-transport-security: "max-age=31536000; includeSubDomains"
+            # Cross-origin isolation (modern browsers)
+            cross-origin-opener-policy: "same-origin"
+```
+
+**What's happening here?**
+This policy creates a production-ready PaaS alternative.
+On every HTTP request, the policy enforces OWASP WAF protection, DDoS mitigation via rate limiting, bot blocking for unwanted crawlers and Tor traffic, and authentication for admin/API routes, before forwarding your request to the pool of upstream services.
+
+On every HTTP response, the policy enforces WAF rules on the headers and body, then adds [common security headers](https://cheatsheetseries.owasp.org/cheatsheets/HTTP_Headers_Cheat_Sheet.html) to the response.
+
+## 6. Try out your endpoint
+
+<TryOut />
+
+Test a few of the features you added with Traffic Policy:
+
+```bash
+# Test WAF with a potentially malicious request
+curl https://$NGROK_DOMAIN/files?name=../../../../etc/passwd"
+
+# Test admin authentication (will redirect to OAuth)
+curl "https://$NGROK_DOMAIN/admin/dashboard"
+
+# Test API authentication (basic auth with base64 encoded credentials)
+# First, base64 encode the $YOUR_ADMIN_USERNAME:your_admin_api_key_here pair
+# Example: admin:secret-api-key becomes YWRtaW46c2VjcmV0LWFwaS1rZXk=
+curl -H "Authorization: Basic YWRtaW46c2VjcmV0LWFwaS1rZXk=" \
+     "https://$NGROK_DOMAIN/api/stats"
+
+# Test bot blocking (should get 404)
+curl -H "User-Agent: GPTBot" \
+     "https://$NGROK_DOMAIN/"
+```
+
+## What's next?
+
+- Read about [other gateway shapes](https://ngrok.com/blog-post/api-gateway-shapes-patterns-2025) you can build with ngrok
+- Learn about [Endpoint Pooling](/universal-gateway/endpoint-pooling) for simpler automatic load balancing
+- Explore [custom domains](/universal-gateway/custom-domains) to use your own domain instead of ngrok subdomains
+- Use [Traffic Inspector](https://dashboard.ngrok.com/traffic-inspector) to monitor performance and debug issues
+- Add [circuit breaker protection](/traffic-policy/actions/circuit-breaker) to handle upstream failures gracefully
+

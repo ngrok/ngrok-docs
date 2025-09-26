@@ -1,0 +1,136 @@
+---
+title: Log Action
+sidebarTitle: Log
+description: The Log action enables you to log metadata to ngrok's eventing system.
+---
+
+import ActionVariablesDescription from "/snippets/traffic-policy/common/action-variables-description.mdx";
+import { ConfigField } from "/snippets/ConfigTable.jsx";
+
+The **Log** Traffic Policy action enables you to leverage ngrok's
+[eventing system](/obs) to introduce observability into your traffic policy
+documents.
+
+## Configuration Reference
+
+The [Traffic Policy](/traffic-policy/) configuration
+reference for this action.
+
+### Supported Phases
+
+- `on_tcp_connect`
+- `on_http_request`
+- `on_http_response`
+
+### Action Type
+
+`log`
+
+### Configuration Fields
+
+<ConfigField title="metadata" type="map[string]any" required={true} cel={true}>
+  A key-value map of metadata that you would like to include in your events
+  for this action.
+</ConfigField>
+
+## Behavior
+
+<Tabs>
+  <Tab title="on_tcp_connect" label="on_tcp_connect">
+    ### Event logs
+
+    When this action is executed, the specified metadata will be collected on the
+    [tcp_connection_closed.v0](/obs/events/reference/#tcp_connection_closedv0) event
+    under the `traffic_policy.logs` key.
+  </Tab>
+
+  <Tab title="on_http_request" label="on_http_request">
+    ### Event logs
+
+    When this action is executed, the specified metadata will be collected on the
+    [http_request_complete.v0](/obs/events/reference/#http_request_completev0) event
+    under `traffic_policy.logs` key.
+  </Tab>
+</Tabs>
+
+## Examples
+
+### Logging with CEL Interpolation
+
+The following [Traffic Policy](/traffic-policy/)
+configuration will log a message with the endpoint identifier for every request.
+
+#### Example Traffic Policy Document
+
+<CodeGroup>
+```yaml policy.yml
+on_http_request:
+  - actions:
+      - type: log
+        config:
+          metadata:
+            message: Log action executed.
+            endpoint_id: ${endpoint.id}
+```
+
+```json policy.json
+{
+  "on_http_request": [
+    {
+      "actions": [
+        {
+          "type": "log",
+          "config": {
+            "metadata": {
+              "message": "Log action executed.",
+              "endpoint_id": "${endpoint.id}"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+</CodeGroup>
+
+#### Example Request
+
+```bash
+$ curl https://example.ngrok.app
+```
+
+Once the request has completed, and you have properly configured an
+event destination, you should see an event appear with the following payload:
+
+```jsx
+{
+  "event_id": "ev_25X3yFS6TDkig1KDJWIc4nnJO0c",
+  "event_type": "http_request_complete.v0",
+  "event_timestamp": "2024-06-23T23:44:16Z",
+  "account_id": "ac_2OtNvAlhso10Gx6a7eupzX3F98q",
+  "object": {
+    "traffic_policy": {
+      "logs": [
+        {
+          "metadata": {
+            "message": "Log action executed.",
+            "endpoint_id": "ep_2bhsN2VP8W4pTkaMSrhyj0SRf8J"
+          }
+        }
+      ]
+    }
+  }
+}
+```
+
+## Action Result Variables
+
+<ActionVariablesDescription />
+
+<ConfigField title="actions.ngrok.log.metadata" type="object">
+  A key-value map containing metadata that was logged during the action.
+  Each key represents a metadata attribute, and the value provides its
+  corresponding details.
+</ConfigField>
+

@@ -1,0 +1,215 @@
+---
+title: Kubernetes ingress to services hosted on EKS
+sidebarTitle: EKS
+description: Learn how to get started running the ngrok Kubernetes Operator on AWS EKS
+---
+
+The [ngrok Kubernetes Operator](https://github.com/ngrok/ngrok-operator) is our official open-source controller for adding public and secure ingress traffic to your k8s services. It works out of the box with n AWS EKS Kubernetes cluster to provide ingress to your services no matter the network configuration, as long as it has outbound access to the ngrok service. This allows ngrok to be portable and work seamlessly across any type of infrastructure.
+
+## What you'll need
+
+- An [AWS EKS cluster](https://eksctl.io/usage/creating-and-managing-clusters/).
+- An [ngrok account](https://ngrok.com/signup).
+- [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) and [Helm
+  3.0.0+](https://helm.sh/docs/intro/install/) installed on your local
+  workstation.
+- The [ngrok Kubernetes Operator](/k8s/) installed on
+  your cluster.
+- A reserved domain, which you can get in the ngrok
+  [dashboard](https://dashboard.ngrok.com/domains) or with the [ngrok
+  API](/api/resources/reserved-domains/).
+  - You can choose from an ngrok subdomain or bring your own custom branded
+    domain, like `https://api.example.com`.
+  - We'll refer to this domain as `<NGROK_DOMAIN>`.
+
+## Ensure `kubectl` can speak with your cluster 
+
+With an AWS EKS cluster, authentication for `kubectl` happens with a credential helper. So in-order to deploy the ngrok Kubernetes Operator to your cluster, you'll need to ensure that you can use the `aws` CLI and that the credential helper is available.
+
+Recent versions of `eksctl` rely on the `aws eks get-token` command, which requires the `aws` CLI to be at-least version `1.16.156`.
+
+Let's ensure that you have the `aws` CLI installed and configured with your AWS credentials. You can confirm this works and you're authenticated correctly by running the following command:
+
+```bash
+aws --version
+aws sts get-caller-identity
+```
+
+If this works, we can now request a kubeconfig:
+
+```bash
+# This will merge the cluster into your $KUBECONFIG or ~/.kube/config
+aws eks update-kubeconfig --region <region-code> --name <my-cluster>
+
+# To keep your kubeconfig isolated, use:
+aws eks update-kubeconfig --kubeconfig kubeconfig --region <region-code> --name <my-cluster>
+export KUBECONFIG=$(pwd)/kubeconfig
+```
+
+## Install a sample application and Kubernetes ingress 
+
+Create a manifest file (for example `ngrok-manifest.yaml`) with the following contents. You will need to replace the `NGROK_DOMAIN` on line 45 with your own custom value. This is the URL you will use to access your service from anywhere. If you're on a free account, it must be on a static subdomain which you can claim by logging into your account and following the instructions on the claim static subdomain banner. For paid accounts, you can use a custom domain or a subdomain of `ngrok.app` or `ngrok.dev` (for example, `username-loves-ingress.ngrok.app` or `k8s.example.com`).
+
+```yaml showLineNumbers
+apiVersion: v1
+kind: Service
+metadata:
+  name: game-2048
+spec:
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+  selector:
+    app: game-2048
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: game-2048
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: game-2048
+  template:
+    metadata:
+      labels:
+        app: game-2048
+    spec:
+      containers:
+        - name: backend
+          image: alexwhen/docker-2048
+          ports:
+            - name: http
+              containerPort: 80
+---
+# Configuration for ngrok's Kubernetes Operator
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: game-2048-ingress
+  namespace: default
+spec:
+  ingressClassName: ngrok
+  rules:
+    - host: <NGROK_DOMAIN>
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: game-2048
+                port:
+                  number: 80
+```
+
+1. Apply the manifest file to your k8s cluster.
+
+   ```bash
+   kubectl apply -f ngrok-manifest.yaml
+   ```
+
+   **Note:** If you get an error when applying the manifest, double check that you've updated the `NGROK_DOMAIN` value and try again.
+
+1. Access your ingress URL using the subdomain you chose in the manifest file above (i.e. `https://my-awesome-k8s-cluster.ngrok.app`) to confirm the 2048 app is accessible from the internet.
+
+   ![application public](/img/howto/kubernetes-operator/k8s-ingress-app-2.png)
+
+## Add edge security to your app 
+
+With our [Traffic Policy system](/traffic-policy/) and the [`oauth`
+action](/traffic-policy/actions/oauth), ngrok manages OAuth protection
+entirely at its cloud service. ngrok's edge authenticates and authorizes all
+requests before allowing ingress and access to your endpoint, meaning you don't
+need to add any additional services to your cluster, or alter any routes.
+
+To enable the `oauth` action, you'll create a new `NgrokTrafficPolicy` custom
+resource and apply it to your entire `Ingress` with an annotation. You can also
+apply the policy to just a specific backend or as the default backend for an
+`Ingress`—see our doc on using the [Operator with
+Ingresses](/k8s/guides/using-ingresses/#using-ngroktrafficpolicy-with-ingress).
+
+1. Edit your existing `2048.yaml` manifest with the following, leaving the
+   `Service` and `Deployment` as they were. Note the new `annotations` field and
+   the `NgrokTrafficPolicy` CR.
+
+   ```yaml
+    ...
+   ---
+   # Configuration for ngrok's Kubernetes Operator
+   apiVersion: networking.k8s.io/v1
+   kind: Ingress
+   metadata:
+     name: game-2048-ingress
+     namespace: default
+     annotations:
+       k8s.ngrok.com/traffic-policy: oauth
+   spec:
+     ingressClassName: ngrok
+     rules:
+       - host: <NGROK_DOMAIN>
+         http:
+           paths:
+             - path: /
+               pathType: Prefix
+               backend:
+                 service:
+                   name: game-2048
+                   port:
+                     number: 80
+   ---
+   # Traffic Policy configuration for OAuth
+   apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+   kind: NgrokTrafficPolicy
+   metadata:
+     name: oauth
+     namespace: default
+   spec:
+     policy:
+   	   on_http_request:
+   		   - type: oauth
+   			   config:
+   			     provider: google
+   ```
+
+1. Re-apply your `2048.yaml` configuration.
+
+   ```bash
+   kubectl apply -f 2048.yaml
+   ```
+
+1. When you open your demo app again, you'll be asked to log in via Google.
+   That's a start, but what if you want to authenticate only yourself or colleagues?
+
+1. You can use [expressions](/traffic-policy/concepts/expressions) and [CEL
+   interpolation](/traffic-policy/concepts/cel-interpolation) to filter out
+   and reject OAuth logins that don't contain `example.com`. Update the
+   `NgrokTrafficPolicy` portion of your manifest after changing `example.com` to
+   your domain.
+
+   ```yaml
+   # Traffic Policy configuration for OAuth
+   apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+   kind: NgrokTrafficPolicy
+   metadata:
+     name: oauth
+     namespace: default
+   spec:
+     policy:
+       on_http_request:
+         - type: oauth
+           config:
+             provider: google
+         - expressions:
+             - "!actions.ngrok.oauth.identity.email.endsWith('@example.com')"
+           actions:
+             - type: custom-response
+               config:
+                 body: Hey, no auth for you ${actions.ngrok.oauth.identity.name}!
+                 status_code: 400
+   ```
+
+1. Check out your deployed 2048 app once again. If you log in with an email that
+   doesn't match your domain, ngrok rejects your request. Authentication... done!

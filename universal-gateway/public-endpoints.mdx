@@ -1,0 +1,94 @@
+---
+title: Public Endpoints
+description: Learn about enabling internet traffic to your services with public endpoints.
+---
+
+Public endpoints enable your services to receive geo-balanced internet traffic using [ngrok's global points of presence](/universal-gateway/edges/).
+
+Public endpoints enable you to receive traffic from the internet via ngrok’s [global points of presence](/universal-gateway/edges/). This is the most common type of endpoint and the easiest way to start.
+
+Public endpoint URLs must:
+
+- Use either a [Domain](/universal-gateway/domains/) or [TCP Address](/universal-gateway/tcp-addresses/)
+- Use the `public` [binding](/universal-gateway/bindings/)
+
+## Get started
+
+You can create a public endpoint using:
+
+- [The dashboard](https://dashboard.ngrok.com/endpoints)
+- [The API](/api/resources/endpoints/#create-endpoint).
+
+Follow the [Getting Started](/getting-started/) guide to set up an ngrok account and create your first public endpoint.
+
+## Authentication
+
+Public endpoints are useful out of the box for content you don’t want to restrict access to, such as blogs or marketing sites; but they can also be used for services that require strict access control such as dashboards or private APIs.
+
+To keep such services both public and secure, you can add a Traffic Policy to your endpoint for authentication and authorization. Traffic Policy actions enable you to do the following with your endpoints:
+
+- [JWT Validation](/traffic-policy/actions/jwt-validation/)
+- [OAuth](/traffic-policy/actions/oauth/)
+- [OIDC](/traffic-policy/actions/oidc/)
+- [IP restrictions](/traffic-policy/actions/restrict-ips/)
+- [Mutual TLS](/traffic-policy/actions/terminate-tls/#example-traffic-policy-document)
+
+## URLs
+
+When you create a public endpoint, the URL you create it with is validated
+differently based on the protocol of the URL.
+
+### `http`
+
+- The hostname must match a [Domain](/universal-gateway/domains/) in your account.
+- The hostname must be a domain with a valid [public suffix](https://publicsuffix.org/).
+- The port must be `80`. If you do not specify a port, the default `80` will be used for you.
+
+**Examples**
+
+- `http://example.ngrok.app`
+- `http://example.ngrok.app:80`
+- `http://example.party`
+- `http://example.ngrok.app:81` - invalid port, must be `80`, not `81`
+- `http://example.doesnotexist` - invalid hostname: `.doesnotexist` is not a public suffix domain
+- `http://example.internal` - invalid hostname: `.internal` is not a public suffix domain
+
+### `https`, `tls`
+
+- The hostname must match a [Domain](/universal-gateway/domains/) in your account.
+- The hostname must be a domain with a valid [public suffix](https://publicsuffix.org/).
+- The port must be `443`. If you do not specify a port, the default `443` will be used for you.
+
+**Examples**
+
+- `https://example.ngrok.app`
+- `https://example.ngrok.app:443`
+- `https://example.party`
+- `https://example.ngrok.app:8443` - invalid port, must be `443`
+- `https://example.nosuchtld` - invalid hostname, `.nosuchtld` is not a public suffix domain
+- `https://example.internal` - invalid hostname, public endpoints cannot use `.internal`
+
+### `tcp`
+
+- You must specify a port number in TCP URLs.
+- The hostname and port must match the address of a [TCP
+  Address](/universal-gateway/tcp-addresses) in your account.
+
+**Examples**
+
+- `tcp://1.tcp.ngrok.io:12345`
+- `tcp://1.tcp.eu.ngrok.io:12345`
+- `tcp://1.tcp.ngrok.io` - invalid, does not specify a port number
+- `tcp://example.ngrok.app:12345` - invalid, does not match a TCP Address
+- `tcp://your-domain.com:12345` - invalid, does not match a TCP Address
+
+## API
+
+Public endpoints can be created programmatically. Consult the documentation on
+[Endpoint APIs](/api/resources/endpoints/).
+
+## Pricing
+
+Public endpoints are available on all plans. Consult the [Endpoints
+Pricing](/universal-gateway/endpoints/#pricing) documentation for
+billing details.

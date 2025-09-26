@@ -1,0 +1,59 @@
+### Redirect with CEL Interpolation
+
+The following [Traffic Policy](/traffic-policy/)
+configuration demonstrates how to use the `redirect` action to redirect users
+while using CEL Interpolation.
+
+#### Example Traffic Policy Document
+
+<CodeGroup>
+```yaml policy.yml {4,8}
+on_http_request:
+  - expressions:
+      - req.url.path in ['/api/v2/geo', '/api/v2/geo/']
+    actions:
+      - type: redirect
+        config:
+          to: /api/v2/geo?city=${conn.geo.city}
+```
+
+```json policy.json {5,11}
+{
+  "on_http_request": [
+    {
+      "expressions": [
+        "req.url.path in ['/api/v2/geo', '/api/v2/geo/']"
+      ],
+      "actions": [
+        {
+          "type": "redirect",
+          "config": {
+            "to": "/api/v2/geo?city=${conn.geo.city}"
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+</CodeGroup>
+
+This configuration will redirect any request from `/api/v2/geo` or `/api/v2/geo/`
+to `/api/v2/geo?city=${conn.geo.city}` using CEL Interpolation to insert the
+city from the connection's geolocation data.
+
+#### Example Request
+
+```bash
+$ curl -i https://example.ngrok.app/api/v2/geo
+```
+
+```http
+HTTP/1.1 302 Found
+location: https://example.ngrok.app/api/v2/geo?city=San%20Francisco
+```
+
+In this example, a request to `https://example.ngrok.app/api/v2/geo` will be
+redirected to `https://example.ngrok.app/api/v2/geo?city=San Francisco`, with
+the `302 Found` status code and the `Location` header indicating the new URL
+that includes the city from the connection's geolocation data.

@@ -1,0 +1,243 @@
+---
+title: How the ngrok Operator Uses Ingresses
+sidebarTitle: Using Ingresses
+---
+
+## How the ngrok Operator Uses Ingresses
+
+The ngrok Kubernetes operator consumes `Ingress` resources and translates them into the native ngrok `CloudEndpoint` and `AgentEndpoint` custom resources.
+Each hostname from the `Ingress` resources you configure will cause the operator to create a `CloudEndpoint` for the hostname.
+Each unique upstream service you reference using `HTTPRoute` resources will cause the operator to create an `AgentEndpoint` with an `internal` binding so that it is not accessible directly on the internet.
+The operator then generates ngrok [traffic policy](/traffic-policy/) configuration on those `CloudEndpoint` to perform all the routing and actions specified in your Gateway API configuration and route to the internal `AgentEndpoint` resources that handle forwarding traffic to your upstream services.
+When you create/update/delete Gateway API resources, the operator will automatically handle creating/updating/deleting the `CloudEndpoint` and `AgentEndpoint` resources as needed.
+
+## Fan-out vs Multiple
+
+The operator supports using a single ingress for your hostname that includes several rules such as the below example.
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: example-ingress
+  namespace: default
+spec:
+  ingressClassName: ngrok
+  rules:
+    - host: example-ingress.ngrok.io
+      http:
+        paths:
+          - path: /foo
+            pathType: Prefix
+            backend:
+              service:
+                name: foo-service
+                port:
+                  number: 80
+          - path: /bar
+            pathType: Prefix
+            backend:
+              service:
+                name: bar-service
+                port:
+                  number: 80
+```
+
+Or you can create multiple different `Ingress` resources that produce the same effect such as the example below.
+The operator will translate both examples into the same configuration.
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: example-ingress-foo
+  namespace: default
+spec:
+  ingressClassName: ngrok
+  rules:
+    - host: example-ingress.ngrok.io
+      http:
+        paths:
+          - path: /foo
+            pathType: Prefix
+            backend:
+              service:
+                name: foo-service
+                port:
+                  number: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: example-ingress-bar
+  namespace: default
+spec:
+  ingressClassName: ngrok
+  rules:
+    - host: example-ingress.ngrok.io
+      http:
+        paths:
+          - path: /bar
+            pathType: Prefix
+            backend:
+              service:
+                name: bar-service
+                port:
+                  number: 80
+```
+
+## Using `NgrokTrafficPolicy` with `Ingress`
+
+To extend the functionality of `Ingress` resources, you have the option of combining them with `NgrokTrafficPolicy` resources to take advantage of ngrok's [traffic policy](/traffic-policy/) system.
+
+`NgrokTrafficPolicy` can be used with `Ingress` resources in three different ways:
+
+- As an annotation
+  - When supplied via an annotation, the rules from the `NgrokTrafficPolicy` run first when requests are sent to any endpoints created for the `Ingress` before any rules from traffic policies supplied as backends or the default backend.
+  - If used in this way, the traffic policy may "terminate" the request by sending back a response or by forwarding to another endpoint using the `forward-internal` action, but if done so, then the request will not be further processed by any other rules in the `Ingress`.
+  - This can allow you to enforce common actions such as header manipulation or authentication for any request matching the ingress regardless of which `Ingress` rule the request may match.
+- As the backend for a specific rule
+  - `NgrokTrafficPolicy` resources can be used in place of a `Service` for the backend of an Ingress rule.
+  - When used this way, the rules from these traffic policies are executed after any traffic policy rules from an annotation `NgrokTrafficPolicy` (if supplied) and only if the request matches the `Ingress` rule.
+    Since the `NgrokTrafficPolicy` is used in-place of a `Service` it is expected that the `NgrokTrafficPolicy` will "terminate" the request either by sending back the response on its own, or forwarding to another endpoint using the `forward-internal` action.
+- As the default backend
+  - You may use an `NgrokTrafficPolicy` as the default backend of your `Ingress`. The rules from the traffic policy will only be executed if the request does not match any of your other `Ingress` rules.
+  - Since the `NgrokTrafficPolicy` is used in-place of a `Service` it is expected that the `NgrokTrafficPolicy` will "terminate" the request either by sending back the response on its own, or forwarding to another endpoint using the `forward-internal` action.
+
+You can use one or multiple of the above options depending on your use-case and preferences.
+
+The following example shows how you can supply an `NgrokTrafficPolicy` to an `Ingress` using an annotation.
+It must be in the same namespace as the `Ingress`.
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    k8s.ngrok.com/traffic-policy: my-ngroktrafficpolicy
+  name: example-ingress
+  namespace: default
+spec:
+  ingressClassName: ngrok
+  rules:
+    - host: example-ingress.ngrok.io
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: example-service
+                port:
+                  number: 80
+```
+
+The following example shows how you can supply an `NgrokTrafficPolicy` to an `Ingress` as the backend for a specific rule.
+It must be in the same namespace as the `Ingress`.
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: example-ingress
+  namespace: default
+spec:
+  ingressClassName: ngrok
+  rules:
+    - host: example-ingress.ngrok.io
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              resource:
+                apiGroup: ngrok.k8s.ngrok.com
+                kind: NgrokTrafficPolicy
+                name: my-ngroktrafficpolicy
+```
+
+The following example shows how you can supply an `NgrokTrafficPolicy` to an `Ingress` as the default backend.
+It must be in the same namespace as the `Ingress`.
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: example-ingress
+  namespace: default
+spec:
+  ingressClassName: ngrok
+  defaultBackend:
+    resource:
+      apiGroup: ngrok.k8s.ngrok.com
+      kind: NgrokTrafficPolicy
+      name: my-ngroktrafficpolicy
+  rules:
+    - host: example-ingress.ngrok.io
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: example-service
+                port:
+                  number: 80
+```
+
+## Ingress HTTPS Upstreams
+
+If you have an Ingress that routes to a Service that expects HTTPS instead of HTTP, you can specify this using the `k8s.ngrok.com/app-protocols` annotation on your `Service`.
+For example, the following `Service` uses the annotation to let the operator know which ports use HTTPS
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: example-service
+  labels:
+    app: example-app
+  annotations:
+    k8s.ngrok.com/app-protocols: '{"https-port":"https","http-port":"http"}'
+spec:
+  ports:
+    - name: https-port
+      port: 443
+      protocol: TCP
+      targetPort: 8443
+    - name: http-port
+      port: 80
+      protocol: TCP
+      targetPort: 8080
+  selector:
+    app: example-app
+```
+
+## Ingress Conflicts
+
+In order to support the ability for users to configure multiple `Ingress` resources that use the same hostname like in the example above, the operator enforces a requirement that all `Ingress` resources that use a given hostname must have the same configuration for the `k8s.ngrok.com/pooling-enabled` and `k8s.ngrok.com/traffic-policy` annotations.
+This means that if you use an ingress such as the following example for `foo.ngrok.io`, any other `Ingress` using the `foo.ngrok.io` hostname **must** have the same pooling and traffic policy annotations as the one below.
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    k8s.ngrok.com/traffic-policy: my-ngroktrafficpolicy
+    k8s.ngrok.com/pooling-enabled: "true"
+  name: example-ingress
+  namespace: default
+spec:
+  ingressClassName: ngrok
+  rules:
+    - host: example-ingress.ngrok.io
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: example-service
+                port:
+                  number: 80
+```

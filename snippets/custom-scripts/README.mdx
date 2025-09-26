@@ -1,0 +1,1 @@
+This directory is scripts we use to automated certain aspects of the docs site. For example, parse-integrations generates integrations metadata which can be used to display the integrations hub at /integrations

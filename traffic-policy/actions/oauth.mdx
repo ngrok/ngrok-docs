@@ -1,0 +1,333 @@
+---
+title: OAuth Action
+sidebarTitle: OAuth
+description: The OAuth action restricts access to only authorized users by enforcing OAuth through an identity provider of your choice.
+---
+import CustomProviders from "/snippets/traffic-policy/actions/oauth/examples/custom-providers.mdx";
+
+import { ConfigField } from "/snippets/ConfigTable.jsx";
+import { ConfigChildren } from "/snippets/ConfigChildren.jsx";
+import ActionVariablesDescription from "/snippets/traffic-policy/common/action-variables-description.mdx";
+
+
+The **OAuth** Traffic Policy action restricts access to only authorized users
+by enforcing **OAuth** through an identity provider of your choice.
+
+## Configuration Reference
+
+The [Traffic Policy](/traffic-policy/) configuration
+reference for this action.
+
+### Supported Phases
+
+`on_http_request`
+
+### Type
+
+`oauth`
+
+### Configuration Fields
+
+<ConfigField title="provider" type="string" required={true}>
+	The name of the _OAuth_ identity provider to be used for authentication.
+</ConfigField>
+
+<ConfigField title="auth_id" type="string" required={false}>
+	Unique authentication identifier for this provider. This value will be
+	used for the cookie, redirect, authentication and logout purposes.
+
+	<Note>
+		To login a user you must use `/ngrok/login?auth_id={auth_id}`. If you are
+		using path based auth you must include the path to be redirected back to:
+		`?redirect_path=/foo`
+	</Note>
+</ConfigField>
+
+<ConfigField title="client_id" type="string" required={false} cel={true}>
+	Your OAuth app's client ID.
+	<Note>Leave this empty if you want to use ngrok's managed application.</Note>
+</ConfigField>
+
+<ConfigField title="client_secret" type="string" required={false} cel={true}>
+	Your OAuth app's client secret.
+	<Note>Leave this empty if you want to use a managed application.</Note>
+</ConfigField>
+
+<ConfigField title="scopes" type="array of strings" required={false}>
+	A list of additional scopes to request when users authenticate with the
+	identity provider.
+</ConfigField>
+
+<ConfigField title="authz_url_params" type="map of string to string" required={false}>
+	A map of additional URL parameters to apply to the authorization endpoint
+	URL.
+</ConfigField>
+
+<ConfigField title="max_session_duration" type="duration" required={false}>
+	Defines the maximum lifetime of a session regardless of activity.
+</ConfigField>
+
+<ConfigField title="idle_session_timeout" type="duration" required={false}>
+	Defines the period of inactivity after which a user's session is
+	automatically ended, requiring re-authentication.
+</ConfigField>
+
+<ConfigField title="userinfo_refresh_interval" type="duration" required={false}>
+	How often should ngrok refresh data about the authenticated user from the
+	identity provider.
+</ConfigField>
+
+<ConfigField title="allow_cors_preflight" type="boolean" required={false} defaultValue={false}>
+	Allow CORS preflight requests to bypass authentication checks. Enable if
+	the endpoint needs to be accessible via CORS.
+</ConfigField>
+
+<ConfigField title="auth_cookie_domain" type="string" required={false}>
+	Sets the allowed domain for the auth cookie.
+</ConfigField>
+
+### Special Paths
+
+#### `/ngrok/login`
+
+Redirect users to this path to explicitly begin an authentication flow. After authentication, users will be redirected to `/`. If the IdP supports it, ngrok will attempt to instruct the IdP to force re-authentication which will force users to re-enter their credentials with the IdP even if they were already logged in.                                                                                                                                                                                                                                                 |
+
+#### `/ngrok/logout`
+
+Logs the user out by clearing their session cookie. Redirect users to this path to log them out.
+
+<Note>
+When using the Google OAuth 2.0/OIDC provider in Chrome with a [managed profile](https://support.google.com/chrome/a/answer/188446), `/ngrok/logout` only clears the ngrok session cookie; it does not end the Google/IdP session maintained by the browser. Users may be silently re-authenticated on the next request. To fully sign out, sign out of Chrome/Google (or use a non-managed profile or Incognito) in addition to calling `/ngrok/logout`.
+</Note>
+
+### Events
+
+When this action is enabled, it populates the following fields in the
+[http_request_complete.v0](/obs/events/reference/#http-request-complete) event:
+
+- `oauth.app_client_id` 
+- `oauth.decision`      
+- `oauth.user.id`       
+- `oauth.user.name`     
+
+### Supported Providers
+
+ngrok currently supports the following OAuth providers (see the Integration Guides for more details). In some instances, ngrok has a
+[managed application](#managed-applications) that allows you to configure OAuth without setting up your own application in your provider. This is useful for testing and
+development, but when you move into production, we recommend using your own custom application in your specific provider.
+
+| Provider  | Provider Identifier | Managed App Available | Integration Guide                                    |
+| --------- | ------------------- | --------------------- | ---------------------------------------------------- |
+| Amazon    | `amazon`            | no                    | [Documentation](/integrations/oauth/oauth/)    |
+| Facebook  | `facebook`          | no                    | [Documentation](/integrations/oauth/facebook-oauth)  |
+| GitHub    | `github`            | yes                   | [Documentation](/integrations/oauth/github-oauth)    |
+| GitLab    | `gitlab`            | yes                   | [Documentation](/integrations/oauth/gitlab-oauth)    |
+| Google    | `google`            | yes                   | [Documentation](/integrations/oauth/google-oauth)    |
+| LinkedIn  | `linkedin`          | yes                   | [Documentation](/integrations/oauth/linkedin-oauth)  |
+| Microsoft | `microsoft`         | yes                   | [Documentation](/integrations/oauth/microsoft-oauth) |
+| Twitch    | `twitch`            | yes                   | [Documentation](/integrations/oauth/twitch-oauth)    |
+
+### Required Scopes
+
+This is a list of the minimum required scopes for each provider. You can use this when configuring your identity provider. These are not
+required when using the ngrok managed applications.
+
+| Provider  | Scopes                                                                                               |
+| --------- | ---------------------------------------------------------------------------------------------------- |
+| Amazon    | `profile`                                                                                            |
+| Facebook  | `email`                                                                                              |
+| Github    | `read:org`, `read:user`                                                                              |
+| Gitlab    | `email`, `openid`, `profile`                                                                         |
+| Google    | `https://www.googleapis.com/auth/userinfo.email`, `https://www.googleapis.com/auth/userinfo.profile` |
+| LinkedIn  | `r_emailaddress`, `r_liteprofile`                                                                    |
+| Microsoft | `User.Read`                                                                                          |
+| Twitch    | `user:read:email`                                                                                    |
+
+## Try it out
+
+Consult the list of [supported providers](#supported-providers) for
+step-by-step integration guides.
+
+## Behavior
+
+### Callback URL
+
+When you create your own OAuth app, you must specify a 'Callback URL' or
+'Redirect URL' to the OAuth provider. When using ngrok's OAuth action, that
+Callback URL is always:
+
+```
+https://idp.ngrok.com/oauth2/callback
+```
+
+### Authentication
+
+When an unauthenticated request is made to an OAuth-protected endpoint, it
+returns a redirect response that begins an authentication flow with the
+configured identity provider. The original URI path is saved so that users can
+be redirected to it if they successfully authenticate.
+
+**If the user fails to authenticate with the identity provider**, ngrok will
+display an error describing the failure returned by the identity provider and
+prompt them to try logging in again.
+
+**If the user successfully authenticates with the identity provider**, ngrok
+will take the following actions:
+
+- Sets a [session cookie](#cookies) to avoid repeating the authentication flow again.
+- Redirects the user to the original URI path they were attempting to access
+  before the authentication flow began. If no such URI path was captured, they
+  are redirected to `/`.
+- Continue processing the rest of the traffic policy actions.
+
+### Continuous Authorization
+
+When an authenticated user makes a request, ngrok will sometimes refresh a
+user's data from the identity provider (email, name, etc.) and re-evaluate
+authorization constraints. This refresh is executed as a back channel request to
+the identity provider; it is transparent to the user and they do not go through
+a re-authentication flow.
+
+The following circumstances trigger refresh and authorization re-evaluation:
+
+- On a periodic interval defined by the [`userinfo_refresh_interval`](/traffic-policy/actions/oauth/#configuration-fields) parameter.
+- If you update the OAuth configuration of the endpoint either in the agent or through the dashboard.
+- If you update the OAuth configuration of the endpoint.
+
+If a previously authenticated user becomes unauthorized because their identity
+provider information changed or because the OAuth action configuration changed,
+they are presented an error and are prompted to try logging in again.
+
+### Managed Applications
+
+Managed applications allow you to use ngrok's OAuth action without setting up
+your own OAuth apps with the identity providers. More practically, this means
+you can use the OAuth action without configuring a client id and client secret.
+
+Managed applications are great for getting started but they have some
+limitations.
+
+- They are [only available for some identity providers](#supported-providers).
+- You may not pass custom scopes when using a managed application.
+- The [upstream headers](/universal-gateway/http/#upstream-headers) `ngrok-auth-oauth-access-token` and
+  `ngrok-auth-oauth-refresh-token` are not sent to your application.
+
+### Traffic Identities
+
+ngrok's [Traffic Identities](/traffic-policy/identities/) feature can be used to observe
+all of the authenticated user activity across your account in the ngrok
+dashboard or via the API. Whenever a user authenticates or accesses an endpoint
+with a configured OAuth action, their Traffic Identity record is created or updated.
+
+You may also use Traffic Identities to remotely log a user out by [revoking a
+session](/traffic-policy/identities/#revoke-sessions).
+
+### Cookies
+
+This action sets two cookies in its operation. Cookies values are opaque to the
+upstream service and must not be modified.
+
+| Cookie    | Description                             |
+| --------- | --------------------------------------- |
+| `session` | Used to track an authenticated user.    |
+| `nonce`   | Used to secure the authentication flow. |
+
+## Examples
+
+### Using a Managed Provider
+
+The following [Traffic Policy](/traffic-policy/)
+configuration will provide your app with a google authentication step.
+
+<CodeGroup>
+```yaml policy.yml
+on_http_request:
+  - actions:
+      - type: oauth
+        config:
+          provider: google
+```
+
+```json policy.json
+{
+  "on_http_request": [
+    {
+      "actions": [
+        {
+          "type": "oauth",
+          "config": {
+            "provider": "google"
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+</CodeGroup>
+
+The `provider` value can be replaced with any of the [Supported Providers](/traffic-policy/actions/oauth/#supported-providers) that have an
+a managed app available.
+
+
+### Restricting access to certain users
+
+See [here](/traffic-policy/examples/add-authentication/#conditional-access-using-oauth-variables) for an example of conditional access based on OAuth result variables.
+
+<CustomProviders />
+
+## Action Result Variables
+
+<ActionVariablesDescription />
+
+<ConfigField title="actions.ngrok.oauth.error.code" type="string">
+	Code for an error that occurred during the invocation of an action.
+</ConfigField>
+
+<ConfigField title="actions.ngrok.oauth.error.message" type="string">
+	Message for an error that occurred during the invocation of an action.
+</ConfigField>
+
+<ConfigField title="actions.ngrok.oauth.identity.id" type="string">
+	Unique identifier for the ngrok Identity entity
+</ConfigField>
+
+<ConfigField title="actions.ngrok.oauth.identity.email" type="string">
+	Email address of the authorized user from the provider.
+</ConfigField>
+
+<ConfigField title="actions.ngrok.oauth.identity.name" type="string">
+	Name for the authorized user from the provider.
+</ConfigField>
+
+<ConfigField title="actions.ngrok.oauth.identity.provider_user_id" type="string">
+	Identifier for the authorized user from the provider.
+</ConfigField>
+
+<ConfigField title="actions.ngrok.oauth.identity.current_provider_session_id" type="string">
+	The current Identity session identifier for this request.
+</ConfigField>
+
+<ConfigField title="actions.ngrok.oauth.access_token" type="string">
+	The access token from the provider.
+</ConfigField>
+
+<ConfigField title="actions.ngrok.oauth.refresh_token" type="string">
+	The refresh token from the provider.
+</ConfigField>
+
+<ConfigField title="actions.ngrok.oauth.expires_at" type="string">
+	Timestamp when the current session will expire.
+</ConfigField>
+
+<ConfigField title="actions.ngrok.oauth.session_timed_out" type="boolean">
+	Returns true when the session timed out.
+</ConfigField>
+
+<ConfigField title="actions.ngrok.oauth.session_max_duration_reached" type="boolean">
+	Returns true when the current session reached the max duration.
+</ConfigField>
+
+<ConfigField title="actions.ngrok.oauth.userinfo_refreshed" type="boolean">
+	Returns true when ngrok updates the user information on the identity.
+</ConfigField>

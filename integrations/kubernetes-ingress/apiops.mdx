@@ -1,0 +1,269 @@
+---
+title: Deploy a production API and gateway with APIOps using Argo CD and ngrok
+sidebarTitle: APIOps with Argo CD
+description: Deploy an API using a APIOps-based deployment and lifecycle management process with Argo CD, ngrok's API gateway, the ngrok Kubernetes Operator, and the Kubernetes Gateway API.
+---
+
+Using this guide, you'll deploy a demo API to a Kubernetes cluster using an APIOps workflow. This process consolidates the backend API service, Kubernetes configurations, and API policy definitions into a single repository that defines the _desired state_ of your deployment.
+
+Here is what you'll be building with:
+
+- ngrok's out-of-the-box [**API Gateway**](https://ngrok.com/use-cases/api-gateway), which instantly tunnels production API traffic through the globally available ngrok network without requiring additional infrastructure or complex configurations.
+- The ngrok [**Kubernetes Operator**](https://github.com/ngrok/ngrok-operator/), which adds secure public ingress and middleware execution to Kubernetes deployments with declarative CRDs.
+- The new [**Kubernetes Gateway API**](https://kubernetes.io/docs/concepts/services-networking/gateway/), a role-oriented mechanism for provisioning load-balancing infrastructure and routing traffic, with fantastic support for [developer-defined](https://ngrok.com/blog-post/developer-defined-golden-path-kubernetes-gateway-api) paths to deploying production APIs.
+- [**Argo CD**](https://argo-cd.readthedocs.io/en/stable/), a declarative, GitOps continuous delivery tool for Kubernetes that lets you version-control all your definitions, configurations, and environments&mdash;even an API gateway.
+
+## What you'll need
+
+- [Argo CD](https://argo-cd.readthedocs.io/en/stable/cli_installation/) installed locally.
+- An existing remote or local Kubernetes cluster _OR_ [minikube](https://minikube.sigs.k8s.io/docs/start/) to create a
+  new demo cluster locally, which will be referred to as `<YOUR-CLUSTER>`.
+- An [AWS EKS cluster](https://eksctl.io/usage/creating-and-managing-clusters/).
+- An [ngrok account](https://ngrok.com/signup).
+- [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) and [Helm
+  3.0.0+](https://helm.sh/docs/intro/install/) installed on your local
+  workstation.
+- The [ngrok Kubernetes Operator](/k8s/) installed on
+  your cluster.
+- A reserved domain, which you can get in the ngrok
+  [dashboard](https://dashboard.ngrok.com/domains) or with the [ngrok
+  API](/api/resources/reserved-domains/).
+  - You can choose from an ngrok subdomain or bring your own custom branded
+    domain, like `https://api.example.com`.
+  - We'll refer to this domain as `<NGROK_DOMAIN>`.
+
+## Deploy Argo CD 
+
+Next, set up Argo CD on your cluster to enable GitOps.
+
+1. Create a namespace for Argo CD:
+
+   ```bash
+   kubectl create namespace argocd
+   ```
+
+1. Apply Argo CD's default manifest to your Kubernetes cluster.
+
+   ```bash
+   kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+   ```
+
+1. Verify you have deployed Argo CD successfully via a single running pod.
+
+   ```bash
+   kubectl get pods --namespace argocd
+
+   NAME                                               READY   STATUS    RESTARTS   AGE
+   argocd-application-controller-0                    1/1     Running   0          44s
+   argocd-applicationset-controller-65bb5ff89-lcmbk   1/1     Running   0          45s
+   argocd-dex-server-6f898cbd9-slg8h                  1/1     Running   0          45s
+   argocd-notifications-controller-64bc7c9f7-dgnfm    1/1     Running   0          45s
+   argocd-redis-5df55f45b7-2sf62                      1/1     Running   0          45s
+   argocd-repo-server-74d5f58dc5-dgbnr                0/1     Running   0          45s
+   argocd-server-5b86767ddb-57xlj                     0/1     Running   0          44s
+   ```
+
+1. Log into the Argo CD web UI, first by creating a new port-forwarding session.
+
+   ```bash
+   kubectl port-forward svc/argocd-server -n argocd 8080:443
+   ```
+
+   When you navigate to `http://<YOUR-CLUSTER>:8080`, you'll first see a warning about self-signed certificates, which you can accept to proceed. Finally, Argo CD prompts you to login with a username and password. The username is `admin`, and you can retrieve the automatically-generated administrator password with the following:
+
+   ```bash
+   argocd admin initial-password -n argocd
+   ```
+
+   Once logged in, you'll have access to the Argo CD UI.
+
+   ![Screenshot of Argo CD deployed on Kubernetes](../img/argocd/img/argo-setup.png)
+
+1. Finally, log in to Argo CD via the CLI to enable administration.
+
+   ```bash
+   argocd login <YOUR-CLUSTER>:8080
+   ```
+
+## Set up the demo API 
+
+Next, you need to set up the Git repository for the API you'll deploy behind your ngrok API gateway. GitOps (and thus APIOps) requires declarative and version-controlled configuration, and that includes the hostname for your deployment. You can't simply clone the demo API repository and apply it to your cluster, as the ngrok-supplied hostname will already be in use.
+
+If you have an existing API and GitOps configuration, you're more than welcome to [skip to step 4](#deploy-demo-api) while adopting the Argo CD CLI commands to your Git repository.
+
+1. Create a new ngrok static domain. Navigate to the [**Domains** section](https://dashboard.ngrok.com/domains) of the ngrok dashboard and click **Create Domain** or **New Domain**. This static domain, which will look like `example.ngrok.app`, will be your `NGROK_DOMAIN` for the remainder of this guide.
+
+1. Fork the repository for the demo API at [ngrok-samples/apiops-demo](https://github.com/ngrok-samples/apiops-demo).
+
+1. In your fork, open `gateway.yaml` and replace the values of lines 18 and 37 with the ngrok domain you just created (e.g. `one-two-three.ngrok.app`).
+
+1. Add, commit, and push these changes to your fork.
+
+## Deploy your demo API with Argo CD 
+
+Now that your demo API is forked and properly configured on GitHub, you can connect it to Argo CD to sync, reconcile, and deploy.
+
+1. Register the demo app with Argo CD, replacing `<YOUR-GITHUB-USERNAME>` to point to your fork of the demo API repository.
+
+   ```bash
+   argocd app create apiops-demo \
+     --repo https://github.com/<YOUR-GITHUB-USERNAME>/apiops-demo.git \
+     --path . \
+     --dest-server https://kubernetes.default.svc \
+     --dest-namespace apiops-demo
+   ```
+
+   Refresh the Argo CD UI to see your app. Take note of the **Missing** and **OutOfSync** status report—they are not errors, but rather reflect the fact that Argo CD doesn't automatically sync and deploy a newly registered app.
+
+   ![Viewing all applications registreed to an Argo CD instance](../img/argocd/img/argo-tile.png)
+
+   You can still click on the app to view additional details about the deployment _and_ the Git repository on which it is based.
+
+1. Use the Argo CD CLI to perform a manual first sync of your registered app against your Git repository.
+
+   ```bash
+   argocd app sync apiops-demo
+   ```
+
+   Refresh the UI to see that your demo API is properly synced and deployed.
+
+   ![alt text](../img/argocd/img/argo-synced.png)
+
+   You can also navigate to the **Edges** view of your [ngrok dashboard](https://dashboard.ngrok.com/edges), then click on the Edge associated with the ngrok domain you created earlier, to see that the ngrok Kubernetes Operator pushed its definitions to the ngrok Edge via secure tunnel.
+
+   ![alt text](../img/argocd/img/ngrok-tunnel.png)
+
+   Finally, you can `curl` your deployed API, with ngrok's API gateway functionality handling ingress and TLS automatically on your behalf. You'll only see `null` in response, but it's still proof your demo API is working as expected.
+
+   ```bash
+   curl \
+     -X GET \
+     -H "Content-Type: application/json" \
+     https://<NGROK-DOMAIN>/legend
+   ```
+
+## Enable APIOps in Argo CD 
+
+A fundamental component of GitOps, and thus APIOps, is that because your Git repository contains the latest version of your desired state, your deployment toolkit should automatically update the production deployment without any manual processes.
+
+1. Enable [auto sync](https://argo-cd.readthedocs.io/en/stable/user-guide/auto_sync/) of your app the Git repository that stores your desired state.
+
+   ```
+   argocd app set apiops-demo --sync-policy automated
+   ```
+
+   You can confirm this change in the Argo CD UI:
+
+   ![Enabling auto sync for an Argo CD-deployed API](../img/argocd/img/argo-auto-sync.png)
+
+   <Note>
+   The default polling interval, at which Argo CD looks for changes to the desired state in your Git repo, is 3 minutes. You can alter this behavior with the [`timeout.reconciliation` value](https://argo-cd.readthedocs.io/en/stable/faq/#how-often-does-argo-cd-check-for-changes-to-my-git-or-helm-repository) in Argo CD's configuration.
+   </Note>
+
+1. Optionally, you can test auto sync by editing the number of replicas of the demo API deployed in your cluster. In your Git repository, open the` deployment.yaml` file and edit the `replicas` value:
+
+   ```yaml
+   spec:
+     replicas: 5
+   ```
+
+   To push these changes to your production cluster, add, commit, and push them to your Git repository.
+
+   ```bash
+   git add .
+   git commit -m "Increase replicas to 5"
+   git push origin main
+   ```
+
+   Argo CD will soon poll your repository, identify changes, and reconcile the deployed state to increase the number of replicas.
+
+   ![Automatically increase the number of replicas via GitOps](../img/argocd/img/argo-replicas.png)
+
+## Configure your API gateway with traffic policies 
+
+The ngrok team [recently rolled out support](https://ngrok.com/blog-post/policy-support-in-gateway-api) for using the [Traffic Policy module](/traffic-policy/) alongside the Kubernetes Gateway API. This allows you to place all your Traffic Policy actions into a single `NgrokTrafficPolicy` CRD, controlling your ngrok-powered API gateway with an APIOps workflow with version-controlled and declarative manifests.
+
+The project comes with a basic example of such a Traffic Policy—[see `traffic-policy.yaml` for details](https://github.com/ngrok-samples/apiops-demo/blob/main/traffic-policy.yaml)—but because rate limiting is typically the first order of business in protecing any API from abuse, let's walk through that process.
+
+1. In your fork of the demo API project, create a new file called `rate-limiting.yaml`. Open the file and add the following YAML:
+
+   ```yaml
+   kind: NgrokTrafficPolicy
+   apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+   metadata:
+     name: traffic-policy-rate-limiting
+   spec:
+     policy:
+       on_http_request:
+         - actions:
+             - type: "rate-limit"
+               config:
+                 name: "Only allow 10 requests per minute"
+                 algorithm: "sliding_window"
+                 capacity: 10
+                 rate: "60s"
+                 bucket_key:
+                   - "req.headers['host']"
+   ```
+
+   This example policy includes a low limit for demonstration purposes, but you can change the `capacity` value to your needs in production.
+
+1. Next, insert the highlight YAML below into the `HTTPRoute` in your `deployment.yaml`.
+
+   This defines a [filter](https://gateway-api.sigs.k8s.io/api-types/httproute/#filters-optional), which must be processes during the request or response lifecycle, allowing you to inject policy into all traffic arriving to your API through your ngrok API gateway.
+
+   ```yaml
+    apiVersion: gateway.networking.k8s.io/v1
+    kind: HTTPRoute
+    metadata:
+      name: apiops-demo-route
+      namespace: apiops-demo
+    spec:
+      parentRefs:
+        - kind: Gateway
+          name: apiops-demo-gateway
+          namespace: apiops-demo
+      hostnames:
+        - "apiops-demo.ngrok.app"
+      rules:
+        - matches:
+            - path:
+                type: PathPrefix
+                value: /
+          filters:
+            - type: ExtensionRef
+              extensionRef:
+                group: ngrok.k8s.ngrok.com
+                kind: NgrokTrafficPolicy
+                name: traffic-policy-rate-limiting
+          backendRefs:
+            - name: apiops-demo-service
+              port: 80
+              kind: Service
+   ```
+
+1. Add, commit, and push this change to your Git repository. Argo CD will auto sync this latest commit then reconcile the deployed state with those changes to the `NgrokTrafficPolicy` CRD and `HTTPRoute`.
+
+   Once the ngrok Kubernetes Operator picks up those changes, it will push definitions to your ngrok Edge—you can verify those changes directly in your [ngrok dashboard](https://dashboard.ngrok.com/edges/):
+
+   ![Validate successful Traffic Policy upload](../img/argocd/img/ngrok-traffic-policy.png)
+
+1. Optionally, test your new rate limiting policy by `curl`-ing your API in a quick loop.
+
+   ```bash
+   for i in `seq 1 50`; do \
+     curl -s -o /dev/null \
+       -w "\n%{http_code}" \
+       -X GET https://apiops-demo.ngrok.app/legend ; \
+   done
+   ```
+
+   You should see [`429` response codes](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/429) as your ngrok API gateway rate-limits your IP address.
+
+## What's next?
+
+You've now built a proof of concept for deploying an API to production using ngrok and Argo CD. You can use this combination to deploy real-world API behind a production-grade gateway with no arcane configurations or expensive external infrastructure.
+
+In a real-world deployment, you would also integrate your Git repository with a proper CI/CD pipeline, which would run tests for security, governance, and code quality. By only merging changes that pass your CI/CD pipeline, you can better guarantee the production-readiness of your API.
+
+If you're looking for more Traffic Policy opportunities, check out our [guide to integrate with Auth0](/integrations/jwt-validation/auth0/) for JWT-based authentication. Our [library of "drop-in" examples](https://ngrok.com/blog-post/api-gateway-policy-management-examples) contains additional use cases like blocking traffic from specific countries, deprecating API versions, [event logging](/obs/), and more. The [Traffic Policy docs](/traffic-policy/) also contains an exhaustive list of actions and syntax reference.
