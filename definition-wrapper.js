@@ -26,7 +26,7 @@ const terms = [
 		titles: ["Endpoint Pooling", "Endpoint pool"],
 		meaning:
 			'When your create two ngrok endpoints with the same URL (and binding), those endpoints automatically form a "pool" and share incoming traffic.',
-		link: "/universal-gateway/endpoint-pooling/",
+		link: "/docs/universal-gateway/endpoint-pooling/",
 		pluralEnding: "s",
 	},
 	{
@@ -134,25 +134,25 @@ const terms = [
 		titles: ["TLS Termination"],
 		meaning:
 			"TLS (Transport Layer Security) termination is the process of decrypting incoming TLS traffic at a server or load balancer before passing the unencrypted traffic to internal systems.",
-		link: "/universal-gateway/tls-termination/",
+		link: "/docs/universal-gateway/tls-termination/",
 	},
 	{
 		titles: ["Traffic Policy", "Traffic Policies"],
 		meaning:
 			"Traffic Policy is a configuration language that enables you to filter, match, manage and orchestrate traffic to your endpoints. For example, you can add authentication, send custom response, rate limit traffic, and more.",
-		link: "/traffic-policy/",
+		link: "/docs/traffic-policy/",
 	},
 	{
 		titles: ["v2"],
 		caseSensitive: true,
 		meaning: "v2 is shorthand for the second major version of the ngrok Agent.",
-		link: "/agent/config/v2",
+		link: "/docs/agent/config/v2",
 	},
 	{
 		titles: ["v3"],
 		caseSensitive: true,
 		meaning: "v3 is shorthand for the third major version of the ngrok Agent.",
-		link: "/agent/config/v3",
+		link: "/docs/agent/config/v3",
 	},
 	{
 		titles: ["WAF"],
