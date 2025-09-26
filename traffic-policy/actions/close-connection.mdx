@@ -3,19 +3,80 @@ title: Close Connection Action
 sidebarTitle: Close Connection
 description: Forcibly close connections to an endpoint.
 ---
-
 import { ConfigField } from "/snippets/ConfigTable.jsx";
 import ActionVariablesDescription from "/snippets/traffic-policy/common/action-variables-description.mdx";
 
+The Close Connection Traffic Policy action lets you forcibly close connections 
+to an endpoint when certain conditions are met, for example, when the number of 
+requests exceeds a given limit (to mitigate DDoS attacks).
+
+This action can be used with other actions such as [rate-limit](/traffic-policy/actions/rate-limit) and [deny](/traffic-policy/actions/deny).
 
 
+## Configuration Reference
 
-<ActionOverview />
-<ActionConfig />
-<ActionBehavior />
-<ActionExamples />
+The [Traffic Policy](/traffic-policy/) configuration reference for this action.
+
+### Supported Phases
+
+`on_http_request`, `on_tcp_connect`
+
+### Type
+
+`close-connection`
+
+### Configuration Fields
+
+<Note>This action does not have any configuration fields.</Note>
+
+## Behavior
+
+When this action is executed, connection to the endpoint is closed immediately.
+
+This can be useful for dealing with DDoS attacks.
+
+## Examples
+
+### Basic Example
+
+This basic example configuration will guide you through setting up an endpoint on ngrok (`hotdog.ngrok.app`) and closing the connection to the endpoint.
+
+<Steps>
+  <Step title="Save the following traffic policy document to a file called policy.yml">
+    ```yaml policy.yml
+    on_http_request:
+    - name: "Immediately close connection"
+      expressions:
+        - req.url.path.startsWith("/dc")
+      actions:
+        - type: close-connection
+    ```
+  </Step>
+
+  <Step title="Start the endpoint with the traffic policy">
+    ```bash
+    ngrok http 8080 --url hotdog.ngrok.app --traffic-policy-file ./policy.yml
+    ```
+  </Step>
+
+  <Step title="Send a request to the endpoint">
+    ```bash
+    curl http://hotdog.ngrok.app/dc
+    ```
+
+    You should see something similar to the following:
+
+    ```bash
+    curl: (16) Error in the HTTP2 framing layer
+    ```
+
+    This is expected as the connection is closed immediately.
+  </Step>
+</Steps>
 
 ## Action Result Variables
 
 <ActionVariablesDescription />
-<ActionVariables />
+
+
+<Note>This action does not set any variables after it has been executed.</Note>
