@@ -9,5 +9,5 @@ curl \
 -H "Content-Type: application/json" \
 -H "Ngrok-Version: 2" \
 -d '{"metadata":"{\"environment\": \"production\", \"service\": \"postgres\"}","value":"supersecretupdated"}' \
-https://api.ngrok.com/vault_secrets/secret_334AgbkBTHlFAkWM7HEjbZiNCBu
+https://api.ngrok.com/vault_secrets/secret_33HIl74cwHVgvh5cRpbdFrN6j9N
 ```

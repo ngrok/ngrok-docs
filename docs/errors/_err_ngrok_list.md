@@ -21,7 +21,7 @@
       <td class="pre-wrapped">
         The last payment for the <code>&lt;ACCOUNT&gt;</code> account failed.
         The account has been suspended. Update the payment information here:
-        <a href="https://dashboard.ngrok.com/billing/payment-method">https://dashboard.ngrok.com/billing/payment-method</a>
+        <a href="https://dashboard.ngrok.com/billing">https://dashboard.ngrok.com/billing</a>
       </td>
     </tr>
     <tr>
@@ -77,10 +77,10 @@
       </td>
       <td class="pre-wrapped">
         Your account is limited to <code>&lt;MAX&gt;</code> simultaneous ngrok agent sessions.
-        You can run multiple simultaneous tunnels from a single agent session by defining the tunnels in your agent configuration file and starting them with the command `ngrok start --all`.
-        Read more about the agent configuration file: <a href="https://ngrok.com/docs/secure-tunnels/ngrok-agent/reference/config">https://ngrok.com/docs/secure-tunnels/ngrok-agent/reference/config</a>
-        You can view your current agent sessions in the dashboard:
-        <a href="https://dashboard.ngrok.com/agents">https://dashboard.ngrok.com/agents</a>
+        Run multiple endpoints at the same time from a single agent by defining them in your agent configuration file and running `ngrok start --all`.
+        Read more about the agent configuration file: <a href="https://ngrok.com/docs/agent/config">https://ngrok.com/docs/agent/config</a>/ 
+        You can view your current agent sessions in the dashboard: <a href="https://dashboard.ngrok.com/agents">https://dashboard.ngrok.com/agents</a>. Upgrade to a paid plan to remove this limit:
+        <a href="https://dashboard.ngrok.com/billing/choose-a-plan">https://dashboard.ngrok.com/billing/choose-a-plan</a>
       </td>
     </tr>
     <tr>
@@ -546,7 +546,7 @@
         <a id="ERR_NGROK_247" href="/docs/errors/err_ngrok_247">ERR_NGROK_247</a>
       </td>
       <td class="pre-wrapped">
-        The account <code>&lt;ACCOUNT&gt;</code> has been suspended for non-payment. Update your payment method to pay your outstanding bill and resume service: <a href="https://dashboard.ngrok.com/billing/payment-method">https://dashboard.ngrok.com/billing/payment-method</a>
+        The account <code>&lt;ACCOUNT&gt;</code> has been suspended for non-payment. Update your payment method to pay your outstanding bill and resume service: <a href="https://dashboard.ngrok.com/billing">https://dashboard.ngrok.com/billing</a>
       </td>
     </tr>
     <tr>
@@ -869,7 +869,7 @@
       <td class="pre-wrapped">
         The last payment for the <code>&lt;ACCOUNT&gt;</code> account failed.
         The account has been suspended. Update the payment information here:
-        <a href="https://dashboard.ngrok.com/billing/payment-method">https://dashboard.ngrok.com/billing/payment-method</a>
+        <a href="https://dashboard.ngrok.com/billing">https://dashboard.ngrok.com/billing</a>
       </td>
     </tr>
     <tr>
@@ -956,7 +956,7 @@
         <a id="ERR_NGROK_350" href="/docs/errors/err_ngrok_350">ERR_NGROK_350</a>
       </td>
       <td class="pre-wrapped">
-        Your account is limited to <code>&lt;MAX&gt;</code> tunnels in a session.
+        Your account is limited to <code>&lt;MAX&gt;</code> endpoints in a session.
       </td>
     </tr>
     <tr>
@@ -964,7 +964,7 @@
         <a id="ERR_NGROK_351" href="/docs/errors/err_ngrok_351">ERR_NGROK_351</a>
       </td>
       <td class="pre-wrapped">
-        Your account is rate limited for adding <code>&lt;MAX&gt;</code> tunnels per <code>&lt;INTERVAL&gt;</code>.
+        Your account is rate limited for adding <code>&lt;MAX&gt;</code> endpoints per <code>&lt;INTERVAL&gt;</code>.
       </td>
     </tr>
     <tr>
@@ -997,7 +997,7 @@
         <a id="ERR_NGROK_358" href="/docs/errors/err_ngrok_358">ERR_NGROK_358</a>
       </td>
       <td class="pre-wrapped">
-        Your account doesn't have permission to create labeled tunnels.
+        Your account doesn't have permission to create labeled endpoints.
       </td>
     </tr>
     <tr>
@@ -1285,7 +1285,7 @@
         <a id="ERR_NGROK_395" href="/docs/errors/err_ngrok_395">ERR_NGROK_395</a>
       </td>
       <td class="pre-wrapped">
-        Bind rules in authtoken ACLs are not supported with labeled tunnels at this time.
+        Bind rules in authtoken ACLs are not supported with labeled endpoints at this time.
       </td>
     </tr>
     <tr>
@@ -1766,14 +1766,6 @@
       </td>
       <td class="pre-wrapped">
         You are not allowed to delete your dev domain.
-      </td>
-    </tr>
-    <tr>
-      <td>
-        <a id="ERR_NGROK_459" href="/docs/errors/err_ngrok_459">ERR_NGROK_459</a>
-      </td>
-      <td class="pre-wrapped">
-        Cannot migrate to dev domains (flag 'AllowDevelopmentDomainAndEndpoints' is disabled).
       </td>
     </tr>
     <tr>
@@ -5259,7 +5251,7 @@
         <a id="ERR_NGROK_2259" href="/docs/errors/err_ngrok_2259">ERR_NGROK_2259</a>
       </td>
       <td class="pre-wrapped">
-        No tunnels exist in this account
+        No endpoints exist in this account
       </td>
     </tr>
     <tr>
@@ -5267,7 +5259,7 @@
         <a id="ERR_NGROK_2260" href="/docs/errors/err_ngrok_2260">ERR_NGROK_2260</a>
       </td>
       <td class="pre-wrapped">
-        No tunnels could be found matching the supplied combination of labels
+        No endpoints could be found matching the supplied combination of labels
       </td>
     </tr>
     <tr>
@@ -5310,6 +5302,14 @@
       </td>
       <td class="pre-wrapped">
         Policy configuration has exceeded its <code>&lt;TYP&gt;</code> per rule limit of <code>&lt;LIMIT&gt;</code> during <code>&lt;PHASE&gt;</code> at index <code>&lt;IDX&gt;</code>. Please check <a href="https://ngrok.com/features/traffic-policy">https://ngrok.com/features/traffic-policy</a> to view your options or contact us at support@ngrok.com.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_2266" href="/docs/errors/err_ngrok_2266">ERR_NGROK_2266</a>
+      </td>
+      <td class="pre-wrapped">
+        Traffic policy contains more than one AI Gateway Action. Only one AI Gateway action is allowed per traffic policy.
       </td>
     </tr>
     <tr>
@@ -6164,6 +6164,14 @@
       </td>
       <td class="pre-wrapped">
         All AI providers failed to respond successfully. The request could not be completed.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a id="ERR_NGROK_3808" href="/docs/errors/err_ngrok_3808">ERR_NGROK_3808</a>
+      </td>
+      <td class="pre-wrapped">
+        API key selection strategy failed: <code>&lt;ERR&gt;</code>
       </td>
     </tr>
     <tr>
@@ -7389,6 +7397,14 @@
     </tr>
     <tr>
       <td>
+        <a id="ERR_NGROK_5327" href="/docs/errors/err_ngrok_5327">ERR_NGROK_5327</a>
+      </td>
+      <td class="pre-wrapped">
+        Failed to parse the SAML configuration for the configuration "<code>&lt;ID&gt;</code>". Please ensure that all URLs in the SAML configuration are well-formed and include a valid scheme, e.g. "https://".
+      </td>
+    </tr>
+    <tr>
+      <td>
         <a id="ERR_NGROK_5400" href="/docs/errors/err_ngrok_5400">ERR_NGROK_5400</a>
       </td>
       <td class="pre-wrapped">
@@ -7790,7 +7806,7 @@
         <a id="ERR_NGROK_6010" href="/docs/errors/err_ngrok_6010">ERR_NGROK_6010</a>
       </td>
       <td class="pre-wrapped">
-        Endpoint configuration is incompatible with tunnel; module <code>&lt;MODULE&gt;</code> required by Endpoint Configuration <code>&lt;ECID&gt;</code> is incompatible with <code>&lt;PROTO&gt;</code> tunnels.
+        Endpoint configuration is incompatible with endpoint; module <code>&lt;MODULE&gt;</code> required by Endpoint Configuration <code>&lt;ECID&gt;</code> is incompatible with <code>&lt;PROTO&gt;</code> endpoints.
       </td>
     </tr>
     <tr>
@@ -8062,8 +8078,8 @@
         <a id="ERR_NGROK_6515" href="/docs/errors/err_ngrok_6515">ERR_NGROK_6515</a>
       </td>
       <td class="pre-wrapped">
-        Tunnel Group Backend <code>&lt;ID&gt;</code> did not match any tunnels.
-        Start tunnels matching its labels in order to serve traffic.
+        Tunnel Group Backend <code>&lt;ID&gt;</code> did not match any endpoints.
+        Start endpoints matching its labels in order to serve traffic.
       </td>
     </tr>
     <tr>
@@ -8137,7 +8153,7 @@
         <a id="ERR_NGROK_6528" href="/docs/errors/err_ngrok_6528">ERR_NGROK_6528</a>
       </td>
       <td class="pre-wrapped">
-        Traffic made it to the ngrok edge, but there are no tunnels online serving an app.
+        Traffic made it to the ngrok edge, but there are no endpoints online serving an app.
       </td>
     </tr>
     <tr>
@@ -10008,8 +10024,8 @@
         <a id="ERR_NGROK_8013" href="/docs/errors/err_ngrok_8013">ERR_NGROK_8013</a>
       </td>
       <td class="pre-wrapped">
-        You must add a credit or debit card before you can use TCP endpoints on a free account. We require a valid card as a way to combat abuse and keep the internet a safe place. This card will NOT  be charged.
-        Add a card to your account here: <a href="https://dashboard.ngrok.com/settings">https://dashboard.ngrok.com/settings</a>#id-verification
+        You must add a credit or debit card before you can use TCP endpoints on a free account. We require a valid card as a way to combat abuse and keep the internet a safe place. This card will NOT be charged.
+        Add a card to your account here: <a href="https://dashboard.ngrok.com/settings">https://dashboard.ngrok.com/settings</a>#id-verification.
       </td>
     </tr>
     <tr>
@@ -11027,7 +11043,7 @@
         <a id="ERR_NGROK_15000" href="/docs/errors/err_ngrok_15000">ERR_NGROK_15000</a>
       </td>
       <td class="pre-wrapped">
-        You are not allowed to create endpoints with subdomains on <code>&lt;BASE&gt;</code>. Your account is on the <code>&lt;PLAN&gt;</code> plan, which doesn't allow starting tunnels on <code>&lt;BASE&gt;</code>.
+        You are not allowed to create endpoints with subdomains on <code>&lt;BASE&gt;</code>. Your account is on the <code>&lt;PLAN&gt;</code> plan, which doesn't allow starting endpoints on <code>&lt;BASE&gt;</code>.
       </td>
     </tr>
     <tr>
