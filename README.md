@@ -30,10 +30,6 @@ When using `pnpm run dev`, this site runs locally at `http://localhost:3333/`
 - `pnpm run dev`: Runs build scripts and starts the dev server
 - `pnpm run test-links`: Runs mintlify's built-in broken link checker
 
-### Other commands
-
-- `pnpm run build`: Runs build scripts and builds the site, but isn't generally necessary.
-
 ### Docs search locally
 
 Search does not work in local builds of the docs site. You'll have to test search in a preview deployment when you create your pull request.
