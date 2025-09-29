@@ -1,0 +1,388 @@
+---
+title: AgentEndpoint
+---
+
+## AgentEndpoint Custom Resource
+
+### **apiVersion:** `ngrok.k8s.ngrok.com/v1alpha1`
+
+### **kind:** `AgentEndpoint`
+
+Agent Endpoints are endpoints that are only available when an agent is running. When used with the ngrok Kubernetes operator,
+this means that the Agent Endpoints are tied to the operator's `operator-agent` pod (which is deployed by default when installing the operator).
+The operator will manage, create, and delete agent endpoints for you according to the configuration of the `AgentEndpoint` custom resources you create.
+So long as at least one instance of the `operator-agent` pod is running, your Agent Endpoints will be available. You may occasionally notice
+the IDs of Agent Endpoints managed by the operator change if the operator pods restart, this will not halt traffic through your Agent Endpoints unless all of the operator pods have stopped.
+
+See the [ngrok agent CLI configuration page](/agent/config/v3/#endpoint-definitions), for more information about using the CLI to start agent endpoints outside of Kubernetes.
+
+Note that while using `AgentEndpoint` resources, an agent endpoint will be created in your ngrok account for each replica of the `ngrok-operator-agent` `Deployment`. This enables high-availability when
+running the `ngrok-operator-agent` deployment at a high replica count, but will result in additional charges for your ngrok account. The lifetime of these agent endpoints are tied to the lifetime of the
+`ngrok-operator-agent` pods, so scaling the deployment up/down will cause the additional Agent Endpoints in your ngrok account to be created as needed and deleted when no longer needed.
+
+## AgentEndpoint Structure and Types
+
+The following outlines the high level structure and typings of an `AgentEndpoint`
+
+```yaml
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: AgentEndpoint
+metadata:
+  name: <string>
+  namespace: <string>
+spec:
+  url: <string>               # required
+  upstream:                   # required
+    url: <string>             # required
+  trafficPolicy:              # optional
+    targetRef:                # optional, one of inline or targetRef must be supplied
+      name: <string>          # required
+    inline:                   # optional, one of inline or targetRef must be supplied
+      <traffic policy config>
+  description: <string>       # optional, default: "Created by the ngrok-operator"
+  metadata: <string>          # optional, default: "{"owned-by":"ngrok-operator"}"
+  bindings: <[]string>        # optional
+  clientCertificateRefs:      # optional
+  - name: <string>            # required
+    namespace: <string>       # optional
+```
+
+## AgentEndpoint Fields
+
+The following sections outline each field of the `AgentEndpoint` custom resource, whether they are required, what their default values are (if applicable), and a description of their purpose/constraints.
+
+### `spec`
+
+`spec` defines the desired state of the `AgentEndpoint`
+
+**Type:** `Object`
+
+**Required:** yes
+
+**Default:** none
+
+**Fields:**
+
+| Field Name                                                 | Type              | Required | Default                           | Description                                                                                                              |
+| ---------------------------------------------------------- | ----------------- | -------- | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| [`spec.url`](#specurl)                                     | `string`          | yes      | none                              | The unique URL for this agent endpoint that defines how the endpoint is accessed                                         |
+| [`spec.upstream`](#specupstream)                           | `Object`          | yes      | none                              | The upstream that will receive traffic sent to the endpoint (unless a response is sent by a traffic policy action first) |
+| [`spec.trafficPolicy`](#spectrafficpolicy)                 | `Object`          | no       | none                              | Allows a traffic policy to be supplied for the endpoint                                                                  |
+| [`spec.description`](#specdescription)                     | `string`          | no       | `"Created by the ngrok-operator"` | Human-readable description for this `AgentEndpoint` to help identify/describe it                                         |
+| [`spec.metadata`](#specmetadata)                           | `string`          | no       | `"{"owned-by":"ngrok-operator"}"` | String of arbitrary data associated with the object in the ngrok API/Dashboard                                           |
+| [`spec.bindings`](#specbindings)                           | `[]string` (enum) | no       | none                              | List of Binding IDs to associate with the endpoint                                                                       |
+| [`spec.clientCertificateRefs`](#specclientcertificaterefs) | `[]Object`        | no       | none                              | List of client certificates to present to the upstream when performing a TLS handshake                                   |
+
+### `spec.url`
+
+The unique URL for this agent endpoint. This URL defines how the endpoint is accessed.
+
+**Note:** [Pooling](/universal-gateway/endpoint-pooling) is always enabled for `AgentEndpoint` resources.
+This means that if two (or more) endpoints share the same `spec.url` then requests will be balanced between them.
+This is not limited to endpoints within the same cluster, or endpoints of the same type. For example, an `AgentEndpoint` can be pooled with a cloud endpoint created in the ngrok dashboard if they share the same URL and both enable pooling.
+It is recommended to include a prefix/suffix in the url to prevent unintended pooling. For example, if you are running a service `foo` in the namespace `bar` in two different
+Kubernetes clusters, you may want to give each one a slightly different `spec.url` that includes something such as a cluster identifier to prevent requests from being balanced between them.
+Unlike `AgentEndpoint` resources, the `CloudEndpoint` resource gives you the ability to configure whether pooling should be allowed or not.
+
+**Type:** `string`
+
+**Required:** yes
+
+**Default:** none
+
+The following formats are accepted:
+
+- **Domain**
+  - When using the domain format you are only defining the domain. The scheme and port will be inferred.
+  - example: `example.org`
+- **Origin**
+  - When using the origin format you are defining the protocol, domain and port. HTTP endpoints accept ports 80 or 443 with respective protocol.
+  - examples:
+    - `https://example.ngrok.app`
+    - `https://example.ngrok.app:443`
+    - `tcp://1.tcp.ngrok.io:12345`
+    - `tls://example.ngrok.app`
+- **Scheme (shorthand)**
+  - When using scheme you are defining the protocol and will receive back a randomly assigned ngrok address.
+  - examples:
+    - `https://`
+    - `tcp://`
+    - `tls://`
+    - `http://`
+- **Empty**
+  - When empty your endpoint will default to be https and receive back a randomly assigned ngrok address.
+- **Internal**
+  - When ending your url with .internal, an internal endpoint will be created. Internal Endpoints cannot be accessed directly, but rather can only be accessed using the forward-internal traffic policy action.
+  - example: `some.domain.internal`
+
+### `spec.upstream`
+
+Configures the upstream for the `AgentEndpoint` that should receive traffic sent to the `AgentEndpoint`
+
+**Type:** `Object`
+
+**Required:** yes
+
+**Default:** none
+
+**Fields:**
+
+| Field Name                                        | Type            | Required | Default | Description                                                              |
+| ------------------------------------------------- | --------------- | -------- | ------- | ------------------------------------------------------------------------ |
+| [`spec.upstream.url`](#specupstreamurl)           | `string`        | yes      | none    | The local or remote address that incoming traffic should be forwarded to |
+| [`spec.upstream.protocol`](#specupstreamprotocol) | `string` (enum) | no       | `http1` | The protocol to use when connecting to the upstream                      |
+
+### `spec.upstream.url`
+
+The local or remote address you would like to incoming traffic to be forwarded to.
+
+**Type:** `string`
+
+**Required:** yes
+
+**Default:** none
+
+Accepted formats are:
+
+- **Origin**
+  - When using the origin format you are defining the protocol, domain and port.
+    When no port is present and scheme is https or http the port will be inferred.
+    - For https port will be `443`
+    - For http port will be `80`
+  - examples:
+    - `https://example.org`
+    - `http://example.org:80`
+    - `tcp://127.0.0.1:80`
+- **Domain**
+  - This is only allowed for https and http endpoints.
+    For TCP and TLS endpoints host and port is required.
+  - When using the domain format you are only defining the host. - Scheme will default to `http` - Port will default to `80`
+  - example: `example.org`
+- **Scheme (shorthand)**
+  - This only works for https and http.
+    For tcp and tls host and port is required.
+  - When using scheme you are defining the protocol and the port will be inferred on the local host.
+    - For https port will be `443`
+    - For http port will be `80`
+    - Host will be `localhost`
+  - example: `https://`
+- **Port (shorthand)**
+  - When using port you are defining the port on the local host that will receive traffic.
+    - Scheme will default to `http`
+    - Host will default to `localhost`
+  - example: `8080`
+
+### `spec.upstream.protocol`
+
+Specifies the protocol to use when connecting to the upstream. Currently only `http1` and `http2` are supported
+with prior knowledge (defaulting to `http1`).
+
+**Type:** `string` (enum)
+
+**Required:** no
+
+**Default:** `http1`
+
+**Allowed Values:** `http1`,`http2`
+
+### `spec.trafficPolicy`
+
+`spec.trafficPolicy` allows for an ngrok traffic policy to be used for this `AgentEndpoint`. It may be supplied inline or via a reference to
+an `NgrokTrafficPolicy` custom resource in the same namespace as the `AgentEndpoint`.
+
+- If `spec.trafficPolicy` is configured, then one of `spec.trafficPolicy.inline` or `spec.trafficPolicy.targetRef` must be supplied
+- It is invalid to supply both `spec.trafficPolicy.inline` and `spec.trafficPolicy.targetRef`
+
+For more information about writing ngrok traffic policies, refer to the [traffic policy section](/traffic-policy/).
+
+**Type:** `Object`
+
+**Required:** no
+
+**Default:** none
+
+**Fields:**
+
+| Field Name                                                    | Type              | Required | Default | Description                                                                                       |
+| ------------------------------------------------------------- | ----------------- | -------- | ------- | ------------------------------------------------------------------------------------------------- |
+| [`spec.trafficPolicy.inline`](#spectrafficpolicyinline)       | `json.RawMessage` | no       | none    | Inline traffic policy configuration for this `AgentEndpoint`                                      |
+| [`spec.trafficPolicy.targetRef`](#spectrafficpolicytargetref) | `Object`          | no       | none    | Reference to an `NgrokTrafficPolicy` custom resource in the same namespace as the `AgentEndpoint` |
+
+### `spec.trafficPolicy.inline`
+
+Allows you to supply a traffic policy for this `AgentEndpoint` with inline configuration. An example has been included below.
+For more information about writing ngrok traffic policies, refer to the [traffic policy section](/traffic-policy/).
+
+**Type:** `json.RawMessage`
+
+**Required:** no
+
+**Default:** none
+
+### `spec.trafficPolicy.targetRef`
+
+Allows you to supply a traffic policy for this `AgentEndpoint` as a reference to an `NgrokTrafficPolicy` custom resource in the same namespace as the `AgentEndpoint`. An example has been included below.
+For more information about writing ngrok traffic policies, refer to the [traffic policy section](/traffic-policy/).
+
+**Type:** `Object`
+
+**Required:** no
+
+**Default:** none
+
+**Fields:**
+
+| Field Name                          | Type     | Required | Default | Description                                                                                  |
+| ----------------------------------- | -------- | -------- | ------- | -------------------------------------------------------------------------------------------- |
+| `spec.trafficPolicy.targetRef.name` | `string` | yes      | none    | Name of an `NgrokTrafficPolicy` custom resource in the same namespace as the `AgentEndpoint` |
+
+### `spec.description`
+
+Human-readable description of this Agent Endpoint that can be used to help identify/describe it.
+
+**Type:** `string`
+
+**Required:** no
+
+**Default:** `"Created by the ngrok-operator"`
+
+### `spec.metadata`
+
+String of arbitrary data associated with the object in the ngrok API/Dashboard.
+
+**Type:** `string`
+
+**Required:** no
+
+**Default:** `"{"owned-by":"ngrok-operator"}"`
+
+### `spec.bindings`
+
+List of Binding IDs to associate with the endpoint
+
+**Type:** `string` (enum)
+
+**Required:** no
+
+**Accepted Values:** `"public"`, `"internal"`, or `"kubernetes"`
+
+- A binding of `"internal"` will create an internal `AgentEndpoint` that is only accessible from other endpoints using the `forward-internal` traffic policy action.
+  - Aside from setting `bindings: ["internal"]`, the `spec.url` of the `AgentEndpoint` must end in `.internal`
+  - Setting `bindings: ["public"]` will not work for internal endpoints (endpoints that have a `spec.url` ending in `.internal`)
+- A binding of `"public"` will create a standard `AgentEndpoint` with its `spec.url` accessible to the public internet
+  - Setting `bindings: ["internal"]` will not work for public endpoints
+- A binding of `"kubernetes"` will create a Kubernetes bound endpoint. This causes the endpoint to not be publicly accessible to the public internet
+  and will be projected into one or more of your Kubernetes clusters that are running the ngrok operator (depending on their endpoint selector configuration) as `Services`.
+  - With a `"kubernetes"` binding, the `spec.url` becomes the `name.namespace` of the projected Service.
+  - For example, with a `spec.url` of `http://my-service.my-namespace` then a Service with name `my-service` in the `my-namespace` namespace will be created by the ngrok operator.
+    Other services within the Kubernetes cluster can make requests to this endpoint. This enables many different use-cases such as being able to project a service in one Kubernetes cluster
+    to another Kubernetes cluster so that services running in the other cluster can make requests to it. This has the benefit of not needing to expose the endpoint to the public internet behind a publicly accessible URL.
+
+### `spec.clientCertificateRefs`
+
+List of references to secrets that contain client certificates to present to the upstream when performing a TLS handshake. These will be ignored if the upstream is not using TLS.
+For example, if the `spec.upstream.url` is `http://service.default:80` then the `clientCertificateRefs` will not be used.
+
+The secrets are expected to contain the data in the keys `tls.crt` and `tls.key`.
+
+The `namespace` field is optional, and when not supplied, the namespace of the `AgentEndpoint` will be used.
+
+When the `spec.upstream.url` has an `https://` scheme, the client certificates will have no effect because no TLS is being used when connecting to the upstream.
+
+**Type:** `[]Object`
+
+**Required:** no
+
+**Default:** none
+
+**Fields:**
+
+| Field Name                             | Type     | Required | Default | Description                                                                                                                                |
+| -------------------------------------- | -------- | -------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| `spec.clientCertificateRefs.name`      | `string` | yes      | none    | Name of a `Secret` resource to pull the client certificate data from                                                                       |
+| `spec.clientCertificateRefs.namespace` | `string` | no       | none    | Namespace of a `Secret` resource to pull the client certificate data from. When not supplied, the namespace of the `AgentEndpoint` is used |
+
+## Example AgentEndpoints
+
+### AgentEndpoint with inline traffic policy
+
+The following `AgentEndpoint`:
+
+- Accepts traffic on the URL `https://example-agent-endpoint.ngrok.io`
+- Sends traffic to `http://my-service.my-namespace:8080`
+  - If a traffic policy "terminates" the request, then the traffic will not be sent to the upstream
+- Adds an inline traffic policy
+  - If the request URL contains `?debug=true` query parameter, then the traffic policy will "terminate" the request and
+    send back a custom response
+
+```yaml
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: AgentEndpoint
+metadata:
+  name: example-agent-endpoint
+spec:
+  url: https://example-agent-endpoint.ngrok.io
+  upstream:
+    url: http://my-service.my-namespace:8080
+  trafficPolicy:
+    inline:
+      on_http_request:
+      - name: example-rule
+        expressions:
+        - req.url.query_params['debug'][0]=='true'
+        actions:
+        - type: custom-response
+          config:
+            body: Example response from traffic policy
+            headers:
+              content-type: text/plain
+            status_code: 200
+```
+
+### AgentEndpoint with referenced traffic policy
+
+The following `AgentEndpoint`:
+
+- Accepts traffic on the URL `https://example-agent-endpoint.ngrok.io`
+- Sends traffic to `http://my-https-service.my-namespace:8443`
+  - Includes a client certificate from the `Secret` `my-client-cert` in the `default` namespace
+  - If a traffic policy "terminates" the request, then the traffic will not be sent to the upstream
+- Adds a reference to a traffic policy that
+  - If the request URL contains `?debug=true` query parameter, then the traffic policy will "terminate" the request and
+    send back a custom response
+
+```yaml
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: NgrokTrafficPolicy
+metadata:
+  name: example-tp
+  namespace: default
+spec:
+  policy:
+    on_http_request:
+    - name: example-rule
+      expressions:
+      - req.url.query_params['debug'][0]=='true'
+      actions:
+      - type: custom-response
+        config:
+          body: Example response from traffic policy
+          headers:
+            content-type: text/plain
+          status_code: 200
+---
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: AgentEndpoint
+metadata:
+  name: example-agent-endpoint
+spec:
+  url: https://example-agent-endpoint.ngrok.io
+  upstream:
+    url: https://my-https-service.my-namespace:8443
+  trafficPolicy:
+    targetRef:
+      name: example-tp
+  clientCertificateRefs:
+  - name: my-client-cert
+    namespace: default
+```
