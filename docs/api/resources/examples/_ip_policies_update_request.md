@@ -9,5 +9,5 @@ curl \
 -H "Content-Type: application/json" \
 -H "Ngrok-Version: 2" \
 -d '{"metadata":"metadata={\"pod-id\": \"b3d9c464-4f48-4783-a741-d7d7d5db310f\"}"}' \
-https://api.ngrok.com/ip_policies/ipp_334Ad1IUBcIrGiq0qqnImpUrHcF
+https://api.ngrok.com/ip_policies/ipp_33NaUWaQ2N8x1GKkek0ELpoDLIB
 ```

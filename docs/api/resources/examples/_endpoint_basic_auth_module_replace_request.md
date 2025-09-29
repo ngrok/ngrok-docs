@@ -9,5 +9,5 @@ curl \
 -H "Content-Type: application/json" \
 -H "Ngrok-Version: 2" \
 -d '{"allow_options":true,"auth_provider_id":"agent"}' \
-https://api.ngrok.com/endpoint_configurations/ec_334Afl6mmN5spvgntfPYz47bJnm/basic_auth
+https://api.ngrok.com/endpoint_configurations/ec_33NaXIoX6hU6A0GtZx0D2QMoP1k/basic_auth
 ```

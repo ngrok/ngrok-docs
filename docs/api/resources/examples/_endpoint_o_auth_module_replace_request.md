@@ -9,5 +9,5 @@ curl \
 -H "Content-Type: application/json" \
 -H "Ngrok-Version: 2" \
 -d '{"options_passthrough":true,"provider":{"google":{"client_id":"client-id","client_secret":"client-secret","email_addresses":["alan@example.com"],"scopes":["profile","email","https://www.googleapis.com/auth/gmail.compose"]}}}' \
-https://api.ngrok.com/endpoint_configurations/ec_334Afl6mmN5spvgntfPYz47bJnm/oauth
+https://api.ngrok.com/endpoint_configurations/ec_33NaXIoX6hU6A0GtZx0D2QMoP1k/oauth
 ```
