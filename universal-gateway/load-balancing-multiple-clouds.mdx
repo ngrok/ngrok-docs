@@ -62,48 +62,46 @@ import (
 	"fmt"
 	"log"
 	"os"
-
-    "github.com/joho/godotenv"
-    "golang.ngrok.com/ngrok/v2"
-
+	"github.com/joho/godotenv"
+	"golang.ngrok.com/ngrok/v2"
 )
 
 func main() {
-if err := godotenv.Load(".env"); err != nil {
-log.Fatal("Error loading .env file", err)
+	if err := godotenv.Load(".env"); err != nil {
+		log.Fatal("Error loading .env file", err)
+	}
+	if err := run(context.Background()); err != nil {
+		log.Fatal(err)
+	}	
 }
-if err := run(context.Background()); err != nil {
-log.Fatal(err)
-}
-}
+
 const address = "http://localhost:8000"
 
 func run(ctx context.Context) error {
-agent, err := ngrok.NewAgent(ngrok.WithAuthtoken(os.Getenv("NGROK_AUTHTOKEN")))
-if err != nil {
-return err
+	agent, err := ngrok.NewAgent(ngrok.WithAuthtoken(os.Getenv("NGROK_AUTHTOKEN")))
+	if err != nil {
+		return err
+	}
+
+	ln, err := agent.Forward(ctx,
+		ngrok.WithUpstream(address),
+		ngrok.WithURL("your-reserved-domain"),
+		ngrok.WithPoolingEnabled(true),
+	)
+
+	if err != nil {
+		fmt.Println("Error", err)
+		return err
+	}
+
+	fmt.Println("Endpoint online: forwarding from", ln.URL(), "to", address)
+
+	// Explicitly stop forwarding; otherwise it runs indefinitely
+	<-ln.Done()
+	return nil
 }
 
-    ln, err := agent.Forward(ctx,
-    	ngrok.WithUpstream(address),
-    	ngrok.WithURL("your-reserved-domain"),
-    	ngrok.WithPoolingEnabled(true),
-    )
-
-    if err != nil {
-    	fmt.Println("Error", err)
-    	return err
-    }
-
-    fmt.Println("Endpoint online: forwarding from", ln.URL(), "to", address)
-
-    // Explicitly stop forwarding; otherwise it runs indefinitely
-    <-ln.Done()
-    return nil
-
-}
-
-````
+```
 
 ```javascript title="example.js"
 require('dotenv').config();
@@ -124,7 +122,7 @@ const ngrok = require('@ngrok/ngrok');
 
 // Keep the process alive
 process.stdin.resume();
-````
+```
 
 ```rust title="src/main.rs"
 #![deny(warnings)]
