@@ -229,6 +229,167 @@ DELETE/api/tunnels/:name
 
 204 status code with an empty body
 
+## List Endpoints
+
+Returns a list of running endpoints with status and metrics information.
+
+### Request
+
+GET/api/endpoints
+
+### Response
+
+200 status code with a JSON response containing an array of endpoint objects.
+
+### Example Response
+
+```
+{
+  "endpoints": [
+    {
+      "name": "command_line",
+      "uri": "/api/endpoints/command_line",
+      "url": "https://871e40f2d4c2.ngrok.paid.lan",
+      "upstream": {
+        "url": "http://localhost:8000",
+        "protocol": "https"
+      },
+      "inspect": true,
+      "traffic_policy": "on_http_request:\n - actions:\n - type: custom-response\n config:\n status_code: 200\n body: Hello, World!\n",
+      "pooling_enabled": true
+    }
+  ]
+}
+```
+
+## Endpoint Detail
+
+Get status and metrics about the named running endpoint.
+
+### Request
+
+GET/api/endpoints/:name
+
+### Response
+
+200 status code with endpoint JSON for success.
+
+404 Not Found if the provided name doesn't correspond to an endpoint.
+
+### Example Response
+
+```
+{
+  "name": "command_line",
+  "uri": "/api/endpoints/command_line",
+  "url": "https://871e40f2d4c2.ngrok.paid.lan",
+  "upstream": {
+    "url": "http://localhost:8000",
+    "protocol": "https"
+  },
+  "inspect": true,
+  "traffic_policy": "on_http_request:\n - actions:\n - type: custom-response\n config:\n status_code: 200\n body: Hello, World!\n",
+  "pooling_enabled": true,
+  "metrics": {
+    "conns": {
+      "count": 0,
+      "gauge": 0,
+      "rate1": 0,
+      "rate5": 0,
+      "rate15": 0,
+      "p50": 0,
+      "p90": 0,
+      "p95": 0,
+      "p99": 0
+    },
+    "http": {
+      "count": 0,
+      "rate1": 0,
+      "rate5": 0,
+      "rate15": 0,
+      "p50": 0,
+      "p90": 0,
+      "p95": 0,
+      "p99": 0
+    }
+  }
+}
+```
+
+## Create Endpoint
+
+Dynamically creates a new endpoint on the ngrok agent.
+
+### Request
+
+POST/api/endpoints
+
+### Response
+
+201 Created on success.
+
+400 Bad Request for malformed payloads.
+
+### Example Request Body
+
+```
+{
+  "name": "my_awesome_tunnel",
+  "url": "https://iamawesome.ngrok.paid.lan",
+  "upstream": {
+    "url": "8001"
+  },
+  "pooling_enabled": true
+}
+```
+
+## Update Endpoint
+
+Updates an existing endpoint or creates a new one if it doesn't exist.
+
+### Request
+
+PUT/api/endpoints/:name
+
+### Response
+
+200 OK if an existing endpoint is updated.
+
+201 Created if an endpoint is created.
+
+400 Bad Request for malformed payloads.
+
+### Example Request Body
+
+```
+{
+  "name": "command_line",
+  "uri": "/api/endpoints/command_line",
+  "url": "https://871e40f2d4c2.ngrok.paid.lan",
+  "upstream": {
+    "url": "http://localhost:8000",
+    "protocol": "https"
+  },
+  "inspect": true,
+  "traffic_policy": "on_http_request:\n - actions:\n - type: custom-response\n config:\n status_code: 200\n body: Hello, World!\n",
+  "pooling_enabled": true
+}
+```
+
+## Delete Endpoint
+
+Stop a running endpoint
+
+### Request
+
+DELETE/api/endpoints/:name
+
+### Response
+
+204 No Content for successful delete.
+
+404 Not Found if trying to delete a nonexistent endpoint.
+
 ## List Captured Requests
 
 Returns a list of all HTTP requests captured for inspection. This will only return requests that are still in memory (ngrok evicts captured requests when their memory usage exceeds `inspect_db_size`)
