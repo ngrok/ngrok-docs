@@ -399,13 +399,13 @@ function addTooltipBehavior(button) {
       learnMoreDiv.style.cssText = `
         margin-top: 8px !important;
         padding-top: 8px !important;
-        border-top: 1px solid rgba(255, 255, 255, 0.2) !important;
+        border-top: 1px solid light-dark(rgba(0, 0, 0, 0.2), rgba(255, 255, 255, 0.2)) !important;
       `;
       
       const learnMoreLink = document.createElement('a');
       learnMoreLink.href = link;
       learnMoreLink.style.cssText = `
-        color: #60a5fa !important;
+        color: light-dark(#1e40af, #60a5fa) !important;
         text-decoration: none !important;
         cursor: pointer !important;
         font-size: 14px !important;
@@ -457,17 +457,18 @@ function addTooltipBehavior(button) {
     const isMobile = window.innerWidth <= 768;
     const maxWidth = isMobile ? 'calc(100vw - 32px)' : 'min(320px, 90vw)';
     
-    // Style to match the image - dark rounded rectangle with white text
+    // Style with light/dark mode support
     tooltipElement.style.cssText = `
       position: fixed !important;
       z-index: 999999 !important;
-      background-color: #000000 !important;
-      color: white !important;
+      background-color: light-dark(white, #000000) !important;
+      color: light-dark(black, white) !important;
+      border: 1px solid light-dark(#e5e7eb, #374151) !important;
       padding: ${isMobile ? '12px' : '12px'} !important;
       border-radius: 8px !important;
       font-size: 16px !important;
       font-weight: 400 !important;
-      line-height: 1.3 !important;
+      line-height: 1.75 !important;
       width: auto !important;
       max-width: ${maxWidth} !important;
       min-width: 0 !important;
@@ -475,7 +476,7 @@ function addTooltipBehavior(button) {
       overflow-wrap: break-word !important;
       white-space: normal !important;
       pointer-events: auto !important;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+      box-shadow: 0 2px 8px light-dark(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.3)) !important;
       display: block !important;
       visibility: visible !important;
       opacity: 1 !important;
