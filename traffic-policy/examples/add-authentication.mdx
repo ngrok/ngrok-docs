@@ -2,8 +2,6 @@
 title: Add Authentication
 ---
 
-
-
 You can use Traffic Policy to add authentication to your endpoints, granting conditional access to traffic trying to reach your services. This page demonstrates a few example rules that do so.
 
 ## JWT authentication
@@ -14,9 +12,9 @@ This rule adds key-based rate limiting to your endpoints based on your consumers
 
 ```yaml policy.yml
 on_http_request:
-  -     name: Add JWT authentication and rate limiting
+  - name: Add JWT authentication and rate limiting
     actions:
-      -         type: rate-limit
+      - type: rate-limit
         config:
           name: Only allow 30 requests per minute
           algorithm: sliding_window
@@ -28,13 +26,13 @@ on_http_request:
         config:
           issuer:
             allow_list:
-              -                 value: https://<YOUR-AUTH-PROVIDER>
+              - value: https://<YOUR-AUTH-PROVIDER>
           audience:
             allow_list:
-              -                 value: <YOUR-NGROK-DOMAIN>
+              - value: <YOUR-NGROK-DOMAIN>
           http:
             tokens:
-              -                 type: jwt
+              - type: jwt
                 method: header
                 name: Authorization
                 prefix: Bearer 
@@ -130,9 +128,9 @@ This rule grants conditional access to a page using the following ngrok [OAuth a
 
 ```yaml policy.yml
 on_http_request:
-  -     name: OAuth
+  - name: OAuth
     actions:
-      -         type: oauth
+      - type: oauth
         config:
           auth_id: oauth
           provider: google
@@ -140,7 +138,7 @@ on_http_request:
     expressions:
       - actions.ngrok.oauth.identity.email.endsWith('@ngrok.com')
     actions:
-      -         type: custom-response
+      - type: custom-response
         config:
           body: Welcome ${actions.ngrok.oauth.identity.name}!
           status_code: 200
@@ -148,7 +146,7 @@ on_http_request:
     expressions:
       - !actions.ngrok.oauth.identity.email.endsWith('@ngrok.com')
     actions:
-      -         type: custom-response
+      - type: custom-response
         config:
           body: Hey, no auth for you ${actions.ngrok.oauth.identity.name}!
           status_code: 400
@@ -215,9 +213,9 @@ This rule uses the `actions.ngrok.oidc.identity_token` [OIDC action result varia
 
 ```yaml policy.yml
 on_http_request:
-  -     name: OIDC
+  - name: OIDC
     actions:
-      -         type: openid-connect
+      - type: openid-connect
         config:
           issuer_url: https://accounts.google.com
           client_id: <your-oidc-client-id>
@@ -226,9 +224,9 @@ on_http_request:
             - openid
             - profile
             - email
-  -     name: Headers
+  - name: Headers
     actions:
-      -         type: add-headers
+      - type: add-headers
         config:
           headers:
             id-token: ${actions.ngrok.oidc.identity_token}
