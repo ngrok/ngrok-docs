@@ -405,7 +405,7 @@ function addTooltipBehavior(button) {
       const learnMoreLink = document.createElement('a');
       learnMoreLink.href = link;
       learnMoreLink.style.cssText = `
-        color: #60a5fa !important;
+        color: light-dark(#1e40af, #60a5fa) !important;
         text-decoration: none !important;
         cursor: pointer !important;
         font-size: 14px !important;
@@ -468,7 +468,7 @@ function addTooltipBehavior(button) {
       border-radius: 8px !important;
       font-size: 16px !important;
       font-weight: 400 !important;
-      line-height: 1.3 !important;
+      line-height: 1.75 !important;
       width: auto !important;
       max-width: ${maxWidth} !important;
       min-width: 0 !important;
