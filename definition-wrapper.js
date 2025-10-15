@@ -99,6 +99,12 @@ const terms = [
 		meaning:
 			"Reverse proxies are an extra security layer between public traffic and your internal services. They live on servers or cloud services, and they intercept and forward traffic to upstream services.",
 	},
+  {
+    titles: ["service user", "service users"],
+    meaning:
+      "A service user is a service account that owns a set of credentials (authtokens, API keys, and SSH keys) independently of a person."
+    link: "/iam/service-users/",
+  },
 	{
 		titles: ["shadow IT"],
 		meaning:
