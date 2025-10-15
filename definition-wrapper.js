@@ -102,7 +102,7 @@ const terms = [
   {
     titles: ["service user", "service users"],
     meaning:
-      "A service user is a service account that owns a set of credentials (authtokens, API keys, and SSH keys) independently of a person."
+      "A service user (previously called a bot user) is a service account that owns a set of credentials (authtokens, API keys, and SSH keys) independently of a person. This is useful for automated systems that programmatically interact with your ngrok accounts.",
     link: "/iam/service-users/",
   },
 	{
