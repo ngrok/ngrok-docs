@@ -100,10 +100,10 @@ const terms = [
 			"Reverse proxies are an extra security layer between public traffic and your internal services. They live on servers or cloud services, and they intercept and forward traffic to upstream services.",
 	},
   {
-    titles: ["service user", "service users"],
+    titles: ["Service User", "Service Users"],
     caseSensitive: false,
     meaning:
-      "A service user (previously called a bot user) is a service account that owns a set of credentials (authtokens, API keys, and SSH keys) independently of a person. This is useful for automated systems that programmatically interact with your ngrok accounts.",
+      "A Service User (previously called a Bot User) is a service account that owns a set of credentials (authtokens, API keys, and SSH keys) independently of a person. This is useful for automated systems that programmatically interact with your ngrok accounts.",
     link: "/iam/service-users/",
   },
 	{
