@@ -108,7 +108,7 @@ const terms = [
 	{
 		titles: ["shadow IT"],
 		meaning:
-			"Shadow IT refers to IT systems, software, and cloud services used by individuals within an organization without the IT department's knowledge or approval",
+			"Shadow IT refers to IT systems, software, and cloud services used by individuals within an organization without the IT department's knowledge or approval.",
 		link: "https://en.wikipedia.org/wiki/Shadow_IT",
 	},
 	{
