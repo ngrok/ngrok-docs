@@ -75,14 +75,18 @@ https://example.com?city=San%20Francisco
 
 The `from` field is a **regular expression** evaluated against the entire URL (scheme, host, port, path, query, and fragment). Matching is not anchored by default; a substring match anywhere in the URL triggers the redirect.
 
-**Example**
+#### Example
+
+The following example redirects any request that contains `/api/v1/` to `/api/v2/`. The redirect is applied to the entire URL, not just the path.
 
 ```yaml
 from: /api/v1/
 to: /api/v2/
 ```
 
-`https://example.com/foobar/api/v1/users` → `https://example.com/foobar/api/v2/users`
+Given the above, `https://example.com/foobar/api/v1/users` would be redirected to `https://example.com/foobar/api/v2/users`.
+
+#### Anchoring / Path Prefix
 
 Anchoring with `^/api/v1/` will not match paths that include the full scheme. To match only the path, use one of the following methods:
 
@@ -127,9 +131,9 @@ from: /v1/
 to: /v2/
 ```
 
-`https://example.com/api/v1/users` → `https://example.com/api/v2/users`
+Given the above, `https://example.com/api/v1/users` would be redirected to `https://example.com/api/v2/users`.
 
-**Relative vs. absolute replacements**
+#### Relative vs. absolute replacements
 
 The `to` value is applied relative to the `from` match. When `from` matches part of the URL, only that segment is replaced. When `from` is omitted, ngrok treats the entire URL as matched and replaces it absolutely.
 
@@ -140,7 +144,7 @@ from: /old
 to: https://new.example.com/blog
 ```
 
-`https://example.com/old/foo` → `https://example.com/https://new.example.com/blog/foo`
+Given the above, `https://example.com/old/foo` would become `https://example.com/https://new.example.com/blog/foo`.
 
 **Absolute example**
 
@@ -150,7 +154,7 @@ When a partial match exists, the replacement is relative; when no `from` match i
 to: https://new.example.com/blog
 ```
 
-`*` → `https://new.example.com/blog`
+Given the above, any request to `https://example.com` would be redirected to `https://new.example.com/blog`.
 
 **Redirecting to another host**
 
@@ -161,7 +165,7 @@ from: ^https?://[^/]+/old/(.*)$
 to: https://new.example.com/new/$1
 ```
 
-`https://example.com/old/foo` → `https://new.example.com/new/foo`
+Given the above, `https://example.com/old/foo` would be redirected to `https://new.example.com/new/foo`.
 
 **Note:** If the rewritten URL equals the original, ngrok skips the redirect.
 
