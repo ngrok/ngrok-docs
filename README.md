@@ -6,97 +6,75 @@ Source code for [ngrok docs](https://ngrok.com/docs); feel free to suggest chang
 
 See our [Contribution Guidelines](CONTRIBUTING.md) for detailed instructions on how to help improve ngrok documentation.
 
-## Getting Started
+- Our site is built with [mintlify](https://mintlify.com/docs/).
+- Our docs content is written with [markdown](https://www.markdownguide.org/getting-started/#what-is-markdown) and [MDX](https://mdxjs.com/docs/what-is-mdx/).
 
-ngrok is built using [Docusaurus 3](https://docusaurus.io/).
+## Prerequisites
 
-The fastest and safest (isolated) way to run the documentation is with the Docker command below, then browse to http://localhost:3000/docs.
+- [Node 22](https://nodejs.org/en/download)
+- [pnpm 10](https://pnpm.io/installation#using-npm)
+- [nvm](https://github.com/nvm-sh/nvm?tab=readme-ov-file#installing-and-updating)
+- `corepack` is included with node by default, no need to install
 
-```sh
-docker run --rm -p 3000:3000 -it --name=ngrokDocs -v "./:/app" -w "/app" --platform=linux/amd64 guergeiro/pnpm:20-8-alpine sh -c "apk add direnv; direnv allow; pnpm install; pnpm run start"
+## Setup
+
+1. Ensure that `node 22` is installed. With `nvm`, run `nvm install`.
+1. Enable `pnpm` with `corepack`: `corepack enable pnpm`
+1. Install `pnpm` with `corepack`: `corepack install`
+1. Install project dependencies with `pnpm`: `pnpm install`
+
+## Running the site locally
+
+When using `pnpm run dev`, this site runs locally at `http://localhost:3333/`
+
+- `pnpm run dev`: Runs build scripts and starts the dev server
+- `pnpm run test-links`: Runs mintlify's built-in broken link checker
+
+### Docs search locally
+
+Search does not work in local builds of the docs site. You'll have to test search in a preview deployment when you create your pull request.
+
+## Creating content
+
+When creating content, directories must exist at the root level of the project. To create a page that will exist at the URL path `/example/page1/`, you can create your `.mdx` file at either of the following file paths:
+
+- `/example/page1.mdx`
+- `/example/page1/index.mdx`
+
+### All pages must be MDX
+
+`.md` files won't be turned into pages.
+
+### Adding items to the sidebar
+
+Pages will not be automatically added to the sidebar. You'll need to edit the `"navigation"` object in `docs.json` to add a file to the sidebar.
+
+In general, find the `"pages"` array of the nav section you want to add your page to, and put the path to your page there.
+
+To add `/example/page1.mdx` to the Universal Gateway sidebar:
+
+1. Search for `"item": "Universal Gateway"`
+2. Add the path to the `"pages"` array there, excluding the file extension and leading slash: `"example/page1"`.
+
+## Metadata and frontmatter
+
+When you add a title and description to a page's frontmatter, it's automatically added to the metadata.
+
+```md
+---
+title: Example
+sidebarTitle: Example in sidebar
+description: Example description
+---
 ```
 
-Otherwise, you can install and run everything on your local host.
+## Redirects
 
-Prerequisites required:
+To create redirects, add them to the `"redirects"` array in `docs.json`.
 
-- [Node 20](https://nodejs.org/en/download)
-- [pnpm 9](https://pnpm.io/installation#using-npm)
-- [nvm](https://github.com/nvm-sh/nvm)
-
-We use [direnv](https://direnv.net/) to assist you with setting up all of the required tooling.
-
-<details>
-  <summary>Prefer to install and manage the tooling yourself?</summary>
-
-1. Install [nvm](https://github.com/nvm-sh/nvm?tab=readme-ov-file#installing-and-updating) or your node version manager of choice.
-2. Ensure that `node 20` is installed. With `nvm`, run `nvm install`.
-3. Enable `pnpm` with `corepack`: `corepack enable pnpm`
-4. Install `pnpm` with `corepack`: `corepack install`
-5. Install project dependencies with `pnpm`: `pnpm install`
-</details>
-
-First, install `direnv`:
-
-| OS     | command                 |
-| ------ | ----------------------- |
-| macOS  | brew install direnv     |
-| ubuntu | sudo apt install direnv |
-
-For all other OSes, see the [direnv installation guide](https://direnv.net/docs/installation.html).
-
-Don't forget to [set up direnv integration with your shell](https://direnv.net/docs/hook.html).
-
-Next, clone the repo and move into the directory:
-
-```sh
-git clone https://github.com/ngrok/ngrok-docs.git
-cd ngrok-docs
-```
-
-Next, run:
-
-```sh
-direnv allow
-```
-
-This will install `nvm` (if not already installed) as well as set the correct `node` and `pnpm` versions for you.
-
-Once you have the pre-requisites installed, local development happens by running:
-
-```sh
-pnpm run start
-```
-
-Our docs mostly use markdown and MDX, you can make yourself familiar with docusaurus [documentation](https://docusaurus.io/docs/en/installation) for more significant features / changes.
-
-## Building ngrok-docs
-
-To ensure your changes work before submitting a pr, please run the following before submission:
-
-```
-cd ngrok-docs
-pnpm run fmt
-pnpm run test
-pnpm run typecheck
-pnpm run build
-```
-
-## Testing
-
-We use [Vitest](https://vitest.dev/) for testing. To run the tests, use:
-
-```sh
-pnpm run test
-```
-
-To run tests in watch mode during development:
-
-```sh
-pnpm run test:watch
-```
+See mintlify docs for the nuances.
 
 ## Looking for support?
 
 For bug reports, feature request, questions and community support please open an issue or discussion in our [ngrok Community](https://github.com/ngrok/ngrok).
-To report a problem with our documentation, please open a new [Github issue](https://github.com/ngrok/ngrok-docs/issues).
+To report a problem with our documentation, please open a new [Github issue](https://github.com/ngrok/ngrok-docs-v2/issues).

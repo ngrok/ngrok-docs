@@ -1,0 +1,61 @@
+### Restricting Access with Allow and Deny Lists
+
+The following [Traffic Policy](/traffic-policy/)
+configuration demonstrates how to restrict access to specific IP addresses
+using the `restrict-ips` action.
+
+#### Example Traffic Policy Document
+
+<CodeGroup>
+```yaml policy.yml {4-10}
+on_http_request:
+  - actions:
+      - type: restrict-ips
+        config:
+          enforce: true
+          allow:
+            - 1.1.1.1/32
+          deny:
+            - e680:5791:be4c:5739:d959:7b94:6d54:d4b4/128
+```
+
+```json policy.json {5-16}
+{
+  "on_http_request": [
+    {
+      "actions": [
+        {
+          "type": "restrict-ips",
+          "config": {
+            "enforce": true,
+            "allow": [
+              "1.1.1.1/32"
+            ],
+            "deny": [
+              "e680:5791:be4c:5739:d959:7b94:6d54:d4b4/128"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+</CodeGroup>
+
+This configuration will ensure that only requests from the IP `1.1.1.1` are
+allowed, while requests from the IP `e680:5791:be4c:5739:d959:7b94:6d54:d4b4`
+are denied.
+
+#### Example Request
+
+If the request comes from an allowed IP, the response will proceed as normal. If
+the request comes from a denied IP, you will receive an HTTP `403` response:
+
+```bash
+$ curl -i https://example.ngrok.app
+```
+
+```http
+HTTP/2 403
+```

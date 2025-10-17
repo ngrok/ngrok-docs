@@ -1,0 +1,144 @@
+---
+title: Add and Remove Headers
+---
+
+
+
+With Traffic Policy, you can add and remove headers from requests to provide more context to your upstream service or withhold sensitive information. This page demonstrates a few example rules that do so.
+
+## Enrich your upstream service
+
+Add new headers to requests to give your upstream service more context about the consumer, which in turn allows for richer functionality, such as localized languages and pricing.
+
+This rule adds multiple headers to the request, including the client's IP address, the endpoint ID, and the client's location.
+
+<CodeGroup>
+
+```yaml policy.yml
+on_http_request:
+  -     actions:
+      -         type: add-headers
+        config:
+          headers:
+            x-is-ngrok: 1
+            x-endpoint-id: ${endpoint.id}
+            x-client-ip: ${conn.client_ip}
+            x-client-conn-start: ${conn.ts.start}
+            x-client-loc: ${conn.geo.city}, ${conn.geo.country}
+            x-client-path: ${req.url.path}
+```
+
+```json policy.json
+{
+  "on_http_request": [
+    {
+      "actions": [
+        {
+          "type": "add-headers",
+          "config": {
+            "headers": {
+              "x-is-ngrok": "1",
+              "x-endpoint-id": "${endpoint.id}",
+              "x-client-ip": "${conn.client_ip}",
+              "x-client-conn-start": "${conn.ts.start}",
+              "x-client-loc": "${conn.geo.city}, ${conn.geo.country}",
+              "x-client-path": "${req.url.path}"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+</CodeGroup>
+
+See [the `add-headers` Traffic Policy action docs](/traffic-policy/actions/add-headers/) for more information.
+
+## Remove service details from response headers
+
+Some frameworks, like [Express](https://expressjs.com/), add headers like `X-Powered-By: Express` to responses, which you may not want to reveal to your users.
+
+This rule removes the `X-Powered-By` header.
+
+<CodeGroup>
+
+```yaml policy.yml
+on_http_request:
+  -     actions:
+      -         type: remove-headers
+        config:
+          headers:
+            - X-Powered-By
+```
+
+```json policy.json
+{
+  "on_http_request": [
+    {
+      "actions": [
+        {
+          "type": "remove-headers",
+          "config": {
+            "headers": [
+              "X-Powered-By"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+</CodeGroup>
+
+See [the `remove-headers` Traffic Policy action docs](/traffic-policy/actions/remove-headers/) for more information.
+
+## Deprecate an API version
+
+By including an `X-Api-Version` header in your API reference or developer documentation, you can quickly return a helpful error message, which encourages them to explore usage of the new version.
+
+This rule:
+
+1. Checks the request's `X-Api-Version`
+1. If its value is `2`, it returns a `400 Bad Request` response with a custom error message
+
+<CodeGroup>
+
+```yaml policy.yml
+on_http_request:
+  - expressions:
+      - "'2' in req.headers['X-Api-Version']"
+    name: "Deprecate API v2"
+    actions:
+      - type: "custom-response"
+        config:
+          status_code: 400
+          body: '{"error":{"message":"Version 2 of the API is no longer supported. Use Version 3 instead."}}'
+```
+
+```json policy.json
+{
+  "on_http_request": [
+    {
+      "expressions": ["'2' in req.headers['X-Api-Version']"],
+      "name": "Deprecate API v2",
+      "actions": [
+        {
+          "type": "custom-response",
+          "config": {
+            "status_code": 400,
+            "body": "{\"error\":{\"message\":\"Version 2 of the API is no longer supported. Use Version 3 instead.\"}}"
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+</CodeGroup>
+
+See [the `custom-response` Traffic Policy action docs](/traffic-policy/actions/custom-response/) for more information.

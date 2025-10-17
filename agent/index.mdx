@@ -1,0 +1,474 @@
+---
+title: ngrok Agent
+sidebarTitle: Overview
+description: The ngrok agent is a lightweight command-line program that forwards traffic from endpoints it creates on the ngrok cloud service to your upstream application services.
+---
+
+import BasicAuthAgentCliExample from "/snippets/examples/agent-cli/http-basic-auth.mdx";
+import ForwardHttpsAgentCliExample from "/snippets/examples/agent-cli/http-forward-https.mdx";
+import NonLocalAgentCliExample from "/snippets/examples/agent-cli/http-nonlocal.mdx";
+import RandomHttpAgentCliExample from "/snippets/examples/agent-cli/http-random.mdx";
+import StaticDomainAgentCliExample from "/snippets/examples/agent-cli/http-static-domain.mdx";
+import IPv6Example from "/snippets/examples/agent-cli/ipv6.mdx";
+import RandomTcpAgentCliExample from "/snippets/examples/agent-cli/tcp-random.mdx";
+import TlsAgentCliExample from "/snippets/examples/agent-cli/tls-terminate-at-edge-custom-domain.mdx";
+
+
+
+
+
+## Overview
+
+The ngrok agent is a lightweight command-line program that forwards traffic
+from endpoints it creates on the ngrok cloud service to your upstream application
+services.
+
+The ngrok agent is a standalone native executable with zero runtime
+dependencies. It runs on [all major operating systems](#system-requirements)
+and it is packaged for distribution on most popular package managers.
+
+The ngrok agent uses a simple [YAML configuration file](/agent/config),
+can install itself as a native operating system service and also has a built-in
+CLI for calling the [ngrok API](/api/).
+
+## Install
+
+Follow the [getting started guide](/getting-started/#2-install-the-ngrok-agent-cli) or visit the [download page](https://download.ngrok.com) to install and set up the ngrok agent.
+
+## Example Usage
+
+### HTTP Endpoint
+
+Serve your web app listening at port 8080 on a random public URL
+
+<RandomHttpAgentCliExample />
+
+### Pre-defined Domain
+
+Serve a web app on example.ngrok.app
+
+<StaticDomainAgentCliExample />
+
+### Basic Auth
+
+Secure your web app with a username + password
+
+<BasicAuthAgentCliExample />
+
+### Forward to non-local
+
+Forward to a service not listening on localhost
+
+<NonLocalAgentCliExample />
+
+### Local HTTPS Server
+
+Forward to an upstream service listening for `https`
+
+<ForwardHttpsAgentCliExample />
+
+### Forwarding to IPv6 Address
+
+The ngrok agent can also forward to IPv6 addresses
+
+<IPv6Example />
+
+### TCP Endpoint
+
+Accept traffic to a non-HTTP service.
+
+<RandomTcpAgentCliExample />
+
+### TLS Endpoint
+
+Listen on `your-name.ngrok.app` for TLS traffic. It could be HTTPS, but any
+protocol wrapped in TLS is accepted.
+
+<TlsAgentCliExample />
+
+### Multiple Endpoints
+
+Start multiple endpoints defined in the [configuration file](/agent/config/).
+
+```bash
+ngrok start foo bar baz
+```
+
+## Tab Completion 
+
+The ngrok agent has built-in tab completion which makes it easy to navigate its
+command and flags by hitting tab in your terminal when using a `bash` or `zsh`
+shell. Add tab-completion to your shell session with:
+
+```bash
+. <(ngrok completion>
+```
+
+Install it permanently by following the documentation for the [`ngrok completion` command](/agent/cli/#ngrok-completion).
+
+## Authtokens
+
+The ngrok agent authenticates with an authtoken.
+[Your authtoken is available on the ngrok dashboard](https://dashboard.ngrok.com/get-started/your-authtoken).
+Add your authtoken to the ngrok agent with the following command:
+
+```bash
+ngrok config add-authtoken <TOKEN>
+```
+
+This command updates the `authtoken` property in your [ngrok configuration file](/agent/config).
+
+Use a separate authtoken for each agent you configure. You can [provision additional authtokens on your ngrok dashboard](https://dashboard.ngrok.com/authtokens) or [via API](/agent/config/v3/#authtoken). Separate authtokens isolate the security risk
+if an authtoken is compromised. It also allows you to configure
+[ACLs](#authtoken-acls) on a per agent basis.
+
+When you provision a new authtoken, the full token is only displayed once. As a security
+feature, ngrok does not store a recoverable representation of the token.
+
+## Authtoken ACLs
+
+Authtoken ACLs restrict what actions an ngrok agent connecting with that
+authtoken is allowed to take. You may define multiple ACLs. Authtokens with no
+ACLs may take all actions. The following ACLs are supported:
+
+| Example              | Description                                                                |
+| -------------------- | -------------------------------------------------------------------------- |
+| `bind:foo.ngrok.app` | The agent may only create an endpoint on `foo.ngrok.app`                   |
+| `bind:*.example.com` | The agent may only create endpoints on subdomains of `example.com`         |
+| `bind:foo=bar`       | The agent may create a labeled endpoint with the label `foo=bar`           |
+| `bind:app=*`         | The agent may create labeled endpoints with labels like `app=x` or `app=y` |
+| `bind:*`             | The agent may listen on all endpoints                                      |
+
+## API Keys
+
+The ngrok agent contains a [complete CLI for the ngrok API](/agent/cli-api/).
+
+To use it, [create an API Key on your ngrok dashboard](https://dashboard.ngrok.com/api) and then run:
+
+```bash
+ngrok config add-api-key <API KEY>
+```
+
+After you've installed the API Key, try querying your list of domains or online endpoints:
+
+```bash
+ngrok api endpoints list
+ngrok api reserved-domains list
+```
+
+## Configuration File
+
+The ngrok agent uses a [YAML configuration file](/agent/config) to customize
+its behavior. The config file is useful if your configuration is too complex
+for the command line and if you want the agent to run multiple endpoints
+simultaneously.
+
+Consult the [ngrok agent configuration file reference](/agent/config/)
+for a full list of configuration file options.
+
+## Environment Variables
+
+The ngrok agent supports environment variables for some configuration.
+Environment variables take precedence over the corresponding values specified
+in the configuration file.
+
+| Name              | Configuration Property                     |
+| ----------------- | ------------------------------------------ |
+| `NGROK_AUTHTOKEN` | [`authtoken`](/agent/config/v3/#authtoken) |
+| `NGROK_API_KEY`   | [`api_key`](/agent/config/v3/#api-key)     |
+
+## Running ngrok in the background 
+
+ngrok includes commands to run itself in the background as a native operating
+system service, i.e. as a daemon. When it runs as an operating system service it:
+
+- Starts when the machine boots
+- Automatically restarts after crashes
+- Can be managed via native OS service tooling
+- Sends logs to the OS's native logging service
+- Starts all endpoints defined in the configuration file, the equivalent of running `ngrok start --all`
+
+<Tip>
+In most cases, installing ngrok as a service requires administrator privileges.
+</Tip>
+
+| OS      | Notes                                                                                                                                                  |
+| ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Linux   | The ngrok agent creates a `systemd` unit file. Errors and warnings are logged to `syslog`.                                                             |
+| Windows | The ngrok agent installs itself as a Windows service. It can be managed via Windows Services. Errors and warnings are logged to the Windows event log. |
+| MacOS   | The ngrok agent creates a plist file and configures itself to run via `launchd`. Errors and warnings are logged to `syslog`.                           |
+
+#### Try it out
+
+Create an ngrok [configuration file](#configuration-file). For this example,
+we'll assume it's `C:\ngrok\ngrok.yml`. In your configuration file, make sure
+you include the [`authtoken`](/agent/config/v3/#authtoken) property and define all
+of the endpoints you want to start. Then run:
+
+```bash
+ngrok service install --config C:\ngrok\ngrok.yml
+```
+
+This will validate that the configuration file is valid, and if so, install
+ngrok as a service using the given configuration file. The service installation
+includes the location of the ngrok executable and the configuration file, so
+don't move or delete either after you've installed the service.
+
+You can then start the ngrok agent service with:
+
+```bash
+ngrok service start
+```
+
+You can manage the agent with your OS's normal service tooling, but the agent
+also includes the [`ngrok service` commands](/agent/cli/#ngrok-service) to
+manage the installed service:
+
+- `ngrok service start`
+- `ngrok service stop`
+- `ngrok service restart`
+- `ngrok service uninstall`
+
+<Tip>
+If you see an exit code `5` or `Input/output error`, it usually indicates that ngrok is not able to find the config file and/or does not have permissions to do so. Make sure you have installed the ngrok service with a valid config file and that when the service is run (either as you or an administrator) it has access to that same config file.
+</Tip>
+
+## Remote Management
+
+The ngrok agent can be stopped, restarted, or upgraded remotely using the
+[Tunnel Sessions](/api/resources/tunnel-sessions#restart-tunnel-agent) API. You
+can also perform these actions from the ngrok Dashboard.
+
+<Warning>
+Use this with caution if you have made changes to the config file. If
+for some reason ngrok cannot restart, you may lose access to the agent
+completely.
+</Warning>
+
+## Connectivity
+
+When the ngrok agent and Agent SDKs start, they establish long-lived TLS
+connections to the ngrok service through which they create new endpoints and
+receive connections from ngrok's cloud service that are intended for your upstream
+services.
+
+### Address 
+
+By default, the latest ngrok agent dials the following Connect URL when it
+connects to the ngrok service. This address resolves to a [dynamic set of IP Addresses](/universal-gateway/ip-addresses/).
+
+```
+connect.ngrok-agent.com:443
+```
+
+<Note>
+All connections to ngrok servers are made on port 443.
+</Note>
+
+You can [customize the Connect URL](/agent/connect-url/) to brand it with
+your own domain.
+
+The agent by default only connects to a single region. However connections to multiple regions can be created with traffic load balanced across these connections. If you are interested in this capability, please [contact us](https://ngrok.com/enterprise/contact).
+
+The complete list of addresses and IP addresses available for the agent to connect to ngrok can be found in our [ngrok DNS tunnel.json file](https://s3.amazonaws.com/dns.ngrok.com/tunnel.json).
+
+<Note>
+Prior to ngrok agent version 3.3.0, the ngrok agent connected to `tunnel.*.ngrok.com` domains. The latest agent uses `connect.*.ngrok-agent.com` domains.
+</Note>
+
+### Additional URLs
+
+In addition to the addresses used for connecting to the ngrok server, the ngrok agent may reach out to the following URLs.
+
+#### Certificate Revocation List (CRL) Check
+
+The ngrok agent reaches out to the following domains to check for revoked certificates. This check can be disabled by adding `crl_noverify: true` to your ngrok agent config.
+
+- Prior to ngrok agent version 3.10.0: `http://crl.ngrok.com/ngrok.crl`
+- Latest versions: `http://crl.ngrok-agent.com/ngrok.crl`
+
+<Note>
+These connections use HTTP and port 80.
+</Note>
+
+You can download and decode the CRL using OpenSSL: `openssl crl -inform PEM -text -noout -in ngrok.crl`
+
+#### ngrok Agent Update Check
+
+The ngrok agent will automatically look for updates when it starts up. This check can be disabled by adding `update_check: false` to your ngrok agent config.
+
+- `https://update.equinox.io`
+
+<Note>
+Even though the Equinox service was [shut down in 2021](https://equinox.io/blog/shutting-down), it is wholly owned and operated by ngrok, and as such, continues to be used for building and distributing our binaries.
+</Note>
+
+### DNS Resolution
+
+When the ngrok agent dials the ngrok service to establish its TLS connections,
+it resolves DNS for the [connection address](/agent/connect-url/) which is defined
+by the [`connect_url`](/agent/config/v3/#connect-url) configuration property.
+ngrok attempts to resolve DNS using multiple mechanisms so that it can
+establish connectivity even in network environments where DNS service is
+failing. ngrok attempts to resolve the IPs of its service using the following
+mechanisms:
+
+- Via the system's default DNS resolvers
+- Via Google's DNS servers (`8.8.8.8` and `8.8.4.4`)
+- Via Google's DNS-over-HTTPS service (https://developers.google.com/speed/public-dns/docs/doh)
+- Via a [file hosted on an ngrok-controlled S3 bucket](https://s3.amazonaws.com/dns.ngrok.com/tunnel.json)
+
+Instead of using the system's default DNS resolvers, you can configure
+the DNS servers the ngrok agent uses for resolution with the
+[`dns_resolver_ips`](/agent/config/v3/#dns-resolver-ips) configuration option.
+
+### TLS Verification
+
+The ngrok agent connects to the ngrok service over TLS connections. The agent
+verifies the TLS Certificate returned by the ngrok service. The certificates
+returned by the ngrok service are signed by ngrok's own root certificate
+authority. The ngrok agent verifies the returned certificate against
+certificate authorities bundled into the agent itself.
+
+Lastly, the ngrok agent makes a request to `crl.ngrok-agent.com` to verify that the
+certificate returned by the ngrok service has not been revoked. It is possible to skip this step by setting `crl_noverify: true` in your configuration file.
+
+### Heartbeats
+
+Once the ngrok agent has established connectivity to the ngrok service, it
+periodically sends application-level heartbeat messages to validate the
+liveness of the connection. You may customize this behavior via the
+[`heartbeat_interval`](/agent/config/v3/#heartbeat-interval) and
+[`heartbeat_tolerance`](/agent/config/v3/#heartbeat-tolerance) configuration
+parameters.
+
+If the ngrok agent does not receive a response to its heartbeat within the
+tolerance window, it terminates the connection and begins reconnecting.
+
+ngrok's heartbeat mechanism allows it to recover from any type of network
+outage, even those caused by packet loss, dynamic IP changes, interface changes
+(e.g. WiFi to LTE) or complete network outages.
+
+The ngrok service also sends its own heartbeats to the agent which it uses to detect
+liveness and terminate dead connections.
+
+### Reconnection
+
+If the ngrok agent is disconnected for any reason, it will automatically begin
+reconnecting. Reconnecting begins the entire connection process over again,
+beginning with DNS resolution. The ngrok agent attempts to recover quickly and
+slowly backs off its reconnection attempts but always attempts to re-establish
+connectivity unless the ngrok service explicitly instructs it to stop
+reconnecting.
+
+### Troubleshooting 
+
+If the ngrok agent can't connect to the ngrok service, it is often difficult to
+understand why.
+
+The ngrok agent includes the `ngrok diagnose` command to help you troubleshoot connection failures. It runs a series of tests
+to diagnose potential issues when connecting to the ngrok service. Consult the
+[`ngrok diagnose` documentation](/agent/cli/#ngrok-diagnose) or [Diagnose](/agent/diagnose) page for additional
+details.
+
+## System Requirements
+
+#### Supported Platforms
+
+The ngrok agent runs on all major platforms including Linux, MacOS, Windows and
+most CPU architectures. See the [ngrok agent download](https://download.ngrok.com) page. It is also distributed as a Docker
+container.
+
+| OS      | Supported Architectures                                                                              |
+| ------- | ---------------------------------------------------------------------------------------------------- |
+| Windows | 64-bit, 32-bit (`x86-64`, `x86`)                                                                     |
+| MacOS   | Intel, Apple Silicon (`x86-64`, `arm64`)                                                             |
+| Linux   | `x86-64`, `x86`, `arm`, `arm64`, `mips`, `mips64`, `mips64le`, `mipsle`, `ppc64`, `ppc64le`, `s390x` |
+| FreeBSD | `x86-64`, `x86`, `arm`                                                                               |
+
+If the agent does not run on your target platform, you can still use ngrok via
+the [Agent SDKs](/agent-sdks/) or the [SSH Reverse Tunnel Agent](/agent/ssh-reverse-tunnel-agent).
+
+#### Resource Requirements
+
+The ngrok agent is lightweight enough to run most everywhere, even on many
+embedded platforms. Keep in mind that the ngrok agent's resource usage depends
+on how much concurrent traffic you drive through it. If your resource
+requirements are more stringent, you can still use ngrok via the [Agent SDKs](/agent-sdks) or the [SSH Reverse Tunnel Agent](/agent/ssh-reverse-tunnel-agent).
+
+| Resource | Value                           |
+| -------- | ------------------------------- |
+| Memory   | 64MB minimum, 128MB recommended |
+| Disk     | 25MB                            |
+| CPU      | No requirement                  |
+
+<Tip>
+
+You can reduce memory usage in the ngrok agent by disabling
+[inspection in the configuration file](/agent/config/v3/#inspect-db-size).
+
+</Tip>
+
+## Updates
+
+The ngrok agent can update itself even if you didn't install it with a package
+manager. Update the ngrok agent with the [`ngrok update`](/agent/cli/#ngrok-update) command.
+
+```bash
+ngrok update
+```
+
+By default, the ngrok agent automatically checks for available updates when it
+runs. If an update is available, it will prompt you to update by pressing
+`Ctrl+U`. You can configure whether the agent checks for updates via the
+[`update_check` config parameter](/agent/config/v3/#update-check).
+
+You can configure which release channel (e.g. `stable`, `beta`) the agent uses
+for updates via the [`update_channel` config parameter](/agent/config/v3/#update-channel).
+
+## IP Restrictions
+
+All agents must use an authtoken to authenticate with ngrok, but you may also
+further restrict with IP Policies that specify which IPs and CIDRs agents may
+connect to your ngrok account from.
+
+- [IP Restrictions on your ngrok dashboard](https://dashboard.ngrok.com/security/ip-restrictions)
+- [IP Restrictions API Resource](/api/resources/ip-restrictions/)
+
+## API
+
+The ngrok agent has its own HTTP API that can be used to dynamically inspect,
+start and stop endpoints on the agent while it is running. Consult the
+[ngrok agent API reference documentation](/agent/api/) for more details.
+
+<Tip>
+
+If you want to programmatically control the ngrok agent, the [Agent SDKs](/agent-sdks/) are usually a more flexible and powerful choice.
+
+</Tip>
+
+## Using ngrok without the agent
+
+There are three ways to use ngrok without the agent:
+
+- [Agent SDKs](/agent-sdks/)
+- [Kubernetes Operator](/k8s/)
+- [SSH Reverse Tunnel](/agent/ssh-reverse-tunnel-agent/)
+
+You may want to use ngrok with one of the alternatives above if:
+
+- You don't want to manage the lifetime of a separate agent process
+- You don't want to bundle and distribute the ngrok agent
+- The ngrok agent doesn't run on your target platform
+- The ngrok agent's resource requirements are too high for your target platform
+- You want fine-grained programmatic control over the agent's functionality
+
+## Changelog
+
+We publish the [ngrok agent changelog](/agent/changelog) with details on
+each release of the ngrok agent.
+
+## Pricing
+
+The ngrok agent is available to all ngrok users at no additional charge. You
+only incur costs if the resources provisioned by the agent incur a cost. For more information, see the [ngrok Pricing page](https://ngrok.com/pricing).

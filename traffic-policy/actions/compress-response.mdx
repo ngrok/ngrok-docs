@@ -1,0 +1,174 @@
+---
+title: Compress Response Action
+sidebarTitle: Compress Response
+description: Compress HTTP response bodies before they are returned to the client.
+---
+import { ConfigField, ConfigEnum, ConfigEnumOption } from "/snippets/ConfigTable.jsx";
+import ActionVariablesDescription from "/snippets/traffic-policy/common/action-variables-description.mdx";
+
+The Compress Response Traffic Policy action enables you to improve the
+performance of your web applications by compressing HTTP response bodies returned
+by your upstream service.
+
+## Configuration Reference
+
+The [Traffic Policy](/traffic-policy/) configuration
+reference for this action.
+
+### Supported Phases
+
+`on_http_response`
+
+### Type
+
+`compress-response`
+
+### Configuration Fields
+
+<ConfigField title="algorithms" type="array of strings" defaultValue="['gzip', 'deflate', 'br', 'compress']">
+  A list of allowed compression algorithms to be considered during encoding
+  type negotiation. Each element must be unique.
+
+  <ConfigEnum label="Supported algorithms">
+    <ConfigEnumOption>`br`</ConfigEnumOption>
+    <ConfigEnumOption>`compress`</ConfigEnumOption>
+    <ConfigEnumOption>`deflate`</ConfigEnumOption>
+    <ConfigEnumOption>`gzip`</ConfigEnumOption>
+  </ConfigEnum>
+</ConfigField>
+
+## Behavior
+
+When an HTTP request includes an `Accept-Encoding` header, HTTP responses are
+automatically compressed, and a Content-Encoding header is added to the
+response.
+
+If the response is already compressed by your upstream service,
+no additional compression will be applied.
+
+### Streaming Compression
+
+When compression is applied, the response body is not buffered; it is
+compressed in real-time as it streams through the ngrok endpoint.
+
+### Algorithm Choice
+
+If a request specifies `Accept-Encoding` but none of the requested algorithms
+are supported, no compression is applied, and the upstream response is returned
+unmodified.
+
+### Quality Values
+
+Compression is negotiated based on the `Accept-Encoding` header as defined by
+the [RFC](https://datatracker.ietf.org/doc/html/rfc9110#name-accept-encoding),
+respecting q-values and selecting the supported algorithm with the highest
+q-value.
+
+For example:
+
+```bash
+Accept-Encoding: gzip;q=1.0, br; q=0.5, *;q=0
+```
+
+The algorithm `gzip` would be selected because it has the highest q-value of `1.0`.
+
+### Response Headers
+
+When this action performs compression, the following changes are made to the
+HTTP response headers:
+
+- The `Content-Length` header is removed.
+- A `Content-Encoding` header is added, specifying the negotiated algorithm.
+- A `Vary: Accept-Encoding` header is added to indicate that the response varies
+  based on the `Accept-Encoding` request header.
+
+## Examples
+
+### Compressing API Responses Based on URL Path
+
+The following [Traffic Policy](/traffic-policy/)
+configuration demonstrates how to set this up using the `compress-response`
+action with an expression to compress traffic on specific URL paths.
+
+#### Example Traffic Policy Document
+
+<CodeGroup>
+```yaml policy.yml highlight={3}
+on_http_response:
+  - expressions:
+      - "req.url.path.startsWith('/api/')"
+    actions:
+      - type: "compress-response"
+        config:
+          algorithms:
+            - "gzip"
+            - "br"
+            - "deflate"
+            - "compress"
+```
+```json policy.json highlight={5}
+{
+  "on_http_response": [
+    {
+      "expressions": [
+        "req.url.path.startsWith('/api/')"
+      ],
+      "actions": [
+        {
+          "type": "compress-response",
+          "config": {
+            "algorithms": [
+              "gzip",
+              "br",
+              "deflate",
+              "compress"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+</CodeGroup>
+
+For this example, we are assuming that an ngrok agent is pointing at the
+upstream service https://jsonplaceholder.typicode.com.
+
+#### Example Request
+
+```bash
+$ curl -i https://jsonplaceholder.ngrok.app/api/posts
+```
+
+```http
+HTTP/2 200 OK
+content-encoding: gzip
+content-type: application/json; charset=utf-8
+
+<compressed-body-here>
+```
+
+In this example, when a request is made to `/api/posts`,
+ngrok compresses the response using one of the specified algorithms
+(e.g., `gzip`). The response includes the `content-encoding: gzip` header, and
+the body is compressed accordingly.
+
+This setup ensures that only API responses
+for paths starting with `/api/` are compressed, enhancing performance and
+responsiveness for only those endpoints.
+
+## Action Result Variables
+
+<ActionVariablesDescription />
+
+<ConfigField title="actions.ngrok.compress.already_compressed" type="boolean">
+  Indicates whether the body was already compressed before the action was
+  applied. Returns <code>true</code> if no further compression was
+  performed.
+</ConfigField>
+
+<ConfigField title="actions.ngrok.compress.negotiated_algorithm" type="string">
+  The compression algorithm selected and applied by the action, based on the
+  client's request and action configuration.
+</ConfigField>

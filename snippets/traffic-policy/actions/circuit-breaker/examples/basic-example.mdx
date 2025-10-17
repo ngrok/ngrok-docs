@@ -1,0 +1,87 @@
+### Basic Example
+
+This example configuration sets up an endpoint (`hotdog.ngrok.app`) that allows only 1 request every 60 seconds and trips the circuit breaker for 2 minutes.
+
+#### Example Traffic Policy Document
+
+<CodeGroup>
+```yaml policy.yml {4-28}
+on_http_request:
+  - actions:
+      - type: circuit-breaker
+        config:
+          error_threshold: 0
+          volume_threshold: 1
+          window_duration: 60s
+          tripped_duration: 2m
+          enforce: true
+```
+
+```json policy.json {5-51}
+{
+  "on_http_request": [
+    {
+      "actions": [
+        {
+          "type": "circuit-breaker",
+          "config": {
+            "error_threshold": 0,
+            "volume_threshold": 1,
+            "window_duration": "60s",
+            "tripped_duration": "2m",
+            "enforce": true
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+</CodeGroup>
+
+#### Start Endpoint with Traffic Policy
+
+```bash
+ngrok http 8080 --url hotdog.ngrok.app --traffic-policy-file /path/to/policy.yml
+```
+
+#### Helper script
+
+```python
+import requests
+import time
+
+# Replace with your domain
+url = "https://hotdog.ngrok.app"
+
+attempt = 1
+
+while True:
+    try:
+        response = requests.get(url)
+
+        # Log the response
+        if response.status_code == 200:
+            print(f"Attempt {attempt}: Success ({response.status_code})")
+        else:
+            print(f"Attempt {attempt}: Failure ({response.status_code})")
+
+        # Stop when circuit breaker trips
+        if response.status_code == 503:
+            print("\nCircuit breaker tripped!")
+            break
+    except requests.exceptions.RequestException as e:
+        print(f"Attempt {attempt}: Error ({e})")
+        break
+
+    attempt += 1
+    time.sleep(0.01)  # Reduce delay for faster request rate
+```
+
+```bash
+➜  ~ python3  circuit_breaker.py
+Attempt 1: Success (200)
+Attempt 2: Failure (503)
+
+Circuit breaker tripped!
+```
