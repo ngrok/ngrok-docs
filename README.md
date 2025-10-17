@@ -34,6 +34,14 @@ When using `pnpm run dev`, this site runs locally at `http://localhost:3333/`
 
 Search does not work in local builds of the docs site. You'll have to test search in a preview deployment when you create your pull request.
 
+## Running Vale
+
+This project uses [Vale](https://vale.sh/) for documentation linting and style checking. Vale helps maintain consistent writing style and catches common writing issues.
+
+`pnpm run vale` runs Vale linting on all documentation files (excluding snippets and errors directories).
+
+Vale checks your docs contributions for style issues (based on the rules the docs team has defined) and provides suggestions for improvements. To ensure your PRs get merged quickly and efficiently, be sure to address any Vale warnings before submitting.
+
 ## Creating content
 
 When creating content, directories must exist at the root level of the project. To create a page that will exist at the URL path `/example/page1/`, you can create your `.mdx` file at either of the following file paths:
