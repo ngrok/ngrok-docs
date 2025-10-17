@@ -1,0 +1,275 @@
+---
+title: Add Authentication
+---
+
+You can use Traffic Policy to add authentication to your endpoints, granting conditional access to traffic trying to reach your services. This page demonstrates a few example rules that do so.
+
+## JWT authentication
+
+This rule adds key-based rate limiting to your endpoints based on your consumers' JWTs. See the [Auth0 guide](/integrations/jwt-validation/auth0) for more information.
+
+<CodeGroup>
+
+```yaml policy.yml
+on_http_request:
+  - name: Add JWT authentication and rate limiting
+    actions:
+      - type: rate-limit
+        config:
+          name: Only allow 30 requests per minute
+          algorithm: sliding_window
+          capacity: 30
+          rate: 60s
+          bucket_key:
+            - req.headers['x-api-key']
+      -         type: jwt-validation
+        config:
+          issuer:
+            allow_list:
+              - value: https://<YOUR-AUTH-PROVIDER>
+          audience:
+            allow_list:
+              - value: <YOUR-NGROK-DOMAIN>
+          http:
+            tokens:
+              - type: jwt
+                method: header
+                name: Authorization
+                prefix: Bearer 
+          jws:
+            allowed_algorithms:
+              - RS256
+            keys:
+              sources:
+                additional_jkus:
+                  - https://<YOUR-AUTH-PROVIDER>/.well-known/jwks.json
+```
+
+```json policy.json
+{
+  "on_http_request": [
+    {
+      "name": "Add JWT authentication and rate limiting",
+      "actions": [
+        {
+          "type": "rate-limit",
+          "config": {
+            "name": "Only allow 30 requests per minute",
+            "algorithm": "sliding_window",
+            "capacity": 30,
+            "rate": "60s",
+            "bucket_key": [
+              "req.headers['x-api-key']"
+            ]
+          }
+        },
+        {
+          "type": "jwt-validation",
+          "config": {
+            "issuer": {
+              "allow_list": [
+                {
+                  "value": "https://<YOUR-AUTH-PROVIDER>"
+                }
+              ]
+            },
+            "audience": {
+              "allow_list": [
+                {
+                  "value": "<YOUR-NGROK-DOMAIN>"
+                }
+              ]
+            },
+            "http": {
+              "tokens": [
+                {
+                  "type": "jwt",
+                  "method": "header",
+                  "name": "Authorization",
+                  "prefix": "Bearer "
+                }
+              ]
+            },
+            "jws": {
+              "allowed_algorithms": [
+                "RS256"
+              ],
+              "keys": {
+                "sources": {
+                  "additional_jkus": [
+                    "https://<YOUR-AUTH-PROVIDER>/.well-known/jwks.json"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+</CodeGroup>
+
+See [the `rate-limit` Traffic Policy action docs](/traffic-policy/actions/rate-limit/) for more information.
+
+## Conditional access using OAuth variables
+
+This rule grants conditional access to a page using the following ngrok [OAuth action result variables](/traffic-policy/actions/oauth):
+
+1. `actions.ngrok.oauth.identity.email.endsWith('@ngrok.com')`
+   1. Checks the email address of the authorized user from the provider. In the example, if the email address's domain is `ngrok.com`, the user will be granted access to the page.
+
+- `actions.ngrok.oauth.identity.name`
+  1. Gets the name of the authorized user from the provider. In this example, the name will be displayed in a welcome message or a rejection message depending on if the user is authenticated.
+
+<CodeGroup>
+
+```yaml policy.yml
+on_http_request:
+  - name: OAuth
+    actions:
+      - type: oauth
+        config:
+          auth_id: oauth
+          provider: google
+  -     name: good email
+    expressions:
+      - actions.ngrok.oauth.identity.email.endsWith('@ngrok.com')
+    actions:
+      - type: custom-response
+        config:
+          body: Welcome ${actions.ngrok.oauth.identity.name}!
+          status_code: 200
+  -     name: bad email
+    expressions:
+      - !actions.ngrok.oauth.identity.email.endsWith('@ngrok.com')
+    actions:
+      - type: custom-response
+        config:
+          body: Hey, no auth for you ${actions.ngrok.oauth.identity.name}!
+          status_code: 400
+```
+
+```json policy.json
+{
+  "on_http_request": [
+    {
+      "name": "OAuth",
+      "actions": [
+        {
+          "type": "oauth",
+          "config": {
+            "auth_id": "oauth",
+            "provider": "google"
+          }
+        }
+      ]
+    },
+    {
+      "name": "good email",
+      "expressions": [
+        "actions.ngrok.oauth.identity.email.endsWith('@ngrok.com')"
+      ],
+      "actions": [
+        {
+          "type": "custom-response",
+          "config": {
+            "body": "Welcome ${actions.ngrok.oauth.identity.name}!",
+            "status_code": 200
+          }
+        }
+      ]
+    },
+    {
+      "name": "bad email",
+      "expressions": [
+        "!actions.ngrok.oauth.identity.email.endsWith('@ngrok.com')"
+      ],
+      "actions": [
+        {
+          "type": "custom-response",
+          "config": {
+            "body": "Hey, no auth for you ${actions.ngrok.oauth.identity.name}!",
+            "status_code": 400
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+</CodeGroup>
+
+See [the `oauth` Traffic Policy action docs](/traffic-policy/actions/oauth/) for more information.
+
+## Sending an OIDC identity token over headers
+
+This rule uses the `actions.ngrok.oidc.identity_token` [OIDC action result variable](/traffic-policy/actions/oidc/#action-result-variables) to send the OIDC identity token over headers to the service at the endpoint.
+
+<CodeGroup>
+
+```yaml policy.yml
+on_http_request:
+  - name: OIDC
+    actions:
+      - type: openid-connect
+        config:
+          issuer_url: https://accounts.google.com
+          client_id: <your-oidc-client-id>
+          client_secret: <your-oidc-client-secret>
+          scopes:
+            - openid
+            - profile
+            - email
+  - name: Headers
+    actions:
+      - type: add-headers
+        config:
+          headers:
+            id-token: ${actions.ngrok.oidc.identity_token}
+```
+
+```json policy.json
+{
+  "on_http_request": [
+    {
+      "name": "OIDC",
+      "actions": [
+        {
+          "type": "openid-connect",
+          "config": {
+            "issuer_url": "https://accounts.google.com",
+            "client_id": "<your-oidc-client-id>",
+            "client_secret": "<your-oidc-client-secret>",
+            "scopes": [
+              "openid",
+              "profile",
+              "email"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Headers",
+      "actions": [
+        {
+          "type": "add-headers",
+          "config": {
+            "headers": {
+              "id-token": "${actions.ngrok.oidc.identity_token}"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+</CodeGroup>
+
+See [the `openid-connect` Traffic Policy action docs](/traffic-policy/actions/oidc/) for more information.

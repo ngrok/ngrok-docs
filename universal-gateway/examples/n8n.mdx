@@ -1,0 +1,131 @@
+---
+title: Expose and Secure Your Self-Hosted n8n Workflows
+sidebarTitle: Expose n8n Workflows
+description: Get your n8n instance online to share with colleagues or receive webhook data with security measures desinged for production usage.
+---
+
+import ReserveDomain from "/snippets/universal-gateway/_reserve-domain.mdx";
+import CloudEndpoint from "/snippets/universal-gateway/_cloud-endpoint.mdx";
+import TryOut from "/snippets/universal-gateway/_try-out.mdx";
+
+
+
+n8n allows you to self-host, which is great when you're testing workflows, but when you're ready to turn your instance into a production-ready automation solution and don't want to buy a domain or pay for hosting, you might feel lost.
+
+ngrok works with the [self-hosted and enterprise editions](https://docs.n8n.io/hosting/) of n8n, including both Docker and npm-based installs, to securely expose them to the public internet.
+That way, you can share n8n with colleagues or accept webhooks to fire off workflows.
+
+<Tip>
+Building with LLMs?
+
+We want your feedback!
+Sign up for early access to [ngrok's AI Gateway](https://ngrok.ai) and our team will reach out to learn more about your needs.
+</Tip>
+
+## 1. Reserve a domain
+
+<ReserveDomain domain="https://your-n8n-instance.ngrok.app" />
+
+## 2. Start your n8n endpoint
+
+On the same system where n8n runs, start the agent on port `5678`, which is the default for n8n, and reference the `n8n.yaml` file you just created.
+Be sure to also change `$NGROK_DOMAIN` to the domain you reserved earlier.
+
+```bash
+ngrok http 5678 --url https://$NGROK_DOMAIN
+```
+
+## 3. Try out your n8n endpoint
+
+<TryOut />
+
+## Optional: Secure your n8n dashboard with Traffic Policy
+
+Even though n8n comes with built-in user administration, you can protect the sign-in page from automated attacks by restricting access to only trusted IPs.
+
+Go to our [IP address helper tool](https://ipv4.ngrok.com/) to get your public IP address.
+
+Next, create a file named `n8n.yaml` on the same system where n8n runs and paste in the following policy, replacing `$YOUR_IP`.
+
+```yaml
+on_http_request:
+  - actions:
+      - type: restrict-ips
+        config:
+          enforce: true
+          allow:
+            - "$YOUR_IP/32"
+```
+
+**What's happening here?**
+This policy applies the [`restrict-ips`](/traffic-policy/actions/restrict-ips) Traffic Policy action and allows only
+devices with a matching IP address to access your n8n instance.
+All other requests are denied at ngrok's network without reaching your service.
+
+Restart your ngrok agent to apply the new policy.
+
+```bash
+ngrok http 5678 --url https://$NGROK_DOMAIN --traffic-policy-file n8n.yaml
+```
+
+## Optional: Enforce verification on incoming webhooks
+
+If you want to receive webhooks from external services, but also want to control precisely which services can send these requests and during what conditions, you can use the [`verify-webhooks` action](/traffic-policy/actions/verify-webhook).
+
+For example, if you want to verify a webhook from GitHub, create or edit a your `n8n.yaml` file and paste in the policy below.
+Replace `$WORKFLOW_UUID` with your workflow's path and `$SECRET` with the secret you configured when you created your webhook.
+
+```yaml
+on_http_request:
+  - expressions:
+      - "req.url.path.contains('/webhook/$WORKFLOW_UUID')"
+    actions:
+      - type: verify-webhook
+        config:
+          provider: github
+          secret: $SECRET
+```
+
+**What's happening here?** This policy filters for _only_ traffic that contains the specific `/webhook/$WORKFLOW_UUID` path, then verifies that it both originates from GitHub (or another [supported provider](/traffic-policy/actions/verify-webhook/#supported-providers)) and contains the appropriate secret.
+
+Restart your ngrok agent to apply the new policy.
+
+```bash
+ngrok http 5678 --url https://$NGROK_DOMAIN --traffic-policy-file n8n.yaml
+```
+
+### Configure both IP restrictions and webhook verification
+
+If you configured IP restrictions earlier, and _then_ set up webhook verification, you'll find that your webhooks won't work because you haven't added the provider's IP to your `restrict-ips` action to allow them.
+Because it's next to impossible to identify all the IPs where a provider's webhooks might come from, it's easier to disable IP restrictions on the `/webhooks/` path.
+
+Edit your `n8n.yaml` file with the policy below.
+
+```yaml
+on_http_request:
+  - expressions:
+      - "req.url.path.contains('/webhook/$WORKFLOW_UUID')"
+    actions:
+      - type: verify-webhook
+        config:
+          provider: github
+          secret: $SECRET
+
+  - expressions:
+      - "!req.url.path.contains('/webhook/')"
+    actions:
+      - type: restrict-ips
+        config:
+          enforce: true
+          allow:
+            - "$YOUR_IP/32"
+```
+
+**What's happening here?** This policy first verifies any incoming webhooks as before. Then, the policy applies IP restrictions to only traffic _not_ to the `/webhook/` path, which allows your webhooks provider's request to reach n8n successfully.
+
+## What's next?
+
+- Watch our livestreamed [n8n workshop](https://www.youtube.com/watch?v=U5FGr5axBnI) to see this example deployed live.
+- Read more about [Traffic Policy](/traffic-policy), [core concepts](/traffic-policy/concepts), and [actions](/traffic-policy/actions) you might want to implement next.
+- View your Ollama traffic in [Traffic Inspector](https://dashboard.ngrok.com/traffic-inspector).
+
