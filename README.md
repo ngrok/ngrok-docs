@@ -22,6 +22,7 @@ See our [Contribution Guidelines](CONTRIBUTING.md) for detailed instructions on 
 1. Enable `pnpm` with `corepack`: `corepack enable pnpm`
 1. Install `pnpm` with `corepack`: `corepack install`
 1. Install project dependencies with `pnpm`: `pnpm install`
+1. Install vale, our linter: `brew install vale` ([or use their install instructions](https://vale.sh/docs/install))
 
 ## Running the site locally
 
