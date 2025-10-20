@@ -54,8 +54,8 @@ for (const category of iCategories) {
       continue;
     }
     
-    const vendorDir = pathParts[1]; // e.g., "1password"
-    const fileName = pathParts[2] + '.mdx'; // e.g., "cli-client.mdx"
+    const vendorDir = pathParts[1]; // for example,, "1password"
+    const fileName = pathParts[2] + '.mdx'; // for example,, "cli-client.mdx"
     
     const sourcePath = path.join(integrationsDir, vendorDir, fileName);
     const targetPath = path.join(integrationsDir, category.name, fileName);
