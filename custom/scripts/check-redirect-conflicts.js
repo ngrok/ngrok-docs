@@ -177,33 +177,15 @@ function generateMarkdownReport(conflicts, redirects) {
 }
 
 // Main execution
-console.log('🔍 Checking for redirect conflicts in docs.json...');
-
 const conflicts = findConflicts();
-const wildcardRedirects = redirects.filter(r => r.source.includes(':slug*'));
 
-// Generate markdown report
-const markdownReport = generateMarkdownReport(conflicts, redirects);
-const outputPath = path.join(__dirname, '../../REDIRECT_CONFLICTS.md');
-
-try {
-    fs.writeFileSync(outputPath, markdownReport, 'utf8');
-    console.log(`📝 Report written to: ${path.relative(process.cwd(), outputPath)}`);
-} catch (error) {
-    console.error('Error writing report file:', error);
-    process.exit(1);
-}
-
-// Console summary
 if (conflicts.length === 0) {
-    console.log('✅ No redirect conflicts found! All sources are unique.');
     process.exit(0);
 } else {
-    console.log(`❌ Found ${conflicts.length} redirect conflict(s)`);
-    console.log(`📊 Analysis Summary:`);
-    console.log(`  Total redirects: ${redirects.length}`);
-    console.log(`  Redirects with :slug* wildcards: ${wildcardRedirects.length}`);
-    console.log(`  Conflicts found: ${conflicts.length}`);
-    console.log(`\n📝 Detailed report saved to REDIRECT_CONFLICTS.md`);
+    // Output each conflicting redirect with source and destination
+    conflicts.forEach((conflict) => {
+        console.log(`${conflict.conflict.redirect1.source} -> ${conflict.conflict.redirect1.destination}`);
+        console.log(`${conflict.conflict.redirect2.source} -> ${conflict.conflict.redirect2.destination}`);
+    });
     process.exit(1);
 }

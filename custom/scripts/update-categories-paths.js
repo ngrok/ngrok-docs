@@ -3,8 +3,8 @@
 import fs from "node:fs";
 
 // Load the current categories and the integrations data
-const categoriesPath = "snippets/custom-scripts/data/integrations/integrationCategories.json";
-const integrationsPath = "snippets/custom-scripts/data/integrations/integrations.json";
+const categoriesPath = "custom/scripts/data/integrations/integrationCategories.json";
+const integrationsPath = "custom/scripts/data/integrations/integrations.json";
 
 console.log('🔄 Updating category paths to match new directory structure...');
 
