@@ -98,9 +98,25 @@ jobs:
             }
           });
           
+          // Check if a link matches an exception pattern
+          function matchesException(link, pattern) {
+            // No wildcards - exact match
+            if (!pattern.includes('*')) {
+              return link === pattern;
+            }
+            
+            // Convert pattern to regex
+            const regexPattern = pattern
+              .replace(/[.+?^${}()|[\]\\]/g, '\\$&') // Escape special regex chars except *
+              .replace(/\*/g, '.*'); // Replace * with .*
+            
+            const regex = new RegExp('^' + regexPattern + '$');
+            return regex.test(link);
+          }
+          
           // Filter exceptions only for links (not redirects)
           const actualLinkErrors = brokenLinks.filter(link => {
-            return !exceptions.some(exception => link.includes(exception));
+            return !exceptions.some(exception => matchesException(link, exception));
           });
           
           const hasErrors = actualLinkErrors.length > 0 || redirectConflicts.length > 0;
