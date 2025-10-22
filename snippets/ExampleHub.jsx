@@ -160,7 +160,6 @@ export const ExampleHub = ({ parentDir }) => {
 		<>
 			<div className="mb-4 flex flex-wrap justify-between place-items-end gap-4">
 				<div className="relative max-w-64">
-					<Icon icon="search" className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
 					<input
 						type="text"
 						className="w-full pl-10 dark:placeholder-white dark:text-white placeholder-black text-black pr-3 py-2 border border-gray-300 rounded-md font-sans"
