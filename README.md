@@ -77,7 +77,20 @@ description: Example description
 ---
 ```
 
-## Redirects
+## Links
+
+We have a linter that checks for broken links and redirect conflicts. A redirect conflict is when you have two redirects with the same source path.
+
+You can add a path pattern to `link-exceptions.json` to make the link-checker ignore certain links. If the pattern matches a link, even if the link is broken, it will pass linting.
+
+> This is trailing-slash agnostic. A link to `/example` will be ignored if `"/example/"` is in the exception list. Same the other way around. `/example/` = `"/example"`. 
+
+- You can add a whole path to an exception with `*`, as in `/path*`.
+- You can match any phrase or path segment with `*` on either side. `*/path*`
+
+> This is useful for things like generated files, which may not be present when the link checker runs, which would cause a false positive.
+
+### Redirects
 
 To create redirects, add them to the `"redirects"` array in `docs.json`.
 
