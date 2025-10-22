@@ -87,9 +87,12 @@ if [ $LINKS_EXIT -ne 0 ] || [ $REDIRECTS_EXIT -ne 0 ]; then
   
   // Check if a link matches an exception pattern
   function matchesException(link, pattern) {
-    // No wildcards - exact match
+    // No wildcards - exact match with trailing slash normalization
     if (!pattern.includes('*')) {
-      return link === pattern;
+      // Normalize both by removing trailing slashes
+      const normalizedLink = link.replace(/\/$/, '');
+      const normalizedPattern = pattern.replace(/\/$/, '');
+      return normalizedLink === normalizedPattern;
     }
     
     // Convert pattern to regex
