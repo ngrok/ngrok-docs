@@ -73,7 +73,7 @@ async function parseIntegrations() {
         const sortedIntegrations = integrations.map(i=>i.docs).flat().sort((a, b) => a.contentTitle && b.contentTitle ? a.contentTitle.localeCompare(b.contentTitle): -1 );
         
         // Load categories to assign category information to each integration
-        const categoriesPath = "snippets/custom-scripts/data/integrations/integrationCategories.json";
+        const categoriesPath = "custom/scripts/data/integrations/integrationCategories.json";
         let categories = [];
         try {
             const categoriesContent = fs.readFileSync(categoriesPath, 'utf8');
@@ -108,7 +108,7 @@ async function parseIntegrations() {
             fs.mkdirSync(snippetsDir, { recursive: true });
         }
 
-        const filePath = "snippets/custom-scripts/data/integrations/integrations.json";
+        const filePath = "custom/scripts/data/integrations/integrations.json";
 
         // Write to file
         fs.writeFileSync(filePath, JSON.stringify(sortedIntegrations, null, 2));

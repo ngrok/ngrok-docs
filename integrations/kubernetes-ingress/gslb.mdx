@@ -1,7 +1,7 @@
 ---
 title: Use ngrok's Global Server Load Balancing with DigitalOcean
 sidebarTitle: Global Server Load Balancing
-description: In this guide, you'll learn how to layer load balancing between three or more globally-distributed, cloud-based virtual machines in DigitalOcean.
+description: In this guide, you'll learn how to layer load balancing between three or more globally distributed, cloud-based virtual machines in DigitalOcean.
 ---
 <Tip>
 **TL;DR**
@@ -31,12 +31,12 @@ ngrok's GSLB even works on top of DigitalOcean's internal load balancers to prov
 
 1. An [ngrok account](https://ngrok.com/signup).
 1. An account with [DigitalOcean](https://cloud.digitalocean.com/registrations/new).
-1. Three Ubuntu 24.04 virtual machines (VMs) in three globally-distributed regions (e.g. New York, Sydney, and Frankfurt):
-   - Hostnames should be unique, ideally using the location of the datacenter (e.g. `nyc`, `sydney`, and `frankfurt`).
+1. Three Ubuntu 24.04 virtual machines (VMs) in three globally distributed regions (for example, New York, Sydney, and Frankfurt):
+   - Hostnames should be unique, ideally using the location of the datacenter (for example, `nyc`, `sydney`, and `frankfurt`).
    - [Docker](https://docs.docker.com/engine/install/) and [Docker Compose](https://docs.docker.com/compose/install/) installed on each VM.
 </Warning>
 
-## **Step 1**: Reserve your ngrok domain 
+## 1. Reserve your ngrok domain 
 
 Your first task is to [generate a new API key](https://dashboard.ngrok.com/api) in the ngrok dashboard. Make sure you save the API key before you close the modal, because it won't be displayed again.
 
@@ -74,7 +74,7 @@ curl \
 Using CNAMEs, ngrok can host an endpoint on your domain while also managing the complete TLS certificate lifecycle on your behalf. If you'd prefer to use a custom domain rather than an ngrok-managed one, [follow our guide](/universal-gateway/custom-domains/) to set up your DNS and replace your custom domain in the `export` command above.
 </Tip>
 
-## **Step 2**: Create your ngrok Edge 
+## 2. Create your ngrok Edge 
 
 With ngrok, you can manage multiple endpoints, such as domains or routes, using a single [Edge](/universal-gateway/edges/) configuration in the cloud. Edges let you update endpoints without taking them offline, connect multiple ngrok agents to a single endpoint, apply modules like [OAuth](/traffic-policy/actions/oauth/) or [IP restrictions](/traffic-policy/actions/restrict-ips/), and balance the load between your upstream services.
 
@@ -95,9 +95,9 @@ Export the `id` in this response, which begins with `edghts_...`, for future use
 export EDGE_ID=edghts_...
 ```
 
-## **Step 3**: Create Tunnel Group backends for your VMs 
+## 3. Create Tunnel Group backends for your VMs 
 
-Next, create a Tunnel Group for each of your globally-distributed VMs. A Tunnel Group uses one or more labels to identify which agent-created tunnels it should attach to a given Edge and route, which you'll create in a moment.
+Next, create a Tunnel Group for each of your globally distributed VMs. A Tunnel Group uses one or more labels to identify which agent-created tunnels it should attach to a given Edge and route, which you'll create in a moment.
 
 You'll need to run the API request to the [`/backends/tunnel_group` endpoint](/api-reference/tunnelgroupbackends/list) for **each** of your VMs, changing the `<LOCATION_NAME>` with the name of the city or region of the data center where they're deployed (e.g. `nyc`, `sydney`, and `frankfurt`).
 
@@ -118,7 +118,7 @@ export BACKEND_ID_02=bkdtg_...
 export BACKEND_ID_03=bkdtg_...
 ```
 
-## **Step 4**: Create a Weighted Backend and Route on your Edge 
+## 4. Create a Weighted Backend and Route on your Edge 
 
 With a [Weighted Backend](/universal-gateway/edges/#weighted), you can specify custom weights for Tunnel Group backends, shaping precisely how to load-balance traffic across the infrastructure you've distributed around the globe. Without a Weighted Backend, the ngrok Edge and [GSLB](/universal-gateway/global-load-balancer/) will always favor the Point of Presence (PoP) and VM nearest the user making requests.
 
@@ -170,7 +170,7 @@ You can also navigate to the [Edges dashboard](https://dashboard.ngrok.com/edges
 
 ![alt text](../img/linode/img/edge-dashboard-no-tunnels.png)
 
-## **Step 5**: Install the ngrok agent and an example workload on each VM 
+## 5. Install the ngrok agent and an example workload on each VM 
 
 To get some tunnels online and quickly see how ngrok's GSLB works, you'll use an [example API deployment](https://github.com/joelhans/ngrok-vps-gslb-demo). This demo deployment has four parts:
 
@@ -188,7 +188,7 @@ Repeat the following steps on **each** VM:
    cd ngrok-vps-gslb-demo
    ```
 
-2. Edit the `ngrok.yml` [ngrok agent configuration file](/agent/config/) with your `<YOUR_NGROK_AUTHTOKEN>`, which you can find in the [ngrok dashboard](https://dashboard.ngrok.com/get-started/your-authtoken)&mdash;note that it's different from the API key you created in the first step. Next, edit the `<LOCATION_NAME>` for that VM, matching the labels you created in [step 3](#create-tunnel-group-backends) (e.g. `nyc`, `sydney`, and `frankfurt`).
+2. Edit the `ngrok.yml` [ngrok agent configuration file](/agent/config/) with your `<YOUR_NGROK_AUTHTOKEN>`, which you can find in the [ngrok dashboard](https://dashboard.ngrok.com/get-started/your-authtoken)&mdash;note that it's different from the API key you created in the first step. Next, edit the `<LOCATION_NAME>` for that VM, matching the labels you created in [step 3](#create-tunnel-group-backends) (for example, `nyc`, `sydney`, and `frankfurt`).
 
    ```yaml
    version: 2
@@ -208,7 +208,7 @@ Repeat the following steps on **each** VM:
    HOSTNAME=$(hostname -f) docker compose up -d
    ```
 
-## **Step 6**: Test out ngrok's Global Server Load Balancing 
+## 6. Test out ngrok's Global Server Load Balancing 
 
 ngrok is now load-balancing your single API endpoint across all three distributed VMs.
 

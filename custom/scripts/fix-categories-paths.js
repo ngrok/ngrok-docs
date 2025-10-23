@@ -6,11 +6,11 @@ console.log('🔄 Fixing category paths to match actual integration paths...');
 
 try {
     // Load the integration paths to see what actually exists
-    const integrationsPath = "snippets/custom-scripts/data/integrations/integrations.json";
+    const integrationsPath = "custom/scripts/data/integrations/integrations.json";
     const integrations = JSON.parse(fs.readFileSync(integrationsPath, 'utf8'));
     
     // Load current categories
-    const categoriesPath = "snippets/custom-scripts/data/integrations/integrationCategories.json";
+    const categoriesPath = "custom/scripts/data/integrations/integrationCategories.json";
     const categories = JSON.parse(fs.readFileSync(categoriesPath, 'utf8'));
     
     console.log(`Loaded ${integrations.length} integrations and ${categories.length} categories`);
