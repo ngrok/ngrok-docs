@@ -33,7 +33,7 @@ Several configuration files control various aspects of the documentation build p
 
 # Adding New Content
 
-- If you're adding new content (e.g., a guide, example), create a new mdx file within the appropriate subdirectory of the docs directory.
+- To add new content (such as a guide or an example), create a new MDX file in the appropriate directory.
   Update the docs.json file to add the new content to the navigation sidebar if applicable.
 
 # Modifying Error Pages

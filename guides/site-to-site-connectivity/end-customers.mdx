@@ -32,7 +32,8 @@ ngrok's solution supports multiple models for TLS encryption, including end-to-e
 
 ### Who else uses ngrok to provide access to private services?
 
-Organizations worldwide trust ngrok for site-to-site connectivity, unified ingress, device gateways, and developer productivity. Our customers include Twilio, Okta, Zoom, Microsoft, Zendesk, Cyera and many more.
+Organizations worldwide trust ngrok for site-to-site connectivity, unified ingress, device gateways, and developer productivity. 
+Our customers include Twilio, Okta, Zoom, Microsoft, Zendesk, Cyera, and many more.
 
 [Databricks](https://ngrok.com/customers/databricks), the leading unified lakehouse platform for data, analytics, and AI, uses ngrok for its site-to-site connectivity across all of its customers.
 
@@ -79,7 +80,8 @@ We run ngrok’s primary network and services on AWS.
 
 This architecture includes multiple [Points of Presence](/universal-gateway/points-of-presence/) (PoPs) worldwide that run our services, route customer traffic, and make up our always-on [Global Server Load Balancer](https://ngrok.com/blog-post/gslb-global-server-load-balancing) (GSLB).
 
-The GSLB, which is active by default for all ngrok endpoints and tunnels, enhances the resiliency of the connection between your services and your vendor’s with DDoS protection and geo-failover that automatically routes traffic to the lowest-latency PoP in the event of downtime or service interruption. If you have specific data residency requirements, like those located in the EU, you and your vendor can configure ngrok to use a specific region in Europe or pin all traffic to a specific PoP.
+The GSLB, which is active by default for all ngrok endpoints and tunnels, enhances the resiliency of the connection between your services and your vendor's with DDoS protection and geo-failover that automatically routes traffic to the lowest-latency PoP in the event of downtime or service interruption. 
+If you have specific data residency requirements (like those located in the EU), then you and your vendor can configure ngrok to use a specific region in Europe or pin all traffic to a specific PoP.
 
 There are many possible architectures for setting up a site-to-site network based on the shared requirements of you and your vendor. Your vendor will work with you to find a mutually secure and reliable architecture.
 
@@ -116,19 +118,19 @@ Your vendor can implement multiple security practices, including:
   Controls](https://ngrok.com/blog-post/account-domain-controls) to route all
   ngrok users with an email address `@your-company.com` into it, and enable
   role-based access controls to limit those accounts.
-- Create [service users](/iam/service-users/) to create authtokens not tied
+- Create [Service Users](/iam/service-users/) to create authtokens not tied
   to any individual user, and use a different, scoped authtoken for each agent.
 - Apply [Access Control
   Lists](/iam/rbac/#additional-restrictions-with-acls) (ACLs) to authtokens
   to control where ngrok agents can be created within your network.
 - Enable the [IP restrictions](/traffic-policy/actions/restrict-ips/)
-  action on your endpoint(s) to allow only trusted connections from your vendor.
+  action on your endpoints to allow only trusted connections from your vendor.
 - Enforce [basic auth](/traffic-policy/actions/basic-auth/), [OAuth](/traffic-policy/actions/oauth/),
   [OpenID](/traffic-policy/actions/oidc/),
   [JWT](/traffic-policy/actions/jwt-validation/),
   [SAML](/traffic-policy/actions/saml), or
   [mTLS](/agent/agent-mutual-tls-termination/)
-  authentication on your endpoint(s).
+  authentication on your endpoints.
 
 The configuration and operation of these security practices will be handled by
 your vendor.
@@ -170,7 +172,7 @@ Yes. Your vendor can configure your site-to-site connectivity architecture in a
 few ways to enable this functionality. They can:
 
 1. Configure your ngrok agent to trust a [specific
-   root certificate](/agent/config/v3/#connect_cas) you own on the host’s OS
+   root certificate](/agent/config/v3/#connect-cas) you own on the host’s OS
    or a specific PEM file on disk instead of the trusted certificate root for the
    ngrok network. You can then use a proxy for deep packet inspection.
 2. Require the outbound connection to `connect.ngrok-agent.com:443` go through a
@@ -194,7 +196,7 @@ Your vendor can also work with ngrok to provision dedicated IPs for their custom
 
 At this point, you can block the default Connect URL at `connect.ngrok-agent.com:443`, which all agents use by default to connect outbound to ngrok’s network. This address resolves to a dynamic set of IP addresses, and blocking it at your network prevents any usage outside of this site-to-site connectivity use case in partnership with your vendor, such as developers utilizing ngrok to tunnel local development environments to the public internet.
 
-You should also block the [ngrok-managed public domains](/universal-gateway/domains/#ngrok-managed-domains), e.g. `ngrok.app`, `ngrok.io`, etc.
+You should also block the [ngrok-managed public domains](/universal-gateway/domains/#ngrok-managed-domains), for example, `ngrok.app`, `ngrok.io`, etc.
 
 Work with your vendor to design an architecture that [prevents unauthorized
 use](#how-can-i-prevent-ngrok-from-being-used-for-any-purpose-other-than-in-site-to-site-connectivity-with-my-vendor?)
@@ -209,7 +211,7 @@ human moderation.
 
 We work with authorized third-party security vendors, who report suspected
 abuse to [abuse@ngrok.com](mailto:abuse@ngrok.com) or our [abuse
-API](/api/resources/abuse-reports/). Our abuse response team investigates
+API](/api-reference/abusereports/create). Our abuse response team investigates
 these reports, collaborates with these third parties, and proactively shuts down
 attacks.
 
@@ -291,7 +293,7 @@ site-to-site connectivity architecture.
 
 ### How do I manage the lifecycle and maintenance of the agent?
 
-Your vendor is responsible for helping you configure and maintain your agent(s).
+Your vendor is responsible for helping you configure and maintain your agents.
 
 They might configure your ngrok agent to [run in the background](/agent/#background-service) as a native operating system service. This functionality works on all Linux, Windows, and macOS systems, and once installed, the ngrok service starts at boot-time, automatically restarts after crashes, and sends logs to your system’s native logging service.
 
@@ -308,19 +310,19 @@ is set to `Always`.
 ngrok releases security and feature updates through all our installation
 channels and package managers. These updates are _not_ automatic. Do not update
 your ngrok agents manually&mdash;your vendor will work with you on when and how
-to update your ngrok agent(s) because the process depends on how they asked you
+to update your ngrok agents because the process depends on how they asked you
 to install them.
 
-- Package manager (`brew` or `apt`): Get updated agent versions through the same channel (e.g. `brew update && brew upgrade package_name` or `apt update && apt install ngrok`).
+- Package manager (`brew` or `apt`): Get updated agent versions through the same channel (for example, `brew update && brew upgrade package_name` or `apt update && apt install ngrok`).
 - Binary from our [downloads page](https://download.ngrok.com): Follow the same process again or [update directly from your CLI](/agent/#updates) with `ngrok update`.
-- Agent SDK: Use the package manager for your language or framework (e.g. `go get -u`)
+- Agent SDK: Use the package manager for your language or framework (for example, `go get -u`)
 - Kubernetes Operator: Use `helm upgrade`.
 
 ### Can I run the ngrok agent in a DMZ?
 
 Yes. There are two requirements in this case:
 
-1. The system(s) in your DMZ must support the general [system requirements](#where-can-i-run-the-ngrok-agent-and-what-are-the-ngrok-agent’s-system-requirements?).
+1. The systems in your DMZ must support the general [system requirements](#where-can-i-run-the-ngrok-agent-and-what-are-the-ngrok-agent’s-system-requirements?).
 2. The upstream service your vendor wants to connect to with ngrok must also be running in your DMZ.
 
 ### How does the agent connect to the ngrok network?
@@ -341,7 +343,7 @@ The ngrok agent utilizes a [heartbeat](/agent/#heartbeats) that attempts to reac
 
 This mechanism allows your site-to-site connectivity to automatically reestablish after packet loss, dynamic IP changes, or complete network outages.
 
-Your vendor can [configure](/agent/config/v3/#heartbeat_interval) both the
+Your vendor can [configure](/agent/config/v3/#heartbeat-interval) both the
 heartbeat interval and tolerance per agent.
 
 ### How does using ngrok, and the availability of your platform, affect our own?
