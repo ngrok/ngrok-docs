@@ -1,0 +1,64 @@
+---
+title: Add Headers Action Reference
+sidebarTitle: Reference
+description: Learn how the Add Headers action works under the hood.
+---
+
+
+import { ConfigField } from "/snippets/ConfigTable.jsx";
+import ActionVariablesDescription from "/snippets/traffic-policy/common/action-variables-description.mdx";
+
+This page serves as a configuration reference for the Add Headers Traffic Policy action.
+
+## Supported Phases
+
+`on_http_request`, `on_http_response`
+
+## Type
+
+`add-headers`
+
+## Configuration Fields
+
+<ConfigField title="headers" type="object" cel={true}>
+  Map of header key to header value to be added.
+
+  Minimum `1`, Maximum `10`.
+</ConfigField>
+
+# Behavior
+
+When configured in the `on_http_request` phase, this action will add the specified headers to incoming http requests before reaching the upstream server. When
+configured in the `on_http_response` phase, the specified headers are added to the http response from the upstream server.
+
+## Addition Only
+
+This action will only add headers to the request or response. If the header already exists
+it will append another header with the same key unless it is the `host` header,
+see [Special Cases](#special-cases).
+
+To replace or remove headers use the [`remove-headers`](/traffic-policy/actions/remove-headers) action then
+add the header with the desired value.
+
+## Case Sensitivity
+
+Header keys added through this action are normalized to lowercase per the [HTTP/2 specification](https://datatracker.ietf.org/doc/html/rfc7540#section-8.1.2).
+
+## Ordering
+
+Since actions are run in the order they are specified, to modify headers that have been added by other actions you must place this action
+after them in your traffic policy document.
+
+## Special Cases
+
+- Adding the `host` header override the existing value instead of appending another header.
+- You may not add or remove the `user-agent` header.
+- You may not use this action to add the `ngrok-skip-browser-warning` header to skip the ngrok browser warning on free accounts. For more information, check out the [free plan limits guide](/pricing-limits/free-plan-limits#removing-the-interstitial-page).
+
+# Action Result Variables
+
+<ActionVariablesDescription />
+
+<ConfigField title="actions.ngrok.add_headers.headers_added" type="object">
+  <p>Map of headers that were added by the action.</p>
+</ConfigField>
