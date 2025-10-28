@@ -37,18 +37,107 @@ The [Traffic Policy](/traffic-policy/) configuration reference for this action.
 
 ## Behavior
 
-This Action's behavior varies based on which [phase](#supported-phases) it's used in.
+This Action's behavior varies based on which [request phase](#supported-phases) it's used in.
 
 ### Addition only
 
 This action will only **add** headers to the request or response.
 If the header already exists, it will append another header with the same key (unless it's the `host` header. See [Special Cases](#special-cases)).
 
+#### Adding to existing headers
+
+For example, you could use this action to add the client's IP to `x-forwarded-for`, appending information about the client making the request, so the upstream server can see where the request originated, regardless of the proxies it passed through.
+
+
+<Note>
+This example uses a connection variable. See [the connection variable reference](https://ngrok.com/docs/traffic-policy/variables/connection#conn-client-ip) to learn more.
+</Note>
+
+<CodeGroup>
+```yaml policy.yml
+on_http_request:
+  - actions:
+    - type: "add-headers"
+      config:
+        headers:
+          x-forwarded-for: "${conn.client_ip}"
+```
+```json policy.json
+{
+  "on_http_request": [
+    {
+      "actions": [
+        {
+          "type": "add-headers",
+          "config": {
+            "headers": {
+              "x-forwarded-for": "${conn.client_ip}"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+</CodeGroup>
+
+The server will see an `x-forwarded-for` header with the client's IP chain, which might look like this:
+
+```bash
+x-forwarded-for: 233.1.111.1, 11.5.5.5
+```
+
 #### Replacing headers
 
-To replace or remove headers, first use the [`remove-headers`](/traffic-policy/actions/remove-headers) action.
-Then add the header with the desired value.
+To replace or remove headers, first use the [`remove-headers`](/traffic-policy/actions/remove-headers) action, then add the header with the desired value.
 The following snippet demonstrates a basic example.
+
+<CodeGroup>
+
+```yaml policy.yml
+on_http_request:
+- actions:
+  - type: remove-headers
+    config:
+      headers:
+      - x-example-header-1
+  - type: add-headers
+    config:
+      headers:
+        x-example-header-2: Example Value
+```
+
+```json policy.json
+{
+  "on_http_request": [
+    {
+      "actions": [
+        {
+          "type": "remove-headers",
+          "config": {
+            "headers": [
+              "x-example-header-1"
+            ]
+          }
+        },
+        {
+          "type": "add-headers",
+          "config": {
+            "headers": {
+              "x-example-header-2": "Example Value"
+						}
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+</CodeGroup>
+
+See [our Adding and Removing Headers examples](/traffic-policy/examples/add-and-remove-headers) for use cases.
 
 ### Case sensitivity
 
