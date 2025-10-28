@@ -5,25 +5,29 @@ description: Add headers to an HTTP request or response before it is delivered u
 ---
 import { ConfigField } from "/snippets/ConfigTable.jsx";
 import ActionVariablesDescription from "/snippets/traffic-policy/common/action-variables-description.mdx";
+import PhasesExplanation from "/snippets/shared/phases-explanation.mdx";
 
 The Add Headers action enables you to add custom headers to an HTTP request or 
 response before delivery to the upstream service or client. This is useful 
 for attaching metadata like request identifiers, applying security controls, or 
 adjusting how applications process traffic.
 
-## Configuration Reference
+## Configuration reference
 
 The [Traffic Policy](/traffic-policy/) configuration reference for this action.
 
-### Supported Phases
+### Supported phases
 
-`on_http_request`, `on_http_response`
+<PhasesExplanation />
+
+- `on_http_request`: When called in this phase, the specified headers are added to incoming http requests before reaching the upstream service.
+- `on_http_response`: When called in this phase, the specified headers are added to the http response from the upstream service, before being delivered.
 
 ### Type
 
 `add-headers`
 
-### Configuration Fields
+### Configuration fields
 
 <ConfigField title="headers" type="object" cel={true}>
   Map of header key to header value to be added.
@@ -33,17 +37,19 @@ The [Traffic Policy](/traffic-policy/) configuration reference for this action.
 
 ## Behavior
 
-When configured in the `on_http_request` phase, this action will add the specified headers to incoming http requests before reaching the upstream server. When
-configured in the `on_http_response` phase, the specified headers are added to the http response from the upstream server.
+This Action's behavior varies based on which [phase](#supported-phases) it's used in.
 
-### Addition Only
+### Addition only
 
-This action will only add headers to the request or response. If the header already exists
-it will append another header with the same key unless it is the `host` header,
-see [Special Cases](#special-cases).
+This action will only **add** headers to the request or response.
+If the header already exists, it will append another header with the same key (unless it's the `host` header. See [Special Cases](#special-cases)).
 
-To replace or remove headers use the [`remove-headers`](/traffic-policy/actions/remove-headers) action then
-add the header with the desired value.
+#### Replacing headers
+
+To replace or remove headers, first use the [`remove-headers`](/traffic-policy/actions/remove-headers) action.
+Then add the header with the desired value.
+The following snippet demonstrates a basic example.
+
 
 ### Case Sensitivity
 
