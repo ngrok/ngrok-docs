@@ -158,16 +158,195 @@ The ngrok API ID for this IP Policy resource.
 
 **Example:** `ipp_34iZT0muBP3kpcAXxGjM4uFlgDK`
 
+### `status.rules`
+
+Array of rules with their ngrok API IDs. Each rule status includes the rule ID, CIDR, and action that was configured.
+
+**Type:** `[]Object`
+
+**Example:**
+```yaml
+rules:
+- id: ipr_34iZT1AbCdEfGhIjKlMnOpQrStU
+  cidr: 162.236.158.182/32
+  action: allow
+```
+
 ### `status.conditions`
 
 Standard Kubernetes conditions that indicate the state of the IP Policy.
 
-**Type:** `[]Object`
+**Type:** `[]Condition`
 
-**Common Conditions:**
-- `IPPolicyCreated`: Indicates the IP Policy was successfully created in the ngrok API
-- `RulesConfigured`: Indicates all rules have been configured for the IP Policy
-- `Ready`: Indicates the IP Policy is active and ready to use
+Each condition includes:
+- `type` - The condition type
+- `status` - `True`, `False`, or `Unknown`
+- `reason` - A programmatic identifier for the condition state
+- `message` - A human-readable description
+- `lastTransitionTime` - When the condition last changed
+- `observedGeneration` - The resource generation this condition applies to
+
+#### Condition Types
+
+##### `Ready`
+
+Indicates whether the IP Policy is fully operational and ready to use.
+
+**Status Values:**
+- `True` - IP Policy is active and ready
+- `False` - IP Policy is not ready (see reason for details)
+
+**Common Reasons:**
+
+| Reason | Status | Meaning |
+|--------|--------|---------|
+| `IPPolicyActive` | `True` | IP Policy is successfully created and active |
+| `IPPolicyRulesConfigurationError` | `False` | One or more rules failed to configure |
+| `IPPolicyCreationFailed` | `False` | Failed to create the IP Policy in ngrok |
+| `IPPolicyInvalidCIDR` | `False` | One or more rules have invalid CIDR notation |
+
+**Example:**
+```yaml
+conditions:
+- type: Ready
+  status: "True"
+  reason: IPPolicyActive
+  message: "IP Policy is active"
+  lastTransitionTime: "2025-10-29T00:39:16Z"
+  observedGeneration: 1
+```
+
+##### `IPPolicyCreated`
+
+Indicates whether the IP Policy was successfully created in the ngrok API.
+
+**Status Values:**
+- `True` - IP Policy was successfully created
+- `False` - Failed to create IP Policy
+
+**Common Reasons:**
+
+| Reason | Status | Meaning |
+|--------|--------|---------|
+| `IPPolicyCreated` | `True` | IP Policy successfully created |
+| `IPPolicyCreationFailed` | `False` | API call to create IP Policy failed |
+
+**Example:**
+```yaml
+conditions:
+- type: IPPolicyCreated
+  status: "True"
+  reason: IPPolicyCreated
+  message: "IP Policy successfully created"
+  lastTransitionTime: "2025-10-29T00:39:16Z"
+  observedGeneration: 1
+```
+
+##### `RulesConfigured`
+
+Indicates whether all rules have been successfully configured for the IP Policy.
+
+**Status Values:**
+- `True` - All rules are configured
+- `False` - One or more rules failed to configure
+
+**Common Reasons:**
+
+| Reason | Status | Meaning |
+|--------|--------|---------|
+| `IPPolicyRulesConfigured` | `True` | All rules successfully configured |
+| `IPPolicyRulesConfigurationError` | `False` | One or more rules failed validation or creation |
+| `IPPolicyInvalidCIDR` | `False` | One or more rules have invalid CIDR notation |
+
+**Example:**
+```yaml
+conditions:
+- type: RulesConfigured
+  status: "True"
+  reason: IPPolicyRulesConfigured
+  message: "All rules configured for IP Policy"
+  lastTransitionTime: "2025-10-29T00:39:16Z"
+  observedGeneration: 1
+```
+
+## Status Examples
+
+### Successfully Created IP Policy
+
+```yaml
+status:
+  id: ipp_34iZT0muBP3kpcAXxGjM4uFlgDK
+  rules:
+  - id: ipr_34iZT1AbCdEfGhIjKlMnOpQrStU
+    cidr: 162.236.158.182/32
+    action: allow
+  conditions:
+  - type: IPPolicyCreated
+    status: "True"
+    reason: IPPolicyCreated
+    message: "IP Policy successfully created"
+    lastTransitionTime: "2025-10-29T00:39:16Z"
+    observedGeneration: 1
+  - type: RulesConfigured
+    status: "True"
+    reason: IPPolicyRulesConfigured
+    message: "All rules configured for IP Policy"
+    lastTransitionTime: "2025-10-29T00:39:16Z"
+    observedGeneration: 1
+  - type: Ready
+    status: "True"
+    reason: IPPolicyActive
+    message: "IP Policy is active"
+    lastTransitionTime: "2025-10-29T00:39:16Z"
+    observedGeneration: 1
+```
+
+### IP Policy with Invalid CIDR
+
+```yaml
+status:
+  conditions:
+  - type: IPPolicyCreated
+    status: "False"
+    reason: IPPolicyCreationFailed
+    message: "Failed to create IP Policy: invalid CIDR notation in rule"
+    lastTransitionTime: "2025-10-29T00:39:15Z"
+    observedGeneration: 1
+  - type: RulesConfigured
+    status: "False"
+    reason: IPPolicyInvalidCIDR
+    message: "Invalid CIDR range: 192.168.1.0/42 (prefix length must be between 0 and 32 for IPv4)"
+    lastTransitionTime: "2025-10-29T00:39:15Z"
+    observedGeneration: 1
+  - type: Ready
+    status: "False"
+    reason: IPPolicyInvalidCIDR
+    message: "IP Policy cannot be activated due to invalid CIDR in rules"
+    lastTransitionTime: "2025-10-29T00:39:15Z"
+    observedGeneration: 1
+```
+
+## Checking IP Policy Status
+
+You can check the status of an IP Policy using kubectl:
+
+```bash
+# Check if IP Policy is ready
+kubectl get ippolicy whitelist-specific-ip -o jsonpath='{.status.conditions[?(@.type=="Ready")]}'
+
+# Watch for IP Policy to become ready
+kubectl wait --for=condition=Ready ippolicy/whitelist-specific-ip --timeout=60s
+
+# Get all IP Policies with their ready status
+kubectl get ippolicies -A -o custom-columns=\
+NAME:.metadata.name,\
+NAMESPACE:.metadata.namespace,\
+READY:.status.conditions[?(@.type==\'Ready\')].status,\
+REASON:.status.conditions[?(@.type==\'Ready\')].reason
+
+# View all rules and their IDs
+kubectl get ippolicy whitelist-specific-ip -o jsonpath='{.status.rules[*]}'
+```
 
 ## Example IPPolicies
 

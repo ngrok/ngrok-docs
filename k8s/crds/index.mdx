@@ -99,3 +99,64 @@ This document will cover the CRDs you might use to achieve your goals with the n
 		</div>
 	</Link>
 </div>
+
+## Resource Status and Conditions
+
+The ngrok Kubernetes Operator uses standard Kubernetes conditions to report the state of resources. Each resource includes a `status.conditions` array that provides visibility into the current state and any issues that may need attention.
+
+### Common Condition Types
+
+The following table summarizes the condition types available across different CRD resources:
+
+| CRD | Condition Type | Purpose |
+|-----|----------------|---------|
+| **Domain** | `Ready` | Overall domain readiness |
+| | `DomainCreated` | Domain reservation status |
+| | `CertificateReady` | TLS certificate status |
+| | `DNSConfigured` | DNS configuration status |
+| | `Progressing` | Domain provisioning in progress |
+| **IPPolicy** | `Ready` | Overall policy readiness |
+| | `IPPolicyCreated` | Policy creation status |
+| | `RulesConfigured` | Rules configuration status |
+| **CloudEndpoint** | `Ready` | Overall endpoint readiness |
+| | `CloudEndpointCreated` | Endpoint creation status |
+| | `DomainReady` | Associated domain status |
+| **AgentEndpoint** | `Ready` | Overall endpoint readiness |
+| | `EndpointCreated` | Endpoint creation status |
+| | `TrafficPolicyApplied` | Traffic policy application status |
+| | `DomainReady` | Associated domain status |
+| **BoundEndpoint** | `Ready` | Overall bound endpoint readiness |
+| | `ServicesCreated` | Target and upstream services creation status |
+| | `ConnectivityVerified` | Upstream connectivity verification status |
+
+### Checking Resource Status
+
+You can use kubectl to check the status of your resources:
+
+```bash
+# Check if a resource is ready
+kubectl get <resource-type> <name> -o jsonpath='{.status.conditions[?(@.type=="Ready")]}'
+
+# Wait for a resource to become ready
+kubectl wait --for=condition=Ready <resource-type>/<name> --timeout=60s
+
+# List all resources with ready status
+kubectl get <resource-type> -A -o custom-columns=\
+NAME:.metadata.name,\
+NAMESPACE:.metadata.namespace,\
+READY:.status.conditions[?(@.type==\'Ready\')].status,\
+REASON:.status.conditions[?(@.type==\'Ready\')].reason
+```
+
+### Understanding Condition Fields
+
+Each condition includes the following fields:
+
+- **type**: The condition type (e.g., `Ready`, `DomainCreated`)
+- **status**: `True`, `False`, or `Unknown`
+- **reason**: A programmatic identifier for the condition state
+- **message**: A human-readable description of the condition
+- **lastTransitionTime**: When the condition last changed state
+- **observedGeneration**: The resource generation this condition reflects
+
+For detailed information about the status fields and conditions for each CRD, refer to the individual CRD documentation pages linked above.
