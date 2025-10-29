@@ -286,13 +286,13 @@ function replaceInTextNodes(element, regex, termTitle, termObj) {
       
       const button = document.createElement('button');
       button.setAttribute('data-state', 'closed');
-      button.setAttribute('data-tooltip', definition);
+      button.setAttribute('data-definition-tooltip', definition);
       if (link) {
         button.setAttribute('data-link', link);
       }
       
       const span = document.createElement('span');
-      span.className = 'tooltip underline decoration-dotted decoration-2 underline-offset-4 decoration-gray-400 dark:decoration-gray-500';
+      span.className = 'definition-tooltip underline decoration-dotted decoration-2 underline-offset-4 decoration-gray-400 dark:decoration-gray-500';
       
       // Preserve styling from parent elements (italics, bold, etc.)
       copyParentStyles(textNode.parentElement, span);
@@ -354,7 +354,7 @@ function copyParentStyles(sourceElement, targetElement) {
     
     // Preserve underline styling from <u> or CSS (but not our tooltip underline)
     const textDecoration = computedStyle.textDecoration;
-    if (textDecoration && textDecoration !== 'none' && !current.classList.contains('tooltip')) {
+    if (textDecoration && textDecoration !== 'none' && !current.classList.contains('definition-tooltip')) {
       stylesToPreserve.textDecoration = textDecoration;
     }
     
@@ -374,7 +374,7 @@ function copyParentStyles(sourceElement, targetElement) {
 }
 
 function addTooltipBehavior(button) {
-  const tooltip = button.getAttribute('data-tooltip');
+  const tooltip = button.getAttribute('data-definition-tooltip');
   const link = button.getAttribute('data-link');
   
   if (!tooltip) return;
