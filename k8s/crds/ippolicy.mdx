@@ -1,0 +1,232 @@
+---
+title: IPPolicy
+---
+
+## IPPolicy Custom Resource
+
+### **apiVersion:** `ingress.k8s.ngrok.com/v1alpha1`
+
+### **kind:** `IPPolicy`
+
+IP Policies define rules that allow or deny traffic based on the source IP of connections to your ngrok endpoints.
+These policies can be attached to endpoints via traffic policy configurations to control access based on IP addresses and CIDR ranges.
+
+IP Policies consist of one or more rules, where each rule specifies:
+- An action (`allow` or `deny`)
+- A CIDR range to match against
+- An optional description
+
+## IPPolicy Structure and Types
+
+The following outlines the high level structure and typings of an `IPPolicy`
+
+```yaml
+apiVersion: ingress.k8s.ngrok.com/v1alpha1
+kind: IPPolicy
+metadata:
+  name: <string>
+  namespace: <string>
+spec:
+  description: <string>       # optional, default: ""
+  metadata: <string>          # optional, default: "{"owned-by":"kubernetes-ingress-controller"}"
+  rules: <[]Object>           # required
+  - action: <string>          # required, enum: "allow" | "deny"
+    cidr: <string>            # required
+    description: <string>     # optional
+    metadata: <string>        # optional
+```
+
+## IPPolicy Fields
+
+The following sections outline each field of the `IPPolicy` custom resource, whether they are required, what their default values are (if applicable), and a description of their purpose/constraints.
+
+### `spec`
+
+`spec` defines the desired state of the `IPPolicy`
+
+**Type:** `Object`
+
+**Required:** yes
+
+**Default:** none
+
+**Fields:**
+
+| Field Name                             | Type       | Required | Default                                         | Description                                                                    |
+| -------------------------------------- | ---------- | -------- | ----------------------------------------------- | ------------------------------------------------------------------------------ |
+| [`spec.description`](#specdescription) | `string`   | no       | `""`                                            | Human-readable description for this `IPPolicy` to help identify/describe it    |
+| [`spec.metadata`](#specmetadata)       | `string`   | no       | `"{"owned-by":"kubernetes-ingress-controller"}"` | String of arbitrary data associated with the object in the ngrok API/Dashboard |
+| [`spec.rules`](#specrules)             | `[]Object` | yes      | none                                            | List of rules that define which IPs/CIDR ranges to allow or deny              |
+
+### `spec.description`
+
+Human-readable description of this IP Policy that can be used to help identify/describe it.
+
+**Type:** `string`
+
+**Required:** no
+
+**Default:** `""`
+
+### `spec.metadata`
+
+String of arbitrary data associated with the object in the ngrok API/Dashboard.
+
+**Type:** `string`
+
+**Required:** no
+
+**Default:** `"{"owned-by":"kubernetes-ingress-controller"}"`
+
+### `spec.rules`
+
+List of rules that define which IP addresses or CIDR ranges should be allowed or denied access.
+Each rule is evaluated independently, and the most specific matching rule applies.
+
+**Type:** `[]Object`
+
+**Required:** yes
+
+**Default:** none
+
+**Fields:**
+
+| Field Name                                      | Type            | Required | Default | Description                                                                    |
+| ----------------------------------------------- | --------------- | -------- | ------- | ------------------------------------------------------------------------------ |
+| [`spec.rules[].action`](#specrulesaction)       | `string` (enum) | yes      | none    | Whether to allow or deny traffic from the specified CIDR range                 |
+| [`spec.rules[].cidr`](#specrulescidr)           | `string`        | yes      | none    | IP address or CIDR range to match against                                      |
+| [`spec.rules[].description`](#specrulesdescription) | `string`    | no       | `""`    | Human-readable description for this rule                                       |
+| [`spec.rules[].metadata`](#specrulesmetadata)   | `string`        | no       | none    | String of arbitrary data associated with the rule in the ngrok API/Dashboard   |
+
+### `spec.rules[].action`
+
+Specifies whether to allow or deny traffic from the IP addresses matching this rule's CIDR range.
+
+**Type:** `string` (enum)
+
+**Required:** yes
+
+**Default:** none
+
+**Allowed Values:** `"allow"`, `"deny"`
+
+### `spec.rules[].cidr`
+
+IP address or CIDR range to match against the source IP of incoming connections.
+This must be a valid IPv4 or IPv6 CIDR notation.
+
+**Type:** `string`
+
+**Required:** yes
+
+**Default:** none
+
+**Examples:**
+- Single IP: `192.168.1.1/32`
+- Subnet: `10.0.0.0/24`
+- IPv6: `2001:db8::/32`
+
+### `spec.rules[].description`
+
+Human-readable description of this rule that can be used to help identify/describe it.
+
+**Type:** `string`
+
+**Required:** no
+
+**Default:** `""`
+
+### `spec.rules[].metadata`
+
+String of arbitrary data associated with this rule in the ngrok API/Dashboard.
+
+**Type:** `string`
+
+**Required:** no
+
+**Default:** none
+
+## Status Fields
+
+The `IPPolicy` resource includes status information that reflects the current state of the policy in the ngrok system.
+
+### `status.id`
+
+The ngrok API ID for this IP Policy resource.
+
+**Type:** `string`
+
+**Example:** `ipp_34iZT0muBP3kpcAXxGjM4uFlgDK`
+
+### `status.conditions`
+
+Standard Kubernetes conditions that indicate the state of the IP Policy.
+
+**Type:** `[]Object`
+
+**Common Conditions:**
+- `IPPolicyCreated`: Indicates the IP Policy was successfully created in the ngrok API
+- `RulesConfigured`: Indicates all rules have been configured for the IP Policy
+- `Ready`: Indicates the IP Policy is active and ready to use
+
+## Example IPPolicies
+
+### Allow specific IP address
+
+The following `IPPolicy` allows traffic only from a specific IP address:
+
+```yaml
+apiVersion: ingress.k8s.ngrok.com/v1alpha1
+kind: IPPolicy
+metadata:
+  name: whitelist-specific-ip
+  namespace: default
+spec:
+  description: IP Policy to whitelist specific IP address
+  rules:
+  - action: allow
+    cidr: 162.236.158.182/32
+    description: Allow access from specific IP address
+```
+
+### Allow subnet with multiple rules
+
+The following `IPPolicy` allows traffic from a corporate network subnet:
+
+```yaml
+apiVersion: ingress.k8s.ngrok.com/v1alpha1
+kind: IPPolicy
+metadata:
+  name: corporate-network-access
+  namespace: production
+spec:
+  description: Allow access from corporate network
+  rules:
+  - action: allow
+    cidr: 10.0.0.0/16
+    description: Allow access from main corporate subnet
+  - action: allow
+    cidr: 172.16.0.0/12
+    description: Allow access from corporate VPN range
+```
+
+### Deny specific IP addresses
+
+The following `IPPolicy` denies traffic from specific IP addresses:
+
+```yaml
+apiVersion: ingress.k8s.ngrok.com/v1alpha1
+kind: IPPolicy
+metadata:
+  name: blocklist
+  namespace: default
+spec:
+  description: Block traffic from malicious IPs
+  rules:
+  - action: deny
+    cidr: 192.0.2.1/32
+    description: Blocked IP from abuse reports
+  - action: deny
+    cidr: 198.51.100.0/24
+    description: Blocked subnet from attack attempts
+```
