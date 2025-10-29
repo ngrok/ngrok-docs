@@ -6,8 +6,6 @@ description: Learn how to use Endpoint Pooling to share incoming traffic between
 
 import { YouTubeEmbed } from "/snippets/YouTubeEmbed.jsx";
 
-
-
 A core benefit of Kubernetes is that it simplifies creating multiple replica
 pods for your apps or APIs and automatically load-balancing
 between them. That's helpful if you have a single cluster and need to
@@ -17,7 +15,10 @@ horizontally scale, but Kubernetes can't help if you want to:
 - Balance traffic between more than one cloud providers
 - Deploy canary versions or run A/B tests of your apps/APIs on a single cluster
 
-<YouTubeEmbed videoId="xD1hZ84uEJs" title="Multi-cluster (and multi-cloud!) ingress in 60 seconds with ngrok" />
+<YouTubeEmbed
+	videoId="xD1hZ84uEJs"
+	title="Multi-cluster (and multi-cloud!) ingress in 60 seconds with ngrok"
+/>
 
 [Endpoint Pooling](/universal-gateway/endpoint-pooling/) makes load
 balancing between Kubernetes services simple—you only need to create two
@@ -45,81 +46,27 @@ don't have one already.
 
 <Tabs>
 	<Tab title="Agent Endpoint">
-	```yaml
-		apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-		kind: AgentEndpoint
-		metadata:
-			name: example
-			namespace: default
-		spec:
-			upstream:
-				url: http://example.default:80
-			url: https://$NGROK_DOMAIN.ngrok.app
-	```
+		```yaml apiVersion: ngrok.k8s.ngrok.com/v1alpha1 kind: AgentEndpoint
+		metadata: name: example namespace: default spec: upstream: url:
+		http://example.default:80 url: https://$NGROK_DOMAIN.ngrok.app ```
 	</Tab>
 	<Tab title="Ingress">
-	```yaml
-	apiVersion: networking.k8s.io/v1
-	kind: Ingress
-	metadata:
-		name: example-ingress
-		namespace: default
-		annotations:
-			k8s.ngrok.com/pooling-enabled: "true"
-	spec:
-		ingressClassName: ngrok
-		rules:
-			- host: $NGROK_DOMAIN.ngrok.app
-				http:
-					paths:
-						- path: /
-							pathType: Prefix
-							backend:
-								service:
-									name: example
-									port:
-										number: 80
-	```
+		```yaml apiVersion: networking.k8s.io/v1 kind: Ingress metadata: name:
+		example-ingress namespace: default annotations:
+		k8s.ngrok.com/pooling-enabled: "true" spec: ingressClassName: ngrok rules: -
+		host: $NGROK_DOMAIN.ngrok.app http: paths: - path: / pathType: Prefix
+		backend: service: name: example port: number: 80 ```
 	</Tab>
 	<Tab title="Gateway API">
-	```yaml
-	apiVersion: gateway.networking.k8s.io/v1
-	kind: Gateway
-	metadata:
-		name: ngrok-gateway
-		namespace: default
-		annotations:
-		  k8s.ngrok.com/pooling-enabled: "true"
-	spec:
-		gatewayClassName: ngrok
-		listeners:
-			- name: example-hostname
-				protocol: HTTP
-				port: 80
-				hostname: $NGROK_DOMAIN.ngrok.app
-	---
-	apiVersion: gateway.networking.k8s.io/v1
-	kind: HTTPRoute
-	metadata:
-		name: example-route
-		namespace: default
-	spec:
-		parentRefs:
-		  - group: gateway.networking.k8s.io
-			  kind: Gateway
-		    name: ngrok-gateway
-		    namespace: default
-		hostnames:
-		  - $NGROK_DOMAIN
-		rules:
-		  - matches:
-			  - path:
-					  type: PathPrefix
-					  value: /
-			backendRefs:
-			  - name: example
-				  port: 80
-	```
+		```yaml apiVersion: gateway.networking.k8s.io/v1 kind: Gateway metadata:
+		name: ngrok-gateway namespace: default annotations:
+		k8s.ngrok.com/pooling-enabled: "true" spec: gatewayClassName: ngrok
+		listeners: - name: example-hostname protocol: HTTP port: 80 hostname:
+		$NGROK_DOMAIN.ngrok.app --- apiVersion: gateway.networking.k8s.io/v1 kind:
+		HTTPRoute metadata: name: example-route namespace: default spec: parentRefs:
+		- group: gateway.networking.k8s.io kind: Gateway name: ngrok-gateway
+		namespace: default hostnames: - $NGROK_DOMAIN rules: - matches: - path:
+		type: PathPrefix value: / backendRefs: - name: example port: 80 ```
 	</Tab>
 </Tabs>
 

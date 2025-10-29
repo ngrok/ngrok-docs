@@ -3,12 +3,12 @@ title: Azure Active Directory B2C SSO (SAML)
 sidebarTitle: Azure AD B2C (SAML)
 description: Use Microsoft Azure AD B2C to secure access to ngrok endpoints
 ---
+
 import Disclaimer from "/snippets/integrations/_endpoint-sso-disclaimer.mdx";
 
 <Disclaimer />
 <Tip>
 **TL;DR**
-
 
 To have ngrok enforce Single Sign-On using SAML with Azure Active Directory B2C (Azure AD B2C):
 
@@ -18,7 +18,7 @@ To have ngrok enforce Single Sign-On using SAML with Azure Active Directory B2C 
 1. [Update the ngrok Edge with the IdP metadata](#update-ngrok-edge)
 1. [Test your integration](#test-integration)
 1. [Bonus: Update your Azure AD B2C custom policies to support the password reset flow](#bonus)
-</Tip>
+   </Tip>
 
 This article details how to configure Azure AD B2C as an Identity Provider for your ngrok Edge. By integrating Azure AD B2C with ngrok, you can:
 
@@ -33,30 +33,30 @@ To configure ngrok tunnels with Azure AD B2C, you must have:
 - a Microsoft Azure account with access to an Azure AD B2C tenant
 - an understanding of Azure AD B2C [custom policies](https://learn.microsoft.com/en-us/azure/active-directory-b2c/custom-policy-overview)
 
-## 1. Create an ngrok Edge 
+## 1. Create an ngrok Edge
 
 1. Go to the [ngrok dashboard](https://dashboard.ngrok.com)
 1. Click **Universal Gateway** > **Edges**
 1. Create an Edge:
-    1. Click **New Edge**
-    1. Click **HTTPS Edge**
-    1. Click the **Pencil Icon** next to "no description". Enter _Edge With Azure Active Directory B2C SSO_ as the Edge name and click **Save**
+   1. Click **New Edge**
+   1. Click **HTTPS Edge**
+   1. Click the **Pencil Icon** next to "no description". Enter _Edge With Azure Active Directory B2C SSO_ as the Edge name and click **Save**
 
 1. Configure the SAML module for this Edge:
-    1. On the Routes section, click **SAML**
-    1. Click **Begin setup**
-    1. In the Identity Provider section, copy the following XML as a placeholder into the input box
+   1. On the Routes section, click **SAML**
+   1. Click **Begin setup**
+   1. In the Identity Provider section, copy the following XML as a placeholder into the input box
 
-    ```xml
-    <EntityDescriptor xmlns="urn:oasis:names:tc:SAML:2.0:metadata"></EntityDescriptor>
-    ```
+   ```xml
+   <EntityDescriptor xmlns="urn:oasis:names:tc:SAML:2.0:metadata"></EntityDescriptor>
+   ```
 
-    ![img/1-3.png](../img/azure-ad-b2c/img/1-3.png)
-    1. Click **Save**
+   ![img/1-3.png](../img/azure-ad-b2c/img/1-3.png)
+   1. Click **Save**
 
-    1. Note that ngrok has now generated values for the fields in the Service Provider section. We will use these to configure Azure AD B2C later
+   1. Note that ngrok has now generated values for the fields in the Service Provider section. We will use these to configure Azure AD B2C later
 
-## 2. Configure Azure AD B2C custom policies 
+## 2. Configure Azure AD B2C custom policies
 
 1. Follow the directions based on the [Azure docs](https://learn.microsoft.com/en-us/azure/active-directory-b2c/tutorial-create-user-flows?pivots=b2c-custom-policy)
 
@@ -66,7 +66,7 @@ To configure ngrok tunnels with Azure AD B2C, you must have:
    1. To keep things simple, use the `LocalAccounts` starter pack. This means users will sign up and log in as users in your Azure AD B2C tenant vs. with another identity provider This means you can skip configuring Facebook as an identity provider. If you are using the IEF Setup App, click the checkbox for `Remove Facebook references` before you deploy the starter pack
    1. Skip the steps of `Register a web application` and `Enable ID token implicit grant` unless you'd like to test this now. We will register a SAML application and test it later
 
-## 3. Create an Azure AD B2C SAML application 
+## 3. Create an Azure AD B2C SAML application
 
 1. Follow the directions based on the [Azure docs](https://learn.microsoft.com/en-us/azure/active-directory-b2c/saml-service-provider?tabs=windows&pivots=b2c-custom-policy)
 
@@ -85,7 +85,7 @@ To configure ngrok tunnels with Azure AD B2C, you must have:
 
    ![img/3-2b.png](../img/azure-ad-b2c/img/3-2b.png)
 
-## 4. Update the ngrok Edge with the IdP metadata 
+## 4. Update the ngrok Edge with the IdP metadata
 
 1. Back in the ngrok dashboard for your Edge's SAML configuration, copy and paste the XML found at the IdP Saml Metadata URL in the Identity Provider section, replacing the previously set placeholder value. Note the IdP Metadata URL follows this format: `https://<tenant-name>.b2clogin.com/<tenant-name>.onmicrosoft.com/<policy-name>/Samlp/metadata`.
 
@@ -93,12 +93,13 @@ To configure ngrok tunnels with Azure AD B2C, you must have:
 
 1. Click **Save**
 
-## 5. Test the integration 
+## 5. Test the integration
+
 <Tip>
 **Note**
 
-
 For this step, we assume you have an app running locally (that is, on localhost:3000) with the ngrok client installed.
+
 </Tip>
 
 1. Launch a tunnel connected to your configured Edge
@@ -132,6 +133,6 @@ For this step, we assume you have an app running locally (that is, on localhost:
 
    ![img/5-3.png](../img/azure-ad-b2c/img/5-3.png) 4. After login, you should be able to see the application
 
-## Bonus: Update your Azure AD B2C custom policies to support the password reset flow 
+## Bonus: Update your Azure AD B2C custom policies to support the password reset flow
 
 1. From the test, you may notice that the `Forgot your password?` link doesn't work. You will need to embed the password reset flow as part of your sign up / sign in custom policy for local accounts, as the `LocalAccounts` starter pack did not include this flow as part of the sign up / sign in policy. Here is [sample code from Azure AD B2C](https://github.com/azure-ad-b2c/samples/tree/master/policies/embedded-password-reset) on how to configure this

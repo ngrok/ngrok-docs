@@ -32,7 +32,7 @@ Here is what you'll be building with:
     domain, like `https://api.example.com`.
   - We'll refer to this domain as `<NGROK_DOMAIN>`.
 
-## Deploy Argo CD 
+## Deploy Argo CD
 
 Next, set up Argo CD on your cluster to enable GitOps.
 
@@ -85,7 +85,7 @@ Next, set up Argo CD on your cluster to enable GitOps.
    argocd login <YOUR-CLUSTER>:8080
    ```
 
-## Set up the demo API 
+## Set up the demo API
 
 Next, you need to set up the Git repository for the API you'll deploy behind your ngrok API gateway. GitOps (and thus APIOps) requires declarative and version-controlled configuration, and that includes the hostname for your deployment. You can't simply clone the demo API repository and apply it to your cluster, as the ngrok-supplied hostname will already be in use.
 
@@ -99,7 +99,7 @@ If you have an existing API and GitOps configuration, you're more than welcome t
 
 1. Add, commit, and push these changes to your fork.
 
-## Deploy your demo API with Argo CD 
+## Deploy your demo API with Argo CD
 
 Now that your demo API is forked and properly configured on GitHub, you can connect it to Argo CD to sync, reconcile, and deploy.
 
@@ -142,7 +142,7 @@ Now that your demo API is forked and properly configured on GitHub, you can conn
      https://<NGROK-DOMAIN>/legend
    ```
 
-## Enable APIOps in Argo CD 
+## Enable APIOps in Argo CD
 
 A fundamental component of GitOps, and thus APIOps, is that because your Git repository contains the latest version of your desired state, your deployment toolkit should automatically update the production deployment without any manual processes.
 
@@ -157,7 +157,11 @@ A fundamental component of GitOps, and thus APIOps, is that because your Git rep
    ![Enabling auto sync for an Argo CD-deployed API](../img/argocd/img/argo-auto-sync.png)
 
    <Note>
-   The default polling interval, at which Argo CD looks for changes to the desired state in your Git repo, is 3 minutes. You can alter this behavior with the [`timeout.reconciliation` value](https://argo-cd.readthedocs.io/en/stable/faq/#how-often-does-argo-cd-check-for-changes-to-my-git-or-helm-repository) in Argo CD's configuration.
+   	The default polling interval, at which Argo CD looks for changes to the
+   	desired state in your Git repo, is 3 minutes. You can alter this behavior
+   	with the [`timeout.reconciliation`
+   	value](https://argo-cd.readthedocs.io/en/stable/faq/#how-often-does-argo-cd-check-for-changes-to-my-git-or-helm-repository)
+   	in Argo CD's configuration.
    </Note>
 
 1. Optionally, you can test auto sync by editing the number of replicas of the demo API deployed in your cluster. In your Git repository, open the` deployment.yaml` file and edit the `replicas` value:
@@ -179,7 +183,7 @@ A fundamental component of GitOps, and thus APIOps, is that because your Git rep
 
    ![Automatically increase the number of replicas via GitOps](../img/argocd/img/argo-replicas.png)
 
-## Configure your API gateway with traffic policies 
+## Configure your API gateway with traffic policies
 
 The ngrok team [recently rolled out support](https://ngrok.com/blog-post/policy-support-in-gateway-api) for using the [Traffic Policy module](/traffic-policy/) alongside the Kubernetes Gateway API. This allows you to place all your Traffic Policy actions into a single `NgrokTrafficPolicy` CRD, controlling your ngrok-powered API gateway with an APIOps workflow with version-controlled and declarative manifests.
 
@@ -213,33 +217,33 @@ The project comes with a basic example of such a Traffic Policy—[see `traffic-
    This defines a [filter](https://gateway-api.sigs.k8s.io/api-types/httproute/#filters-optional), which must be processes during the request or response lifecycle, allowing you to inject policy into all traffic arriving to your API through your ngrok API gateway.
 
    ```yaml
-    apiVersion: gateway.networking.k8s.io/v1
-    kind: HTTPRoute
-    metadata:
-      name: apiops-demo-route
-      namespace: apiops-demo
-    spec:
-      parentRefs:
-        - kind: Gateway
-          name: apiops-demo-gateway
-          namespace: apiops-demo
-      hostnames:
-        - "apiops-demo.ngrok.app"
-      rules:
-        - matches:
-            - path:
-                type: PathPrefix
-                value: /
-          filters:
-            - type: ExtensionRef
-              extensionRef:
-                group: ngrok.k8s.ngrok.com
-                kind: NgrokTrafficPolicy
-                name: traffic-policy-rate-limiting
-          backendRefs:
-            - name: apiops-demo-service
-              port: 80
-              kind: Service
+   apiVersion: gateway.networking.k8s.io/v1
+   kind: HTTPRoute
+   metadata:
+     name: apiops-demo-route
+     namespace: apiops-demo
+   spec:
+     parentRefs:
+       - kind: Gateway
+         name: apiops-demo-gateway
+         namespace: apiops-demo
+     hostnames:
+       - "apiops-demo.ngrok.app"
+     rules:
+       - matches:
+           - path:
+               type: PathPrefix
+               value: /
+         filters:
+           - type: ExtensionRef
+             extensionRef:
+               group: ngrok.k8s.ngrok.com
+               kind: NgrokTrafficPolicy
+               name: traffic-policy-rate-limiting
+         backendRefs:
+           - name: apiops-demo-service
+             port: 80
+             kind: Service
    ```
 
 1. Add, commit, and push this change to your Git repository. Argo CD will auto sync this latest commit then reconcile the deployed state with those changes to the `NgrokTrafficPolicy` CRD and `HTTPRoute`.

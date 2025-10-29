@@ -24,7 +24,7 @@ Together, Consul provides a robust and secure way for Services within a cluster 
     domain, like `https://api.example.com`.
   - We'll refer to this domain as `<NGROK_DOMAIN>`.
 
-## Set up a local Consul Service Mesh on Kubernetes 
+## Set up a local Consul Service Mesh on Kubernetes
 
 For this guide, we'll need access to a remote or local Kubernetes cluster with Consul installed. If you have an existing cluster with Consul set up, you can skip this step and proceed to [2. Install the ngrok Kubernetes Operator](#install-the-ngrok-ingress-controller).
 
@@ -78,8 +78,11 @@ helm repo add hashicorp https://helm.releases.hashicorp.com
 
 helm install --values values.yaml consul hashicorp/consul --create-namespace --namespace consul --version "1.0.0"
 ```
+
 <Tip>
-**Depending on your computer, this can take some time for the pods to become healthy. You can watch the status of the pods with `kubectl get pods --namespace consul -w`**
+	**Depending on your computer, this can take some time for the pods to become
+	healthy. You can watch the status of the pods with `kubectl get pods
+	--namespace consul -w`**
 </Tip>
 
 1. Verify Consul is installed and all its pods are healthy
@@ -93,18 +96,21 @@ consul-webhook-cert-manager-5bb6f965c8-pjqms   1/1     Running   0              
 ```
 
 We now have a Kubernetes cluster with a Consul service mesh installed.
+
 <Note>
-**These steps are based on Consul's Tutorial [Consul Service Discovery and Service Mesh on Minikube](https://developer.hashicorp.com/consul/tutorials/kubernetes/kubernetes-minikube)**
+	**These steps are based on Consul's Tutorial [Consul Service Discovery and
+	Service Mesh on
+	Minikube](https://developer.hashicorp.com/consul/tutorials/kubernetes/kubernetes-minikube)**
 </Note>
 
-## Configure the ngrok Kubernetes Operator 
+## Configure the ngrok Kubernetes Operator
 
 Consul requires a bit of extra configruation to work with ngrok's Operator for
 Kubernetes ingress. You'll need to use a pod annotation to enable the Consul
 Connect sidecar injector. This will allow us to use Consul Connect to secure the
 traffic between the ngrok Kubernetes Operator and our services.
 
-1. First, create a Kubernetes Service for the ngrok Kubernetes Operator. Consul relies on this to name our services to declare Service Intention `source` and `destination` values. We'll create a Kubernetes Service for the ngrok Kubernetes Operator in the `consul` namespace.
+1.  First, create a Kubernetes Service for the ngrok Kubernetes Operator. Consul relies on this to name our services to declare Service Intention `source` and `destination` values. We'll create a Kubernetes Service for the ngrok Kubernetes Operator in the `consul` namespace.
 
     ```yaml
     apiVersion: v1
@@ -122,43 +128,43 @@ traffic between the ngrok Kubernetes Operator and our services.
         app.kubernetes.io/name: ngrok-operator
     ```
 
-1. Install the ngrok Kubernetes Operator
+1.  Install the ngrok Kubernetes Operator
 
-    Next, install the ngrok Kubernetes Operator into our cluster. We want the controller pods to be in the Consul service mesh in order to proxy traffic to our other services. We'll use pod annotations to enable the Consul Connect sidecar injector and allow outbound traffic to use the Consul mesh. Consul documents how to set these 2 annotations in the [Configure Operators for Consul on Kubernetes](https://developer.hashicorp.com/consul/docs/k8s/connect/ingress-controllers) doc.
+        Next, install the ngrok Kubernetes Operator into our cluster. We want the controller pods to be in the Consul service mesh in order to proxy traffic to our other services. We'll use pod annotations to enable the Consul Connect sidecar injector and allow outbound traffic to use the Consul mesh. Consul documents how to set these 2 annotations in the [Configure Operators for Consul on Kubernetes](https://developer.hashicorp.com/consul/docs/k8s/connect/ingress-controllers) doc.
 
-    ```yaml
-    # This annotation is required to enable the Consul Connect sidecar injector
-    consul.hashicorp.com/connect-inject: "true"
-    # This is the CIDR of your Kubernetes API: `kubectl get svc kubernetes --output jsonpath='{.spec.clusterIP}'
-    consul.hashicorp.com/transparent-proxy-exclude-outbound-cidrs: "10.96.0.1/32"
-    ```
+        ```yaml
+        # This annotation is required to enable the Consul Connect sidecar injector
+        consul.hashicorp.com/connect-inject: "true"
+        # This is the CIDR of your Kubernetes API: `kubectl get svc kubernetes --output jsonpath='{.spec.clusterIP}'
+        consul.hashicorp.com/transparent-proxy-exclude-outbound-cidrs: "10.96.0.1/32"
+        ```
 
-    Check out our [Operator installation doc](/k8s/installation/helm/) for details on how to use Helm to install with your ngrok credentials. Once you've done that, you can run the command below to set the appropriate annotations.
+        Check out our [Operator installation doc](/k8s/installation/helm/) for details on how to use Helm to install with your ngrok credentials. Once you've done that, you can run the command below to set the appropriate annotations.
 
-    ```bash
-    helm install ngrok-operator ngrok/ngrok-operator \
-      --reuse-values
-      --set-string podAnnotations.consul\\.hashicorp\\.com/connect-inject=true \
-    	--set podAnnotations."consul\.hashicorp\.com/transparent-proxy-exclude-outbound-cidrs"="YOUR KUBERNETES API CIDR"
-    ```
-<Note>
+        ```bash
+        helm install ngrok-operator ngrok/ngrok-operator \
+          --reuse-values
+          --set-string podAnnotations.consul\\.hashicorp\\.com/connect-inject=true \
+        	--set podAnnotations."consul\.hashicorp\.com/transparent-proxy-exclude-outbound-cidrs"="YOUR KUBERNETES API CIDR"
+        ```
+
+    <Note>
 **- HashiCorp's docs also mention the annotation `consul.hashicorp.com/transparent-proxy-exclude-inbound-ports`. This is not applicable to the ngrok Kubernetes Operator as we create an outbound connection for Ingress rather than exposing ports.**
-
 
 - The `--set-string` flag allows the pod annotation to escape the `.` character in the annotation name while ensuring the value `true` is a boolean and not a string.
 - In a production environment, or anywhere you wish to use Infrastructure as Code and source control your Helm configurations, you can set up your credentials following this [guide](https://github.com/ngrok/ngrok-operator/blob/main/docs/deployment-guide/credentials.md).
-</Note>
+  </Note>
 
-## Install a Sample Application 
+## Install a Sample Application
 
 Now let's install a sample application to try out our service mesh and Operator combination. We'll use the [HashiCups Demo Application](https://github.com/hashicorp-demoapp) HashiCorp uses for demos and guides such as in their [Getting Started with Consul Service Mesh for Kubernetes](https://developer.hashicorp.com/consul/tutorials/kubernetes-features/service-mesh-deploy) guide. This application is a simple e-commerce application that allows users to order coffee cups.
 The application has a `frontend` and public API services that are also backed by a private API and database. These communicate with each other through the Consul service mesh. This comes with nginx installed as a proxy for the `frontend` and Public API services. We'll replace this with ngrok to provide public access and other features.
+
 <Tip>
 **For this demo, everything will be installed in the `consul` namespace.**
 
-
-
 The ngrok Kubernetes Operator can send traffic to services across different namespaces, but [Consul Service Intentions](https://developer.hashicorp.com/consul/docs/connect/config-entries/service-intentions) across namespaces [require an enterprise account](https://developer.hashicorp.com/consul/docs/connect/config-entries/service-intentions#sources-namespace). For now, we'll keep everything in the same namespace.
+
 </Tip>
 
 1. Clone the [HashiCorp Learning Consul repo](https://github.com/hashicorp/learn-consul-kubernetes). This has multiple great example applications for learning about Consul and Kubernetes. We'll use the HashiCups application for this guide.
@@ -216,7 +222,7 @@ spec:
     name: public-api
 ```
 
-## Configure Public Ingress for the sample application 
+## Configure Public Ingress for the sample application
 
 Now that the ngrok Kubernetes Operator can communicate with the `frontend` service and `public-api` service through the Consul Service Mesh via Service Intentions, we can create an ingress to route traffic to the app. We'll create ingress objects to route traffic to the `frontend` service and the `public-api` service.
 
@@ -247,22 +253,21 @@ spec:
                 port:
                   number: 8080
 ```
+
 <Tip>
 **This ingress object:**
-
-
 
 - Uses the `ngrok` ingress class
 - The host is the ngrok domain name you selected that is static
 - There is a route for `/` that routes to the `frontend` service on port `3000`
 - There is a route for `/api` that routes to the `public-api` service on port `8080`
-</Tip>
+  </Tip>
 
 Open your `<NGROK_DOMAIN>` domain in your browser and see the HashiCups application.
 
 ![HashiCups App](../img/consul/img/hashicups.png)
 
-## Add OAuth Protection to the App 
+## Add OAuth Protection to the App
 
 Let's take your ingress needs a little further by assuming you want to add edge security, in the form of Google OAuth,
 to the endpoint where your 2048 application is humming along.
@@ -338,28 +343,28 @@ Ingresses](/k8s/guides/using-ingresses/#using-ngroktrafficpolicy-with-ingress).
    your domain.
 
    ```yaml
-    # Traffic Policy configuration for OAuth
-    apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-    kind: NgrokTrafficPolicy
-    metadata:
-      name: oauth
-      namespace: default
-    spec:
-      policy:
-        on_http_request:
-          - type: oauth
-            config:
-              provider: google
-          - expressions:
-              - "!actions.ngrok.oauth.identity.email.endsWith('@example.com')"
-            actions:
-              - type: custom-response
-                config:
-                  body: Hey, no auth for you ${actions.ngrok.oauth.identity.name}!
-                  status_code: 400
+   # Traffic Policy configuration for OAuth
+   apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+   kind: NgrokTrafficPolicy
+   metadata:
+     name: oauth
+     namespace: default
+   spec:
+     policy:
+       on_http_request:
+         - type: oauth
+           config:
+             provider: google
+         - expressions:
+             - "!actions.ngrok.oauth.identity.email.endsWith('@example.com')"
+           actions:
+             - type: custom-response
+               config:
+                 body: Hey, no auth for you ${actions.ngrok.oauth.identity.name}!
+                 status_code: 400
    ```
 
 1. Check out your deployed HashiCups app once again. If you log in with an email that
-   doesn't match your domain, ngrok rejects your request. 
+   doesn't match your domain, ngrok rejects your request.
 
 Now only you can order from HashiCups—from anywhere.

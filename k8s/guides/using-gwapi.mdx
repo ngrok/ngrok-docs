@@ -111,35 +111,35 @@ metadata:
   namespace: default
 spec:
   hostnames:
-  - example-hostname.ngrok.io
+    - example-hostname.ngrok.io
   parentRefs:
-  - group: gateway.networking.k8s.io
-    kind: Gateway
-    name: example-gateway
-    namespace: default
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: example-gateway
+      namespace: default
   rules:
-  - matches:
-      - path:
-          type: PathPrefix
-          value: /
-    backendRefs:
-      - group: ""
-        kind: Service
-        name: example-service
-        port: 80
-        weight: 1
-        filters:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - group: ""
+          kind: Service
+          name: example-service
+          port: 80
+          weight: 1
+          filters:
+            - type: ExtensionRef
+              extensionRef:
+                group: "ngrok.k8s.ngrok.com"
+                kind: "NgrokTrafficPolicy"
+                name: basic-auth
+      filters:
         - type: ExtensionRef
           extensionRef:
             group: "ngrok.k8s.ngrok.com"
             kind: "NgrokTrafficPolicy"
             name: basic-auth
-    filters:
-    - type: ExtensionRef
-      extensionRef:
-        group: "ngrok.k8s.ngrok.com"
-        kind: "NgrokTrafficPolicy"
-        name: basic-auth
 ```
 
 ## Gateway API HTTPS Upstreams
@@ -206,49 +206,49 @@ metadata:
 spec:
   gatewayClassName: ngrok
   listeners:
-  - allowedRoutes:
-      kinds:
-      - group: gateway.networking.k8s.io
-        kind: HTTPRoute
-      namespaces:
-        from: All
-    hostname: invalid-gw-2.tests.ngrok.io
-    name: http
-    port: 443
-    protocol: HTTP
+    - allowedRoutes:
+        kinds:
+          - group: gateway.networking.k8s.io
+            kind: HTTPRoute
+        namespaces:
+          from: All
+      hostname: invalid-gw-2.tests.ngrok.io
+      name: http
+      port: 443
+      protocol: HTTP
 status:
   addresses:
-  - type: Hostname
-    value: invalid-gw-2.tests.ngrok.io
+    - type: Hostname
+      value: invalid-gw-2.tests.ngrok.io
   conditions:
-  - lastTransitionTime: "2025-06-11T15:00:27Z"
-    message: gateway listeners are not valid
-    observedGeneration: 1
-    reason: ListenersNotValid
-    status: "False"
-    type: Accepted
-  - lastTransitionTime: "1970-01-01T00:00:00Z"
-    message: Waiting for controller
-    reason: Pending
-    status: Unknown
-    type: Programmed
-  listeners:
-  - attachedRoutes: 0
-    conditions:
     - lastTransitionTime: "2025-06-11T15:00:27Z"
-      message: ngrok only supports HTTP on port 80
+      message: gateway listeners are not valid
       observedGeneration: 1
-      reason: PortUnavailable
+      reason: ListenersNotValid
       status: "False"
       type: Accepted
-    - lastTransitionTime: "2025-06-11T20:28:15Z"
-      message: listener is not valid
-      observedGeneration: 1
-      reason: Invalid
-      status: "False"
+    - lastTransitionTime: "1970-01-01T00:00:00Z"
+      message: Waiting for controller
+      reason: Pending
+      status: Unknown
       type: Programmed
-    name: http
-    supportedKinds: []
+  listeners:
+    - attachedRoutes: 0
+      conditions:
+        - lastTransitionTime: "2025-06-11T15:00:27Z"
+          message: ngrok only supports HTTP on port 80
+          observedGeneration: 1
+          reason: PortUnavailable
+          status: "False"
+          type: Accepted
+        - lastTransitionTime: "2025-06-11T20:28:15Z"
+          message: listener is not valid
+          observedGeneration: 1
+          reason: Invalid
+          status: "False"
+          type: Programmed
+      name: http
+      supportedKinds: []
 ```
 
 We can see that the listener for this Gateway is invalid because the listener specified listening for HTTP on port 443 and

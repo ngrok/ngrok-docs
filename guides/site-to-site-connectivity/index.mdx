@@ -32,7 +32,7 @@ This setup minimizes security risks, simplifies deployment, and ensures continuo
 | **Tool**           | **Ideal Environment**                                                                                                                                                                          |
 | ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Agent**          | Simple, lightweight, and quick deployment to connect to customer services on any platform (cloud, on-prem, VM, or physical server). No code changes or complex network configuration required. |
-| **SDK**            | Embed ngrok connectivity directly into your application for programmatic control, or when you're building custom integrations (for example, device gateways, BYOC architectures).                     |
+| **SDK**            | Embed ngrok connectivity directly into your application for programmatic control, or when you're building custom integrations (for example, device gateways, BYOC architectures).              |
 | **ngrok Operator** | Customer's environment is Kubernetes-based and you need to expose services securely from inside their cluster to your network, without configuring low-level networking.                       |
 
 All three options leverage ngrok's global network for secure, low-latency access without requiring firewall/NAT changes
@@ -188,12 +188,12 @@ Our traffic policy file for tls://patientdb-clinic1.clinic-network.com should lo
 ```yaml
 on_tcp_connect:
   - actions:
-    - type: terminate-tls
-      config:
-        min_version: "1.3"
-    - type: forward-internal
-      config:
-        url: tls://patient-db.clinic1.internal:443
+      - type: terminate-tls
+        config:
+          min_version: "1.3"
+      - type: forward-internal
+        config:
+          url: tls://patient-db.clinic1.internal:443
 ```
 
 To deter port scanners or other malicious actors from our TCP cloud endpoint, let's add IP restrictions using the restrict-ips traffic policy action onto our clinic operations tcp endpoint.
@@ -203,15 +203,15 @@ Our traffic policy file for our tcp cloud endpoint should look like this:
 ```yaml
 on_tcp_connect:
   - actions:
-    - type: restrict-ips
-      config:
-        enforce: true
-        allow:
-          - e680:5791:be4c:5739:d959:7b94:6d54:d4b4/128
-          - 203.0.113.42/32
-    - type: forward-internal
-      config:
-        url: tcp://operations-database.clinic1.internal:443
+      - type: restrict-ips
+        config:
+          enforce: true
+          allow:
+            - e680:5791:be4c:5739:d959:7b94:6d54:d4b4/128
+            - 203.0.113.42/32
+      - type: forward-internal
+        config:
+          url: tcp://operations-database.clinic1.internal:443
 ```
 
 Finally, to secure our HTTPs cloud endpoint, let's add a check to make sure a specific header auth token is present in the request along with a JWT validation step before our REST API can be accessed.
@@ -227,16 +227,16 @@ on_http_request:
         config:
           issuer:
             allow_list:
-              - value: 'https://example.com/issuer'
+              - value: "https://example.com/issuer"
           audience:
             allow_list:
-              - value: 'urn:example:api'
+              - value: "urn:example:api"
           http:
             tokens:
               - type: access_token
                 method: header
                 name: Authorization
-                prefix: 'Bearer '
+                prefix: "Bearer "
               - type: it+jwt
                 method: body
                 name: _id_token
@@ -247,10 +247,10 @@ on_http_request:
             keys:
               sources:
                 additional_jkus:
-                  - 'https://example.com/issuer/jku'
+                  - "https://example.com/issuer/jku"
   - type: forward-internal
     config:
-      url: 'https://rest-api.clinic1.internal:443'
+      url: "https://rest-api.clinic1.internal:443"
 ```
 
 You can also create a cloud endpoint and attach its corresponding traffic policies with a single API call. Below are the curl commands to create each endpoint and attach its traffic policy.
@@ -313,12 +313,12 @@ agent:
   authtoken: <YOUR_NGROK_AUTHTOKEN>
   endpoints:
     - name: service-a
-      url: 'https://service.internal'
+      url: "https://service.internal"
       pooling_enabled: true
       upstream:
         url: 8080
     - name: service-b
-      url: 'https://service.internal'
+      url: "https://service.internal"
       pooling_enabled: true
       upstream:
         url: 8081
@@ -356,7 +356,8 @@ ngrok service start
 ```
 
 <Note>
-In most cases, installing ngrok as a service requires administrator privileges.
+	In most cases, installing ngrok as a service requires administrator
+	privileges.
 </Note>
 
 This will start all tunnels defined in the configuration file, ensure ngrok runs persistently in the background, and integrate with native OS service tooling.

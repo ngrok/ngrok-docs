@@ -3,9 +3,6 @@ title: Securing Your Endpoints with OAuth Authentication
 sidebarTitle: OAuth
 ---
 
-
-
-
 OAuth is a widely adopted authentication and authorization mechanism that enables users to securely access resources without exposing their credentials. It is commonly used for single sign-on (SSO), API security, and third-party integrations.
 
 By enforcing OAuth authentication at the network edge, you can:
@@ -13,7 +10,6 @@ By enforcing OAuth authentication at the network edge, you can:
 🔐 Ensure only authorized users can access your services. <br />
 ⚡ Offload authentication from your application, simplifying backend logic. <br />
 🛡 Prevent unauthorized access by requiring valid OAuth tokens before forwarding requests. <br />
-
 
 ## 🔍 What are the Benefits of Using OAuth for Authentication?
 
@@ -85,98 +81,92 @@ Consult the list of [supported providers](/traffic-policy/actions/oauth/#support
 	<Tab title="Ingress">
 	💡 `Ingress` resources do not natively support OAuth enforcement, but they can be extended using a traffic policy.
 
-	### 1. Create an `NgrokTrafficPolicy`
+    ### 1. Create an `NgrokTrafficPolicy`
 
-	```yaml
-  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-  kind: NgrokTrafficPolicy
-  metadata:
-    name: example-tp
-    namespace: default
-  spec:
-    policy:
-      on_http_request:
-        - actions:
-            - type: oauth
-              config:
-                provider: google
-                client_id: "{your app's oauth client id}"
-                client_secret: "{your app's oauth client secret}"
-                scopes:
-                  - https://www.googleapis.com/auth/userinfo.profile
-                  - https://www.googleapis.com/auth/userinfo.email
-	```
+    ```yaml
 
-	### 2. Use the `NgrokTrafficPolicy` on an `Ingress`
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: NgrokTrafficPolicy
+metadata:
+name: example-tp
+namespace: default
+spec:
+policy:
+on_http_request: - actions: - type: oauth
+config:
+provider: google
+client_id: "{your app's oauth client id}"
+client_secret: "{your app's oauth client secret}"
+scopes: - https://www.googleapis.com/auth/userinfo.profile - https://www.googleapis.com/auth/userinfo.email
+```
 
-	```yaml
-  apiVersion: networking.k8s.io/v1
-  kind: Ingress
-  metadata:
-    annotations:
-      k8s.ngrok.com/traffic-policy: example-tp
-    name: example-ingress
-    namespace: default
-  spec:
-    ingressClassName: ngrok
-    rules:
-      - host: example-hostname.ngrok.io
-        http:
-          paths:
-            - path: /
-              pathType: Prefix
-              backend:
-                service:
-                  name: example-service
-                  port:
-                    number: 80
-	```
-	</Tab>
-	<Tab title="Gateway API">
-	💡 Gateway API resources do not natively support OAuth enforcement, but they can be extended using a traffic policy.
+    ### 2. Use the `NgrokTrafficPolicy` on an `Ingress`
 
-	### 1. Create an `NgrokTrafficPolicy`
+    ```yaml
 
-	```yaml
-  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-  kind: NgrokTrafficPolicy
-  metadata:
-    name: example-tp
-    namespace: default
-  spec:
-    policy:
-      on_http_request:
-        - actions:
-            - type: oauth
-              config:
-                provider: google
-                client_id: "{your app's oauth client id}"
-                client_secret: "{your app's oauth client secret}"
-                scopes:
-                  - https://www.googleapis.com/auth/userinfo.profile
-                  - https://www.googleapis.com/auth/userinfo.email
-	```
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+annotations:
+k8s.ngrok.com/traffic-policy: example-tp
+name: example-ingress
+namespace: default
+spec:
+ingressClassName: ngrok
+rules: - host: example-hostname.ngrok.io
+http:
+paths: - path: /
+pathType: Prefix
+backend:
+service:
+name: example-service
+port:
+number: 80
+```
+</Tab>
+<Tab title="Gateway API">
+💡 Gateway API resources do not natively support OAuth enforcement, but they can be extended using a traffic policy.
 
-	### 2. Use the `NgrokTrafficPolicy` on a `Gateway`
+    ### 1. Create an `NgrokTrafficPolicy`
 
-	The following example showcases supplying the `NgrokTrafficPolicy` on a `Gateway` resource. All requests to the `Gateway` will run the traffic policy.
-	If you prefer, `NgrokTrafficPolicy` can also be used on the route level by using an `externalRef` filter on an `HTTPRoute`. See the [using Gateway API guide](/k8s/guides/using-gwapi) for examples.
+    ```yaml
 
-	```yaml
-  apiVersion: gateway.networking.k8s.io/v1
-  kind: Gateway
-  metadata:
-    name: example-gateway
-    namespace: default
-    annotations:
-      k8s.ngrok.com/traffic-policy: example-tp
-  spec:
-    gatewayClassName: ngrok
-    listeners:
-      - name: example-hostname
-        hostname: "example-hostname.ngrok.io"
-        port: 443
-        protocol: HTTPS
-	```
-	</Tab>
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: NgrokTrafficPolicy
+metadata:
+name: example-tp
+namespace: default
+spec:
+policy:
+on_http_request: - actions: - type: oauth
+config:
+provider: google
+client_id: "{your app's oauth client id}"
+client_secret: "{your app's oauth client secret}"
+scopes: - https://www.googleapis.com/auth/userinfo.profile - https://www.googleapis.com/auth/userinfo.email
+```
+
+    ### 2. Use the `NgrokTrafficPolicy` on a `Gateway`
+
+    The following example showcases supplying the `NgrokTrafficPolicy` on a `Gateway` resource. All requests to the `Gateway` will run the traffic policy.
+    If you prefer, `NgrokTrafficPolicy` can also be used on the route level by using an `externalRef` filter on an `HTTPRoute`. See the [using Gateway API guide](/k8s/guides/using-gwapi) for examples.
+
+    ```yaml
+
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+name: example-gateway
+namespace: default
+annotations:
+k8s.ngrok.com/traffic-policy: example-tp
+spec:
+gatewayClassName: ngrok
+listeners: - name: example-hostname
+hostname: "example-hostname.ngrok.io"
+port: 443
+protocol: HTTPS
+```
+</Tab>
+
 </Tabs>

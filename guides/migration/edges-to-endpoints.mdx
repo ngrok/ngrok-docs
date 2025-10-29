@@ -2,7 +2,6 @@
 title: Migrating ngrok Edges to Cloud Endpoints
 ---
 
-
 This guide walks you through manually migrating ngrok **Edge configurations** (HTTPS, TLS, TCP) to **Cloud Endpoints** using **Traffic Policies**.
 
 ## 📋 Prerequisites
@@ -49,13 +48,10 @@ GET /edges/tcp
 If a response includes a non-empty [`next_page_uri`](/api/#pagination) you’ll want to follow it until it is `null`:
 
 ```yaml
-{
-  "https_edges": [...],
-  "next_page_uri": "/edges/https?page=2"
-}
+{ "https_edges": [...], "next_page_uri": "/edges/https?page=2" }
 ```
 
-Be sure to keep your [API rate limits](/api/#rate-limits) in mind. 
+Be sure to keep your [API rate limits](/api/#rate-limits) in mind.
 Repeat this process for:
 
 - `/edges/tls`
@@ -173,7 +169,6 @@ on_tcp_connect:
       - type: forward-internal
         config:
           url: tcp://app-service.internal:443
-
 ```
 
 Additionally, you cannot use the `custom-response` action for an HTTP fallback.
@@ -304,10 +299,10 @@ Each edge `hostport` should become a separate **cloud endpoint** with its config
 
 ```json
 {
-  "type": "cloud",
-  "url": "https://yourdomain.com",
-  "description": "Migrated from edge abc123",
-  "traffic_policy": "on_http_request:\n  - expressions:\n      - req.url.path.startsWith(\"/api\")\n    actions:\n      - type: oauth\n        config:\n          provider: google\n          client_id: ...\n      - type: forward-internal\n        config:\n          url: https://app-service.internal:443\non_http_response:\n  - actions:\n      - type: add-headers\n        config:\n          headers:\n            X-Edge: migrated\n"
+	"type": "cloud",
+	"url": "https://yourdomain.com",
+	"description": "Migrated from edge abc123",
+	"traffic_policy": "on_http_request:\n  - expressions:\n      - req.url.path.startsWith(\"/api\")\n    actions:\n      - type: oauth\n        config:\n          provider: google\n          client_id: ...\n      - type: forward-internal\n        config:\n          url: https://app-service.internal:443\non_http_response:\n  - actions:\n      - type: add-headers\n        config:\n          headers:\n            X-Edge: migrated\n"
 }
 ```
 

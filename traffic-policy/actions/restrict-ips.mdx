@@ -13,7 +13,6 @@ The **Restrict IPs** Traffic Policy action allows you to allow or deny traffic b
 
 You can define rules using either **Allow and Deny lists**, or **Reference IDs** to existing ngrok [IP Policies](/api-reference/ippolicies/list).
 
-
 ## Configuration Reference
 
 The [Traffic Policy](/traffic-policy/) configuration
@@ -30,19 +29,21 @@ reference for this action.
 ### Configuration Fields
 
 <ConfigField title="enforce" type="boolean" required={true}>
-  Default true. If false, continue to the next action even if the IP is not permitted.
+	Default true. If false, continue to the next action even if the IP is not
+	permitted.
 </ConfigField>
 
 <ConfigField title="allow" type="array of strings" required={false} cel={true}>
-  A list of CIDRs that are allowed.
+	A list of CIDRs that are allowed.
 </ConfigField>
 
 <ConfigField title="deny" type="array of strings" required={false} cel={true}>
-  A list of CIDRs that are denied.
+	A list of CIDRs that are denied.
 </ConfigField>
 
 <ConfigField title="ip_policies" type="array of refs" required={false}>
-  List of [IP Policy](/api-reference/ippolicies/list) identifiers to be checked if the source IP is allowed access.
+	List of [IP Policy](/api-reference/ippolicies/list) identifiers to be checked
+	if the source IP is allowed access.
 </ConfigField>
 
 ## Behavior
@@ -86,7 +87,6 @@ abbreviated notations such as `"::/0"`.
 Don't forget to create IPv6 rules. It is easy to test with only IPv4 and then
 suddenly things don't work as expected because you forgot to create IPv6 rules.
 
-
 ## Examples `on_tcp_connect`
 
 ### Restricting Access with Allow and Deny Lists
@@ -112,26 +112,23 @@ on_tcp_connect:
 
 ```json policy.json
 {
-  "on_tcp_connect": [
-    {
-      "actions": [
-        {
-          "type": "restrict-ips",
-          "config": {
-            "enforce": true,
-            "allow": [
-              "1.1.1.1/32"
-            ],
-            "deny": [
-              "e680:5791:be4c:5739:d959:7b94:6d54:d4b4/128"
-            ]
-          }
-        }
-      ]
-    }
-  ]
+	"on_tcp_connect": [
+		{
+			"actions": [
+				{
+					"type": "restrict-ips",
+					"config": {
+						"enforce": true,
+						"allow": ["1.1.1.1/32"],
+						"deny": ["e680:5791:be4c:5739:d959:7b94:6d54:d4b4/128"]
+					}
+				}
+			]
+		}
+	]
 }
 ```
+
 </CodeGroup>
 
 This configuration will ensure that only requests from the IP `1.1.1.1` are
@@ -172,23 +169,22 @@ on_tcp_connect:
 
 ```json policy.json
 {
-  "on_tcp_connect": [
-    {
-      "actions": [
-        {
-          "type": "restrict-ips",
-          "config": {
-            "enforce": true,
-            "ip_policies": [
-              "ipp_1yjqdrIBwgciY2I9zH2EelgBbJF"
-            ]
-          }
-        }
-      ]
-    }
-  ]
+	"on_tcp_connect": [
+		{
+			"actions": [
+				{
+					"type": "restrict-ips",
+					"config": {
+						"enforce": true,
+						"ip_policies": ["ipp_1yjqdrIBwgciY2I9zH2EelgBbJF"]
+					}
+				}
+			]
+		}
+	]
 }
 ```
+
 </CodeGroup>
 
 This configuration will ensure that the [IP Policies](/api-reference/ippolicies/list)
@@ -235,26 +231,23 @@ on_http_request:
 
 ```json policy.json
 {
-  "on_http_request": [
-    {
-      "actions": [
-        {
-          "type": "restrict-ips",
-          "config": {
-            "enforce": true,
-            "allow": [
-              "1.1.1.1/32"
-            ],
-            "deny": [
-              "e680:5791:be4c:5739:d959:7b94:6d54:d4b4/128"
-            ]
-          }
-        }
-      ]
-    }
-  ]
+	"on_http_request": [
+		{
+			"actions": [
+				{
+					"type": "restrict-ips",
+					"config": {
+						"enforce": true,
+						"allow": ["1.1.1.1/32"],
+						"deny": ["e680:5791:be4c:5739:d959:7b94:6d54:d4b4/128"]
+					}
+				}
+			]
+		}
+	]
 }
 ```
+
 </CodeGroup>
 
 This configuration will ensure that only requests from the IP `1.1.1.1` are
@@ -295,23 +288,22 @@ on_http_request:
 
 ```json policy.json
 {
-  "on_http_request": [
-    {
-      "actions": [
-        {
-          "type": "restrict-ips",
-          "config": {
-            "enforce": true,
-            "ip_policies": [
-              "ipp_1yjqdrIBwgciY2I9zH2EelgBbJF"
-            ]
-          }
-        }
-      ]
-    }
-  ]
+	"on_http_request": [
+		{
+			"actions": [
+				{
+					"type": "restrict-ips",
+					"config": {
+						"enforce": true,
+						"ip_policies": ["ipp_1yjqdrIBwgciY2I9zH2EelgBbJF"]
+					}
+				}
+			]
+		}
+	]
 }
 ```
+
 </CodeGroup>
 
 This configuration will ensure that the [IP Policies](/api-reference/ippolicies/list)
@@ -359,34 +351,33 @@ on_http_request:
 
 ```json policy.json
 {
-  "on_http_request": [
-    {
-      "actions": [
-        {
-          "type": "restrict-ips",
-          "config": {
-            "enforce": false,
-            "ip_policies": [
-              "ipp_1yjqdrIBwgciY2I9zH2EelgBbJF"
-            ]
-          }
-        },
-        {
-          "type": "log",
-          "config": {
-            "metadata": {
-              "message": "Restrict IPs action would be ${actions.ngrok.restrict_ips.action} for ${conn.client_ip}.",
-              "matched_cidr": "${actions.ngrok.restrict_ips.matched_cidr}",
-              "error_code": "${actions.ngrok.restrict_ips.error.code}",
-              "error_message": "${actions.ngrok.restrict_ips.error.message}"
-            }
-          }
-        }
-      ]
-    }
-  ]
+	"on_http_request": [
+		{
+			"actions": [
+				{
+					"type": "restrict-ips",
+					"config": {
+						"enforce": false,
+						"ip_policies": ["ipp_1yjqdrIBwgciY2I9zH2EelgBbJF"]
+					}
+				},
+				{
+					"type": "log",
+					"config": {
+						"metadata": {
+							"message": "Restrict IPs action would be ${actions.ngrok.restrict_ips.action} for ${conn.client_ip}.",
+							"matched_cidr": "${actions.ngrok.restrict_ips.matched_cidr}",
+							"error_code": "${actions.ngrok.restrict_ips.error.code}",
+							"error_message": "${actions.ngrok.restrict_ips.error.message}"
+						}
+					}
+				}
+			]
+		}
+	]
 }
 ```
+
 </CodeGroup>
 
 This configuration will test the incoming client IP against the specified
@@ -420,13 +411,16 @@ HTTP/2 200
 </ConfigField>
 
 <ConfigField title="actions.ngrok.restrict_ips.matched_cidr" type="string">
-    The CIDR block that matched the incoming client's IP address. If no match was found, this value will be empty.
+	The CIDR block that matched the incoming client's IP address. If no match was
+	found, this value will be empty.
 </ConfigField>
 
 <ConfigField title="actions.ngrok.restrict_ips.error.code" type="string">
-    A machine-readable code describing an error that occurred during the action's execution.
+	A machine-readable code describing an error that occurred during the action's
+	execution.
 </ConfigField>
 
 <ConfigField title="actions.ngrok.restrict_ips.error.message" type="string">
-    A human-readable message providing details about an error that occurred during the action's execution.
+	A human-readable message providing details about an error that occurred during
+	the action's execution.
 </ConfigField>

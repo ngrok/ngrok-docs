@@ -13,10 +13,14 @@ import { ConfigChildren } from "/snippets/ConfigChildren.jsx";
 The HTTP Request Traffic Policy action performs an outbound HTTP request to a target URL. You can use it to integrate with external services through internal endpoints or—if enabled—with external APIs.
 
 <Note>
-External requests are supported but disabled by default. [Contact ngrok support](https://ngrok.com/support) to enable external access.
+	External requests are supported but disabled by default. [Contact ngrok
+	support](https://ngrok.com/support) to enable external access.
 </Note>
 
-<YouTubeEmbed videoId="1VYtIOJsgic" title="Learn about ngrok's http-request action" />
+<YouTubeEmbed
+	videoId="1VYtIOJsgic"
+	title="Learn about ngrok's http-request action"
+/>
 
 ## Configuration Reference
 
@@ -51,17 +55,19 @@ reference for this action.
 <ConfigField title="query_params" type="list of objects" cel={true}>
   A list of query parameters to append to the URL. Each item is an object with the following structure:
 
-  ```yaml
-  - key: "parameter_name"
-    value: "parameter_value"
-  ```
+```yaml
+- key: "parameter_name"
+  value: "parameter_value"
+```
 
-  Maximum: `32` entries. Key max length: `128` chars. Value max length: `8192` chars.
+Maximum: `32` entries. Key max length: `128` chars. Value max length: `8192` chars.
+
 </ConfigField>
 <ConfigField title="headers" type="object" cel={true}>
   A map of HTTP headers to include in the request. Keys are header names and values are header values.
 
-  Maximum: `10` entries.
+Maximum: `10` entries.
+
 </ConfigField>
 <ConfigField title="body" type="string" cel={true}>
   The body of the HTTP request. Supported on methods like `POST`, `PUT`, or `PATCH`.
@@ -69,22 +75,32 @@ reference for this action.
 <ConfigField title="max_redirects" type="int" defaultValue="10">
   The maximum number of HTTP redirects to follow.
 
-  The minimum allowed is `0`. The maximum allowed is `100`.
+The minimum allowed is `0`. The maximum allowed is `100`.
+
 </ConfigField>
 <ConfigField title="timeout" type="duration" defaultValue="3s">
   The maximum duration as a duration string to wait for the entire request (including retries and redirects).
 
-  The minimum allowed is `1s`. The maximum allowed is `30s`.
+The minimum allowed is `1s`. The maximum allowed is `30s`.
+
 </ConfigField>
 <ConfigField title="retry_condition" type="string" cel={true} defaultValue="false">
   A CEL expression evaluated after each failed attempt. If `true`, the request is retried (up to `3` times).
 
-  <ConfigEnum>
-    <ConfigEnumOption>`attempts` (`int`): Total number of attempts so far</ConfigEnumOption>
-    <ConfigEnumOption>`last_attempt.req`: The last request object</ConfigEnumOption>
-    <ConfigEnumOption>`last_attempt.res`: The last response object (if any)</ConfigEnumOption>
-    <ConfigEnumOption>`last_attempt.error`: The error string (if any)</ConfigEnumOption>
-  </ConfigEnum>
+<ConfigEnum>
+	<ConfigEnumOption>
+		`attempts` (`int`): Total number of attempts so far
+	</ConfigEnumOption>
+	<ConfigEnumOption>
+		`last_attempt.req`: The last request object
+	</ConfigEnumOption>
+	<ConfigEnumOption>
+		`last_attempt.res`: The last response object (if any)
+	</ConfigEnumOption>
+	<ConfigEnumOption>
+		`last_attempt.error`: The error string (if any)
+	</ConfigEnumOption>
+</ConfigEnum>
 
 </ConfigField>
 <ConfigField title="on_error" type="enum">
@@ -95,7 +111,6 @@ reference for this action.
     <ConfigEnumOption>`halt` – Stop processing the policy</ConfigEnumOption>
   </ConfigEnum>
 </ConfigField>
-
 
 ## Behavior
 
@@ -119,7 +134,7 @@ You can use a condition to automatically retry failed requests. This is useful f
 - `last_attempt.error`: any error that occurred
 
 ```js
-last_attempt.res.statusCode == 500
+last_attempt.res.statusCode == 500;
 ```
 
 The request will retry up to **3 times**.
@@ -207,21 +222,22 @@ on_http_request:
 
 ```json policy.json
 {
-  "on_http_request": [
-    {
-      "name": "BasicInternalRequest",
-      "actions": [
-        {
-          "type": "http-request",
-          "config": {
-            "url": "https://upstream-service.internal/ping"
-          }
-        }
-      ]
-    }
-  ]
+	"on_http_request": [
+		{
+			"name": "BasicInternalRequest",
+			"actions": [
+				{
+					"type": "http-request",
+					"config": {
+						"url": "https://upstream-service.internal/ping"
+					}
+				}
+			]
+		}
+	]
 }
 ```
+
 </CodeGroup>
 
 #### Send query parameters
@@ -253,33 +269,33 @@ on_http_request:
 
 ```json policy.json {10-19}
 {
-  "on_http_request": [
-    {
-      "name": "QueryParamsExample",
-      "actions": [
-        {
-          "type": "http-request",
-          "config": {
-            "url": "https://httpbin.internal/get",
-            "query_params": [
-              {
-                "key": "trace",
-                "value": "true"
-              },
-              {
-                "key": "user",
-                "value": "req.headers[\"x-user-id\"]"
-              }
-            ]
-          }
-        }
-      ]
-    }
-  ]
+	"on_http_request": [
+		{
+			"name": "QueryParamsExample",
+			"actions": [
+				{
+					"type": "http-request",
+					"config": {
+						"url": "https://httpbin.internal/get",
+						"query_params": [
+							{
+								"key": "trace",
+								"value": "true"
+							},
+							{
+								"key": "user",
+								"value": "req.headers[\"x-user-id\"]"
+							}
+						]
+					}
+				}
+			]
+		}
+	]
 }
 ```
-</CodeGroup>
 
+</CodeGroup>
 
 ### Make a POST request
 
@@ -312,27 +328,28 @@ on_http_request:
 
 ```json policy.json
 {
-  "on_http_request": [
-    {
-      "name": "PostWithBody",
-      "actions": [
-        {
-          "type": "http-request",
-          "config": {
-            "url": "https://httpbin.internal/post",
-            "method": "POST",
-            "headers": {
-              "content-type": "application/json",
-              "x-custom-header": "abc123"
-            },
-            "body": "{ \"user\": \"${req.headers[\\\"x-user-id\\\"]}\" }"
-          }
-        }
-      ]
-    }
-  ]
+	"on_http_request": [
+		{
+			"name": "PostWithBody",
+			"actions": [
+				{
+					"type": "http-request",
+					"config": {
+						"url": "https://httpbin.internal/post",
+						"method": "POST",
+						"headers": {
+							"content-type": "application/json",
+							"x-custom-header": "abc123"
+						},
+						"body": "{ \"user\": \"${req.headers[\\\"x-user-id\\\"]}\" }"
+					}
+				}
+			]
+		}
+	]
 }
 ```
+
 </CodeGroup>
 
 ### Follow redirects
@@ -365,36 +382,37 @@ on_http_request:
 
 ```json policy.json {11}
 {
-  "on_http_request": [
-    {
-      "name": "FollowRedirects",
-      "actions": [
-        {
-          "type": "http-request",
-          "config": {
-            "url": "https://httpbin.internal/redirect/2",
-            "method": "GET",
-            "max_redirects": 2
-          }
-        }
-      ]
-    }
-  ]
+	"on_http_request": [
+		{
+			"name": "FollowRedirects",
+			"actions": [
+				{
+					"type": "http-request",
+					"config": {
+						"url": "https://httpbin.internal/redirect/2",
+						"method": "GET",
+						"max_redirects": 2
+					}
+				}
+			]
+		}
+	]
 }
 ```
-</CodeGroup>
 
+</CodeGroup>
 
 ## Action Result Variables
 
 <ActionVariablesDescription />
 
 <ConfigField title="actions.ngrok.http_request.error.code" type="string">
-  The ngrok error code for an error that occurred during the invocation of an action.
+	The ngrok error code for an error that occurred during the invocation of an
+	action.
 </ConfigField>
 
 <ConfigField title="actions.ngrok.http_request.error.message" type="string">
-  The message for an error that occurred during the invocation of an action.
+	The message for an error that occurred during the invocation of an action.
 </ConfigField>
 
 <ConfigField title="actions.ngrok.http_request.attempts" type="array of objects">

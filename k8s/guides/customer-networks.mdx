@@ -5,15 +5,15 @@ description: Learn how to use the ngrok Kubernetes Operator to establish secure,
 
 ngrok is a universal gateway, which means it allows you to securely connect to any app, IoT device, or service running in a private environment.
 
-This guide walks you through a practical example of using the [**ngrok Kubernetes Operator**](/k8s/) to establish secure, remote access to services running inside a protected customer network which is not k8s native—all managed seamlessly from within your Kubernetes cluster in your cloud instance. 
+This guide walks you through a practical example of using the [**ngrok Kubernetes Operator**](/k8s/) to establish secure, remote access to services running inside a protected customer network which is not k8s native—all managed seamlessly from within your Kubernetes cluster in your cloud instance.
 
 While a traditional site-to-site VPN topology can achieve similar connectivity, this approach takes ngrok's secure ingress capabilities to the next level. Connect critical systems without any risk of public addressability or wrestling with the complexity, fragility, and operational overhead of conventional VPN solutions. The result is a privatized, streamlined way to enable secure access.
 
 ## Example scenario
 
-You run Acme Corp, a managed service provider (MSP) serving several nationwide retail chains. Each of your customers operates an on-premises retail headquarters with essential back-office systems locked behind strict firewalls. Among these critical services are inventory databases, payment APIs (requiring end-to-end encryption through the ngrok cloud to maintain PCI compliance), and store management web portals. 
+You run Acme Corp, a managed service provider (MSP) serving several nationwide retail chains. Each of your customers operates an on-premises retail headquarters with essential back-office systems locked behind strict firewalls. Among these critical services are inventory databases, payment APIs (requiring end-to-end encryption through the ngrok cloud to maintain PCI compliance), and store management web portals.
 
-To keep operations running smoothly, you need a secure, controlled way to reach these resources directly from your Kubernetes cluster—without exposing them to the public internet or maintaining complex VPN infrastructure. 
+To keep operations running smoothly, you need a secure, controlled way to reach these resources directly from your Kubernetes cluster—without exposing them to the public internet or maintaining complex VPN infrastructure.
 
 In this guide, we'll walk through setting up remote access to the systems in a single customer HQ (Customer 1) using the ngrok Kubernetes Operator, with a repeatable workflow you can apply across your entire retail network.
 
@@ -51,7 +51,7 @@ Create an authtoken for that Service User and assign it an ACL rule. By assignin
 
 ### 2. Install the ngrok agent within Customer 1's network and configure internal agent endpoints in ngrok.yml
 
-You're now going to configure the agent to create internal agent endpoints that point to the services you want to remotely access. This will connect the services to your ngrok account but nothing will be able to connect to them until we complete the subsequent steps. Additionally, for our TLS  endpoint, we need to configure it so that mTLS is terminated at the ngrok agent and data remains encrypted through the ngrok cloud edge. The configuration to achieve this is shown below in the example agent configuration file.
+You're now going to configure the agent to create internal agent endpoints that point to the services you want to remotely access. This will connect the services to your ngrok account but nothing will be able to connect to them until we complete the subsequent steps. Additionally, for our TLS endpoint, we need to configure it so that mTLS is terminated at the ngrok agent and data remains encrypted through the ngrok cloud edge. The configuration to achieve this is shown below in the example agent configuration file.
 
 **Internal Endpoints** are private endpoints that only receive traffic when forwarded through the [forward-internal traffic policy action](/traffic-policy/actions/forward-internal/). This allows you to route traffic to an application through ngrok without making it publicly addressable. Internal endpoint URL hostnames must end with  .internal.
 
@@ -59,14 +59,14 @@ After installing the ngrok agent, define internal endpoints for each service you
 
 ```yaml
 version: 3
-agent: 
+agent:
   authtoken: <AUTHTOKEN_FROM_STEP_1>
 endpoints:
   - name: Internal Endpoint for Cust 1 Web Application
     url: http://webapp.cust1.internal
     upstream:
       url: 8080
-      
+
   - name: Internal Endpoint for Cust 1 Payment API
     url: tls://api.cust1.internal
     upstream:
@@ -75,7 +75,7 @@ endpoints:
       server_certificate: "/path/to/app-example-com-crt.pem"
       server_private_key: "/path/to/app-example-com-crt.key"
       mutual_tls_certificate_authorities: "/path/to/app-example-com-ca"
-      
+
   - name: Internal Endpoint for Cust 1 Inventory Database
     url: tcp://database.cust1.internal
     upstream:
@@ -108,19 +108,19 @@ kubectl create ns acme-customers
 
 ### 4. Create Kubernetes bound cloud endpoints and attach traffic policy
 
-We are going to create a **Cloud Endpoint** with a [**Kubernetes binding](/universal-gateway/bindings/).** This will create a privately addressable way to access the remote services. These endpoints will only be accessible within Kubernetes clusters where you install the ngrok operator.
+We are going to create a **Cloud Endpoint** with a [\*\*Kubernetes binding](/universal-gateway/bindings/).\*\* This will create a privately addressable way to access the remote services. These endpoints will only be accessible within Kubernetes clusters where you install the ngrok operator.
 
 Endpoints with a kubernetes binding are secure, private endpoints that are only addressable inside of Kubernetes clusters where you install the ngrok operator. They enable you to connect to ngrok endpoints without making them publicly addressable. In this case, we will create cloud endpoints with a binding of kubernetes.
 
-Cloud Endpoints are persistent, always-on endpoints whose creation, deletion, and configuration is managed centrally via the Dashboard or API. 
-They exist permanently until they are explicitly deleted. 
+Cloud Endpoints are persistent, always-on endpoints whose creation, deletion, and configuration is managed centrally via the Dashboard or API.
+They exist permanently until they are explicitly deleted.
 Cloud Endpoints do not forward their traffic to an agent by default and instead only use their attached Traffic Policy to handle connections.
 
 Create a kubernetes bound cloud endpoint in the ngrok dashboard by navigating to endpoints and clicking “new”. Configure it as shown in the screenshot below:
 
 ![Cloud endpoint UI screenshot](./_img/cloud-endpoint-ss-1.png)
 
-Additionally, create a cloud endpoint for the other two services: *“tls://api-cust1.acme-customers”* and *“tcp://database-cust1.acme-customers:5432”*. A v1.Service object is created in the namespace determined by the second part of the kubernetes endpoint URL's hostname (acme-customers). The name of the service is denoted by the first part of the endpoint URL's hostname .
+Additionally, create a cloud endpoint for the other two services: _“tls://api-cust1.acme-customers”_ and _“tcp://database-cust1.acme-customers:5432”_. A v1.Service object is created in the namespace determined by the second part of the kubernetes endpoint URL's hostname (acme-customers). The name of the service is denoted by the first part of the endpoint URL's hostname .
 
 Once you've created these endpoints, check your acme-customers namespace in your kubernetes cluster, and you should see three v1.Service objects created named webapp-cust1, api-cust1, and database-cust1.
 
@@ -172,14 +172,14 @@ spec:
               config:
               url: http://webapp.cust1.internal
 bindings:
-- kubernetes
+  - kubernetes
 ```
 
 ## Additional ngrok Features
 
 ### Set up a custom connect URL
 
-When the ngrok agent starts, it makes an outbound connection via TLS over port 443 to the ngrok cloud service. This connection is made to the “agent connect URL”. By default, [this connect URL](/agent/connect-url/) is *connect.ngrok-agent.com*, but it can be white-labeled so that your ngrok agents will connect to *connect.acme.com* instead of the default connection hostname. 
+When the ngrok agent starts, it makes an outbound connection via TLS over port 443 to the ngrok cloud service. This connection is made to the “agent connect URL”. By default, [this connect URL](/agent/connect-url/) is _connect.ngrok-agent.com_, but it can be white-labeled so that your ngrok agents will connect to _connect.acme.com_ instead of the default connection hostname.
 
 This is highly recommended because your customers may need to whitelist egress traffic out of their networks and customers will see this traffic in their network logs. You can also request dedicated IPs for your connect URL that are unique to your account.
 
@@ -213,7 +213,8 @@ ngrok service start
 ```
 
 <Note>
-In most cases, installing ngrok as a service requires administrator privileges.
+	In most cases, installing ngrok as a service requires administrator
+	privileges.
 </Note>
 
 ### Eliminate Single Points of Failure with Redundant Agents
@@ -258,12 +259,12 @@ There also exists a config variable (connect_timeout) to specify how long to wai
 
 ```yaml
 version: 3
-agent: 
+agent:
   authtoken: <YOUR_NGROK_AUTHTOKEN>
   connect_timeout: 5s
 endpoints:
-  - name: my-service 
-    url: 'https://app.example.com'
+  - name: my-service
+    url: "https://app.example.com"
     upstream:
       url: http://localhost:8080
 ```
@@ -276,11 +277,11 @@ The agent heartbeat mechanism is crucial for maintaining endpoint stability and 
 version: 3
 agent:
   authtoken: <YOUR_NGROK_AUTHTOKEN>
-  heartbeat_interval: 10s   # How often to send heartbeat
-  heartbeat_tolerance: 15s  # How long before considering connection dead
+  heartbeat_interval: 10s # How often to send heartbeat
+  heartbeat_tolerance: 15s # How long before considering connection dead
 endpoints:
   - name: my-service
-    url: 'https://app.example.com'
+    url: "https://app.example.com"
     upstream:
       url: http://localhost:8080
 ```

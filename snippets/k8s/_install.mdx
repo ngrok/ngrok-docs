@@ -22,33 +22,34 @@ The simple method only takes one command, but with the secure method, you:
 	<Tab title="More secure">
 		First, prepare new environment variables.
 
-		```bash
-		export ENCODED_NGROK_AUTHTOKEN=$(echo -n "$NGROK_AUTHTOKEN" | base64)
-		export ENCODED_NGROK_API_KEY=$(echo -n "$NGROK_API_KEY" | base64)
-		```
+    	```bash
+    	export ENCODED_NGROK_AUTHTOKEN=$(echo -n "$NGROK_AUTHTOKEN" | base64)
+    	export ENCODED_NGROK_API_KEY=$(echo -n "$NGROK_API_KEY" | base64)
+    	```
 
-		Apply a `Secret` resource with your encoded credentials.
+    	Apply a `Secret` resource with your encoded credentials.
 
-		```bash
-		kubectl apply -f -<<EOF
-		apiVersion: v1
-		kind: Secret
-		metadata:
-			name: ngrok-operator-credentials
-			namespace: ngrok-operator
-		data:
-			API_KEY: "$ENCODED_NGROK_API_KEY"
-			AUTHTOKEN: "$ENCODED_NGROK_AUTHTOKEN"
-		EOF
-		```
+    	```bash
+    	kubectl apply -f -<<EOF
+    	apiVersion: v1
+    	kind: Secret
+    	metadata:
+    		name: ngrok-operator-credentials
+    		namespace: ngrok-operator
+    	data:
+    		API_KEY: "$ENCODED_NGROK_API_KEY"
+    		AUTHTOKEN: "$ENCODED_NGROK_AUTHTOKEN"
+    	EOF
+    	```
 
-		Next, install the Operator and reference the `Secret` resource.
+    	Next, install the Operator and reference the `Secret` resource.
 
-		```bash
-		helm install ngrok-operator ngrok/ngrok-operator \
-		--namespace ngrok-operator \
-		--create-namespace \
-		--set credentials.secret.name=ngrok-operator-credentials \
-		```
-	</Tab>
+    	```bash
+    	helm install ngrok-operator ngrok/ngrok-operator \
+    	--namespace ngrok-operator \
+    	--create-namespace \
+    	--set credentials.secret.name=ngrok-operator-credentials \
+    	```
+    </Tab>
+
 </Tabs>

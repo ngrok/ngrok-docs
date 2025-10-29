@@ -9,8 +9,11 @@ You can think of it as the [ngrok Agent CLI](/getting-started/) packaged as a JS
 This quickstart uses the ngrok JavaScript SDK to create an agent endpoint that forwards traffic from the internet to a Node.js app running on your local device, then secure it by requiring visitors to log in with a Google account to access it.
 
 <Info>
-If you'd prefer to skip the boilerplate setup, you can clone the complete example from the [ngrok-samples collection](https://github.com/ngrok-samples/javascript-quickstart).
-In that case, you'll just need to reserve a domain and add your auth token as described below to get started.
+	If you'd prefer to skip the boilerplate setup, you can clone the complete
+	example from the [ngrok-samples
+	collection](https://github.com/ngrok-samples/javascript-quickstart). In that
+	case, you'll just need to reserve a domain and add your auth token as
+	described below to get started.
 </Info>
 
 ## What you'll need
@@ -27,22 +30,22 @@ This is the app that your agent endpoint will forward online traffic to.
 If you don't have an app to work with, you can create a minimal Node.js app using the following code to set up a basic HTTP server at port `8080`.
 
 ```javascript title="service.js"
-const http = require('http');
+const http = require("http");
 
 const server = http.createServer((req, res) => {
-    res.writeHead(200, { 'Content-Type': 'text/html' });
-    const html = `
+	res.writeHead(200, { "Content-Type": "text/html" });
+	const html = `
     <html>
     <head><title>Test Page</title></head>
     <body><h1>Hello from Node.js HTTP Server!</h1></body>
     </html>
     `;
-    res.end(html);
+	res.end(html);
 });
 
 const port = 8080;
 server.listen(port, () => {
-    console.log(`Serving custom HTML at http://localhost:${port}`);
+	console.log(`Serving custom HTML at http://localhost:${port}`);
 });
 ```
 
@@ -88,6 +91,7 @@ npm install dotenv
 If you don't want to use a `.env` file, you can instead [export your auth token as an environment variable](https://support.apple.com/en-il/guide/terminal/apd382cc5fa-4f58-4449-b20a-41c53c006f8f/mac) in your terminal session, or [pass the auth token directly to the forward method](https://ngrok.github.io/ngrok-javascript/#authorization) in your code.
 
 You can set your reserved domain directly in your endpoint file below.
+
 </Tip>
 
 ## 4. Create your endpoint
@@ -101,27 +105,29 @@ This example:
 - Secures the endpoint with Google OAuth authentication.
 
 <Note>
-This example uses ngrok's default Google OAuth application.
-To use your own, see [the OAuth Traffic Policy Action documentation](/traffic-policy/actions/oauth/#google-example).
+	This example uses ngrok's default Google OAuth application. To use your own,
+	see [the OAuth Traffic Policy Action
+	documentation](/traffic-policy/actions/oauth/#google-example).
 </Note>
 
 ```javascript title="endpoint.js"
-require('dotenv').config();
-const ngrok = require('@ngrok/ngrok');
+require("dotenv").config();
+const ngrok = require("@ngrok/ngrok");
 
-(async function() {
-    const listener = await ngrok.forward({
-        // The port your app is running on.
-        addr: 8080,
-        authtoken: process.env.NGROK_AUTHTOKEN,
-        domain: process.env.NGROK_DOMAIN,
-        // Secure your endpoint with a traffic policy.
-        // This could also be a path to a traffic policy file.
-        traffic_policy: '{"on_http_request": [{"actions": [{"type": "oauth","config": {"provider": "google"}}]}]}'
-    });
+(async function () {
+	const listener = await ngrok.forward({
+		// The port your app is running on.
+		addr: 8080,
+		authtoken: process.env.NGROK_AUTHTOKEN,
+		domain: process.env.NGROK_DOMAIN,
+		// Secure your endpoint with a traffic policy.
+		// This could also be a path to a traffic policy file.
+		traffic_policy:
+			'{"on_http_request": [{"actions": [{"type": "oauth","config": {"provider": "google"}}]}]}',
+	});
 
-    // Output ngrok url to console
-    console.log(`Ingress established at ${listener.url()}`);
+	// Output ngrok url to console
+	console.log(`Ingress established at ${listener.url()}`);
 })();
 
 // Keep the process alive

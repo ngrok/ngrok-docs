@@ -3,15 +3,11 @@ title: Protecting Services with Rate Limiting
 sidebarTitle: Rate Limiting
 ---
 
-
-
-
 Rate limiting is a critical feature that prevents your services from being overwhelmed by excessive network traffic. By enforcing rate limits, you can control how many requests are allowed over a given period, helping to:
 
 ⚡ Maintain API performance by preventing excessive load. <br />
 🔐 Protect against abuse and malicious traffic. <br />
 🌍 Ensure fair usage across clients and users. <br />
-
 
 ## 🔍 What are the Benefits of Rate Limiting?
 
@@ -86,97 +82,92 @@ Check out the [rate limit traffic policy action](/traffic-policy/actions/rate-li
 	<Tab title="Ingress">
 	💡 `Ingress` resources do not natively support rate limiting, but they can be extended using a traffic policy.
 
-	### 1. Create an `NgrokTrafficPolicy`
+    ### 1. Create an `NgrokTrafficPolicy`
 
-	```yaml
-  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-  kind: NgrokTrafficPolicy
-  metadata:
-    name: example-tp
-    namespace: default
-  spec:
-    policy:
-      on_http_request:
-        - actions:
-            - type: rate-limit
-              config:
-                name: Only allow 30 requests per minute
-                algorithm: sliding_window
-                capacity: 30
-                rate: 60s
-                bucket_key:
-                  - req.headers['host']
-	```
+    ```yaml
 
-	### 2. Use the `NgrokTrafficPolicy` on an `Ingress`
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: NgrokTrafficPolicy
+metadata:
+name: example-tp
+namespace: default
+spec:
+policy:
+on_http_request: - actions: - type: rate-limit
+config:
+name: Only allow 30 requests per minute
+algorithm: sliding_window
+capacity: 30
+rate: 60s
+bucket_key: - req.headers['host']
+```
 
-	```yaml
-  apiVersion: networking.k8s.io/v1
-  kind: Ingress
-  metadata:
-    annotations:
-      k8s.ngrok.com/traffic-policy: example-tp
-    name: example-ingress
-    namespace: default
-  spec:
-    ingressClassName: ngrok
-    rules:
-      - host: example-hostname.ngrok.io
-        http:
-          paths:
-            - path: /
-              pathType: Prefix
-              backend:
-                service:
-                  name: example-service
-                  port:
-                    number: 80
-	```
-	</Tab>
-	<Tab title="Gateway API">
-	💡 Gateway API resources do not natively support rate limiting, but they can be extended using a traffic policy.
+    ### 2. Use the `NgrokTrafficPolicy` on an `Ingress`
 
-	### 1. Create an `NgrokTrafficPolicy`
+    ```yaml
 
-	```yaml
-  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-  kind: NgrokTrafficPolicy
-  metadata:
-    name: example-tp
-    namespace: default
-  spec:
-    policy:
-      on_http_request:
-        - actions:
-            - type: rate-limit
-              config:
-                name: Only allow 30 requests per minute
-                algorithm: sliding_window
-                capacity: 30
-                rate: 60s
-                bucket_key:
-                  - req.headers['host']
-	```
-	### 2. Use the `NgrokTrafficPolicy` on a `Gateway`
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+annotations:
+k8s.ngrok.com/traffic-policy: example-tp
+name: example-ingress
+namespace: default
+spec:
+ingressClassName: ngrok
+rules: - host: example-hostname.ngrok.io
+http:
+paths: - path: /
+pathType: Prefix
+backend:
+service:
+name: example-service
+port:
+number: 80
+```
+</Tab>
+<Tab title="Gateway API">
+💡 Gateway API resources do not natively support rate limiting, but they can be extended using a traffic policy.
 
-	The following example showcases supplying the `NgrokTrafficPolicy` on a `Gateway` resource. All requests to the `Gateway` will run the traffic policy.
-	If you prefer, `NgrokTrafficPolicy` can also be used on the route level by using an `externalRef` filter on an `HTTPRoute`. See the [using Gateway API guide](/k8s/guides/using-gwapi) for examples.
+    ### 1. Create an `NgrokTrafficPolicy`
 
-	```yaml
-  apiVersion: gateway.networking.k8s.io/v1
-  kind: Gateway
-  metadata:
-    name: example-gateway
-    namespace: default
-    annotations:
-      k8s.ngrok.com/traffic-policy: example-tp
-  spec:
-    gatewayClassName: ngrok
-    listeners:
-      - name: example-hostname
-        hostname: "example-hostname.ngrok.io"
-        port: 443
-        protocol: HTTPS
-	```
-	</Tab>
+    ```yaml
+
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: NgrokTrafficPolicy
+metadata:
+name: example-tp
+namespace: default
+spec:
+policy:
+on_http_request: - actions: - type: rate-limit
+config:
+name: Only allow 30 requests per minute
+algorithm: sliding_window
+capacity: 30
+rate: 60s
+bucket_key: - req.headers['host']
+```	### 2. Use the`NgrokTrafficPolicy`on a`Gateway`
+
+    The following example showcases supplying the `NgrokTrafficPolicy` on a `Gateway` resource. All requests to the `Gateway` will run the traffic policy.
+    If you prefer, `NgrokTrafficPolicy` can also be used on the route level by using an `externalRef` filter on an `HTTPRoute`. See the [using Gateway API guide](/k8s/guides/using-gwapi) for examples.
+
+    ```yaml
+
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+name: example-gateway
+namespace: default
+annotations:
+k8s.ngrok.com/traffic-policy: example-tp
+spec:
+gatewayClassName: ngrok
+listeners: - name: example-hostname
+hostname: "example-hostname.ngrok.io"
+port: 443
+protocol: HTTPS
+```
+</Tab>
+
 </Tabs>

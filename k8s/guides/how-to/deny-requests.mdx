@@ -3,9 +3,6 @@ title: Protecting Your Endpoints by Denying Unwanted Traffic
 sidebarTitle: Deny Requests
 ---
 
-
-
-
 Whenever your endpoints are exposed to the internet, they will inevitably receive unwanted or malicious traffic. This can include bot activity, unauthorized access attempts, abusive requests, or even potential security threats.
 
 By denying requests at the edge, you can:
@@ -13,7 +10,6 @@ By denying requests at the edge, you can:
 🚫 Block unauthorized access attempts before they reach your upstream service. <br />
 ⚡ Reduce load on backend services by filtering unnecessary traffic. <br />
 🔐 Improve security by rejecting requests based on predefined rules. <br />
-
 
 ## 🔍 What are the Benefits of Denying Requests?
 
@@ -80,92 +76,88 @@ Check out the [deny request traffic policy action](/traffic-policy/actions/deny/
 	<Tab title="Ingress">
 	💡 `Ingress` resources do not natively support request denial configuration, but they can be extended using a traffic policy.
 
-	### 1. Create an `NgrokTrafficPolicy`
+    ### 1. Create an `NgrokTrafficPolicy`
 
-	```yaml
-  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-  kind: NgrokTrafficPolicy
-  metadata:
-    name: example-tp
-    namespace: default
-  spec:
-    policy:
-      on_http_request:
-        - expressions:
-            - conn.client_ip.geo.location.is_eu == false
-          actions:
-            - type: deny
-              config:
-                status_code: 403
-	```
+    ```yaml
 
-	### 2. Use the `NgrokTrafficPolicy` on an `Ingress`
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: NgrokTrafficPolicy
+metadata:
+name: example-tp
+namespace: default
+spec:
+policy:
+on_http_request: - expressions: - conn.client_ip.geo.location.is_eu == false
+actions: - type: deny
+config:
+status_code: 403
+```
 
-	```yaml
-  apiVersion: networking.k8s.io/v1
-  kind: Ingress
-  metadata:
-    annotations:
-      k8s.ngrok.com/traffic-policy: example-tp
-    name: example-ingress
-    namespace: default
-  spec:
-    ingressClassName: ngrok
-    rules:
-      - host: example-hostname.ngrok.io
-        http:
-          paths:
-            - path: /
-              pathType: Prefix
-              backend:
-                service:
-                  name: example-service
-                  port:
-                    number: 80
-	```
-	</Tab>
-	<Tab title="Gateway API">
-	💡 Gateway API resources do not natively support request denial configuration, but they can be extended using a traffic policy.
+    ### 2. Use the `NgrokTrafficPolicy` on an `Ingress`
 
-	### 1. Create an `NgrokTrafficPolicy`
+    ```yaml
 
-	```yaml
-  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-  kind: NgrokTrafficPolicy
-  metadata:
-    name: example-tp
-    namespace: default
-  spec:
-    policy:
-      on_http_request:
-        - expressions:
-            - conn.client_ip.geo.location.is_eu == false
-          actions:
-            - type: deny
-              config:
-                status_code: 403
-	```
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+annotations:
+k8s.ngrok.com/traffic-policy: example-tp
+name: example-ingress
+namespace: default
+spec:
+ingressClassName: ngrok
+rules: - host: example-hostname.ngrok.io
+http:
+paths: - path: /
+pathType: Prefix
+backend:
+service:
+name: example-service
+port:
+number: 80
+```
+</Tab>
+<Tab title="Gateway API">
+💡 Gateway API resources do not natively support request denial configuration, but they can be extended using a traffic policy.
 
-	### 2. Use the `NgrokTrafficPolicy` on a `Gateway`
+    ### 1. Create an `NgrokTrafficPolicy`
 
-	The following example showcases supplying the `NgrokTrafficPolicy` on a `Gateway` resource. All requests to the `Gateway` will run the traffic policy.
-	If you prefer, `NgrokTrafficPolicy` can also be used on the route level by using an `externalRef` filter on an `HTTPRoute`. See the [using Gateway API guide](/k8s/guides/using-gwapi) for examples.
+    ```yaml
 
-	```yaml
-  apiVersion: gateway.networking.k8s.io/v1
-  kind: Gateway
-  metadata:
-    name: example-gateway
-    namespace: default
-    annotations:
-      k8s.ngrok.com/traffic-policy: example-tp
-  spec:
-    gatewayClassName: ngrok
-    listeners:
-      - name: example-hostname
-        hostname: "example-hostname.ngrok.io"
-        port: 443
-        protocol: HTTPS
-	```
-	</Tab>
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: NgrokTrafficPolicy
+metadata:
+name: example-tp
+namespace: default
+spec:
+policy:
+on_http_request: - expressions: - conn.client_ip.geo.location.is_eu == false
+actions: - type: deny
+config:
+status_code: 403
+```
+
+    ### 2. Use the `NgrokTrafficPolicy` on a `Gateway`
+
+    The following example showcases supplying the `NgrokTrafficPolicy` on a `Gateway` resource. All requests to the `Gateway` will run the traffic policy.
+    If you prefer, `NgrokTrafficPolicy` can also be used on the route level by using an `externalRef` filter on an `HTTPRoute`. See the [using Gateway API guide](/k8s/guides/using-gwapi) for examples.
+
+    ```yaml
+
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+name: example-gateway
+namespace: default
+annotations:
+k8s.ngrok.com/traffic-policy: example-tp
+spec:
+gatewayClassName: ngrok
+listeners: - name: example-hostname
+hostname: "example-hostname.ngrok.io"
+port: 443
+protocol: HTTPS
+```
+</Tab>
+
 </Tabs>

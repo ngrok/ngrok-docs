@@ -7,7 +7,6 @@ description: Return a hard-coded response back to the client that made a request
 import { ConfigField } from "/snippets/ConfigTable.jsx";
 import ActionVariablesDescription from "/snippets/traffic-policy/common/action-variables-description.mdx";
 
-
 The **Custom Response** Traffic Policy action enables you to return a hard-coded response back to the client that made a request to your endpoint.
 
 ## Configuration Reference
@@ -26,19 +25,18 @@ reference for this action.
 ### Configuration Fields
 
 <ConfigField title="status_code" type="integer" defaultValue="200">
-  <p>Status code of the custom response being sent back.</p>
+	<p>Status code of the custom response being sent back.</p>
 </ConfigField>
 <ConfigField title="body" type="string" cel={true}>
-  <p>Body of the custom response being sent back.</p>
+	<p>Body of the custom response being sent back.</p>
 </ConfigField>
 <ConfigField title="headers" type="object" cel={true}>
-  <p>
-    Map of key-value headers of the custom response to be sent back. If
-    `content-type` is not included in `headers`, this action will attempt to
-    infer the correct `content-type`. Maximum properties `10`.
-  </p>
+	<p>
+		Map of key-value headers of the custom response to be sent back. If
+		`content-type` is not included in `headers`, this action will attempt to
+		infer the correct `content-type`. Maximum properties `10`.
+	</p>
 </ConfigField>
-
 
 ## Behavior
 
@@ -56,7 +54,6 @@ When used during the `on_http_response`, this action overwrites the response fro
 ### Inferring Content-Type
 
 If the `content-type` header is not explicitly specified in `headers`, this action will attempt to infer the correct `content-type` based on the provided content.
-
 
 ## Examples
 
@@ -82,24 +79,25 @@ on_http_request:
 
 ```json policy.json
 {
-  "on_http_request": [
-    {
-      "actions": [
-        {
-          "type": "custom-response",
-          "config": {
-            "status_code": 503,
-            "body": "<html><body><h1>Service Unavailable</h1><p>Our servers are currently down for maintenance. Please check back later.</p></body></html>",
-            "headers": {
-              "content-type": "text/html"
-            }
-          }
-        }
-      ]
-    }
-  ]
+	"on_http_request": [
+		{
+			"actions": [
+				{
+					"type": "custom-response",
+					"config": {
+						"status_code": 503,
+						"body": "<html><body><h1>Service Unavailable</h1><p>Our servers are currently down for maintenance. Please check back later.</p></body></html>",
+						"headers": {
+							"content-type": "text/html"
+						}
+					}
+				}
+			]
+		}
+	]
 }
 ```
+
 </CodeGroup>
 
 #### Example Request
@@ -149,30 +147,31 @@ on_http_request:
 
 ```json policy.json {5-11}
 {
-  "on_http_request": [
-    {
-      "actions": [
-        {
-          "type": "forward-internal",
-          "config": {
-            "url": "https://endpoint-1.internal",
-            "on_error": "continue"
-          }
-        },
-        {
-          "type": "custom-response",
-          "config": {
-            "status_code": 302,
-            "headers": {
-              "location": "https://www.example.com"
-            }
-          }
-        }
-      ]
-    }
-  ]
+	"on_http_request": [
+		{
+			"actions": [
+				{
+					"type": "forward-internal",
+					"config": {
+						"url": "https://endpoint-1.internal",
+						"on_error": "continue"
+					}
+				},
+				{
+					"type": "custom-response",
+					"config": {
+						"status_code": 302,
+						"headers": {
+							"location": "https://www.example.com"
+						}
+					}
+				}
+			]
+		}
+	]
 }
 ```
+
 </CodeGroup>
 
 ### Custom JSON API Response with CEL Interpolation
@@ -198,26 +197,25 @@ on_http_request:
 
 ```json policy.json {11}
 {
-  "on_http_request": [
-    {
-      "expressions": [
-        "req.url.path == '/api/example'"
-      ],
-      "actions": [
-        {
-          "type": "custom-response",
-          "config": {
-            "body": "{\"connection-start\":\"${conn.ts.start}\"}",
-            "headers": {
-              "content-type": "application/json"
-            }
-          }
-        }
-      ]
-    }
-  ]
+	"on_http_request": [
+		{
+			"expressions": ["req.url.path == '/api/example'"],
+			"actions": [
+				{
+					"type": "custom-response",
+					"config": {
+						"body": "{\"connection-start\":\"${conn.ts.start}\"}",
+						"headers": {
+							"content-type": "application/json"
+						}
+					}
+				}
+			]
+		}
+	]
 }
 ```
+
 </CodeGroup>
 
 #### Example Request
@@ -240,7 +238,6 @@ custom JSON response with the default status code of `200`. The response include
 `content-type: application/json` header and a JSON body that uses CEL
 Interpolation to show the connection start time using the [`conn.ts.start`
 variable](/traffic-policy/variables/connection/#conntsstart).
-
 
 ### Custom Plaintext Response with Multiple CEL Interpolations
 
@@ -266,27 +263,26 @@ on_http_request:
 
 ```json policy.json {12}
 {
-  "on_http_request": [
-    {
-      "expressions": [
-        "req.url.path == '/api/example'"
-      ],
-      "actions": [
-        {
-          "type": "custom-response",
-          "config": {
-            "status_code": 418,
-            "body": "connection began at ${conn.ts.start}, now ${timestamp(time.now)}",
-            "headers": {
-              "content-type": "text/plain"
-            }
-          }
-        }
-      ]
-    }
-  ]
+	"on_http_request": [
+		{
+			"expressions": ["req.url.path == '/api/example'"],
+			"actions": [
+				{
+					"type": "custom-response",
+					"config": {
+						"status_code": 418,
+						"body": "connection began at ${conn.ts.start}, now ${timestamp(time.now)}",
+						"headers": {
+							"content-type": "text/plain"
+						}
+					}
+				}
+			]
+		}
+	]
 }
 ```
+
 </CodeGroup>
 
 #### Example Request
@@ -312,4 +308,3 @@ interpolations to show the connection start time and the current time.
 <ActionVariablesDescription />
 
 <Note>This action does not set any variables after it has been executed.</Note>
-

@@ -29,7 +29,7 @@ Here is what you'll be building with:
     domain, like `https://api.example.com`.
   - We'll refer to this domain as `<NGROK_DOMAIN>`.
 
-## Create your cluster in AKS 
+## Create your cluster in AKS
 
 Start by creating a new managed Kubernetes cluster in AKS. If you already have one, you can skip to [Add ngrok's Kubernetes ingress to your demo app](#add-ngrok-based-ingress-to-your-demo-app).
 
@@ -58,11 +58,13 @@ Start by creating a new managed Kubernetes cluster in AKS. If you already have o
    tigera-operator   tigera-operator           1/1     1            1           5m
    ```
 
-## Deploy a demo microservices app 
+## Deploy a demo microservices app
 
 To showcase how this integration works, you'll deploy the [AKS Store](https://github.com/Azure-Samples/azure-voting-app-redis) app, which uses a microservices architecture to connect frontend UI to API-like services, passing data to RabbitMQ and MongoDB in the backend. To showcase the features of AKS, you'll deploy this demo app directly in the Azure Portal.
+
 <Tip>
-**If you prefer the CLI, save the YAML below to a `.yaml` file on your local workstation and deploy with `kubectl apply -f ...`.**
+	**If you prefer the CLI, save the YAML below to a `.yaml` file on your local
+	workstation and deploy with `kubectl apply -f ...`.**
 </Tip>
 
 1. Click **Create**&rarr;**Apply a YAML**.
@@ -305,16 +307,19 @@ To showcase how this integration works, you'll deploy the [AKS Store](https://gi
 
 1. Click **Add** to deploy the demo app. To double-check services deployed successfully, click on **Workloads** in the Azure Portal and look for `store-front`, `rabbitmq`, `product-service`, and `order-service` in the `default` namespace. If you prefer the CLI, you can run `kubectl get pods` for the same information.
 
-## Add ngrok's Kubernetes ingress to your demo app 
+## Add ngrok's Kubernetes ingress to your demo app
 
 Next, you'll configure and deploy the [ngrok Kubernetes Operator](https://github.com/ngrok/ngrok-operator) to expose your demo app to the public internet through the ngrok cloud service.
 
 1. In the Azure Portal, click **Create&rarr;Apply a YAML**.
 
 1. Copy and paste the YAML below into the editor. This manifest defines how the ngrok Kubernetes Operator should route traffic arriving on `NGROK_DOMAIN` to the `store-front` service on port `80`, which you deployed in the previous step.
-<Tip>
-**Make sure you edit line `9` of the YAML below, which contains the `NGROK_DOMAIN` variable, with the ngrok subdomain you created in the second step.**
-</Tip>
+
+   <Tip>
+   	**Make sure you edit line `9` of the YAML below, which contains the
+   	`NGROK_DOMAIN` variable, with the ngrok subdomain you created in the second
+   	step.**
+   </Tip>
 
    ```yaml showLineNumbers
    apiVersion: networking.k8s.io/v1
@@ -344,7 +349,7 @@ Next, you'll configure and deploy the [ngrok Kubernetes Operator](https://github
 
    ![The AKS Store demo app accessible from the public internet](../img/azure-aks/img/store-front.png)
 
-## Add OAuth authentication to your demo app 
+## Add OAuth authentication to your demo app
 
 Now that your demo app is publicly accessible through the ngrok cloud service, you can quickly layer on [additional capabilities](/universal-gateway/http/), like authentication, without configuring and deploying complex infrastructure. Let's see how that works for restricting access to individual Google accounts or any Google account under a specific domain name.
 
@@ -413,29 +418,29 @@ Ingresses](/k8s/guides/using-ingresses/#using-ngroktrafficpolicy-with-ingress).
    your domain.
 
    ```yaml
-    # Traffic Policy configuration for OAuth
-    apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-    kind: NgrokTrafficPolicy
-    metadata:
-      name: oauth
-      namespace: default
-    spec:
-      policy:
-        on_http_request:
-          - type: oauth
-            config:
-              provider: google
-          - expressions:
-              - "!actions.ngrok.oauth.identity.email.endsWith('@example.com')"
-            actions:
-              - type: custom-response
-                config:
-                  body: Hey, no auth for you ${actions.ngrok.oauth.identity.name}!
-                  status_code: 400
+   # Traffic Policy configuration for OAuth
+   apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+   kind: NgrokTrafficPolicy
+   metadata:
+     name: oauth
+     namespace: default
+   spec:
+     policy:
+       on_http_request:
+         - type: oauth
+           config:
+             provider: google
+         - expressions:
+             - "!actions.ngrok.oauth.identity.email.endsWith('@example.com')"
+           actions:
+             - type: custom-response
+               config:
+                 body: Hey, no auth for you ${actions.ngrok.oauth.identity.name}!
+                 status_code: 400
    ```
 
 1. Check out your deployed app once again. If you log in with an email that
-   doesn't match your domain, ngrok rejects your request. 
+   doesn't match your domain, ngrok rejects your request.
 
 ## What's next?
 

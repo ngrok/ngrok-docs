@@ -3,14 +3,14 @@ title: Load Balancing Between Multiple Clouds
 description: Learn how to load balance traffic between multiple clouds with ngrok.
 ---
 
-
-
 ngrok's [Endpoint Pooling](/universal-gateway/endpoint-pooling) allows you to automatically load balance between replicas of your service across multiple clouds by creating two endpoints with the same URL.
 
 This guide will show you how to set up endpoint pooling with a few different methods.
 
 <Tip>
-This guide will reference reserved domains frequently. You can reserve a free domain in the [dashboard](https://dashboard.ngrok.com/domains) or use a custom domain you own.
+	This guide will reference reserved domains frequently. You can reserve a free
+	domain in the [dashboard](https://dashboard.ngrok.com/domains) or use a custom
+	domain you own.
 </Tip>
 
 ## Why use Endpoint Pooling?
@@ -67,41 +67,42 @@ import (
 )
 
 func main() {
-	if err := godotenv.Load(".env"); err != nil {
-		log.Fatal("Error loading .env file", err)
-	}
-	if err := run(context.Background()); err != nil {
-		log.Fatal(err)
-	}	
+if err := godotenv.Load(".env"); err != nil {
+log.Fatal("Error loading .env file", err)
+}
+if err := run(context.Background()); err != nil {
+log.Fatal(err)
+}
 }
 
 const address = "http://localhost:8000"
 
 func run(ctx context.Context) error {
-	agent, err := ngrok.NewAgent(ngrok.WithAuthtoken(os.Getenv("NGROK_AUTHTOKEN")))
-	if err != nil {
-		return err
-	}
-
-	ln, err := agent.Forward(ctx,
-		ngrok.WithUpstream(address),
-		ngrok.WithURL("your-reserved-domain"),
-		ngrok.WithPoolingEnabled(true),
-	)
-
-	if err != nil {
-		fmt.Println("Error", err)
-		return err
-	}
-
-	fmt.Println("Endpoint online: forwarding from", ln.URL(), "to", address)
-
-	// Explicitly stop forwarding; otherwise it runs indefinitely
-	<-ln.Done()
-	return nil
+agent, err := ngrok.NewAgent(ngrok.WithAuthtoken(os.Getenv("NGROK_AUTHTOKEN")))
+if err != nil {
+return err
 }
 
-```
+    ln, err := agent.Forward(ctx,
+    	ngrok.WithUpstream(address),
+    	ngrok.WithURL("your-reserved-domain"),
+    	ngrok.WithPoolingEnabled(true),
+    )
+
+    if err != nil {
+    	fmt.Println("Error", err)
+    	return err
+    }
+
+    fmt.Println("Endpoint online: forwarding from", ln.URL(), "to", address)
+
+    // Explicitly stop forwarding; otherwise it runs indefinitely
+    <-ln.Done()
+    return nil
+
+}
+
+````
 
 ```javascript title="example.js"
 require('dotenv').config();
@@ -122,7 +123,7 @@ const ngrok = require('@ngrok/ngrok');
 
 // Keep the process alive
 process.stdin.resume();
-```
+````
 
 ```rust title="src/main.rs"
 #![deny(warnings)]

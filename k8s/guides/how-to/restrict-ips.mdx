@@ -3,9 +3,6 @@ title: Controlling Access with IP Restrictions
 sidebarTitle: Restrict IPs
 ---
 
-
-
-
 Instead of denying requests based on request properties like headers or paths, you may need to restrict access based on the request's source IP address.
 
 By defining allow lists (permitting only specific IP ranges) or deny lists (blocking unwanted IPs), you can:
@@ -13,7 +10,6 @@ By defining allow lists (permitting only specific IP ranges) or deny lists (bloc
 🛡 Enhance security by blocking malicious IPs or untrusted networks. <br />
 🚀 Limit access to internal or private resources. <br />
 ⚡ Prevent API abuse by restricting access to known users or organizations. <br />
-
 
 ## 🔍 What are the Benefits of Restricting IPs?
 
@@ -81,96 +77,90 @@ Check out the [IP restriction policy action](/traffic-policy/actions/restrict-ip
 	<Tab title="Ingress">
 	💡 `Ingress` resources do not natively support IP-based restrictions, but they can be extended using a traffic policy.
 
-	### 1. Create an `NgrokTrafficPolicy`
+    ### 1. Create an `NgrokTrafficPolicy`
 
-	```yaml
-  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-  kind: NgrokTrafficPolicy
-  metadata:
-    name: example-tp
-    namespace: default
-  spec:
-    policy:
-      on_tcp_connect:
-        - actions:
-            - type: restrict-ips
-              config:
-                enforce: true
-                allow:
-                  - 1.1.1.1/32
-                deny:
-                  - e680:5791:be4c:5739:d959:7b94:6d54:d4b4/128
-	```
+    ```yaml
 
-	### 2. Use the `NgrokTrafficPolicy` on an `Ingress`
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: NgrokTrafficPolicy
+metadata:
+name: example-tp
+namespace: default
+spec:
+policy:
+on_tcp_connect: - actions: - type: restrict-ips
+config:
+enforce: true
+allow: - 1.1.1.1/32
+deny: - e680:5791:be4c:5739:d959:7b94:6d54:d4b4/128
+```
 
-	```yaml
-  apiVersion: networking.k8s.io/v1
-  kind: Ingress
-  metadata:
-    annotations:
-      k8s.ngrok.com/traffic-policy: example-tp
-    name: example-ingress
-    namespace: default
-  spec:
-    ingressClassName: ngrok
-    rules:
-      - host: example-hostname.ngrok.io
-        http:
-          paths:
-            - path: /
-              pathType: Prefix
-              backend:
-                service:
-                  name: example-service
-                  port:
-                    number: 80
-	```
-	</Tab>
-	<Tab title="Gateway API">
-	💡 Gateway API resources do not natively support IP-based restrictions, but they can be extended using a traffic policy.
+    ### 2. Use the `NgrokTrafficPolicy` on an `Ingress`
 
-	### 1. Create an `NgrokTrafficPolicy`
+    ```yaml
 
-	```yaml
-  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-  kind: NgrokTrafficPolicy
-  metadata:
-    name: example-tp
-    namespace: default
-  spec:
-    policy:
-      on_tcp_connect:
-        - actions:
-            - type: restrict-ips
-              config:
-                enforce: true
-                allow:
-                  - 1.1.1.1/32
-                deny:
-                  - e680:5791:be4c:5739:d959:7b94:6d54:d4b4/128
-	```
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+annotations:
+k8s.ngrok.com/traffic-policy: example-tp
+name: example-ingress
+namespace: default
+spec:
+ingressClassName: ngrok
+rules: - host: example-hostname.ngrok.io
+http:
+paths: - path: /
+pathType: Prefix
+backend:
+service:
+name: example-service
+port:
+number: 80
+```
+</Tab>
+<Tab title="Gateway API">
+💡 Gateway API resources do not natively support IP-based restrictions, but they can be extended using a traffic policy.
 
-	### 2. Use the `NgrokTrafficPolicy` on a `Gateway`
+    ### 1. Create an `NgrokTrafficPolicy`
 
-	The following example showcases supplying the `NgrokTrafficPolicy` on a `Gateway` resource. All requests to the `Gateway` will run the traffic policy.
-	If you prefer, `NgrokTrafficPolicy` can also be used on the route level by using an `externalRef` filter on an `HTTPRoute`. See the [using Gateway API guide](/k8s/guides/using-gwapi) for examples.
+    ```yaml
 
-	```yaml
-  apiVersion: gateway.networking.k8s.io/v1
-  kind: Gateway
-  metadata:
-    name: example-gateway
-    namespace: default
-    annotations:
-      k8s.ngrok.com/traffic-policy: example-tp
-  spec:
-    gatewayClassName: ngrok
-    listeners:
-      - name: example-hostname
-        hostname: "example-hostname.ngrok.io"
-        port: 443
-        protocol: HTTPS
-	```
-	</Tab>
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: NgrokTrafficPolicy
+metadata:
+name: example-tp
+namespace: default
+spec:
+policy:
+on_tcp_connect: - actions: - type: restrict-ips
+config:
+enforce: true
+allow: - 1.1.1.1/32
+deny: - e680:5791:be4c:5739:d959:7b94:6d54:d4b4/128
+```
+
+    ### 2. Use the `NgrokTrafficPolicy` on a `Gateway`
+
+    The following example showcases supplying the `NgrokTrafficPolicy` on a `Gateway` resource. All requests to the `Gateway` will run the traffic policy.
+    If you prefer, `NgrokTrafficPolicy` can also be used on the route level by using an `externalRef` filter on an `HTTPRoute`. See the [using Gateway API guide](/k8s/guides/using-gwapi) for examples.
+
+    ```yaml
+
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+name: example-gateway
+namespace: default
+annotations:
+k8s.ngrok.com/traffic-policy: example-tp
+spec:
+gatewayClassName: ngrok
+listeners: - name: example-hostname
+hostname: "example-hostname.ngrok.io"
+port: 443
+protocol: HTTPS
+```
+</Tab>
+
 </Tabs>

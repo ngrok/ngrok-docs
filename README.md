@@ -83,7 +83,7 @@ We have a linter that checks for broken links and redirect conflicts. A redirect
 
 You can add a path pattern to `link-exceptions.json` to make the link-checker ignore certain links. If the pattern matches a link, even if the link is broken, it will pass linting.
 
-> This is trailing-slash agnostic. A link to `/example` will be ignored if `"/example/"` is in the exception list. Same the other way around. `/example/` = `"/example"`. 
+> This is trailing-slash agnostic. A link to `/example` will be ignored if `"/example/"` is in the exception list. Same the other way around. `/example/` = `"/example"`.
 
 - You can add a whole path to an exception with `*`, as in `/path*`.
 - You can match any phrase or path segment with `*` on either side. `*/path*`
