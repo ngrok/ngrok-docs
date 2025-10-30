@@ -162,7 +162,7 @@ export const ExampleHub = ({ parentDir }) => {
 				<div className="relative max-w-64">
 					<input
 						type="text"
-						className="w-full pl-10 dark:placeholder-white dark:text-white placeholder-black text-black pr-3 py-2 border border-gray-300 rounded-md font-sans"
+						className="w-full dark:bg-black dark:placeholder-white dark:text-white placeholder-black text-black px-3 py-2 border border-gray-300 rounded-md font-sans"
 						placeholder="Filter..."
 						value={exampleSearch}
 						onChange={(event) => setExampleSearch(event.target.value)}
