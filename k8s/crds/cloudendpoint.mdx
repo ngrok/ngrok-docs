@@ -203,6 +203,282 @@ In this scenario, the older endpoint wins and the newer one will fail to be crea
 
 **Default:** `false`
 
+## Status Fields
+
+The `CloudEndpoint` resource includes status information that reflects the current state of the cloud endpoint in the ngrok system.
+
+### `status.id`
+
+The ngrok API ID for this cloud endpoint.
+
+**Type:** `string`
+
+**Example:** `ep_34iZT0muBP3kpcAXxGjM4uFlgDK`
+
+### `status.domain`
+
+**(Deprecated)** Domain information for the endpoint. This field is deprecated; use `status.domainRef` instead.
+
+**Type:** `Object`
+
+### `status.domainRef`
+
+Reference to the Domain resource associated with this cloud endpoint.
+
+**Type:** `Object`
+
+**Fields:**
+- `name` - Name of the Domain resource
+- `namespace` - Namespace of the Domain resource
+
+**Example:**
+```yaml
+domainRef:
+  name: example-domain-ngrok-app
+  namespace: default
+```
+
+### `status.conditions`
+
+Standard Kubernetes conditions that indicate the state of the cloud endpoint.
+
+**Type:** `[]Condition`
+
+Each condition includes:
+- `type` - The condition type
+- `status` - `True`, `False`, or `Unknown`
+- `reason` - A programmatic identifier for the condition state
+- `message` - A human-readable description
+- `lastTransitionTime` - When the condition last changed
+- `observedGeneration` - The resource generation this condition applies to
+
+#### Condition Types
+
+##### `Ready`
+
+Indicates whether the cloud endpoint is fully operational and ready to use.
+
+**Status Values:**
+- `True` - Cloud endpoint is active and ready
+- `False` - Cloud endpoint is not ready (see reason for details)
+
+**Reasons:**
+
+| Reason | Status | Meaning |
+|--------|--------|---------|
+| `CloudEndpointActive` | `True` | Cloud endpoint is successfully created and active |
+| `CloudEndpointCreationFailed` | `False` | Failed to create the cloud endpoint in ngrok |
+| `Pending` | `False` | Cloud endpoint creation is pending (e.g., waiting for domain) |
+| `Unknown` | `False` | Cloud endpoint state is unknown |
+| `DomainNotReady` | `False` | Associated domain is not ready |
+
+Additionally, the `Ready` condition may reflect reasons from the associated Domain resource when domain issues prevent endpoint creation.
+
+**Example:**
+```yaml
+conditions:
+- type: Ready
+  status: "True"
+  reason: CloudEndpointActive
+  message: "Cloud endpoint is active"
+  lastTransitionTime: "2025-10-29T00:39:16Z"
+  observedGeneration: 1
+```
+
+**Example (Pooling Error):**
+```yaml
+conditions:
+- type: Ready
+  status: "False"
+  reason: CloudEndpointCreationFailed
+  message: |
+    Failed to create cloud endpoint: HTTP 400: The provided cloud endpoint was invalid because pooling was set to disabled when another endpoint exists for this url. [ERR_NGROK_18017]
+    
+    Operation ID: op_34ic9T376GyGAXQ4sIRn7F0xUYP
+  lastTransitionTime: "2025-10-29T00:39:15Z"
+  observedGeneration: 2
+```
+
+##### `CloudEndpointCreated`
+
+Indicates whether the cloud endpoint was successfully created in the ngrok API.
+
+**Status Values:**
+- `True` - Cloud endpoint was successfully created
+- `False` - Failed to create cloud endpoint
+
+**Reasons:**
+
+| Reason | Status | Meaning |
+|--------|--------|---------|
+| `CloudEndpointCreated` | `True` | Cloud endpoint successfully created |
+| `CloudEndpointCreationFailed` | `False` | API call to create cloud endpoint failed |
+
+**Example:**
+```yaml
+conditions:
+- type: CloudEndpointCreated
+  status: "True"
+  reason: CloudEndpointCreated
+  message: "Cloud endpoint successfully created"
+  lastTransitionTime: "2025-10-29T00:39:16Z"
+  observedGeneration: 1
+```
+
+##### `DomainReady`
+
+Indicates whether the associated domain is ready for use. This condition propagates the state from the referenced Domain resource.
+
+**Status Values:**
+- `True` - Domain is ready
+- `False` - Domain is not ready
+
+**Reasons:**
+
+This condition propagates reasons from the Domain resource's `Ready` condition, including:
+- `DomainActive` - Domain is successfully reserved and ready
+- `ProvisioningError` - Domain has DNS or certificate provisioning errors
+- `DomainCreationFailed` - Domain failed to be created
+- `DomainInvalid` - Domain format or configuration is invalid
+
+**Example:**
+```yaml
+conditions:
+- type: DomainReady
+  status: "True"
+  reason: DomainActive
+  message: "Domain ready for use"
+  lastTransitionTime: "2025-10-29T00:39:25Z"
+  observedGeneration: 1
+```
+
+**Example (Domain DNS Error):**
+```yaml
+conditions:
+- type: DomainReady
+  status: "False"
+  reason: ProvisioningError
+  message: 'DNS_ERROR Reserved domain "example.com" NS DNS records are not pointing at the ngrok infrastructure'
+  lastTransitionTime: "2025-10-29T00:39:24Z"
+  observedGeneration: 1
+```
+
+## Status Examples
+
+### Successfully Created Cloud Endpoint
+
+```yaml
+status:
+  id: ep_34iZT0muBP3kpcAXxGjM4uFlgDK
+  domainRef:
+    name: example-domain-ngrok-app
+    namespace: default
+  conditions:
+  - type: DomainReady
+    status: "True"
+    reason: DomainActive
+    message: "Domain ready for use"
+    lastTransitionTime: "2025-10-29T00:39:25Z"
+    observedGeneration: 1
+  - type: CloudEndpointCreated
+    status: "True"
+    reason: CloudEndpointCreated
+    message: "Cloud endpoint successfully created"
+    lastTransitionTime: "2025-10-29T00:39:16Z"
+    observedGeneration: 1
+  - type: Ready
+    status: "True"
+    reason: CloudEndpointActive
+    message: "Cloud endpoint is active"
+    lastTransitionTime: "2025-10-29T00:39:16Z"
+    observedGeneration: 1
+```
+
+### Cloud Endpoint with Pooling Error
+
+```yaml
+status:
+  domainRef:
+    name: example-domain-ngrok-app
+    namespace: default
+  conditions:
+  - type: DomainReady
+    status: "True"
+    reason: DomainActive
+    message: "Domain ready for use"
+    lastTransitionTime: "2025-10-29T00:39:25Z"
+    observedGeneration: 2
+  - type: CloudEndpointCreated
+    status: "False"
+    reason: CloudEndpointCreationFailed
+    message: |
+      Failed to create cloud endpoint: HTTP 400: The provided cloud endpoint was invalid because pooling was set to disabled when another endpoint exists for this url. [ERR_NGROK_18017]
+      
+      Operation ID: op_34ic9T376GyGAXQ4sIRn7F0xUYP
+    lastTransitionTime: "2025-10-29T00:39:25Z"
+    observedGeneration: 2
+  - type: Ready
+    status: "False"
+    reason: CloudEndpointCreationFailed
+    message: |
+      Failed to create cloud endpoint: HTTP 400: The provided cloud endpoint was invalid because pooling was set to disabled when another endpoint exists for this url. [ERR_NGROK_18017]
+      
+      Operation ID: op_34ic9T376GyGAXQ4sIRn7F0xUYP
+    lastTransitionTime: "2025-10-29T00:39:15Z"
+    observedGeneration: 2
+```
+
+### Cloud Endpoint with Domain Not Ready
+
+```yaml
+status:
+  domainRef:
+    name: custom-domain-com
+    namespace: default
+  conditions:
+  - type: DomainReady
+    status: "False"
+    reason: ProvisioningError
+    message: 'DNS_ERROR Reserved domain "example.com" NS DNS records are not pointing at the ngrok infrastructure'
+    lastTransitionTime: "2025-10-29T00:39:24Z"
+    observedGeneration: 1
+  - type: CloudEndpointCreated
+    status: "False"
+    reason: Pending
+    message: "Waiting for domain to be ready"
+    lastTransitionTime: "2025-10-29T00:39:24Z"
+    observedGeneration: 1
+  - type: Ready
+    status: "False"
+    reason: DomainNotReady
+    message: "Cloud endpoint cannot be created because domain is not ready"
+    lastTransitionTime: "2025-10-29T00:39:24Z"
+    observedGeneration: 1
+```
+
+## Checking Cloud Endpoint Status
+
+You can check the status of a cloud endpoint using kubectl:
+
+```bash
+# Check if cloud endpoint is ready
+kubectl get cloudendpoint example-cloud-endpoint -o jsonpath='{.status.conditions[?(@.type=="Ready")]}'
+
+# Watch for cloud endpoint to become ready
+kubectl wait --for=condition=Ready cloudendpoint/example-cloud-endpoint --timeout=60s
+
+# Get all cloud endpoints with their ready status
+kubectl get cloudendpoints -A -o custom-columns=\
+NAME:.metadata.name,\
+NAMESPACE:.metadata.namespace,\
+DOMAIN:.status.domainRef.name,\
+READY:.status.conditions[?(@.type==\'Ready\')].status,\
+REASON:.status.conditions[?(@.type==\'Ready\')].reason
+
+# Check domain readiness for a cloud endpoint
+kubectl get cloudendpoint example-cloud-endpoint -o jsonpath='{.status.conditions[?(@.type=="DomainReady")]}'
+```
+
 ## Example CloudEndpoints
 
 ### CloudEndpoint with inline traffic policy
