@@ -48,9 +48,9 @@ If the header already exists, it will append another header with the same key (u
 
 For example, you could use this action to add the client's IP to `x-forwarded-for`, appending information about the client making the request, so the upstream server can see where the request originated, regardless of the proxies it passed through.
 
-
 <Note>
-This example uses a connection variable. See [the connection variable reference](https://ngrok.com/docs/traffic-policy/variables/connection#conn-client-ip) to learn more.
+This example uses a connection variable.
+See [the connection variable reference](https://ngrok.com/docs/traffic-policy/variables/connection#conn-client-ip) to learn more.
 </Note>
 
 <CodeGroup>
@@ -137,20 +137,46 @@ on_http_request:
 
 </CodeGroup>
 
+<Tip>
 See [our Adding and Removing Headers examples](/traffic-policy/examples/add-and-remove-headers) for use cases.
+</Tip>
 
 ### Case sensitivity
 
-Header keys added through this action are normalized to lowercase per the [HTTP/2 specification](https://datatracker.ietf.org/doc/html/rfc7540#section-8.1.2).
+Header keys are case-insensitive.
+All header keys added with `add-headers` are normalized to lowercase, per the [HTTP/2 specification](https://datatracker.ietf.org/doc/html/rfc7540#section-8.1.2).
+
+For example, the following snippets, despite specifying a capitalized `Authorization` header, would yield a lower-case `authorization` header.
+
+<CodeGroup>
+```yaml policy.yml
+- type: add-headers
+  config:
+    headers:
+      Authorization: ax10malv
+```
+```json policy.json
+{
+	"type": "add-headers",
+	"config": {
+		"headers": {
+			"Authorization": "ax10malv"
+		}
+	}
+}
+```
+</CodeGroup>
 
 ### Ordering
 
-Since actions are run in the order they are specified, to modify headers that have been added by other actions you must place this action
-after them in your traffic policy document.
+Actions are run in the same order that they're defined in your traffic policy.
+If you want an `add-headers` action to modify headers created or modified in other actions, it must be defined after them in your traffic policy document.
 
 ### Special cases
 
-- Adding the `host` header override the existing value instead of appending another header.
+These are the special cases in which this action will behave differently from how this reference document has specified.
+
+- Adding the `host` header overrides the existing value instead of appending another header.
 - You may not add or remove the `user-agent` header.
 - You may not use this action to add the `ngrok-skip-browser-warning` header to skip the ngrok browser warning on free accounts. For more information, check out the [free plan limits guide](/pricing-limits/free-plan-limits#removing-the-interstitial-page).
 
