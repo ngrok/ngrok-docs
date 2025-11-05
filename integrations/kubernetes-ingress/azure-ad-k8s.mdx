@@ -3,10 +3,9 @@ title: Ingress to apps secured by Microsoft Entra ID in Kubernetes
 description: Add ingress to any app running in Kubernetes, then restrict access to only users authorized through Microsoft Entra ID, using the ngrok Kubernetes Operator.
 sidebarTitle: Microsoft Entra ID
 ---
+
 <Tip>
 **TL;DR**
-
-
 
 To use the ngrok Kubernetes Operator with Microsoft Entra ID:
 
@@ -38,11 +37,11 @@ With this guide, you'll (optionally) create a new Kubernetes cluster and example
 3. A Kubernetes cluster, either locally or in a public cloud, with an app you'd like to be publicly accessible to specific users.
 </Warning>
 
-## **Step 1**: Create a cluster and deploy an example app 
+## 1. Create a cluster and deploy an example app 
 
 This guide requires you to deploy _some_ app on _any_ Kubernetes cluster, either locally or in a public cloud, to provide an endpoint for ngrok's secure tunnel. You can use any cluster and any app, but for demonstration, we'll create a local Kubernetes cluster with [minikube](https://minikube.sigs.k8s.io/docs/) and deploy the [Online Boutique](https://github.com/GoogleCloudPlatform/microservices-demo) example.
 
-If you already have a cluster and app, skip to [Step 2: Add the ngrok Kubernetes Operator](#add-the-ngrok-kubernetes-operator).
+If you already have a cluster and app, skip to [2. Add the ngrok Kubernetes Operator](#add-the-ngrok-kubernetes-operator).
 
 1. Download the `GoogleCloudPlatform/microservices-demo` project to your local workstation and navigate into the new directory.
 
@@ -63,7 +62,7 @@ If you already have a cluster and app, skip to [Step 2: Add the ngrok Kubernetes
    kubectl apply -f ./release/kubernetes-manifests.yaml
    ```
 
-## **Step 2**: Add the ngrok Kubernetes Operator 
+## 2. Add the ngrok Kubernetes Operator 
 
 Next, you'll configure and deploy the [ngrok Kubernetes Operator](https://github.com/ngrok/ngrok-operator) to expose your app to the public internet through the ngrok cloud service.
 
@@ -146,13 +145,13 @@ Next, you'll configure and deploy the [ngrok Kubernetes Operator](https://github
 **If you see an error when applying the manifest, double-check that you've updated the `NGROK_DOMAIN` value and re-apply.**
 </Tip>
 
-1. Access your app, with ingress now handled by ngrok, by navigating to your ngrok domain, e.g. `https://one-two-three.ngrok.app`, in your browser.
+1. Access your app, with ingress now handled by ngrok, by navigating to your ngrok domain, for example, `https://one-two-three.ngrok.app`, in your browser.
 
-## **Step 3**: Update your ngrok Edge to enable SAML 
+## 3. Update your ngrok Edge to enable SAML 
 
 Your Kubernetes-based app is now publicly accessible through the ngrok cloud service—to restrict access to only authorized users with proper Microsoft Entra ID credentials, you first need to enable SAML on your Edge.
 
-1. Navigate to the [**Edges** section](https://dashboard.ngrok.com/edges) of the ngrok dashboard and click on the Edge created by the ngrok Kubernetes Operator. The domain name should match your `NGROK_DOMAIN`, and you should see **Created by kubernetes-ingress-controller** in the edge's description.
+1. Navigate to the [**Edges** section](https://dashboard.ngrok.com/edges) of the ngrok dashboard and click the Edge created by the ngrok Kubernetes Operator. The domain name should match your `NGROK_DOMAIN`, and you should see **Created by kubernetes-ingress-controller** in the edge's description.
 
    ![Finding your edge in the ngrok dashboard](../img/azure-ad/img/k8s_edge-dashboard.png)
 
@@ -168,7 +167,7 @@ Your Kubernetes-based app is now publicly accessible through the ngrok cloud ser
 
 ![An ngrok Edge with SAML enabled](../img/azure-ad/img/k8s_saml-enabled.png)
 
-## **Step 4**: Create an enterprise app in Microsoft Entra ID 
+## 4. Create an enterprise app in Microsoft Entra ID 
 
 With SAML configured on your ngrok Edge, you can now configure Microsoft Entra ID to operate as your identity provider, often called **IdP**.
 
@@ -192,7 +191,7 @@ With SAML configured on your ngrok Edge, you can now configure Microsoft Entra I
 
 1. In the **SAML Certificates** box, download the **Federation Metadata XML**.
 
-## **Step 5**: Finish adding Microsoft Entra ID authorization to your ngrok Edge 
+## 5. Finish adding Microsoft Entra ID authorization to your ngrok Edge 
 
 Time to head back to your ngrok dashboard to finish the SAML configuration.
 
@@ -202,9 +201,11 @@ Time to head back to your ngrok dashboard to finish the SAML configuration.
 
 1. Click **Save**.
 
-## **Step 6**: Test authorization to your app using Microsoft Entra ID 
+## 6. Test authorization to your app using Microsoft Entra ID 
 
-You've finished integrating the ngrok Kubernetes Operator and Microsoft Entra ID! Your app, whether the Online Boutique used throughout this guide or a custom deployment, is now publicly accessible only to those authorized with their Microsoft Entra ID credentials. Time to test how it works:
+You've now finished integrating the ngrok Kubernetes Operator and Microsoft Entra ID. 
+Your app, whether the Online Boutique used throughout this guide or a custom deployment, is now publicly accessible only to those authorized with their Microsoft Entra ID credentials. 
+Time to test how it works:
 
 1. Open an incognito/private window in your browser, or a different browser than you've used so far, and navigate again to your `NGROK_DOMAIN`. You should see a single sign-on screen from Microsoft.
 
@@ -214,7 +215,7 @@ You've finished integrating the ngrok Kubernetes Operator and Microsoft Entra ID
 
    Behind the scenes, ngrok requests your identity provider, Microsoft Entra ID, for authentication. Once you sign in, or are already logged in, Microsoft Entra ID then returns a SAML assertion to ngrok, telling ngrok your authentication is confirmed and you have authorization to access the app.
 
-   Microsoft Entra ID will then redirect you back to your app!
+   Microsoft Entra ID will then redirect you back to your app.
 
 ## What's next?
 

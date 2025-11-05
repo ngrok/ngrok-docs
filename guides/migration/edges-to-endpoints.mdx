@@ -21,7 +21,7 @@ This guide walks you through manually migrating ngrok **Edge configurations** (H
 | HTTPS     | Cloud Endpoint + Agent Endpoint | `on_http_request`, `on_http_response` |
 | TLS/TCP   | Cloud Endpoint + Agent Endpoint | `on_tcp_connect`                      |
 
-## ⚙️ Step 1 — Set Up Environment
+## ⚙️ 1. Set Up Environment
 
 Make sure you have:
 
@@ -36,7 +36,7 @@ Ngrok-Version: 2
 Content-Type: application/json
 ```
 
-## 📋 Step 2 — List Your Edges
+## 📋 2. List Your Edges
 
 Use the ngrok API to list all existing edges:
 
@@ -55,12 +55,13 @@ If a response includes a non-empty [`next_page_uri`](/api/#pagination) you’ll 
 }
 ```
 
-Just make sure to keep your [API rate limits](/api/#rate-limits) in mind! Repeat this process for:
+Be sure to keep your [API rate limits](/api/#rate-limits) in mind. 
+Repeat this process for:
 
 - `/edges/tls`
 - `/edges/tcp`
 
-## 🧠 Step 3 — Determine the Target URL
+## 🧠 3. Determine the Target URL
 
 Each edge has one or more `hostports`. Use those to define a **cloud endpoint `url`**:
 
@@ -72,7 +73,7 @@ Each edge has one or more `hostports`. Use those to define a **cloud endpoint `u
 
 Note, you’ll have to create a cloud endpoint for each `hostport` attached to an edge if you want multiple `hostports` to service the same traffic flow.
 
-## 🛠️ Step 4 — Create a Traffic Policy
+## 🛠️ 4. Create a Traffic Policy
 
 Each cloud endpoint will have a YAML traffic policy.
 
@@ -86,7 +87,7 @@ on_tcp_connect: []
 
 Use only the relevant phases for the edge type.
 
-## 🔁 Step 5 — Migrate Routes (HTTPS Only)
+## 🔁 5. Migrate Routes (HTTPS Only)
 
 HTTPS edges have routes, and we will need to convert each route’s to a CEL expression based on it’s `match_type` for use on every rule that is defined.
 
@@ -99,7 +100,7 @@ Here are some example CEL expressions for routes based on the `match_type`:
 
 Create these for later use in each `expressions:` block in your policy rules.
 
-## 🔧 Step 6 — Convert Modules to Actions
+## 🔧 6. Convert Modules to Actions
 
 Each module on the edge or its routes maps to one or more policy actions:
 
@@ -122,7 +123,7 @@ You’ll want to translate each Module configuration to Action Configuration:
 
 Add these actions under the correct phase (with matching route expressions when the endpoint is HTTP or HTTPS).
 
-## 🎯 Step 7 — Convert Backends
+## 🎯 7. Convert Backends
 
 Your edge’s backend defines where traffic goes. These should be placed **after all other actions you defined above. These should be added to the end of the phase.**
 
@@ -130,7 +131,7 @@ Your edge’s backend defines where traffic goes. These should be placed **after
 
 If the edge uses a `tunnel_group` backend (identified by labels):
 
-- Construct an internal domain for each label (e.g., `service=app` → `service-app.internal`)
+- Construct an internal domain for each label (for example, `service=app` → `service-app.internal`)
 - Forward traffic to each internal domain using the `forward-internal` action and fall through with the `forward-internal` action.
 - Run the agent or create a cloud endpoint with that internal domain to receive traffic.
 
@@ -295,7 +296,7 @@ yaml_output = yaml.dump([config], sort_keys=False)
 print(yaml_output)
 ```
 
-## ✏️ Step 8 — Create the Cloud Endpoint
+## ✏️ 8. Create the Cloud Endpoint
 
 Each edge `hostport` should become a separate **cloud endpoint** with its configuration represented as **JSON**, and the `traffic_policy` embedded as **stringified YAML**.
 
@@ -323,7 +324,7 @@ Ngrok-Version: 2
 ...
 ```
 
-## 🧹 Step 9 — Clean Up the Old Edge
+## 🧹 9. Clean Up the Old Edge
 
 Once you have validated that your edge has been migrated and works, you can clean up the edge from your account:
 
