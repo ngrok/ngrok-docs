@@ -21,7 +21,7 @@ To follow this guide, you need:
 - An [ngrok account](https://dashboard.ngrok.com/signup) (some features require a [pay-as-you-go plan](https://ngrok.com/pricing))
 - Any ARM64 device running Linux (see our [system requirements](/agent/#system-requirements) for all supported architectures)
 
-## Step 1: Install the ngrok Agent
+## 1. Install the ngrok Agent
 
 1. Open a shell session with your remote ARM64 device.
 
@@ -43,7 +43,7 @@ To follow this guide, you need:
    ngrok authtoken {NGROK_AUTHTOKEN}
    ```
 
-## Step 2: Enable SSH access
+## 2. Enable SSH access
 
 If you want to perform remote administration on your ARM64 device using a reserved TCP address and an encrypted tunnel, instead of relying on IP addresses, you can create a [TCP tunnel](/universal-gateway/tcp/) at port `22` on your ARM64 device.
 
@@ -67,15 +67,15 @@ If you want to perform remote administration on your ARM64 device using a reserv
 
    |                       |                                                                                                                                                |
    | --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-   | `{NGROK_PORT}`        | The port number assigned to your ngrok agent (e.g. if the agent shows `tcp://4.tcp.us-cal-1.ngrok.io:12345`, your port number is `12345`).     |
+   | `{NGROK_PORT}`        | The port number assigned to your ngrok agent (for example, if the agent shows `tcp://4.tcp.us-cal-1.ngrok.io:12345`, your port number is `12345`).     |
    | `{USER}`              | An existing user on your remote device.                                                                                                        |
-   | `{NGROK_TCP_ADDRESS}` | The address of the ngrok agent (e.g. if the agent shows `tcp://4.tcp.us-cal-1.ngrok.io:12345`, your TCP address is `4.tcp.us-cal-1.ngrok.io`). |
+   | `{NGROK_TCP_ADDRESS}` | The address of the ngrok agent (for example, if the agent shows `tcp://4.tcp.us-cal-1.ngrok.io:12345`, your TCP address is `4.tcp.us-cal-1.ngrok.io`). |
 
    ```bash
    ssh -p {NGROK_PORT} {USER}@{NGROK_TCP_ADDRESS}
    ```
 
-## Step 3: Enable ingress to a service on your ARM64-based Linux device
+## 3. Enable ingress to a service on your ARM64-based Linux device
 
 Separately from SSH access, you can also use ngrok to create an [HTTP tunnel](/universal-gateway/http/) to route traffic to specific applications or services running on your ARM64 device's `localhost` network.
 
@@ -83,7 +83,7 @@ Separately from SSH access, you can also use ngrok to create an [HTTP tunnel](/u
 If you already established a TCP tunnel for SSH access, you'll either need to create a second tunnel for the HTTP tunnel, or use the [agent configuration file](/agent/config/v3/) to define multiple tunnels.
 </Note>
 
-1. Use ngrok to create an HTTP tunnel at the port on which your service operates, e.g. port `8080`.
+1. Use ngrok to create an HTTP tunnel at the port on which your service operates, for example, port `8080`.
 
    ```bash
    ngrok http 8080
@@ -101,15 +101,15 @@ If you already established a TCP tunnel for SSH access, you'll either need to cr
    ngrok http 8080 --url https://example.ngrok.app
    ```
 
-1. Open a browser and navigate to the endpoint, e.g. `https://12345.ngrok.app`, to access the service from any remote system.
+1. Open a browser and navigate to the endpoint, for example, `https://12345.ngrok.app`, to access the service from any remote system.
 
-## Step 4: Add a Traffic Policy to restrict IPs
+## 4. Add a Traffic Policy to restrict IPs
 
 Now that you have SSH tunneling and service ingress handled via ngrok, you may also want to protect those services from unknown and untrusted users. You'll use the [Restrict IPs](/traffic-policy/actions/restrict-ips) traffic policy action.
 
-1.  Create a new file on your ARM64 device, where you create ngrok endpoints, named `policy.yml`.
+1. Create a new file on your ARM64 device, where you create ngrok endpoints, named `policy.yml`.
 
-1.  Open the file for editing and paste in the following contents, replacing `1.1.1.1` with the public IP of the workstation you use to access your ARM64 device:
+1. Open the file for editing and paste in the following contents, replacing `1.1.1.1` with the public IP of the workstation you use to access your ARM64 device:
 
     ```yaml
     on_tcp_connect:
@@ -126,7 +126,7 @@ Now that you have SSH tunneling and service ingress handled via ngrok, you may a
     ngrok's IP Restriction action uses [CIDRs](https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing) to specific IPs or IP ranges. The `/32` notation refers to a single IPv4 address, like `
     :::
 
-1.  Restart any existing tunnels, or create new ones, referencing the `policy.yml` file you just created, choosing between a TLS and HTTP tunnel below.
+1. Restart any existing tunnels, or create new ones, referencing the `policy.yml` file you just created, choosing between a TLS and HTTP tunnel below.
 
     <Tabs>
       <Tab title="TLS tunnel">
@@ -145,7 +145,7 @@ Now that you have SSH tunneling and service ingress handled via ngrok, you may a
       </Tab>
     </Tabs>
 
-1.  When you re-establish your TLS or HTTP tunnels, ngrok will proxy requests from your allowed IP/CIDR through to your ARM64 device and reject all others _at its cloud service_, preventing your device from being constantly bombarded with automated and malicious attacks.
+1. When you re-establish your TLS or HTTP tunnels, ngrok will proxy requests from your allowed IP/CIDR through to your ARM64 device and reject all others _at its cloud service_, preventing your device from being constantly bombarded with automated and malicious attacks.
 
 ## What's next?
 

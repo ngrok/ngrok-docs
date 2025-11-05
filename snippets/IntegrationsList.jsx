@@ -1053,7 +1053,7 @@ export const IntegrationsList = () => {
 		{
 		  "path": "/integrations/kubernetes-ingress/gslb",
 		  "frontMatter": {
-			"description": "In this guide, you'll learn how to layer load balancing between three or more globally-distributed, cloud-based virtual machines in DigitalOcean.",
+			"description": "In this guide, you'll learn how to layer load balancing between three or more globally distributed, cloud-based virtual machines in DigitalOcean.",
 			"title": "Use ngrok's Global Server Load Balancing with DigitalOcean"
 		  },
 		  "contentTitle": "Use ngrok's Global Server Load Balancing with DigitalOcean",
@@ -1062,7 +1062,7 @@ export const IntegrationsList = () => {
 		{
 		  "path": "/integrations/guides/linode-gslb",
 		  "frontMatter": {
-			"description": "In this guide, you'll learn how to layer load balancing between three or more globally-distributed, cloud-based virtual machines in Linode.",
+			"description": "In this guide, you'll learn how to layer load balancing between three or more globally distributed, cloud-based virtual machines in Linode.",
 			"title": "Use ngrok's Global Server Load Balancing with Linode"
 		  },
 		  "contentTitle": "Use ngrok's Global Server Load Balancing with Linode",

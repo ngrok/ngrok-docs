@@ -32,7 +32,7 @@ This setup minimizes security risks, simplifies deployment, and ensures continuo
 | **Tool**           | **Ideal Environment**                                                                                                                                                                          |
 | ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Agent**          | Simple, lightweight, and quick deployment to connect to customer services on any platform (cloud, on-prem, VM, or physical server). No code changes or complex network configuration required. |
-| **SDK**            | Embed ngrok connectivity directly into your application for programmatic control, or when you're building custom integrations (e.g., device gateways, BYOC architectures).                     |
+| **SDK**            | Embed ngrok connectivity directly into your application for programmatic control, or when you're building custom integrations (for example, device gateways, BYOC architectures).                     |
 | **ngrok Operator** | Customer's environment is Kubernetes-based and you need to expose services securely from inside their cluster to your network, without configuring low-level networking.                       |
 
 All three options leverage ngrok's global network for secure, low-latency access without requiring firewall/NAT changes
@@ -43,9 +43,9 @@ All three options leverage ngrok's global network for secure, low-latency access
 - An ngrok agent configured on a customer integrated server. See the [getting started guide](/getting-started/) for instructions on how to install the ngrok agent.
 - [An ngrok API Key](https://dashboard.ngrok.com/api/new). You'll need an account first.
 
-### 1. Create a bot user and authtoken to enable isolated agent management
+### 1. Create a Service User and authtoken to enable isolated agent management
 
-Create a bot user so that you can create an agent authtoken independent of any user account. A bot user represents a service account, and allows each clinic to have its own authtoken. In the case one authtoken is compromised, only that clinic may be affected rather than all of them.
+Create a Service User so that you can create an agent authtoken independent of any user account. A Service User represents a service account, and allows each clinic to have its own authtoken. In the case one authtoken is compromised, only that clinic may be affected rather than all of them.
 
 ```bash
 curl \
@@ -53,11 +53,11 @@ curl \
   -H "Authorization: Bearer <NGROK_API_KEY>" \
   -H "Content-Type: application/json" \
   -H "Ngrok-Version: 2" \
-  -d '{"name":"bot user for clinic 1"}' \
+  -d '{"name":"Service User for clinic 1"}' \
   https://api.ngrok.com/bot_users
 ```
 
-Create an authtoken assigned to this specific bot user. Apply an ACL rule to ensure this bot user can only create internal endpoints for clinic 1.
+Create an authtoken assigned to this specific Service User. Apply an ACL rule to ensure this Service User can only create internal endpoints for clinic 1.
 
 ```bash
 curl -X POST \
@@ -214,7 +214,7 @@ on_tcp_connect:
         url: tcp://operations-database.clinic1.internal:443
 ```
 
-Finally, to secure our HTTPs cloud endpoint, let's add a check to make sure a specific header auth token is present in the request along with a JWT validation step before our REST API can be accessed.
+Finally, to secure our HTTPS cloud endpoint, let's add a check to make sure a specific header auth token is present in the request along with a JWT validation step before our REST API can be accessed.
 
 Our traffic policy file for https://api-clinic1.clinic-network.com should look like this:
 
@@ -283,7 +283,7 @@ curl -X POST https://api.ngrok.com/endpoints \
   }'
 ```
 
-#### HTTPs Endpoint with JWT Validation
+#### HTTPS Endpoint with JWT Validation
 
 ```bash
 curl -X POST https://api.ngrok.com/endpoints \
@@ -348,7 +348,7 @@ agent:
 
 ### Install ngrok as a background service
 
-Now, install and start the service
+Install and start the service:
 
 ```bash
 ngrok service install --config /etc/ngrok.yml
@@ -363,7 +363,7 @@ This will start all tunnels defined in the configuration file, ensure ngrok runs
 
 ## Recap
 
-You officially made it! You have now integrated a system that allows you to seamlessly and securely access any and all remote resources within your customer's network. Let's recap what you've built:
+You have now integrated a system that allows you to seamlessly and securely access any and all remote resources within your customer's network. Let's recap what you've built:
 
 1. One ngrok agent per clinic and no need for multiple installs.
 2. Always-online API and databases, securely available via cloud and internal endpoints.

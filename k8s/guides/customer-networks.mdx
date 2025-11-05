@@ -5,7 +5,7 @@ description: Learn how to use the ngrok Kubernetes Operator to establish secure,
 
 ngrok is a universal gateway, which means it allows you to securely connect to any app, IoT device, or service running in a private environment.
 
-This guide walks you through a practical example of using the [**ngrok Kubernetes Operator**](/k8s/) to establish secure, remote access to services running inside a protected customer network which is not k8s native — all managed seamlessly from within your Kubernetes cluster in your cloud instance. 
+This guide walks you through a practical example of using the [**ngrok Kubernetes Operator**](/k8s/) to establish secure, remote access to services running inside a protected customer network which is not k8s native—all managed seamlessly from within your Kubernetes cluster in your cloud instance. 
 
 While a traditional site-to-site VPN topology can achieve similar connectivity, this approach takes ngrok's secure ingress capabilities to the next level. Connect critical systems without any risk of public addressability or wrestling with the complexity, fragility, and operational overhead of conventional VPN solutions. The result is a privatized, streamlined way to enable secure access.
 
@@ -13,7 +13,7 @@ While a traditional site-to-site VPN topology can achieve similar connectivity, 
 
 You run Acme Corp, a managed service provider (MSP) serving several nationwide retail chains. Each of your customers operates an on-premises retail headquarters with essential back-office systems locked behind strict firewalls. Among these critical services are inventory databases, payment APIs (requiring end-to-end encryption through the ngrok cloud to maintain PCI compliance), and store management web portals. 
 
-To keep operations running smoothly, you need a secure, controlled way to reach these resources directly from your Kubernetes cluster — without exposing them to the public internet or maintaining complex VPN infrastructure. 
+To keep operations running smoothly, you need a secure, controlled way to reach these resources directly from your Kubernetes cluster—without exposing them to the public internet or maintaining complex VPN infrastructure. 
 
 In this guide, we'll walk through setting up remote access to the systems in a single customer HQ (Customer 1) using the ngrok Kubernetes Operator, with a repeatable workflow you can apply across your entire retail network.
 
@@ -28,24 +28,24 @@ In this guide, we'll walk through setting up remote access to the systems in a s
 - The ngrok operator installed on your local Kubernetes cluster.
 - [An ngrok API Key](https://dashboard.ngrok.com/api/new). You'll need an account first.
 
-### 1. Create a bot user and authtoken for Customer 1
+### 1. Create a Service User and authtoken for Customer 1
 
-First, you will create a bot user + associated authtoken for each of your customers.
+First, you'll create a Service User and an associated authtoken for each of your customers.
 
-A bot user is intended for automated systems that programmatically interact with your ngrok account (other platforms sometimes call this concept a Service Account).
+A Service User is intended for automated systems that programmatically interact with your ngrok account (other platforms sometimes call this concept a Service Account).
 
-We create a separate bot user + associated authtoken for each of your customers so that:
+We create a separate Service User + associated authtoken for each of your customers so that:
 
 1. Their usage of your ngrok account is isolated and scoped with a specific permission set
 2. If a customer is compromised you can revoke their access independently
 3. Agent start/stop audit events are properly attributed to each customer
 4. Your ngrok agents don't stop working if the human user who set them up leaves your ngrok account.
 
-Navigate to the [service users](https://dashboard.ngrok.com/service-users) section of your dashboard and click on “new service user”.
+Navigate to the [Service Users](https://dashboard.ngrok.com/service-users) section of your dashboard and click “new Service User”.
 
 ![Service User interface screenshot](./_img/service-user-ss-1.png)
 
-Create an authtoken for that service user and assign it an ACL rule. By assigning an ACL rule, you can restrict what endpoints the service user with this authtoken can create. Navigate to the authtokens section on your dashboard and click “new authtoken”. Assign it an ACL rule as shown below to restrict any agent using it with permission to only create internal endpoints with a URL matching `*.cust1.internal`.
+Create an authtoken for that Service User and assign it an ACL rule. By assigning an ACL rule, you can restrict what endpoints the Service User with this authtoken can create. Navigate to the authtokens section on your dashboard and click “new authtoken”. Assign it an ACL rule as shown below to restrict any agent using it with permission to only create internal endpoints with a URL matching `*.cust1.internal`.
 
 ![Service User configuration interface screenshot](./_img/service-user-ss-2.png)
 
@@ -84,9 +84,9 @@ endpoints:
 
 ### 3. Install the ngrok operator within your Kubernetes cluster
 
-Now we're going to enable applications in your cluster to connect to the remote services. To do this, we'll need to install the ngrok Kubernetes operator into your cluster. The operator will create v1.Service objects that your apps can connect to in order to access the remote services in your customer's network.
+Now we're going to enable applications in your cluster to connect to the remote services. To do this, we'll need to install the ngrok Kubernetes operator into your cluster. The operator will create v1.Service objects that your apps can connect to for access to the remote services in your customer's network.
 
-First, create a separate bot user with an associated authtoken **and** API key specifically for the operator.
+First, create a separate Service User with an associated authtoken **and** API key specifically for the operator.
 
 Then install the operator:
 
@@ -112,7 +112,9 @@ We are going to create a **Cloud Endpoint** with a [**Kubernetes binding](/unive
 
 Endpoints with a kubernetes binding are secure, private endpoints that are only addressable inside of Kubernetes clusters where you install the ngrok operator. They enable you to connect to ngrok endpoints without making them publicly addressable. In this case, we will create cloud endpoints with a binding of kubernetes.
 
-Cloud Endpoints are persistent, always-on endpoints whose creation, deletion and configuration is managed centrally via the Dashboard or API. They exist permanently until they are explicitly deleted. Cloud Endpoints do not forward their traffic to an agent by default and instead only use their attached Traffic Policy to handle connections.
+Cloud Endpoints are persistent, always-on endpoints whose creation, deletion, and configuration is managed centrally via the Dashboard or API. 
+They exist permanently until they are explicitly deleted. 
+Cloud Endpoints do not forward their traffic to an agent by default and instead only use their attached Traffic Policy to handle connections.
 
 Create a kubernetes bound cloud endpoint in the ngrok dashboard by navigating to endpoints and clicking “new”. Configure it as shown in the screenshot below:
 
@@ -285,7 +287,7 @@ endpoints:
 
 ## Recap
 
-Congrats! You have now integrated a system that allows you to seamlessly and granularly access your remote resources within your customer's network directly from your Kubernetes cluster. Let's recap what you've built:
+You have now integrated a system that allows you to seamlessly and granularly access your remote resources within your customer's network directly from your Kubernetes cluster. Let's recap what you've built:
 
 1. Singular ngrok operator installed in your k8s cluster to create service objects using k8s cloud endpoints.
 2. One ngrok agent per customer network, with multiple installs/endpoint pooling available for resiliency failover and reliability.

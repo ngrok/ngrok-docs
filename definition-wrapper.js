@@ -99,10 +99,17 @@ const terms = [
 		meaning:
 			"Reverse proxies are an extra security layer between public traffic and your internal services. They live on servers or cloud services, and they intercept and forward traffic to upstream services.",
 	},
+  {
+    titles: ["Service User", "Service Users"],
+    caseSensitive: false,
+    meaning:
+      "A Service User (previously called a Bot User) is a service account that owns a set of credentials (authtokens, API keys, and SSH keys) independently of a person. This is useful for automated systems that programmatically interact with your ngrok accounts.",
+    link: "/iam/service-users/",
+  },
 	{
 		titles: ["shadow IT"],
 		meaning:
-			"Shadow IT refers to IT systems, software, and cloud services used by individuals within an organization without the IT department's knowledge or approval",
+			"Shadow IT refers to IT systems, software, and cloud services used by individuals within an organization without the IT department's knowledge or approval.",
 		link: "https://en.wikipedia.org/wiki/Shadow_IT",
 	},
 	{
@@ -239,6 +246,10 @@ function isInsideExcludedElement(element) {
   let current = element;
   while (current && current !== document.body) {
     if (excludedTags.includes(current.tagName)) {
+      return true;
+    }
+    // Check if parent has data-component-part="tabs-list"
+    if (current.getAttribute('data-component-part') === 'tabs-list') {
       return true;
     }
     current = current.parentElement;
