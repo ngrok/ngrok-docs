@@ -1,0 +1,246 @@
+---
+title: Securely Put Your Self-Hosted n8n Workflows Online
+sidebarTitle: Grant Access to Your n8n Workflows
+description: Get your n8n instance online to share with colleagues or receive webhook data with security measures designed for production usage.
+---
+
+import ReserveDomain from "/snippets/universal-gateway/_reserve-domain.mdx";
+import CloudEndpoint from "/snippets/universal-gateway/_cloud-endpoint.mdx";
+import TryOut from "/snippets/universal-gateway/_try-out.mdx";
+
+
+n8n allows you to self-host, which is great when you're testing workflows, but when you're ready to turn your instance into a production-ready automation solution and don't want to buy a domain or pay for hosting, you might feel lost.
+
+ngrok works with the [self-hosted and enterprise editions](https://docs.n8n.io/hosting/) of n8n, including Docker, Docker Compose, and npm-based installs, to make them securely available on the public internet.
+That way, you can share n8n with colleagues or accept webhooks to fire off workflows.
+
+<Tip>
+Building with LLMs?
+
+We want your feedback!
+Sign up for early access to [ngrok's AI Gateway](https://ngrok.ai) and our team will reach out to learn more about your needs.
+</Tip>
+
+## 1: Reserve a domain
+
+<ReserveDomain domain="https://your-n8n-instance.ngrok.app" />
+
+## 2: Run n8n + ngrok
+
+To run n8n and ngrok in Docker, you can either use Docker Compose to run both services together or run them as separate containers. In both cases, you can use a `.env` file to store configuration values.
+
+Replace `NGROK_DOMAIN` and `NGROK_AUTHTOKEN` with your values, as well as `N8N_HOST` and `WEBHOOK_URL` with your reserved domain. If you don't already have an authtoken, you can find it in your dashboard [here](https://dashboard.ngrok.com/get-started/your-authtoken).
+
+```js .env highlight={1,2,5,6}
+NGROK_DOMAIN=your-n8n-instance.ngrok.app
+NGROK_AUTHTOKEN=your-ngrok-authtoken
+N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true
+N8N_RUNNERS_ENABLED=true
+N8N_HOST=your-n8n-instance.ngrok.app
+WEBHOOK_URL="https://your-n8n-instance.ngrok.app/"
+TZ="Europe/London"
+GENERIC_TIMEZONE="Europe/London"
+```
+
+Once that file is saved, you can either create a `docker-compose.yaml` file to run both services together or run them as separate containers with `docker run`.
+
+<CodeGroup>
+
+```yaml docker-compose.yaml
+services:
+  n8n:
+    image: docker.n8n.io/n8nio/n8n
+    restart: always
+    ports:
+      - "127.0.0.1:5678:5678"
+    env_file: .env
+    volumes:
+      - n8n_data:/home/node/.n8n
+
+  ngrok:
+    image: ngrok/ngrok:latest
+    restart: always
+    depends_on:
+      - n8n
+    env_file: .env
+    command: http --url=${NGROK_DOMAIN} n8n:5678
+    ports:
+      - "4040:4040" # ngrok web UI
+
+volumes:
+  n8n_data:
+```
+
+```bash docker
+docker network create n8n
+
+docker run -d --name n8n \
+  --network n8n \
+  -p 5678:5678 \
+  -v n8n_data:/home/node/.n8n \
+  --env-file .env \
+  docker.n8n.io/n8nio/n8n
+
+docker run -d \
+  --name ngrok \
+  --network n8n \
+  -p 4040:4040 \
+  --env-file .env \
+  ngrok/ngrok:latest http --url=your-n8n-instance.ngrok.app n8n:5678
+```
+
+</CodeGroup>
+
+If you're using Docker Compose, you'll need to run the following command from the same directory where your `docker-compose.yaml` file is located.
+
+```bash
+docker compose up
+```
+
+## 3. Try out your n8n endpoint
+
+You can now access your n8n instance at the domain you reserved in step 1. Visit
+it in your browser to go through the first time n8n admin account setup.
+
+## Optional: Secure your n8n dashboard with Traffic Policy
+
+Even though n8n comes with built-in user administration, you can protect the sign-in page from automated attacks by restricting access to only trusted IPs.
+
+Go to our [IP address helper tool](https://ipv4.ngrok.com/) to get your public IP address.
+
+Next, create a file named `n8n.yaml` on the same system where n8n runs and paste in the following policy, replacing `$YOUR_IP`.
+
+```yaml n8n.yaml
+on_http_request:
+  - actions:
+      - type: restrict-ips
+        config:
+          enforce: true
+          allow:
+            - "$YOUR_IP/32"
+```
+
+<Info>
+**What's happening here?**
+
+This policy applies the [`restrict-ips`](/traffic-policy/actions/restrict-ips) Traffic Policy action and allows only
+devices with a matching IP address to access your n8n instance.
+All other requests are denied at ngrok's network without reaching your service.
+</Info>
+
+Then make the following modifications to your `docker-compose.yaml` file to mount the policy file into the ngrok container and tell ngrok to use it.
+
+<CodeGroup>
+
+```yaml docker-compose.yaml highlight={17-19}
+services:
+  n8n:
+    image: docker.n8n.io/n8nio/n8n
+    restart: always
+    ports:
+      - "127.0.0.1:5678:5678"
+    env_file: .env
+    volumes:
+      - n8n_data:/home/node/.n8n
+
+  ngrok:
+    image: ngrok/ngrok:latest
+    restart: always
+    depends_on:
+      - n8n
+    env_file: .env
+    command: http --url=${NGROK_DOMAIN} --traffic-policy-file /etc/n8n.yaml n8n:5678
+    volumes:
+      - ./n8n.yaml:/etc/n8n.yaml
+    ports:
+      - "4040:4040" # ngrok web UI
+
+volumes:
+  n8n_data:
+```
+
+```bash docker highlight={7-8}
+docker kill ngrok
+docker run -d \
+  --name ngrok \
+  --network n8n \
+  -p 4040:4040 \
+  --env-file .env \
+  -v $(pwd)/n8n.yaml:/etc/n8n.yaml \
+  ngrok/ngrok:latest http --url=your-n8n-instance.ngrok.app --traffic-policy-file /etc/n8n.yaml n8n:5678
+```
+
+</CodeGroup>
+
+If you're using Docker Compose, restart your setup to apply the new policy.
+
+```bash
+docker compose down
+docker compose up
+```
+
+## Optional: Enforce verification on incoming webhooks
+
+If you want to receive webhooks from external services, but also want to control precisely which services can send these requests and during what conditions, you can use the [`verify-webhooks` action](/traffic-policy/actions/verify-webhook).
+
+For example, if you want to verify a webhook from GitHub, you can edit your `n8n.yaml` file and paste in the policy below.
+Replace `$WORKFLOW_UUID` with your workflow's path and `$SECRET` with the secret you configured when you created your webhook.
+
+```yaml n8n.yaml
+on_http_request:
+  - expressions:
+      - "req.url.path.contains('/webhook/$WORKFLOW_UUID')"
+    actions:
+      - type: verify-webhook
+        config:
+          provider: github
+          secret: $SECRET
+```
+
+<Info>
+**What's happening here?**
+
+This policy filters for _only_ traffic that contains the specific `/webhook/$WORKFLOW_UUID` path. It then verifies that the traffic both originates from GitHub (or another [supported provider](/traffic-policy/actions/verify-webhook/#supported-providers)) and contains the appropriate secret.
+</Info>
+
+You'll need to restart your ngrok container to apply the new policy.
+
+### Configure both IP restrictions and webhook verification
+
+If you configured IP restrictions earlier, and _then_ set up webhook verification, you'll find that your webhooks won't work because you haven't added the provider's IP to your `restrict-ips` action to allow them.
+Because it's next to impossible to identify all the IPs where a provider's webhooks might come from, it's easier to disable IP restrictions on the `/webhooks/` path.
+
+Edit your `n8n.yaml` file with the policy below.
+
+```yaml n8n.yaml
+on_http_request:
+  - expressions:
+      - "req.url.path.contains('/webhook/$WORKFLOW_UUID')"
+    actions:
+      - type: verify-webhook
+        config:
+          provider: github
+          secret: $SECRET
+
+  - expressions:
+      - "!req.url.path.contains('/webhook/')"
+    actions:
+      - type: restrict-ips
+        config:
+          enforce: true
+          allow:
+            - "$YOUR_IP/32"
+```
+
+<Info>
+**What's happening here?**
+
+This policy first verifies any incoming webhooks as before. Then, the policy applies IP restrictions to only traffic _not_ to the `/webhook/` path, which allows your webhooks provider's request to reach n8n successfully.
+</Info>
+
+## What's next?
+
+- Watch our livestreamed [n8n workshop](https://www.youtube.com/watch?v=U5FGr5axBnI) to see this example deployed live.
+- Read more about [Traffic Policy](/traffic-policy), [core concepts](/traffic-policy/concepts), and [actions](/traffic-policy/actions) you might want to implement next.
+- View your Ollama traffic in [Traffic Inspector](https://dashboard.ngrok.com/traffic-inspector).
+

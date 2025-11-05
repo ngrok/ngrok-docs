@@ -1,0 +1,94 @@
+---
+title: Implement the 'Front Door' Pattern
+sidebarTitle: The Front Door Pattern
+description: By using Cloud Endpoint and internal Agent Endpoints together, you loosely double your gateway and services for extra flexibility.
+---
+
+import ReserveDomain from "/snippets/universal-gateway/_reserve-domain.mdx";
+import CloudEndpoint from "/snippets/universal-gateway/_cloud-endpoint.mdx";
+import TryOut from "/snippets/universal-gateway/_try-out.mdx";
+
+
+
+The Front Door pattern is a common API gateway design where a single public endpoint serves as the centralized entrance to your upstream services.
+
+Why use this pattern? It creates a clear boundary between your public-facing gateway and your internal services and creates a consistent interface for exposing them to the public internet.
+This simplifies how you manage ingress, helps you route traffic to multiple services, and gives you a unified place to apply gateway-wide policies like authentication, rate limiting, and more.
+
+With this pattern, you can:
+
+- Host any number of services under a single hostname (for example, `your-company.com`) by routing via path, subdomain, headers, or any other [Traffic Policy variable](/traffic-policy/variables).
+- Apply certain policies like authentication at your gateway, then layer in other policies for specific services.
+- Prevent your services or their host systems from being exposed to the public internet.
+- Give infrastructure and platform teams control over creating consistent global policy while also allowing developers to manage how traffic reaches their services.
+
+## 1. Create an endpoint for your service
+
+Start an internal [Agent Endpoint](/universal-gateway/agent-endpoints/), replacing `$PORT` based on where your service listens.
+You can also use one of our [SDKs](/agent-sdks) or the [Kubernetes Operator](/k8s).
+
+```bash
+ngrok http $PORT --url https://service.internal
+```
+
+## 2. Reserve a domain
+
+<ReserveDomain />
+
+## 3. Create a Cloud Endpoint
+
+<CloudEndpoint />
+
+## 4. Add routing to your service with Traffic Policy
+
+While viewing your new cloud endpoint in the dashboard, copy the policy below and paste it into the Traffic Policy editor.
+
+```yaml
+on_http_request:
+  - actions:
+      - type: forward-internal
+        config:
+          url: http://service.internal
+```
+
+**What's happening here?** The traffic policy engine forwards all HTTP requests to the internal agent endpoint you created at `https://service.internal`.
+
+## 5. Try out your endpoint
+
+<TryOut />
+
+## Optional: Add a second service and routing
+
+If you have another service to host under the front door pattern, start another agent.
+
+```bash
+ngrok http $PORT --url https://service-two.internal
+```
+
+Next, update your policy to route traffic based on the path.
+Copy and paste the policy below into the ngrok dashboard, replacing `/one` and `/two` with the paths you'd like to use for routing traffic to each service.
+
+```yaml
+on_http_request:
+  - expressions:
+      - "req.url.includes('/one')"
+    actions:
+      - type: forward-internal
+        config:
+          url: http://service.internal
+  - expressions:
+      - "req.url.includes('/two')"
+    actions:
+      - type: forward-internal
+        config:
+          url: http://service-two.internal
+```
+
+**What's happening here?** The traffic policy engine forwards all HTTP requests to the `/one` path to the internal agent endpoint at `https://service.internal` and requests to the `/two` path to `https://service-two.internal`.
+
+## What's next?
+
+- [Traffic Policy](/traffic-policy) enables you to do many more things worth your endpoints.
+  For example, try adding authentication to your endpoint with the [`oauth` action](/traffic-policy/actions/oauth) or [`basic-auth` action](/traffic-policy/actions/basic-auth).
+- View your traffic in [Traffic Inspector](https://dashboard.ngrok.com/traffic-inspector) to find potential issues or observe patterns of traffic you may way to [block using additional policies](/traffic-policy/examples/block-unwanted-requests/) on your Cloud Endpoint.
+

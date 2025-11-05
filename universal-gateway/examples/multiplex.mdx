@@ -1,0 +1,120 @@
+---
+title: Multiplex to Internal Services from a Single Domain
+sidebarTitle: Multiplex to Internal Services
+description: Dynamically serve any number of API or web app services from a single fully qualified domain name (FQDN) without complex networking configurations.
+---
+
+import ReserveDomain from '/snippets/universal-gateway/_reserve-domain.mdx';
+import CloudEndpoint from '/snippets/universal-gateway/_cloud-endpoint.mdx';
+import TryOut from '/snippets/universal-gateway/_try-out.mdx';
+
+
+
+Multiplexing is a common gateway design where you host multiple services from a single fully qualified domain name (FQDN) like `example.com`.
+For example, `app.example.com` can serve a static web app while `api.example.com` serves a JSON API using entirely different services and infrastructure. With ngrok Cloud Endpoints and Traffic Policy, you can dynamically determine where your traffic is forwarded to.
+
+ngrok simplifies multiplexing by letting you:
+
+1. Put a URL online to accept internet traffic to a [Cloud Endpoint](/universal-gateway/cloud-endpoints/), which allows you to control how that traffic accesses the internal resources where your [internal Agent Endpoints](/universal-gateway/agent-endpoints/) are running. We call this the ["front door"](/universal-gateway/examples/front-door-pattern) pattern.
+2. Use [Traffic Policy](/traffic-policy) to create dynamic routing topologies based on subdomains or headers.
+3. Add new services behind your gateway without service discovery, manual registration, certificate management, split-horizon DNS zones, or any other complex networking configurations.
+4. Remove the need to manage multiple domains or subdomains for each service, which can be cumbersome and error-prone.
+
+## 1. Create endpoints for your services
+
+Start internal [Agent Endpoints](/universal-gateway/agent-endpoints/), replacing `$PORT` based on where your service listens, for each of your services on the systems where they run.
+You can also use one of our [SDKs](/agent-sdks/#example-usage) or the [Kubernetes Operator](/getting-started/kubernetes/ingress/).
+
+```bash
+ngrok http $PORT --url https://foo.internal
+ngrok http $PORT --url https://bar.internal
+ngrok http $PORT --url https://baz.internal
+```
+
+Make sure the hostname of the internal endpoint matches the subdomain or header value you want to use for routing.
+
+- `https://foo.example.com` &rarr; `https://foo.internal`
+- `x-service: bar` &rarr; `https://bar.internal`
+
+## 2. Reserve a domain
+
+Navigate to the [**Domains** section](https://dashboard.ngrok.com/domains) of the ngrok dashboard and click **New +** to reserve a [custom wildcard domain](/universal-gateway/custom-domains/) like `*.example.com`.
+You'll then need to set up CNAME records with your DNS provider.
+
+## 3. Create a Cloud Endpoint
+
+<CloudEndpoint />
+
+## 4. Add multiplexing with Traffic Policy
+
+While still viewing your new cloud endpoint in the dashboard, copy one of the three policies below and paste it into the Traffic Policy editor.
+The choice depends on whether you want to route by hostname/subdomain, header value, or with global variables that are accessed at runtime.
+
+<Tabs>
+	<Tab title="By subdomain">
+		```yaml
+		on_http_request:
+			- actions:
+          - type: forward-internal
+						config:
+							url: https://${req.host.split(".$NGROK_DOMAIN")[0]}.internal 
+		```
+
+    	**What's happening here?**
+    	This policy forwards every HTTP request to one of your internal Agent Endpoints, which in turn forward traffic to your internal services.
+    	The [`split` macro](/traffic-policy/macros/#stringsplit---list) dynamically routes traffic based on the incoming hostname so that the policy forwards requests to the `foo` subdomain to `https://foo.internal`, and so on.
+    </Tab>
+    <Tab title="By header">
+    	```yaml
+    	on_http_request:
+    	  - actions:
+    				- type: forward-internal
+    					config:
+    						url: https://${getReqHeader('x-service')[0]}.internal
+    	```
+
+    	**What's happening here?**
+    	This policy forwards every HTTP request to one of your internal Agent Endpoints, which in turn forward traffic to your internal services.
+    	The [`split` macro](/traffic-policy/macros/#stringsplit---list) dynamically routes traffic based on the `x-service` header so that the policy forwards requests with the `x-service: foo` header to `https://foo.internal`, and so on.
+    </Tab>
+    <Tab title="By allowed subdomains">
+    	```yaml
+    	on_http_request:
+    		- actions:
+    				- type: set-vars
+    					config:
+    						allowed_subdomains:
+    							- user3
+    							- user2
+    							- user1
+    						subdomain: ${getReqHeader('host')[0].split('.', 1)[0]}
+    		- expressions:
+    				- "!(vars.subdomain in vars.allowed_subdomains)"
+    			actions:
+    				- type: custom-response
+    					config:
+    						body: 'Denied.'
+    		- actions:
+    				- type: forward-internal
+    					config:
+    						url: 'http://${vars.subdomain}.internal'
+    	```
+    	**What's happening here?**
+    	This policy first sets a variable `allowed_subdomains` to a list of subdomains that are allowed to access the service.
+    	Then it checks if the incoming request's subdomain is in that list. If not, it returns a custom response with a `Denied` message. If the subdomain is allowed, it forwards the request to the corresponding internal Agent Endpoint.
+    </Tab>
+
+    </Tabs>
+
+## 5. Try out your endpoints
+
+Visit the domain you reserved either in the browser or in the terminal using a tool like `curl`.
+When you try various subdomains or header values in your requests, you should see your various APIs or apps as they're connected to your internal Agent Endpoints.
+
+## What's next?
+
+- Add authentication like [JWT
+  validation](/traffic-policy/actions/jwt-validation) or [IP restrictions](/traffic-policy/actions/restrict-ips) to some or all of your multiplexed services, or even [combine multiple methods](/universal-gateway/examples/ip-restrictions-basic-auth/) to let users authenticate with one `OR` another method.
+- View your traffic in [Traffic
+  Inspector](https://dashboard.ngrok.com/traffic-inspector) to ensure multiplexing works as expected or to find potentially abusive patterns you can block using [IP Intelligence](/traffic-policy/variables/ip-intel/) or the [OWASP action](/traffic-policy/actions/owasp-crs-request/).
+

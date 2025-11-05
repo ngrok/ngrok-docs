@@ -1,0 +1,432 @@
+---
+title: Restrict IPs Action
+sidebarTitle: Restrict IPs
+description: Allow or deny traffic based on the source IP address of connections to your ngrok endpoints.
+---
+
+import ActionVariablesDescription from "/snippets/traffic-policy/common/action-variables-description.mdx";
+
+import { ConfigField } from "/snippets/ConfigTable.jsx";
+import { ConfigChildren } from "/snippets/ConfigChildren.jsx";
+
+The **Restrict IPs** Traffic Policy action allows you to allow or deny traffic based on the source IP address of connections to your ngrok endpoints.
+
+You can define rules using either **Allow and Deny lists**, or **Reference IDs** to existing ngrok [IP Policies](/api-reference/ippolicies/list).
+
+
+## Configuration Reference
+
+The [Traffic Policy](/traffic-policy/) configuration
+reference for this action.
+
+### Supported Phases
+
+`on_http_request`, `on_http_response`, `on_tcp_connect`
+
+### Type
+
+`restrict-ips`
+
+### Configuration Fields
+
+<ConfigField title="enforce" type="boolean" required={true}>
+  Default true. If false, continue to the next action even if the IP is not permitted.
+</ConfigField>
+
+<ConfigField title="allow" type="array of strings" required={false} cel={true}>
+  A list of CIDRs that are allowed.
+</ConfigField>
+
+<ConfigField title="deny" type="array of strings" required={false} cel={true}>
+  A list of CIDRs that are denied.
+</ConfigField>
+
+<ConfigField title="ip_policies" type="array of refs" required={false}>
+  List of [IP Policy](/api-reference/ippolicies/list) identifiers to be checked if the source IP is allowed access.
+</ConfigField>
+
+## Behavior
+
+### Evaluation of Rules
+
+This action evaluates the configured rules against the layer 4 source IP
+(`conn.client_ip`) of a connection.
+
+HTTP headers like `X-Forwarded-For` are never used.
+
+### Allow and Deny Conditions
+
+A connection is allowed only if its source IP matches at least one of the
+allowed CIDRs and does not match any of the denied CIDRs.
+
+### Building CIDR Sets
+
+The set of allowed and denied CIDRs are built from:
+
+- The CIDRs specified in the `allow` and `deny` fields.
+- The CIDRs belonging to the ngrok [IP Policies](/api-reference/ippolicies/list)
+  specified in the `ip_policies` field.
+
+### Denied Connection Handling
+
+If this action denies the connection:
+
+- When used on the `on_tcp_connect` phase:
+  - The connection is closed.
+- When used on the `on_http_request` or `on_http_response` phase:
+  - An `HTTP 403` response is returned.
+- The upstream server is never reached.
+- No further rules or actions in the traffic policy will be executed.
+
+### IPv6 Support
+
+This action supports IPv6 addresses for all IP rules. You may use standard
+abbreviated notations such as `"::/0"`.
+
+Don't forget to create IPv6 rules. It is easy to test with only IPv4 and then
+suddenly things don't work as expected because you forgot to create IPv6 rules.
+
+
+## Examples `on_tcp_connect`
+
+### Restricting Access with Allow and Deny Lists
+
+The following [Traffic Policy](/traffic-policy)
+configuration demonstrates how to restrict access to specific IP addresses
+using the `restrict-ips` action.
+
+#### Example Traffic Policy Document
+
+<CodeGroup>
+```yaml policy.yml
+on_tcp_connect:
+  - actions:
+      - type: restrict-ips
+        config:
+          enforce: true
+          allow:
+            - 1.1.1.1/32
+          deny:
+            - e680:5791:be4c:5739:d959:7b94:6d54:d4b4/128
+```
+
+```json policy.json
+{
+  "on_tcp_connect": [
+    {
+      "actions": [
+        {
+          "type": "restrict-ips",
+          "config": {
+            "enforce": true,
+            "allow": [
+              "1.1.1.1/32"
+            ],
+            "deny": [
+              "e680:5791:be4c:5739:d959:7b94:6d54:d4b4/128"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+</CodeGroup>
+
+This configuration will ensure that only requests from the IP `1.1.1.1` are
+allowed, while requests from the IP `e680:5791:be4c:5739:d959:7b94:6d54:d4b4`
+are denied.
+
+#### Example Request
+
+If the request comes from an allowed IP, the response will proceed as normal. If
+the request comes from a denied IP, the connection will be closed:
+
+```bash
+$ telnet 5.tcp.ngrok.io 22984
+
+Trying...
+Connected to 5.tcp.ngrok.io.
+Connection closed by foreign host.
+```
+
+### Restricting Access with IP Policies
+
+The following [Traffic Policy](/traffic-policy)
+configuration demonstrates how to restrict access using the `restrict-ips`
+action with [IP Policies](/api-reference/ippolicies/list).
+
+#### Example Traffic Policy Document
+
+<CodeGroup>
+```yaml policy.yml
+on_tcp_connect:
+  - actions:
+      - type: restrict-ips
+        config:
+          enforce: true
+          ip_policies:
+            - ipp_1yjqdrIBwgciY2I9zH2EelgBbJF
+```
+
+```json policy.json
+{
+  "on_tcp_connect": [
+    {
+      "actions": [
+        {
+          "type": "restrict-ips",
+          "config": {
+            "enforce": true,
+            "ip_policies": [
+              "ipp_1yjqdrIBwgciY2I9zH2EelgBbJF"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+</CodeGroup>
+
+This configuration will ensure that the [IP Policies](/api-reference/ippolicies/list)
+specified `ipp_1yjqdrIBwgciY2I9zH2EelgBbJF` are enforced against incoming
+traffic.
+
+#### Example Request
+
+If the request comes from an allowed IP, the response will proceed as normal. If
+the request comes from a denied IP, you will receive an HTTP `403` response:
+
+```bash
+$ telnet 5.tcp.ngrok.io 22984
+
+Trying...
+Connected to 5.tcp.ngrok.io.
+Connection closed by foreign host.
+```
+
+snippets/traffic-policy/actions/restrict-ips/tcp/examples/3-testing-traffic
+
+## Examples `on_http_request`
+
+### Restricting Access with Allow and Deny Lists
+
+The following [Traffic Policy](/traffic-policy/)
+configuration demonstrates how to restrict access to specific IP addresses
+using the `restrict-ips` action.
+
+#### Example Traffic Policy Document
+
+<CodeGroup>
+```yaml policy.yml
+on_http_request:
+  - actions:
+      - type: restrict-ips
+        config:
+          enforce: true
+          allow:
+            - 1.1.1.1/32
+          deny:
+            - e680:5791:be4c:5739:d959:7b94:6d54:d4b4/128
+```
+
+```json policy.json
+{
+  "on_http_request": [
+    {
+      "actions": [
+        {
+          "type": "restrict-ips",
+          "config": {
+            "enforce": true,
+            "allow": [
+              "1.1.1.1/32"
+            ],
+            "deny": [
+              "e680:5791:be4c:5739:d959:7b94:6d54:d4b4/128"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+</CodeGroup>
+
+This configuration will ensure that only requests from the IP `1.1.1.1` are
+allowed, while requests from the IP `e680:5791:be4c:5739:d959:7b94:6d54:d4b4`
+are denied.
+
+#### Example Request
+
+If the request comes from an allowed IP, the response will proceed as normal. If
+the request comes from a denied IP, you will receive an HTTP `403` response:
+
+```bash
+$ curl -i https://example.ngrok.app
+```
+
+```http
+HTTP/2 403
+```
+
+### Restricting Access with IP Policies
+
+The following [Traffic Policy](/traffic-policy/)
+configuration demonstrates how to restrict access using the `restrict-ips`
+action with [IP Policies](/api-reference/ippolicies/list).
+
+#### Example Traffic Policy Document
+
+<CodeGroup>
+```yaml policy.yml
+on_http_request:
+  - actions:
+      - type: restrict-ips
+        config:
+          enforce: true
+          ip_policies:
+            - ipp_1yjqdrIBwgciY2I9zH2EelgBbJF
+```
+
+```json policy.json
+{
+  "on_http_request": [
+    {
+      "actions": [
+        {
+          "type": "restrict-ips",
+          "config": {
+            "enforce": true,
+            "ip_policies": [
+              "ipp_1yjqdrIBwgciY2I9zH2EelgBbJF"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+</CodeGroup>
+
+This configuration will ensure that the [IP Policies](/api-reference/ippolicies/list)
+specified `ipp_1yjqdrIBwgciY2I9zH2EelgBbJF` are enforced against incoming
+traffic.
+
+#### Example Request
+
+If the request comes from an allowed IP, the response will proceed as normal. If
+the request comes from a denied IP, you will receive an HTTP `403` response:
+
+```bash
+$ curl -i https://example.ngrok.app
+```
+
+```http
+HTTP/2 403
+```
+
+### Test Restricting IPs
+
+The following [Traffic Policy](/traffic-policy/)
+configuration demonstrates how to test restricting IPs using the [`log`](/traffic-policy/actions/log/)
+action with the `restrict-ips` action and [IP Policies](/api-reference/ippolicies/list).
+
+#### Example Traffic Policy Document
+
+<CodeGroup>
+```yaml policy.yml
+on_http_request:
+  - actions:
+      - type: restrict-ips
+        config:
+          enforce: false
+          ip_policies:
+            - ipp_1yjqdrIBwgciY2I9zH2EelgBbJF
+      - type: log
+        config:
+          metadata:
+            message: Restrict IPs action would be ${actions.ngrok.restrict_ips.action} for ${conn.client_ip}.
+            matched_cidr: ${actions.ngrok.restrict_ips.matched_cidr}
+            error_code: ${actions.ngrok.restrict_ips.error.code}
+            error_message: ${actions.ngrok.restrict_ips.error.message}
+```
+
+```json policy.json
+{
+  "on_http_request": [
+    {
+      "actions": [
+        {
+          "type": "restrict-ips",
+          "config": {
+            "enforce": false,
+            "ip_policies": [
+              "ipp_1yjqdrIBwgciY2I9zH2EelgBbJF"
+            ]
+          }
+        },
+        {
+          "type": "log",
+          "config": {
+            "metadata": {
+              "message": "Restrict IPs action would be ${actions.ngrok.restrict_ips.action} for ${conn.client_ip}.",
+              "matched_cidr": "${actions.ngrok.restrict_ips.matched_cidr}",
+              "error_code": "${actions.ngrok.restrict_ips.error.code}",
+              "error_message": "${actions.ngrok.restrict_ips.error.message}"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+</CodeGroup>
+
+This configuration will test the incoming client IP against the specified
+[IP Policy](/api-reference/ippolicies/list) `ipp_1yjqdrIBwgciY2I9zH2EelgBbJF`
+without enforcing it, then log the result using the [`log`](/traffic-policy/actions/log/)
+action.
+
+#### Example Request
+
+The following request will be allowed and an event will be logged:
+
+```bash
+$ curl -i https://example.ngrok.app
+```
+
+```http
+HTTP/2 200
+```
+
+## Action Result Variables
+
+<ActionVariablesDescription />
+
+<ConfigField title="actions.ngrok.restrict_ips.action" type="string">
+  The action taken for this request.
+
+  <ConfigEnum label="Possible values">
+    <ConfigEnumOption>`allow` - If the request was permitted.</ConfigEnumOption>
+    <ConfigEnumOption>`deny` - If the request was denied.</ConfigEnumOption>
+  </ConfigEnum>
+</ConfigField>
+
+<ConfigField title="actions.ngrok.restrict_ips.matched_cidr" type="string">
+    The CIDR block that matched the incoming client's IP address. If no match was found, this value will be empty.
+</ConfigField>
+
+<ConfigField title="actions.ngrok.restrict_ips.error.code" type="string">
+    A machine-readable code describing an error that occurred during the action's execution.
+</ConfigField>
+
+<ConfigField title="actions.ngrok.restrict_ips.error.message" type="string">
+    A human-readable message providing details about an error that occurred during the action's execution.
+</ConfigField>

@@ -1,0 +1,106 @@
+---
+title: Kubernetes Custom White-Label Domains
+sidebarTitle: Custom Domains
+description: Learn how to use custom domains with the ngrok Kubernetes Operator.
+---
+
+In the Kubernetes Ingress and Gateway API specs, both ingresses and routes can have multiple rules with different hostnames. 
+While standard ngrok domains are available for use immediately after reservation, custom white-label domains may require extra steps to set up.
+This guide outlines your options for getting custom white-label domains working with the ngrok Kubernetes Operator.
+
+## Managed by Kubernetes
+
+If you have [ExternalDNS](https://github.com/kubernetes-sigs/external-dns) installed and configured, you can create an Ingress object to fully automate the process of reserving a domain in ngrok, updating DNS records with your DNS provider to the ngrok-provided CNAME record, and receiving a TLS certificate.
+
+If you aren't using ExternalDNS or a similar tool, you must manually create records for each Ingress or Gateway you provision.
+
+### Ingress
+
+If you create an ingress object (k8s ingress) or route object (Gateway API) with a hostname that isn't a standard ngrok domain, the operator will attempt to create a custom white-label domain for you. 
+This domain will be reserved and registered with ngrok but you must configure its DNS records before you can use it. 
+This will be registered in the ngrok API and also show up as a domain CRD. 
+
+For example, if you create an ingress object like the one shown below, the operator will attempt to reserve and register the domain `foo.bar.com` with ngrok:
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: example-ingress
+spec:
+  rules:
+    - host: foo.bar.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: service1
+                port:
+                  number: 80
+```
+
+This will be registered in the ngrok API and also show up as a domain CRD. 
+The operator will then wait for the DNS records to be configured for this domain. 
+Once the DNS records are configured, the operator will configure the endpoint to route traffic to the ingress or route object.
+
+You should be able to see the domain CRD via kubectl:
+
+```shell
+kubectl get domains.ingress.k8s.ngrok.com
+```
+
+For custom domains, the domain resource contains the CNAME target value that needs to be created for DNS resolution and certificates to work properly.
+This value is added to the ingress or route object's `status.loadBalancer.ingress` field.
+
+`kubectl get ingress -o yaml example-ingress`
+
+```yaml
+Status:
+  loadBalancer:
+    ingress:
+    - hostname: abc123.def456.ngrok-cname.com
+```
+
+### Gateway
+
+Using a custom domain with the Gateway API is similar to the Ingress example above.
+
+If you create the following Gateway, the ngrok-operator will reserve the domain for you:
+
+```yaml
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: example-gateway
+spec:
+  gatewayClassName: ngrok
+  listeners:
+    - allowedRoutes:
+        kinds:
+          - group: gateway.networking.k8s.io
+            kind: HTTPRoute
+        namespaces:
+          from: All
+      hostname: foo.bar.com
+      name: http
+      port: 443
+      protocol: HTTPS
+```
+
+It will also populate the Gateway's `status.addresses` field:
+
+```yaml
+status:
+  addresses:
+    - type: Hostname
+      value: abc123.def456.ngrok-cname.com
+```
+
+## Externally managed
+
+Domains can also be created in the dashboard, or via the ngrok API or Terraform provider.
+
+If created externally, the operator will discover the domain is already registered and won't interact with it unless you modify or delete the CRD itself.
+Deleting the ingress objects that use that host won't result in the domain CRD being deleted.

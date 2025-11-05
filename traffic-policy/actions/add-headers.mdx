@@ -1,0 +1,313 @@
+---
+title: Add Headers Action
+sidebarTitle: Add Headers
+description: Add headers to an HTTP request or response before it is delivered upstream or back to the client.
+---
+import { ConfigField } from "/snippets/ConfigTable.jsx";
+import ActionVariablesDescription from "/snippets/traffic-policy/common/action-variables-description.mdx";
+import PhasesExplanation from "/snippets/shared/phases-explanation.mdx";
+
+The Add Headers action enables you to add custom headers to an HTTP request or 
+response before delivery to the upstream service or client. This is useful 
+for attaching metadata like request identifiers, applying security controls, or 
+adjusting how applications process traffic.
+
+## Configuration reference
+
+The [Traffic Policy](/traffic-policy/) configuration reference for this action.
+
+### Supported phases
+
+<PhasesExplanation />
+
+- `on_http_request`: When called in this phase, the specified headers are added to incoming http requests before reaching the upstream service.
+- `on_http_response`: When called in this phase, the specified headers are added to the http response from the upstream service, before being delivered.
+
+### Type
+
+`add-headers`
+
+### Configuration fields
+
+<ConfigField title="headers" type="object" cel={true}>
+  Map of header key to header value to be added.
+
+  Minimum `1`, Maximum `10`.
+</ConfigField>
+
+## Behavior
+
+This Action's behavior varies based on which [request phase](#supported-phases) it's used in.
+
+### Addition only
+
+This action will only **add** headers to the request or response.
+If the header already exists, it will append another header with the same key (unless it's the `host` header. See [Special Cases](#special-cases)).
+
+#### Adding to existing headers
+
+For example, you could use this action to add the client's IP to `x-forwarded-for`, appending information about the client making the request, so the upstream server can see where the request originated, regardless of the proxies it passed through.
+
+<Note>
+This example uses a connection variable.
+See [the connection variable reference](https://ngrok.com/docs/traffic-policy/variables/connection#conn-client-ip) to learn more.
+</Note>
+
+<CodeGroup>
+```yaml policy.yml
+on_http_request:
+  - actions:
+    - type: "add-headers"
+      config:
+        headers:
+          x-forwarded-for: "${conn.client_ip}"
+```
+```json policy.json
+{
+  "on_http_request": [
+    {
+      "actions": [
+        {
+          "type": "add-headers",
+          "config": {
+            "headers": {
+              "x-forwarded-for": "${conn.client_ip}"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+</CodeGroup>
+
+The server will see an `x-forwarded-for` header with the client's IP chain, which might look like this:
+
+```bash
+x-forwarded-for: 233.1.111.1, 11.5.5.5
+```
+
+#### Replacing headers
+
+To replace or remove headers, first use the [`remove-headers`](/traffic-policy/actions/remove-headers) action, then add the header with the desired value.
+The following snippet demonstrates a basic example.
+
+<CodeGroup>
+
+```yaml policy.yml
+on_http_request:
+- actions:
+  - type: remove-headers
+    config:
+      headers:
+      - x-example-header-1
+  - type: add-headers
+    config:
+      headers:
+        x-example-header-2: Example Value
+```
+
+```json policy.json
+{
+  "on_http_request": [
+    {
+      "actions": [
+        {
+          "type": "remove-headers",
+          "config": {
+            "headers": [
+              "x-example-header-1"
+            ]
+          }
+        },
+        {
+          "type": "add-headers",
+          "config": {
+            "headers": {
+              "x-example-header-2": "Example Value"
+						}
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+</CodeGroup>
+
+<Tip>
+See [our Adding and Removing Headers examples](/traffic-policy/examples/add-and-remove-headers) for use cases.
+</Tip>
+
+### Case sensitivity
+
+Header keys are case-insensitive.
+All header keys added with `add-headers` are normalized to lowercase, per the [HTTP/2 specification](https://datatracker.ietf.org/doc/html/rfc7540#section-8.1.2).
+
+For example, the following snippets, despite specifying a capitalized `Authorization` header, would yield a lower-case `authorization` header.
+
+<CodeGroup>
+```yaml policy.yml
+- type: add-headers
+  config:
+    headers:
+      Authorization: ax10malv
+```
+```json policy.json
+{
+	"type": "add-headers",
+	"config": {
+		"headers": {
+			"Authorization": "ax10malv"
+		}
+	}
+}
+```
+</CodeGroup>
+
+### Ordering
+
+Actions are run in the same order that they're defined in your traffic policy.
+If you want an `add-headers` action to modify headers created or modified in other actions, it must be defined after them in your traffic policy document.
+
+### Special cases
+
+These are the special cases in which this action will behave differently from how this reference document has specified.
+
+- Adding the `host` header overrides the existing value instead of appending another header.
+- You may not add or remove the `user-agent` header.
+- You may not use this action to add the `ngrok-skip-browser-warning` header to skip the ngrok browser warning on free accounts. For more information, check out the [free plan limits guide](/pricing-limits/free-plan-limits#removing-the-interstitial-page).
+
+## Examples
+
+### Adding Client IP headers to all HTTP requests
+
+The following [Traffic Policy](/traffic-policy/)
+configuration will add the client IP address to all HTTP requests.
+
+#### Example traffic policy document
+
+<CodeGroup>
+```yaml policy.yml
+on_http_request:
+  - actions:
+    - type: "add-headers"
+      config:
+        headers:
+          x-client-ip: "${conn.client_ip}"
+```
+```json policy.json
+{
+  "on_http_request": [
+    {
+      "actions": [
+        {
+          "type": "add-headers",
+          "config": {
+            "headers": {
+              "x-client-ip": "${conn.client_ip}"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+</CodeGroup>
+
+For this example, we are assuming that ngrok is pointing at the upstream service
+https://httpbin.org and we are adding the following header to all requests:
+
+- `x-client-ip` with the value `${conn.client_ip}` to demonstrate the use of
+  CEL interpolation to include the client IP address.
+
+#### Example request
+
+```bash
+$ curl -i https://httpbin.ngrok.app/get
+```
+
+```http
+HTTP/2 200 OK
+content-type: application/json
+
+{
+  "headers": {
+    "X-Client-Ip": "2600:1700:4fa6:1a00:2051:938:7373:5563",
+  }
+}
+```
+
+### Adding headers to an HTTP response
+
+The following [Traffic Policy](/traffic-policy/)
+configuration will add headers to the response from the upstream service when the method is `GET` and the URL starts with `/status/200`.
+
+#### Example traffic policy document
+
+<CodeGroup>
+```yaml policy.yml highlight={3}
+on_http_response:
+  - expressions:
+      - "req.method == "GET" && req.url.path.startsWith("/status/200")"
+    actions:
+      - type: "add-headers"
+        config:
+          headers:
+            x-custom-header: "my-custom-value"
+            x-string-interpolation-example: "started at ${conn.ts.start}"
+```
+```json policy.json highlight={5}
+{
+  "on_http_response": [
+    {
+      "expressions": [
+        "req.method == \"GET\" && req.url.path.startsWith(\"/status/200\")"
+      ],
+      "actions": [
+        {
+          "type": "add-headers",
+          "config": {
+            "headers": {
+              "x-custom-header": "my-custom-value",
+              "x-string-interpolation-example": "started at ${conn.ts.start}"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+</CodeGroup>
+
+For this example, we are assuming that ngrok is pointing at the upstream service
+https://httpbin.org and we will be adding two headers:
+
+- `x-custom-header` with the value `my-custom-value`
+- `x-string-interpolation-example` with the value `started at ${conn.ts.start}`
+  to demonstrate the use of CEL interpolation to include the request connection
+  start time.
+
+### Example request
+
+```bash
+$ curl -i https://httpbin.ngrok.app/status/200
+```
+
+```http
+HTTP/2 200 OK
+x-custom-header: my-custom-value
+x-string-interpolation-example: started at 2024-07-13T00:10:16Z
+```
+
+## Action result variables
+
+<ActionVariablesDescription />
+
+<ConfigField title="actions.ngrok.add_headers.headers_added" type="object">
+  <p>Map of headers that were added by the action.</p>
+</ConfigField>
