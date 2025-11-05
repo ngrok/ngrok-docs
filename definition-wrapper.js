@@ -248,6 +248,10 @@ function isInsideExcludedElement(element) {
     if (excludedTags.includes(current.tagName)) {
       return true;
     }
+    // Check if parent has data-component-part="tabs-list"
+    if (current.getAttribute('data-component-part') === 'tabs-list') {
+      return true;
+    }
     current = current.parentElement;
   }
   
