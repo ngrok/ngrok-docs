@@ -31,6 +31,7 @@ const terms = [
 	},
 	{
 		titles: ["Gateway API CRD", "Gateway API"],
+		glossaryIndex: 0,
 		link: "https://gateway-api.sigs.k8s.io/guides/",
 		meaning:
 			"Gateway API CRDs (Custom Resource Definitions) are a set of standardized, extensible resources that manage networking configurations like routing, gateways, and traffic policies.",
@@ -50,6 +51,7 @@ const terms = [
 	},
 	{
 		titles: ["IP CIDR", "CIDR"],
+		glossaryIndex: 1,
 		meaning:
 			"Classless Inter-Domain Routing is a method used to allocate IP addresses more efficiently and route IP packets more flexibly than older class-based systems.",
 		link: "https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing",
@@ -62,7 +64,8 @@ const terms = [
 		link: "https://en.wikipedia.org/wiki/System_for_Cross-domain_Identity_Management",
 	},
 	{
-		titles: ["K8"],
+		titles: ["K8", "K8s"],
+		glossaryIndex: 1,
 		meaning: "K8s is an industry-standard abbreviation for Kubernetes.",
 		pluralEnding: "s",
 		link: "https://kubernetes.io/docs/concepts/overview/",
@@ -75,6 +78,7 @@ const terms = [
 	},
 	{
 		titles: ["MCP server", "MCP"],
+		glossaryIndex: 1,
 		meaning:
 			"MCP (Model Context Protocol) is an open standard that allows AI models to access external data, tools, and services, and potentially use them to automate workflows.",
 		link: "https://en.wikipedia.org/wiki/Model_Context_Protocol",
@@ -94,7 +98,8 @@ const terms = [
 		link: "https://owasp.org/about/",
 	},
 	{
-		titles: ["reverse proxy", "reverse proxies"],
+		titles: ["reverse proxy", "reverse proxies", "Reverse Proxy"],
+		glossaryIndex: 2,
 		link: "https://en.wikipedia.org/wiki/Reverse_proxy",
 		meaning:
 			"Reverse proxies are an extra security layer between public traffic and your internal services. They live on servers or cloud services, and they intercept and forward traffic to upstream services.",
@@ -107,7 +112,7 @@ const terms = [
     link: "/iam/service-users/",
   },
 	{
-		titles: ["shadow IT"],
+		titles: ["Shadow IT", "shadow IT"],
 		meaning:
 			"Shadow IT refers to IT systems, software, and cloud services used by individuals within an organization without the IT department's knowledge or approval.",
 		link: "https://en.wikipedia.org/wiki/Shadow_IT",
@@ -267,7 +272,7 @@ function replaceInTextNodes(element, regex, termTitle, termObj) {
     {
       acceptNode: function(node) {
         // Skip text nodes that are inside excluded elements
-        if (isInsideExcludedElement(node.parentElement)) {
+        if (isInsideExcludedElement(node.parentElement) || window?.location?.href?.pathname("glossary")) {
           return NodeFilter.FILTER_REJECT;
         }
         return NodeFilter.FILTER_ACCEPT;
