@@ -54,4 +54,4 @@ terms.forEach(term => {
 const outputPath = path.join(__dirname, '../../../glossary.mdx');
 fs.writeFileSync(outputPath, glossaryContent.trim() + '\n');
 
-console.log('✅ Successfully generated glossary.mdx');
+console.log('Successfully generated glossary.mdx');
