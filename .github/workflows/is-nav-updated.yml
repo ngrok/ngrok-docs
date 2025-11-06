@@ -1,0 +1,108 @@
+name: Ensure nav is updated if files added/deleted
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  is-nav-updated:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get added and deleted .mdx files
+        id: mdx-files
+        run: |
+          git fetch origin ${{ github.base_ref }}
+          added_files=$(git diff --name-only --diff-filter=A origin/${{ github.base_ref }}...HEAD | grep '\.mdx$' | grep -v '^snippets/' || true)
+          deleted_files=$(git diff --name-only --diff-filter=D origin/${{ github.base_ref }}...HEAD | grep '\.mdx$' | grep -v '^snippets/' || true)
+          
+          echo "added_files<<EOF" >> $GITHUB_OUTPUT
+          echo "$added_files" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          
+          echo "deleted_files<<EOF" >> $GITHUB_OUTPUT
+          echo "$deleted_files" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Check docs.json updated
+        run: |
+          added_files="${{ steps.mdx-files.outputs.added_files }}"
+          deleted_files="${{ steps.mdx-files.outputs.deleted_files }}"
+          
+          # Check if any .mdx files were added or deleted
+          if [ -z "$added_files" ] && [ -z "$deleted_files" ]; then
+            echo "No .mdx files were added or deleted in this PR."
+            exit 0
+          fi
+          
+          # Check if docs.json was modified
+          git fetch origin ${{ github.base_ref }}
+          if ! git diff --name-only origin/${{ github.base_ref }}...HEAD | grep -q '^docs.json$'; then
+            echo "::error file=docs.json::docs.json was not updated, but .mdx files were added or deleted."
+            echo ""
+            echo "❌ docs.json must be updated when adding or deleting .mdx files."
+            exit 1
+          fi
+          
+          echo "docs.json was modified. Checking if changes include file paths..."
+          
+          # Get the diff for docs.json
+          docs_json_diff=$(git diff origin/${{ github.base_ref }}...HEAD -- docs.json)
+          
+          missing_paths=()
+          
+          # Check added files
+          while IFS= read -r file; do
+            if [ -z "$file" ]; then
+              continue
+            fi
+            
+            # Remove .mdx extension
+            path_without_ext="${file%.mdx}"
+            
+            echo "Checking for addition of: $path_without_ext"
+            
+            # Look for the path as an addition in docs.json
+            if ! echo "$docs_json_diff" | grep -q "^+.*$path_without_ext"; then
+              echo "::error file=$file::Added file not found in docs.json changes: $file (expected: $path_without_ext)"
+              missing_paths+=("+ $file → $path_without_ext")
+            else
+              echo "✓ Found addition for: $file"
+            fi
+          done <<< "$added_files"
+          
+          # Check deleted files
+          while IFS= read -r file; do
+            if [ -z "$file" ]; then
+              continue
+            fi
+            
+            # Remove .mdx extension
+            path_without_ext="${file%.mdx}"
+            
+            echo "Checking for deletion of: $path_without_ext"
+            
+            # Look for the path as a deletion in docs.json
+            if ! echo "$docs_json_diff" | grep -q "^-.*$path_without_ext"; then
+              echo "::error file=$file::Deleted file not found in docs.json changes: $file (expected: $path_without_ext)"
+              missing_paths+=("- $file → $path_without_ext")
+            else
+              echo "✓ Found deletion for: $file"
+            fi
+          done <<< "$deleted_files"
+          
+          if [ ${#missing_paths[@]} -gt 0 ]; then
+            echo ""
+            echo "❌ The following file changes are not reflected in docs.json:"
+            printf '  %s\n' "${missing_paths[@]}"
+            echo ""
+            echo "Please update docs.json to include these file paths."
+            exit 1
+          else
+            echo ""
+            echo "✓ All .mdx file changes are properly reflected in docs.json."
+          fi
