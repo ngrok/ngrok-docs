@@ -272,7 +272,7 @@ function replaceInTextNodes(element, regex, termTitle, termObj) {
     {
       acceptNode: function(node) {
         // Skip text nodes that are inside excluded elements
-        if (isInsideExcludedElement(node.parentElement)) {
+        if (isInsideExcludedElement(node.parentElement) || window?.location?.href?.pathname("glossary")) {
           return NodeFilter.FILTER_REJECT;
         }
         return NodeFilter.FILTER_ACCEPT;
