@@ -68,8 +68,14 @@ jobs:
             
             # Look for the path as an addition in docs.json
             if ! echo "$docs_json_diff" | grep -q "^+.*$path_without_ext"; then
-              echo "::error file=$file::Added file not found in docs.json changes: $file (expected: $path_without_ext)"
-              missing_paths+=("+ $file → $path_without_ext")
+              # Not found in diff, check if it already exists in current navigation
+              navigation_string=$(jq -c '.navigation' docs.json)
+              if echo "$navigation_string" | grep -q "$path_without_ext"; then
+                echo "✓ File already exists in navigation (no addition needed): $file"
+              else
+                echo "::error file=$file::Added file not found in docs.json navigation: $file (expected: $path_without_ext)"
+                missing_paths+=("+ $file → $path_without_ext")
+              fi
             else
               echo "✓ Found addition for: $file"
             fi
