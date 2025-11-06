@@ -54,7 +54,7 @@ jobs:
             
             # Check if redirect exists in docs.json
             if ! jq -e --arg source "$redirect_source" '.redirects[] | select(.source == $source)' docs.json > /dev/null; then
-              echo "::warning file=$file::No redirect found for deleted file: $file (expected redirect source: $redirect_source)"
+              echo "::error file=$file::No redirect found for deleted file: $file (expected redirect source: $redirect_source)"
               missing_redirects+=("$file")
             else
               echo "✓ Redirect found for: $file"
@@ -63,10 +63,11 @@ jobs:
           
           if [ ${#missing_redirects[@]} -gt 0 ]; then
             echo ""
-            echo "⚠️  The following deleted files are missing redirects in docs.json:"
+            echo "❌ The following deleted files are missing redirects in docs.json:"
             printf '  - %s\n' "${missing_redirects[@]}"
             echo ""
-            echo "Consider adding redirects to prevent broken links."
+            echo "Please add redirects to prevent broken links."
+            exit 1
           else
             echo ""
             echo "✓ All deleted .mdx files have redirects configured."
