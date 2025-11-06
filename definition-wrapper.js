@@ -92,6 +92,7 @@ const terms = [
 	},
 	{
 		titles: ["OWASP"],
+		glossaryIndex: 0,
 		caseSensitive: true,
 		meaning:
 			"The Open Web Application Security Project is a non-profit organization dedicated to improving software security through providing resources, tools, and community support.",
