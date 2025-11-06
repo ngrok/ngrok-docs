@@ -35,7 +35,12 @@ terms.forEach(term => {
   const titleIndex = term.glossaryIndex !== undefined ? term.glossaryIndex : 0;
   const title = term.titles[titleIndex];
   const meaning = term.meaning || 'Definition not available';
-  const link = term.link || '';
+  let link = term.link || '';
+  
+  // Trim /docs from internal links
+  if (link.startsWith('/docs')) {
+    link = link.substring(5);
+  }
   
   glossaryContent += `## ${title}\n\n`;
   glossaryContent += `${meaning}\n\n`;
