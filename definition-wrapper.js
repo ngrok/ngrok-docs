@@ -91,8 +91,8 @@ const terms = [
 		link: "https://en.wikipedia.org/wiki/OpenID",
 	},
 	{
-		titles: ["OWASP"],
-		glossaryIndex: 0,
+		titles: ["OWASP", "owasp"],
+		glossaryIndex: 1,
 		caseSensitive: true,
 		meaning:
 			"The Open Web Application Security Project is a non-profit organization dedicated to improving software security through providing resources, tools, and community support.",
