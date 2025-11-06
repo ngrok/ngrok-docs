@@ -88,8 +88,14 @@ jobs:
             
             # Look for the path as a deletion in docs.json
             if ! echo "$docs_json_diff" | grep -q "^-.*$path_without_ext"; then
-              echo "::error file=$file::Deleted file not found in docs.json changes: $file (expected: $path_without_ext)"
-              missing_paths+=("- $file → $path_without_ext")
+              # Not found in diff, check if it exists in current navigation
+              navigation_string=$(jq -c '.navigation' docs.json)
+              if echo "$navigation_string" | grep -q "$path_without_ext"; then
+                echo "::error file=$file::Deleted file still exists in docs.json navigation: $file (expected deletion of: $path_without_ext)"
+                missing_paths+=("- $file → $path_without_ext")
+              else
+                echo "✓ File was not in navigation (no removal needed): $file"
+              fi
             else
               echo "✓ Found deletion for: $file"
             fi
