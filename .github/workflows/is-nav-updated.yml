@@ -1,0 +1,122 @@
+name: Ensure nav is updated if files added/deleted
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  is-nav-updated:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get added and deleted .mdx files
+        id: mdx-files
+        run: |
+          git fetch origin ${{ github.base_ref }}
+          added_files=$(git diff --name-only --diff-filter=A origin/${{ github.base_ref }}...HEAD | grep '\.mdx$' | grep -v '^snippets/' | grep -v '^custom/' || true)
+          deleted_files=$(git diff --name-only --diff-filter=D origin/${{ github.base_ref }}...HEAD | grep '\.mdx$' | grep -v '^snippets/' | grep -v '^custom/' || true)
+          
+          echo "added_files<<EOF" >> $GITHUB_OUTPUT
+          echo "$added_files" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          
+          echo "deleted_files<<EOF" >> $GITHUB_OUTPUT
+          echo "$deleted_files" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Check docs.json updated
+        run: |
+          added_files="${{ steps.mdx-files.outputs.added_files }}"
+          deleted_files="${{ steps.mdx-files.outputs.deleted_files }}"
+          
+          # Check if any .mdx files were added or deleted
+          if [ -z "$added_files" ] && [ -z "$deleted_files" ]; then
+            echo "No .mdx files were added or deleted in this PR."
+            exit 0
+          fi
+          
+          # Filter out added files with noSidebar: true
+          echo "Checking if the files you added have noSidebar: true in the frontmatter."
+          filtered_added_files=()
+          while IFS= read -r file; do
+            if [ -z "$file" ]; then
+              continue
+            fi
+            if git show HEAD:"$file" 2>/dev/null | grep -qE "^noSidebar:\s*true"; then
+              echo "⊘ Ignoring $file (has noSidebar: true)"
+            else
+              filtered_added_files+=("$file")
+            fi
+          done <<< "$added_files"
+          
+          # Check if we have any files that need navigation updates
+          if [ ${#filtered_added_files[@]} -eq 0 ] && [ -z "$deleted_files" ]; then
+            echo "No .mdx files require navigation updates (all added files have noSidebar: true)."
+            exit 0
+          fi
+          
+          # Check if docs.json was modified
+          git fetch origin ${{ github.base_ref }}
+          if ! git diff --name-only origin/${{ github.base_ref }}...HEAD | grep -q '^docs.json$'; then
+            echo "::error file=docs.json::docs.json was not updated, but .mdx files were added or deleted."
+            echo ""
+            echo "❌ The navigation array in docs.json must be updated when adding or deleting .mdx files. If you're creating a page that you don't want in the sidebar, add noSidebar: true to the frontmatter."
+            exit 1
+          fi
+          
+          echo "docs.json was modified. Checking navigation array..."
+          
+          # Get navigation as a string for searching
+          navigation_string=$(jq -c '.navigation' docs.json)
+          
+          missing_paths=()
+          
+          # Check added files - they should exist in navigation
+          for file in "${filtered_added_files[@]}"; do
+            # Remove .mdx extension
+            path_without_ext="${file%.mdx}"
+            
+            echo "Checking if added file is in navigation: $path_without_ext"
+            
+            if echo "$navigation_string" | grep -q "$path_without_ext"; then
+              echo "✓ Found in navigation: $file"
+            else
+              echo "::error file=$file::Added file not found in docs.json navigation: $file (expected: $path_without_ext)"
+              missing_paths+=("+ $file → $path_without_ext")
+            fi
+          done
+          
+          # Check deleted files - they should NOT exist in navigation
+          while IFS= read -r file; do
+            if [ -z "$file" ]; then
+              continue
+            fi
+            
+            # Remove .mdx extension
+            path_without_ext="${file%.mdx}"
+            
+            echo "Checking if deleted file is removed from navigation: $path_without_ext"
+            
+            if echo "$navigation_string" | grep -q "$path_without_ext"; then
+              echo "::error file=$file::Deleted file still exists in docs.json navigation: $file (path: $path_without_ext)"
+              missing_paths+=("- $file → $path_without_ext")
+            else
+              echo "✓ Removed from navigation: $file"
+            fi
+          done <<< "$deleted_files"
+          
+          if [ ${#missing_paths[@]} -gt 0 ]; then
+            echo ""
+            echo "❌ The following file changes are not reflected in docs.json:"
+            printf '  %s\n' "${missing_paths[@]}"
+            echo ""
+            echo "Please update docs.json to include these file paths."
+            exit 1
+          else
+            echo ""
+            echo "✓ All .mdx file changes are properly reflected in docs.json."
+          fi
