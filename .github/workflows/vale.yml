@@ -47,7 +47,7 @@ jobs:
         id: parse_results
         continue-on-error: true
         uses: actions/github-script@v7
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' && github.event.pull_request
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -92,15 +92,40 @@ jobs:
               valeResults = {};
             }
             
-            // Check if we're in a PR context
-            if (!github.context.payload || !github.context.payload.pull_request) {
-              console.log('Not in a pull request context, skipping comment');
+            // Get PR info - use event data as fallback
+            let prNumber, owner, repo;
+            try {
+              // Try github.context.payload first
+              if (github && github.context && github.context.payload && github.context.payload.pull_request) {
+                prNumber = github.context.payload.pull_request.number;
+                owner = github.context.repo.owner;
+                repo = github.context.repo.repo;
+              } 
+              // Fallback to github.event
+              else if (github && github.event && github.event.pull_request) {
+                prNumber = github.event.pull_request.number;
+                owner = github.context.repo.owner;
+                repo = github.context.repo.repo;
+              } 
+              // Last resort - use context.repo and event.number
+              else if (github && github.context && github.context.repo) {
+                prNumber = github.event.number || github.event.issue?.number;
+                owner = github.context.repo.owner;
+                repo = github.context.repo.repo;
+              } else {
+                console.log('Could not determine PR context. github:', !!github, 'context:', !!github?.context, 'event:', !!github?.event);
+                return;
+              }
+              
+              if (!prNumber || !owner || !repo) {
+                console.log('Missing required PR info. prNumber:', prNumber, 'owner:', owner, 'repo:', repo);
+                return;
+              }
+            } catch (e) {
+              console.log('Error getting PR context:', e.message);
+              console.log('Stack:', e.stack);
               return;
             }
-            
-            const prNumber = github.context.payload.pull_request.number;
-            const owner = github.context.repo.owner;
-            const repo = github.context.repo.repo;
             
             // Group issues by file and severity
             const issuesByFile = {};
