@@ -67,8 +67,16 @@ jobs:
                 // Vale might output errors to stderr mixed with JSON, try to extract JSON
                 const jsonMatch = valeOutput.match(/\{[\s\S]*\}/);
                 if (jsonMatch) {
-                  valeResults = JSON.parse(jsonMatch[0]);
-                  console.log('Parsed JSON successfully, found', Object.keys(valeResults).length, 'files with issues');
+                  const parsed = JSON.parse(jsonMatch[0]);
+                  // Check if this is an error object (has Code, Text, etc) rather than file-based results
+                  if (parsed.Code && parsed.Text) {
+                    console.log('Vale encountered an error:', parsed.Text);
+                    console.log('Skipping comment posting due to Vale error');
+                    valeResults = {};
+                  } else {
+                    valeResults = parsed;
+                    console.log('Parsed JSON successfully, found', Object.keys(valeResults).length, 'files with issues');
+                  }
                 } else if (valeOutput.trim() === '' || valeOutput.trim() === '{}') {
                   // No issues found
                   console.log('No Vale issues found (empty output)');
@@ -84,7 +92,12 @@ jobs:
               valeResults = {};
             }
             
-            // Use github.context directly (context is already available but we use github.context)
+            // Check if we're in a PR context
+            if (!github.context.payload || !github.context.payload.pull_request) {
+              console.log('Not in a pull request context, skipping comment');
+              return;
+            }
+            
             const prNumber = github.context.payload.pull_request.number;
             const owner = github.context.repo.owner;
             const repo = github.context.repo.repo;
