@@ -192,43 +192,51 @@ jobs:
             }
             
             if (totalErrors > 0 || totalWarnings > 0 || totalSuggestions > 0) {
-              const pr = await github.rest.pulls.get({
-                owner,
-                repo,
-                pull_number: prNumber,
-              });
-              
-              const headSha = pr.data.head.sha;
-              const prFiles = await github.rest.pulls.listFiles({
-                owner,
-                repo,
-                pull_number: prNumber,
-              });
-              
-              const changedFiles = new Set(prFiles.data.map(f => f.filename));
-              
-              for (const [file, issues] of Object.entries(issuesByFile)) {
-                if (!changedFiles.has(file)) continue;
+              try {
+                const pr = await github.rest.pulls.get({
+                  owner,
+                  repo,
+                  pull_number: prNumber,
+                });
                 
-                const allIssues = [...issues.errors, ...issues.warnings];
-                if (allIssues.length === 0) continue;
+                const headSha = pr.data.head.sha;
+                const prFiles = await github.rest.pulls.listFiles({
+                  owner,
+                  repo,
+                  pull_number: prNumber,
+                });
                 
-                for (const issue of allIssues) {
-                  try {
-                    await github.rest.pulls.createReviewComment({
-                      owner,
-                      repo,
-                      pull_number: prNumber,
-                      commit_id: headSha,
-                      path: file,
-                      line: issue.line,
-                      side: 'RIGHT',
-                      body: `**${issue.severity.toUpperCase()}**: ${issue.message}\n\n*Rule: \`${issue.check}\`*`
-                    });
-                  } catch (e) {
-                    console.log(`Failed to post comment on ${file}:${issue.line}:`, e.message);
+                const changedFiles = new Set(prFiles.data.map(f => f.filename));
+                console.log(`PR has ${changedFiles.size} changed files`);
+                
+                let inlineCommentsPosted = 0;
+                for (const [file, issues] of Object.entries(issuesByFile)) {
+                  if (!changedFiles.has(file)) continue;
+                  
+                  const allIssues = [...issues.errors, ...issues.warnings];
+                  if (allIssues.length === 0) continue;
+                  
+                  for (const issue of allIssues) {
+                    try {
+                      await github.rest.pulls.createReviewComment({
+                        owner,
+                        repo,
+                        pull_number: prNumber,
+                        commit_id: headSha,
+                        path: file,
+                        line: issue.line,
+                        side: 'RIGHT',
+                        body: `**${issue.severity.toUpperCase()}**: ${issue.message}\n\n*Rule: \`${issue.check}\`*`
+                      });
+                      inlineCommentsPosted++;
+                    } catch (e) {
+                      console.log(`Failed to post comment on ${file}:${issue.line}:`, e.message);
+                    }
                   }
                 }
+                console.log(`Posted ${inlineCommentsPosted} inline comments`);
+              } catch (e) {
+                console.log('Error posting inline comments:', e.message);
               }
               
               const comments = await github.rest.issues.listComments({
