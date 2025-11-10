@@ -52,35 +52,35 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const fs = require('fs');
-            const core = require('@actions/core');
             
             // Read Vale JSON output
             let valeResults = {};
             try {
-              const valeOutput = fs.readFileSync('vale-results.json', 'utf8');
-              // Vale might output errors to stderr mixed with JSON, try to extract JSON
-              const jsonMatch = valeOutput.match(/\{[\s\S]*\}/);
-              if (jsonMatch) {
-                valeResults = JSON.parse(jsonMatch[0]);
-              } else if (valeOutput.trim() === '' || valeOutput.trim() === '{}') {
-                // No issues found
+              if (!fs.existsSync('vale-results.json')) {
+                console.log('vale-results.json file does not exist');
                 valeResults = {};
               } else {
-                console.log('Could not parse Vale output as JSON:', valeOutput);
-                valeResults = {};
+                const valeOutput = fs.readFileSync('vale-results.json', 'utf8');
+                console.log('Vale output length:', valeOutput.length);
+                console.log('Vale output preview:', valeOutput.substring(0, 200));
+                
+                // Vale might output errors to stderr mixed with JSON, try to extract JSON
+                const jsonMatch = valeOutput.match(/\{[\s\S]*\}/);
+                if (jsonMatch) {
+                  valeResults = JSON.parse(jsonMatch[0]);
+                  console.log('Parsed JSON successfully, found', Object.keys(valeResults).length, 'files with issues');
+                } else if (valeOutput.trim() === '' || valeOutput.trim() === '{}') {
+                  // No issues found
+                  console.log('No Vale issues found (empty output)');
+                  valeResults = {};
+                } else {
+                  console.log('Could not parse Vale output as JSON. Full output:', valeOutput);
+                  valeResults = {};
+                }
               }
             } catch (error) {
               console.log('Error parsing Vale JSON output:', error.message);
-              // If there's an error parsing, Vale likely found issues
-              // Try to check if file exists and has content
-              try {
-                const valeOutput = fs.readFileSync('vale-results.json', 'utf8');
-                if (valeOutput.trim() && !valeOutput.trim().startsWith('{')) {
-                  console.log('Vale output (non-JSON):', valeOutput);
-                }
-              } catch (e) {
-                console.log('No vale-results.json file found');
-              }
+              console.log('Stack:', error.stack);
               valeResults = {};
             }
             
@@ -129,99 +129,103 @@ jobs:
             // Build comment body
             let commentBody = '## 📝 Vale Linting Results\n\n';
             
-            if (totalErrors === 0 && totalWarnings === 0 && totalSuggestions === 0) {
-              commentBody += '✅ **No issues found!** All files pass Vale linting.\n';
-            } else {
-              // Summary
-              commentBody += '### Summary\n\n';
-              if (totalErrors > 0) {
-                commentBody += `❌ **Errors:** ${totalErrors}\n`;
-              }
-              if (totalWarnings > 0) {
-                commentBody += `⚠️ **Warnings:** ${totalWarnings}\n`;
-              }
-              if (totalSuggestions > 0) {
-                commentBody += `💡 **Suggestions:** ${totalSuggestions}\n`;
-              }
-              commentBody += '\n---\n\n';
+            // Summary
+            commentBody += '### Summary\n\n';
+            if (totalErrors > 0) {
+              commentBody += `❌ **Errors:** ${totalErrors}\n`;
+            }
+            if (totalWarnings > 0) {
+              commentBody += `⚠️ **Warnings:** ${totalWarnings}\n`;
+            }
+            if (totalSuggestions > 0) {
+              commentBody += `💡 **Suggestions:** ${totalSuggestions}\n`;
+            }
+            commentBody += '\n---\n\n';
+            
+            // Detailed results by file
+            commentBody += '### Issues by File\n\n';
+            for (const [file, issues] of Object.entries(issuesByFile)) {
+              const fileErrors = issues.errors.length;
+              const fileWarnings = issues.warnings.length;
+              const fileSuggestions = issues.suggestions.length;
               
-              // Detailed results by file
-              commentBody += '### Issues by File\n\n';
-              for (const [file, issues] of Object.entries(issuesByFile)) {
-                const fileErrors = issues.errors.length;
-                const fileWarnings = issues.warnings.length;
-                const fileSuggestions = issues.suggestions.length;
-                
-                if (fileErrors === 0 && fileWarnings === 0 && fileSuggestions === 0) continue;
-                
-                commentBody += `#### \`${file}\`\n\n`;
-                
-                // Errors
-                if (fileErrors > 0) {
-                  commentBody += `**Errors (${fileErrors}):**\n`;
-                  for (const error of issues.errors) {
-                    commentBody += `- **Line ${error.line}:** ${error.message} \`${error.check}\`\n`;
-                  }
-                  commentBody += '\n';
+              if (fileErrors === 0 && fileWarnings === 0 && fileSuggestions === 0) continue;
+              
+              commentBody += `#### \`${file}\`\n\n`;
+              
+              // Errors
+              if (fileErrors > 0) {
+                commentBody += `**Errors (${fileErrors}):**\n`;
+                for (const error of issues.errors) {
+                  commentBody += `- **Line ${error.line}:** ${error.message} \`${error.check}\`\n`;
                 }
-                
-                // Warnings
-                if (fileWarnings > 0) {
-                  commentBody += `**Warnings (${fileWarnings}):**\n`;
-                  for (const warning of issues.warnings) {
-                    commentBody += `- **Line ${warning.line}:** ${warning.message} \`${warning.check}\`\n`;
-                  }
-                  commentBody += '\n';
-                }
-                
-                // Suggestions
-                if (fileSuggestions > 0) {
-                  commentBody += `**Suggestions (${fileSuggestions}):**\n`;
-                  for (const suggestion of issues.suggestions.slice(0, 10)) {
-                    commentBody += `- **Line ${suggestion.line}:** ${suggestion.message} \`${suggestion.check}\`\n`;
-                  }
-                  if (fileSuggestions > 10) {
-                    commentBody += `- *... and ${fileSuggestions - 10} more suggestions*\n`;
-                  }
-                  commentBody += '\n';
-                }
-                
                 commentBody += '\n';
               }
+              
+              // Warnings
+              if (fileWarnings > 0) {
+                commentBody += `**Warnings (${fileWarnings}):**\n`;
+                for (const warning of issues.warnings) {
+                  commentBody += `- **Line ${warning.line}:** ${warning.message} \`${warning.check}\`\n`;
+                }
+                commentBody += '\n';
+              }
+              
+              // Suggestions
+              if (fileSuggestions > 0) {
+                commentBody += `**Suggestions (${fileSuggestions}):**\n`;
+                for (const suggestion of issues.suggestions.slice(0, 10)) {
+                  commentBody += `- **Line ${suggestion.line}:** ${suggestion.message} \`${suggestion.check}\`\n`;
+                }
+                if (fileSuggestions > 10) {
+                  commentBody += `- *... and ${fileSuggestions - 10} more suggestions*\n`;
+                }
+                commentBody += '\n';
+              }
+              
+              commentBody += '\n';
             }
             
-            // Find existing comments
-            const comments = await github.rest.issues.listComments({
-              owner,
-              repo,
-              issue_number: prNumber,
-            });
-            
-            const botComment = comments.data.find(
-              comment => comment.user.type === 'Bot' && comment.body.includes('Vale Linting Results')
-            );
-            
-            // Post or update comment
-            if (botComment) {
-              await github.rest.issues.updateComment({
-                owner,
-                repo,
-                comment_id: botComment.id,
-                body: commentBody
-              });
-            } else {
-              await github.rest.issues.createComment({
+            // Only post comment if there are issues to report
+            if (totalErrors > 0 || totalWarnings > 0 || totalSuggestions > 0) {
+              // Find existing comments
+              const comments = await github.rest.issues.listComments({
                 owner,
                 repo,
                 issue_number: prNumber,
-                body: commentBody
               });
+              
+              const botComment = comments.data.find(
+                comment => comment.user.type === 'Bot' && comment.body.includes('Vale Linting Results')
+              );
+              
+              // Post or update comment
+              if (botComment) {
+                await github.rest.issues.updateComment({
+                  owner,
+                  repo,
+                  comment_id: botComment.id,
+                  body: commentBody
+                });
+              } else {
+                await github.rest.issues.createComment({
+                  owner,
+                  repo,
+                  issue_number: prNumber,
+                  body: commentBody
+                });
+              }
             }
             
             // Write counts to output for use in next step
-            core.setOutput('total_errors', totalErrors.toString());
-            core.setOutput('total_warnings', totalWarnings.toString());
-            core.setOutput('total_suggestions', totalSuggestions.toString());
+            // core is available in github-script context
+            if (typeof core !== 'undefined') {
+              core.setOutput('total_errors', totalErrors.toString());
+              core.setOutput('total_warnings', totalWarnings.toString());
+              core.setOutput('total_suggestions', totalSuggestions.toString());
+            }
+            
+            console.log('Summary: Errors:', totalErrors, 'Warnings:', totalWarnings, 'Suggestions:', totalSuggestions);
 
       - name: Check results and set status
         id: check_status
