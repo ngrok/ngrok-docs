@@ -199,9 +199,18 @@ jobs:
               });
               
               const headSha = pr.data.head.sha;
+              const prFiles = await github.rest.pulls.listFiles({
+                owner,
+                repo,
+                pull_number: prNumber,
+              });
+              
+              const changedFiles = new Set(prFiles.data.map(f => f.filename));
               
               for (const [file, issues] of Object.entries(issuesByFile)) {
-                const allIssues = [...issues.errors, ...issues.warnings, ...issues.suggestions];
+                if (!changedFiles.has(file)) continue;
+                
+                const allIssues = [...issues.errors, ...issues.warnings];
                 if (allIssues.length === 0) continue;
                 
                 for (const issue of allIssues) {
