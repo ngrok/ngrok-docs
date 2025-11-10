@@ -208,6 +208,7 @@ jobs:
             
             // Only post comment if there are issues to report
             if (totalErrors > 0 || totalWarnings > 0 || totalSuggestions > 0) {
+              console.log('Posting comment to PR #' + prNumber);
               // Find existing comments
               const comments = await github.rest.issues.listComments({
                 owner,
@@ -221,6 +222,7 @@ jobs:
               
               // Post or update comment
               if (botComment) {
+                console.log('Updating existing comment');
                 await github.rest.issues.updateComment({
                   owner,
                   repo,
@@ -228,6 +230,7 @@ jobs:
                   body: commentBody
                 });
               } else {
+                console.log('Creating new comment');
                 await github.rest.issues.createComment({
                   owner,
                   repo,
@@ -235,6 +238,19 @@ jobs:
                   body: commentBody
                 });
               }
+              console.log('Comment posted successfully');
+            } else {
+              console.log('No issues to report, skipping comment');
+            }
+            
+            // Clean up JSON file
+            try {
+              if (fs.existsSync('vale-results.json')) {
+                fs.unlinkSync('vale-results.json');
+                console.log('Cleaned up vale-results.json');
+              }
+            } catch (e) {
+              console.log('Error cleaning up JSON file:', e.message);
             }
             
             // Write counts to output for use in next step
@@ -250,7 +266,7 @@ jobs:
       - name: Check results and set status
         id: check_status
         run: |
-          # Parse Vale results to determine status
+          # Parse Vale results to determine status (JSON file already cleaned up by previous step)
           if [ -f vale-results.json ]; then
             # Use jq if available, otherwise use a simple grep approach
             if command -v jq &> /dev/null; then
