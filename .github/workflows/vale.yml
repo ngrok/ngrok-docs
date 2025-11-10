@@ -20,8 +20,15 @@ jobs:
 
       - name: Install Vale
         run: |
-          # Install the latest Vale release
-          wget -q https://github.com/errata-ai/vale/releases/latest/download/vale_Linux_64-bit.tar.gz -O vale.tar.gz
+          # Install Vale from latest release
+          VALE_VERSION=$(curl -s https://api.github.com/repos/errata-ai/vale/releases/latest | grep '"tag_name":' | cut -d '"' -f 4)
+          VALE_VERSION_NUM=${VALE_VERSION#v}
+          echo "Installing Vale ${VALE_VERSION} (${VALE_VERSION_NUM})"
+          wget "https://github.com/errata-ai/vale/releases/download/${VALE_VERSION}/vale_${VALE_VERSION_NUM}_Linux_64-bit.tar.gz" -O vale.tar.gz
+          if [ ! -f vale.tar.gz ] || [ ! -s vale.tar.gz ]; then
+            echo "Error: Failed to download Vale"
+            exit 1
+          fi
           tar -xzf vale.tar.gz -C /tmp
           sudo mv /tmp/vale /usr/local/bin/vale
           vale --version
