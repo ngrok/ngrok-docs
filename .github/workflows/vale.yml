@@ -37,13 +37,10 @@ jobs:
       - name: Get changed files
         id: changed-files
         run: |
-          git diff --name-only --diff-filter=ACMR ${{ github.event.pull_request.base.sha }} ${{ github.sha }} | grep -E '\.(mdx|md)$' | grep -v '^snippets/' | grep -v '^errors/' | grep -v '^agent/cli-api.mdx$' | grep -v '^agent/cli.mdx$' > changed_files.txt || true
-          if [ -s changed_files.txt ]; then
-            echo "Files to check:"
-            cat changed_files.txt
-            echo "files<<EOF" >> $GITHUB_OUTPUT
-            cat changed_files.txt >> $GITHUB_OUTPUT
-            echo "EOF" >> $GITHUB_OUTPUT
+          FILES=$(git diff --name-only --diff-filter=ACMR ${{ github.event.pull_request.base.sha }} ${{ github.sha }} | grep -E '\.(mdx|md)$' | grep -v '^snippets/' | grep -v '^errors/' | grep -v '^agent/cli-api.mdx$' | grep -v '^agent/cli.mdx$' | tr '\n' ' ' | xargs)
+          if [ -n "$FILES" ]; then
+            echo "Files to check: $FILES"
+            echo "files=$FILES" >> $GITHUB_OUTPUT
           else
             echo "No files to check"
             echo "files=" >> $GITHUB_OUTPUT
