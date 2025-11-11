@@ -2,9 +2,6 @@
 title: TLS Routing
 ---
 
-
-
-
 Transport Layer Security (TLS) routing enables your API Gateway to handle encrypted traffic based on the Server Name Indication (SNI) without needing to terminate the connection. By default, TLS traffic is routed without termination, preserving full end-to-end encryption. However, TLS termination can be enabled if your use case requires it.
 
 Proper TLS routing enables:
@@ -30,97 +27,97 @@ The following examples showcase how you can route TLS traffic to your upstream s
 See the [TLS Endpoints page](/universal-gateway/tls/) for more details on how ngrok handles TLS endpoints.
 
 <Tabs>
-	<Tab title="AgentEndpoint">
-	```yaml
-  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-  kind: AgentEndpoint
-  metadata:
-    name: example-service
-    namespace: default
-  spec:
-    url: tls://example-hostname.ngrok.io:8443
-    upstream:
-      url: tls://example-service.example-namespace:8443
-	```
-	</Tab>
-	<Tab title="CloudEndpoint with AgentEndpoint">
+<Tab title="AgentEndpoint">
+```yaml
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: AgentEndpoint
+metadata:
+  name: example-service
+  namespace: default
+spec:
+  url: tls://example-hostname.ngrok.io:8443
+  upstream:
+    url: tls://example-service.example-namespace:8443
+```
+</Tab>
+<Tab title="CloudEndpoint with AgentEndpoint">
 
-	### 1. Create an `AgentEndpoint` for your upstream `Service`
-	```yaml
-  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-  kind: AgentEndpoint
-  metadata:
-    name: example-service
-    namespace: default
-  spec:
-    url: tls://example-service.internal:8443
-    upstream:
-      url: tls://example-service.example-namespace:8443
-	```
+### 1. Create an `AgentEndpoint` for your upstream `Service`
+```yaml
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: AgentEndpoint
+metadata:
+  name: example-service
+  namespace: default
+spec:
+  url: tls://example-service.internal:8443
+  upstream:
+    url: tls://example-service.example-namespace:8443
+```
 
-	### 2. Create a `CloudEndpoint` that routes to the `AgentEndpoint`
+### 2. Create a `CloudEndpoint` that routes to the `AgentEndpoint`
 
-	```yaml
-  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-  kind: CloudEndpoint
-  metadata:
-    name: example-cloud-endpoint
-  spec:
-    url: tls://example-hostname.ngrok.io:8443
-    trafficPolicy:
-      policy:
-        on_http_request:
-        - actions:
-          - type: forward-internal
-            config:
-              url: tls://example-service.internal:8443
-	```
-	</Tab>
-	<Tab title="Gateway API">
+```yaml
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: CloudEndpoint
+metadata:
+  name: example-cloud-endpoint
+spec:
+  url: tls://example-hostname.ngrok.io:8443
+  trafficPolicy:
+    policy:
+      on_http_request:
+      - actions:
+        - type: forward-internal
+          config:
+            url: tls://example-service.internal:8443
+```
+</Tab>
+<Tab title="Gateway API">
 
-	For TLS and TCP Routes, you must put the domain in the `Gateway.Spec.Addresses` field as the ngrok operator needs to know what domains to use when creating endpoints for you and Gateway API forbids using the hostname field
-	on Gateway listeners for TCP/TLS protocols.
+For TLS and TCP Routes, you must put the domain in the `Gateway.Spec.Addresses` field as the ngrok operator needs to know what domains to use when creating endpoints for you and Gateway API forbids using the hostname field
+on Gateway listeners for TCP/TLS protocols.
 
-	Since the `Gateway.Spec.Addresses` are expected to bind to all listeners, you may want to create separate Gateways for TLS and TCP endpoints to prevent unwanted conflicts and overlap.
-	For these reasons, TCP and TLS routing is often more easily configurable using the `AgentEndpoint` resources directly instead of Gateway API configuration.
+Since the `Gateway.Spec.Addresses` are expected to bind to all listeners, you may want to create separate Gateways for TLS and TCP endpoints to prevent unwanted conflicts and overlap.
+For these reasons, TCP and TLS routing is often more easily configurable using the `AgentEndpoint` resources directly instead of Gateway API configuration.
 
-	### 1. Create a `Gateway`
+### 1. Create a `Gateway`
 
-	If you already have a `Gateway` you can use that instead
+If you already have a `Gateway` you can use that instead
 
-	```yaml
-  apiVersion: gateway.networking.k8s.io/v1
-  kind: Gateway
-  metadata:
-    name: example-gateway
-    namespace: default
-  spec:
-    gatewayClassName: ngrok
-    addresses:
-    - type: Hostname
-      value: example-hostname.ngrok.io
-    listeners:
-      - name: p9000
-        port: 9000
-        protocol: TLS
-	```
+```yaml
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: example-gateway
+  namespace: default
+spec:
+  gatewayClassName: ngrok
+  addresses:
+  - type: Hostname
+    value: example-hostname.ngrok.io
+  listeners:
+    - name: p9000
+      port: 9000
+      protocol: TLS
+```
 
-	### 2. Create a `TLSRoute`
+### 2. Create a `TLSRoute`
 
-	```yaml
-  apiVersion: gateway.networking.k8s.io/v1alpha2
-  kind: TLSRoute
-  metadata:
-    name: example-tlsroute
-    namespace: default
-  spec:
-    parentRefs:
-      - name: example-gateway
-        sectionName: p9000
-    rules:
-      - backendRefs:
-          - name: example-service
-            port: 9000
-	```
-	</Tab>
+```yaml
+apiVersion: gateway.networking.k8s.io/v1alpha2
+kind: TLSRoute
+metadata:
+  name: example-tlsroute
+  namespace: default
+spec:
+  parentRefs:
+    - name: example-gateway
+      sectionName: p9000
+  rules:
+    - backendRefs:
+        - name: example-service
+          port: 9000
+```
+</Tab>
 </Tabs>

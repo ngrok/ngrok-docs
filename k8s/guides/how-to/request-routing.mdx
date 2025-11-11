@@ -3,9 +3,6 @@ title: Controlling Traffic Flow with Request Routing
 sidebarTitle: Request Routing
 ---
 
-
-
-
 Request routing is the core capability of an API Gateway, enabling it to direct incoming traffic to the appropriate backend service.
 By defining routing rules, you can control how requests are handled, which services they reach, and under what conditions.
 
@@ -110,118 +107,118 @@ The following examples showcase how you can match on an exact path.
 The request will not be routed unless it has the exact path `/example`, so `/example/foo` will not be routed.
 
 <Tabs>
-	<Tab title="CloudEndpoint with AgentEndpoint">
+  <Tab title="CloudEndpoint with AgentEndpoint">
 
-	### 1. Create an `AgentEndpoint` for your upstream `Service`
-	```yaml
-  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-  kind: AgentEndpoint
-  metadata:
-    name: example-service
-    namespace: default
-  spec:
-    url: http://example-service.internal:80
-    upstream:
-      url: http://example-service.example-namespace:8080
-    bindings:
-    - internal
-	```
+  ### 1. Create an `AgentEndpoint` for your upstream `Service`
+```yaml
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: AgentEndpoint
+metadata:
+  name: example-service
+  namespace: default
+spec:
+  url: http://example-service.internal:80
+  upstream:
+    url: http://example-service.example-namespace:8080
+  bindings:
+  - internal
+```
 
-	### 2. Create a `CloudEndpoint` that routes to the `AgentEndpoint`
+  ### 2. Create a `CloudEndpoint` that routes to the `AgentEndpoint`
 
-	```yaml
-  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-  kind: CloudEndpoint
-  metadata:
-    name: example-cloud-endpoint
-  spec:
-    url: https://example-hostname.ngrok.io
-    bindings:
-    - public
-    trafficPolicy:
-      policy:
-        on_http_request:
-        - expressions:
-          - "req.url.path == '/example'"
-          actions:
-          - type: forward-internal
-            config:
-              url: http://example-service.internal:80
-	```
-	</Tab>
-	<Tab title="Ingress">
-	```yaml
-  apiVersion: networking.k8s.io/v1
-  kind: Ingress
-  metadata:
-    name: example-ingress
-    namespace: default
-  spec:
-    ingressClassName: ngrok
-    rules:
-      - host: example-hostname.ngrok.io
-        http:
-          paths:
-            - path: /example
-              pathType: Exact
-              backend:
-                service:
-                  name: example-service
-                  port:
-                    number: 80
-	```
-	</Tab>
-	<Tab title="Gateway API">
-	Check out the [Gateway API HTTPRoute matching docs](https://gateway-api.sigs.k8s.io/api-types/httproute/#matches) for more information on matching requests.
+```yaml
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: CloudEndpoint
+metadata:
+  name: example-cloud-endpoint
+spec:
+  url: https://example-hostname.ngrok.io
+  bindings:
+  - public
+  trafficPolicy:
+    policy:
+      on_http_request:
+      - expressions:
+        - "req.url.path == '/example'"
+        actions:
+        - type: forward-internal
+          config:
+            url: http://example-service.internal:80
+```
+  </Tab>
+  <Tab title="Ingress">
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: example-ingress
+  namespace: default
+spec:
+  ingressClassName: ngrok
+  rules:
+    - host: example-hostname.ngrok.io
+      http:
+        paths:
+          - path: /example
+            pathType: Exact
+            backend:
+              service:
+                name: example-service
+                port:
+                  number: 80
+```
+  </Tab>
+  <Tab title="Gateway API">
+  Check out the [Gateway API HTTPRoute matching docs](https://gateway-api.sigs.k8s.io/api-types/httproute/#matches) for more information on matching requests.
 
-	### 1. Create a `Gateway`
+  ### 1. Create a `Gateway`
 
-	If you already have a `Gateway` you can use that instead
+  If you already have a `Gateway` you can use that instead
 
-	```yaml
-  apiVersion: gateway.networking.k8s.io/v1
-  kind: Gateway
-  metadata:
+```yaml
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: example-gateway
+  namespace: default
+spec:
+  gatewayClassName: ngrok
+  listeners:
+    - name: example
+      hostname: "example-hostname.ngrok.io"
+      port: 443
+      protocol: HTTPS
+```
+
+  ### 2. Create an `HTTPRoute` with Exact Path Matching
+
+```yaml
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: example-route
+  namespace: default
+spec:
+  hostnames:
+  - example-hostname.ngrok.io
+  parentRefs:
+  - group: gateway.networking.k8s.io
+    kind: Gateway
     name: example-gateway
     namespace: default
-  spec:
-    gatewayClassName: ngrok
-    listeners:
-      - name: example
-        hostname: "example-hostname.ngrok.io"
-        port: 443
-        protocol: HTTPS
-	```
-
-	### 2. Create an `HTTPRoute` with Exact Path Matching
-
-	```yaml
-  apiVersion: gateway.networking.k8s.io/v1
-  kind: HTTPRoute
-  metadata:
-    name: example-route
-    namespace: default
-  spec:
-    hostnames:
-    - example-hostname.ngrok.io
-    parentRefs:
-    - group: gateway.networking.k8s.io
-      kind: Gateway
-      name: example-gateway
-      namespace: default
-    rules:
-    - matches:
-      - path:
-          type: Exact
-          value: /example
-      backendRefs:
-        - group: ""
-          kind: Service
-          name: example-service
-          port: 80
-          weight: 1
-	```
-	</Tab>
+  rules:
+  - matches:
+    - path:
+        type: Exact
+        value: /example
+    backendRefs:
+      - group: ""
+        kind: Service
+        name: example-service
+        port: 80
+        weight: 1
+```
+  </Tab>
 </Tabs>
 
 
@@ -231,117 +228,117 @@ The following examples showcase how you can match using a path prefix.
 Any request that has a path starting with `/example` will be routed, so `/example/foo` will be routed as well.
 
 <Tabs>
-	<Tab title="CloudEndpoint with AgentEndpoint">
-	### 1. Create an `AgentEndpoint` for your upstream `Service`
-	```yaml
-  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-  kind: AgentEndpoint
-  metadata:
-    name: example-service
-    namespace: default
-  spec:
-    url: http://example-service.internal:80
-    upstream:
-      url: http://example-service.example-namespace:8080
-    bindings:
-    - internal
-	```
+  <Tab title="CloudEndpoint with AgentEndpoint">
+  ### 1. Create an `AgentEndpoint` for your upstream `Service`
+```yaml
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: AgentEndpoint
+metadata:
+  name: example-service
+  namespace: default
+spec:
+  url: http://example-service.internal:80
+  upstream:
+    url: http://example-service.example-namespace:8080
+  bindings:
+  - internal
+```
 
-	### 2. Create a `CloudEndpoint` that routes to the `AgentEndpoint`
+  ### 2. Create a `CloudEndpoint` that routes to the `AgentEndpoint`
 
-	```yaml
-  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-  kind: CloudEndpoint
-  metadata:
-    name: example-cloud-endpoint
-  spec:
-    url: https://example-hostname.ngrok.io
-    bindings:
-    - public
-    trafficPolicy:
-      policy:
-        on_http_request:
-        - expressions:
-          - "req.url.path.startsWith('/example')"
-          actions:
-          - type: forward-internal
-            config:
-              url: http://example-service.internal:80
-	```
-	</Tab>
-	<Tab title="Ingress">
-	```yaml
-  apiVersion: networking.k8s.io/v1
-  kind: Ingress
-  metadata:
-    name: example-ingress
-    namespace: default
-  spec:
-    ingressClassName: ngrok
-    rules:
-      - host: example-hostname.ngrok.io
-        http:
-          paths:
-            - path: /example
-              pathType: Prefix
-              backend:
-                service:
-                  name: example-service
-                  port:
-                    number: 80
-	```
-	</Tab>
-	<Tab title="Gateway API">
-	Check out the [Gateway API HTTPRoute matching docs](https://gateway-api.sigs.k8s.io/api-types/httproute/#matches) for more information on matching requests.
+```yaml
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: CloudEndpoint
+metadata:
+  name: example-cloud-endpoint
+spec:
+  url: https://example-hostname.ngrok.io
+  bindings:
+  - public
+  trafficPolicy:
+    policy:
+      on_http_request:
+      - expressions:
+        - "req.url.path.startsWith('/example')"
+        actions:
+        - type: forward-internal
+          config:
+            url: http://example-service.internal:80
+```
+  </Tab>
+<Tab title="Ingress">
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: example-ingress
+  namespace: default
+spec:
+  ingressClassName: ngrok
+  rules:
+    - host: example-hostname.ngrok.io
+      http:
+        paths:
+          - path: /example
+            pathType: Prefix
+            backend:
+              service:
+                name: example-service
+                port:
+                  number: 80
+```
+</Tab>
+<Tab title="Gateway API">
+Check out the [Gateway API HTTPRoute matching docs](https://gateway-api.sigs.k8s.io/api-types/httproute/#matches) for more information on matching requests.
 
-	### 1. Create a `Gateway`
+### 1. Create a `Gateway`
 
-	If you already have a `Gateway` you can use that instead
+If you already have a `Gateway` you can use that instead
 
-	```yaml
-  apiVersion: gateway.networking.k8s.io/v1
-  kind: Gateway
-  metadata:
+```yaml
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: example-gateway
+  namespace: default
+spec:
+  gatewayClassName: ngrok
+  listeners:
+    - name: example
+      hostname: "example-hostname.ngrok.io"
+      port: 443
+      protocol: HTTPS
+```
+
+### 2. Create an `HTTPRoute` with Prefix Path Matching
+
+```yaml
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: example-route
+  namespace: default
+spec:
+  hostnames:
+  - example-hostname.ngrok.io
+  parentRefs:
+  - group: gateway.networking.k8s.io
+    kind: Gateway
     name: example-gateway
     namespace: default
-  spec:
-    gatewayClassName: ngrok
-    listeners:
-      - name: example
-        hostname: "example-hostname.ngrok.io"
-        port: 443
-        protocol: HTTPS
-	```
-
-	### 2. Create an `HTTPRoute` with Prefix Path Matching
-
-	```yaml
-  apiVersion: gateway.networking.k8s.io/v1
-  kind: HTTPRoute
-  metadata:
-    name: example-route
-    namespace: default
-  spec:
-    hostnames:
-    - example-hostname.ngrok.io
-    parentRefs:
-    - group: gateway.networking.k8s.io
-      kind: Gateway
-      name: example-gateway
-      namespace: default
-    rules:
-    - matches:
-      - path:
-          type: PathPrefix
-          value: /example
-      backendRefs:
-        - group: ""
-          kind: Service
-          name: example-service
-          port: 80
-          weight: 1
-	```
-	</Tab>
+  rules:
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /example
+    backendRefs:
+      - group: ""
+        kind: Service
+        name: example-service
+        port: 80
+        weight: 1
+```
+</Tab>
 </Tabs>
 
 
@@ -350,96 +347,96 @@ Any request that has a path starting with `/example` will be routed, so `/exampl
 The following examples showcase how to create an endpoint that only routes requests with the `POST` method.
 
 <Tabs>
-	<Tab title="CloudEndpoint with AgentEndpoint">
-	### 1. Create an `AgentEndpoint` for your upstream `Service`
-	```yaml
-  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-  kind: AgentEndpoint
-  metadata:
-    name: example-service
-    namespace: default
-  spec:
-    url: http://example-service.internal:80
-    upstream:
-      url: http://example-service.example-namespace:8080
-    bindings:
-    - internal
-	```
+<Tab title="CloudEndpoint with AgentEndpoint">
+### 1. Create an `AgentEndpoint` for your upstream `Service`
+```yaml
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: AgentEndpoint
+metadata:
+  name: example-service
+  namespace: default
+spec:
+  url: http://example-service.internal:80
+  upstream:
+    url: http://example-service.example-namespace:8080
+  bindings:
+  - internal
+```
 
-	### 2. Create a `CloudEndpoint` that routes to the `AgentEndpoint`
+### 2. Create a `CloudEndpoint` that routes to the `AgentEndpoint`
 
-	```yaml
-  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-  kind: CloudEndpoint
-  metadata:
-    name: example-cloud-endpoint
-  spec:
-    url: https://example-hostname.ngrok.io
-    bindings:
-    - public
-    trafficPolicy:
-      policy:
-        on_http_request:
-        - expressions:
-          - "req.method == 'POST'"
-          actions:
-          - type: forward-internal
-            config:
-              url: http://example-service.internal:80
-	```
-	</Tab>
-	<Tab title="Ingress">
-	❌ `Ingress` resources do not natively support request method matching, so this option requires using Gateway API or the `CloudEndpoint`/`AgentEndpoint` resources directly.
-	</Tab>
-	<Tab title="Gateway API">
-	Check out the [Gateway API HTTPRoute matching docs](https://gateway-api.sigs.k8s.io/api-types/httproute/#matches) for more information on matching requests.
+```yaml
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: CloudEndpoint
+metadata:
+  name: example-cloud-endpoint
+spec:
+  url: https://example-hostname.ngrok.io
+  bindings:
+  - public
+  trafficPolicy:
+    policy:
+      on_http_request:
+      - expressions:
+        - "req.method == 'POST'"
+        actions:
+        - type: forward-internal
+          config:
+            url: http://example-service.internal:80
+```
+</Tab>
+<Tab title="Ingress">
+❌ `Ingress` resources do not natively support request method matching, so this option requires using Gateway API or the `CloudEndpoint`/`AgentEndpoint` resources directly.
+</Tab>
+<Tab title="Gateway API">
+Check out the [Gateway API HTTPRoute matching docs](https://gateway-api.sigs.k8s.io/api-types/httproute/#matches) for more information on matching requests.
 
-	### 1. Create a `Gateway`
+### 1. Create a `Gateway`
 
-	If you already have a `Gateway` you can use that instead
+If you already have a `Gateway` you can use that instead
 
-	```yaml
-  apiVersion: gateway.networking.k8s.io/v1
-  kind: Gateway
-  metadata:
+```yaml
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: example-gateway
+  namespace: default
+spec:
+  gatewayClassName: ngrok
+  listeners:
+    - name: example
+      hostname: "example-hostname.ngrok.io"
+      port: 443
+      protocol: HTTPS
+```
+
+### 2. Create an `HTTPRoute` with Request Method Matching
+
+```yaml
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: example-route
+  namespace: default
+spec:
+  hostnames:
+  - example-hostname.ngrok.io
+  parentRefs:
+  - group: gateway.networking.k8s.io
+    kind: Gateway
     name: example-gateway
     namespace: default
-  spec:
-    gatewayClassName: ngrok
-    listeners:
-      - name: example
-        hostname: "example-hostname.ngrok.io"
-        port: 443
-        protocol: HTTPS
-	```
-
-	### 2. Create an `HTTPRoute` with Request Method Matching
-
-	```yaml
-  apiVersion: gateway.networking.k8s.io/v1
-  kind: HTTPRoute
-  metadata:
-    name: example-route
-    namespace: default
-  spec:
-    hostnames:
-    - example-hostname.ngrok.io
-    parentRefs:
-    - group: gateway.networking.k8s.io
-      kind: Gateway
-      name: example-gateway
-      namespace: default
-    rules:
-    - matches:
-      - method: "POST"
-      backendRefs:
-        - group: ""
-          kind: Service
-          name: example-service
-          port: 80
-          weight: 1
-	```
-	</Tab>
+  rules:
+  - matches:
+    - method: "POST"
+    backendRefs:
+      - group: ""
+        kind: Service
+        name: example-service
+        port: 80
+        weight: 1
+```
+</Tab>
 </Tabs>
 
 ## Exact Header Matching
@@ -447,101 +444,101 @@ The following examples showcase how to create an endpoint that only routes reque
 The following examples showcase how to create an endpoint that only routes requests if the header `x-request-header` is present with value `foo`.
 
 <Tabs>
-	<Tab title="CloudEndpoint with AgentEndpoint">
-	### 1. Create an `AgentEndpoint` for your upstream `Service`
-	```yaml
-  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-  kind: AgentEndpoint
-  metadata:
-    name: example-service
-    namespace: default
-  spec:
-    url: http://example-service.internal:80
-    upstream:
-      url: http://example-service.example-namespace:8080
-    bindings:
-    - internal
-	```
+<Tab title="CloudEndpoint with AgentEndpoint">
+### 1. Create an `AgentEndpoint` for your upstream `Service`
+```yaml
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: AgentEndpoint
+metadata:
+  name: example-service
+  namespace: default
+spec:
+  url: http://example-service.internal:80
+  upstream:
+    url: http://example-service.example-namespace:8080
+  bindings:
+  - internal
+```
 
-	### 2. Create a `CloudEndpoint` that routes to the `AgentEndpoint`
+### 2. Create a `CloudEndpoint` that routes to the `AgentEndpoint`
 
-	```yaml
-  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-  kind: CloudEndpoint
-  metadata:
-    name: example-cloud-endpoint
-  spec:
-    url: https://example-hostname.ngrok.io
-    bindings:
-    - public
-    trafficPolicy:
-      policy:
-        on_http_request:
-        - expressions:
-          - "req.url.path.startsWith('/')"
+```yaml
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: CloudEndpoint
+metadata:
+  name: example-cloud-endpoint
+spec:
+  url: https://example-hostname.ngrok.io
+  bindings:
+  - public
+  trafficPolicy:
+    policy:
+      on_http_request:
+      - expressions:
+        - "req.url.path.startsWith('/')"
 
-          - "req.headers.exists_one(x, x == 'x-request-header') && req.headers['x-request-header'].join(',') == 'foo'"
-          actions:
-          - type: forward-internal
-            config:
-              url: http://example-service.internal:80
-	```
-	</Tab>
-	<Tab title="Ingress">
-	❌ `Ingress` resources do not natively support header matching, so this option requires using Gateway API or the `CloudEndpoint`/`AgentEndpoint` resources directly.
-	</Tab>
-	<Tab title="Gateway API">
-	Check out the [Gateway API HTTPRoute matching docs](https://gateway-api.sigs.k8s.io/api-types/httproute/#matches) for more information on matching requests.
+        - "req.headers.exists_one(x, x == 'x-request-header') && req.headers['x-request-header'].join(',') == 'foo'"
+        actions:
+        - type: forward-internal
+          config:
+            url: http://example-service.internal:80
+```
+</Tab>
+<Tab title="Ingress">
+❌ `Ingress` resources do not natively support header matching, so this option requires using Gateway API or the `CloudEndpoint`/`AgentEndpoint` resources directly.
+</Tab>
+<Tab title="Gateway API">
+Check out the [Gateway API HTTPRoute matching docs](https://gateway-api.sigs.k8s.io/api-types/httproute/#matches) for more information on matching requests.
 
-	### 1. Create a `Gateway`
+### 1. Create a `Gateway`
 
-	If you already have a `Gateway` you can use that instead
+If you already have a `Gateway` you can use that instead
 
-	```yaml
-  apiVersion: gateway.networking.k8s.io/v1
-  kind: Gateway
-  metadata:
+```yaml
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: example-gateway
+  namespace: default
+spec:
+  gatewayClassName: ngrok
+  listeners:
+    - name: example
+      hostname: "example-hostname.ngrok.io"
+      port: 443
+      protocol: HTTPS
+```
+
+### 2. Create an `HTTPRoute` with Exact Header Matching
+
+```yaml
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: example-route
+  namespace: default
+spec:
+  hostnames:
+  - example-hostname.ngrok.io
+  parentRefs:
+  - group: gateway.networking.k8s.io
+    kind: Gateway
     name: example-gateway
     namespace: default
-  spec:
-    gatewayClassName: ngrok
-    listeners:
-      - name: example
-        hostname: "example-hostname.ngrok.io"
-        port: 443
-        protocol: HTTPS
-	```
-
-	### 2. Create an `HTTPRoute` with Exact Header Matching
-
-	```yaml
-  apiVersion: gateway.networking.k8s.io/v1
-  kind: HTTPRoute
-  metadata:
-    name: example-route
-    namespace: default
-  spec:
-    hostnames:
-    - example-hostname.ngrok.io
-    parentRefs:
-    - group: gateway.networking.k8s.io
-      kind: Gateway
-      name: example-gateway
-      namespace: default
-    rules:
-    - matches:
-      - headers:
-        - type: Exact
-          name: x-request-header
-          value: foo
-      backendRefs:
-        - group: ""
-          kind: Service
-          name: example-service
-          port: 80
-          weight: 1
-	```
-	</Tab>
+  rules:
+  - matches:
+    - headers:
+      - type: Exact
+        name: x-request-header
+        value: foo
+    backendRefs:
+      - group: ""
+        kind: Service
+        name: example-service
+        port: 80
+        weight: 1
+```
+</Tab>
 </Tabs>
 
 ## Regex Header Matching
@@ -549,99 +546,99 @@ The following examples showcase how to create an endpoint that only routes reque
 The following examples showcase how to create an endpoint that only routes requests if the header `x-request-header` is present and the value matches the regex `x-value-.*`
 
 <Tabs>
-	<Tab title="CloudEndpoint with AgentEndpoint">
-	### 1. Create an `AgentEndpoint` for your upstream `Service`
-	```yaml
-  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-  kind: AgentEndpoint
-  metadata:
-    name: example-service
-    namespace: default
-  spec:
-    url: http://example-service.internal:80
-    upstream:
-      url: http://example-service.example-namespace:8080
-    bindings:
-    - internal
-	```
+<Tab title="CloudEndpoint with AgentEndpoint">
+### 1. Create an `AgentEndpoint` for your upstream `Service`
+```yaml
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: AgentEndpoint
+metadata:
+  name: example-service
+  namespace: default
+spec:
+  url: http://example-service.internal:80
+  upstream:
+    url: http://example-service.example-namespace:8080
+  bindings:
+  - internal
+```
 
-	### 2. Create a `CloudEndpoint` that routes to the `AgentEndpoint`
+### 2. Create a `CloudEndpoint` that routes to the `AgentEndpoint`
 
-	```yaml
-  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-  kind: CloudEndpoint
-  metadata:
-    name: example-cloud-endpoint
-  spec:
-    url: https://example-hostname.ngrok.io
-    bindings:
-    - public
-    trafficPolicy:
-      policy:
-        on_http_request:
-        - expressions:
-          - "req.headers.exists_one(x, x == 'x-request-header') && req.headers['x-request-header'].join(',').matches('x-value-.*')"
-          actions:
-          - type: forward-internal
-            config:
-              url: http://example-service.internal:80
-	```
-	</Tab>
-	<Tab title="Ingress">
-	❌ `Ingress` resources do not natively support header matching, so this option requires using Gateway API or the `CloudEndpoint`/`AgentEndpoint` resources directly.
-	</Tab>
-	<Tab title="Gateway API">
-	Check out the [Gateway API HTTPRoute matching docs](https://gateway-api.sigs.k8s.io/api-types/httproute/#matches) for more information on matching requests.
+```yaml
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: CloudEndpoint
+metadata:
+  name: example-cloud-endpoint
+spec:
+  url: https://example-hostname.ngrok.io
+  bindings:
+  - public
+  trafficPolicy:
+    policy:
+      on_http_request:
+      - expressions:
+        - "req.headers.exists_one(x, x == 'x-request-header') && req.headers['x-request-header'].join(',').matches('x-value-.*')"
+        actions:
+        - type: forward-internal
+          config:
+            url: http://example-service.internal:80
+```
+</Tab>
+<Tab title="Ingress">
+❌ `Ingress` resources do not natively support header matching, so this option requires using Gateway API or the `CloudEndpoint`/`AgentEndpoint` resources directly.
+</Tab>
+<Tab title="Gateway API">
+Check out the [Gateway API HTTPRoute matching docs](https://gateway-api.sigs.k8s.io/api-types/httproute/#matches) for more information on matching requests.
 
-	### 1. Create a `Gateway`
+### 1. Create a `Gateway`
 
-	If you already have a `Gateway` you can use that instead
+If you already have a `Gateway` you can use that instead
 
-	```yaml
-  apiVersion: gateway.networking.k8s.io/v1
-  kind: Gateway
-  metadata:
+```yaml
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: example-gateway
+  namespace: default
+spec:
+  gatewayClassName: ngrok
+  listeners:
+    - name: example
+      hostname: "example-hostname.ngrok.io"
+      port: 443
+      protocol: HTTPS
+```
+
+### 2. Create an `HTTPRoute` with Regex Header Matching
+
+```yaml
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: example-route
+  namespace: default
+spec:
+  hostnames:
+  - example-hostname.ngrok.io
+  parentRefs:
+  - group: gateway.networking.k8s.io
+    kind: Gateway
     name: example-gateway
     namespace: default
-  spec:
-    gatewayClassName: ngrok
-    listeners:
-      - name: example
-        hostname: "example-hostname.ngrok.io"
-        port: 443
-        protocol: HTTPS
-	```
-
-	### 2. Create an `HTTPRoute` with Regex Header Matching
-
-	```yaml
-  apiVersion: gateway.networking.k8s.io/v1
-  kind: HTTPRoute
-  metadata:
-    name: example-route
-    namespace: default
-  spec:
-    hostnames:
-    - example-hostname.ngrok.io
-    parentRefs:
-    - group: gateway.networking.k8s.io
-      kind: Gateway
-      name: example-gateway
-      namespace: default
-    rules:
-    - matches:
-      - headers:
-        - type: RegularExpression
-          name: x-request-header
-          value: x-value-.*
-      backendRefs:
-        - group: ""
-          kind: Service
-          name: example-service
-          port: 80
-          weight: 1
-	```
-	</Tab>
+  rules:
+  - matches:
+    - headers:
+      - type: RegularExpression
+        name: x-request-header
+        value: x-value-.*
+    backendRefs:
+      - group: ""
+        kind: Service
+        name: example-service
+        port: 80
+        weight: 1
+```
+</Tab>
 </Tabs>
 
 ## Exact Query Parameter Matching
@@ -649,99 +646,99 @@ The following examples showcase how to create an endpoint that only routes reque
 The following examples showcase how to create an endpoint that only routes requests if the query parameter `my-query-param` is present with value `foo`.
 
 <Tabs>
-	<Tab title="CloudEndpoint with AgentEndpoint">
-	### 1. Create an `AgentEndpoint` for your upstream `Service`
-	```yaml
-  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-  kind: AgentEndpoint
-  metadata:
-    name: example-service
-    namespace: default
-  spec:
-    url: http://example-service.internal:80
-    upstream:
-      url: http://example-service.example-namespace:8080
-    bindings:
-    - internal
-	```
+<Tab title="CloudEndpoint with AgentEndpoint">
+### 1. Create an `AgentEndpoint` for your upstream `Service`
+```yaml
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: AgentEndpoint
+metadata:
+  name: example-service
+  namespace: default
+spec:
+  url: http://example-service.internal:80
+  upstream:
+    url: http://example-service.example-namespace:8080
+  bindings:
+  - internal
+```
 
-	### 2. Create a `CloudEndpoint` that routes to the `AgentEndpoint`
+### 2. Create a `CloudEndpoint` that routes to the `AgentEndpoint`
 
-	```yaml
-  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-  kind: CloudEndpoint
-  metadata:
-    name: example-cloud-endpoint
-  spec:
-    url: https://example-hostname.ngrok.io
-    bindings:
-    - public
-    trafficPolicy:
-      policy:
-        on_http_request:
-        - expressions:
-          - "req.url.query_params.exists_one(x, x == 'my-query-param') && req.url.query_params['my-query-param'].join(',') == 'foo'"
-          actions:
-          - type: forward-internal
-            config:
-              url: http://example-service.internal:80
-	```
-	</Tab>
-	<Tab title="Ingress">
-	❌ `Ingress` resources do not natively support header matching, so this option requires using Gateway API or the `CloudEndpoint`/`AgentEndpoint` resources directly.
-	</Tab>
-	<Tab title="Gateway API">
-	Check out the [Gateway API HTTPRoute matching docs](https://gateway-api.sigs.k8s.io/api-types/httproute/#matches) for more information on matching requests.
+```yaml
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: CloudEndpoint
+metadata:
+  name: example-cloud-endpoint
+spec:
+  url: https://example-hostname.ngrok.io
+  bindings:
+  - public
+  trafficPolicy:
+    policy:
+      on_http_request:
+      - expressions:
+        - "req.url.query_params.exists_one(x, x == 'my-query-param') && req.url.query_params['my-query-param'].join(',') == 'foo'"
+        actions:
+        - type: forward-internal
+          config:
+            url: http://example-service.internal:80
+```
+</Tab>
+<Tab title="Ingress">
+❌ `Ingress` resources do not natively support header matching, so this option requires using Gateway API or the `CloudEndpoint`/`AgentEndpoint` resources directly.
+</Tab>
+<Tab title="Gateway API">
+Check out the [Gateway API HTTPRoute matching docs](https://gateway-api.sigs.k8s.io/api-types/httproute/#matches) for more information on matching requests.
 
-	### 1. Create a `Gateway`
+### 1. Create a `Gateway`
 
-	If you already have a `Gateway` you can use that instead
+If you already have a `Gateway` you can use that instead
 
-	```yaml
-  apiVersion: gateway.networking.k8s.io/v1
-  kind: Gateway
-  metadata:
+```yaml
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: example-gateway
+  namespace: default
+spec:
+  gatewayClassName: ngrok
+  listeners:
+    - name: example
+      hostname: "example-hostname.ngrok.io"
+      port: 443
+      protocol: HTTPS
+```
+
+### 2. Create an `HTTPRoute` with Exact Query Parameter Matching
+
+```yaml
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: example-route
+  namespace: default
+spec:
+  hostnames:
+  - example-hostname.ngrok.io
+  parentRefs:
+  - group: gateway.networking.k8s.io
+    kind: Gateway
     name: example-gateway
     namespace: default
-  spec:
-    gatewayClassName: ngrok
-    listeners:
-      - name: example
-        hostname: "example-hostname.ngrok.io"
-        port: 443
-        protocol: HTTPS
-	```
-
-	### 2. Create an `HTTPRoute` with Exact Query Parameter Matching
-
-	```yaml
-  apiVersion: gateway.networking.k8s.io/v1
-  kind: HTTPRoute
-  metadata:
-    name: example-route
-    namespace: default
-  spec:
-    hostnames:
-    - example-hostname.ngrok.io
-    parentRefs:
-    - group: gateway.networking.k8s.io
-      kind: Gateway
-      name: example-gateway
-      namespace: default
-    rules:
-    - matches:
-      - queryParams:
-        - type: Exact
-          name: my-query-param
-          value: foo
-      backendRefs:
-        - group: ""
-          kind: Service
-          name: example-service
-          port: 80
-          weight: 1
-	```
-	</Tab>
+  rules:
+  - matches:
+    - queryParams:
+      - type: Exact
+        name: my-query-param
+        value: foo
+    backendRefs:
+      - group: ""
+        kind: Service
+        name: example-service
+        port: 80
+        weight: 1
+```
+</Tab>
 </Tabs>
 
 ## Regex Query Parameter Matching
@@ -749,97 +746,97 @@ The following examples showcase how to create an endpoint that only routes reque
 The following examples showcase how to create an endpoint that only routes requests if the query parameter `my-query-param` is present and its value matches the regex `value-.*`.
 
 <Tabs>
-	<Tab title="CloudEndpoint with AgentEndpoint">
-	### 1. Create an `AgentEndpoint` for your upstream `Service`
-	```yaml
-  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-  kind: AgentEndpoint
-  metadata:
-    name: example-service
-    namespace: default
-  spec:
-    url: http://example-service.internal:80
-    upstream:
-      url: http://example-service.example-namespace:8080
-    bindings:
-    - internal
-	```
+<Tab title="CloudEndpoint with AgentEndpoint">
+### 1. Create an `AgentEndpoint` for your upstream `Service`
+```yaml
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: AgentEndpoint
+metadata:
+  name: example-service
+  namespace: default
+spec:
+  url: http://example-service.internal:80
+  upstream:
+    url: http://example-service.example-namespace:8080
+  bindings:
+  - internal
+```
 
-	### 2. Create a `CloudEndpoint` that routes to the `AgentEndpoint`
+### 2. Create a `CloudEndpoint` that routes to the `AgentEndpoint`
 
-	```yaml
-  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-  kind: CloudEndpoint
-  metadata:
-    name: example-cloud-endpoint
-  spec:
-    url: https://example-hostname.ngrok.io
-    bindings:
-    - public
-    trafficPolicy:
-      policy:
-        on_http_request:
-        - expressions:
-          - "req.url.query_params.exists_one(x, x == 'my-query-param') && req.url.query_params['my-query-param'].join(',').matches('value-.*')"
-          actions:
-          - type: forward-internal
-            config:
-              url: http://example-service.internal:80
-	```
-	</Tab>
-	<Tab title="Ingress">
-	❌ `Ingress` resources do not natively support query parameter matching, so this option requires using Gateway API or the `CloudEndpoint`/`AgentEndpoint` resources directly.
-	</Tab>
-	<Tab title="Gateway API">
-	Check out the [Gateway API HTTPRoute matching docs](https://gateway-api.sigs.k8s.io/api-types/httproute/#matches) for more information on matching requests.
+```yaml
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: CloudEndpoint
+metadata:
+  name: example-cloud-endpoint
+spec:
+  url: https://example-hostname.ngrok.io
+  bindings:
+  - public
+  trafficPolicy:
+    policy:
+      on_http_request:
+      - expressions:
+        - "req.url.query_params.exists_one(x, x == 'my-query-param') && req.url.query_params['my-query-param'].join(',').matches('value-.*')"
+        actions:
+        - type: forward-internal
+          config:
+            url: http://example-service.internal:80
+```
+</Tab>
+<Tab title="Ingress">
+❌ `Ingress` resources do not natively support query parameter matching, so this option requires using Gateway API or the `CloudEndpoint`/`AgentEndpoint` resources directly.
+</Tab>
+<Tab title="Gateway API">
+Check out the [Gateway API HTTPRoute matching docs](https://gateway-api.sigs.k8s.io/api-types/httproute/#matches) for more information on matching requests.
 
-	### 1. Create a `Gateway`
+### 1. Create a `Gateway`
 
-	If you already have a `Gateway` you can use that instead
+If you already have a `Gateway` you can use that instead
 
-	```yaml
-  apiVersion: gateway.networking.k8s.io/v1
-  kind: Gateway
-  metadata:
+```yaml
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: example-gateway
+  namespace: default
+spec:
+  gatewayClassName: ngrok
+  listeners:
+    - name: example
+      hostname: "example-hostname.ngrok.io"
+      port: 443
+      protocol: HTTPS
+```
+
+### 2. Create an `HTTPRoute` with Regex Query Parameter Matching
+
+```yaml
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: example-route
+  namespace: default
+spec:
+  hostnames:
+  - example-hostname.ngrok.io
+  parentRefs:
+  - group: gateway.networking.k8s.io
+    kind: Gateway
     name: example-gateway
     namespace: default
-  spec:
-    gatewayClassName: ngrok
-    listeners:
-      - name: example
-        hostname: "example-hostname.ngrok.io"
-        port: 443
-        protocol: HTTPS
-	```
-
-	### 2. Create an `HTTPRoute` with Regex Query Parameter Matching
-
-	```yaml
-  apiVersion: gateway.networking.k8s.io/v1
-  kind: HTTPRoute
-  metadata:
-    name: example-route
-    namespace: default
-  spec:
-    hostnames:
-    - example-hostname.ngrok.io
-    parentRefs:
-    - group: gateway.networking.k8s.io
-      kind: Gateway
-      name: example-gateway
-      namespace: default
-    rules:
-    - matches:
-      - queryParams:
-        - type: RegularExpression
-          name: my-query-param
-          value: value-.*
-      backendRefs:
-        - group: ""
-          kind: Service
-          name: example-service
-          port: 80
-          weight: 1
-	```
-	</Tab>
+  rules:
+  - matches:
+    - queryParams:
+      - type: RegularExpression
+        name: my-query-param
+        value: value-.*
+    backendRefs:
+      - group: ""
+        kind: Service
+        name: example-service
+        port: 80
+        weight: 1
+```
+</Tab>
 </Tabs>
