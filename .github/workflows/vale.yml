@@ -37,21 +37,19 @@ jobs:
       - name: Get changed files
         id: changed-files
         run: |
-          git diff --name-only --diff-filter=ACMR ${{ github.event.pull_request.base.sha }} ${{ github.sha }} | grep -E '\.(mdx|md)$' | grep -v '^snippets/' | grep -v '^errors/' | grep -v '^agent/cli-api.mdx$' | grep -v '^agent/cli.mdx$' > changed_files.txt || true
+          # Get changed markdown files, excluding specific directories and files
+          git diff --name-only --diff-filter=ACMR \
+            ${{ github.event.pull_request.base.sha }} ${{ github.sha }} \
+            | grep -E '\.(mdx|md)$' \
+            | grep -v '^snippets/' \
+            | grep -v '^errors/' \
+            | grep -v '^agent/cli-api.mdx$' \
+            | grep -v '^agent/cli.mdx$' \
+            > changed_files.txt || true
+          
           if [ -s changed_files.txt ]; then
-            FILES_JSON="["
-            FIRST=true
-            while IFS= read -r file; do
-              if [ -n "$file" ]; then
-                if [ "$FIRST" = true ]; then
-                  FIRST=false
-                else
-                  FILES_JSON="$FILES_JSON,"
-                fi
-                FILES_JSON="$FILES_JSON\"$file\""
-              fi
-            done < changed_files.txt
-            FILES_JSON="$FILES_JSON]"
+            # Build JSON array of files using jq
+            FILES_JSON=$(jq -R -s -c 'split("\n") | map(select(length > 0))' changed_files.txt)
             echo "Files to check: $FILES_JSON"
             echo "vale_files=$FILES_JSON" >> $GITHUB_OUTPUT
           else
@@ -75,18 +73,23 @@ jobs:
         env:
           REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          FILES=$(cat changed_files.txt | tr '\n' ' ')
+          # Read files into space-separated string for Vale
+          FILES=$(tr '\n' ' ' < changed_files.txt)
           
-          # Convert to checkstyle XML format with proper severity
-          vale --config=.vale.ini --output=JSON $FILES | jq -r '
-            "<?xml version=\"1.0\" encoding=\"UTF-8\"?><checkstyle>",
-            (to_entries[] | .key as $file | .value[] | 
-              "<file name=\"\($file)\"><error line=\"\(.Line)\" column=\"\(.Span[0])\" severity=\"\(.Severity)\" message=\"\(.Message | gsub("\""; "&quot;"))\" /></file>"),
-            "</checkstyle>"
-          ' | reviewdog -f=checkstyle -reporter=github-pr-check -fail-on-error=false
+          # Run Vale and convert JSON output to checkstyle XML for reviewdog
+          vale --config=.vale.ini --output=JSON $FILES | \
+            jq -r '
+              "<?xml version=\"1.0\" encoding=\"UTF-8\"?><checkstyle>",
+              (to_entries[] | .key as $file | .value[] | 
+                "<file name=\"\($file)\"><error line=\"\(.Line)\" column=\"\(.Span[0])\" severity=\"\(.Severity)\" message=\"\(.Message | gsub("\""; "&quot;"))\" /></file>"),
+              "</checkstyle>"
+            ' | \
+            reviewdog -f=checkstyle -reporter=github-pr-check -fail-on-error=false
           
-          # Check for errors and fail CI if any exist
-          ERRORS=$(vale --config=.vale.ini --minAlertLevel=error --output=JSON $FILES | jq '[.[] | length] | add')
+          # Count errors and fail CI if any exist
+          ERRORS=$(vale --config=.vale.ini --minAlertLevel=error --output=JSON $FILES | \
+            jq '[.[] | length] | add')
+          
           if [ "$ERRORS" -gt 0 ]; then
             echo "Found $ERRORS error(s)"
             exit 1
