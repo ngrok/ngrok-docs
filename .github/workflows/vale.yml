@@ -77,20 +77,11 @@ jobs:
         run: |
           FILES=$(cat changed_files.txt | tr '\n' ' ')
           
-          # Convert to reviewdog JSON format with proper severity
-          vale --config=.vale.ini --output=JSON $FILES | jq -c '
-            to_entries[] | .value[] | 
-            {
-              message: .Message,
-              location: {
-                path: .key,
-                range: {
-                  start: { line: .Line, column: .Span[0] }
-                }
-              },
-              severity: (if .Severity == "error" then "ERROR" else "INFO" end)
-            }
-          ' | reviewdog -f=rdjsonl -reporter=github-pr-check -fail-on-error=false
+          # Process errors with error level
+          vale --config=.vale.ini --output=JSON $FILES | jq -r 'to_entries[] | .key as $file | .value[] | select(.Severity == "error") | "\($file):\(.Line):\(.Span[0]): \(.Message)"' | reviewdog -efm="%f:%l:%c: %m" -reporter=github-pr-check -level=error -fail-on-error=false || true
+          
+          # Process warnings/suggestions with info level
+          vale --config=.vale.ini --output=JSON $FILES | jq -r 'to_entries[] | .key as $file | .value[] | select(.Severity != "error") | "\($file):\(.Line):\(.Span[0]): \(.Message)"' | reviewdog -efm="%f:%l:%c: %m" -reporter=github-pr-check -level=info -fail-on-error=false || true
           
           # Check for errors and fail CI if any exist
           ERRORS=$(vale --config=.vale.ini --minAlertLevel=error --output=JSON $FILES | jq '[.[] | length] | add')
