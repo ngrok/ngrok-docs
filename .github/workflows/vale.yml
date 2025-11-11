@@ -77,7 +77,8 @@ jobs:
           FILES=$(tr '\n' ' ' < changed_files.txt)
           
           # Run Vale and convert JSON output to checkstyle XML for reviewdog
-          vale --config=.vale.ini --output=JSON $FILES | \
+          # Exclude suggestions (only show warnings and errors in PR comments)
+          vale --config=.vale.ini --minAlertLevel=warning --output=JSON $FILES | \
             jq -r '
               "<?xml version=\"1.0\" encoding=\"UTF-8\"?><checkstyle>",
               (to_entries[] | .key as $file | .value[] | 
