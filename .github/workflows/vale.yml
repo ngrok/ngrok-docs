@@ -41,20 +41,18 @@ jobs:
           if [ -s changed_files.txt ]; then
             FILES=$(cat changed_files.txt | tr '\n' ' ' | xargs)
             echo "Files to check: $FILES"
-            echo "files<<EOF" >> $GITHUB_OUTPUT
-            cat changed_files.txt >> $GITHUB_OUTPUT
-            echo "EOF" >> $GITHUB_OUTPUT
+            echo "vale_files=$FILES" >> $GITHUB_OUTPUT
           else
             echo "No files to check"
-            echo "files=" >> $GITHUB_OUTPUT
+            echo "vale_files=" >> $GITHUB_OUTPUT
           fi
 
       - name: Run Vale
-        if: steps.changed-files.outputs.files != ''
+        if: steps.changed-files.outputs.vale_files != ''
         uses: errata-ai/vale-action@v2.1.1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           reporter: github-pr-check
           fail_on_error: false
-          files: ${{ steps.changed-files.outputs.files }}
+          vale_flags: '${{ steps.changed-files.outputs.vale_files }}'
