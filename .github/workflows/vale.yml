@@ -39,9 +39,21 @@ jobs:
         run: |
           git diff --name-only --diff-filter=ACMR ${{ github.event.pull_request.base.sha }} ${{ github.sha }} | grep -E '\.(mdx|md)$' | grep -v '^snippets/' | grep -v '^errors/' | grep -v '^agent/cli-api.mdx$' | grep -v '^agent/cli.mdx$' > changed_files.txt || true
           if [ -s changed_files.txt ]; then
-            FILES=$(cat changed_files.txt | tr '\n' ' ' | xargs)
-            echo "Files to check: $FILES"
-            echo "vale_files=$FILES" >> $GITHUB_OUTPUT
+            FILES_JSON="["
+            FIRST=true
+            while IFS= read -r file; do
+              if [ -n "$file" ]; then
+                if [ "$FIRST" = true ]; then
+                  FIRST=false
+                else
+                  FILES_JSON="$FILES_JSON,"
+                fi
+                FILES_JSON="$FILES_JSON\"$file\""
+              fi
+            done < changed_files.txt
+            FILES_JSON="$FILES_JSON]"
+            echo "Files to check: $FILES_JSON"
+            echo "vale_files=$FILES_JSON" >> $GITHUB_OUTPUT
           else
             echo "No files to check"
             echo "vale_files=" >> $GITHUB_OUTPUT
