@@ -30,14 +30,9 @@ jobs:
           pnpm install
 
       - name: Run Vale
-        run: |
-          export PATH="$PATH:$(pwd)/node_modules/.bin"
-          vale --output=JSON --glob='!{snippets/**,errors/**,agent/cli-api.mdx,agent/cli.mdx}' . > /tmp/vale-output.json 2>&1 || true
-          echo "Vale exit code: $?"
-          head -100 /tmp/vale-output.json
-
-      - name: Run Vale with reviewdog
         uses: errata-ai/vale-action@v2.1.1
+        env:
+          PATH: ${{ env.PATH }}:${{ github.workspace }}/node_modules/.bin
         with:
           reporter: github-pr-review
           fail_on_error: true
