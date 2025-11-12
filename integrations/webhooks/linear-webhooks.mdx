@@ -9,14 +9,12 @@ import ReplayingRequests from "/snippets/integrations/_replaying-requests.mdx";
 <Tip>
 **TL;DR**
 
-
-
 To integrate Linear webhooks with ngrok:
 
-1. [Launch your local webhook.](#start-your-app) `npm start`
-1. [Launch ngrok.](#start-ngrok) `ngrok http 3000`
-1. [Configure Linear webhooks with your ngrok URL.](#setup-webhook)
-1. [Secure your webhook requests with verification.](#security)
+1. [Launch your local webhook.](#1-start-your-app) `npm start`
+1. [Launch ngrok.](#1-launch-ngrok) `ngrok http 3000`
+1. [Configure Linear webhooks with your ngrok URL.](#run-webhooks-with-linear-and-ngrok)
+1. [Secure your webhook requests with verification.](#secure-webhook-requests)
 </Tip>
 
 This guide covers how to use ngrok to integrate your localhost app with Linear by using Webhooks.
@@ -24,16 +22,22 @@ Linear webhooks can be used to notify an external application whenever specific 
 
 By integrating ngrok with Linear, you can:
 
-- **Develop and test Linear webhooks locally**, eliminating the time in deploying your development code to a public environment and setting it up in HTTPS.
-- **Inspect and troubleshoot requests from Linear** in real-time via the inspection UI and API.
-- **Modify and Replay Linear Webhook requests** with a single click and without spending time reproducing events manually in your Linear workspace.
-- **Secure your app with Linear validation provided by ngrok**. Invalid requests are blocked by ngrok before reaching your app.
+- **Develop and test Linear webhooks locally** - No need to deploy your code and set up HTTPS.
+- **Inspect and troubleshoot requests from Linear in real-time using ngrok's inspection UI and API**.
+- **Modify and Replay Linear Webhook requests with a single click** - No need to reproduce events manually in your Linear workspace.
+- **Secure your app with Linear validation provided by ngrok** - Invalid requests are blocked by ngrok before reaching your app.
+
+## What you'll need
+
+- An [ngrok account](https://dashboard.ngrok.com/signup).
+- Your [ngrok auth token](https://dashboard.ngrok.com/get-started/your-authtoken).
+- Configure [the ngrok agent CLI](/getting-started#1-install-the-ngrok-agent-cli) locally.
 
 ## 1. Start your app 
 
 For this tutorial, we'll use the [sample NodeJS app available on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
 
-To install this sample, run the following commands in a terminal:
+To install it, run the following commands in a terminal:
 
 ```bash
 git clone https://github.com/ngrok/ngrok-webhook-nodejs-sample.git
@@ -41,59 +45,58 @@ cd ngrok-webhook-nodejs-sample
 npm install
 ```
 
-This will get the project installed locally.
-
-Now you can launch the app by running the following command:
+Launch the app with the following command:
 
 ```bash
 npm start
 ```
 
-The app runs by default on port 3000.
+The app runs by default on port `3000`.
 
 You can validate that the app is up and running by visiting http://localhost:3000. The application logs request headers and body in the terminal and responds with a message in the browser.
 
 ## 2. Launch ngrok 
 
+<Tip>
+If you haven't done all the preliminary steps for this tutorial, [you should do them now](#what-you'll-need).
+</Tip>
+
 Once your app is running locally, you're ready to put it online securely using ngrok.
 
-1. If you're not an ngrok user yet, just [sign up for ngrok for free](https://ngrok.com/signup).
-
-1. [Download the ngrok agent](https://download.ngrok.com).
-
-1. Go to the [ngrok dashboard](https://dashboard.ngrok.com) and copy your Authtoken. <br />
-   **Tip:** The ngrok agent uses the auth token to log into your account when you start a tunnel.
 1. Start ngrok by running the following command:
 
    ```bash
    ngrok http 3000
    ```
-
 1. ngrok will display a URL where your localhost application is exposed to the internet (copy this URL for use with Linear).
    ![ngrok agent running](../img/twilio/img/launch_ngrok_tunnel.png)
 
 ## 3. Integrate Linear 
 
-Linear can trigger webhook calls to external applications whenever events happen in your Linear workspace. To register for such events, follow the instructions below:
+Linear can trigger webhook calls to external applications whenever events happen in your Linear workspace. To register for such events:
 
 1. Sign in to [Linear](https://linear.app) with an account that has administrative privileges.
 
-1. Click on your profile icon and select **Settings**
+1. Select your profile icon, then select **Settings**
 
 1. Navigate to **Administration** > **API**.
 
-1. In the **Webhooks** section, click on **Create Webhook**.
+1. In the **Webhooks** section, select **Create Webhook**.
    ![URL](../img/linear/img/ngrok_url_configuration_linear.png)
 
-1. In the **Label** field, provide a descriptive name for the webhook (e.g., "ngrok Integration Webhook").
+1. In the **Name** field, provide something descriptive like "ngrok Integration Webhook".
 
-1. In the **URL** field, enter the URL provided by the ngrok agent to expose your application to the internet (that is, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`).
+1. In the **URL** field, enter the URL provided by the ngrok agent to put your app online at that address. For example, your URL might be something like `https://1234-abcd-5e6f-7g8h-9i0j.ngrok.app`.
 
 1. Be sure to copy and securely store the **Signing secret** provided by Linear.
 
 1. Under the **Data change events** section, choose the appropriate change events that should trigger the webhook.
 
-1. Click **Create** to save the webhook.
+1. Select **Create** to save the webhook.
+
+## Get more out of Linear with ngrok
+
+ngrok can do more than just put your Linear application online. Check out these other quick wins ngrok offers you.
 
 ### Run Webhooks with Linear and ngrok
 
@@ -105,13 +108,15 @@ To trigger a webhook event:
 
 1. Confirm your localhost app receives the webhook notification and logs both headers and body in the terminal.
 
-**Note:** Different messages are sent to your application depending on the trigger event you choose.
+<Note>
+Different messages are sent to your application depending on the trigger event you choose.
+</Note>
 
 To review webhook deliveries in Linear:
 
 1. Navigate back to **Settings** > **Administration** > **API** > **Webhooks**.
 
-1. Click on the webhook you've just created.
+1. Select the webhook you've just created.
 
 1. Review the webhook details and recent delivery attempts.
    ![Recent Events](../img/linear/img/ngrok_introspection_linear_webhooks.png)
@@ -120,11 +125,13 @@ To review webhook deliveries in Linear:
 
 <ReplayingRequests />
 
-## Secure webhook requests 
+### Secure webhook requests 
 
 The ngrok signature webhook verification feature allows ngrok to assert that requests from your Linear webhook are the only traffic allowed to make calls to your localhost app.
 
-**Note:** This ngrok feature is limited to 500 validations per month on free ngrok accounts. For unlimited, upgrade to Pro or Enterprise.
+<Note>
+This ngrok feature is limited to 500 validations per month on free ngrok accounts. For unlimited, upgrade to Pro or Enterprise.
+</Note>
 
 This is a quick step to add extra protection to your application.
 
