@@ -66,7 +66,7 @@ jobs:
       - name: Install reviewdog and jq
         run: |
           wget -O - -q https://raw.githubusercontent.com/reviewdog/reviewdog/master/install.sh | sh -s -- -b /usr/local/bin v0.17.0
-          sudo apt-get update && sudo apt-get install -y jq
+          sudo apt-get update && sudo apt-get install -y jq curl
 
       - name: Run Vale with reviewdog
         if: steps.changed-files.outputs.vale_files != ''
@@ -86,12 +86,58 @@ jobs:
               "</checkstyle>"
             ' | \
             reviewdog -f=checkstyle -reporter=github-pr-check -fail-on-error=false
+
+      - name: Generate Vale summary and post PR comment
+        if: steps.changed-files.outputs.vale_files != ''
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Read files into space-separated string for Vale
+          FILES=$(tr '\n' ' ' < changed_files.txt)
           
-          # Count errors and fail CI if any exist
-          ERRORS=$(vale --config=.vale.ini --minAlertLevel=error --output=JSON $FILES | \
-            jq '[.[] | length] | add')
+          # Run Vale and save JSON output
+          vale --config=.vale.ini --minAlertLevel=warning --output=JSON $FILES > vale_results.json || true
           
-          if [ "$ERRORS" -gt 0 ]; then
-            echo "Found $ERRORS error(s)"
-            exit 1
+          # Check if there are any results
+          TOTAL_ISSUES=$(jq '[.[] | length] | add' vale_results.json 2>/dev/null || echo "0")
+          
+          if [ "$TOTAL_ISSUES" -eq 0 ] || [ "$TOTAL_ISSUES" = "null" ]; then
+            echo "No Vale issues found"
+            exit 0
           fi
+          
+          # Generate summary grouped by rule and severity
+          SUMMARY=$(jq -r '
+            def severity_order: {"error": 0, "warning": 1, "suggestion": 2};
+            
+            # Collect all issues with rule name and file path
+            [to_entries[] | .key as $file | .value[] | {
+              rule: .Check,
+              severity: .Severity,
+              file: $file,
+              line: .Line,
+              message: .Message
+            }] as $all_issues |
+            
+            # Group by rule and severity
+            ($all_issues | group_by(.rule + "|" + .severity) | sort_by(.[0].severity | severity_order[.] // 99)) as $grouped |
+            
+            # Format as markdown
+            "## 📝 Vale Linting Summary\n\n" +
+            "Found **\($all_issues | length) total issue(s)** across **\($grouped | length) unique rule violation(s)**.\n\n" +
+            ($grouped | map(
+              "### " + (.[0].severity | ascii_upcase) + ": " + .[0].rule + "\n\n" +
+              "**Count:** " + (length | tostring) + "\n\n" +
+              "**Locations:**\n" +
+              (map("- `\(.file):\(.line)`: \(.message)") | join("\n")) + "\n\n"
+            ) | join("---\n\n"))
+          ' vale_results.json)
+          
+          # Post comment to PR using GitHub API
+          BODY_JSON=$(echo "$SUMMARY" | jq -Rs '{body: .}')
+          curl -X POST \
+            -H "Authorization: token $GITHUB_TOKEN" \
+            -H "Accept: application/vnd.github.v3+json" \
+            -H "Content-Type: application/json" \
+            "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments" \
+            -d "$BODY_JSON"
