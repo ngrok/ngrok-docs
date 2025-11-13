@@ -27,7 +27,6 @@ GET /{resource}?filter='{CEL_EXPRESSION}'
 ```
 
 
----
 
 ## Supported CEL (subset)
 
