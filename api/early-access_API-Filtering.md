@@ -12,17 +12,18 @@ This feature is under active development. Behavior, supported fields, and limits
 
 Advanced API filtering helps you quickly surface the resources that matter, using a server-side subset of the Common Expression Language (CEL) to evaluate expressions against each resource instance before results are returned. Using Advanced API Filtering helps avoid downloading large collections and filtering client-side, and helps make operational tooling faster and more precise.
 
-**Request shape**
+The following example request fetches a list of all your Cloud and Agent endpoints.
+
+```http
+GET /endpoints?filter='obj.type == "cloud" || obj.type == "agent"'
+```
+
+## Request shape
 
 ```http
 GET /{resource}?filter='{CEL_EXPRESSION}'
 ```
 
-Example:
-
-```http
-GET /endpoints?filter='obj.type == "cloud" || obj.type == "agent"'
-```
 
 ---
 
