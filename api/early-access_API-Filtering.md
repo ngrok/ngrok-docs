@@ -161,7 +161,7 @@ Reference:
 
 ## Error handling
 
-Invalid filters return **HTTP 400** with a structured error body (category, status code, message, details). Example:
+Invalid filters return **HTTP 400** with a structured error body (`category`, `status_code`, `message`, `details`). Example:
 
 ```http
 HTTP/1.1 400 Bad Request
