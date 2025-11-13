@@ -154,6 +154,9 @@ Reference:
 GET /agent_ingresses?filter='obj.domain in ["foo.com","bar.com","baz.com"] || (obj.created_at < "2025-05-10Z" && obj.description.contains("cowbell"))'
 ```
 
+Reference:
+- [`LIST /agent_ingresses`](/api-reference/agentingresses/list)
+
 ---
 
 ## Error handling
