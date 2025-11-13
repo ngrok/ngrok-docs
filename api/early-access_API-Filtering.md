@@ -5,7 +5,9 @@ description: Learn how to use Advanced API to make operational tooling faster an
 tag: Preview
 ---
 
-> **Status: In Progress** — This feature is under active development. Behavior, supported fields, and limits may change before General Availability (GA). This guide is provided as forward-looking context for evaluation and feedback.
+<Info>
+This feature is under active development. Behavior, supported fields, and limits may change before General Availability (GA). This guide is provided as forward-looking context for evaluation and feedback.
+</Info>
 
 ## Overview
 
