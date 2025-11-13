@@ -91,7 +91,6 @@ These exclusions intentionally keep evaluation small and predictable.
 
 Very large expressions can stress the query engine. The service may enforce **limits on the number of conditions per query** or similar throttles in the future.
 
----
 
 ## Filterable resources and fields
 
