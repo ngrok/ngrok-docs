@@ -113,7 +113,6 @@ The initial release prioritizes the resource types and fields below. Field cover
 | **Vaults** | - `id`<br>- `created_at`<br>- `description`<br>- `metadata`<br>- `name` |
 | **Secrets** | - `id`<br>- `created_at`<br>- `description`<br>- `metadata`<br>- `name` |
 
----
 
 ## Usage examples
 
