@@ -9,7 +9,6 @@ tag: Preview
 This feature is under active development. Behavior, supported fields, and limits may change before General Availability (GA). This guide is provided as forward-looking context for evaluation and feedback.
 </Info>
 
-## Overview
 
 Advanced API filtering helps you quickly surface the resources that matter, using a server-side subset of the Common Expression Language (CEL) to evaluate expressions against each resource instance before results are returned. Using Advanced API Filtering helps avoid downloading large collections and filtering client-side, and helps make operational tooling faster and more precise.
 
