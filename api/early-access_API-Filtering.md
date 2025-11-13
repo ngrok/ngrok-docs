@@ -10,7 +10,9 @@ This feature is under active development. Behavior, supported fields, and limits
 </Info>
 
 
-Advanced API filtering helps you quickly surface the resources that matter, using a server-side subset of the Common Expression Language (CEL) to evaluate expressions against each resource instance before results are returned. Using Advanced API Filtering helps avoid downloading large collections and filtering client-side, and helps make operational tooling faster and more precise.
+When using ngrok's API, you can add the `filter` query parameter to your `GET` requests to ensure you receive a smaller payload tailored to your needs. This is called Advanced API Filtering, and it helps make operational tooling faster and more precise while eliminating the need to download large collections and filter client-side.
+
+To use Advanced API Filtering, you can pass a server-side subset of CEL expressions to the `filter` query parameter, as demonstrated in the following example. 
 
 The following example request fetches a list of all your Cloud and Agent endpoints.
 
