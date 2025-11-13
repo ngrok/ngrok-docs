@@ -52,7 +52,6 @@ GET /endpoints?filter='obj.type in ["agent", "cloud"]'
 GET /endpoints?filter='["agent","cloud"] in obj.types'
 ```
 
----
 
 ## Dates and time helpers
 
