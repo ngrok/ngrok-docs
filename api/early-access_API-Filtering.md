@@ -131,7 +131,7 @@ GET /endpoints?filter='obj.type == "cloud" && obj.created_at >= daysAgo(6)'
 Reference:
 - [`LIST /endpoints`](/api-reference/endpoints/list)
 
-**Reserved domains by prefix**
+### **Reserved domains by prefix**
 ```http
 GET /reserved_domains?filter='obj.domain.startsWith("myapi.ngrok")'
 ```
