@@ -139,7 +139,7 @@ GET /reserved_domains?filter='obj.domain.startsWith("myapi.ngrok")'
 Reference:
 - [`LIST /reserved_domains`](/api-reference/reserveddomains/list)
 
-**IP policy rules by CIDR and action**
+### **IP policy rules by CIDR and action**
 ```http
 GET /ip_policy_rules?filter='obj.cidr.contains("1.1.0.0/16") && obj.action == "deny"'
 ```
