@@ -147,7 +147,7 @@ GET /ip_policy_rules?filter='obj.cidr.contains("1.1.0.0/16") && obj.action == "d
 Reference:
 - [`LIST /ip_policy_rules`](/api-reference/ippolicyrules/list)
 
-**Credentials by owner with optional empty ACL**
+### **Credentials by owner with optional empty ACL**
 ```http
 GET /credentials?filter='obj.owner_id == "usr_2tEpN0yrxDI4j8jVnhVRoTNN2Tx" && (obj.acl == null || obj.acl == "")'
 ```
