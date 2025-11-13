@@ -157,7 +157,6 @@ GET /agent_ingresses?filter='obj.domain in ["foo.com","bar.com","baz.com"] || (o
 Reference:
 - [`LIST /agent_ingresses`](/api-reference/agentingresses/list)
 
----
 
 ## Error handling
 
