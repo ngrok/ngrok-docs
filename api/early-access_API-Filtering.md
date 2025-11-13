@@ -26,7 +26,6 @@ GET /endpoints?filter='obj.type == "cloud" || obj.type == "agent"'
 GET /{resource}?filter='{CEL_EXPRESSION}'
 ```
 
-
 ## Supported CEL (subset)
 
 The following core operators and helpers are supported for the initial release:
