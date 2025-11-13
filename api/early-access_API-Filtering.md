@@ -61,7 +61,6 @@ GET /endpoints?filter='["agent","cloud"] in obj.types'
   GET /endpoints?filter='obj.created_at >= daysAgo(7)'
   ```
 
-
 ## Query restrictions and limitations
 
 ### Unsupported CEL features (initial release)
