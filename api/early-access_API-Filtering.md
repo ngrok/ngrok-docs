@@ -68,6 +68,8 @@ GET /endpoints?filter='["agent","cloud"] in obj.types'
 
 ### Unsupported CEL features (initial release)
 
+To keep filter evaluation small and predictable, the following CEL features will be excluded in the initial release of Advanced API Filtering.
+
 - **No index access** (e.g., `a[0]`)
 - **No arithmetic** (e.g., `a + b`)
 - **No ternary** (e.g., `cond ? x : y`)
