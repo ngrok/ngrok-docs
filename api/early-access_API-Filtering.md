@@ -81,7 +81,9 @@ These exclusions intentionally keep evaluation small and predictable.
 
 ### High-entropy fields and substring checks
 
-Substring functions (`startsWith()`, `contains()`, `endsWith()`) are **disallowed** on fields considered **high entropy** (values that are effectively random, where substring predicates add cost without meaningful benefit). **Identifiers are the canonical example** of high-entropy fields. Prefer equality on these fields (e.g., `obj.id == "ep_123"`).
+**High entropy** fields are fields with values that are effectively random, usually because they're generated. The `id` field on a response object, such as `obj.id`, is a common example.
+
+[Substring functions](https://github.com/google/cel-spec/blob/master/doc/langdef.md#string-functions), such as `startsWith()`, `contains()`, `endsWith()`, are **disallowed** on high entropy fields. Check for equality on these fields instead. For example, `obj.id == "ep_123"`.
 
 ### Query complexity (budgeting/limits)
 
