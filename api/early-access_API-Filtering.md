@@ -9,7 +9,6 @@ tag: Preview
 This feature is under active development. Behavior, supported fields, and limits may change before General Availability (GA). This guide is provided as forward-looking context for evaluation and feedback.
 </Info>
 
-
 When using ngrok's API, you can add the `filter` query parameter to your `GET` requests to ensure you receive a smaller payload tailored to your needs. This is called Advanced API Filtering, and it helps make operational tooling faster and more precise while eliminating the need to download large collections and filter client-side.
 
 To use Advanced API Filtering, you can pass a server-side subset of CEL expressions to the `filter` query parameter, as demonstrated in the following example. 
@@ -86,7 +85,6 @@ These exclusions intentionally keep evaluation small and predictable.
 
 Very large expressions can stress the query engine. The service may enforce **limits on the number of conditions per query** or similar throttles in the future.
 
-
 ## Filterable resources and fields
 
 The initial release prioritizes the resource types and fields below. Field coverage is evolving and may change before GA.
@@ -112,7 +110,6 @@ The initial release prioritizes the resource types and fields below. Field cover
 | **SSH Certificate Authorities** | - `id`<br>- `created_at`<br>- `description`<br>- `metadata` |
 | **Vaults** | - `id`<br>- `created_at`<br>- `description`<br>- `metadata`<br>- `name` |
 | **Secrets** | - `id`<br>- `created_at`<br>- `description`<br>- `metadata`<br>- `name` |
-
 
 ## Usage examples
 
@@ -156,7 +153,6 @@ GET /agent_ingresses?filter='obj.domain in ["foo.com","bar.com","baz.com"] || (o
 
 Reference:
 - [`LIST /agent_ingresses`](/api-reference/agentingresses/list)
-
 
 ## Error handling
 
