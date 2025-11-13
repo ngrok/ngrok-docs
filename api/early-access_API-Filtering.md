@@ -128,6 +128,8 @@ GET /endpoints?filter='obj.type == "cloud" && obj.created_at < "2025-10-31T09:23
 # or using helpers
 GET /endpoints?filter='obj.type == "cloud" && obj.created_at >= daysAgo(6)'
 ```
+Reference:
+- [`LIST /endpoints`](/api-reference/endpoints/list)
 
 **Reserved domains by prefix**
 ```http
