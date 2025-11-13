@@ -136,6 +136,9 @@ GET /reserved_domains?filter='obj.domain.startsWith("myapi.ngrok")'
 GET /ip_policy_rules?filter='obj.cidr.contains("1.1.0.0/16") && obj.action == "deny"'
 ```
 
+Reference:
+- [`LIST /ip_policy_rules`](/api-reference/ippolicyrules/list)
+
 **Credentials by owner with optional empty ACL**
 ```http
 GET /credentials?filter='obj.owner_id == "usr_2tEpN0yrxDI4j8jVnhVRoTNN2Tx" && (obj.acl == null || obj.acl == "")'
