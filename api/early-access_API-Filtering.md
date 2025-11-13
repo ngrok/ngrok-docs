@@ -52,7 +52,6 @@ GET /endpoints?filter='obj.type in ["agent", "cloud"]'
 GET /endpoints?filter='["agent","cloud"] in obj.types'
 ```
 
-
 ## Dates and time helpers
 
 - **Treat timestamps as numerics** by using `<`, `<=`, `==`, `>=`, `>` directly on timestamp fields.  
