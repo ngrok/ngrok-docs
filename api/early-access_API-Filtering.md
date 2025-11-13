@@ -155,7 +155,7 @@ GET /credentials?filter='obj.owner_id == "usr_2tEpN0yrxDI4j8jVnhVRoTNN2Tx" && (o
 Reference:
 - [`LIST /credentials`](/api-reference/credentials/list)
 
-**Complex nesting**
+### **Complex nesting**
 ```http
 GET /agent_ingresses?filter='obj.domain in ["foo.com","bar.com","baz.com"] || (obj.created_at < "2025-05-10Z" && obj.description.contains("cowbell"))'
 ```
