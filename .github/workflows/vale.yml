@@ -50,10 +50,8 @@ jobs:
           if [ -s changed_files.txt ]; then
             # Build JSON array of files using jq
             FILES_JSON=$(jq -R -s -c 'split("\n") | map(select(length > 0))' changed_files.txt)
-            echo "Files to check: $FILES_JSON"
             echo "vale_files=$FILES_JSON" >> $GITHUB_OUTPUT
           else
-            echo "No files to check"
             echo "vale_files=" >> $GITHUB_OUTPUT
           fi
 
@@ -75,8 +73,29 @@ jobs:
           # Read files into space-separated string for Vale
           FILES=$(tr '\n' ' ' < changed_files.txt)
           
+          # Verify we have files to check
+          if [ -z "$FILES" ] || [ "$FILES" = " " ]; then
+            exit 0
+          fi
+          
           # Run Vale and save JSON output
           vale --config=.vale.ini --minAlertLevel=warning --output=JSON $FILES > vale_results.json || true
+          
+          # Filter Vale results to only include files that are actually in our changed files list
+          # This prevents processing violations from files that Vale might have checked but aren't in the PR
+          # Read changed files into a jq-friendly format
+          jq -R -s 'split("\n") | map(select(length > 0))' changed_files.txt > changed_files_array.json
+          
+          # Filter Vale results to only include files in the changed files list
+          jq --slurpfile changed changed_files_array.json '
+            . as $all | 
+            $changed[0] as $changed_files |
+            ($all | keys | map(select(. as $file | ($changed_files | index($file) != null)))) as $valid_files |
+            ($valid_files | map({key: ., value: $all[.]}) | from_entries)
+          ' vale_results.json > vale_results_filtered.json
+          
+          # Use the filtered results
+          mv vale_results_filtered.json vale_results.json
           
           # Check if there are any results
           TOTAL_ISSUES=$(jq '[.[] | length] | add' vale_results.json 2>/dev/null || echo "0")
@@ -93,19 +112,9 @@ jobs:
           
           # Count total violations
           TOTAL_VIOLATIONS=$(jq '[.[] | length] | add' vale_results.json)
-          echo "Found $TOTAL_VIOLATIONS total violations to process"
           
           COMMENT_COUNT=0
           SKIP_COUNT=0
-          
-          # Get existing comments to check for duplicates
-          curl -s -H "Authorization: token $GITHUB_TOKEN" \
-            "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/comments" > existing_comments.json
-          
-          # Ensure it's valid JSON
-          if ! jq empty existing_comments.json 2>/dev/null; then
-            echo "[]" > existing_comments.json
-          fi
           
           # Get PR files to check which lines are actually changed
           curl -s -H "Authorization: token $GITHUB_TOKEN" \
@@ -159,78 +168,6 @@ jobs:
             return $((1 - line_changed))
           }
           
-          # Function to check if a comment already exists for this file+rule
-          # Checks by rule name in comment body rather than exact line number
-          # to handle cases where line numbers shift due to content added above.
-          # We check ALL comments on the PR (not filtered by commit hash) to catch comments
-          # from previous commits. We match by file and rule name, not by exact line number,
-          # since line numbers can shift when content is added above.
-          comment_exists() {
-            local file="$1"
-            local target_line="$2"
-            local rule="$3"
-            
-            # Get all existing comments on this file with the same rule
-            # We don't filter by commit hash - we want to check ALL comments on the PR
-            # This fixes the issue where comments from old commits were being ignored
-            local matching_comments=$(jq -r --arg file "$file" --arg rule "$rule" '
-              [.[] | select(
-                .path == $file and 
-                (.body | contains("**" + $rule + "**"))
-              )]
-            ' existing_comments.json 2>/dev/null)
-            
-            # If no matching comments, return 1 (doesn't exist)
-            if [ -z "$matching_comments" ] || [ "$matching_comments" = "[]" ] || [ "$matching_comments" = "null" ]; then
-              return 1
-            fi
-            
-            # Check if any of the matching comments are on a line that's actually changed in the current diff
-            # OR if the target line we want to post on is close to an existing comment line
-            # This handles line number shifts - we match by rule name and check if either:
-            # 1. The existing comment is on a changed line, OR
-            # 2. The target line is close to an existing comment (within 5 lines) to handle small shifts
-            local comment_count=$(echo "$matching_comments" | jq -r 'length' 2>/dev/null)
-            
-            if [ -z "$comment_count" ] || [ "$comment_count" = "0" ] || [ "$comment_count" = "null" ]; then
-              return 1
-            fi
-            
-            # Check each matching comment
-            local comment_index=0
-            while [ "$comment_index" -lt "$comment_count" ]; do
-              local comment_line=$(echo "$matching_comments" | jq -r ".[$comment_index].line // empty" 2>/dev/null)
-              
-              if [ -n "$comment_line" ] && [ "$comment_line" != "null" ]; then
-                # Check if this comment is on a line that's actually changed in the diff
-                if is_line_changed "$file" "$comment_line"; then
-                  # Found a comment on a changed line with the same rule - this is a duplicate
-                  return 0
-                fi
-                
-                # Also check if the target line is close to the comment line (within 5 lines)
-                # This handles small line number shifts
-                local line_diff=$((target_line - comment_line))
-                # Get absolute value
-                if [ "$line_diff" -lt 0 ]; then
-                  line_diff=$((0 - line_diff))
-                fi
-                if [ "$line_diff" -le 5 ]; then
-                  # Lines are close together - likely the same violation that shifted
-                  # But only skip if the target line is actually changed
-                  if is_line_changed "$file" "$target_line"; then
-                    return 0
-                  fi
-                fi
-              fi
-              
-              comment_index=$((comment_index + 1))
-            done
-            
-            # No matching comment found
-            return 1
-          }
-          
           # Process violations and group by file+line to combine multiple violations on same line
           jq -c --arg commit "$PR_HEAD_SHA" '
             def severity_emoji(s):
@@ -273,27 +210,9 @@ jobs:
             
             # Check if this line is actually changed in the diff
             if ! is_line_changed "$FILE" "$LINE"; then
-              echo "Skipping ${VIOLATION_COUNT} violation(s) at ${FILE}:${LINE} (line not actually changed in diff)"
               SKIP_COUNT=$((SKIP_COUNT + VIOLATION_COUNT))
               continue
             fi
-            
-            # Check if a comment already exists for any rule in this violation group
-            RULES=$(echo "$violation_group" | jq -r '.violations[].rule' | tr '\n' ',' | sed 's/,$//')
-            SKIP_GROUP=0
-            while IFS= read -r rule; do
-              if comment_exists "$FILE" "$LINE" "$rule"; then
-                echo "Skipping duplicate: ${rule} at ${FILE}:${LINE} (comment already exists)"
-                SKIP_GROUP=1
-                break
-              fi
-            done < <(echo "$violation_group" | jq -r '.violations[].rule')
-            
-            if [ "$SKIP_GROUP" -eq 1 ]; then
-              SKIP_COUNT=$((SKIP_COUNT + VIOLATION_COUNT))
-              continue
-            fi
-            echo "Processing ${VIOLATION_COUNT} violation(s): ${RULES} at ${FILE}:${LINE}"
             
             COMMENT_JSON=$(jq -n \
               --arg path "$FILE" \
@@ -317,15 +236,8 @@ jobs:
             
             HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
             if [ "$HTTP_CODE" = "201" ]; then
-              echo "Posted comment with ${VIOLATION_COUNT} violation(s) at ${FILE}:${LINE}"
               COMMENT_COUNT=$((COMMENT_COUNT + VIOLATION_COUNT))
             elif [ "$HTTP_CODE" = "422" ]; then
-              echo "Skipping ${VIOLATION_COUNT} violation(s) at ${FILE}:${LINE} (line not in diff or cannot be resolved)"
               SKIP_COUNT=$((SKIP_COUNT + VIOLATION_COUNT))
-            else
-              echo "Failed to post comment for ${VIOLATION_COUNT} violation(s) at ${FILE}:${LINE} (HTTP $HTTP_CODE)"
-              echo "$RESPONSE" | head -n-1
             fi
           done < violations_to_post.json
-          
-          echo "Posted $COMMENT_COUNT comments, skipped $SKIP_COUNT (not actually changed in diff), out of $TOTAL_VIOLATIONS total violations"
