@@ -159,16 +159,20 @@ jobs:
             return $((1 - line_changed))
           }
           
-          # Function to check if a comment already exists for this file+line
+          # Function to check if a comment already exists for this file+rule
+          # Checks by rule name in comment body rather than exact line number
+          # to handle cases where line numbers shift due to content added above
           comment_exists() {
             local file="$1"
             local line="$2"
+            local rule="$3"
             
-            # Check if there's ANY existing comment on this file+line
-            local comment_count=$(jq -r --arg file "$file" --argjson line "$line" '
+            # Check if there's an existing comment on this file with the same rule
+            # Look for the rule name in the comment body (format: **RuleName**)
+            local comment_count=$(jq -r --arg file "$file" --arg rule "$rule" '
               [.[] | select(
                 .path == $file and 
-                (.line | tostring) == ($line | tostring)
+                (.body | contains("**" + $rule + "**"))
               )] | length
             ' existing_comments.json 2>/dev/null)
             
@@ -227,15 +231,21 @@ jobs:
               continue
             fi
             
-            # Check if a comment already exists on this line
-            if comment_exists "$FILE" "$LINE"; then
-              RULES=$(echo "$violation_group" | jq -r '.violations[].rule' | tr '\n' ',' | sed 's/,$//')
-              echo "Skipping duplicate: ${RULES} at ${FILE}:${LINE} (comment already exists)"
+            # Check if a comment already exists for any rule in this violation group
+            RULES=$(echo "$violation_group" | jq -r '.violations[].rule' | tr '\n' ',' | sed 's/,$//')
+            SKIP_GROUP=0
+            while IFS= read -r rule; do
+              if comment_exists "$FILE" "$LINE" "$rule"; then
+                echo "Skipping duplicate: ${rule} at ${FILE}:${LINE} (comment already exists)"
+                SKIP_GROUP=1
+                break
+              fi
+            done < <(echo "$violation_group" | jq -r '.violations[].rule')
+            
+            if [ "$SKIP_GROUP" -eq 1 ]; then
               SKIP_COUNT=$((SKIP_COUNT + VIOLATION_COUNT))
               continue
             fi
-            
-            RULES=$(echo "$violation_group" | jq -r '.violations[].rule' | tr '\n' ',' | sed 's/,$//')
             echo "Processing ${VIOLATION_COUNT} violation(s): ${RULES} at ${FILE}:${LINE}"
             
             COMMENT_JSON=$(jq -n \
