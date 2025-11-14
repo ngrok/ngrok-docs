@@ -95,10 +95,6 @@ jobs:
           TOTAL_VIOLATIONS=$(jq '[.[] | length] | add' vale_results.json)
           echo "Found $TOTAL_VIOLATIONS total violations to process"
           
-          # Get existing comments to check for duplicates
-          curl -s -H "Authorization: token $GITHUB_TOKEN" \
-            "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/comments" > existing_comments.json
-          
           COMMENT_COUNT=0
           SKIP_COUNT=0
           
@@ -132,21 +128,6 @@ jobs:
             RULE=$(echo "$violation" | jq -r '.rule')
             BODY=$(echo "$violation" | jq -r '.body')
             COMMIT=$(echo "$violation" | jq -r '.commit')
-            
-            # Check if this exact comment already exists
-            COMMENT_EXISTS=$(jq -r --arg path "$FILE" --argjson line "$LINE" --arg rule "$RULE" '
-              .[] | select(
-                .path == $path and 
-                (.line | tostring) == ($line | tostring) and
-                (.body | contains("**" + $rule + "**"))
-              ) | .id
-            ' existing_comments.json | head -1)
-            
-            if [ -n "$COMMENT_EXISTS" ]; then
-              echo "Skipping duplicate: ${RULE} at ${FILE}:${LINE}"
-              SKIP_COUNT=$((SKIP_COUNT + 1))
-              continue
-            fi
             
             echo "Processing violation: ${RULE} at ${FILE}:${LINE}"
             
@@ -183,4 +164,4 @@ jobs:
             fi
           done < violations_to_post.json
           
-          echo "Posted $COMMENT_COUNT comments, skipped $SKIP_COUNT (duplicates or not in diff), out of $TOTAL_VIOLATIONS total violations"
+          echo "Posted $COMMENT_COUNT comments, skipped $SKIP_COUNT (not in diff), out of $TOTAL_VIOLATIONS total violations"
