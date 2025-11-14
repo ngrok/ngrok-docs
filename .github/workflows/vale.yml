@@ -102,6 +102,11 @@ jobs:
           curl -s -H "Authorization: token $GITHUB_TOKEN" \
             "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/comments" > existing_comments.json
           
+          # Ensure it's valid JSON
+          if ! jq empty existing_comments.json 2>/dev/null; then
+            echo "[]" > existing_comments.json
+          fi
+          
           # Get PR files to check which lines are actually changed
           curl -s -H "Authorization: token $GITHUB_TOKEN" \
             "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files" > pr_files.json
@@ -154,39 +159,25 @@ jobs:
             return $((1 - line_changed))
           }
           
-          # Function to check if a comment already exists for this file+line+rules combination
+          # Function to check if a comment already exists for this file+line
           comment_exists() {
             local file="$1"
             local line="$2"
-            local rules_json="$3"
             
-            # Extract rule names from the violations JSON
-            local rules=$(echo "$rules_json" | jq -r '.[].rule' | sort)
-            
-            # Check if there's an existing comment on this file+line that contains all our rules
-            local existing_comment=$(jq -r --arg file "$file" --argjson line "$line" '
-              .[] | select(
+            # Check if there's ANY existing comment on this file+line
+            local comment_count=$(jq -r --arg file "$file" --argjson line "$line" '
+              [.[] | select(
                 .path == $file and 
                 (.line | tostring) == ($line | tostring)
-              ) | .body
-            ' existing_comments.json 2>/dev/null | head -1)
+              )] | length
+            ' existing_comments.json 2>/dev/null)
             
-            if [ -z "$existing_comment" ] || [ "$existing_comment" = "null" ]; then
-              return 1  # No comment exists
+            # Return 0 (exists) if count > 0, 1 (doesn't exist) otherwise
+            if [ -n "$comment_count" ] && [ "$comment_count" != "null" ] && [ "$comment_count" != "0" ]; then
+              return 0  # Comment exists
             fi
             
-            # Check if the existing comment contains all the rules we're about to post
-            local all_rules_found=1
-            while IFS= read -r rule; do
-              if [ -n "$rule" ]; then
-                if ! echo "$existing_comment" | grep -qF "**${rule}**"; then
-                  all_rules_found=0
-                  break
-                fi
-              fi
-            done <<< "$rules"
-            
-            return $((1 - all_rules_found))
+            return 1  # No comment exists
           }
           
           # Process violations and group by file+line to combine multiple violations on same line
@@ -236,11 +227,10 @@ jobs:
               continue
             fi
             
-            # Check if a comment with these rules already exists on this line
-            VIOLATIONS_JSON=$(echo "$violation_group" | jq -c '.violations')
-            if comment_exists "$FILE" "$LINE" "$VIOLATIONS_JSON"; then
+            # Check if a comment already exists on this line
+            if comment_exists "$FILE" "$LINE"; then
               RULES=$(echo "$violation_group" | jq -r '.violations[].rule' | tr '\n' ',' | sed 's/,$//')
-              echo "Skipping duplicate comment: ${RULES} at ${FILE}:${LINE}"
+              echo "Skipping duplicate: ${RULES} at ${FILE}:${LINE} (comment already exists)"
               SKIP_COUNT=$((SKIP_COUNT + VIOLATION_COUNT))
               continue
             fi
