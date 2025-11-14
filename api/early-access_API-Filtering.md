@@ -95,27 +95,27 @@ Very large expressions can stress the query engine. The service may enforce **li
 
 The initial release prioritizes the resource types and fields below. Field coverage is evolving and may change before GA.
 
-| Resource Type                   | Filterable Fields                                                                                                                                                        |
-| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Resource Type                   | Filterable Fields                                                                                                                                                                            |
+| ------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Endpoints**                   | - `id`<br />- `created_at`<br />- `description`<br />- `metadata`<br />- `principal.id`<br />- `type`<br />- `binding`<br />- `url`<br />- `pooling_enabled`<br />- `scheme`<br />- `region` |
-| **Reserved Addresses**          | - `id`<br />- `created_at`<br />- `description`<br />- `metadata`<br />- `addr`<br />- `region`                                                                                    |
-| **Reserved Domains**            | - `id`<br />- `created_at`<br />- `description`<br />- `metadata`<br />- `domain`<br />- `region`<br />- `cname_target`<br />- `certificate.id`<br />- `acme_challenge_cname_target`     |
-| **TLS Certificates**            | - `id`<br />- `created_at`<br />- `description`<br />- `metadata`<br />- `subject_common_name`<br />- `not_after`<br />- `not_before`<br />- `serial_number`                           |
-| **Certificate Authorities**     | - `id`<br />- `created_at`<br />- `description`<br />- `metadata`<br />- `subject_common_name`<br />- `not_before`<br />- `not_after`                                                |
-| **IP Policies**                 | - `id`<br />- `created_at`<br />- `description`<br />- `metadata`                                                                                                              |
-| **IP Policy Rules**             | - `id`<br />- `created_at`<br />- `description`<br />- `metadata`<br />- `ip_policy`<br />- `cidr`<br />- `action`                                                                   |
-| **Agent Ingress**               | - `id`<br />- `created_at`<br />- `description`<br />- `metadata`<br />- `domain`                                                                                                |
-| **Tunnel Sessions**             | - `id`<br />- `metadata`<br />- `agent_version`<br />- `ip`<br />- `os`<br />- `region`<br />- `started_at`<br />- `credential`                                                        |
-| **Event Destinations**          | - `id`<br />- `created_at`<br />- `description`<br />- `metadata`                                                                                                              |
-| **Event Subscriptions**         | - `id`<br />- `created_at`<br />- `description`<br />- `metadata`                                                                                                              |
-| **IP Restrictions**             | - `id`<br />- `created_at`<br />- `description`<br />- `metadata`                                                                                                              |
-| **API Keys**                    | - `id`<br />- `created_at`<br />- `description`<br />- `metadata`<br />- `owner_id`                                                                                              |
-| **SSH Credentials**             | - `id`<br />- `created_at`<br />- `description`<br />- `metadata`<br />- `owner_id`<br />- `acl`                                                                                   |
-| **Credentials**                 | - `id`<br />- `created_at`<br />- `description`<br />- `metadata`<br />- `owner_id`<br />- `acl`                                                                                   |
-| **Service Users**               | - `id`<br />- `created_at`                                                                                                                                                 |
-| **SSH Certificate Authorities** | - `id`<br />- `created_at`<br />- `description`<br />- `metadata`                                                                                                              |
-| **Vaults**                      | - `id`<br />- `created_at`<br />- `description`<br />- `metadata`<br />- `name`                                                                                                  |
-| **Secrets**                     | - `id`<br />- `created_at`<br />- `description`<br />- `metadata`<br />- `name`                                                                                                  |
+| **Reserved Addresses**          | - `id`<br />- `created_at`<br />- `description`<br />- `metadata`<br />- `addr`<br />- `region`                                                                                              |
+| **Reserved Domains**            | - `id`<br />- `created_at`<br />- `description`<br />- `metadata`<br />- `domain`<br />- `region`<br />- `cname_target`<br />- `certificate.id`<br />- `acme_challenge_cname_target`         |
+| **TLS Certificates**            | - `id`<br />- `created_at`<br />- `description`<br />- `metadata`<br />- `subject_common_name`<br />- `not_after`<br />- `not_before`<br />- `serial_number`                                 |
+| **Certificate Authorities**     | - `id`<br />- `created_at`<br />- `description`<br />- `metadata`<br />- `subject_common_name`<br />- `not_before`<br />- `not_after`                                                        |
+| **IP Policies**                 | - `id`<br />- `created_at`<br />- `description`<br />- `metadata`                                                                                                                            |
+| **IP Policy Rules**             | - `id`<br />- `created_at`<br />- `description`<br />- `metadata`<br />- `ip_policy`<br />- `cidr`<br />- `action`                                                                           |
+| **Agent Ingress**               | - `id`<br />- `created_at`<br />- `description`<br />- `metadata`<br />- `domain`                                                                                                            |
+| **Tunnel Sessions**             | - `id`<br />- `metadata`<br />- `agent_version`<br />- `ip`<br />- `os`<br />- `region`<br />- `started_at`<br />- `credential`                                                              |
+| **Event Destinations**          | - `id`<br />- `created_at`<br />- `description`<br />- `metadata`                                                                                                                            |
+| **Event Subscriptions**         | - `id`<br />- `created_at`<br />- `description`<br />- `metadata`                                                                                                                            |
+| **IP Restrictions**             | - `id`<br />- `created_at`<br />- `description`<br />- `metadata`                                                                                                                            |
+| **API Keys**                    | - `id`<br />- `created_at`<br />- `description`<br />- `metadata`<br />- `owner_id`                                                                                                          |
+| **SSH Credentials**             | - `id`<br />- `created_at`<br />- `description`<br />- `metadata`<br />- `owner_id`<br />- `acl`                                                                                             |
+| **Credentials**                 | - `id`<br />- `created_at`<br />- `description`<br />- `metadata`<br />- `owner_id`<br />- `acl`                                                                                             |
+| **Service Users**               | - `id`<br />- `created_at`                                                                                                                                                                   |
+| **SSH Certificate Authorities** | - `id`<br />- `created_at`<br />- `description`<br />- `metadata`                                                                                                                            |
+| **Vaults**                      | - `id`<br />- `created_at`<br />- `description`<br />- `metadata`<br />- `name`                                                                                                              |
+| **Secrets**                     | - `id`<br />- `created_at`<br />- `description`<br />- `metadata`<br />- `name`                                                                                                              |
 
 ## Usage examples
 
