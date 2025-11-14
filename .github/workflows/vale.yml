@@ -117,7 +117,38 @@ jobs:
           SKIP_COUNT=0
           
           # Delete all existing Vale comments from the PR
-          # Get all PR review comments and delete them page by page
+          # First, delete PR issue comments (summary comments)
+          PAGE=1
+          PER_PAGE=100
+          
+          while true; do
+            ISSUE_COMMENTS_PAGE=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+              -H "Accept: application/vnd.github.v3+json" \
+              "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments?page=$PAGE&per_page=$PER_PAGE")
+            
+            if ! echo "$ISSUE_COMMENTS_PAGE" | jq -e 'type == "array"' > /dev/null 2>&1; then
+              break
+            fi
+            
+            PAGE_COUNT=$(echo "$ISSUE_COMMENTS_PAGE" | jq 'length')
+            if [ "$PAGE_COUNT" -eq 0 ]; then
+              break
+            fi
+            
+            # Delete summary comments (those with "# Style linting summary" in the body)
+            echo "$ISSUE_COMMENTS_PAGE" | jq -r '.[] | select(.body | contains("# Style linting summary")) | .id' 2>/dev/null | while read -r comment_id; do
+              if [ -n "$comment_id" ] && [ "$comment_id" != "null" ] && [ "$comment_id" != "" ]; then
+                curl -s -X DELETE \
+                  -H "Authorization: token $GITHUB_TOKEN" \
+                  -H "Accept: application/vnd.github.v3+json" \
+                  "https://api.github.com/repos/${{ github.repository }}/issues/comments/$comment_id" > /dev/null
+              fi
+            done
+            
+            PAGE=$((PAGE + 1))
+          done
+          
+          # Get all PR review comments (line comments) and delete them page by page
           PAGE=1
           PER_PAGE=100
           
@@ -274,3 +305,21 @@ jobs:
               SKIP_COUNT=$((SKIP_COUNT + VIOLATION_COUNT))
             fi
           done < violations_to_post.json
+          
+          # Count errors and warnings from Vale results
+          ERROR_COUNT=$(jq '[to_entries[] | .value[] | select(.Severity == "error")] | length' vale_results.json 2>/dev/null || echo "0")
+          WARNING_COUNT=$(jq '[to_entries[] | .value[] | select(.Severity == "warning")] | length' vale_results.json 2>/dev/null || echo "0")
+          
+          # Post summary comment
+          SUMMARY_BODY=$(printf "# Style linting summary\n\nVale found %s error(s) and %s warning(s) in this PR. Please resolve all errors and review all warnings before merging." "$ERROR_COUNT" "$WARNING_COUNT")
+          
+          SUMMARY_JSON=$(jq -n \
+            --arg body "$SUMMARY_BODY" \
+            '{body: $body}')
+          
+          curl -s -X POST \
+            -H "Authorization: token $GITHUB_TOKEN" \
+            -H "Accept: application/vnd.github.v3+json" \
+            -H "Content-Type: application/json" \
+            "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments" \
+            -d "$SUMMARY_JSON" > /dev/null
