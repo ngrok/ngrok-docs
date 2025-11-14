@@ -55,7 +55,7 @@ GET /endpoints?filter='["agent","cloud"] in obj.types'
 
 - **Treat timestamps as numerics** by using `<`, `<=`, `==`, `>=`, `>` directly on timestamp fields, e.g.:
   ```http
-  GET /vaults?filter=’obj.created_at < “2025-10-31T09:23:45-07:00”’
+  GET /vaults?filter=’obj.created_at < timestamp(“2025-10-31T09:23:45-07:00”)’
   ```
 - **Parsing:** `datetime.parse("<ISO-8601>")` to compare against string literals.
 - **Convenience helpers:** `now()` and `daysAgo(n)` support concise relative filters, e.g.:
