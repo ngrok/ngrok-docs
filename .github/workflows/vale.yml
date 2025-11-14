@@ -126,13 +126,22 @@ jobs:
           fi
           
           # Find and delete all comments that look like Vale comments
-          # Vale comments start with ❌ or ⚠️ and contain **RuleName** pattern
-          jq -r '.[] | select(.body | startswith("❌") or startswith("⚠️")) | select(.body | contains("**")) | .id' existing_comments.json 2>/dev/null | while read -r comment_id; do
+          # Vale comments have the pattern: emoji **RuleName** (severity): message
+          # Match comments that contain both ** (for rule name) and (error) or (warning) pattern
+          jq -r '.[] | select(.body | contains("**")) | select(.body | contains("(error)") or contains("(warning)")) | .id' existing_comments.json 2>/dev/null | while read -r comment_id; do
             if [ -n "$comment_id" ] && [ "$comment_id" != "null" ]; then
-              curl -s -X DELETE \
+              DELETE_RESPONSE=$(curl -s -w "\n%{http_code}" -X DELETE \
                 -H "Authorization: token $GITHUB_TOKEN" \
                 -H "Accept: application/vnd.github.v3+json" \
-                "https://api.github.com/repos/${{ github.repository }}/pulls/comments/$comment_id" > /dev/null
+                "https://api.github.com/repos/${{ github.repository }}/pulls/comments/$comment_id")
+              HTTP_CODE=$(echo "$DELETE_RESPONSE" | tail -n1)
+              if [ "$HTTP_CODE" != "204" ] && [ "$HTTP_CODE" != "200" ]; then
+                # If delete fails, try the review comments endpoint
+                curl -s -X DELETE \
+                  -H "Authorization: token $GITHUB_TOKEN" \
+                  -H "Accept: application/vnd.github.v3+json" \
+                  "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/comments/$comment_id" > /dev/null
+              fi
             fi
           done
           
