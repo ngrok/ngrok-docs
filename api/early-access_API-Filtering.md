@@ -11,7 +11,7 @@ This feature is under active development. Behavior, supported fields, and limits
 
 When using ngrok's API, you can add the `filter` query parameter to your `GET` requests to ensure you receive a smaller payload tailored to your needs. This is called Advanced API Filtering, and it helps make operational tooling faster and more precise while eliminating the need to download large collections and filter client-side.
 
-To use Advanced API Filtering, you can pass a server-side subset of CEL expressions to the `filter` query parameter, as demonstrated in the following example. 
+To use Advanced API Filtering, you can pass a server-side subset of CEL expressions to the `filter` query parameter, as demonstrated in the following example.
 
 The following example request fetches a list of all your Cloud and Agent endpoints.
 
@@ -28,6 +28,7 @@ GET /{resource}?filter='{CEL_EXPRESSION}'
 ## Supported CEL (subset)
 
 The following core operators and helpers are supported for the initial release:
+
 - Logical operators: `!`, `&&`, `||`
 - Comparative operators: `<`, `<=`, `==`, `!=`, `>=`, `>`
 - Parentheses for grouping
@@ -41,12 +42,14 @@ The following core operators and helpers are supported for the initial release:
 Expressions are evaluated against a single **resource instance** exposed as `obj`. Compare fields **on the instance** rather than attempting list-wise checks on fields.
 
 ✅ Valid
+
 ```http
 GET /endpoints?filter='obj.type == "cloud" || obj.type == "agent"'
 GET /endpoints?filter='obj.type in ["agent", "cloud"]'
 ```
 
 ❌ Not valid
+
 ```http
 GET /endpoints?filter='["agent","cloud"] in obj.types'
 ```
@@ -92,69 +95,80 @@ Very large expressions can stress the query engine. The service may enforce **li
 
 The initial release prioritizes the resource types and fields below. Field coverage is evolving and may change before GA.
 
-| Resource Type | Filterable Fields |
-|---------------|-------------------|
-| **Endpoints** | - `id`<br>- `created_at`<br>- `description`<br>- `metadata`<br>- `principal.id`<br>- `type`<br>- `binding`<br>- `url`<br>- `pooling_enabled`<br>- `scheme`<br>- `region` |
-| **Reserved Addresses** | - `id`<br>- `created_at`<br>- `description`<br>- `metadata`<br>- `addr`<br>- `region` |
-| **Reserved Domains** | - `id`<br>- `created_at`<br>- `description`<br>- `metadata`<br>- `domain`<br>- `region`<br>- `cname_target`<br>- `certificate.id`<br>- `acme_challenge_cname_target` |
-| **TLS Certificates** | - `id`<br>- `created_at`<br>- `description`<br>- `metadata`<br>- `subject_common_name`<br>- `not_after`<br>- `not_before`<br>- `serial_number` |
-| **Certificate Authorities** | - `id`<br>- `created_at`<br>- `description`<br>- `metadata`<br>- `subject_common_name`<br>- `not_before`<br>- `not_after` |
-| **IP Policies** | - `id`<br>- `created_at`<br>- `description`<br>- `metadata` |
-| **IP Policy Rules** | - `id`<br>- `created_at`<br>- `description`<br>- `metadata`<br>- `ip_policy`<br>- `cidr`<br>- `action` |
-| **Agent Ingress** | - `id`<br>- `created_at`<br>- `description`<br>- `metadata`<br>- `domain` |
-| **Tunnel Sessions** | - `id`<br>- `metadata`<br>- `agent_version`<br>- `ip`<br>- `os`<br>- `region`<br>- `started_at`<br>- `credential` |
-| **Event Destinations** | - `id`<br>- `created_at`<br>- `description`<br>- `metadata` |
-| **Event Subscriptions** | - `id`<br>- `created_at`<br>- `description`<br>- `metadata` |
-| **IP Restrictions** | - `id`<br>- `created_at`<br>- `description`<br>- `metadata` |
-| **API Keys** | - `id`<br>- `created_at`<br>- `description`<br>- `metadata`<br>- `owner_id` |
-| **SSH Credentials** | - `id`<br>- `created_at`<br>- `description`<br>- `metadata`<br>- `owner_id`<br>- `acl` |
-| **Credentials** | - `id`<br>- `created_at`<br>- `description`<br>- `metadata`<br>- `owner_id`<br>- `acl` |
-| **Service Users** | - `id`<br>- `created_at` |
-| **SSH Certificate Authorities** | - `id`<br>- `created_at`<br>- `description`<br>- `metadata` |
-| **Vaults** | - `id`<br>- `created_at`<br>- `description`<br>- `metadata`<br>- `name` |
-| **Secrets** | - `id`<br>- `created_at`<br>- `description`<br>- `metadata`<br>- `name` |
+| Resource Type                   | Filterable Fields                                                                                                                                                        |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Endpoints**                   | - `id`<br>- `created_at`<br>- `description`<br>- `metadata`<br>- `principal.id`<br>- `type`<br>- `binding`<br>- `url`<br>- `pooling_enabled`<br>- `scheme`<br>- `region` |
+| **Reserved Addresses**          | - `id`<br>- `created_at`<br>- `description`<br>- `metadata`<br>- `addr`<br>- `region`                                                                                    |
+| **Reserved Domains**            | - `id`<br>- `created_at`<br>- `description`<br>- `metadata`<br>- `domain`<br>- `region`<br>- `cname_target`<br>- `certificate.id`<br>- `acme_challenge_cname_target`     |
+| **TLS Certificates**            | - `id`<br>- `created_at`<br>- `description`<br>- `metadata`<br>- `subject_common_name`<br>- `not_after`<br>- `not_before`<br>- `serial_number`                           |
+| **Certificate Authorities**     | - `id`<br>- `created_at`<br>- `description`<br>- `metadata`<br>- `subject_common_name`<br>- `not_before`<br>- `not_after`                                                |
+| **IP Policies**                 | - `id`<br>- `created_at`<br>- `description`<br>- `metadata`                                                                                                              |
+| **IP Policy Rules**             | - `id`<br>- `created_at`<br>- `description`<br>- `metadata`<br>- `ip_policy`<br>- `cidr`<br>- `action`                                                                   |
+| **Agent Ingress**               | - `id`<br>- `created_at`<br>- `description`<br>- `metadata`<br>- `domain`                                                                                                |
+| **Tunnel Sessions**             | - `id`<br>- `metadata`<br>- `agent_version`<br>- `ip`<br>- `os`<br>- `region`<br>- `started_at`<br>- `credential`                                                        |
+| **Event Destinations**          | - `id`<br>- `created_at`<br>- `description`<br>- `metadata`                                                                                                              |
+| **Event Subscriptions**         | - `id`<br>- `created_at`<br>- `description`<br>- `metadata`                                                                                                              |
+| **IP Restrictions**             | - `id`<br>- `created_at`<br>- `description`<br>- `metadata`                                                                                                              |
+| **API Keys**                    | - `id`<br>- `created_at`<br>- `description`<br>- `metadata`<br>- `owner_id`                                                                                              |
+| **SSH Credentials**             | - `id`<br>- `created_at`<br>- `description`<br>- `metadata`<br>- `owner_id`<br>- `acl`                                                                                   |
+| **Credentials**                 | - `id`<br>- `created_at`<br>- `description`<br>- `metadata`<br>- `owner_id`<br>- `acl`                                                                                   |
+| **Service Users**               | - `id`<br>- `created_at`                                                                                                                                                 |
+| **SSH Certificate Authorities** | - `id`<br>- `created_at`<br>- `description`<br>- `metadata`                                                                                                              |
+| **Vaults**                      | - `id`<br>- `created_at`<br>- `description`<br>- `metadata`<br>- `name`                                                                                                  |
+| **Secrets**                     | - `id`<br>- `created_at`<br>- `description`<br>- `metadata`<br>- `name`                                                                                                  |
 
 ## Usage examples
 
 ### **Filter endpoints by type and creation time**
+
 ```http
 GET /endpoints?filter='obj.type == "cloud" && obj.created_at < timestamp("2025-10-31T09:23:45-07:00")'
 # or using helpers
 GET /endpoints?filter='obj.type == "cloud" && obj.created_at >= daysAgo(6)'
 ```
+
 Reference:
+
 - [`LIST /endpoints`](/api-reference/endpoints/list)
 
 ### **Reserved domains by prefix**
+
 ```http
 GET /reserved_domains?filter='obj.domain.startsWith("myapi.ngrok")'
 ```
 
 Reference:
+
 - [`LIST /reserved_domains`](/api-reference/reserveddomains/list)
 
 ### **IP policy rules by CIDR and action**
+
 ```http
 GET /ip_policy_rules?filter='obj.cidr.contains("1.1.0.0/16") && obj.action == "deny"'
 ```
 
 Reference:
+
 - [`LIST /ip_policy_rules`](/api-reference/ippolicyrules/list)
 
 ### **Credentials by owner with optional empty ACL**
+
 ```http
 GET /credentials?filter='obj.owner_id == "usr_2tEpN0yrxDI4j8jVnhVRoTNN2Tx" && (obj.acl == null || obj.acl == "")'
 ```
 
 Reference:
+
 - [`LIST /credentials`](/api-reference/credentials/list)
 
 ### **Complex nesting**
+
 ```http
 GET /agent_ingresses?filter='obj.domain in ["foo.com","bar.com","baz.com"] || (obj.created_at < timestamp("2025-05-10Z") && obj.description.contains("cowbell"))'
 ```
 
 Reference:
+
 - [`LIST /agent_ingresses`](/api-reference/agentingresses/list)
 
 ## Error handling
