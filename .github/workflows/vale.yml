@@ -116,6 +116,26 @@ jobs:
           COMMENT_COUNT=0
           SKIP_COUNT=0
           
+          # Delete all existing Vale comments from the PR
+          curl -s -H "Authorization: token $GITHUB_TOKEN" \
+            "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/comments" > existing_comments.json
+          
+          # Ensure it's valid JSON
+          if ! jq empty existing_comments.json 2>/dev/null; then
+            echo "[]" > existing_comments.json
+          fi
+          
+          # Find and delete all comments that look like Vale comments
+          # Vale comments start with ❌ or ⚠️ and contain **RuleName** pattern
+          jq -r '.[] | select(.body | startswith("❌") or startswith("⚠️")) | select(.body | contains("**")) | .id' existing_comments.json 2>/dev/null | while read -r comment_id; do
+            if [ -n "$comment_id" ] && [ "$comment_id" != "null" ]; then
+              curl -s -X DELETE \
+                -H "Authorization: token $GITHUB_TOKEN" \
+                -H "Accept: application/vnd.github.v3+json" \
+                "https://api.github.com/repos/${{ github.repository }}/pulls/comments/$comment_id" > /dev/null
+            fi
+          done
+          
           # Get PR files to check which lines are actually changed
           curl -s -H "Authorization: token $GITHUB_TOKEN" \
             "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files" > pr_files.json
