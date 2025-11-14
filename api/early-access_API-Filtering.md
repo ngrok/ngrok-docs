@@ -27,7 +27,7 @@ GET /{resource}?filter='{CEL_EXPRESSION}'
 
 ## Supported CEL (subset)
 
-The following core operators and helpers are supported for the initial release:
+The following core operators and helpers are supported:
 
 - Logical operators: `!`, `&&`, `||`
 - Comparative operators: `<`, `<=`, `==`, `!=`, `>=`, `>`
@@ -68,9 +68,9 @@ GET /endpoints?filter='["agent","cloud"] in obj.types'
 
 ## Query restrictions and limitations
 
-### Unsupported CEL features (initial release)
+### Unsupported CEL features
 
-To keep filter evaluation small and predictable, the following CEL features will be excluded in the initial release of API Filtering.
+To keep filter evaluation small and predictable, the following CEL features are not supported.
 
 - **No index access** (e.g., `a[0]`)
 - **No arithmetic** (e.g., `a + b`)
