@@ -182,9 +182,19 @@ jobs:
             }
           ' vale_results.json > violations_to_post.json
           
-          # Debug: show how many groups we have
-          GROUP_COUNT=$(jq -s 'length' violations_to_post.json 2>/dev/null || wc -l < violations_to_post.json)
+          # Debug: show how many groups we have and what's in each group
+          GROUP_COUNT=$(wc -l < violations_to_post.json)
           echo "Grouped violations into $GROUP_COUNT comment groups"
+          echo "Group details:"
+          while read -r group; do
+            if [ -n "$group" ]; then
+              FILE=$(echo "$group" | jq -r '.file')
+              LINE=$(echo "$group" | jq -r '.line')
+              COUNT=$(echo "$group" | jq '.violations | length')
+              RULES=$(echo "$group" | jq -r '.violations[].rule' | tr '\n' ',' | sed 's/,$//')
+              echo "  $FILE:$LINE - $COUNT violation(s): $RULES"
+            fi
+          done < violations_to_post.json
           
           # Process each violation group (file+line combination)
           while read -r violation_group; do
