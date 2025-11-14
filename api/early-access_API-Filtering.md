@@ -9,11 +9,11 @@ tag: Preview
 This feature is under active development. Behavior, supported fields, and limits may change before General Availability (GA). This guide is provided as forward-looking context for evaluation and feedback.
 </Info>
 
-When using ngrok's API, you can add the `filter` query parameter to your `GET` requests to ensure you receive a smaller payload tailored to your needs. This helps make operational tooling faster and more precise while eliminating the need to download large collections and filter client-side.
+When using ngrok's API, you can add the `filter` query parameter to `GET` requests to return only those results which match a provided criteria. This makes automated management of resources easier while eliminating the need to download large collections and filter client-side.
 
-To use API Filtering, you can pass a server-side subset of CEL expressions to the `filter` query parameter, as demonstrated in the following example.
+To use API Filtering, you pass a server-side subset of CEL expressions to the `filter` query parameter, as demonstrated in the following example.
 
-The following example request fetches a list of all your Cloud and Agent endpoints.
+This example request fetches a list of all your Cloud and Agent endpoints.
 
 ```http
 GET /endpoints?filter='obj.type == "cloud" || obj.type == "agent"'
@@ -27,7 +27,7 @@ GET /{resource}?filter='{CEL_EXPRESSION}'
 
 ## Supported CEL (subset)
 
-The following core operators and helpers are supported:
+These core operators and helpers are supported:
 
 - Logical operators: `!`, `&&`, `||`
 - Comparative operators: `<`, `<=`, `==`, `!=`, `>=`, `>`
@@ -56,11 +56,10 @@ GET /endpoints?filter='["agent","cloud"] in obj.types'
 
 ## Dates and time helpers
 
-- **Treat timestamps as numerics** by using `<`, `<=`, `==`, `>=`, `>` directly on timestamp fields, e.g.:
+- **Treat timestamps as numerics** by using `<`, `<=`, `==`, `>=`, `>` directly on `timestamp()` fields, e.g.:
   ```http
   GET /vaults?filter=’obj.created_at < timestamp(“2025-10-31T09:23:45-07:00”)’
   ```
-- **Parsing:** `timestamp("RFC-3339")` to compare against string literals.
 - **Convenience helpers:** `now()` and `daysAgo(n)` support concise relative filters, e.g.:
   ```http
   GET /endpoints?filter='obj.created_at >= daysAgo(7)'
@@ -93,7 +92,7 @@ Very large expressions can stress the query engine. The service may enforce **li
 
 ## Filterable resources and fields
 
-The initial release prioritizes the resource types and fields below. Field coverage is evolving and may change before GA.
+The initial release prioritizes the resource types and fields below. CEL filtering is not supported on deprecated endpoints. Field coverage is evolving and may change before GA.
 
 | Resource Type                   | Filterable Fields                                                                                                                                                                            |
 | ------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
