@@ -117,44 +117,52 @@ jobs:
           SKIP_COUNT=0
           
           # Delete all existing Vale comments from the PR
-          # Get all PR review comments (line comments)
-          curl -s -H "Authorization: token $GITHUB_TOKEN" \
-            -H "Accept: application/vnd.github.v3+json" \
-            "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/comments" > existing_comments.json
+          # Get all PR review comments (line comments) - handle pagination
+          PAGE=1
+          PER_PAGE=100
+          ALL_COMMENTS="[]"
           
-          # Check if response is valid JSON and is an array
-          if ! jq -e 'type == "array"' existing_comments.json > /dev/null 2>&1; then
-            echo "[]" > existing_comments.json
-          fi
+          while true; do
+            COMMENTS_PAGE=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+              -H "Accept: application/vnd.github.v3+json" \
+              "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/comments?page=$PAGE&per_page=$PER_PAGE")
+            
+            if ! echo "$COMMENTS_PAGE" | jq -e 'type == "array"' > /dev/null 2>&1; then
+              break
+            fi
+            
+            PAGE_COUNT=$(echo "$COMMENTS_PAGE" | jq 'length')
+            if [ "$PAGE_COUNT" -eq 0 ]; then
+              break
+            fi
+            
+            ALL_COMMENTS=$(echo "$ALL_COMMENTS" | jq --argjson page "$COMMENTS_PAGE" '. + $page')
+            PAGE=$((PAGE + 1))
+          done
           
-          # Get the current user (GitHub Actions bot) to only delete our own comments
+          echo "$ALL_COMMENTS" > existing_comments.json
+          
+          # Get the current user (GitHub Actions bot)
           CURRENT_USER=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
             -H "Accept: application/vnd.github.v3+json" \
-            "https://api.github.com/user" | jq -r '.login')
+            "https://api.github.com/user" | jq -r '.login // empty')
           
-          # Find and delete all comments that look like Vale comments
-          # Vale comments have the pattern: emoji **RuleName** (severity): message
-          # Match comments that contain both ** (for rule name) and (error) or (warning) pattern
-          # Also verify the comment was created by the current user (GitHub Actions bot)
-          jq -r --arg user "$CURRENT_USER" '
-            .[] | 
-            select(.user.login == $user) |
-            select(.body | contains("**")) | 
-            select(.body | contains("(error)") or contains("(warning)")) | 
-            .id
-          ' existing_comments.json 2>/dev/null | while read -r comment_id; do
-            if [ -n "$comment_id" ] && [ "$comment_id" != "null" ] && [ "$comment_id" != "" ]; then
-              # Delete the comment using the PR review comments endpoint
-              HTTP_CODE=$(curl -s -w "%{http_code}" -o /dev/null -X DELETE \
-                -H "Authorization: token $GITHUB_TOKEN" \
-                -H "Accept: application/vnd.github.v3+json" \
-                "https://api.github.com/repos/${{ github.repository }}/pulls/comments/$comment_id")
-              # 204 No Content means successful deletion
-              if [ "$HTTP_CODE" = "204" ]; then
-                : # Successfully deleted
+          # Delete ALL comments by the current user (GitHub Actions bot)
+          # This ensures we delete all our comments regardless of format changes
+          if [ -n "$CURRENT_USER" ] && [ "$CURRENT_USER" != "null" ]; then
+            jq -r --arg user "$CURRENT_USER" '
+              .[] | 
+              select(.user.login == $user) | 
+              .id
+            ' existing_comments.json 2>/dev/null | while read -r comment_id; do
+              if [ -n "$comment_id" ] && [ "$comment_id" != "null" ] && [ "$comment_id" != "" ]; then
+                curl -s -X DELETE \
+                  -H "Authorization: token $GITHUB_TOKEN" \
+                  -H "Accept: application/vnd.github.v3+json" \
+                  "https://api.github.com/repos/${{ github.repository }}/pulls/comments/$comment_id" > /dev/null
               fi
-            fi
-          done
+            done
+          fi
           
           # Get PR files to check which lines are actually changed
           curl -s -H "Authorization: token $GITHUB_TOKEN" \
