@@ -87,7 +87,7 @@ jobs:
             ' | \
             reviewdog -f=checkstyle -reporter=github-pr-check -fail-on-error=false
 
-      - name: Generate Vale summary and post PR comment
+      - name: Post individual Vale comments on PR lines
         if: steps.changed-files.outputs.vale_files != ''
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -106,59 +106,59 @@ jobs:
             exit 0
           fi
           
-          # Generate summary grouped by rule and severity
-          SUMMARY=$(jq -r '
-            # Collect all issues with rule name and file path
-            [to_entries[] | .key as $file | .value[] | {
-              rule: .Check,
-              severity: .Severity,
-              file: $file,
-              line: .Line,
-              message: .Message
-            }] as $all_issues |
-            
-            # Separate errors and warnings
-            ($all_issues | map(select(.severity == "error"))) as $errors |
-            ($all_issues | map(select(.severity == "warning"))) as $warnings |
-            
-            # Group errors by rule name
-            ($errors | group_by(.rule)) as $error_groups |
-            # Group warnings by rule name
-            ($warnings | group_by(.rule)) as $warning_groups |
-            
-            # Build the summary
-            "# Vale linting summary\n\n" +
-            "Please address the following style issues in the doc(s) touched in this PR to help speed up the review process.\n\n\n" +
-            
-            # Errors section
-            (if ($error_groups | length) > 0 then
-              "## Errors\n\n\n" +
-              "❌ These issues must be resolved before the PR can be accepted:\n\n\n" +
-              ($error_groups | map(
-                "### " + .[0].rule + "\n\n\n" +
-                "**Locations:**\n\n" +
-                (map("- `\(.file):\(.line)`: \(.message)") | join("\n")) + "\n\n"
-              ) | join("\n"))
-            else "" end) +
-            
-            # Warnings section
-            (if ($warning_groups | length) > 0 then
-              (if ($error_groups | length) > 0 then "\n\n" else "" end) +
-              "## Warnings\n\n" +
-              "⚠️ The docs team strongly recommends making these changes, if applicable:\n\n" +
-              ($warning_groups | map(
-                "### " + .[0].rule + "\n\n" +
-                "**Locations:**\n\n" +
-                (map("- `\(.file):\(.line)`: \(.message)") | join("\n")) + "\n\n"
-              ) | join("\n"))
-            else "" end)
-          ' vale_results.json)
+          # Get PR head SHA
+          PR_HEAD_SHA=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+            "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}" \
+            | jq -r '.head.sha')
           
-          # Post comment to PR using GitHub API
-          BODY_JSON=$(echo "$SUMMARY" | jq -Rs '{body: .}')
-          curl -X POST \
-            -H "Authorization: token $GITHUB_TOKEN" \
-            -H "Accept: application/vnd.github.v3+json" \
-            -H "Content-Type: application/json" \
-            "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments" \
-            -d "$BODY_JSON"
+          # Get existing review comments to avoid duplicates (store as JSON for easier querying)
+          EXISTING_COMMENTS_JSON=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+            "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/comments")
+          
+          # Process each violation and post individual comments
+          jq -r 'to_entries[] | .key as $file | .value[] | 
+            "\($file)|\(.Line)|\(.Check)|\(.Severity)|\(.Message)"' vale_results.json | while IFS='|' read -r file line rule severity message; do
+            
+            # Check if we've already commented on this exact violation
+            COMMENT_EXISTS=$(echo "$EXISTING_COMMENTS_JSON" | jq -r --arg path "$file" --arg line "$line" --arg rule "$rule" '
+              .[] | select(.path == $path and (.line | tostring) == $line and (.body | contains("**" + $rule + "**"))) | .id
+            ' | head -1)
+            
+            if [ -n "$COMMENT_EXISTS" ]; then
+              echo "Skipping duplicate comment for ${file}:${line} (${rule})"
+              continue
+            fi
+            
+            # Format comment with rule citation
+            SEVERITY_EMOJI=""
+            if [ "$severity" = "error" ]; then
+              SEVERITY_EMOJI="❌ "
+            elif [ "$severity" = "warning" ]; then
+              SEVERITY_EMOJI="⚠️ "
+            fi
+            
+            COMMENT_BODY="${SEVERITY_EMOJI}**${rule}** (${severity}): ${message}"
+            
+            # Post review comment on specific line
+            COMMENT_JSON=$(jq -n \
+              --arg path "$file" \
+              --arg line "$line" \
+              --arg body "$COMMENT_BODY" \
+              --arg commit "$PR_HEAD_SHA" \
+              '{
+                path: $path,
+                line: ($line | tonumber),
+                side: "RIGHT",
+                body: $body,
+                commit_id: $commit
+              }')
+            
+            curl -s -X POST \
+              -H "Authorization: token $GITHUB_TOKEN" \
+              -H "Accept: application/vnd.github.v3+json" \
+              -H "Content-Type: application/json" \
+              "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/comments" \
+              -d "$COMMENT_JSON" > /dev/null
+            
+            echo "Posted comment for ${rule} at ${file}:${line}"
+          done
