@@ -151,7 +151,7 @@ Reference:
 
 ### **Complex nesting**
 ```http
-GET /agent_ingresses?filter='obj.domain in ["foo.com","bar.com","baz.com"] || (obj.created_at < "2025-05-10Z" && obj.description.contains("cowbell"))'
+GET /agent_ingresses?filter='obj.domain in ["foo.com","bar.com","baz.com"] || (obj.created_at < timestamp("2025-05-10Z") && obj.description.contains("cowbell"))'
 ```
 
 Reference:
