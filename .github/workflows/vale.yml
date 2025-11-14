@@ -95,13 +95,14 @@ jobs:
           TOTAL_VIOLATIONS=$(jq '[.[] | length] | add' vale_results.json)
           echo "Found $TOTAL_VIOLATIONS total violations to process"
           
-          COMMENT_COUNT=0
-          
-          # Get PR files once to cache the response
+          # Get existing comments to check for duplicates
           curl -s -H "Authorization: token $GITHUB_TOKEN" \
-            "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files" > pr_files.json
+            "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/comments" > existing_comments.json
           
-          # Process each violation and post individual comments
+          COMMENT_COUNT=0
+          SKIP_COUNT=0
+          
+          # Process violations into a temp file to avoid subshell issues
           jq -c --arg commit "$PR_HEAD_SHA" '
             def severity_emoji(s):
               if s == "error" then "❌ "
@@ -118,7 +119,10 @@ jobs:
               body: (severity_emoji(.Severity) + "**" + .Check + "** (" + .Severity + "): " + .Message),
               commit: $commit
             }
-          ' vale_results.json | while read -r violation; do
+          ' vale_results.json > violations_to_post.json
+          
+          # Process each violation
+          while read -r violation; do
             if [ -z "$violation" ]; then
               continue
             fi
@@ -128,6 +132,21 @@ jobs:
             RULE=$(echo "$violation" | jq -r '.rule')
             BODY=$(echo "$violation" | jq -r '.body')
             COMMIT=$(echo "$violation" | jq -r '.commit')
+            
+            # Check if this exact comment already exists
+            COMMENT_EXISTS=$(jq -r --arg path "$FILE" --argjson line "$LINE" --arg rule "$RULE" '
+              .[] | select(
+                .path == $path and 
+                (.line | tostring) == ($line | tostring) and
+                (.body | contains("**" + $rule + "**"))
+              ) | .id
+            ' existing_comments.json | head -1)
+            
+            if [ -n "$COMMENT_EXISTS" ]; then
+              echo "Skipping duplicate: ${RULE} at ${FILE}:${LINE}"
+              SKIP_COUNT=$((SKIP_COUNT + 1))
+              continue
+            fi
             
             echo "Processing violation: ${RULE} at ${FILE}:${LINE}"
             
@@ -153,12 +172,15 @@ jobs:
             
             HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
             if [ "$HTTP_CODE" = "201" ]; then
-              echo "Posted comment for ${RULE} at ${FILE}:${LINE} (diff line ${DIFF_LINE})"
+              echo "Posted comment for ${RULE} at ${FILE}:${LINE}"
               COMMENT_COUNT=$((COMMENT_COUNT + 1))
+            elif [ "$HTTP_CODE" = "422" ]; then
+              echo "Skipping ${RULE} at ${FILE}:${LINE} (line not in diff or cannot be resolved)"
+              SKIP_COUNT=$((SKIP_COUNT + 1))
             else
-              echo "Failed to post comment for ${RULE} at ${FILE}:${LINE} (diff line ${DIFF_LINE}, HTTP $HTTP_CODE)"
+              echo "Failed to post comment for ${RULE} at ${FILE}:${LINE} (HTTP $HTTP_CODE)"
               echo "$RESPONSE" | head -n-1
             fi
-          done
+          done < violations_to_post.json
           
-          echo "Posted $COMMENT_COUNT comments out of $TOTAL_VIOLATIONS violations"
+          echo "Posted $COMMENT_COUNT comments, skipped $SKIP_COUNT (duplicates or not in diff), out of $TOTAL_VIOLATIONS total violations"
