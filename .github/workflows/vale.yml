@@ -117,30 +117,41 @@ jobs:
           SKIP_COUNT=0
           
           # Delete all existing Vale comments from the PR
+          # Get all PR review comments (line comments)
           curl -s -H "Authorization: token $GITHUB_TOKEN" \
+            -H "Accept: application/vnd.github.v3+json" \
             "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/comments" > existing_comments.json
           
-          # Ensure it's valid JSON
-          if ! jq empty existing_comments.json 2>/dev/null; then
+          # Check if response is valid JSON and is an array
+          if ! jq -e 'type == "array"' existing_comments.json > /dev/null 2>&1; then
             echo "[]" > existing_comments.json
           fi
+          
+          # Get the current user (GitHub Actions bot) to only delete our own comments
+          CURRENT_USER=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+            -H "Accept: application/vnd.github.v3+json" \
+            "https://api.github.com/user" | jq -r '.login')
           
           # Find and delete all comments that look like Vale comments
           # Vale comments have the pattern: emoji **RuleName** (severity): message
           # Match comments that contain both ** (for rule name) and (error) or (warning) pattern
-          jq -r '.[] | select(.body | contains("**")) | select(.body | contains("(error)") or contains("(warning)")) | .id' existing_comments.json 2>/dev/null | while read -r comment_id; do
-            if [ -n "$comment_id" ] && [ "$comment_id" != "null" ]; then
-              DELETE_RESPONSE=$(curl -s -w "\n%{http_code}" -X DELETE \
+          # Also verify the comment was created by the current user (GitHub Actions bot)
+          jq -r --arg user "$CURRENT_USER" '
+            .[] | 
+            select(.user.login == $user) |
+            select(.body | contains("**")) | 
+            select(.body | contains("(error)") or contains("(warning)")) | 
+            .id
+          ' existing_comments.json 2>/dev/null | while read -r comment_id; do
+            if [ -n "$comment_id" ] && [ "$comment_id" != "null" ] && [ "$comment_id" != "" ]; then
+              # Delete the comment using the PR review comments endpoint
+              HTTP_CODE=$(curl -s -w "%{http_code}" -o /dev/null -X DELETE \
                 -H "Authorization: token $GITHUB_TOKEN" \
                 -H "Accept: application/vnd.github.v3+json" \
                 "https://api.github.com/repos/${{ github.repository }}/pulls/comments/$comment_id")
-              HTTP_CODE=$(echo "$DELETE_RESPONSE" | tail -n1)
-              if [ "$HTTP_CODE" != "204" ] && [ "$HTTP_CODE" != "200" ]; then
-                # If delete fails, try the review comments endpoint
-                curl -s -X DELETE \
-                  -H "Authorization: token $GITHUB_TOKEN" \
-                  -H "Accept: application/vnd.github.v3+json" \
-                  "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/comments/$comment_id" > /dev/null
+              # 204 No Content means successful deletion
+              if [ "$HTTP_CODE" = "204" ]; then
+                : # Successfully deleted
               fi
             fi
           done
