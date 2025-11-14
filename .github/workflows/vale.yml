@@ -108,8 +108,6 @@ jobs:
           
           # Generate summary grouped by rule and severity
           SUMMARY=$(jq -r '
-            def severity_order: {"error": 0, "warning": 1, "suggestion": 2};
-            
             # Collect all issues with rule name and file path
             [to_entries[] | .key as $file | .value[] | {
               rule: .Check,
@@ -119,18 +117,41 @@ jobs:
               message: .Message
             }] as $all_issues |
             
-            # Group by rule and severity
-            ($all_issues | group_by(.rule + "|" + .severity) | sort_by(.[0].severity | severity_order[.] // 99)) as $grouped |
+            # Separate errors and warnings
+            ($all_issues | map(select(.severity == "error"))) as $errors |
+            ($all_issues | map(select(.severity == "warning"))) as $warnings |
             
-            # Format as markdown
-            "## 📝 Vale Linting Summary\n\n" +
-            "Found **\($all_issues | length) total issue(s)** across **\($grouped | length) unique rule violation(s)**.\n\n" +
-            ($grouped | map(
-              "### " + (.[0].severity | ascii_upcase) + ": " + .[0].rule + "\n\n" +
-              "**Count:** " + (length | tostring) + "\n\n" +
-              "**Locations:**\n" +
-              (map("- `\(.file):\(.line)`: \(.message)") | join("\n")) + "\n\n"
-            ) | join("---\n\n"))
+            # Group errors by rule name
+            ($errors | group_by(.rule)) as $error_groups |
+            # Group warnings by rule name
+            ($warnings | group_by(.rule)) as $warning_groups |
+            
+            # Build the summary
+            "# Vale linting summary\n\n" +
+            "Please address the following style issues in the doc(s) touched in this PR to help speed up the review process.\n\n\n" +
+            
+            # Errors section
+            (if ($error_groups | length) > 0 then
+              "## Errors\n\n\n" +
+              "❌ These issues must be resolved before the PR can be accepted:\n\n\n" +
+              ($error_groups | map(
+                "### " + .[0].rule + "\n\n\n" +
+                "**Locations:**\n\n" +
+                (map("- `\(.file):\(.line)`: \(.message)") | join("\n\n")) + "\n\n"
+              ) | join("\n"))
+            else "" end) +
+            
+            # Warnings section
+            (if ($warning_groups | length) > 0 then
+              (if ($error_groups | length) > 0 then "\n\n" else "" end) +
+              "## Warnings\n\n" +
+              "⚠️ The docs team strongly recommends making these changes, if applicable:\n\n" +
+              ($warning_groups | map(
+                "### " + .[0].rule + "\n\n" +
+                "**Locations:**\n\n" +
+                (map("- `\(.file):\(.line)`: \(.message)") | join("\n\n")) + "\n\n"
+              ) | join("\n"))
+            else "" end)
           ' vale_results.json)
           
           # Post comment to PR using GitHub API
