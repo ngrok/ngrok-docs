@@ -91,39 +91,11 @@ jobs:
             "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}" \
             | jq -r '.head.sha')
           
-          # Get existing review comments to avoid duplicates
-          curl -s -H "Authorization: token $GITHUB_TOKEN" \
-            "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/comments" > existing_comments.json
-          
-          # Ensure existing_comments.json is valid JSON (empty array if no comments)
-          if ! jq empty existing_comments.json 2>/dev/null; then
-            echo "[]" > existing_comments.json
-          fi
-          
           # Count total violations
           TOTAL_VIOLATIONS=$(jq '[.[] | length] | add' vale_results.json)
           echo "Found $TOTAL_VIOLATIONS total violations to process"
           
           COMMENT_COUNT=0
-          
-          # Count violations that will be processed (after duplicate filtering)
-          VIOLATIONS_TO_PROCESS=$(jq -c --arg commit "$PR_HEAD_SHA" '
-            ($existing_comments[0] // []) as $existing |
-            [to_entries[] | .key as $file | .value[] | 
-            {
-              file: $file,
-              line: .Line,
-              rule: .Check,
-              # Only check for comments that match our exact format: emoji + **RuleName** (severity):
-              exists: (($existing | .[] | select(
-                .path == $file and 
-                (.line | tostring) == (.Line | tostring) and
-                (.body | test("^[❌⚠️]\\s\\*\\*" + .Check + "\\*\\*\\s\\("))
-              )) | length > 0)
-            } |
-            select(.exists == false)] | length
-          ' --slurpfile existing_comments existing_comments.json vale_results.json)
-          echo "Will process $VIOLATIONS_TO_PROCESS violations (after filtering duplicates)"
           
           # Process each violation and post individual comments
           jq -c --arg commit "$PR_HEAD_SHA" '
@@ -131,8 +103,6 @@ jobs:
               if s == "error" then "❌ "
               elif s == "warning" then "⚠️ "
               else "" end;
-            
-            ($existing_comments[0] // []) as $existing |
             
             to_entries[] | .key as $file | .value[] | 
             {
@@ -142,16 +112,9 @@ jobs:
               severity: .Severity,
               message: .Message,
               body: (severity_emoji(.Severity) + "**" + .Check + "** (" + .Severity + "): " + .Message),
-              commit: $commit,
-              # Only check for comments that match our exact format: emoji + **RuleName** (severity):
-              exists: (($existing | .[] | select(
-                .path == $file and 
-                (.line | tostring) == (.Line | tostring) and
-                (.body | test("^[❌⚠️]\\s\\*\\*" + .Check + "\\*\\*\\s\\("))
-              )) | length > 0)
-            } |
-            select(.exists == false)
-          ' --slurpfile existing_comments existing_comments.json vale_results.json | while read -r violation; do
+              commit: $commit
+            }
+          ' vale_results.json | while read -r violation; do
             if [ -z "$violation" ]; then
               continue
             fi
