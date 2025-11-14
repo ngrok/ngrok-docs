@@ -34,7 +34,7 @@ The following core operators and helpers are supported for the initial release:
 - List membership using the `in` keyword
 - String substring checks: `startsWith()`, `contains()`, `endsWith()`
 - Length / emptiness checks: `size()`, `== ""`, `== null`
-- Date parsing: `datetime.parse()`
+- Date parsing: `timestamp(RFC-3339)`
 
 ### Instance Inspection (vs. List Comprehension)
 
