@@ -98,6 +98,10 @@ jobs:
           COMMENT_COUNT=0
           SKIP_COUNT=0
           
+          # Get existing comments to check for duplicates
+          curl -s -H "Authorization: token $GITHUB_TOKEN" \
+            "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/comments" > existing_comments.json
+          
           # Get PR files to check which lines are actually changed
           curl -s -H "Authorization: token $GITHUB_TOKEN" \
             "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files" > pr_files.json
@@ -150,6 +154,41 @@ jobs:
             return $((1 - line_changed))
           }
           
+          # Function to check if a comment already exists for this file+line+rules combination
+          comment_exists() {
+            local file="$1"
+            local line="$2"
+            local rules_json="$3"
+            
+            # Extract rule names from the violations JSON
+            local rules=$(echo "$rules_json" | jq -r '.[].rule' | sort)
+            
+            # Check if there's an existing comment on this file+line that contains all our rules
+            local existing_comment=$(jq -r --arg file "$file" --argjson line "$line" '
+              .[] | select(
+                .path == $file and 
+                (.line | tostring) == ($line | tostring)
+              ) | .body
+            ' existing_comments.json 2>/dev/null | head -1)
+            
+            if [ -z "$existing_comment" ] || [ "$existing_comment" = "null" ]; then
+              return 1  # No comment exists
+            fi
+            
+            # Check if the existing comment contains all the rules we're about to post
+            local all_rules_found=1
+            while IFS= read -r rule; do
+              if [ -n "$rule" ]; then
+                if ! echo "$existing_comment" | grep -qF "**${rule}**"; then
+                  all_rules_found=0
+                  break
+                fi
+              fi
+            done <<< "$rules"
+            
+            return $((1 - all_rules_found))
+          }
+          
           # Process violations and group by file+line to combine multiple violations on same line
           jq -c --arg commit "$PR_HEAD_SHA" '
             def severity_emoji(s):
@@ -193,6 +232,15 @@ jobs:
             # Check if this line is actually changed in the diff
             if ! is_line_changed "$FILE" "$LINE"; then
               echo "Skipping ${VIOLATION_COUNT} violation(s) at ${FILE}:${LINE} (line not actually changed in diff)"
+              SKIP_COUNT=$((SKIP_COUNT + VIOLATION_COUNT))
+              continue
+            fi
+            
+            # Check if a comment with these rules already exists on this line
+            VIOLATIONS_JSON=$(echo "$violation_group" | jq -c '.violations')
+            if comment_exists "$FILE" "$LINE" "$VIOLATIONS_JSON"; then
+              RULES=$(echo "$violation_group" | jq -r '.violations[].rule' | tr '\n' ',' | sed 's/,$//')
+              echo "Skipping duplicate comment: ${RULES} at ${FILE}:${LINE}"
               SKIP_COUNT=$((SKIP_COUNT + VIOLATION_COUNT))
               continue
             fi
