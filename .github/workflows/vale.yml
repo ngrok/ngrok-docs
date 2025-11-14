@@ -161,27 +161,74 @@ jobs:
           
           # Function to check if a comment already exists for this file+rule
           # Checks by rule name in comment body rather than exact line number
-          # to handle cases where line numbers shift due to content added above
+          # to handle cases where line numbers shift due to content added above.
+          # We check ALL comments on the PR (not filtered by commit hash) to catch comments
+          # from previous commits. We match by file and rule name, not by exact line number,
+          # since line numbers can shift when content is added above.
           comment_exists() {
             local file="$1"
-            local line="$2"
+            local target_line="$2"
             local rule="$3"
             
-            # Check if there's an existing comment on this file with the same rule
-            # Look for the rule name in the comment body (format: **RuleName**)
-            local comment_count=$(jq -r --arg file "$file" --arg rule "$rule" '
+            # Get all existing comments on this file with the same rule
+            # We don't filter by commit hash - we want to check ALL comments on the PR
+            # This fixes the issue where comments from old commits were being ignored
+            local matching_comments=$(jq -r --arg file "$file" --arg rule "$rule" '
               [.[] | select(
                 .path == $file and 
                 (.body | contains("**" + $rule + "**"))
-              )] | length
+              )]
             ' existing_comments.json 2>/dev/null)
             
-            # Return 0 (exists) if count > 0, 1 (doesn't exist) otherwise
-            if [ -n "$comment_count" ] && [ "$comment_count" != "null" ] && [ "$comment_count" != "0" ]; then
-              return 0  # Comment exists
+            # If no matching comments, return 1 (doesn't exist)
+            if [ -z "$matching_comments" ] || [ "$matching_comments" = "[]" ] || [ "$matching_comments" = "null" ]; then
+              return 1
             fi
             
-            return 1  # No comment exists
+            # Check if any of the matching comments are on a line that's actually changed in the current diff
+            # OR if the target line we want to post on is close to an existing comment line
+            # This handles line number shifts - we match by rule name and check if either:
+            # 1. The existing comment is on a changed line, OR
+            # 2. The target line is close to an existing comment (within 5 lines) to handle small shifts
+            local comment_count=$(echo "$matching_comments" | jq -r 'length' 2>/dev/null)
+            
+            if [ -z "$comment_count" ] || [ "$comment_count" = "0" ] || [ "$comment_count" = "null" ]; then
+              return 1
+            fi
+            
+            # Check each matching comment
+            local comment_index=0
+            while [ "$comment_index" -lt "$comment_count" ]; do
+              local comment_line=$(echo "$matching_comments" | jq -r ".[$comment_index].line // empty" 2>/dev/null)
+              
+              if [ -n "$comment_line" ] && [ "$comment_line" != "null" ]; then
+                # Check if this comment is on a line that's actually changed in the diff
+                if is_line_changed "$file" "$comment_line"; then
+                  # Found a comment on a changed line with the same rule - this is a duplicate
+                  return 0
+                fi
+                
+                # Also check if the target line is close to the comment line (within 5 lines)
+                # This handles small line number shifts
+                local line_diff=$((target_line - comment_line))
+                # Get absolute value
+                if [ "$line_diff" -lt 0 ]; then
+                  line_diff=$((0 - line_diff))
+                fi
+                if [ "$line_diff" -le 5 ]; then
+                  # Lines are close together - likely the same violation that shifted
+                  # But only skip if the target line is actually changed
+                  if is_line_changed "$file" "$target_line"; then
+                    return 0
+                  fi
+                fi
+              fi
+              
+              comment_index=$((comment_index + 1))
+            done
+            
+            # No matching comment found
+            return 1
           }
           
           # Process violations and group by file+line to combine multiple violations on same line
