@@ -178,6 +178,10 @@ jobs:
             }
           ' vale_results.json > violations_to_post.json
           
+          # Debug: show how many groups we have
+          GROUP_COUNT=$(jq -s 'length' violations_to_post.json 2>/dev/null || wc -l < violations_to_post.json)
+          echo "Grouped violations into $GROUP_COUNT comment groups"
+          
           # Process each violation group (file+line combination)
           while read -r violation_group; do
             if [ -z "$violation_group" ]; then
@@ -199,6 +203,9 @@ jobs:
             
             RULES=$(echo "$violation_group" | jq -r '.violations[].rule' | tr '\n' ',' | sed 's/,$//')
             echo "Processing ${VIOLATION_COUNT} violation(s): ${RULES} at ${FILE}:${LINE}"
+            if [ "$VIOLATION_COUNT" -gt 1 ]; then
+              echo "Combined body preview: $(echo "$COMBINED_BODY" | head -c 200)..."
+            fi
             
             COMMENT_JSON=$(jq -n \
               --arg path "$FILE" \
