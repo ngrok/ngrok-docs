@@ -150,15 +150,15 @@ jobs:
             return $((1 - line_changed))
           }
           
-          # Process violations into a temp file to avoid subshell issues
+          # Process violations and group by file+line to combine multiple violations on same line
           jq -c --arg commit "$PR_HEAD_SHA" '
             def severity_emoji(s):
               if s == "error" then "❌ "
               elif s == "warning" then "⚠️ "
               else "" end;
             
-            to_entries[] | .key as $file | .value[] | 
-            {
+            # Group violations by file and line
+            [to_entries[] | .key as $file | .value[] | {
               file: $file,
               line: .Line,
               rule: .Check,
@@ -166,34 +166,44 @@ jobs:
               message: .Message,
               body: (severity_emoji(.Severity) + "**" + .Check + "** (" + .Severity + "): " + .Message),
               commit: $commit
+            }] |
+            group_by(.file + "|" + (.line | tostring)) |
+            .[] |
+            {
+              file: .[0].file,
+              line: .[0].line,
+              commit: .[0].commit,
+              violations: [.[] | {rule: .rule, severity: .severity, message: .message, body: .body}],
+              combined_body: ([.[] | .body] | join("\n\n"))
             }
           ' vale_results.json > violations_to_post.json
           
-          # Process each violation
-          while read -r violation; do
-            if [ -z "$violation" ]; then
+          # Process each violation group (file+line combination)
+          while read -r violation_group; do
+            if [ -z "$violation_group" ]; then
               continue
             fi
             
-            FILE=$(echo "$violation" | jq -r '.file')
-            LINE=$(echo "$violation" | jq -r '.line')
-            RULE=$(echo "$violation" | jq -r '.rule')
-            BODY=$(echo "$violation" | jq -r '.body')
-            COMMIT=$(echo "$violation" | jq -r '.commit')
+            FILE=$(echo "$violation_group" | jq -r '.file')
+            LINE=$(echo "$violation_group" | jq -r '.line')
+            COMMIT=$(echo "$violation_group" | jq -r '.commit')
+            COMBINED_BODY=$(echo "$violation_group" | jq -r '.combined_body')
+            VIOLATION_COUNT=$(echo "$violation_group" | jq '.violations | length')
             
             # Check if this line is actually changed in the diff
             if ! is_line_changed "$FILE" "$LINE"; then
-              echo "Skipping ${RULE} at ${FILE}:${LINE} (line not actually changed in diff)"
-              SKIP_COUNT=$((SKIP_COUNT + 1))
+              echo "Skipping ${VIOLATION_COUNT} violation(s) at ${FILE}:${LINE} (line not actually changed in diff)"
+              SKIP_COUNT=$((SKIP_COUNT + VIOLATION_COUNT))
               continue
             fi
             
-            echo "Processing violation: ${RULE} at ${FILE}:${LINE}"
+            RULES=$(echo "$violation_group" | jq -r '.violations[].rule' | tr '\n' ',' | sed 's/,$//')
+            echo "Processing ${VIOLATION_COUNT} violation(s): ${RULES} at ${FILE}:${LINE}"
             
             COMMENT_JSON=$(jq -n \
               --arg path "$FILE" \
               --argjson line "$LINE" \
-              --arg body "$BODY" \
+              --arg body "$COMBINED_BODY" \
               --arg commit "$COMMIT" \
               '{
                 path: $path,
@@ -212,13 +222,13 @@ jobs:
             
             HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
             if [ "$HTTP_CODE" = "201" ]; then
-              echo "Posted comment for ${RULE} at ${FILE}:${LINE}"
-              COMMENT_COUNT=$((COMMENT_COUNT + 1))
+              echo "Posted comment with ${VIOLATION_COUNT} violation(s) at ${FILE}:${LINE}"
+              COMMENT_COUNT=$((COMMENT_COUNT + VIOLATION_COUNT))
             elif [ "$HTTP_CODE" = "422" ]; then
-              echo "Skipping ${RULE} at ${FILE}:${LINE} (line not in diff or cannot be resolved)"
-              SKIP_COUNT=$((SKIP_COUNT + 1))
+              echo "Skipping ${VIOLATION_COUNT} violation(s) at ${FILE}:${LINE} (line not in diff or cannot be resolved)"
+              SKIP_COUNT=$((SKIP_COUNT + VIOLATION_COUNT))
             else
-              echo "Failed to post comment for ${RULE} at ${FILE}:${LINE} (HTTP $HTTP_CODE)"
+              echo "Failed to post comment for ${VIOLATION_COUNT} violation(s) at ${FILE}:${LINE} (HTTP $HTTP_CODE)"
               echo "$RESPONSE" | head -n-1
             fi
           done < violations_to_post.json
