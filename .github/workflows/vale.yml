@@ -104,12 +104,7 @@ jobs:
           TOTAL_VIOLATIONS=$(jq '[.[] | length] | add' vale_results.json)
           echo "Found $TOTAL_VIOLATIONS total violations to process"
           
-          # Count existing comments
-          EXISTING_COUNT=$(jq 'length' existing_comments.json)
-          echo "Found $EXISTING_COUNT existing comments"
-          
           COMMENT_COUNT=0
-          SKIP_COUNT=0
           
           # Count violations that will be processed (after duplicate filtering)
           VIOLATIONS_TO_PROCESS=$(jq -c --arg commit "$PR_HEAD_SHA" '
@@ -119,10 +114,11 @@ jobs:
               file: $file,
               line: .Line,
               rule: .Check,
+              # Only check for comments that match our exact format: emoji + **RuleName** (severity):
               exists: (($existing | .[] | select(
                 .path == $file and 
                 (.line | tostring) == (.Line | tostring) and
-                (.body | contains("**" + .Check + "**"))
+                (.body | test("^[❌⚠️]\\s\\*\\*" + .Check + "\\*\\*\\s\\("))
               )) | length > 0)
             } |
             select(.exists == false)] | length
@@ -147,11 +143,11 @@ jobs:
               message: .Message,
               body: (severity_emoji(.Severity) + "**" + .Check + "** (" + .Severity + "): " + .Message),
               commit: $commit,
-              # Check if comment with this specific rule already exists on this line
+              # Only check for comments that match our exact format: emoji + **RuleName** (severity):
               exists: (($existing | .[] | select(
                 .path == $file and 
                 (.line | tostring) == (.Line | tostring) and
-                (.body | contains("**" + .Check + "**"))
+                (.body | test("^[❌⚠️]\\s\\*\\*" + .Check + "\\*\\*\\s\\("))
               )) | length > 0)
             } |
             select(.exists == false)
