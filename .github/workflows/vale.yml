@@ -117,50 +117,45 @@ jobs:
           SKIP_COUNT=0
           
           # Delete all existing Vale comments from the PR
-          # Get all PR review comments (line comments) - handle pagination
-          PAGE=1
-          PER_PAGE=100
-          ALL_COMMENTS="[]"
-          
-          while true; do
-            COMMENTS_PAGE=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
-              -H "Accept: application/vnd.github.v3+json" \
-              "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/comments?page=$PAGE&per_page=$PER_PAGE")
-            
-            if ! echo "$COMMENTS_PAGE" | jq -e 'type == "array"' > /dev/null 2>&1; then
-              break
-            fi
-            
-            PAGE_COUNT=$(echo "$COMMENTS_PAGE" | jq 'length')
-            if [ "$PAGE_COUNT" -eq 0 ]; then
-              break
-            fi
-            
-            ALL_COMMENTS=$(echo "$ALL_COMMENTS" | jq --argjson page "$COMMENTS_PAGE" '. + $page')
-            PAGE=$((PAGE + 1))
-          done
-          
-          echo "$ALL_COMMENTS" > existing_comments.json
-          
-          # Get the current user (GitHub Actions bot)
+          # Get the current user (GitHub Actions bot) first
           CURRENT_USER=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
             -H "Accept: application/vnd.github.v3+json" \
             "https://api.github.com/user" | jq -r '.login // empty')
           
-          # Delete ALL comments by the current user (GitHub Actions bot)
-          # This ensures we delete all our comments regardless of format changes
+          # Get all PR review comments and delete them page by page to avoid memory issues
           if [ -n "$CURRENT_USER" ] && [ "$CURRENT_USER" != "null" ]; then
-            jq -r --arg user "$CURRENT_USER" '
-              .[] | 
-              select(.user.login == $user) | 
-              .id
-            ' existing_comments.json 2>/dev/null | while read -r comment_id; do
-              if [ -n "$comment_id" ] && [ "$comment_id" != "null" ] && [ "$comment_id" != "" ]; then
-                curl -s -X DELETE \
-                  -H "Authorization: token $GITHUB_TOKEN" \
-                  -H "Accept: application/vnd.github.v3+json" \
-                  "https://api.github.com/repos/${{ github.repository }}/pulls/comments/$comment_id" > /dev/null
+            PAGE=1
+            PER_PAGE=100
+            
+            while true; do
+              COMMENTS_PAGE=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+                -H "Accept: application/vnd.github.v3+json" \
+                "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/comments?page=$PAGE&per_page=$PER_PAGE")
+              
+              if ! echo "$COMMENTS_PAGE" | jq -e 'type == "array"' > /dev/null 2>&1; then
+                break
               fi
+              
+              PAGE_COUNT=$(echo "$COMMENTS_PAGE" | jq 'length')
+              if [ "$PAGE_COUNT" -eq 0 ]; then
+                break
+              fi
+              
+              # Delete comments from this page that belong to the current user
+              echo "$COMMENTS_PAGE" | jq -r --arg user "$CURRENT_USER" '
+                .[] | 
+                select(.user.login == $user) | 
+                .id
+              ' 2>/dev/null | while read -r comment_id; do
+                if [ -n "$comment_id" ] && [ "$comment_id" != "null" ] && [ "$comment_id" != "" ]; then
+                  curl -s -X DELETE \
+                    -H "Authorization: token $GITHUB_TOKEN" \
+                    -H "Accept: application/vnd.github.v3+json" \
+                    "https://api.github.com/repos/${{ github.repository }}/pulls/comments/$comment_id" > /dev/null
+                fi
+              done
+              
+              PAGE=$((PAGE + 1))
             done
           fi
           
