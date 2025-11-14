@@ -11,7 +11,7 @@ This feature is under active development. Behavior, supported fields, and limits
 
 When using ngrok's API, you can add the `filter` query parameter to `GET` requests to return only those results which match a provided criteria. This makes automated management of resources easier while eliminating the need to download large collections and filter client-side.
 
-To use API Filtering, you pass a server-side subset of CEL expressions to the `filter` query parameter, as demonstrated in the following example.
+To use API Filtering, you pass a subset of CEL expressions to the `filter` query parameter, as demonstrated in the following example.
 
 This example request fetches a list of all your Cloud and Agent endpoints.
 
