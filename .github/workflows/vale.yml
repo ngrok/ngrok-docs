@@ -111,54 +111,80 @@ jobs:
             "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}" \
             | jq -r '.head.sha')
           
-          # Get existing review comments to avoid duplicates (store as JSON for easier querying)
-          EXISTING_COMMENTS_JSON=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
-            "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/comments")
+          # Get existing review comments to avoid duplicates
+          curl -s -H "Authorization: token $GITHUB_TOKEN" \
+            "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/comments" > existing_comments.json
           
+          # Ensure existing_comments.json is valid JSON (empty array if no comments)
+          if ! jq empty existing_comments.json 2>/dev/null; then
+            echo "[]" > existing_comments.json
+          fi
+          
+          # Count total violations
+          TOTAL_VIOLATIONS=$(jq '[.[] | length] | add' vale_results.json)
+          echo "Found $TOTAL_VIOLATIONS total violations to process"
+          
+          COMMENT_COUNT=0
           # Process each violation and post individual comments
-          jq -r 'to_entries[] | .key as $file | .value[] | 
-            "\($file)|\(.Line)|\(.Check)|\(.Severity)|\(.Message)"' vale_results.json | while IFS='|' read -r file line rule severity message; do
+          jq -c --arg commit "$PR_HEAD_SHA" '
+            def severity_emoji(s):
+              if s == "error" then "❌ "
+              elif s == "warning" then "⚠️ "
+              else "" end;
             
-            # Check if we've already commented on this exact violation
-            COMMENT_EXISTS=$(echo "$EXISTING_COMMENTS_JSON" | jq -r --arg path "$file" --arg line "$line" --arg rule "$rule" '
-              .[] | select(.path == $path and (.line | tostring) == $line and (.body | contains("**" + $rule + "**"))) | .id
-            ' | head -1)
+            def comment_exists(existing; file; line; rule):
+              (existing | .[] | select(
+                .path == file and 
+                (.line | tostring) == (line | tostring) and 
+                (.body | contains("**" + rule + "**"))
+              )) | length > 0;
             
-            if [ -n "$COMMENT_EXISTS" ]; then
-              echo "Skipping duplicate comment for ${file}:${line} (${rule})"
-              continue
-            fi
+            to_entries[] | .key as $file | .value[] | 
+            select(comment_exists($existing_comments[0]; $file; .Line; .Check) | not) |
+            {
+              file: $file,
+              line: .Line,
+              rule: .Check,
+              severity: .Severity,
+              message: .Message,
+              body: (severity_emoji(.Severity) + "**" + .Check + "** (" + .Severity + "): " + .Message),
+              commit: $commit
+            }
+          ' --slurpfile existing_comments existing_comments.json vale_results.json | while read -r violation; do
+            FILE=$(echo "$violation" | jq -r '.file')
+            LINE=$(echo "$violation" | jq -r '.line')
+            RULE=$(echo "$violation" | jq -r '.rule')
+            BODY=$(echo "$violation" | jq -r '.body')
+            COMMIT=$(echo "$violation" | jq -r '.commit')
             
-            # Format comment with rule citation
-            SEVERITY_EMOJI=""
-            if [ "$severity" = "error" ]; then
-              SEVERITY_EMOJI="❌ "
-            elif [ "$severity" = "warning" ]; then
-              SEVERITY_EMOJI="⚠️ "
-            fi
-            
-            COMMENT_BODY="${SEVERITY_EMOJI}**${rule}** (${severity}): ${message}"
-            
-            # Post review comment on specific line
             COMMENT_JSON=$(jq -n \
-              --arg path "$file" \
-              --arg line "$line" \
-              --arg body "$COMMENT_BODY" \
-              --arg commit "$PR_HEAD_SHA" \
+              --arg path "$FILE" \
+              --argjson line "$LINE" \
+              --arg body "$BODY" \
+              --arg commit "$COMMIT" \
               '{
                 path: $path,
-                line: ($line | tonumber),
+                line: $line,
                 side: "RIGHT",
                 body: $body,
                 commit_id: $commit
               }')
             
-            curl -s -X POST \
+            RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
               -H "Authorization: token $GITHUB_TOKEN" \
               -H "Accept: application/vnd.github.v3+json" \
               -H "Content-Type: application/json" \
               "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/comments" \
-              -d "$COMMENT_JSON" > /dev/null
+              -d "$COMMENT_JSON")
             
-            echo "Posted comment for ${rule} at ${file}:${line}"
+            HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
+            if [ "$HTTP_CODE" = "201" ]; then
+              echo "Posted comment for ${RULE} at ${FILE}:${LINE}"
+              COMMENT_COUNT=$((COMMENT_COUNT + 1))
+            else
+              echo "Failed to post comment for ${RULE} at ${FILE}:${LINE} (HTTP $HTTP_CODE)"
+              echo "$RESPONSE" | head -n-1
+            fi
           done
+          
+          echo "Posted $COMMENT_COUNT comments out of $TOTAL_VIOLATIONS violations"
