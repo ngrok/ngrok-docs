@@ -98,6 +98,58 @@ jobs:
           COMMENT_COUNT=0
           SKIP_COUNT=0
           
+          # Get PR files to check which lines are actually changed
+          curl -s -H "Authorization: token $GITHUB_TOKEN" \
+            "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files" > pr_files.json
+          
+          # Function to check if a line is actually changed (added/modified) in the diff
+          is_line_changed() {
+            local file="$1"
+            local target_line="$2"
+            
+            # Get the diff for this file
+            local file_diff=$(jq -r --arg file "$file" '.[] | select(.filename == $file) | .patch // ""' pr_files.json)
+            
+            if [ -z "$file_diff" ] || [ "$file_diff" = "null" ] || [ "$file_diff" = "" ]; then
+              return 1
+            fi
+            
+            local current_line=0
+            local line_changed=0
+            
+            while IFS= read -r diff_line || [ -n "$diff_line" ]; do
+              # Skip diff headers
+              if [[ "$diff_line" =~ ^(@@|diff|index|---|\+\+\+) ]]; then
+                if [[ "$diff_line" =~ ^@@ ]]; then
+                  # Extract starting line number from @@ -old_start,old_count +new_start,new_count @@
+                  if [[ "$diff_line" =~ \+([0-9]+) ]]; then
+                    current_line="${BASH_REMATCH[1]}"
+                    current_line=$((current_line - 1))
+                  fi
+                fi
+                continue
+              fi
+              
+              # Check if this is an added/modified line (starts with +)
+              if [[ "$diff_line" =~ ^\+ ]]; then
+                current_line=$((current_line + 1))
+                if [ "$current_line" -eq "$target_line" ]; then
+                  line_changed=1
+                  break
+                fi
+              # Count unchanged lines (context) but don't mark as changed
+              elif [[ "$diff_line" =~ ^[[:space:]] ]]; then
+                current_line=$((current_line + 1))
+                if [ "$current_line" -eq "$target_line" ]; then
+                  # This line is in the diff but not actually changed
+                  return 1
+                fi
+              fi
+            done <<< "$file_diff"
+            
+            return $((1 - line_changed))
+          }
+          
           # Process violations into a temp file to avoid subshell issues
           jq -c --arg commit "$PR_HEAD_SHA" '
             def severity_emoji(s):
@@ -128,6 +180,13 @@ jobs:
             RULE=$(echo "$violation" | jq -r '.rule')
             BODY=$(echo "$violation" | jq -r '.body')
             COMMIT=$(echo "$violation" | jq -r '.commit')
+            
+            # Check if this line is actually changed in the diff
+            if ! is_line_changed "$FILE" "$LINE"; then
+              echo "Skipping ${RULE} at ${FILE}:${LINE} (line not actually changed in diff)"
+              SKIP_COUNT=$((SKIP_COUNT + 1))
+              continue
+            fi
             
             echo "Processing violation: ${RULE} at ${FILE}:${LINE}"
             
@@ -164,4 +223,4 @@ jobs:
             fi
           done < violations_to_post.json
           
-          echo "Posted $COMMENT_COUNT comments, skipped $SKIP_COUNT (not in diff), out of $TOTAL_VIOLATIONS total violations"
+          echo "Posted $COMMENT_COUNT comments, skipped $SKIP_COUNT (not actually changed in diff), out of $TOTAL_VIOLATIONS total violations"
