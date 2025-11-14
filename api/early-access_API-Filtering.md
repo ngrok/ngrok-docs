@@ -118,7 +118,7 @@ The initial release prioritizes the resource types and fields below. Field cover
 
 ### **Filter endpoints by type and creation time**
 ```http
-GET /endpoints?filter='obj.type == "cloud" && obj.created_at < "2025-10-31T09:23:45-07:00"'
+GET /endpoints?filter='obj.type == "cloud" && obj.created_at < timestamp("2025-10-31T09:23:45-07:00")'
 # or using helpers
 GET /endpoints?filter='obj.type == "cloud" && obj.created_at >= daysAgo(6)'
 ```
