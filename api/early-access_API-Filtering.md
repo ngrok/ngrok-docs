@@ -1,7 +1,7 @@
 ---
-title: Advanced API Filtering (Preview)
-sidebarTitle: Advanced API Filtering
-description: Learn how to use Advanced API to make operational tooling faster and more precise.
+title: API Filtering (Preview)
+sidebarTitle: API Filtering
+description: Learn how to use API Filtering to make operational tooling faster and more precise.
 tag: Preview
 ---
 
@@ -9,9 +9,9 @@ tag: Preview
 This feature is under active development. Behavior, supported fields, and limits may change before General Availability (GA). This guide is provided as forward-looking context for evaluation and feedback.
 </Info>
 
-When using ngrok's API, you can add the `filter` query parameter to your `GET` requests to ensure you receive a smaller payload tailored to your needs. This is called Advanced API Filtering, and it helps make operational tooling faster and more precise while eliminating the need to download large collections and filter client-side.
+When using ngrok's API, you can add the `filter` query parameter to your `GET` requests to ensure you receive a smaller payload tailored to your needs. This helps make operational tooling faster and more precise while eliminating the need to download large collections and filter client-side.
 
-To use Advanced API Filtering, you can pass a server-side subset of CEL expressions to the `filter` query parameter, as demonstrated in the following example.
+To use API Filtering, you can pass a server-side subset of CEL expressions to the `filter` query parameter, as demonstrated in the following example.
 
 The following example request fetches a list of all your Cloud and Agent endpoints.
 
@@ -70,7 +70,7 @@ GET /endpoints?filter='["agent","cloud"] in obj.types'
 
 ### Unsupported CEL features (initial release)
 
-To keep filter evaluation small and predictable, the following CEL features will be excluded in the initial release of Advanced API Filtering.
+To keep filter evaluation small and predictable, the following CEL features will be excluded in the initial release of API Filtering.
 
 - **No index access** (e.g., `a[0]`)
 - **No arithmetic** (e.g., `a + b`)
