@@ -97,6 +97,10 @@ jobs:
           
           COMMENT_COUNT=0
           
+          # Get PR files once to cache the response
+          curl -s -H "Authorization: token $GITHUB_TOKEN" \
+            "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files" > pr_files.json
+          
           # Process each violation and post individual comments
           jq -c --arg commit "$PR_HEAD_SHA" '
             def severity_emoji(s):
@@ -149,10 +153,10 @@ jobs:
             
             HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
             if [ "$HTTP_CODE" = "201" ]; then
-              echo "Posted comment for ${RULE} at ${FILE}:${LINE}"
+              echo "Posted comment for ${RULE} at ${FILE}:${LINE} (diff line ${DIFF_LINE})"
               COMMENT_COUNT=$((COMMENT_COUNT + 1))
             else
-              echo "Failed to post comment for ${RULE} at ${FILE}:${LINE} (HTTP $HTTP_CODE)"
+              echo "Failed to post comment for ${RULE} at ${FILE}:${LINE} (diff line ${DIFF_LINE}, HTTP $HTTP_CODE)"
               echo "$RESPONSE" | head -n-1
             fi
           done
