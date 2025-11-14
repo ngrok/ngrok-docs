@@ -115,6 +115,8 @@ jobs:
           
           COMMENT_COUNT=0
           SKIP_COUNT=0
+          ERROR_COUNT=0
+          WARNING_COUNT=0
           
           # Delete all existing Vale comments from the PR
           # First, delete PR issue comments (summary comments)
@@ -278,6 +280,12 @@ jobs:
               continue
             fi
             
+            # Count errors and warnings for this violation group (on changed lines)
+            VIOLATION_ERRORS=$(echo "$violation_group" | jq '[.violations[] | select(.severity == "error")] | length')
+            VIOLATION_WARNINGS=$(echo "$violation_group" | jq '[.violations[] | select(.severity == "warning")] | length')
+            ERROR_COUNT=$((ERROR_COUNT + VIOLATION_ERRORS))
+            WARNING_COUNT=$((WARNING_COUNT + VIOLATION_WARNINGS))
+            
             COMMENT_JSON=$(jq -n \
               --arg path "$FILE" \
               --argjson line "$LINE" \
@@ -306,11 +314,7 @@ jobs:
             fi
           done < violations_to_post.json
           
-          # Count errors and warnings from Vale results
-          ERROR_COUNT=$(jq '[to_entries[] | .value[] | select(.Severity == "error")] | length' vale_results.json 2>/dev/null || echo "0")
-          WARNING_COUNT=$(jq '[to_entries[] | .value[] | select(.Severity == "warning")] | length' vale_results.json 2>/dev/null || echo "0")
-          
-          # Post summary comment
+          # Post summary comment (ERROR_COUNT and WARNING_COUNT were counted above from changed lines only)
           SUMMARY_BODY=$(printf "# Style linting summary\n\nVale found %s error(s) and %s warning(s) in this PR. Please resolve all errors and review all warnings before merging." "$ERROR_COUNT" "$WARNING_COUNT")
           
           SUMMARY_JSON=$(jq -n \
