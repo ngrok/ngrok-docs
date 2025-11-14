@@ -63,29 +63,9 @@ jobs:
           tar -xzf vale_3.13.0_Linux_64-bit.tar.gz -C /usr/local/bin
           vale --version
 
-      - name: Install reviewdog and jq
+      - name: Install jq and curl
         run: |
-          wget -O - -q https://raw.githubusercontent.com/reviewdog/reviewdog/master/install.sh | sh -s -- -b /usr/local/bin v0.17.0
           sudo apt-get update && sudo apt-get install -y jq curl
-
-      - name: Run Vale with reviewdog
-        if: steps.changed-files.outputs.vale_files != ''
-        env:
-          REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          # Read files into space-separated string for Vale
-          FILES=$(tr '\n' ' ' < changed_files.txt)
-          
-          # Run Vale and convert JSON output to checkstyle XML for reviewdog
-          # Exclude suggestions (only show warnings and errors in PR comments)
-          vale --config=.vale.ini --minAlertLevel=warning --output=JSON $FILES | \
-            jq -r '
-              "<?xml version=\"1.0\" encoding=\"UTF-8\"?><checkstyle>",
-              (to_entries[] | .key as $file | .value[] | 
-                "<file name=\"\($file)\"><error line=\"\(.Line)\" column=\"\(.Span[0])\" severity=\"\(.Severity)\" message=\"\(.Message | gsub("\""; "&quot;"))\" /></file>"),
-              "</checkstyle>"
-            ' | \
-            reviewdog -f=checkstyle -reporter=github-pr-check -fail-on-error=false
 
       - name: Post individual Vale comments on PR lines
         if: steps.changed-files.outputs.vale_files != ''
@@ -124,7 +104,31 @@ jobs:
           TOTAL_VIOLATIONS=$(jq '[.[] | length] | add' vale_results.json)
           echo "Found $TOTAL_VIOLATIONS total violations to process"
           
+          # Count existing comments
+          EXISTING_COUNT=$(jq 'length' existing_comments.json)
+          echo "Found $EXISTING_COUNT existing comments"
+          
           COMMENT_COUNT=0
+          SKIP_COUNT=0
+          
+          # Count violations that will be processed (after duplicate filtering)
+          VIOLATIONS_TO_PROCESS=$(jq -c --arg commit "$PR_HEAD_SHA" '
+            ($existing_comments[0] // []) as $existing |
+            [to_entries[] | .key as $file | .value[] | 
+            {
+              file: $file,
+              line: .Line,
+              rule: .Check,
+              exists: (($existing | .[] | select(
+                .path == $file and 
+                (.line | tostring) == (.Line | tostring) and
+                (.body | contains("**" + .Check + "**"))
+              )) | length > 0)
+            } |
+            select(.exists == false)] | length
+          ' --slurpfile existing_comments existing_comments.json vale_results.json)
+          echo "Will process $VIOLATIONS_TO_PROCESS violations (after filtering duplicates)"
+          
           # Process each violation and post individual comments
           jq -c --arg commit "$PR_HEAD_SHA" '
             def severity_emoji(s):
@@ -132,15 +136,9 @@ jobs:
               elif s == "warning" then "⚠️ "
               else "" end;
             
-            def comment_exists(existing; file; line; rule):
-              (existing | .[] | select(
-                .path == file and 
-                (.line | tostring) == (line | tostring) and 
-                (.body | contains("**" + rule + "**"))
-              )) | length > 0;
+            ($existing_comments[0] // []) as $existing |
             
             to_entries[] | .key as $file | .value[] | 
-            select(comment_exists($existing_comments[0]; $file; .Line; .Check) | not) |
             {
               file: $file,
               line: .Line,
@@ -148,14 +146,27 @@ jobs:
               severity: .Severity,
               message: .Message,
               body: (severity_emoji(.Severity) + "**" + .Check + "** (" + .Severity + "): " + .Message),
-              commit: $commit
-            }
+              commit: $commit,
+              # Check if comment with this specific rule already exists on this line
+              exists: (($existing | .[] | select(
+                .path == $file and 
+                (.line | tostring) == (.Line | tostring) and
+                (.body | contains("**" + .Check + "**"))
+              )) | length > 0)
+            } |
+            select(.exists == false)
           ' --slurpfile existing_comments existing_comments.json vale_results.json | while read -r violation; do
+            if [ -z "$violation" ]; then
+              continue
+            fi
+            
             FILE=$(echo "$violation" | jq -r '.file')
             LINE=$(echo "$violation" | jq -r '.line')
             RULE=$(echo "$violation" | jq -r '.rule')
             BODY=$(echo "$violation" | jq -r '.body')
             COMMIT=$(echo "$violation" | jq -r '.commit')
+            
+            echo "Processing violation: ${RULE} at ${FILE}:${LINE}"
             
             COMMENT_JSON=$(jq -n \
               --arg path "$FILE" \
