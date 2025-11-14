@@ -57,7 +57,7 @@ GET /endpoints?filter='["agent","cloud"] in obj.types'
   ```http
   GET /vaults?filter=’obj.created_at < timestamp(“2025-10-31T09:23:45-07:00”)’
   ```
-- **Parsing:** `datetime.parse("<ISO-8601>")` to compare against string literals.
+- **Parsing:** `timestamp("RFC-3339")` to compare against string literals.
 - **Convenience helpers:** `now()` and `daysAgo(n)` support concise relative filters, e.g.:
   ```http
   GET /endpoints?filter='obj.created_at >= daysAgo(7)'
