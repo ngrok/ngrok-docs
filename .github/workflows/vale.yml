@@ -111,8 +111,8 @@ jobs:
           ERROR_COUNT=0
           WARNING_COUNT=0
           
-          # Delete all existing Vale comments from the PR
-          # First, delete PR issue comments (summary comments)
+          # Find existing summary comment (don't delete it - we'll update it later)
+          SUMMARY_COMMENT_ID=""
           PAGE=1
           PER_PAGE=100
           
@@ -130,15 +130,12 @@ jobs:
               break
             fi
             
-            # Delete summary comments (those with "# Style linting summary" in the body)
-            echo "$ISSUE_COMMENTS_PAGE" | jq -r '.[] | select(.body | contains("# Style linting summary")) | .id' 2>/dev/null | while read -r comment_id; do
-              if [ -n "$comment_id" ] && [ "$comment_id" != "null" ] && [ "$comment_id" != "" ]; then
-                curl -s -X DELETE \
-                  -H "Authorization: token $GITHUB_TOKEN" \
-                  -H "Accept: application/vnd.github.v3+json" \
-                  "https://api.github.com/repos/${{ github.repository }}/issues/comments/$comment_id" > /dev/null
-              fi
-            done
+            # Find summary comment (those with "# Style linting summary" in the body)
+            FOUND_ID=$(echo "$ISSUE_COMMENTS_PAGE" | jq -r '.[] | select(.body | contains("# Style linting summary")) | .id' 2>/dev/null | head -n1)
+            if [ -n "$FOUND_ID" ] && [ "$FOUND_ID" != "null" ] && [ "$FOUND_ID" != "" ]; then
+              SUMMARY_COMMENT_ID="$FOUND_ID"
+              break
+            fi
             
             PAGE=$((PAGE + 1))
           done
@@ -310,7 +307,7 @@ jobs:
             done < violations_to_post.json
           fi
           
-          # Post summary comment (ERROR_COUNT and WARNING_COUNT were counted above from changed lines only)
+          # Post or update summary comment (ERROR_COUNT and WARNING_COUNT were counted above from changed lines only)
           if [ "$ERROR_COUNT" -eq 0 ] && [ "$WARNING_COUNT" -eq 0 ]; then
             SUMMARY_BODY=$(printf "# Style linting summary\n\nVale found no style issues in this PR. Great job!")
           else
@@ -321,9 +318,21 @@ jobs:
             --arg body "$SUMMARY_BODY" \
             '{body: $body}')
           
-          curl -s -X POST \
-            -H "Authorization: token $GITHUB_TOKEN" \
-            -H "Accept: application/vnd.github.v3+json" \
-            -H "Content-Type: application/json" \
-            "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments" \
-            -d "$SUMMARY_JSON" > /dev/null
+          # Update existing comment or create new one
+          if [ -n "$SUMMARY_COMMENT_ID" ] && [ "$SUMMARY_COMMENT_ID" != "" ]; then
+            # Update existing comment (this will show live update without refresh)
+            curl -s -X PATCH \
+              -H "Authorization: token $GITHUB_TOKEN" \
+              -H "Accept: application/vnd.github.v3+json" \
+              -H "Content-Type: application/json" \
+              "https://api.github.com/repos/${{ github.repository }}/issues/comments/$SUMMARY_COMMENT_ID" \
+              -d "$SUMMARY_JSON" > /dev/null
+          else
+            # Create new comment
+            curl -s -X POST \
+              -H "Authorization: token $GITHUB_TOKEN" \
+              -H "Accept: application/vnd.github.v3+json" \
+              -H "Content-Type: application/json" \
+              "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments" \
+              -d "$SUMMARY_JSON" > /dev/null
+          fi
