@@ -100,19 +100,12 @@ jobs:
           # Check if there are any results
           TOTAL_ISSUES=$(jq '[.[] | length] | add // 0' vale_results.json 2>/dev/null || echo "0")
           
-          if [ -z "$TOTAL_ISSUES" ] || [ "$TOTAL_ISSUES" = "null" ] || [ "$TOTAL_ISSUES" -eq 0 ]; then
-            echo "No Vale issues found"
-            exit 0
-          fi
-          
-          # Get PR head SHA
+          # Get PR head SHA (needed for both posting comments and cleanup)
           PR_HEAD_SHA=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
             "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}" \
             | jq -r '.head.sha')
           
-          # Count total violations
-          TOTAL_VIOLATIONS=$(jq '[.[] | length] | add' vale_results.json)
-          
+          # Initialize counters
           COMMENT_COUNT=0
           SKIP_COUNT=0
           ERROR_COUNT=0
@@ -234,36 +227,38 @@ jobs:
             return $((1 - line_changed))
           }
           
-          # Process violations and group by file+line to combine multiple violations on same line
-          jq -c --arg commit "$PR_HEAD_SHA" '
-            def severity_emoji(s):
-              if s == "error" then "❌ "
-              elif s == "warning" then "⚠️ "
-              else "" end;
+          # Only process violations if there are any
+          if [ -n "$TOTAL_ISSUES" ] && [ "$TOTAL_ISSUES" != "null" ] && [ "$TOTAL_ISSUES" -gt 0 ]; then
+            # Process violations and group by file+line to combine multiple violations on same line
+            jq -c --arg commit "$PR_HEAD_SHA" '
+              def severity_emoji(s):
+                if s == "error" then "❌ "
+                elif s == "warning" then "⚠️ "
+                else "" end;
+              
+              # Group violations by file and line
+              [to_entries[] | .key as $file | .value[] | {
+                file: $file,
+                line: (.Line | tonumber),
+                rule: .Check,
+                severity: .Severity,
+                message: .Message,
+                body: (severity_emoji(.Severity) + "**" + .Check + "** (" + .Severity + "): " + .Message),
+                commit: $commit
+              }] |
+              group_by(.file + "|" + (.line | tostring)) |
+              .[] |
+              {
+                file: .[0].file,
+                line: .[0].line,
+                commit: .[0].commit,
+                violations: [.[] | {rule: .rule, severity: .severity, message: .message, body: .body}],
+                combined_body: ([.[] | .body] | join("\n\n"))
+              }
+            ' vale_results.json > violations_to_post.json
             
-            # Group violations by file and line
-            [to_entries[] | .key as $file | .value[] | {
-              file: $file,
-              line: (.Line | tonumber),
-              rule: .Check,
-              severity: .Severity,
-              message: .Message,
-              body: (severity_emoji(.Severity) + "**" + .Check + "** (" + .Severity + "): " + .Message),
-              commit: $commit
-            }] |
-            group_by(.file + "|" + (.line | tostring)) |
-            .[] |
-            {
-              file: .[0].file,
-              line: .[0].line,
-              commit: .[0].commit,
-              violations: [.[] | {rule: .rule, severity: .severity, message: .message, body: .body}],
-              combined_body: ([.[] | .body] | join("\n\n"))
-            }
-          ' vale_results.json > violations_to_post.json
-          
-          # Process each violation group (file+line combination)
-          while read -r violation_group; do
+            # Process each violation group (file+line combination)
+            while read -r violation_group; do
             if [ -z "$violation_group" ]; then
               continue
             fi
@@ -312,7 +307,8 @@ jobs:
             elif [ "$HTTP_CODE" = "422" ]; then
               SKIP_COUNT=$((SKIP_COUNT + VIOLATION_COUNT))
             fi
-          done < violations_to_post.json
+            done < violations_to_post.json
+          fi
           
           # Post summary comment (ERROR_COUNT and WARNING_COUNT were counted above from changed lines only)
           if [ "$ERROR_COUNT" -eq 0 ] && [ "$WARNING_COUNT" -eq 0 ]; then
