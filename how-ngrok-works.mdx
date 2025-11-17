@@ -1,0 +1,53 @@
+---
+title: How does ngrok work?
+---
+
+
+## Overview
+
+ngrok operates a global network of servers called the _ngrok cloud service_ where it
+accepts traffic to your upstream services from clients on the internet. The
+URLs that it receives traffic on are your _endpoints_. You configure _modules_
+that ngrok will use to authenticate, transform and accelerate that traffic as
+it is sent to your upstream service.
+
+Unlike traditional reverse proxies, ngrok does not transmit traffic to your
+upstream services by forwarding to IP addresses. Instead, you run a small piece
+of software alongside your service that we call an _agent_ which connects to
+ngrok's global service via secure, outbound persistent TLS connections. When
+traffic is received on your endpoints at ngrok's cloud service, it is transmitted to
+the agent via those TLS connections and finally from the agent to your upstream
+service.
+
+You can choose how to run the agent software in different form factors. It's
+lightweight and easy to install.
+
+1. **As a service:** Run a small side process called the [ngrok agent](/agent/)
+   as a background OS service.
+1. **As an interactive CLI:** Run the [ngrok agent](/agent/) interactively from
+   the command line while developing and testing.
+1. **As an SDK embedded in your app:** Include a small [Agent SDK](/agent-sdks) library
+   directly into your application software that returns a socket-like object.
+1. **As a Kubernetes Controller:** Run our [ngrok Kubernetes Operator](/k8s/) in a
+   Kubernetes environment.
+
+## ngrok vs. Traditional reverse proxies
+
+ngrok doesn't forward to IP addresses like traditional reverse proxies and
+instead sends connections to your upstream service via a lightweight piece of
+agent software running alongside or in your application.
+
+This unique architecture confers several important benefits over the
+traditional model.
+
+First, it means you can run your services _anywhere_—any cloud such as AWS or
+Azure, any application platform like Heroku, an on-prem data center, a Raspberry
+Pi in your home, or even on your laptop.
+
+Second, it allows ngrok to provide ingress with zero networking configuration.
+You don't need to work with arcane networking primitives like DNS, IPs, certificates, or ports. 
+That configuration is pushed to ngrok's cloud service and it's all handled automatically for you.
+
+Third, ngrok can protect you from attacks and enforce authentication without
+the concern that someone could 'go around' ngrok by discovering your upstream
+IP addresses.
