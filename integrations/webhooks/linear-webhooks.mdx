@@ -1,0 +1,160 @@
+---
+title: Linear Webhooks
+sidebarTitle: Linear
+description: Develop and test Linear webhooks from localhost
+---
+import InspectingRequests from "/snippets/integrations/_inspecting-requests.mdx";
+import ReplayingRequests from "/snippets/integrations/_replaying-requests.mdx";
+
+<Tip>
+**TL;DR**
+
+To integrate Linear webhooks with ngrok:
+
+1. [Launch your local webhook.](#1-start-your-app) `npm start`
+1. [Launch ngrok.](#1-launch-ngrok) `ngrok http 3000`
+1. [Configure Linear webhooks with your ngrok URL.](#run-webhooks-with-linear-and-ngrok)
+1. [Secure your webhook requests with verification.](#secure-webhook-requests)
+</Tip>
+
+This guide covers how to use ngrok to integrate your localhost app with Linear by using Webhooks.
+Linear webhooks can be used to notify an external application whenever specific events occur in your Linear workspace.
+
+By integrating ngrok with Linear, you can:
+
+- **Develop and test Linear webhooks locally** - No need to deploy your code and set up HTTPS.
+- **Inspect and troubleshoot requests from Linear in real-time using ngrok's inspection UI and API**.
+- **Modify and Replay Linear Webhook requests with a single click** - No need to reproduce events manually in your Linear workspace.
+- **Secure your app with Linear validation provided by ngrok** - Invalid requests are blocked by ngrok before reaching your app.
+
+## What you'll need
+
+- An [ngrok account](https://dashboard.ngrok.com/signup).
+- Your [ngrok auth token](https://dashboard.ngrok.com/get-started/your-authtoken).
+- Configure [the ngrok agent CLI](/getting-started#1-install-the-ngrok-agent-cli) locally.
+
+## 1. Start your app 
+
+For this tutorial, we'll use the [sample NodeJS app available on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
+
+To install it, run the following commands in a terminal:
+
+```bash
+git clone https://github.com/ngrok/ngrok-webhook-nodejs-sample.git
+cd ngrok-webhook-nodejs-sample
+npm install
+```
+
+Launch the app with the following command:
+
+```bash
+npm start
+```
+
+The app runs by default on port `3000`.
+
+You can validate that the app is up and running by visiting http://localhost:3000. The application logs request headers and body in the terminal and responds with a message in the browser.
+
+## 2. Launch ngrok 
+
+<Tip>
+If you haven't done all the preliminary steps for this tutorial, [you should do them now](#what-you'll-need).
+</Tip>
+
+Once your app is running locally, you're ready to put it online securely using ngrok.
+
+1. Start ngrok by running the following command:
+
+   ```bash
+   ngrok http 3000
+   ```
+1. ngrok will display a URL where your localhost application is exposed to the internet (copy this URL for use with Linear).
+   ![ngrok agent running](../img/twilio/img/launch_ngrok_tunnel.png)
+
+## 3. Integrate Linear 
+
+Linear can trigger webhook calls to external applications whenever events happen in your Linear workspace. To register for such events:
+
+1. Sign in to [Linear](https://linear.app) with an account that has administrative privileges.
+
+1. Select your profile icon, then select **Settings**
+
+1. Navigate to **Administration** > **API**.
+
+1. In the **Webhooks** section, select **Create Webhook**.
+   ![URL](../img/linear/img/ngrok_url_configuration_linear.png)
+
+1. In the **Name** field, provide something descriptive like "ngrok Integration Webhook".
+
+1. In the **URL** field, enter the URL provided by the ngrok agent to put your app online at that address. For example, your URL might be something like `https://1234-abcd-5e6f-7g8h-9i0j.ngrok.app`.
+
+1. Be sure to copy and securely store the **Signing secret** provided by Linear.
+
+1. Under the **Data change events** section, choose the appropriate change events that should trigger the webhook.
+
+1. Select **Create** to save the webhook.
+
+## Get more out of Linear with ngrok
+
+ngrok can do more than just put your Linear application online. Check out these other quick wins ngrok offers you.
+
+### Run Webhooks with Linear and ngrok
+
+After you create a webhook in Linear, Linear will submit a POST request to your application through ngrok whenever the selected events occur.
+
+To trigger a webhook event:
+
+1. In your Linear workspace, navigate to a project and create a new issue, or update an existing issue.
+
+1. Confirm your localhost app receives the webhook notification and logs both headers and body in the terminal.
+
+<Note>
+Different messages are sent to your application depending on the trigger event you choose.
+</Note>
+
+To review webhook deliveries in Linear:
+
+1. Navigate back to **Settings** > **Administration** > **API** > **Webhooks**.
+
+1. Select the webhook you've just created.
+
+1. Review the webhook details and recent delivery attempts.
+   ![Recent Events](../img/linear/img/ngrok_introspection_linear_webhooks.png)
+
+<InspectingRequests />
+
+<ReplayingRequests />
+
+### Secure webhook requests 
+
+The ngrok signature webhook verification feature allows ngrok to assert that requests from your Linear webhook are the only traffic allowed to make calls to your localhost app.
+
+<Note>
+This ngrok feature is limited to 500 validations per month on free ngrok accounts. For unlimited, upgrade to Pro or Enterprise.
+</Note>
+
+This is a quick step to add extra protection to your application.
+
+1. In your Linear webhook settings, locate the **Secret** field. Linear will generate a secret automatically when you create the webhook. Copy this secret value.
+
+1. Create a traffic policy file named `linear_policy.yml`, replacing `{your secret}` with your **Secret** from Linear:
+
+   ```yaml
+   on_http_request:
+     - actions:
+         - type: verify-webhook
+           config:
+             provider: linear
+             secret: "{your secret}"
+   ```
+
+1. Restart your ngrok agent by running the command:
+
+   ```bash
+   ngrok http 3000 --traffic-policy-file linear_policy.yml
+   ```
+
+1. In your Linear workspace, create or update an issue to trigger the webhook.
+
+1. Verify that your local application receives the request and logs information to the terminal.
+

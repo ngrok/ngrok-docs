@@ -17,8 +17,31 @@ jobs:
         id: mdx-files
         run: |
           git fetch origin ${{ github.base_ref }}
-          added_files=$(git diff --name-only --diff-filter=A origin/${{ github.base_ref }}...HEAD | grep '\.mdx$' | grep -v '^snippets/' | grep -v '^custom/' || true)
-          deleted_files=$(git diff --name-only --diff-filter=D origin/${{ github.base_ref }}...HEAD | grep '\.mdx$' | grep -v '^snippets/' | grep -v '^custom/' || true)
+          
+          added_files=""
+          deleted_files=""
+          
+          # Process added files - only include .mdx files
+          while IFS= read -r file; do
+            [ -z "$file" ] && continue
+            [[ "$file" == *.mdx ]] || continue
+            [[ "$file" == snippets/* ]] && continue
+            [[ "$file" == api-reference/* ]] && continue
+            [[ "$file" == custom/* ]] && continue
+            [[ "$file" == errors/* ]] && continue
+            added_files+="$file"$'\n'
+          done < <(git diff --name-only --diff-filter=A origin/${{ github.base_ref }}...HEAD)
+          
+          # Process deleted files - only include .mdx files
+          while IFS= read -r file; do
+            [ -z "$file" ] && continue
+            [[ "$file" == *.mdx ]] || continue
+            [[ "$file" == snippets/* ]] && continue
+            [[ "$file" == api-reference/* ]] && continue
+            [[ "$file" == custom/* ]] && continue
+            [[ "$file" == errors/* ]] && continue
+            deleted_files+="$file"$'\n'
+          done < <(git diff --name-only --diff-filter=D origin/${{ github.base_ref }}...HEAD)
           
           echo "added_files<<EOF" >> $GITHUB_OUTPUT
           echo "$added_files" >> $GITHUB_OUTPUT
