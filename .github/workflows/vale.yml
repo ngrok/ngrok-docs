@@ -98,9 +98,9 @@ jobs:
           mv vale_results_filtered.json vale_results.json
           
           # Check if there are any results
-          TOTAL_ISSUES=$(jq '[.[] | length] | add' vale_results.json 2>/dev/null || echo "0")
+          TOTAL_ISSUES=$(jq '[.[] | length] | add // 0' vale_results.json 2>/dev/null || echo "0")
           
-          if [ "$TOTAL_ISSUES" -eq 0 ] || [ "$TOTAL_ISSUES" = "null" ]; then
+          if [ -z "$TOTAL_ISSUES" ] || [ "$TOTAL_ISSUES" = "null" ] || [ "$TOTAL_ISSUES" -eq 0 ]; then
             echo "No Vale issues found"
             exit 0
           fi
