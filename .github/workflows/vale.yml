@@ -1,0 +1,338 @@
+name: Vale Linting
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  vale:
+    name: Run Vale
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      checks: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: |
+          corepack enable
+          corepack install
+          pnpm install
+
+      - name: Setup PATH for mdx2vast
+        run: |
+          echo "PATH=${{ github.workspace }}/node_modules/.bin:$PATH" >> $GITHUB_ENV
+
+      - name: Get changed files
+        id: changed-files
+        run: |
+          # Get changed markdown files, excluding specific directories and files
+          git diff --name-only --diff-filter=ACMR \
+            ${{ github.event.pull_request.base.sha }} ${{ github.sha }} \
+            | grep -E '\.(mdx|md)$' \
+            | grep -v '^snippets/' \
+            | grep -v '^errors/' \
+            | grep -v '^agent/cli-api.mdx$' \
+            | grep -v '^agent/cli.mdx$' \
+            > changed_files.txt || true
+          
+          if [ -s changed_files.txt ]; then
+            # Build JSON array of files using jq
+            FILES_JSON=$(jq -R -s -c 'split("\n") | map(select(length > 0))' changed_files.txt)
+            echo "vale_files=$FILES_JSON" >> $GITHUB_OUTPUT
+          else
+            echo "vale_files=" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Install Vale
+        run: |
+          wget -q https://github.com/errata-ai/vale/releases/latest/download/vale_3.13.0_Linux_64-bit.tar.gz
+          tar -xzf vale_3.13.0_Linux_64-bit.tar.gz -C /usr/local/bin
+          vale --version
+
+      - name: Install jq and curl
+        run: |
+          sudo apt-get update && sudo apt-get install -y jq curl
+
+      - name: Post individual Vale comments on PR lines
+        if: steps.changed-files.outputs.vale_files != ''
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Read files into space-separated string for Vale
+          FILES=$(tr '\n' ' ' < changed_files.txt)
+          
+          # Verify we have files to check
+          if [ -z "$FILES" ] || [ "$FILES" = " " ]; then
+            exit 0
+          fi
+          
+          # Run Vale and save JSON output (MinAlertLevel is set in .vale.ini)
+          vale --config=.vale.ini --output=JSON $FILES > vale_results.json || true
+          
+          # Filter Vale results to only include files that are actually in our changed files list
+          # This prevents processing violations from files that Vale might have checked but aren't in the PR
+          # Read changed files into a jq-friendly format
+          jq -R -s 'split("\n") | map(select(length > 0))' changed_files.txt > changed_files_array.json
+          
+          # Filter Vale results to only include files in the changed files list
+          jq --slurpfile changed changed_files_array.json '
+            . as $all | 
+            $changed[0] as $changed_files |
+            ($all | keys | map(select(. as $file | ($changed_files | index($file) != null)))) as $valid_files |
+            ($valid_files | map({key: ., value: $all[.]}) | from_entries)
+          ' vale_results.json > vale_results_filtered.json
+          
+          # Use the filtered results
+          mv vale_results_filtered.json vale_results.json
+          
+          # Check if there are any results
+          TOTAL_ISSUES=$(jq '[.[] | length] | add // 0' vale_results.json 2>/dev/null || echo "0")
+          
+          # Get PR head SHA (needed for both posting comments and cleanup)
+          PR_HEAD_SHA=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+            "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}" \
+            | jq -r '.head.sha')
+          
+          # Initialize counters
+          COMMENT_COUNT=0
+          SKIP_COUNT=0
+          ERROR_COUNT=0
+          WARNING_COUNT=0
+          
+          # Find existing summary comment (don't delete it - we'll update it later)
+          SUMMARY_COMMENT_ID=""
+          PAGE=1
+          PER_PAGE=100
+          
+          while true; do
+            ISSUE_COMMENTS_PAGE=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+              -H "Accept: application/vnd.github.v3+json" \
+              "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments?page=$PAGE&per_page=$PER_PAGE")
+            
+            if ! echo "$ISSUE_COMMENTS_PAGE" | jq -e 'type == "array"' > /dev/null 2>&1; then
+              break
+            fi
+            
+            PAGE_COUNT=$(echo "$ISSUE_COMMENTS_PAGE" | jq 'length')
+            if [ "$PAGE_COUNT" -eq 0 ]; then
+              break
+            fi
+            
+            # Find summary comment (those with "# Style linting summary" in the body)
+            FOUND_ID=$(echo "$ISSUE_COMMENTS_PAGE" | jq -r '.[] | select(.body | contains("# Style linting summary")) | .id' 2>/dev/null | head -n1)
+            if [ -n "$FOUND_ID" ] && [ "$FOUND_ID" != "null" ] && [ "$FOUND_ID" != "" ]; then
+              SUMMARY_COMMENT_ID="$FOUND_ID"
+              break
+            fi
+            
+            PAGE=$((PAGE + 1))
+          done
+          
+          # Get all PR review comments (line comments) and delete them page by page
+          PAGE=1
+          PER_PAGE=100
+          
+          while true; do
+            COMMENTS_PAGE=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+              -H "Accept: application/vnd.github.v3+json" \
+              "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/comments?page=$PAGE&per_page=$PER_PAGE")
+            
+            if ! echo "$COMMENTS_PAGE" | jq -e 'type == "array"' > /dev/null 2>&1; then
+              break
+            fi
+            
+            PAGE_COUNT=$(echo "$COMMENTS_PAGE" | jq 'length')
+            if [ "$PAGE_COUNT" -eq 0 ]; then
+              break
+            fi
+            
+            # Delete ALL comments from this page (we can only delete our own anyway due to permissions)
+            echo "$COMMENTS_PAGE" | jq -r '.[].id' 2>/dev/null | while read -r comment_id; do
+              if [ -n "$comment_id" ] && [ "$comment_id" != "null" ] && [ "$comment_id" != "" ]; then
+                HTTP_CODE=$(curl -s -w "%{http_code}" -o /dev/null -X DELETE \
+                  -H "Authorization: token $GITHUB_TOKEN" \
+                  -H "Accept: application/vnd.github.v3+json" \
+                  "https://api.github.com/repos/${{ github.repository }}/pulls/comments/$comment_id")
+                # 204 = success, 404 = already deleted or doesn't exist, anything else = permission issue (ignore)
+              fi
+            done
+            
+            PAGE=$((PAGE + 1))
+          done
+          
+          # Get PR files to check which lines are actually changed
+          curl -s -H "Authorization: token $GITHUB_TOKEN" \
+            "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files" > pr_files.json
+          
+          # Function to check if a line is actually changed (added/modified) in the diff
+          is_line_changed() {
+            local file="$1"
+            local target_line="$2"
+            
+            # Get the diff for this file
+            local file_diff=$(jq -r --arg file "$file" '.[] | select(.filename == $file) | .patch // ""' pr_files.json)
+            
+            if [ -z "$file_diff" ] || [ "$file_diff" = "null" ] || [ "$file_diff" = "" ]; then
+              return 1
+            fi
+            
+            local current_line=0
+            local line_changed=0
+            
+            while IFS= read -r diff_line || [ -n "$diff_line" ]; do
+              # Skip diff headers
+              if [[ "$diff_line" =~ ^(@@|diff|index|---|\+\+\+) ]]; then
+                if [[ "$diff_line" =~ ^@@ ]]; then
+                  # Extract starting line number from @@ -old_start,old_count +new_start,new_count @@
+                  if [[ "$diff_line" =~ \+([0-9]+) ]]; then
+                    current_line="${BASH_REMATCH[1]}"
+                    current_line=$((current_line - 1))
+                  fi
+                fi
+                continue
+              fi
+              
+              # Check if this is an added/modified line (starts with +)
+              if [[ "$diff_line" =~ ^\+ ]]; then
+                current_line=$((current_line + 1))
+                if [ "$current_line" -eq "$target_line" ]; then
+                  line_changed=1
+                  break
+                fi
+              # Count unchanged lines (context) but don't mark as changed
+              elif [[ "$diff_line" =~ ^[[:space:]] ]]; then
+                current_line=$((current_line + 1))
+                if [ "$current_line" -eq "$target_line" ]; then
+                  # This line is in the diff but not actually changed
+                  return 1
+                fi
+              fi
+            done <<< "$file_diff"
+            
+            return $((1 - line_changed))
+          }
+          
+          # Only process violations if there are any
+          if [ -n "$TOTAL_ISSUES" ] && [ "$TOTAL_ISSUES" != "null" ] && [ "$TOTAL_ISSUES" -gt 0 ]; then
+            # Process violations and group by file+line to combine multiple violations on same line
+            jq -c --arg commit "$PR_HEAD_SHA" '
+              def severity_emoji(s):
+                if s == "error" then "❌ "
+                elif s == "warning" then "⚠️ "
+                else "" end;
+              
+              # Group violations by file and line
+              [to_entries[] | .key as $file | .value[] | {
+                file: $file,
+                line: (.Line | tonumber),
+                rule: .Check,
+                severity: .Severity,
+                message: .Message,
+                body: (severity_emoji(.Severity) + "**" + .Check + "** (" + .Severity + "): " + .Message),
+                commit: $commit
+              }] |
+              group_by(.file + "|" + (.line | tostring)) |
+              .[] |
+              {
+                file: .[0].file,
+                line: .[0].line,
+                commit: .[0].commit,
+                violations: [.[] | {rule: .rule, severity: .severity, message: .message, body: .body}],
+                combined_body: ([.[] | .body] | join("\n\n"))
+              }
+            ' vale_results.json > violations_to_post.json
+            
+            # Process each violation group (file+line combination)
+            while read -r violation_group; do
+            if [ -z "$violation_group" ]; then
+              continue
+            fi
+            
+            FILE=$(echo "$violation_group" | jq -r '.file')
+            LINE=$(echo "$violation_group" | jq -r '.line')
+            COMMIT=$(echo "$violation_group" | jq -r '.commit')
+            COMBINED_BODY=$(echo "$violation_group" | jq -r '.combined_body')
+            VIOLATION_COUNT=$(echo "$violation_group" | jq '.violations | length')
+            
+            # Check if this line is actually changed in the diff
+            if ! is_line_changed "$FILE" "$LINE"; then
+              SKIP_COUNT=$((SKIP_COUNT + VIOLATION_COUNT))
+              continue
+            fi
+            
+            # Count errors and warnings for this violation group (on changed lines)
+            VIOLATION_ERRORS=$(echo "$violation_group" | jq '[.violations[] | select(.severity == "error")] | length')
+            VIOLATION_WARNINGS=$(echo "$violation_group" | jq '[.violations[] | select(.severity == "warning")] | length')
+            ERROR_COUNT=$((ERROR_COUNT + VIOLATION_ERRORS))
+            WARNING_COUNT=$((WARNING_COUNT + VIOLATION_WARNINGS))
+            
+            COMMENT_JSON=$(jq -n \
+              --arg path "$FILE" \
+              --argjson line "$LINE" \
+              --arg body "$COMBINED_BODY" \
+              --arg commit "$COMMIT" \
+              '{
+                path: $path,
+                line: $line,
+                side: "RIGHT",
+                body: $body,
+                commit_id: $commit
+              }')
+            
+            RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
+              -H "Authorization: token $GITHUB_TOKEN" \
+              -H "Accept: application/vnd.github.v3+json" \
+              -H "Content-Type: application/json" \
+              "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/comments" \
+              -d "$COMMENT_JSON")
+            
+            HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
+            if [ "$HTTP_CODE" = "201" ]; then
+              COMMENT_COUNT=$((COMMENT_COUNT + VIOLATION_COUNT))
+            elif [ "$HTTP_CODE" = "422" ]; then
+              SKIP_COUNT=$((SKIP_COUNT + VIOLATION_COUNT))
+            fi
+            done < violations_to_post.json
+          fi
+          
+          # Post or update summary comment (ERROR_COUNT and WARNING_COUNT were counted above from changed lines only)
+          if [ "$ERROR_COUNT" -eq 0 ] && [ "$WARNING_COUNT" -eq 0 ]; then
+            SUMMARY_BODY=$(printf "# Style linting summary\n\nVale found no style issues in this PR. Great job!")
+          else
+            SUMMARY_BODY=$(printf "# Style linting summary\n\nVale found ❌ %s error(s) and ⚠️ %s warning(s) in this PR. Please resolve all errors and review all warnings before merging.\n\nSee the [ngrok docs style guide](https://www.notion.so/ngrok/Style-Guide-1d6d19ffb65480a6ab31fca7a303030f) for more information about style rules and best practices." "$ERROR_COUNT" "$WARNING_COUNT")
+          fi
+          
+          SUMMARY_JSON=$(jq -n \
+            --arg body "$SUMMARY_BODY" \
+            '{body: $body}')
+          
+          # Update existing comment or create new one
+          if [ -n "$SUMMARY_COMMENT_ID" ] && [ "$SUMMARY_COMMENT_ID" != "" ]; then
+            # Update existing comment (this will show live update without refresh)
+            curl -s -X PATCH \
+              -H "Authorization: token $GITHUB_TOKEN" \
+              -H "Accept: application/vnd.github.v3+json" \
+              -H "Content-Type: application/json" \
+              "https://api.github.com/repos/${{ github.repository }}/issues/comments/$SUMMARY_COMMENT_ID" \
+              -d "$SUMMARY_JSON" > /dev/null
+          else
+            # Create new comment
+            curl -s -X POST \
+              -H "Authorization: token $GITHUB_TOKEN" \
+              -H "Accept: application/vnd.github.v3+json" \
+              -H "Content-Type: application/json" \
+              "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments" \
+              -d "$SUMMARY_JSON" > /dev/null
+          fi
