@@ -160,9 +160,9 @@ jobs:
             
             # Only delete comments posted by GitHub Actions bot (our workflow)
             # Identify our comments by checking if they contain our signature pattern (emoji + rule name format)
-            # AND are from a bot user (GitHub Actions uses bot accounts)
+            # AND are from the GitHub Actions bot (username contains "github-actions")
             # This ensures we never delete human comments, even if they somehow match our pattern
-            echo "$COMMENTS_PAGE" | jq -r '.[] | select((.body | test("^[❌⚠️]\\s+\\*\\*")) and .user.type == "Bot") | .id' 2>/dev/null | while read -r comment_id; do
+            echo "$COMMENTS_PAGE" | jq -r '.[] | select((.body | contains("❌") or contains("⚠️")) and (.body | contains("**") and contains("(") and contains("):")) and (.user.login | test("github-actions"))) | .id' 2>/dev/null | while read -r comment_id; do
               if [ -n "$comment_id" ] && [ "$comment_id" != "null" ] && [ "$comment_id" != "" ]; then
                 HTTP_CODE=$(curl -s -w "%{http_code}" -o /dev/null -X DELETE \
                   -H "Authorization: token $GITHUB_TOKEN" \
