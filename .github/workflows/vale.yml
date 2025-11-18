@@ -140,7 +140,7 @@ jobs:
             PAGE=$((PAGE + 1))
           done
           
-          # Get all PR review comments (line comments) and delete them page by page
+          # Get all PR review comments (line comments) and delete only our own comments page by page
           PAGE=1
           PER_PAGE=100
           
@@ -158,8 +158,11 @@ jobs:
               break
             fi
             
-            # Delete ALL comments from this page (we can only delete our own anyway due to permissions)
-            echo "$COMMENTS_PAGE" | jq -r '.[].id' 2>/dev/null | while read -r comment_id; do
+            # Only delete comments posted by GitHub Actions bot (our workflow)
+            # Identify our comments by checking if they contain our signature pattern (emoji + rule name format)
+            # AND are from a bot user (GitHub Actions uses bot accounts)
+            # This ensures we never delete human comments, even if they somehow match our pattern
+            echo "$COMMENTS_PAGE" | jq -r '.[] | select((.body | test("^[❌⚠️]\\s+\\*\\*")) and .user.type == "Bot") | .id' 2>/dev/null | while read -r comment_id; do
               if [ -n "$comment_id" ] && [ "$comment_id" != "null" ] && [ "$comment_id" != "" ]; then
                 HTTP_CODE=$(curl -s -w "%{http_code}" -o /dev/null -X DELETE \
                   -H "Authorization: token $GITHUB_TOKEN" \
