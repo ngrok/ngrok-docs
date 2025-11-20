@@ -1,0 +1,72 @@
+name: Auto-generate Docs PR
+
+permissions:
+  contents: write
+  pull-requests: write
+
+on:
+  schedule:
+    - cron: '30 10 * * *'  # 10:30 AM UTC daily (30 min after buildkite cron)
+  workflow_dispatch: # Allow manual triggering
+
+jobs:
+  check-and-create-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate bot token
+        uses: actions/create-github-app-token@v2
+        id: generate-token
+        with:
+          app-id: ${{ secrets.NGROK_DOCS_BOT_APP_ID }}
+          private-key: ${{ secrets.NGROK_DOCS_BOT_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+
+      - name: Checkout main branch
+        uses: actions/checkout@v4
+        with:
+          token: ${{ steps.generate-token.outputs.token }}
+          ref: main
+      - name: Fetch dev-gen-changes branch
+        run: |
+          git fetch origin ngrokrock/dev-gen-changes:ngrokrock/dev-gen-changes
+
+      - name: Check for changes
+        id: check
+        run: |
+          # Check if there are differences between main and dev-gen-changes
+          if git diff --quiet main...ngrokrock/dev-gen-changes; then
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+            echo "No changes detected between main and ngrokrock/dev-gen-changes"
+          else
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+            echo "Changes detected - will create/update PR"
+          fi
+
+      - name: Create or Update Pull Request
+        if: steps.check.outputs.has_changes == 'true'
+        id: gh-pr
+        env:
+          GH_TOKEN: ${{ steps.generate-token.outputs.token }}
+        run: |
+          # Try to create the PR, or update if it already exists
+          pr_url=$(gh pr create \
+            --title "Docs: Auto-generated documentation update" \
+            --body "This PR contains automatically generated documentation changes from the ngrok monorepo." \
+            --base main \
+            --head ngrokrock/dev-gen-changes \
+            --repo "$GITHUB_REPOSITORY" \
+            2>&1 | tee /tmp/pr_output)
+          
+          # If PR already exists, get its URL
+          if echo "$pr_url" | grep -q "https://github.com/"; then
+            echo "pr_url=$(echo "$pr_url" | grep -o 'https://github.com/[^ ]*')" >> $GITHUB_OUTPUT
+          else
+            # Try to get the existing PR URL
+            existing_url=$(gh pr list --head ngrokrock/dev-gen-changes --base main --json url --jq '.[0].url' --repo "$GITHUB_REPOSITORY")
+            echo "pr_url=$existing_url" >> $GITHUB_OUTPUT
+          fi
+
+      - name: PR Info
+        if: steps.check.outputs.has_changes == 'true' && steps.gh-pr.outputs.pr_url
+        run: |
+          echo "Pull Request URL - ${{ steps.gh-pr.outputs.pr_url }}"
