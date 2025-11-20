@@ -3,7 +3,7 @@ title: Finalizers Created by the ngrok Kubernetes Operator
 sidebarTitle: Finalizers
 ---
 
-## What Are Finalizers?
+## What are finalizers?
 
 Finalizers are **mechanisms in Kubernetes** that prevent a resource from being deleted until **certain cleanup operations** have been completed.
 They act as a safeguard to ensure that dependent external resources, such as resources in your ngrok account that the operator creates/updates/deletes, are properly removed before the Kubernetes object disappears.
@@ -14,11 +14,11 @@ If you are using the ngrok Kubernetes operator, and delete resources such as `Cl
 
 ---
 
-## How the Operator Uses Finalizers
+## How the operator uses finalizers
 
 The ngrok Kubernetes operator **automatically attaches finalizers** to its **custom resources** to make sure that any associated resources in your ngrok account are properly cleaned up before deletion.
 
-### Why Does the Operator Use Finalizers?
+### Why does the operator use finalizers?
 
 - **Prevents orphaned resources**
   - Ensures ngrok resources (for example, tunnels, endpoints) are deleted before removing the Kubernetes object.
@@ -29,29 +29,29 @@ The ngrok Kubernetes operator **automatically attaches finalizers** to its **cus
 
 ---
 
-## How Finalizers Work
+## How finalizers work
 
 1. **Resource is Marked for Deletion**  
    When a user deletes an ngrok **custom resource**, Kubernetes does **not** immediately remove it.
    Instead, it **sets a deletion timestamp** on the resource.
 
-2. **The Operator Detects the Deletion Request**  
+2. **The operator detects the deletion request**  
    The ngrok operator sees that the resource has a **finalizer** and begins the **cleanup process**.
 
-3. **Cleanup Operations are Performed**
+3. **Cleanup operations are performed**
 
    - **Contacts the ngrok API** to delete the associated **tunnel, endpoint, or cloud resource**.
    - **Verifies successful cleanup** before proceeding.
 
-4. **Finalizer is Removed**  
+4. **Finalizer is removed**  
    Once the ngrok resource is fully cleaned up, the operator **removes the finalizer** from the Kubernetes object.
 
-5. **Kubernetes Deletes the Resource**  
+5. **Kubernetes deletes the resource**  
    With the finalizer removed, Kubernetes **completes the deletion process**, and the resource is fully removed from the cluster.
 
 ---
 
-## Checking Finalizers on a Resource
+## Checking finalizers on a resource
 
 To check if a resource has a finalizer, use:
 
@@ -70,7 +70,7 @@ metadata:
   - ngrok.k8s.ngrok.com/finalizer
 ```
 
-## Manually Removing Finalizers
+## Manually removing finalizers
 
 If the operator is not responding or failing to clean up resources properly, you may need to manually remove the finalizer on a resource.
 This may happen if you are uninstalling the operator with `helm uninstall` and the operator pods are removed before they have a chance to clean up the finalizers on all the resources that were
