@@ -22,4 +22,26 @@ This operator exposes prometheus metrics on the `/metrics` endpoint. The metrics
 The ngrok Kubernetes Operator generates structured logs that capture its reconciliation processes, configuration changes, and any errors encountered while managing resources. These logs are a primary source of truth when diagnosing issues or understanding the operator’s actions.
 
 ### Configure log levels
-Lorem ipsum
+
+Logging is essential for understanding how the ngrok Kubernetes Operator is behaving inside your cluster. By tuning the operator’s log level, you can control the level of detail emitted—from high-level operational events to more detailed verbose debugging output. This flexibility lets you strike the right balance between observability and signal-to-noise, whether you’re troubleshooting an issue, monitoring production workloads, or simply reducing unnecessary log volume.
+
+### Available log levels
+
+| Log Level            | Description                                                                |
+| -------------------- | -------------------------------------------------------------------------- |
+| `debug`              | The most verbose level. debug logs include detailed internal state, reconciliation steps, API interactions, and decision-making paths inside the operator. This level is intended for development or deep troubleshooting. It provides maximum insight but can generate a large log volume.                                        |
+| `info`               | The default and generally recommended level. `info` logs capture high-level operational events such as resource reconciliation, configuration changes, and important lifecycle actions. These logs provide good observability with minimal noise and are appropriate for most production environments.                             |
+| `error`              | The most minimal level. `error` logs are emitted only when something fails—such as an unexpected response from the Kubernetes API, a reconciliation error, or a misconfiguration that prevents the operator from completing an action. Use this level when you want to minimize log output while still surfacing critical failures.|
+
+### Via `helm`
+
+To configure the log level via `helm`, use `--set` to supply the desired log
+
+```sh
+helm install ngrok-operator ngrok/ngrok-operator \
+--namespace ngrok-operator \
+--create-namespace \
+--set credentials.apiKey=$NGROK_API_KEY \
+--set credentials.authtoken=$NGROK_AUTHTOKEN
+--set log.level=info
+```
