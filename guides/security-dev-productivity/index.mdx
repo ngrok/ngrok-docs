@@ -8,17 +8,17 @@ Organizations and enterprises must ensure robust security for their endpoints wi
 
 This guide describes the best practices and features organizations can apply to consistently secure developers using ngrok.
 
-## The "Front Door" Method
+## The "Front Door" method
 
-Instead of exposing individual developer endpoints publicly, let's implement a more secure approach: Creating a single, centralized cloud endpoint managed by security teams. This endpoint can be customized with traffic policies while keeping developer endpoints private and protected.
+Instead of exposing individual developer endpoints publicly, let's implement a more secure approach: Creating a single, centralized Cloud Endpoint managed by security teams. This endpoint can be customized with Traffic Policies while keeping developer endpoints private and protected.
 
-## Architectural Reference
+## Architectural reference
 
 ![Secure Developer Productivity Architecture.](./img/architecture.png)
 
 Create one ngrok account, managed by security or DevOps. The following can be managed centrally at this account's dashboard:
 
-- Cloud endpoint traffic policies
+- Cloud endpoint Traffic Policies
 - Authtokens and ACL restrictions
 - Users and access control
 
@@ -36,7 +36,7 @@ Create a tunnel authtoken for each developer. This authtoken will be specific to
 
 ![The UI for creating an ACL rule.](./img/aclrules.png)
 
-## Developer installs ngrok agent and defines an internal endpoint in ngrok.yml
+## Developer installs ngrok Agent and defines an internal endpoint in ngrok.yml
 
 Have the developer [install the ngrok agent](https://dashboard.ngrok.com/get-started/setup/) and then have them run the command below to ensure their agent uses the proper authtoken you provisioned for them in the previous step.
 
@@ -44,7 +44,7 @@ Have the developer [install the ngrok agent](https://dashboard.ngrok.com/get-sta
 ngrok config add-authtoken <AUTHTOKEN_CREATED_ABOVE>
 ```
 
-Internal Endpoints are private endpoints that only receive traffic when forwarded through the [forward-internal traffic policy action](/traffic-policy/actions/forward-internal/). This allows you to route traffic to an application through ngrok without making it publicly addressable.
+Internal Endpoints are private endpoints that only receive traffic when forwarded through the [forward-internal Traffic Policy action](/traffic-policy/actions/forward-internal/). This allows you to route traffic to an application through ngrok without making it publicly addressable.
 
 Internal endpoint URLs must:
 
@@ -64,31 +64,31 @@ endpoints:
       url: {port serving alias1's local application}
 ```
 
-Within this configuration file, developers have the ability to add any further traffic policy actions that may aid them in their testing.
+Within this configuration file, developers have the ability to add any further Traffic Policy actions that may aid them in their testing.
 
 In this way, developers only handle private endpoints and don't have permissions to alter any configurations on public endpoints.
 
-## Reserve a custom wildcard domain for your public cloud endpoint
+## Reserve a custom wildcard domain for your public Cloud Endpoint
 
-Creating a custom wildcard domain is the first step in creating a public cloud endpoint to receive traffic on any subdomain of your domain. Navigate to the [domains](https://dashboard.ngrok.com/domains) section in your dashboard and click "new domain". Any naming convention you use for this domain will require proper DNS and CNAME records. These targets are returned after domain creation and can take 5-10 mins for ssl to be established.
+Creating a custom wildcard domain is the first step in creating a public Cloud Endpoint to receive traffic on any subdomain of your domain. Navigate to the [domains](https://dashboard.ngrok.com/domains) section in your dashboard and click "new domain". Any naming convention you use for this domain will require proper DNS and CNAME records. These targets are returned after domain creation and can take 5-10 mins for ssl to be established.
 
 ![The UI for reserving a custom domain.](./img/newdomain.png)
 
-## Create a public cloud endpoint and traffic policy
+## Create a public Cloud Endpoint and Traffic Policy
 
 Cloud Endpoints are persistent, always-on endpoints whose creation, deletion, and configuration are managed centrally via the Dashboard or API. 
 They exist permanently until they are explicitly deleted. 
 Cloud Endpoints do not forward their traffic to an agent by default and instead only use their attached Traffic Policy to handle connections.
 
-This cloud endpoint will multiplex across several internal endpoints which point to their corresponding local development environments.
+This Cloud Endpoint will multiplex across several internal endpoints which point to their corresponding local development environments.
 
-You can use traffic policy to forward traffic from your cloud endpoint to the correct internal endpoint based on the hostname of the cloud endpoint that developers make requests to. Since the cloud endpoint is set up as a wildcard URL, any text placed where the wildcard is will forward to its corresponding internal endpoint.
+You can use Traffic Policy to forward traffic from your Cloud Endpoint to the correct internal endpoint based on the hostname of the Cloud Endpoint that developers make requests to. Since the Cloud Endpoint is set up as a wildcard URL, any text placed where the wildcard is will forward to its corresponding internal endpoint.
 
 `alias1.devtest.example.com → alias1.internal → alias1's local env`
 
-So, all alias1 has to do is go to that cloud endpoint URL in their browser and they will be able to access their local environment. Same goes for alias2, alias3, and aliasN.
+So, all alias1 has to do is go to that Cloud Endpoint URL in their browser and they will be able to access their local environment. Same goes for alias2, alias3, and aliasN.
 
-To achieve this dynamic routing, replace the default traffic policy on the cloud endpoint in the dashboard with the following:
+To achieve this dynamic routing, replace the default Traffic Policy on the Cloud Endpoint in the dashboard with the following:
 
 ```yaml
 on_http_request:
@@ -98,13 +98,13 @@ on_http_request:
           url: https://${req.host.split(".devtest.example.com")[0]}.internal
 ```
 
-## Secure your cloud endpoint
+## Secure your Cloud Endpoint
 
-Now that traffic is forwarded correctly from the cloud endpoint to its corresponding internal endpoints, you can layer on security to the public cloud endpoint. There are a variety of traffic policy actions to choose from to achieve this. Listed below are YAML snippets and curl commands below for how to enable IP Restrictions, JWT Validation, and mTLS. There are many other actions to choose from which can be found in [Traffic Policy Actions](/traffic-policy/actions/). These actions will be added to your existing traffic policy config, preceding the forward-internal action.
+Now that traffic is forwarded correctly from the Cloud Endpoint to its corresponding internal endpoints, you can layer on security to the public Cloud Endpoint. There are a variety of Traffic Policy actions to choose from to achieve this. Listed below are YAML snippets and curl commands below for how to enable IP Restrictions, JWT Validation, and mTLS. There are many other actions to choose from which can be found in [Traffic Policy Actions](/traffic-policy/actions/). These actions will be added to your existing Traffic Policy config, preceding the forward-internal action.
 
-### IP Restrictions
+### IP restrictions
 
-For developers with a designated source IP, you can use the restrict-ips action to allowlist trusted source IPs where only these IPs will be able to access this cloud endpoint.
+For developers with a designated source IP, you can use the restrict-ips action to allowlist trusted source IPs where only these IPs will be able to access this Cloud Endpoint.
 
 ```yaml
 on_http_request:
@@ -120,7 +120,7 @@ on_http_request:
           url: https://${req.host.split(".devtest.example.com")[0]}.internal
 ```
 
-### JWT Validation
+### JWT validation
 
 You also have the option to send a JWT to ngrok, specify an allowlist of issuers/JWKS URLs, and ngrok will validate the JWT.
 
@@ -178,7 +178,7 @@ on_http_request:
           url: https://${req.host.split(".devtest.example.com")[0]}.internal
 ```
 
-For all of these options, you can either use one or layer multiple actions onto the cloud endpoint.
+For all of these options, you can either use one or layer multiple actions onto the Cloud Endpoint.
 
 ## Create a custom connect URL
 
@@ -204,8 +204,8 @@ agent:
 
 ## Recap
 
-You have now integrated a system that allows your security team to centrally manage and secure a cloud endpoint which developers can seamlessly use to access applications running in their local environments. Let's recap what you've built:
+You have now integrated a system that allows your security team to centrally manage and secure a Cloud Endpoint which developers can seamlessly use to access applications running in their local environments. Let's recap what you've built:
 
 1. One ngrok agent per developer machine - ACL restricted authtokens provisioned by security specialists for developers.
 2. Local, uninterrupted development and testing for engineers, made securely available via cloud and internal endpoints.
-3. Granular access with a composable traffic policy offering refined and robust security measures for a singular public cloud endpoint.
+3. Granular access with a composable Traffic Policy offering refined and robust security measures for a singular public Cloud Endpoint.
