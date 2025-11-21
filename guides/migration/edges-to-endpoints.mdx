@@ -5,7 +5,7 @@ title: Migrating ngrok Edges to Cloud Endpoints
 
 This guide walks you through manually migrating ngrok **Edge configurations** (HTTPS, TLS, TCP) to **Cloud Endpoints** using **Traffic Policies**.
 
-## 📋 Prerequisites
+## Prerequisites
 
 - An **[ngrok account](https://dashboard.ngrok.com)** with an **[ngrok API key](https://dashboard.ngrok.com/api-keys)**.
 - The [ngrok API documentation](/api).
@@ -14,14 +14,14 @@ This guide walks you through manually migrating ngrok **Edge configurations** (H
 - YAML formatting skills for creating traffic policies.
 - A text editor to prepare YAML payloads.
 
-## ✅ What you'll be migrating
+## What you'll be migrating
 
 | Edge Type | Replaced By                     | Policy Phases Used                    |
 | --------- | ------------------------------- | ------------------------------------- |
 | HTTPS     | Cloud Endpoint + Agent Endpoint | `on_http_request`, `on_http_response` |
 | TLS/TCP   | Cloud Endpoint + Agent Endpoint | `on_tcp_connect`                      |
 
-## ⚙️ 1. Set up environment
+## 1. Set up environment
 
 Make sure you have:
 
@@ -36,7 +36,7 @@ Ngrok-Version: 2
 Content-Type: application/json
 ```
 
-## 📋 2. List your edges
+## 2. List your edges
 
 Use the ngrok API to list all existing edges:
 
@@ -61,7 +61,7 @@ Repeat this process for:
 - `/edges/tls`
 - `/edges/tcp`
 
-## 🧠 3. Determine the target URL
+## 3. Determine the target URL
 
 Each edge has one or more `hostports`. Use those to define a **cloud endpoint `url`**:
 
@@ -73,7 +73,7 @@ Each edge has one or more `hostports`. Use those to define a **cloud endpoint `u
 
 Note, you’ll have to create a cloud endpoint for each `hostport` attached to an edge if you want multiple `hostports` to service the same traffic flow.
 
-## 🛠️ 4. Create a Traffic Policy
+## 4. Create a Traffic Policy
 
 Each cloud endpoint will have a YAML traffic policy.
 
@@ -87,7 +87,7 @@ on_tcp_connect: []
 
 Use only the relevant phases for the edge type.
 
-## 🔁 5. Migrate routes (HTTPS only)
+## 5. Migrate routes (HTTPS only)
 
 HTTPS edges have routes, and we will need to convert each route’s to a CEL expression based on it’s `match_type` for use on every rule that is defined.
 
@@ -100,7 +100,7 @@ Here are some example CEL expressions for routes based on the `match_type`:
 
 Create these for later use in each `expressions:` block in your policy rules.
 
-## 🔧 6. Convert modules to actions
+## 6. Convert modules to actions
 
 Each module on the edge or its routes maps to one or more policy actions:
 
@@ -123,7 +123,7 @@ You’ll want to translate each Module configuration to Action Configuration:
 
 Add these actions under the correct phase (with matching route expressions when the endpoint is HTTP or HTTPS).
 
-## 🎯 7. Convert backends
+## 7. Convert backends
 
 Your edge’s backend defines where traffic goes. These should be placed **after all other actions you defined above. These should be added to the end of the phase.**
 
