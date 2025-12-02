@@ -48,47 +48,47 @@ export KUBECONFIG=$(pwd)/kubeconfig
 
 ## Install a sample application and Kubernetes ingress 
 
-Create a manifest file (for example `ngrok-manifest.yaml`) with the following contents. You will need to replace the `NGROK_DOMAIN` on line 45 with your own custom value. This is the URL you will use to access your service from anywhere. If you're on a free account, it must be on a static subdomain which you can claim by logging into your account and following the instructions on the claim static subdomain banner. For paid accounts, you can use a custom domain or a subdomain of `ngrok.app` or `ngrok.dev` (for example, `username-loves-ingress.ngrok.app` or `k8s.example.com`).
+Create a manifest file (for example `ngrok-manifest.yaml`) with the following contents. This deploys the tinyllama demo LLM application from [ngrok-samples/tinyllama](https://github.com/ngrok-samples/tinyllama). You will need to replace the `NGROK_DOMAIN` on line 50 with your own custom value. This is the URL you will use to access your service from anywhere. If you're on a free account, it must be on a static subdomain which you can claim by logging into your account and following the instructions on the claim static subdomain banner. For paid accounts, you can use a custom domain or a subdomain of `ngrok.app` or `ngrok.dev` (for example, `username-loves-ingress.ngrok.app` or `k8s.example.com`).
 
 ```yaml showLineNumbers
 apiVersion: v1
 kind: Service
 metadata:
-  name: game-2048
+  name: tinyllama
 spec:
   ports:
     - name: http
       port: 80
-      targetPort: 80
+      targetPort: 8080
   selector:
-    app: game-2048
+    app: tinyllama
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: game-2048
+  name: tinyllama
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: game-2048
+      app: tinyllama
   template:
     metadata:
       labels:
-        app: game-2048
+        app: tinyllama
     spec:
       containers:
-        - name: backend
-          image: alexwhen/docker-2048
+        - name: tinyllama
+          image: ghcr.io/ngrok-samples/tinyllama:main
           ports:
             - name: http
-              containerPort: 80
+              containerPort: 8080
 ---
 # Configuration for ngrok's Kubernetes Operator
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: game-2048-ingress
+  name: tinyllama-ingress
   namespace: default
 spec:
   ingressClassName: ngrok
@@ -100,7 +100,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: game-2048
+                name: tinyllama
                 port:
                   number: 80
 ```
@@ -113,9 +113,11 @@ spec:
 
    **Note:** If you get an error when applying the manifest, double check that you've updated the `NGROK_DOMAIN` value and try again.
 
-1. Access your ingress URL using the subdomain you chose in the manifest file above (that is, `https://my-awesome-k8s-cluster.ngrok.app`) to confirm the 2048 app is accessible from the internet.
+1. Access your ingress URL using the subdomain you chose in the manifest file above (that is, `https://my-awesome-k8s-cluster.ngrok.app`) to confirm the tinyllama app is accessible from the internet.
 
    ![application public](/img/howto/kubernetes-operator/k8s-ingress-app-2.png)
+
+   > **Note:** The screenshot shows our earlier 2048 sample app. In this guide, you'll see the tinyllama demo app, but the ingress behavior is the same.
 
 ## Add edge security to your app 
 
@@ -131,7 +133,7 @@ apply the policy to just a specific backend or as the default backend for an
 `Ingress`—see our doc on using the [Operator with
 Ingresses](/k8s/guides/using-ingresses/#using-ngroktrafficpolicy-with-ingress).
 
-1. Edit your existing `2048.yaml` manifest with the following, leaving the
+1. Edit your existing `ngrok-manifest.yaml` manifest with the following, leaving the
    `Service` and `Deployment` as they were. Note the new `annotations` field and
    the `NgrokTrafficPolicy` CR.
 
@@ -142,7 +144,7 @@ Ingresses](/k8s/guides/using-ingresses/#using-ngroktrafficpolicy-with-ingress).
    apiVersion: networking.k8s.io/v1
    kind: Ingress
    metadata:
-     name: game-2048-ingress
+     name: tinyllama-ingress
      namespace: default
      annotations:
        k8s.ngrok.com/traffic-policy: oauth
@@ -156,7 +158,7 @@ Ingresses](/k8s/guides/using-ingresses/#using-ngroktrafficpolicy-with-ingress).
                pathType: Prefix
                backend:
                  service:
-                   name: game-2048
+                   name: tinyllama
                    port:
                      number: 80
    ---
@@ -167,17 +169,17 @@ Ingresses](/k8s/guides/using-ingresses/#using-ngroktrafficpolicy-with-ingress).
      name: oauth
      namespace: default
    spec:
-     policy:
-   	   on_http_request:
-   		   - type: oauth
-   			   config:
-   			     provider: google
+      policy:
+        on_http_request:
+          - type: oauth
+            config:
+              provider: google
    ```
 
-1. Re-apply your `2048.yaml` configuration.
+1. Re-apply your `ngrok-manifest.yaml` configuration.
 
    ```bash
-   kubectl apply -f 2048.yaml
+   kubectl apply -f ngrok-manifest.yaml
    ```
 
 1. When you open your demo app again, you'll be asked to log in via Google.
@@ -211,5 +213,5 @@ Ingresses](/k8s/guides/using-ingresses/#using-ngroktrafficpolicy-with-ingress).
                  status_code: 400
    ```
 
-1. Check out your deployed 2048 app once again. If you log in with an email that
+1. Check out your deployed tinyllama app once again. If you log in with an email that
    doesn't match your domain, ngrok rejects your request. 
