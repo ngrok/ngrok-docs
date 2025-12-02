@@ -11,14 +11,14 @@ See our [Contribution Guidelines](CONTRIBUTING.md) for detailed instructions on 
 
 ## Prerequisites
 
-- [Node 22](https://nodejs.org/en/download)
+- [Node 24](https://nodejs.org/en/download)
 - [pnpm 10](https://pnpm.io/installation#using-npm)
 - [nvm](https://github.com/nvm-sh/nvm?tab=readme-ov-file#installing-and-updating)
 - `corepack` is included with node by default, no need to install
 
 ## Setup
 
-1. Ensure that `node 22` is installed. With `nvm`, run `nvm install`.
+1. Ensure that `node 24` is installed. With `nvm`, run `nvm install`.
 1. Enable `pnpm` with `corepack`: `corepack enable pnpm`
 1. Install `pnpm` with `corepack`: `corepack install`
 1. Install project dependencies with `pnpm`: `pnpm install`
