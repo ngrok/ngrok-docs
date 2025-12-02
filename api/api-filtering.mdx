@@ -17,13 +17,13 @@ To use API Filtering, you pass a subset of CEL expressions to the `filter` query
 This example request fetches a list of all your Cloud and Agent endpoints.
 
 ```http
-GET /endpoints?filter='obj.type == "cloud" || obj.type == "agent"'
+GET /endpoints?filter=obj.type == "cloud" || obj.type == "agent"
 ```
 
 ## Request shape
 
 ```http
-GET /{resource}?filter='{CEL_EXPRESSION}'
+GET /{resource}?filter={CEL_EXPRESSION}
 ```
 
 ## Supported CEL (subset)
@@ -45,25 +45,25 @@ Expressions are evaluated against a single **resource instance** exposed as `obj
 ✅ Valid
 
 ```http
-GET /endpoints?filter='obj.type == "cloud" || obj.type == "agent"'
-GET /endpoints?filter='obj.type in ["agent", "cloud"]'
+GET /endpoints?filter=obj.type == "cloud" || obj.type == "agent"
+GET /endpoints?filter=obj.type in ["agent", "cloud"]
 ```
 
 ❌ Not valid
 
 ```http
-GET /endpoints?filter='["agent","cloud"] in obj.types'
+GET /endpoints?filter=["agent","cloud"] in obj.types
 ```
 
 ## Dates and time helpers
 
 - **Treat timestamps as numerics** by using `<`, `<=`, `==`, `>=`, `>` directly on `timestamp()` fields, for example:
   ```http
-  GET /vaults?filter=’obj.created_at < timestamp(“2025-10-31T09:23:45-07:00”)’
+  GET /vaults?filter=obj.created_at < timestamp("2025-10-31T09:23:45-07:00")
   ```
 - **Convenience helpers:** `now()` and `daysAgo(n)` support concise relative filters, for example:
   ```http
-  GET /endpoints?filter='obj.created_at >= daysAgo(7)'
+  GET /endpoints?filter=obj.created_at >= daysAgo(7)
   ```
 
 ## Query restrictions and limitations
@@ -85,7 +85,11 @@ These exclusions intentionally keep evaluation small and predictable.
 
 **High entropy** fields are fields with values that are effectively random, usually because they're generated. The `id` field on a response object, such as `obj.id`, is a common example.
 
-[Substring functions](https://github.com/google/cel-spec/blob/master/doc/langdef.md#string-functions), such as `startsWith()`, `contains()`, `endsWith()`, are **disallowed** on high entropy fields. Check for equality on these fields instead. For example, `obj.id == "ep_123"`.
+[Substring functions](https://github.com/google/cel-spec/blob/master/doc/langdef.md#string-functions), such as `startsWith()`, `contains()`, and `endsWith()`, are **disallowed** on high entropy fields. Check for equality on these fields instead. For example:
+
+```
+obj.id == "ep_123"
+```
 
 ### Query complexity (budgeting/limits)
 
@@ -122,9 +126,9 @@ The initial release prioritizes the resource types and fields below. CEL filteri
 ### **Filter endpoints by type and creation time**
 
 ```http
-GET /endpoints?filter='obj.type == "cloud" && obj.created_at < timestamp("2025-10-31T09:23:45-07:00")'
+GET /endpoints?filter=obj.type == "cloud" && obj.created_at < timestamp("2025-10-31T09:23:45-07:00")
 # or using helpers
-GET /endpoints?filter='obj.type == "cloud" && obj.created_at >= daysAgo(6)'
+GET /endpoints?filter=obj.type == "cloud" && obj.created_at >= daysAgo(6)
 ```
 
 Reference:
@@ -134,7 +138,7 @@ Reference:
 ### **Reserved domains by prefix**
 
 ```http
-GET /reserved_domains?filter='obj.domain.startsWith("myapi.ngrok")'
+GET /reserved_domains?filter=obj.domain.startsWith("myapi.ngrok")
 ```
 
 Reference:
@@ -144,7 +148,7 @@ Reference:
 ### **IP policy rules by CIDR and action**
 
 ```http
-GET /ip_policy_rules?filter='obj.cidr.contains("1.1.0.0/16") && obj.action == "deny"'
+GET /ip_policy_rules?filter=obj.cidr.contains("1.1.0.0/16") && obj.action == "deny"
 ```
 
 Reference:
@@ -154,7 +158,7 @@ Reference:
 ### **Credentials by owner with optional empty ACL**
 
 ```http
-GET /credentials?filter='obj.owner_id == "usr_2tEpN0yrxDI4j8jVnhVRoTNN2Tx" && (obj.acl == null || obj.acl == "")'
+GET /credentials?filter=obj.owner_id == "usr_2tEpN0yrxDI4j8jVnhVRoTNN2Tx" && (obj.acl == null || obj.acl == "")
 ```
 
 Reference:
@@ -164,7 +168,7 @@ Reference:
 ### **Complex nesting**
 
 ```http
-GET /agent_ingresses?filter='obj.domain in ["foo.com","bar.com","baz.com"] || (obj.created_at < timestamp("2025-05-10Z") && obj.description.contains("cowbell"))'
+GET /agent_ingresses?filter=obj.domain in ["foo.com","bar.com","baz.com"] || (obj.created_at < timestamp("2025-05-10Z") && obj.description.contains("cowbell"))
 ```
 
 Reference:
