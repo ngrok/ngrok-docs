@@ -1,0 +1,99 @@
+name: Auto-generate Helm Values
+
+permissions:
+  contents: write
+  pull-requests: write
+
+on:
+  schedule:
+    - cron: '0 11 * * 1'  # 11:00 AM UTC every Monday
+  workflow_dispatch:
+
+jobs:
+  update-helm-values:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate bot token
+        uses: actions/create-github-app-token@v2
+        id: generate-token
+        with:
+          app-id: ${{ secrets.NGROK_DOCS_BOT_APP_ID }}
+          private-key: ${{ secrets.NGROK_DOCS_BOT_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+
+      - name: Checkout main branch
+        uses: actions/checkout@v4
+        with:
+          token: ${{ steps.generate-token.outputs.token }}
+          ref: main
+
+      - name: Fetch and Update Helm Values
+        run: |
+          HELM_VALUES_URL="https://raw.githubusercontent.com/ngrok/ngrok-operator/main/helm/ngrok-operator/values.yaml"
+          OUTPUT_PATH="snippets/k8s/_helm-config.mdx"
+          
+          # Create the content with the wrapped values
+          echo '```yaml title="helm values" wrap' > "$OUTPUT_PATH"
+          curl -sSL --fail "$HELM_VALUES_URL" >> "$OUTPUT_PATH"
+          
+          # Ensure there is a newline before the closing block
+          # We add an explicit newline to be safe (extra newline is harmless in YAML/Markdown)
+          echo "" >> "$OUTPUT_PATH"
+          echo '```' >> "$OUTPUT_PATH"
+          
+          echo "Updated $OUTPUT_PATH"
+
+      - name: Check for changes
+        id: check
+        run: |
+          if git diff --quiet snippets/k8s/_helm-config.mdx; then
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+            echo "No changes detected."
+          else
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+            echo "Changes detected."
+          fi
+
+      - name: Push changes and Create PR
+        if: steps.check.outputs.has_changes == 'true'
+        id: gh-pr
+        env:
+          GH_TOKEN: ${{ steps.generate-token.outputs.token }}
+        run: |
+          git config user.name "ngrok-docs-bot[bot]"
+          git config user.email "ngrok-docs-bot[bot]@users.noreply.github.com"
+          
+          BRANCH_NAME="docs/auto-gen-helm-values"
+          
+          # Create or reset the branch
+          git checkout -B "$BRANCH_NAME"
+          
+          # Add and commit changes
+          git add snippets/k8s/_helm-config.mdx
+          git commit -m "docs: update helm values"
+          
+          # Push the branch (force to overwrite if exists)
+          git push -f origin "$BRANCH_NAME"
+          
+          # Create PR if it doesn't exist
+          pr_url=$(gh pr create \
+            --title "Docs: Update Helm Values" \
+            --body "This PR automatically updates the Helm values in snippets/k8s/_helm-config.mdx from the ngrok-operator repository." \
+            --base main \
+            --head "$BRANCH_NAME" \
+            --repo "$GITHUB_REPOSITORY" \
+            2>&1 | tee /tmp/pr_output || true)
+          
+          # Parse PR URL
+          if echo "$pr_url" | grep -q "https://github.com/"; then
+             echo "pr_url=$(echo "$pr_url" | grep -o 'https://github.com/[^ ]*')" >> $GITHUB_OUTPUT
+          else
+             # If creation failed (likely because it exists), get the existing URL
+             existing_url=$(gh pr list --head "$BRANCH_NAME" --base main --json url --jq '.[0].url' --repo "$GITHUB_REPOSITORY")
+             echo "pr_url=$existing_url" >> $GITHUB_OUTPUT
+          fi
+
+      - name: PR Info
+        if: steps.check.outputs.has_changes == 'true' && steps.gh-pr.outputs.pr_url
+        run: |
+          echo "Pull Request URL - ${{ steps.gh-pr.outputs.pr_url }}"
