@@ -36,6 +36,29 @@ curl --location 'https://api.ngrok.com/endpoints' \
   --header 'Authorization: Bearer <token>'
 ```
 
+### Pagination
+
+API filtering supports with pagination. You can combine the `filter` parameter with pagination parameters to page through filtered results.
+
+Pagination parameters:
+
+- **`before_id`**: Accepts a resource ID. When present, the response includes **earlier entries in the result set**, sorted by ID, that appear before the specified `before_id`.
+- **`limit`**: Constrains the number of results returned in a single page. If omitted, the default (and maximum) value is 100.
+
+Pagination is always applied _after_ filtering:
+
+1. The service applies your `filter` expression to the full collection.
+2. The filtered results are ordered by ID.
+3. `before_id` and `limit` are applied to that ordered, filtered result set.
+
+Example:
+
+```http
+GET /endpoints?filter=obj.type == "cloud"&before_id=ep_123&limit=50
+```
+
+This request returns up to 50 `cloud` endpoints that appear earlier than `ep_123` in the ordered result set.
+
 ## Supported CEL (subset)
 
 These core operators and helpers are supported:
@@ -132,6 +155,19 @@ The initial release prioritizes the resource types and fields below. CEL filteri
 | **Secrets**                     | - `id`<br />- `created_at`<br />- `description`<br />- `metadata`<br />- `name`                                                                                                              | Coming soon               |
 
 ## Usage examples
+
+### Paginate filtered results
+
+```http
+GET /endpoints?filter=obj.type == "agent"&limit=25
+```
+
+```http
+GET /endpoints?filter=obj.type == "agent"&before_id=ep_2aB3cD4eF&limit=25
+```
+
+Use `limit` to control the page size (up to 100). Use `before_id` with the last ID from the previous page to request **earlier** results that match the same filter.
+
 
 ### **Filter endpoints by type and creation time**
 
