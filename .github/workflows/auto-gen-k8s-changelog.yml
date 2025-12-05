@@ -1,0 +1,93 @@
+name: Auto-generate K8s Changelog
+
+permissions:
+  contents: write
+  pull-requests: write
+
+on:
+  schedule:
+    - cron: '0 11 * * 1'  # 11:00 AM UTC every Monday
+  workflow_dispatch:
+
+jobs:
+  update-k8s-changelog:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate bot token
+        uses: actions/create-github-app-token@v2
+        id: generate-token
+        with:
+          app-id: ${{ secrets.NGROK_DOCS_BOT_APP_ID }}
+          private-key: ${{ secrets.NGROK_DOCS_BOT_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+
+      - name: Checkout main branch
+        uses: actions/checkout@v4
+        with:
+          token: ${{ steps.generate-token.outputs.token }}
+          ref: main
+
+      - name: Fetch and Update Changelog
+        run: |
+          CHANGELOG_URL="https://raw.githubusercontent.com/ngrok/ngrok-operator/refs/heads/main/CHANGELOG.md"
+          OUTPUT_PATH="snippets/k8s/_changelog.mdx"
+          
+          # Fetch and process using perl to remove the title and leading newlines exactly as the script did
+          curl -sSL --fail "$CHANGELOG_URL" | perl -0777 -pe 's/^# Changelog\n*//m' > "$OUTPUT_PATH"
+          
+          echo "Updated $OUTPUT_PATH"
+
+      - name: Check for changes
+        id: check
+        run: |
+          if git diff --quiet snippets/k8s/_changelog.mdx; then
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+            echo "No changes detected."
+          else
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+            echo "Changes detected."
+          fi
+
+      - name: Push changes and Create PR
+        if: steps.check.outputs.has_changes == 'true'
+        id: gh-pr
+        env:
+          GH_TOKEN: ${{ steps.generate-token.outputs.token }}
+        run: |
+          git config user.name "ngrok-docs-bot[bot]"
+          git config user.email "ngrok-docs-bot[bot]@users.noreply.github.com"
+          
+          BRANCH_NAME="docs/auto-gen-k8s-changelog"
+          
+          # Create or reset the branch
+          git checkout -B "$BRANCH_NAME"
+          
+          # Add and commit changes
+          git add snippets/k8s/_changelog.mdx
+          git commit -m "docs: update k8s changelog"
+          
+          # Push the branch (force to overwrite if exists)
+          git push -f origin "$BRANCH_NAME"
+          
+          # Create PR if it doesn't exist
+          pr_url=$(gh pr create \
+            --title "Docs: Automated updated K8s Changelog" \
+            --body "This PR automatically updates the K8s Changelog in snippets/k8s/_changelog.mdx from the ngrok-operator repository." \
+            --base main \
+            --head "$BRANCH_NAME" \
+            --repo "$GITHUB_REPOSITORY" \
+            2>&1 | tee /tmp/pr_output || true)
+          
+          # Parse PR URL
+          if echo "$pr_url" | grep -q "https://github.com/"; then
+             echo "pr_url=$(echo "$pr_url" | grep -o 'https://github.com/[^ ]*')" >> $GITHUB_OUTPUT
+          else
+             # If creation failed (likely because it exists), get the existing URL
+             existing_url=$(gh pr list --head "$BRANCH_NAME" --base main --json url --jq '.[0].url' --repo "$GITHUB_REPOSITORY")
+             echo "pr_url=$existing_url" >> $GITHUB_OUTPUT
+          fi
+
+      - name: PR Info
+        if: steps.check.outputs.has_changes == 'true' && steps.gh-pr.outputs.pr_url
+        run: |
+          echo "Pull Request URL - ${{ steps.gh-pr.outputs.pr_url }}"
