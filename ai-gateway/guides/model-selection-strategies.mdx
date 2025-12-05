@@ -1,0 +1,282 @@
+---
+title: Model Selection Strategies
+description: Configure custom strategies for selecting models using CEL expressions
+---
+
+Model selection strategies let you customize how the AI Gateway chooses which model to use for requests. Using CEL (Common Expression Language) expressions, you can filter, sort, and prioritize models based on performance metrics, cost, features, and custom metadata.
+
+## When to Use Selection Strategies
+
+Selection strategies are useful when:
+
+- Clients use `ngrok/auto` or omit the model field
+- You want to prefer certain models over others
+- You need performance-based routing (lowest latency, lowest error rate)
+- You want cost optimization (cheapest models first)
+- You need feature-based filtering (only models with tool calling)
+
+## Basic Configuration
+
+Define strategies in your traffic policy:
+
+```yaml
+on_http_request:
+  - type: ai-gateway
+    config:
+      model_selection:
+        strategy:
+          - "ai.models.filter(m, m.provider_id == 'openai')"
+          - "ai.models"
+```
+
+## How Strategies Execute
+
+Strategies execute **in order** until one returns at least one model:
+
+```yaml
+model_selection:
+  strategy:
+    - "ai.models.filter(m, m.provider_id == 'openai')"   # Try first
+    - "ai.models.filter(m, m.provider_id == 'anthropic')" # Try if first returns empty
+    - "ai.models"                                          # Fallback to all models
+```
+
+If a strategy returns no models, the gateway tries the next strategy. Always include a fallback strategy (like `ai.models`) to ensure requests don't fail.
+
+### Client Model Priority
+
+When clients specify models in their request, selection strategies act as **filters only**:
+
+- Strategies can filter OUT models but cannot ADD models the client didn't request
+- The client's preferred order is preserved (`model` field first, then `models` array entries)
+- If strategies filter out all client-specified models, the request fails with an error
+
+This ensures clients get predictable behavior—if they ask for `gpt-4o`, they won't unexpectedly get `claude-3-5-sonnet` even if your strategy prefers Anthropic.
+
+## Common Patterns
+
+### Provider Priority
+
+Prefer a specific provider, with fallbacks:
+
+```yaml
+model_selection:
+  strategy:
+    - "ai.models.filter(m, m.provider_id == 'openai')"
+    - "ai.models.filter(m, m.provider_id == 'anthropic')"
+    - "ai.models"
+```
+
+### Cost Optimization
+
+Prefer cheaper models:
+
+```yaml
+model_selection:
+  strategy:
+    - "ai.models.filter(m, m.id.contains('mini'))"
+    - "ai.models.sortBy('price')"
+    - "ai.models"
+```
+
+### Performance-Based
+
+Prefer low-latency, reliable models:
+
+```yaml
+model_selection:
+  strategy:
+    - "ai.models.filter(m, m.metrics.global.latency.upstream_ms_p95 < 1500 && m.metrics.global.error_rate.total < 0.01)"
+    - "ai.models"
+```
+
+### Feature-Based
+
+Only models with specific capabilities:
+
+```yaml
+model_selection:
+  strategy:
+    - "ai.models.filter(m, 'tool-calling' in m.supported_features)"
+    - "ai.models"
+```
+
+### Geographic Filtering
+
+Only models in specific regions:
+
+```yaml
+model_selection:
+  strategy:
+    - "ai.models.inCountryCode('US')"
+    - "ai.models"
+```
+
+### Metadata-Based
+
+Use custom metadata for filtering:
+
+```yaml
+providers:
+  - id: "openai"
+    models:
+      - id: "gpt-4o"
+        metadata:
+          tier: "premium"
+          approved: true
+      - id: "gpt-4o-mini"
+        metadata:
+          tier: "budget"
+          approved: true
+
+model_selection:
+  strategy:
+    - "ai.models.filter(m, m.metadata.tier == 'budget')"
+    - "ai.models"
+```
+
+### Known Models Only
+
+Reject unknown pass-through models (only allow models in the catalog):
+
+```yaml
+model_selection:
+  strategy:
+    - "ai.models.filter(m, m.known)"
+```
+
+This prevents clients from requesting arbitrary model names that get passed through to providers.
+
+## Available Functions
+
+### Filtering
+
+| Function | Description | Example |
+|----------|-------------|---------|
+| `filter(predicate)` | Filter by condition | `ai.models.filter(m, m.provider_id == 'openai')` |
+| `only(ids)` | Include only specific models | `ai.models.only(['gpt-4o', 'claude-3-5-sonnet'])` |
+| `ignore(ids)` | Exclude specific models | `ai.models.ignore(['gpt-3.5-turbo'])` |
+| `onlyProviders(ids)` | Include only specific providers | `ai.models.onlyProviders(['openai', 'anthropic'])` |
+| `ignoreProviders(ids)` | Exclude specific providers | `ai.models.ignoreProviders(['google'])` |
+| `onlyAuthors(ids)` | Include only specific authors | `ai.models.onlyAuthors(['openai'])` |
+| `ignoreAuthors(ids)` | Exclude specific authors | `ai.models.ignoreAuthors(['meta'])` |
+
+### Geographic
+
+| Function | Description | Example |
+|----------|-------------|---------|
+| `inRegion(code)` | Models available in region | `ai.models.inRegion('us-east-1')` |
+| `inCountryCode(code)` | Models available in country | `ai.models.inCountryCode('US')` |
+
+### Cost
+
+| Function | Description | Example |
+|----------|-------------|---------|
+| `underCost(type, max)` | Models under price threshold | `ai.models.underCost('text.input', 1.0)` |
+| `sortBy('price')` | Sort by price (cheapest first) | `ai.models.sortBy('price')` |
+
+### Selection
+
+| Function | Description | Example |
+|----------|-------------|---------|
+| `random()` | Select one random model | `ai.models.random()` |
+| `randomize()` | Shuffle model order | `ai.models.randomize()` |
+| `[index]` | Select by index | `ai.models.filter(...)[0]` |
+
+### Lookup
+
+| Function | Description | Example |
+|----------|-------------|---------|
+| `get(providerId, modelId)` | Get specific model | `ai.models.get('openai', 'gpt-4o')` |
+| `getMetadata(key)` | Get metadata value | `m.getMetadata('tier')` |
+
+## Available Model Variables
+
+When using `filter()`, these variables are available on each model `m`:
+
+| Variable | Type | Description |
+|----------|------|-------------|
+| `m.id` | string | Model identifier |
+| `m.provider_id` | string | Provider identifier |
+| `m.author_id` | string | Model author identifier |
+| `m.display_name` | string | Human-readable name |
+| `m.known` | boolean | Whether this model is in the catalog (false for unknown pass-through models) |
+| `m.custom` | boolean | Whether this is a custom-configured model |
+| `m.metadata` | object | Custom metadata from config |
+| `m.input_modalities` | list | Input types ("text", "image", etc.) |
+| `m.output_modalities` | list | Output types |
+| `m.supported_features` | list | Features ("tool-calling", "coding", etc.) |
+| `m.max_context_window` | number | Maximum context window size |
+| `m.max_output_tokens` | number | Maximum output tokens |
+
+### Metrics Variables
+
+Access performance metrics via `m.metrics`:
+
+```yaml
+# Global metrics (all ngrok traffic)
+m.metrics.global.request_count
+m.metrics.global.latency.upstream_ms_avg
+m.metrics.global.latency.upstream_ms_p95
+m.metrics.global.error_rate.total
+m.metrics.global.error_rate.timeout
+m.metrics.global.error_rate.rate_limit
+
+# Account-scoped metrics
+m.metrics.account.request_count
+m.metrics.account.token.provider_input
+m.metrics.account.token.provider_output
+
+# Endpoint-scoped metrics
+m.metrics.endpoint.request_count
+m.metrics.endpoint.latency.upstream_ms_avg
+```
+
+## CEL Operators
+
+| Operator | Description | Example |
+|----------|-------------|---------|
+| `==`, `!=` | Equality | `m.provider_id == 'openai'` |
+| `<`, `>`, `<=`, `>=` | Comparison | `m.metrics.global.latency.upstream_ms_avg < 1000` |
+| `&&` | Logical AND | `m.provider_id == 'openai' && m.id.contains('gpt-4')` |
+| `\|\|` | Logical OR | `m.id.contains('mini') \|\| m.id.contains('turbo')` |
+| `!` | Logical NOT | `!m.custom` |
+| `in` | List membership | `'image' in m.input_modalities` |
+
+## String Functions
+
+| Function | Description | Example |
+|----------|-------------|---------|
+| `contains()` | Check substring | `m.id.contains('gpt')` |
+| `startsWith()` | Check prefix | `m.id.startsWith('gpt-4')` |
+| `endsWith()` | Check suffix | `m.id.endsWith('-turbo')` |
+
+## Complete Example
+
+```yaml
+on_http_request:
+  - type: ai-gateway
+    config:
+      providers:
+        - id: "openai"
+          metadata:
+            cost_per_1k_input: 0.03
+        - id: "anthropic"
+        - id: "google"
+      
+      model_selection:
+        strategy:
+          # Prefer fast, reliable OpenAI models
+          - "ai.models.filter(m, m.provider_id == 'openai' && m.metrics.global.error_rate.total < 0.01)"
+          # Fall back to any fast model
+          - "ai.models.filter(m, m.metrics.global.latency.upstream_ms_p95 < 2000)"
+          # Fall back to any model
+          - "ai.models"
+```
+
+## Next Steps
+
+- [CEL Functions Reference](/ai-gateway/reference/cel-functions) - Complete function reference
+- [Model Filtering Example](/ai-gateway/examples/model-filtering) - More examples
+- [Metrics Reference](/ai-gateway/observability/metrics) - Understanding metrics
+

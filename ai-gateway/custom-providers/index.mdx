@@ -1,0 +1,281 @@
+---
+title: Custom Providers Overview
+sidebarTitle: Overview
+description: Connect custom endpoints and self-hosted models to the AI Gateway
+---
+
+The AI Gateway can route requests to any OpenAI-compatible endpoint beyond the [built-in providers](/ai-gateway/reference/model-catalog). This enables you to use self-hosted models, private deployments, or alternative AI services.
+
+## Requirements
+
+Custom providers must:
+
+1. **Expose an OpenAI-compatible API** - Same request/response format as OpenAI
+2. **Be reachable from ngrok** - Either via HTTPS URL or ngrok internal endpoint
+3. **Support the endpoints you need** - `/v1/chat/completions`, `/v1/embeddings`, etc.
+
+## URL Requirements
+
+The `base_url` configuration has specific requirements based on the URL type:
+
+| URL Type | Scheme | Example |
+|----------|--------|---------|
+| External HTTPS | `https://` only | `https://api.custom.com/v1` |
+| ngrok internal endpoint | `http://` or `https://` | `https://my-service.internal` |
+
+<Warning>
+HTTP URLs are only allowed for ngrok `.internal` endpoints. All external URLs must use HTTPS.
+</Warning>
+
+### External HTTPS URLs
+
+For publicly accessible services with valid TLS certificates:
+
+```yaml
+providers:
+  - id: "my-provider"
+    base_url: "https://api.my-service.com/v1"
+    api_keys:
+      - value: ${secrets.get('my-provider', 'api-key')}
+```
+
+### ngrok Internal Endpoints
+
+For services running behind ngrok (local services, private networks), use internal endpoints:
+
+```yaml
+providers:
+  - id: "my-local-service"
+    base_url: "https://my-service.internal"
+    # No API key needed if your service doesn't require one
+```
+
+Internal endpoints let you:
+- Route to local services without public exposure
+- Connect to other ngrok endpoints in your account
+- Use HTTP for services without TLS
+
+## Basic Configuration
+
+```yaml
+on_http_request:
+  - type: ai-gateway
+    config:
+      providers:
+        - id: "my-custom-provider"
+          base_url: "https://my-ai-service.example.com/v1"
+          api_keys:
+            - value: ${secrets.get('custom', 'api-key')}
+          models:
+            - id: "my-model"
+```
+
+### Configuration Fields
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| `id` | Yes | Unique identifier for the provider |
+| `base_url` | Yes | Base URL for the provider's API |
+| `api_keys` | No | API keys for authentication |
+| `models` | No | List of available models |
+| `id_aliases` | No | Alternative names for the provider |
+| `metadata` | No | Custom metadata for selection strategies |
+
+## Defining Models
+
+Specify which models your custom provider offers:
+
+```yaml
+providers:
+  - id: "my-provider"
+    base_url: "https://my-service.internal"
+    models:
+      - id: "llama3-70b"
+      - id: "mistral-7b"
+      - id: "codellama-34b"
+```
+
+### Model Metadata
+
+Add metadata to models for use in selection strategies:
+
+```yaml
+providers:
+  - id: "my-provider"
+    base_url: "https://my-service.internal"
+    models:
+      - id: "llama3-70b"
+        metadata:
+          gpu: "A100"
+          quantization: "none"
+          max_context: 8192
+```
+
+## Authentication
+
+### With Provider API Keys
+
+If your service requires authentication:
+
+```yaml
+providers:
+  - id: "my-provider"
+    base_url: "https://my-service.example.com"
+    api_keys:
+      - value: ${secrets.get('my-provider', 'api-key')}
+```
+
+### Without Provider API Keys
+
+Some self-hosted services don't require authentication:
+
+```yaml
+providers:
+  - id: "my-provider"
+    base_url: "https://my-service.internal"
+    # No api_keys needed
+```
+
+### Custom Headers
+
+For services requiring non-standard authentication:
+
+```yaml
+on_http_request:
+  - type: ai-gateway
+    config:
+      headers:
+        X-Custom-Auth: ${secrets.get('my-provider', 'token')}
+      providers:
+        - id: "my-provider"
+          base_url: "https://my-service.example.com"
+```
+
+## Timeouts
+
+Self-hosted models can be slower than cloud providers. Adjust timeouts as needed:
+
+```yaml
+on_http_request:
+  - type: ai-gateway
+    config:
+      per_request_timeout: "120s"
+      total_timeout: "5m"
+      providers:
+        - id: "my-provider"
+          base_url: "https://my-service.internal"
+```
+
+## Restricting Access
+
+Allow only your custom provider and block cloud providers:
+
+```yaml
+on_http_request:
+  - type: ai-gateway
+    config:
+      only_allow_configured_providers: true
+      only_allow_configured_models: true
+      providers:
+        - id: "my-provider"
+          base_url: "https://my-service.internal"
+          models:
+            - id: "llama3"
+            - id: "mistral"
+```
+
+## Failover Patterns
+
+### Custom Provider with Cloud Fallback
+
+Use your self-hosted model as primary with cloud backup:
+
+```yaml
+on_http_request:
+  - type: ai-gateway
+    config:
+      providers:
+        - id: "my-provider"
+          base_url: "https://my-service.internal"
+          models:
+            - id: "llama3"
+        
+        - id: "openai"
+          api_keys:
+            - value: ${secrets.get('openai', 'api-key')}
+      
+      model_selection:
+        strategy:
+          - "ai.models.filter(m, m.provider_id == 'my-provider')"
+          - "ai.models"
+```
+
+### Multiple Custom Providers
+
+Load balance across multiple self-hosted instances:
+
+```yaml
+on_http_request:
+  - type: ai-gateway
+    config:
+      providers:
+        - id: "inference-1"
+          base_url: "https://inference-1.internal"
+          models:
+            - id: "llama3"
+        
+        - id: "inference-2"
+          base_url: "https://inference-2.internal"
+          models:
+            - id: "llama3"
+      
+      model_selection:
+        strategy:
+          - "ai.models.random()"
+```
+
+## Troubleshooting
+
+### Connection Refused
+
+- Verify the `base_url` is correct and reachable
+- For internal endpoints, ensure the ngrok tunnel is running
+- Check firewall rules allow traffic
+
+### HTTPS Required Error
+
+External URLs must use HTTPS. For local services, use ngrok internal endpoints:
+
+```bash
+# Expose local service with internal endpoint
+ngrok http 8000 --url https://my-service.internal
+```
+
+### Authentication Errors
+
+- Verify API key is correct in secrets
+- Check if the service requires specific headers
+- Some services use `Authorization: Bearer` vs `Api-Key`
+
+### Model Not Found
+
+- Verify the model ID matches exactly what the service expects
+- Check if the model is loaded/downloaded on the service
+- Some services require specific model name formats
+
+## Integration Guides
+
+Step-by-step setup instructions for specific platforms:
+
+<CardGroup cols={2}>
+  <Card title="Ollama" icon="terminal" href="/ai-gateway/custom-providers/ollama">
+    Run open-source models locally with Ollama
+  </Card>
+  <Card title="vLLM" icon="bolt" href="/ai-gateway/custom-providers/vllm">
+    High-performance inference server
+  </Card>
+  <Card title="Azure OpenAI" icon="microsoft" href="/ai-gateway/custom-providers/azure-openai">
+    Microsoft's OpenAI service
+  </Card>
+</CardGroup>
+

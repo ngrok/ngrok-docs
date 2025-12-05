@@ -1,0 +1,150 @@
+---
+title: Models
+description: Understanding model naming and request formats in the AI Gateway
+---
+
+Models are the AI systems that process your requests. The AI Gateway supports flexible model naming and can route to the same model across different providers.
+
+## Specifying Models
+
+You can specify which model to use in your requests. The gateway supports several formats depending on how specific you need to be.
+
+### Just the Model Name
+
+The simplest approach—use the model name directly:
+
+```json
+{
+  "model": "gpt-4o",
+  "messages": [{"role": "user", "content": "Hello"}]
+}
+```
+
+The gateway looks up `gpt-4o` in the [Model Catalog](/ai-gateway/reference/model-catalog) and automatically routes to the right provider (OpenAI in this case).
+
+### With a Provider Prefix
+
+Use `provider:model` when you want to explicitly choose a provider:
+
+```json
+{
+  "model": "anthropic:claude-3-5-sonnet-latest",
+  "messages": [{"role": "user", "content": "Hello"}]
+}
+```
+
+This is useful when:
+- A model name exists on multiple providers
+- You want to force a specific provider
+- You're using a custom provider you've configured
+
+### With Model Author
+
+Use the `author/model` format when you want to be specific about who authored the model:
+
+```json
+{
+  "model": "meta-llama/llama-3-70b",
+  "messages": [{"role": "user", "content": "Hello"}]
+}
+```
+
+The gateway will infer the provider from the model catalog. To also specify which provider should serve the model, add the provider prefix:
+
+```json
+{
+  "model": "openrouter:meta-llama/llama-3-70b",
+  "messages": [{"role": "user", "content": "Hello"}]
+}
+```
+
+This `provider:author/model` format lets you choose both the model author and which provider serves it. This is useful when the same model is available from multiple sources (like OpenRouter, Together, or a self-hosted instance).
+
+## Multiple Models (Fallback)
+
+Specify multiple models for automatic fallback using the `models` array:
+
+```json
+{
+  "model": "gpt-4o",
+  "models": ["gpt-4o-mini", "claude-3-5-sonnet-20241022"],
+  "messages": [{"role": "user", "content": "Hello"}]
+}
+```
+
+The gateway tries models in order:
+1. `model` field first (primary choice)
+2. `models` array entries as fallbacks
+
+This enables cross-provider failover—if OpenAI fails, the gateway can automatically try Anthropic.
+
+## Automatic Model Selection
+
+Use the special `ngrok/auto` model to let the gateway choose based on your configured [model selection strategy](/ai-gateway/guides/model-selection-strategies):
+
+```json
+{
+  "model": "ngrok/auto",
+  "messages": [{"role": "user", "content": "Hello"}]
+}
+```
+
+This is equivalent to omitting the model field entirely. The gateway selects from available models based on your strategy (e.g., lowest latency, lowest cost).
+
+## Unknown Models (Pass-through)
+
+If a client requests a model that isn't in the [Model Catalog](/ai-gateway/reference/model-catalog), the gateway can still route it if:
+
+1. The model name includes a provider prefix (e.g., `openai:gpt-5-preview`)
+2. The provider is known and allowed by your configuration
+
+```json
+{
+  "model": "openai:some-new-model",
+  "messages": [{"role": "user", "content": "Hello"}]
+}
+```
+
+The gateway extracts `openai` as the provider and forwards the request with `some-new-model` as the model name. This enables immediate access to new models before they're added to the catalog.
+
+<Note>
+Unknown models bypass catalog validation—the provider will return an error if the model doesn't exist. Unknown models also lack metadata (pricing, capabilities) for model selection strategies.
+</Note>
+
+## Model Aliases
+
+The gateway automatically normalizes common model aliases. For example:
+
+- Shortened names may map to full version identifiers
+- Legacy names may map to current versions
+
+You can also define custom aliases in your provider configuration:
+
+```yaml
+providers:
+  - id: "openai"
+    models:
+      - id: "gpt-4o-2024-11-20"
+        id_aliases: ["gpt-4o", "gpt-4-latest"]
+```
+
+Clients can then use any of these names to reach the same model.
+
+## Model Capabilities
+
+Models have different capabilities that you can filter on using [selection strategies](/ai-gateway/guides/model-selection-strategies):
+
+- **Input modalities**: text, image, audio, video, file
+- **Output modalities**: text, image, audio
+- **Features**: tool-calling, coding, vision, etc.
+- **Context window**: Maximum input tokens
+- **Output tokens**: Maximum output tokens
+
+See the [Model Catalog](/ai-gateway/reference/model-catalog) for capabilities of each model.
+
+## Next Steps
+
+- [Model Catalog](/ai-gateway/reference/model-catalog) - Full list of supported models
+- [Model Selection Strategies](/ai-gateway/guides/model-selection-strategies) - Custom routing logic
+- [Configuring Providers](/ai-gateway/guides/configuring-providers) - Configure specific models
+

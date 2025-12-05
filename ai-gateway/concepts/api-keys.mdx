@@ -1,0 +1,131 @@
+---
+title: Provider API Keys
+description: Understanding provider API key management in the AI Gateway
+---
+
+Provider API keys authenticate requests to AI providers like OpenAI, Anthropic, and Google. The AI Gateway offers flexible key management—from simple passthrough to centralized management with automatic failover.
+
+## Key Precedence
+
+The gateway determines which provider API key to use based on these rules:
+
+### 1. Gateway Keys Override SDK Keys
+
+If you configure provider API keys in the gateway, those keys are used instead of any key sent by your SDK:
+
+```yaml
+providers:
+  - id: "openai"
+    api_keys:
+      - value: ${secrets.get('openai', 'gateway-key')}
+```
+
+Even if your SDK sends `apiKey: "sk-different-key"`, the gateway uses `gateway-key`.
+
+**Why this matters**: Centralizing keys in the gateway lets you:
+- Hide actual provider API keys from application code
+- Rotate keys without redeploying applications
+- Track usage across all applications
+
+### 2. SDK Keys in Passthrough Mode
+
+If no keys are configured for a provider, the key from your SDK is passed through:
+
+```yaml
+providers:
+  - id: "openai"
+    # No api_keys specified - SDK key is forwarded
+```
+
+**Why this matters**: Quick setup with no configuration changes needed.
+
+### 3. Restricted Provider Mode
+
+When `only_allow_configured_providers: true`, providers without configured keys are rejected:
+
+```yaml
+only_allow_configured_providers: true
+providers:
+  - id: "openai"
+    api_keys:
+      - value: ${secrets.get('openai', 'key')}
+```
+
+Requests to unconfigured providers (like `anthropic`) will fail with a clear error.
+
+## When to Use Each Mode
+
+| Mode | Use Case |
+|------|----------|
+| **Passthrough** | Development, quick testing, applications that manage their own keys |
+| **Gateway-managed** | Production, multi-tenant apps, centralized key rotation |
+| **Restricted** | Compliance requirements, cost control, limiting provider access |
+
+## Multiple Keys for Failover
+
+Configure multiple provider API keys for automatic failover:
+
+```yaml
+providers:
+  - id: "openai"
+    api_keys:
+      - value: ${secrets.get('openai', 'primary')}
+      - value: ${secrets.get('openai', 'backup')}
+      - value: ${secrets.get('openai', 'emergency')}
+```
+
+When a key fails (rate limit, quota exceeded, or error), the gateway automatically tries the next key in order.
+
+**Key ordering**: By default, keys are tried in the order they're listed. Put your highest-capacity or preferred keys first.
+
+## Intelligent Key Selection
+
+For more control over key selection, use `api_key_selection` with CEL expressions to select keys based on runtime metrics:
+
+```yaml
+api_key_selection:
+  strategy:
+    # Prefer keys with remaining quota
+    - "ai.keys.filter(k, k.quota.remaining_requests > 100)"
+    # Fall back to keys with low error rates
+    - "ai.keys.filter(k, k.error_rate.rate_limit < 0.1)"
+    # Fall back to all keys
+    - "ai.keys"
+```
+
+This enables:
+- **Quota-aware routing**: Route to keys with remaining capacity
+- **Error-rate routing**: Avoid keys hitting rate limits
+- **Load distribution**: Spread traffic across multiple keys
+
+See the [CEL Functions Reference](/ai-gateway/reference/cel-functions#api-key-selection) for available key variables and functions.
+
+## Key Sources
+
+### Inline Keys (Development Only)
+
+```yaml
+api_keys:
+  - value: "sk-proj-abc123..."
+```
+
+<Warning>
+Inline keys are visible in traffic policy configurations. Use only for local testing. See [ngrok Secrets](#ngrok-secrets-recommended) for the recommended approach.
+</Warning>
+
+### ngrok Secrets (Recommended)
+
+```yaml
+api_keys:
+  - value: ${secrets.get('openai', 'key-one')}
+  - value: ${secrets.get('openai', 'key-two')}
+```
+
+Store your provider API keys securely in [ngrok secrets](/traffic-policy/secrets) and reference them with `${secrets.get('namespace', 'key')}`.
+
+## Next Steps
+
+- [Managing Provider API Keys](/ai-gateway/guides/managing-api-keys) - Detailed guide on secrets, rotation, and selection strategies
+- [Configuring Providers](/ai-gateway/guides/configuring-providers) - Full provider configuration
+- [Multi-Key Failover](/ai-gateway/examples/multi-key-failover) - Example configuration
+- [CEL Functions Reference](/ai-gateway/reference/cel-functions#api-key-selection) - API key selection functions

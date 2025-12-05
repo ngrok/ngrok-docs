@@ -1,0 +1,124 @@
+---
+title: Traffic Inspector
+sidebarTitle: Traffic Inspector
+description: Debug AI Gateway requests with full request/response visibility
+---
+
+ngrok's [Traffic Inspector](/obs/traffic-inspection) works with AI Gateway endpoints, allowing you to view full request and response bodies for debugging.
+
+## Enabling Traffic Inspection
+
+Traffic Inspector is controlled at the account level:
+
+<Steps>
+  <Step title="Open Dashboard Settings">
+    Go to [ngrok Dashboard Settings](https://dashboard.ngrok.com/settings#observability)
+  </Step>
+  <Step title="Enable Full Capture Mode">
+    Under **Observability**, enable **Full Capture Mode**
+  </Step>
+  <Step title="View Traffic">
+    Access the [Traffic Inspector](https://dashboard.ngrok.com/observability/traffic-inspector) to see captured requests
+  </Step>
+</Steps>
+
+## What You Can See
+
+With Traffic Inspector enabled, you can view:
+
+- Full request bodies (prompts, messages, parameters)
+- Full response bodies (completions, usage data)
+- Request and response headers
+- HTTP timing information
+- Status codes
+
+This is useful for:
+
+- **Debugging prompt issues** — See exactly what was sent to the provider
+- **Verifying responses** — Confirm the model returned expected output
+- **Testing configurations** — Verify your AI Gateway setup is working correctly
+- **Troubleshooting errors** — See error responses from providers
+
+## Current Limitations
+
+<Warning>
+Traffic Inspector shows **standard HTTP request/response data**. The AI Gateway does not currently add AI-specific instrumentation to Traffic Inspector.
+
+**Not currently available:**
+- Which provider was selected from your configured list
+- Retry attempts and failover decisions
+- Token counts and cost estimates
+- Model selection strategy evaluation results
+- Per-provider latency breakdowns
+- API key selection details
+
+These features are on our roadmap. Email [niji@ngrok.ai](mailto:niji@ngrok.ai) to tell us what you'd like to see — your feedback directly influences our roadmap.
+</Warning>
+
+## Best Practices
+
+### Disable in Production
+
+Full Capture Mode stores complete request and response bodies, which may include:
+
+- User prompts containing sensitive information
+- PII in conversation context
+- API responses with confidential data
+
+Consider:
+- Disabling Full Capture Mode in production environments
+- Enabling temporarily only when debugging specific issues
+- Using separate endpoints for development vs production
+
+### Data Retention
+
+Traffic Inspector data is retained based on your ngrok plan:
+
+| Plan | Retention |
+|------|-----------|
+| Free | 3 days |
+| Personal | 7 days |
+| Pro | 30 days |
+| Enterprise | 90 days |
+
+### Filtering Traffic
+
+Use the Traffic Inspector's filtering capabilities to find specific requests:
+
+- Filter by endpoint URL
+- Filter by HTTP status code
+- Filter by time range
+- Search request/response content
+
+## Example: Debugging a Failed Request
+
+1. Send a request to your AI Gateway endpoint
+2. Open [Traffic Inspector](https://dashboard.ngrok.com/observability/traffic-inspector)
+3. Find your request by timestamp or endpoint
+4. Expand the request to see:
+   - The model and messages sent
+   - The provider's response or error
+   - Response headers including rate limit information
+
+## Security Considerations
+
+### Data Visibility
+
+When Full Capture Mode is enabled:
+- All team members with dashboard access can view request bodies
+- This includes prompts, user messages, and AI responses
+- Consider access controls for sensitive environments
+
+### Compliance
+
+If your organization has compliance requirements (HIPAA, GDPR, etc.):
+- Review whether storing request/response bodies is permitted
+- Consider using Traffic Inspector only in development
+- Consult your compliance team before enabling in production
+
+## See Also
+
+- [Traffic Inspection Documentation](/obs/traffic-inspection) — Full ngrok Traffic Inspector docs
+- [Metrics Reference](/ai-gateway/observability/metrics) — Use metrics for intelligent routing
+- [Error Handling](/ai-gateway/guides/error-handling) — Understanding retry behavior
+

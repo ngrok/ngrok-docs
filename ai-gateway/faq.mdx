@@ -1,0 +1,546 @@
+---
+title: FAQ
+description: Frequently asked questions about AI Gateway
+---
+
+## Configuration and Setup
+
+### Why am I getting "provider not allowed"?
+
+This error occurs when `only_allow_configured_providers: true` is set and you're trying to use a provider that isn't explicitly configured.
+
+**Solution:**
+
+```yaml
+only_allow_configured_providers: true
+providers:
+  - id: openai      # Add your provider here
+    api_keys:
+      - value: ${secrets.get('openai', 'key')}
+```
+
+Or set `only_allow_configured_providers: false` to allow all providers.
+
+---
+
+### Why am I getting "model unknown"?
+
+This error can occur for several reasons:
+
+1. **Model restrictions enabled** — `only_allow_configured_models: true` is set and the model isn't explicitly listed
+2. **Missing provider prefix** — For unknown models (not in catalog), you must include a provider prefix like `openai:new-model`
+3. **Provider not configured** — The provider for the unknown model isn't configured or allowed
+
+**Solutions:**
+
+Add the model to your configuration:
+```yaml
+only_allow_configured_models: true
+providers:
+  - id: openai
+    models:
+      - id: "gpt-4o"      # Add your model here
+      - id: "gpt-4o-mini"
+```
+
+Or use a provider prefix for unknown models:
+```json
+{
+  "model": "openai:gpt-5-preview",
+  "messages": [{"role": "user", "content": "Hello"}]
+}
+```
+
+Or set `only_allow_configured_models: false` to allow all models.
+
+---
+
+### How do I limit which models users can access?
+
+Use model restrictions:
+
+```yaml
+only_allow_configured_models: true
+providers:
+  - id: openai
+    models:
+      - id: "gpt-4o-mini"  # Only allow specific models
+```
+
+---
+
+### Can I use the gateway with the Vercel AI SDK?
+
+Yes! The gateway is fully compatible:
+
+```typescript
+import { createOpenAI } from "@ai-sdk/openai"
+
+const openai = createOpenAI({
+  baseUrl: "https://ai-gateway.ngrok.app",
+})
+```
+
+See [SDK Integration](/ai-gateway/sdks) for details.
+
+---
+
+## Retries and Failover
+
+### How do retries work?
+
+The gateway automatically retries on any failure:
+
+- Timeouts
+- HTTP errors (4xx, 5xx)
+- Connection failures
+
+Retry order:
+1. Different key for same provider
+2. Different provider
+3. Different model (if client specified fallbacks)
+
+See [Error Handling](/ai-gateway/guides/error-handling) for details.
+
+---
+
+### How long does the gateway retry before giving up?
+
+Controlled by `total_timeout` (default: 5 minutes):
+
+```yaml
+total_timeout: "3m"  # Retry for up to 3 minutes
+```
+
+---
+
+### Can I disable automatic retries?
+
+Not directly, but you can set very short timeouts:
+
+```yaml
+per_request_timeout: "5s"
+total_timeout: "10s"
+```
+
+---
+
+### Will the gateway failover to a different provider automatically?
+
+Yes, if:
+
+1. Multiple providers are configured
+2. The requested model fails and another provider supports a fallback model
+
+The gateway automatically tries alternative providers when the primary fails. You can also specify fallback models in the request body:
+
+```json
+{
+  "model": "gpt-4o",
+  "models": ["claude-3-5-sonnet-20241022"],
+  "messages": [{"role": "user", "content": "Hello"}]
+}
+```
+
+---
+
+## Keys and Authentication
+
+### Do I need to configure API keys in the gateway?
+
+No, it's optional. By default (passthrough mode), the gateway forwards whatever key your SDK sends.
+
+Configure keys in the gateway for:
+
+- Key rotation and failover
+- Hiding keys from clients
+- Key-level metrics
+
+---
+
+### How do I secure my gateway when using server-side API keys?
+
+When you configure API keys in the gateway, your endpoint becomes publicly accessible. Add authorization to protect it:
+
+```yaml
+on_http_request:
+  - expressions:
+      - req.headers['authorization'][0] != 'Bearer ' + secrets.get('gateway-auth', 'access-token')
+    actions:
+      - type: custom-response
+        config:
+          status_code: 401
+          body: '{"error": {"message": "Unauthorized"}}'
+
+  - actions:
+      - type: ai-gateway
+        config:
+          # ...
+```
+
+See [Securing Your Gateway](/ai-gateway/guides/securing-endpoints) for complete examples.
+
+---
+
+### Can I use different keys for different teams?
+
+Yes, configure multiple keys and use metadata:
+
+```yaml
+providers:
+  - id: openai
+    api_keys:
+      - value: ${secrets.get('openai', 'team-a')}
+      - value: ${secrets.get('openai', 'team-b')}
+```
+
+Note: Per-key metadata is not currently supported. Use separate endpoints or providers for team-based tracking.
+
+---
+
+### How do I rotate API keys?
+
+Add the new key, deploy, then remove the old key:
+
+```yaml
+api_keys:
+  - value: ${secrets.get('openai', 'old-key')}
+  - value: ${secrets.get('openai', 'new-key')}  # Add new
+```
+
+After confirming the new key works:
+
+```yaml
+api_keys:
+  - value: ${secrets.get('openai', 'new-key')}  # Remove old
+```
+
+---
+
+## Performance and Costs
+
+### Does the gateway add latency?
+
+Yes, minimal overhead (~10-15ms) for parsing, token counting, and routing.
+
+Provider response time dominates total latency.
+
+---
+
+### How are tokens counted?
+
+Using **tiktoken** (OpenAI's tokenizer) for estimation, with provider-reported counts used when available.
+
+Token counts are available in metrics and event destinations.
+
+---
+
+### Does the gateway charge for token usage?
+
+No, you only pay providers for actual token usage. The gateway itself doesn't charge per token.
+
+Check ngrok's pricing for gateway usage costs.
+
+---
+
+### Can I cache responses to reduce costs?
+
+Currently no. Caching may be added in future versions.
+
+---
+
+## Security and Privacy
+
+### Is my data stored by ngrok?
+
+No, unless Traffic Inspector is enabled. By default:
+
+- Request/response bodies processed in-memory only
+- Data immediately discarded after processing
+- Only metadata (token counts, latencies) retained
+
+See [Traffic Inspector](/ai-gateway/observability/traffic-inspector) for details.
+
+---
+
+### Can I use the gateway for sensitive data?
+
+Yes, with considerations:
+
+- Disable Traffic Inspector in production
+- Review your compliance requirements
+- Understand that data still goes to AI providers
+
+---
+
+### How do I redact PII automatically?
+
+Use Traffic Policy's find-and-replace actions before the AI Gateway action:
+
+```yaml
+on_http_request:
+  - actions:
+      - type: request-body-find-replace
+        config:
+          replacements:
+            - from: "\\b\\d{3}-\\d{2}-\\d{4}\\b"  # SSN pattern
+              to: "[REDACTED]"
+      - type: ai-gateway
+        config:
+          # ...
+```
+
+For streaming responses, use `sse-find-replace` in `on_event_stream_message`. See [Modifying Requests](/ai-gateway/guides/modifying-requests) and [Modifying Responses](/ai-gateway/guides/modifying-responses) for details.
+
+---
+
+## Models and Providers
+
+### Which providers are supported?
+
+Built-in support for:
+
+- OpenAI
+- Anthropic
+- Google
+- DeepSeek
+- OpenRouter
+- Hyperbolic
+- Inception Labs
+- Inference Net
+
+Plus any self-hosted OpenAI-compatible endpoint. See the [Model Catalog](/ai-gateway/reference/model-catalog) for the full list.
+
+---
+
+### Can I use self-hosted models?
+
+Yes! Configure a custom provider:
+
+```yaml
+providers:
+  - id: ollama
+    base_url: "https://ollama.internal"
+    models:
+      - id: "llama3"
+```
+
+See [Custom Providers](/ai-gateway/custom-providers) for details.
+
+---
+
+### How do I know which models are available?
+
+Built-in providers have pre-configured model catalogs. For custom providers, you must specify models manually.
+
+---
+
+### What is `ngrok/auto`?
+
+`ngrok/auto` is a special model name that tells the gateway to choose the model based on your [model selection strategy](/ai-gateway/guides/model-selection-strategies):
+
+```json
+{
+  "model": "ngrok/auto",
+  "messages": [{"role": "user", "content": "Hello"}]
+}
+```
+
+This is equivalent to omitting the model field. Use it when you want the gateway to select the best model based on latency, cost, or other criteria you've configured.
+
+---
+
+### Can clients use models not in the catalog?
+
+Yes! If a client includes a provider prefix (like `openai:new-model`), the gateway passes the request through to that provider even if the model isn't in the catalog. This lets clients use new models immediately.
+
+To restrict this behavior, use a model selection strategy:
+
+```yaml
+model_selection:
+  strategy:
+    - "ai.models.filter(m, m.known)"  # Only allow catalog models
+```
+
+The `m.known` field is `false` for pass-through models not in the catalog.
+
+---
+
+### Why isn't my custom model working?
+
+Ensure:
+
+1. Your endpoint is OpenAI-compatible
+2. The model name is configured correctly
+3. Authentication is set up
+4. The endpoint is reachable from ngrok
+
+---
+
+## Monitoring and Debugging
+
+### How do I view request metrics?
+
+View in the ngrok dashboard:
+
+1. Navigate to your AI Gateway endpoint
+2. Click "Metrics" tab
+
+Or export to external systems via [Log Exporting](/ai-gateway/observability/log-exporting).
+
+---
+
+### Why are my requests failing silently?
+
+Check:
+
+1. Traffic Inspector (if enabled) for error details
+2. Event destinations for error logs
+3. Provider-level error metrics
+
+---
+
+### How do I debug which provider was used?
+
+Enable event destinations at the endpoint level to stream detailed request logs. Configure event destinations in your ngrok endpoint configuration (not in the ai-gateway action config).
+
+---
+
+### Can I see individual request/response bodies?
+
+Yes, enable Traffic Inspector in development (not recommended for production with sensitive data).
+
+---
+
+## Advanced Usage
+
+### Can I implement custom routing logic?
+
+Yes, using CEL expressions in model selection strategies:
+
+```yaml
+model_selection:
+  strategy:
+    - "ai.models.filter(m, m.metrics.global.latency.upstream_ms_avg < 1000)"
+    - "ai.models.random()"
+```
+
+See [Model Selection Strategies](/ai-gateway/guides/model-selection-strategies).
+
+---
+
+### How do I prioritize certain models or providers?
+
+Use selection strategies to control priority. The order of strategies determines preference:
+
+```yaml
+model_selection:
+  strategy:
+    - "ai.models.filter(m, m.provider_id == 'openai')"    # Try OpenAI first
+    - "ai.models.filter(m, m.provider_id == 'anthropic')" # Then Anthropic
+    - "ai.models"                                          # Fall back to any
+```
+
+The first strategy that returns models is used. See [Model Selection Strategies](/ai-gateway/guides/model-selection-strategies).
+
+---
+
+### Can I route based on request content?
+
+Model selection is based on model/provider, but you can use Traffic Policy expressions to route different requests to different configurations:
+
+```yaml
+on_http_request:
+  - expressions:
+      - req.headers['x-priority'][0] == 'high'
+    actions:
+      - type: ai-gateway
+        config:
+          model_selection:
+            strategy:
+              - "ai.models.filter(m, m.provider_id == 'openai')"
+  - actions:
+      - type: ai-gateway
+        config:
+          # Default configuration
+```
+
+You cannot currently route based on the message content itself.
+
+---
+
+### Does the gateway support streaming?
+
+Yes, streaming is fully supported. The gateway forwards SSE streams transparently.
+
+---
+
+## Troubleshooting
+
+### The gateway is timing out
+
+Increase timeout values:
+
+```yaml
+per_request_timeout: "60s"
+total_timeout: "5m"
+```
+
+Or check provider health metrics.
+
+---
+
+### I'm getting rate limited even with multiple keys
+
+Ensure keys are properly configured with multiple keys for automatic failover:
+
+```yaml
+providers:
+  - id: openai
+    api_keys:
+      - value: ${secrets.get('openai', 'key-one')}
+      - value: ${secrets.get('openai', 'key-two')}
+```
+
+Keys are tried in order when the previous key fails.
+
+---
+
+### Failover isn't working
+
+For **key failover** (same provider, different keys):
+- Configure multiple keys for the provider
+- Keys are tried in order when one fails
+
+For **provider failover** (different providers):
+- Client must specify fallback models using the `models` array
+- Or the same model must be available from multiple providers
+
+```json
+{
+  "model": "gpt-4o",
+  "models": ["claude-3-5-sonnet-20241022"],
+  "messages": [{"role": "user", "content": "Hello"}]
+}
+```
+
+For **model selection failover**:
+- Configure multiple strategies in `model_selection`
+- Strategies are tried in order until one returns models
+
+---
+
+### How do I get support?
+
+- Check [ngrok documentation](https://ngrok.com/docs)
+- Contact ngrok support
+- Join ngrok community forums
+
+---
+
+## See Also
+
+- [Quickstart](/ai-gateway/quickstart) - Get started quickly
+- [Configuration Schema](/ai-gateway/reference/configuration-schema) - All configuration options
+- [Error Handling](/ai-gateway/guides/error-handling) - Understanding failures
+- [Examples](/ai-gateway/examples/multi-key-failover) - Common use cases

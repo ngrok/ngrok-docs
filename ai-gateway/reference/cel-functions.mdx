@@ -1,0 +1,547 @@
+---
+title: CEL Functions Reference
+description: Complete reference for CEL functions available in AI Gateway selection strategies
+---
+
+This page documents all CEL (Common Expression Language) functions available for model and API key selection strategies in the AI Gateway.
+
+## Base Collections
+
+### `ai.models`
+
+Returns all available models from configured providers.
+
+```yaml
+model_selection:
+  strategy:
+    - "ai.models"
+```
+
+### `ai.providers`
+
+Returns all available providers.
+
+```yaml
+# Access all providers
+ai.providers
+```
+
+### `ai.authors`
+
+Returns all model authors in the catalog.
+
+```yaml
+# Access all authors
+ai.authors
+```
+
+## Filtering Functions
+
+### `filter(predicate)`
+
+Filter a collection based on a condition. Works with models, providers, and authors.
+
+```yaml
+# Filter models by provider
+- "ai.models.filter(m, m.provider_id == 'openai')"
+
+# Filter models by multiple conditions
+- "ai.models.filter(m, m.provider_id == 'openai' && m.id.contains('gpt-4'))"
+
+# Filter by metrics
+- "ai.models.filter(m, m.metrics.global.error_rate.total < 0.01)"
+```
+
+### `only(ids)`
+
+Include only items matching the specified IDs or aliases. Returns items where the ID or any alias matches.
+
+**For models:**
+
+```yaml
+# Only include specific models
+- "ai.models.only(['gpt-4o', 'gpt-4o-mini', 'claude-3-5-sonnet'])"
+```
+
+**For providers:**
+
+```yaml
+# Only include specific providers
+- "ai.providers.only(['openai', 'anthropic'])"
+```
+
+**For authors:**
+
+```yaml
+# Only include specific authors
+- "ai.authors.only(['openai', 'anthropic'])"
+```
+
+### `onlyProviders(ids)`
+
+Filter models to only those from specified providers.
+
+```yaml
+# Keep only models from OpenAI and Anthropic
+- "ai.models.onlyProviders(['openai', 'anthropic'])"
+```
+
+### `onlyAuthors(ids)`
+
+Filter models to only those from specified authors.
+
+```yaml
+# Keep only models authored by OpenAI
+- "ai.models.onlyAuthors(['openai'])"
+```
+
+### `ignore(ids)`
+
+Exclude items matching the specified IDs or aliases.
+
+**For models:**
+
+```yaml
+# Exclude specific models
+- "ai.models.ignore(['gpt-3.5-turbo', 'gpt-4-turbo'])"
+```
+
+**For providers:**
+
+```yaml
+# Exclude specific providers
+- "ai.providers.ignore(['google'])"
+```
+
+**For authors:**
+
+```yaml
+# Exclude specific authors
+- "ai.authors.ignore(['meta'])"
+```
+
+### `ignoreProviders(ids)`
+
+Exclude models from specified providers.
+
+```yaml
+# Exclude all Google models
+- "ai.models.ignoreProviders(['google'])"
+```
+
+### `ignoreAuthors(ids)`
+
+Exclude models from specified authors.
+
+```yaml
+# Exclude all Meta models
+- "ai.models.ignoreAuthors(['meta'])"
+```
+
+## Geographic Filtering
+
+### `inRegion(regionCode)`
+
+Filter models available in a specific datacenter region.
+
+```yaml
+# Only models available in us-east-1
+- "ai.models.inRegion('us-east-1')"
+```
+
+### `inCountryCode(countryCode)`
+
+Filter models available in datacenters within a specific country (ISO 3166 Alpha-2 code).
+
+```yaml
+# Only models available in US datacenters
+- "ai.models.inCountryCode('US')"
+
+# Only models available in EU
+- "ai.models.inCountryCode('DE')"
+```
+
+## Cost Filtering
+
+### `underCost(priceType, maxCost)`
+
+Filter models with pricing under a specified threshold.
+
+**Supported price types:**
+
+| Price Type | Description |
+|------------|-------------|
+| `text.input` | Input token price per million |
+| `text.output` | Output token price per million |
+| `text.input_cache_write` | Cache write price |
+| `text.input_cache_read` | Cache read price |
+| `text.input_batch` | Batch input price |
+| `text.output_batch` | Batch output price |
+| `tools.web_search.per_search_call` | Web search per call |
+| `tools.code_interpreter.per_execution_call` | Code interpreter per call |
+| `tools.file_search.per_storage_gb` | File search storage cost |
+| `tools.image_generation.per_image_generation` | Image generation per image |
+
+```yaml
+# Only models with input cost under $1 per million tokens
+- "ai.models.underCost('text.input', 1.0)"
+
+# Only models with output cost under $5 per million tokens
+- "ai.models.underCost('text.output', 5.0)"
+```
+
+## Sorting Functions
+
+### `sortBy(field)`
+
+Sort models by a field. Currently only `'price'` is supported, which sorts by text input pricing (cheapest first).
+
+```yaml
+# Sort by price (cheapest first)
+- "ai.models.sortBy('price')"
+```
+
+## Selection Functions
+
+### `random()`
+
+Select a random item from a collection. Returns a single item.
+
+```yaml
+# Select a random model
+- "ai.models.random()"
+
+# Select a random model from filtered set
+- "ai.models.filter(m, m.provider_id == 'openai').random()"
+```
+
+### `randomize()`
+
+Shuffle the entire collection randomly. Returns the full list in random order.
+
+```yaml
+# Shuffle all models
+- "ai.models.randomize()"
+```
+
+### Index Access `[index]`
+
+Select a specific item by index.
+
+```yaml
+# Select the first model
+- "ai.models.filter(m, m.provider_id == 'openai')[0]"
+```
+
+## Lookup Functions
+
+### `get(id)` (providers and authors)
+
+Get a specific provider or author by ID.
+
+```yaml
+# Get OpenAI provider
+ai.providers.get('openai')
+
+# Get OpenAI author
+ai.authors.get('openai')
+```
+
+### `get(providerId, modelId)` (models)
+
+Get a specific model by provider ID and model ID.
+
+```yaml
+# Get specific model
+ai.models.get('openai', 'gpt-4o')
+```
+
+### `getModel(id)` (on provider)
+
+Get a model from a specific provider.
+
+```yaml
+# Get model from provider
+ai.providers.get('openai').getModel('gpt-4o')
+```
+
+### `getMetadata(key)`
+
+Get metadata value by key. Supports dot-notation for nested access.
+
+```yaml
+# Get metadata from model
+- "ai.models.filter(m, m.getMetadata('tier') == 'premium')"
+
+# Nested metadata access
+- "ai.models.filter(m, m.getMetadata('config.region') == 'us')"
+```
+
+## Model Variables
+
+When iterating over models with `filter()`, these variables are available:
+
+| Variable | Type | Description |
+|----------|------|-------------|
+| `m.id` | string | Model identifier |
+| `m.id_aliases` | []string | Alternative model identifiers |
+| `m.provider_id` | string | Provider identifier |
+| `m.provider_id_aliases` | []string | Alternative provider identifiers |
+| `m.author_id` | string | Model author identifier |
+| `m.author_id_aliases` | []string | Alternative author identifiers |
+| `m.display_name` | string | Human-readable model name |
+| `m.description` | string | Model description |
+| `m.known` | boolean | Whether this model is in the catalog (false for unknown pass-through models) |
+| `m.custom` | boolean | Whether this is a custom-configured model |
+| `m.metadata` | object | Custom metadata from config |
+| `m.input_modalities` | []string | Input types ("text", "image", etc.) |
+| `m.output_modalities` | []string | Output types ("text", "image", etc.) |
+| `m.supported_features` | []string | Features ("tool-calling", "coding", etc.) |
+| `m.max_context_window` | number | Maximum context window size |
+| `m.max_output_tokens` | number | Maximum output tokens |
+| `m.parameter_count` | number | Model parameter count |
+| `m.quantization` | string | Quantization method |
+| `m.data_training_policy` | string | Training data policy |
+| `m.data_retention_days` | number | Data retention period |
+| `m.data_retention_policy` | string | Data retention policy |
+| `m.pricing` | object | Pricing information |
+| `m.datacenters` | []object | Datacenter availability |
+| `m.metrics` | object | Performance metrics |
+
+### Datacenter Variables
+
+```yaml
+m.datacenters[].country_code  # ISO 3166 Alpha-2 country code
+m.datacenters[].region        # Cloud region identifier
+```
+
+### Metrics Variables
+
+Metrics are available at multiple scopes:
+
+```yaml
+# Global scope (all ngrok traffic)
+m.metrics.global.request_count
+m.metrics.global.latency.upstream_ms_avg
+m.metrics.global.latency.upstream_ms_p95
+m.metrics.global.latency.gateway_ms_avg
+m.metrics.global.latency.gateway_ms_p95
+m.metrics.global.latency.time_to_first_token_ms_avg
+m.metrics.global.latency.time_to_first_token_ms_p95
+m.metrics.global.error_rate.total
+m.metrics.global.error_rate.timeout
+m.metrics.global.error_rate.rate_limit
+m.metrics.global.error_rate.client
+m.metrics.global.error_rate.server
+
+# Regional scope
+m.metrics.region.request_count
+m.metrics.region.latency.upstream_ms_avg
+# ... same structure as global
+
+# Account scope
+m.metrics.account.request_count
+m.metrics.account.token.provider_input
+m.metrics.account.token.provider_output
+m.metrics.account.token.estimated_input
+m.metrics.account.token.estimated_output
+
+# Endpoint scope
+m.metrics.endpoint.request_count
+m.metrics.endpoint.latency.upstream_ms_avg
+```
+
+## CEL Standard Functions
+
+These standard CEL functions are also available:
+
+| Function | Description | Example |
+|----------|-------------|---------|
+| `contains()` | Check if string contains substring | `m.id.contains('gpt')` |
+| `startsWith()` | Check if string starts with prefix | `m.id.startsWith('gpt-4')` |
+| `endsWith()` | Check if string ends with suffix | `m.id.endsWith('-turbo')` |
+| `in` | Check list membership | `'image' in m.input_modalities` |
+| `size()` | Get collection size | `m.supported_features.size() > 0` |
+
+## Operators
+
+| Operator | Description |
+|----------|-------------|
+| `==`, `!=` | Equality comparison |
+| `<`, `>`, `<=`, `>=` | Numeric comparison |
+| `&&` | Logical AND |
+| `\|\|` | Logical OR |
+| `!` | Logical NOT |
+| `+`, `-`, `*`, `/`, `%` | Arithmetic |
+
+## Complete Examples
+
+### Provider Priority with Performance Filtering
+
+```yaml
+model_selection:
+  strategy:
+    # Prefer OpenAI with good metrics
+    - "ai.models.filter(m, m.provider_id == 'openai' && m.metrics.global.error_rate.total < 0.01)"
+    # Fall back to Anthropic
+    - "ai.models.filter(m, m.provider_id == 'anthropic')"
+    # Fall back to any model
+    - "ai.models"
+```
+
+### Cost-Optimized Selection
+
+```yaml
+model_selection:
+  strategy:
+    # Cheapest models first
+    - "ai.models.underCost('text.input', 0.5).sortBy('price')"
+    # Fall back to any model
+    - "ai.models"
+```
+
+### Geographic Compliance
+
+```yaml
+model_selection:
+  strategy:
+    # Only US-based models
+    - "ai.models.inCountryCode('US')"
+    # Fall back to any model
+    - "ai.models"
+```
+
+### Exclude Specific Providers
+
+```yaml
+model_selection:
+  strategy:
+    # Everything except Google
+    - "ai.models.ignoreProviders(['google'])"
+    # Fall back to Google if needed
+    - "ai.models"
+```
+
+### Feature-Based Selection
+
+```yaml
+model_selection:
+  strategy:
+    # Only models with tool calling
+    - "ai.models.filter(m, 'tool-calling' in m.supported_features)"
+    # Fall back to any model
+    - "ai.models"
+```
+
+## API Key Selection {#api-key-selection}
+
+API key selection strategies let you customize how the AI Gateway chooses which API key to use for requests. This is useful for intelligent key rotation based on quota usage, error rates, and other runtime metrics.
+
+### `ai.keys`
+
+Returns all configured API keys for the current provider enriched with runtime metrics.
+
+```yaml
+api_key_selection:
+  strategy:
+    - "ai.keys"
+```
+
+### Key Variables
+
+When iterating over keys with `filter()`, these variables are available on each key `k`:
+
+| Variable | Type | Description |
+|----------|------|-------------|
+| `k.id` | string | Hashed key identifier (safe for logging) |
+| `k.value` | string | The actual API key value |
+| `k.quota` | object | Quota metrics for this key |
+| `k.error_rate` | object | Error rate metrics for this key |
+
+### Quota Variables
+
+Access quota information via `k.quota`:
+
+```yaml
+k.quota.remaining_requests   # Requests remaining before rate limit
+k.quota.remaining_tokens     # Tokens remaining before rate limit
+k.quota.limit_requests       # Maximum requests in rate limit period
+k.quota.limit_tokens         # Maximum tokens in rate limit period
+```
+
+<Note>
+Quota values may be `null` if the quota could not be determined from provider responses.
+</Note>
+
+### Error Rate Variables
+
+Access error rate information via `k.error_rate`:
+
+```yaml
+k.error_rate.total       # Fraction of failed requests (0.0 to 1.0)
+k.error_rate.timeout     # Fraction of timeout errors
+k.error_rate.rate_limit  # Fraction of rate limit (429) errors
+k.error_rate.client      # Fraction of client (4xx) errors
+k.error_rate.server      # Fraction of server (5xx) errors
+```
+
+### API Key Selection Examples
+
+#### Quota-Based Selection
+
+Prefer keys with remaining quota:
+
+```yaml
+api_key_selection:
+  strategy:
+    # Keys with significant remaining quota
+    - "ai.keys.filter(k, k.quota.remaining_requests > 100)"
+    # Fall back to all keys
+    - "ai.keys"
+```
+
+#### Error Rate-Based Selection
+
+Avoid keys hitting rate limits:
+
+```yaml
+api_key_selection:
+  strategy:
+    # Keys with low rate limit errors
+    - "ai.keys.filter(k, k.error_rate.rate_limit < 0.1)"
+    # Fall back to keys with any low error rate
+    - "ai.keys.filter(k, k.error_rate.total < 0.5)"
+    # Fall back to all keys
+    - "ai.keys"
+```
+
+#### Combined Selection
+
+Use multiple criteria:
+
+```yaml
+api_key_selection:
+  strategy:
+    # Best keys: good quota AND low errors
+    - "ai.keys.filter(k, k.quota.remaining_requests > 500 && k.error_rate.rate_limit < 0.05)"
+    # Good keys: reasonable quota
+    - "ai.keys.filter(k, k.quota.remaining_requests > 100)"
+    # Acceptable keys: low error rate
+    - "ai.keys.filter(k, k.error_rate.total < 0.3)"
+    # Fall back to all keys
+    - "ai.keys"
+```
+
+#### Random Selection
+
+Distribute load across keys:
+
+```yaml
+api_key_selection:
+  strategy:
+    # Randomly select from keys with quota
+    - "ai.keys.filter(k, k.quota.remaining_requests > 100).randomize()"
+    # Fall back to any key randomly
+    - "ai.keys.randomize()"
+```
+

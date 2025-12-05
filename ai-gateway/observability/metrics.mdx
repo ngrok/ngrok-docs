@@ -1,0 +1,216 @@
+---
+title: Metrics Reference
+sidebarTitle: Metrics
+description: Real-time metrics for intelligent model selection
+---
+
+The AI Gateway collects real-time performance metrics that you can use in [model selection strategies](/ai-gateway/guides/model-selection-strategies) to make intelligent routing decisions.
+
+## Availability
+
+<Warning>
+**Important**: Metrics are **only available within `model_selection.strategy` CEL expressions**. They are not available in:
+
+- General `expression` fields in traffic policies
+- Other action configurations
+- `api_key_selection.strategy` expressions (not yet implemented)
+
+This is because metrics are populated at runtime during AI Gateway request processing, specifically when evaluating model selection strategies.
+</Warning>
+
+## Accessing Metrics
+
+Metrics are available on each model through the `metrics` field:
+
+```yaml
+model_selection:
+  strategy:
+    # Filter by latency
+    - "ai.models.filter(m, m.metrics.global.latency.upstream_ms_avg < 1000)"
+    # Filter by error rate
+    - "ai.models.filter(m, m.metrics.global.error_rate.total < 0.05)"
+    # Fallback
+    - "ai.models"
+```
+
+## Metric Scopes
+
+Metrics are collected at multiple scopes, allowing you to make decisions based on global trends or your specific usage:
+
+| Scope | CEL Path | Description |
+|-------|----------|-------------|
+| Global | `m.metrics.global` | Aggregated across all ngrok accounts |
+| Region | `m.metrics.region` | Aggregated for the region handling the request |
+| Account | `m.metrics.account` | Your ngrok account's usage |
+| Endpoint | `m.metrics.endpoint` | This specific endpoint's usage |
+| API Key | `m.metrics.api_keys["key_id"]` | Per-provider API key metrics |
+
+### Scope Selection Guidelines
+
+- **Global** — Best for understanding overall provider health and comparing models you haven't used yet
+- **Region** — Useful when latency varies by geographic region
+- **Account** — Reflects your specific usage patterns and rate limit status
+- **Endpoint** — Most specific, useful for per-application decisions
+- **API Key** — Track quota and usage for specific provider API keys
+
+## Available Metrics
+
+### Base Metrics (All Scopes)
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `provider` | string | Provider ID (e.g., `"openai"`) |
+| `model` | string | Model ID (e.g., `"gpt-4o"`) |
+| `request_count` | uint64 | Total requests in the aggregation window |
+| `start_time` | uint32 | Window start (Unix timestamp in seconds) |
+| `end_time` | uint32 | Window end (Unix timestamp in seconds) |
+
+### Latency Metrics
+
+Access via `m.metrics.<scope>.latency`:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `gateway_ms_avg` | uint32 | Average gateway processing time (request received → upstream sent) |
+| `gateway_ms_p95` | uint32 | P95 gateway processing time |
+| `upstream_ms_avg` | uint32 | Average time to receive full response from provider |
+| `upstream_ms_p95` | uint32 | P95 upstream response time |
+| `time_to_first_token_ms_avg` | uint32* | Average TTFT (streaming responses only) |
+| `time_to_first_token_ms_p95` | uint32* | P95 TTFT (streaming responses only) |
+| `time_per_output_token_ms_avg` | uint32* | Average inter-token time (streaming only) |
+| `time_per_output_token_ms_p95` | uint32* | P95 inter-token time (streaming only) |
+
+*Fields marked with `*` may be null if no streaming requests have been recorded.
+
+### Error Rate Metrics
+
+Access via `m.metrics.<scope>.error_rate`:
+
+All values are fractions from 0.0 to 1.0 (e.g., 0.05 = 5% error rate):
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `total` | float32 | Overall error rate (any non-2xx/3xx response) |
+| `timeout` | float32 | Timeout errors (no response received within timeout) |
+| `rate_limit` | float32 | Rate limit errors (HTTP 429) |
+| `client` | float32 | Client errors (4xx excluding 429) |
+| `server` | float32 | Server errors (5xx) |
+
+### Token Metrics (Account/Endpoint/API Key Scopes)
+
+Access via `m.metrics.<scope>.token`:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `provider_input` | uint64 | Input tokens as reported by the provider |
+| `provider_output` | uint64 | Output tokens as reported by the provider |
+| `estimated_input` | uint64 | Input tokens estimated by ngrok's tokenizer |
+| `estimated_output` | uint64 | Output tokens estimated by ngrok's tokenizer |
+
+<Note>
+Token metrics are only available at Account, Endpoint, and API Key scopes. Global and Region scopes do not include token counts.
+</Note>
+
+### Quota Metrics (API Key Scope Only)
+
+Access via `m.metrics.api_keys["key_id"].quota`:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `remaining_requests` | uint64* | Requests remaining before hitting rate limit |
+| `remaining_tokens` | uint64* | Tokens remaining before hitting rate limit |
+| `limit_requests` | uint64* | Max requests allowed in rate limit period |
+| `limit_tokens` | uint64* | Max tokens allowed in rate limit period |
+
+*Fields may be null if quota information is not available from the provider.
+
+## Examples
+
+### Route to Fastest Models
+
+Prefer models with low average latency:
+
+```yaml
+model_selection:
+  strategy:
+    - "ai.models.filter(m, m.metrics.global.latency.upstream_ms_avg < 500)"
+    - "ai.models.filter(m, m.metrics.global.latency.upstream_ms_avg < 2000)"
+    - "ai.models"
+```
+
+### Avoid High Error Rates
+
+Skip models with too many errors:
+
+```yaml
+model_selection:
+  strategy:
+    - "ai.models.filter(m, m.metrics.global.error_rate.total < 0.01)"
+    - "ai.models.filter(m, m.metrics.global.error_rate.total < 0.10)"
+    - "ai.models"
+```
+
+### Avoid Rate-Limited Providers
+
+Skip models currently hitting rate limits:
+
+```yaml
+model_selection:
+  strategy:
+    - "ai.models.filter(m, m.metrics.global.error_rate.rate_limit < 0.05)"
+    - "ai.models"
+```
+
+### Combined Performance Criteria
+
+Use multiple criteria for optimal routing:
+
+```yaml
+model_selection:
+  strategy:
+    # Ideal: fast and reliable
+    - "ai.models.filter(m, m.metrics.global.latency.upstream_ms_avg < 1000 && m.metrics.global.error_rate.total < 0.01)"
+    # Good: reasonably fast with acceptable errors
+    - "ai.models.filter(m, m.metrics.global.latency.upstream_ms_avg < 3000 && m.metrics.global.error_rate.total < 0.05)"
+    # Fallback: any available model
+    - "ai.models"
+```
+
+### Sort by Latency
+
+Order models by speed instead of filtering:
+
+```yaml
+model_selection:
+  strategy:
+    - "ai.models.sortBy(m, m.metrics.global.latency.upstream_ms_avg)"
+```
+
+### Use Account-Specific Metrics
+
+Base decisions on your own usage data:
+
+```yaml
+model_selection:
+  strategy:
+    # Use your account's error rate data
+    - "ai.models.filter(m, m.metrics.account.error_rate.total < 0.05)"
+    - "ai.models"
+```
+
+## Metric Availability Notes
+
+1. **New models**: Models without historical data will have zero values for metrics. Include a fallback strategy that doesn't filter by metrics.
+
+2. **Custom providers**: Metrics for custom providers (Ollama, vLLM, etc.) are only available after you've sent traffic through them.
+
+3. **Aggregation windows**: Metrics are aggregated over rolling time windows. The exact window size may vary by scope.
+
+4. **Metric freshness**: Metrics are cached and updated periodically. There may be a brief delay before recent requests are reflected.
+
+## See Also
+
+- [Model Selection Strategies](/ai-gateway/guides/model-selection-strategies) — Full guide on selection strategies
+- [CEL Functions Reference](/ai-gateway/reference/cel-functions) — All available CEL functions
+- [Configuration Reference](/ai-gateway/reference/configuration-schema) — Full configuration options
+

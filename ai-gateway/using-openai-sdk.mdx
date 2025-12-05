@@ -1,0 +1,75 @@
+---
+title: Using the OpenAI SDK
+description: Integrate AI Gateway with OpenAI's official SDKs
+---
+
+The AI Gateway is fully compatible with OpenAI's official SDKs across all languages. Simply replace the `baseURL` to route requests through your gateway.
+
+## TypeScript / JavaScript
+
+```typescript
+import OpenAI from "openai";
+
+const openai = new OpenAI({
+  baseURL: "https://ai-gateway.ngrok.app",
+  apiKey: process.env.OPENAI_API_KEY
+});
+
+const completion = await openai.chat.completions.create({
+  model: "gpt-4o",
+  messages: [{ role: "user", content: "Hello!" }]
+});
+```
+
+## Python
+
+```python
+import openai
+
+openai.base_url = "https://ai-gateway.ngrok.app"
+openai.api_key = "sk-..."
+
+response = openai.ChatCompletion.create(
+    model="gpt-4o",
+    messages=[{"role": "user", "content": "Hello!"}]
+)
+```
+
+## How It Works
+
+The AI Gateway translates OpenAI API requests directly to the configured provider. Your application code remains unchanged - only the endpoint URL is different.
+
+## Default Behavior
+
+By default, the gateway operates in **passthrough mode**:
+
+- All OpenAI models are supported
+- Your API key is forwarded to OpenAI
+- Automatic retries on failures
+- Request/response metrics collected
+
+## Provider Restrictions
+
+If you configure specific providers in your traffic policy, only those providers will be allowed:
+
+```yaml
+on_http_request:
+  - type: ai-gateway
+    config:
+      only_allow_configured_providers: true
+      providers:
+        - name: openai
+```
+
+With this configuration, requests to other providers will be rejected.
+
+## Supported Endpoints
+
+The AI Gateway supports all OpenAI API endpoints:
+
+- `/v1/chat/completions`
+- `/v1/completions`
+- `/v1/embeddings`
+- `/v1/models`
+
+Streaming responses are fully supported.

@@ -1,0 +1,233 @@
+---
+title: Error Handling
+description: Understanding retry logic and error behavior in AI Gateway
+---
+
+## Automatic Retry Behavior
+
+The gateway automatically retries requests when any provider attempt fails. This includes:
+
+- **Timeouts** — Request exceeded `per_request_timeout`
+- **HTTP errors** — Any non-2xx/3xx response from providers (4xx, 5xx)
+- **Connection errors** — Network failures, DNS issues, etc.
+
+When a request fails, the gateway moves to the next available attempt (next key, next provider, or next model).
+
+## Retry Cascade
+
+When a request fails, the gateway follows this failover order:
+
+### 1. Retry with Another Key
+
+If multiple API keys are configured for a provider, try the next key:
+
+```yaml
+providers:
+  - id: "openai"
+    api_keys:
+      - value: ${secrets.get('openai', 'key-one')}   # Try first
+      - value: ${secrets.get('openai', 'key-two')}   # Retry with this if first fails
+```
+
+### 2. Retry with Another Provider
+
+If all keys for a provider fail, try a different provider that supports the model:
+
+```yaml
+providers:
+  - id: "openai"      # Try first
+    api_keys:
+      - value: ${secrets.get('openai', 'key')}
+  - id: "anthropic"   # Retry with this if OpenAI fails
+    api_keys:
+      - value: ${secrets.get('anthropic', 'key')}
+```
+
+**Note**: Provider failover only works when the client specifies multiple models in the request.
+
+### 3. Retry with Another Model
+
+If the client specified multiple acceptable models, try an alternative:
+
+```json
+{
+  "model": "gpt-4o",
+  "models": ["gpt-4o-mini", "gpt-3.5-turbo"],
+  "messages": [{"role": "user", "content": "Hello"}]
+}
+```
+
+The `model` field is tried first, then entries in the `models` array as fallbacks.
+
+## Error Behavior Configuration
+
+Control what happens when all retry attempts are exhausted:
+
+### `on_error: "halt"` (Default)
+
+Stop processing and return the error to the client:
+
+```yaml
+on_http_request:
+  - type: ai-gateway
+    config:
+      on_error: "halt"
+```
+
+The client receives the last error from the retry cascade.
+
+### `on_error: "continue"`
+
+Continue to the next action in the traffic policy:
+
+```yaml
+on_http_request:
+  - type: ai-gateway
+    config:
+      on_error: "continue"
+  - type: custom-error-handler
+    # This action runs if ai-gateway fails
+```
+
+Useful for custom error handling or fallback logic.
+
+## Error Response Format
+
+When all retry attempts fail, the gateway returns an error. The response preserves the last provider's error response when available, or returns an ngrok error message.
+
+**Provider error passthrough:**
+If the last attempt received an HTTP error response from the provider, that response (status code and body) is returned to the client.
+
+**Gateway error:**
+If the failure was due to timeouts, connection errors, or configuration issues, the gateway returns an error message:
+
+```
+All AI providers failed to respond successfully. The request could not be completed. Errors:
+[429] openai/gpt-4o: 429 Too Many Requests
+[500] anthropic/claude-3-5-sonnet-20241022: 500 Internal Server Error
+```
+
+## Common Error Scenarios
+
+### Scenario 1: Key Exhaustion
+
+All keys for a provider hit rate limits:
+
+```
+1. Try openai/key-one → 429 Rate Limit
+2. Try openai/key-two → 429 Rate Limit
+3. Try openai/key-three → 429 Rate Limit
+4. Move to next provider or return error
+```
+
+### Scenario 2: Provider Timeout
+
+Provider times out, fallback to another:
+
+```
+1. Try openai → Timeout after 30s
+2. Try anthropic → Success
+```
+
+### Scenario 3: All Providers Fail
+
+All configured providers and keys fail:
+
+```
+1. Try openai/key-one → 500 Server Error
+2. Try openai/key-two → 500 Server Error
+3. Try anthropic/key → 503 Service Unavailable
+4. Return error to client (if on_error: "halt")
+```
+
+## Timeout Configuration
+
+Control retry timing with timeout settings:
+
+```yaml
+on_http_request:
+  - type: ai-gateway
+    config:
+      per_request_timeout: "30s"   # Each provider attempt
+      total_timeout: "5m"           # All attempts combined
+```
+
+- **`per_request_timeout`**: Maximum time for a single provider attempt
+- **`total_timeout`**: Maximum time for all retry attempts
+
+If `total_timeout` is reached, retries stop even if more providers are available.
+
+## Errors That Skip Retry Cascade
+
+These errors occur before the retry cascade begins and are returned immediately:
+
+- **Invalid request body** — Request JSON could not be parsed
+- **No models available** — No configured providers support the requested model
+- **Token limit exceeded** — Request exceeds `max_input_tokens`
+- **No API key** — No key configured and none provided by client
+- **Configuration errors** — Invalid provider or model configuration
+
+Once the retry cascade starts, all provider errors (including 4xx) trigger retries until attempts are exhausted.
+
+## Monitoring Errors
+
+Track errors using the `error_rate` metrics available in [model selection strategies](/ai-gateway/guides/model-selection-strategies):
+
+| Metric | Description |
+|--------|-------------|
+| `error_rate.total` | Fraction of requests that failed (0.0 to 1.0) |
+| `error_rate.timeout` | Fraction of requests that timed out |
+| `error_rate.rate_limit` | Fraction of requests that returned HTTP 429 |
+| `error_rate.client` | Fraction of requests that returned 4xx errors |
+| `error_rate.server` | Fraction of requests that returned 5xx errors |
+
+Use these metrics to:
+- Filter out problematic providers in model selection
+- Identify keys hitting rate limits
+- Adjust timeout values based on timeout rates
+
+## Best Practices
+
+1. **Configure multiple keys** per provider for key-level failover
+2. **Use multiple providers** for provider-level failover
+3. **Set appropriate timeouts** based on your use case
+4. **Monitor error metrics** to catch issues early
+5. **Implement client-side retries** for additional resilience
+
+## Example: Comprehensive Error Handling
+
+```yaml
+on_http_request:
+  - type: ai-gateway
+    config:
+      per_request_timeout: "45s"
+      total_timeout: "3m"
+      on_error: "halt"
+      
+      providers:
+        # Primary provider with multiple keys
+        - id: "openai"
+          api_keys:
+            - value: ${secrets.get('openai', 'key-a')}
+            - value: ${secrets.get('openai', 'key-b')}
+            - value: ${secrets.get('openai', 'key-c')}
+        
+        # Backup provider
+        - id: "anthropic"
+          api_keys:
+            - value: ${secrets.get('anthropic', 'primary')}
+            - value: ${secrets.get('anthropic', 'backup')}
+        
+        # Emergency fallback
+        - id: "google"
+          api_keys:
+            - value: ${secrets.get('google', 'key')}
+```
+
+This configuration provides:
+- 3 failover keys for OpenAI
+- 2 failover keys for Anthropic
+- 1 emergency key for Google
+- Up to 3 minutes of retry attempts
+- Clear error messages on complete failure
+
