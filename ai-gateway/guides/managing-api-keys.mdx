@@ -5,9 +5,9 @@ description: Securely manage provider API keys for AI providers
 
 This guide covers how to store, rotate, and manage provider API keys for your AI Gateway.
 
-## Key Storage Options
+## Key storage options
 
-### Inline Keys (Development Only)
+### Inline keys (development only)
 
 Store keys directly in your traffic policy:
 
@@ -22,7 +22,7 @@ providers:
 Inline keys are visible in traffic policy configurations. Use only for local development and testing. See [ngrok Secrets](#ngrok-secrets-recommended) for the recommended approach.
 </Warning>
 
-### ngrok Secrets (Recommended)
+### ngrok secrets (recommended)
 
 Store and reference keys securely with [ngrok secrets](/traffic-policy/secrets):
 
@@ -34,7 +34,7 @@ providers:
       - value: ${secrets.get('openai', 'key-two')}
 ```
 
-## Creating Secrets
+## Creating secrets
 
 ### Using the CLI
 
@@ -44,13 +44,13 @@ ngrok api secrets create \
   --secret-data '{"key-one": "sk-proj-abc123...", "key-two": "sk-proj-def456..."}'
 ```
 
-### Using the Dashboard
+### Using the dashboard
 
 1. Navigate to [**Vaults & Secrets**](https://dashboard.ngrok.com/vaults) in the ngrok Dashboard
 2. Create a new secret (for example, `openai`)
 3. Add your provider API keys as key-value pairs
 
-## Multiple Keys for Failover
+## Multiple keys for failover
 
 Configure multiple provider API keys for automatic failover when keys hit rate limits or fail:
 
@@ -70,7 +70,7 @@ providers:
 
 **Key ordering matters**: Keys are tried in the order listed. Place your highest-capacity keys first.
 
-## Key Rotation
+## Key rotation
 
 To rotate provider API keys without downtime:
 
@@ -99,7 +99,7 @@ api_keys:
 
 Revoke the old key with your provider (OpenAI, Anthropic, etc.) to complete the rotation.
 
-## Multi-Provider Example
+## Multi-provider example
 
 ```yaml
 on_http_request:
@@ -128,11 +128,11 @@ This configuration provides:
 - 1 key for Google
 - Automatic key rotation on failures
 
-## Intelligent Key Selection
+## Intelligent key selection
 
 For advanced control over which API key is used, configure `api_key_selection` with CEL expressions. This enables intelligent key rotation based on runtime metrics like quota usage and error rates.
 
-### Basic Configuration
+### Basic configuration
 
 ```yaml
 on_http_request:
@@ -151,7 +151,7 @@ on_http_request:
           - "ai.keys"
 ```
 
-### How It Works
+### How it works
 
 Strategies execute **in order** until one returns at least one key:
 
@@ -159,7 +159,7 @@ Strategies execute **in order** until one returns at least one key:
 2. If no keys match, falls back to all keys
 3. Selected keys are then tried in order for failover
 
-### Quota-Based Selection
+### Quota-based selection
 
 Prioritize keys with remaining capacity:
 
@@ -176,7 +176,7 @@ api_key_selection:
     - "ai.keys"
 ```
 
-### Error Rate-Based Selection
+### Error rate-based selection
 
 Avoid keys experiencing issues:
 
@@ -191,7 +191,7 @@ api_key_selection:
     - "ai.keys"
 ```
 
-### Load Distribution
+### Load distribution
 
 Randomize key selection to distribute load:
 
@@ -204,7 +204,7 @@ api_key_selection:
     - "ai.keys.randomize()"
 ```
 
-### Available Key Variables
+### Available key variables
 
 | Variable | Description |
 |----------|-------------|
@@ -216,7 +216,7 @@ api_key_selection:
 
 See [CEL Functions Reference](/ai-gateway/reference/cel-functions#api-key-selection) for the complete list.
 
-## Security Best Practices
+## Security best practices
 
 - **Add authorization** to your gateway when using server-side keys—see [Securing Your Gateway](/ai-gateway/guides/securing-endpoints)
 - **Never commit provider API keys** to version control
@@ -226,7 +226,7 @@ See [CEL Functions Reference](/ai-gateway/reference/cel-functions#api-key-select
 - **Use different keys** for different environments (dev, staging, prod)
 - **Set up alerts** for rate limit errors to proactively add capacity
 
-## Passthrough Mode
+## Passthrough mode
 
 If you don't configure any keys for a provider, the gateway forwards whatever key your SDK sends:
 
@@ -241,7 +241,7 @@ This is useful for:
 - Applications that already manage their own keys
 - Quick testing without configuration changes
 
-## Next Steps
+## Next steps
 
 - [Securing Your Gateway](/ai-gateway/guides/securing-endpoints) - Add authorization when using server-side keys
 - [Provider API Keys Concept](/ai-gateway/concepts/api-keys) - Understanding key precedence

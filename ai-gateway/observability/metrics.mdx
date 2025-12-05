@@ -18,7 +18,7 @@ The AI Gateway collects real-time performance metrics that you can use in [model
 This is because metrics are populated at runtime during AI Gateway request processing, specifically when evaluating model selection strategies.
 </Warning>
 
-## Accessing Metrics
+## Accessing metrics
 
 Metrics are available on each model through the `metrics` field:
 
@@ -33,7 +33,7 @@ model_selection:
     - "ai.models"
 ```
 
-## Metric Scopes
+## Metric scopes
 
 Metrics are collected at multiple scopes, allowing you to make decisions based on global trends or your specific usage:
 
@@ -45,7 +45,7 @@ Metrics are collected at multiple scopes, allowing you to make decisions based o
 | Endpoint | `m.metrics.endpoint` | This specific endpoint's usage |
 | API Key | `m.metrics.api_keys["key_id"]` | Per-provider API key metrics |
 
-### Scope Selection Guidelines
+### Scope selection guidelines
 
 - **Global** - Best for understanding overall provider health and comparing models you haven't used yet
 - **Region** - Useful when latency varies by geographic region
@@ -53,9 +53,9 @@ Metrics are collected at multiple scopes, allowing you to make decisions based o
 - **Endpoint** - Most specific, useful for per-application decisions
 - **API Key** - Track quota and usage for specific provider API keys
 
-## Available Metrics
+## Available metrics
 
-### Base Metrics (All Scopes)
+### Base metrics (all scopes)
 
 | Field | Type | Description |
 |-------|------|-------------|
@@ -65,7 +65,7 @@ Metrics are collected at multiple scopes, allowing you to make decisions based o
 | `start_time` | uint32 | Window start (Unix timestamp in seconds) |
 | `end_time` | uint32 | Window end (Unix timestamp in seconds) |
 
-### Latency Metrics
+### Latency metrics
 
 Access via `m.metrics.<scope>.latency`:
 
@@ -82,7 +82,7 @@ Access via `m.metrics.<scope>.latency`:
 
 *Fields marked with `*` may be null if no streaming requests have been recorded.
 
-### Error Rate Metrics
+### Error rate metrics
 
 Access via `m.metrics.<scope>.error_rate`:
 
@@ -96,7 +96,7 @@ All values are fractions from 0.0 to 1.0 (for example, 0.05 = 5% error rate):
 | `client` | float32 | Client errors (4xx excluding 429) |
 | `server` | float32 | Server errors (5xx) |
 
-### Token Metrics (Account/Endpoint/API Key Scopes)
+### Token metrics (account/endpoint/API key scopes)
 
 Access via `m.metrics.<scope>.token`:
 
@@ -111,7 +111,7 @@ Access via `m.metrics.<scope>.token`:
 Token metrics are only available at Account, Endpoint, and API Key scopes. Global and Region scopes do not include token counts.
 </Note>
 
-### Quota Metrics (API Key Scope Only)
+### Quota metrics (API key scope only)
 
 Access via `m.metrics.api_keys["key_id"].quota`:
 
@@ -126,7 +126,7 @@ Access via `m.metrics.api_keys["key_id"].quota`:
 
 ## Examples
 
-### Route to Fastest Models
+### Route to fastest models
 
 Prefer models with low average latency:
 
@@ -138,7 +138,7 @@ model_selection:
     - "ai.models"
 ```
 
-### Avoid High Error Rates
+### Avoid high error rates
 
 Skip models with too many errors:
 
@@ -150,7 +150,7 @@ model_selection:
     - "ai.models"
 ```
 
-### Avoid Rate-Limited Providers
+### Avoid rate-limited providers
 
 Skip models currently hitting rate limits:
 
@@ -161,7 +161,7 @@ model_selection:
     - "ai.models"
 ```
 
-### Combined Performance Criteria
+### Combined performance criteria
 
 Use multiple criteria for optimal routing:
 
@@ -176,7 +176,7 @@ model_selection:
     - "ai.models"
 ```
 
-### Sort by Latency
+### Sort by latency
 
 Order models by speed instead of filtering:
 
@@ -186,7 +186,7 @@ model_selection:
     - "ai.models.sortBy(m, m.metrics.global.latency.upstream_ms_avg)"
 ```
 
-### Use Account-Specific Metrics
+### Use account-specific metrics
 
 Base decisions on your own usage data:
 
@@ -198,7 +198,7 @@ model_selection:
     - "ai.models"
 ```
 
-## Metric Availability Notes
+## Metric availability notes
 
 1. **New models**: Models without historical data will have zero values for metrics. Include a fallback strategy that doesn't filter by metrics.
 
@@ -208,7 +208,7 @@ model_selection:
 
 4. **Metric freshness**: Metrics are cached and updated periodically. There may be a brief delay before recent requests are reflected.
 
-## See Also
+## See also
 
 - [Model Selection Strategies](/ai-gateway/guides/model-selection-strategies) - Full guide on selection strategies
 - [CEL Functions Reference](/ai-gateway/reference/cel-functions) - All available CEL functions

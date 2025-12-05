@@ -5,7 +5,7 @@ description: Add authorization to your AI Gateway when using server-side API key
 
 When you configure server-side API keys on your AI Gateway, your endpoint becomes publicly accessible—anyone with the URL can make requests. This guide shows how to add an authorization layer using secrets and traffic policy to protect your gateway.
 
-## The Problem
+## The problem
 
 Without authorization, a gateway configured with server-side API keys is open to abuse:
 
@@ -21,7 +21,7 @@ on_http_request:
 
 Anyone who discovers your gateway URL can make unlimited requests using your API keys. You need to add your own authorization layer.
 
-## Solution: API Key Authorization
+## Solution: API key authorization
 
 The simplest solution is to require clients to provide an access token that you control. Store this token in ngrok secrets and validate it before processing requests.
 
@@ -104,7 +104,7 @@ curl https://your-gateway.ngrok.app/v1/chat/completions \
   }'
 ```
 
-## Multiple Access Tokens
+## Multiple access tokens
 
 Support multiple clients with different access tokens. Use `set-vars` to define the list of valid tokens, then check membership with `in`:
 
@@ -142,7 +142,7 @@ on_http_request:
 
 This approach makes it easy to add or remove client tokens by updating the list.
 
-## Using X-API-Key Header
+## Using X-API-Key header
 
 If you prefer using an `X-API-Key` header instead of `Authorization: Bearer`:
 
@@ -181,7 +181,7 @@ const client = new OpenAI({
 });
 ```
 
-## Adding Rate Limiting
+## Adding rate limiting
 
 Combine authorization with rate limiting for additional protection:
 
@@ -219,7 +219,7 @@ on_http_request:
                 - value: ${secrets.get('openai', 'api-key')}
 ```
 
-## Combining with IP Restrictions
+## Combining with IP restrictions
 
 For additional security, restrict access to specific IP addresses using CIDR notation:
 
@@ -254,7 +254,7 @@ on_http_request:
                 - value: ${secrets.get('openai', 'api-key')}
 ```
 
-## Alternative: JWT Validation
+## Alternative: JWT validation
 
 For more complex authentication scenarios, use the [`jwt-validation`](/traffic-policy/actions/jwt-validation) action to validate JWTs from your identity provider:
 
@@ -294,7 +294,7 @@ on_http_request:
                 - value: ${secrets.get('openai', 'api-key')}
 ```
 
-## Rotating Access Tokens
+## Rotating access tokens
 
 To rotate your access token without downtime:
 
@@ -324,7 +324,7 @@ To rotate your access token without downtime:
         body: '{"error": {"message": "Invalid or missing authorization token", "type": "authentication_error"}}'
 ```
 
-## Best Practices
+## Best practices
 
 1. **Use strong tokens** - Generate access tokens with at least 32 bytes of entropy
 2. **Never share tokens** - Issue different tokens to different clients
@@ -333,7 +333,7 @@ To rotate your access token without downtime:
 5. **Layer defenses** - Combine authorization with rate limiting and IP restrictions
 6. **Use HTTPS** - Always use HTTPS endpoints (ngrok handles this automatically)
 
-## Next Steps
+## Next steps
 
 - [Managing API Keys](/ai-gateway/guides/managing-api-keys) - Secure provider API key storage
 - [Restricting Model Access](/ai-gateway/guides/restricting-access) - Control providers and models

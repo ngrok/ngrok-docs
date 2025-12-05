@@ -4,7 +4,7 @@ icon: gears
 description: Understand the AI Gateway request flow and failover behavior
 ---
 
-## Request Flow
+## Request flow
 
 When you send a request to your AI Gateway endpoint:
 
@@ -27,11 +27,11 @@ sequenceDiagram
 4. **If it fails, the gateway retries** with the next model or key in the list
 5. **The response is returned** to your app
 
-## Model Selection
+## Model selection
 
 The gateway needs to determine which model and provider to use for each request. This happens in two stages: resolving what the client asked for, then selecting from available options.
 
-### Resolving the Client's Request
+### Resolving the client's request
 
 The model name in your request determines the starting point:
 
@@ -48,13 +48,13 @@ The model name in your request determines the starting point:
 Unknown models (not in the catalog) are automatically passed through if you include a provider prefix. This lets you use new models immediately without waiting for catalog updates.
 </Note>
 
-### Default Selection
+### Default selection
 
 By default, the gateway uses the model and provider you requested. If that fails, it tries:
 1. Other provider API keys for the same provider
 2. Other providers that offer the same model
 
-### Custom Selection Strategies
+### Custom selection strategies
 
 You can completely customize how models are selected using CEL expressions. Define a `model_selection` strategy to control the order models are tried:
 
@@ -87,17 +87,17 @@ Each strategy in the list is evaluated in order. The first one that returns mode
 Use `ngrok/auto` as the model name to let your selection strategy choose entirely. See [Model Selection Strategies](/ai-gateway/guides/model-selection-strategies) for detailed examples.
 </Tip>
 
-## Failover & Retries
+## Failover & retries
 
 When a request fails, the gateway automatically retries. This happens transparently - your app just sees a successful response (or a final error if all options are exhausted).
 
-### What Triggers a Retry?
+### What triggers a retry?
 
 - **Timeouts** - Provider took too long to respond
 - **HTTP errors** - Any non-2xx/3xx response (4xx, 5xx)
 - **Connection failures** - Network errors, DNS issues, etc.
 
-### Retry Order
+### Retry order
 
 The gateway works through your configured options:
 
@@ -140,7 +140,7 @@ on_http_request:
 
 If a single attempt exceeds `per_request_timeout`, the gateway moves to the next option. If total time exceeds `total_timeout`, the gateway returns an error to your app.
 
-## Token Counting
+## Token counting
 
 The gateway counts tokens for each request, enabling:
 
@@ -158,7 +158,7 @@ on_http_request:
             - value: ${secrets.get('openai', 'api-key')}
 ```
 
-## Content Modification
+## Content modification
 
 You can modify requests and responses using Traffic Policy's find and replace actions ([`request-body-find-replace`](/traffic-policy/actions/request-body-find-replace), [`response-body-find-replace`](/traffic-policy/actions/response-body-find-replace), [`sse-find-replace`](/traffic-policy/actions/sse-find-replace)). This enables use cases like:
 
@@ -201,7 +201,7 @@ on_event_stream_message:
   </Card>
 </CardGroup>
 
-## Next Steps
+## Next steps
 
 <CardGroup cols={2}>
   <Card title="Configuring Providers" icon="building" href="/ai-gateway/guides/configuring-providers">

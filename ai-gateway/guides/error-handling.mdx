@@ -3,7 +3,7 @@ title: Error Handling
 description: Understanding retry logic and error behavior in AI Gateway
 ---
 
-## Automatic Retry Behavior
+## Automatic retry behavior
 
 The gateway automatically retries requests when any provider attempt fails. This includes:
 
@@ -13,11 +13,11 @@ The gateway automatically retries requests when any provider attempt fails. This
 
 When a request fails, the gateway moves to the next available attempt (next key, next provider, or next model).
 
-## Retry Cascade
+## Retry cascade
 
 When a request fails, the gateway follows this failover order:
 
-### 1. Retry with Another Key
+### 1. Retry with another key
 
 If multiple API keys are configured for a provider, try the next key:
 
@@ -29,7 +29,7 @@ providers:
       - value: ${secrets.get('openai', 'key-two')}   # Retry with this if first fails
 ```
 
-### 2. Retry with Another Provider
+### 2. Retry with another provider
 
 If all keys for a provider fail, try a different provider that supports the model:
 
@@ -45,7 +45,7 @@ providers:
 
 **Note**: Provider failover only works when the client specifies multiple models in the request.
 
-### 3. Retry with Another Model
+### 3. Retry with another model
 
 If the client specified multiple acceptable models, try an alternative:
 
@@ -59,7 +59,7 @@ If the client specified multiple acceptable models, try an alternative:
 
 The `model` field is tried first, then entries in the `models` array as fallbacks.
 
-## Error Behavior Configuration
+## Error behavior configuration
 
 Control what happens when all retry attempts are exhausted:
 
@@ -91,7 +91,7 @@ on_http_request:
 
 Useful for custom error handling or fallback logic.
 
-## Error Response Format
+## Error response format
 
 When all retry attempts fail, the gateway returns an error. The response preserves the last provider's error response when available, or returns an ngrok error message.
 
@@ -107,9 +107,9 @@ All AI providers failed to respond successfully. The request could not be comple
 [500] anthropic/claude-3-5-sonnet-20241022: 500 Internal Server Error
 ```
 
-## Common Error Scenarios
+## Common error scenarios
 
-### Scenario 1: Key Exhaustion
+### Scenario 1: Key exhaustion
 
 All keys for a provider hit rate limits:
 
@@ -120,7 +120,7 @@ All keys for a provider hit rate limits:
 4. Move to next provider or return error
 ```
 
-### Scenario 2: Provider Timeout
+### Scenario 2: Provider timeout
 
 Provider times out, fallback to another:
 
@@ -129,7 +129,7 @@ Provider times out, fallback to another:
 2. Try anthropic → Success
 ```
 
-### Scenario 3: All Providers Fail
+### Scenario 3: All providers fail
 
 All configured providers and keys fail:
 
@@ -140,7 +140,7 @@ All configured providers and keys fail:
 4. Return error to client (if on_error: "halt")
 ```
 
-## Timeout Configuration
+## Timeout configuration
 
 Control retry timing with timeout settings:
 
@@ -157,7 +157,7 @@ on_http_request:
 
 If `total_timeout` is reached, retries stop even if more providers are available.
 
-## Errors That Skip Retry Cascade
+## Errors that skip retry cascade
 
 These errors occur before the retry cascade begins and are returned immediately:
 
@@ -169,7 +169,7 @@ These errors occur before the retry cascade begins and are returned immediately:
 
 Once the retry cascade starts, all provider errors (including 4xx) trigger retries until attempts are exhausted.
 
-## Monitoring Errors
+## Monitoring errors
 
 Track errors using the `error_rate` metrics available in [model selection strategies](/ai-gateway/guides/model-selection-strategies):
 
@@ -186,7 +186,7 @@ Use these metrics to:
 - Identify keys hitting rate limits
 - Adjust timeout values based on timeout rates
 
-## Best Practices
+## Best practices
 
 1. **Configure multiple keys** per provider for key-level failover
 2. **Use multiple providers** for provider-level failover
@@ -194,7 +194,7 @@ Use these metrics to:
 4. **Monitor error metrics** to catch issues early
 5. **Implement client-side retries** for additional resilience
 
-## Example: Comprehensive Error Handling
+## Example: Comprehensive error handling
 
 ```yaml
 on_http_request:

@@ -5,11 +5,11 @@ description: Understanding provider API key management in the AI Gateway
 
 Provider API keys authenticate requests to AI providers like OpenAI, Anthropic, and Google. The AI Gateway offers flexible key management—from simple passthrough to centralized management with automatic failover.
 
-## Key Precedence
+## Key precedence
 
 The gateway determines which provider API key to use based on these rules:
 
-### 1. Gateway Keys Override SDK Keys
+### 1. Gateway keys override SDK keys
 
 If you configure provider API keys in the gateway, those keys are used instead of any key sent by your SDK:
 
@@ -27,7 +27,7 @@ Even if your SDK sends `apiKey: "sk-different-key"`, the gateway uses `gateway-k
 - Rotate keys without redeploying applications
 - Track usage across all applications
 
-### 2. SDK Keys in Passthrough Mode
+### 2. SDK keys in passthrough mode
 
 If no keys are configured for a provider, the key from your SDK is passed through:
 
@@ -39,7 +39,7 @@ providers:
 
 **Why this matters**: Quick setup with no configuration changes needed.
 
-### 3. Restricted Provider Mode
+### 3. Restricted provider mode
 
 When `only_allow_configured_providers: true`, providers without configured keys are rejected:
 
@@ -53,7 +53,7 @@ providers:
 
 Requests to unconfigured providers (like `anthropic`) will fail with a clear error.
 
-## When to Use Each Mode
+## When to use each mode
 
 | Mode | Use Case |
 |------|----------|
@@ -61,7 +61,7 @@ Requests to unconfigured providers (like `anthropic`) will fail with a clear err
 | **Gateway-managed** | Production, multi-tenant apps, centralized key rotation |
 | **Restricted** | Compliance requirements, cost control, limiting provider access |
 
-## Multiple Keys for Failover
+## Multiple keys for failover
 
 Configure multiple provider API keys for automatic failover:
 
@@ -78,7 +78,7 @@ When a key fails (rate limit, quota exceeded, or error), the gateway automatical
 
 **Key ordering**: By default, keys are tried in the order they're listed. Put your highest-capacity or preferred keys first.
 
-## Intelligent Key Selection
+## Intelligent key selection
 
 For more control over key selection, use `api_key_selection` with CEL expressions to select keys based on runtime metrics:
 
@@ -100,9 +100,9 @@ This enables:
 
 See the [CEL Functions Reference](/ai-gateway/reference/cel-functions#api-key-selection) for available key variables and functions.
 
-## Key Sources
+## Key sources
 
-### Inline Keys (Development Only)
+### Inline keys (development only)
 
 ```yaml
 api_keys:
@@ -113,7 +113,7 @@ api_keys:
 Inline keys are visible in traffic policy configurations. Use only for local testing. See [ngrok Secrets](#ngrok-secrets-recommended) for the recommended approach.
 </Warning>
 
-### ngrok Secrets (Recommended)
+### ngrok secrets (recommended)
 
 ```yaml
 api_keys:
@@ -123,7 +123,7 @@ api_keys:
 
 Store your provider API keys securely in [ngrok secrets](/traffic-policy/secrets) and reference them with `${secrets.get('namespace', 'key')}`.
 
-## Next Steps
+## Next steps
 
 - [Managing Provider API Keys](/ai-gateway/guides/managing-api-keys) - Detailed guide on secrets, rotation, and selection strategies
 - [Configuring Providers](/ai-gateway/guides/configuring-providers) - Full provider configuration
