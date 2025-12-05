@@ -46,7 +46,7 @@ These core operators and helpers are supported:
 - List membership using the `in` keyword
 - String substring checks: `startsWith()`, `contains()`, `endsWith()`
 - Length / emptiness checks: `size()`, `== ""`, `== null`
-- Date parsing: `timestamp(RFC-3339)`
+- Date and time helpers: `timestamp(RFC-3339)`, `timestamp(time.now)`, `timestamp(time.now).subtract(<duration>)`, `timestamp(time.now).add(<duration>)`
 
 ### Instance inspection (versus list comprehension)
 
@@ -71,9 +71,13 @@ GET /endpoints?filter=["agent","cloud"] in obj.types
   ```http
   GET /vaults?filter=obj.created_at < timestamp("2025-10-31T09:23:45-07:00")
   ```
-- **Convenience helpers:** `time.now` and `time.duration()` support concise relative filters, for example:
+- **Relative helpers based on the current time:** Use `timestamp(time.now)` for the current time, then chain `.subtract(<duration>)` or `.add(<duration>)` with a duration string such as `"7d"`, `"24h"`, or `"15m"`. For example:
   ```http
-  GET /endpoints?filter=obj.created_at >= time.duration("7d")
+  # resources created in the last 7 days
+  GET /endpoints?filter=obj.created_at >= timestamp(time.now).subtract("7d")
+
+  # resources that will expire within the next 24 hours
+  GET /tls_certificates?filter=obj.not_after <= timestamp(time.now).add("24h")
   ```
 
 ## Query restrictions and limitations
@@ -138,7 +142,7 @@ The initial release prioritizes the resource types and fields below. CEL filteri
 ```http
 GET /endpoints?filter=obj.type == "cloud" && obj.created_at < timestamp("2025-10-31T09:23:45-07:00")
 # or using helpers
-GET /endpoints?filter=obj.type == "cloud" && obj.created_at >= daysAgo(6)
+GET /endpoints?filter=obj.type == "cloud" && obj.created_at >= timestamp(time.now).subtract("6d")
 ```
 
 Reference:
