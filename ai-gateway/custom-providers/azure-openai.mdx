@@ -22,86 +22,92 @@ graph LR
     B --> C[Azure OpenAI]
 ```
 
-## Step 1: Get Azure OpenAI details
+## Getting started
 
-From the Azure Portal, gather:
+<Steps>
+  <Step title="Get Azure OpenAI details">
+    From the Azure Portal, gather:
 
-1. **Endpoint URL**: `https://your-resource.openai.azure.com`
-2. **API Key**: From "Keys and Endpoint" section
-3. **Deployment Name**: The name you gave your model deployment
+    1. **Endpoint URL**: `https://your-resource.openai.azure.com`
+    2. **API Key**: From "Keys and Endpoint" section
+    3. **Deployment Name**: The name you gave your model deployment
+  </Step>
 
-## Step 2: Store your API key
+  <Step title="Store your API key">
+    Add your Azure OpenAI API key to [ngrok secrets](/traffic-policy/secrets):
 
-Add your Azure OpenAI API key to [ngrok secrets](/traffic-policy/secrets):
+    ```bash
+    ngrok api secrets create \
+      --name azure-openai \
+      --secret-data '{"api-key": "your-azure-api-key"}'
+    ```
 
-```bash
-ngrok api secrets create \
-  --name azure-openai \
-  --secret-data '{"api-key": "your-azure-api-key"}'
-```
+    <Tip>
+    You can also create secrets in the [ngrok Dashboard](https://dashboard.ngrok.com/vaults).
+    </Tip>
+  </Step>
 
-<Tip>
-You can also create secrets in the [ngrok Dashboard](https://dashboard.ngrok.com/vaults).
-</Tip>
+  <Step title="Configure the AI Gateway">
+    Create a traffic policy with Azure OpenAI as a provider:
 
-## Step 3: Configure the AI gateway
+    ```yaml title="policy.yaml"
+    on_http_request:
+      - type: ai-gateway
+        config:
+          headers:
+            api-version: "2024-02-15-preview"
+          providers:
+            - id: "azure-openai"
+              base_url: "https://your-resource.openai.azure.com/openai/deployments/your-deployment"
+              api_keys:
+                - value: ${secrets.get('azure-openai', 'api-key')}
+              models:
+                - id: "gpt-4o"
+    ```
 
-Create your traffic policy:
+    <Note>
+    Azure OpenAI requires the `api-version` header. The AI Gateway adds this to all requests.
+    </Note>
+  </Step>
 
-```yaml
-on_http_request:
-  - type: ai-gateway
-    config:
-      headers:
-        api-version: "2024-02-15-preview"
-      providers:
-        - id: "azure-openai"
-          base_url: "https://your-resource.openai.azure.com/openai/deployments/your-deployment"
-          api_keys:
-            - value: ${secrets.get('azure-openai', 'api-key')}
-          models:
-            - id: "gpt-4o"
-```
+  <Step title="Use with OpenAI SDK">
+    Point any OpenAI-compatible SDK at your AI Gateway:
 
-<Note>
-Azure OpenAI requires the `api-version` header. The AI Gateway adds this to all requests.
-</Note>
+    <CodeGroup>
+    ```python Python
+    from openai import OpenAI
 
-## Step 4: Use with OpenAI SDK
+    client = OpenAI(
+        base_url="https://your-ai-subdomain.ngrok.app/v1",
+        api_key="unused"  # Gateway handles auth
+    )
 
-<CodeGroup>
-```python Python
-from openai import OpenAI
+    response = client.chat.completions.create(
+        model="azure-openai:gpt-4o",
+        messages=[{"role": "user", "content": "Hello!"}]
+    )
 
-client = OpenAI(
-    base_url="https://your-ai-subdomain.ngrok.app/v1",
-    api_key="unused"  # Gateway handles auth
-)
+    print(response.choices[0].message.content)
+    ```
 
-response = client.chat.completions.create(
-    model="azure-openai:gpt-4o",
-    messages=[{"role": "user", "content": "Hello!"}]
-)
+    ```typescript TypeScript
+    import OpenAI from "openai";
 
-print(response.choices[0].message.content)
-```
+    const client = new OpenAI({
+      baseURL: "https://your-ai-subdomain.ngrok.app/v1",
+      apiKey: "unused"
+    });
 
-```typescript TypeScript
-import OpenAI from "openai";
+    const response = await client.chat.completions.create({
+      model: "azure-openai:gpt-4o",
+      messages: [{ role: "user", content: "Hello!" }]
+    });
 
-const client = new OpenAI({
-  baseURL: "https://your-ai-subdomain.ngrok.app/v1",
-  apiKey: "unused"
-});
-
-const response = await client.chat.completions.create({
-  model: "azure-openai:gpt-4o",
-  messages: [{ role: "user", content: "Hello!" }]
-});
-
-console.log(response.choices[0].message.content);
-```
-</CodeGroup>
+    console.log(response.choices[0].message.content);
+    ```
+    </CodeGroup>
+  </Step>
+</Steps>
 
 ## Advanced configuration
 
