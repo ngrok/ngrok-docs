@@ -3,7 +3,11 @@ title: Managing Provider API Keys
 description: Securely manage provider API keys for AI providers
 ---
 
-This guide covers how to store, rotate, and manage provider API keys for your AI Gateway.
+This guide covers how to store, rotate, and manage provider API keys for your AI Gateway. Managing keys in the gateway keeps them out of your application code and enables features like automatic failover and intelligent key selection.
+
+<Warning>
+When you configure provider keys in the gateway, anyone with your endpoint URL can make requests using your provider keys. See [Securing Your Gateway](/ai-gateway/guides/securing-endpoints) to add authorization.
+</Warning>
 
 ## Key storage options
 
@@ -22,9 +26,9 @@ providers:
 Inline keys are visible in traffic policy configurations. Use only for local development and testing. See [ngrok Secrets](#ngrok-secrets-recommended) for the recommended approach.
 </Warning>
 
-### ngrok secrets (recommended)
+### ngrok Vaults & Secrets (recommended)
 
-Store and reference keys securely with [ngrok secrets](/traffic-policy/secrets):
+Store keys in [ngrok Vaults & Secrets](/traffic-policy/secrets)—they're encrypted at rest, never visible in your traffic policy, and can be rotated without redeploying:
 
 ```yaml
 providers:
@@ -47,8 +51,9 @@ ngrok api secrets create \
 ### Using the dashboard
 
 1. Navigate to [**Vaults & Secrets**](https://dashboard.ngrok.com/vaults) in the ngrok Dashboard
-2. Create a new secret (for example, `openai`)
-3. Add your provider API keys as key-value pairs
+2. Create a vault if you don't have one (for example, `ai-keys`)
+3. Create a secret in the vault (for example, `openai`)
+4. Add your provider API keys as key-value pairs
 
 ## Multiple keys for failover
 
@@ -74,30 +79,32 @@ providers:
 
 To rotate provider API keys without downtime:
 
-### Step 1: Add the new key
+<Steps>
+  <Step title="Add the new key">
+    ```yaml
+    api_keys:
+      - value: ${secrets.get('openai', 'old-key')}
+      - value: ${secrets.get('openai', 'new-key')}  # Added
+    ```
+  </Step>
 
-```yaml
-api_keys:
-  - value: ${secrets.get('openai', 'old-key')}
-  - value: ${secrets.get('openai', 'new-key')}  # Added
-```
+  <Step title="Deploy and monitor">
+    Deploy the updated traffic policy. Monitor traffic to ensure the new key works correctly.
+  </Step>
 
-### Step 2: Deploy and monitor
+  <Step title="Remove the old key">
+    Once confirmed, remove the old key:
 
-Deploy the updated traffic policy. Monitor traffic to ensure the new key works correctly.
+    ```yaml
+    api_keys:
+      - value: ${secrets.get('openai', 'new-key')}
+    ```
+  </Step>
 
-### Step 3: Remove the old key
-
-Once confirmed, remove the old key:
-
-```yaml
-api_keys:
-  - value: ${secrets.get('openai', 'new-key')}
-```
-
-### Step 4: Revoke the old key
-
-Revoke the old key with your provider (OpenAI, Anthropic, etc.) to complete the rotation.
+  <Step title="Revoke the old key">
+    Revoke the old key with your provider (OpenAI, Anthropic, etc.) to complete the rotation.
+  </Step>
+</Steps>
 
 ## Multi-provider example
 
