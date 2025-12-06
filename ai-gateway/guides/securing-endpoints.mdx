@@ -25,84 +25,86 @@ Anyone who discovers your gateway URL can make unlimited requests using your API
 
 The simplest solution is to require clients to provide an access token that you control. Store this token in ngrok secrets and validate it before processing requests.
 
-### Step 1: Create a secret for your access token
+<Steps>
+  <Step title="Create a secret for your access token">
+    Create a vault and secret to store your access token:
 
-First, create a vault and secret to store your access token:
+    ```bash
+    # Create a vault for gateway secrets
+    ngrok api vaults create --name "gateway-auth"
 
-```bash
-# Create a vault for gateway secrets
-ngrok api vaults create --name "gateway-auth"
+    # Create a secret with your access token (use a long, random string)
+    ngrok api secrets create \
+      --name "access-token" \
+      --value "your-secret-access-token-here" \
+      --vault-id "vault_xxxxxxxxxxxxx"
+    ```
 
-# Create a secret with your access token (use a long, random string)
-ngrok api secrets create \
-  --name "access-token" \
-  --value "your-secret-access-token-here" \
-  --vault-id "vault_xxxxxxxxxxxxx"
-```
+    <Tip>
+    Generate a secure access token using: `openssl rand -base64 32`
+    </Tip>
+  </Step>
 
-<Tip>
-Generate a secure access token using: `openssl rand -base64 32`
-</Tip>
+  <Step title="Add authorization to your traffic policy">
+    Use an expression to compare the `Authorization` header against your secret and reject unauthorized requests:
 
-### Step 2: Add authorization to your traffic policy
+    ```yaml
+    on_http_request:
+      # Reject unauthorized requests
+      - expressions:
+          - req.headers['authorization'][0] != 'Bearer ' + secrets.get('gateway-auth', 'access-token')
+        actions:
+          - type: custom-response
+            config:
+              status_code: 401
+              headers:
+                content-type: application/json
+              body: '{"error": {"message": "Invalid or missing authorization token", "type": "authentication_error"}}'
 
-Use an expression to compare the `Authorization` header against your secret and reject unauthorized requests:
+      # Process authorized requests through the gateway
+      - actions:
+          - type: ai-gateway
+            config:
+              providers:
+                - id: openai
+                  api_keys:
+                    - value: ${secrets.get('openai', 'api-key')}
+                - id: anthropic
+                  api_keys:
+                    - value: ${secrets.get('anthropic', 'api-key')}
+    ```
+  </Step>
 
-```yaml
-on_http_request:
-  # Reject unauthorized requests
-  - expressions:
-      - req.headers['authorization'][0] != 'Bearer ' + secrets.get('gateway-auth', 'access-token')
-    actions:
-      - type: custom-response
-        config:
-          status_code: 401
-          headers:
-            content-type: application/json
-          body: '{"error": {"message": "Invalid or missing authorization token", "type": "authentication_error"}}'
+  <Step title="Update your client configuration">
+    Clients must now include the access token in their requests:
 
-  # Process authorized requests through the gateway
-  - actions:
-      - type: ai-gateway
-        config:
-          providers:
-            - id: openai
-              api_keys:
-                - value: ${secrets.get('openai', 'api-key')}
-            - id: anthropic
-              api_keys:
-                - value: ${secrets.get('anthropic', 'api-key')}
-```
+    ```javascript
+    import OpenAI from 'openai';
 
-### Step 3: Update your client configuration
+    const client = new OpenAI({
+      baseURL: "https://your-gateway.ngrok.app/v1",
+      apiKey: "your-secret-access-token-here"  // Your gateway access token
+    });
 
-Clients must now include the access token in their requests:
+    const response = await client.chat.completions.create({
+      model: "gpt-4o",
+      messages: [{ role: "user", content: "Hello!" }]
+    });
+    ```
 
-```javascript
-import OpenAI from 'openai';
+    Or with curl:
 
-const client = new OpenAI({
-  baseURL: "https://your-gateway.ngrok.app/v1",
-  apiKey: "your-secret-access-token-here"  // Your gateway access token
-});
-
-const response = await client.chat.completions.create({
-  model: "gpt-4o",
-  messages: [{ role: "user", content: "Hello!" }]
-});
-```
-
-Or with curl:
-
-```bash
-curl https://your-gateway.ngrok.app/v1/chat/completions \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer your-secret-access-token-here" \
-  -d '{
-    "model": "gpt-4o",
-    "messages": [{"role": "user", "content": "Hello!"}]
-  }'
-```
+    ```bash
+    curl https://your-gateway.ngrok.app/v1/chat/completions \
+      -H "Content-Type: application/json" \
+      -H "Authorization: Bearer your-secret-access-token-here" \
+      -d '{
+        "model": "gpt-4o",
+        "messages": [{"role": "user", "content": "Hello!"}]
+      }'
+    ```
+  </Step>
+</Steps>
 
 ## Multiple access tokens
 
