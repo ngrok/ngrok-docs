@@ -1,0 +1,222 @@
+---
+title: Modifying Requests
+description: Learn how to modify requests before they reach providers using built-in fields and find/replace.
+---
+
+The AI Gateway provides multiple ways to modify requests before they reach providers:
+
+- **Built-in fields** - Add headers, query parameters, or body fields directly in the AI Gateway config
+- **Find & Replace** - Use regex patterns to transform request content
+
+## Built-in request modification
+
+The AI Gateway config includes `headers`, `query_params`, and `body` fields for simple modifications without needing a separate action.
+
+### Adding headers
+
+Add custom headers to all requests sent to providers:
+
+```yaml policy.yaml highlight={5-7}
+on_http_request:
+  - actions:
+      - type: ai-gateway
+        config:
+          headers:
+            X-Request-ID: "${req.id}"
+            X-Client-IP: "${conn.client_ip}"
+          providers:
+            - id: openai
+              api_keys:
+                - value: "${secrets.get('openai-api-key')}"
+```
+
+Headers support CEL expressions for dynamic values.
+
+### Adding query parameters
+
+Append query parameters to provider requests (useful for providers that require API versioning):
+
+```yaml policy.yaml highlight={5-6}
+on_http_request:
+  - actions:
+      - type: ai-gateway
+        config:
+          query_params:
+            api_version: "2024-02-01"
+          providers:
+            - id: azure-openai
+              base_url: "https://your-resource.openai.azure.com"
+              api_keys:
+                - value: "${secrets.get('azure-api-key')}"
+```
+
+### Adding body fields
+
+Merge additional fields into the JSON request body. This is useful for enforcing default parameters:
+
+```yaml policy.yaml highlight={5-8}
+on_http_request:
+  - actions:
+      - type: ai-gateway
+        config:
+          body:
+            temperature: 0.7
+            top_p: 0.9
+            max_tokens: 1000
+          providers:
+            - id: openai
+              api_keys:
+                - value: "${secrets.get('openai-api-key')}"
+```
+
+With this config, every request will include these parameters, overriding any values the client sends.
+
+### Combining built-in fields
+
+You can use all three together:
+
+```yaml policy.yaml highlight={5-12}
+on_http_request:
+  - actions:
+      - type: ai-gateway
+        config:
+          headers:
+            X-Request-ID: "${req.id}"
+          query_params:
+            api_version: "2024-02-01"
+          body:
+            temperature: 0.7
+            max_tokens: 2000
+          providers:
+            - id: openai
+              api_keys:
+                - value: "${secrets.get('openai-api-key')}"
+```
+
+## Advanced: find and replace
+
+For more complex transformations like PII redaction or content rewriting, use the [`request-body-find-replace`](/traffic-policy/actions/request-body-find-replace) action. It runs before the AI Gateway and uses regex patterns to modify the request body.
+
+```yaml policy.yaml highlight={3-8}
+on_http_request:
+  - actions:
+      - type: request-body-find-replace
+        config:
+          replacements:
+            - from: "pattern-to-match"
+              to: "replacement-value"
+      - type: ai-gateway
+        config:
+          providers:
+            - id: openai
+              api_keys:
+                - value: "${secrets.get('openai-api-key')}"
+```
+
+### Redacting PII from prompts
+
+Prevent sensitive information from being sent to AI providers:
+
+```yaml policy.yaml highlight={5-10}
+on_http_request:
+  - actions:
+      - type: request-body-find-replace
+        config:
+          replacements:
+            # Redact email addresses
+            - from: "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}"
+              to: "[EMAIL REDACTED]"
+            # Redact SSN patterns
+            - from: "\\b\\d{3}-\\d{2}-\\d{4}\\b"
+              to: "[SSN REDACTED]"
+      - type: ai-gateway
+        config:
+          providers:
+            - id: openai
+              api_keys:
+                - value: "${secrets.get('openai-api-key')}"
+```
+
+**Before** (original request):
+
+```json
+{
+  "model": "gpt-4o",
+  "messages": [{
+    "role": "user",
+    "content": "Summarize this: John's email is john@example.com and SSN is 123-45-6789"
+  }]
+}
+```
+
+**After** (what the provider receives):
+
+```json
+{
+  "model": "gpt-4o",
+  "messages": [{
+    "role": "user",
+    "content": "Summarize this: John's email is [EMAIL REDACTED] and SSN is [SSN REDACTED]"
+  }]
+}
+```
+
+### Injecting system instructions
+
+Append instructions to existing system messages:
+
+```yaml policy.yaml highlight={5-7}
+on_http_request:
+  - actions:
+      - type: request-body-find-replace
+        config:
+          replacements:
+            - from: '"role":\s*"system",\s*"content":\s*"([^"]*)"'
+              to: '"role": "system", "content": "$1 Always follow company compliance guidelines. Never share internal data."'
+      - type: ai-gateway
+        config:
+          providers:
+            - id: openai
+              api_keys:
+                - value: "${secrets.get('openai-api-key')}"
+```
+
+This uses capture group `$1` to preserve the original system message content.
+
+## Common PII patterns
+
+| Pattern | Matches |
+|---------|---------|
+| `[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}` | Email addresses |
+| `\b\d{3}-\d{2}-\d{4}\b` | US Social Security Numbers |
+| `\b\d{3}[-.\s]?\d{3}[-.\s]?\d{4}\b` | US Phone numbers |
+| `\b\d{4}[- ]?\d{4}[- ]?\d{4}[- ]?\d{4}\b` | Credit card numbers |
+| `"api_key":\s*"[^"]*"` | JSON API key fields |
+| `"password":\s*"[^"]*"` | JSON password fields |
+
+## Using capture groups
+
+Preserve parts of the matched text:
+
+```yaml
+replacements:
+  # Keep the field name, redact the value
+  - from: '"(ssn|social_security|password)":\s*"[^"]*"'
+    to: '"$1": "[REDACTED]"'
+```
+
+## Dynamic patterns with CEL
+
+Both `from` and `to` fields support CEL expressions:
+
+```yaml
+replacements:
+  - from: "${vars.custom_pattern}"
+    to: "Redacted by request ${req.id}"
+```
+
+## Next steps
+
+- [Modifying Responses](/ai-gateway/guides/modifying-responses) - Sanitize responses and streaming content
+- [Request Body Find & Replace Reference](/traffic-policy/actions/request-body-find-replace) - Full configuration options
+- [Configuration Schema](/ai-gateway/reference/configuration-schema) - All AI Gateway config fields

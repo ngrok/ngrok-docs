@@ -127,6 +127,20 @@ const actions = [
     categories: ["request-modification"]
   },
   {
+    type: "request-body-find-replace",
+    name: "Request Body Find & Replace",
+    description: "Find and replace text patterns in HTTP request bodies using regular expressions.",
+    phases: ["on_http_request"],
+    categories: ["request-modification"]
+  },
+  {
+    type: "response-body-find-replace",
+    name: "Response Body Find & Replace",
+    description: "Find and replace text patterns in HTTP response bodies using regular expressions.",
+    phases: ["on_http_response"],
+    categories: ["response-modification"]
+  },
+  {
     type: "remove-headers",
     name: "Remove Headers",
     description: "Remove headers from incoming requests or outgoing responses.",
@@ -146,6 +160,13 @@ const actions = [
     description: "Set custom variables for use in your traffic policy.",
     phases: ["on_http_request", "on_http_response", "on_tcp_connect"],
     categories: ["request-modification", "response-modification", "connection-modification"]
+  },
+  {
+    type: "sse-find-replace",
+    name: "SSE Find & Replace",
+    description: "Find and replace text patterns in Server-Sent Events (SSE) streams.",
+    phases: ["on_event_stream_message"],
+    categories: ["response-modification"]
   },
   {
     type: "terminate-tls",
@@ -170,7 +191,7 @@ const actions = [
   }
 ];
 
-const Phases = ["on_tcp_connect", "on_http_request", "on_http_response"];
+const Phases = ["on_tcp_connect", "on_http_request", "on_http_response", "on_event_stream_message"];
 
 const Protocols = {
 	TCP: ["on_tcp_connect"],
@@ -184,7 +205,8 @@ const Protocols = {
 	const phaseColorMap = {
 		"on_tcp_connect": "blue",
 		"on_http_request": "green",
-		"on_http_response": "purple"
+		"on_http_response": "purple",
+		"on_event_stream_message": "orange"
 	};
 
 	const clearFilters = () => {
