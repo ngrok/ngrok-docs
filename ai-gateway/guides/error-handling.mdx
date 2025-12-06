@@ -1,67 +1,58 @@
 ---
 title: Error Handling
-description: Understanding retry logic and error behavior in AI Gateway
+description: Understanding failover logic and error behavior in AI Gateway
 ---
 
-## Automatic retry behavior
+## Automatic failover behavior
 
-The gateway automatically retries requests when any provider attempt fails. This includes:
+When a request to a provider fails, the gateway automatically tries the next candidate. This includes failures from:
 
 - **Timeouts** - Request exceeded `per_request_timeout`
 - **HTTP errors** - Any non-2xx/3xx response from providers (4xx, 5xx)
 - **Connection errors** - Network failures, DNS issues, etc.
 
-When a request fails, the gateway moves to the next available attempt (next key, next provider, or next model).
+The gateway never retries the same model/key combination—it always moves to the next candidate in its list.
 
-## Retry cascade
+## Failover cascade
 
 When a request fails, the gateway follows this failover order:
 
-### 1. Retry with another key
+### 1. Try another key
 
-If multiple API keys are configured for a provider, try the next key:
+If multiple API keys are configured for the current model's provider, try the next key:
 
 ```yaml
 providers:
   - id: "openai"
     api_keys:
       - value: ${secrets.get('openai', 'key-one')}   # Try first
-      - value: ${secrets.get('openai', 'key-two')}   # Retry with this if first fails
+      - value: ${secrets.get('openai', 'key-two')}   # Try if first fails
 ```
 
-### 2. Retry with another provider
+### 2. Try another model candidate
 
-If all keys for a provider fail, try a different provider that supports the model:
+If all keys for the current model fail, the gateway moves to the next model in its candidate list. This happens when:
 
-```yaml
-providers:
-  - id: "openai"      # Try first
-    api_keys:
-      - value: ${secrets.get('openai', 'key')}
-  - id: "anthropic"   # Retry with this if OpenAI fails
-    api_keys:
-      - value: ${secrets.get('anthropic', 'key')}
-```
-
-**Note**: Provider failover only works when the client specifies multiple models in the request.
-
-### 3. Retry with another model
-
-If the client specified multiple acceptable models, try an alternative:
+- The client specified multiple models using the `models` array
+- Model selection strategies returned multiple candidates
 
 ```json
 {
   "model": "gpt-4o",
-  "models": ["gpt-4o-mini", "gpt-3.5-turbo"],
+  "models": ["anthropic:claude-3-5-sonnet-20241022", "google:gemini-2.0-flash"],
   "messages": [{"role": "user", "content": "Hello"}]
 }
 ```
 
 The `model` field is tried first, then entries in the `models` array as fallbacks.
 
+<Note>
+Provider failover requires the client to specify models from different providers, or for model selection strategies to return candidates from multiple providers.
+</Note>
+
 ## Error behavior configuration
 
-Control what happens when all retry attempts are exhausted:
+Control what happens when all candidates are exhausted:
 
 ### `on_error: "halt"` (default)
 
@@ -74,7 +65,7 @@ on_http_request:
       on_error: "halt"
 ```
 
-The client receives the last error from the retry cascade.
+The client receives the last error from the failover cascade.
 
 ### `on_error: "continue"`
 
@@ -93,7 +84,7 @@ Useful for custom error handling or fallback logic.
 
 ## Error response format
 
-When all retry attempts fail, the gateway returns an error. The response preserves the last provider's error response when available, or returns an ngrok error message.
+When all candidates fail, the gateway returns an error. The response preserves the last provider's error response when available, or returns an ngrok error message.
 
 **Provider error passthrough:**
 If the last attempt received an HTTP error response from the provider, that response (status code and body) is returned to the client.
@@ -142,7 +133,7 @@ All configured providers and keys fail:
 
 ## Timeout configuration
 
-Control retry timing with timeout settings:
+Control failover timing with timeout settings:
 
 ```yaml
 on_http_request:
@@ -153,13 +144,13 @@ on_http_request:
 ```
 
 - **`per_request_timeout`**: Maximum time for a single provider attempt
-- **`total_timeout`**: Maximum time for all retry attempts
+- **`total_timeout`**: Maximum time for all failover attempts
 
-If `total_timeout` is reached, retries stop even if more providers are available.
+If `total_timeout` is reached, failover stops even if more candidates are available.
 
-## Errors that skip retry cascade
+## Errors that skip failover
 
-These errors occur before the retry cascade begins and are returned immediately:
+These errors occur before the failover cascade begins and are returned immediately:
 
 - **Invalid request body** - Request JSON could not be parsed
 - **No models available** - No configured providers support the requested model
@@ -167,7 +158,7 @@ These errors occur before the retry cascade begins and are returned immediately:
 - **No API key** - No key configured and none provided by client
 - **Configuration errors** - Invalid provider or model configuration
 
-Once the retry cascade starts, all provider errors (including 4xx) trigger retries until attempts are exhausted.
+Once the failover cascade starts, all provider errors (including 4xx) trigger the next candidate until all are exhausted.
 
 ## Monitoring errors
 
@@ -189,10 +180,10 @@ Use these metrics to:
 ## Best practices
 
 1. **Configure multiple keys** per provider for key-level failover
-2. **Use multiple providers** for provider-level failover
+2. **Specify multiple models** in client requests for cross-provider failover
 3. **Set appropriate timeouts** based on your use case
 4. **Monitor error metrics** to catch issues early
-5. **Implement client-side retries** for additional resilience
+5. **Use model selection strategies** to order candidates by preference
 
 ## Example: Comprehensive error handling
 
@@ -228,6 +219,10 @@ This configuration provides:
 - 3 failover keys for OpenAI
 - 2 failover keys for Anthropic
 - 1 emergency key for Google
-- Up to 3 minutes of retry attempts
+- Up to 3 minutes for all failover attempts
 - Clear error messages on complete failure
+
+<Note>
+For cross-provider failover, clients must specify models from multiple providers using the `models` array, or model selection strategies must return candidates from multiple providers.
+</Note>
 

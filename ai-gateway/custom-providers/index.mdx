@@ -207,8 +207,12 @@ on_http_request:
       model_selection:
         strategy:
           - "ai.models.filter(m, m.provider_id == 'my-provider')"
-          - "ai.models"
+          - "ai.models.filter(m, m.provider_id == 'openai')"
 ```
+
+<Note>
+The first strategy that returns models wins. If your custom provider has matching models, only those are tried. OpenAI is only used if no custom provider models match. For cross-provider failover when requests fail, have clients specify multiple models: `models: ["my-provider:llama3", "openai:gpt-4o"]`.
+</Note>
 
 ### Multiple custom providers
 
@@ -218,6 +222,7 @@ Load balance across multiple self-hosted instances:
 on_http_request:
   - type: ai-gateway
     config:
+      only_allow_configured_providers: true
       providers:
         - id: "inference-1"
           base_url: "https://inference-1.internal"
@@ -231,6 +236,7 @@ on_http_request:
       
       model_selection:
         strategy:
+          # Randomize across configured providers only
           - "ai.models.random()"
 ```
 

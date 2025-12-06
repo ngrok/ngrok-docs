@@ -70,13 +70,13 @@ on_http_request:
           base_url: "https://ollama.internal"
       model_selection:
         strategy:
-          # Prefer your self-hosted model
           - "ai.models.filter(m, m.provider_id == 'ollama')"
-          # Fall back to cheapest cloud option
           - "ai.models.sortBy(m, m.pricing.input)"
 ```
 
-Each strategy in the list is evaluated in order. The first one that returns models is used. This lets you define sophisticated routing logic:
+Strategies are evaluated in order—the first one that returns models wins. If Ollama has matching models, only those are tried. The second strategy (sorted by price) is only used if no Ollama models match.
+
+This lets you define sophisticated routing logic:
 
 - **Cost optimization** - Route to cheapest models first
 - **Provider preference** - Prefer certain providers over others
@@ -87,17 +87,19 @@ Each strategy in the list is evaluated in order. The first one that returns mode
 Use `ngrok/auto` as the model name to let your selection strategy choose entirely. See [Model Selection Strategies](/ai-gateway/guides/model-selection-strategies) for detailed examples.
 </Tip>
 
-## Failover & retries
+## Failover
 
-When a request fails, the gateway automatically retries. This happens transparently - your app just sees a successful response (or a final error if all options are exhausted).
+When a request fails, the gateway automatically tries the next candidate. This happens transparently—your app just sees a successful response (or a final error if all candidates are exhausted).
 
-### What triggers a retry?
+### What triggers failover?
 
 - **Timeouts** - Provider took too long to respond
 - **HTTP errors** - Any non-2xx/3xx response (4xx, 5xx)
 - **Connection failures** - Network errors, DNS issues, etc.
 
-### Retry order
+The gateway never retries the same model/key combination—it always moves to the next candidate.
+
+### Failover order
 
 The gateway works through your configured options:
 
@@ -124,14 +126,14 @@ Two settings control how long the gateway waits:
 | Setting | Default | Description |
 |---------|---------|-------------|
 | `per_request_timeout` | 30s | Max time for a single attempt |
-| `total_timeout` | 5m | Max time including all retries |
+| `total_timeout` | 5m | Max time including all failover attempts |
 
 ```yaml title="traffic-policy.yaml" highlight={4-5}
 on_http_request:
   - type: ai-gateway
     config:
       per_request_timeout: "60s"  # Wait longer for slow models
-      total_timeout: "3m"          # But don't retry forever
+      total_timeout: "3m"          # Limit total failover time
       providers:
         - id: openai
           api_keys:

@@ -85,38 +85,42 @@ See [SDK Integration](/ai-gateway/sdks) for details.
 
 ---
 
-## Retries and Failover
+## Failover
 
-### How do retries work?
+### How does failover work?
 
-The gateway automatically retries on any failure:
+When a request fails, the gateway tries the next candidate in its list. This includes failures from:
 
 - Timeouts
 - HTTP errors (4xx, 5xx)
 - Connection failures
 
-Retry order:
-1. Different key for same provider
-2. Different provider
-3. Different model (if client specified fallbacks)
+Failover order:
+1. Next API key for the same model/provider
+2. Next model candidate (from model selection or client `models` array)
+
+The gateway never retries the same model/key combination—it always moves to the next candidate.
 
 See [Error Handling](/ai-gateway/guides/error-handling) for details.
 
 ---
 
-### How long does the gateway retry before giving up?
+### How long does the gateway try before giving up?
 
 Controlled by `total_timeout` (default: 5 minutes):
 
 ```yaml
-total_timeout: "3m"  # Retry for up to 3 minutes
+total_timeout: "3m"  # Allow up to 3 minutes for all attempts
 ```
 
 ---
 
-### Can I disable automatic retries?
+### Can I disable automatic failover?
 
-Not directly, but you can set very short timeouts:
+Not directly, but you can limit the attempts by:
+- Configuring only one API key per provider
+- Having clients specify a single model
+- Setting short timeouts:
 
 ```yaml
 per_request_timeout: "5s"
@@ -127,10 +131,10 @@ total_timeout: "10s"
 
 ### Will the gateway failover to a different provider automatically?
 
-Yes, if:
+Yes, if the client specifies multiple models that span different providers:
 
-1. Multiple providers are configured
-2. The requested model fails and another provider supports a fallback model
+1. Using the `models` array: `"models": ["openai:gpt-4o", "anthropic:claude-3-5-sonnet-20241022"]`
+2. Or using just the model name (like `"model": "gpt-4o"`) when selection strategies return candidates from multiple providers
 
 The gateway automatically tries alternative providers when the primary fails. You can also specify fallback models in the request body:
 
@@ -431,17 +435,23 @@ See [Model Selection Strategies](/ai-gateway/guides/model-selection-strategies).
 
 ### How do I prioritize certain models or providers?
 
-Use selection strategies to control priority. The order of strategies determines preference:
+Use selection strategies to define preference order:
 
 ```yaml
 model_selection:
   strategy:
-    - "ai.models.filter(m, m.provider_id == 'openai')"    # Try OpenAI first
-    - "ai.models.filter(m, m.provider_id == 'anthropic')" # Then Anthropic
-    - "ai.models"                                          # Fall back to any
+    - "ai.models.filter(m, m.provider_id == 'openai')"
+    - "ai.models.filter(m, m.provider_id == 'anthropic')"
+    - "ai.models"
 ```
 
-The first strategy that returns models is used. See [Model Selection Strategies](/ai-gateway/guides/model-selection-strategies).
+The first strategy that returns models wins. If OpenAI models exist, only those are tried. Anthropic is only considered if no OpenAI models match.
+
+<Note>
+Strategies control which models are considered, not failover order. For cross-provider failover when requests fail, have clients specify multiple models: `models: ["openai:gpt-4o", "anthropic:claude-3-5-sonnet-20241022"]`.
+</Note>
+
+See [Model Selection Strategies](/ai-gateway/guides/model-selection-strategies).
 
 ---
 

@@ -44,7 +44,7 @@ Use the `author/model` format when you want to be specific about who authored th
 
 ```json
 {
-  "model": "meta-llama/llama-3-70b",
+  "model": "anthropic/claude-sonnet-4",
   "messages": [{"role": "user", "content": "Hello"}]
 }
 ```
@@ -53,7 +53,7 @@ The gateway will infer the provider from the model catalog. To also specify whic
 
 ```json
 {
-  "model": "openrouter:meta-llama/llama-3-70b",
+  "model": "openrouter:anthropic/claude-sonnet-4",
   "messages": [{"role": "user", "content": "Hello"}]
 }
 ```
@@ -76,6 +76,8 @@ The gateway tries models in order:
 1. `model` field first (primary choice)
 2. `models` array entries as fallbacks
 
+You can use `model` alone, `models` alone, or both together—all are valid ways to specify client model preferences.
+
 This enables cross-provider failover—if OpenAI fails, the gateway can automatically try Anthropic.
 
 ## Automatic model selection
@@ -95,8 +97,8 @@ This is equivalent to omitting the model field entirely. The gateway selects fro
 
 If a client requests a model that isn't in the [Model Catalog](/ai-gateway/reference/model-catalog), the gateway can still route it if:
 
-1. The model name includes a provider prefix (for example, `openai:gpt-5-preview`)
-2. The provider is known and allowed by your configuration
+1. The model name includes a provider prefix (for example, `openai:some-new-model`) or uses author syntax where the author is a known provider (for example, `openai/some-new-model`)
+2. The provider is known (either from the model catalog or a custom provider you've defined in your configuration) and allowed by your configuration
 
 ```json
 {
@@ -129,6 +131,10 @@ providers:
 ```
 
 Clients can then use any of these names to reach the same model.
+
+<Note>
+Aliases must be unique across all models. You cannot use an alias that is already in use as an ID or alias by another model.
+</Note>
 
 ## Model capabilities
 

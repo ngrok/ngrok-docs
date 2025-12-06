@@ -3,7 +3,7 @@ title: Provider API Keys
 description: Understanding provider API key management in the AI Gateway
 ---
 
-Provider API keys authenticate requests to AI providers like OpenAI, Anthropic, and Google. The AI Gateway offers flexible key management—from simple passthrough to centralized management with automatic failover.
+Provider API keys authenticate requests to AI providers like OpenAI, Anthropic, and Google. The AI Gateway action offers flexible key management—from simple passthrough to centralized management with automatic failover.
 
 ## Key precedence
 
@@ -41,17 +41,15 @@ providers:
 
 ### 3. Restricted provider mode
 
-When `only_allow_configured_providers: true`, providers without configured keys are rejected:
+When `only_allow_configured_providers: true`, only providers explicitly listed in the `providers` array are allowed. Requests to any other provider are rejected, regardless of whether the SDK sends its own API key:
 
 ```yaml
 only_allow_configured_providers: true
 providers:
   - id: "openai"
-    api_keys:
-      - value: ${secrets.get('openai', 'key')}
 ```
 
-Requests to unconfigured providers (like `anthropic`) will fail with a clear error.
+With this configuration, requests to providers not in the list (like `anthropic`) will fail with a clear error. API keys have no impact on this behavior—it's purely about which providers you've configured.
 
 ## When to use each mode
 
@@ -92,6 +90,8 @@ api_key_selection:
     # Fall back to all keys
     - "ai.keys"
 ```
+
+Strategies are evaluated in order—the first expression that returns keys wins. Subsequent strategies are only used if the previous ones return no keys.
 
 This enables:
 - **Quota-aware routing**: Route to keys with remaining capacity
