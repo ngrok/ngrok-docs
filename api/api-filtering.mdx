@@ -46,7 +46,7 @@ These core operators and helpers are supported:
 - List membership using the `in` keyword
 - String substring checks: `startsWith()`, `contains()`, `endsWith()`
 - Length / emptiness checks: `size()`, `== ""`, `== null`
-- Date parsing: `timestamp(RFC-3339)`
+- Date and time helpers: `timestamp(RFC-3339)`, `timestamp(time.now)`, `timestamp(time.now).subtract(<duration>)`, `timestamp(time.now).add(<duration>)`
 
 ### Instance inspection (versus list comprehension)
 
@@ -71,9 +71,13 @@ GET /endpoints?filter=["agent","cloud"] in obj.types
   ```http
   GET /vaults?filter=obj.created_at < timestamp("2025-10-31T09:23:45-07:00")
   ```
-- **Convenience helpers:** `time.now` and `time.duration()` support concise relative filters, for example:
+- **Relative helpers based on the current time:** Use `timestamp(time.now)` for the current time, then chain `.subtract(<duration>)` or `.add(<duration>)` with a duration string such as `"7d"`, `"24h"`, or `"15m"`. For example:
   ```http
-  GET /endpoints?filter=obj.created_at >= time.duration("7d")
+  # resources created in the last 7 days
+  GET /endpoints?filter=obj.created_at >= timestamp(time.now).subtract("7d")
+
+  # resources that will expire within the next 24 hours
+  GET /tls_certificates?filter=obj.not_after <= timestamp(time.now).add("24h")
   ```
 
 ## Query restrictions and limitations
@@ -111,9 +115,9 @@ The initial release prioritizes the resource types and fields below. CEL filteri
 
 | Resource Type                   | Filterable Fields                                                                                                                                                                            | Available for Early Access Testing |
 | ------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------- |
-| **Endpoints**                   | - `id`<br />- `created_at`<br />- `description`<br />- `metadata`<br />- `principal.id`<br />- `type`<br />- `binding`<br />- `url`<br />- `pooling_enabled`<br />- `scheme`<br />- `region` | Coming soon               |
+| **Endpoints**                   | - `id`<br />- `created_at`<br />- `description`<br />- `metadata`<br />- `principal.id`<br />- `type`<br />- `binding`<br />- `url`<br />- `pooling_enabled`<br />- `scheme`<br />- `region` | ✅                        |
 | **Reserved Addresses**          | - `id`<br />- `created_at`<br />- `description`<br />- `metadata`<br />- `addr`<br />- `region`                                                                                              | Coming soon               |
-| **Reserved Domains**            | - `id`<br />- `created_at`<br />- `description`<br />- `metadata`<br />- `domain`<br />- `region`<br />- `cname_target`<br />- `certificate.id`<br />- `acme_challenge_cname_target`         | Coming soon               |
+| **Reserved Domains**            | - `id`<br />- `created_at`<br />- `description`<br />- `metadata`<br />- `domain`<br />- `region`<br />- `cname_target`<br />- `certificate.id`<br />- `acme_challenge_cname_target`         | ✅                        |
 | **TLS Certificates**            | - `id`<br />- `created_at`<br />- `description`<br />- `metadata`<br />- `subject_common_name`<br />- `not_after`<br />- `not_before`<br />- `serial_number`                                 | Coming soon               |
 | **Certificate Authorities**     | - `id`<br />- `created_at`<br />- `description`<br />- `metadata`<br />- `subject_common_name`<br />- `not_before`<br />- `not_after`                                                        | Coming soon               |
 | **IP Policies**                 | - `id`<br />- `created_at`<br />- `description`<br />- `metadata`                                                                                                                            | Coming soon               |
@@ -124,7 +128,7 @@ The initial release prioritizes the resource types and fields below. CEL filteri
 | **Event Subscriptions**         | - `id`<br />- `created_at`<br />- `description`<br />- `metadata`                                                                                                                            | Coming soon               |
 | **IP Restrictions**             | - `id`<br />- `created_at`<br />- `description`<br />- `metadata`                                                                                                                            | Coming soon               |
 | **API Keys**                    | - `id`<br />- `created_at`<br />- `description`<br />- `metadata`<br />- `owner_id`                                                                                                          | Coming soon               |
-| **SSH Credentials**             | - `id`<br />- `created_at`<br />- `description`<br />- `metadata`<br />- `owner_id`<br />- `acl`                                                                                             | Coming soon               |
+| **SSH Credentials**             | - `id`<br />- `created_at`<br />- `description`<br />- `metadata`<br />- `owner_id`<br />- `acl`                                                                                             | ✅                        |
 | **Credentials**                 | - `id`<br />- `created_at`<br />- `description`<br />- `metadata`<br />- `owner_id`<br />- `acl`                                                                                             | Coming soon               |
 | **Service Users**               | - `id`<br />- `created_at`                                                                                                                                                                   | Coming soon               |
 | **SSH Certificate Authorities** | - `id`<br />- `created_at`<br />- `description`<br />- `metadata`                                                                                                                            | Coming soon               |
@@ -138,7 +142,7 @@ The initial release prioritizes the resource types and fields below. CEL filteri
 ```http
 GET /endpoints?filter=obj.type == "cloud" && obj.created_at < timestamp("2025-10-31T09:23:45-07:00")
 # or using helpers
-GET /endpoints?filter=obj.type == "cloud" && obj.created_at >= daysAgo(6)
+GET /endpoints?filter=obj.type == "cloud" && obj.created_at >= timestamp(time.now).subtract("6d")
 ```
 
 Reference:
