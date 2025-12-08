@@ -10,7 +10,7 @@ title: CloudEndpoint
 
 The `CloudEndpoint` custom resource is used to create centrally managed endpoints in the cloud. Cloud Endpoints are persistent, always-on endpoints that live within the ngrok cloud.
 They exist permanently until they are explicitly deleted. Cloud Endpoints do not forward their traffic to an agent by default and instead only use their attached Traffic Policy to handle connections.
-Using the traffic policy configuration, you may configure your Cloud Endpoints to route to one or more other internal ngrok endpoints.
+Using the Traffic Policy configuration, you may configure your Cloud Endpoints to route to one or more other internal ngrok endpoints.
 
 For more information about cloud endpoints in ngrok, refer to the [cloud endpoints page](/universal-gateway/cloud-endpoints/)
 
@@ -29,7 +29,7 @@ spec:
   trafficPolicyName: <string> # optional
   trafficPolicy:              # optional
     policy:                   # required
-      <traffic policy config>
+      <Traffic Policy config>
   description: <string>       # optional, default: "Created by the ngrok-operator"
   metadata: <string>          # optional, default: "{"owned-by":"ngrok-operator"}"
   bindings: <[]string>        # optional
@@ -55,8 +55,8 @@ The following sections outline each field of the `CloudEndpoint` custom resource
 | Field Name                                         | Type              | Required | Default                           | Description                                                                                                                              |
 | -------------------------------------------------- | ----------------- | -------- | --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
 | [`spec.url`](#specurl)                             | `string`          | yes      | none                              | The unique URL for this `CloudEndpoint` that defines how the endpoint is accessed                                                        |
-| [`spec.trafficPolicyName`](#spectrafficpolicyname) | `string`          | no       | none                              | The name of an `NgrokTrafficPolicy` custom resource in the same namespace as the `CloudEndpoint` to use for traffic policy configuration |
-| [`spec.trafficPolicy`](#spectrafficpolicy)         | `Object`          | no       | none                              | Allows for a traffic policy to be provided to the `CloudEndpoint` using inline configuration                                             |
+| [`spec.trafficPolicyName`](#spectrafficpolicyname) | `string`          | no       | none                              | The name of an `NgrokTrafficPolicy` custom resource in the same namespace as the `CloudEndpoint` to use for Traffic Policy configuration |
+| [`spec.trafficPolicy`](#spectrafficpolicy)         | `Object`          | no       | none                              | Allows for a Traffic Policy to be provided to the `CloudEndpoint` using inline configuration                                             |
 | [`spec.description`](#specdescription)             | `string`          | no       | `"Created by the ngrok-operator"` | Human-readable description for this `CloudEndpoint` to help identify/describe it                                                         |
 | [`spec.metadata`](#specmetadata)                   | `string`          | no       | `"{"owned-by":"ngrok-operator"}"` | String of arbitrary data associated with the object in the ngrok API/Dashboard                                                           |
 | [`spec.bindings`](#specbindings)                   | `[]string` (enum) | no       | none                              | List of Binding IDs to associate with the endpoint                                                                                       |
@@ -95,12 +95,12 @@ The following formats are accepted:
   When empty your endpoint will default to be https and receive back a randomly assigned ngrok address.
 - **Internal**
   - When ending your URL with .internal, an internal endpoint will be created. Internal Endpoints cannot be accessed directly, but rather
-    can only be accessed using the forward-internal traffic policy action.
+    can only be accessed using the forward-internal Traffic Policy action.
   - example: `some.domain.internal`
 
 ### `spec.trafficPolicyName`
 
-Reference to an `NgrokTrafficPolicy` custom resource in the same namespace as the `CloudEndpoint` to use for traffic policy configuration.
+Reference to an `NgrokTrafficPolicy` custom resource in the same namespace as the `CloudEndpoint` to use for Traffic Policy configuration.
 It is invalid to configure both `spec.trafficPolicyName` and `spec.trafficPolicy` at the same time.
 
 The referenced `NgrokTrafficPolicy` **must** be in the same namespace as the `CloudEndpoint`.
@@ -113,9 +113,9 @@ The referenced `NgrokTrafficPolicy` **must** be in the same namespace as the `Cl
 
 ### `spec.trafficPolicy`
 
-Reference to an `NgrokTrafficPolicy` custom resource in the same namespace as the `CloudEndpoint` to use for traffic policy configuration.
+Reference to an `NgrokTrafficPolicy` custom resource in the same namespace as the `CloudEndpoint` to use for Traffic Policy configuration.
 It is invalid to configure both `spec.trafficPolicyName` and `spec.trafficPolicy` at the same time.
-For more information about writing ngrok traffic policies, refer to the [traffic policy section](/traffic-policy/).
+For more information about writing ngrok Traffic Policies, refer to the [Traffic Policy section](/traffic-policy/).
 
 **Type:** `Object`
 
@@ -127,12 +127,12 @@ For more information about writing ngrok traffic policies, refer to the [traffic
 
 | Field Name                                              | Type              | Required | Default | Description                                                                 |
 | ------------------------------------------------------- | ----------------- | -------- | ------- | --------------------------------------------------------------------------- |
-| [`spec.trafficPolicy.policy`](#spectrafficpolicypolicy) | `json.RawMessage` | yes      | none    | The inline traffic policy configuration to be used for this `CloudEndpoint` |
+| [`spec.trafficPolicy.policy`](#spectrafficpolicypolicy) | `json.RawMessage` | yes      | none    | The inline Traffic Policy configuration to be used for this `CloudEndpoint` |
 
 ### `spec.trafficPolicy.policy`
 
-Allows you to supply a traffic policy for this `AgentEndpoint` with inline configuration. An example has been included below.
-For more information about writing ngrok traffic policies, refer to the [traffic policy section](/traffic-policy/).
+Allows you to supply a Traffic Policy for this `AgentEndpoint` with inline configuration. An example has been included below.
+For more information about writing ngrok Traffic Policies, refer to the [Traffic Policy section](/traffic-policy/).
 
 **Type:** `json.RawMessage`
 
@@ -172,7 +172,7 @@ List of Binding IDs to associate with the endpoint
 
 **Accepted Values:** `"public"`, `"internal"`, or `"kubernetes"`
 
-- A binding of `"internal"` will create an internal `AgentEndpoint` that is only accessible from other endpoints using the `forward-internal` traffic policy action.
+- A binding of `"internal"` will create an internal `AgentEndpoint` that is only accessible from other endpoints using the `forward-internal` Traffic Policy action.
   - Aside from setting `bindings: ["internal"]`, the `spec.url` of the `AgentEndpoint` must end in `.internal`
   - Setting `bindings: ["public"]` will not work for internal endpoints (endpoints that have a `spec.url` ending in `.internal`)
 - A binding of `"public"` will create a standard `AgentEndpoint` with its `spec.url` accessible to the public internet
@@ -481,12 +481,12 @@ kubectl get cloudendpoint example-cloud-endpoint -o jsonpath='{.status.condition
 
 ## Example CloudEndpoints
 
-### CloudEndpoint with inline traffic policy
+### CloudEndpoint with inline Traffic Policy
 
 The following `CloudEndpoint`:
 
 - Accepts traffic on the URL `https://example-cloud-endpoint.ngrok.io`
-- Adds an inline traffic policy that sends back a custom response
+- Adds an inline Traffic Policy that sends back a custom response
 
 ```yaml
 apiVersion: ngrok.k8s.ngrok.com/v1alpha1
@@ -502,18 +502,18 @@ spec:
         actions:
         - type: custom-response
           config:
-            body: Example response from traffic policy
+            body: Example response from Traffic Policy
             headers:
               content-type: text/plain
             status_code: 200
 ```
 
-### CloudEndpoint with referenced traffic policy
+### CloudEndpoint with referenced Traffic Policy
 
 The following `CloudEndpoint`:
 
 - Accepts traffic on the URL `https://example-cloud-endpoint.ngrok.io`
-- Adds a reference to a traffic policy that sends back a custom response
+- Adds a reference to a Traffic Policy that sends back a custom response
 
 ```yaml
 apiVersion: ngrok.k8s.ngrok.com/v1alpha1
@@ -528,7 +528,7 @@ spec:
       actions:
       - type: custom-response
         config:
-          body: Example response from traffic policy
+          body: Example response from Traffic Policy
           headers:
             content-type: text/plain
           status_code: 200

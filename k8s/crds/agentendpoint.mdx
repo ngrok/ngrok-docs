@@ -38,7 +38,7 @@ spec:
     targetRef:                # optional, one of inline or targetRef must be supplied
       name: <string>          # required
     inline:                   # optional, one of inline or targetRef must be supplied
-      <traffic policy config>
+      <Traffic Policy config>
   description: <string>       # optional, default: "Created by the ngrok-operator"
   metadata: <string>          # optional, default: "{"owned-by":"ngrok-operator"}"
   bindings: <[]string>        # optional
@@ -66,8 +66,8 @@ The following sections outline each field of the `AgentEndpoint` custom resource
 | Field Name                                                 | Type              | Required | Default                           | Description                                                                                                              |
 | ---------------------------------------------------------- | ----------------- | -------- | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
 | [`spec.url`](#specurl)                                     | `string`          | yes      | none                              | The unique URL for this agent endpoint that defines how the endpoint is accessed                                         |
-| [`spec.upstream`](#specupstream)                           | `Object`          | yes      | none                              | The upstream that will receive traffic sent to the endpoint (unless a response is sent by a traffic policy action first) |
-| [`spec.trafficPolicy`](#spectrafficpolicy)                 | `Object`          | no       | none                              | Allows a traffic policy to be supplied for the endpoint                                                                  |
+| [`spec.upstream`](#specupstream)                           | `Object`          | yes      | none                              | The upstream that will receive traffic sent to the endpoint (unless a response is sent by a Traffic Policy action first) |
+| [`spec.trafficPolicy`](#spectrafficpolicy)                 | `Object`          | no       | none                              | Allows a Traffic Policy to be supplied for the endpoint                                                                  |
 | [`spec.description`](#specdescription)                     | `string`          | no       | `"Created by the ngrok-operator"` | Human-readable description for this `AgentEndpoint` to help identify/describe it                                         |
 | [`spec.metadata`](#specmetadata)                           | `string`          | no       | `"{"owned-by":"ngrok-operator"}"` | String of arbitrary data associated with the object in the ngrok API/Dashboard                                           |
 | [`spec.bindings`](#specbindings)                           | `[]string` (enum) | no       | none                              | List of Binding IDs to associate with the endpoint                                                                       |
@@ -112,7 +112,7 @@ The following formats are accepted:
 - **Empty**
   - When empty your endpoint will default to be https and receive back a randomly assigned ngrok address.
 - **Internal**
-  - When ending your URL with .internal, an internal endpoint will be created. Internal Endpoints cannot be accessed directly, but rather can only be accessed using the forward-internal traffic policy action.
+  - When ending your URL with .internal, an internal endpoint will be created. Internal Endpoints cannot be accessed directly, but rather can only be accessed using the forward-internal Traffic Policy action.
   - example: `some.domain.internal`
 
 ### `spec.upstream`
@@ -187,13 +187,13 @@ with prior knowledge (defaulting to `http1`).
 
 ### `spec.trafficPolicy`
 
-`spec.trafficPolicy` allows for an ngrok traffic policy to be used for this `AgentEndpoint`. It may be supplied inline or via a reference to
+`spec.trafficPolicy` allows for an ngrok Traffic Policy to be used for this `AgentEndpoint`. It may be supplied inline or via a reference to
 an `NgrokTrafficPolicy` custom resource in the same namespace as the `AgentEndpoint`.
 
 - If `spec.trafficPolicy` is configured, then one of `spec.trafficPolicy.inline` or `spec.trafficPolicy.targetRef` must be supplied
 - It is invalid to supply both `spec.trafficPolicy.inline` and `spec.trafficPolicy.targetRef`
 
-For more information about writing ngrok traffic policies, refer to the [traffic policy section](/traffic-policy/).
+For more information about writing ngrok Traffic Policies, refer to the [Traffic Policy section](/traffic-policy/).
 
 **Type:** `Object`
 
@@ -205,13 +205,13 @@ For more information about writing ngrok traffic policies, refer to the [traffic
 
 | Field Name                                                    | Type              | Required | Default | Description                                                                                       |
 | ------------------------------------------------------------- | ----------------- | -------- | ------- | ------------------------------------------------------------------------------------------------- |
-| [`spec.trafficPolicy.inline`](#spectrafficpolicyinline)       | `json.RawMessage` | no       | none    | Inline traffic policy configuration for this `AgentEndpoint`                                      |
+| [`spec.trafficPolicy.inline`](#spectrafficpolicyinline)       | `json.RawMessage` | no       | none    | Inline Traffic Policy configuration for this `AgentEndpoint`                                      |
 | [`spec.trafficPolicy.targetRef`](#spectrafficpolicytargetref) | `Object`          | no       | none    | Reference to an `NgrokTrafficPolicy` custom resource in the same namespace as the `AgentEndpoint` |
 
 ### `spec.trafficPolicy.inline`
 
-Allows you to supply a traffic policy for this `AgentEndpoint` with inline configuration. An example has been included below.
-For more information about writing ngrok traffic policies, refer to the [traffic policy section](/traffic-policy/).
+Allows you to supply a Traffic Policy for this `AgentEndpoint` with inline configuration. An example has been included below.
+For more information about writing ngrok Traffic Policies, refer to the [Traffic Policy section](/traffic-policy/).
 
 **Type:** `json.RawMessage`
 
@@ -221,8 +221,8 @@ For more information about writing ngrok traffic policies, refer to the [traffic
 
 ### `spec.trafficPolicy.targetRef`
 
-Allows you to supply a traffic policy for this `AgentEndpoint` as a reference to an `NgrokTrafficPolicy` custom resource in the same namespace as the `AgentEndpoint`. An example has been included below.
-For more information about writing ngrok traffic policies, refer to the [traffic policy section](/traffic-policy/).
+Allows you to supply a Traffic Policy for this `AgentEndpoint` as a reference to an `NgrokTrafficPolicy` custom resource in the same namespace as the `AgentEndpoint`. An example has been included below.
+For more information about writing ngrok Traffic Policies, refer to the [Traffic Policy section](/traffic-policy/).
 
 **Type:** `Object`
 
@@ -266,7 +266,7 @@ List of Binding IDs to associate with the endpoint
 
 **Accepted Values:** `"public"`, `"internal"`, or `"kubernetes"`
 
-- A binding of `"internal"` will create an internal `AgentEndpoint` that is only accessible from other endpoints using the `forward-internal` traffic policy action.
+- A binding of `"internal"` will create an internal `AgentEndpoint` that is only accessible from other endpoints using the `forward-internal` Traffic Policy action.
   - Aside from setting `bindings: ["internal"]`, the `spec.url` of the `AgentEndpoint` must end in `.internal`
   - Setting `bindings: ["public"]` will not work for internal endpoints (endpoints that have a `spec.url` ending in `.internal`)
 - A binding of `"public"` will create a standard `AgentEndpoint` with its `spec.url` accessible to the public internet
@@ -316,13 +316,13 @@ The actual URL assigned to the endpoint. This may differ from `spec.url` when us
 
 ### `status.trafficPolicy`
 
-Indicates which traffic policy is attached to the endpoint.
+Indicates which Traffic Policy is attached to the endpoint.
 
 **Type:** `string`
 
 **Possible Values:**
-- `inline` - Endpoint uses an inline traffic policy
-- `none` - No traffic policy is attached
+- `inline` - Endpoint uses an inline Traffic Policy
+- `none` - No Traffic Policy is attached
 - `<policy-name>` - Name of the referenced NgrokTrafficPolicy resource
 
 **Example:** `inline`
@@ -420,18 +420,18 @@ conditions:
 
 ##### `TrafficPolicyApplied`
 
-Indicates whether the traffic policy was successfully applied to the endpoint.
+Indicates whether the Traffic Policy was successfully applied to the endpoint.
 
 **Status Values:**
 - `True` - Traffic policy is applied
-- `False` - Failed to apply traffic policy
+- `False` - Failed to apply Traffic Policy
 
 **Reasons:**
 
 | Reason | Status | Meaning |
 |--------|--------|---------|
 | `TrafficPolicyApplied` | `True` | Traffic policy successfully applied |
-| `TrafficPolicyError` | `False` | Error applying or validating traffic policy |
+| `TrafficPolicyError` | `False` | Error applying or validating Traffic Policy |
 
 **Example:**
 ```yaml
@@ -579,7 +579,7 @@ status:
   - type: Ready
     status: "False"
     reason: TrafficPolicyError
-    message: "AgentEndpoint not ready due to traffic policy error"
+    message: "AgentEndpoint not ready due to Traffic Policy error"
     lastTransitionTime: "2025-10-29T00:39:26Z"
     observedGeneration: 1
 ```
@@ -607,21 +607,21 @@ REASON:.status.conditions[?(@.type==\'Ready\')].reason
 # Check domain readiness for an agent endpoint
 kubectl get agentendpoint example-agent-endpoint -o jsonpath='{.status.conditions[?(@.type=="DomainReady")]}'
 
-# Check traffic policy status
+# Check Traffic Policy status
 kubectl get agentendpoint example-agent-endpoint -o jsonpath='{.status.conditions[?(@.type=="TrafficPolicyApplied")]}'
 ```
 
 ## Example AgentEndpoints
 
-### AgentEndpoint with inline traffic policy
+### AgentEndpoint with inline Traffic Policy
 
 The following `AgentEndpoint`:
 
 - Accepts traffic on the URL `https://example-agent-endpoint.ngrok.io`
 - Sends traffic to `http://my-service.my-namespace:8080`
-  - If a traffic policy "terminates" the request, then the traffic will not be sent to the upstream
-- Adds an inline traffic policy
-  - If the request URL contains `?debug=true` query parameter, then the traffic policy will "terminate" the request and
+  - If a Traffic Policy "terminates" the request, then the traffic will not be sent to the upstream
+- Adds an inline Traffic Policy
+  - If the request URL contains `?debug=true` query parameter, then the Traffic Policy will "terminate" the request and
     send back a custom response
 
 ```yaml
@@ -642,22 +642,22 @@ spec:
         actions:
         - type: custom-response
           config:
-            body: Example response from traffic policy
+            body: Example response from Traffic Policy
             headers:
               content-type: text/plain
             status_code: 200
 ```
 
-### AgentEndpoint with referenced traffic policy
+### AgentEndpoint with referenced Traffic Policy
 
 The following `AgentEndpoint`:
 
 - Accepts traffic on the URL `https://example-agent-endpoint.ngrok.io`
 - Sends traffic to `http://my-https-service.my-namespace:8443`
   - Includes a client certificate from the `Secret` `my-client-cert` in the `default` namespace
-  - If a traffic policy "terminates" the request, then the traffic will not be sent to the upstream
-- Adds a reference to a traffic policy that
-  - If the request URL contains `?debug=true` query parameter, then the traffic policy will "terminate" the request and
+  - If a Traffic Policy "terminates" the request, then the traffic will not be sent to the upstream
+- Adds a reference to a Traffic Policy that
+  - If the request URL contains `?debug=true` query parameter, then the Traffic Policy will "terminate" the request and
     send back a custom response
 
 ```yaml
@@ -675,7 +675,7 @@ spec:
       actions:
       - type: custom-response
         config:
-          body: Example response from traffic policy
+          body: Example response from Traffic Policy
           headers:
             content-type: text/plain
           status_code: 200
