@@ -1,0 +1,105 @@
+---
+title: AI Gateway Overview
+sidebarTitle: Overview
+icon: house
+description: Route requests to AI providers with automatic failover, load balancing, and observability.
+---
+
+The ngrok AI Gateway lets you route requests to AI providers like OpenAI, Anthropic, and Google through a single endpoint. If one provider fails, it automatically tries another. If one provider API key hits rate limits, it switches to another.
+
+## Why use the AI Gateway?
+
+<CardGroup cols={2}>
+  <Card title="Failover & Routing" icon="rotate">
+    Automatic retries on errors and timeouts. Customize the routing logic to prefer cheaper models, specific providers, or your own criteria.
+  </Card>
+  <Card title="One Endpoint, Many Providers" icon="arrows-split-up-and-left">
+    Use the same endpoint for OpenAI, Anthropic, Google, and others. Switch providers without changing your code.
+  </Card>
+  <Card title="OpenAI SDK Compatible" icon="plug">
+    Works with any OpenAI SDK. Just change the `baseURL` and you're connected.
+  </Card>
+  <Card title="Self-Hosted Models" icon="server">
+    Route to local models like Ollama or vLLM alongside cloud providers.
+  </Card>
+</CardGroup>
+
+## Quick example
+
+Point your OpenAI SDK at your [ngrok endpoint](/ai-gateway/guides/creating-endpoints):
+
+<CodeGroup>
+```python Python highlight={4}
+from openai import OpenAI
+
+client = OpenAI(
+    base_url="https://your-endpoint.ngrok.app/v1",
+    api_key="your-api-key"
+)
+
+response = client.chat.completions.create(
+    model="gpt-4o",
+    messages=[{"role": "user", "content": "Hello!"}]
+)
+```
+
+```typescript TypeScript highlight={4}
+import OpenAI from "openai";
+
+const client = new OpenAI({
+  baseURL: "https://your-endpoint.ngrok.app/v1",
+  apiKey: "your-api-key"
+});
+
+const response = await client.chat.completions.create({
+  model: "gpt-4o",
+  messages: [{ role: "user", content: "Hello!" }]
+});
+```
+
+```bash cURL highlight={1}
+curl https://your-endpoint.ngrok.app/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer your-api-key" \
+  -d '{
+    "model": "gpt-4o",
+    "messages": [{"role": "user", "content": "Hello!"}]
+  }'
+```
+</CodeGroup>
+
+Behind the scenes, the AI Gateway:
+1. Receives your request
+2. Selects which model and provider to use (based on your configuration)
+3. Forwards the request with the appropriate provider API key
+4. If it fails, retries with the next option in your failover chain
+5. Returns the response
+
+## What can you do?
+
+| Use Case | Description |
+|----------|-------------|
+| **Multi-provider failover** | Configure OpenAI as primary, Anthropic as backup |
+| **Multi-key rotation** | Use multiple provider API keys to avoid rate limits |
+| **Custom selection strategies** | Define exactly how models are selected using CEL expressions |
+| **Cost-based routing** | Route to the cheapest available model automatically |
+| **Access control** | Restrict which providers and models clients can use |
+| **Self-hosted models** | Route to Ollama, vLLM, or other local inference servers |
+| **Content modification** | Redact PII, sanitize responses, or inject prompts |
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Quickstart" icon="rocket" href="/ai-gateway/quickstart">
+    Get your AI Gateway running in 5 minutes using the dashboard
+  </Card>
+  <Card title="Manual Setup" icon="terminal" href="/ai-gateway/guides/creating-endpoints">
+    Create endpoints via CLI, API, or Kubernetes
+  </Card>
+  <Card title="How It Works" icon="gears" href="/ai-gateway/how-it-works">
+    Understand the request flow and failover behavior
+  </Card>
+  <Card title="SDK Integration" icon="plug" href="/ai-gateway/sdks">
+    Connect your application to the AI Gateway
+  </Card>
+</CardGroup>

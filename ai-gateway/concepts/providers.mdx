@@ -1,0 +1,89 @@
+---
+title: Providers
+description: Understanding AI providers in the AI Gateway.
+---
+
+Providers are the AI services that host and serve models. The AI Gateway routes your requests to providers and handles authentication, failover, and observability.
+
+## Built-in providers
+
+The AI Gateway includes built-in support for these providers:
+
+| Provider | Description |
+|----------|-------------|
+| **OpenAI** | GPT models, o1/o3 reasoning models |
+| **Anthropic** | Claude models |
+| **Google** | Gemini models |
+| **DeepSeek** | DeepSeek Chat and Reasoner models |
+| **OpenRouter** | Multi-provider routing service |
+| **Hyperbolic** | Open-source model hosting |
+| **InceptionLabs** | Diffusion-based language models |
+| **Inference.net** | Distributed inference network |
+
+For the complete list of models available from each provider, see the [Model Catalog](/ai-gateway/reference/model-catalog).
+
+## Operating modes
+
+### Passthrough mode (default)
+
+When no providers are configured, the gateway operates in **passthrough mode**:
+
+- All built-in providers are available
+- Your SDK's API key is forwarded directly to the provider
+- Failover across models and providers is still enabled
+- Metrics and observability are still enabled
+
+```yaml
+on_http_request:
+  - type: ai-gateway
+    config: {}  # No configuration needed
+```
+
+### Managed mode
+
+When you explicitly configure providers, you gain additional control:
+
+- Specify which providers are allowed
+- Manage API keys centrally
+- Add custom metadata for tracking
+- Configure custom or self-hosted providers
+
+```yaml
+on_http_request:
+  - type: ai-gateway
+    config:
+      providers:
+        - id: "openai"
+          api_keys:
+            - value: ${secrets.get('openai', 'key')}
+```
+
+## Custom providers
+
+You can add any OpenAI-compatible endpoint as a custom provider:
+
+```yaml
+providers:
+  - id: "my-ollama"
+    base_url: "https://ollama.internal.company.com"
+    models:
+      - id: "llama3"
+      - id: "mistral"
+```
+
+Custom providers must expose an OpenAI-compatible API. See the [Custom Providers guide](/ai-gateway/custom-providers) for detailed setup instructions.
+
+## Provider selection
+
+When a request arrives, the gateway determines which provider to use:
+
+1. **Explicit provider** - If the model name includes a provider prefix (for example, `openai:gpt-4o`), that provider is used
+2. **Catalog lookup** - The gateway looks up the model in its catalog to find the default provider
+3. **Selection strategy** - If configured, [model selection strategies](/ai-gateway/guides/model-selection-strategies) can override the default
+
+## Next steps
+
+- [Models](/ai-gateway/concepts/models) - Understanding model naming and request formats
+- [API Keys](/ai-gateway/concepts/api-keys) - How authentication works
+- [Configuring Providers](/ai-gateway/guides/configuring-providers) - Detailed configuration guide
+

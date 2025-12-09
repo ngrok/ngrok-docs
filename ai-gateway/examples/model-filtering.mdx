@@ -1,0 +1,307 @@
+---
+title: Model Filtering Strategy
+description: Filter and select models based on performance criteria.
+---
+
+## Basic example
+
+Select only fast models:
+
+```yaml
+on_http_request:
+  - type: ai-gateway
+    config:
+      model_selection:
+        strategy:
+          - "ai.models.filter(m, m.metrics.global.latency.upstream_ms_p95 < 1200)"
+          - "ai.models.filter(m, m.metrics.global.error_rate.total < 0.01)"
+```
+
+## How it works
+
+Strategies execute in order:
+
+```
+1. Filter to models with p95 latency < 1200ms
+2. From those, filter to models with < 1% error rate
+3. Select from the remaining models
+```
+
+If a strategy returns no models, the gateway tries the next strategy.
+
+## Performance-based filtering
+
+### Low latency
+
+Prefer the fastest models:
+
+```yaml
+model_selection:
+  strategy:
+    - "ai.models.filter(m, m.metrics.global.latency.upstream_ms_avg < 500)"
+    - "ai.models.filter(m, m.metrics.global.latency.upstream_ms_avg < 1000)"
+    - "ai.models.random()"
+```
+
+### High reliability
+
+Prefer models with low error rates:
+
+```yaml
+model_selection:
+  strategy:
+    - "ai.models.filter(m, m.metrics.global.error_rate.total < 0.01 && m.metrics.global.error_rate.timeout < 0.005)"
+    - "ai.models.random()"
+```
+
+### Balanced
+
+Balance speed and reliability:
+
+```yaml
+model_selection:
+  strategy:
+    - "ai.models.filter(m, m.metrics.global.latency.upstream_ms_p95 < 2000 && m.metrics.global.error_rate.total < 0.02)"
+    - "ai.models.random()"
+```
+
+## Cost optimization
+
+### Prefer cheaper models
+
+Select mini/turbo models when available:
+
+```yaml
+model_selection:
+  strategy:
+    - "ai.models.filter(m, m.id.contains('mini') || m.id.contains('turbo'))"
+    - "ai.models.random()"
+```
+
+### Cost tiers
+
+Define cost tiers with fallback:
+
+```yaml
+model_selection:
+  strategy:
+    # Try budget models first
+    - "ai.models.filter(m, m.id.contains('3.5-turbo'))"
+    # Fall back to standard models
+    - "ai.models.filter(m, m.id.contains('4o-mini'))"
+    # Fall back to any model
+    - "ai.models"
+```
+
+## Provider preference
+
+### Prefer specific provider
+
+Try a specific provider first:
+
+```yaml
+model_selection:
+  strategy:
+    - "ai.models.filter(m, m.provider_id == 'openai')"
+    - "ai.models.random()"
+```
+
+### Avoid specific provider
+
+Exclude a provider unless necessary:
+
+```yaml
+model_selection:
+  strategy:
+    # Try everything except Google first
+    - "ai.models.filter(m, m.provider_id != 'google')"
+    # Fall back to Google if needed
+    - "ai.models.filter(m, m.provider_id == 'google')"
+```
+
+## Multi-criteria filtering
+
+### Complex performance criteria
+
+```yaml
+model_selection:
+  strategy:
+    # Must be fast AND reliable
+    - "ai.models.filter(m, m.metrics.global.latency.upstream_ms_p95 < 1500 && m.metrics.global.error_rate.total < 0.01)"
+    - "ai.models.random()"
+```
+
+### Tiered selection
+
+Prioritize different criteria:
+
+```yaml
+model_selection:
+  strategy:
+    # Tier 1: Fast and reliable
+    - "ai.models.filter(m, m.metrics.global.latency.upstream_ms_p95 < 1000 && m.metrics.global.error_rate.total < 0.005)"
+    # Tier 2: Moderate speed, good reliability
+    - "ai.models.filter(m, m.metrics.global.latency.upstream_ms_p95 < 2000 && m.metrics.global.error_rate.total < 0.01)"
+    # Tier 3: Any model
+    - "ai.models"
+```
+
+## Metadata-based filtering
+
+Use custom metadata to categorize and filter models:
+
+```yaml
+providers:
+  - id: openai
+    models:
+      - id: "gpt-4o"
+        metadata:
+          tier: "premium"
+          compliance: "hipaa"
+      - id: "gpt-4o-mini"
+        metadata:
+          tier: "budget"
+          compliance: "standard"
+```
+
+Strategy:
+
+```yaml
+model_selection:
+  strategy:
+    # Use budget tier for cost savings
+    - "ai.models.filter(m, m.metadata.tier == 'budget')"
+    # Fall back to any tier
+    - "ai.models"
+```
+
+### Compliance filtering
+
+Filter by compliance requirements:
+
+```yaml
+model_selection:
+  strategy:
+    - "ai.models.filter(m, m.metadata.compliance == 'hipaa')"
+    - "ai.models"
+```
+
+## Feature-based filtering
+
+Filter by supported capabilities:
+
+```yaml
+model_selection:
+  strategy:
+    # Only models that support tool calling
+    - "ai.models.filter(m, 'tool-calling' in m.supported_features)"
+    - "ai.models"
+```
+
+### Vision models
+
+Select models that can process images:
+
+```yaml
+model_selection:
+  strategy:
+    - "ai.models.filter(m, 'image' in m.input_modalities)"
+    - "ai.models"
+```
+
+## Real-world examples
+
+### High-volume production
+
+Optimize for cost and speed:
+
+```yaml
+on_http_request:
+  - type: ai-gateway
+    config:
+      providers:
+        - id: openai
+        - id: anthropic
+        - id: google
+      
+      model_selection:
+        strategy:
+          # Prefer cheap, fast models with good reliability
+          - "ai.models.filter(m, m.id.contains('turbo') || m.id.contains('mini')).filter(m, m.metrics.global.latency.upstream_ms_avg < 800 && m.metrics.global.error_rate.total < 0.02)"
+          - "ai.models.random()"
+```
+
+### High-reliability application
+
+Optimize for reliability over cost:
+
+```yaml
+model_selection:
+  strategy:
+    # Only the most reliable models, prefer premium
+    - "ai.models.filter(m, m.metrics.global.error_rate.total < 0.005 && m.metrics.global.error_rate.timeout < 0.001).filter(m, !m.id.contains('mini'))"
+    - "ai.models.random()"
+```
+
+### Development environment
+
+Prefer self-hosted for development:
+
+```yaml
+model_selection:
+  strategy:
+    # Use self-hosted Ollama
+    - "ai.models.filter(m, m.provider_id == 'ollama')"
+    # Fall back to cloud for testing
+    - "ai.models.filter(m, m.provider_id == 'openai' && m.id.contains('mini'))"
+    - "ai.models"
+```
+
+## Monitoring strategy effectiveness
+
+Track which models are selected:
+
+```
+request_count{model="gpt-4o"}: 45,234
+request_count{model="gpt-4o-mini"}: 123,456
+request_count{model="claude-3-5-sonnet"}: 5,432
+
+latency_avg{model="gpt-4o"}: 1100ms
+latency_avg{model="gpt-4o-mini"}: 650ms
+```
+
+Use metrics to refine your strategy.
+
+## Available variables
+
+| Variable | Type | Description |
+|----------|------|-------------|
+| `m.id` | string | Model identifier |
+| `m.provider_id` | string | Provider identifier |
+| `m.author_id` | string | Model author identifier |
+| `m.display_name` | string | Human-readable model name |
+| `m.custom` | boolean | Whether this is a custom model |
+| `m.metadata` | object | Custom metadata |
+| `m.input_modalities` | list | Supported input types |
+| `m.output_modalities` | list | Supported output types |
+| `m.supported_features` | list | Supported capabilities |
+| `m.metrics.global.request_count` | number | Total requests |
+| `m.metrics.global.latency.upstream_ms_avg` | number | Average latency (ms) |
+| `m.metrics.global.latency.upstream_ms_p95` | number | P95 latency (ms) |
+| `m.metrics.global.error_rate.total` | number | Overall error rate (0-1) |
+| `m.metrics.global.error_rate.timeout` | number | Timeout error rate (0-1) |
+| `m.metrics.global.error_rate.rate_limit` | number | Rate limit error rate (0-1) |
+
+## Best practices
+
+1. **Start simple** - Begin with basic filters, add complexity as needed
+2. **Include fallbacks** - Always have a final strategy that accepts any model
+3. **Monitor metrics** - Use metrics to validate your strategy is working
+4. **Test strategies** - Test with production traffic patterns
+5. **Use request_count** - Filter by `m.metrics.global.request_count > 0` to ensure metrics exist
+
+## See also
+
+- [Model Selection Strategies](/ai-gateway/guides/model-selection-strategies) - Complete selection reference
+- [Metrics Reference](/ai-gateway/observability/metrics) - Understanding metrics
+- [Configuration Schema](/ai-gateway/reference/configuration-schema) - All configuration options
