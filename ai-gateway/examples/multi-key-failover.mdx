@@ -1,0 +1,213 @@
+---
+title: Multi-Key Failover
+description: Configure multiple provider API keys for automatic failover.
+---
+
+Configure multiple provider API keys per provider to automatically failover when keys hit rate limits or encounter errors.
+
+## Basic example
+
+```yaml
+on_http_request:
+  - type: ai-gateway
+    config:
+      providers:
+        - id: openai
+          api_keys:
+            - value: ${secrets.get('openai', 'key-one')}
+            - value: ${secrets.get('openai', 'key-two')}
+```
+
+## How it works
+
+When a request fails with the first key, the gateway automatically tries the next key:
+
+```
+1. Request arrives for gpt-4o
+2. Try with openai/key-one → 429 Rate Limit
+3. Automatically retry with openai/key-two → Success ✓
+```
+
+Keys are tried **in the order they're listed**. Put your highest-capacity or preferred keys first.
+
+## Benefits
+
+- **No downtime** when hitting rate limits
+- **Automatic failover** without manual intervention
+- **Load distribution** across multiple billing accounts
+- **Increased capacity** by combining quotas
+
+## Three-key failover
+
+Add more keys for additional resilience:
+
+```yaml
+providers:
+  - id: openai
+    api_keys:
+      - value: ${secrets.get('openai', 'team-a-key')}
+      - value: ${secrets.get('openai', 'team-b-key')}
+      - value: ${secrets.get('openai', 'backup-key')}
+```
+
+Failover sequence:
+
+```
+1. Try team-a-key → Rate limited
+2. Try team-b-key → Timeout
+3. Try backup-key → Success ✓
+```
+
+## Multiple providers with multiple keys
+
+Combine multi-key and multi-provider failover for maximum resilience:
+
+```yaml
+providers:
+  - id: openai
+    api_keys:
+      - value: ${secrets.get('openai', 'key-one')}
+      - value: ${secrets.get('openai', 'key-two')}
+  
+  - id: anthropic
+    api_keys:
+      - value: ${secrets.get('anthropic', 'key-one')}
+      - value: ${secrets.get('anthropic', 'key-two')}
+```
+
+Failover cascade:
+
+```
+1. openai/key-one → Fails
+2. openai/key-two → Fails
+3. anthropic/key-one → Success ✓
+```
+
+<Note>
+For cross-provider failover, clients must specify multiple models in the request or use a model selection strategy.
+</Note>
+
+## Real-world scenario
+
+High-traffic production application:
+
+```yaml
+on_http_request:
+  - type: ai-gateway
+    config:
+      per_request_timeout: "30s"
+      total_timeout: "2m"
+      
+      providers:
+        - id: openai
+          api_keys:
+            # Production keys with high quotas
+            - value: ${secrets.get('openai', 'prod-key-1')}
+            - value: ${secrets.get('openai', 'prod-key-2')}
+            - value: ${secrets.get('openai', 'prod-key-3')}
+            # Backup key for emergencies
+            - value: ${secrets.get('openai', 'emergency-key')}
+```
+
+This provides:
+- 4 failover keys for OpenAI
+- Up to 2 minutes of retry attempts
+- Automatic key rotation on failures
+
+## Intelligent key selection
+
+For smarter key selection based on runtime metrics, use `api_key_selection`:
+
+```yaml
+on_http_request:
+  - type: ai-gateway
+    config:
+      providers:
+        - id: openai
+          api_keys:
+            - value: ${secrets.get('openai', 'key-one')}
+            - value: ${secrets.get('openai', 'key-two')}
+            - value: ${secrets.get('openai', 'key-three')}
+      
+      api_key_selection:
+        strategy:
+          # Prefer keys with remaining quota
+          - "ai.keys.filter(k, k.quota.remaining_requests > 100)"
+          # Fall back to all keys
+          - "ai.keys"
+```
+
+### Quota-aware selection
+
+Route to keys with the most remaining capacity:
+
+```yaml
+api_key_selection:
+  strategy:
+    # Keys with plenty of quota
+    - "ai.keys.filter(k, k.quota.remaining_requests > 500)"
+    # Keys with some quota
+    - "ai.keys.filter(k, k.quota.remaining_requests > 50)"
+    # Fall back to all keys
+    - "ai.keys"
+```
+
+### Error rate-aware selection
+
+Avoid keys that are hitting rate limits:
+
+```yaml
+api_key_selection:
+  strategy:
+    # Keys with low rate limit errors
+    - "ai.keys.filter(k, k.error_rate.rate_limit < 0.05)"
+    # Keys with acceptable overall error rates
+    - "ai.keys.filter(k, k.error_rate.total < 0.2)"
+    # Fall back to all keys
+    - "ai.keys"
+```
+
+### Combined strategy
+
+Use both quota and error rate for optimal selection:
+
+```yaml
+api_key_selection:
+  strategy:
+    # Best keys: high quota AND low errors
+    - "ai.keys.filter(k, k.quota.remaining_requests > 500 && k.error_rate.rate_limit < 0.05)"
+    # Good keys: decent quota
+    - "ai.keys.filter(k, k.quota.remaining_requests > 100)"
+    # Acceptable keys: low errors
+    - "ai.keys.filter(k, k.error_rate.total < 0.3)"
+    # Fall back to all keys
+    - "ai.keys"
+```
+
+### Load distribution
+
+Randomize selection to spread load across keys:
+
+```yaml
+api_key_selection:
+  strategy:
+    # Randomly select from healthy keys
+    - "ai.keys.filter(k, k.quota.remaining_requests > 100).randomize()"
+    # Fall back to any key
+    - "ai.keys.randomize()"
+```
+
+## Best practices
+
+1. **Use at least 2-3 keys** per provider for reliability
+2. **Order keys by capacity** - highest quota first
+3. **Use different billing accounts** for true isolation
+4. **Monitor usage** to identify when keys need rotation
+5. **Rotate keys regularly** for security
+
+## See also
+
+- [Multi-Provider Failover](/ai-gateway/examples/multi-provider-failover) - Failover across providers
+- [Managing Provider API Keys](/ai-gateway/guides/managing-api-keys) - Key rotation and secrets
+- [Configuring Providers](/ai-gateway/guides/configuring-providers) - Full provider setup
+- [CEL Functions Reference](/ai-gateway/reference/cel-functions#api-key-selection) - Complete API key selection reference

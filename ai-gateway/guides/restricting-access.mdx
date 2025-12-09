@@ -1,0 +1,212 @@
+---
+title: Restricting Model Access
+description: Control which providers and models can be accessed through your gateway.
+---
+
+The AI Gateway provides two flags to restrict which providers and models clients can use. This is useful for cost control, compliance, and ensuring applications only use approved AI services.
+
+## Restricting providers
+
+### `only_allow_configured_providers`
+
+When set to `true`, only providers explicitly listed in your configuration are allowed. Requests to other providers are rejected.
+
+```yaml
+on_http_request:
+  - type: ai-gateway
+    config:
+      only_allow_configured_providers: true
+      providers:
+        - id: "openai"
+        - id: "anthropic"
+```
+
+With this configuration:
+- ✅ Requests to OpenAI models work
+- ✅ Requests to Anthropic models work
+- ❌ Requests to Google, DeepSeek, or other providers are rejected
+
+### Disabling specific providers
+
+You can also disable individual providers while allowing others:
+
+```yaml
+providers:
+  - id: "openai"
+    disabled: false
+  - id: "anthropic"
+    disabled: true  # Temporarily disabled
+```
+
+## Restricting models
+
+### `only_allow_configured_models`
+
+When set to `true`, only models explicitly listed in your provider configurations are allowed. Requests for other models are rejected.
+
+```yaml
+on_http_request:
+  - type: ai-gateway
+    config:
+      only_allow_configured_models: true
+      providers:
+        - id: "openai"
+          models:
+            - id: "gpt-4o"
+            - id: "gpt-4o-mini"
+```
+
+With this configuration:
+- ✅ Requests for `gpt-4o` work
+- ✅ Requests for `gpt-4o-mini` work
+- ❌ Requests for `gpt-3.5-turbo` or other models are rejected
+
+### Disabling specific models
+
+Disable individual models without removing them from configuration:
+
+```yaml
+providers:
+  - id: "openai"
+    models:
+      - id: "gpt-4o"
+        disabled: false
+      - id: "gpt-4o-mini"
+        disabled: false
+      - id: "gpt-3.5-turbo"
+        disabled: true  # Not allowed
+```
+
+## Combined restrictions
+
+For maximum control, combine both flags:
+
+```yaml
+on_http_request:
+  - type: ai-gateway
+    config:
+      only_allow_configured_providers: true
+      only_allow_configured_models: true
+      
+      providers:
+        - id: "openai"
+          api_keys:
+            - value: ${secrets.get('openai', 'key')}
+          models:
+            - id: "gpt-4o"
+            - id: "gpt-4o-mini"
+        
+        - id: "anthropic"
+          api_keys:
+            - value: ${secrets.get('anthropic', 'key')}
+          models:
+            - id: "claude-3-5-sonnet-20241022"
+```
+
+This configuration creates a strict allowlist:
+- Only OpenAI and Anthropic providers
+- Only three specific models across those providers
+- All other requests are rejected with clear error messages
+
+## Use cases
+
+### Cost control
+
+Limit access to expensive models:
+
+```yaml
+only_allow_configured_models: true
+providers:
+  - id: "openai"
+    models:
+      - id: "gpt-4o-mini"  # Cost-effective
+      # gpt-4o excluded - too expensive for general use
+```
+
+### Compliance
+
+Ensure only approved providers are used:
+
+```yaml
+only_allow_configured_providers: true
+providers:
+  - id: "openai"
+    metadata:
+      compliance: "soc2"
+  # Other providers not approved by security team
+```
+
+### Development versus production
+
+Development allows all models:
+
+```yaml
+# dev.yaml
+only_allow_configured_models: false
+```
+
+Production restricts to approved models:
+
+```yaml
+# prod.yaml
+only_allow_configured_models: true
+providers:
+  - id: "openai"
+    models:
+      - id: "gpt-4o"
+        metadata:
+          approved_for_production: true
+```
+
+### Team-specific access
+
+Different gateway endpoints for different teams:
+
+```yaml
+# ml-team-gateway.yaml
+only_allow_configured_providers: true
+providers:
+  - id: "openai"
+  - id: "anthropic"
+  - id: "google"
+```
+
+```yaml
+# support-team-gateway.yaml
+only_allow_configured_providers: true
+only_allow_configured_models: true
+providers:
+  - id: "openai"
+    models:
+      - id: "gpt-4o-mini"  # Only basic model for support chatbot
+```
+
+## Error messages
+
+When a request is rejected, the gateway returns a clear error:
+
+**Provider not allowed:**
+```json
+{
+  "error": {
+    "message": "Provider 'google' is not allowed by gateway configuration",
+    "type": "provider_not_allowed"
+  }
+}
+```
+
+**Model not allowed:**
+```json
+{
+  "error": {
+    "message": "Model 'gpt-3.5-turbo' is not allowed by gateway configuration",
+    "type": "model_not_allowed"
+  }
+}
+```
+
+## Next steps
+
+- [Configuring Providers](/ai-gateway/guides/configuring-providers) - Full provider setup
+- [FAQ](/ai-gateway/faq) - Common error troubleshooting
+

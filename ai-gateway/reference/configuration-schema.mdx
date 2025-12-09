@@ -1,0 +1,395 @@
+---
+title: Configuration Schema
+description: Complete reference for AI Gateway configuration options.
+---
+
+import { ConfigField } from "/snippets/ConfigTable.jsx";
+import { ConfigEnum, ConfigEnumOption } from "/snippets/ConfigTable.jsx";
+
+The [Traffic Policy](/traffic-policy/) configuration reference for the AI Gateway action.
+
+## Supported phases
+
+`on_http_request`
+
+## Type
+
+`ai-gateway`
+
+## Basic structure
+
+```yaml
+on_http_request:
+  - type: ai-gateway
+    config:
+      max_input_tokens: 4096
+      max_output_tokens: 8192
+      headers: {}
+      query_params: {}
+      body: {}
+      on_error: "halt"
+      total_timeout: "5m"
+      per_request_timeout: "30s"
+      providers: []
+      only_allow_configured_providers: false
+      only_allow_configured_models: false
+      model_selection:
+        strategy: []
+      api_key_selection:
+        strategy: []
+```
+
+## Configuration fields
+
+<ConfigField title="max_input_tokens" type="integer">
+  <p>Maximum number of tokens allowed in the prompt and context. Requests exceeding this limit will be rejected.</p>
+  <p>No limit is applied if not specified. Maximum allowed value is 500,000.</p>
+  
+  ```yaml
+  max_input_tokens: 4096
+  ```
+</ConfigField>
+
+<ConfigField title="max_output_tokens" type="integer">
+  <p>Maximum number of tokens allowed in the completion response.</p>
+  <p>No limit is applied if not specified. Maximum allowed value is 500,000.</p>
+  
+  ```yaml
+  max_output_tokens: 2048
+  ```
+</ConfigField>
+
+<ConfigField title="headers" type="object" cel={true}>
+  <p>Additional HTTP headers to include in requests to AI providers.</p>
+  
+  ```yaml
+  headers:
+    X-Custom-Header: "value"
+    X-Request-ID: "${req.id}"
+  ```
+</ConfigField>
+
+<ConfigField title="query_params" type="object" cel={true}>
+  <p>Additional query parameters to append to provider requests.</p>
+  
+  ```yaml
+  query_params:
+    api_version: "2023-10-01"
+  ```
+</ConfigField>
+
+<ConfigField title="body" type="object" cel={true}>
+  <p>Additional JSON fields to merge into the request body.</p>
+  
+  ```yaml
+  body:
+    temperature: 0.7
+    top_p: 0.9
+  ```
+</ConfigField>
+
+<ConfigField title="on_error" type="enum" defaultValue="halt">
+  <p>Behavior when all failover attempts are exhausted.</p>
+  
+  <ConfigEnum label="Supported values">
+    <ConfigEnumOption>`halt` (default) - Stop processing and return error to client</ConfigEnumOption>
+    <ConfigEnumOption>`continue` - Continue to next action in traffic policy</ConfigEnumOption>
+  </ConfigEnum>
+  
+  ```yaml
+  on_error: "continue"
+  ```
+</ConfigField>
+
+<ConfigField title="total_timeout" type="string" defaultValue="5m">
+  <p>Maximum total time for all failover attempts across all models and keys. Must be specified as a duration string (for example, <code>"2m"</code>, <code>"90s"</code>).</p>
+  
+  ```yaml
+  total_timeout: "2m"
+  ```
+</ConfigField>
+
+<ConfigField title="per_request_timeout" type="string" defaultValue="30s">
+  <p>Timeout for a single request to a provider. Must be specified as a duration string (for example, <code>"45s"</code>, <code>"1m"</code>).</p>
+  
+  ```yaml
+  per_request_timeout: "45s"
+  ```
+</ConfigField>
+
+<ConfigField title="providers" type="array">
+  <p>List of AI provider configurations. When empty, all built-in providers are allowed in passthrough mode.</p>
+  <p>See <a href="#provider-configuration">Provider Configuration</a> below for detailed field definitions.</p>
+  
+  ```yaml
+  providers:
+    - id: "openai"
+      api_keys:
+        - value: ${secrets.get('openai', 'key-one')}
+  ```
+</ConfigField>
+
+<ConfigField title="only_allow_configured_providers" type="boolean" defaultValue="false">
+  <p>When <code>true</code>, only providers explicitly listed in <code>providers</code> are allowed. Requests to other providers are rejected with an error.</p>
+  
+  ```yaml
+  only_allow_configured_providers: true
+  ```
+</ConfigField>
+
+<ConfigField title="only_allow_configured_models" type="boolean" defaultValue="false">
+  <p>When <code>true</code>, only models explicitly listed in provider configurations are allowed. Requests for other models are rejected.</p>
+  
+  ```yaml
+  only_allow_configured_models: true
+  ```
+</ConfigField>
+
+<ConfigField title="model_selection" type="object">
+  <p>Strategy for selecting model candidates using CEL expressions. The first strategy that returns models wins—subsequent strategies are only used if previous ones return no models.</p>
+  <p>See <a href="/ai-gateway/guides/model-selection-strategies">Model Selection Strategies</a> for details and <a href="/ai-gateway/reference/cel-functions">CEL Functions Reference</a> for available functions.</p>
+  
+  ```yaml
+  model_selection:
+    strategy:
+      - "ai.models.filter(m, m.provider_id == 'openai')"
+      - "ai.models"
+  ```
+</ConfigField>
+
+<ConfigField title="api_key_selection" type="object">
+  <p>Strategy for selecting API keys using CEL expressions. Enables intelligent key selection based on metrics like quota usage and error rates.</p>
+  <p>When not specified, keys are tried in the order listed. See <a href="/ai-gateway/reference/cel-functions#api-key-selection">CEL Functions Reference</a> for available functions.</p>
+  
+  ```yaml
+  api_key_selection:
+    strategy:
+      - "ai.keys.filter(k, k.quota.remaining_requests > 100)"
+      - "ai.keys.filter(k, k.error_rate.rate_limit < 0.1)"
+      - "ai.keys"
+  ```
+</ConfigField>
+
+## Provider configuration
+
+Each provider in the `providers` array supports these fields:
+
+<ConfigField title="providers[].id" type="string" required>
+  <p>Provider identifier. Use built-in names (<code>openai</code>, <code>anthropic</code>, <code>google</code>, <code>deepseek</code>) or custom names for self-hosted providers.</p>
+  
+  ```yaml
+  - id: "openai"
+  ```
+</ConfigField>
+
+<ConfigField title="providers[].id_aliases" type="array of strings">
+  <p>Alternative identifiers for this provider. Allows clients to reference the same provider by different names.</p>
+  
+  ```yaml
+  - id: "custom-openai"
+    id_aliases: ["openai", "gpt"]
+  ```
+</ConfigField>
+
+<ConfigField title="providers[].base_url" type="string">
+  <p>Custom endpoint URL for self-hosted or alternative provider endpoints. Required for custom providers.</p>
+  
+  ```yaml
+  - id: "ollama"
+    base_url: "https://ollama.internal.company.com"
+  ```
+</ConfigField>
+
+<ConfigField title="providers[].display_name" type="string">
+  <p>Human-readable name for the provider.</p>
+</ConfigField>
+
+<ConfigField title="providers[].description" type="string">
+  <p>Description of the provider.</p>
+</ConfigField>
+
+<ConfigField title="providers[].website" type="string">
+  <p>Provider's website URL.</p>
+</ConfigField>
+
+<ConfigField title="providers[].disabled" type="boolean" defaultValue="false">
+  <p>Temporarily disable this provider without removing its configuration.</p>
+  
+  ```yaml
+  - id: "openai"
+    disabled: true
+  ```
+</ConfigField>
+
+<ConfigField title="providers[].metadata" type="object">
+  <p>Custom metadata for tracking and organization. Not sent to providers. Available in selection strategies via <code>m.getMetadata()</code>.</p>
+  
+  ```yaml
+  - id: "openai"
+    metadata:
+      team: "ml-platform"
+      environment: "production"
+  ```
+</ConfigField>
+
+<ConfigField title="providers[].api_keys" type="array">
+  <p>List of API keys for this provider. Keys are tried in order for automatic failover.</p>
+  
+  ```yaml
+  api_keys:
+    - value: ${secrets.get('openai', 'primary')}
+    - value: ${secrets.get('openai', 'backup')}
+  ```
+</ConfigField>
+
+<ConfigField title="providers[].models" type="array">
+  <p>List of model configurations for this provider. See <a href="#model-configuration">Model Configuration</a> below.</p>
+</ConfigField>
+
+## API key configuration
+
+Each API key in `providers[].api_keys` supports:
+
+<ConfigField title="providers[].api_keys[].value" type="string" required>
+  <p>The API key value. Use <code>secrets.get()</code> for secure storage.</p>
+  
+  ```yaml
+  api_keys:
+    - value: ${secrets.get('openai', 'key-one')}
+  ```
+</ConfigField>
+
+## Model configuration
+
+Each model in `providers[].models` supports:
+
+<ConfigField title="providers[].models[].id" type="string" required>
+  <p>Model identifier as recognized by the provider.</p>
+  
+  ```yaml
+  models:
+    - id: "gpt-4o"
+  ```
+</ConfigField>
+
+<ConfigField title="providers[].models[].id_aliases" type="array of strings">
+  <p>Alternative identifiers for this model.</p>
+  
+  ```yaml
+  models:
+    - id: "gpt-4o-2024-11-20"
+      id_aliases: ["gpt-4o", "gpt-4-latest"]
+  ```
+</ConfigField>
+
+<ConfigField title="providers[].models[].author_id" type="string">
+  <p>ID of the model author (for third-party models).</p>
+</ConfigField>
+
+<ConfigField title="providers[].models[].display_name" type="string">
+  <p>Human-readable name for the model.</p>
+</ConfigField>
+
+<ConfigField title="providers[].models[].description" type="string">
+  <p>Description of the model.</p>
+</ConfigField>
+
+<ConfigField title="providers[].models[].disabled" type="boolean" defaultValue="false">
+  <p>Temporarily disable this model.</p>
+  
+  ```yaml
+  models:
+    - id: "gpt-3.5-turbo"
+      disabled: true
+  ```
+</ConfigField>
+
+<ConfigField title="providers[].models[].metadata" type="object">
+  <p>Custom metadata for the model. Available in selection strategies.</p>
+  
+  ```yaml
+  models:
+    - id: "gpt-4o"
+      metadata:
+        tier: "premium"
+        approved: true
+  ```
+</ConfigField>
+
+<ConfigField title="providers[].models[].input_modalities" type="array of strings">
+  <p>Input types supported by the model (for example, "text", "image", "audio").</p>
+</ConfigField>
+
+<ConfigField title="providers[].models[].output_modalities" type="array of strings">
+  <p>Output types supported by the model.</p>
+</ConfigField>
+
+<ConfigField title="providers[].models[].max_context_window" type="integer">
+  <p>Maximum context window size in tokens.</p>
+</ConfigField>
+
+<ConfigField title="providers[].models[].max_output_tokens" type="integer">
+  <p>Maximum output tokens the model can generate.</p>
+</ConfigField>
+
+<ConfigField title="providers[].models[].supported_features" type="array of strings">
+  <p>Features supported by the model (for example, "tool-calling", "coding").</p>
+</ConfigField>
+
+## Complete example
+
+```yaml
+on_http_request:
+  - type: ai-gateway
+    config:
+      max_input_tokens: 4096
+      max_output_tokens: 2048
+      total_timeout: "3m"
+      per_request_timeout: "30s"
+      on_error: "halt"
+      only_allow_configured_providers: true
+      only_allow_configured_models: true
+      
+      providers:
+        - id: "openai"
+          metadata:
+            team: "ml"
+          api_keys:
+            - value: ${secrets.get('openai', 'primary')}
+            - value: ${secrets.get('openai', 'backup')}
+            - value: ${secrets.get('openai', 'emergency')}
+          models:
+            - id: "gpt-4o"
+              metadata:
+                approved: true
+            - id: "gpt-4o-mini"
+              metadata:
+                approved: true
+        
+        - id: "anthropic"
+          api_keys:
+            - value: ${secrets.get('anthropic', 'key')}
+          models:
+            - id: "claude-3-5-sonnet-20241022"
+        
+        - id: "ollama-internal"
+          base_url: "https://ollama.company.internal"
+          models:
+            - id: "llama3-70b"
+      
+      model_selection:
+        strategy:
+          - "ai.models.filter(m, m.provider_id == 'openai')"
+          - "ai.models.filter(m, m.provider_id == 'anthropic')"
+          - "ai.models.filter(m, m.provider_id == 'ollama-internal')"
+      
+      api_key_selection:
+        strategy:
+          # Prefer keys with remaining quota
+          - "ai.keys.filter(k, k.quota.remaining_requests > 100)"
+          # Fall back to keys with low error rates
+          - "ai.keys.filter(k, k.error_rate.rate_limit < 0.1)"
+          # Fall back to all keys
+          - "ai.keys"
+```
+

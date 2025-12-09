@@ -1,0 +1,128 @@
+---
+title: Log Exporting
+sidebarTitle: Log Exporting
+description: Export AI Gateway logs to external systems.
+---
+
+You can export HTTP logs from your AI Gateway endpoints to external systems using ngrok's [Log Exporting](/obs/events) feature.
+
+## Current support
+
+<Note>
+AI Gateway endpoints emit **standard ngrok traffic logs** (`http_request_complete.v0`). AI-specific log fields (provider selection, retry tracking, token usage) are not currently available but are on our roadmap.
+</Note>
+
+Log Exporting allows you to:
+
+- Stream request/response logs to your analytics platform
+- Archive traffic data for compliance
+- Build custom dashboards and alerts
+- Integrate with your existing observability stack
+
+## Setting up log exporting
+
+Log Exports are configured at the account level through the ngrok Dashboard:
+
+<Steps>
+  <Step title="Open Log Exporting">
+    Go to [Log Exporting](https://dashboard.ngrok.com/log-exporting) in the ngrok Dashboard
+  </Step>
+  <Step title="Create a New Log Export">
+    Click to create a new Log Export
+  </Step>
+  <Step title="Select Log Sources">
+    Choose which log sources to capture (for example, `http_request_complete.v0` for HTTP traffic)
+  </Step>
+  <Step title="Configure Destinations">
+    Select and configure one or more destinations for your logs
+  </Step>
+</Steps>
+
+## Supported destinations
+
+ngrok supports exporting logs to:
+
+- **Amazon CloudWatch** - AWS logging and monitoring
+- **Amazon Firehose** - AWS data streaming (can deliver to S3)
+- **Amazon Kinesis** - AWS data streaming
+- **Azure Logs Ingestion** - Azure logging
+- **Datadog Logs** - Monitoring and analytics
+
+For detailed configuration of each destination type, see the [Log Exporting documentation](/obs/events).
+
+## What logs include
+
+Standard HTTP traffic logs from AI Gateway endpoints include:
+
+| Field | Description |
+|-------|-------------|
+| `event_id` | Unique identifier for the log |
+| `event_timestamp` | When the request completed |
+| `account_id` | Your ngrok account ID |
+| `conn.client_ip` | Client IP address |
+| `conn.server_name` | Endpoint hostname |
+| `http.request.method` | HTTP method (POST, GET, etc.) |
+| `http.request.url.path` | Request path (for example, `/v1/chat/completions`) |
+| `http.response.status_code` | Response status code |
+| `http.response.body_length` | Response body size |
+
+## What's not yet included
+
+<Warning>
+AI Gateway-specific data is **not** currently included in logs:
+
+- Which provider handled the request
+- Model selection strategy results  
+- Retry attempts and failover decisions
+- Token counts (input/output/total)
+- Cost estimates
+- Provider API key used
+
+These AI-specific log fields are on our roadmap. Email [niji@ngrok.ai](mailto:niji@ngrok.ai) to tell us what data you need - your feedback shapes our development priorities.
+</Warning>
+
+## Filtering logs
+
+You can filter traffic logs using CEL expressions to capture only relevant requests:
+
+```cel
+# Only log requests to chat completions endpoint
+ev.http.request.url.path == "/v1/chat/completions"
+
+# Only log errors
+ev.http.response.status_code >= 400
+
+# Only log slow requests (if timing fields available)
+ev.http.response.status_code == 200
+```
+
+See the [Log Exporting documentation](/obs/events) for more filter examples.
+
+## Use cases
+
+### Compliance logging
+
+Stream all requests to long-term storage for audit trails:
+- Use Amazon Firehose to deliver to S3
+- All HTTP requests are captured with timestamps and metadata
+- Combine with Traffic Inspector for full body capture when needed
+
+### Real-time monitoring
+
+Send logs to your monitoring platform:
+- Use Datadog or CloudWatch destinations
+- Build dashboards showing request volume and latency
+- Set up alerts for error spikes
+
+### Custom analytics
+
+Process logs in your own systems:
+- Stream to Kinesis or Firehose
+- Build custom pipelines for your specific needs
+- Aggregate and analyze traffic patterns
+
+## See also
+
+- [Log Exporting Documentation](/obs/events) - Full ngrok Log Exporting docs
+- [Traffic Inspector](/ai-gateway/observability/traffic-inspector) - View request/response bodies
+- [Metrics Reference](/ai-gateway/observability/metrics) - Use metrics for intelligent routing
