@@ -10,14 +10,14 @@ title: AgentEndpoint
 
 Agent Endpoints are endpoints that are only available when an agent is running. When used with the ngrok Kubernetes Operator,
 this means that the Agent Endpoints are tied to the Operator's `operator-agent` pod (which is deployed by default when installing the Operator).
-The Operator will manage, create, and delete agent endpoints for you according to the configuration of the `AgentEndpoint` custom resources you create.
+The Operator will manage, create, and delete Agent Endpoints for you according to the configuration of the `AgentEndpoint` custom resources you create.
 So long as at least one instance of the `operator-agent` pod is running, your Agent Endpoints will be available. You may occasionally notice
 the IDs of Agent Endpoints managed by the Operator change if the Operator pods restart, this will not halt traffic through your Agent Endpoints unless all of the Operator pods have stopped.
 
-See the [ngrok agent CLI configuration page](/agent/config/v3/#endpoint-definitions), for more information about using the CLI to start agent endpoints outside of Kubernetes.
+See the [ngrok agent CLI configuration page](/agent/config/v3/#endpoint-definitions), for more information about using the CLI to start Agent Endpoints outside of Kubernetes.
 
-Note that while using `AgentEndpoint` resources, an agent endpoint will be created in your ngrok account for each replica of the `ngrok-operator-agent` `Deployment`. This enables high-availability when
-running the `ngrok-operator-agent` deployment at a high replica count, but will result in additional charges for your ngrok account. The lifetime of these agent endpoints are tied to the lifetime of the
+Note that while using `AgentEndpoint` resources, an Agent Endpoint will be created in your ngrok account for each replica of the `ngrok-operator-agent` `Deployment`. This enables high-availability when
+running the `ngrok-operator-agent` deployment at a high replica count, but will result in additional charges for your ngrok account. The lifetime of these Agent Endpoints are tied to the lifetime of the
 `ngrok-operator-agent` pods, so scaling the deployment up/down will cause the additional Agent Endpoints in your ngrok account to be created as needed and deleted when no longer needed.
 
 ## AgentEndpoint structure and types
@@ -65,7 +65,7 @@ The following sections outline each field of the `AgentEndpoint` custom resource
 
 | Field Name                                                 | Type              | Required | Default                           | Description                                                                                                              |
 | ---------------------------------------------------------- | ----------------- | -------- | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| [`spec.url`](#specurl)                                     | `string`          | yes      | none                              | The unique URL for this agent endpoint that defines how the endpoint is accessed                                         |
+| [`spec.url`](#specurl)                                     | `string`          | yes      | none                              | The unique URL for this Agent Endpoint that defines how the endpoint is accessed                                         |
 | [`spec.upstream`](#specupstream)                           | `Object`          | yes      | none                              | The upstream that will receive traffic sent to the endpoint (unless a response is sent by a Traffic Policy action first) |
 | [`spec.trafficPolicy`](#spectrafficpolicy)                 | `Object`          | no       | none                              | Allows a Traffic Policy to be supplied for the endpoint                                                                  |
 | [`spec.description`](#specdescription)                     | `string`          | no       | `"Created by the ngrok-operator"` | Human-readable description for this `AgentEndpoint` to help identify/describe it                                         |
@@ -75,7 +75,7 @@ The following sections outline each field of the `AgentEndpoint` custom resource
 
 ### `spec.url`
 
-The unique URL for this agent endpoint. This URL defines how the endpoint is accessed.
+The unique URL for this Agent Endpoint. This URL defines how the endpoint is accessed.
 
 **Note:** [Pooling](/universal-gateway/endpoint-pooling) is always enabled for `AgentEndpoint` resources.
 This means that if two (or more) endpoints share the same `spec.url` then requests will be balanced between them.
@@ -304,7 +304,7 @@ When the `spec.upstream.url` has an `https://` scheme, the client certificates w
 
 ## Status fields
 
-The `AgentEndpoint` resource includes status information that reflects the current state of the agent endpoint in the ngrok system.
+The `AgentEndpoint` resource includes status information that reflects the current state of the Agent Endpoint in the ngrok system.
 
 ### `status.assignedURL`
 
@@ -329,7 +329,7 @@ Indicates which Traffic Policy is attached to the endpoint.
 
 ### `status.domainRef`
 
-Reference to the Domain resource associated with this agent endpoint.
+Reference to the Domain resource associated with this Agent Endpoint.
 
 **Type:** `Object`
 
@@ -346,7 +346,7 @@ domainRef:
 
 ### `status.conditions`
 
-Standard Kubernetes conditions that indicate the state of the agent endpoint.
+Standard Kubernetes conditions that indicate the state of the Agent Endpoint.
 
 **Type:** `[]Condition`
 
@@ -362,7 +362,7 @@ Each condition includes:
 
 ##### `Ready`
 
-Indicates whether the agent endpoint is fully operational and ready to receive traffic.
+Indicates whether the Agent Endpoint is fully operational and ready to receive traffic.
 
 **Status Values:**
 - `True` - Agent endpoint is active and ready
@@ -586,16 +586,16 @@ status:
 
 ## Checking Agent Endpoint status
 
-You can check the status of an agent endpoint using kubectl:
+You can check the status of an Agent Endpoint using kubectl:
 
 ```bash
-# Check if agent endpoint is ready
+# Check if Agent Endpoint is ready
 kubectl get agentendpoint example-agent-endpoint -o jsonpath='{.status.conditions[?(@.type=="Ready")]}'
 
-# Watch for agent endpoint to become ready
+# Watch for Agent Endpoint to become ready
 kubectl wait --for=condition=Ready agentendpoint/example-agent-endpoint --timeout=60s
 
-# Get all agent endpoints with their ready status
+# Get all Agent Endpoints with their ready status
 kubectl get agentendpoints -A -o custom-columns=\
 NAME:.metadata.name,\
 NAMESPACE:.metadata.namespace,\
@@ -604,7 +604,7 @@ TRAFFIC_POLICY:.status.trafficPolicy,\
 READY:.status.conditions[?(@.type==\'Ready\')].status,\
 REASON:.status.conditions[?(@.type==\'Ready\')].reason
 
-# Check domain readiness for an agent endpoint
+# Check domain readiness for an Agent Endpoint
 kubectl get agentendpoint example-agent-endpoint -o jsonpath='{.status.conditions[?(@.type=="DomainReady")]}'
 
 # Check Traffic Policy status
