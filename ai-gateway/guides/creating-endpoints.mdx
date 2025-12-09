@@ -1,0 +1,229 @@
+---
+title: Creating Endpoints
+description: How to create an AI Gateway endpoint using cloud endpoints, agent endpoints, or traffic policy.
+---
+
+<Tip>
+This guide shows how to create an AI Gateway endpoint manually. For a simpler, faster setup, follow [the dashboard quickstart guide](/ai-gateway/quickstart) instead.
+</Tip>
+
+## Before you start
+
+Before creating an AI Gateway endpoint, you'll need:
+
+- An [ngrok account](https://dashboard.ngrok.com/signup)
+- Your [ngrok auth token](https://dashboard.ngrok.com/get-started/your-authtoken)
+- An [ngrok API key](https://dashboard.ngrok.com/api-keys) (for API-based setup)
+
+## Option 1: Cloud Endpoint
+
+Cloud Endpoints are persistent, always-on endpoints managed via the dashboard or API. They're ideal for production deployments where you want centralized control.
+
+### Using the dashboard
+
+1. Go to [dashboard.ngrok.com/endpoints/new/cloud](https://dashboard.ngrok.com/endpoints/new/cloud) to create a new Cloud Endpoint
+2. Choose a URL for your endpoint (for example, `https://your-ai-subdomain.ngrok.app`)
+3. Add the following traffic policy:
+
+```yaml
+on_http_request:
+  - type: ai-gateway
+    config: {}
+```
+
+4. Click **Save** to create your endpoint
+
+With an empty config, the gateway operates in passthrough mode - it routes requests to providers and uses the API key from the client's `Authorization` header.
+
+<Note>
+After saving, your endpoint will appear in the [AI Gateways](https://dashboard.ngrok.com/ai-gateways) section of the dashboard since it uses the `ai-gateway` action.
+</Note>
+
+### Using the API
+
+Create a traffic policy file:
+
+```yaml title="traffic-policy.yaml"
+on_http_request:
+  - type: ai-gateway
+    config: {}
+```
+
+Create the cloud endpoint using the ngrok CLI:
+
+```bash
+ngrok api endpoints create \
+  --api-key $NGROK_API_KEY \
+  --url https://your-ai-subdomain.ngrok.app \
+  --type cloud \
+  --bindings public \
+  --traffic-policy-file traffic-policy.yaml
+```
+
+Or using cURL:
+
+```bash
+curl -X POST https://api.ngrok.com/endpoints \
+  -H "Authorization: Bearer $NGROK_API_KEY" \
+  -H "Content-Type: application/json" \
+  -H "Ngrok-Version: 2" \
+  -d '{
+    "url": "https://your-ai-subdomain.ngrok.app",
+    "type": "cloud",
+    "bindings": ["public"],
+    "traffic_policy": "on_http_request:\n  - type: ai-gateway\n    config: {}"
+  }'
+```
+
+## Option 2: Agent endpoint
+
+Agent Endpoints are created by the ngrok agent and exist for the lifetime of the agent process. They're ideal for development, testing, or deployments where the endpoint should go offline when your application stops.
+
+### Using the Agent CLI
+
+Create a traffic policy file:
+
+```yaml title="traffic-policy.yaml"
+on_http_request:
+  - type: ai-gateway
+    config: {}
+```
+
+Start the agent with the traffic policy:
+
+```bash
+ngrok http 8080 --url https://your-ai-subdomain.ngrok.app --traffic-policy-file traffic-policy.yaml
+```
+
+<Tip>
+When using an agent endpoint as an AI Gateway, the `8080` port doesn't matter since the AI Gateway action handles all requests. You can use any port number.
+</Tip>
+
+### Using Agent configuration file
+
+Add the traffic policy to your ngrok configuration file:
+
+```yaml title="ngrok.yml"
+version: 3
+agent:
+  authtoken: $NGROK_AUTHTOKEN
+endpoints:
+  - name: ai-gateway
+    url: https://your-ai-subdomain.ngrok.app
+    upstream:
+      url: http://localhost:8080  # Not used when ai-gateway handles requests
+    traffic_policy:
+      on_http_request:
+        - type: ai-gateway
+          config: {}
+```
+
+Start the agent:
+
+```bash
+ngrok start ai-gateway
+```
+
+## Option 3: Kubernetes operator
+
+If you're using the [ngrok Kubernetes Operator](/k8s/), create an AI Gateway endpoint using a custom resource:
+
+```yaml title="ai-gateway.yaml"
+apiVersion: ngrok.k8s.io/v1alpha1
+kind: CloudEndpoint
+metadata:
+  name: ai-gateway
+spec:
+  url: https://your-ai-subdomain.ngrok.app
+  trafficPolicy:
+    on_http_request:
+      - type: ai-gateway
+        config: {}
+```
+
+Apply the resource:
+
+```bash
+kubectl apply -f ai-gateway.yaml
+```
+
+## Testing your endpoint
+
+Once your endpoint is created, test it with a simple request. In passthrough mode, provide your provider API key:
+
+```bash
+curl https://your-ai-subdomain.ngrok.app/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $OPENAI_API_KEY" \
+  -d '{
+    "model": "gpt-4o",
+    "messages": [{"role": "user", "content": "Hello!"}]
+  }'
+```
+
+Or with the OpenAI SDK:
+
+```python
+from openai import OpenAI
+
+client = OpenAI(
+    base_url="https://your-ai-subdomain.ngrok.app/v1",
+    api_key="sk-..."  # Your OpenAI API key
+)
+
+response = client.chat.completions.create(
+    model="gpt-4o",
+    messages=[{"role": "user", "content": "Hello!"}]
+)
+
+print(response.choices[0].message.content)
+```
+
+<Tip>
+Once you [configure server-side API keys](#configuring-server-side-api-keys), clients won't need to provide their own keys.
+</Tip>
+
+## Configuring server-side API keys
+
+Once your gateway is working, you can configure server-side API keys for failover and to avoid exposing provider keys to clients. Store your keys in [Vaults & Secrets](https://dashboard.ngrok.com/vaults), then reference them in your traffic policy:
+
+```yaml
+on_http_request:
+  - type: ai-gateway
+    config:
+      providers:
+        - id: openai
+          api_keys:
+            - value: ${secrets.get('openai', 'primary-key')}
+            - value: ${secrets.get('openai', 'backup-key')}
+        - id: anthropic
+          api_keys:
+            - value: ${secrets.get('anthropic', 'api-key')}
+```
+
+With this configuration:
+- The gateway uses your server-side keys instead of requiring clients to provide their own
+- If one key hits rate limits, the gateway automatically tries the next one
+- If OpenAI fails entirely, requests can fail over to Anthropic
+
+<Warning>
+When you configure server-side API keys, your endpoint becomes publicly accessible. Anyone with the URL can make requests using your keys. See [Securing Your Gateway](/ai-gateway/guides/securing-endpoints) to add authorization.
+</Warning>
+
+See [Managing API Keys](/ai-gateway/guides/managing-api-keys) for detailed instructions on setting up vaults and secrets.
+
+## When to use each option
+
+| Option | Best For |
+|--------|----------|
+| **Cloud Endpoint (Dashboard)** | Quick setup, non-technical users, prototyping |
+| **Cloud Endpoint (API)** | Production deployments, infrastructure-as-code, CI/CD |
+| **Agent Endpoint** | Development, testing, temporary deployments |
+| **Kubernetes Operator** | Kubernetes-native deployments, GitOps workflows |
+
+## Next steps
+
+- [Configuring Providers](/ai-gateway/guides/configuring-providers) - Set up providers, models, and API keys
+- [Model Selection Strategies](/ai-gateway/guides/model-selection-strategies) - Define custom routing logic
+- [SDK Integration](/ai-gateway/sdks) - Connect your application
+
