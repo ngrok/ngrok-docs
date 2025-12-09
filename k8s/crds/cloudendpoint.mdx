@@ -11,9 +11,9 @@ description: Reference documentation for the CloudEndpoint Kubernetes custom res
 
 The `CloudEndpoint` custom resource is used to create centrally managed endpoints in the cloud. Cloud Endpoints are persistent, always-on endpoints that live within the ngrok cloud.
 They exist permanently until they are explicitly deleted. Cloud Endpoints do not forward their traffic to an agent by default and instead only use their attached Traffic Policy to handle connections.
-Using the traffic policy configuration, you may configure your Cloud Endpoints to route to one or more other internal ngrok endpoints.
+Using the Traffic Policy configuration, you may configure your Cloud Endpoints to route to one or more other internal ngrok endpoints.
 
-For more information about cloud endpoints in ngrok, refer to the [cloud endpoints page](/universal-gateway/cloud-endpoints/)
+For more information about Cloud Endpoints in ngrok, refer to the [Cloud Endpoints page](/universal-gateway/cloud-endpoints/)
 
 ## CloudEndpoint structure and types
 
@@ -30,7 +30,7 @@ spec:
   trafficPolicyName: <string> # optional
   trafficPolicy:              # optional
     policy:                   # required
-      <traffic policy config>
+      <Traffic Policy config>
   description: <string>       # optional, default: "Created by the ngrok-operator"
   metadata: <string>          # optional, default: "{"owned-by":"ngrok-operator"}"
   bindings: <[]string>        # optional
@@ -56,8 +56,8 @@ The following sections outline each field of the `CloudEndpoint` custom resource
 | Field Name                                         | Type              | Required | Default                           | Description                                                                                                                              |
 | -------------------------------------------------- | ----------------- | -------- | --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
 | [`spec.url`](#specurl)                             | `string`          | yes      | none                              | The unique URL for this `CloudEndpoint` that defines how the endpoint is accessed                                                        |
-| [`spec.trafficPolicyName`](#spectrafficpolicyname) | `string`          | no       | none                              | The name of an `NgrokTrafficPolicy` custom resource in the same namespace as the `CloudEndpoint` to use for traffic policy configuration |
-| [`spec.trafficPolicy`](#spectrafficpolicy)         | `Object`          | no       | none                              | Allows for a traffic policy to be provided to the `CloudEndpoint` using inline configuration                                             |
+| [`spec.trafficPolicyName`](#spectrafficpolicyname) | `string`          | no       | none                              | The name of an `NgrokTrafficPolicy` custom resource in the same namespace as the `CloudEndpoint` to use for Traffic Policy configuration |
+| [`spec.trafficPolicy`](#spectrafficpolicy)         | `Object`          | no       | none                              | Allows for a Traffic Policy to be provided to the `CloudEndpoint` using inline configuration                                             |
 | [`spec.description`](#specdescription)             | `string`          | no       | `"Created by the ngrok-operator"` | Human-readable description for this `CloudEndpoint` to help identify/describe it                                                         |
 | [`spec.metadata`](#specmetadata)                   | `string`          | no       | `"{"owned-by":"ngrok-operator"}"` | String of arbitrary data associated with the object in the ngrok API/Dashboard                                                           |
 | [`spec.bindings`](#specbindings)                   | `[]string` (enum) | no       | none                              | List of Binding IDs to associate with the endpoint                                                                                       |
@@ -65,7 +65,7 @@ The following sections outline each field of the `CloudEndpoint` custom resource
 
 ### `spec.url`
 
-The unique URL for this cloud endpoint. This URL defines how the endpoint is accessed.
+The unique URL for this Cloud Endpoint. This URL defines how the endpoint is accessed.
 
 **Type:** `string`
 
@@ -96,12 +96,12 @@ The following formats are accepted:
   When empty your endpoint will default to be https and receive back a randomly assigned ngrok address.
 - **Internal**
   - When ending your URL with .internal, an internal endpoint will be created. Internal Endpoints cannot be accessed directly, but rather
-    can only be accessed using the forward-internal traffic policy action.
+    can only be accessed using the forward-internal Traffic Policy action.
   - example: `some.domain.internal`
 
 ### `spec.trafficPolicyName`
 
-Reference to an `NgrokTrafficPolicy` custom resource in the same namespace as the `CloudEndpoint` to use for traffic policy configuration.
+Reference to an `NgrokTrafficPolicy` custom resource in the same namespace as the `CloudEndpoint` to use for Traffic Policy configuration.
 It is invalid to configure both `spec.trafficPolicyName` and `spec.trafficPolicy` at the same time.
 
 The referenced `NgrokTrafficPolicy` **must** be in the same namespace as the `CloudEndpoint`.
@@ -114,9 +114,9 @@ The referenced `NgrokTrafficPolicy` **must** be in the same namespace as the `Cl
 
 ### `spec.trafficPolicy`
 
-Reference to an `NgrokTrafficPolicy` custom resource in the same namespace as the `CloudEndpoint` to use for traffic policy configuration.
+Reference to an `NgrokTrafficPolicy` custom resource in the same namespace as the `CloudEndpoint` to use for Traffic Policy configuration.
 It is invalid to configure both `spec.trafficPolicyName` and `spec.trafficPolicy` at the same time.
-For more information about writing ngrok traffic policies, refer to the [traffic policy section](/traffic-policy/).
+For more information about writing ngrok Traffic Policies, refer to the [Traffic Policy section](/traffic-policy/).
 
 **Type:** `Object`
 
@@ -128,12 +128,12 @@ For more information about writing ngrok traffic policies, refer to the [traffic
 
 | Field Name                                              | Type              | Required | Default | Description                                                                 |
 | ------------------------------------------------------- | ----------------- | -------- | ------- | --------------------------------------------------------------------------- |
-| [`spec.trafficPolicy.policy`](#spectrafficpolicypolicy) | `json.RawMessage` | yes      | none    | The inline traffic policy configuration to be used for this `CloudEndpoint` |
+| [`spec.trafficPolicy.policy`](#spectrafficpolicypolicy) | `json.RawMessage` | yes      | none    | The inline Traffic Policy configuration to be used for this `CloudEndpoint` |
 
 ### `spec.trafficPolicy.policy`
 
-Allows you to supply a traffic policy for this `AgentEndpoint` with inline configuration. An example has been included below.
-For more information about writing ngrok traffic policies, refer to the [traffic policy section](/traffic-policy/).
+Allows you to supply a Traffic Policy for this `AgentEndpoint` with inline configuration. An example has been included below.
+For more information about writing ngrok Traffic Policies, refer to the [Traffic Policy section](/traffic-policy/).
 
 **Type:** `json.RawMessage`
 
@@ -143,7 +143,7 @@ For more information about writing ngrok traffic policies, refer to the [traffic
 
 ### `spec.description`
 
-Human-readable description of this cloud endpoint that can be used to help identify/describe it.
+Human-readable description of this Cloud Endpoint that can be used to help identify/describe it.
 
 **Type:** `string`
 
@@ -173,15 +173,15 @@ List of Binding IDs to associate with the endpoint
 
 **Accepted Values:** `"public"`, `"internal"`, or `"kubernetes"`
 
-- A binding of `"internal"` will create an internal `AgentEndpoint` that is only accessible from other endpoints using the `forward-internal` traffic policy action.
+- A binding of `"internal"` will create an internal `AgentEndpoint` that is only accessible from other endpoints using the `forward-internal` Traffic Policy action.
   - Aside from setting `bindings: ["internal"]`, the `spec.url` of the `AgentEndpoint` must end in `.internal`
   - Setting `bindings: ["public"]` will not work for internal endpoints (endpoints that have a `spec.url` ending in `.internal`)
 - A binding of `"public"` will create a standard `AgentEndpoint` with its `spec.url` accessible to the public internet
   - Setting `bindings: ["internal"]` will not work for public endpoints
 - A binding of `"kubernetes"` will create a Kubernetes bound endpoint. This causes the endpoint to not be publicly accessible to the public internet
-  and will be projected into one or more of your Kubernetes clusters that are running the ngrok operator (depending on their endpoint selector configuration) as `Services`.
+  and will be projected into one or more of your Kubernetes clusters that are running the ngrok Operator (depending on their endpoint selector configuration) as `Services`.
   - With a `"kubernetes"` binding, the `spec.url` becomes the `name.namespace` of the projected Service.
-  - For example, with a `spec.url` of `http://my-service.my-namespace` then a Service with name `my-service` in the `my-namespace` namespace will be created by the ngrok operator.
+  - For example, with a `spec.url` of `http://my-service.my-namespace` then a Service with name `my-service` in the `my-namespace` namespace will be created by the ngrok Operator.
     Other services within the Kubernetes cluster can make requests to this endpoint. This enables many different use-cases such as being able to project a service in one Kubernetes cluster
     to another Kubernetes cluster so that services running in the other cluster can make requests to it. This has the benefit of not needing to expose the endpoint to the public internet behind a publicly accessible URL.
 
@@ -190,7 +190,7 @@ List of Binding IDs to associate with the endpoint
 Configures whether [pooling](/universal-gateway/endpoint-pooling) is always enabled for this `CloudEndpoint`.
 
 When pooling is enabled, if two different endpoints share the same `spec.url` then requests will be balanced between them.
-This is not limited to endpoints within the same cluster, or endpoints of the same type. For example, a `CloudEndpoint` can be pooled with an agent endpoint created using the ngrok CLI if they both enable pooling and share the same URL.
+This is not limited to endpoints within the same cluster, or endpoints of the same type. For example, a `CloudEndpoint` can be pooled with an Agent Endpoint created using the ngrok CLI if they both enable pooling and share the same URL.
 
 It is recommended to include a prefix/suffix in the URL to prevent unintended pooling. For example, if you are running a service `foo` in the namespace `bar` in two different
 Kubernetes clusters, you may want to give each one a slightly different `spec.url` that includes something such as a cluster identifier to prevent requests from being balanced between them.
@@ -206,11 +206,11 @@ In this scenario, the older endpoint wins and the newer one will fail to be crea
 
 ## Status fields
 
-The `CloudEndpoint` resource includes status information that reflects the current state of the cloud endpoint in the ngrok system.
+The `CloudEndpoint` resource includes status information that reflects the current state of the Cloud Endpoint in the ngrok system.
 
 ### `status.id`
 
-The ngrok API ID for this cloud endpoint.
+The ngrok API ID for this Cloud Endpoint.
 
 **Type:** `string`
 
@@ -224,7 +224,7 @@ The ngrok API ID for this cloud endpoint.
 
 ### `status.domainRef`
 
-Reference to the Domain resource associated with this cloud endpoint.
+Reference to the Domain resource associated with this Cloud Endpoint.
 
 **Type:** `Object`
 
@@ -241,7 +241,7 @@ domainRef:
 
 ### `status.conditions`
 
-Standard Kubernetes conditions that indicate the state of the cloud endpoint.
+Standard Kubernetes conditions that indicate the state of the Cloud Endpoint.
 
 **Type:** `[]Condition`
 
@@ -257,7 +257,7 @@ Each condition includes:
 
 ##### `Ready`
 
-Indicates whether the cloud endpoint is fully operational and ready to use.
+Indicates whether the Cloud Endpoint is fully operational and ready to use.
 
 **Status Values:**
 - `True` - Cloud endpoint is active and ready
@@ -268,7 +268,7 @@ Indicates whether the cloud endpoint is fully operational and ready to use.
 | Reason | Status | Meaning |
 |--------|--------|---------|
 | `CloudEndpointActive` | `True` | Cloud endpoint is successfully created and active |
-| `CloudEndpointCreationFailed` | `False` | Failed to create the cloud endpoint in ngrok |
+| `CloudEndpointCreationFailed` | `False` | Failed to create the Cloud Endpoint in ngrok |
 | `Pending` | `False` | Cloud endpoint creation is pending (for example, waiting for domain) |
 | `Unknown` | `False` | Cloud endpoint state is unknown |
 | `DomainNotReady` | `False` | Associated domain is not ready |
@@ -293,7 +293,7 @@ conditions:
   status: "False"
   reason: CloudEndpointCreationFailed
   message: |
-    Failed to create cloud endpoint: HTTP 400: The provided cloud endpoint was invalid because pooling was set to disabled when another endpoint exists for this url. [ERR_NGROK_18017]
+    Failed to create Cloud Endpoint: HTTP 400: The provided Cloud Endpoint was invalid because pooling was set to disabled when another endpoint exists for this url. [ERR_NGROK_18017]
     
     Operation ID: op_34ic9T376GyGAXQ4sIRn7F0xUYP
   lastTransitionTime: "2025-10-29T00:39:15Z"
@@ -302,18 +302,18 @@ conditions:
 
 ##### `CloudEndpointCreated`
 
-Indicates whether the cloud endpoint was successfully created in the ngrok API.
+Indicates whether the Cloud Endpoint was successfully created in the ngrok API.
 
 **Status Values:**
 - `True` - Cloud endpoint was successfully created
-- `False` - Failed to create cloud endpoint
+- `False` - Failed to create Cloud Endpoint
 
 **Reasons:**
 
 | Reason | Status | Meaning |
 |--------|--------|---------|
 | `CloudEndpointCreated` | `True` | Cloud endpoint successfully created |
-| `CloudEndpointCreationFailed` | `False` | API call to create cloud endpoint failed |
+| `CloudEndpointCreationFailed` | `False` | API call to create Cloud Endpoint failed |
 
 **Example:**
 ```yaml
@@ -413,7 +413,7 @@ status:
     status: "False"
     reason: CloudEndpointCreationFailed
     message: |
-      Failed to create cloud endpoint: HTTP 400: The provided cloud endpoint was invalid because pooling was set to disabled when another endpoint exists for this url. [ERR_NGROK_18017]
+      Failed to create Cloud Endpoint: HTTP 400: The provided Cloud Endpoint was invalid because pooling was set to disabled when another endpoint exists for this url. [ERR_NGROK_18017]
       
       Operation ID: op_34ic9T376GyGAXQ4sIRn7F0xUYP
     lastTransitionTime: "2025-10-29T00:39:25Z"
@@ -422,7 +422,7 @@ status:
     status: "False"
     reason: CloudEndpointCreationFailed
     message: |
-      Failed to create cloud endpoint: HTTP 400: The provided cloud endpoint was invalid because pooling was set to disabled when another endpoint exists for this url. [ERR_NGROK_18017]
+      Failed to create Cloud Endpoint: HTTP 400: The provided Cloud Endpoint was invalid because pooling was set to disabled when another endpoint exists for this url. [ERR_NGROK_18017]
       
       Operation ID: op_34ic9T376GyGAXQ4sIRn7F0xUYP
     lastTransitionTime: "2025-10-29T00:39:15Z"
@@ -459,16 +459,16 @@ status:
 
 ## Checking Cloud Endpoint status
 
-You can check the status of a cloud endpoint using kubectl:
+You can check the status of a Cloud Endpoint using kubectl:
 
 ```bash
-# Check if cloud endpoint is ready
+# Check if Cloud Endpoint is ready
 kubectl get cloudendpoint example-cloud-endpoint -o jsonpath='{.status.conditions[?(@.type=="Ready")]}'
 
-# Watch for cloud endpoint to become ready
+# Watch for Cloud Endpoint to become ready
 kubectl wait --for=condition=Ready cloudendpoint/example-cloud-endpoint --timeout=60s
 
-# Get all cloud endpoints with their ready status
+# Get all Cloud Endpoints with their ready status
 kubectl get cloudendpoints -A -o custom-columns=\
 NAME:.metadata.name,\
 NAMESPACE:.metadata.namespace,\
@@ -476,18 +476,18 @@ DOMAIN:.status.domainRef.name,\
 READY:.status.conditions[?(@.type==\'Ready\')].status,\
 REASON:.status.conditions[?(@.type==\'Ready\')].reason
 
-# Check domain readiness for a cloud endpoint
+# Check domain readiness for a Cloud Endpoint
 kubectl get cloudendpoint example-cloud-endpoint -o jsonpath='{.status.conditions[?(@.type=="DomainReady")]}'
 ```
 
 ## Example CloudEndpoints
 
-### CloudEndpoint with inline traffic policy
+### CloudEndpoint with inline Traffic Policy
 
 The following `CloudEndpoint`:
 
 - Accepts traffic on the URL `https://example-cloud-endpoint.ngrok.io`
-- Adds an inline traffic policy that sends back a custom response
+- Adds an inline Traffic Policy that sends back a custom response
 
 ```yaml
 apiVersion: ngrok.k8s.ngrok.com/v1alpha1
@@ -503,18 +503,18 @@ spec:
         actions:
         - type: custom-response
           config:
-            body: Example response from traffic policy
+            body: Example response from Traffic Policy
             headers:
               content-type: text/plain
             status_code: 200
 ```
 
-### CloudEndpoint with referenced traffic policy
+### CloudEndpoint with referenced Traffic Policy
 
 The following `CloudEndpoint`:
 
 - Accepts traffic on the URL `https://example-cloud-endpoint.ngrok.io`
-- Adds a reference to a traffic policy that sends back a custom response
+- Adds a reference to a Traffic Policy that sends back a custom response
 
 ```yaml
 apiVersion: ngrok.k8s.ngrok.com/v1alpha1
@@ -529,7 +529,7 @@ spec:
       actions:
       - type: custom-response
         config:
-          body: Example response from traffic policy
+          body: Example response from Traffic Policy
           headers:
             content-type: text/plain
           status_code: 200

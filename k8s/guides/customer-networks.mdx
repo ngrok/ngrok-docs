@@ -25,7 +25,7 @@ In this guide, walk through setting up remote access to the systems in a single 
 
 - An ngrok account. If you don't have one, [sign up](https://dashboard.ngrok.com/signup).
 - An ngrok agent configured on a server within customer 1's network. See the [getting started guide](/getting-started/) for instructions on how to install the ngrok agent.
-- The ngrok operator installed on your local Kubernetes cluster.
+- The ngrok Operator installed on your local Kubernetes cluster.
 - [An ngrok API Key](https://dashboard.ngrok.com/api/new). You'll need an account first.
 
 ### 1. Create a Service User and authtoken for Customer 1
@@ -51,7 +51,7 @@ Create an authtoken for that Service User and assign it an ACL rule. By assignin
 
 ### 2. Install the ngrok Agent within Customer 1's network and configure internal Agent endpoints in ngrok.yml
 
-Configure the agent to create internal agent endpoints that point to the services you want to remotely access. This will connect the services to your ngrok account but nothing will be able to connect to them until completing the subsequent steps. Additionally, for the TLS endpoint, configure it so that mTLS is terminated at the ngrok agent and data remains encrypted through the ngrok cloud edge. The configuration to achieve this is shown below in the example agent configuration file.
+Configure the agent to create internal Agent Endpoints that point to the services you want to remotely access. This will connect the services to your ngrok account but nothing will be able to connect to them until completing the subsequent steps. Additionally, for the TLS endpoint, configure it so that mTLS is terminated at the ngrok agent and data remains encrypted through the ngrok cloud edge. The configuration to achieve this is shown below in the example agent configuration file.
 
 **Internal Endpoints** are private endpoints that only receive traffic when forwarded through the [forward-internal Traffic Policy action](/traffic-policy/actions/forward-internal/). This allows you to route traffic to an application through ngrok without making it publicly addressable. Internal endpoint URL hostnames must end with `.internal`.
 
@@ -84,20 +84,20 @@ endpoints:
 
 ### 3. Install the ngrok Operator within your Kubernetes cluster
 
-Enable applications in your cluster to connect to the remote services. To do this, install the ngrok Kubernetes operator into your cluster. The operator will create v1.Service objects that your apps can connect to for access to the remote services in your customer's network.
+Enable applications in your cluster to connect to the remote services. To do this, install the ngrok Kubernetes Operator into your cluster. The Operator will create v1.Service objects that your apps can connect to for access to the remote services in your customer's network.
 
-First, create a separate Service User with an associated authtoken **and** API key specifically for the operator.
+First, create a separate Service User with an associated authtoken **and** API key specifically for the Operator.
 
-Then install the operator:
+Then install the Operator:
 
 ```bash
 helm install ngrok-operator ngrok/ngrok-operator \
 --namespace ngrok-operator \
 --create-namespace \
---set description="acme ngrok operator" \
+--set description="acme ngrok Operator" \
 --set bindings.enabled=true \
---set credentials.apiKey=$NGROK_API_KEY \ # api key created for the operator
---set credentials.authtoken=$NGROK_AUTHTOKEN # authtoken created for the operator
+--set credentials.apiKey=$NGROK_API_KEY \ # api key created for the Operator
+--set credentials.authtoken=$NGROK_AUTHTOKEN # authtoken created for the Operator
 ```
 
 Lastly, create a namespace for your customer fleet where the Service objects in the next step will be created.
@@ -108,9 +108,9 @@ kubectl create ns acme-customers
 
 ### 4. Create Kubernetes bound Cloud Endpoints and attach Traffic Policy
 
-Create a **Cloud Endpoint** with a [**Kubernetes binding](/universal-gateway/bindings/).** This will create a privately addressable way to access the remote services. These endpoints will only be accessible within Kubernetes clusters where you install the ngrok operator.
+Create a **Cloud Endpoint** with a [**Kubernetes binding](/universal-gateway/bindings/).** This will create a privately addressable way to access the remote services. These endpoints will only be accessible within Kubernetes clusters where you install the ngrok Operator.
 
-Endpoints with a kubernetes binding are secure, private endpoints that are only addressable inside of Kubernetes clusters where you install the ngrok operator. They enable you to connect to ngrok endpoints without making them publicly addressable. In this case, create Cloud Endpoints with a binding of kubernetes.
+Endpoints with a kubernetes binding are secure, private endpoints that are only addressable inside of Kubernetes clusters where you install the ngrok Operator. They enable you to connect to ngrok endpoints without making them publicly addressable. In this case, create Cloud Endpoints with a binding of kubernetes.
 
 Cloud Endpoints are persistent, always-on endpoints whose creation, deletion, and configuration is managed centrally via the Dashboard or API. 
 They exist permanently until they are explicitly deleted. 
@@ -289,7 +289,7 @@ endpoints:
 
 You have now integrated a system that allows you to seamlessly and granularly access your remote resources within your customer's network directly from your Kubernetes cluster. Recap what you've built:
 
-1. Singular ngrok operator installed in your k8s cluster to create service objects using k8s Cloud Endpoints.
+1. Singular ngrok Operator installed in your k8s cluster to create service objects using k8s Cloud Endpoints.
 2. One ngrok agent per customer network, with multiple installs/endpoint pooling available for resiliency failover and reliability.
-3. Private, kubernetes bound Cloud Endpoints used in service projection, forwarded traffic to internal agent endpoints for e2e connectivity.
+3. Private, kubernetes bound Cloud Endpoints used in service projection, forwarded traffic to internal Agent Endpoints for e2e connectivity.
 4. E2E encryption with agent mTLS termination and TLS endpoints
