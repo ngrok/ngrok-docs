@@ -1,0 +1,64 @@
+---
+title: Monitoring the Kubernetes Operator
+sidebarTitle: Observability
+description: Learn how to enable and customize ngrok's Kubernetes ingress Observability features.
+---
+
+Configuring metrics and logging for the ngrok Kubernetes Operator is essential for gaining visibility into how the operator is handling your ingress resources and other CRDs.
+
+This guide explains the available observability features, and how to enable and customize them to:
+- Diagnose issues more quickly.
+- Track system performance.
+- Ensure the operator is running reliably in production.
+
+## Metrics
+
+The ngrok Kubernetes Operator exposes a set of [Prometheus-compatible](https://prometheus.io/) metrics that provide insight into the operator’s internal state and the resources it manages. By enabling metrics, you can monitor reconciliation activity, track resource health, and build alerts around key operational behaviors. 
+
+### Supported metrics
+
+This project is built using [Kubebuilder](https://github.com/kubernetes-sigs/kubebuilder?tab=readme-ov-file#kubebuilder). By default, it exposes the metrics described in the Kubebuilder [metrics reference](https://book.kubebuilder.io/reference/metrics-reference.html?highlight=metrics#default-exported-metrics-references).
+
+### Accessing metrics
+This operator exposes prometheus metrics on the `/metrics` endpoint. The metrics are exposed on the `:8080` port and can be scraped by Prometheus or other services. The controller applies these annotations [by default](https://github.com/ngrok/ngrok-operator/blob/15e015e5b559ca3f4eb18ded6b5192c6de5bc3ce/helm/ngrok-operator/templates/controller-deployment.yaml#L25-L27).
+
+## Logging
+
+The ngrok Kubernetes Operator generates structured logs that capture its reconciliation processes, configuration changes, and any errors encountered while managing resources. These logs are a primary source of truth when diagnosing issues or understanding the operator’s actions.
+
+### Configure log levels
+
+By tuning the operator’s log level, you can control the level of detail emitted in logs. This lets you strike the right balance between observability and signal-to-noise, whether you’re troubleshooting an issue, monitoring production workloads, or reducing log volume.
+
+### Available log levels
+
+| Log Level            | Description                                                                |
+| -------------------- | -------------------------------------------------------------------------- |
+| `debug`              | The most verbose level. `debug` logs include detailed internal state, reconciliation steps, API interactions, and decision-making paths inside the operator.<br/ ><br/ >This level is intended for development or troubleshooting. It provides maximum insight, but can generate a large log volume.                                        |
+| `info`               | The default and generally recommended level. `info` logs capture high-level operational events such as resource reconciliation, configuration changes, and important lifecycle actions.<br/ ><br/ >These logs provide good observability with minimal noise and are appropriate for most production environments.                             |
+| `error`              | The most minimal level. `error` logs are emitted only when something fails—such as an unexpected response from the Kubernetes API, a reconciliation error, or a misconfiguration that prevents the operator from completing an action.<br/ ><br/ >Use this level when you want to minimize log output while still surfacing critical failures.|
+
+### Via `helm`
+
+To configure the log level via `helm`, use `--set` to supply the desired log
+
+```sh
+helm install ngrok-operator ngrok/ngrok-operator \
+--namespace ngrok-operator \
+--create-namespace \
+--set credentials.apiKey=$NGROK_API_KEY \
+--set credentials.authtoken=$NGROK_AUTHTOKEN
+--set log.level=info
+```
+
+### Via `helm` value overrides
+
+The log level can be configured through Helm value overrides, allowing you to define logging behavior in a reproducible, version-controlled way. This approach is ideal when you want consistent settings across environments or when deploying via automated pipelines.
+
+To override the log level, specify the configuration in your `values.yaml` file and pass the file to `helm` using the `--values` option ([more info](https://helm.sh/docs/helm/helm_install/#options)).
+
+```yml
+log:
+  level: debug
+  format: json
+```

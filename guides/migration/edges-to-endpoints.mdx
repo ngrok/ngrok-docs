@@ -5,7 +5,7 @@ title: Migrating ngrok Edges to Cloud Endpoints
 
 This guide walks you through manually migrating ngrok **Edge configurations** (HTTPS, TLS, TCP) to **Cloud Endpoints** using **Traffic Policies**.
 
-## 📋 Prerequisites
+## Prerequisites
 
 - An **[ngrok account](https://dashboard.ngrok.com)** with an **[ngrok API key](https://dashboard.ngrok.com/api-keys)**.
 - The [ngrok API documentation](/api).
@@ -14,14 +14,14 @@ This guide walks you through manually migrating ngrok **Edge configurations** (H
 - YAML formatting skills for creating traffic policies.
 - A text editor to prepare YAML payloads.
 
-## ✅ What You'll Be Migrating
+## What you'll be migrating
 
 | Edge Type | Replaced By                     | Policy Phases Used                    |
 | --------- | ------------------------------- | ------------------------------------- |
 | HTTPS     | Cloud Endpoint + Agent Endpoint | `on_http_request`, `on_http_response` |
 | TLS/TCP   | Cloud Endpoint + Agent Endpoint | `on_tcp_connect`                      |
 
-## ⚙️ 1. Set Up Environment
+## 1. Set up environment
 
 Make sure you have:
 
@@ -36,7 +36,7 @@ Ngrok-Version: 2
 Content-Type: application/json
 ```
 
-## 📋 2. List Your Edges
+## 2. List your edges
 
 Use the ngrok API to list all existing edges:
 
@@ -61,7 +61,7 @@ Repeat this process for:
 - `/edges/tls`
 - `/edges/tcp`
 
-## 🧠 3. Determine the Target URL
+## 3. Determine the target URL
 
 Each edge has one or more `hostports`. Use those to define a **cloud endpoint `url`**:
 
@@ -73,7 +73,7 @@ Each edge has one or more `hostports`. Use those to define a **cloud endpoint `u
 
 Note, you’ll have to create a cloud endpoint for each `hostport` attached to an edge if you want multiple `hostports` to service the same traffic flow.
 
-## 🛠️ 4. Create a Traffic Policy
+## 4. Create a Traffic Policy
 
 Each cloud endpoint will have a YAML traffic policy.
 
@@ -87,9 +87,9 @@ on_tcp_connect: []
 
 Use only the relevant phases for the edge type.
 
-## 🔁 5. Migrate Routes (HTTPS Only)
+## 5. Migrate routes (HTTPS only)
 
-HTTPS edges have routes, and we will need to convert each route’s to a CEL expression based on it’s `match_type` for use on every rule that is defined.
+HTTPS edges have routes, and each route needs to be converted to a CEL expression based on its `match_type` for use on every rule that is defined.
 
 Here are some example CEL expressions for routes based on the `match_type`:
 
@@ -100,7 +100,7 @@ Here are some example CEL expressions for routes based on the `match_type`:
 
 Create these for later use in each `expressions:` block in your policy rules.
 
-## 🔧 6. Convert Modules to Actions
+## 6. Convert modules to actions
 
 Each module on the edge or its routes maps to one or more policy actions:
 
@@ -123,11 +123,11 @@ You’ll want to translate each Module configuration to Action Configuration:
 
 Add these actions under the correct phase (with matching route expressions when the endpoint is HTTP or HTTPS).
 
-## 🎯 7. Convert Backends
+## 7. Convert backends
 
 Your edge’s backend defines where traffic goes. These should be placed **after all other actions you defined above. These should be added to the end of the phase.**
 
-### Tunnel Group Backends
+### Tunnel group backends
 
 If the edge uses a `tunnel_group` backend (identified by labels):
 
@@ -153,7 +153,7 @@ on_http_request:
             ngrok http 80 --url https://service-app.internal
 ```
 
-Here we are defining `forward-internal` to forward to [`https://service-app.internal`](https://service-app.internal) and when an error occurs (like the endpoint being offline) fallback to some custom text (by leveraging `on_error: continue` and `custom-response`) describing how to get back online (this is optional).
+Here, `forward-internal` is defined to forward to [`https://service-app.internal`](https://service-app.internal) and when an error occurs (like the endpoint being offline) fallback to some custom text (by leveraging `on_error: continue` and `custom-response`) describing how to get back online (this is optional).
 
 **Running internal agent endpoint via the CLI:**
 
@@ -161,9 +161,9 @@ Here we are defining `forward-internal` to forward to [`https://service-app.inte
 ngrok http 80 --url https://service-app.internal
 ```
 
-Here, we have started an agent endpoint with the URL [`https://service-app.internal`](https://service-app.internal) which points to a service running locally on the machine on port 80.
+Here, an agent endpoint has been started with the URL [`https://service-app.internal`](https://service-app.internal) which points to a service running locally on the machine on port 80.
 
-### TCP/TLS Backends
+### TCP/TLS backends
 
 These are generally Tunnel Groups and should follow the same rules as above. However, wanted to call out that you should use the `on_tcp_connect` phase here instead:
 
@@ -178,7 +178,7 @@ on_tcp_connect:
 
 Additionally, you cannot use the `custom-response` action for an HTTP fallback.
 
-### HTTP Response Backends
+### HTTP response backends
 
 Use `custom-response` to serve static content:
 
@@ -193,12 +193,12 @@ on_http_request:
           body: pong
 ```
 
-### Failover Backends
+### Failover backends
 
 1. Loop through the list of failover backends
 2. For each backend type, applying the same rules in group in sequence but on each Tunnel Group, use `on_error: continue` to fall-through to the next group, or HTTP Response backend.
 
-### Weighted Backends → Not yet supported
+### Weighted backends → Not yet supported
 
 These are not officially supported today in traffic policies.
 
@@ -251,7 +251,7 @@ on_http_request:
             ngrok http 80 --url ${vars.weighted_url}
 ```
 
-Since our CEL environment doesn’t support reduce or fold you’ll have to use an external script to determine the cumulative weights, chance, and lookups:
+Since the CEL environment doesn't support reduce or fold, you'll have to use an external script to determine the cumulative weights, chance, and lookups:
 
 ```python
 import yaml
@@ -324,7 +324,7 @@ Ngrok-Version: 2
 ...
 ```
 
-## 🧹 9. Clean Up the Old Edge
+## 🧹 9. Clean up the old edge
 
 Once you have validated that your edge has been migrated and works, you can clean up the edge from your account:
 
@@ -334,7 +334,7 @@ DELETE /edges/{type}/{id}
 
 Repeat for all HTTPS, TLS, and TCP edges.
 
-## ✅ Final Checklist
+## ✅ Final checklist
 
 | Step                                                          | Done? |
 | ------------------------------------------------------------- | ----- |

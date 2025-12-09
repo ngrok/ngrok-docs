@@ -11,7 +11,7 @@ Along the way, you'll learn enough to leverage MicroK8s in your next Kubernetes 
 Here is what you'll be building with:
 
 - The **[ngrok Kubernetes Operator](https://ngrok.com/blog-post/ngrok-k8s)**: ngrok's official controller for adding secure public ingress and middleware execution to your Kubernetes apps with ngrok's cloud service. With ngrok, you can manage and secure app traffic at every stage of the development lifecycle while benefiting from simpler configurations, security, and edge acceleration.
-- The **Kubernetes Gateway API**: This new API, which made generally available in [October 2023](https://kubernetes.io/blog/2023/10/31/gateway-api-ga/), is a role-oriented mechanism for provisioning load-balancing infrastructure and routing traffic. The Gateway API does not replace "traditional" [Operators](https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/)—both are available for production usage, but the Gateway API may be better suited for large organizations with defined roles for managing Kubernetes services, cluster operators vs. application developers.
+- The **Kubernetes Gateway API**: This new API, which made generally available in [October 2023](https://kubernetes.io/blog/2023/10/31/gateway-api-ga/), is a role-oriented mechanism for provisioning load-balancing infrastructure and routing traffic. The Gateway API does not replace "traditional" [Operators](https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/)—both are available for production usage, but the Gateway API may be better suited for large organizations with defined roles for managing Kubernetes services and cluster operators, rather than application developers.
 - **Canonical MicroK8s**: An open-source system for low-ops, minimal, production-ready Kubernetes. MicroK8s' single-node configuration, small size, and customizeable footprint lets you use it for local development, in minimal environments like GitHub's CI/CD, or using Kubernetes on IoT hardware.
 
 ## What you'll need
@@ -28,7 +28,7 @@ Here is what you'll be building with:
   API](/api-reference/reserveddomains/list).
   - You can choose from an ngrok subdomain or bring your own custom branded
     domain, like `https://api.example.com`.
-  - We'll refer to this domain as `<NGROK_DOMAIN>`.
+  - This guide refers to this domain as `<NGROK_DOMAIN>`.
 
 ## Deploy a Kubernetes cluster with MicroK8s 
 
@@ -60,54 +60,54 @@ Now you need a domain and Kubernetes service to ingress traffic to.
 
    Creating a subdomain on the ngrok network provides a public route to accept HTTP, HTTPS, and TLS traffic.
 
-1. Create a new Kubernetes manifest (`2048.yaml`) with the YAML below. This manifest defines the 2048 application service and deployment, then configures the ngrok Kubernetes Operator to connect the `game-2048` service to the ngrok edge via your `NGROK_DOMAIN`.
+1. Create a new Kubernetes manifest (`tinyllama.yaml`) with the YAML below. This manifest defines the tinyllama demo LLM application from [ngrok-samples/tinyllama](https://github.com/ngrok-samples/tinyllama) service and deployment, then configures the ngrok Kubernetes Operator to connect the `tinyllama` service to the ngrok edge via your `NGROK_DOMAIN`.
 
    ```yaml showLineNumbers
    apiVersion: v1
    kind: Service
    metadata:
-     name: game-2048
+     name: tinyllama
      namespace: default
    spec:
      ports:
        - name: http
          port: 80
-         targetPort: 80
+         targetPort: 8080
      selector:
-       app: game-2048
+       app: tinyllama
    ---
    apiVersion: apps/v1
    kind: Deployment
    metadata:
-     name: game-2048
+     name: tinyllama
      namespace: default
    spec:
      replicas: 1
      selector:
        matchLabels:
-         app: game-2048
+         app: tinyllama
      template:
        metadata:
          labels:
-           app: game-2048
+           app: tinyllama
        spec:
          containers:
-           - name: backend
-             image: alexwhen/docker-2048
+           - name: tinyllama
+             image: ghcr.io/ngrok-samples/tinyllama:main
              ports:
                - name: http
-                 containerPort: 80
+                 containerPort: 8080
    ```
 
-1. Apply the `2048.yaml` manifest to your MicroK8s cluster.
+1. Apply the `tinyllama.yaml` manifest to your MicroK8s cluster.
 
    ```bash
-   kubectl apply -f 2048.yaml
+   kubectl apply -f tinyllama.yaml
    ```
 
 ## Configure the ngrok Kubernetes Operator 
 
-With your example app running alongside the ngrok Kubernetes Operator, you now need to configure the new [Kubernetes Gateway API](/k8s/?k8s-install=gatewayAPI) to route traffic arriving from outside the cluster on `NGROK_DOMAIN` to the `game-2048` service.
+With your example app running alongside the ngrok Kubernetes Operator, you now need to configure the new [Kubernetes Gateway API](/k8s/?k8s-install=gatewayAPI) to route traffic arriving from outside the cluster on `NGROK_DOMAIN` to the `tinyllama` service.
 
 You'll first create a [GatewayClass](https://gateway-api.sigs.k8s.io/api-types/gatewayclass/), which represents a class of cluster-level [Gateways](https://gateway-api.sigs.k8s.io/api-types/gateway/). You'll then configure the Gateway with a listener, and an [HTTPRoute](https://gateway-api.sigs.k8s.io/api-types/httproute/) to specify how the Gateway should route requests.
 
@@ -128,35 +128,35 @@ You'll first create a [GatewayClass](https://gateway-api.sigs.k8s.io/api-types/g
    kubectl apply -f gatewayclass.yaml
    ```
 
-1. Create a new file named `2048-gateway.yaml` on your workstation with the below YAML, replacing `<YOUR_NGROK_DOMAIN>`:
+1. Create a new file named `tinyllama-gateway.yaml` on your workstation with the below YAML, replacing `<YOUR_NGROK_DOMAIN>`:
 
    ```yaml showLineNumbers
    apiVersion: gateway.networking.k8s.io/v1
    kind: Gateway
    metadata:
-     name: 2048-gateway
+     name: tinyllama-gateway
      namespace: default
    spec:
      gatewayClassName: ngrok
      listeners:
-       - name: 2048-web
-   			 protocol: HTTPS
-   			 port: 80
+       - name: tinyllama-web
+         protocol: HTTPS
+         port: 80
          hostname: "<YOUR_NGROK_DOMAIN>"
-   			 allowedRoutes:
-   			   namespaces:
-   				   from: Same
+         allowedRoutes:
+           namespaces:
+             from: Same
    ---
    apiVersion: gateway.networking.k8s.io/v1
    kind: HTTPRoute
    metadata:
-     name: 2048-route
+     name: tinyllama-route
      namespace: default
    spec:
      parentRefs:
        - group: gateway.networking.k8s.io
-   			 kind: Gateway
-         name: 2048-gateway
+         kind: Gateway
+         name: tinyllama-gateway
          namespace: default
      hostnames:
        - "<YOUR_NGROK_DOMAIN>"
@@ -166,14 +166,14 @@ You'll first create a [GatewayClass](https://gateway-api.sigs.k8s.io/api-types/g
                type: PathPrefix
                value: /
          backendRefs:
-           - name: game-2048
+           - name: tinyllama
              kind: Service
              port: 80
    ```
 
-   This YAML uses the [Gateway API](https://gateway-api.sigs.k8s.io/#introduction) to first define a [Gateway](https://gateway-api.sigs.k8s.io/api-types/gateway) that allows north/south traffic to enter the cluster from external requests, then uses an [HTTPRoute](https://gateway-api.sigs.k8s.io/concepts/api-overview/#httproute) to terminate the connection at the pod running the `game-2048` service.
+   This YAML uses the [Gateway API](https://gateway-api.sigs.k8s.io/#introduction) to first define a [Gateway](https://gateway-api.sigs.k8s.io/api-types/gateway) that allows north/south traffic to enter the cluster from external requests, then uses an [HTTPRoute](https://gateway-api.sigs.k8s.io/concepts/api-overview/#httproute) to terminate the connection at the pod running the `tinyllama` service.
 
-1. Access your 2048 demo app by navigating to your ngrok domain, for example, `https://<YOUR_NGROK_DOMAIN>`. ngrok's network
+1. Access your tinyllama demo app by navigating to your ngrok domain, for example, `https://<YOUR_NGROK_DOMAIN>`. ngrok's network
    and the ngrok Kubernetes Operator routes traffic to your app from any device or external network.
 
 ## What's next?

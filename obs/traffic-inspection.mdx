@@ -21,9 +21,9 @@ The ngrok Traffic Inspector replaces the local agent inspection interface and ad
 By enabling full capture mode in your ngrok settings, you are able to replay requests to your upstream directly from the browser, instead of the original source.
 This can dramatically speed up development of webhooks or callbacks that are difficult to trigger repeatedly.
 
-Everyone gets three days of traffic retention, after which the traffic events are purged from the system. If you would like a longer look back window, you can purchase up to [90 days of retention with our production plans](https://ngrok.com/pricing).
+Everyone gets three days of traffic retention, after which the traffic events are purged from the system. If you would like a longer look back window, you can purchase up to [90 days of retention with production plans](https://ngrok.com/pricing).
 
-## Full Capture mode
+## Full capture mode
 
 By default, the ngrok Traffic Inspector will only store the metadata about each request and response. Full Capture mode is an opt-in setting on your ngrok account that will store the full request and response parameters, headers, and bodies for each traffic event that flows through your endpoints.
 This can be enabled by account admins by visiting the Observability section in the [ngrok Settings Page](https://dashboard.ngrok.com/settings#observability) after logging in.
@@ -47,20 +47,20 @@ Once Full Capture is enabled, a replay button will appear for fully captured req
 
 Replay works by resending your original unmodified request to your endpoint. It will be subject to the policies of that endpoint at the time of replay (which could be different than the original request).
 
-When replaying a request to your service, we aim to make minimal changes. However, some alterations are inevitable. Here's a list of changes we make to replayed requests:
+When replaying a request to your service, minimal changes are made. However, some alterations are inevitable. Here's a list of changes made to replayed requests:
 
 - The replayed request will originate from a different IP address, so any IP restrictions may prevent the replay from reaching your upstream.
-- We remove any `Connection: Keep-Alive` headers as replay does not support them.
+- Any `Connection: Keep-Alive` headers are removed as replay does not support them.
 - Some request bodies might not be captured, even if they were replayed successfully. This is particularly true for traffic events with an error status code.
-- We add a custom ngrok header `Ngrok-Replay-Original-Request-ID` that contains the ID of the original request. This allows you to trace back to the original request if needed.
-- If the request has been truncated, we can't replay it.
-- We can't replay the request if the HTTP method is unknown or undefined.
+- A custom ngrok header `Ngrok-Replay-Original-Request-ID` is added that contains the ID of the original request. This allows you to trace back to the original request if needed.
+- If the request has been truncated, it cannot be replayed.
+- The request cannot be replayed if the HTTP method is unknown or undefined.
 - The `X-forwarded` header values are substituted with accurate values for the replay, not the original request.
 
-## Replay with Modifications
+## Replay with modifications
 
-ngrok Traffic Inspector allows you to edit the request before re-sending it to your backend. It can be accessed from the same drop down as Replay. We make the same changes to the replayed requests as before in addition to the following changes:
+ngrok Traffic Inspector allows you to edit the request before re-sending it to your backend. It can be accessed from the same drop down as Replay. The same changes are made to the replayed requests as before in addition to the following changes:
 
 - You are not allowed to modify any [forbidden headers](https://developer.mozilla.org/en-US/docs/Glossary/Forbidden_header_name) in the replayed request.
 - The request can be replayed to the same endpoint as long as it is in the same account. You cannot replay to endpoints that are active in other accounts.
-- We do not support modifying the trailer of the request. If you need that capability, please let us know in the [ngrok Community Repo](https://github.com/ngrok/ngrok).
+- Modifying the trailer of the request is not supported. If you need that capability, please share feedback in the [ngrok Community Repo](https://github.com/ngrok/ngrok).

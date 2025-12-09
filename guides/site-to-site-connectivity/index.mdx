@@ -1,6 +1,6 @@
 ---
 title: Configure Site-to-Site Connectivity
-sidebarTitle: Get Started
+sidebarTitle: For Your Applications
 description: Configure site-to-site connectivity to grant trusted parties access to critical systems without exposing those systems to the public internet.
 ---
 
@@ -12,11 +12,11 @@ This guide will walk you through an example scenario using ngrok to set up a sec
 
 Consider a situation where a you have a fleet of customers comprised of medical clinics. Each of these clinics has a host of services living behind a secure firewall which blocks inbound connections, but you require fine grained access to these critical resources. For the purposes of this example scenario, these resources include a REST API, a patient database, and a clinic operations database for each clinic. This guide will walk you through how to set up remote access to the resources in a single clinic (clinic 1), and the steps can be reproduced for each clinic in the customer fleet.
 
-## Architectural Reference
+## Architectural reference
 
 ![A diagram outlining the site-to-site connectivity architecture that will be configured in this guide.](./img/scenario.png)
 
-### Why only one ngrok agent per clinic?
+### Why only one ngrok Agent per clinic?
 
 Traditionally, you might assume that every service inside the clinic needs its own ngrok agent, but this isn't necessary. A single ngrok agent is installed on a network-accessible server inside the clinic, and it:
 
@@ -43,7 +43,7 @@ All three options leverage ngrok's global network for secure, low-latency access
 - An ngrok agent configured on a customer integrated server. See the [getting started guide](/getting-started/) for instructions on how to install the ngrok agent.
 - [An ngrok API Key](https://dashboard.ngrok.com/api/new). You'll need an account first.
 
-### 1. Create a Service User and authtoken to enable isolated agent management
+### 1. Create a Service User and authtoken to enable isolated Agent management
 
 Create a Service User so that you can create an agent authtoken independent of any user account. A Service User represents a service account, and allows each clinic to have its own authtoken. In the case one authtoken is compromised, only that clinic may be affected rather than all of them.
 
@@ -71,7 +71,7 @@ curl -X POST \
 
 An [internal endpoint](/universal-gateway/internal-endpoints/) enables a service inside the clinic to be reachable within ngrok, without being publicly exposed. They can:
 
-1. Only receive traffic from cloud endpoints or internal services that explicitly route traffic to them.
+1. Only receive traffic from Cloud Endpoints or internal services that explicitly route traffic to them.
 2. Not be accessed directly from the internet.
 3. Be used for telemetry APIs, databases, and dashboards.
 
@@ -112,9 +112,9 @@ curl \
   https://api.ngrok.com/reserved_domains
 ```
 
-### 4. Reserve a TCP address for your TCP-based cloud endpoint
+### 4. Reserve a TCP address for your TCP-based Cloud Endpoint
 
-When you reserve a TCP Address, you can create a TCP cloud endpoint that binds to that domain. Reserved TCP addresses are available on ngrok's pay-as-you-go plan.
+When you reserve a TCP Address, you can create a TCP Cloud Endpoint that binds to that domain. Reserved TCP addresses are available on ngrok's pay-as-you-go plan.
 
 ```bash
 curl -X POST \
@@ -125,18 +125,18 @@ curl -X POST \
   https://api.ngrok.com/reserved_addrs
 ```
 
-### 5. Create your cloud endpoints for persistent API and database access
+### 5. Create your Cloud Endpoints for persistent API and database access
 
-A [cloud endpoint](/universal-gateway/cloud-endpoints/) is a permanent, externally accessible entry point into the clinic that's also:
+A [Cloud Endpoint](/universal-gateway/cloud-endpoints/) is a permanent, externally accessible entry point into the clinic that's also:
 
 1. Managed centrally via the ngrok API or dashboard.
 2. Always on, not tied to the lifecycle of the agent.
 3. Does not forward traffic to the agent by default—it must be configured to route traffic to internal endpoints.
 4. Used for exposing services to external cloud apps securely.
 
-Since the REST API and databases must be always accessible, create permanent cloud endpoints that will route traffic to their internal endpoints.
+Since the REST API and databases must be always accessible, create permanent Cloud Endpoints that will route traffic to their internal endpoints.
 
-With our reserved TCP address, we can create a TCP cloud endpoint for our clinic operations database:
+With the reserved TCP address, create a TCP Cloud Endpoint for the clinic operations database:
 
 ```bash
 curl -X POST \
@@ -151,7 +151,7 @@ curl -X POST \
   https://api.ngrok.com/endpoints
 ```
 
-With our reserved wildcard domain from step 3, we don't need to reserve additional domains for our REST API and patient database, and can directly create HTTPS and TLS cloud endpoints:
+With the reserved wildcard domain from step 3, you don't need to reserve additional domains for the REST API and patient database, and can directly create HTTPS and TLS Cloud Endpoints:
 
 ```bash
 curl -X POST https://api.ngrok.com/endpoints \
@@ -177,13 +177,13 @@ curl -X POST https://api.ngrok.com/endpoints \
 
 ### 6. Secure your endpoints with Traffic Policy
 
-There are a variety of traffic policy actions to choose from to layer security on to our endpoints. Listed below are YAML snippets and curl commands below for how to enable IP Restrictions, JWT Validation, and mTLS. There are many other actions to choose from which can be found in [Traffic Policy Actions](/traffic-policy/actions/). These actions will be added to the existing traffic policy config, preceding the forward-internal action.
+There are a variety of traffic policy actions to choose from to layer security on to endpoints. Listed below are YAML snippets and curl commands below for how to enable IP Restrictions, JWT Validation, and mTLS. There are many other actions to choose from which can be found in [Traffic Policy Actions](/traffic-policy/actions/). These actions will be added to the existing traffic policy config, preceding the forward-internal action.
 
-As patient data is extremely sensitive, let's add an extra layer of protection for our TLS cloud endpoint. ngrok's [Traffic Policy](/traffic-policy/) is the perfect way to do this in a flexible and robust manner. We'll also use traffic policy's [forward-internal action](/traffic-policy/actions/forward-internal/) to forward traffic from our public cloud endpoints to our internal agent endpoints.
+Because patient data is extremely sensitive, you'll want to add an extra layer of protection for the TLS Cloud Endpoint. ngrok's [Traffic Policy](/traffic-policy/) is the perfect way to do this in a flexible and robust manner. You can use traffic policy's [forward-internal action](/traffic-policy/actions/forward-internal/) to forward traffic from public Cloud Endpoints to internal agent endpoints.
 
-Navigate to your newly created TLS cloud endpoint in the [endpoints](https://dashboard.ngrok.com/authtokens) tab on the dashboard, and apply a terminate-tls traffic policy action to require a minimum tls version. Since this is a cloud endpoint, TLS will terminate at the ngrok edge by default, but we can also create an action within our agent configuration file if we wish to terminate TLS at the ngrok agent itself.
+Navigate to your newly created TLS Cloud Endpoint in the [endpoints](https://dashboard.ngrok.com/authtokens) tab on the dashboard, and apply a terminate-tls traffic policy action to require a minimum tls version. Since this is a Cloud Endpoint, TLS will terminate at the ngrok edge by default, but you can also create an action within the agent configuration file if you wish to terminate TLS at the ngrok agent itself.
 
-Our traffic policy file for tls://patientdb-clinic1.clinic-network.com should look like this:
+The traffic policy file for tls://patientdb-clinic1.clinic-network.com should look like this:
 
 ```yaml
 on_tcp_connect:
@@ -196,9 +196,9 @@ on_tcp_connect:
         url: tls://patient-db.clinic1.internal:443
 ```
 
-To deter port scanners or other malicious actors from our TCP cloud endpoint, let's add IP restrictions using the restrict-ips traffic policy action onto our clinic operations tcp endpoint.
+To deter port scanners or other malicious actors from the TCP Cloud Endpoint, add IP restrictions using the restrict-ips traffic policy action onto the clinic operations tcp endpoint.
 
-Our traffic policy file for our tcp cloud endpoint should look like this:
+The traffic policy file for the tcp Cloud Endpoint should look like this:
 
 ```yaml
 on_tcp_connect:
@@ -214,9 +214,9 @@ on_tcp_connect:
         url: tcp://operations-database.clinic1.internal:443
 ```
 
-Finally, to secure our HTTPS cloud endpoint, let's add a check to make sure a specific header auth token is present in the request along with a JWT validation step before our REST API can be accessed.
+Finally, to secure the HTTPS Cloud Endpoint, add a check to make sure a specific header auth token is present in the request along with a JWT validation step before the REST API can be accessed.
 
-Our traffic policy file for https://api-clinic1.clinic-network.com should look like this:
+The traffic policy file for https://api-clinic1.clinic-network.com should look like this:
 
 ```yaml
 on_http_request:
@@ -253,9 +253,9 @@ on_http_request:
       url: 'https://rest-api.clinic1.internal:443'
 ```
 
-You can also create a cloud endpoint and attach its corresponding traffic policies with a single API call. Below are the curl commands to create each endpoint and attach its traffic policy.
+You can also create a Cloud Endpoint and attach its corresponding traffic policies with a single API call. Below are the curl commands to create each endpoint and attach its traffic policy.
 
-#### TLS Endpoint with Minimum TLS Version
+#### TLS endpoint with minimum TLS version
 
 ```bash
 curl -X POST https://api.ngrok.com/endpoints \
@@ -269,7 +269,7 @@ curl -X POST https://api.ngrok.com/endpoints \
   }'
 ```
 
-#### TCP Endpoint with IP Restrictions
+#### TCP endpoint with IP restrictions
 
 ```bash
 curl -X POST https://api.ngrok.com/endpoints \
@@ -283,7 +283,7 @@ curl -X POST https://api.ngrok.com/endpoints \
   }'
 ```
 
-#### HTTPS Endpoint with JWT Validation
+#### HTTPS endpoint with JWT validation
 
 ```bash
 curl -X POST https://api.ngrok.com/endpoints \
@@ -299,11 +299,11 @@ curl -X POST https://api.ngrok.com/endpoints \
 
 ---
 
-## Additional ngrok Features
+## Additional ngrok features
 
-### Enable endpoint pooling
+### Enable Endpoint Pooling
 
-You can use endpoint pooling with multiple internal agent endpoints to achieve redundancy and high availability for services inside your network. If desired, you can install a second agent within the customer network as a failover in case agents in the wild go offline.
+You can use Endpoint Pooling with multiple internal agent endpoints to achieve redundancy and high availability for services inside your network. If desired, you can install a second agent within the customer network as a failover in case agents in the wild go offline.
 
 Configure each agent endpoint to use the same ngrok internal URL. This automatically forms an endpoint pool. Incoming traffic to the pooled URL is automatically distributed among all healthy endpoints in the pool. If one endpoint goes offline, traffic is seamlessly routed to the remaining endpoints, ensuring redundancy and failover
 
@@ -324,7 +324,7 @@ agent:
         url: 8081
 ```
 
-### Create a custom connect URL
+### Create a custom Connect URL
 
 This provides a white-labeling capability so that your ngrok agents will connect to `connect.example.com` instead of the default connection hostname (connect.ngrok-agent.com). Dedicated IPs that are unique for your account which your agents will connect to are also available. This takes away any danger of rogue agents in your network trying to call home and adds an additional layer of security by specializing your ngrok connectivity. Custom connect URLs are available with ngrok's pay-as-you-go plan as an additional paid feature.
 
@@ -363,11 +363,11 @@ This will start all tunnels defined in the configuration file, ensure ngrok runs
 
 ## Recap
 
-You have now integrated a system that allows you to seamlessly and securely access any and all remote resources within your customer's network. Let's recap what you've built:
+You have now integrated a system that allows you to seamlessly and securely access any and all remote resources within your customer's network. To recap what you've built:
 
 1. One ngrok agent per clinic and no need for multiple installs.
 2. Always-online API and databases, securely available via cloud and internal endpoints.
 3. ngrok runs as a background service, which means it's reliable and will always auto-restart.
-4. Granular access with a composable traffic policy offering refined and robust security measures for our endpoints.
+4. Granular access with a composable traffic policy offering refined and robust security measures for endpoints.
 
 Not sure how to explain ngrok to your end users? Check out [the guide on ngrok's standards on security, trust, compliance, and privacy](/guides/site-to-site-connectivity/end-customers/).

@@ -8,7 +8,7 @@ When you need to deploy ngrok behind a corporate firewall, there may be addition
 
 As background, this is usually not an issue. Firewalls usually allow outbound connections, which is what an ngrok Agent makes to establish a session with the ngrok service and subsequently your tunnel.
 
-However, certain corporate firewalls have more restrictions around outbound connections. For example, we've seen that ngrok may be blocked on Fortinet firewalls.
+However, certain corporate firewalls have more restrictions around outbound connections. For example, ngrok may be blocked on Fortinet firewalls.
 
 If you're having trouble using the ngrok agent to start a tunnel, the first step is to run [`ngrok diagnose`](/agent/diagnose) which will produce a report that will help you identify connection issues.
 
@@ -36,19 +36,19 @@ To resolve these issues, you have a couple options:
 
 When working with the network team, you'll want to set up the following exceptions and allow:
 
-- Connect URLs (our default is connect.ngrok-agent.com, but there is one for each region), so that the ngrok agent can connect with our servers
-- Our update URL (the default is update.equinox.io), so that the ngrok agent can quickly update itself
+- Connect URLs (the default is connect.ngrok-agent.com, but there is one for each region), so that the ngrok agent can connect with ngrok servers
+- The update URL (the default is update.equinox.io), so that the ngrok agent can quickly update itself
 
-Setting up a custom Connect URL can be useful because it ensures that no one can bring their own ngrok account. In this case, the network admins could continue to block traffic to our default Connect URLs and only allow your custom branded Connect URL. For this, you'll need to:
+Setting up a custom Connect URL can be useful because it ensures that no one can bring their own ngrok account. In this case, the network admins could continue to block traffic to the default Connect URLs and only allow your custom branded Connect URL. For this, you'll need to:
 
 - Set up a [custom Connect URL in your ngrok Dashboard](https://dashboard.ngrok.com/tunnels/ingress)
 - Edit your ngrok agent configuration file with a [`connect_url`](/agent/config/v3/#connect-url) parameter, set to your custom Connect URL
 
-### Certificate Revocation List
+### Certificate revocation list
 
 One of the steps in agent connection is [checking the certificate revocation list](/agent/#tls-verification). This requires an outbound connection on port 80 to the CRL URL (`crl.ngrok.com` for agent versions 3.9.0 and before, `crl.ngrok-agent.com` for agent version 3.10.0 and after).If you are unable to connect to this URL, it is possible to skip the CRL check by setting `crl_noverify: true` in your configuration file. However, disabling the CRL check does expose you to the possibility of using a certificate that has been revoked which could mean that a third party could intercept and view your traffic.
 
-## Testing in a Kubernetes Cluster
+## Testing in a Kubernetes cluster
 
 If you are using ngrok from within a Kubernetes Cluster, you may need to diagnose the network connectivity from the cluster to the ngrok cloud. To do this, you can run the previously mentioned `ngrok diagnose` command using the [pre-built docker images](https://hub.docker.com/r/ngrok/ngrok) for the agent as a `Job` in Kubernetes.
 
