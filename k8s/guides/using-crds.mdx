@@ -9,11 +9,11 @@ You can also head to the [Custom Resource Definition docs](/k8s/crds) for more d
 
 ## Using `AgentEndpoint`
 
-The `AgentEndpoint` resource is used to create [Agent Endpoints](/universal-gateway/agent-endpoints/) using the operator.
+The `AgentEndpoint` resource is used to create [Agent Endpoints](/universal-gateway/agent-endpoints/) using the Operator.
 
 At a high level, Agent Endpoints are endpoints that accept traffic and forward it to an upstream of your choice.
-They may optionally include [traffic policy](/traffic-policy/) configuration specified in-line or as a reference to an `NgrokTrafficPolicy` resource.
-The lifetime of these endpoints is tied to the lifetime of the "agent" responsible for them, in this scenario, the operator is the "agent", so if the operator is deleted, then the endpoint will be deleted.
+They may optionally include [Traffic Policy](/traffic-policy/) configuration specified in-line or as a reference to an `NgrokTrafficPolicy` resource.
+The lifetime of these endpoints is tied to the lifetime of the "agent" responsible for them, in this scenario, the Operator is the "agent", so if the Operator is deleted, then the endpoint will be deleted.
 
 The [endpoint types page](/k8s/guides/endpoint-types) showcases using different protocols with `AgentEndpoint` and/or `CloudEndpoint` resources.
 See the [AgentEndpoint Reference](/k8s/crds/agentendpoint) for more detailed information about `AgentEndpoint` structure and fields.
@@ -35,7 +35,7 @@ spec:
 
 ### `AgentEndpoint` with in-line Traffic Policy
 
-The following example showcases an `AgentEndpoint` with in-line traffic policy configuration
+The following example showcases an `AgentEndpoint` with in-line Traffic Policy configuration
 
 ```yaml
 apiVersion: ngrok.k8s.ngrok.com/v1alpha1
@@ -55,7 +55,7 @@ spec:
         actions:
         - type: custom-response
           config:
-            body: Example response from traffic policy
+            body: Example response from Traffic Policy
             headers:
               content-type: text/plain
             status_code: 200
@@ -63,7 +63,7 @@ spec:
 
 ### `AgentEndpoint` with referenced `NgrokTrafficPolicy`
 
-The following example showcases an `AgentEndpoint` with traffic policy configuration from a referenced `NgrokTrafficPolicy` resource.
+The following example showcases an `AgentEndpoint` with Traffic Policy configuration from a referenced `NgrokTrafficPolicy` resource.
 
 ```yaml
 apiVersion: ngrok.k8s.ngrok.com/v1alpha1
@@ -80,7 +80,7 @@ spec:
       actions:
       - type: custom-response
         config:
-          body: Example response from traffic policy
+          body: Example response from Traffic Policy
           headers:
             content-type: text/plain
           status_code: 200
@@ -100,7 +100,7 @@ spec:
 
 ### `AgentEndpoint` with client certificates
 
-If you would like to enforce mutual TLS, you can reference `Secret` objects that contain client certificates that the operator should use for the
+If you would like to enforce mutual TLS, you can reference `Secret` objects that contain client certificates that the Operator should use for the
 `AgentEndpoint` when connecting to the upstream.
 
 - The secrets are expected to contain the data in the keys `tls.crt` and `tls.key`.
@@ -140,23 +140,23 @@ spec:
 
 ## Using `CloudEndpoint`
 
-The `CloudEndpoint` resource is used to create [Cloud Endpoints](/universal-gateway/cloud-endpoints/) using the operator.
+The `CloudEndpoint` resource is used to create [Cloud Endpoints](/universal-gateway/cloud-endpoints/) using the Operator.
 
 At a high level, Cloud Endpoints are endpoints that live in the ngrok cloud and are always online.
-They may optionally include [traffic policy](/traffic-policy/) configuration specified in-line or as a reference to an `NgrokTrafficPolicy` resource.
-Since they live in the ngrok cloud, Cloud Endpoints are always accessible, even if the cluster running your ngrok operator goes down.
+They may optionally include [Traffic Policy](/traffic-policy/) configuration specified in-line or as a reference to an `NgrokTrafficPolicy` resource.
+Since they live in the ngrok cloud, Cloud Endpoints are always accessible, even if the cluster running your ngrok Operator goes down.
 
 Unlike Agent Endpoints, Cloud Endpoints do not directly specify a local upstream to forward traffic to since they live in the cloud.
-Their primary purpose is to run traffic policies which can be used to forward traffic to other endpoints.
+Their primary purpose is to run Traffic Policies which can be used to forward traffic to other endpoints.
 
-A very common pattern is to make a publicly accessible Cloud Endpoint for a hostname that has traffic policy to forward traffic to one of several other Cloud or Agent endpoints depending on the path/headers/etc.
+A very common pattern is to make a publicly accessible Cloud Endpoint for a hostname that has Traffic Policy to forward traffic to one of several other Cloud or Agent endpoints depending on the path/headers/etc.
 
 The [endpoint types page](/k8s/guides/endpoint-types) showcases using different protocols with `AgentEndpoint` and/or `CloudEndpoint` resources.
 See the [CloudEndpoint Reference](/k8s/crds/cloudendpoint) for more detailed information about `CloudEndpoint` structure and fields.
 
 ### `CloudEndpoint` with in-line Traffic Policy
 
-The following example showcases an `CloudEndpoint` with in-line traffic policy configuration
+The following example showcases an `CloudEndpoint` with in-line Traffic Policy configuration
 
 ```yaml
 apiVersion: ngrok.k8s.ngrok.com/v1alpha1
@@ -172,7 +172,7 @@ spec:
         actions:
         - type: custom-response
           config:
-            body: Example response from traffic policy
+            body: Example response from Traffic Policy
             headers:
               content-type: text/plain
             status_code: 200
@@ -180,7 +180,7 @@ spec:
 
 ### `CloudEndpoint` with referenced `NgrokTrafficPolicy`
 
-The following example showcases an `CloudEndpoint` with traffic policy configuration from a referenced `NgrokTrafficPolicy` resource.
+The following example showcases an `CloudEndpoint` with Traffic Policy configuration from a referenced `NgrokTrafficPolicy` resource.
 
 ```yaml
 apiVersion: ngrok.k8s.ngrok.com/v1alpha1
@@ -195,7 +195,7 @@ spec:
       actions:
       - type: custom-response
         config:
-          body: Example response from traffic policy
+          body: Example response from Traffic Policy
           headers:
             content-type: text/plain
           status_code: 200
@@ -215,11 +215,11 @@ For a more in-depth guide on using `CloudEndpoints` to forward requests to other
 
 ## Using `NgrokTrafficPolicy`
 
-`NgrokTrafficPolicy` allows you to specify a [traffic policy](/traffic-policy/) configuration to be used on one or more `Ingress`, `Gateway`, `CloudEndpoint`, or `AgentEndpoint` resources.
+`NgrokTrafficPolicy` allows you to specify a [Traffic Policy](/traffic-policy/) configuration to be used on one or more `Ingress`, `Gateway`, `CloudEndpoint`, or `AgentEndpoint` resources.
 
 On their own, `NgrokTrafficPolicy` resources do not do anything unless attached to a `CloudEndpoint`, `Ingress`, etc.
 
-The `CloudEndpoint` and `AgentEndpoint` custom resources allow you to choose whether you would like to supply traffic policy configuration in-line or as a reference to an `NgrokTrafficPolicy` resource.
+The `CloudEndpoint` and `AgentEndpoint` custom resources allow you to choose whether you would like to supply Traffic Policy configuration in-line or as a reference to an `NgrokTrafficPolicy` resource.
 This makes it easy to create common `NgrokTrafficPolicy` resources and reuse them on multiple different resources.
 
 `Ingress` and Gateway API resources have several methods of accepting `NgrokTrafficPolicy` resources outlined in the [using ingresses](/k8s/guides/using-ingresses) and [using Gateway API](/k8s/guides/using-gwapi) pages.
@@ -241,7 +241,7 @@ spec:
       actions:
       - type: custom-response
         config:
-          body: Custom response from traffic policy
+          body: Custom response from Traffic Policy
           headers:
             content-type: text/plain
           status_code: 200
@@ -252,7 +252,7 @@ See the [NgrokTrafficPolicy Reference](/k8s/crds/ngroktrafficpolicy) for more de
 ## Using `Domain`, `AgentEndpoint`, `BoundEndpoint`, and `KubernetesOperator`
 
 `Domain`, `AgentEndpoint`, `BoundEndpoint`, and `KubernetesOperator` are all custom resources that you should not need to interface with directly very much.
-They are created by the operator in response to `AgentEndpoint`, `CloudEndpoint`, `Ingress`, and Gateway API resources. They exist primarily to provide feedback to the user about events and resources that are created in response to your configuration and help keep the state of your cluster configuration in-sync with the resources in your ngrok account.
+They are created by the Operator in response to `AgentEndpoint`, `CloudEndpoint`, `Ingress`, and Gateway API resources. They exist primarily to provide feedback to the user about events and resources that are created in response to your configuration and help keep the state of your cluster configuration in-sync with the resources in your ngrok account.
 
 You can use `kubectl describe` on any of them to check their status and conditions when debugging configuration.
 
@@ -264,16 +264,16 @@ You can use `kubectl describe` on any of them to check their status and conditio
   - AgentEndpoints establish connections to your upstream services to handle forwarding traffic.
   - [AgentEndpoint Reference](/k8s/crds/agentendpoint)
 - **BoundEndpoints**:
-  - BoundEndpoints project endpoints with a binding type of `kubernetes` into one or more Kubernetes clusters running the ngrok operator.
+  - BoundEndpoints project endpoints with a binding type of `kubernetes` into one or more Kubernetes clusters running the ngrok Operator.
   - For more information on endpoint bindings, refer to [the bindings page](/k8s/guides/bindings).
   - [BoundEndpoint Reference](/k8s/crds/boundendpoint)
 - **KubernetesOperators**:
-  - KubernetesOperators are used to synchronize the state of any instances of the ngrok Kubernetes operator with your ngrok account.
+  - KubernetesOperators are used to synchronize the state of any instances of the ngrok Kubernetes Operator with your ngrok account.
   - [KubernetesOperator Reference](/k8s/crds/kubernetesoperator)
 
 ## Using edges
 
 Edges are a deprecated custom resource that are not documented as they will be removed soon, so you should not start using Edges or create any new ones now.
-For those who have installed an early release of the operator and created any `HTTPSEdge` resources, they can be rewritten as `CloudEndpoint` and/or `AgentEndpoint` custom resources.
+For those who have installed an early release of the Operator and created any `HTTPSEdge` resources, they can be rewritten as `CloudEndpoint` and/or `AgentEndpoint` custom resources.
 The same is true of the `NgrokModuleSet` resources that were the precursor to `NgrokTrafficPolicy`.
-Edges will be completely removed prior to the 1.0 release of the ngrok Kubernetes operator.
+Edges will be completely removed prior to the 1.0 release of the ngrok Kubernetes Operator.
