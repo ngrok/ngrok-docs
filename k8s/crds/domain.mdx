@@ -2,7 +2,7 @@
 title: Domain
 ---
 
-## Domain Custom Resource
+## Domain custom resource
 
 ### **apiVersion:** `ingress.k8s.ngrok.com/v1alpha1`
 
@@ -18,7 +18,7 @@ If you delete all the `Ingress`/`Gateway`/`CloudEndpoint`/`AgentEndpoint` object
 This ensures you don't lose domains while modifying or recreating ingress objects.
 You can still manually delete a domain CRD via `kubectl delete domain <name>` if you want to unregister it.
 
-## Domain Structure and Types
+## Domain structure and types
 
 The following outlines the high level structure and typings of a `Domain`
 
@@ -35,7 +35,7 @@ spec:
   region: <string>            # required
 ```
 
-## Domain Fields
+## Domain fields
 
 The following sections outline each field of the `Domain` custom resource, whether they are required, what their default values are (if applicable), and a description of their purpose/constraints.
 
@@ -105,7 +105,295 @@ Note that agents may still connect to specific regions.
 
 **Allowed Values:** `"au"`, `"eu"`, `"ap"`, `"us"`, `"jp"`, `"in"`, `"sa"`, `"global"`
 
-## Example Domain
+## Status fields
+
+The `Domain` resource includes status information that reflects the current state of the domain in the ngrok system.
+
+### `status.id`
+
+The ngrok API ID for this domain.
+
+**Type:** `string`
+
+**Example:** `rd_347Xxo1moBQ5AgBmI3a9CFgcCrk`
+
+### `status.domain`
+
+The actual domain string that was reserved.
+
+**Type:** `string`
+
+**Example:** `example-domain.ngrok.app`
+
+### `status.region`
+
+The ngrok region where the domain is available.
+
+**Type:** `string`
+
+**Example:** `global`
+
+### `status.cnameTarget`
+
+The CNAME target for custom domains. This field is only populated for custom (non-ngrok) domains and indicates where you should point your DNS records.
+
+**Type:** `string`
+
+**Example:** `example.cname.ngrok.io`
+
+### `status.conditions`
+
+Standard Kubernetes conditions that indicate the state of the domain.
+
+**Type:** `[]Condition`
+
+Each condition includes:
+- `type` - The condition type
+- `status` - `True`, `False`, or `Unknown`
+- `reason` - A programmatic identifier for the condition state
+- `message` - A human-readable description
+- `lastTransitionTime` - When the condition last changed
+- `observedGeneration` - The resource generation this condition applies to
+
+#### Condition types
+
+##### `Ready`
+
+Indicates whether the domain is fully operational and ready to use for endpoints.
+
+**Status Values:**
+- `True` - Domain is active and ready
+- `False` - Domain is not ready (see reason for details)
+
+**Reasons:**
+
+| Reason | Status | Meaning |
+|--------|--------|---------|
+| `DomainActive` | `True` | Domain is successfully reserved and ready to use |
+| `DomainInvalid` | `False` | Domain format or configuration is invalid |
+| `DomainCreationFailed` | `False` | Failed to reserve the domain in ngrok |
+| `ProvisioningError` | `False` | Error provisioning custom domain (DNS/certificate issues) |
+
+**Example:**
+```yaml
+conditions:
+- type: Ready
+  status: "True"
+  reason: DomainActive
+  message: "Domain ready for use"
+  lastTransitionTime: "2025-10-29T00:39:15Z"
+  observedGeneration: 1
+```
+
+##### `DomainCreated`
+
+Indicates whether the domain was successfully reserved in the ngrok API.
+
+**Status Values:**
+- `True` - Domain was successfully reserved
+- `False` - Failed to reserve domain
+
+**Reasons:**
+
+| Reason | Status | Meaning |
+|--------|--------|---------|
+| `DomainCreated` | `True` | Domain successfully reserved |
+| `DomainCreationFailed` | `False` | API call to reserve domain failed |
+| `DomainInvalid` | `False` | Domain name or format is invalid |
+
+**Example:**
+```yaml
+conditions:
+- type: DomainCreated
+  status: "True"
+  reason: DomainCreated
+  message: "Domain successfully reserved"
+  lastTransitionTime: "2025-10-29T00:39:15Z"
+  observedGeneration: 1
+```
+
+##### `CertificateReady`
+
+Indicates whether the TLS certificate for the domain is ready.
+
+**Status Values:**
+- `True` - Certificate is ready or managed by ngrok
+- `False` - Certificate is not ready
+
+**Reasons:**
+
+| Reason | Status | Meaning |
+|--------|--------|---------|
+| `NgrokManaged` | `True` | Certificate is automatically managed by ngrok |
+| `CertificateReady` | `True` | Custom certificate is provisioned and ready |
+| `ProvisioningError` | `False` | Error provisioning custom domain certificate |
+| `DomainCreationFailed` | `False` | Cannot provision certificate because domain creation failed |
+| `DomainInvalid` | `False` | Cannot provision certificate because domain is invalid |
+
+**Example:**
+```yaml
+conditions:
+- type: CertificateReady
+  status: "True"
+  reason: NgrokManaged
+  message: "Certificate managed by ngrok"
+  lastTransitionTime: "2025-10-29T00:39:15Z"
+  observedGeneration: 1
+```
+
+##### `DNSConfigured`
+
+Indicates whether DNS is properly configured for the domain.
+
+**Status Values:**
+- `True` - DNS is configured correctly
+- `False` - DNS configuration is incomplete or incorrect
+
+**Reasons:**
+
+| Reason | Status | Meaning |
+|--------|--------|---------|
+| `NgrokManaged` | `True` | DNS is automatically managed by ngrok (ngrok subdomain) |
+| `DomainCreated` | `True` | DNS records have been configured for custom domain |
+| `ProvisioningError` | `False` | DNS records are not pointing to ngrok infrastructure |
+| `DomainCreationFailed` | `False` | Cannot configure DNS because domain creation failed |
+| `DomainInvalid` | `False` | Cannot configure DNS because domain is invalid |
+
+**Example:**
+```yaml
+conditions:
+- type: DNSConfigured
+  status: "True"
+  reason: NgrokManaged
+  message: "DNS managed by ngrok"
+  lastTransitionTime: "2025-10-29T00:39:15Z"
+  observedGeneration: 1
+```
+
+**Example (Custom Domain DNS Error):**
+```yaml
+conditions:
+- type: DNSConfigured
+  status: "False"
+  reason: ProvisioningError
+  message: "DNS_ERROR Reserved domain \"example.com\" NS DNS records are not pointing at the ngrok infrastructure"
+  lastTransitionTime: "2025-10-29T00:39:24Z"
+  observedGeneration: 1
+```
+
+##### `Progressing`
+
+Indicates whether the domain is actively being provisioned (typically for custom domains).
+
+**Status Values:**
+- `True` - Domain is currently being provisioned
+- `False` - Domain is not in a provisioning state
+
+**Reasons:**
+
+| Reason | Status | Meaning |
+|--------|--------|---------|
+| `Provisioning` | `True` | Domain provisioning is in progress |
+
+**Example:**
+```yaml
+conditions:
+- type: Progressing
+  status: "True"
+  reason: Provisioning
+  message: "Domain provisioning in progress"
+  lastTransitionTime: "2025-10-29T00:39:15Z"
+  observedGeneration: 1
+```
+
+## Status examples
+
+### Successfully reserved ngrok subdomain
+
+```yaml
+status:
+  id: rd_347Xxo1moBQ5AgBmI3a9CFgcCrk
+  domain: example-domain.ngrok.app
+  conditions:
+  - type: DomainCreated
+    status: "True"
+    reason: DomainCreated
+    message: "Domain successfully reserved"
+    lastTransitionTime: "2025-10-29T00:39:15Z"
+    observedGeneration: 1
+  - type: CertificateReady
+    status: "True"
+    reason: NgrokManaged
+    message: "Certificate managed by ngrok"
+    lastTransitionTime: "2025-10-29T00:39:15Z"
+    observedGeneration: 1
+  - type: DNSConfigured
+    status: "True"
+    reason: NgrokManaged
+    message: "DNS managed by ngrok"
+    lastTransitionTime: "2025-10-29T00:39:15Z"
+    observedGeneration: 1
+  - type: Ready
+    status: "True"
+    reason: DomainActive
+    message: "Domain ready for use"
+    lastTransitionTime: "2025-10-29T00:39:15Z"
+    observedGeneration: 1
+```
+
+### Custom domain with DNS error
+
+```yaml
+status:
+  domain: "*.wildcard-test.example.com"
+  cnameTarget: "example.cname.ngrok.io"
+  conditions:
+  - type: DomainCreated
+    status: "True"
+    reason: DomainCreated
+    message: "Domain successfully reserved"
+    lastTransitionTime: "2025-10-29T00:39:24Z"
+    observedGeneration: 1
+  - type: DNSConfigured
+    status: "False"
+    reason: ProvisioningError
+    message: 'DNS_ERROR Reserved domain "*.wildcard-test.example.com" NS DNS records are not pointing at the ngrok infrastructure'
+    lastTransitionTime: "2025-10-29T00:39:24Z"
+    observedGeneration: 1
+  - type: CertificateReady
+    status: "False"
+    reason: ProvisioningError
+    message: "Cannot provision certificate until DNS is configured"
+    lastTransitionTime: "2025-10-29T00:39:24Z"
+    observedGeneration: 1
+  - type: Ready
+    status: "False"
+    reason: ProvisioningError
+    message: "Domain not ready due to DNS configuration error"
+    lastTransitionTime: "2025-10-29T00:39:24Z"
+    observedGeneration: 1
+```
+
+## Checking domain status
+
+You can check the status of a domain using kubectl:
+
+```bash
+# Check if domain is ready
+kubectl get domain example-domain -o jsonpath='{.status.conditions[?(@.type=="Ready")]}'
+
+# Watch for domain to become ready
+kubectl wait --for=condition=Ready domain/example-domain --timeout=60s
+
+# Get all domains with their ready status
+kubectl get domains -A -o custom-columns=\
+NAME:.metadata.name,\
+DOMAIN:.status.domain,\
+READY:.status.conditions[?(@.type==\'Ready\')].status,\
+REASON:.status.conditions[?(@.type==\'Ready\')].reason
+```
+
+## Example domain
 
 ```yaml
 apiVersion: ingress.k8s.ngrok.com/v1alpha1

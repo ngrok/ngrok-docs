@@ -20,20 +20,20 @@ ngrok Kubernetes Operator.
 ## What you'll need
 
 - **[`kubectl`](https://kubernetes.io/docs/tasks/tools/) and [Helm](https://helm.sh/docs/intro/install/)** installed on your local workstation.
-- **A Kubernetes cluster**—see our [local cluster options](/k8s/guides/local-cluster) doc for some options.
+- **A Kubernetes cluster**—see the [local cluster options](/k8s/guides/local-cluster) doc for some options.
 - **A domain**: This can be your free dev domain, or if you're on a paid plan, one that you choose [in the ngrok
   dashboard](https://dashboard.ngrok.com/domains) or with the [ngrok
-  API](/api/resources/reserved-domains/#create-reserved-domain). Pay-as-you-go plans allow you to bring your own [custom branded
+  API](/api-reference/reserveddomains/create). Pay-as-you-go plans allow you to bring your own [custom branded
   domain](/universal-gateway/custom-domains), like
   `https://api.example.com`.
-  - We'll refer to this domain as `$YOUR_DOMAIN`.
+  - This guide refers to this domain as `$YOUR_DOMAIN`.
 - An [**Auth0
   account**](https://auth0.com/signup?place=header&type=button&text=sign%20up)
   (free is fine) for creating an API and generating JWTs.
 
 ### Deploy demo API services
 
-If you want to quickly wire up a POC using ngrok, we recommend using our [demo
+If you want to quickly wire up a POC using ngrok, use the [demo
 API service](https://github.com/ngrok-samples/api-demo), which responds with details
 about your requests.
 
@@ -41,8 +41,8 @@ You can also bring your own services to this guide—in that case, make sure to
 change service names, target ports, and namespaces accordingly in the resources
 you'll define in the next few steps.
 
-The following manifests create two different but similar deployments that we
-will direct traffic to. Using the container environment variables section, they
+The following manifests create two different but similar deployments that
+traffic will be directed to. Using the container environment variables section, they
 are configured slightly differently to demonstrate that requests are actually
 being routed to different destinations.
 
@@ -131,7 +131,7 @@ Apply these with `kubectl apply -f ...` into your cluster.
 
 ## 1. Deploy the ngrok Kubernetes Operator
 
-You can check out our [installation doc](/k8s/installation/helm) for more details and
+You can check out the [installation doc](/k8s/installation/helm) for more details and
 options on this process, but as a quickstart, add the ngrok Kubernetes Operator
 repo to Helm.
 
@@ -264,7 +264,7 @@ configured and managed in different ways.
 
     		You'll get a `201` response—save the value of `id`, as you'll need it
     		again later to continue configuring the Traffic Policy applied to your
-    		cloud endpoint. We'll refer to it as `<CLOUD_ENDPOINT_ID>`.
+    		cloud endpoint. This guide refers to it as `<CLOUD_ENDPOINT_ID>`.
 
     </Tab>
 
@@ -275,13 +275,13 @@ configured and managed in different ways.
 Your front door is ready, but it currently doesn't have any logic for routing
 traffic to your API services.
 
-Enter our [Traffic Policy system](/traffic-policy), which lets you filter
+Use the [Traffic Policy system](/traffic-policy), which lets you filter
 traffic based on its properties and take action as it passes through ngrok's
 global network. Two important concepts of Traffic Policy to note:
 
 - [Phases](/traffic-policy/concepts/phases) are the distinct points in the lifecycle of
-  a request where you can filter and take action. For this use case, we're using
-  `on_http_request`, which activates when ngrok receives an HTTP request over an
+  a request where you can filter and take action. For this use case, `on_http_request` is used,
+  which activates when ngrok receives an HTTP request over an
   established connection.
 - [Expressions](/traffic-policy/concepts/expressions) define when to run
   your actions. They're written in [Common Expression
@@ -413,8 +413,7 @@ ngrok's JWT validation action helps you:
   services.
 - Offload all this logic from your API services and run it in ngrok's network.
 
-You can use any OAuth provider for JWT validation, but but let's quickly cover the
-process with Auth0.
+You can use any OAuth provider for JWT validation. The process with Auth0 is covered below.
 
 - Log in to your [Auth0 tenant dashboard](https://manage.auth0.com/dashboard).
 - Select **Applications > APIs**, then **+ Create API**.
@@ -435,7 +434,7 @@ The rule below builds on top of the previous cloud endpoint policy to:
    based on the pathname.
 
 You'll need to change the variables accordingly—if you're not sure where to find
-this information, we have a full [integration
+this information, see the full [integration
 guide](/integrations/jwt-validation/auth0) with more details.
 
 ```yaml mode="traffic-policy" title="policy.yaml"
@@ -480,9 +479,7 @@ Apply in either the dashboard or ngrok API.
 
 ### Rate limit specific API services
 
-Let's say one of your services (like `abc`, if you're following along with
-the demo service), needs additional protection from unintentional misuse and
-malicious attacks.
+For example, one of your services (like `abc`, if you're following along with the demo service) may need additional protection from unintentional misuse and malicious attacks.
 
 The [`rate-limit` Traffic Policy
 action](/traffic-policy/actions/rate-limit) allows you to reject requests
@@ -545,14 +542,13 @@ which also automatically gives you features like DDoS protection and global load
 balancing. Plus, you've added global AuthN with JWTs and explored composing
 Traffic Policy rules on multiple endpoints.
 
-There's still a lot more to explore with ngrok's API gateway. Next up, we
-recommend you:
+There's still a lot more to explore with ngrok's API gateway. Next up:
 
 1. Check out your [Traffic
    Inspector](https://dashboard.ngrok.com/observability/traffic-inspector)
    ([documentation](/obs/traffic-inspection#ngrok-traffic-inspector)) to
    observe, modify, and replay requests across your API gateway.
-2. Explore other opportunities to manage and take action on API traffic in our
+2. Explore other opportunities to manage and take action on API traffic in the
    [Traffic Policy documentation](/traffic-policy).
 3. Extend your API gateway into [multicloud](/guides/api-gateway/multicloud)
    by deploying the Kubernetes Operator on a second (or third) cluster and

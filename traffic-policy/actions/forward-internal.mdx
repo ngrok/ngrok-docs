@@ -9,12 +9,12 @@ import { ConfigField, ConfigEnum, ConfigEnumOption } from "/snippets/ConfigTable
 
 The **Forward Internal** Traffic Policy action enables you to forward traffic from an endpoint to a internal endpoint within the same ngrok account. This is useful for safely and securely routing traffic from your public endpoints to other services, giving you the ability to choose when and how your endpoints are made publicly available.
 
-## Configuration Reference
+## Configuration reference
 
 The [Traffic Policy](/traffic-policy/) configuration
 reference for this action.
 
-### Supported Phases
+### Supported phases
 
 `on_tcp_connect`, `on_http_request`
 
@@ -22,7 +22,7 @@ reference for this action.
 
 `forward-internal`
 
-### Configuration Fields
+### Configuration fields
 
 <ConfigField title="url" type="string" required={true} cel={true}>
   <p>
@@ -54,13 +54,13 @@ If the forwarding is unsuccessful because the specified endpoint doesn't exist, 
 Even if you do not plan to send traffic to a local service when creating a forwarding endpoint, you will still need to specify a local port. This port will receive traffic if an expression causes only a subset of traffic to be forwarded or if there is an error forwarding traffic and `on_error` is set to `continue` without a subsequent terminating action.
 </Note>
 
-### HTTP Headers
+### HTTP headers
 
 When forwarding HTTP requests to another endpoint, the `Host` header will be set to the hostname of the forwarding endpoint. For example, if `https://example.ngrok.app` is forwarding HTTP requests to `https://example.internal`, the `Host` header received by the upstream will be `example.ngrok.app`.
 
 The action will also set the `X-Forwarded-For`, `X-Forwarded-Host`, and `X-Forwarded-Proto` headers when making the upstream request. See [Upstream Headers](/universal-gateway/http#upstream-headers) for more information.
 
-### Managing Fallback Behavior (`on_error`) 
+### Managing fallback behavior (`on_error`) 
 
 If `on_error` is set to `halt` (default) and the action encounters an error when forwarding traffic, the Traffic Policy chain will halt and no further actions will be executed. For example, if you have a `log` action after the `forward-internal` action and the `url` specified isn't an online endpoint, the `log` action will not be run and the error will be returned.
 
@@ -70,17 +70,17 @@ However, if `on_error` is set to `continue`, actions that appear after the `forw
 
 A request may only be forwarded to a internal endpoint on the same account as this endpoint.
 
-The target must be of the same protocol (i.e. an HTTP Endpoint may only forward to an HTTP Internal Endpoint).
+The target must be of the same protocol (that is, an HTTP Endpoint may only forward to an HTTP Internal Endpoint).
 
 In addition, the target's traffic policy may only specify policy for the current protocol, for example if `forward-internal` is used in the `on_http_request` phase, the internal endpoint may only have `on_http_request` and `on_http_response` sections.
 
 ## Examples
 
-### Basic Example
+### Basic example
 
 This example configuration will set up a public endpoint (`forward-internal-example.ngrok.app`) forwarding all traffic it receives to a internal endpoint (`example.internal`) that forwards the request to port `80` on your local machine. Since it is forwarding all traffic to the internal endpoint, no traffic will be sent to `8080` which is the upstream port for the public endpoint.
 
-#### Example Traffic Policy Document
+#### Example Traffic Policy document
 
 <CodeGroup>
 ```yaml policy.yml
@@ -109,19 +109,19 @@ on_http_request:
 ```
 </CodeGroup>
 
-#### Start an Internal Endpoint
+#### Start an internal endpoint
 
 ```bash
 ngrok http 80 --url example.internal
 ```
 
-#### Start Public Endpoint with Traffic Policy
+#### Start public endpoint with Traffic Policy
 
 ```bash
 ngrok http 8080 --url forward-internal-example.ngrok.app --traffic-policy-file /path/to/policy.yml
 ```
 
-### Example Request
+### Example request
 
 ```bash
 $ curl https://forward-internal-example.ngrok.app -v
@@ -146,7 +146,7 @@ X-Forwarded-Proto: https
 Accept-Encoding: gzip
 ```
 
-## Action Result Variables
+## Action result variables
 
 <ActionVariablesDescription />
 

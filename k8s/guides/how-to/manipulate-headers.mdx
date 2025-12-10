@@ -3,9 +3,6 @@ title: Customizing Requests with Header Manipulation
 sidebarTitle: Manipulate Headers
 ---
 
-
-
-
 Header manipulation is a core feature of API Gateways that allows you to modify HTTP headers on incoming requests and outgoing responses.
 This enables better security, routing, debugging, and interoperability between services.
 
@@ -16,7 +13,7 @@ By adding, modifying, or removing headers, you can:
 🚀 Enable service compatibility by adjusting headers for different upstream APIs. <br />
 
 
-## 🔍 What are the Benefits of Modifying Headers?
+## 🔍 What are the benefits of modifying headers?
 
 Headers contain critical metadata that helps control authentication, caching, routing, security, and debugging.
 Modifying headers at the gateway level ensures consistency without requiring upstream service changes.
@@ -32,73 +29,50 @@ Key Benefits:
 - **Injecting Authentication Headers:** Add Authorization headers for SSO, API tokens, or identity providers.
 - **Adding Debugging & Tracing Information:** Inject X-Request-ID or Trace-Id headers for observability and monitoring.
 
-## Header Manipulation Examples
+## Header manipulation examples
 
 
-### Adding Request Headers
+### Adding request headers
 
 The following examples will add the `X-Request-Header: my-custom-value` header to requests before they are forwarded to the upstream.
 
 
 <Tabs>
-	<Tab title="AgentEndpoint">
+<Tab title="AgentEndpoint">
 
-	Check out the [add headers](/traffic-policy/actions/add-headers/) and [remove headers](/traffic-policy/actions/remove-headers/) traffic policy action pages for more details about how they function and the parameters they accept.
+Check out the [add headers](/traffic-policy/actions/add-headers/) and [remove headers](/traffic-policy/actions/remove-headers/) traffic policy action pages for more details about how they function and the parameters they accept.
 
-	```yaml
-  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-  kind: AgentEndpoint
-  metadata:
-    name: example-agent-endpoint
-  spec:
-    url: https://example-hostname.ngrok.io
-    upstream:
-      url: http://my-service.my-namespace:8080
-    trafficPolicy:
-      inline:
-        on_http_request:
-            actions:
-              - type: add-headers
-                config:
-                  headers:
-                    X-Request-Header: my-custom-value
-	```
-	</Tab>
-	<Tab title="CloudEndpoint">
+```yaml
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: AgentEndpoint
+metadata:
+  name: example-agent-endpoint
+spec:
+  url: https://example-hostname.ngrok.io
+  upstream:
+    url: http://my-service.my-namespace:8080
+  trafficPolicy:
+    inline:
+      on_http_request:
+          actions:
+            - type: add-headers
+              config:
+                headers:
+                  X-Request-Header: my-custom-value
+```
+</Tab>
+<Tab title="CloudEndpoint">
 
-	Check out the [add headers](/traffic-policy/actions/add-headers/) and [remove headers](/traffic-policy/actions/remove-headers/) traffic policy action pages for more details about how they function and the parameters they accept.
+Check out the [add headers](/traffic-policy/actions/add-headers/) and [remove headers](/traffic-policy/actions/remove-headers/) traffic policy action pages for more details about how they function and the parameters they accept.
 
-	```yaml
-  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-  kind: CloudEndpoint
-  metadata:
-    name: example-cloud-endpoint
-  spec:
-    url: https://example-hostname.ngrok.io
-    trafficPolicy:
-      policy:
-        on_http_request:
-            actions:
-              - type: add-headers
-                config:
-                  headers:
-                    X-Request-Header: my-custom-value
-	```
-	</Tab>
-	<Tab title="Ingress">
-	💡 `Ingress` resources do not have native configuration for header manipulation, but they can be extended using a traffic policy.
-
-	Check out the [add headers](/traffic-policy/actions/add-headers/) and [remove headers](/traffic-policy/actions/remove-headers/) traffic policy action pages for more details about how they function and the parameters they accept.
-
-	### 1. Create an `NgrokTrafficPolicy`
-
-	```yaml
-  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-  kind: NgrokTrafficPolicy
-  metadata:
-    name: example-tp
-    namespace: default
-  spec:
+```yaml
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: CloudEndpoint
+metadata:
+  name: example-cloud-endpoint
+spec:
+  url: https://example-hostname.ngrok.io
+  trafficPolicy:
     policy:
       on_http_request:
           actions:
@@ -106,156 +80,156 @@ The following examples will add the `X-Request-Header: my-custom-value` header t
               config:
                 headers:
                   X-Request-Header: my-custom-value
-	```
+```
+</Tab>
+<Tab title="Ingress">
+💡 `Ingress` resources do not have native configuration for header manipulation, but they can be extended using a traffic policy.
 
-	### 2. Use the `NgrokTrafficPolicy` on an `Ingress`
+Check out the [add headers](/traffic-policy/actions/add-headers/) and [remove headers](/traffic-policy/actions/remove-headers/) traffic policy action pages for more details about how they function and the parameters they accept.
 
-	```yaml
-  apiVersion: networking.k8s.io/v1
-  kind: Ingress
-  metadata:
-    annotations:
-      k8s.ngrok.com/traffic-policy: example-tp
-    name: example-ingress
-    namespace: default
-  spec:
-    ingressClassName: ngrok
-    rules:
-      - host: example-hostname.ngrok.io
-        http:
-          paths:
-            - path: /
-              pathType: Prefix
-              backend:
-                service:
-                  name: example-service
-                  port:
-                    number: 80
-	```
-	</Tab>
-	<Tab title="Gateway API">
-	✅ Gateway API natively supports header manipulation, and this feature is fully supported by the ngrok Kubernetes operator.
+### 1. Create an `NgrokTrafficPolicy`
 
-	### 1. Create a `Gateway`
+```yaml
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: NgrokTrafficPolicy
+metadata:
+  name: example-tp
+  namespace: default
+spec:
+  policy:
+    on_http_request:
+        actions:
+          - type: add-headers
+            config:
+              headers:
+                X-Request-Header: my-custom-value
+```
 
-	If you already have a `Gateway` you can use that instead
+### 2. Use the `NgrokTrafficPolicy` on an `Ingress`
 
-	```yaml
-  apiVersion: gateway.networking.k8s.io/v1
-  kind: Gateway
-  metadata:
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    k8s.ngrok.com/traffic-policy: example-tp
+  name: example-ingress
+  namespace: default
+spec:
+  ingressClassName: ngrok
+  rules:
+    - host: example-hostname.ngrok.io
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: example-service
+                port:
+                  number: 80
+```
+</Tab>
+<Tab title="Gateway API">
+✅ Gateway API natively supports header manipulation, and this feature is fully supported by the ngrok Kubernetes operator.
+
+### 1. Create a `Gateway`
+
+If you already have a `Gateway` you can use that instead
+
+```yaml
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: example-gateway
+  namespace: default
+spec:
+  gatewayClassName: ngrok
+  listeners:
+    - name: example-hostname
+      hostname: "example-hostname.ngrok.io"
+      port: 443
+      protocol: HTTPS
+```
+
+### 2. Create an `HTTPRoute` with the `RequestHeaderModifier` filter
+
+```yaml
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: example-route
+  namespace: default
+spec:
+  hostnames:
+  - example-hostname.ngrok.io
+  parentRefs:
+  - group: gateway.networking.k8s.io
+    kind: Gateway
     name: example-gateway
     namespace: default
-  spec:
-    gatewayClassName: ngrok
-    listeners:
-      - name: example-hostname
-        hostname: "example-hostname.ngrok.io"
-        port: 443
-        protocol: HTTPS
-	```
-
-	### 2. Create an `HTTPRoute` with the `RequestHeaderModifier` filter
-
-	```yaml
-  apiVersion: gateway.networking.k8s.io/v1
-  kind: HTTPRoute
-  metadata:
-    name: example-route
-    namespace: default
-  spec:
-    hostnames:
-    - example-hostname.ngrok.io
-    parentRefs:
-    - group: gateway.networking.k8s.io
-      kind: Gateway
-      name: example-gateway
-      namespace: default
-    rules:
-    - matches:
-        - path:
-            type: PathPrefix
-            value: /
-      backendRefs:
-        - group: ""
-          kind: Service
-          name: example-service
-          port: 8080
-          weight: 1
-      filters:
-      - type: RequestHeaderModifier
-        requestHeaderModifier:
-          add:
-          - name: X-Request-Header
-            value: "my-custom-value"
-	```
-	</Tab>
+  rules:
+  - matches:
+      - path:
+          type: PathPrefix
+          value: /
+    backendRefs:
+      - group: ""
+        kind: Service
+        name: example-service
+        port: 8080
+        weight: 1
+    filters:
+    - type: RequestHeaderModifier
+      requestHeaderModifier:
+        add:
+        - name: X-Request-Header
+          value: "my-custom-value"
+```
+</Tab>
 </Tabs>
 
-### Adding Response Headers
+### Adding response headers
 
 The following examples will add the `X-Response-Header: my-custom-value` header to responses before they are sent to the clients.
 
 
 <Tabs>
-	<Tab title="AgentEndpoint">
+<Tab title="AgentEndpoint">
 
-	Check out the [add headers](/traffic-policy/actions/add-headers/) and [remove headers](/traffic-policy/actions/remove-headers/) traffic policy action pages for more details about how they function and the parameters they accept.
+Check out the [add headers](/traffic-policy/actions/add-headers/) and [remove headers](/traffic-policy/actions/remove-headers/) traffic policy action pages for more details about how they function and the parameters they accept.
 
-	```yaml
-  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-  kind: AgentEndpoint
-  metadata:
-    name: example-agent-endpoint
-  spec:
-    url: https://example-hostname.ngrok.io
-    upstream:
-      url: http://my-service.my-namespace:8080
-    trafficPolicy:
-      inline:
-        on_http_response:
-            actions:
-              - type: add-headers
-                config:
-                  headers:
-                    X-Response-Header: my-custom-value
-	```
-	</Tab>
-	<Tab title="CloudEndpoint">
+```yaml
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: AgentEndpoint
+metadata:
+  name: example-agent-endpoint
+spec:
+  url: https://example-hostname.ngrok.io
+  upstream:
+    url: http://my-service.my-namespace:8080
+  trafficPolicy:
+    inline:
+      on_http_response:
+          actions:
+            - type: add-headers
+              config:
+                headers:
+                  X-Response-Header: my-custom-value
+```
+</Tab>
+<Tab title="CloudEndpoint">
 
-	Check out the [add headers](/traffic-policy/actions/add-headers/) and [remove headers](/traffic-policy/actions/remove-headers/) traffic policy action pages for more details about how they function and the parameters they accept.
+Check out the [add headers](/traffic-policy/actions/add-headers/) and [remove headers](/traffic-policy/actions/remove-headers/) traffic policy action pages for more details about how they function and the parameters they accept.
 
-	```yaml
-  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-  kind: CloudEndpoint
-  metadata:
-    name: example-cloud-endpoint
-  spec:
-    url: https://example-hostname.ngrok.io
-    trafficPolicy:
-      policy:
-        on_http_response:
-            actions:
-              - type: add-headers
-                config:
-                  headers:
-                    X-Response-Header: my-custom-value
-	```
-	</Tab>
-	<Tab title="Ingress">
-	💡 `Ingress` resources do not have native configuration for header manipulation, but they can be extended using a traffic policy.
-
-	Check out the [add headers](/traffic-policy/actions/add-headers/) and [remove headers](/traffic-policy/actions/remove-headers/) traffic policy action pages for more details about how they function and the parameters they accept.
-
-	### 1. Create an `NgrokTrafficPolicy`
-
-	```yaml
-  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-  kind: NgrokTrafficPolicy
-  metadata:
-    name: example-tp
-    namespace: default
-  spec:
+```yaml
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: CloudEndpoint
+metadata:
+  name: example-cloud-endpoint
+spec:
+  url: https://example-hostname.ngrok.io
+  trafficPolicy:
     policy:
       on_http_response:
           actions:
@@ -263,103 +237,126 @@ The following examples will add the `X-Response-Header: my-custom-value` header 
               config:
                 headers:
                   X-Response-Header: my-custom-value
-	```
+```
+</Tab>
+<Tab title="Ingress">
+💡 `Ingress` resources do not have native configuration for header manipulation, but they can be extended using a traffic policy.
 
-	### 2. Use the `NgrokTrafficPolicy` on an `Ingress`
+Check out the [add headers](/traffic-policy/actions/add-headers/) and [remove headers](/traffic-policy/actions/remove-headers/) traffic policy action pages for more details about how they function and the parameters they accept.
 
-	```yaml
-  apiVersion: networking.k8s.io/v1
-  kind: Ingress
-  metadata:
-    annotations:
-      k8s.ngrok.com/traffic-policy: example-tp
-    name: example-ingress
-    namespace: default
-  spec:
-    ingressClassName: ngrok
-    rules:
-      - host: example-hostname.ngrok.io
-        http:
-          paths:
-            - path: /
-              pathType: Prefix
-              backend:
-                service:
-                  name: example-service
-                  port:
-                    number: 80
-	```
-	</Tab>
-	<Tab title="Gateway API">
-	✅ Gateway API natively supports header manipulation, and this feature is fully supported by the ngrok Kubernetes operator.
+### 1. Create an `NgrokTrafficPolicy`
 
-	### 1. Create a `Gateway`
+```yaml
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: NgrokTrafficPolicy
+metadata:
+  name: example-tp
+  namespace: default
+spec:
+  policy:
+    on_http_response:
+        actions:
+          - type: add-headers
+            config:
+              headers:
+                X-Response-Header: my-custom-value
+```
 
-	If you already have a `Gateway` you can use that instead
+### 2. Use the `NgrokTrafficPolicy` on an `Ingress`
 
-	```yaml
-  apiVersion: gateway.networking.k8s.io/v1
-  kind: Gateway
-  metadata:
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    k8s.ngrok.com/traffic-policy: example-tp
+  name: example-ingress
+  namespace: default
+spec:
+  ingressClassName: ngrok
+  rules:
+    - host: example-hostname.ngrok.io
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: example-service
+                port:
+                  number: 80
+```
+</Tab>
+<Tab title="Gateway API">
+✅ Gateway API natively supports header manipulation, and this feature is fully supported by the ngrok Kubernetes operator.
+
+### 1. Create a `Gateway`
+
+If you already have a `Gateway` you can use that instead
+
+```yaml
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: example-gateway
+  namespace: default
+spec:
+  gatewayClassName: ngrok
+  listeners:
+    - name: example-hostname
+      hostname: "example-hostname.ngrok.io"
+      port: 443
+      protocol: HTTPS
+```
+
+### 2. Create an `HTTPRoute` with the `ResponseHeaderModifier` filter
+
+```yaml
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: example-route
+  namespace: default
+spec:
+  hostnames:
+  - example-hostname.ngrok.io
+  parentRefs:
+  - group: gateway.networking.k8s.io
+    kind: Gateway
     name: example-gateway
     namespace: default
-  spec:
-    gatewayClassName: ngrok
-    listeners:
-      - name: example-hostname
-        hostname: "example-hostname.ngrok.io"
-        port: 443
-        protocol: HTTPS
-	```
-
-	### 2. Create an `HTTPRoute` with the `ResponseHeaderModifier` filter
-
-	```yaml
-  apiVersion: gateway.networking.k8s.io/v1
-  kind: HTTPRoute
-  metadata:
-    name: example-route
-    namespace: default
-  spec:
-    hostnames:
-    - example-hostname.ngrok.io
-    parentRefs:
-    - group: gateway.networking.k8s.io
-      kind: Gateway
-      name: example-gateway
-      namespace: default
-    rules:
-    - matches:
-        - path:
-            type: PathPrefix
-            value: /
-      backendRefs:
-        - group: ""
-          kind: Service
-          name: example-service
-          port: 8080
-          weight: 1
-      filters:
-      - type: ResponseHeaderModifier
-        responseHeaderModifier:
-          add:
-          - name: X-Response-Header
-            value: "my-custom-value"
-	```
-	</Tab>
+  rules:
+  - matches:
+      - path:
+          type: PathPrefix
+          value: /
+    backendRefs:
+      - group: ""
+        kind: Service
+        name: example-service
+        port: 8080
+        weight: 1
+    filters:
+    - type: ResponseHeaderModifier
+      responseHeaderModifier:
+        add:
+        - name: X-Response-Header
+          value: "my-custom-value"
+```
+</Tab>
 </Tabs>
 
-### Removing Request Headers
+### Removing request headers
 
 The following examples will remove the `X-Trace-Id` header from requests before they are forwarded to the upstream if the header is present.
 
 
 <Tabs>
-	<Tab title="AgentEndpoint">
+  <Tab title="AgentEndpoint">
 
-	Check out the [add headers](/traffic-policy/actions/add-headers/) and [remove headers](/traffic-policy/actions/remove-headers/) traffic policy action pages for more details about how they function and the parameters they accept.
+  Check out the [add headers](/traffic-policy/actions/add-headers/) and [remove headers](/traffic-policy/actions/remove-headers/) traffic policy action pages for more details about how they function and the parameters they accept.
 
-	```yaml
+  ```yaml
   apiVersion: ngrok.k8s.ngrok.com/v1alpha1
   kind: AgentEndpoint
   metadata:
@@ -376,13 +373,13 @@ The following examples will remove the `X-Trace-Id` header from requests before 
                 config:
                   headers:
                     - X-Trace-Id
-	```
-	</Tab>
-	<Tab title="CloudEndpoint">
+  ```
+  </Tab>
+  <Tab title="CloudEndpoint">
 
-	Check out the [add headers](/traffic-policy/actions/add-headers/) and [remove headers](/traffic-policy/actions/remove-headers/) traffic policy action pages for more details about how they function and the parameters they accept.
+  Check out the [add headers](/traffic-policy/actions/add-headers/) and [remove headers](/traffic-policy/actions/remove-headers/) traffic policy action pages for more details about how they function and the parameters they accept.
 
-	```yaml
+  ```yaml
   apiVersion: ngrok.k8s.ngrok.com/v1alpha1
   kind: CloudEndpoint
   metadata:
@@ -397,16 +394,16 @@ The following examples will remove the `X-Trace-Id` header from requests before 
                 config:
                   headers:
                     - X-Trace-Id
-	```
-	</Tab>
-	<Tab title="Ingress">
-	💡 `Ingress` resources do not have native configuration for header manipulation, but they can be extended using a traffic policy.
+  ```
+  </Tab>
+  <Tab title="Ingress">
+  💡 `Ingress` resources do not have native configuration for header manipulation, but they can be extended using a traffic policy.
 
-	Check out the [add headers](/traffic-policy/actions/add-headers/) and [remove headers](/traffic-policy/actions/remove-headers/) traffic policy action pages for more details about how they function and the parameters they accept.
+  Check out the [add headers](/traffic-policy/actions/add-headers/) and [remove headers](/traffic-policy/actions/remove-headers/) traffic policy action pages for more details about how they function and the parameters they accept.
 
-	### 1. Create an `NgrokTrafficPolicy`
+  ### 1. Create an `NgrokTrafficPolicy`
 
-	```yaml
+  ```yaml
   apiVersion: ngrok.k8s.ngrok.com/v1alpha1
   kind: NgrokTrafficPolicy
   metadata:
@@ -420,11 +417,11 @@ The following examples will remove the `X-Trace-Id` header from requests before 
               config:
                 headers:
                   - X-Trace-Id
-	```
+  ```
 
-	### 2. Use the `NgrokTrafficPolicy` on an `Ingress`
+  ### 2. Use the `NgrokTrafficPolicy` on an `Ingress`
 
-	```yaml
+  ```yaml
   apiVersion: networking.k8s.io/v1
   kind: Ingress
   metadata:
@@ -445,15 +442,15 @@ The following examples will remove the `X-Trace-Id` header from requests before 
                   name: example-service
                   port:
                     number: 80
-	```
-	</Tab>
-	<Tab title="Gateway API">
-	✅ Gateway API natively supports header manipulation, and this feature is fully supported by the ngrok Kubernetes operator.
-	### 1. Create a `Gateway`
+  ```
+  </Tab>
+  <Tab title="Gateway API">
+  ✅ Gateway API natively supports header manipulation, and this feature is fully supported by the ngrok Kubernetes operator.
+  ### 1. Create a `Gateway`
 
-	If you already have a `Gateway` you can use that instead
+  If you already have a `Gateway` you can use that instead
 
-	```yaml
+  ```yaml
   apiVersion: gateway.networking.k8s.io/v1
   kind: Gateway
   metadata:
@@ -466,11 +463,11 @@ The following examples will remove the `X-Trace-Id` header from requests before 
         hostname: "example-hostname.ngrok.io"
         port: 443
         protocol: HTTPS
-	```
+  ```
 
-	### 2. Create an `HTTPRoute` with the `RequestHeaderModifier` filter
+  ### 2. Create an `HTTPRoute` with the `RequestHeaderModifier` filter
 
-	```yaml
+  ```yaml
   apiVersion: gateway.networking.k8s.io/v1
   kind: HTTPRoute
   metadata:
@@ -499,20 +496,20 @@ The following examples will remove the `X-Trace-Id` header from requests before 
       - type: RequestHeaderModifier
           remove:
           - X-Trace-Id
-	```
-	</Tab>
+  ```
+  </Tab>
 </Tabs>
 
-### Removing Response Headers
+### Removing response headers
 
 The following examples will remove the `Server` header from responses before they are sent to the clients if the header is present.
 
 <Tabs>
-	<Tab title="AgentEndpoint">
+  <Tab title="AgentEndpoint">
 
-	Check out the [add headers](/traffic-policy/actions/add-headers/) and [remove headers](/traffic-policy/actions/remove-headers/) traffic policy action pages for more details about how they function and the parameters they accept.
+  Check out the [add headers](/traffic-policy/actions/add-headers/) and [remove headers](/traffic-policy/actions/remove-headers/) traffic policy action pages for more details about how they function and the parameters they accept.
 
-	```yaml
+  ```yaml
   apiVersion: ngrok.k8s.ngrok.com/v1alpha1
   kind: AgentEndpoint
   metadata:
@@ -529,13 +526,13 @@ The following examples will remove the `Server` header from responses before the
                 config:
                   headers:
                     - Server
-	```
-	</Tab>
-	<Tab title="CloudEndpoint">
+  ```
+  </Tab>
+  <Tab title="CloudEndpoint">
 
-	Check out the [add headers](/traffic-policy/actions/add-headers/) and [remove headers](/traffic-policy/actions/remove-headers/) traffic policy action pages for more details about how they function and the parameters they accept.
+  Check out the [add headers](/traffic-policy/actions/add-headers/) and [remove headers](/traffic-policy/actions/remove-headers/) traffic policy action pages for more details about how they function and the parameters they accept.
 
-	```yaml
+  ```yaml
   apiVersion: ngrok.k8s.ngrok.com/v1alpha1
   kind: CloudEndpoint
   metadata:
@@ -550,16 +547,16 @@ The following examples will remove the `Server` header from responses before the
                 config:
                   headers:
                     - Server
-	```
-	</Tab>
-	<Tab title="Ingress">
-	💡 `Ingress` resources do not have native configuration for header manipulation, but they can be extended using a traffic policy.
+  ```
+  </Tab>
+  <Tab title="Ingress">
+  💡 `Ingress` resources do not have native configuration for header manipulation, but they can be extended using a traffic policy.
 
-	Check out the [add headers](/traffic-policy/actions/add-headers/) and [remove headers](/traffic-policy/actions/remove-headers/) traffic policy action pages for more details about how they function and the parameters they accept.
+  Check out the [add headers](/traffic-policy/actions/add-headers/) and [remove headers](/traffic-policy/actions/remove-headers/) traffic policy action pages for more details about how they function and the parameters they accept.
 
-	### 1. Create an `NgrokTrafficPolicy`
+  ### 1. Create an `NgrokTrafficPolicy`
 
-	```yaml
+  ```yaml
   apiVersion: ngrok.k8s.ngrok.com/v1alpha1
   kind: NgrokTrafficPolicy
   metadata:
@@ -573,11 +570,11 @@ The following examples will remove the `Server` header from responses before the
               config:
                 headers:
                   - Server
-	```
+  ```
 
-	### 2. Use the `NgrokTrafficPolicy` on an `Ingress`
+  ### 2. Use the `NgrokTrafficPolicy` on an `Ingress`
 
-	```yaml
+  ```yaml
   apiVersion: networking.k8s.io/v1
   kind: Ingress
   metadata:
@@ -598,16 +595,16 @@ The following examples will remove the `Server` header from responses before the
                   name: example-service
                   port:
                     number: 80
-	```
-	</Tab>
-	<Tab title="Gateway API">
-	✅ Gateway API natively supports header manipulation, and this feature is fully supported by the ngrok Kubernetes operator.
+  ```
+  </Tab>
+  <Tab title="Gateway API">
+  ✅ Gateway API natively supports header manipulation, and this feature is fully supported by the ngrok Kubernetes operator.
 
-	### 1. Create a `Gateway`
+  ### 1. Create a `Gateway`
 
-	If you already have a `Gateway` you can use that instead
+  If you already have a `Gateway` you can use that instead
 
-	```yaml
+  ```yaml
   apiVersion: gateway.networking.k8s.io/v1
   kind: Gateway
   metadata:
@@ -620,11 +617,11 @@ The following examples will remove the `Server` header from responses before the
         hostname: "example-hostname.ngrok.io"
         port: 443
         protocol: HTTPS
-	```
+  ```
 
-	### 2. Create an `HTTPRoute` with the `ResponseHeaderModifier` filter
+  ### 2. Create an `HTTPRoute` with the `ResponseHeaderModifier` filter
 
-	```yaml
+  ```yaml
   apiVersion: gateway.networking.k8s.io/v1
   kind: HTTPRoute
   metadata:
@@ -654,6 +651,6 @@ The following examples will remove the `Server` header from responses before the
         responseHeaderModifier:
           remove:
           - Server
-	```
-	</Tab>
+  ```
+  </Tab>
 </Tabs>

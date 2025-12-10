@@ -7,7 +7,7 @@ The ngrok agent supports an optional, YAML configuration file which enables you 
 
 The agent configuration file location depends on your system. You can check the location of your configuration file by running `ngrok config check` or edit the file in your terminal by running `ngrok config edit`.
 
-## Breaking Changes
+## Breaking changes
 
 There are important differences between the v3 ngrok Agent Configuration file and v2:
 
@@ -16,7 +16,7 @@ There are important differences between the v3 ngrok Agent Configuration file an
 - Deprecated the `tunnels` field in favor of [`endpoints`](#endpoint-definitions).
 - Changed `server_addr` agent configuration field to [`connect_url`](#connect-url).
 - Changed `root_cas` agent configuration field to [`connect_cas`](#connect-cas).
-- Labeled tunnels are no longer supported in v3. Use [endpoints](/api/resources/endpoints/) instead.
+- Labeled tunnels are no longer supported in v3. Use [endpoints](/api-reference/endpoints/list instead.
 
 ## Migrating from v2
 
@@ -57,7 +57,7 @@ You will also need to adjust the following fields if you are using them:
 - Change `root_cas` to `connect_cas`
 - Change `server_addr` to [`connect_url`](#connect-url)
 
-## Supported Fields
+## Supported fields
 
 The ngrok Agent Configuration file supports the following top-level configuration fields:
 
@@ -76,11 +76,11 @@ The top-level `version` field is **required**. Value **must** be `3`.
 version: 3
 ```
 
-## Agent Configuration
+## Agent configuration
 
 The top-level `agent` field is **required**. The agent field allows you to modify both general and advanced agent configuration options, everything from your authtoken to whether the agent should check for updates.
 
-### Agent Configuration Options
+### Agent configuration options
 
 | Name                                          | Description                                                                                                                                                                                          |
 | --------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -100,7 +100,7 @@ The top-level `agent` field is **required**. The agent field allows you to modif
 | [`log_level`](#log-level)                     | Logging level of detail. In increasing order of verbosity, possible values are: `crit`, `warn`, `error`, `info`, and `debug`.                                                                        |
 | [`log_format`](#log-format)                   | Format of written log records.                                                                                                                                                                       |
 | [`log`](#log)                                 | Write logs to this target destination.                                                                                                                                                               |
-| [`metadata`](#metadata)                       | Opaque, user-supplied string that will be returned as part of the ngrok API response to the [list online sessions](/api/resources/tunnel-sessions) resource for all endpoints started by this agent. |
+| [`metadata`](#metadata)                       | Opaque, user-supplied string that will be returned as part of the ngrok API response to the [list online sessions](/api-reference/tunnelsessions/list) resource for all endpoints started by this agent. |
 | [`proxy_url`](#proxy-url)                     | URL of an HTTP or SOCKS5 proxy to use for establishing the tunnel connection.                                                                                                                        |
 | [`remote_management`](#remote-management)     | Set this to `true` to allow the ngrok agent to be remotely managed (stop, restart, update). Defaults to `true`.                                                                                      |
 | [`update_channel`](#update-channel)           | The update channel determines the stability of released builds to update to. Use `stable` for all production deployments.                                                                            |
@@ -112,7 +112,7 @@ The top-level `agent` field is **required**. The agent field allows you to modif
 
 The authentication token used to authenticate this agent when it connects to the ngrok service. You can obtain your default authtoken through the [ngrok Dashboard](https://dashboard.ngrok.com/get-started/your-authtoken).
 
-##### Deploying on Multiple Devices
+##### Deploying on multiple devices
 
 Your default authtoken will work on multiple machines or devices. However, if you want more control and security across many devices, you can generate a unique authtoken for each device in the [ngrok Dashboard](https://dashboard.ngrok.com/tunnels/authtokens) or via the `ngrok api credentials` command.
 
@@ -148,7 +148,8 @@ This is the root certificate authorities used to validate the TLS connection to 
 | ------------ | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `trusted`    | default | use only the trusted certificate root for the ngrok.com tunnel service                                                                                                      |
 | `host`       |         | use the root certificates trusted by the host's operating system. This is helpful for working with machine-in-the-middle (MITM) proxies doing deep packet inspection (DPI). |
-| other values |         | path to a certificate PEM file on disk with certificate authorities to trust                                                                                                |
+| other values |         | path to a certificate PEM file on disk with certificate authorities to trust                
+                                                                                |
 
 #### `connect_interface`
 
@@ -239,7 +240,7 @@ agent:
 
 #### `metadata`
 
-This is a user-supplied custom string that will be returned as part of the ngrok API response to the [list online sessions resource](/api/resources/tunnel-sessions) for all endpoints started by this agent. This is a useful mechanism to identify endpoints by your own device or customer identifier. Maximum 4096 characters.
+This is a user-supplied custom string that will be returned as part of the ngrok API response to the [list online sessions resource](/api-reference/tunnelsessions/list) for all endpoints started by this agent. This is a useful mechanism to identify endpoints by your own device or customer identifier. Maximum 4096 characters.
 
 ```yaml {2,2}
 agent:
@@ -252,7 +253,7 @@ This is the URL of an HTTP or SOCKS5 proxy to use for establishing the tunnel co
 
 #### `remote_management`
 
-Set this to `true` to allow the ngrok agent to be remotely managed (stop, restart, update) via the [ngrok API](/api/resources/tunnel-sessions#restart-tunnel-agent) or the [ngrok Dashboard](https://dashboard.ngrok.com/tunnels/agents). Defaults to `true`.
+Set this to `true` to allow the ngrok agent to be remotely managed (stop, restart, update) via the [ngrok API](/api-reference/tunnelsessions/restart) or the [ngrok Dashboard](https://dashboard.ngrok.com/tunnels/agents). Defaults to `true`.
 
 #### `update_channel`
 
@@ -302,7 +303,17 @@ agent:
     - example.com
 ```
 
-## Endpoint Definitions
+### Working with machine-in-the-middle (MITM) proxies
+If you're working with machine-in-the-middle (MITM) proxies, you may need to specify a custom CA certificate to trust the ngrok server. 
+This may require you to use the ngrok root CA certificate that the agent uses to connect to the ngrok edge.
+
+Use the following command to extract the ngrok agent self-signed root CA certificate:
+
+``` strings `which ngrok` | grep 'BEGIN CERTIFICATE' -A 22 ```
+
+This outputs the root CA certificate in PEM format.
+
+## Endpoint definitions
 
 The `endpoints` field enables you to define and configure multiple endpoints.
 
@@ -316,7 +327,7 @@ endpoint configuration options can be found here.
 
 ### Example
 
-In the snippet below we are defining two HTTPS endpoints, one TCP endpoint, and one TLS endpoint named 'httpbin', 'demo', 'ssh', and 'demo-2':
+The snippet below defines two HTTPS endpoints, one TCP endpoint, and one TLS endpoint, named 'httpbin', 'demo', 'ssh', and 'demo-2', respectively:
 
 ```yaml
 endpoints:
@@ -350,7 +361,7 @@ ngrok start httpbin
 ngrok start --all
 ```
 
-### Endpoint Configuration Options
+### Endpoint configuration options
 
 | Name                                                                                                                   | Required | Description                                                                                                                                                                                                    |
 | ---------------------------------------------------------------------------------------------------------------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -484,8 +495,8 @@ endpoints:
 
 Object. Accepts a Traffic Policy configuration in YAML format.
 
-Traffic Policy enables you to manage, route and secure traffic through configuration. You can learn
-more about the individual parts of the Traffic Policy and the available actions here:
+Traffic Policy enables you to manage, route, and secure traffic through configuration. 
+You can learn more about the individual parts of the Traffic Policy and the available actions here:
 
 - [HTTP Traffic Policy Docs](/traffic-policy/)
 - [TLS Traffic Policy Docs](/traffic-policy)
@@ -576,7 +587,7 @@ endpoints:
 
 String. The application layer protocol the agent should use when talking to your upstream application for HTTP endpoints.
 
-###### Accepted Values:
+###### Accepted values:
 
 - `http1` (default)
 - `http2`
@@ -636,7 +647,7 @@ endpoints:
 # ...
 ```
 
-## Tunnels (Deprecated)
+## Tunnels (deprecated)
 
 <Warning>
 The `tunnels` configuration field is deprecated and will be removed by the end of 2025. Please use the `endpoints` configuration field instead.
@@ -661,19 +672,19 @@ tunnels:
     addr: 80
 ```
 
-### Tunnel Configuration Options
+### Tunnel configuration options
 
 You can find the configuration options for `tunnels` under the [Agent Configuration v2 docs](/agent/config/v2/#tunnel-configurations).
 
-## Example Configuration Files
+## Example configuration files
 
 Below are a collection of different agent configurations to serve as examples for your `ngrok.yml` file.
 
 ### Basic
 
-Here is a basic example configuration file, in this example we are authenticating
-using our authtoken and defining a single HTTPS endpoint named `basic` with a
-endpoint url `basic.ngrok.app` and an upstream url of `localhost:8080`.
+Here is a basic example configuration file. In this example, authentication is done
+using an authtoken and a single HTTPS endpoint named `basic` is defined with an
+endpoint URL `basic.ngrok.app` and an upstream URL of `localhost:8080`.
 
 ```yaml
 # Version of the ngrok Agent Configuration file. Required.
@@ -700,7 +711,7 @@ authtoken in the example to your own before running the following command:
 ngrok start basic
 ```
 
-### Multiple Endpoints
+### Multiple endpoints
 
 ```yaml
 # Version of the ngrok Agent Configuration file. Required.
@@ -725,7 +736,7 @@ endpoints:
       url: 8080
 ```
 
-### Endpoint with Inline Traffic Policy
+### Endpoint with inline Traffic Policy
 
 ```yaml
 # Version of the ngrok Agent Configuration file. Required.
@@ -756,7 +767,7 @@ endpoints:
       protocol: http1
 ```
 
-### Endpoint with Traffic Policy File
+### Endpoint with Traffic Policy file
 
 ```yaml
 # Version of the ngrok Agent Configuration file. Required.
@@ -791,8 +802,8 @@ agent:
 
 # Endpoint Definitions
 endpoints:
-  # Endpoint with no endpoint url defined to get a randomly assigned ngrok address.
-  - name: my_tunnel_name
+  # Endpoint with no endpoint URL defined to get a randomly assigned ngrok address.
+  - name: my_endpoint_name
     #url: http://  # uncomment this line if you want your endpoint to be HTTP, by default it's HTTPS
     upstream:
       url: 80

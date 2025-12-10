@@ -11,17 +11,18 @@ See our [Contribution Guidelines](CONTRIBUTING.md) for detailed instructions on 
 
 ## Prerequisites
 
-- [Node 22](https://nodejs.org/en/download)
+- [Node 24](https://nodejs.org/en/download)
 - [pnpm 10](https://pnpm.io/installation#using-npm)
 - [nvm](https://github.com/nvm-sh/nvm?tab=readme-ov-file#installing-and-updating)
 - `corepack` is included with node by default, no need to install
 
 ## Setup
 
-1. Ensure that `node 22` is installed. With `nvm`, run `nvm install`.
+1. Ensure that `node 24` is installed. With `nvm`, run `nvm install`.
 1. Enable `pnpm` with `corepack`: `corepack enable pnpm`
 1. Install `pnpm` with `corepack`: `corepack install`
 1. Install project dependencies with `pnpm`: `pnpm install`
+1. Install vale, our linter: `brew install vale` ([or use their install instructions](https://vale.sh/docs/install))
 
 ## Running the site locally
 
@@ -33,6 +34,14 @@ When using `pnpm run dev`, this site runs locally at `http://localhost:3333/`
 ### Docs search locally
 
 Search does not work in local builds of the docs site. You'll have to test search in a preview deployment when you create your pull request.
+
+## Running Vale
+
+This project uses [Vale](https://vale.sh/) for documentation linting and style checking. Vale helps maintain consistent writing style and catches common writing issues.
+
+`pnpm run vale` runs Vale linting on all documentation files (excluding snippets and errors directories).
+
+Vale checks your docs contributions for style issues (based on the rules the docs team has defined) and provides suggestions for improvements. To ensure your PRs get merged quickly and efficiently, be sure to address any Vale warnings before submitting.
 
 ## Creating content
 
@@ -68,7 +77,20 @@ description: Example description
 ---
 ```
 
-## Redirects
+## Links
+
+We have a linter that checks for broken links and redirect conflicts. A redirect conflict is when you have two redirects with the same source path.
+
+You can add a path pattern to `link-exceptions.json` to make the link-checker ignore certain links. If the pattern matches a link, even if the link is broken, it will pass linting.
+
+> This is trailing-slash agnostic. A link to `/example` will be ignored if `"/example/"` is in the exception list. Same the other way around. `/example/` = `"/example"`.
+
+- You can add a whole path to an exception with `*`, as in `/path*`.
+- You can match any phrase or path segment with `*` on either side. `*/path*`
+
+> This is useful for things like generated files, which may not be present when the link checker runs, which would cause a false positive.
+
+### Redirects
 
 To create redirects, add them to the `"redirects"` array in `docs.json`.
 

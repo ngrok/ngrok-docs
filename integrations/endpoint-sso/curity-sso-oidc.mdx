@@ -20,7 +20,7 @@ This article details how to configure Curity as the primary Identity Provider fo
 By integrating Curity Identity Server with ngrok, you can:
 
 - **Restrict access to ngrok tunnels** to only users who authenticated via Curity
-- **Use Curity security policies, MFA authenticators** — including BankId, SITHS, and WebAuthn — **to control access to ngrok tunnels**.
+- **Use Curity security policies, MFA authenticators**—including BankId, SITHS, and WebAuthn—**to control access to ngrok tunnels**.
 - **Use Curity's Dashboard to facilitate access to ngrok apps**.
 
 ## Requirements
@@ -30,18 +30,18 @@ To configure ngrok tunnels with Curity, you must have:
 - an Curity account with administrative rights to create clients
 - an [ngrok Enterprise Account](https://ngrok.com/pricing) with an authtoken or admin access to configure edges with OpenID Connect.
 
-## Configuration Steps
+## Configuration steps
 
 To integrate ngrok with Curity Identity Server, you will need to:
 
 1. Configure Curity with the ngrok app
 1. Configure ngrok with the SSO settings provided by Curity
 
-## **Step 1**: Configure Curity Authentication 
+## 1. Configure Curity Authentication 
 
 The Curity Identity Server provides an authenticator called `html-form` that is suitable for setting up a login with username and password. It uses a Credential Manager to verify the credentials, which in turn uses a data-source. There any many options for stronger authentication than username and password. A list of possible authentication methods is available [here](https://curity.io/product/authentication-service/ways-to-authenticate/).
 
-### Add Authentication
+### Add authentication
 
 1. #### Add an Authenticator
    1. Navigate to Profiles > Authentication Service > Authenticators.
@@ -55,13 +55,13 @@ The Curity Identity Server provides an authenticator called `html-form` that is 
 
       ![img/username-04.jpg](../img/curity/img/username-04.jpg)
 
-## **Step 2**: Configure Curity for OIDC 
+## 2. Configure Curity for OIDC 
 
 ### Add an openid client in Curity
 
 1. #### Add New Client
    1. Navigate to **Profiles** > **Token Service** > **Clients** and click **+ New Client**.
-   1. Give the client an ID (eg. `www` for a website client) and click **Create**.
+   1. Give the client an ID (for example,  `www` for a website client) and click **Create**.
 
 2. #### Add Capabilities
    1. Scroll down to the **Capabilities** section and click **Add capabilities**.
@@ -94,7 +94,7 @@ The Curity Identity Server provides an authenticator called `html-form` that is 
 
       ![img/username-04.jpg](../img/curity/img/username-04.jpg)
 
-## **Step 3**: Configure ngrok 
+## 3. Configure ngrok 
 
 ngrok can leverage Curity Identity Server in two ways:
 
@@ -103,10 +103,12 @@ ngrok can leverage Curity Identity Server in two ways:
 
 ### **Option 1**: ngrok CLI
 
-> **Note:** For this tutorial, we assume you have an app running locally (i.e., on localhost:3000) with the ngrok client installed.
+<Note>
+This tutorial assumes you have an app running locally (for example, on `localhost:3000`) with the ngrok client installed.
+</Note>
 
 1. Launch a terminal
-1. Enter the following command to launch an ngrok tunnel with Curity Identity Server. Replace `<curity_url>` with your Curity issuer address (i.e., https://acme.com/oauth/v2/oauth-anonymous) and the `<curity_client_id>` and `<curity_client_secret>` with the respective values copied from the ngrok app registered at Curity:
+1. Enter the following command to launch an ngrok tunnel with Curity Identity Server. Replace `<curity_url>` with your Curity issuer address (that is, https://acme.com/oauth/v2/oauth-anonymous) and the `<curity_client_id>` and `<curity_client_secret>` with the respective values copied from the ngrok app registered at Curity:
 
    ```bash
    ngrok http 3000 --oidc <curity_url> \
@@ -115,9 +117,9 @@ ngrok can leverage Curity Identity Server in two ways:
    --url curity-sso-test.ngrok.dev
    ```
 
-1. [Skip to **Step 4**: ](#test-sso) Test the integration
+1. [Skip to 4. ](#test-sso) Test the integration
 
-### **Option 2**: ngrok Edge
+### **Option 2**: ngrok edge
 
 To configure an edge with Curity:
 
@@ -131,42 +133,39 @@ To configure an edge with Curity:
 1. Click **Begin setup** and enter the following:
 
    ![Curity config in ngrok](../img/curity/img/curity-1.png)
-   - **Issuer URL**: Your Curity issuer url (i.e. https://acme.com/oauth/v2/oauth-anonymous).
+   - **Issuer URL**: Your Curity issuer URL (that is, https://acme.com/oauth/v2/oauth-anonymous).
    - **Client ID**: The name of the client from Curity
    - **Client Secret**: The client secret copied from Curity
 
 1. Click **Save**.
 
 1. Launch a tunnel connected to your Curity edge:
-<Tip>
-**Note**
+<Note>
+This step assumes you have an app running locally (for example, on `localhost:3000`) with the ngrok client installed.
+</Note>
 
-
-For this step, we assume you have an app running locally (i.e. on localhost:3000) with the ngrok client installed.
-</Tip>
-
-1.  Click **Start a tunnel**.
-1.  Click the **copy icon** next to the tunnel command.
+1. Click **Start a tunnel**.
+1. Click the **copy icon** next to the tunnel command.
 
     ![tunnel config](../img/curity/img/curity-2.png)
 
-1.  Launch a tunnel:
+1. Launch a tunnel:
     - Launch a terminal
-    - Paste the command. Replace http://localhost:80 with your local web app address (i.e., http://localhost:3000)
+    - Paste the command. Replace http://localhost:80 with your local web app address (that is, http://localhost:3000)
     - hit **Enter**. an ngrok tunnel associated to your edge configuration is launched.
-1.  To confirm that the tunnel is connected to your edge:
+1. To confirm that the tunnel is connected to your edge:
     - Return to the ngrok dashboard
     - Close the **Start a tunnel** and the **Tunnel group** tabs
     - Refresh the test edge page. Under traffic, You will see the message _You have 1 tunnel online. Start additional tunnels to begin load balancing_
 
     ![tunnel confirmed](../img/curity/img/curity-3.png)
 
-1.  In the test edge, copy the **endpoint URL**. (you will use this url to test the Curity Authentication)
+1. In the test edge, copy the **endpoint URL**. (you will use this URL to test the Curity Authentication)
     ![tunnel url](../img/curity/img/curity-4.png)
 
-## **Step 4**: Test the integration 
+## 4. Test the integration 
 
 1. In your browser, launch an incognito window.
-1. Access your ngrok tunnel (i.e., https://curity-sso-test.ngrok.app or using a copied URL).
+1. Access your ngrok tunnel (for example, https://curity-sso-test.ngrok.app or using a copied URL).
 1. You should be prompted to log in with your Curity credentials.
 1. After login, you should be able to see your web app.

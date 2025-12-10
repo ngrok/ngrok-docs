@@ -12,7 +12,7 @@ To make changes to the documentation, edit the relevant Markdown files in your l
 
 When making changes, please follow the Markdown style guide and try to keep your changes concise and to the point. If you're making significant changes or adding new content, please consider including examples or other resources to help readers understand the topic better.
 
-Once you have finished making your changes, we recommend you run a local build with mintilify (command pnpm run build) to ensure your contribution will not present errors with links or build. After a successful build, push them to your fork on GitHub and create a pull request to submit your changes for review.
+Once you have finished making your changes, we recommend you run a local build with mintilify (command pnpm run dev) to ensure your contribution will not present errors with links or build. After a successful build, push them to your fork on GitHub and create a pull request to submit your changes for review.
 
 # Code of Conduct
 
@@ -33,7 +33,7 @@ Several configuration files control various aspects of the documentation build p
 
 # Adding New Content
 
-- If you're adding new content (e.g., a guide, example), create a new mdx file within the appropriate subdirectory of the docs directory.
+- To add new content (such as a guide or an example), create a new MDX file in the appropriate directory.
   Update the docs.json file to add the new content to the navigation sidebar if applicable.
 
 # Modifying Error Pages

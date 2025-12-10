@@ -44,7 +44,7 @@ This document will cover the CRDs you might use to achieve your goals with the n
                 <h3 className="text-md sm:text-base">NgrokTrafficPolicy</h3>
             </div>
             <p className="flex-grow text-md sm:text-sm">
-                Configuration language that offers you the flexibility to filter, match, manage and orchestrate traffic to your endpoints.
+                Configuration language that offers you the flexibility to filter, match, manage, and orchestrate traffic to your endpoints.
             </p>
         </div>
     </Link>
@@ -74,28 +74,89 @@ This document will cover the CRDs you might use to achieve your goals with the n
         </div>
     </Link>
 
-    <Link to={`/k8s/crds/tunnel/`}>
-        <div className="ngrok--card hover:bg-card-hover">
-            <div className="ngrok--card-heading">
-                <h3 className="text-md sm:text-base">Tunnel</h3>
-            </div>
-            <p className="flex-grow text-md sm:text-sm">
-                Establish secure tunnels for backend services.
-            </p>
+    <Link to={`/k8s/crds/kubernetesoperator/`}>
+      <div className="ngrok--card hover:bg-card-hover">
+        <div className="ngrok--card-heading">
+          <h3 className="text-md sm:text-base">KubernetesOperator</h3>
         </div>
+        <p className="text-md flex-grow sm:text-sm">
+          Use ngrok with your Kubernetes clusters.
+        </p>
+      </div>
     </Link>
 
 </div>
 
 <div className="ngrok--cards ngrok--cards-flex ngrok--cards-row">
-	<Link to={`/k8s/crds/kubernetesoperator/`}>
-		<div className="ngrok--card hover:bg-card-hover">
-			<div className="ngrok--card-heading">
-				<h3 className="text-md sm:text-base">KubernetesOperator</h3>
-			</div>
-			<p className="text-md flex-grow sm:text-sm">
-				Use ngrok with your Kubernetes clusters.
-			</p>
-		</div>
-	</Link>
+    <Link to={`/k8s/crds/ippolicy/`}>
+        <div className="ngrok--card hover:bg-card-hover">
+            <div className="ngrok--card-heading">
+                <h3 className="text-md sm:text-base">IPPolicy</h3>
+            </div>
+            <p className="flex-grow text-md sm:text-sm">
+              A policy to restrict access to an endpoint based on IP that can be used across endpoints.
+            </p>
+        </div>
+    </Link>
 </div>
+
+## Resource status and conditions
+
+The ngrok Kubernetes Operator uses standard Kubernetes conditions to report the state of resources. Each resource includes a `status.conditions` array that provides visibility into the current state and any issues that may need attention.
+
+### Common condition types
+
+The following table summarizes the condition types available across different CRD resources:
+
+| CRD | Condition Type | Purpose |
+|-----|----------------|---------|
+| **Domain** | `Ready` | Overall domain readiness |
+| | `DomainCreated` | Domain reservation status |
+| | `CertificateReady` | TLS certificate status |
+| | `DNSConfigured` | DNS configuration status |
+| | `Progressing` | Domain provisioning in progress |
+| **IPPolicy** | `Ready` | Overall policy readiness |
+| | `IPPolicyCreated` | Policy creation status |
+| | `RulesConfigured` | Rules configuration status |
+| **CloudEndpoint** | `Ready` | Overall endpoint readiness |
+| | `CloudEndpointCreated` | Endpoint creation status |
+| | `DomainReady` | Associated domain status |
+| **AgentEndpoint** | `Ready` | Overall endpoint readiness |
+| | `EndpointCreated` | Endpoint creation status |
+| | `TrafficPolicyApplied` | Traffic policy application status |
+| | `DomainReady` | Associated domain status |
+| **BoundEndpoint** | `Ready` | Overall bound endpoint readiness |
+| | `ServicesCreated` | Target and upstream services creation status |
+| | `ConnectivityVerified` | Upstream connectivity verification status |
+
+### Checking resource status
+
+You can use kubectl to check the status of your resources:
+
+```bash
+# Check if a resource is ready
+kubectl get <resource-type> <name> -o jsonpath='{.status.conditions[?(@.type=="Ready")]}'
+
+# Wait for a resource to become ready
+kubectl wait --for=condition=Ready <resource-type>/<name> --timeout=60s
+
+# List all resources with ready status
+kubectl get <resource-type> -A -o custom-columns=\
+NAME:.metadata.name,\
+NAMESPACE:.metadata.namespace,\
+READY:.status.conditions[?(@.type==\'Ready\')].status,\
+REASON:.status.conditions[?(@.type==\'Ready\')].reason
+```
+
+### Understanding condition fields
+
+Each condition includes the following fields:
+
+- **type**: The condition type (for example, `Ready`, `DomainCreated`)
+- **status**: `True`, `False`, or `Unknown`
+- **reason**: A programmatic identifier for the condition state
+- **message**: A human-readable description of the condition
+- **lastTransitionTime**: When the condition last changed state
+- **observedGeneration**: The resource generation this condition reflects
+
+For detailed information about the status fields and conditions for each CRD, refer to the individual CRD documentation pages linked above.

@@ -1,7 +1,7 @@
 ---
 title: OWASP CRS Response Action
 sidebarTitle: OWASP CRS Response
-description: The OWASP CRS Response action enables OWASP Core Rule Set (CRS) to analyze outgoing HTTP responses from your endpoint and protect against common web attacks.
+description: Block common web attacks with the `owasp-crs-response` action in Traffic Policy.
 ---
 
 import ActionVariablesDescription from "/snippets/traffic-policy/common/action-variables-description.mdx";
@@ -10,32 +10,30 @@ import { YouTubeEmbed } from "/snippets/YouTubeEmbed.jsx";
 import { ConfigField } from "/snippets/ConfigTable.jsx";
 import { ConfigChildren } from "/snippets/ConfigChildren.jsx";
 
-The **OWASP CRS Response** Traffic Policy action enables OWASP (Open Worldwide Application
-Security Project) CRS (previously Core Rule Set), a set of generic attack detection
-rules for use with ModSecurity or compatible web application firewalls. It aims to protect
-web applications from a wide range of attacks, including the
-[OWASP Top Ten](https://owasp.org/www-project-top-ten/), with a minimum of false alerts.
-CRS provides protection against many common attack categories, including SQL Injection,
-Cross Site Scripting, Local File Inclusion, etc.
+The `owasp-crs-response` action enables rule processing on incoming HTTP
+requests to your endpoint. To use rule processing to block malicious HTTP
+_requests_, enable the [OWASP CRS Request
+action](/traffic-policy/actions/owasp-crs-request/) action.
+<Tip>
+Use both actions.
+</Tip>
 
-The `owasp-crs-response` action only enables rule processing on _outgoing_ HTTP responses from your
-endpoint. In addition to this action, we also recommend you enable the [OWASP CRS Request
-action](/traffic-policy/actions/owasp-crs-request/) to analyze _incoming_ HTTP requests to your endpoint.
+[OWASP](https://owasp.org/) stands for the Open Web Application Security
+Project, an online community that, among other things, maintains annual lists of
+the most critical web application security risks. The [OWASP Core Rule
+Set](https://owasp.org/www-project-modsecurity-core-rule-set/) (CRS) is a set of
+attack detection rules exposed for use in your Traffic Policies.
+It includes protections against attacks like SQL Injection, Cross Site
+Scripting, Local File Inclusion, and many others.
 
-## Video walkthrough
+<YouTubeEmbed videoId="HHxj5VGFTEA" title="Block web attacks with ngrok's OWASP CRS Request" />
 
-The video below walks you through ngrok's OWASP CRS request and response actions in Traffic Policy, which let you add web application firewall protection directly to your ngrok endpoints without changing your existing infrastructure.
-
-<YouTubeEmbed videoId="HHxj5VGFTEA" title="Block web attacks with ngrok's OWASP CRS Response" />
-
-<ActionOverview />
-
-### Configuration Reference
+### Configuration reference
 
 This is the [Traffic Policy](/traffic-policy/) configuration
 reference for this action.
 
-#### Supported Phases
+#### Supported phases
 
 `on_http_response`
 
@@ -43,7 +41,7 @@ reference for this action.
 
 `owasp-crs-response`
 
-#### Configuration Fields
+#### Configuration fields
 
     <ConfigField title="on_error" type="string" required={true}>
         <p>Behavior if there is an error. Must be one of either "continue" or "halt" (default "halt")</p>
@@ -51,7 +49,7 @@ reference for this action.
     </ConfigField>
 
     <ConfigField title="process_body" type="bool" required={false}>
-        <p>If false, we do not process rules for the response body. Default is false.</p>
+        <p>If false, rules for the response body are not processed. Default is false.</p>
     </ConfigField>
 
     <ConfigField title="exclude_rule_ids" type="array of integers" required={false}>
@@ -66,7 +64,7 @@ This action evaluates rules for response headers and body (when `process_body` i
 
 The tallying process is called Anomaly Scoring, and is detailed on [the CRS website.](https://coreruleset.org/docs/2-how-crs-works/2-1-anomaly_scoring/)
 
-### Default Behavior
+### Default behavior
 
 The default behavior for this action is based on the following [Coraza](https://coraza.io/) directives and rules from v4.14.0 of the CRS:
 
@@ -76,21 +74,21 @@ The default behavior for this action is based on the following [Coraza](https://
 
 Included in these rules is an outbound anomaly score threshold of 4 and a [paranoia level](https://coreruleset.org/docs/2-how-crs-works/2-2-paranoia_levels/) of 1.
 
-### Managing Fallback Behavior (`on_error`) 
+### Managing fallback behavior (`on_error`) 
 
 If `on_error` is set to `halt` (default) and the action encounters an error when forwarding traffic, the Traffic Policy chain will halt and no further actions will be executed. For example, if you have a `log` action after the `owasp-crs-response` action, the `log` action will not be run and the error will be returned.
 
 However, if `on_error` is set to `continue`, actions that appear after the `owasp-crs-response` action will still be executed even if the `owasp-crs-response` action encounters an error.
 
-### Body Processing
+### Body processing
 
-When `process_body` is enabled, ngrok evaluates rules against the first 4kb of the body. If the body is larger than 4kb, we ignore the portion after the first 4kb.
+When `process_body` is enabled, ngrok evaluates rules against the first 4kb of the body. If the body is larger than 4kb, the portion after the first 4kb is ignored.
 
-### Rule Exclusion
+### Rule exclusion
 
 When `exclude_rule_ids` is configured, ngrok skips evaluation of the specified rule IDs. This allows you to disable specific OWASP CRS rules that may be causing false positives in your environment.
 
-### Outbound Anomaly Score Threshold Exceeded
+### Outbound anomaly score threshold exceeded
 
 If the anomaly score accumulated from matching rules exceeds the threshold, ngrok blocks the request with a `HTTP 403` response. The response from your upstream does not make it to the client.
 
@@ -104,7 +102,7 @@ If ngrok is unable to read the response body successfully, ngrok blocks the resp
 
 The following configuration demonstrates how to run the `owasp-crs-response` action in block mode.
 
-#### Example Traffic Policy Document
+#### Example Traffic Policy document
 
 <CodeGroup>
 ```yaml policy.yml {5}
@@ -137,7 +135,7 @@ on_http_response:
 
 The following configuration demonstrates how to run the `owasp-crs-response` action in test mode where rules are evaluated but blocks are not enforced.
 
-#### Example Traffic Policy Document
+#### Example Traffic Policy document
 
 <CodeGroup>
 ```yaml policy.yml {5}
@@ -190,13 +188,13 @@ on_http_response:
 
 ### Example response from your upstream that ngrok would block
 
-A `text/plain` response like the following will result in ngrok blocking the response due to potential security leaks i.e. SQL Injection vulnerabilities.
+A `text/plain` response like the following will result in ngrok blocking the response due to potential security leaks that is, SQL Injection vulnerabilities.
 
 ```
 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'SELECT * FROM users WHERE id = 'abc'' at line 1
 ```
 
-## Action Result Variables
+## Action result variables
 
 <ActionVariablesDescription />
 

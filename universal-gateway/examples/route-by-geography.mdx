@@ -9,7 +9,7 @@ import TryOut from "/snippets/universal-gateway/_try-out.mdx";
 
 
 
-To route traffic to specific regions, you can use ngrok’s Cloud Endpoints, internal Agent Endpoints, and Traffic Policy engine to match incoming traffic based on the [client's IP geolocation data](/traffic-policy/variables/connection/#conngeocountry-code) using [ISO 3166 country codes](https://www.iso.org/iso-3166-country-codes.html), then forward requests to the appropriate regional endpoints.
+To route traffic to specific regions, you can use ngrok's Cloud Endpoints, internal Agent Endpoints, and Traffic Policy engine to match incoming traffic based on the [client's IP geolocation data](/traffic-policy/variables/connection/#conngeocountry-code) using [ISO 3166 country codes](https://www.iso.org/iso-3166-country-codes.html), then forward requests to the appropriate regional endpoints.
 
 With this setup, you can:
 
@@ -21,8 +21,8 @@ This also implements the ['front door' pattern](/universal-gateway/examples/fron
 
 ## 1. Start endpoints for your services
 
-On a server designated for US traffic, start an internal [Agent Endpoint](/universal-gateway/agent-endpoints/), replacing `$PORT` based on where your service listens.
-You can also use one of our [SDKs](/agent-sdks) or the [Kubernetes Operator](/k8s).
+On a server designated for U.S. traffic, start an internal [Agent Endpoint](/universal-gateway/agent-endpoints/), replacing `$PORT` based on where your service listens.
+You can also use one of the [SDKs](/agent-sdks) or the [Kubernetes Operator](/k8s).
 
 ```bash
 ngrok http $PORT --url https://us-service.internal
@@ -44,15 +44,15 @@ ngrok http $PORT --url https://ca-service.internal
 
 ## 4. Add routing to your services with Traffic Policy
 
-While still viewing your new cloud endpoint in the dashboard, copy and paste the policy below into the Traffic Policy editor.
+While viewing your new cloud endpoint in the dashboard, copy the policy below and paste it into the Traffic Policy editor.
 
 ```yaml
 on_http_request:
   - expressions:
-      # Check if the client is from the US
+      # Check if the client is from the U.S.
       - "conn.geo.country_code == 'US'"
     actions:
-      # Forward the request to the US internal service
+      # Forward the request to the U.S. internal service
       - type: forward-internal
         config:
           url: http://us-service.internal
@@ -73,8 +73,8 @@ on_http_request:
           url: http://us-service.internal
 ```
 
-**What's happening here?** This policy checks checks every HTTP request for where it originated from.
-If that's the US or Canada, ngrok forwards the traffic to its respective endpoint.
+**What's happening here?** This policy checks every HTTP request to see where it originated from.
+If that's the U.S. or Canada, ngrok forwards the traffic to its respective endpoint.
 If the traffic comes from any other country, ngrok forwards it to a "default" service of your choosing.
 
 ## 5. Try out your endpoint
