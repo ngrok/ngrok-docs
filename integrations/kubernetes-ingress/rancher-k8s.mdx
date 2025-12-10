@@ -34,14 +34,14 @@ to ngrok using Rancher's Chart repository, and deploy a demo application, which 
   3.0.0+](https://helm.sh/docs/intro/install/) installed on your local
   workstation.
 - The [ngrok Kubernetes Operator](/k8s/) installed on
-  your cluster. While you _can_ install the Operator via Rancher directly, we
-  recommend using our official Helm chart.
+  your cluster. While you _can_ install the Operator via Rancher directly, this guide
+  recommends using the official Helm chart.
 - A reserved domain, which you can get in the ngrok
   [dashboard](https://dashboard.ngrok.com/domains) or with the [ngrok
   API](/api-reference/reserveddomains/list).
   - You can choose from an ngrok subdomain or bring your own custom branded
     domain, like `https://api.example.com`.
-  - We'll refer to this domain as `<NGROK_DOMAIN>`.
+  - This guide refers to this domain as `<NGROK_DOMAIN>`.
 
 ## Install Rancher via Docker 
 
@@ -51,7 +51,7 @@ an existing cluster running Rancher, you can skip this step and proceed to [Inst
 In the following steps, you'll run Rancher, and create the Kubernetes cluster it runs on, within a Docker container.
 This simple, local-only installation option should be used only for [test and demonstration
 purposes](https://ranchermanager.docs.rancher.com/pages-for-subheaders/installation-and-upgrade#docker-install). You
-can, however, use the Rancher backup operator to
+can, however, use the Rancher backup Operator to
 [migrate](https://ranchermanager.docs.rancher.com/how-to-guides/new-user-guides/backup-restore-and-disaster-recovery/migrate-rancher-to-new-cluster)
 this Docker container-based installation to a production-ready, high-availability Kubernetes cluster.
 
@@ -152,49 +152,49 @@ simplifying how you route external traffic through your Rancher-managed cluster.
 
    Creating a subdomain on the ngrok network provides a public route to accept HTTP, HTTPS, and TLS traffic.
 
-1. Create a new Kubernetes manifest (`2048.yaml`) with the below contents. This manifest defines the 2048 application
-   service and deployment, then configures the ngrok Kubernetes Operator to connect the `game-2048` service to the ngrok
+1. Create a new Kubernetes manifest (`tinyllama.yaml`) with the below contents. This manifest defines the [tinyllama](https://github.com/ngrok-samples/tinyllama) demo LLM application
+   service and deployment, then configures the ngrok Kubernetes Operator to connect the `tinyllama` service to the ngrok
    edge via your `<NGROK_DOMAIN>`.
 
    ```yaml showLineNumbers
    apiVersion: v1
    kind: Service
    metadata:
-     name: game-2048
+     name: tinyllama
    spec:
      ports:
        - name: http
          port: 80
-         targetPort: 80
+         targetPort: 8080
      selector:
-       app: game-2048
+       app: tinyllama
    ---
    apiVersion: apps/v1
    kind: Deployment
    metadata:
-     name: game-2048
+     name: tinyllama
    spec:
      replicas: 1
      selector:
        matchLabels:
-         app: game-2048
+         app: tinyllama
      template:
        metadata:
          labels:
-           app: game-2048
+           app: tinyllama
        spec:
          containers:
-           - name: backend
-             image: alexwhen/docker-2048
+           - name: tinyllama
+             image: ghcr.io/ngrok-samples/tinyllama:main
              ports:
                - name: http
-                 containerPort: 80
+                 containerPort: 8080
    ---
    # ngrok Kubernetes Operator configuration
    apiVersion: networking.k8s.io/v1
    kind: Ingress
    metadata:
-     name: game-2048-ingress
+     name: tinyllama-ingress
    spec:
      ingressClassName: ngrok
      rules:
@@ -205,18 +205,18 @@ simplifying how you route external traffic through your Rancher-managed cluster.
                pathType: Prefix
                backend:
                  service:
-                   name: game-2048
+                   name: tinyllama
                    port:
                      number: 80
    ```
 
-1. Apply the `2048.yaml` manifest to your RKE2 cluster.
+1. Apply the `tinyllama.yaml` manifest to your RKE2 cluster.
 
    ```bash
-   kubectl apply -f 2048.yaml
+   kubectl apply -f tinyllama.yaml
    ```
 
-1. Access your 2048 demo app by navigating to your ngrok subdomain, for example, `https://one-two-three.ngrok.app`.
+1. Access your tinyllama demo app by navigating to your ngrok subdomain, for example, `https://one-two-three.ngrok.app`.
    ngrok's edge and your Operator will route traffic to your app from any device or external network as long
    as your Rancher server and application cluster remain operational.
 

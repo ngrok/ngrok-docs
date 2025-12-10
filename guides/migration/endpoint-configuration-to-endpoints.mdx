@@ -1,9 +1,134 @@
 ---
 title: Migrate from ngrok Endpoint Configurations to Cloud Endpoints
+description: Learn how to migrate your Endpoint configurations to Cloud Endpoints.
+noSidebar: true
 ---
 
+{/* This page is intentionally left out of the sidebar */}
 
-## 🗑️ 6. Delete the Old Endpoint Configuration
+This guide walks you through manually migrating ngrok Endpoint configurations to Cloud Endpoints with appropriate Traffic policies.
+
+## Prerequisites
+
+- An **[ngrok account](https://dashboard.ngrok.com)** with an **[ngrok API key](https://dashboard.ngrok.com/api-keys)**.
+- The [ngrok API documentation](/api)./docs/guides/migration/modules-to-traffic-policy-actions
+- Tools like `curl` or Postman (or [ngrok's own API libraries](/api/#client-libraries)).
+- Understanding of your existing **edge configurations**.
+- YAML formatting skills for creating Traffic Policies.
+- A text editor to prepare YAML payloads.
+
+### Important notes
+
+- **Dry Run First**: Test Traffic Policies without deleting anything.
+- **Backup Everything**: Save JSON exports of your current configurations.
+- **Check your protocols**: Not everything is supported on TCP / TLS.
+
+## 1. Set up environment
+
+Make sure you have:
+
+- **NGROK_API_TOKEN** (your personal or organization token).
+- **API Base URL**: `https://api.ngrok.com`.
+
+**Example Header for all API requests:**
+
+```bash
+Authorization: Bearer YOUR_NGROK_API_TOKEN
+Ngrok-Version: 2
+Content-Type: application/json
+
+```
+
+## 2. Retrieve existing endpoint configurations
+
+Get a list of all current endpoint configurations:
+
+```bash
+curl -H "Authorization: Bearer YOUR_NGROK_API_TOKEN" \
+     -H "Ngrok-Version: 2" \
+     https://api.ngrok.com/endpoint_configurations
+
+```
+
+Save the response. Each object represents an existing endpoint you may need to migrate.
+
+## 3. Retrieve reserved domains and addresses
+
+You must associate reserved domains and addresses with endpoint configurations manually.
+
+**Reserved domains (HTTP / HTTPS):**
+
+```bash
+curl -H "Authorization: Bearer YOUR_NGROK_API_TOKEN" \
+     -H "Ngrok-Version: 2" \
+     https://api.ngrok.com/reserved_domains
+
+```
+
+**Reserved addresses (TCP):**
+
+```bash
+curl -H "Authorization: Bearer YOUR_NGROK_API_TOKEN" \
+     -H "Ngrok-Version: 2" \
+     https://api.ngrok.com/reserved_addrs
+
+```
+
+**Match reserved domains/addresses** to endpoint configurations:
+
+- For **domains**, check if `http_endpoint_configuration` or `https_endpoint_configuration` is populated.
+- For **addresses**, check if `endpoint_configuration` is populated.
+
+## 4. Build a Traffic Policy for each endpoint
+
+For each endpoint configuration:
+
+1. **Analyze features** enabled on the endpoint:
+   - OAuth? OIDC? Webhook verification? TLS termination?
+   - Request/response header modifications?
+   - IP restrictions?
+   - Circuit breaker or compression?
+2. **Translate module configuration to Traffic Policy YAML**.
+
+   [📚 Guide: How to Migrate Each Endpoint Configuration Module to Traffic Policy Actions](/guides/migration/modules-to-traffic-policy-actions)
+
+To help start you off, here is a **basic Traffic Policy skeleton in YAML**:
+
+```yaml
+on_http_request: []
+on_http_response: []
+on_tcp_connect: []
+```
+
+## 5. Create a new Cloud Endpoint
+
+Once your Traffic Policy YAML is ready:
+
+Create a new **Cloud Endpoint**:
+
+```bash
+curl -X POST \
+     -H "Authorization: Bearer YOUR_NGROK_API_TOKEN" \
+     -H "Ngrok-Version: 2" \
+     -H "Content-Type: application/json" \
+     -d '{
+           "description": "Migrated from endpoint configuration ID",
+           "type": "cloud",
+           "url": "<address or domain>",
+           "traffic_policy": "--- YOUR POLICY YAML STRINGIFIED HERE ---"
+         }' \
+     https://api.ngrok.com/endpoints
+
+```
+
+Make sure:
+
+- `url` matches the domain or address associated with the old configuration.
+- `traffic_policy` is stringified and properly escaped, using third-party tools can help with this.
+
+---
+
+## 6. Delete the old endpoint configuration
 
 Once the new endpoint is verified to work:
 
@@ -16,15 +141,16 @@ curl -X DELETE \
 
 ---
 
-## 🔁 Repeat for All Endpoint Configurations
+## 7. Repeat for all endpoint configurations
 
-Repeat **Steps 2-6** for every domain and address you have attached to the endpoint config.
-Be careful if endpoints have multiple domains or addresses attached.
+- Repeat **Steps 2-6** for every domain and address you have attached to the endpoint config.
+- Be careful if endpoints have multiple domains/addresses attached.
 
-<Note>
-- **Dry Run First**: Test traffic policies without deleting anything.
-- **Backup Everything**: Save JSON exports of your current configurations.
-- **Check your protocols:** Not everything is supported on TCP / TLS.
-</Note>
+After completing the process, your endpoints will be managed under **Cloud Endpoints** with fine-grained **Traffic Policies**, allowing better modular management and control.
 
-After completing the process, your endpoints will be managed under cloud endpoints with fine-grained traffic policies for better modular management and control.
+## What's next?
+
+Here are some guides to help get you started with Traffic Policy:
+
+- Learn how to take advantage of ngrok's [load balancing and traffic forwarding capabilities with Cloud Endpoints](/universal-gateway/cloud-endpoints/forwarding-and-load-balancing).
+- Use Cloud Endpoints for [path-based traffic routing and Traffic Policy decentralization](/universal-gateway/cloud-endpoints/routing-and-policy-decentralization).

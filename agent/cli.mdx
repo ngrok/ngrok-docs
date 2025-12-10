@@ -59,7 +59,7 @@ ngrok http 80 --url https://api.example.com --pooling-enabled
 ngrok http 80 --url https://svc.internal
 ngrok tcp 5432 --url tcp://postgres.internal:5432
 
-# make your endpoint URL addressable only from k8s clusters
+# make your endpoint url addressable only from k8s clusters
 # where you've installed the ngrok k8s operator
 ngrok http 80 --url https://example.namespace --binding kubernetes
 
@@ -81,7 +81,6 @@ ngrok start foo bar baz
 | [start](#ngrok-start)    | start endpoints or tunnels by name from the configuration file                                          |
 | [tcp](#ngrok-tcp)    | start a TCP tunnel                                          |
 | [tls](#ngrok-tls)    | start a TLS tunnel                                          |
-| [tunnel](#ngrok-tunnel)    | start a tunnel for use with a tunnel-group backend                                          |
 | [update](#ngrok-update)    | update ngrok to the latest version                                          |
 | [version](#ngrok-version)    | print the version string                                          |
 
@@ -675,60 +674,13 @@ ngrok tls --url=t.co --crt=/path/to/t.co.crt --key=/path/to/t.co.key 443
 |  `--proxy-proto` (deprecated) | use --upstream-proxy-protocol instead |
 |  `--region` (deprecated) | ngrok automatically chooses the region with lowest latency |
 |  `--subdomain` (deprecated) | host tunnel on a custom subdomain |
-|  `--terminate-at` | terminate at ngrok "edge", "agent", or "upstream". defaults to "upstream" unless --crt or --key are present, in which case "edge" is the default. |
+|  `--terminate-at` (deprecated) | this flag is deprecated and will be removed in a future release; use terminate-tls via Traffic Policy or agent_tls_termination via agent configuration instead |
 |  `--traffic-policy-file` | path to traffic policy configuration YAML or JSON file, e.g. './path/to/policy.yml' |
 |  `--traffic-policy-url` | URL to traffic policy configuration YAML or JSON file, e.g. 'https://example.com/policy.yml' |
 |  `--upstream-proxy-protocol` | version of proxy proto to use with this tunnel, empty if not unused |
 |  `--upstream-tls-verify` | enables TLS verification of server TLS certificates |
 |  `--upstream-tls-verify-cas` | path to CA cert to use to verify server certs |
 |  `--url` | host endpoint on a URL |
-|  `--config` | path to config files; they are merged if multiple |
-
-
-## ngrok tunnel
-
-Starts a tunnel with labels so that it can be part of a tunnel-group.
-The tunnel-group consists of all the tunnels matching all the labels
-of a tunnel-group backend. Endpoint configurations containing a
-tunnel-group backend will cause traffic to their associated reserved
-domain or address to be forwarded to the tunnel-group.
-
-See the [Tunnel Group backends](/network-edge/edges/#tunnel-group) and [Edges](/network-edge/edges/) pages for more information.
-
-### Usage
-
-```sh
-ngrok tunnel [--label key=value] ... [address:port | port] [flags]
-```
-
-### Example
-
-```sh
-# tunnel-group traffic for app=foo may be forwarded to port 80
-ngrok tunnel --label app=foo 80
-
-# match tunnel-group with multiple labels
-ngrok tunnel --label app=foo --label dc=bar 80
-```
-
-### Flags
-
-| Flag              | Description                             |
-| ----------------- | --------------------------------------- |
-|  `--app-protocol` (deprecated) | use --upstream-protocol instead |
-|  `--authtoken` | ngrok.com authtoken identifying a user |
-|  `--crt` | path to a TLS certificate for TLS termination |
-|  `--description` | user editable description about this endpoint |
-|  `--inspect` | enable/disable http introspection (default true) |
-|  `--key` | path to a TLS key for TLS termination |
-|  `--label` | labels to associate with the tunnel in key=value format |
-|  `--metadata` | metadata about this endpoint |
-|  `--mutual-tls-cas` | path to TLS certificate authority to verify client certs in mutual tls |
-|  `--name` | user supplied name for this endpoint |
-|  `--proxy-proto` (deprecated) | use --upstream-proxy-protocol instead |
-|  `--region` (deprecated) | ngrok automatically chooses the region with lowest latency |
-|  `--upstream-protocol` | Specify the upstream protocol to be used: 'http1', 'http2' (default 'http1') |
-|  `--upstream-proxy-protocol` | version of proxy proto to use with this tunnel, empty if not unused |
 |  `--config` | path to config files; they are merged if multiple |
 
 

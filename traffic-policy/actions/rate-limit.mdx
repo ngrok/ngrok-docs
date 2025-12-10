@@ -14,12 +14,12 @@ that restrict the throughput of traffic that successfully reaches your endpoint.
 
 Traffic may be limited overall or by attributes of the incoming requests.
 
-## Configuration Reference
+## Configuration reference
 
 The [Traffic Policy](/traffic-policy/) configuration
 reference for this action.
 
-### Supported Phases
+### Supported phases
 
 `on_http_request`
 
@@ -27,7 +27,7 @@ reference for this action.
 
 `rate-limit`
 
-### Configuration Fields
+### Configuration fields
 
     <ConfigField title="name" type="string" required={true}>
         <p>A name for this rate limit configuration. Must be less than <code>1024</code> characters.</p>
@@ -57,7 +57,7 @@ reference for this action.
 
     <ConfigField title="bucket_key" type="array of strings" required={true}>
         <p>The elements of this collection define the unique key of a request to track the rate at which the capacity is being met.</p>
-        <p>Each bucket key is a CEL expression which includes all valid traffic policy [variables](/traffic-policy/variables/) and [macros](/traffic-policy/macros/).</p>
+        <p>Each bucket key is a CEL expression which includes all valid Traffic Policy [variables](/traffic-policy/variables/) and [macros](/traffic-policy/macros/).</p>
         <ConfigEnum label="Sample buckets">
             <ConfigEnumOption>`req.host` - The Host of the request.</ConfigEnumOption>
             <ConfigEnumOption>`conn.client_ip` - The client IP address.</ConfigEnumOption>
@@ -68,7 +68,7 @@ reference for this action.
 
 ## Behavior
 
-### Determining the Rate Limit Bucket
+### Determining the rate limit bucket
 
 When this action is executed, information from the incoming HTTP request is
 used to determine which rate limit bucket the request falls into. Each bucket
@@ -78,7 +78,7 @@ such as client IP, request host, or a header value.
 If the bucket has not exceeded its capacity, the request proceeds to the next
 action in your policy configuration.
 
-## Multiple Buckets
+## Multiple buckets
 
 If multiple `bucket_key` values are specified, the action will create a
 unique rate limit bucket for each combination of the specified keys. For
@@ -87,7 +87,7 @@ all incoming requests that have the exact same combination of `Host` header and 
 will be grouped into the same rate limit bucket. To rate limit separately with two different
 buckets, you can create multiple `rate-limit` actions instead.
 
-### Rate Limit Exceeded
+### Rate limit exceeded
 
 If the identified bucket has received more events than its capacity over the
 specified duration:
@@ -96,7 +96,7 @@ specified duration:
 2. The `retry-after` header is included in the response, indicating the number
    of seconds after which the request may be retried.
 
-### Capacity per Ingress Server
+### Capacity per ingress server
 
 Currently, the `capacity` for each rate limit bucket is applied per ingress
 server. This means that each server independently tracks the number of requests
@@ -104,13 +104,13 @@ and enforces the rate limits accordingly.
 
 
 ## Examples
-### Rate Limit by Host Header
+### Rate limit by host header
 
 The following [Traffic Policy](/traffic-policy/)
 configuration demonstrates how to use the `rate-limit` action to rate limit
 all incoming requests by the `Host` header.
 
-#### Example Traffic Policy Document
+#### Example Traffic Policy document
 
 <CodeGroup>
 ```yaml policy.yml {10}
@@ -150,10 +150,10 @@ on_http_request:
 ```
 </CodeGroup>
 
-For this example, we are assuming that ngrok is pointing at the upstream service
+For this example, assume that ngrok is pointing at the upstream service
 https://httpbin.org.
 
-#### Example Request
+#### Example request
 
 ```bash
 $ curl https://httpbin.ngrok.app/get
@@ -164,11 +164,11 @@ HTTP/2 429
 retry-after: 24
 ```
 
-In this example, we attempt to connect to `httpbin.ngrok.app` using the `curl`
-command and get back a `429` status code with a `retry-after` header telling us
-the number of seconds we must wait before retrying the request.
+In this example, a connection attempt to `httpbin.ngrok.app` using the `curl`
+command returns a `429` status code with a `retry-after` header indicating
+the number of seconds to wait before retrying the request.
 
-## Action Result Variables
+## Action result variables
 
 <ActionVariablesDescription />
 

@@ -1,5 +1,6 @@
 ---
 title: Configure Secure Access to Remote IoT Devices
+sidebarTitle: Using Remote IoT Devices
 description: Learn how to use ngrok to remotely access IoT devices and services. Connect remotely without VPN or SSH.
 ---
 
@@ -21,7 +22,7 @@ In this scenario, each factory's network blocks inbound connections, but the tec
 
 Each factory would only need one ngrok agent running.
 
-### Why only one ngrok agent per factory?
+### Why only one ngrok Agent per factory?
 
 Traditionally, you might assume that every device inside the factory needs its own ngrok agent, but this isn't
 necessary. A single ngrok agent is installed on a network-accessible machine inside the factory, and it:
@@ -42,7 +43,7 @@ This setup minimizes security risks, simplifies deployment, and ensures continuo
 An [internal endpoint](/universal-gateway/internal-endpoints/) enables a service inside the factory network to be reachable
 within ngrok, without being publicly exposed. They can:
 
-1. Only receive traffic from cloud endpoints or internal services that explicitly route traffic to them.
+1. Only receive traffic from Cloud Endpoints or internal services that explicitly route traffic to them.
 2. Not be accessed directly from the internet.
 3. Be used for telemetry APIs, databases, and dashboards.
 
@@ -63,7 +64,7 @@ endpoints:
 
 Now this API is only accessible inside ngrok's private network.
 
-A [cloud endpoint](/universal-gateway/cloud-endpoints/) is a permanent, externally accessible entry point into the factory
+A [Cloud Endpoint](/universal-gateway/cloud-endpoints/) is a permanent, externally accessible entry point into the factory
 network that's also:
 
 1. Managed centrally via the ngrok API or dashboard.
@@ -72,7 +73,7 @@ network that's also:
 4. Used for exposing services to external cloud apps securely.
 
 For example, the factory's telemetry API is accessible via https://factory.example.com/api, but instead of
-exposing the API directly, a cloud endpoint forwards traffic to its internal endpoint:
+exposing the API directly, a Cloud Endpoint forwards traffic to its internal endpoint:
 
 ```yaml
 on_http_request:
@@ -130,9 +131,9 @@ In most cases, installing ngrok as a service requires administrator privileges.
 This will start all tunnels defined in the configuration file, ensure ngrok runs persistently in the background,
 and integrate with native OS service tooling.
 
-## Reserve a TCP address for your TCP-based cloud endpoint
+## Reserve a TCP address for your TCP-based Cloud Endpoint
 
-When you reserve a TCP Address, you can create a TCP cloud endpoint that binds to that domain. Reserved TCP
+When you reserve a TCP Address, you can create a TCP Cloud Endpoint that binds to that domain. Reserved TCP
 addresses are available on ngrok's pay-as-you-go plan.
 
 ```curl
@@ -180,10 +181,10 @@ Navigate to the [Authtokens](https://dashboard.ngrok.com/authtokens) section of 
 authtoken for that Service User and assign it an ACL binding, so that it can only create endpoints bound to the reserved
 wildcard domain for that factory's telemetry API.
 
-## Create cloud endpoints for always-on API and database access
+## Create Cloud Endpoints for always-on API and database access
 
-Since the telemetry API and database must be always accessible, create permanent cloud endpoints that route traffic to their
-internal endpoints. Create an HTTPS cloud endpoint for the API using the ngrok platform API.
+Since the telemetry API and database must be always accessible, create permanent Cloud Endpoints that route traffic to their
+internal endpoints. Create an HTTPS Cloud Endpoint for the API using the ngrok platform API.
 
 ```curl
 curl -X POST https://api.ngrok.com/endpoints \
@@ -198,7 +199,7 @@ curl -X POST https://api.ngrok.com/endpoints \
 ```
 
 Now factory1.api.acme.com/api permanently forwards traffic to api.internal inside the factory. Next, create a
-TCP cloud endpoint for the sensor database because it's on a TCP-based internal endpoint.
+TCP Cloud Endpoint for the sensor database because it's on a TCP-based internal endpoint.
 
 ```curl
 curl -X POST https://api.ngrok.com/endpoints \
@@ -241,9 +242,9 @@ Now, `app.factory.com` is live—only for this session.
 
 ## Secure API access with Google OAuth and mTLS with Traffic Policy
 
-Navigate to your newly created telemetry API cloud endpoint in the [endpoints](https://dashboard.ngrok.com/authtokens)
+Navigate to your newly created telemetry API Cloud Endpoint in the [endpoints](https://dashboard.ngrok.com/authtokens)
 tab on the dashboard, and apply a [Traffic Policy](/traffic-policy/). Make sure you have a certificate on hand or generate them using the
-instructions in our [terminate-tls](/traffic-policy/actions/terminate-tls/#generate-certificates) docs.
+instructions in the [terminate-tls](/traffic-policy/actions/terminate-tls/#generate-certificates) docs.
 
 ```yaml
 on_tcp_connect:
@@ -270,10 +271,10 @@ Now, only Google authenticated users can access the web dashboard and the connec
 ## Welcome to your secure, connected, and automated factory
 
 You have now integrated a system that allows you to seamlessly and securely access any
-and all remote services within your enterprise. Let's recap what you've built:
+and all remote services within your enterprise. To recap what you've built:
 
 1. One ngrok agent per factory and no need for multiple installs.
-2. Always-online API and dashboard, securely available via cloud endpoints.
+2. Always-online API and dashboard, securely available via Cloud Endpoints.
 3. A web dashboard that spins up on-demand with authentication via Google OAuth and mTLS security.
 4. An Agent API that dynamically manages tunnels with automatic provisioning and deprovisioning.
 5. ngrok runs as a background service, which means it's reliable and will always auto-restart.

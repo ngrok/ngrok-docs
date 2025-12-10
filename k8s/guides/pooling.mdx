@@ -6,10 +6,10 @@ description: Learn how to load balance traffic between endpoints using the ngrok
 
 Endpoint pooling is the concept of creating two or more endpoints that share the same URL and have pooling enabled (if you don't enable pooling for an endpoint it cannot have the same URL as another endpoint).
 The [endpoint pooling page](/universal-gateway/endpoint-pooling/) goes over concepts and details of pooling in more depth.
-This guide focuses on how to use and configure endpoint pooling while using the ngrok Kubernetes operator.
+This guide focuses on how to use and configure endpoint pooling while using the ngrok Kubernetes Operator.
 
-Note that while endpoint pooling is supported by the ngrok Kubernetes operator, endpoint pools are not specific to the environment in which they were created.
-This means that you can pool endpoints created with the Kubernetes operator with endpoints started using the CLI, etc. This is a powerful and important concept to keep in mind to avoid unwanted pooling.
+Note that while endpoint pooling is supported by the ngrok Kubernetes Operator, endpoint pools are not specific to the environment in which they were created.
+This means that you can pool endpoints created with the Kubernetes Operator with endpoints started using the CLI, etc. This is a powerful and important concept to keep in mind to avoid unwanted pooling.
 
 <Note>
 
@@ -20,9 +20,9 @@ Similarly, any endpoint attempting to create an endpoint that does not enable po
 
 ## Endpoint Pooling with `AgentEndpoints`
 
-Within the Kubernetes operator, `AgentEndpoint` resources are currently **Always Pooled**.
+Within the Kubernetes Operator, `AgentEndpoint` resources are currently **Always Pooled**.
 This means that if you create the same `AgentEndpoint` in two different Kubernetes clusters, or with a URL shared by any other type of endpoint that has pooling enabled, then they will all be part of the same pool.
-When the Kubernetes operator creates `AgentEndpoint` resources for you by translating `Ingress` and Gateway API resources, it will prefix the generated `AgentEndpoint` URL with a special hash to avoid unintended pooling.
+When the Kubernetes Operator creates `AgentEndpoint` resources for you by translating `Ingress` and Gateway API resources, it will prefix the generated `AgentEndpoint` URL with a special hash to avoid unintended pooling.
 
 ## Endpoint Pooling with `CloudEndpoints`
 
@@ -41,7 +41,7 @@ spec:
       actions:
       - type: custom-response
         config:
-          body: Example response from traffic policy
+          body: Example response from Traffic Policy
           headers:
             content-type: text/plain
           status_code: 200
@@ -58,7 +58,7 @@ spec:
 
 ## Endpoint Pooling with `Ingresses`
 
-If you are using `Ingress` resources with the operator, you can enable endpoint pooling for an `Ingress` using the `k8s.ngrok.com/pooling-enabled: "true"` annotation.
+If you are using `Ingress` resources with the Operator, you can enable endpoint pooling for an `Ingress` using the `k8s.ngrok.com/pooling-enabled: "true"` annotation.
 The following will create an `Ingress` that creates a `CloudEndpoint` with pooling enabled. Any other endpoint created with the same URL and pooling enabled will be pooled with the `CloudEndpoint` that this `Ingress` creates.
 
 ```yaml
@@ -84,7 +84,7 @@ spec:
                   number: 80
 ```
 
-Since the operator collapses `Ingress` resources that share the same hostname, you must make sure that all `Ingress` resources that use a given hostname use the same pooling enabled or disabled configuration.
+Since the Operator collapses `Ingress` resources that share the same hostname, you must make sure that all `Ingress` resources that use a given hostname use the same pooling enabled or disabled configuration.
 See the [using Ingresses guide](/k8s/guides/using-ingresses) for more information.
 
 ## Endpoint Pooling with Gateway API

@@ -5,20 +5,20 @@ sidebarTitle: Uninstall
 
 The following guide will walk you through uninstalling the ngrok Kubernetes Operator.
 
-## 1. (optional) Delete any Standard Resources
+## 1. (Optional) Delete any standard resources
 
-While not completely necessary, first deleting any `Ingress`/`Gateway`/`HTTPRoute`/etc. resources you are using with the operator
-will help the operator remove any resources from your ngrok account before the operator is uninstalled.
-You can still manually remove any remaining resources from your ngrok account using the API/Dashboard after uninstalling the operator whether or not you perform these steps.
+While not completely necessary, first deleting any `Ingress`/`Gateway`/`HTTPRoute`/etc. resources you are using with the Operator
+will help the Operator remove any resources from your ngrok account before the Operator is uninstalled.
+You can still manually remove any remaining resources from your ngrok account using the API/Dashboard after uninstalling the Operator whether or not you perform these steps.
 
-## 2. (optional) Delete ngrok Custom Resources
+## 2. (Optional) Delete ngrok custom resources
 
 The following command will go through and delete any Custom Resource Definitions (CRDs) from ngrok.
-If you have not first deleted any `Ingress`/`Gateway`/`HTTPRoute`/etc. resources you are using with the operator,
+If you have not first deleted any `Ingress`/`Gateway`/`HTTPRoute`/etc. resources you are using with the Operator,
 then some of these custom resources may hang around for a while because they have [finalizers](/k8s/guides/finalizers) set on them
 that wait until the owning `Ingress`/`Gateway`/etc. has been removed.
 
-Similar to the above, this step is not required, but will help the operator remove the resources from your ngrok account before the operator is uninstalled.
+Similar to the above, this step is not required, but will help the Operator remove the resources from your ngrok account before the Operator is uninstalled.
 
 ```bash
 kubectl delete crd $(kubectl get crd -o name | grep "ngrok")
@@ -26,7 +26,7 @@ kubectl delete crd $(kubectl get crd -o name | grep "ngrok")
 
 ## 3. Uninstall the Operator with Helm
 
-Set the following variables to the name and namespace of your operator installation.
+Set the following variables to the name and namespace of your Operator installation.
 You can check this with `helm list -A` if you did not use the following defaults.
 
 ```bash
@@ -34,17 +34,17 @@ export OPERATOR_NAME=ngrok-operator
 export OPERATOR_NAMESPACE=ngrok-operator
 ```
 
-The following command will uninstall the ngrok Kubernetes operator
+The following command will uninstall the ngrok Kubernetes Operator
 
 ```bash
 helm uninstall $OPERATOR_NAME -n $OPERATOR_NAMESPACE
 ```
 
-## 4. Remove any Remaining Resources in the Dashboard
+## 4. Remove any remaining resources in the Dashboard
 
 Head over to the [ngrok Dashboard](https://dashboard.ngrok.com) and check if there are any remaining resources such as Domains that you would like to
 delete so that you are no longer billed for them.
 
-If you just used `helm uninstall` to uninstall the operator without first removing any custom resources then the operator `Deployment` may have been
-deleted before it had the chance to clean up all the resources from your ngrok account. Additionally, the operator will not delete any domains that you created,
+If you just used `helm uninstall` to uninstall the Operator without first removing any custom resources then the Operator `Deployment` may have been
+deleted before it had the chance to clean up all the resources from your ngrok account. Additionally, the Operator will not delete any domains that you created,
 so those will need to be removed manually if you no longer want them.

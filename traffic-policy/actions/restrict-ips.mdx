@@ -14,12 +14,12 @@ The **Restrict IPs** Traffic Policy action allows you to allow or deny traffic b
 You can define rules using either **Allow and Deny lists**, or **Reference IDs** to existing ngrok [IP Policies](/api-reference/ippolicies/list).
 
 
-## Configuration Reference
+## Configuration reference
 
 The [Traffic Policy](/traffic-policy/) configuration
 reference for this action.
 
-### Supported Phases
+### Supported phases
 
 `on_http_request`, `on_http_response`, `on_tcp_connect`
 
@@ -27,7 +27,7 @@ reference for this action.
 
 `restrict-ips`
 
-### Configuration Fields
+### Configuration fields
 
 <ConfigField title="enforce" type="boolean" required={true}>
   Default true. If false, continue to the next action even if the IP is not permitted.
@@ -47,19 +47,19 @@ reference for this action.
 
 ## Behavior
 
-### Evaluation of Rules
+### Evaluation of rules
 
 This action evaluates the configured rules against the layer 4 source IP
 (`conn.client_ip`) of a connection.
 
 HTTP headers like `X-Forwarded-For` are never used.
 
-### Allow and Deny Conditions
+### Allow and deny conditions
 
 A connection is allowed only if its source IP matches at least one of the
 allowed CIDRs and does not match any of the denied CIDRs.
 
-### Building CIDR Sets
+### Building CIDR sets
 
 The set of allowed and denied CIDRs are built from:
 
@@ -67,7 +67,7 @@ The set of allowed and denied CIDRs are built from:
 - The CIDRs belonging to the ngrok [IP Policies](/api-reference/ippolicies/list)
   specified in the `ip_policies` field.
 
-### Denied Connection Handling
+### Denied connection handling
 
 If this action denies the connection:
 
@@ -76,9 +76,9 @@ If this action denies the connection:
 - When used on the `on_http_request` or `on_http_response` phase:
   - An `HTTP 403` response is returned.
 - The upstream server is never reached.
-- No further rules or actions in the traffic policy will be executed.
+- No further rules or actions in the Traffic Policy will be executed.
 
-### IPv6 Support
+### IPv6 support
 
 This action supports IPv6 addresses for all IP rules. You may use standard
 abbreviated notations such as `"::/0"`.
@@ -89,13 +89,13 @@ suddenly things don't work as expected because you forgot to create IPv6 rules.
 
 ## Examples `on_tcp_connect`
 
-### Restricting Access with Allow and Deny Lists
+### Restricting access with allow and deny lists
 
 The following [Traffic Policy](/traffic-policy)
 configuration demonstrates how to restrict access to specific IP addresses
 using the `restrict-ips` action.
 
-#### Example Traffic Policy Document
+#### Example Traffic Policy document
 
 <CodeGroup>
 ```yaml policy.yml
@@ -138,7 +138,7 @@ This configuration will ensure that only requests from the IP `1.1.1.1` are
 allowed, while requests from the IP `e680:5791:be4c:5739:d959:7b94:6d54:d4b4`
 are denied.
 
-#### Example Request
+#### Example request
 
 If the request comes from an allowed IP, the response will proceed as normal. If
 the request comes from a denied IP, the connection will be closed:
@@ -151,13 +151,13 @@ Connected to 5.tcp.ngrok.io.
 Connection closed by foreign host.
 ```
 
-### Restricting Access with IP Policies
+### Restricting access with IP Policies
 
 The following [Traffic Policy](/traffic-policy)
 configuration demonstrates how to restrict access using the `restrict-ips`
 action with [IP Policies](/api-reference/ippolicies/list).
 
-#### Example Traffic Policy Document
+#### Example Traffic Policy document
 
 <CodeGroup>
 ```yaml policy.yml
@@ -195,7 +195,7 @@ This configuration will ensure that the [IP Policies](/api-reference/ippolicies/
 specified `ipp_1yjqdrIBwgciY2I9zH2EelgBbJF` are enforced against incoming
 traffic.
 
-#### Example Request
+#### Example request
 
 If the request comes from an allowed IP, the response will proceed as normal. If
 the request comes from a denied IP, you will receive an HTTP `403` response:
@@ -212,13 +212,13 @@ snippets/traffic-policy/actions/restrict-ips/tcp/examples/3-testing-traffic
 
 ## Examples `on_http_request`
 
-### Restricting Access with Allow and Deny Lists
+### Restricting access with allow and deny lists
 
 The following [Traffic Policy](/traffic-policy/)
 configuration demonstrates how to restrict access to specific IP addresses
 using the `restrict-ips` action.
 
-#### Example Traffic Policy Document
+#### Example Traffic Policy document
 
 <CodeGroup>
 ```yaml policy.yml
@@ -261,7 +261,7 @@ This configuration will ensure that only requests from the IP `1.1.1.1` are
 allowed, while requests from the IP `e680:5791:be4c:5739:d959:7b94:6d54:d4b4`
 are denied.
 
-#### Example Request
+#### Example request
 
 If the request comes from an allowed IP, the response will proceed as normal. If
 the request comes from a denied IP, you will receive an HTTP `403` response:
@@ -274,13 +274,13 @@ $ curl -i https://example.ngrok.app
 HTTP/2 403
 ```
 
-### Restricting Access with IP Policies
+### Restricting access with IP Policies
 
 The following [Traffic Policy](/traffic-policy/)
 configuration demonstrates how to restrict access using the `restrict-ips`
 action with [IP Policies](/api-reference/ippolicies/list).
 
-#### Example Traffic Policy Document
+#### Example Traffic Policy document
 
 <CodeGroup>
 ```yaml policy.yml
@@ -318,7 +318,7 @@ This configuration will ensure that the [IP Policies](/api-reference/ippolicies/
 specified `ipp_1yjqdrIBwgciY2I9zH2EelgBbJF` are enforced against incoming
 traffic.
 
-#### Example Request
+#### Example request
 
 If the request comes from an allowed IP, the response will proceed as normal. If
 the request comes from a denied IP, you will receive an HTTP `403` response:
@@ -331,13 +331,13 @@ $ curl -i https://example.ngrok.app
 HTTP/2 403
 ```
 
-### Test Restricting IPs
+### Test restricting IPs
 
 The following [Traffic Policy](/traffic-policy/)
 configuration demonstrates how to test restricting IPs using the [`log`](/traffic-policy/actions/log/)
 action with the `restrict-ips` action and [IP Policies](/api-reference/ippolicies/list).
 
-#### Example Traffic Policy Document
+#### Example Traffic Policy document
 
 <CodeGroup>
 ```yaml policy.yml
@@ -394,7 +394,7 @@ This configuration will test the incoming client IP against the specified
 without enforcing it, then log the result using the [`log`](/traffic-policy/actions/log/)
 action.
 
-#### Example Request
+#### Example request
 
 The following request will be allowed and an event will be logged:
 
@@ -406,7 +406,7 @@ $ curl -i https://example.ngrok.app
 HTTP/2 200
 ```
 
-## Action Result Variables
+## Action result variables
 
 <ActionVariablesDescription />
 

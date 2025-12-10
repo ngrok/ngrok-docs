@@ -2,25 +2,25 @@
 title: AgentEndpoint
 ---
 
-## AgentEndpoint Custom Resource
+## AgentEndpoint custom resource
 
 ### **apiVersion:** `ngrok.k8s.ngrok.com/v1alpha1`
 
 ### **kind:** `AgentEndpoint`
 
-Agent Endpoints are endpoints that are only available when an agent is running. When used with the ngrok Kubernetes operator,
-this means that the Agent Endpoints are tied to the operator's `operator-agent` pod (which is deployed by default when installing the operator).
-The operator will manage, create, and delete agent endpoints for you according to the configuration of the `AgentEndpoint` custom resources you create.
+Agent Endpoints are endpoints that are only available when an agent is running. When used with the ngrok Kubernetes Operator,
+this means that the Agent Endpoints are tied to the Operator's `operator-agent` pod (which is deployed by default when installing the Operator).
+The Operator will manage, create, and delete Agent Endpoints for you according to the configuration of the `AgentEndpoint` custom resources you create.
 So long as at least one instance of the `operator-agent` pod is running, your Agent Endpoints will be available. You may occasionally notice
-the IDs of Agent Endpoints managed by the operator change if the operator pods restart, this will not halt traffic through your Agent Endpoints unless all of the operator pods have stopped.
+the IDs of Agent Endpoints managed by the Operator change if the Operator pods restart, this will not halt traffic through your Agent Endpoints unless all of the Operator pods have stopped.
 
-See the [ngrok agent CLI configuration page](/agent/config/v3/#endpoint-definitions), for more information about using the CLI to start agent endpoints outside of Kubernetes.
+See the [ngrok agent CLI configuration page](/agent/config/v3/#endpoint-definitions), for more information about using the CLI to start Agent Endpoints outside of Kubernetes.
 
-Note that while using `AgentEndpoint` resources, an agent endpoint will be created in your ngrok account for each replica of the `ngrok-operator-agent` `Deployment`. This enables high-availability when
-running the `ngrok-operator-agent` deployment at a high replica count, but will result in additional charges for your ngrok account. The lifetime of these agent endpoints are tied to the lifetime of the
+Note that while using `AgentEndpoint` resources, an Agent Endpoint will be created in your ngrok account for each replica of the `ngrok-operator-agent` `Deployment`. This enables high-availability when
+running the `ngrok-operator-agent` deployment at a high replica count, but will result in additional charges for your ngrok account. The lifetime of these Agent Endpoints are tied to the lifetime of the
 `ngrok-operator-agent` pods, so scaling the deployment up/down will cause the additional Agent Endpoints in your ngrok account to be created as needed and deleted when no longer needed.
 
-## AgentEndpoint Structure and Types
+## AgentEndpoint structure and types
 
 The following outlines the high level structure and typings of an `AgentEndpoint`
 
@@ -38,7 +38,7 @@ spec:
     targetRef:                # optional, one of inline or targetRef must be supplied
       name: <string>          # required
     inline:                   # optional, one of inline or targetRef must be supplied
-      <traffic policy config>
+      <Traffic Policy config>
   description: <string>       # optional, default: "Created by the ngrok-operator"
   metadata: <string>          # optional, default: "{"owned-by":"ngrok-operator"}"
   bindings: <[]string>        # optional
@@ -47,7 +47,7 @@ spec:
     namespace: <string>       # optional
 ```
 
-## AgentEndpoint Fields
+## AgentEndpoint fields
 
 The following sections outline each field of the `AgentEndpoint` custom resource, whether they are required, what their default values are (if applicable), and a description of their purpose/constraints.
 
@@ -65,9 +65,9 @@ The following sections outline each field of the `AgentEndpoint` custom resource
 
 | Field Name                                                 | Type              | Required | Default                           | Description                                                                                                              |
 | ---------------------------------------------------------- | ----------------- | -------- | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| [`spec.url`](#specurl)                                     | `string`          | yes      | none                              | The unique URL for this agent endpoint that defines how the endpoint is accessed                                         |
-| [`spec.upstream`](#specupstream)                           | `Object`          | yes      | none                              | The upstream that will receive traffic sent to the endpoint (unless a response is sent by a traffic policy action first) |
-| [`spec.trafficPolicy`](#spectrafficpolicy)                 | `Object`          | no       | none                              | Allows a traffic policy to be supplied for the endpoint                                                                  |
+| [`spec.url`](#specurl)                                     | `string`          | yes      | none                              | The unique URL for this Agent Endpoint that defines how the endpoint is accessed                                         |
+| [`spec.upstream`](#specupstream)                           | `Object`          | yes      | none                              | The upstream that will receive traffic sent to the endpoint (unless a response is sent by a Traffic Policy action first) |
+| [`spec.trafficPolicy`](#spectrafficpolicy)                 | `Object`          | no       | none                              | Allows a Traffic Policy to be supplied for the endpoint                                                                  |
 | [`spec.description`](#specdescription)                     | `string`          | no       | `"Created by the ngrok-operator"` | Human-readable description for this `AgentEndpoint` to help identify/describe it                                         |
 | [`spec.metadata`](#specmetadata)                           | `string`          | no       | `"{"owned-by":"ngrok-operator"}"` | String of arbitrary data associated with the object in the ngrok API/Dashboard                                           |
 | [`spec.bindings`](#specbindings)                           | `[]string` (enum) | no       | none                              | List of Binding IDs to associate with the endpoint                                                                       |
@@ -75,11 +75,11 @@ The following sections outline each field of the `AgentEndpoint` custom resource
 
 ### `spec.url`
 
-The unique URL for this agent endpoint. This URL defines how the endpoint is accessed.
+The unique URL for this Agent Endpoint. This URL defines how the endpoint is accessed.
 
 **Note:** [Pooling](/universal-gateway/endpoint-pooling) is always enabled for `AgentEndpoint` resources.
 This means that if two (or more) endpoints share the same `spec.url` then requests will be balanced between them.
-This is not limited to endpoints within the same cluster, or endpoints of the same type. For example, an `AgentEndpoint` can be pooled with a cloud endpoint created in the ngrok dashboard if they share the same URL and both enable pooling.
+This is not limited to endpoints within the same cluster, or endpoints of the same type. For example, an `AgentEndpoint` can be pooled with a Cloud Endpoint created in the ngrok dashboard if they share the same URL and both enable pooling.
 It is recommended to include a prefix/suffix in the URL to prevent unintended pooling. For example, if you are running a service `foo` in the namespace `bar` in two different
 Kubernetes clusters, you may want to give each one a slightly different `spec.url` that includes something such as a cluster identifier to prevent requests from being balanced between them.
 Unlike `AgentEndpoint` resources, the `CloudEndpoint` resource gives you the ability to configure whether pooling should be allowed or not.
@@ -112,7 +112,7 @@ The following formats are accepted:
 - **Empty**
   - When empty your endpoint will default to be https and receive back a randomly assigned ngrok address.
 - **Internal**
-  - When ending your URL with .internal, an internal endpoint will be created. Internal Endpoints cannot be accessed directly, but rather can only be accessed using the forward-internal traffic policy action.
+  - When ending your URL with .internal, an internal endpoint will be created. Internal Endpoints cannot be accessed directly, but rather can only be accessed using the forward-internal Traffic Policy action.
   - example: `some.domain.internal`
 
 ### `spec.upstream`
@@ -187,13 +187,13 @@ with prior knowledge (defaulting to `http1`).
 
 ### `spec.trafficPolicy`
 
-`spec.trafficPolicy` allows for an ngrok traffic policy to be used for this `AgentEndpoint`. It may be supplied inline or via a reference to
+`spec.trafficPolicy` allows for an ngrok Traffic Policy to be used for this `AgentEndpoint`. It may be supplied inline or via a reference to
 an `NgrokTrafficPolicy` custom resource in the same namespace as the `AgentEndpoint`.
 
 - If `spec.trafficPolicy` is configured, then one of `spec.trafficPolicy.inline` or `spec.trafficPolicy.targetRef` must be supplied
 - It is invalid to supply both `spec.trafficPolicy.inline` and `spec.trafficPolicy.targetRef`
 
-For more information about writing ngrok traffic policies, refer to the [traffic policy section](/traffic-policy/).
+For more information about writing ngrok Traffic Policies, refer to the [Traffic Policy section](/traffic-policy/).
 
 **Type:** `Object`
 
@@ -205,13 +205,13 @@ For more information about writing ngrok traffic policies, refer to the [traffic
 
 | Field Name                                                    | Type              | Required | Default | Description                                                                                       |
 | ------------------------------------------------------------- | ----------------- | -------- | ------- | ------------------------------------------------------------------------------------------------- |
-| [`spec.trafficPolicy.inline`](#spectrafficpolicyinline)       | `json.RawMessage` | no       | none    | Inline traffic policy configuration for this `AgentEndpoint`                                      |
+| [`spec.trafficPolicy.inline`](#spectrafficpolicyinline)       | `json.RawMessage` | no       | none    | Inline Traffic Policy configuration for this `AgentEndpoint`                                      |
 | [`spec.trafficPolicy.targetRef`](#spectrafficpolicytargetref) | `Object`          | no       | none    | Reference to an `NgrokTrafficPolicy` custom resource in the same namespace as the `AgentEndpoint` |
 
 ### `spec.trafficPolicy.inline`
 
-Allows you to supply a traffic policy for this `AgentEndpoint` with inline configuration. An example has been included below.
-For more information about writing ngrok traffic policies, refer to the [traffic policy section](/traffic-policy/).
+Allows you to supply a Traffic Policy for this `AgentEndpoint` with inline configuration. An example has been included below.
+For more information about writing ngrok Traffic Policies, refer to the [Traffic Policy section](/traffic-policy/).
 
 **Type:** `json.RawMessage`
 
@@ -221,8 +221,8 @@ For more information about writing ngrok traffic policies, refer to the [traffic
 
 ### `spec.trafficPolicy.targetRef`
 
-Allows you to supply a traffic policy for this `AgentEndpoint` as a reference to an `NgrokTrafficPolicy` custom resource in the same namespace as the `AgentEndpoint`. An example has been included below.
-For more information about writing ngrok traffic policies, refer to the [traffic policy section](/traffic-policy/).
+Allows you to supply a Traffic Policy for this `AgentEndpoint` as a reference to an `NgrokTrafficPolicy` custom resource in the same namespace as the `AgentEndpoint`. An example has been included below.
+For more information about writing ngrok Traffic Policies, refer to the [Traffic Policy section](/traffic-policy/).
 
 **Type:** `Object`
 
@@ -266,15 +266,15 @@ List of Binding IDs to associate with the endpoint
 
 **Accepted Values:** `"public"`, `"internal"`, or `"kubernetes"`
 
-- A binding of `"internal"` will create an internal `AgentEndpoint` that is only accessible from other endpoints using the `forward-internal` traffic policy action.
+- A binding of `"internal"` will create an internal `AgentEndpoint` that is only accessible from other endpoints using the `forward-internal` Traffic Policy action.
   - Aside from setting `bindings: ["internal"]`, the `spec.url` of the `AgentEndpoint` must end in `.internal`
   - Setting `bindings: ["public"]` will not work for internal endpoints (endpoints that have a `spec.url` ending in `.internal`)
 - A binding of `"public"` will create a standard `AgentEndpoint` with its `spec.url` accessible to the public internet
   - Setting `bindings: ["internal"]` will not work for public endpoints
 - A binding of `"kubernetes"` will create a Kubernetes bound endpoint. This causes the endpoint to not be publicly accessible to the public internet
-  and will be projected into one or more of your Kubernetes clusters that are running the ngrok operator (depending on their endpoint selector configuration) as `Services`.
+  and will be projected into one or more of your Kubernetes clusters that are running the ngrok Operator (depending on their endpoint selector configuration) as `Services`.
   - With a `"kubernetes"` binding, the `spec.url` becomes the `name.namespace` of the projected Service.
-  - For example, with a `spec.url` of `http://my-service.my-namespace` then a Service with name `my-service` in the `my-namespace` namespace will be created by the ngrok operator.
+  - For example, with a `spec.url` of `http://my-service.my-namespace` then a Service with name `my-service` in the `my-namespace` namespace will be created by the ngrok Operator.
     Other services within the Kubernetes cluster can make requests to this endpoint. This enables many different use-cases such as being able to project a service in one Kubernetes cluster
     to another Kubernetes cluster so that services running in the other cluster can make requests to it. This has the benefit of not needing to expose the endpoint to the public internet behind a publicly accessible URL.
 
@@ -302,9 +302,9 @@ When the `spec.upstream.url` has an `https://` scheme, the client certificates w
 | `spec.clientCertificateRefs.name`      | `string` | yes      | none    | Name of a `Secret` resource to pull the client certificate data from                                                                       |
 | `spec.clientCertificateRefs.namespace` | `string` | no       | none    | Namespace of a `Secret` resource to pull the client certificate data from. When not supplied, the namespace of the `AgentEndpoint` is used |
 
-## Status Fields
+## Status fields
 
-The `AgentEndpoint` resource includes status information that reflects the current state of the agent endpoint in the ngrok system.
+The `AgentEndpoint` resource includes status information that reflects the current state of the Agent Endpoint in the ngrok system.
 
 ### `status.assignedURL`
 
@@ -316,20 +316,20 @@ The actual URL assigned to the endpoint. This may differ from `spec.url` when us
 
 ### `status.trafficPolicy`
 
-Indicates which traffic policy is attached to the endpoint.
+Indicates which Traffic Policy is attached to the endpoint.
 
 **Type:** `string`
 
 **Possible Values:**
-- `inline` - Endpoint uses an inline traffic policy
-- `none` - No traffic policy is attached
+- `inline` - Endpoint uses an inline Traffic Policy
+- `none` - No Traffic Policy is attached
 - `<policy-name>` - Name of the referenced NgrokTrafficPolicy resource
 
 **Example:** `inline`
 
 ### `status.domainRef`
 
-Reference to the Domain resource associated with this agent endpoint.
+Reference to the Domain resource associated with this Agent Endpoint.
 
 **Type:** `Object`
 
@@ -346,7 +346,7 @@ domainRef:
 
 ### `status.conditions`
 
-Standard Kubernetes conditions that indicate the state of the agent endpoint.
+Standard Kubernetes conditions that indicate the state of the Agent Endpoint.
 
 **Type:** `[]Condition`
 
@@ -358,11 +358,11 @@ Each condition includes:
 - `lastTransitionTime` - When the condition last changed
 - `observedGeneration` - The resource generation this condition applies to
 
-#### Condition Types
+#### Condition types
 
 ##### `Ready`
 
-Indicates whether the agent endpoint is fully operational and ready to receive traffic.
+Indicates whether the Agent Endpoint is fully operational and ready to receive traffic.
 
 **Status Values:**
 - `True` - Agent endpoint is active and ready
@@ -420,18 +420,18 @@ conditions:
 
 ##### `TrafficPolicyApplied`
 
-Indicates whether the traffic policy was successfully applied to the endpoint.
+Indicates whether the Traffic Policy was successfully applied to the endpoint.
 
 **Status Values:**
 - `True` - Traffic policy is applied
-- `False` - Failed to apply traffic policy
+- `False` - Failed to apply Traffic Policy
 
 **Reasons:**
 
 | Reason | Status | Meaning |
 |--------|--------|---------|
 | `TrafficPolicyApplied` | `True` | Traffic policy successfully applied |
-| `TrafficPolicyError` | `False` | Error applying or validating traffic policy |
+| `TrafficPolicyError` | `False` | Error applying or validating Traffic Policy |
 
 **Example:**
 ```yaml
@@ -482,9 +482,9 @@ conditions:
   observedGeneration: 1
 ```
 
-## Status Examples
+## Status examples
 
-### Successfully Created Agent Endpoint
+### Successfully created Agent Endpoint
 
 ```yaml
 status:
@@ -520,7 +520,7 @@ status:
     observedGeneration: 1
 ```
 
-### Agent Endpoint with Domain Not Ready
+### Agent Endpoint with domain not ready
 
 ```yaml
 status:
@@ -548,7 +548,7 @@ status:
     observedGeneration: 1
 ```
 
-### Agent Endpoint with Traffic Policy Error
+### Agent Endpoint with Traffic Policy error
 
 ```yaml
 status:
@@ -579,23 +579,23 @@ status:
   - type: Ready
     status: "False"
     reason: TrafficPolicyError
-    message: "AgentEndpoint not ready due to traffic policy error"
+    message: "AgentEndpoint not ready due to Traffic Policy error"
     lastTransitionTime: "2025-10-29T00:39:26Z"
     observedGeneration: 1
 ```
 
-## Checking Agent Endpoint Status
+## Checking Agent Endpoint status
 
-You can check the status of an agent endpoint using kubectl:
+You can check the status of an Agent Endpoint using kubectl:
 
 ```bash
-# Check if agent endpoint is ready
+# Check if Agent Endpoint is ready
 kubectl get agentendpoint example-agent-endpoint -o jsonpath='{.status.conditions[?(@.type=="Ready")]}'
 
-# Watch for agent endpoint to become ready
+# Watch for Agent Endpoint to become ready
 kubectl wait --for=condition=Ready agentendpoint/example-agent-endpoint --timeout=60s
 
-# Get all agent endpoints with their ready status
+# Get all Agent Endpoints with their ready status
 kubectl get agentendpoints -A -o custom-columns=\
 NAME:.metadata.name,\
 NAMESPACE:.metadata.namespace,\
@@ -604,24 +604,24 @@ TRAFFIC_POLICY:.status.trafficPolicy,\
 READY:.status.conditions[?(@.type==\'Ready\')].status,\
 REASON:.status.conditions[?(@.type==\'Ready\')].reason
 
-# Check domain readiness for an agent endpoint
+# Check domain readiness for an Agent Endpoint
 kubectl get agentendpoint example-agent-endpoint -o jsonpath='{.status.conditions[?(@.type=="DomainReady")]}'
 
-# Check traffic policy status
+# Check Traffic Policy status
 kubectl get agentendpoint example-agent-endpoint -o jsonpath='{.status.conditions[?(@.type=="TrafficPolicyApplied")]}'
 ```
 
 ## Example AgentEndpoints
 
-### AgentEndpoint with inline traffic policy
+### AgentEndpoint with inline Traffic Policy
 
 The following `AgentEndpoint`:
 
 - Accepts traffic on the URL `https://example-agent-endpoint.ngrok.io`
 - Sends traffic to `http://my-service.my-namespace:8080`
-  - If a traffic policy "terminates" the request, then the traffic will not be sent to the upstream
-- Adds an inline traffic policy
-  - If the request URL contains `?debug=true` query parameter, then the traffic policy will "terminate" the request and
+  - If a Traffic Policy "terminates" the request, then the traffic will not be sent to the upstream
+- Adds an inline Traffic Policy
+  - If the request URL contains `?debug=true` query parameter, then the Traffic Policy will "terminate" the request and
     send back a custom response
 
 ```yaml
@@ -642,22 +642,22 @@ spec:
         actions:
         - type: custom-response
           config:
-            body: Example response from traffic policy
+            body: Example response from Traffic Policy
             headers:
               content-type: text/plain
             status_code: 200
 ```
 
-### AgentEndpoint with referenced traffic policy
+### AgentEndpoint with referenced Traffic Policy
 
 The following `AgentEndpoint`:
 
 - Accepts traffic on the URL `https://example-agent-endpoint.ngrok.io`
 - Sends traffic to `http://my-https-service.my-namespace:8443`
   - Includes a client certificate from the `Secret` `my-client-cert` in the `default` namespace
-  - If a traffic policy "terminates" the request, then the traffic will not be sent to the upstream
-- Adds a reference to a traffic policy that
-  - If the request URL contains `?debug=true` query parameter, then the traffic policy will "terminate" the request and
+  - If a Traffic Policy "terminates" the request, then the traffic will not be sent to the upstream
+- Adds a reference to a Traffic Policy that
+  - If the request URL contains `?debug=true` query parameter, then the Traffic Policy will "terminate" the request and
     send back a custom response
 
 ```yaml
@@ -675,7 +675,7 @@ spec:
       actions:
       - type: custom-response
         config:
-          body: Example response from traffic policy
+          body: Example response from Traffic Policy
           headers:
             content-type: text/plain
           status_code: 200

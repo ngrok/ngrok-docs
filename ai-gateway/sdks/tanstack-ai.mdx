@@ -1,0 +1,263 @@
+---
+title: TanStack AI
+sidebarTitle: TanStack AI
+description: Use the ngrok AI Gateway with TanStack AI.
+---
+
+<Note>
+**Prerequisite**: You need an AI Gateway endpoint before continuing. Create one using the [dashboard quickstart](/ai-gateway/quickstart) or follow the [manual setup guide](/ai-gateway/guides/creating-endpoints).
+</Note>
+
+[TanStack AI](https://tanstack.com/ai) is a type-safe library for building AI applications with React, Solid, and other frameworks. It works seamlessly with the ngrok AI Gateway through its OpenAI adapter.
+
+## Installation
+
+```bash
+npm install @tanstack/ai @tanstack/ai-openai
+```
+
+## Basic usage
+
+Configure the OpenAI adapter to use your AI Gateway endpoint:
+
+```typescript highlight={5}
+import { chat } from "@tanstack/ai";
+import { openai } from "@tanstack/ai-openai";
+
+const adapter = openai({
+  baseURL: "https://your-ai-subdomain.ngrok.app/v1",
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+const stream = chat({
+  adapter,
+  messages: [{ role: "user", content: "Hello!" }],
+  model: "gpt-4o",
+});
+```
+
+## Streaming responses
+
+TanStack AI is built for streaming. Process chunks as they arrive:
+
+```typescript highlight={10-12}
+import { chat } from "@tanstack/ai";
+import { openai } from "@tanstack/ai-openai";
+
+const adapter = openai({
+  baseURL: "https://your-ai-subdomain.ngrok.app/v1",
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+const stream = chat({
+  adapter,
+  messages: [{ role: "user", content: "Write a poem about AI gateways." }],
+  model: "gpt-4o",
+});
+
+for await (const chunk of stream) {
+  // Process each chunk as it arrives
+  console.log(chunk);
+}
+```
+
+## API route handler
+
+Build API endpoints that stream responses:
+
+```typescript title="app/api/chat/route.ts" highlight={5}
+import { chat, toStreamResponse } from "@tanstack/ai";
+import { openai } from "@tanstack/ai-openai";
+
+const adapter = openai({
+  baseURL: "https://your-ai-subdomain.ngrok.app/v1",
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+export async function POST(request: Request) {
+  const { messages } = await request.json();
+
+  const stream = chat({
+    adapter,
+    messages,
+    model: "gpt-4o",
+  });
+
+  return toStreamResponse(stream);
+}
+```
+
+## Using different providers
+
+The AI Gateway routes based on the model name. Use provider prefixes to target specific providers:
+
+```typescript highlight={10-11}
+import { chat } from "@tanstack/ai";
+import { openai } from "@tanstack/ai-openai";
+
+const gateway = openai({
+  baseURL: "https://your-ai-subdomain.ngrok.app/v1",
+  apiKey: "unused", // Gateway handles auth
+});
+
+// Use different providers through the same gateway
+const openaiStream = chat({ adapter: gateway, model: "openai:gpt-4o", messages });
+const anthropicStream = chat({ adapter: gateway, model: "anthropic:claude-3-5-sonnet-latest", messages });
+```
+
+## Automatic model selection
+
+Let the gateway choose the best model with `ngrok/auto`:
+
+```typescript highlight={11}
+import { chat } from "@tanstack/ai";
+import { openai } from "@tanstack/ai-openai";
+
+const gateway = openai({
+  baseURL: "https://your-ai-subdomain.ngrok.app/v1",
+  apiKey: "unused",
+});
+
+const stream = chat({
+  adapter: gateway,
+  model: "ngrok/auto", // Gateway selects based on your strategy
+  messages: [{ role: "user", content: "Explain quantum computing" }],
+});
+```
+
+Configure your selection strategy in the Traffic Policy:
+
+```yaml title="traffic-policy.yaml" highlight={11-13}
+on_http_request:
+  - type: ai-gateway
+    config:
+      providers:
+        - id: openai
+          api_keys:
+            - value: ${secrets.get('openai', 'api-key')}
+        - id: anthropic
+          api_keys:
+            - value: ${secrets.get('anthropic', 'api-key')}
+      model_selection:
+        strategy:
+          - "ai.models.sortBy(m, m.pricing.input)" # Cheapest first
+```
+
+## Tool calling
+
+The AI Gateway supports function/tool calling:
+
+```typescript highlight={10-20}
+import { chat, toolDefinition } from "@tanstack/ai";
+import { openai } from "@tanstack/ai-openai";
+import { z } from "zod";
+
+const adapter = openai({
+  baseURL: "https://your-ai-subdomain.ngrok.app/v1",
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+const getWeatherDef = toolDefinition({
+  name: "get_weather",
+  description: "Get the current weather",
+  inputSchema: z.object({
+    location: z.string().describe("The location to get weather for"),
+  }),
+});
+
+const getWeather = getWeatherDef.server(async ({ location }) => {
+  return { temperature: 72, conditions: "sunny" };
+});
+
+const stream = chat({
+  adapter,
+  messages: [{ role: "user", content: "What's the weather in San Francisco?" }],
+  model: "gpt-4o",
+  tools: [getWeather],
+});
+```
+
+## Provider options
+
+Pass provider-specific options for fine-grained control:
+
+```typescript highlight={13-19}
+import { chat } from "@tanstack/ai";
+import { openai } from "@tanstack/ai-openai";
+
+const adapter = openai({
+  baseURL: "https://your-ai-subdomain.ngrok.app/v1",
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+const stream = chat({
+  adapter,
+  messages,
+  model: "gpt-4o",
+  providerOptions: {
+    temperature: 0.7,
+    maxTokens: 1000,
+    topP: 0.9,
+    frequencyPenalty: 0.5,
+    presencePenalty: 0.5,
+  },
+});
+```
+
+## React integration
+
+Use TanStack AI with React for building chat interfaces:
+
+```tsx title="app/page.tsx"
+"use client";
+
+import { useChat } from "@tanstack/ai-react";
+
+export default function Chat() {
+  const { messages, input, handleInputChange, handleSubmit } = useChat({
+    api: "/api/chat",
+  });
+
+  return (
+    <div>
+      {messages.map((m) => (
+        <div key={m.id}>
+          {m.role}: {m.content}
+        </div>
+      ))}
+      <form onSubmit={handleSubmit}>
+        <input value={input} onChange={handleInputChange} />
+        <button type="submit">Send</button>
+      </form>
+    </div>
+  );
+}
+```
+
+## Environment variables
+
+Set up your environment:
+
+```bash title=".env.local"
+# Your AI Gateway endpoint
+AI_GATEWAY_URL=https://your-ai-subdomain.ngrok.app/v1
+
+# Optional: API key if using passthrough mode
+OPENAI_API_KEY=sk-...
+```
+
+```typescript
+import { openai } from "@tanstack/ai-openai";
+
+const adapter = openai({
+  baseURL: process.env.AI_GATEWAY_URL,
+  apiKey: process.env.OPENAI_API_KEY ?? "unused",
+});
+```
+
+## Next steps
+
+- [TanStack AI Documentation](https://tanstack.com/ai/latest/docs) - Full SDK reference
+- [Model Selection Strategies](/ai-gateway/guides/model-selection-strategies) - Configure routing logic
+- [Configuring Providers](/ai-gateway/guides/configuring-providers) - Set up providers and keys
+

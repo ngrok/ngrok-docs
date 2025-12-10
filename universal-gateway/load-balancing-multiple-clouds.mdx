@@ -18,19 +18,19 @@ This guide will reference reserved domains frequently. You can reserve a free do
 ngrok's Endpoint Pooling:
 
 - Works with the [agent CLI](/agent),
-  [SDKs](/agent-sdks/) and our [Kubernetes Operator](/k8s). You can even use all these tools in a single pool.
+  [SDKs](/agent-sdks/) and the [Kubernetes Operator](/k8s). You can even use all these tools in a single pool.
 - Lets you migrate from one deployment strategy to another without hard cut-overs, like moving from using the agent for ingress to embedding ngrok directly in your app/API with an SDK.
 - Works with [Traffic Policy](/traffic-policy), enabling you to manage traffic identically across all your replicas from a single "front door," or enforce different policies for each replica.
 
 ## Using the CLI
 
-Start with a single [agent endpoint](/universal-gateway/agent-endpoints/) on an ngrok URL, or a [reserved domain](https://dashboard.ngrok.com/domains), with the `--pooling-enabled` flag on.
+Start with a single [Agent Endpoint](/universal-gateway/agent-endpoints/) on an ngrok URL, or a [reserved domain](https://dashboard.ngrok.com/domains), with the `--pooling-enabled` flag on.
 
 ```bash mode="cli"
 ngrok http 8000 --url your-reserved-domain --pooling-enabled true
 ```
 
-Repeat the same steps on another cloud where you've deployed a replica of your service. This will start a second internal agent endpoint on the same URL.
+Repeat the same steps on another cloud where you've deployed a replica of your service. This will start a second internal Agent Endpoint on the same URL.
 
 ```bash mode="cli"
 ngrok http 8000 --url your-reserved-domain --pooling-enabled true
@@ -49,9 +49,9 @@ You can verify pooling works in a few ways:
 ## Using SDKs and other tools
 
 Pooling isn't limited to how you start a given service or its replicas.
-If you've already started up one agent endpoint with the CLI, you can start up another with one of our [SDKs](/agent-sdks) or the [Kubernetes Operator](/k8s) to load-balance between them.
+If you've already started up one Agent Endpoint with the CLI, you can start up another with one of the [SDKs](/agent-sdks) or the [Kubernetes Operator](/k8s) to load-balance between them.
 
-The following is a simple example of enabling pooling with one of our SDKs.
+The following is a simple example of enabling pooling with one of the SDKs.
 
 <CodeGroup>
 ```go title="example.go"
@@ -190,23 +190,23 @@ If you already have a pool of endpoints created by agent CLIs, make a few reques
 You can use Endpoint Pooling with Cloud Endpoints for custom traffic management.
 Pooling works with [internal Agent Endpoints](/universal-gateway/internal-endpoints/), which can only receive traffic from other endpoints associated with your ngrok account.
 
-A [Cloud Endpoint](/universal-gateway/cloud-endpoints/) is a persistent public endpoint where you can manage a traffic policy for any upstream endpoints it forwards traffic to.
-Forwarding traffic from a cloud endpoint to a pool of internal endpoints gives you a single "front door" for your multicloud load-balanced services.
+A [Cloud Endpoint](/universal-gateway/cloud-endpoints/) is a persistent public endpoint where you can manage a Traffic Policy for any upstream endpoints it forwards traffic to.
+Forwarding traffic from a Cloud Endpoint to a pool of internal endpoints gives you a single "front door" for your multicloud load-balanced services.
 
 ### 1. Set up your internal Agent Endpoints
 
-First, set up your internal Agent Endpoints. To pool traffic with a cloud endpoint, you must:
+First, set up your internal Agent Endpoints. To pool traffic with a Cloud Endpoint, you must:
 
 1. Stop any agents you've already created associated with the URL you want to use.
 1. Restart those agents as internal endpoints by giving them any URL with a TLD of `.internal`.
 
-```bash title="Create an internal agent endpoint"
+```bash title="Create an internal Agent Endpoint"
 ngrok http 8080 --url "https://example.internal"
 ```
 
 ### 2. Set up your Cloud Endpoint
 
-Next, set up your cloud endpoint:
+Next, set up your Cloud Endpoint:
 
 1. Navigate to the [**Endpoint** section](https://dashboard.ngrok.com/endpoints) of your ngrok dashboard and select **New**, then **Cloud Endpoint**.
 1. Leave the binding as **Public** and enter `your-reserved-domain` for the domain.
@@ -215,8 +215,8 @@ Next, set up your cloud endpoint:
 ### 3. Add a Traffic Policy
 
 Now you can add a Traffic Policy.
-While viewing your Cloud Endpoint in the dashboard, add the following traffic policy.
-It uses the `forward-internal` action to route all requests to your pool of internal agent endpoints.
+While viewing your Cloud Endpoint in the dashboard, add the following Traffic Policy.
+It uses the `forward-internal` action to route all requests to your pool of internal Agent Endpoints.
 
 ```yaml
 on_http_request:
@@ -228,7 +228,7 @@ on_http_request:
 
 Be sure to select the **Save** button to apply the policy.
 
-Now when you make a request to your URL, your traffic is first routed through the cloud endpoint before being shared among your pooled internal agent endpoints.
+Now when you make a request to your URL, your traffic is first routed through the Cloud Endpoint before being shared among your pooled internal Agent Endpoints.
 
 <Info title="Coming soon!">
 
@@ -251,15 +251,15 @@ With custom load balancing strategies, you'll be able to decide exactly what hap
 
 If you opted for a Cloud Endpoint that routes traffic to a pool of internal
 Agent Endpoints, you can now filter, manage, and orchestrate traffic from that
-single endpoint using Traffic Policy. Here's a few of our most popular actions:
+single endpoint using Traffic Policy. Here are a few of the most popular actions:
 
 - [`oauth`](/traffic-policy/actions/oauth)
 - [`url-redirect`](/traffic-policy/actions/redirect)
 - [`set-vars`](/traffic-policy/actions/set-vars)
 - [`add-headers`](/traffic-policy/actions/add-headers)
 
-We didn't cover Kubernetes deployments in this guide, but we have a similar
-quickstart guide for [load-balancing K8s
+Kubernetes deployments are not covered in this guide, but a similar
+quickstart guide is available for [load-balancing K8s
 services](/k8s/load-balancing/load-balancing-kubernetes). If you're
-interested in a more production-ready deployment, take a look at our [multicloud
+interested in a more production-ready deployment, take a look at the [multicloud
 API gateway setup tutorial](/guides/api-gateway/multicloud).

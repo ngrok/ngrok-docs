@@ -1,15 +1,15 @@
 ---
 title: Forwarding Traffic to and Load Balancing Internal Endpoints with Cloud Endpoints
 sidebarTitle: Forwarding Traffic and Load Balancing
-description: How to use ngrok cloud endpoints to do round-robin load balancing.
+description: How to use ngrok Cloud Endpoints to do round-robin load balancing.
 ---
 
 This guide provides an example of using an ngrok Cloud Endpoint to route traffic between multiple internal endpoints.
 
-## Core Concepts
+## Core concepts
 
-- [Cloud endpoints](/universal-gateway/cloud-endpoints) are centrally managed endpoints in the cloud that can be used to route traffic to agent endpoints.
-- [Internal endpoints](/universal-gateway/internal-endpoints) are endpoints that are not publicly accessible and are only reachable from within your network by cloud endpoints via the forward action.
+- [Cloud endpoints](/universal-gateway/cloud-endpoints) are centrally managed endpoints in the cloud that can be used to route traffic to Agent Endpoints.
+- [Internal endpoints](/universal-gateway/internal-endpoints) are endpoints that are not publicly accessible and are only reachable from within your network by Cloud Endpoints via the forward action.
 - **Load balancing** improves application performance and reduces load by distributing incoming traffic across servers. This leads to faster response times for user-facing applications.
 
 ## Prerequisites
@@ -24,9 +24,9 @@ If you are going to be following along using **CURL**, you will need:
 
 - An [ngrok API key](https://dashboard.ngrok.com/api) as an environment variable named `NGROK_API_KEY`.
 
-## 1. Create an Internal Endpoint
+## 1. Create an internal endpoint
 
-Let's start by creating a internal endpoint, initiated from the agent.
+Start by creating an internal endpoint, initiated from the agent.
 The endpoints will be in HTTP for this guide, but you can also use TCP or TLS.
 
 ```bash
@@ -37,10 +37,10 @@ ngrok http 80 \
 After running the above command, you should see an internal endpoint with an "online" status for your domain. This endpoint will route traffic to the app running at your local port 80.
 You can set up any HTTP server to run on this port locally, and it the endpoint will internally route traffic to that server.
 
-## 2. Create a Domain
+## 2. Create a domain
 
-Next, let's create the domain that the cloud endpoint will reside on.
-For the purpose of this guide, we will create an ngrok HTTP domain.
+Next, create the domain that the Cloud Endpoint will reside on.
+For the purpose of this guide, create an ngrok HTTP domain.
 
 <Tabs>
 <Tab title="ngrok CLI">
@@ -102,11 +102,11 @@ When you have completed this step, you can move on to the next step.
 
 ## 3. Create a Traffic Policy for your Cloud Endpoint
 
-Unlike agent endpoints in which traffic policies are optional,
-cloud endpoints require a traffic policy so they know how to
+Unlike Agent Endpoints in which Traffic Policies are optional,
+Cloud Endpoints require a Traffic Policy so they know how to
 handle incoming traffic. This guide will showcase one of the simplest
 and most common use cases: forwarding traffic to other endpoints
-(the internal endpoint we created in Step 1) via the forward action.
+(the internal endpoint created in Step 1) via the forward action.
 
 <CodeGroup>
 
@@ -139,14 +139,14 @@ on_http_request:
 
 ## 4. Create an ngrok Cloud Endpoint
 
-Now we can create an ngrok Cloud Endpoint that points to our
+Now create an ngrok Cloud Endpoint that points to the
 newly created internal endpoint. Cloud Endpoints can be created
 via the API or ngrok dashboard.
 
 <Tabs>
 <Tab title="API">
-We use the URL from Step 2 as the `url` value in the traffic policy, and the traffic policy from Step 3 as the `traffic-policy` value.
-The binding is set to public so anyone can access our cloud endpoint.
+We use the URL from Step 2 as the `url` value in the Traffic Policy, and the Traffic Policy from Step 3 as the `traffic-policy` value.
+The binding is set to public so anyone can access our Cloud Endpoint.
 
 ```bash
 ngrok api endpoints create \
@@ -166,7 +166,7 @@ Coming soon!
 </Tab>
 </Tabs>
 
-## 5. Load Balancing with Endpoint Pools
+## 5. Load balancing with Endpoint Pools
 
 Load balancing is simple with ngrok Endpoint Pools. 
 Start another agent with the same internal endpoint URL, and the traffic will be automatically load balanced between the two agents in the pool.
@@ -178,5 +178,5 @@ ngrok http 80 \
 
 ## Conclusion
 
-And we're done. You've successfully created a cloud endpoint that can be accessed from the URL you reserved: `${NGROK_SUBDOMAIN}.ngrok.app`
-The cloud endpoint will refer to its traffic policy and forward traffic to our internal endpoint. The internal endpoint finally exposes the local port on which it was created on in Step 1.
+You're done. You've successfully created a Cloud Endpoint that can be accessed from the URL you reserved: `${NGROK_SUBDOMAIN}.ngrok.app`
+The Cloud Endpoint will refer to its Traffic Policy and forward traffic to the internal endpoint. The internal endpoint finally exposes the local port on which it was created on in Step 1.

@@ -108,33 +108,33 @@ For the former, Palette has a [ready-to-apply pack](https://docs.spectrocloud.co
 
 1. Create an ngrok static subdomain for ingress, if you don't have one already. Navigate to the [**Domains** section](https://dashboard.ngrok.com/domains) of the ngrok dashboard and click **Create Domain** or **New Domain**. This static subdomain will be your `NGROK_DOMAIN` for the remainder of this guide.
 
-1. Create a new cluster profile, name it `game-2048`, and click the **Add-on** profile type.
+1. Create a new cluster profile, name it `tinyllama`, and click the **Add-on** profile type.
 
 1. Click **Add Manifest** to create a new layer using Kubernetes manifests in YAML.
 
-   Name the layer `2048`, then click **New manifest** and name it `deployment`. Copy the following YAML content to create a Kubernetes deployment named `game-2048`.
+   Name the layer `tinyllama`, then click **New manifest** and name it `deployment`. Copy the following YAML content to create a Kubernetes deployment named `tinyllama`.
 
    ```yaml showLineNumbers
    apiVersion: apps/v1
    kind: Deployment
    metadata:
-     name: game-2048
+     name: tinyllama
    spec:
      replicas: 1
      selector:
        matchLabels:
-         app: game-2048
+         app: tinyllama
      template:
        metadata:
          labels:
-           app: game-2048
+           app: tinyllama
        spec:
          containers:
-           - name: backend
-             image: alexwhen/docker-2048
+           - name: tinyllama
+             image: ghcr.io/ngrok-samples/tinyllama:main
              ports:
                - name: http
-                 containerPort: 80
+                 containerPort: 8080
    ```
 
    Create a second manifest named `service` copy in the following YAML:
@@ -143,25 +143,25 @@ For the former, Palette has a [ready-to-apply pack](https://docs.spectrocloud.co
    apiVersion: v1
    kind: Service
    metadata:
-     name: game-2048
+     name: tinyllama
    spec:
      ports:
        - name: http
          port: 80
-         targetPort: 80
+         targetPort: 8080
      selector:
-       app: game-2048
+       app: tinyllama
    ```
 
    Click **Confirm & Create** to save the deployment.
 
-1. Add another manifest to create a Kubernetes ingress service, which will inform the ngrok Kubernetes Operator to create a new Edge for your app. Name it `2048-ingress` and create an `ingress` manifest with the following YAML content, replacing the `<NGROK_DOMAIN>` variable with the subdomain you created, which should look like `one-two-three.ngrok.app`.
+1. Add another manifest to create a Kubernetes ingress service, which will inform the ngrok Kubernetes Operator to create a new Edge for your app. Name it `tinyllama-ingress` and create an `ingress` manifest with the following YAML content, replacing the `<NGROK_DOMAIN>` variable with the subdomain you created, which should look like `one-two-three.ngrok.app`.
 
    ```yaml showLineNumbers
    apiVersion: networking.k8s.io/v1
    kind: Ingress
    metadata:
-     name: game-2048-ingress
+     name: tinyllama-ingress
      namespace: ngrok-operator
    spec:
      ingressClassName: ngrok
@@ -173,7 +173,7 @@ For the former, Palette has a [ready-to-apply pack](https://docs.spectrocloud.co
                pathType: Prefix
                backend:
                  service:
-                   name: game-2048
+                   name: tinyllama
                    port:
                      number: 80
    ```
@@ -210,7 +210,7 @@ You can now create your core cluster using Palette and your cloud provider. Once
 
    ![Choose your cluster profile](../img/spectro-cloud/img/choose-profile.png)
 
-1. Add your additional profiles by clicking on the **+** next to **Addon layers**. Choose the ngrok Kubernetes Operator profile, then repeat for the 2048 game profile.
+1. Add your additional profiles by clicking on the **+** next to **Addon layers**. Choose the ngrok Kubernetes Operator profile, then repeat for the tinyllama profile.
 
    You have one more opportunity to customize the configurations, but you can click **Next** to continue.
 
@@ -233,7 +233,7 @@ You can now create your core cluster using Palette and your cloud provider. Once
 
 1. Once Palette reports your cluster as `Running`, you can open your browser and navigate to your `NGROK_DOMAIN` to see your example app as managed, deployed, and publicly networked via, respectively, Palette, Kubernetes, and ngrok.
 
-   ![Viewing the final 2048 game](../img/spectro-cloud/img/final-2048-game.png)
+   ![Viewing tinyllama](../img/spectro-cloud/img/final-2048-game.png)
 
 ## What's next?
 
@@ -249,4 +249,4 @@ ngrok will automatically delete your Edge upon the deletion of your cluster.
 
 ### Extend your ngrok Kubernetes Operator and Palette integration
 
-Read our [Kubernetes Operator docs](/k8s/) for more details, including [how it works](/k8s/how-it-works/) and details on how to [apply an `NgrokTrafficPolicy` resource](/k8s/guides/using-ingresses/#using-ngroktrafficpolicy-with-ingress) to your `Ingress` to start using our [Traffic Policy system](/traffic-policy).
+Read the [Kubernetes Operator docs](/k8s/) for more details, including [how it works](/k8s/how-it-works/) and details on how to [apply an `NgrokTrafficPolicy` resource](/k8s/guides/using-ingresses/#using-ngroktrafficpolicy-with-ingress) to your `Ingress` to start using the [Traffic Policy system](/traffic-policy).

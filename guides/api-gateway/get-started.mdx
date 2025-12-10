@@ -1,10 +1,8 @@
 ---
 title: Get started with ngrok's API gateway
 sidebarTitle: Get Started
-description: Learn how to set up ngrok as an API gateway with internal agent endpoints and a cloud endpoint with Traffic Policy.
+description: Learn how to set up ngrok as an API gateway using a Cloud Endpoint that forwards traffic to internal Agent Endpoints with Traffic Policy.
 ---
-
-
 
 You've developed a world-class API, and now you want to make it available online.
 
@@ -23,9 +21,9 @@ In this tutorial, you'll learn how to implement ngrok as an API gateway with
 these broad steps:
 
 1. Set up the common pattern for ngrok's API gateway.
-2. Create one or more internal agent endpoints for your upstream API services.
-3. Create a cloud endpoint to centralize your traffic management policies,
-   including how to forward traffic to your internal agent endpoint.
+2. Create one or more internal Agent Endpoints for your upstream API services.
+3. Create a Cloud Endpoint to centralize your traffic management policies,
+   including how to forward traffic to your internal Agent Endpoint.
 
 ## What you'll need
 
@@ -34,15 +32,15 @@ these broad steps:
   API](/api-reference/reserveddomains/create). Pay-as-you-go plans allow you to bring your own [custom branded
   domain](/universal-gateway/custom-domains), like
   `https://api.example.com`.
-  - We'll refer to this domain as `$YOUR_DOMAIN`.
+  - This guide refers to this domain as `$YOUR_DOMAIN`.
 - (optional) **An API key**: [Create an ngrok API
   key](https://dashboard.ngrok.com/api-keys/new) if you'd like to use the ngrok
-  API to manage your cloud endpoints.
+  API to manage your Cloud Endpoints.
 
 ### Deploy a demo API service (optional)
 
 If you don't yet have API services you'd like to bring online with an API
-gateway, or just want to quickly wire up a POC using ngrok, we recommend our
+gateway, or just want to quickly wire up a POC using ngrok, use the
 [ngrok demo API](https://github.com/ngrok-samples/api-demo), which responds with
 details about the request.
 
@@ -59,10 +57,10 @@ Start up a second container on port `5000`.
 docker run -p 5000:4000 -e MESSAGE='Hello from service xyz!' -d joelatngrok/api-demo
 ```
 
-## 1. Create an internal agent endpoint
+## 1. Create an internal Agent endpoint
 
 Your upstream API service needs a way of receiving traffic from the ngrok
-network, which you can establish with an agent endpoint on an internal URL like
+network, which you can establish with an Agent Endpoint on an internal URL like
 `https://abc.internal`. Replace `4000` if you've brought your own API service.
 
 ```
@@ -72,11 +70,11 @@ ngrok http 4000 --url https://abc.internal
 Your API service isn't yet accessible on the public internet. To fix that, you
 need two things:
 
-1. A cloud endpoint for traffic routing and centralized policy management.
-2. A Traffic Policy rule that forwards traffic from your cloud endpoint to
+1. A Cloud Endpoint for traffic routing and centralized policy management.
+2. A Traffic Policy rule that forwards traffic from your Cloud Endpoint to
    `https://abc.internal`.
 
-## 2. Create a cloud endpoint
+## 2. Create a Cloud Endpoint
 
 Cloud endpoints are persistent, always-on endpoints that you can manage with the
 ngrok dashboard or API.
@@ -93,7 +91,7 @@ sync to ward off configuration drift.
 
     	Leave the **Binding** value **Public**, then enter the domain name you reserved earlier. Select **Create Cloud Endpoint**.
 
-    	With your cloud endpoint created, you'll see a default Traffic Policy in the dashboard. Paste in the YAML below to apply the rule.
+    	With your Cloud Endpoint created, you'll see a default Traffic Policy in the dashboard. Paste in the YAML below to apply the rule.
 
     		```yaml title="policy.yaml" mode=traffic-policy
     		on_http_request:
@@ -108,7 +106,7 @@ sync to ward off configuration drift.
     </Tab>
     <Tab>
 
-    	The `ngrok` CLI provides a helpful wrapper around the [ngrok API](/api/index), which you can use to create a cloud endpoint and apply a file containing Traffic Policy rules.
+    	The `ngrok` CLI provides a helpful wrapper around the [ngrok API](/api/index), which you can use to create a Cloud Endpoint and apply a file containing Traffic Policy rules.
 
     		Create a new file named `policy.yaml` on your local workstation with the following YAML.
 
@@ -120,7 +118,7 @@ sync to ward off configuration drift.
     							url: https://abc.internal
     		```
 
-    	Create a cloud endpoint on `$YOUR_DOMAIN`, passing your `policy.yaml` file as an option.
+    	Create a Cloud Endpoint on `$YOUR_DOMAIN`, passing your `policy.yaml` file as an option.
 
     	```bash
     	ngrok api endpoints create \
@@ -129,7 +127,7 @@ sync to ward off configuration drift.
     		--traffic-policy "$(cat policy.yaml)"
     	```
 
-    	You'll get a `201` response—save the value of `id`, as you'll need it again later to continue configuring the Traffic Policy applied to your cloud endpoint.
+    	You'll get a `201` response—save the value of `id`, as you'll need it again later to continue configuring the Traffic Policy applied to your Cloud Endpoint.
 
     </Tab>
 
@@ -141,7 +139,7 @@ At this point, your API gateway is ready for traffic. Send the following request
 curl -X GET https://$YOUR_DOMAIN
 ```
 
-If you're using our demo API, you'll see a response like:
+If you're using the demo API, you'll see a response like:
 
 ```json
 {
@@ -165,7 +163,7 @@ Your API gateway is ready, but chances are you need to handle ingress into more
 than a one API service.
 
 <Tip>
-If you're using our demo API service, fire up another internal agent endpoint to route traffic to the second container on port `5000`.
+If you're using the demo API service, fire up another internal Agent Endpoint to route traffic to the second container on port `5000`.
 
 ```bash
 ngrok http 5000 --url https://xyz.internal
@@ -173,13 +171,13 @@ ngrok http 5000 --url https://xyz.internal
 
 </Tip>
 
-Enter our [Traffic Policy system](/traffic-policy), which lets you filter
+Use the [Traffic Policy system](/traffic-policy), which lets you filter
 traffic based on its properties and take action as it passes through ngrok's
 global network. Two important concepts of Traffic Policy to note:
 
 - [Phases](/traffic-policy/concepts/phases) are the distinct points in the lifecycle of
-  a request where you can filter and take action. For this use case, we're using
-  `on_http_request`, which activates when ngrok receives an HTTP request over an
+  a request where you can filter and take action. For this use case, `on_http_request` is used,
+  which activates when ngrok receives an HTTP request over an
   established connection.
 - [Expressions](/traffic-policy/concepts/expressions) define when to run
   your actions. They're written in [Common Expression
@@ -189,9 +187,9 @@ global network. Two important concepts of Traffic Policy to note:
 The rules below:
 
 1. Filter for requests arriving on _only_ `https://$YOUR_DOMAIN/abc` and
-   forward them to your internal agent endpoint at `https://abc.internal`.
+   forward them to your internal Agent Endpoint at `https://abc.internal`.
 2. Filter for requests arriving on _only_ `https://$YOUR_DOMAIN/xyz` and
-   forward them to your internal agent endpoint at `https://xyz.internal`.
+   forward them to your internal Agent Endpoint at `https://xyz.internal`.
 
 You can also [route by other
 properties](/traffic-policy/examples/route-requests), like subdomains and
@@ -200,10 +198,10 @@ headers.
 <Tabs>
 	<Tab>
 
-    	Copy and paste the rules below into your cloud endpoint's Traffic Policy editor
+    	Copy and paste the rules below into your Cloud Endpoint's Traffic Policy editor
     	in the dashboard. If you're bringing your own API services instead of using the
     	demo API, you'll need to change `/abc` and `/xyz` to match your services' paths
-    	and the `url` for your internal agent endpoints.
+    	and the `url` for your internal Agent Endpoints.
 
     	```yaml mode=traffic-policy title="policy.yaml"
     	on_http_request:
@@ -229,7 +227,7 @@ headers.
     	Update your existing `policy.yaml` file with the YAML below. If you're
     	bringing your own API services instead of using the demo API, you'll need to
     	change `/abc` and `/xyz` to match your services' paths and the `url` for
-    	your internal agent endpoints.
+    	your internal Agent Endpoints.
 
     	```yaml mode=traffic-policy title="policy.yaml"
     	on_http_request:
@@ -247,7 +245,7 @@ headers.
     						url: https://xyz.internal
     	```
 
-    	Update your cloud endpoint.
+    	Update your Cloud Endpoint.
 
     	```bash
     	ngrok api endpoints update <CLOUD_ENDPOINT_ID> \
@@ -287,14 +285,14 @@ rules is that they're composable—you can reuse them, chain them, and apply the
 at multiple stages in the lifecycle of an API request.
 
 With the shape you've already created, you can centrally manage certain
-policies, like authentication, on your cloud endpoint, then compose additional
+policies, like authentication, on your Cloud Endpoint, then compose additional
 rules onto specific services.
 
 ### Validate JWTs on all APIs and requests
 
 API authentication is too important not to apply consistently across all your
 APIs and requests. That's where the always-on, _front door to all your routes_
-quality of a cloud endpoint comes in handy—you can apply the [`jwt-validation`
+quality of a Cloud Endpoint comes in handy—you can apply the [`jwt-validation`
 action](/traffic-policy/actions/jwt-validation) once for dependable AuthN
 no matter how many services you end up deploying behind your multicloud API
 gateway.
@@ -311,8 +309,7 @@ ngrok's JWT validation action helps you:
   services.
 - Offload all this logic from your API services and run it in ngrok's network.
 
-You can use any OAuth provider for JWT validation, but let's quickly cover the
-process with Auth0.
+You can use any OAuth provider for JWT validation. The process with Auth0 is covered below.
 
 - Log in to your [Auth0 tenant dashboard](https://manage.auth0.com/dashboard).
 - Select **Applications > APIs**, then **+ Create API**.
@@ -325,15 +322,15 @@ process with Auth0.
   a signed, fully functional JWT and examples of how to programmatically
   generate more.
 
-The rule below builds on top of the previous cloud endpoint policy to:
+The rule below builds on top of the previous Cloud Endpoint policy to:
 
 1. Reject requests missing a token with a `401 Unauthorized` error.
 2. Reject requests with an invalid token with a `403 Forbidden` error.
-3. Forward requests with a valid token to one of your internal agent endpoints
+3. Forward requests with a valid token to one of your internal Agent Endpoints
    based on the pathname.
 
 You'll need to change the variables accordingly—if you're not sure where to find
-this information, we have a full [integration
+this information, see the full [integration
 guide](/integrations/jwt-validation/auth0) with more details.
 
 ```yaml mode="traffic-policy" title="policy.yaml"
@@ -378,9 +375,7 @@ Apply in either the dashboard or ngrok API.
 
 ### 5. Rate limit specific API services
 
-Let's say one of your services (like `abc` on port `4000`, if you're following
-along with the demo service), needs additional protection from unintentional
-misuse and malicious attacks.
+For example, one of your services (like `abc` on port `4000`, if you're following along with the demo service) may need additional protection from unintentional misuse and malicious attacks.
 
 The [`rate-limit` Traffic Policy
 action](/traffic-policy/actions/rate-limit) allows you to reject requests
@@ -424,10 +419,10 @@ for i in `seq 1 50`; do curl -X GET -w '%{http_code}' https://$YOUR_DOMAIN/abc ;
 You'll see a few normal responses until you hit the rate limit, and then you'll
 see `429` errors. Run the same command on the `/xyz` path and you won't see the
 same errors, since you've applied this policy only to the
-`https://abc.internal` agent endpoint.
+`https://abc.internal` Agent Endpoint.
 
 If you want all your APIs to have a consistent rate limiting strategy, you can
-move the rule to your cloud endpoint above the `jwt-validation` action.
+move the rule to your Cloud Endpoint above the `jwt-validation` action.
 
 ## What's next?
 
@@ -437,13 +432,13 @@ balancing. Plus, you've added global AuthN with JWTs and explored composing
 Traffic Policy rules on multiple endpoints.
 
 That said, your journey into deploying and securing services
-with ngrok's API gateway is just beginning. Next up, we recommend you:
+with ngrok's API gateway is just beginning. Next up:
 
 1. Check out your [Traffic
    Inspector](https://dashboard.ngrok.com/observability/traffic-inspector)
    ([documentation](/obs/traffic-inspection#ngrok-traffic-inspector)) to
    observe, modify, and replay requests across your API gateway.
-2. Explore other opportunities to manage and take action on API traffic in our
+2. Explore other opportunities to manage and take action on API traffic in the
    [Traffic Policy documentation](/traffic-policy).
 3. Learn [how to monitor your API traffic](/guides/api-gateway/monitor-ngrok), so you'll
    know how your service is performing at all times, and be alerted to errors.
