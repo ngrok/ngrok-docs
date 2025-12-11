@@ -1,0 +1,245 @@
+---
+title: Debugging
+description: Inspect AI Gateway action results to diagnose request failures and understand routing decisions.
+---
+
+import { ConfigField } from "/snippets/ConfigTable.jsx";
+
+When troubleshooting AI Gateway issues, you can access detailed information about what happened during request processing using action result variables. This page explains how to capture and interpret this data.
+
+## Action result variables
+
+After the `ai-gateway` action runs, detailed results are available in `${actions.ngrok.ai_gateway}`. This includes:
+
+- Which models were considered as candidates
+- Every attempt made to providers
+- Token counts (estimated and actual)
+- Error details for failed attempts
+
+### Schema
+
+<ConfigField title="actions.ngrok.ai_gateway.status" type="string">
+  Overall outcome of the action: `"success"` or `"error"`.
+</ConfigField>
+
+<ConfigField title="actions.ngrok.ai_gateway.candidates" type="array">
+  List of all provider/model combinations considered before attempting requests.
+  
+  Each candidate contains:
+  - `provider` - Provider ID (for example, `"openai"`, `"anthropic"`)
+  - `model` - Model ID (for example, `"gpt-4o"`, `"claude-3-5-sonnet-20241022"`)
+</ConfigField>
+
+<ConfigField title="actions.ngrok.ai_gateway.attempts" type="array">
+  List of all request attempts made. Each attempt contains:
+  
+  - `status` - Attempt outcome: `"success"` or `"error"`
+  - `status_code` - HTTP status code from provider (0 if no response)
+  - `error` - Error message if the attempt failed
+  - `provider_id` - Provider name
+  - `model_id` - Model name
+  - `api_key_hash` - Non-reversible hash of the API key used
+  - `input_tokens_estimated` - An estimate generated before the request is sent
+  - `input_tokens_actual` - Actual tokens from provider response
+  - `output_tokens_estimated` - Estimated output tokens
+  - `output_tokens_actual` - Actual output tokens from response
+  - `tokenizer_encoding` - Encoding used (for example, `"cl100k_base"`)
+  - `body_on_error` - Response body for failed attempts (truncated to 1KB)
+  - `req` - Request details (method, URL, headers, body)
+</ConfigField>
+
+<ConfigField title="actions.ngrok.ai_gateway.error.code" type="string">
+  Error code if the action failed (for example, `"ERR_NGROK_3807"`).
+</ConfigField>
+
+<ConfigField title="actions.ngrok.ai_gateway.error.message" type="string">
+  Error message if the action failed.
+</ConfigField>
+
+### Accessing action results
+
+To access action results, configure `on_error: "continue"` so subsequent actions can inspect the data:
+
+```yaml
+on_http_request:
+  - type: ai-gateway
+    config:
+      on_error: continue
+  - type: log
+    config:
+      metadata:
+        ai_gateway_result: ${actions.ngrok.ai_gateway}
+  - type: deny
+```
+
+<Note>
+Cloud Endpoints require a terminal action such as `deny`, `custom-response`, `redirect`, or `forward-internal` to complete the request. See [Cloud Endpoints](/universal-gateway/cloud-endpoints#differences-from-agent-endpoints) for more details.
+</Note>
+
+## Debugging patterns
+
+### Return results as response (development)
+
+During development, return the full action result to the client for inspection:
+
+```yaml
+on_http_request:
+  - type: ai-gateway
+    config:
+      on_error: continue
+  - type: custom-response
+    config:
+      status_code: 503
+      headers:
+        content-type: application/json
+      body: ${actions.ngrok.ai_gateway}
+```
+
+**Example response:**
+
+```json
+{
+  "status": "error",
+  "candidates": [
+    {"provider": "openai", "model": "gpt-4o"},
+    {"provider": "anthropic", "model": "claude-3-5-sonnet-20241022"}
+  ],
+  "attempts": [
+    {
+      "status": "error",
+      "status_code": 429,
+      "error": "rate limit exceeded",
+      "provider_id": "openai",
+      "model_id": "gpt-4o",
+      "api_key_hash": "sha256:abc123",
+      "input_tokens_estimated": 150,
+      "body_on_error": "{\"error\":{\"message\":\"Rate limit exceeded\",\"type\":\"rate_limit_error\"}}"
+    },
+    {
+      "status": "error", 
+      "status_code": 500,
+      "error": "internal server error",
+      "provider_id": "anthropic",
+      "model_id": "claude-3-5-sonnet-20241022",
+      "api_key_hash": "sha256:def456"
+    }
+  ],
+  "error": {
+    "code": "ERR_NGROK_3807",
+    "message": "All AI providers failed to respond successfully."
+  }
+}
+```
+
+### Send to log exports (production)
+
+In production, send action results to your logging infrastructure:
+
+```yaml
+on_http_request:
+  - type: ai-gateway
+    config:
+      on_error: continue
+  - type: log
+    config:
+      metadata:
+        ai_gateway_result: ${actions.ngrok.ai_gateway}
+  - type: deny
+```
+
+This fires a log event that can be exported to your observability platform. See [Log Exporting](/ai-gateway/observability/log-exporting) for setup.
+
+### Combined approach
+
+Log the results and return a user-friendly error:
+
+```yaml
+on_http_request:
+  - type: ai-gateway
+    config:
+      on_error: continue
+  - type: log
+    config:
+      metadata:
+        ai_gateway_result: ${actions.ngrok.ai_gateway}
+  - type: custom-response
+    config:
+      status_code: 503
+      headers:
+        content-type: application/json
+      body: |
+        {
+          "error": "AI service temporarily unavailable",
+          "code": "${actions.ngrok.ai_gateway.error.code}"
+        }
+```
+
+## Interpreting results
+
+### Identifying rate limits
+
+Look for `status_code: 429` in attempts:
+
+```json
+{
+  "attempts": [
+    {
+      "status": "error",
+      "status_code": 429,
+      "provider_id": "openai",
+      "api_key_hash": "sha256:abc123",
+      "body_on_error": "{\"error\":{\"type\":\"rate_limit_error\"}}"
+    }
+  ]
+}
+```
+
+**Solution:** Add more API keys or configure key rotation with `api_key_selection`.
+
+### Identifying model mismatches
+
+When `candidates` is empty and you get `ERR_NGROK_3804`:
+
+```json
+{
+  "status": "error",
+  "candidates": [],
+  "attempts": [],
+  "error": {
+    "code": "ERR_NGROK_3804",
+    "message": "Unable to route request - no models matched"
+  }
+}
+```
+
+**Solution:** Check the model name spelling or add the provider prefix.
+
+### Identifying timeout issues
+
+Look for attempts without a `status_code` or with timeout errors:
+
+```json
+{
+  "attempts": [
+    {
+      "status": "error",
+      "status_code": 0,
+      "error": "context deadline exceeded",
+      "provider_id": "openai"
+    }
+  ]
+}
+```
+
+**Solution:** Increase `per_request_timeout` or investigate provider latency.
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Troubleshooting" icon="circle-exclamation" href="/ai-gateway/guides/troubleshooting">
+    Error codes and solutions
+  </Card>
+  <Card title="Log Exporting" icon="file-export" href="/ai-gateway/observability/log-exporting">
+    Export logs to your observability platform
+  </Card>
+</CardGroup>
