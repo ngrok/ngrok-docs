@@ -1,25 +1,27 @@
 ---
 title: Error Handling
-description: Understanding failover logic and error behavior in AI Gateway.
+description: Configure failover behavior and error recovery in AI Gateway.
 ---
 
-## Automatic failover behavior
+When a request to a provider fails, the AI Gateway automatically attempts failover to the next available candidate. This page explains how failover works and how to configure error behavior.
 
-When a request to a provider fails, the gateway automatically tries the next candidate. This includes failures from:
+## Automatic failover
 
-- **Timeouts** - Request exceeded `per_request_timeout`
-- **HTTP errors** - Any non-2xx/3xx response from providers (4xx, 5xx)
-- **Connection errors** - Network failures, DNS issues, etc.
+The gateway automatically tries the next candidate when a request fails due to:
 
-The gateway never retries the same model/key combination—it always moves to the next candidate in its list.
+- **Timeouts** — Request exceeded `per_request_timeout`
+- **HTTP errors** — Any 4xx or 5xx response from providers
+- **Connection errors** — Network failures, DNS issues, TLS errors
 
-## Failover cascade
+The gateway never retries the same model/key combination. It always moves to the next candidate.
 
-When a request fails, the gateway follows this failover order:
+## Failover order
 
-### 1. Try another key
+When a request fails, the gateway follows this order:
 
-If multiple API keys are configured for the current model's provider, try the next key:
+### 1. Try another API key
+
+If multiple API keys are configured for the current model's provider, the gateway tries the next key:
 
 ```yaml
 providers:
@@ -29,12 +31,12 @@ providers:
       - value: ${secrets.get('openai', 'key-two')}   # Try if first fails
 ```
 
-### 2. Try another model candidate
+### 2. Try another model
 
-If all keys for the current model fail, the gateway moves to the next model in its candidate list. This happens when:
+After exhausting all keys for a model, the gateway moves to the next model candidate. Candidates come from:
 
-- The client specified multiple models using the `models` array
-- Model selection strategies returned multiple candidates
+- The client's `models` array in the request body
+- Model selection strategies that return multiple models
 
 ```json
 {
@@ -44,15 +46,13 @@ If all keys for the current model fail, the gateway moves to the next model in i
 }
 ```
 
-The `model` field is tried first, then entries in the `models` array as fallbacks.
+The `model` field is tried first, then entries in `models` as fallbacks.
 
 <Note>
-Provider failover requires the client to specify models from different providers, or for model selection strategies to return candidates from multiple providers.
+Cross-provider failover requires the client to specify models from different providers, or model selection strategies that return candidates from multiple providers.
 </Note>
 
 ## Error behavior configuration
-
-Control what happens when all candidates are exhausted:
 
 ### `on_error: "halt"` (default)
 
@@ -65,164 +65,74 @@ on_http_request:
       on_error: "halt"
 ```
 
-The client receives the last error from the failover cascade.
-
 ### `on_error: "continue"`
 
-Continue to the next action in the Traffic Policy:
+Continue to the next action in the Traffic Policy, allowing custom error handling:
 
 ```yaml
 on_http_request:
   - type: ai-gateway
     config:
       on_error: "continue"
-  - type: custom-error-handler
-    # This action runs if ai-gateway fails
+  - type: custom-response
+    config:
+      status_code: 503
+      body: "AI service temporarily unavailable"
 ```
 
-Useful for custom error handling or fallback logic.
-
-## Error response format
-
-When all candidates fail, the gateway returns an error. The response preserves the last provider's error response when available, or returns an ngrok error message.
-
-**Provider error passthrough:**
-If the last attempt received an HTTP error response from the provider, that response (status code and body) is returned to the client.
-
-**Gateway error:**
-If the failure was due to timeouts, connection errors, or configuration issues, the gateway returns an error message:
-
-```
-All AI providers failed to respond successfully. The request could not be completed. Errors:
-[429] openai/gpt-4o: 429 Too Many Requests
-[500] anthropic/claude-3-5-sonnet-20241022: 500 Internal Server Error
-```
-
-## Common error scenarios
-
-### Scenario 1: Key exhaustion
-
-All keys for a provider hit rate limits:
-
-```
-1. Try openai/key-one → 429 Rate Limit
-2. Try openai/key-two → 429 Rate Limit
-3. Try openai/key-three → 429 Rate Limit
-4. Move to next provider or return error
-```
-
-### Scenario 2: Provider timeout
-
-Provider times out, fallback to another:
-
-```
-1. Try openai → Timeout after 30s
-2. Try anthropic → Success
-```
-
-### Scenario 3: All providers fail
-
-All configured providers and keys fail:
-
-```
-1. Try openai/key-one → 500 Server Error
-2. Try openai/key-two → 500 Server Error
-3. Try anthropic/key → 503 Service Unavailable
-4. Return error to client (if on_error: "halt")
-```
+When using `on_error: "continue"`, you can inspect the error details using [action result variables](/ai-gateway/guides/debugging#action-result-variables).
 
 ## Timeout configuration
 
-Control failover timing with timeout settings:
+Control failover timing with these settings:
 
 ```yaml
 on_http_request:
   - type: ai-gateway
     config:
       per_request_timeout: "30s"   # Each provider attempt
-      total_timeout: "5m"           # All attempts combined
+      total_timeout: "5m"          # All attempts combined
 ```
 
-- **`per_request_timeout`**: Maximum time for a single provider attempt
-- **`total_timeout`**: Maximum time for all failover attempts
+| Setting | Default | Description |
+|---------|---------|-------------|
+| `per_request_timeout` | `30s` | Maximum time for a single provider attempt |
+| `total_timeout` | `5m` | Maximum time for all failover attempts combined |
 
-If `total_timeout` is reached, failover stops even if more candidates are available.
+If `total_timeout` is reached, failover stops immediately even if more candidates remain.
 
 ## Errors that skip failover
 
-These errors occur before the failover cascade begins and are returned immediately:
+These errors return immediately without attempting failover:
 
-- **Invalid request body** - Request JSON could not be parsed
-- **No models available** - No configured providers support the requested model
-- **Token limit exceeded** - Request exceeds `max_input_tokens`
-- **No API key** - No key configured and none provided by client
-- **Configuration errors** - Invalid provider or model configuration
+| Error | Description |
+|-------|-------------|
+| Invalid request body | Request JSON could not be parsed |
+| No models available | No models matched the gateway configuration and client request |
+| Model selection empty | All model selection strategies returned empty results |
+| Configuration errors | Invalid provider or model configuration |
 
-Once the failover cascade starts, all provider errors (including 4xx) trigger the next candidate until all are exhausted.
+Once failover begins, all provider errors (including 4xx) trigger the next candidate until exhausted.
 
-## Monitoring errors
-
-Track errors using the `error_rate` metrics available in [model selection strategies](/ai-gateway/guides/model-selection-strategies):
-
-| Metric | Description |
-|--------|-------------|
-| `error_rate.total` | Fraction of requests that failed (0.0 to 1.0) |
-| `error_rate.timeout` | Fraction of requests that timed out |
-| `error_rate.rate_limit` | Fraction of requests that returned HTTP 429 |
-| `error_rate.client` | Fraction of requests that returned 4xx errors |
-| `error_rate.server` | Fraction of requests that returned 5xx errors |
-
-Use these metrics to:
-- Filter out problematic providers in model selection
-- Identify keys hitting rate limits
-- Adjust timeout values based on timeout rates
+<Note>
+Token limit and API key errors for a specific model trigger failover to the next model, not immediate failure.
+</Note>
 
 ## Best practices
 
-1. **Configure multiple keys** per provider for key-level failover
-2. **Specify multiple models** in client requests for cross-provider failover
-3. **Set appropriate timeouts** based on your use case
-4. **Monitor error metrics** to catch issues early
-5. **Use model selection strategies** to order candidates by preference
+1. **Configure multiple API keys** per provider for key-level failover
+2. **Use the `models` array** in client requests for cross-provider failover
+3. **Set appropriate timeouts** based on your latency requirements
+4. **Use `on_error: "continue"`** with custom responses for graceful degradation
+5. **Monitor with log exports** to track failover patterns
 
-## Example: Comprehensive error handling
+## Next steps
 
-```yaml
-on_http_request:
-  - type: ai-gateway
-    config:
-      per_request_timeout: "45s"
-      total_timeout: "3m"
-      on_error: "halt"
-      
-      providers:
-        # Primary provider with multiple keys
-        - id: "openai"
-          api_keys:
-            - value: ${secrets.get('openai', 'key-a')}
-            - value: ${secrets.get('openai', 'key-b')}
-            - value: ${secrets.get('openai', 'key-c')}
-        
-        # Backup provider
-        - id: "anthropic"
-          api_keys:
-            - value: ${secrets.get('anthropic', 'primary')}
-            - value: ${secrets.get('anthropic', 'backup')}
-        
-        # Emergency fallback
-        - id: "google"
-          api_keys:
-            - value: ${secrets.get('google', 'key')}
-```
-
-This configuration provides:
-- 3 failover keys for OpenAI
-- 2 failover keys for Anthropic
-- 1 emergency key for Google
-- Up to 3 minutes for all failover attempts
-- Clear error messages on complete failure
-
-<Note>
-For cross-provider failover, clients must specify models from multiple providers using the `models` array, or model selection strategies must return candidates from multiple providers.
-</Note>
-
+<CardGroup cols={2}>
+  <Card title="Troubleshooting" icon="circle-exclamation" href="/ai-gateway/guides/troubleshooting">
+    Error codes, causes, and solutions
+  </Card>
+  <Card title="Debugging" icon="bug" href="/ai-gateway/guides/debugging">
+    Inspect action results and diagnose issues
+  </Card>
+</CardGroup>

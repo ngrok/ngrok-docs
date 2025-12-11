@@ -1,0 +1,343 @@
+---
+title: Troubleshooting
+description:  When the AI Gateway encounters an error, it returns an ngrok error code and message to help identify the issue. The full list of AI Gateway error codes and their meanings are listed on this page.
+---
+
+## Error codes reference
+
+### ERR_NGROK_3800
+
+**Message**
+
+The request could not be proxied to the AI provider successfully
+
+**HTTP Status**
+
+502 Bad Gateway
+
+
+**Causes**
+- Network connectivity issues between ngrok and the provider
+- Provider endpoint is down or unreachable
+- DNS resolution failure for provider URL
+
+**Solutions**
+- Check provider status pages (e.g., [OpenAI Status](https://status.openai.com))
+- Verify custom provider `base_url` is correct and accessible
+- Configure failover to alternative providers
+
+---
+
+### ERR_NGROK_3801
+
+**Message**
+
+The request's body could not be parsed: {err}
+
+**HTTP Status**
+
+400 Bad Request
+
+**Causes**
+- Request body is not valid JSON
+- `model` field is not a string
+- `models` field is not an array
+- `models` array contains non-string values
+
+**Solutions**
+- Validate your request JSON before sending
+- Ensure the `model` field is a string
+- If using `models` array, ensure all entries are strings
+
+---
+
+### ERR_NGROK_3802
+
+**Message**
+
+No API key was provided in the request or in the provider configuration
+
+**HTTP Status**
+
+400 Bad Request
+
+
+**Causes**
+- No `Authorization` header in the client request
+- No API keys configured for the provider in the gateway
+- API key selection strategy filtered out all keys
+
+**Solutions**
+- Include an API key in your request: `Authorization: Bearer sk-...`
+- Configure API keys in your gateway's provider configuration
+- Review your `api_key_selection` strategy if configured
+
+---
+
+### ERR_NGROK_3803
+
+**Message**
+
+Model selection strategy failed: {err}
+
+**HTTP Status**
+
+424 Failed Dependency
+
+
+**Causes**
+- CEL expression syntax error in `model_selection.strategy`
+- Runtime error evaluating the strategy expression
+- Reference to undefined variable in strategy
+
+**Solutions**
+- Check variable names and ensure they are [available](/ai-gateway/guides/model-selection-strategies#available-model-variables) and correctly referenced.
+- Check for typos in variable names (e.g., `ai.models` not `ai.model`)
+- Review [CEL Functions Reference](/ai-gateway/reference/cel-functions) for available functions.
+- Try and validate your CEL expressions using the [CEL playground](https://playcel.undistro.io/).
+
+---
+
+### ERR_NGROK_3804
+
+**Message**
+
+Unable to route request - no models matched both your gateway configuration and client request
+
+**HTTP Status**
+
+422 Unprocessable Entity
+
+**Causes**
+- Typo in the model name (e.g., `gpt-4a` instead of `gpt-4o`)
+- Model not in the [Model Catalog](/ai-gateway/reference/model-catalog) and no provider prefix
+- `only_allow_configured_models: true` and model not in provider config
+- `only_allow_configured_providers: true` and provider not configured
+
+**Solutions**
+- Check spelling — common models include `gpt-4o`, `gpt-4`, `claude-3-5-sonnet-20241022`
+- For unknown models, prefix with provider: `openai:my-custom-model`
+- Review your gateway's `providers` configuration
+- Check if restriction flags are excluding your model
+
+**Example error with OpenAI SDK:**
+```python
+openai.UnprocessableEntityError: 422 Unable to route request - no models matched 
+both your gateway configuration and client request. Errors:
+all potential models excluded by gateway configuration. reasons: 
+  - client supplied model ("gpt-4a") did not match any known models and a 
+    provider could not be parsed
+
+ERR_NGROK_3804
+```
+
+---
+
+### ERR_NGROK_3805
+
+**Message**
+
+All model selection strategy expressions resulted in an empty set after filtering by configured providers. Check your model selection strategy and provider configuration.
+
+**HTTP Status**
+
+422 Unprocessable Entity
+
+**Causes**
+- A strategy either returned empty, had an error, or returned models not in the catalog or matched the client's requested models. The gateway tries each in order and fails immediately if it encounters an error or an empty set, and after exhausting all of them.
+
+**Solutions**
+- Double check your model selection strategies and ensure they are correctly configured to return models that exist in the catalog or in your gateway configuration
+- Double check whether you have enabled `only_allow_configured_models` or `only_allow_configured_providers`
+- If clients specify models in requests, ensure your model selection strategies will return those models
+
+---
+
+### ERR_NGROK_3806
+
+**Message**
+
+Model selection strategy expression '{expression}' returned an invalid type: expected AIModel or []AIModel, got {actualType}
+
+**HTTP Status**
+
+422 Unprocessable Entity
+
+**Causes**
+- Strategy expression returned a string, number, or other value instead of a model object or list of model objects
+
+**Solutions**
+- Use `ai.models`, `ai.models.randomize()`, `ai.models.random()`, or `ai.models.filter(...)` which return model objects
+- Don't return raw strings like `"gpt-4o"` or numbers like `123` from your strategy expressions
+
+---
+
+### ERR_NGROK_3807
+
+**Message**
+
+All AI providers failed to respond successfully. The request could not be completed.
+
+**HTTP Status**
+
+424 Failed Dependency
+
+**Causes**
+- All configured providers returned errors
+- All API keys exhausted (rate limits, invalid keys)
+- Network issues to all providers
+- Provider-specific errors (invalid model, authentication failures)
+
+**Solutions**
+- Check the error details for specific provider failures (errors are listed in the response)
+- Verify API keys are valid and have available quota
+- Add more providers or API keys for better failover
+- Use [debugging](/ai-gateway/guides/debugging) to inspect individual attempt errors
+
+---
+
+### ERR_NGROK_3808
+
+**Message**
+
+API key selection strategy failed: {err}
+
+**HTTP Status**
+
+424 Failed Dependency
+
+**Causes**
+- No API key sent in request and no API keys configured for the provider (only for official providers like OpenAI)
+- All `api_key_selection` strategies returned no keys or had errors
+- Strategy expression returned an invalid type instead of a key or list of keys
+
+**Solutions**
+- Include an API key in your request: `Authorization: Bearer sk-...`
+- Configure API keys in your gateway's provider configuration
+- Check the error message for details about which strategy failed
+
+---
+
+### ERR_NGROK_3809
+
+**Message**
+
+Unsupported proto for AI Gateway action: {proto}
+
+**HTTP Status**
+
+424 Failed Dependency
+
+**Causes**
+- AI Gateway action used on a non-HTTP endpoint
+- Endpoint configured for TCP or TLS protocol
+
+**Solutions**
+- AI Gateway only supports HTTP/HTTPS endpoints
+- Check your endpoint configuration and ensure it uses HTTP protocol
+
+---
+
+### ERR_NGROK_3810
+
+**Message**
+
+AI gateway total timeout of {timeout} was exceeded.
+
+**HTTP Status**
+
+504 Gateway Timeout
+
+**Causes**
+- All failover attempts took longer than `total_timeout`
+- Providers responding slowly
+- Too many failover candidates with slow responses
+
+**Solutions**
+- Increase `total_timeout` if appropriate for your use case
+- Reduce `per_request_timeout` to fail faster on slow providers
+- Use model selection strategies to prioritize faster providers
+- Reduce the number of failover candidates
+
+---
+
+### ERR_NGROK_3811
+
+**Message**
+
+Request input exceeds maximum token limit. Input tokens: {inputTokens}, Max allowed: {maxAllowed}
+
+**HTTP Status**
+
+413 Payload Too Large
+
+**Causes**
+- Prompt and context exceed `max_input_tokens` setting
+- Very long conversation history
+- Large embedded content in messages
+
+**Solutions**
+- Reduce prompt length or conversation history
+- Increase `max_input_tokens` in gateway configuration
+- Implement client-side token counting or compression before sending
+
+## SDK error handling
+
+Here are some ways you can handle ngrok errors in your SDK:
+
+<CodeGroup>
+```python OpenAI Python SDK
+from openai import OpenAI, APIError
+
+client = OpenAI(
+    base_url="https://your-gateway.ngrok.app/v1",
+    api_key="your-key"
+)
+
+try:
+    response = client.chat.completions.create(
+        model="gpt-4o",
+        messages=[{"role": "user", "content": "Hello"}]
+    )
+except APIError as e:
+    print(f"Error code: {e.code}")
+    print(f"Message: {e.message}")
+    if "ERR_NGROK_3804" in str(e):
+        print("Model not found - check model name spelling")
+```
+
+```javascript OpenAI Node.js SDK
+import OpenAI from 'openai';
+
+const client = new OpenAI({
+  baseURL: 'https://your-gateway.ngrok.app/v1',
+  apiKey: 'your-key',
+});
+
+try {
+  const response = await client.chat.completions.create({
+    model: 'gpt-4o',
+    messages: [{ role: 'user', content: 'Hello' }],
+  });
+} catch (error) {
+  if (error instanceof OpenAI.APIError) {
+    console.log('Status:', error.status);
+    console.log('Message:', error.message);
+    if (error.message.includes('ERR_NGROK_3804')) {
+      console.log('Model not found - check model name spelling');
+    }
+  }
+}
+```
+</CodeGroup>
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Debugging" icon="bug" href="/ai-gateway/guides/debugging">
+    Inspect action results and diagnose issues
+  </Card>
+  <Card title="Error Handling" icon="shield" href="/ai-gateway/guides/error-handling">
+    Configure failover and error recovery
+  </Card>
+</CardGroup>
