@@ -45,39 +45,70 @@ const res = await openai.chat.completions.create({
 Add multiple providers for maximum reliability:
 
 ```yaml
-providers:
-  - id: openai
-    api_keys:
-      - value: ${secrets.get('openai', 'key')}
-  
-  - id: anthropic
-    api_keys:
-      - value: ${secrets.get('anthropic', 'key')}
-  
-  - id: google
-    api_keys:
-      - value: ${secrets.get('google', 'key')}
+on_http_request:
+  - type: ai-gateway
+    config:
+			only_allow_configured_providers: true
+			providers:
+				- id: openai
+					api_keys:
+						- value: ${secrets.get('openai', 'key')}
+				
+				- id: anthropic
+					api_keys:
+						- value: ${secrets.get('anthropic', 'key')}
+				
+				- id: google
+					api_keys:
+						- value: ${secrets.get('google', 'key')}
 ```
 
 ## Provider order
 
-Providers are tried in alphabetical order, not the order they are configured.
+Providers are tried in alphabetical order, not the order they are configured, to control order use the `model_selection.strategy` to specify the order:
+
+```yaml
+on_http_request:
+  - type: ai-gateway
+    config:
+      providers:
+        - id: openai
+        - id: anthropic
+        - id: google
+      model_selection:
+        strategy:
+          - "ai.models.filter(m, m.provider_id == 'openai')"
+          - "ai.models.filter(m, m.provider_id == 'anthropic')"
+          - "ai.models.filter(m, m.provider_id == 'google')"
+```
 
 ## Combining multi-key and multi-provider
 
-Maximum resilience with multiple keys per provider:
+Maximum resilience with multiple keys per provider and explicit ordering:
 
 ```yaml
-providers:
-  - id: openai
-    api_keys:
-      - value: ${secrets.get('openai', 'key-one')}
-      - value: ${secrets.get('openai', 'key-two')}
-  
-  - id: anthropic
-    api_keys:
-      - value: ${secrets.get('anthropic', 'key-one')}
-      - value: ${secrets.get('anthropic', 'key-two')}
+on_http_request:
+  - type: ai-gateway
+    config:
+			providers:
+				- id: openai
+					api_keys:
+						- value: ${secrets.get('openai', 'key-one')}
+						- value: ${secrets.get('openai', 'key-two')}
+				
+				- id: anthropic
+					api_keys:
+						- value: ${secrets.get('anthropic', 'key-one')}
+						- value: ${secrets.get('anthropic', 'key-two')}
+
+			only_allow_configured_providers: true
+
+			model_selection:
+				strategy:
+					# Try OpenAI models first
+					- "ai.models.filter(m, m.provider_id == 'openai')"
+					# Then fall back to Anthropic models
+					- "ai.models.filter(m, m.provider_id == 'anthropic')"
 ```
 
 Failover cascade:
@@ -89,6 +120,8 @@ Failover cascade:
 If both OpenAI keys fail:
 3. anthropic/key-one → Success ✓
 ```
+
+**Note**: The `model_selection.strategy` ensures providers are tried in the specified order, not alphabetically. The `only_allow_configured_providers` option restricts requests to only the configured providers.
 
 ## Performance-based selection
 
@@ -115,29 +148,33 @@ on_http_request:
 
 ## Regional failover
 
-Use multiple providers across different regions:
+For providers that offer regional availability, you can use the custom providers feature to add specific regions:
 
 ```yaml
-providers:
-  - id: openai
-    api_keys:
-      - value: ${secrets.get('openai', 'us-east')}
-    metadata:
-      region: "us-east"
-  
-  - id: openai-eu
-    base_url: "https://eu.api.openai.com"
-    id_aliases: ["openai"]
-    api_keys:
-      - value: ${secrets.get('openai', 'eu-west')}
-    metadata:
-      region: "eu-west"
-  
-  - id: anthropic
-    api_keys:
-      - value: ${secrets.get('anthropic', 'key')}
-    metadata:
-      region: "us-west"
+on_http_request:
+  - type: ai-gateway
+    config:
+			providers:
+				- id: openai
+					api_keys:
+						- value: ${secrets.get('openai', 'us-east')}
+					metadata:
+						region: "us-east"
+				
+				- id: openai-eu
+					base_url: "https://eu.api.openai.com"
+					id_aliases: ["openai"]
+					api_keys:
+						- value: ${secrets.get('openai', 'eu-west')}
+					metadata:
+						region: "eu-west"
+
+			only_allow_configured_providers: true
+
+			model_selection:
+				strategy:
+					- "ai.models.filter(m, m.metadata.region == 'us-east')"
+					- "ai.models.filter(m, m.metadata.region == 'eu-west')"
 ```
 
 ## Cost optimization
