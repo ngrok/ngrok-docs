@@ -47,7 +47,7 @@ helm install ngrok-operator ngrok/ngrok-operator \
 
 Use the [`AgentEndpoint` CRD](https://ngrok.com/docs/k8s/crds/agentendpoint) to register an **internal** endpoint per API in each cluster. 
 
-Internal endpoints are not internet-reachable; they're only targetable from other ngrok endpoints via the `forward-internal` traffic policy action—perfect for wiring a single public gateway to multiple cluster services. To make an endpoint internal, set `spec.bindings: ["internal"]` **and** end `spec.url` with `.internal`.
+Internal endpoints are not internet-reachable; they're only targetable from other ngrok endpoints via the `forward-internal` Traffic Policy action—perfect for wiring a single public gateway to multiple cluster services. To make an endpoint internal, set `spec.bindings: ["internal"]` **and** end `spec.url` with `.internal`.
 
 <Tabs>
 
@@ -123,7 +123,7 @@ kubectl apply -f agentendpoints-eks.yaml --context eks
 kubectl apply -f agentendpoints-gke.yaml --context gke
 ```
 
-## 3. Create a public Cloud Endpoint and attach traffic policy
+## 3. Create a public Cloud Endpoint and attach Traffic Policy
 
 Cloud Endpoints are persistent, always-on endpoints you manage centrally via the [dashboard](https://dashboard.ngrok.com/) or [API](https://ngrok.com/docs/api). Cloud Endpoints don't forward their traffic to an agent by default and instead only use their attached Traffic Policy to handle connections. 
 
@@ -133,7 +133,7 @@ Create a public Cloud Endpoint in the ngrok dashboard by navigating to endpoints
 
 ![New Cloud Endpoint UI in the dashboard](./img/multicloud-dashboard.png)
 
-Now that you've created the Cloud Endpoint, you need to configure it to route to the correct internal endpoint based on the request header. Click on your Cloud Endpoint and replace the default traffic policy with: 
+Now that you've created the Cloud Endpoint, you need to configure it to route to the correct internal endpoint based on the request header. Click on your Cloud Endpoint and replace the default Traffic Policy with: 
 
 ```yaml
 on_http_request:
@@ -143,13 +143,13 @@ on_http_request:
         url: https://${getReqHeader('X-Acme-Api')[0]}.internal
 ```
 
-This traffic policy will read the value of the request header for `X-Acme-Api` and route it to that corresponding internal endpoint. For example, a request sent with the header `X-Acme-Api: catalog-eks` will route to `https://catalog-eks.internal`, which is configured to point to the Catalog API in your EKS cluster. 
+This Traffic Policy will read the value of the request header for `X-Acme-Api` and route it to that corresponding internal endpoint. For example, a request sent with the header `X-Acme-Api: catalog-eks` will route to `https://catalog-eks.internal`, which is configured to point to the Catalog API in your EKS cluster. 
 
-## 4. Attach traffic policy to authenticate your Cloud Endpoint
+## 4. Attach Traffic Policy to authenticate your Cloud Endpoint
 
-Traffic Policy is ngrok's configuration language for endpoints. In this example, the traffic policy for your Cloud Endpoint handles routing rules (seen in step 3), rate limiting, authentication, and firewall rules. A full list of available traffic policy actions can be seen [here](https://ngrok.com/docs/traffic-policy/actions/). Use these actions by themselves or layered on top of each other (executed sequentially from top to bottom). 
+Traffic Policy is ngrok's configuration language for endpoints. In this example, the Traffic Policy for your Cloud Endpoint handles routing rules (seen in step 3), rate limiting, authentication, and firewall rules. A full list of available Traffic Policy actions can be seen [here](https://ngrok.com/docs/traffic-policy/actions/). Use these actions by themselves or layered on top of each other (executed sequentially from top to bottom). 
 
-Here's how your traffic policy YAML might look for your Cloud Endpoint:
+Here's how your Traffic Policy YAML might look for your Cloud Endpoint:
 
 ```yaml
 on_http_request:
