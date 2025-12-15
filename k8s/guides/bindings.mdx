@@ -5,9 +5,9 @@ description: Learn about ngrok's endpoint bindings and how to use them in the ng
 ---
 
 ngrok supports the concept of endpoint bindings which allow you to control how your endpoints are accessed.
-This page gives a brief overview of each type of binding as well as how they are used with the ngrok Kubernetes operator.
+This page gives a brief overview of each type of binding as well as how they are used with the ngrok Kubernetes Operator.
 
-With the Kubernetes operator, bindings can be used on the `CloudEndpoint` and `AgentEndpoint` custom resources.
+With the Kubernetes Operator, bindings can be used on the `CloudEndpoint` and `AgentEndpoint` custom resources.
 
 ## Public binding
 
@@ -75,8 +75,8 @@ spec:
 ```
 
 The internal binding and URL on the above internal `AgentEndpoint` make it not accessible via the public internet.
-It can be accessed by using the `forward-internal` action from a traffic policy on other endpoints.
-This is not limited to the Kubernetes cluster that you installed the operator in, and you could, for example, create a public endpoint using the ngrok dashboard/API/CLI that forwards to this endpoint.
+It can be accessed by using the `forward-internal` action from a Traffic Policy on other endpoints.
+This is not limited to the Kubernetes cluster that you installed the Operator in, and you could, for example, create a public endpoint using the ngrok dashboard/API/CLI that forwards to this endpoint.
 
 [Learn more about Internal Endpoints](/universal-gateway/internal-endpoints/).
 
@@ -110,13 +110,13 @@ spec:
 ```
 
 The kubernetes binding and URL for the above `AgentEndpoint` make it a Kubernetes bound endpoint.
-Endpoints with a binding of `kubernetes` can be made available as projected services in any cluster running the ngrok operator.
+Endpoints with a binding of `kubernetes` can be made available as projected services in any cluster running the ngrok Operator.
 These endpoints are not accessible on the public internet, but can be used to enable services in your Kubernetes cluster to access the endpoint by making
 requests to a projected `Service` that is created for the endpoint.
 
 ### How Kubernetes bound endpoints work
 
-An endpoint with a Kubernetes binding will cause instances of the ngrok Kubernetes operator to create a `BoundEndpoint` custom resource for the endpoint.
+An endpoint with a Kubernetes binding will cause instances of the ngrok Kubernetes Operator to create a `BoundEndpoint` custom resource for the endpoint.
 The `BoundEndpoint` will cause the endpoint to be projected into the cluster as a `Service` resource.
 
 This enables many different use-cases such as enabling secure communication between different Kubernetes clusters using Kubernetes bound endpoints.
@@ -138,7 +138,7 @@ spec:
     url: http://my-service.my-namespace:80
 ```
 
-Will cause the following `BoundEndpoint` to be created by the operator.
+Will cause the following `BoundEndpoint` to be created by the Operator.
 You can also configure the same options on `CloudEndpoint` resources.
 
 ```yaml
@@ -159,7 +159,7 @@ spec:
     service: my-service
 ```
 
-Which in-turn causes the operator to project the following `Service` into your cluster
+Which in-turn causes the Operator to project the following `Service` into your cluster
 
 ```yaml
 apiVersion: v1
@@ -187,37 +187,37 @@ spec:
 
 When anything in the cluster makes a request to the `my-bound-service.my-namespace` `Service` it will hit the above `AgentEndpoint` and ultimately be routed to the `my-service.my-namespace` `Service`.
 
-This can be used within a single cluster to use ngrok traffic policies on your endpoints for `Service` to `Service` networking to perform operations such as rate-limiting, header manipulation, etc.
-Furthermore, the true power in Kubernetes bindings is allowing you to project a `Service` in one cluster to one or more other clusters running the ngrok Kubernetes operator.
+This can be used within a single cluster to use ngrok Traffic Policies on your endpoints for `Service` to `Service` networking to perform operations such as rate-limiting, header manipulation, etc.
+Furthermore, the true power in Kubernetes bindings is allowing you to project a `Service` in one cluster to one or more other clusters running the ngrok Kubernetes Operator.
 When doing this, you can configure networking between different Kubernetes clusters without needing to expose any publicly accessible URLs that would need to require authentication to prevent unwanted access.
 This is not simply limited to Kubernetes clusters. You could for example, create a Kubernetes bound endpoint using the ngrok CLI/SDK to project workloads running on another system such as a Virtual Machine into your Kubernetes clusters.
 
 ### Enable bindings for the Operator
 
-By default, the kubernetes bindings feature is not enabled for the ngrok operator.
-Without enabling the feature, you can still create endpoints like any of the above examples for `internal`/`public`/`kubernetes` endpoints, but the operator will not create any `BoundEndpoint` resources for endpoints in your ngrok account with a Kubernetes binding.
+By default, the kubernetes bindings feature is not enabled for the ngrok Operator.
+Without enabling the feature, you can still create endpoints like any of the above examples for `internal`/`public`/`kubernetes` endpoints, but the Operator will not create any `BoundEndpoint` resources for endpoints in your ngrok account with a Kubernetes binding.
 
-To enable the feature and allow your operator to create `BoundEndpoints` in response to endpoints with a kubernetes binding, use the helm value `bindings.enabled`.
-For example, if you installed the ngrok operator with the default name/namespace, the following command will enable bindings.
+To enable the feature and allow your Operator to create `BoundEndpoints` in response to endpoints with a kubernetes binding, use the helm value `bindings.enabled`.
+For example, if you installed the ngrok Operator with the default name/namespace, the following command will enable bindings.
 
 ```bash
 helm upgrade ngrok-operator -n ngrok-operator ngrok/ngrok-operator --reuse-values --set bindings.enabled=true
 ```
 
-See the [operator Helm page](/k8s/installation/helm) for more information about the `bindings` value and all the other configuration options such as configuring custom annotations/labels on the projected services created by Kubernetes bound endpoints.
+See the [Operator Helm page](/k8s/installation/helm) for more information about the `bindings` value and all the other configuration options such as configuring custom annotations/labels on the projected services created by Kubernetes bound endpoints.
 
 ### Restrict Kubernetes bound endpoints
 
-By default, the operator will create a `BoundEndpoint` in response to all endpoints in your account with a Kubernetes binding type.
-You can modify your operator to only process a subset of them with the `bindings.endpointSelectors` Helm value.
+By default, the Operator will create a `BoundEndpoint` in response to all endpoints in your account with a Kubernetes binding type.
+You can modify your Operator to only process a subset of them with the `bindings.endpointSelectors` Helm value.
 
 `bindings.endpointSelectors` is a list of cel expressions used to filter which kubernetes-bound endpoints should be projected into this cluster.
 It defaults to `["true"]` which causes it to process all endpoints with a Kubernetes type binding. This can be modified to anything you like to control which
-endpoints the operator should process. This strategy can enable you to easily only project endpoints into certain clusters running the ngrok Kubernetes operator.
+endpoints the Operator should process. This strategy can enable you to easily only project endpoints into certain clusters running the ngrok Kubernetes Operator.
 
 ## Bindings with `Ingresses`
 
-By default, creating an `Ingress` will create a `CloudEndpoint` that has a `public` binding, meaning that its URL is accessible via the public internet, and an `AgentEndpoint` with an `internal` binding, meaning that its URL is only accessible using the `forward-internal` traffic policy action.
+By default, creating an `Ingress` will create a `CloudEndpoint` that has a `public` binding, meaning that its URL is accessible via the public internet, and an `AgentEndpoint` with an `internal` binding, meaning that its URL is only accessible using the `forward-internal` Traffic Policy action.
 You can control the binding on the `CloudEndpoint` that will be created by this `Ingress` using the `k8s.ngrok.com/bindings` annotation.
 
 For more information about bindings, see [the bindings page](/k8s/guides/bindings)
@@ -250,7 +250,7 @@ spec:
 
 ## Bindings with Gateway API
 
-By default, the `CloudEndpoint` resources that are created by the operator from Gateway API config have a `public` binding, meaning that its URL is accessible via the public internet, and any created `AgentEndpoint` resources will have an `internal` binding, meaning that its URL is only accessible using the `forward-internal` traffic policy action.
+By default, the `CloudEndpoint` resources that are created by the Operator from Gateway API config have a `public` binding, meaning that its URL is accessible via the public internet, and any created `AgentEndpoint` resources will have an `internal` binding, meaning that its URL is only accessible using the `forward-internal` Traffic Policy action.
 You can control the binding on the `CloudEndpoint` that will be created by using the `k8s.ngrok.com/bindings` annotation.
 
 For more information about bindings, see [the bindings page](/k8s/guides/bindings)

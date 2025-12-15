@@ -177,13 +177,13 @@ curl -X POST https://api.ngrok.com/endpoints \
 
 ### 6. Secure your endpoints with Traffic Policy
 
-There are a variety of traffic policy actions to choose from to layer security on to endpoints. Listed below are YAML snippets and curl commands below for how to enable IP Restrictions, JWT Validation, and mTLS. There are many other actions to choose from which can be found in [Traffic Policy Actions](/traffic-policy/actions/). These actions will be added to the existing traffic policy config, preceding the forward-internal action.
+There are a variety of Traffic Policy actions to choose from to layer security on to endpoints. Listed below are YAML snippets and curl commands below for how to enable IP Restrictions, JWT Validation, and mTLS. There are many other actions to choose from which can be found in [Traffic Policy Actions](/traffic-policy/actions/). These actions will be added to the existing Traffic Policy config, preceding the forward-internal action.
 
-Because patient data is extremely sensitive, you'll want to add an extra layer of protection for the TLS Cloud Endpoint. ngrok's [Traffic Policy](/traffic-policy/) is the perfect way to do this in a flexible and robust manner. You can use traffic policy's [forward-internal action](/traffic-policy/actions/forward-internal/) to forward traffic from public Cloud Endpoints to internal agent endpoints.
+Because patient data is extremely sensitive, you'll want to add an extra layer of protection for the TLS Cloud Endpoint. ngrok's [Traffic Policy](/traffic-policy/) is the perfect way to do this in a flexible and robust manner. You can use Traffic Policy's [forward-internal action](/traffic-policy/actions/forward-internal/) to forward traffic from public Cloud Endpoints to internal Agent Endpoints.
 
-Navigate to your newly created TLS Cloud Endpoint in the [endpoints](https://dashboard.ngrok.com/authtokens) tab on the dashboard, and apply a terminate-tls traffic policy action to require a minimum tls version. Since this is a Cloud Endpoint, TLS will terminate at the ngrok edge by default, but you can also create an action within the agent configuration file if you wish to terminate TLS at the ngrok agent itself.
+Navigate to your newly created TLS Cloud Endpoint in the [endpoints](https://dashboard.ngrok.com/authtokens) tab on the dashboard, and apply a terminate-tls Traffic Policy action to require a minimum tls version. Since this is a Cloud Endpoint, TLS will terminate at the ngrok edge by default, but you can also create an action within the agent configuration file if you wish to terminate TLS at the ngrok agent itself.
 
-The traffic policy file for tls://patientdb-clinic1.clinic-network.com should look like this:
+The Traffic Policy file for tls://patientdb-clinic1.clinic-network.com should look like this:
 
 ```yaml
 on_tcp_connect:
@@ -196,9 +196,9 @@ on_tcp_connect:
         url: tls://patient-db.clinic1.internal:443
 ```
 
-To deter port scanners or other malicious actors from the TCP Cloud Endpoint, add IP restrictions using the restrict-ips traffic policy action onto the clinic operations tcp endpoint.
+To deter port scanners or other malicious actors from the TCP Cloud Endpoint, add IP restrictions using the restrict-ips Traffic Policy action onto the clinic operations tcp endpoint.
 
-The traffic policy file for the tcp Cloud Endpoint should look like this:
+The Traffic Policy file for the tcp Cloud Endpoint should look like this:
 
 ```yaml
 on_tcp_connect:
@@ -216,7 +216,7 @@ on_tcp_connect:
 
 Finally, to secure the HTTPS Cloud Endpoint, add a check to make sure a specific header auth token is present in the request along with a JWT validation step before the REST API can be accessed.
 
-The traffic policy file for https://api-clinic1.clinic-network.com should look like this:
+The Traffic Policy file for https://api-clinic1.clinic-network.com should look like this:
 
 ```yaml
 on_http_request:
@@ -253,7 +253,7 @@ on_http_request:
       url: 'https://rest-api.clinic1.internal:443'
 ```
 
-You can also create a Cloud Endpoint and attach its corresponding traffic policies with a single API call. Below are the curl commands to create each endpoint and attach its traffic policy.
+You can also create a Cloud Endpoint and attach its corresponding Traffic Policies with a single API call. Below are the curl commands to create each endpoint and attach its Traffic Policy.
 
 #### TLS endpoint with minimum TLS version
 
@@ -303,9 +303,9 @@ curl -X POST https://api.ngrok.com/endpoints \
 
 ### Enable Endpoint Pooling
 
-You can use Endpoint Pooling with multiple internal agent endpoints to achieve redundancy and high availability for services inside your network. If desired, you can install a second agent within the customer network as a failover in case agents in the wild go offline.
+You can use Endpoint Pooling with multiple internal Agent Endpoints to achieve redundancy and high availability for services inside your network. If desired, you can install a second agent within the customer network as a failover in case agents in the wild go offline.
 
-Configure each agent endpoint to use the same ngrok internal URL. This automatically forms an endpoint pool. Incoming traffic to the pooled URL is automatically distributed among all healthy endpoints in the pool. If one endpoint goes offline, traffic is seamlessly routed to the remaining endpoints, ensuring redundancy and failover
+Configure each Agent Endpoint to use the same ngrok internal URL. This automatically forms an endpoint pool. Incoming traffic to the pooled URL is automatically distributed among all healthy endpoints in the pool. If one endpoint goes offline, traffic is seamlessly routed to the remaining endpoints, ensuring redundancy and failover
 
 ```yaml
 version: 3
@@ -368,6 +368,6 @@ You have now integrated a system that allows you to seamlessly and securely acce
 1. One ngrok agent per clinic and no need for multiple installs.
 2. Always-online API and databases, securely available via cloud and internal endpoints.
 3. ngrok runs as a background service, which means it's reliable and will always auto-restart.
-4. Granular access with a composable traffic policy offering refined and robust security measures for endpoints.
+4. Granular access with a composable Traffic Policy offering refined and robust security measures for endpoints.
 
 Not sure how to explain ngrok to your end users? Check out [the guide on ngrok's standards on security, trust, compliance, and privacy](/guides/site-to-site-connectivity/end-customers/).

@@ -98,12 +98,12 @@ nodeAffinityPreset:
   ##
   type: ""
   ## @param nodeAffinityPreset.key Node label key to match. Ignored if `affinity` is set.
-  ## for example,
+  ## E.g.
   ## key: "kubernetes.io/e2e-az-name"
   ##
   key: ""
   ## @param nodeAffinityPreset.values Node label values to match. Ignored if `affinity` is set.
-  ## for example,
+  ## E.g.
   ## values:
   ##   - e2e-az1
   ##   - e2e-az2
@@ -121,6 +121,12 @@ topologySpreadConstraints: []
 ## ref: https://kubernetes.io/docs/concepts/configuration/pod-priority-preemption/#priorityclass
 ##
 priorityClassName: ""
+
+## @param terminationGracePeriodSeconds The amount of time to wait for the pod to gracefully terminate
+## ref: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#pod-termination
+## Increase this value to give the operator more time to clean up finalizers during shutdown
+##
+terminationGracePeriodSeconds: 30
 
 ## @param lifecycle an object containing lifecycle configuration
 ## ref: https://kubernetes.io/docs/concepts/containers/container-lifecycle-hooks/
@@ -254,6 +260,7 @@ ingress:
 ##
 ## @section Agent configuration
 ##
+## @param agent.podAnnotations Custom pod annotations to apply to agent pods. If not set, falls back to podAnnotations.
 ## @param agent.priorityClassName Priority class for pod scheduling.
 ## @param agent.replicaCount The number of agents to run.
 ## @param agent.serviceAccount.create Specifies whether a ServiceAccount should be created for the agent.
@@ -261,6 +268,7 @@ ingress:
 ## If not set and create is true, a name is generated using the fullname template
 ## @param agent.serviceAccount.annotations Additional annotations to add to the agent ServiceAccount
 agent:
+  podAnnotations: {}
   priorityClassName: ""
 
   replicaCount: 1
@@ -292,6 +300,22 @@ agent:
     create: true
     name: ""
     annotations: {}
+
+  ## @param agent.updateStrategy.type Agent update strategy
+  ## @skip agent.updateStrategy.rollingUpdate
+  ## ref: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#update-strategies
+  ##
+  updateStrategy:
+    ## StrategyType
+    ## Can be set to RollingUpdate, OnDelete (statefulset), Recreate (deployment)
+    ##
+    type: RollingUpdate
+
+  ## @param agent.terminationGracePeriodSeconds The amount of time to wait for the agent pod to gracefully terminate
+  ## ref: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#pod-termination
+  ## Increase this value to give the operator more time to clean up finalizers during shutdown
+  ##
+  terminationGracePeriodSeconds: 30
 
   ## @param agent.tolerations Tolerations for the agent pod(s)
   tolerations: []
@@ -368,6 +392,22 @@ bindings:
       name: ""
       annotations: {}
 
+    ## @param bindings.forwarder.updateStrategy.type Bindings Forwarder update strategy type
+    ## @skip bindings.forwarder.updateStrategy.rollingUpdate
+    ## ref: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#update-strategies
+    ##
+    updateStrategy:
+      ## StrategyType
+      ## Can be set to RollingUpdate, OnDelete (statefulset), Recreate (deployment)
+      ##
+      type: RollingUpdate
+
+    ## @param bindings.forwarder.terminationGracePeriodSeconds The amount of time to wait for the bindings forwarder pod to gracefully terminate
+    ## ref: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#pod-termination
+    ## Increase this value to give the operator more time to clean up finalizers during shutdown
+    ##
+    terminationGracePeriodSeconds: 30
+
     ## @param bindings.forwarder.tolerations Tolerations for the bindings forwarder pod(s)
     tolerations: []
 
@@ -376,4 +416,5 @@ bindings:
 
     ## @param bindings.forwarder.topologySpreadConstraints Topology Spread Constraints for the bindings forwarder pod(s)
     topologySpreadConstraints: []
+
 ```
