@@ -11,9 +11,11 @@ When troubleshooting AI Gateway issues, you can access detailed information abou
 
 After the `ai-gateway` action runs, detailed results are available in `${actions.ngrok.ai_gateway}`. This includes:
 
-- Which models were considered as candidates
-- Every attempt made to providers
-- Token counts (estimated and actual)
+- Model selection process and filtering steps
+- Every model and request attempted
+- API key selection details
+- Token counts
+- Latency measurements
 - Error details for failed attempts
 
 ### Schema
@@ -22,38 +24,79 @@ After the `ai-gateway` action runs, detailed results are available in `${actions
   Overall outcome of the action: `"success"` or `"error"`.
 </ConfigField>
 
-<ConfigField title="actions.ngrok.ai_gateway.candidates" type="array">
-  List of all provider/model combinations considered before attempting requests.
+<ConfigField title="actions.ngrok.ai_gateway.error" type="object">
+  Error details, only present if status is `"error"`.
   
-  Each candidate contains:
-  - `provider` - Provider ID (for example, `"openai"`, `"anthropic"`)
-  - `model` - Model ID (for example, `"gpt-4o"`, `"claude-3-5-sonnet-20241022"`)
+  - `code` - Error code (for example, `"ERR_NGROK_3807"`)
+  - `message` - Error message describing the failure
 </ConfigField>
 
-<ConfigField title="actions.ngrok.ai_gateway.attempts" type="array">
-  List of all request attempts made. Each attempt contains:
+<ConfigField title="actions.ngrok.ai_gateway.client" type="object">
+  Information about the client request.
   
-  - `status` - Attempt outcome: `"success"` or `"error"`
-  - `status_code` - HTTP status code from provider (0 if no response)
-  - `error` - Error message if the attempt failed
-  - `provider_id` - Provider name
-  - `model_id` - Model name
-  - `api_key_hash` - Non-reversible hash of the API key used
-  - `input_tokens_estimated` - An estimate generated before the request is sent
-  - `input_tokens_actual` - Actual tokens from provider response
-  - `output_tokens_estimated` - Estimated output tokens
-  - `output_tokens_actual` - Actual output tokens from response
-  - `tokenizer_encoding` - Encoding used (for example, `"cl100k_base"`)
-  - `body_on_error` - Response body for failed attempts (truncated to 1KB)
-  - `req` - Request details (method, URL, headers, body)
+  - `method` - HTTP method from the client request
+  - `path` - Request path from the client
+  - `request_headers` - Client request headers (API key/auth headers trimmed)
+  - `user_agent` - User-Agent header from the client
+  - `model` - Client-requested model field
+  - `models` - Client-requested models field
+  - `api_key_hash` - Trimmed API key from the client
+  - `rejected_models` - Models the client requested but were excluded (each with `model` and `reason`)
 </ConfigField>
 
-<ConfigField title="actions.ngrok.ai_gateway.error.code" type="string">
-  Error code if the action failed (for example, `"ERR_NGROK_3807"`).
+<ConfigField title="actions.ngrok.ai_gateway.input_ngrok_tokens" type="integer">
+  Estimated input token count calculated by ngrok (used for billing).
 </ConfigField>
 
-<ConfigField title="actions.ngrok.ai_gateway.error.message" type="string">
-  Error message if the action failed.
+<ConfigField title="actions.ngrok.ai_gateway.output_ngrok_tokens" type="integer">
+  Estimated output token count calculated by ngrok (used for billing).
+</ConfigField>
+
+<ConfigField title="actions.ngrok.ai_gateway.gateway_latency_ms" type="integer">
+  Time added by gateway logic in milliseconds. Excludes time the gateway spent waiting on the upstream to respond to requests.
+</ConfigField>
+
+<ConfigField title="actions.ngrok.ai_gateway.model_selection" type="array">
+  Details about the model selection process (if applicable). Each entry contains:
+  
+  - `strategy` - The resolved strategy expression
+  - `error` - Error if strategy evaluation failed
+  - `candidates_returned` - Models that the strategy returned
+  - `candidates_after_allowed_filter` - Above list of models after ones that are not allowed by the gateway config have been removed.
+  - `candidates_after_client_filter` - Above list of models after filtering out ones that the client did not want (if applicable).
+  - `models_to_try` - Final list of models to try
+</ConfigField>
+
+<ConfigField title="actions.ngrok.ai_gateway.models_tried" type="array">
+  Models attempted in chronological order. Each entry contains:
+  
+  - `model` - Model identifier
+  - `provider` - Provider identifier
+  - `author` - Author identifier (may be empty)
+  - `api_key_selection` - Details about API key selection (strategy, error, keys_to_try)
+  - `requests_made` - Array of request attempts for this model
+</ConfigField>
+
+<ConfigField title="actions.ngrok.ai_gateway.models_tried[].requests_made" type="array">
+  List of requests made for a specific model. Each request contains:
+  
+  - `status` - Request outcome: `"success"` or `"error"`
+  - `error` - Error message if request failed
+  - `upstream_input_tokens` - Input tokens counted by the provider
+  - `upstream_output_tokens` - Output tokens counted by the provider
+  - `request` - `url` and `api_key` of the request made to the upstream. Api key is trimmed to avoid leaking.
+  - `response` - `status_code`, `headers`, `body_on_error` capture details of the response.
+  - `upstream_latency` - Latency measurements (`time_to_first_byte_ms`, `total_ms`)
+</ConfigField>
+
+<ConfigField title="actions.ngrok.ai_gateway.success" type="object">
+  Details of the successful model, only present when status is `"success"`.
+  
+  - `model_index` - Index into models_tried array for the successful model
+  - `request_index` - Index into requests_made array for the successful request
+  - `model` - Model id used in the successful request
+  - `provider` - Provider id used in the successful request
+  - `author` - Author id used in the successful request (may be empty)
 </ConfigField>
 
 ### Accessing action results
@@ -100,34 +143,63 @@ on_http_request:
 ```json
 {
   "status": "error",
-  "candidates": [
-    {"provider": "openai", "model": "gpt-4o"},
-    {"provider": "anthropic", "model": "claude-3-5-sonnet-20241022"}
-  ],
-  "attempts": [
-    {
-      "status": "error",
-      "status_code": 429,
-      "error": "rate limit exceeded",
-      "provider_id": "openai",
-      "model_id": "gpt-4o",
-      "api_key_hash": "sha256:abc123",
-      "input_tokens_estimated": 150,
-      "body_on_error": "{\"error\":{\"message\":\"Rate limit exceeded\",\"type\":\"rate_limit_error\"}}"
-    },
-    {
-      "status": "error", 
-      "status_code": 500,
-      "error": "internal server error",
-      "provider_id": "anthropic",
-      "model_id": "claude-3-5-sonnet-20241022",
-      "api_key_hash": "sha256:def456"
-    }
-  ],
   "error": {
     "code": "ERR_NGROK_3807",
     "message": "All AI providers failed to respond successfully."
-  }
+  },
+  "client": {
+    "method": "POST",
+    "path": "/v1/chat/completions",
+    "user_agent": "curl/8.17.0",
+    "model": "gpt-4o",
+    "models": ["gpt-4.1", "gpt-5"],
+    "api_key_hash": "sk-proj...7890" // If the actual key was sk-proj-abcdefghijklmnopqrstuvwxyz1234567890
+  },
+  "input_ngrok_tokens": 150,
+  "gateway_latency_ms": 45,
+  "model_selection": [
+    {
+      "strategy": "ai.models.filter(x, x.id in [\"gpt-4o\", \"claude-3-5-sonnet-20241022\"])",
+      "candidates_returned": ["gpt-4o", "claude-3-5-sonnet-20241022"],
+      "candidates_after_allowed_filter": ["gpt-4o"],
+      "candidates_after_client_filter": ["gpt-4o"],
+      "models_to_try": ["gpt-4o"]
+    }
+  ],
+  "models_tried": [
+    {
+      "model": "gpt-4o",
+      "provider": "openai",
+      "author": "openai",
+      "api_key_selection": [
+        {
+          "strategy": "ai.keys",
+          "keys_to_try": ["sk-proj...2315"]
+        }
+      ],
+      "requests_made": [
+        {
+          "status": "error",
+          "error": "rate limit exceeded",
+          "upstream_input_tokens": 0,
+          "upstream_output_tokens": 0,
+          "request": {
+            "url": "https://api.openai.com/v1/chat/completions",
+            "api_key": "sk-proj...2315"
+          },
+          "response": {
+            "status_code": 429,
+            "headers": {"content-type": ["application/json"]},
+            "body_on_error": "{\"error\":{\"message\":\"Rate limit exceeded\",\"type\":\"rate_limit_error\"}}"
+          },
+          "upstream_latency": {
+            "time_to_first_byte_ms": 120,
+            "total_ms": 125
+          }
+        }
+      ]
+    }
+  ]
 }
 ```
 
@@ -178,17 +250,26 @@ on_http_request:
 
 ### Identifying rate limits
 
-Look for `status_code: 429` in attempts:
+Look for `status_code: 429` in request responses:
 
 ```json
 {
-  "attempts": [
+  "models_tried": [
     {
-      "status": "error",
-      "status_code": 429,
-      "provider_id": "openai",
-      "api_key_hash": "sha256:abc123",
-      "body_on_error": "{\"error\":{\"type\":\"rate_limit_error\"}}"
+      "model": "gpt-4o",
+      "provider": "openai",
+      "requests_made": [
+        {
+          "status": "error",
+          "response": {
+            "status_code": 429,
+            "body_on_error": "{\"error\":{\"type\":\"rate_limit_error\"}}"
+          },
+          "request": {
+            "api_key": "sk-proj...2315"
+          }
+        }
+      ]
     }
   ]
 }
@@ -196,15 +277,23 @@ Look for `status_code: 429` in attempts:
 
 **Solution:** Add more API keys or configure key rotation with `api_key_selection`.
 
-### Identifying model mismatches
+### Identifying model filtering issues
 
-When `candidates` is empty and you get `ERR_NGROK_3804`:
+When you get `ERR_NGROK_3804` or want to understand what the gateway did, check `model_selection` to understand how models were filtered:
 
 ```json
 {
   "status": "error",
-  "candidates": [],
-  "attempts": [],
+  "model_selection": [
+    {
+      "strategy": "round-robin",
+      "candidates_returned": ["gpt-4o", "claude-3-5-sonnet-20241022"],
+      "candidates_after_allowed_filter": ["gpt-4o"],
+      "candidates_after_client_filter": [], // After filtering by client model/models we have no remaining models
+      "models_to_try": []
+    }
+  ],
+  "models_tried": [],
   "error": {
     "code": "ERR_NGROK_3804",
     "message": "Unable to route request - no models matched"
@@ -212,7 +301,7 @@ When `candidates` is empty and you get `ERR_NGROK_3804`:
 }
 ```
 
-**Solution:** Check the model name spelling or add the provider prefix.
+**Solution:** The client requested models that didn't survive filtering. Check `client.model` and adjust your configuration or the client request. Model names/spelling may be wrong. Try adding the provider prefix for new models or models not in the gateway config or model catalog.
 
 ### Identifying timeout issues
 
@@ -220,18 +309,49 @@ Look for attempts without a `status_code` or with timeout errors:
 
 ```json
 {
-  "attempts": [
+  "models_tried": [
     {
-      "status": "error",
-      "status_code": 0,
-      "error": "context deadline exceeded",
-      "provider_id": "openai"
+      "model": "gpt-4o",
+      "provider": "openai",
+      "requests_made": [
+        {
+          "status": "error",
+          "error": "context deadline exceeded",
+          "response": {
+            "status_code": 0
+          }
+        }
+      ]
     }
   ]
 }
 ```
 
-**Solution:** Increase `per_request_timeout` or investigate provider latency.
+**Solution:** Increase `per_request_timeout` or investigate provider latency using `upstream_latency` metrics.
+
+### Understanding latency
+
+Use the latency measurements to identify bottlenecks:
+
+```json
+{
+  "gateway_latency_ms": 45,
+  "models_tried": [
+    {
+      "requests_made": [
+        {
+          "upstream_latency": {
+            "time_to_first_byte_ms": 2500,
+            "total_ms": 8000
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+**Solution:** High `time_to_first_byte_ms`/`total_ms` indicates slow provider response. High `gateway_latency_ms` indicates gateway processing overhead. Increase `per_request_timeout`/`total_timeout` or investigate provider latency.
 
 ## Next steps
 
