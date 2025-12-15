@@ -11,6 +11,8 @@ Configure multiple providers for automatic failover when your primary provider e
 on_http_request:
   - type: ai-gateway
     config:
+			only_allow_configured_providers: true
+
       providers:
         - id: openai
           api_keys:
@@ -49,6 +51,7 @@ on_http_request:
   - type: ai-gateway
     config:
 			only_allow_configured_providers: true
+
 			providers:
 				- id: openai
 					api_keys:
@@ -71,10 +74,13 @@ Providers are tried in alphabetical order, not the order they are configured, to
 on_http_request:
   - type: ai-gateway
     config:
+			only_allow_configured_providers: true
+
       providers:
         - id: openai
         - id: anthropic
         - id: google
+		  
       model_selection:
         strategy:
           - "ai.models.filter(m, m.provider_id == 'openai')"
@@ -90,6 +96,8 @@ Maximum resilience with multiple keys per provider and explicit ordering:
 on_http_request:
   - type: ai-gateway
     config:
+			only_allow_configured_providers: true
+
 			providers:
 				- id: openai
 					api_keys:
@@ -100,8 +108,6 @@ on_http_request:
 					api_keys:
 						- value: ${secrets.get('anthropic', 'key-one')}
 						- value: ${secrets.get('anthropic', 'key-two')}
-
-			only_allow_configured_providers: true
 
 			model_selection:
 				strategy:
@@ -131,6 +137,8 @@ Use model selection strategies to prefer providers based on metrics:
 on_http_request:
   - type: ai-gateway
     config:
+			only_allow_configured_providers: true
+
       providers:
         - id: openai
         - id: anthropic
@@ -154,6 +162,8 @@ For providers that offer regional availability, you can use the custom providers
 on_http_request:
   - type: ai-gateway
     config:
+			only_allow_configured_providers: true
+
 			providers:
 				- id: openai
 					api_keys:
@@ -168,9 +178,7 @@ on_http_request:
 						- value: ${secrets.get('openai', 'eu-west')}
 					metadata:
 						region: "eu-west"
-
-			only_allow_configured_providers: true
-
+			
 			model_selection:
 				strategy:
 					- "ai.models.filter(m, m.metadata.region == 'us-east')"
@@ -182,17 +190,22 @@ on_http_request:
 Prefer cheaper providers with fallback to premium:
 
 ```yaml
-providers:
-  - id: deepseek      # Cost-effective primary
-  - id: openai        # Premium fallback
-  - id: anthropic     # Alternative premium
+on_http_request:
+  - type: ai-gateway
+    config:
+			only_allow_configured_providers: true
 
-model_selection:
-  strategy:
-    # Prefer mini/turbo models
-    - "ai.models.filter(m, m.id.contains('mini') || m.id.contains('turbo'))"
-    # Fall back to any model
-    - "ai.models"
+			providers:
+				- id: deepseek      # Cost-effective primary
+				- id: openai        # Premium fallback
+				- id: anthropic     # Alternative premium
+
+			model_selection:
+				strategy:
+					# Prefer mini/turbo models
+					- "ai.models.filter(m, m.id.contains('mini') || m.id.contains('turbo'))"
+					# Fall back to any model
+					- "ai.models"
 ```
 
 ## Real-world production example
@@ -203,6 +216,7 @@ Enterprise setup with multiple providers:
 on_http_request:
   - type: ai-gateway
     config:
+			only_allow_configured_providers: true
       per_request_timeout: "45s"
       total_timeout: "3m"
       on_error: "halt"
