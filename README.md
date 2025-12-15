@@ -12,24 +12,23 @@ See our [Contribution Guidelines](CONTRIBUTING.md) for detailed instructions on 
 ## Prerequisites
 
 - [Node 24](https://nodejs.org/en/download)
-- [pnpm 10](https://pnpm.io/installation#using-npm)
+- [bun](https://bun.sh/)
 - [nvm](https://github.com/nvm-sh/nvm?tab=readme-ov-file#installing-and-updating)
 - `corepack` is included with node by default, no need to install
 
 ## Setup
 
 1. Ensure that `node 24` is installed. With `nvm`, run `nvm install`.
-1. Enable `pnpm` with `corepack`: `corepack enable pnpm`
-1. Install `pnpm` with `corepack`: `corepack install`
-1. Install project dependencies with `pnpm`: `pnpm install`
+1. Enable `bun` with `corepack`: `corepack enable bun`
+1. Install project dependencies with `bun`: `bun install`
 1. Install vale, our linter: `brew install vale` ([or use their install instructions](https://vale.sh/docs/install))
 
 ## Running the site locally
 
-When using `pnpm run dev`, this site runs locally at `http://localhost:3333/`
+When using `bun dev`, this site runs locally at `http://localhost:3333/`
 
-- `pnpm run dev`: Runs build scripts and starts the dev server
-- `pnpm run test-links`: Runs mintlify's built-in broken link checker
+- `bun dev`: Runs build scripts and starts the dev server
+- `bun run test-links`: Runs mintlify's built-in broken link checker
 
 ### Docs search locally
 
@@ -39,7 +38,7 @@ Search does not work in local builds of the docs site. You'll have to test searc
 
 This project uses [Vale](https://vale.sh/) for documentation linting and style checking. Vale helps maintain consistent writing style and catches common writing issues.
 
-`pnpm run vale` runs Vale linting on all documentation files (excluding snippets and errors directories).
+`bun run vale` runs Vale linting on all documentation files (excluding snippets and errors directories).
 
 Vale checks your docs contributions for style issues (based on the rules the docs team has defined) and provides suggestions for improvements. To ensure your PRs get merged quickly and efficiently, be sure to address any Vale warnings before submitting.
 
