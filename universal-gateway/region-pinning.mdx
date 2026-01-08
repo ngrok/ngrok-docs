@@ -11,18 +11,19 @@ This feature is under active development. Behavior, supported fields, and limits
 [Visit this page](https://dashboard.ngrok.com/developer-preview) to sign up for Early Access, or to send input ('Let us know' link at the bottom).
 </Warning>
 
-Region Pinning restricts which ngrok regions may handle traffic for a Domain. 
+Region Pinning restricts which ngrok regions may handle traffic for a domain. 
 
-Control traffic into your [ngrok Domains](https://ngrok.com/docs/universal-gateway/domains) by choosing a subset of our globally distributed physical [Points of Presence](https://ngrok.com/docs/universal-gateway/points-of-presence). ngrok will only route to the set of regions you choose -- *not* outside it.
+Control traffic into your [domains](https://ngrok.com/docs/universal-gateway/domains) by choosing a subset of ngrok's globally distributed physical [points of presence](https://ngrok.com/docs/universal-gateway/points-of-presence) (PoPs). 
+ngrok will only route to the set of regions you choose—not outside it.
 
 The same configuration will soon support [Dedicated IP addresses \\[Preview\\]](#dedicated-ips).
 
-This feature is designed for customers with **data residency** and **compliance requirements** who need to ensure traffic is only processed in specific geographical boundaries.
+This feature is designed for customers with data residency and compliance requirements who need to ensure traffic is only processed in specific geographical boundaries.
 
-# How it works:
+## How it works
 
-1. Define which ngrok [Points of Presence](https://ngrok.com/docs/universal-gateway/points-of-presence) your [Domain](https://ngrok.com/docs/universal-gateway/domains) is allowed to use. 
-2. All requests to [Endpoints](https://ngrok.com/docs/universal-gateway/endpoints) on that Domain will ***only*** be routed through your chosen Points of Presence. 
+1. Define which ngrok PoPs your domain is allowed to use. 
+2. All requests to [endpoints](https://ngrok.com/docs/universal-gateway/endpoints) on that domain will only be routed through your chosen points of presence. 
 
 <img 
   src="../img/docs/region_pinning_diagram_how_it_works.png" 
@@ -30,23 +31,23 @@ This feature is designed for customers with **data residency** and **compliance 
   style={{height: "auto", width: "50%"}}
 />
 
-# How to configure region pinning
+## How to configure region pinning
 
-To start using region pinning: update your [Domain resource](https://ngrok.com/docs/universal-gateway/domains) with your preferred set of target regions.
+To start using region pinning, update your domain resource with your preferred set of target regions.
 
-You can do this through the **API** or **dashboard**. 
+You can do this through the API or the dashboard, both described below. 
 
-## Using the API
+### Using the API
 
-When using the API, you’ll setup Region Pinning by defining which [Points of Presence](https://ngrok.com/docs/universal-gateway/points-of-presence) (PoPs) or Region aliases should serve your requests. 
+When using the API, set up Region Pinning by defining which PoPs or region aliases should serve your requests. 
 
-Just add the `ips` property when *creating* or *modifying* a Domain.
+Add the `ips` property when creating or modifying a domain.
 
-### Option 1: Create a pinned domain
+#### Option 1: Create a pinned domain
 
-Use the `POST /reserved_domains` endpoint ([documentation](https://ngrok.com/docs/api-reference/reserveddomains/create)).
+Use the [`POST /reserved_domains` endpoint](https://ngrok.com/docs/api-reference/reserveddomains/create).
 
-Add a list of `ips` that are allowed to resolve your requests: either a set of ngrok [physical Points of Presence](https://ngrok.com/docs/universal-gateway/points-of-presence) (like “Frankfurt” or “California”), or [Dedicated IPs \\[Preview\\]](#dedicated-ips), or both. 
+Add a list of `ips` that are allowed to resolve your requests, which can be a set of ngrok physical PoPs (like “Frankfurt” or “California”), [dedicated IPs \\[Preview\\]](#dedicated-ips), or both. 
 
 ```json
 curl --request POST \
@@ -68,13 +69,12 @@ curl --request POST \
   }'
 ```
 
-### Option 2: Update an existing domain
+#### Option 2: Update an existing domain
 
-You can update existing Domains to *add* Region Pinning, *remove* it, or *modify* your set of pinned Regions. 
+You can update existing domains to add or remove Region Pinning, or modify your set of pinned regions, using the `ips` property.
+No DNS changes are required.
 
-No DNS changes are required; just update the `ips` property in your Domain. 
-
-Use `PATCH` to update the list of pinned regions (see [API docs](https://ngrok.com/docs/api-reference/reserveddomains/update)).
+Use `PATCH` to [update the list of pinned regions](https://ngrok.com/docs/api-reference/reserveddomains/update).
 
 ```json
 curl --request PATCH \
@@ -96,11 +96,11 @@ curl --request PATCH \
   }'
 ```
 
-### Un-pin a domain
+#### Un-pin a domain
 
-You can “un-pin” a Domain, which changes it back to the default **Global** routing behavior (use the best-available PoP). 
+You can un-pin a domain, which changes it back to the default Global routing behavior using the best-available PoP. 
 
-You can do this by setting the `ips` property to an empty list `[]`, or to the Region alias `global`.
+You can do this by setting the `ips` property to an empty list `[]`, or to the region alias `global`.
 
   1) Remove pinned regions by setting an empty list:
 
@@ -128,7 +128,7 @@ curl --request PATCH \
  }'  
 ```
 
-### API error handling
+#### API error handling
 
 If a request has invalid syntax or a non-existent region code, the API request will fail.
 
@@ -146,7 +146,7 @@ Content-Type: application/json; charset=utf-8
 }
 ```
 
-## Using the dashboard
+### Using the dashboard
 
 You can also make these changes through the [ngrok dashboard](https://dashboard.ngrok.com/domains). 
 <Warning>
@@ -156,25 +156,24 @@ You can also make these changes through the [ngrok dashboard](https://dashboard.
 
 To configure your “pinned” regions: 
 
-1. View your existing Domains at dashboard.ngrok.com/domains
-2. Click into the Domain you wish to modify. 
+1. View [your existing domains in the dashboard](https://dashboard.ngrok.com/domains).
+2. Click the domain you wish to modify. 
 3. Choose your target regions from the dropdown menu. 
-    1. Select a set of [Points of Presence](https://ngrok.com/docs/universal-gateway/points-of-presence), or choose a “Region alias” that covers multiple PoPs, or both.
+    1. You can select a set of PoPs, choose a region alias that covers multiple PoPs, or do both.
 
-![Region Pinning dashboard](../img/docs/region-pinning-dashboard-ui.png)
 
-# Dedicated IPs
+## Dedicated IPs
 <Warning>
 Preview feature, details subject to change. This is related to Region Pinning, but will be released separately. [Sign up for Early Access](https://dashboard.ngrok.com/developer-preview).
 </Warning>
 
-Dedicated IPs let you configure a Domain’s matching endpoints to receive traffic on IP addresses that are **dedicated only to your account** — rather than using ngrok’s default range of multi-tenant IP addresses shared across our customers.
+Dedicated IPs let you configure a domain’s matching endpoints to receive traffic on IP addresses that are dedicated only to your account, rather than using ngrok’s default range of multi-tenant IP addresses shared across customers.
 
-When a Domain uses dedicated IPs, you can create matching endpoints on any inbound port (not just 80/443).
+When a domain uses dedicated IPs, you can create matching endpoints on any inbound port (not just 80/443).
 
 ### How to use it
 
-Dedicated IPs and Region Pinning share the same `ips` field on the Domain:
+Dedicated IPs and Region Pinning share the same `ips` field on the domain:
 
 - Region Pinning: `ips: [{ "value": "<region-code>" }]`
 - Dedicated IPs: `ips: [{ "value": "<ip-address>" }]`
@@ -191,21 +190,21 @@ You can include both (example below).
 
 ```
 
-# FAQs (Frequently Asked Questions)
+## FAQ
 
-1. **Does this affect TCP endpoints?**
+### Does this affect TCP endpoints?
     - Region pinning: no. In this preview, region pinning applies to HTTP/HTTPS matching endpoints. TCP uses [reserved addresses](https://ngrok.com/docs/api-reference/reservedaddrs), which already include a region.
-    - Dedicated IPs: yes, Dedicated IPs are available for *any* [ngrok-supported protocol](/universal-gateway/protocols):  HTTP, HTTPS, TCP, TLS
-2. **What happens if I forget to add the `ips` field when creating a Domain?**
-    1. A: it defaults back to standard **GLOBAL** routing, where traffic is automatically routed through the *best option* from our physical [Points of Presence](/universal-gateway/points-of-presence). This is the baseline behavior for Domains, and is used by the vast majority of customers. 
-3. **Do I have to specify every region manually?** 
-    1. No: we provide regional aliases as a “shortcut” to select *multiple* ngrok Points of Presence within a geographical area. 
-    2. Currently, the only supported alias is `global`. 
-    3. *We may add other aliases like `european_union` or `united_states` , depending on customer needs.*
+    - Dedicated IPs: yes, dedicated IPs are available for any [ngrok-supported protocol](/universal-gateway/protocols), including HTTP/S, TCP, and TLS.
+### What happens if the `ips` field isn't added when creating a domain?
+It defaults back to standard global routing, where traffic is automatically routed through the best option from ngrok's physical PoPs. This is the baseline behavior for domains, and is used by the vast majority of customers. 
+### Is it necessary to specify every region manually?
+No, ngrok provides regional aliases as a shortcut to select multiple PoPs within a geographical area. 
+Currently the only supported alias is `global`. 
+ngrok may add other aliases such as `european_union` or `united_states`, depending on customer needs.
 
-# Reference: Points of Presence
+## Points of presence reference
 
-The `ips` parameter uses these new, clearer PoP names:
+The `ips` parameter uses the following PoP names:
 
 | **Geographical region** | **Location** | **Code (to use in API)** |
 | --- | --- | --- |
@@ -221,4 +220,3 @@ The `ips` parameter uses these new, clearer PoP names:
 | | Europe _[proposed]_ | `european_union` |
 | | United States _[proposed]_ | `united_states` |
 
-(see existing public [Points of Presence](https://ngrok.com/docs/universal-gateway/points-of-presence) names)
