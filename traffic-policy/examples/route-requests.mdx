@@ -23,6 +23,7 @@ See the action reference for configuration details.
 | [By geographic location](#by-geographic-location) | Regional routing, compliance |
 | [By IP intelligence](#by-ip-intelligence) | Bot detection, threat-based routing |
 | [By device type](#by-device-type) | Mobile vs desktop experiences |
+| [By client certificate](#by-client-certificate) | mTLS-based service routing |
 
 ---
 
@@ -973,6 +974,66 @@ on_http_request:
 ```
 
 </CodeGroup>
+
+## By client certificate
+
+When [Mutual TLS (mTLS)](/universal-gateway/tls-termination/#mutual-tls-mtls) is enabled, route requests based on client certificate details like the common name.
+
+<CodeGroup>
+
+```yaml policy.yml
+on_http_request:
+  # Route based on client certificate common name
+  - expressions:
+      - conn.tls.client.subject.common_name == 'service-a'
+    actions:
+      - type: forward-internal
+        config:
+          url: https://service-a.internal
+  - expressions:
+      - conn.tls.client.subject.common_name == 'service-b'
+    actions:
+      - type: forward-internal
+        config:
+          url: https://service-b.internal
+```
+
+```json policy.json
+{
+  "on_http_request": [
+    {
+      "expressions": [
+        "conn.tls.client.subject.common_name == 'service-a'"
+      ],
+      "actions": [
+        {
+          "type": "forward-internal",
+          "config": {
+            "url": "https://service-a.internal"
+          }
+        }
+      ]
+    },
+    {
+      "expressions": [
+        "conn.tls.client.subject.common_name == 'service-b'"
+      ],
+      "actions": [
+        {
+          "type": "forward-internal",
+          "config": {
+            "url": "https://service-b.internal"
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+</CodeGroup>
+
+---
 
 ## Combine multiple conditions
 
