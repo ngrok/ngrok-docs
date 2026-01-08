@@ -1,47 +1,59 @@
 ---
-title: Route Request Examples
-sidebarTitle: Route Requests
-description: Learn how to route requests to different internal endpoints using Traffic Policy based on URL, hostname, path, or headers.
+title: Route Requests
+description: Learn how to route requests to different internal endpoints using Traffic Policy based on subdomain, path, header, cookie, query parameters, IP intelligence, and more.
 ---
 
-With Traffic Policy, you can use [CEL interpolation](/traffic-policy/concepts/cel-interpolation) to dynamically forward requests to different internal endpoints based on URL request attributes, including but not limited to:
+Traffic Policy uses [CEL expressions](/traffic-policy/concepts/expressions/) and [interpolation](/traffic-policy/concepts/cel-interpolation) to dynamically route requests to different internal endpoints.
+Route based on virtually any request attribute—subdomain, path, headers, cookies, query parameters, geographic location, IP intelligence, and more.
 
-- URL
-- hostname
-- path
-- headers
+<Note>
+All routing examples use the [`forward-internal` action](/traffic-policy/actions/forward-internal/) to send traffic to internal endpoints.
+See the action reference for configuration details.
+</Note>
 
-This allows you to manage complex traffic topologies without manually creating and managing each [`forward-internal` action](/traffic-policy/actions/forward-internal).
+## Routing methods
 
-This page contains examples of rules that route requests based on different request attributes.
+| Method | Use case |
+| --- | --- |
+| [By subdomain](#by-subdomain) | Multi-tenant apps, customer-specific routing |
+| [By path](#by-path) | API versioning, microservice routing |
+| [By header](#by-header) | Customer routing, feature flags, A/B testing |
+| [By cookie](#by-cookie) | Session-based routing, sticky sessions |
+| [By query parameter](#by-query-parameter) | Debug routing, testing environments |
+| [By geographic location](#by-geographic-location) | Regional routing, compliance |
+| [By IP intelligence](#by-ip-intelligence) | Bot detection, threat-based routing |
+| [By device type](#by-device-type) | Mobile vs desktop experiences |
+| [By time of day](#by-time-of-day) | Scheduled maintenance, traffic shifting |
 
-See [the `forward-internal` Traffic Policy action docs](/traffic-policy/actions/forward-internal/) for more information.
+---
 
-## Based on URL
+## By subdomain
 
-This rule forwards requests from `https://*.example.com` to `https://<SUBDOMAIN>.internal`.
+Route requests from `https://*.example.com` to corresponding internal services.
+
+### Extract subdomain dynamically
 
 <CodeGroup>
 
 ```yaml policy.yml
 on_http_request:
-- name: Route requests based on URL
+- name: Route by subdomain
   actions:
   - type: forward-internal
     config:
-      url: https://${req.host.split(".example.com")[0]}.internal
+      url: https://${req.host.split('.example.com')[0]}.internal
 ```
 
 ```json policy.json
 {
   "on_http_request": [
     {
-      "name": "Route requests based on URL",
+      "name": "Route by subdomain",
       "actions": [
         {
           "type": "forward-internal",
           "config": {
-            "url": "https://${req.host.split(\".example.com\")[0]}.internal"
+            "url": "https://${req.host.split('.example.com')[0]}.internal"
           }
         }
       ]
@@ -52,33 +64,1244 @@ on_http_request:
 
 </CodeGroup>
 
-## Based on headers
-
-This rule forwards requests containing a `X-Customer-Value: {CUSTOMER}` header to `https://{CUSTOMER}.internal`.
+### Route specific subdomains
 
 <CodeGroup>
 
 ```yaml policy.yml
 on_http_request:
+- name: Route API subdomain
+  expressions:
+  - req.host.startsWith('api.')
   actions:
   - type: forward-internal
     config:
-      url: https://${getReqHeader('X-Customer-Value')[0]}.internal
+      url: https://api-service.internal
+- name: Route admin subdomain
+  expressions:
+  - req.host.startsWith('admin.')
+  actions:
+  - type: forward-internal
+    config:
+      url: https://admin-service.internal
+- name: Route everything else to main app
+  actions:
+  - type: forward-internal
+    config:
+      url: https://main-app.internal
 ```
 
 ```json policy.json
 {
-  "on_http_request": {
-    "actions": [
-      {
-        "type": "forward-internal",
-        "config": {
-          "url": "https://${getReqHeader('X-Customer-Value')[0]}.internal"
+  "on_http_request": [
+    {
+      "name": "Route API subdomain",
+      "expressions": [
+        "req.host.startsWith('api.')"
+      ],
+      "actions": [
+        {
+          "type": "forward-internal",
+          "config": {
+            "url": "https://api-service.internal"
+          }
         }
-      }
-    ]
-  }
+      ]
+    },
+    {
+      "name": "Route admin subdomain",
+      "expressions": [
+        "req.host.startsWith('admin.')"
+      ],
+      "actions": [
+        {
+          "type": "forward-internal",
+          "config": {
+            "url": "https://admin-service.internal"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Route everything else to main app",
+      "actions": [
+        {
+          "type": "forward-internal",
+          "config": {
+            "url": "https://main-app.internal"
+          }
+        }
+      ]
+    }
+  ]
 }
 ```
 
 </CodeGroup>
+
+---
+
+## By path
+
+Route requests to different services based on URL path patterns.
+
+### API versioning
+
+<CodeGroup>
+
+```yaml policy.yml
+on_http_request:
+- name: Route v1 API
+  expressions:
+  - req.url.path.startsWith('/api/v1')
+  actions:
+  - type: forward-internal
+    config:
+      url: https://api-v1.internal
+- name: Route v2 API
+  expressions:
+  - req.url.path.startsWith('/api/v2')
+  actions:
+  - type: forward-internal
+    config:
+      url: https://api-v2.internal
+- name: Default to latest version
+  expressions:
+  - req.url.path.startsWith('/api')
+  actions:
+  - type: forward-internal
+    config:
+      url: https://api-v2.internal
+```
+
+```json policy.json
+{
+  "on_http_request": [
+    {
+      "name": "Route v1 API",
+      "expressions": [
+        "req.url.path.startsWith('/api/v1')"
+      ],
+      "actions": [
+        {
+          "type": "forward-internal",
+          "config": {
+            "url": "https://api-v1.internal"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Route v2 API",
+      "expressions": [
+        "req.url.path.startsWith('/api/v2')"
+      ],
+      "actions": [
+        {
+          "type": "forward-internal",
+          "config": {
+            "url": "https://api-v2.internal"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Default to latest version",
+      "expressions": [
+        "req.url.path.startsWith('/api')"
+      ],
+      "actions": [
+        {
+          "type": "forward-internal",
+          "config": {
+            "url": "https://api-v2.internal"
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+</CodeGroup>
+
+### Microservice routing
+
+<CodeGroup>
+
+```yaml policy.yml
+on_http_request:
+- name: Route to users service
+  expressions:
+  - req.url.path.startsWith('/users')
+  actions:
+  - type: forward-internal
+    config:
+      url: https://users-service.internal
+- name: Route to orders service
+  expressions:
+  - req.url.path.startsWith('/orders')
+  actions:
+  - type: forward-internal
+    config:
+      url: https://orders-service.internal
+- name: Route to payments service
+  expressions:
+  - req.url.path.startsWith('/payments')
+  actions:
+  - type: forward-internal
+    config:
+      url: https://payments-service.internal
+```
+
+```json policy.json
+{
+  "on_http_request": [
+    {
+      "name": "Route to users service",
+      "expressions": [
+        "req.url.path.startsWith('/users')"
+      ],
+      "actions": [
+        {
+          "type": "forward-internal",
+          "config": {
+            "url": "https://users-service.internal"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Route to orders service",
+      "expressions": [
+        "req.url.path.startsWith('/orders')"
+      ],
+      "actions": [
+        {
+          "type": "forward-internal",
+          "config": {
+            "url": "https://orders-service.internal"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Route to payments service",
+      "expressions": [
+        "req.url.path.startsWith('/payments')"
+      ],
+      "actions": [
+        {
+          "type": "forward-internal",
+          "config": {
+            "url": "https://payments-service.internal"
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+</CodeGroup>
+
+---
+
+## By header
+
+Route requests based on custom header values.
+Use this for customer-specific routing, feature flags, or A/B testing.
+
+### Customer-specific routing
+
+<CodeGroup>
+
+```yaml policy.yml
+on_http_request:
+- name: Route by customer header
+  actions:
+  - type: forward-internal
+    config:
+      url: https://${getReqHeader('X-Customer-ID')[0]}.internal
+```
+
+```json policy.json
+{
+  "on_http_request": [
+    {
+      "name": "Route by customer header",
+      "actions": [
+        {
+          "type": "forward-internal",
+          "config": {
+            "url": "https://${getReqHeader('X-Customer-ID')[0]}.internal"
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+</CodeGroup>
+
+### Feature flag routing
+
+<CodeGroup>
+
+```yaml policy.yml
+on_http_request:
+- name: Route beta users to new service
+  expressions:
+  - "'beta' in req.headers['x-feature-flags']"
+  actions:
+  - type: forward-internal
+    config:
+      url: https://new-feature-service.internal
+- name: Route to stable service
+  actions:
+  - type: forward-internal
+    config:
+      url: https://stable-service.internal
+```
+
+```json policy.json
+{
+  "on_http_request": [
+    {
+      "name": "Route beta users to new service",
+      "expressions": [
+        "'beta' in req.headers['x-feature-flags']"
+      ],
+      "actions": [
+        {
+          "type": "forward-internal",
+          "config": {
+            "url": "https://new-feature-service.internal"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Route to stable service",
+      "actions": [
+        {
+          "type": "forward-internal",
+          "config": {
+            "url": "https://stable-service.internal"
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+</CodeGroup>
+
+---
+
+## By cookie
+
+Route based on cookie values for session-based routing or sticky sessions.
+
+### Route by session cookie
+
+<CodeGroup>
+
+```yaml policy.yml
+on_http_request:
+- name: Route premium users
+  expressions:
+  - "'session' in req.cookies && req.cookies['session'][0].value.contains('premium')"
+  actions:
+  - type: forward-internal
+    config:
+      url: https://premium-service.internal
+- name: Route free users
+  actions:
+  - type: forward-internal
+    config:
+      url: https://free-service.internal
+```
+
+```json policy.json
+{
+  "on_http_request": [
+    {
+      "name": "Route premium users",
+      "expressions": [
+        "'session' in req.cookies && req.cookies['session'][0].value.contains('premium')"
+      ],
+      "actions": [
+        {
+          "type": "forward-internal",
+          "config": {
+            "url": "https://premium-service.internal"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Route free users",
+      "actions": [
+        {
+          "type": "forward-internal",
+          "config": {
+            "url": "https://free-service.internal"
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+</CodeGroup>
+
+### A/B testing with cookies
+
+<CodeGroup>
+
+```yaml policy.yml
+on_http_request:
+- name: Route to experiment A
+  expressions:
+  - "'ab_test' in req.cookies && req.cookies['ab_test'][0].value == 'A'"
+  actions:
+  - type: forward-internal
+    config:
+      url: https://experiment-a.internal
+- name: Route to experiment B
+  expressions:
+  - "'ab_test' in req.cookies && req.cookies['ab_test'][0].value == 'B'"
+  actions:
+  - type: forward-internal
+    config:
+      url: https://experiment-b.internal
+- name: Default to control
+  actions:
+  - type: forward-internal
+    config:
+      url: https://control.internal
+```
+
+```json policy.json
+{
+  "on_http_request": [
+    {
+      "name": "Route to experiment A",
+      "expressions": [
+        "'ab_test' in req.cookies && req.cookies['ab_test'][0].value == 'A'"
+      ],
+      "actions": [
+        {
+          "type": "forward-internal",
+          "config": {
+            "url": "https://experiment-a.internal"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Route to experiment B",
+      "expressions": [
+        "'ab_test' in req.cookies && req.cookies['ab_test'][0].value == 'B'"
+      ],
+      "actions": [
+        {
+          "type": "forward-internal",
+          "config": {
+            "url": "https://experiment-b.internal"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Default to control",
+      "actions": [
+        {
+          "type": "forward-internal",
+          "config": {
+            "url": "https://control.internal"
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+</CodeGroup>
+
+---
+
+## By query parameter
+
+Route based on query string parameters.
+Use this for debug modes or testing environments.
+
+### Debug routing
+
+<CodeGroup>
+
+```yaml policy.yml
+on_http_request:
+- name: Route to debug service
+  expressions:
+  - "'debug' in req.url.query_params && req.url.query_params['debug'][0] == 'true'"
+  actions:
+  - type: forward-internal
+    config:
+      url: https://debug-service.internal
+- name: Default routing
+  actions:
+  - type: forward-internal
+    config:
+      url: https://production-service.internal
+```
+
+```json policy.json
+{
+  "on_http_request": [
+    {
+      "name": "Route to debug service",
+      "expressions": [
+        "'debug' in req.url.query_params && req.url.query_params['debug'][0] == 'true'"
+      ],
+      "actions": [
+        {
+          "type": "forward-internal",
+          "config": {
+            "url": "https://debug-service.internal"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Default routing",
+      "actions": [
+        {
+          "type": "forward-internal",
+          "config": {
+            "url": "https://production-service.internal"
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+</CodeGroup>
+
+### Environment routing
+
+<CodeGroup>
+
+```yaml policy.yml
+on_http_request:
+- name: Route to staging
+  expressions:
+  - "'env' in req.url.query_params && req.url.query_params['env'][0] == 'staging'"
+  actions:
+  - type: forward-internal
+    config:
+      url: https://staging-service.internal
+- name: Route to canary
+  expressions:
+  - "'env' in req.url.query_params && req.url.query_params['env'][0] == 'canary'"
+  actions:
+  - type: forward-internal
+    config:
+      url: https://canary-service.internal
+```
+
+```json policy.json
+{
+  "on_http_request": [
+    {
+      "name": "Route to staging",
+      "expressions": [
+        "'env' in req.url.query_params && req.url.query_params['env'][0] == 'staging'"
+      ],
+      "actions": [
+        {
+          "type": "forward-internal",
+          "config": {
+            "url": "https://staging-service.internal"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Route to canary",
+      "expressions": [
+        "'env' in req.url.query_params && req.url.query_params['env'][0] == 'canary'"
+      ],
+      "actions": [
+        {
+          "type": "forward-internal",
+          "config": {
+            "url": "https://canary-service.internal"
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+</CodeGroup>
+
+---
+
+## By geographic location
+
+Route requests based on the geographic location of the client IP.
+Use this for compliance requirements or serving region-specific content.
+See [connection variables](/traffic-policy/variables/connection/) for available geo fields.
+
+### Route by country
+
+<CodeGroup>
+
+```yaml policy.yml
+on_http_request:
+- name: Route EU traffic
+  expressions:
+  - conn.client_ip.geo.location.is_eu == true
+  actions:
+  - type: forward-internal
+    config:
+      url: https://eu-service.internal
+- name: Route US traffic
+  expressions:
+  - conn.client_ip.geo.location.country_code == 'US'
+  actions:
+  - type: forward-internal
+    config:
+      url: https://us-service.internal
+- name: Route other traffic
+  actions:
+  - type: forward-internal
+    config:
+      url: https://global-service.internal
+```
+
+```json policy.json
+{
+  "on_http_request": [
+    {
+      "name": "Route EU traffic",
+      "expressions": [
+        "conn.client_ip.geo.location.is_eu == true"
+      ],
+      "actions": [
+        {
+          "type": "forward-internal",
+          "config": {
+            "url": "https://eu-service.internal"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Route US traffic",
+      "expressions": [
+        "conn.client_ip.geo.location.country_code == 'US'"
+      ],
+      "actions": [
+        {
+          "type": "forward-internal",
+          "config": {
+            "url": "https://us-service.internal"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Route other traffic",
+      "actions": [
+        {
+          "type": "forward-internal",
+          "config": {
+            "url": "https://global-service.internal"
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+</CodeGroup>
+
+### Route by continent
+
+<CodeGroup>
+
+```yaml policy.yml
+on_http_request:
+- name: Route Asia Pacific traffic
+  expressions:
+  - conn.client_ip.geo.location.continent == 'Asia'
+  actions:
+  - type: forward-internal
+    config:
+      url: https://apac-service.internal
+- name: Route European traffic
+  expressions:
+  - conn.client_ip.geo.location.continent == 'Europe'
+  actions:
+  - type: forward-internal
+    config:
+      url: https://emea-service.internal
+- name: Route Americas traffic
+  expressions:
+  - conn.client_ip.geo.location.continent in ['North America', 'South America']
+  actions:
+  - type: forward-internal
+    config:
+      url: https://americas-service.internal
+```
+
+```json policy.json
+{
+  "on_http_request": [
+    {
+      "name": "Route Asia Pacific traffic",
+      "expressions": [
+        "conn.client_ip.geo.location.continent == 'Asia'"
+      ],
+      "actions": [
+        {
+          "type": "forward-internal",
+          "config": {
+            "url": "https://apac-service.internal"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Route European traffic",
+      "expressions": [
+        "conn.client_ip.geo.location.continent == 'Europe'"
+      ],
+      "actions": [
+        {
+          "type": "forward-internal",
+          "config": {
+            "url": "https://emea-service.internal"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Route Americas traffic",
+      "expressions": [
+        "conn.client_ip.geo.location.continent in ['North America', 'South America']"
+      ],
+      "actions": [
+        {
+          "type": "forward-internal",
+          "config": {
+            "url": "https://americas-service.internal"
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+</CodeGroup>
+
+---
+
+## By IP intelligence
+
+Use [IP Intelligence](/traffic-policy/variables/ip-intel/) to route traffic based on IP categories, reputation, or autonomous system information.
+This is useful for threat detection, bot management, and compliance.
+
+### Route known bots to a separate service
+
+<CodeGroup>
+
+```yaml policy.yml
+on_http_request:
+- name: Route search engine crawlers
+  expressions:
+  - |
+    'search-engine.google.crawler' in conn.client_ip.categories ||
+    'search-engine.bing.crawler' in conn.client_ip.categories
+  actions:
+  - type: forward-internal
+    config:
+      url: https://seo-optimized-service.internal
+- name: Route AI crawlers to limited content
+  expressions:
+  - |
+    'ai.openai' in conn.client_ip.categories ||
+    'ai.anthropic' in conn.client_ip.categories
+  actions:
+  - type: forward-internal
+    config:
+      url: https://ai-crawler-service.internal
+```
+
+```json policy.json
+{
+  "on_http_request": [
+    {
+      "name": "Route search engine crawlers",
+      "expressions": [
+        "'search-engine.google.crawler' in conn.client_ip.categories || 'search-engine.bing.crawler' in conn.client_ip.categories"
+      ],
+      "actions": [
+        {
+          "type": "forward-internal",
+          "config": {
+            "url": "https://seo-optimized-service.internal"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Route AI crawlers to limited content",
+      "expressions": [
+        "'ai.openai' in conn.client_ip.categories || 'ai.anthropic' in conn.client_ip.categories"
+      ],
+      "actions": [
+        {
+          "type": "forward-internal",
+          "config": {
+            "url": "https://ai-crawler-service.internal"
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+</CodeGroup>
+
+### Route by autonomous system
+
+Route traffic based on the network it originates from.
+Use this for treating cloud provider traffic differently.
+
+<CodeGroup>
+
+```yaml policy.yml
+on_http_request:
+- name: Route AWS traffic
+  expressions:
+  - conn.client_ip.as.organization.contains('AMAZON')
+  actions:
+  - type: forward-internal
+    config:
+      url: https://aws-optimized-service.internal
+- name: Route GCP traffic
+  expressions:
+  - conn.client_ip.as.organization.contains('GOOGLE')
+  actions:
+  - type: forward-internal
+    config:
+      url: https://gcp-optimized-service.internal
+```
+
+```json policy.json
+{
+  "on_http_request": [
+    {
+      "name": "Route AWS traffic",
+      "expressions": [
+        "conn.client_ip.as.organization.contains('AMAZON')"
+      ],
+      "actions": [
+        {
+          "type": "forward-internal",
+          "config": {
+            "url": "https://aws-optimized-service.internal"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Route GCP traffic",
+      "expressions": [
+        "conn.client_ip.as.organization.contains('GOOGLE')"
+      ],
+      "actions": [
+        {
+          "type": "forward-internal",
+          "config": {
+            "url": "https://gcp-optimized-service.internal"
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+</CodeGroup>
+
+### Route anonymous proxy traffic
+
+<CodeGroup>
+
+```yaml policy.yml
+on_http_request:
+- name: Route Tor traffic to captcha
+  expressions:
+  - "'proxy.anonymous.tor' in conn.client_ip.categories"
+  actions:
+  - type: forward-internal
+    config:
+      url: https://captcha-challenge.internal
+- name: Route VPN traffic to verification
+  expressions:
+  - "'proxy.anonymous.vpn' in conn.client_ip.categories"
+  actions:
+  - type: forward-internal
+    config:
+      url: https://verification-service.internal
+```
+
+```json policy.json
+{
+  "on_http_request": [
+    {
+      "name": "Route Tor traffic to captcha",
+      "expressions": [
+        "'proxy.anonymous.tor' in conn.client_ip.categories"
+      ],
+      "actions": [
+        {
+          "type": "forward-internal",
+          "config": {
+            "url": "https://captcha-challenge.internal"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Route VPN traffic to verification",
+      "expressions": [
+        "'proxy.anonymous.vpn' in conn.client_ip.categories"
+      ],
+      "actions": [
+        {
+          "type": "forward-internal",
+          "config": {
+            "url": "https://verification-service.internal"
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+</CodeGroup>
+
+---
+
+## By device type
+
+Route mobile users to a mobile-optimized service using [user agent variables](/traffic-policy/variables/req/#requser-agent).
+
+<CodeGroup>
+
+```yaml policy.yml
+on_http_request:
+- name: Route mobile users
+  expressions:
+  - req.user_agent.is_mobile == true
+  actions:
+  - type: forward-internal
+    config:
+      url: https://mobile-service.internal
+- name: Route tablet users
+  expressions:
+  - req.user_agent.is_tablet == true
+  actions:
+  - type: forward-internal
+    config:
+      url: https://tablet-service.internal
+- name: Route desktop users
+  actions:
+  - type: forward-internal
+    config:
+      url: https://desktop-service.internal
+```
+
+```json policy.json
+{
+  "on_http_request": [
+    {
+      "name": "Route mobile users",
+      "expressions": [
+        "req.user_agent.is_mobile == true"
+      ],
+      "actions": [
+        {
+          "type": "forward-internal",
+          "config": {
+            "url": "https://mobile-service.internal"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Route tablet users",
+      "expressions": [
+        "req.user_agent.is_tablet == true"
+      ],
+      "actions": [
+        {
+          "type": "forward-internal",
+          "config": {
+            "url": "https://tablet-service.internal"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Route desktop users",
+      "actions": [
+        {
+          "type": "forward-internal",
+          "config": {
+            "url": "https://desktop-service.internal"
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+</CodeGroup>
+
+---
+
+## By time of day
+
+Route traffic to different services based on time.
+Use this for maintenance windows or traffic shifting.
+See [time variables](/traffic-policy/variables/time/) for available options.
+
+<CodeGroup>
+
+```yaml policy.yml
+on_http_request:
+- name: Route to maintenance page during off-hours
+  expressions:
+  - time.now.hour() >= 2 && time.now.hour() < 6
+  actions:
+  - type: forward-internal
+    config:
+      url: https://maintenance-service.internal
+- name: Normal routing
+  actions:
+  - type: forward-internal
+    config:
+      url: https://production-service.internal
+```
+
+```json policy.json
+{
+  "on_http_request": [
+    {
+      "name": "Route to maintenance page during off-hours",
+      "expressions": [
+        "time.now.hour() >= 2 && time.now.hour() < 6"
+      ],
+      "actions": [
+        {
+          "type": "forward-internal",
+          "config": {
+            "url": "https://maintenance-service.internal"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Normal routing",
+      "actions": [
+        {
+          "type": "forward-internal",
+          "config": {
+            "url": "https://production-service.internal"
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+</CodeGroup>
+
+---
+
+## Combine multiple conditions
+
+Create complex routing logic by combining multiple conditions.
+
+### Route by path and method
+
+<CodeGroup>
+
+```yaml policy.yml
+on_http_request:
+- name: Route write operations to primary
+  expressions:
+  - req.url.path.startsWith('/api')
+  - req.method in ['POST', 'PUT', 'DELETE', 'PATCH']
+  actions:
+  - type: forward-internal
+    config:
+      url: https://primary-database.internal
+- name: Route read operations to replica
+  expressions:
+  - req.url.path.startsWith('/api')
+  - req.method == 'GET'
+  actions:
+  - type: forward-internal
+    config:
+      url: https://read-replica.internal
+```
+
+```json policy.json
+{
+  "on_http_request": [
+    {
+      "name": "Route write operations to primary",
+      "expressions": [
+        "req.url.path.startsWith('/api')",
+        "req.method in ['POST', 'PUT', 'DELETE', 'PATCH']"
+      ],
+      "actions": [
+        {
+          "type": "forward-internal",
+          "config": {
+            "url": "https://primary-database.internal"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Route read operations to replica",
+      "expressions": [
+        "req.url.path.startsWith('/api')",
+        "req.method == 'GET'"
+      ],
+      "actions": [
+        {
+          "type": "forward-internal",
+          "config": {
+            "url": "https://read-replica.internal"
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+</CodeGroup>
+
+### Route by content type
+
+<CodeGroup>
+
+```yaml policy.yml
+on_http_request:
+- name: Route JSON API requests
+  expressions:
+  - req.content_type == 'application/json'
+  actions:
+  - type: forward-internal
+    config:
+      url: https://json-api.internal
+- name: Route form submissions
+  expressions:
+  - req.content_type == 'application/x-www-form-urlencoded'
+  actions:
+  - type: forward-internal
+    config:
+      url: https://form-handler.internal
+- name: Route file uploads
+  expressions:
+  - req.content_type.startsWith('multipart/')
+  actions:
+  - type: forward-internal
+    config:
+      url: https://file-upload.internal
+```
+
+```json policy.json
+{
+  "on_http_request": [
+    {
+      "name": "Route JSON API requests",
+      "expressions": [
+        "req.content_type == 'application/json'"
+      ],
+      "actions": [
+        {
+          "type": "forward-internal",
+          "config": {
+            "url": "https://json-api.internal"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Route form submissions",
+      "expressions": [
+        "req.content_type == 'application/x-www-form-urlencoded'"
+      ],
+      "actions": [
+        {
+          "type": "forward-internal",
+          "config": {
+            "url": "https://form-handler.internal"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Route file uploads",
+      "expressions": [
+        "req.content_type.startsWith('multipart/')"
+      ],
+      "actions": [
+        {
+          "type": "forward-internal",
+          "config": {
+            "url": "https://file-upload.internal"
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+</CodeGroup>
+
+---
+
+## Related resources
+
+- [Traffic Policy variables](/traffic-policy/variables/)
+- [IP Intelligence variables](/traffic-policy/variables/ip-intel/)
+- [CEL expressions](/traffic-policy/concepts/expressions/)
+- [`forward-internal` action](/traffic-policy/actions/forward-internal/)
+- [A/B testing examples](/traffic-policy/examples/a-b-tests/)
