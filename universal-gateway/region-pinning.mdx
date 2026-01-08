@@ -5,19 +5,17 @@ description: Customize where your traffic connects to meet data residency needs,
 tag: Preview
 ---
 
-<Info>
+<Warning>
 This feature is under active development. Behavior, supported fields, and limits may change before General Availability (GA). This guide is provided as forward-looking context for evaluation and feedback.
-<br /><br />
+
 [Visit this page](https://dashboard.ngrok.com/developer-preview) to sign up for Early Access, or to send input ('Let us know' link at the bottom).
-</Info>
+</Warning>
 
+Region Pinning restricts which ngrok regions may handle traffic for a Domain. 
 
-Region Pinning allows you to control the physical location of where your ngrok traffic is handled. 
+Control traffic into your [ngrok Domains](https://ngrok.com/docs/universal-gateway/domains) by choosing a subset of our globally distributed physical [Points of Presence](https://ngrok.com/docs/universal-gateway/points-of-presence). ngrok will only route to the set of regions you choose -- *not* outside it.
 
-You can control traffic into your [ngrok Domains](https://ngrok.com/docs/universal-gateway/domains), restricting it to a subset of our globally distributed physical [Points of Presence](https://ngrok.com/docs/universal-gateway/points-of-presence). 
-
-- Coming soon, you can also restrict to your own [Dedicated IPs](#dedicated-ips).
-- You can *combine* these restrictions for maximum flexibility.
+The same configuration will soon support [Dedicated IP addresses \\[Preview\\]](#dedicated-ips).
 
 This feature is designed for customers with **data residency** and **compliance requirements** who need to ensure traffic is only processed in specific geographical boundaries.
 
@@ -26,7 +24,11 @@ This feature is designed for customers with **data residency** and **compliance 
 1. Define which ngrok [Points of Presence](https://ngrok.com/docs/universal-gateway/points-of-presence) your [Domain](https://ngrok.com/docs/universal-gateway/domains) is allowed to use. 
 2. All requests to [Endpoints](https://ngrok.com/docs/universal-gateway/endpoints) on that Domain will ***only*** be routed through your chosen Points of Presence. 
 
-![Region Pinning diagram -- how it works](../img/docs/region_pinning_diagram_how_it_works.png)
+<img 
+  src="../img/docs/region_pinning_diagram_how_it_works.png" 
+  alt="Region Pinning diagram -- how it works"
+  style={{height: "auto", width: "50%"}}
+/>
 
 # How to configure region pinning
 
@@ -38,13 +40,13 @@ You can do this through our **API** or **dashboard**.
 
 When using the API, you’ll setup Region Pinning by defining which [Points of Presence](https://ngrok.com/docs/universal-gateway/points-of-presence) (PoPs) or Region aliases should serve your requests. 
 
-Just add the `ips` property when *creating* or *modifying* ****a Domain.
+Just add the `ips` property when *creating* or *modifying* a Domain.
 
 ### Option 1: Create a pinned domain
 
 Use the `POST /reserved_domains` endpoint ([documentation](https://ngrok.com/docs/api-reference/reserveddomains/create)).
 
-Add a list of `ips` that will resolve your request — today, these are the ngrok [physical Points of Presence](https://ngrok.com/docs/universal-gateway/points-of-presence) (like “Frankfurt” or “California”) that are allowed to resolve handle your traffic.
+Add a list of `ips` that are allowed to resolve your requests: either a set of ngrok [physical Points of Presence](https://ngrok.com/docs/universal-gateway/points-of-presence) (like “Frankfurt” or “California”), or [Dedicated IPs \\[Preview\\]](#dedicated-ips), or both. 
 
 ```json
 curl --request POST \
@@ -96,7 +98,9 @@ curl --request PATCH \
 
 ### Un-pin a Domain
 
-To “un-pin” a Domain — change it back to the default **Global** routing — set the `ips` property to an empty list `[]` or to the alias `global`.
+You can “un-pin” a Domain, which changes it back to the default **Global** routing behavior (use the best-available PoP). 
+
+You can do this by setting the `ips` property to an empty list `[]`, or to the Region alias `global`.
 
   1) Remove pinned regions by setting an empty list:
 
@@ -145,8 +149,10 @@ Content-Type: application/json; charset=utf-8
 ## Using the Dashboard
 
 You can also make these changes through the [ngrok dashboard](https://dashboard.ngrok.com/domains). 
+<Warning>
+*Preview* — these designs are subject to change.
+</Warning>
 
-*[Preview — these designs are subject to change]*
 
 To configure your “pinned” regions: 
 
@@ -158,9 +164,9 @@ To configure your “pinned” regions:
 ![Region Pinning dashboard](../img/docs/region-pinning-dashboard-ui.png)
 
 # Dedicated IPs
-<Info>
-Another Preview feature -- related to Region Pinning, but will be released separately. [Sign up for Early Access](https://dashboard.ngrok.com/developer-preview).
-</Info>
+<Warning>
+Preview feature, details subject to change. This is related to Region Pinning, but will be released separately. [Sign up for Early Access](https://dashboard.ngrok.com/developer-preview).
+</Warning>
 
 Dedicated IPs let you configure a Domain’s matching endpoints to receive traffic on IP addresses that are **dedicated only to your account** — rather than using ngrok’s default range of multi-tenant IP addresses shared across our customers.
 
@@ -188,10 +194,10 @@ You can include both (example below).
 # FAQs (Frequently Asked Questions)
 
 1. **Does this affect TCP endpoints?**
-    - Region pinning: no, only HTTP/HTTPS traffic, because TCP addresses are inherently region-pinned based on the address assignment.
-    - Dedicated IPs: yes, Dedicated IPs are available for *any* [ngrok-supported protocol](https://ngrok.com/docs/universal-gateway/protocols):  HTTP, HTTPS, TCP, TLS
-2. **What happens if I omit the `targets` field when creating a Domain?**
-    1. A: it defaults back to standard **GLOBAL** routing, where we automatically route traffic through the *best option* from our physical [Points of Presence](https://ngrok.com/docs/universal-gateway/points-of-presence). This is the baseline behavior for Domains, and is used by the vast majority of customers. 
+    - Region pinning: no. In this preview, region pinning applies to HTTP/HTTPS matching endpoints. TCP uses [reserved addresses](https://ngrok.com/docs/api-reference/reservedaddrs), which already include a region.
+    - Dedicated IPs: yes, Dedicated IPs are available for *any* [ngrok-supported protocol](/universal-gateway/protocols):  HTTP, HTTPS, TCP, TLS
+2. **What happens if I forget to add the `ips` field when creating a Domain?**
+    1. A: it defaults back to standard **GLOBAL** routing, where we automatically route traffic through the *best option* from our physical [Points of Presence](/universal-gateway/points-of-presence). This is the baseline behavior for Domains, and is used by the vast majority of customers. 
 3. **Do I have to specify every region manually?** 
     1. No: we support regional aliases as a “shortcut” to select *multiple* ngrok Points of Presence within a geographical area. 
     2. Currently, the only supported alias is `global`. 
@@ -199,10 +205,9 @@ You can include both (example below).
 
 # Reference: Points of Presence
 
-The `targets` parameter uses these new, clearer PoP names:
+The `ips` parameter uses these new, clearer PoP names:
 
-| **Geographical 
-region** | **Location** | **Code (use in API)** |
+| **Geographical region** | **Location** | **Code (to use in API)** |
 | --- | --- | --- |
 | **United States** | Ohio | `us-ohio-1` |
 |  | California | `us-cal-1` |
@@ -212,6 +217,8 @@ region** | **Location** | **Code (use in API)** |
 |  | Mumbai | `in-mum-1` |
 |  | Tokyo | `jp-tokyo-1` |
 | **South America** | São Paulo | `br-sao-1` |
-| **Regional Alias** | Global | `global` |
+| **Regional Aliases** | Global | `global` |
+| | Europe _[proposed]_ | `european_union` |
+| | United States _[proposed]_ | `united_states` |
 
 (see existing public [Points of Presence](https://ngrok.com/docs/universal-gateway/points-of-presence) names)
