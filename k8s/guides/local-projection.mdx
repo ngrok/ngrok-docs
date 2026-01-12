@@ -1,0 +1,140 @@
+---
+title: Projecting Local Services into Remote Clusters
+sidebarTitle: Local Projection
+description: Learn how to use Kubernetes bindings to instantly test local services against remote staging or production-like clusters without slow CI/CD loops.
+---
+
+Kubernetes bindings let you "project" a service running on your local machine into a remote Kubernetes cluster, making it available to other pods and services.
+
+This approach eliminates the slow Kubernetes dev loop in favor of instant feedback by routing traffic from your remote cluster directly to your local machine.
+
+## How it works
+
+A Kubernetes-bound endpoint is a private endpoint only accessible inside clusters where you've installed the ngrok Kubernetes Operator.
+When you create one, the Operator automatically creates a `Service` resource in your cluster that routes traffic to your endpoint.
+
+This means:
+
+- Your local service appears as a normal Kubernetes `Service` in the remote cluster
+- Other pods can make requests to it using standard service DNS
+- No public exposure—traffic stays private through ngrok's network
+- No port forwarding or VPN configuration required
+
+## Prerequisites
+
+- An ngrok account with an [API key](https://dashboard.ngrok.com/api-keys) and [authtoken](https://dashboard.ngrok.com/get-started/your-authtoken)
+- The [ngrok CLI](/agent/cli/) installed on your local machine
+- A local service running on a port you want to expose
+- Access to a remote Kubernetes cluster
+
+## 1. Set up the remote cluster
+
+Install the ngrok Kubernetes Operator with bindings enabled:
+
+```bash
+helm install ngrok-operator ngrok/ngrok-operator \
+  --namespace ngrok-operator \
+  --create-namespace \
+  --set bindings.enabled=true \
+  --set credentials.apiKey=$NGROK_API_KEY \
+  --set credentials.authtoken=$NGROK_AUTHTOKEN
+```
+
+Create a namespace for your projected services:
+
+```bash
+kubectl create ns staging
+```
+
+### Restrict which endpoints can be projected (optional)
+
+You can limit which Kubernetes-bound endpoints appear in your cluster using endpoint selectors.
+For example, to only allow endpoints matching `*.staging`:
+
+```bash
+helm upgrade ngrok-operator ngrok/ngrok-operator \
+  --namespace ngrok-operator \
+  --reuse-values \
+  --set 'bindings.endpointSelectors={endpoint.url.contains(".staging")}'
+```
+
+See [Restrict Kubernetes bound endpoints](/k8s/guides/bindings/#restrict-kubernetes-bound-endpoints) for more details.
+
+## 2. Project your local service
+
+With your local service running (for example, on port `8080`), create a Kubernetes-bound endpoint.
+The ngrok CLI works best for if you're _not_ running the service in a [local K8s cluster](/k8s/guides/local-cluster), like [k3d](https://k3d.io/stable/) or [kind](https://kind.sigs.k8s.io/)—for that, use the ngrok Kubernetes Operator on the local cluster as well.
+
+<Tabs>
+  <Tab title="ngrok CLI">
+    ```bash
+    ngrok http 8080 --url http://my-service.staging --binding kubernetes
+    ```
+
+    The URL format is `http://<service-name>.<namespace>`, which determines where the `Service` resource gets created in your cluster.
+  </Tab>
+  <Tab title="Kubernetes Operator">
+    If you want to project a service using the Operator instead (useful for projecting services between clusters), create an `AgentEndpoint`:
+
+    ```yaml
+    apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+    kind: AgentEndpoint
+    metadata:
+      name: my-service-projection
+      namespace: staging
+    spec:
+      url: http://my-service.staging
+      bindings:
+        - kubernetes
+      upstream:
+        url: http://localhost:8080
+    ```
+  </Tab>
+</Tabs>
+
+Once started, the Operator creates a `Service` named `my-service` in the `staging` namespace.
+
+## 3. Test the connection
+
+Verify the projected service is accessible from within your *remote* cluster:
+
+```bash
+kubectl run -i --tty --rm debug \
+  --namespace staging \
+  --restart=Never \
+  --image=curlimages/curl \
+  -- curl http://my-service.staging
+```
+
+You should see the response from your local service, and the request will appear in your ngrok agent output.
+
+## 4. Redirect existing traffic to your local service
+
+If other services in your cluster already communicate with a service you want to intercept, you can redirect their traffic to your local endpoint.
+
+For example, if a `frontend` deployment sends requests to a `backend` service configured via an environment variable:
+
+1. Start your Kubernetes-bound endpoint with the same service name:
+   ```bash
+   ngrok http 8080 --url http://backend.staging --binding kubernetes
+   ```
+
+2. Update the frontend deployment to point to your projected service:
+   ```bash
+   kubectl set env deployment/frontend BACKEND_URL=http://backend.staging
+   ```
+
+3. Restart the frontend pods:
+   ```bash
+   kubectl rollout restart deployment/frontend -n staging
+   ```
+
+Now all requests from `frontend` to `BACKEND_URL` route to your local machine. 
+When you make changes locally using your IDE, they'll be instantly reflected in the remote cluster, and services in staging interact direct with your local version.
+Test and iterate until you're ready to create a pull request and push more formally to your CI/CD pipeline, then revert the environment variable, perform another rollout, and stop your ngrok agent to clean everything up.
+
+## What's next
+
+- [Bindings](/k8s/guides/bindings/): Learn about all binding types and how they work with the Operator
+- [Kubernetes endpoints](/universal-gateway/kubernetes-endpoints/): Deep dive into URL formats and service creation
+- [CloudEndpoint CRD](/k8s/crds/cloudendpoint/): Create persistent Kubernetes-bound endpoints declaratively
