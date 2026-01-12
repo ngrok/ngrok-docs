@@ -2,7 +2,57 @@
 title: IP Policies
 sidebarTitle: IP Policies
 description: Placeholder ip policies description, content would go here
-noindex: true
 ---
 
-x
+IP policies are reusable groups of rules for allowing or denying traffic from specific IPs and CIDRs. You can enforce them in the following scenarios:
+
+- On your Endpoints with the [`restrict-ips`](/traffic-policy/actions/restrict-ips) Traffic Policy Action.
+- Account-wide with [IP Restrictions](/traffic-policy/examples/add-authentication#ip-restrictions).
+
+## Applying IP Policies to Endpoints
+
+The following example demonstrates how you can add an IP policy to your endpoints using the `restrict-ips` Traffic Policy Action. To try this example out, copy it to a `policy.yml` or `policy.json` file and use the following command:
+
+
+```bash
+ngrok http $YOUR_PORT --url $YOUR_DOMAIN --traffic-policy-file /path/to/policy.yml
+```
+
+The contents of the file should be the following:
+
+<CodeGroup>
+```yaml policy.yml
+on_http_request:
+	# Only allow requests from trusted IPs
+	- actions:
+			- type: restrict-ips
+				config:
+					allow:
+						- 203.0.113.0/24
+						- 198.51.100.42/32
+```
+
+```json policy.json
+{
+	"on_http_request": [
+		{
+			"actions": [
+				{
+					"type": "restrict-ips",
+					"config": {
+						"allow": [
+							"203.0.113.0/24",
+							"198.51.100.42/32"
+						]
+					}
+				}
+			]
+		}
+	]
+}
+```
+</CodeGroup>
+
+## Applying account-wide IP Policies
+
+
