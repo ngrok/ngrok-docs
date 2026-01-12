@@ -4,10 +4,9 @@ sidebarTitle: Local Projection
 description: Learn how to use Kubernetes bindings to instantly test local services against remote staging or production-like clusters without slow CI/CD loops.
 ---
 
-Kubernetes bindings let you "project" a service running on your local machine into a remote Kubernetes cluster, making it instantly available to other pods and services—without deploying anything.
+Kubernetes bindings let you "project" a service running on your local machine into a remote Kubernetes cluster, making it available to other pods and services.
 
-This approach eliminates the slow Kubernetes dev loop: save code, commit, push, wait for CI, wait for image pulls, wait for pod restarts.
-Instead, you get instant feedback by routing traffic from your remote cluster directly to your local machine.
+This approach eliminates the slow Kubernetes dev loop in favor of instant feedback by routing traffic from your remote cluster directly to your local machine.
 
 ## How it works
 
@@ -25,8 +24,8 @@ This means:
 
 - An ngrok account with an [API key](https://dashboard.ngrok.com/api-keys) and [authtoken](https://dashboard.ngrok.com/get-started/your-authtoken)
 - The [ngrok CLI](/agent/cli/) installed on your local machine
-- Access to a remote Kubernetes cluster
 - A local service running on a port you want to expose
+- Access to a remote Kubernetes cluster
 
 ## Set up the remote cluster
 
@@ -47,7 +46,7 @@ Create a namespace for your projected services:
 kubectl create ns staging
 ```
 
-### Restrict which endpoints can be projected
+### Restrict which endpoints can be projected (optional)
 
 You can limit which Kubernetes-bound endpoints appear in your cluster using endpoint selectors.
 For example, to only allow endpoints matching `*.staging`:
@@ -63,7 +62,8 @@ See [Restrict Kubernetes bound endpoints](/k8s/guides/bindings/#restrict-kuberne
 
 ## Project your local service
 
-With your local service running (for example, on port `8080`), create a Kubernetes-bound endpoint using the ngrok CLI:
+With your local service running (for example, on port `8080`), create a Kubernetes-bound endpoint.
+The ngrok CLI works best for if you're _not_ running the service in a local K8s cluster, like k3d or kind—for that, use the ngrok Kubernetes Operator on the local cluster as well.
 
 <Tabs>
   <Tab title="ngrok CLI">
@@ -96,7 +96,7 @@ Once started, the Operator creates a `Service` named `my-service` in the `stagin
 
 ## Test the connection
 
-Verify the projected service is accessible from within your cluster:
+Verify the projected service is accessible from within your *remote* cluster:
 
 ```bash
 kubectl run -i --tty --rm debug \
@@ -129,19 +129,9 @@ For example, if a `frontend` deployment sends requests to a `backend` service co
    kubectl rollout restart deployment/frontend -n staging
    ```
 
-Now all requests from `frontend` to `BACKEND_URL` route to your local machine.
-
-When you're done, revert the environment variable, perform another rollout, and stop your ngrok agent.
-
-## Example workflow
-
-A typical development session might look like:
-
-1. **Start local dev server**: Run your service locally with hot reload
-2. **Create binding**: `ngrok http 3000 --url http://api.staging --binding kubernetes`
-3. **Develop**: Make changes, see them instantly reflected in the remote cluster
-4. **Test**: Other services in staging interact with your local changes
-5. **Finish**: Stop the ngrok agent; the binding disappears automatically
+Now all requests from `frontend` to `BACKEND_URL` route to your local machine. 
+When you make changes locally using your IDE, they'll be instantly reflected in the remote cluster, and services in staging interact direct with your local version.
+Test and iterate until you're ready to create a pull request and push more formally to your CI/CD pipeline, then revert the environment variable, perform another rollout, and stop your ngrok agent to clean everything up.
 
 ## What's next
 
