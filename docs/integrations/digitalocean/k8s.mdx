@@ -1,0 +1,281 @@
+---
+description: Add ingress to any app running in a Kubernetes cluster managed by DigitalOcean using the ngrok Kubernetes Operator.
+---
+
+# Ingress to Kubernetes apps on clusters managed by DigitalOcean
+
+:::tip TL;DR
+
+To use the ngrok Kubernetes Operator with DigitalOcean:
+
+1. [Provision a new cluster on DigitalOcean with `doctl`](#provision-a-new-cluster)
+2. [Deploy an example app on your DigitalOcean-managed cluster](#deploy-an-example-app)
+3. [Configure the ngrok Kubernetes Operator](#configure-the-ngrok-kubernetes-ingress-controller)
+4. [Enable extra features of ngrok's Cloud Edge](#enable-extra-features-of-ngrok)
+
+:::
+
+Using this guide, you'll launch a new cluster on [DigitalOcean](https://digitalocean.com) and use the DigitalOcean Marketplace to provision the [ngrok Kubernetes Operator](https://marketplace.digitalocean.com/apps/ngrok-ingress-controller) to securely ingress public traffic to a demo app.
+
+In the end, you'll have learned enough to deploy your next production-ready Kubernetes app with Rafay, with the ngrok Kubernetes Operator giving you access to additional features, like observability and resiliency, with no extra configuration complexity.
+
+Here is what you'll be building with:
+
+- **The [ngrok Kubernetes Operator](https://ngrok.com/blog-post/ngrok-k8s)**: ngrok's official controller for adding secure public ingress and middleware execution to your Kubernetes apps with ngrok's Cloud Edge. With ngrok, you can manage and secure app traffic at every stage of the development lifecycle while benefiting from simpler configurations, security, and edge acceleration.
+- **DigitalOcean**: DigitalOcean is a cloud service provider focused on developers, startups, and small-to-midsize businesses. With reliable monthly rates for less than hyperscalers like AWS, DigitalOcean's Kubernetes solution is a great fit for internal development teams building or scaling up new platforms without massive infrastructure build-out or expense.
+
+:::caution This how-to guide requires:
+
+1. An [ngrok account](https://ngrok.com/signup) at any tier.
+1. A [DigitalOcean account](https://cloud.digitalocean.com/registrations/new).
+1. [doctl](https://docs.digitalocean.com/reference/doctl/) installed locally.
+1. [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) installed locally.
+
+:::
+
+## **Step 1**: Provision a new cluster on DigitalOcean with `doctl` {#provision-a-new-cluster}
+
+In this guide, we'll stick with the CLI as much as possible to showcase how tightly the ngrok Kubernetes Operator can integrate with DigitalOcean and how you might automate these steps in the future.
+
+1. With `doctl` installed remotely, scope out the node sizes/specs, which will directly affect your [monthly pricing](https://www.digitalocean.com/pricing/kubernetes), with the following:
+
+   ```bash
+   doctl kubernetes options sizes
+   ```
+
+1. Provision your cluster with the command below, replacing `NODE_SIZE` and `CLUSTER_NAME` with your chosen size and a relevant name.
+
+   ```bash
+   doctl kubernetes clusters create --size NODE_SIZE CLUSTER_NAME --1-clicks ngrok-ingress-controller
+   ```
+
+   This command not only provisions your cluster, but also installs the [ngrok Kubernetes Operator](https://github.com/ngrok/ngrok-operator) from their [1-Click catalog](https://marketplace.digitalocean.com/apps/ngrok-ingress-controller).
+
+   After a few moments, `doctl` will let you know it's finished deploying the cluster and adding its credentials to your `kubcetl` config file.
+
+   ```bash
+   ...
+   Notice: Successfully kicked off addon job.
+   ID                                      Name        Region    Version        Auto Upgrade    Status     Node Pools
+   d62a17ca-32e0-4d8b-9260-2d0d1c582939    ngrokker    nyc1      1.29.1-do.0    false           running    ngrokker-default-pool
+   ```
+
+1. You can now verify that the cluster is running successfully by looking at the pods in the new `ngrok-ingress-controller` namespace.
+
+   ```bash
+   kubectl get pods -n ngrok-ingress-controller
+
+   NAME                                                              READY   STATUS                       RESTARTS   AGE
+   ngrok-ingress-controller-kubernetes-ingress-controller-mannvs9b   0/1     CreateContainerConfigError   0          6m30s
+   ```
+
+   The `CreateContainerConfigError` is to be expected at this point. If you run `kubectl describe pods -n ngrok-ingress-controller YOUR_NGROK_INGRESS_CONTAINER`, you'd see the following error: `kubelet            Error: secret "ngrok-auth" not found`.
+
+1. To remedy that, get your `AUTHTOKEN` and `API_KEY`, which the ngrok Kubernetes Operator will use to authenticate against your existing ngrok account.
+
+   Find your `AUTHTOKEN` under [**Your Authtoken**](https://dashboard.ngrok.com/get-started/your-authtoken) in the ngrok dashboard.
+
+   To create a new API key, navigate to the [**API** section](https://dashboard.ngrok.com/api) of the ngrok dashboard, click the **New API Key** button, change the description or owner, and click the **Add API Key** button. Copy the API key token shown in the modal window before closing, as the ngrok dashboard will not show you the token again.
+
+1. While you're in the ngrok dashboard, create an ngrok static subdomain for ingress. Navigate to the [**Domains**
+   section](https://dashboard.ngrok.com/domains) of the ngrok dashboard and click **Create Domain** or **New
+   Domain**. This static subdomain, like `example123.ngrok.app`, will be your `NGROK_DOMAIN` for the remainder of this guide.
+
+1. Create a file named `ngrok_creds.yaml` on your local workstation with the below YAML, replacing `API_KEY` and `AUTHTOKEN` but retaining the quotation (`"`) marks.
+
+   ```yaml
+   apiVersion: v1
+   kind: Secret
+   metadata:
+     name: ngrok-auth
+     namespace: ngrok-ingress-controller
+   stringData:
+     API_KEY: "NGROK_API_KEY"
+     AUTHTOKEN: "NGROK_AUTHTOKEN"
+   ```
+
+   The ngrok Kubernetes Operator pod should pick up on the new secret and authenticate properly.
+
+   Your new Kubernetes cluster, managed by DigitalOcean, is all set up—and with the ngrok Kubernetes Operator installed with a single option on the CLI.
+
+## **Step 2**: Deploy an example app on your DigitalOcean-managed cluster {#deploy-an-example-app}
+
+Let's explore how you can add apps or services to your DigitalOcean-managed Kubernetes cluster. DigitalOcean has a repository of [sample Kubernetes apps](https://github.com/digitalocean/kubernetes-sample-apps/tree/master/bookinfo-example), including the [Bookinfo](https://github.com/digitalocean/kubernetes-sample-apps/tree/master/bookinfo-example) app, which we'll use.
+
+1. Clone the repository to your local workstation and `cd` into the new directory:
+
+   ```bash
+   git clone https://github.com/digitalocean/kubernetes-sample-apps.git
+   cd kubernetes-sample-apps
+   ```
+
+1. Deploy the Bookinfo app to your cluster:
+
+   ```bash
+   kubectl apply -k bookinfo-example/kustomize
+   ```
+
+   You should see your cluster create a handful of new services, then verify everything is running correctly with `kubectl get all -n bookinfo`.
+
+## **Step 3**: Configure the ngrok Kubernetes Operator {#configure-the-ngrok-kubernetes-ingress-controller}
+
+Your Bookinfo app is running, but you have no means of accessing it from your local workstation—or anywhere else, for that matter. You _could_ use `kubectl port-forward...`, but that's a fragile method of accessing your new app, and isn't appropriate for production use.
+
+Instead, finish configuring the ngrok Kubernetes Operator to direct incoming requests directly to the container running the user-facing Bookinfo container. The [Bookinfo docs](https://github.com/digitalocean/kubernetes-sample-apps/tree/master/bookinfo-example) recommend port-forwarding to the `productpage` service, which runs on port `9080`—you can use that information to configure the ngrok Kubernetes Operator.
+
+1. Create a new file called `bookinfo-ingress.yaml` on your local workstation. This configuration defines how the ngrok Kubernetes Operator will route traffic arriving on `NGROK_DOMAIN` to the `store-front` service on port `80` as defined in the manifest.
+
+   :::tip
+
+   Make sure you edit line `10` of the YAML below, which contains the `NGROK_DOMAIN` variable, with the ngrok domain you created earlier.
+
+   :::
+
+   ```yaml showLineNumbers
+   ---
+   apiVersion: networking.k8s.io/v1
+   kind: Ingress
+   metadata:
+     name: bookinfo-ingress
+     namespace: bookinfo
+   spec:
+     ingressClassName: ngrok
+     rules:
+       # highlight-start
+       - host: NGROK_DOMAIN
+         # highlight-end
+         http:
+           paths:
+             - path: /
+               pathType: Prefix
+               backend:
+                 service:
+                   name: productpage
+                   port:
+                     number: 9080
+   ```
+
+1. Apply the new configuration to your cluster:
+
+   ```bash
+   kubectl apply -f ngrok_ingress.yaml
+   ```
+
+   :::tip
+
+   **Note:** If you get an error when applying the manifest, double check that you've updated the `NGROK_DOMAIN` value and try again.
+
+   :::
+
+1. Navigate to `https://NGROK_DOMAIN` in your browser to see your example Bookinfo app as managed, deployed, and publicly networked via DigitalOcean, Kubernetes, and ngrok! Click **Normal user** to see a little more—it's not much to look at, but it's a working Kubernetes app with functional, secure, and simple ingress with the ngrok Kubernetes Operator.
+
+   ![Successfully deployed Booklist app on DigitalOcean, Kubernetes, and ngrok](img/bookinfo-deployed.png)
+
+## **Step 4**: Enable extra features of ngrok's Cloud Edge {#enable-extra-features-of-ngrok}
+
+To demonstrate how both [fanout ingress](/k8s/with-edges.mdx#simple-fanout) and [OAuth support](/traffic-policy/actions/oauth/) work, you can quickly launch an open-source observability stack including [Prometheus](https://github.com/prometheus), [Grafana](https://github.com/grafana/grafana), and [Alertmanager](https://github.com/prometheus/alertmanager/) on your cluster.
+
+:::note
+
+Installing this monitoring stack is also possible using `doctl kubernetes 1-click install YOUR_CLUSTER --1-clicks netdata`, although at the time of writing, DigitalOcean's API did not respond as expected to complete the operation.
+
+:::
+
+1. Head over to the [Kubernetes Clusters](https://cloud.digitalocean.com/kubernetes/clusters/) dashboard on the DigitalOcean console and click on the cluster you created previously.
+
+1. Click the **Marketplace** tab, find or search for **Kubernetes Monitoring Stack**, and click **Install**. Confirm your choice.
+
+   In the background, DigitalOcean uses Helm to create a new integrated deployment for Prometheus, Grafana, and Alertmanager.
+
+1. Create a new domain in the [ngrok dashboard](https://dashboard.ngrok.com/domains) at `monitoring.NGROK_DOMAIN`.
+
+1. Edit your `ngrok_ingress.yaml` file you created in the previous step to include the highlighted configuration at the bottom, which will route all traffic arriving on `https://monitoring.NGROK_DOMAIN/` to the `kube-prometheus-stack-prometheus` service running on port `9090` in your cluster.
+
+   ```yaml showLineNumbers
+   ---
+   apiVersion: networking.k8s.io/v1
+   kind: Ingress
+   metadata:
+     name: monitoring-ingress
+     namespace: kube-prometheus-stack
+   spec:
+     ingressClassName: ngrok
+     rules:
+       # highlight-start
+       - host: monitoring.NGROK_DOMAIN
+         # highlight-end
+         http:
+           paths:
+             - path: /
+               pathType: Prefix
+               backend:
+                 service:
+                   name: kube-prometheus-stack-grafana
+                   port:
+                     number: 9090
+   ```
+
+1. Visit a URL like `https://monitoring.NGROK_DOMAIN/alerts` to see data from Alertmanager:
+
+   ![Looking at the deployed Prometheus and Alertmanager dashboard](img/monitoring-deployed.png)
+
+   Having comprehensive observability for your Kubernetes app is paramount, but so is security—you don't want just anyone snooping around your metrics and alerts.
+
+1. Edit your `ngrok_ingress.yaml` file once again to add OAuth.
+
+   :::tip
+
+   - See L7-8 for the annotation this OAuth setup requires.
+   - See L22-33 for configuration of ngrok's OAuth module, replacing `example.com` with the domain name for your email address. You can also configure the OAuth module to authenticate individual email addresses.
+
+   :::
+
+   ```yaml showLineNumbers
+   ---
+   apiVersion: networking.k8s.io/v1
+   kind: Ingress
+   metadata:
+     name: monitoring-ingress
+     namespace: kube-prometheus-stack
+     #highlight-start
+     annotations:
+       k8s.ngrok.com/modules: oauth
+     #highlight-end
+   spec:
+     ingressClassName: ngrok
+     rules:
+       - host: monitoring.NGROK_DOMAIN
+         http:
+           paths:
+             - path: /
+               pathType: Prefix
+               backend:
+                 service:
+                   name: kube-prometheus-stack-grafana
+                   port:
+                     number: 9090
+   #highlight-start
+   ---
+   # Configuration for ngrok's OAuth authentication module
+   kind: NgrokModuleSet
+   apiVersion: ingress.k8s.ngrok.com/v1alpha1
+   metadata:
+     name: oauth
+     namespace: kube-prometheus-stack
+   modules:
+     oauth:
+       google:
+         emailDomains:
+           - example.com
+   #highlight-end
+   ```
+
+1. Reload your browser at `https://monitoring.NGROK_DOMAIN` to see the Google-based OAuth prompt. If you sign in to a Google account associated with the domain you specified, ngrok will route your request to the backend service, automatically blocking all unauthenticated requests for you.
+
+## What's next?
+
+You've now used the open-source ngrok Kubernetes Operator to add public ingress to an example app on a Kubernetes cluster managed by DigitalOcean. Because ngrok abstracts ingress and middleware execution to its Cloud Edge, and thanks to DigitalOcean's `doctl` tool, you can quickly deploy new clusters, apps, and helpful services without leaving your CLI.
+
+If you followed along, you already used [name-based virtual hosting](/k8s/with-edges.mdx#name-based-virtual-hosting) to direct traffic to different apps with or without authentication enabled. You also might find the [simple fanout](/k8s/with-edges.mdx#simple-fanout) useful for quickly deploying secure ingress for multiple apps running on the same cluster.
+
+Learn more about the ngrok Kubernetes Operator, or contribute to its ongoing development, by checking out the [GitHub repository](https://github.com/ngrok/ngrok-operator). We also have an extensive explainer for [how the Operator works](/k8s/how-it-works/), plus additional [documentation](/k8s/), which also includes details on leveraging the new Kubernetes Gateway API.
