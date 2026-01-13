@@ -1,0 +1,193 @@
+---
+title: Access CI/CD Deploy Previews on Secure URLs
+sidebarTitle: Ephemeral Workloads
+description: Expose deploy previews and CI test environments on secure, short-lived URLs with ngrok endpoints and Traffic Policy.
+---
+
+import ReserveDomain from "/snippets/universal-gateway/_reserve-domain.mdx";
+import CloudEndpoint from "/snippets/universal-gateway/_cloud-endpoint.mdx";
+import TryOut from "/snippets/universal-gateway/_try-out.mdx";
+
+Deploy previews and CI test environments are ephemeral by nature—they spin up for a branch, get tested, and disappear.
+But accessing them securely and reliably can be tricky: you need a public URL for external testing tools or manual review, but you don't want zombie previews leaking your roadmap to the public internet.
+
+ngrok makes ephemeral workloads easier by letting you:
+
+- Expose staging or preview builds on-demand with secure, authenticated URLs.
+- Use dynamic endpoint URLs based on branch names, PR numbers, or commit SHAs.
+- Apply Traffic Policy to add authentication, logging, and access control to every preview.
+- Clean up automatically when CI jobs finish.
+
+## What you'll need
+
+- A CI/CD platform like GitHub Actions, GitLab CI, or Jenkins
+- A [pay-as-you-go](/pricing-limits/) account for custom domains
+
+## 1. Reserve a wildcard domain
+
+Navigate to the [**Domains** section](https://dashboard.ngrok.com/domains) of the ngrok dashboard and click **New +** to reserve a [custom wildcard domain](/universal-gateway/custom-domains/) like `*.preview.example.com`.
+You'll then need to set up CNAME records with your DNS provider.
+
+This wildcard lets you dynamically create preview URLs like `pr-123.preview.example.com` for each pull request or branch.
+
+## 2. Create a Cloud Endpoint
+
+<CloudEndpoint />
+
+## 3. Add routing with Traffic Policy
+
+While viewing your new Cloud Endpoint in the dashboard, copy the policy below and paste it into the Traffic Policy editor.
+
+```yaml
+on_http_request:
+  - actions:
+      - type: forward-internal
+        config:
+          url: https://${req.host.split(".preview.example.com")[0]}.internal
+```
+
+**What's happening here?** This policy dynamically routes each preview URL to a matching internal Agent Endpoint.
+Requests to `pr-123.preview.example.com` get forwarded to `https://pr-123.internal`, which connects to the ephemeral container or service running your deploy preview.
+
+## 4. Add authentication to your previews
+
+Deploy previews shouldn't be publicly accessible.
+Use the [OAuth action](/traffic-policy/actions/oauth) to require reviewers to authenticate before accessing any preview and deny all requests from those without a `example.com` email:
+
+```yaml
+on_http_request:
+  - actions:
+      - type: oauth
+        config:
+          provider: google
+
+  - expressions:
+      - "!actions.ngrok.oauth.identity.email.endsWith('@example.com')"
+    actions:
+      - type: deny
+
+  - actions:
+      - type: forward-internal
+        config:
+          url: https://${req.host.split(".preview.example.com")[0]}.internal
+```
+
+This ensures only authenticated users from your domain can access previews, while keeping the dynamic routing intact.
+
+## 5. Start an Agent Endpoint from your CI pipeline
+
+In your CI/CD workflow, start an internal [Agent Endpoint](/universal-gateway/agent-endpoints/) that matches the preview URL pattern.
+The exact setup depends on your CI platform, but here's a GitHub Actions example:
+
+```yaml
+name: Deploy Preview
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build and start app
+        run: |
+          # Build your app
+          npm install && npm run build
+          # Start your app in the background
+          npm run start &
+          sleep 5
+
+      - name: Install ngrok
+        run: |
+          curl -sSL https://ngrok-agent.s3.amazonaws.com/ngrok.asc \
+            | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null
+          echo "deb https://ngrok-agent.s3.amazonaws.com buster main" \
+            | sudo tee /etc/apt/sources.list.d/ngrok.list
+          sudo apt update && sudo apt install ngrok
+
+      - name: Start ngrok tunnel
+        env:
+          NGROK_AUTHTOKEN: ${{ secrets.NGROK_AUTHTOKEN }}
+        run: |
+          ngrok config add-authtoken $NGROK_AUTHTOKEN
+          ngrok http 3000 --url https://pr-${{ github.event.pull_request.number }}.internal &
+          sleep 5
+
+      - name: Run tests against preview
+        run: |
+          curl -sSf https://pr-${{ github.event.pull_request.number }}.preview.example.com
+
+      - name: Comment preview URL
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `🚀 Deploy preview available at: https://pr-${{ github.event.pull_request.number }}.preview.example.com`
+            })
+```
+
+**What's happening here?** This workflow builds your app, starts it on port 3000, then creates an internal Agent Endpoint at `https://pr-{PR_NUMBER}.internal`.
+The Cloud Endpoint you configured earlier routes traffic from `pr-{PR_NUMBER}.preview.example.com` to this internal endpoint.
+
+When the job finishes, the agent stops and the preview disappears.
+
+## 6. Try out your endpoint
+
+<TryOut />
+
+## 7. Route external testing tools (optional)
+
+If you use external testing services like BrowserStack, Sauce Labs, or a third-party QA platform, they can hit your preview URLs directly.
+Add IP restrictions to allow only your testing provider:
+
+```yaml
+on_http_request:
+  - expressions:
+      - "!conn.client_ip in ['<TESTING_PROVIDER_IP_RANGE>']"
+    actions:
+      - type: deny
+
+  - actions:
+      - type: forward-internal
+        config:
+          url: https://${req.host.split(".preview.example.com")[0]}.internal
+```
+
+Or combine OAuth for manual reviewers with IP allowlisting for automated tests:
+
+```yaml
+on_http_request:
+  - expressions:
+      - "conn.client_ip in ['<TESTING_PROVIDER_IP_RANGE>']"
+    actions:
+      - type: forward-internal
+        config:
+          url: https://${req.host.split(".preview.example.com")[0]}.internal
+
+  - actions:
+      - type: oauth
+        config:
+          provider: google
+
+  - expressions:
+      - "!actions.ngrok.oauth.identity.email.endsWith('@example.com')"
+    actions:
+      - type: deny
+
+  - actions:
+      - type: forward-internal
+        config:
+          url: https://${req.host.split(".preview.example.com")[0]}.internal
+```
+
+## What's next?
+
+- View your preview traffic in [Traffic Inspector](https://dashboard.ngrok.com/traffic-inspector) to debug failing tests or observe how reviewers interact with previews.
+- Explore other CI/CD patterns like [blue-green deployments](/universal-gateway/examples/blue-green-deployments/) or [canary deployments](/universal-gateway/examples/canary-deployments/) for production rollouts.
+- Use the [Kubernetes Operator](/k8s/) to manage ephemeral workloads in Kubernetes clusters with the same patterns.
