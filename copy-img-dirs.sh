@@ -19,7 +19,7 @@ find "$SOURCE_DIR" -type d -name "img" | while read -r img_dir; do
     parent_name=$(basename "$parent_dir")
     
     # Create the new name with parent prefix
-    new_name="${parent_name}-img"
+    new_name="${parent_name}"
     dest_path="$DEST_DIR/$new_name"
     
     echo "Copying: $img_dir -> $dest_path"
