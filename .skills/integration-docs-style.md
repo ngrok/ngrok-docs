@@ -24,11 +24,21 @@
 - **Descriptive headers**: Section headers should be descriptive, not generic (e.g., "Configure ngrok to expose Home Assistant" not "Add ngrok")
 - **Prerequisites section**: Use "## What you'll need" as a heading, not plain text "Prerequisites:"
 - **Prerequisites in body**: Never include signup text or prerequisite information in body content - move it to "What you'll need" section
+- **Prerequisites placement**: "What you'll need" section can appear after Note components if the Note provides important context first
+- **List item periods**: All list items in "What you'll need" sections must end with periods
 - **Simplify wordy phrases**: Use concise language (e.g., "To learn more about X, check out:" not "If you're eager to learn more about X, give the following a read:")
 - **Use direct language**: Prefer "First," over "Your first task is to"
 - **Intro paragraph**: Add an intro paragraph below the Tip but above the first h2 that briefly explains the guide's purpose
 - **No future tense in intros**: Use present tense in intro paragraphs (e.g., "It covers setting up..." not "You'll set up...")
 - **UI text formatting**: UI text (button labels, menu items, etc.) should be in **bold**, not in quotes or other styling
+- **UI text in links**: When UI text is in a link, format as `[**UI Element**](url)` not `**[UI Element](url)**` - bold inside the link brackets
+- **No ampersands**: Don't use `&` unless it's specifically part of bold UI text - use "and" instead
+- **Remove redundant text**: Remove unnecessary descriptive phrases (e.g., "link in the top table" is redundant if you've already specified where to click)
+- **Avoid casual phrases**: Don't use casual language like "you are good to go" - use professional language like "your domain is configured"
+- **Avoid repetition**: Don't repeat the same phrase in consecutive sentences
+- **Header balance**: Headers should be descriptive but not too wordy - avoid redundant phrases like "log in to your account" when the context is clear
+- **Company names**: Don't include .com in company names (e.g., "GoDaddy" not "GoDaddy.com")
+- **Avoid "whenever"**: Use more direct language instead of "whenever you want to"
 
 ## Images
 
