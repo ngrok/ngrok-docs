@@ -12,7 +12,9 @@
 - **Prerequisites placement**: "What you'll need" section can appear after Note components if the Note provides important context first
 - **List item periods**: All list items in "What you'll need" sections must end with periods
 - **Personal pronouns in prerequisites**: Use "Your" not "The" when referring to user's personal items (e.g., "Your [ngrok authtoken]" not "The [ngrok authtoken]")
-- **What's next sections**: "What's next?" sections should use unordered lists for linking out to content, but can also include paragraphs
+- **Resource sections**: Sections linking to additional resources (e.g., "What's next?", "Further resources") should use unordered lists for linking out to content, but can also include paragraphs
+- **Choose appropriate section name**: Use "What's next?" for next steps, "Further resources" for reference links, or other appropriate names based on context
+- **Don't duplicate prerequisites**: If prerequisites are listed in "What you'll need", don't repeat them in Tip components
 
 ## Text Formatting
 
@@ -35,6 +37,7 @@
 - **No nested numbered lists**: If section headers are numbered (## 1., ## 2., etc.), use plain text or bullet points in body content, not numbered lists
 - **Exception for explicit numbering**: If the text explicitly calls out numbering (e.g., "You have two options:"), use numbered lists instead of bullet points
 - **Convert nested lists to plain text**: Instructions within numbered sections should be written as paragraphs or bullet points
+- **Options vs sequential steps**: Use "Option 1", "Option 2" for alternative approaches, and numbered steps (## 1., ## 2.) only for sequential instructions
 
 ## Language and Style
 
@@ -49,10 +52,13 @@
 - **Prefer "In" over "Within"**: Use "In" instead of "Within" when referring to files or locations (e.g., "In your configuration file" not "Within your configuration file")
 - **authtoken is one word**: Always use "authtoken" not "auth token"
 - **No ampersands**: Don't use `&` unless it's specifically part of bold UI text - use "and" instead
+- **Remove unnecessary "also"**: Remove "also" when it doesn't add value (e.g., "You may need" not "You may also need")
+- **GitHub capitalization**: Always use "GitHub" not "Github" or "Github"
 
 ## Links
 
 - **Use relative paths**: Internal documentation links should use relative paths (e.g., `../traffic-policy/`) not full URLs (e.g., `https://ngrok.com/docs/traffic-policy`)
+- **Descriptive anchor text**: Link anchor text should be descriptive (e.g., "ngrok Python SDK docs" not "Reference Documentation")
 
 ## Images
 
