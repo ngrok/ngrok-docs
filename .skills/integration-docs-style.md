@@ -26,10 +26,12 @@
 - **Prerequisites in body**: Never include signup text or prerequisite information in body content - move it to "What you'll need" section
 - **Prerequisites placement**: "What you'll need" section can appear after Note components if the Note provides important context first
 - **List item periods**: All list items in "What you'll need" sections must end with periods
+- **Personal pronouns in prerequisites**: Use "Your" not "The" when referring to user's personal items (e.g., "Your [ngrok authtoken]" not "The [ngrok authtoken]")
 - **Simplify wordy phrases**: Use concise language (e.g., "To learn more about X, check out:" not "If you're eager to learn more about X, give the following a read:")
 - **Use direct language**: Prefer "First," over "Your first task is to"
-- **Intro paragraph**: Add an intro paragraph below the Tip but above the first h2 that briefly explains the guide's purpose
+- **Intro paragraph**: Add an intro paragraph below the Tip (or after frontmatter if no Tip) but above the first h2 that briefly explains the guide's purpose
 - **No future tense in intros**: Use present tense in intro paragraphs (e.g., "It covers setting up..." not "You'll set up...")
+- **Descriptive headers for content**: Use at least two descriptive headers to break up longer content and organize the guide
 - **UI text formatting**: UI text (button labels, menu items, etc.) should be in **bold**, not in quotes or other styling
 - **UI text in links**: When UI text is in a link, format as `[**UI Element**](url)` not `**[UI Element](url)**` - bold inside the link brackets
 - **No ampersands**: Don't use `&` unless it's specifically part of bold UI text - use "and" instead
