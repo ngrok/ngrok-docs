@@ -23,12 +23,20 @@
 
 - **Descriptive headers**: Section headers should be descriptive, not generic (e.g., "Configure ngrok to expose Home Assistant" not "Add ngrok")
 - **Prerequisites section**: Use "## What you'll need" as a heading, not plain text "Prerequisites:"
+- **Prerequisites in body**: Never include signup text or prerequisite information in body content - move it to "What you'll need" section
 - **Simplify wordy phrases**: Use concise language (e.g., "To learn more about X, check out:" not "If you're eager to learn more about X, give the following a read:")
 - **Use direct language**: Prefer "First," over "Your first task is to"
+- **Intro paragraph**: Add an intro paragraph below the Tip but above the first h2 that briefly explains the guide's purpose
+- **No future tense in intros**: Use present tense in intro paragraphs (e.g., "It covers setting up..." not "You'll set up...")
+- **UI text formatting**: UI text (button labels, menu items, etc.) should be in **bold**, not in quotes or other styling
 
 ## Images
 
 - **No screenshots**: Remove all `/img/integrations/*` images from integration docs
 - **Delete image files**: Delete the actual image files from the repository
 - **Normalize text**: Fix surrounding text to flow naturally without image references
+
+## SEO and Metadata
+
+- **Descriptive descriptions**: Frontmatter descriptions should be descriptive for SEO purposes and 150 characters or less
 
