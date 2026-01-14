@@ -60,36 +60,52 @@ This rule returns a custom response with a [`robots.txt` file](https://developer
 
 ```yaml policy.yml
 on_http_request:
-  - name: Add `robots.txt` to deny all bots and crawlers
-    expressions:
-      - req.url.contains('/robots.txt')
+  - expressions: 
+    - "!req.url.path.contains('/robots.txt')"
     actions:
-      - type: custom-response
-        config:
-          status_code: 200
-          body: User-agent: *
-Disallow: /
-          headers:
-            content-type: text/plain
+    - type: forward-internal
+      config: 
+        url: <Internal endpoint URL Here>
+  - expressions: 
+    - "req.url.path.contains('/robots.txt')"
+    actions:
+    - type: custom-response
+      config:
+        body: "User-agent: *\r\nDisallow: /"
+        headers:
+          content-type: text/plain
+        status_code: 200
 ```
-
+  
 ```json policy.json
 {
   "on_http_request": [
     {
-      "name": "Add `robots.txt` to deny all bots and crawlers",
       "expressions": [
-        "req.url.contains('/robots.txt')"
+        "!req.url.path.contains('/robots.txt')"
+      ],
+      "actions": [
+        {
+          "type": "forward-internal",
+          "config": {
+            "url": "<Internal endpoint URL Here>"
+          }
+        }
+      ]
+    },
+    {
+      "expressions": [
+        "req.url.path.contains('/robots.txt')"
       ],
       "actions": [
         {
           "type": "custom-response",
           "config": {
-            "status_code": 200,
             "body": "User-agent: *\r\nDisallow: /",
             "headers": {
               "content-type": "text/plain"
-            }
+            },
+            "status_code": 200
           }
         }
       ]
@@ -155,7 +171,7 @@ You can also take action on incoming requests that contain specific strings in [
 on_http_request:
   - name: Block specific bots by user agent
     expressions:
-      - req.user_agent.name in ('ChatGPT-User', 'GPTBot', 'OAI-SearchBot')
+      - req.user_agent.name in ['ChatGPT-User', 'GPTBot', 'OAI-SearchBot']
     actions:
       - type: deny
         config:
@@ -168,7 +184,7 @@ on_http_request:
     {
       "name": "Block specific bots by user agent",
       "expressions": [
-        "req.user_agent.name in ('ChatGPT-User', 'GPTBot', 'OAI-SearchBot')"
+        "req.user_agent.name in ['ChatGPT-User', 'GPTBot', 'OAI-SearchBot']"
       ],
       "actions": [
         {
@@ -187,10 +203,10 @@ on_http_request:
 
 <Tip>
 
-You can expand the expression to include additional user agents by extending the `(chatgpt-user|gptbot)` section of the regular expression.
+You can expand the expression to include additional user agents by adding them to the list:
 
 ```bash
-(chatgpt-user|gptbot|anthropic|claude|any|other|user-agent|goes|here)
+['ChatGPT-User', 'GPTBot', 'anthropic', 'claude']
 ```
 
 </Tip>

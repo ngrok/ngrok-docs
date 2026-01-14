@@ -113,6 +113,22 @@ Token metrics are only available at Account, Endpoint, and API Key scopes. Globa
 
 ### Quota metrics (API key scope only)
 
+<Warning>
+**Safe API key access**: Not all models have metrics for every API key. Always check if the key exists before accessing it.
+
+❌ This will error if metrics don't exist for this API key:
+
+```yaml
+- "ai.models.filter(m, m.metrics.api_keys['sk-abc123'].latency.upstream_ms_avg < 1000)"
+```
+
+✅ Check the key exists first:
+
+```yaml
+- "ai.models.filter(m, 'sk-abc123' in m.metrics.api_keys && m.metrics.api_keys['sk-abc123'].latency.upstream_ms_avg < 1000)"
+```
+</Warning>
+
 Access via `m.metrics.api_keys["key_id"].quota`:
 
 | Field | Type | Description |

@@ -1,61 +1,445 @@
 ---
 title: Add Authentication
-description: Learn how to add authentication to your endpoints using Traffic Policy including JWT validation and rate limiting examples.
+description: Learn how to add authentication to your endpoints using Traffic Policy with Basic Auth, OAuth, OIDC, JWT validation, and more.
 ---
 
-You can use Traffic Policy to add authentication to your endpoints, granting conditional access to traffic trying to reach your services. This page demonstrates a few example rules that do so.
+Traffic Policy gives you powerful options for adding authentication to your endpoints—without touching your application code.
+Whether you need a quick login prompt for a demo, OAuth for production apps, or JWT validation for APIs, ngrok has you covered.
 
-## JWT authentication
+<Note>
+For a deeper dive into authentication concepts and when to use each method, see the [Authentication with ngrok](https://ngrok.com/blog/authentication-with-ngrok) blog post.
+</Note>
 
-This rule adds key-based rate limiting to your endpoints based on your consumers' JWTs. See the [Auth0 guide](/integrations/jwt-validation/auth0) for more information.
+## Authentication and access control methods
+
+| Method | Best for |
+| --- | --- |
+| [Basic Auth](#basic-auth) | Quick demos, internal tools |
+| [OAuth](#oauth) | User-facing apps with social login |
+| [OpenID Connect (OIDC)](#openid-connect-oidc) | Enterprise apps with corporate IdPs |
+| [JWT validation](#jwt-validation) | APIs with token-based auth |
+| [IP restrictions](#ip-restrictions) | Network-level access control |
+| [Mutual TLS (mTLS)](#mutual-tls-mtls) | Machine-to-machine, zero trust |
+
+---
+
+## Basic Auth
+
+HTTP Basic Auth is the simplest form of authentication—it prompts visitors for a username and password with zero setup.
+Use it for one-off demos or sharing local development work.
 
 <CodeGroup>
 
 ```yaml policy.yml
 on_http_request:
-- name: Add JWT authentication and rate limiting
-  actions:
-  - type: rate-limit
-    config:
-      name: Only allow 30 requests per minute
-      algorithm: sliding_window
-      capacity: 30
-      rate: 60s
-      bucket_key:
-      - req.headers['x-api-key']
-  - type: jwt-validation
-    config:
-      issuer:
-        allow_list:
-        - value: https://<YOUR-AUTH-PROVIDER>
-      audience:
-        allow_list:
-        - value: "<YOUR-NGROK-DOMAIN>"
-      http:
-        tokens:
-        - type: jwt
-          method: header
-          name: Authorization
-          prefix: 'Bearer '
-      jws:
-        allowed_algorithms:
-        - RS256
-        keys:
-          sources:
-            additional_jkus:
-            - https://<YOUR-AUTH-PROVIDER>/.well-known/jwks.json
+  # Prompt for username and password with up to 10 credential pairs
+  - actions:
+      - type: basic-auth
+        config:
+          credentials:
+            - username: user1
+              password: password123
+            - username: user2
+              password: securepass456
 ```
 
 ```json policy.json
 {
   "on_http_request": [
     {
-      "name": "Add JWT authentication and rate limiting",
+      "actions": [
+        {
+          "type": "basic-auth",
+          "config": {
+            "credentials": [
+              {
+                "username": "user1",
+                "password": "password123"
+              },
+              {
+                "username": "user2",
+                "password": "securepass456"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+</CodeGroup>
+
+See [the `basic-auth` action docs](/traffic-policy/actions/basic-auth/) for more information.
+
+---
+
+## OAuth
+
+OAuth lets you leverage existing identity providers like Google, GitHub, or Microsoft for authentication.
+Users sign in with their existing accounts—no password management required.
+
+ngrok supports these OAuth providers out of the box with managed applications:
+
+- Google
+- GitHub
+- GitLab
+- LinkedIn
+- Microsoft
+- Twitch
+
+### Simple OAuth setup
+
+<CodeGroup>
+
+```yaml policy.yml
+on_http_request:
+  # Redirect unauthenticated users to Google sign-in
+  - actions:
+      - type: oauth
+        config:
+          provider: google
+```
+
+```json policy.json
+{
+  "on_http_request": [
+    {
+      "actions": [
+        {
+          "type": "oauth",
+          "config": {
+            "provider": "google"
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+</CodeGroup>
+
+### Restrict access by email domain
+
+Use [expressions](/traffic-policy/concepts/expressions/) to restrict access based on email domain, allowing only users from specific organizations.
+
+<CodeGroup>
+
+```yaml policy.yml
+on_http_request:
+  # Authenticate with Google OAuth
+  - actions:
+      - type: oauth
+        config:
+          provider: google
+  # Only allow users with company email addresses
+  - expressions:
+      - "!actions.ngrok.oauth.identity.email.endsWith('@your-company.com')"
+    actions:
+      - type: deny
+        config:
+          status_code: 403
+```
+
+```json policy.json
+{
+  "on_http_request": [
+    {
+      "actions": [
+        {
+          "type": "oauth",
+          "config": {
+            "provider": "google"
+          }
+        }
+      ]
+    },
+    {
+      "expressions": [
+        "!actions.ngrok.oauth.identity.email.endsWith('@your-company.com')"
+      ],
+      "actions": [
+        {
+          "type": "deny",
+          "config": {
+            "status_code": 403
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+</CodeGroup>
+
+For more OAuth examples—including session controls, multiple email domains, custom OAuth apps, and login/logout flows—see the [`oauth` action docs](/traffic-policy/actions/oauth/) and the [OAuth protection guide](/traffic-policy/examples/oauth-protection/).
+
+---
+
+## OpenID Connect (OIDC)
+
+OIDC connects to managed corporate identity providers like Okta, Azure AD, or any OIDC-compliant IdP.
+This gives you fine-grained control over authentication while leveraging your existing identity infrastructure.
+
+### Basic OIDC setup
+
+<CodeGroup>
+
+```yaml policy.yml
+on_http_request:
+  # Authenticate with your OIDC provider
+  - actions:
+      - type: openid-connect
+        config:
+          issuer_url: https://accounts.google.com
+          client_id: "<your-oidc-client-id>"
+          client_secret: "<your-oidc-client-secret>"
+          scopes:
+            - openid
+            - profile
+            - email
+```
+
+```json policy.json
+{
+  "on_http_request": [
+    {
+      "actions": [
+        {
+          "type": "openid-connect",
+          "config": {
+            "issuer_url": "https://accounts.google.com",
+            "client_id": "<your-oidc-client-id>",
+            "client_secret": "<your-oidc-client-secret>",
+            "scopes": [
+              "openid",
+              "profile",
+              "email"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+</CodeGroup>
+
+### Pass identity tokens to your service
+
+Forward the OIDC identity token to your upstream service via headers for further authorization logic.
+
+<CodeGroup>
+
+```yaml policy.yml
+on_http_request:
+  # Authenticate with OIDC
+  - actions:
+      - type: openid-connect
+        config:
+          issuer_url: https://accounts.google.com
+          client_id: "<your-oidc-client-id>"
+          client_secret: "<your-oidc-client-secret>"
+          scopes:
+            - openid
+            - profile
+            - email
+  # Forward identity token and email to upstream service
+  - actions:
+      - type: add-headers
+        config:
+          headers:
+            x-identity-token: "${actions.ngrok.oidc.identity_token}"
+            x-user-email: "${actions.ngrok.oidc.identity.email}"
+```
+
+```json policy.json
+{
+  "on_http_request": [
+    {
+      "actions": [
+        {
+          "type": "openid-connect",
+          "config": {
+            "issuer_url": "https://accounts.google.com",
+            "client_id": "<your-oidc-client-id>",
+            "client_secret": "<your-oidc-client-secret>",
+            "scopes": [
+              "openid",
+              "profile",
+              "email"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "actions": [
+        {
+          "type": "add-headers",
+          "config": {
+            "headers": {
+              "x-identity-token": "${actions.ngrok.oidc.identity_token}",
+              "x-user-email": "${actions.ngrok.oidc.identity.email}"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+</CodeGroup>
+
+See [the `openid-connect` action docs](/traffic-policy/actions/oidc/) for more information.
+
+---
+
+## JWT validation
+
+For APIs, JWT validation lets you verify tokens without managing user sessions.
+Combine it with rate limiting for robust API protection.
+
+### Basic JWT validation
+
+<CodeGroup>
+
+```yaml policy.yml
+on_http_request:
+  # Validate JWT from Authorization header using JWKS endpoint
+  - actions:
+      - type: jwt-validation
+        config:
+          issuer:
+            allow_list:
+              - value: https://your-auth-provider.com
+          audience:
+            allow_list:
+              - value: "your-api-audience"
+          http:
+            tokens:
+              - type: jwt
+                method: header
+                name: Authorization
+                prefix: 'Bearer '
+          jws:
+            allowed_algorithms:
+              - RS256
+            keys:
+              sources:
+                additional_jkus:
+                  - https://your-auth-provider.com/.well-known/jwks.json
+```
+
+```json policy.json
+{
+  "on_http_request": [
+    {
+      "actions": [
+        {
+          "type": "jwt-validation",
+          "config": {
+            "issuer": {
+              "allow_list": [
+                {
+                  "value": "https://your-auth-provider.com"
+                }
+              ]
+            },
+            "audience": {
+              "allow_list": [
+                {
+                  "value": "your-api-audience"
+                }
+              ]
+            },
+            "http": {
+              "tokens": [
+                {
+                  "type": "jwt",
+                  "method": "header",
+                  "name": "Authorization",
+                  "prefix": "Bearer "
+                }
+              ]
+            },
+            "jws": {
+              "allowed_algorithms": [
+                "RS256"
+              ],
+              "keys": {
+                "sources": {
+                  "additional_jkus": [
+                    "https://your-auth-provider.com/.well-known/jwks.json"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+</CodeGroup>
+
+### JWT validation with rate limiting
+
+Combine authentication with key-based rate limiting for complete API protection.
+
+<CodeGroup>
+
+```yaml policy.yml
+on_http_request:
+  # Rate limit by API key, then validate JWT
+  - actions:
+      - type: rate-limit
+        config:
+          name: 30 requests per minute per API key
+          algorithm: sliding_window
+          capacity: 30
+          rate: 60s
+          bucket_key:
+            - req.headers['x-api-key']
+      - type: jwt-validation
+        config:
+          issuer:
+            allow_list:
+              - value: https://<YOUR-AUTH-PROVIDER>
+          audience:
+            allow_list:
+              - value: "<YOUR-NGROK-DOMAIN>"
+          http:
+            tokens:
+              - type: jwt
+                method: header
+                name: Authorization
+                prefix: 'Bearer '
+          jws:
+            allowed_algorithms:
+              - RS256
+            keys:
+              sources:
+                additional_jkus:
+                  - https://<YOUR-AUTH-PROVIDER>/.well-known/jwks.json
+```
+
+```json policy.json
+{
+  "on_http_request": [
+    {
       "actions": [
         {
           "type": "rate-limit",
           "config": {
-            "name": "Only allow 30 requests per minute",
+            "name": "30 requests per minute per API key",
             "algorithm": "sliding_window",
             "capacity": 30,
             "rate": "60s",
@@ -113,87 +497,40 @@ on_http_request:
 
 </CodeGroup>
 
-See [the `rate-limit` Traffic Policy action docs](/traffic-policy/actions/rate-limit/) for more information.
+See [the `jwt-validation` action docs](/traffic-policy/actions/jwt-validation/) and the [Auth0 integration guide](/integrations/jwt-validation/auth0) for more information.
 
-## Conditional access using OAuth variables
+---
 
-This rule grants conditional access to a page using the following ngrok [OAuth action result variables](/traffic-policy/actions/oauth):
+## IP restrictions
 
-1. `actions.ngrok.oauth.identity.email.endsWith('@ngrok.com')`
-   1. Checks the email address of the authorized user from the provider. In the example, if the email address's domain is `ngrok.com`, the user will be granted access to the page.
-
-- `actions.ngrok.oauth.identity.name`
-  1. Gets the name of the authorized user from the provider. In this example, the name will be displayed in a welcome message or a rejection message depending on if the user is authenticated.
+Restrict access to specific IP addresses or CIDR ranges.
+Use this for network-level access control, such as allowing only office IPs or blocking known bad actors.
 
 <CodeGroup>
 
 ```yaml policy.yml
 on_http_request:
-- name: OAuth
-  actions:
-  - type: oauth
-    config:
-      auth_id: oauth
-      provider: google
-- name: good email
-  expressions:
-  - actions.ngrok.oauth.identity.email.endsWith('@ngrok.com')
-  actions:
-  - type: custom-response
-    config:
-      body: Welcome ${actions.ngrok.oauth.identity.name}!
-      status_code: 200
-- name: bad email
-  expressions:
-  - "!actions.ngrok.oauth.identity.email.endsWith('@ngrok.com')"
-  actions:
-  - type: custom-response
-    config:
-      body: Hey, no auth for you ${actions.ngrok.oauth.identity.name}!
-      status_code: 400
+  # Only allow requests from trusted IPs
+  - actions:
+      - type: restrict-ips
+        config:
+          allow:
+            - 203.0.113.0/24
+            - 198.51.100.42/32
 ```
 
 ```json policy.json
 {
   "on_http_request": [
     {
-      "name": "OAuth",
       "actions": [
         {
-          "type": "oauth",
+          "type": "restrict-ips",
           "config": {
-            "auth_id": "oauth",
-            "provider": "google"
-          }
-        }
-      ]
-    },
-    {
-      "name": "good email",
-      "expressions": [
-        "actions.ngrok.oauth.identity.email.endsWith('@ngrok.com')"
-      ],
-      "actions": [
-        {
-          "type": "custom-response",
-          "config": {
-            "body": "Welcome ${actions.ngrok.oauth.identity.name}!",
-            "status_code": 200
-          }
-        }
-      ]
-    },
-    {
-      "name": "bad email",
-      "expressions": [
-        "!actions.ngrok.oauth.identity.email.endsWith('@ngrok.com')"
-      ],
-      "actions": [
-        {
-          "type": "custom-response",
-          "config": {
-            "body": "Hey, no auth for you ${actions.ngrok.oauth.identity.name}!",
-            "status_code": 400
+            "allow": [
+              "203.0.113.0/24",
+              "198.51.100.42/32"
+            ]
           }
         }
       ]
@@ -204,64 +541,65 @@ on_http_request:
 
 </CodeGroup>
 
-See [the `oauth` Traffic Policy action docs](/traffic-policy/actions/oauth/) for more information.
+You can also combine IP restrictions with other authentication methods.
+See [the IP restrictions + Basic Auth example](/universal-gateway/examples/ip-restrictions-basic-auth/) for a pattern that allows users to authenticate with one method OR another.
 
-## Sending an OIDC identity token over headers
+See [the `restrict-ips` action docs](/traffic-policy/actions/restrict-ips/) for more information.
 
-This rule uses the `actions.ngrok.oidc.identity_token` [OIDC action result variable](/traffic-policy/actions/oidc/#action-result-variables) to send the OIDC identity token over headers to the service at the endpoint.
+---
+
+## Mutual TLS (mTLS)
+
+Mutual TLS requires clients to present a valid certificate, enabling strong machine-to-machine authentication.
+Use this for zero-trust architectures or when you need to verify client identity at the transport layer.
+
+mTLS is configured at the endpoint level rather than through Traffic Policy actions.
+See the [Mutual TLS documentation](/universal-gateway/tls-termination/#mutual-tls-mtls) for setup instructions.
+
+Once mTLS is enabled, you can use Traffic Policy to make routing or access decisions based on client certificate details.
+See the [routing by client certificate](/traffic-policy/examples/route-requests/#by-client-certificate) example.
+
+---
+
+## Enforce authentication
+
+Use Traffic Policy to require authentication or apply different rate limits based on authentication status.
+
+### Reject unauthenticated requests
+
+For APIs that require authentication, immediately reject requests that don't include an `Authorization` header.
 
 <CodeGroup>
 
 ```yaml policy.yml
 on_http_request:
-- name: OIDC
-  actions:
-  - type: openid-connect
-    config:
-      issuer_url: https://accounts.google.com
-      client_id: "<your-oidc-client-id>"
-      client_secret: "<your-oidc-client-secret>"
-      scopes:
-      - openid
-      - profile
-      - email
-- name: Headers
-  actions:
-  - type: add-headers
-    config:
-      headers:
-        id-token: "${actions.ngrok.oidc.identity_token}"
+  # Return 401 if no Authorization header is present
+  - expressions:
+      - "!('authorization' in req.headers)"
+    actions:
+      - type: custom-response
+        config:
+          status_code: 401
+          body: '{"error": "Authorization header required"}'
+          headers:
+            content-type: application/json
 ```
 
 ```json policy.json
 {
   "on_http_request": [
     {
-      "name": "OIDC",
+      "expressions": [
+        "!('authorization' in req.headers)"
+      ],
       "actions": [
         {
-          "type": "openid-connect",
+          "type": "custom-response",
           "config": {
-            "issuer_url": "https://accounts.google.com",
-            "client_id": "<your-oidc-client-id>",
-            "client_secret": "<your-oidc-client-secret>",
-            "scopes": [
-              "openid",
-              "profile",
-              "email"
-            ]
-          }
-        }
-      ]
-    },
-    {
-      "name": "Headers",
-      "actions": [
-        {
-          "type": "add-headers",
-          "config": {
+            "status_code": 401,
+            "body": "{\"error\": \"Authorization header required\"}",
             "headers": {
-              "id-token": "${actions.ngrok.oidc.identity_token}"
+              "content-type": "application/json"
             }
           }
         }
@@ -273,4 +611,94 @@ on_http_request:
 
 </CodeGroup>
 
-See [the `openid-connect` Traffic Policy action docs](/traffic-policy/actions/oidc/) for more information.
+### Tiered rate limits
+
+Create different rate limits based on authentication status—unauthenticated users get a lower limit while authenticated users get higher capacity.
+
+<CodeGroup>
+
+```yaml policy.yml
+on_http_request:
+  # Unauthenticated requests get 10 req/min by IP
+  - expressions:
+      - "!('Authorization' in req.headers)"
+    actions:
+      - type: rate-limit
+        config:
+          name: Free tier - 10 requests per minute
+          algorithm: sliding_window
+          capacity: 10
+          rate: 60s
+          bucket_key:
+            - conn.client_ip
+  # Authenticated requests get 100 req/min by token
+  - expressions:
+      - "'Authorization' in req.headers"
+    actions:
+      - type: rate-limit
+        config:
+          name: Authenticated - 100 requests per minute
+          algorithm: sliding_window
+          capacity: 100
+          rate: 60s
+          bucket_key:
+            - req.headers['authorization']
+```
+
+```json policy.json
+{
+  "on_http_request": [
+    {
+      "expressions": [
+        "!('Authorization' in req.headers)"
+      ],
+      "actions": [
+        {
+          "type": "rate-limit",
+          "config": {
+            "name": "Free tier - 10 requests per minute",
+            "algorithm": "sliding_window",
+            "capacity": 10,
+            "rate": "60s",
+            "bucket_key": [
+              "conn.client_ip"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "expressions": [
+        "'Authorization' in req.headers"
+      ],
+      "actions": [
+        {
+          "type": "rate-limit",
+          "config": {
+            "name": "Authenticated - 100 requests per minute",
+            "algorithm": "sliding_window",
+            "capacity": 100,
+            "rate": "60s",
+            "bucket_key": [
+              "req.headers['authorization']"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+</CodeGroup>
+
+---
+
+## Related resources
+
+- [Traffic Policy overview](/traffic-policy/)
+- [`oauth` action reference](/traffic-policy/actions/oauth/)
+- [OAuth protection guide](/traffic-policy/examples/oauth-protection/)
+- [Block unwanted requests](/traffic-policy/examples/block-unwanted-requests/)
+- [Rate limit requests](/traffic-policy/examples/rate-limit-requests/)
+- [IP restrictions + Basic Auth example](/universal-gateway/examples/ip-restrictions-basic-auth/)

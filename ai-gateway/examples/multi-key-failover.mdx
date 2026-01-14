@@ -63,16 +63,26 @@ Failover sequence:
 Combine multi-key and multi-provider failover for maximum resilience:
 
 ```yaml
-providers:
-  - id: openai
-    api_keys:
-      - value: ${secrets.get('openai', 'key-one')}
-      - value: ${secrets.get('openai', 'key-two')}
-  
-  - id: anthropic
-    api_keys:
-      - value: ${secrets.get('anthropic', 'key-one')}
-      - value: ${secrets.get('anthropic', 'key-two')}
+on_http_request:
+  - type: ai-gateway
+    config:
+      only_allow_configured_providers: true
+
+      providers:
+        - id: openai
+          api_keys:
+            - value: ${secrets.get('openai', 'key-one')}
+            - value: ${secrets.get('openai', 'key-two')}
+        
+        - id: anthropic
+          api_keys:
+            - value: ${secrets.get('anthropic', 'key-one')}
+            - value: ${secrets.get('anthropic', 'key-two')}
+      
+      model_selection:
+        strategy:
+          - "ai.models.filter(m, m.provider_id == 'openai')"
+          - "ai.models.filter(m, m.provider_id == 'anthropic')"
 ```
 
 Failover cascade:
@@ -84,7 +94,7 @@ Failover cascade:
 ```
 
 <Note>
-For cross-provider failover, clients must specify multiple models in the request or use a model selection strategy.
+For cross-provider failover, clients must specify multiple models in the request or use a model selection strategy. Providers are tried in alphabetical order by default; use `model_selection.strategy` to specify a custom order.
 </Note>
 
 ## Real-world scenario

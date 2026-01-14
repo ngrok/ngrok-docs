@@ -1,0 +1,62 @@
+---
+title: IP Policies
+sidebarTitle: IP Policies
+description: Use rules to allow or deny traffic and dashboard access from specific IPs and CIDRs.
+---
+
+IP Policies are reusable groups of rules for allowing or denying traffic and ngrok dashboard access from specific IPs and CIDRs. You can enforce them in the following scenarios:
+
+## Applying IP Policies to Endpoints
+
+You can add an IP Policy to your endpoints using the [`restrict-ips`](/traffic-policy/actions/restrict-ips) Traffic Policy Action.
+
+To get started with an Agent Endpoint, create a `policy.yml` or `policy.json` file on the same machine as the endpoint. To use a Cloud Endpoint, [visit the Endpoints section in the ngrok dashboard](https://dashboard.ngrok.com/endpoints) and select the Cloud Endpoint. You'll be taken to the Traffic Policy editor. 
+
+The contents of the policy file should be the following:
+
+<CodeGroup>
+```yaml policy.yml
+on_http_request:
+	# Only allow requests from trusted IPs
+	- actions:
+			- type: restrict-ips
+				config:
+					allow:
+						- 203.0.113.0/24
+						- 198.51.100.42/32
+```
+
+```json policy.json
+{
+	"on_http_request": [
+		{
+			"actions": [
+				{
+					"type": "restrict-ips",
+					"config": {
+						"allow": [
+							"203.0.113.0/24",
+							"198.51.100.42/32"
+						]
+					}
+				}
+			]
+		}
+	]
+}
+```
+</CodeGroup>
+
+If you're using a Cloud Endpoint, save your changes in the dashboard. To apply this policy to your Agent Endpoint, start it using the `--traffic-policy-file` flag as shown in the following example:
+
+```bash
+ngrok http $YOUR_PORT --url $YOUR_DOMAIN --traffic-policy-file /path/to/policy.yml
+```
+
+## Applying account-wide IP Policies
+
+To apply account-wide IP Policies, you can use [the IP Restrictions feature in the ngrok dashboard](https://dashboard.ngrok.com/ip-restrictions).
+
+In the dashboard UI, you can apply [IP Restrictions](/traffic-policy/examples/add-authentication#ip-restrictions) to users trying to sign in to your ngrok dashboard, traffic trying to access your API or Endpoints, and source IPs trying to start Agent Endpoints on your account.
+
+You can define the IP Policies that make up your restrictions in the dashboard UI.
