@@ -1,38 +1,57 @@
   <CodeGroup>
-    ```json policy.json
+```yaml policy.yml
+on_http_request:
+  - expressions: 
+    - "!req.url.path.contains('/robots.txt')"
+    actions:
+    - type: forward-internal
+      config: 
+        url: <Internal endpoint URL Here>
+  - expressions: 
+    - "req.url.path.contains('/robots.txt')"
+    actions:
+    - type: custom-response
+      config:
+        body: "User-agent: *\r\nDisallow: /"
+        headers:
+          content-type: text/plain
+        status_code: 200
+```
+  
+```json policy.json
+{
+  "on_http_request": [
     {
-      "on_http_request": [
+      "expressions": [
+        "!req.url.path.contains('/robots.txt')"
+      ],
+      "actions": [
         {
-          "name": "Add `robots.txt` to deny all bots and crawlers",
-          "expressions": ["req.url.contains('/robots.txt')"],
-          "actions": [
-            {
-              "type": "custom-response",
-              "config": {
-                "status_code": 200,
-                "body": "User-agent: *\r\nDisallow: /",
-                "headers": {
-                  "content-type": "text/plain"
-                }
-              }
-            }
-          ]
+          "type": "forward-internal",
+          "config": {
+            "url": "<Internal endpoint URL Here>"
+          }
+        }
+      ]
+    },
+    {
+      "expressions": [
+        "req.url.path.contains('/robots.txt')"
+      ],
+      "actions": [
+        {
+          "type": "custom-response",
+          "config": {
+            "body": "User-agent: *\r\nDisallow: /",
+            "headers": {
+              "content-type": "text/plain"
+            },
+            "status_code": 200
+          }
         }
       ]
     }
-    ```
-
-    ```yaml policy.yml
-    on_http_request:
-      - name: Add `robots.txt` to deny all bots and crawlers
-        expressions:
-          - req.url.contains('/robots.txt')
-        actions:
-          - type: custom-response
-            config:
-              status_code: 200
-              body: "User-agent: *\r\nDisallow: /"
-              headers:
-                content-type: text/plain
-    ```
+  ]
+}
+```
   </CodeGroup>
