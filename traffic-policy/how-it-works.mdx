@@ -8,11 +8,11 @@ The ngrok Traffic Policy engine enables you to manage traffic consistently acros
 
 Traffic Policy is composed of a few key components:
 
-- [**Phases:**](/traffic-policy/concepts/phases) Defined points in the traffic lifecycle where you can apply logic.
-- [**Phase Rules:**](/traffic-policy/how-it-works#phase-rules) The set of conditions and actions applied during specific phases to filter, manipulate, or manage traffic.
-- [**Expressions:**](/traffic-policy/how-it-works#expressions) Conditions used in Phase Rules to determine when an action should be applied.
-- [**Actions:**](/traffic-policy/how-it-works#actions) Logic that is triggered when a Phase Rule condition is met.
-- [**CEL Interpolation:**](/traffic-policy/how-it-works#cel-interpolation) A way to dynamically evaluate variables and macros inside configuration values, such as URLs or headers.
+- [**Phases:**](#phases) Defined points in the traffic lifecycle where you can apply logic.
+- [**Phase Rules:**](#phase-rules) The set of conditions and actions applied during specific phases to filter, manipulate, or manage traffic.
+- [**Expressions:**](#expressions) Conditions used in Phase Rules to determine when an action should be applied.
+- [**Actions:**](#actions) Logic that is triggered when a Phase Rule condition is met.
+- [**CEL Interpolation:**](#cel-interpolation) A way to dynamically evaluate variables and macros inside configuration values, such as URLs or headers.
 
 By combining these components, Traffic Policy provides a powerful way to control your traffic flow at a fine-grained level.
 
@@ -47,7 +47,7 @@ Some phases are not available on certain protocols. The following table defines 
 
 Each Phase is made up of Phase Rules. Phase Rules allow you to define how traffic is filtered and processed within a phase. To do this each rule consists of two key parts: **expressions** and **actions**.
 
-Here is an example:
+The following example uses an [expression](#expressions) to check if the client IP is `192.168.1.200`, and uses [the `deny` action](/traffic-policy/actions/deny) to deny the connection if it is.
 
 ```yaml
 on_tcp_connect:
@@ -59,11 +59,24 @@ on_tcp_connect:
 
 ## Expressions
 
-Expressions are conditions written in [Common Expression Language (CEL)](https://github.com/google/cel-spec) that can be used to evaluate specific traffic attributes, such as the client IP, request URL, or HTTP method. These conditions determine whether a rule applies to a given traffic flow. For instance, an expression like `conn.client_ip == '192.168.1.200'` targets requests from a specific IP address.
+Expressions are conditions written in Common Expression Language (CEL) that can be used to evaluate specific traffic attributes, such as the client IP, request URL, or HTTP method. These conditions determine whether a rule applies to a given traffic flow. For instance, an expression like `conn.client_ip == '192.168.1.200'` targets requests from a specific IP address.
 
 You can define multiple expressions, which are automatically combined using the `&&` Operator. This means all expressions in the list must evaluate to `true` for the associated rules to run. If no expressions are provided, the system defaults to `true`, ensuring the rule matches all traffic, and the specified actions are executed in sequence.
 
 By combining multiple conditions, you can craft highly specific and flexible rules to manage traffic effectively.
+
+The following example shows how to use expressions and actions together to redirect traffic based on the request URL path.
+
+```yaml Phase Expressions
+on_http_request:
+  - expressions:
+      - req.url.path.startsWith('/api/v1/')
+    actions:
+      - type: redirect
+        config:
+      from: /api/v1/
+          to: /api/v2/
+```
 
 ## Actions
 
@@ -98,7 +111,7 @@ When an action in a Traffic Policy requires a configuration object, some fields 
 
 For example, when using the `add-headers` action, the `headers` field is a key-value map, where the header values can contain CEL expressions. This allows you to use real-time traffic data, such as the client's IP address, to populate header values dynamically.
 
-## How CEL interpolation works
+### How CEL interpolation works
 
 In the context of Traffic Policy actions, CEL expressions can be written within strings using a special syntax: `${expression}`. This tells the system to evaluate the expression at runtime and replace the placeholder with the resulting value.
 
@@ -122,7 +135,7 @@ In this example:
 
 When the rule is executed, the system evaluates the CEL expressions and substitutes the results into the configuration. This allows for highly customizable behavior based on real-time data.
 
-## What can be interpolated?
+### What can be interpolated?
 
 You can use the following inside of CEL interpolated expressions:
 
@@ -131,15 +144,15 @@ You can use the following inside of CEL interpolated expressions:
 
 This dynamic configuration enables Traffic Policies to be tailored based on specific conditions at runtime.
 
-## Why use CEL interpolation?
+### Why use CEL interpolation?
 
 - **Flexibility**: Dynamically adjust action configurations based on traffic, headers, and more.
 - **Power**: Create complex, context-aware behaviors by utilizing real-time data and previous actions.
 - **Efficiency**: Avoid having to manually hard-code values or create separate policies for different traffic scenarios.
 
-## Example use cases
+### Example use cases
 
-### Custom header values
+#### Custom header values
 
 Set headers dynamically based on incoming traffic, such as client IP, request path, or even specific action results.
 
@@ -154,7 +167,7 @@ on_http_request:
             X-User-Agent: "${req.headers['User-Agent'][0]}"
 ```
 
-### Debugging
+#### Debugging
 
 Take the result of an action and set it as metadata on the event stream log for the request or output the response as a custom response to see the result immediately, kind of like `console.log`.
 
