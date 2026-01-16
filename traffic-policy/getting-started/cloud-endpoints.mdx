@@ -1,0 +1,96 @@
+---
+title: Cloud Endpoints with Traffic Policy Quickstart
+sidebarTitle: Cloud Endpoints
+description: Learn how to create Cloud Endpoints with Traffic Policies using the ngrok API for programmatic endpoint management.
+---
+
+[Traffic Policy](/traffic-policy/) enables you to manage traffic to your ngrok endpoints by dynamically implementing logic based on the request before it reaches your upstream services. This guide will teach you how to configure a [Cloud Endpoint](/universal-gateway/cloud-endpoints) with a custom Traffic Policy.
+
+<Tip>
+	This guide walks you through using the ngrok dashboard, which is recommended for most cases. You can also [use the ngrok API](#using-the-api).
+</Tip>
+
+## What you'll need
+
+- An [ngrok account](https://dashboard.ngrok.com/).
+- A [reserved domain](https://dashboard.ngrok.com/domains).
+
+## Using the Dashboard
+
+1. In the ngrok dashboard, select the [Endpoints & Traffic Policy Tab](https://dashboard.ngrok.com/endpoints).
+2. If you already have a Cloud Endpoint to use, select it and move on to the next step. Otherwise, follow these steps to create one.
+	- At the top-right of the page, select [**New Endpoint**](https://dashboard.ngrok.com/endpoints/new). In the modal that appears, select Cloud Endpoint.
+	- In the next step, select the Public binding. In the URL field add the reserved domain you created earlier.
+	- Select Create Endpoint, and you should be taken to that endpoint's page.
+3. After selecting or creating an endpoint, you'll be taken to the endpoint's page, where you can add a Traffic Policy. Add the following yaml to create a basic policy, then select **Save**.
+```yaml title="Example policy"
+on_http_request:
+  - actions:
+      - type: custom-response
+        config:
+          status_code: 200
+          body: "Hello, World!"
+```
+4. After applying the policy, visit your reserved domain. You should see the "Hello, World!" message displayed in your browser.
+
+## Using the API
+
+<Warning>
+	The best way to configure a Traffic Policy on a Cloud Endpoint is to [use the dashboard](#).
+</Warning>
+
+To apply a Traffic Policy to a Cloud Endpoint using the ngrok API, you'll need:
+
+- The [ngrok Agent CLI](https://ngrok.com/download) installed.
+- Your [ngrok API key](https://dashboard.ngrok.com/api-keys).
+
+<Note>
+	These instructions use the ngrok agent CLI to interact with the API. You can also [use the HTTP API](/api-reference/endpoints/create#body-traffic-policy).
+</Note>
+
+### 1. Add your API key to the Agent
+
+Create an [API key on your ngrok dashboard](https://dashboard.ngrok.com/api-keys) and then run the following in your terminal:
+
+```bash
+ngrok config add-api-key <your-api-key>
+```
+
+### 2. Create your Traffic Policy file
+
+Create a file named `policy.yml` with the following contents:
+
+```yaml
+on_http_request:
+  - actions:
+      - type: custom-response
+        config:
+          status_code: 200
+          body: "Hello, World!"
+```
+
+This will be the Traffic Policy used on your Cloud Endpoint to respond to each HTTP request with a simple “Hello, World!” message.
+
+### 3. Create your Cloud Endpoint via the API
+
+Create your Cloud Endpoint via the API by running the following in your terminal (make sure to replace `<your-reserve-domain>` with your reserved domain):
+
+```bash
+ngrok api endpoints create \
+  --url https://<your-reserve-domain> \
+  --traffic-policy "$(<policy.yml)"
+```
+
+### 4. Test it out
+
+Once you have created your Cloud Endpoint you can now open the URL
+in your web browser.
+You should see the "Hello, World!" message displayed in your browser.
+
+## What's next?
+
+To learn more about ngrok's Traffic Policy and its capabilities, check out the following resources:
+
+- Learn [how the Traffic Policy engine works under the hood](/traffic-policy/how-it-works).
+- Check out [the example gallery](/traffic-policy/examples/) to see Traffic Policy in real-world scenarios.
+- The list of [available actions](/traffic-policy/actions/), [macros](/traffic-policy/macros/) and [variables](/traffic-policy/variables/) you can use.
