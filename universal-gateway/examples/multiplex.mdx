@@ -51,57 +51,57 @@ While still viewing your new Cloud Endpoint in the dashboard, copy one of the th
 The choice depends on whether you want to route by hostname/subdomain, header value, or with global variables that are accessed at runtime.
 
 <Tabs>
-	<Tab title="By subdomain">
-		```yaml
-		on_http_request:
-			- actions:
+  <Tab title="By subdomain">
+    ```yaml
+    on_http_request:
+      - actions:
           - type: forward-internal
-						config:
-							url: https://${req.host.split(".$NGROK_DOMAIN")[0]}.internal 
-		```
+            config:
+              url: https://${req.host.split(".$NGROK_DOMAIN")[0]}.internal 
+    ```
 
-    	**What's happening here?**
-    	This policy forwards every HTTP request to one of your internal Agent Endpoints, which in turn forward traffic to your internal services.
-    	The [`split` macro](/traffic-policy/macros/#stringsplit---list) dynamically routes traffic based on the incoming hostname so that the policy forwards requests to the `foo` subdomain to `https://foo.internal`, and so on.
+      **What's happening here?**
+      This policy forwards every HTTP request to one of your internal Agent Endpoints, which in turn forward traffic to your internal services.
+      The [`split` macro](/traffic-policy/macros/#stringsplit---list) dynamically routes traffic based on the incoming hostname so that the policy forwards requests to the `foo` subdomain to `https://foo.internal`, and so on.
     </Tab>
     <Tab title="By header">
-    	```yaml
-    	on_http_request:
-    	  - actions:
-    				- type: forward-internal
-    					config:
-    						url: https://${getReqHeader('x-service')[0]}.internal
-    	```
+      ```yaml
+      on_http_request:
+        - actions:
+            - type: forward-internal
+              config:
+                url: https://${getReqHeader('x-service')[0]}.internal
+      ```
 
-    	**What's happening here?**
-    	This policy forwards every HTTP request to one of your internal Agent Endpoints, which in turn forward traffic to your internal services.
-    	The [`split` macro](/traffic-policy/macros/#stringsplit---list) dynamically routes traffic based on the `x-service` header so that the policy forwards requests with the `x-service: foo` header to `https://foo.internal`, and so on.
+      **What's happening here?**
+      This policy forwards every HTTP request to one of your internal Agent Endpoints, which in turn forward traffic to your internal services.
+      The [`split` macro](/traffic-policy/macros/#stringsplit---list) dynamically routes traffic based on the `x-service` header so that the policy forwards requests with the `x-service: foo` header to `https://foo.internal`, and so on.
     </Tab>
     <Tab title="By allowed subdomains">
-    	```yaml
-    	on_http_request:
-    		- actions:
-    				- type: set-vars
-    					config:
-    						allowed_subdomains:
-    							- user3
-    							- user2
-    							- user1
-    						subdomain: ${getReqHeader('host')[0].split('.', 1)[0]}
-    		- expressions:
-    				- "!(vars.subdomain in vars.allowed_subdomains)"
-    			actions:
-    				- type: custom-response
-    					config:
-    						body: 'Denied.'
-    		- actions:
-    				- type: forward-internal
-    					config:
-    						url: 'http://${vars.subdomain}.internal'
-    	```
-    	**What's happening here?**
-    	This policy first sets a variable `allowed_subdomains` to a list of subdomains that are allowed to access the service.
-    	Then it checks if the incoming request's subdomain is in that list. If not, it returns a custom response with a `Denied` message. If the subdomain is allowed, it forwards the request to the corresponding internal Agent Endpoint.
+      ```yaml
+      on_http_request:
+        - actions:
+            - type: set-vars
+              config:
+                allowed_subdomains:
+                  - user3
+                  - user2
+                  - user1
+                subdomain: ${getReqHeader('host')[0].split('.', 1)[0]}
+        - expressions:
+            - "!(vars.subdomain in vars.allowed_subdomains)"
+          actions:
+            - type: custom-response
+              config:
+                body: 'Denied.'
+        - actions:
+            - type: forward-internal
+              config:
+                url: 'http://${vars.subdomain}.internal'
+      ```
+      **What's happening here?**
+      This policy first sets a variable `allowed_subdomains` to a list of subdomains that are allowed to access the service.
+      Then it checks if the incoming request's subdomain is in that list. If not, it returns a custom response with a `Denied` message. If the subdomain is allowed, it forwards the request to the corresponding internal Agent Endpoint.
     </Tab>
 
     </Tabs>
