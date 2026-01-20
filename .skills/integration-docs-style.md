@@ -14,6 +14,7 @@
 - **List item periods**: All list items in "What you'll need" sections must end with periods
 - **List item capitalization**: All list items must start with a capital letter
 - **Link prerequisites**: When possible, link prerequisites to their install/download pages (e.g., "[Docker Desktop](https://www.docker.com/products/docker-desktop/) installed" not just "Docker Desktop installed")
+- **Combine related technologies**: When listing multiple related technologies, combine them in one list item (e.g., "[Python](url) and [Flask](url) installed" not separate items)
 - **Personal pronouns in prerequisites**: Use "Your" not "The" when referring to user's personal items (e.g., "Your [ngrok authtoken]" not "The [ngrok authtoken]")
 - **Resource sections**: Sections linking to additional resources (e.g., "What's next?", "Further resources") should use unordered lists for linking out to content, but can also include paragraphs
 - **Choose appropriate section name**: Use "What's next?" for next steps, "Further resources" for reference links, or other appropriate names based on context
