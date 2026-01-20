@@ -7,10 +7,13 @@
 - **Descriptive headers**: Section headers should be descriptive, not generic (e.g., "Configure ngrok to expose Home Assistant" not "Add ngrok")
 - **Descriptive headers for content**: Use at least two descriptive headers to break up longer content and organize the guide
 - **Header balance**: Headers should be descriptive but not too wordy - avoid redundant phrases like "log in to your account" when the context is clear
+- **Product names in headers**: Product names like "Python SDK" in headers may need to be added to heading exceptions in linter configs (e.g., Headings.yml)
 - **Prerequisites section**: Use "## What you'll need" as a heading, not plain text "Prerequisites:"
 - **Prerequisites in body**: Never include signup text or prerequisite information in body content - move it to "What you'll need" section
 - **Prerequisites placement**: "What you'll need" section can appear after Note components if the Note provides important context first
 - **List item periods**: All list items in "What you'll need" sections must end with periods
+- **List item capitalization**: All list items must start with a capital letter
+- **Link prerequisites**: When possible, link prerequisites to their install/download pages (e.g., "[Docker Desktop](https://www.docker.com/products/docker-desktop/) installed" not just "Docker Desktop installed")
 - **Personal pronouns in prerequisites**: Use "Your" not "The" when referring to user's personal items (e.g., "Your [ngrok authtoken]" not "The [ngrok authtoken]")
 - **Resource sections**: Sections linking to additional resources (e.g., "What's next?", "Further resources") should use unordered lists for linking out to content, but can also include paragraphs
 - **Choose appropriate section name**: Use "What's next?" for next steps, "Further resources" for reference links, or other appropriate names based on context
@@ -24,6 +27,7 @@
   - Frontmatter (`---`) and components (e.g., `<Tip>`)
   - Code blocks (```) and components
   - Paragraphs and headings
+- **Convert "Tip:" to component**: If you see "Tip:" in plain text, convert it to a `<Tip>` component
 - **File names**: Always in backticks in body content (e.g., `compose.yaml`), never in headers
 - **Addresses/URLs**: Always in backticks in body content (e.g., `localhost:8123`), never in headers
 - **No HTML entities**: Don't use `&mdash;` - use periods and split into separate sentences instead
