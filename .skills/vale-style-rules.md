@@ -2,7 +2,9 @@
 
 This guide helps you quickly resolve Vale warnings and errors in your PRs. Vale is a prose linter that runs automatically on all documentation changes.
 
-NOTE: You may have to prompt an LLM multiple times to apply this skill because it might ignore some issues in its first pass.
+## Important: Verification Required
+
+**For LLMs applying Vale fixes**: You MUST run `pnpm run vale <filename>` against the document you're editing and confirm that there are **0 errors, 0 warnings, and 0 suggestions** before completing your work. Your work as a copyeditor is not done until the Vale command confirms the document is clean. Do not consider the task complete until you have verified this.
 
 ## Running Vale Locally
 
@@ -214,20 +216,3 @@ description: Learn how to get started with ngrok and create your first tunnel.
 
 - ✅ `Traffic Policy`, `Kubernetes Operator`
 - ❌ `traffic policy`, `kubernetes operator`
-
-## Quick Fix Checklist
-
-When Vale flags an issue in your PR:
-
-1. **Read the error/warning message** - It tells you exactly what's wrong
-2. **Check the link** - Vale provides links to style guide references
-3. **Find the pattern above** - Match the error to the fix
-4. **Apply the fix** - Use the examples provided
-5. **Run Vale locally** - Verify the fix with `pnpm run vale`
-6. **Re-submit** - Push your changes and Vale will re-check
-
-## Getting Help
-
-- See the full [Style Guide](style-guide.mdx) for detailed explanations
-- Check the [Vale rules section](style-guide.mdx#vale-rules) in the style guide
-- Reach out to the docs team if you have questions
