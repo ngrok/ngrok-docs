@@ -43,6 +43,10 @@ This project uses [Vale](https://vale.sh/) for documentation linting and style c
 
 Vale checks your docs contributions for style issues (based on the rules the docs team has defined) and provides suggestions for improvements. To ensure your PRs get merged quickly and efficiently, be sure to address any Vale warnings before submitting.
 
+## Style guide
+
+See our [Style Guide](https://ngrok.com/docs/style-guide) for detailed writing guidelines and best practices for ngrok documentation. The style guide covers language preferences, formatting rules, and Vale-specific style rules to help you write consistent, clear documentation.
+
 ## Creating content
 
 When creating content, directories must exist at the root level of the project. To create a page that will exist at the URL path `/example/page1/`, you can create your `.mdx` file at either of the following file paths:
