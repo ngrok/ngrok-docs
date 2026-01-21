@@ -1,10 +1,10 @@
+import { Icon } from "@ngrok/mantle/icon";
 
 export const ActionHub = () => {
 
 const DefaultPhaseValue = "any";
 const DefaultProtocolValue = "any";
-
-
+const DefaultTerminatingValue = "any";
 
 const actions = [
   {
@@ -33,7 +33,8 @@ const actions = [
     name: "Close Connection",
     description: "Close a client's connection to ngrok before it is further processed or tunneled to any of your upstream services.",
     phases: ["on_tcp_connect", "on_http_request"],
-    categories: ["traffic-control"]
+    categories: ["traffic-control"],
+		terminating: true
   },
   {
     type: "compress-response",
@@ -47,14 +48,16 @@ const actions = [
     name: "Custom Response",
     description: "Send a custom HTTP response directly back to the client.",
     phases: ["on_http_request", "on_http_response"],
-    categories: ["response-modification"]
+    categories: ["response-modification"],
+		terminating: true
   },
   {
     type: "deny",
     name: "Deny",
     description: "Deny incoming traffic to your endpoint at the HTTP layer.",
     phases: ["on_http_request", "on_tcp_connect"],
-    categories: ["traffic-control", "connection-modification"]
+    categories: ["traffic-control", "connection-modification"],
+		terminating: true
   },
   {
     type: "forward-internal",
@@ -193,6 +196,9 @@ const actions = [
 
 const Phases = ["on_tcp_connect", "on_http_request", "on_http_response", "on_event_stream_message"];
 
+
+const Terminating = [true, false];
+
 const Protocols = {
 	TCP: ["on_tcp_connect"],
 	HTTP: ["on_http_request", "on_http_response"],
@@ -200,6 +206,7 @@ const Protocols = {
 	const [protocolFilter, setProtocolFilter] = useState(DefaultProtocolValue);
 	const [phaseFilter, setPhaseFilter] = useState(DefaultPhaseValue);
 	const [actionSearch, setActionSearch] = useState("");
+	const [terminatingFilter, setTerminatingFilter] = useState(DefaultTerminatingValue);
 
 	// Map phase to color for badges
 	const phaseColorMap = {
@@ -213,6 +220,7 @@ const Protocols = {
 		setPhaseFilter(DefaultPhaseValue);
 		setProtocolFilter(DefaultProtocolValue);
 		setActionSearch("");
+		setTerminatingFilter(DefaultTerminatingValue);
 	};
 
 	const sortedActions = actions.sort((a, b) => a.type.localeCompare(b.type));
@@ -242,6 +250,12 @@ const Protocols = {
 		);
 	}
 
+	if (terminatingFilter !== DefaultTerminatingValue) {
+		filteredActions = filteredActions.filter((action) =>
+			// Filter by terminating if set
+			terminatingFilter === "any" || action.terminating === terminatingFilter,
+		);
+	}
 
 
 	if (actionSearch) {
@@ -296,6 +310,20 @@ const Protocols = {
 							</option>
 						))}
 					</select>
+
+					<select 
+						className="w-[180px] px-3 py-2 border border-gray-300 rounded-md dark:bg-black dark:text-white max-h-[50%]"
+						value={terminatingFilter}
+						onChange={(e) => setTerminatingFilter(e.target.value)}
+						defaultValue={DefaultTerminatingValue}
+					>
+						<option value={DefaultTerminatingValue}>Terminating/Non-terminating</option>
+						{Terminating.map((terminating) => (
+							<option key={terminating} value={terminating}>
+								{terminating}
+							</option>
+						))}
+					</select>
 				</div>
 			</div>
 
@@ -323,6 +351,12 @@ const Protocols = {
 										</span>
 									);
 								})}
+						</div>
+						{/* This icon should be positioned to the rigght side of the card */}
+						<div className="flex justify-end mt-1">
+							<Tooltip tip={action.terminating ? "This is a terminating action. No actions defined after it will be processed." : "This is a non-terminating action. It cannot be the last action in the chain."}>
+							{action.terminating ? <Icon icon="stop" /> : <Icon icon="play" />}
+							</Tooltip>
 						</div>
 					</Card>
 				))}
