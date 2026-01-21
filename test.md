@@ -1,0 +1,64 @@
+---
+title: Test Document
+---
+
+# Getting Started With Ngrok
+
+This is a test document that violates all Vale rules.We'll look at how to configure things.Let's get started!
+
+## Configure Your API Key.
+
+We recommend using this approach.Our application will receive the request.I think this is the best way to do it.
+
+### Using traffic policies
+
+The user can configure his/her settings.Each developer should update his code.
+
+## Time And Date Examples
+
+The meeting is at 3:00PM on 7/31/2016.The event starts at 9:30am on 31/7/2016.
+
+## List Examples
+
+You can use ngrok, Cloudflare or AWS.The options include red, blue and green.Configure the API, database and cache.
+
+## Dash Examples
+
+The feature is available — check the settings.Use ngrok — it's fast and secure.
+
+## Ellipsis Examples
+
+The dialog shows **Continue...** when ready.Wait for the process to complete...
+
+## Exclamation Examples
+
+This feature is now available!Great news!
+
+## Latin Abbreviations
+
+e.g., you can use this method.i.e., the configuration must be updated.eg, you can use this method.ie, you can use this method.
+
+## Hyphen Examples
+
+The recently-updated feature.A quickly-running process.The newly-created account.
+
+## Optional Plural Examples
+
+The user(s) can configure settings.Select the option(s) you need.
+
+## Acronym Examples
+
+The A.P.I. is available via H.T.T.P.S.The D.N.S. uses the C.L.I.
+
+## Spelling Examples
+
+The feature is organised with a colour centre.The labour is complete.
+
+## ngrok Terms Examples
+
+You can use traffic policy with kubernetes operator.The cloud endpoint uses agent endpoint.
+
+## Sentence Spacing
+
+This is a sentence.  This is another sentence.This is a sentence.This is another sentence.
+
