@@ -196,9 +196,6 @@ const actions = [
 
 const Phases = ["on_tcp_connect", "on_http_request", "on_http_response", "on_event_stream_message"];
 
-
-const Terminating = [true, false];
-
 const Protocols = {
 	TCP: ["on_tcp_connect"],
 	HTTP: ["on_http_request", "on_http_response"],
@@ -253,7 +250,7 @@ const Protocols = {
 	if (terminatingFilter !== DefaultTerminatingValue) {
 		filteredActions = filteredActions.filter((action) =>
 			// Filter by terminating if set
-			terminatingFilter === "any" || action.terminating === terminatingFilter,
+			terminatingFilter === "true" ? action.terminating === true : action.terminating !== true,
 		);
 	}
 
@@ -315,14 +312,10 @@ const Protocols = {
 						className="w-[180px] px-3 py-2 border border-gray-300 rounded-md dark:bg-black dark:text-white max-h-[50%]"
 						value={terminatingFilter}
 						onChange={(e) => setTerminatingFilter(e.target.value)}
-						defaultValue={DefaultTerminatingValue}
 					>
-						<option value={DefaultTerminatingValue}>Terminating/Non-terminating</option>
-						{Terminating.map((terminating) => (
-							<option key={terminating} value={terminating}>
-								{terminating}
-							</option>
-						))}
+						<option value={DefaultTerminatingValue}>All Types</option>
+						<option value="true">Terminating</option>
+						<option value="false">Non-terminating</option>
 					</select>
 				</div>
 			</div>
