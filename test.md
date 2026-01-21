@@ -60,5 +60,4 @@ You can use traffic policy with kubernetes operator.The cloud endpoint uses agen
 
 ## Sentence Spacing
 
-This is a sentence.  This is another sentence.This is a sentence.This is another sentence.
-
+This is a sentence. This is another sentence.This is a sentence.This is another sentence.

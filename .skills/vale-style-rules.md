@@ -9,6 +9,7 @@ Run `pnpm run vale` to check your changes before submitting a PR.
 ## Common Vale Errors (Must Fix)
 
 ### Heading Capitalization
+
 **Error**: "'X' should use sentence-style capitalization."
 
 **Fix**: Use sentence case for headings (h2-h6). Capitalize only the first word and proper nouns.
@@ -22,6 +23,7 @@ Run `pnpm run vale` to check your changes before submitting a PR.
 **Note**: If a product name like "Python SDK" needs to be capitalized in a heading, add it to `.vale/styles/StyleRules/Headings.yml` exceptions list.
 
 ### Sentence Spacing
+
 **Error**: "'X' should have one space."
 
 **Fix**: Use exactly one space after periods, question marks, or exclamation points.
@@ -31,6 +33,7 @@ Run `pnpm run vale` to check your changes before submitting a PR.
 - ❌ `This is a sentence.This is another.` (no space)
 
 ### Dash Spacing
+
 **Error**: "Don't put a space before or after a dash."
 
 **Fix**: No spaces around em dashes (—) or en dashes (–).
@@ -41,6 +44,7 @@ Run `pnpm run vale` to check your changes before submitting a PR.
 - ❌ `Use ngrok — it's fast and secure.`
 
 ### Oxford Comma
+
 **Error**: "Use the Oxford comma in 'X'."
 
 **Fix**: Always use a comma before "and" or "or" in lists of three or more items.
@@ -51,6 +55,7 @@ Run `pnpm run vale` to check your changes before submitting a PR.
 - ❌ `The options include red, blue and green.`
 
 ### Description Required
+
 **Error**: Missing description field.
 
 **Fix**: Every document must have a `description` field in frontmatter (approximately 150 characters, ends with a period).
@@ -65,6 +70,7 @@ description: Learn how to get started with ngrok and create your first tunnel.
 ## Common Vale Warnings (Should Fix)
 
 ### First-Person Pronouns
+
 **Warning**: "Avoid first-person pronouns such as 'X'—speak to 'you' the reader instead."
 
 **Fix**: Replace first-person pronouns (I, me, my, mine, we, our, us, let's) with "you" or imperative mood.
@@ -79,6 +85,7 @@ description: Learn how to get started with ngrok and create your first tunnel.
 **Exceptions**: "Let's Encrypt" and "US" are allowed.
 
 ### Time Format (AM/PM)
+
 **Warning**: Incorrect AM/PM format.
 
 **Fix**: Use "AM" or "PM" with a space before it, uppercase, no periods.
@@ -91,6 +98,7 @@ description: Learn how to get started with ngrok and create your first tunnel.
 - ❌ `9:30 a.m.`
 
 ### Date Format
+
 **Warning**: Incorrect date format.
 
 **Fix**: Use "Month Day, Year" format.
@@ -103,6 +111,7 @@ description: Learn how to get started with ngrok and create your first tunnel.
 - ❌ `31 July 2016`
 
 ### Ellipses
+
 **Warning**: Using three periods instead of ellipsis character.
 
 **Fix**: Use the single-character ellipsis (`…`) instead of three periods (`...`).
@@ -112,6 +121,7 @@ description: Learn how to get started with ngrok and create your first tunnel.
 - ❌ `Wait for the process to complete...`
 
 ### Exclamation Points
+
 **Warning**: Exclamation point usage.
 
 **Fix**: Don't use exclamation points in documentation. Keep tone professional.
@@ -120,6 +130,7 @@ description: Learn how to get started with ngrok and create your first tunnel.
 - ❌ `This feature is now available!`
 
 ### Gender-Neutral Pronouns
+
 **Warning**: Gender-specific pronouns detected.
 
 **Fix**: Use gender-neutral pronouns (they, them, their) instead of he/she or s/he.
@@ -129,6 +140,7 @@ description: Learn how to get started with ngrok and create your first tunnel.
 - ❌ `The user can configure his/her settings.`
 
 ### Heading Punctuation
+
 **Warning**: Period at end of heading.
 
 **Fix**: Don't put periods at the end of headings.
@@ -137,6 +149,7 @@ description: Learn how to get started with ngrok and create your first tunnel.
 - ❌ `## Getting started.`
 
 ### Latin Abbreviations
+
 **Warning**: Latin abbreviation detected.
 
 **Fix**: Replace with plain English.
@@ -147,6 +160,7 @@ description: Learn how to get started with ngrok and create your first tunnel.
 - ❌ `i.e., the configuration must be updated.`
 
 ### Hyphens After -ly Words
+
 **Warning**: Hyphen after -ly word.
 
 **Fix**: Don't use hyphens after words ending in "-ly".
@@ -157,6 +171,7 @@ description: Learn how to get started with ngrok and create your first tunnel.
 - ❌ `A quickly-running process`
 
 ### Optional Plurals
+
 **Warning**: Optional plural in parentheses.
 
 **Fix**: Choose either singular or plural based on context.
@@ -166,6 +181,7 @@ description: Learn how to get started with ngrok and create your first tunnel.
 - ❌ `The user(s) can configure settings.`
 
 ### Periods with Acronyms
+
 **Warning**: Periods used with acronyms.
 
 **Fix**: Don't use periods with acronyms or initialisms.
@@ -174,6 +190,7 @@ description: Learn how to get started with ngrok and create your first tunnel.
 - ❌ `A.P.I.`, `H.T.T.P.`, `H.T.T.P.S.`, `D.N.S.`, `C.L.I.`
 
 ### American Spelling
+
 **Warning**: British spelling detected.
 
 **Fix**: Use American spelling.
@@ -182,9 +199,11 @@ description: Learn how to get started with ngrok and create your first tunnel.
 - ❌ `organised`, `colour`, `centre`, `labour`
 
 ### Capitalize ngrok-Specific Terms
+
 **Warning**: ngrok-specific term not capitalized.
 
 **Fix**: Always capitalize these terms:
+
 - Traffic Policy
 - Kubernetes Operator
 - Traffic Inspector
@@ -210,4 +229,3 @@ When Vale flags an issue in your PR:
 - See the full [Style Guide](style-guide.mdx) for detailed explanations
 - Check the [Vale rules section](style-guide.mdx#vale-rules) in the style guide
 - Reach out to the docs team if you have questions
-
