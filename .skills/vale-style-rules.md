@@ -2,6 +2,8 @@
 
 This guide helps you quickly resolve Vale warnings and errors in your PRs. Vale is a prose linter that runs automatically on all documentation changes.
 
+NOTE: You may have to prompt an LLM multiple times to apply this skill because it might ignore some issues in its first pass.
+
 ## Running Vale Locally
 
 Run `pnpm run vale` to check your changes before submitting a PR.
