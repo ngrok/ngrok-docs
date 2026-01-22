@@ -64,7 +64,8 @@ const actions = [
     name: "Forward Internal",
     description: "Forward traffic to an internal endpoint within the same ngrok account.",
     phases: ["on_http_request", "on_tcp_connect"],
-    categories: ["traffic-control", "connection-modification"]
+    categories: ["traffic-control", "connection-modification"],
+		terminating: true
   },
   {
     type: "http-request",
