@@ -1,0 +1,118 @@
+---
+title: Agent Endpoints with Traffic Policy Quickstart
+sidebarTitle: Agent Endpoints
+description: Learn how to set up an Agent Endpoint with a custom Traffic Policy.
+---
+
+[Traffic Policy](/traffic-policy/) enables you to manage traffic to your ngrok endpoints by dynamically implementing logic based on the request before it reaches your upstream services. This guide will teach you how to configure an [Agent Endpoint](/universal-gateway/agent-endpoints) with a custom Traffic Policy using the [ngrok Agent CLI](/agent/cli/).
+
+There are two ways to define your Traffic Policy:
+
+- You can create a yaml or json file and manually apply it to specific endpoints when you start them. This approach is best when you want to apply a different Traffic Policy to each endpoint.
+- You can edit your [Agent Configuration File](/agent/config/). This file applies to all endpoints you start with the agent CLI by default. Choose this approach to set up traffic management logic for all endpoints running locally on your machine.
+
+This guide will demonstrate both approaches. If you don't know which to choose, follow the instructions for using a separate policy file.
+
+## What you'll need
+
+- An [ngrok account](https://dashboard.ngrok.com/).
+- The [ngrok Agent CLI](https://ngrok.com/download) installed.
+
+## 1. Set up your Traffic Policy
+
+<Tabs>
+
+<Tab title="Using a separate policy file">
+Create a custom Traffic Policy file with the following contents:
+
+```yaml
+on_http_request:
+  - actions:
+      - type: custom-response
+        config:
+          status_code: 200
+          body: "Hello, World!"
+```
+
+This policy will respond to each HTTP request with a simple “Hello, World!” message.
+
+</Tab>
+<Tab title="Using the Agent Configuration File">
+
+
+<Note>
+
+Your configuration file `version` [must be set to `3`](/agent/config/v3).
+
+</Note>
+
+Enter the following command into your terminal:
+
+```bash
+ngrok config edit
+```
+
+In your configuration file, add the following content to the bottom and save the file:
+
+```yaml
+endpoints:
+  - name: my-agent-endpoint
+    description: My first Agent Endpoint with a Traffic Policy
+    upstream:
+      url: 80
+    traffic_policy:
+      on_http_request:
+        - actions:
+            - type: custom-response
+              config:
+                status_code: 200
+                body: Hello, World!
+```
+
+This policy will respond to each HTTP request with “Hello, World!"
+
+</Tab>
+</Tabs>
+
+## 2. Start your endpoint
+
+<Tabs>
+
+<Tab title="Using a separate policy file">
+
+Run the agent, applying the Traffic Policy you saved in the previous step with the `--traffic-policy-file` flag:
+
+```bash
+$ ngrok http 80 --traffic-policy-file policy.yml
+```
+
+This command starts an HTTP tunnel for port `80`, using the specified `policy.yml` Traffic Policy to manage traffic.
+
+</Tab>
+<Tab title="Using the Agent Configuration File">
+
+Start your Agent Endpoint by running the following command:
+
+```bash
+ngrok start my-agent-endpoint
+```
+
+This command will start an HTTP tunnel for port `80`, using the specified Traffic Policy in the config file to manage traffic.
+
+</Tab>
+</Tabs>
+
+## 3. Test it out
+
+After running the ngrok command in the previous step you should now see a URL in the forwarding section. Open the URL
+in your web browser. You should see the "Hello, World!" message displayed in your browser.
+
+## What's next?
+
+You've now successfully set up your first Agent Endpoint with a custom Traffic Policy using the ngrok agent.
+
+To learn more about ngrok's Traffic Policy and its capabilities, check out the following resources:
+
+- Learn [how the Traffic Policy engine works under the hood](/traffic-policy/how-it-works).
+- Check out [the example gallery](/traffic-policy/examples/) to see Traffic Policy in real-world scenarios.
+- The list of [available actions](/traffic-policy/actions/), [macros](/traffic-policy/macros/) and [variables](/traffic-policy/variables/) you can use.

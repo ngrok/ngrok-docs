@@ -1,0 +1,215 @@
+---
+title: How Traffic Policy Works
+sidebarTitle: How It Works
+description: Learn how ngrok's Traffic Policy engine works under the hood.
+---
+
+The ngrok Traffic Policy engine enables you to manage traffic consistently across your endpoints by allowing you to inspect, manipulate, and route traffic in a structured way.
+
+Traffic Policy is composed of a few key components:
+
+- [**Phases:**](#phases) Defined points in the traffic lifecycle where you can apply logic.
+- [**Phase Rules:**](#phase-rules) The set of conditions and actions applied during specific phases to filter, manipulate, or manage traffic.
+- [**Expressions:**](#expressions) Conditions used in Phase Rules to determine when an action should be applied.
+- [**Actions:**](#actions) Logic that is triggered when a Phase Rule condition is met.
+- [**CEL Interpolation:**](#cel-interpolation) A way to dynamically evaluate variables and macros inside configuration values, such as URLs or headers.
+
+By combining these components, Traffic Policy provides a powerful way to control your traffic flow at a fine-grained level.
+
+## Phases
+
+In Traffic Policy, a phase represents a distinct point in the lifecycle of a request as it moves through an ngrok endpoint. Phases allow you to inspect, process, and manage traffic at key moments.
+
+### `on_tcp_connect`
+
+The first phase in the traffic lifecycle. This phase is triggered when a new TCP connection is established. It provides an opportunity to allow, reject, or manipulate connections before any higher-level protocol processing begins. This phase is present in all traffic to the endpoint.
+
+### `on_http_request`
+
+Activated when ngrok receives an HTTP request over an established connection. This phase provides access to the request's details (for example, headers, method, path) as variables and is ideal for actions like forwarding traffic, rewriting paths, or applying authentication and rate limits.
+
+### `on_http_response`
+
+Triggered after ngrok receives a response from the upstream service. This phase allows you to modify the response before it is sent to the client, such as by adding headers, changing status codes, or transforming the response body.
+
+### Phases available by protocol
+
+Some phases are not available on certain protocols. The following table defines the availability by protocol:
+
+| Protocol  | `on_tcp_connect` | `on_http_request` | `on_http_response` |
+| --------- | -------------- | --------------- | ---------------- |
+| **HTTPS** | ✅             | ✅              | ✅               |
+| **HTTP**  | ✅             | ✅              | ✅               |
+| **TLS**   | ✅             | ❌              | ❌               |
+| **TCP**   | ✅             | ❌              | ❌               |
+
+## Phase Rules
+
+Each Phase is made up of Phase Rules. Phase Rules allow you to define how traffic is filtered and processed within a phase. To do this each rule consists of two key parts: **expressions** and **actions**.
+
+The following example uses an [expression](#expressions) to check if the client IP is `192.168.1.200`, and uses [the `deny` action](/traffic-policy/actions/deny) to deny the connection if it is.
+
+```yaml
+on_tcp_connect:
+  - expressions:
+      - conn.client_ip == '192.168.1.200'
+    actions:
+      - type: deny
+```
+
+## Expressions
+
+Expressions are conditions written in Common Expression Language (CEL) that can be used to evaluate specific traffic attributes, such as the client IP, request URL, or HTTP method. These conditions determine whether a rule applies to a given traffic flow. For instance, an expression like `conn.client_ip == '192.168.1.200'` targets requests from a specific IP address.
+
+You can define multiple expressions, which are automatically combined using the `&&` Operator. This means all expressions in the list must evaluate to `true` for the associated rules to run. If no expressions are provided, the system defaults to `true`, ensuring the rule matches all traffic, and the specified actions are executed in sequence.
+
+By combining multiple conditions, you can craft highly specific and flexible rules to manage traffic effectively.
+
+The following example shows how to use expressions and actions together to redirect traffic based on the request URL path.
+
+```yaml Phase Expressions
+on_http_request:
+  - expressions:
+      - req.url.path.startsWith('/api/v1/')
+    actions:
+      - type: redirect
+        config:
+      from: /api/v1/
+          to: /api/v2/
+```
+
+<Tip>
+See the [Expression Examples](/traffic-policy/concepts/expressions) documentation to explore expressions across different use cases.
+</Tip>
+
+## Actions
+
+Actions define the behavior that is applied when the expressions evaluate to true. Each action specifies a particular operation to be applied, such as denying traffic, modifying headers, or redirecting requests. Actions are executed sequentially as defined in the policy, but note that some actions can short-circuit the request and return without executing subsequent actions.
+
+For example, the following action denies traffic and returns a `404` HTTP status code:
+
+```yaml
+on_http_request:
+  - actions:
+      - type: "deny"
+        config:
+          status_code: 404
+```
+
+For a full list of actions, check out the [Action Hub](/traffic-policy/actions/).
+
+### Non-terminating actions
+
+Some Actions can short-circuit a request and immediately return a response. These are called **terminating actions**. **Non-terminating actions** do not return a response, but instead go to the next Action in the chain. All **Cloud Endpoint** Traffic Policies must end with a terminating action. This requirement does not apply to **Agent Endpoints**.
+
+The list of terminating Traffic Policy Actions includes:
+- [`close-connection`](/traffic-policy/actions/close-connection)
+- [`custom-response`](/traffic-policy/actions/custom-response)
+- [`deny`](/traffic-policy/actions/deny)
+- [`forward-internal`](/traffic-policy/actions/forward-internal)
+
+## Chaining rules and priority
+
+Multiple rules can be defined within a single phase. Rules are evaluated in the order they are defined, and their execution depends on the type of actions taken. For example:
+
+- Some actions (for example, `deny`) immediately stop further rule evaluation.
+- Others (for example, `url-rewrite`) allow subsequent rules to apply.
+
+This flexibility enables layered and powerful Traffic Policies.
+
+## CEL Interpolation
+
+**CEL Interpolation** allows you to write dynamic configurations for Traffic Policy actions. It enables expressions to be embedded within string fields of a configuration object, making the Traffic Policy system more flexible and powerful.
+
+When an action in a Traffic Policy requires a configuration object, some fields allow CEL expressions to be interpolated directly into strings. This means that you can define dynamic values that are computed based on traffic, connection, or previously executed action variables.
+
+For example, when using the `add-headers` action, the `headers` field is a key-value map, where the header values can contain CEL expressions. This allows you to use real-time traffic data, such as the client's IP address, to populate header values dynamically.
+
+### How CEL interpolation works
+
+In the context of Traffic Policy actions, CEL expressions can be written within strings using a special syntax: `${expression}`. This tells the system to evaluate the expression at runtime and replace the placeholder with the resulting value.
+
+For example, consider the following configuration for the `add-headers` action:
+
+```yaml
+on_http_request:
+  - name: CEL Interpolation Example
+    actions:
+      - type: add-headers
+        config:
+          headers:
+            X-Client-IP: "${conn.client_ip}"
+            X-Request-Path: "${req.url.path}"
+```
+
+In this example:
+
+- The header `X-Client-IP` is set to the value of the client's IP address (`conn.client_ip`).
+- The header `X-Request-Path` dynamically reflects the path of the incoming request (`req.url.path`).
+
+When the rule is executed, the system evaluates the CEL expressions and substitutes the results into the configuration. This allows for highly customizable behavior based on real-time data.
+
+### What can be interpolated?
+
+You can use the following inside of CEL interpolated expressions:
+
+- [Variables](/traffic-policy/variables/) (including action variables)
+- [Macros](/traffic-policy/macros/)
+
+This dynamic configuration enables Traffic Policies to be tailored based on specific conditions at runtime.
+
+### Why use CEL interpolation?
+
+- **Flexibility**: Dynamically adjust action configurations based on traffic, headers, and more.
+- **Power**: Create complex, context-aware behaviors by utilizing real-time data and previous actions.
+- **Efficiency**: Avoid having to manually hard-code values or create separate policies for different traffic scenarios.
+
+### Example use cases
+
+#### Custom header values
+
+Set headers dynamically based on incoming traffic, such as client IP, request path, or even specific action results.
+
+```yaml
+on_http_request:
+  - name: CEL Interpolation Example
+    actions:
+      - type: add-headers
+        config:
+          headers:
+            X-Country-Code: "${conn.geo.country_code}"
+            X-User-Agent: "${req.headers['User-Agent'][0]}"
+```
+
+#### Debugging
+
+Take the result of an action and set it as metadata on the event stream log for the request or output the response as a custom response to see the result immediately, kind of like `console.log`.
+
+```yaml
+on_http_request:
+  - actions:
+      - type: "restrict-ips"
+        config:
+          enforce: false
+          ip_policies:
+            - "ipp_2p2q5Yt85IKQQ7zbpR4XmUpyVIN"
+      - type: "log"
+        config:
+          metadata:
+            message: "Restrict IPs action would be ${actions.ngrok.restrict_ips.action} for ${conn.client_ip}."
+            matched_cidr: "${actions.ngrok.restrict_ips.matched_cidr}"
+            error_code: "${actions.ngrok.restrict_ips.error.code}"
+            error_message: "${actions.ngrok.restrict_ips.error.message}"
+      - type: "custom-response"
+        config:
+          status_code: 403
+          body: "Restrict IPs action would be ${actions.ngrok.restrict_ips.action} for ${conn.client_ip}. The matched CIDR is ${actions.ngrok.restrict_ips.matched_cidr}. Your error code is ${actions.ngrok.restrict_ips.error.code} and the error message is the following: ${actions.ngrok.restrict_ips.error.message}"
+          headers:
+            content-type: "text/html"
+```
+
+## What's next?
+
+- [Create your first Traffic Policy](/traffic-policy/getting-started/agent-endpoints/) to start managing your traffic.
+- Explore [the Traffic Policy Action Hub](/traffic-policy/actions/) to see all the Actions available to you.
+- Explore [practical examples](/traffic-policy/examples/) to see Traffic Policies in action.
