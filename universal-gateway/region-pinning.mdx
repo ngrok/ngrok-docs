@@ -43,7 +43,7 @@ You can do this through the API or the dashboard, both described below.
 ### Using the API
 
 When using the API, set up region pinning by defining which PoPs or region aliases should serve your requests. 
-Add the `ips` property when creating or modifying a domain.
+Add the `resolves_to` property when creating or modifying a domain.
 
 The sections that follow describe how to create, update, and un-pin a domain in detail.
 
@@ -51,7 +51,7 @@ The sections that follow describe how to create, update, and un-pin a domain in 
 
 Use the [`POST /reserved_domains` endpoint](/api-reference/reserveddomains/create).
 
-Add a list of `ips` that are allowed to resolve your requests, which can be a set of ngrok physical PoPs (like "Frankfurt" or "California"), [dedicated IPs](#dedicated-ips-preview), or both. 
+Add a list of `resolves_to` that are allowed to resolve your requests, which can be a set of ngrok physical PoPs (like "Frankfurt" or "California"), [dedicated IPs](#dedicated-ips-preview), or both. 
 
 ```json
 curl --request POST \
@@ -66,7 +66,7 @@ curl --request POST \
       "authority": "letsencrypt",
       "private_key_type": "ecdsa"
     },
-    "ips": [
+    "resolves_to": [
       { "value": "us-ohio-1"},  
       { "value": "de-fra-1"}
     ]
@@ -75,7 +75,7 @@ curl --request POST \
 
 #### Update an existing domain
 
-You can update existing domains to add or remove region pinning, or modify your set of pinned regions, using the `ips` property.
+You can update existing domains to add or remove region pinning, or modify your set of pinned regions, using the `resolves_to` property.
 No DNS changes are required.
 
 Use `PATCH` to [update the list of pinned regions](/api-reference/reserveddomains/update).
@@ -93,7 +93,7 @@ curl --request PATCH \
       "authority": "letsencrypt",
       "private_key_type": "ecdsa"
     },
-    "ips": [
+    "resolves_to": [
       { "value": "us-ohio-1"},  
       { "value": "de-fra-1"}
     ]
@@ -104,7 +104,7 @@ curl --request PATCH \
 
 You can un-pin a domain, which changes it back to the default global routing behavior using the best available PoP. 
 
-To do this, set the `ips` property to an empty list `[]`, or to the region alias `global`.
+To do this, set the `resolves_to` property to an empty list `[]`, or to the region alias `global`.
 
 1. Remove pinned regions by setting an empty list:
 
@@ -116,7 +116,7 @@ curl --request PATCH \
  --header "Content-Type: application/json" \
  --header "ngrok-version: 2" \
  --data '{
-   "ips": [] 
+   "resolves_to": [] 
  }'  
 ```
 
@@ -126,7 +126,7 @@ curl --request PATCH \
 # Only change the last property. The rest is the same as in the previous example.
 
  --data '{
-   "ips": [
+   "resolves_to": [
      { "value": "global" }
    ]
  }'  
@@ -173,16 +173,16 @@ When a domain uses dedicated IPs, you can create matching endpoints on any inbou
 
 ### How to use dedicated IPs
 
-Dedicated IPs and region pinning share the same `ips` field on the domain:
+Dedicated IPs and region pinning share the same `resolves_to` field on the domain:
 
-- Region pinning: `ips: [{ "value": "<region-code>" }]`
-- Dedicated IPs: `ips: [{ "value": "<ip-address>" }]`
+- Region pinning: `resolves_to: [{ "value": "<region-code>" }]`
+- Dedicated IPs: `resolves_to: [{ "value": "<ip-address>" }]`
 
 You can include both, as shown in the example below.
 
 ```json
 {
-  "ips": [
+  "resolves_to": [
     { "value": "us-ohio-1" },
     { "value": "203.0.113.10" }
   ]
@@ -197,9 +197,9 @@ You can include both, as shown in the example below.
 - Region pinning: no. In this preview, region pinning applies to HTTP/HTTPS matching endpoints. TCP uses [reserved addresses](/api-reference/reservedaddrs), which already include a region.
 - Dedicated IPs: yes, dedicated IPs are available for any [ngrok-supported protocol](/universal-gateway/protocols), including HTTP/S, TCP, and TLS.
 
-### What happens if the `ips` field isn't added when creating a domain?
+### What happens if the `resolves_to` field isn't added when creating a domain?
 
-If the `ips` field is not added when creating a domain, it defaults back to standard global routing, where traffic is automatically routed through the best option from ngrok's physical PoPs. 
+If the `resolves_to` field is not added when creating a domain, it defaults back to standard global routing, where traffic is automatically routed through the best option from ngrok's physical PoPs. 
 This is the baseline behavior for domains, and is used by the vast majority of customers. 
 
 ### Is it necessary to specify every region manually?
@@ -210,7 +210,7 @@ ngrok may add other aliases such as `european_union` or `united_states`, dependi
 
 ## Points of presence reference
 
-The `ips` parameter uses the following PoP names:
+The `resolves_to` parameter uses the following PoP names:
 
 | **Geographical region** | **Location** | **Code (to use in API)** |
 | --- | --- | --- |
