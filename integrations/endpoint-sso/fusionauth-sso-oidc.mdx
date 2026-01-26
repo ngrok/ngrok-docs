@@ -1,7 +1,7 @@
 ---
 title: FusionAuth Endpoint SSO (OpenID Connect)
 sidebarTitle: FusionAuth (OpenID Connect)
-description: Use FusionAuth SSO to secure access to ngrok endpoints.
+description: Use FusionAuth single sign-on (SSO) to secure access to ngrok endpoints.
 ---
 
 import Disclaimer from "/snippets/integrations/_endpoint-sso-disclaimer.mdx";
@@ -12,39 +12,35 @@ import Disclaimer from "/snippets/integrations/_endpoint-sso-disclaimer.mdx";
 
 
 
-To secure access to ngrok with FusionAuth Single Sign-On using OpenID Connect:
+To secure access to ngrok with FusionAuth single sign-on (SSO) using OpenID Connect:
 
 1. [Configure FusionAuth SSO](#configure-FusionAuth)
-1. [Configure ngrok](#configure-ngrok)
-1. [Test access to ngrok with FusionAuth SSO](#test-sso)
+2. [Configure ngrok](#configure-ngrok)
+3. [Test access to ngrok with FusionAuth SSO](#test-sso)
 </Tip>
 
-This article details how to configure FusionAuth as the primary Identity Provider for ngrok tunnels.
+This guide explains how to configure FusionAuth as the primary Identity Provider for ngrok tunnels using single sign-on (SSO).
 By integrating FusionAuth SSO with ngrok, you can:
 
-- **Restrict access to ngrok tunnels** only to users authenticated via FusionAuth
-- **Use FusionAuth Premium Features and Login Methods**—including Advanced Registration Forms, Passwordless Login, WebAuthn, **and Advanced Threat Detection to control access to ngrok tunnels**.
+- Restrict access to ngrok tunnels only to users authenticated via FusionAuth
+- Use FusionAuth Premium Features and Login Methods—including Advanced Registration Forms, Passwordless Login, WebAuthn, and Advanced Threat Detection to control access to ngrok tunnels
 
-## Supported features
+The ngrok integration with FusionAuth supports OIDC-based SSO.
+In this mode, users access ngrok edges and tunnels and are redirected to FusionAuth for authentication.
 
-The ngrok integration with FusionAuth supports:
+## What you'll need
 
-- **OIDC based SSO**: In this mode, users access ngrok edges and tunnels and are redirected to FusionAuth for authentication.
-
-## Requirements
-
-To configure ngrok tunnels with FusionAuth, you must have:
-
-- A public facing FusionAuth instance. You can spin up a basic [FusionAuth Cloud instance](https://fusionauth.io/pricing) or [install it on any server](https://fusionauth.io/docs/v1/tech/installation-guide/).
-- An [ngrok Enterprise Account](https://ngrok.com/pricing) with an authtoken or admin access to configure edges with OpenID Connect.
-- A local web app or application that needs to be protected by Fusion Auth.
+- A public facing FusionAuth instance.
+You can spin up a basic [FusionAuth Cloud instance](https://fusionauth.io/pricing) or [install it on any server](https://fusionauth.io/docs/v1/tech/installation-guide/).
+- An ngrok Enterprise account with an authtoken or admin access to configure edges with OpenID Connect.
+- A local web app or application that needs to be protected by FusionAuth.
 
 ## Configuration steps
 
-To integrate ngrok with FusionAuth SSO, you will need to:
+To integrate ngrok with FusionAuth SSO, you need to:
 
-1. Configure FusionAuth with the ngrok app
-1. Configure ngrok with the SSO settings provided by FusionAuth
+1. Configure FusionAuth with the ngrok app.
+2. Configure ngrok with the SSO settings provided by FusionAuth.
 
 ## 1. Configure FusionAuth 
 
@@ -62,7 +58,7 @@ To integrate ngrok with FusionAuth SSO, you will need to:
 
 ## 2. Configure ngrok 
 
-ngrok can leverage FusionAuth SSO in two ways:
+ngrok can use FusionAuth SSO in two ways:
 
 - From the ngrok CLI (using the `--oidc` parameter)
 - From the ngrok dashboard
@@ -73,8 +69,9 @@ ngrok can leverage FusionAuth SSO in two ways:
 This tutorial assumes you have an app running locally (for example, on `localhost:3000`) with the ngrok client installed.
 </Note>
 
-1. Launch a terminal
-1. Enter the following command to launch an ngrok tunnel with FusionAuth SSO. Replace `<FusionAuth_url>` with your FusionAuth org address (that is, https://acme.fusionauth.com) and the `<FusionAuth_client_id>` and `<FusionAuth_client_secret>` with the respective values copied from the ngrok app registered at FusionAuth:
+1. Launch a terminal.
+2. Enter the following command to launch an ngrok tunnel with FusionAuth SSO.
+Replace `<FusionAuth_url>` with your FusionAuth org address (for example, `https://acme.fusionauth.com`) and the `<FusionAuth_client_id>` and `<FusionAuth_client_secret>` with the respective values copied from the ngrok app registered at FusionAuth:
 
    ```bash
    ngrok http 3000 --oidc <FusionAuth_url> \
@@ -83,55 +80,50 @@ This tutorial assumes you have an app running locally (for example, on `localhos
    --url fusionauth-sso-test.ngrok.dev
    ```
 
-1. Skip to **Step 3**
+3. Skip to **Step 3**.
 
 ### **Option 2**: ngrok edge
 
 To configure an edge with FusionAuth:
 
 1. Go to dashboard.ngrok.com.
-1. Click **Universal Gateway** > **Edges**
-1. If you don't have an edge already set to add FusionAuth SSO, create a test edge:
-   - Click **New Edge**
-   - Click **HTTPS Edge**
-   - Click the **pencil icon** next to "no description". Enter _Edge with FusionAuth SSO_ as the edge name and click **Save**.
-1. On the edge settings, click **OIDC**.
-1. Click **Begin setup** and enter the following:
+2. Click **Universal Gateway > Edges**.
+3. If you don't have an edge already set to add FusionAuth SSO, create a test edge:
+   - Click **New Edge**.
+   - Click **HTTPS Edge**.
+   - Click the **pencil icon** next to "no description".
+   Enter `Edge with FusionAuth SSO` as the edge name and click **Save**.
+4. On the edge settings, click **OIDC**.
+5. Click **Begin setup** and enter the following:
+   - **Issuer URL**: Your FusionAuth tenant URL (for example, `https://acme.fusionauth.com`).
+   - **Client ID**: The client ID copied from FusionAuth.
+   - **Client Secret**: The client secret copied from FusionAuth.
+6. Click **Save**.
+7. Launch a tunnel connected to your FusionAuth edge:
 
-   ![FusionAuth config in ngrok](../img/fusionauth/ngrok-edge.png)
-   - **Issuer URL**: Your FusionAuth tenant URL (that is, https://acme.fusionauth.com).
-   - **Client ID**: The client id copied from FusionAuth
-   - **Client Secret**: The client secret copied from FusionAuth
+   <Note>
+   This step assumes you have an app running locally (for example, on `localhost:3000`) with the ngrok client installed.
+   </Note>
 
-1. Click **Save**.
+8. Click **Start a tunnel**.
+9. Click the **copy icon** next to the tunnel command.
+10. Launch a tunnel:
+    - Launch a terminal.
+    - Paste the command.
+    Replace `http://localhost:80` with your local web app address (such as `http://localhost:3000`).
+    - Press **Enter**.
+    An ngrok tunnel associated with your edge configuration will launch.
+11. To confirm that the tunnel is connected to your edge:
+    - Return to the ngrok dashboard.
+    - Close the **Start a tunnel** and the **Tunnel group** tabs.
+    - Refresh the test edge page.
+    Under traffic, you will see the message _You have 1 tunnel online. Start additional tunnels to begin load balancing_.
+12. In the **Endpoints** section, copy the **endpoint URL**.
+You will use this URL to test the FusionAuth authentication.
 
-1. Launch a tunnel connected to your FusionAuth edge:
-<Note>
-This step assumes you have an app running locally (for example, on `localhost:3000`) with the ngrok client installed.
-</Note>
-
-1. Click **Start a tunnel**.
-1. Click the **copy icon** next to the tunnel command.
-
-    ![tunnel config](../img/fusionauth/fa-2.png)
-
-1. Launch a tunnel:
-    - Launch a terminal
-    - Paste the command. Replace `http://localhost:80` with your local web app addess (such as `http://localhost:3000`)
-    - hit **Enter**. an ngrok tunnel associated to your edge configuration is launched.
-1. To confirm that the tunnel is connected to your edge:
-    - Return to the ngrok dashboard
-    - Close the **Start a tunnel** and the **Tunnel group** tabs
-    - Refresh the test edge page. Under traffic, You will see the message _You have 1 tunnel online. Start additional tunnels to begin load balancing_
-
-    ![tunnel confirmed](../img/fusionauth/fa-3.png)
-
-1. In the **Endpoints** section, copy the **endpoint URL**. (you will use this URL to test the FusionAuth Authentication)
-    ![tunnel url](../img/fusionauth/ngrok-url.png)
-
-## 3. Test the integration 
+## 3. Test the integration
 
 1. In your browser, launch an incognito window.
-1. Access your ngrok tunnel (for example, https://fusionauth-sso-test.ngrok.app or using a copied URL).
-1. You should be prompted to log in with your FusionAuth credentials.
-1. After login, you should be able to see your web app.
+2. Access your ngrok tunnel (for example, `https://fusionauth-sso-test.ngrok.app` or using a copied URL).
+3. You should be prompted to log in with your FusionAuth credentials.
+4. After logging in, you should be able to see your web app.
