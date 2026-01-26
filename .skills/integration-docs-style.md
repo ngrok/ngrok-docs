@@ -4,6 +4,7 @@
 
 - **Intro paragraph**: Add an intro paragraph below the Tip (or after frontmatter if no Tip) but above the first h2 that briefly explains the guide's purpose
 - **No future tense in intros**: Use present tense in intro paragraphs (e.g., "It covers setting up..." not "You'll set up...")
+- **Vary intro phrasing**: Vary the phrasing in intro paragraphs across different docs - avoid using the exact same phrasing like "This guide covers configuring" repeatedly. Use alternatives like "This guide shows you how to configure...", "This guide explains how to configure...", "This guide walks you through configuring...", or other variations
 - **Descriptive headers**: Section headers should be descriptive, not generic (e.g., "Configure ngrok to expose Home Assistant" not "Add ngrok")
 - **Descriptive headers for content**: Use at least two descriptive headers to break up longer content and organize the guide
 - **Header balance**: Headers should be descriptive but not too wordy - avoid redundant phrases like "log in to your account" when the context is clear
@@ -11,7 +12,7 @@
 - **Prerequisites section**: Use "## What you'll need" as a heading, not plain text "Prerequisites:"
 - **Prerequisites in body**: Never include signup text or prerequisite information in body content - move it to "What you'll need" section
 - **Prerequisites placement**: "What you'll need" section can appear after Note components if the Note provides important context first
-- **List item periods**: All list items in "What you'll need" sections must end with periods
+- **List item periods in prerequisites**: All list items in "What you'll need" sections must end with periods (these are typically complete sentences)
 - **List item capitalization**: All list items must start with a capital letter
 - **Link prerequisites**: When possible, link prerequisites to their install/download pages (e.g., "[Docker Desktop](https://www.docker.com/products/docker-desktop/) installed" not just "Docker Desktop installed")
 - **Combine related technologies**: When listing multiple related technologies, combine them in one list item (e.g., "[Python](url) and [Flask](url) installed" not separate items)
@@ -43,6 +44,9 @@
 - **Exception for explicit numbering**: If the text explicitly calls out numbering (e.g., "You have two options:"), use numbered lists instead of bullet points
 - **Convert nested lists to plain text**: Instructions within numbered sections should be written as paragraphs or bullet points
 - **Options vs sequential steps**: Use "Option 1", "Option 2" for alternative approaches, and numbered steps (## 1., ## 2.) only for sequential instructions
+- **List item periods**: List items that are incomplete sentences or fragments should NOT have periods. Only complete sentences in list items should have periods
+- **List item formatting**: Don't use bold formatting in list items unless it's UI text or something that actually needs emphasis. Regular bullet points don't need bold
+- **Single-item lists**: If a list has only one item, convert it to plain text instead of using a list format
 
 ## Language and Style
 
