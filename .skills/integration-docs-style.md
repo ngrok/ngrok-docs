@@ -59,6 +59,10 @@
 - **No ampersands**: Don't use `&` unless it's specifically part of bold UI text - use "and" instead
 - **Remove unnecessary "also"**: Remove "also" when it doesn't add value (e.g., "You may need" not "You may also need")
 - **GitHub capitalization**: Always use "GitHub" not "Github" or "Github"
+- **Acronym usage**: When a term with an acronym (e.g., "single sign-on (SSO)") is used multiple times, provide the acronym in parentheses on first mention in the body text (intro paragraph), then use the acronym throughout the rest of the document
+- **Description field doesn't count**: The frontmatter `description` field does not count as the first mention for acronym purposes - the first mention must be in the body text
+- **Acronym exception for UI text**: When describing UI text that includes the full term, use the full term as it appears in the UI (e.g., "**Single sign on URL**" not "**SSO URL**" if that's what the UI displays)
+- **Term capitalization**: Use lowercase for terms like "single sign-on" in body text and descriptions unless it's part of a proper noun or title case is required (e.g., "single sign-on" not "Single Sign-On" in descriptions)
 
 ## Links
 
