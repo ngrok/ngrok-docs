@@ -7,6 +7,7 @@
 - **Vary intro phrasing**: Vary the phrasing in intro paragraphs across different docs - avoid using the exact same phrasing like "This guide covers configuring" repeatedly. Use alternatives like "This guide shows you how to configure...", "This guide explains how to configure...", "This guide walks you through configuring...", or other variations
 - **Descriptive headers**: Section headers should be descriptive, not generic (e.g., "Configure ngrok to expose Home Assistant" not "Add ngrok")
 - **Descriptive headers for content**: Use at least two descriptive headers to break up longer content and organize the guide
+- **Header hierarchy for sequential steps**: Sequential steps (e.g., "1. Configure IdP", "2. Configure ngrok", "3. Test") must use the same heading level. Do not use ## for step 1 and ### for steps 2–N—that wrongly implies later steps are subsections of step 1. Use ## for all top-level steps, or group under a parent ## and use ### only for true subsections of that step
 - **Header balance**: Headers should be descriptive but not too wordy - avoid redundant phrases like "log in to your account" when the context is clear
 - **Product names in headers**: Product names like "Python SDK" in headers may need to be added to heading exceptions in linter configs (e.g., Headings.yml)
 - **Prerequisites section**: Use "## What you'll need" as a heading, not plain text "Prerequisites:"
