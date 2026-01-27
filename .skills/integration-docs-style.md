@@ -23,14 +23,13 @@
 - **Choose appropriate section name**: Use "What's next?" for next steps, "Further resources" for reference links, or other appropriate names based on context
 - **Don't duplicate prerequisites**: If prerequisites are listed in "What you'll need", don't repeat them in Tip components
 
+- **No consecutive blank lines**: More than one blank line in a row is not allowed anywhere in the doc.
+
 ## Text Formatting
 
 - **Sentence breaks**: Every sentence must start on a new line in markdown files
 - **Long sentences**: Break up sentences that are too long into multiple sentences
-- **Line breaks**: Use extra line breaks (two blank lines) between:
-  - Frontmatter (`---`) and components (e.g., `<Tip>`)
-  - Code blocks (```) and components
-  - Paragraphs and headings
+- **Line breaks**: Use a single blank line between: frontmatter (`---`) and components (e.g., `<Tip>`), code blocks (```) and components, and paragraphs and headings. More than one blank line in a row is not allowed.
 - **Convert "Tip:" to component**: If you see "Tip:" in plain text, convert it to a `<Tip>` component
 - **File names**: Always in backticks in body content (e.g., `compose.yaml`), never in headers
 - **Addresses/URLs**: Always in backticks in body content (e.g., `localhost:8123`), never in headers
