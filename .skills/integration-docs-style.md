@@ -76,6 +76,7 @@
 - **Keep architectural diagrams**: Architectural diagrams and reference diagrams should be kept
 - **Delete image files**: Delete the actual image files from the repository for removed screenshots
 - **Normalize text**: Fix surrounding text to flow naturally without image references
+- **No broken image refs**: When removing screenshots (or when auditing a doc), remove the image markup entirely—do not leave `![...](path)` refs whose files do not exist. Fix or remove any orphaned image references so the doc never points at missing assets.
 
 ## SEO and Metadata
 
