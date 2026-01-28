@@ -1,4 +1,3 @@
-import { Icon } from "@ngrok/mantle/icon";
 
 export const ActionHub = () => {
 
