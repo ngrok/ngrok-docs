@@ -13,8 +13,6 @@ This should not be confused with securing your ngrok edge to allow your applicat
 - Admin access to edit your ngrok account settings.
 - An ngrok Enterprise account or an SSO/Account Governance license.
 
-You may want to consult the Salesforce documentation on [configuring an authentication provider using OpenID Connect](https://help.salesforce.com/s/articleView?id=xcloud.sso_provider_openid_connect.htm&type=5).
-
 <Note>
 The OIDC flow is initiated from your Applications login page.
 (OIDC Service Provider flow is not supported.)
@@ -22,47 +20,35 @@ The OIDC flow is initiated from your Applications login page.
 
 ## 1. Configure Salesforce
 
-Begin by creating a new External Client App in Salesforce.
+Create a new External Client App in Salesforce, then configure it as follows.
 
-Configure your new external app according to the following criteria:
+In the **Policies** tab:
 
-1. In the **Policies** tab:
-   - Go to **App Policies**.
-   - Set **Start Page** to **Custom**.
-   - Set **Custom Start URL** to `https://dashboard.ngrok.com/login/sso`.
-2. In the **Settings** tab:
-   - Go to **Basic Information** and set the External Client App Name.
-   - Go to **OAuth Settings > App Settings**:
-     - Set the OAuth Scopes:
-       - Access the Identity URL Service (id, profile, email, address, phone)
-       - Access unique identifiers (openid)
-       - Access custom permissions (custom_permissions)
-     - Set **Configure ID Token**:
-       - Set **ID Token Audience** to `https://idp.ngrok.com`
-       - Set **Include Standard Claims**
-       - Set **Custom Attributes**
-     - Flow Enablement:
-       - Set **Enable Authorization Code and Credentials Flow**
-     - Security:
-       - Set **Require Secret for Web Server Flow**
-       - Set **Require Secret for Refresh Token Flow**
+- Go to **App Policies**.
+- Set **Start Page** to **Custom**.
+- Set **Custom Start URL** to `https://dashboard.ngrok.com/login/sso`.
 
-Finally, note your Client ID (Consumer Key) and Secret.
-These can be found in **OAuth Settings > App Settings**.
+In the **Settings** tab:
+
+- Go to **Basic Information** and set the External Client App Name.
+- Go to **OAuth Settings > App Settings** and set:
+  - OAuth Scopes: Access the Identity URL Service (id, profile, email, address, phone), Access unique identifiers (openid), Access custom permissions (custom_permissions)
+  - **Configure ID Token**: Set **ID Token Audience** to `https://idp.ngrok.com`, **Include Standard Claims**, and **Custom Attributes**
+  - Flow Enablement: **Enable Authorization Code and Credentials Flow**
+  - Security: **Require Secret for Web Server Flow** and **Require Secret for Refresh Token Flow**
+
+Note your Client ID (Consumer Key) and Secret from **OAuth Settings > App Settings**.
 
 ## 2. Configure ngrok
 
-Configure SSO for your ngrok account:
+- Log into your ngrok dashboard and navigate to **Settings > Account**.
+- Click **+ New Identity Provider** and select **New OpenID Connect Provider**.
+- Add a description and set the following details:
+  - Issuer URL, in the format `[yourdomain]-dev-ed.develop.lightning.force.com`
+  - Client ID (from Salesforce)
+  - Client Secret (from Salesforce)
 
-1. Log into your ngrok dashboard and navigate to **Settings > Account**.
-2. Click **+ New Identity Provider** and select **New OpenID Connect Provider**.
-3. Add a description and set the following details:
-   - Issuer URL, in the format `[yourdomain]-dev-ed.develop.lightning.force.com`
-   - Client ID (from Salesforce)
-   - Client Secret (from Salesforce)
+You can now log into your ngrok account using Salesforce.
 
-You should now be configured to log into your ngrok account using Salesforce.
-
-By default, users can log into ngrok with their existing credentials as well as through Salesforce.
-This is known as "mixed mode."
-Once you verify that everything is working properly with your integration, you can enforce SSO in the ngrok dashboard and require all new users to log in through Salesforce for their ngrok account.
+By default, users can log into ngrok with their existing credentials as well as through Salesforce ("mixed mode").
+After you verify that the integration works, enable **SSO Enforced** in the ngrok dashboard to require all new users to log in through Salesforce.

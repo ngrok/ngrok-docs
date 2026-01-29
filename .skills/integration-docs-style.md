@@ -4,30 +4,31 @@
 
 - **Intro paragraph**: Add an intro paragraph below the Tip (or after frontmatter if no Tip) but above the first h2 that briefly explains the guide's purpose
 - **No future tense in intros**: Use present tense in intro paragraphs (e.g., "It covers setting up..." not "You'll set up...")
+- **Vary intro phrasing**: Vary the phrasing in intro paragraphs across different docs - avoid using the exact same phrasing like "This guide covers configuring" repeatedly. Use alternatives like "This guide shows you how to configure...", "This guide explains how to configure...", "This guide walks you through configuring...", or other variations
 - **Descriptive headers**: Section headers should be descriptive, not generic (e.g., "Configure ngrok to expose Home Assistant" not "Add ngrok")
 - **Descriptive headers for content**: Use at least two descriptive headers to break up longer content and organize the guide
+- **Header hierarchy for sequential steps**: Sequential steps (e.g., "1. Configure IdP", "2. Configure ngrok", "3. Test") must use the same heading level. Do not use ## for step 1 and ### for steps 2–N—that wrongly implies later steps are subsections of step 1. Use ## for all top-level steps, or group under a parent ## and use ### only for true subsections of that step
 - **Header balance**: Headers should be descriptive but not too wordy - avoid redundant phrases like "log in to your account" when the context is clear
 - **Product names in headers**: Product names like "Python SDK" in headers may need to be added to heading exceptions in linter configs (e.g., Headings.yml)
 - **Prerequisites section**: Use "## What you'll need" as a heading, not plain text "Prerequisites:"
 - **Prerequisites in body**: Never include signup text or prerequisite information in body content - move it to "What you'll need" section
 - **Prerequisites placement**: "What you'll need" section can appear after Note components if the Note provides important context first
-- **List item periods**: All list items in "What you'll need" sections must end with periods
+- **List item periods in prerequisites**: All list items in "What you'll need" sections must end with periods (these are typically complete sentences)
 - **List item capitalization**: All list items must start with a capital letter
 - **Link prerequisites**: When possible, link prerequisites to their install/download pages (e.g., "[Docker Desktop](https://www.docker.com/products/docker-desktop/) installed" not just "Docker Desktop installed")
 - **Combine related technologies**: When listing multiple related technologies, combine them in one list item (e.g., "[Python](url) and [Flask](url) installed" not separate items)
 - **Personal pronouns in prerequisites**: Use "Your" not "The" when referring to user's personal items (e.g., "Your [ngrok authtoken]" not "The [ngrok authtoken]")
 - **Resource sections**: Sections linking to additional resources (e.g., "What's next?", "Further resources") should use unordered lists for linking out to content, but can also include paragraphs
+- **No "Configuration steps" section**: Remove the "Configuration steps" section where present; it is redundant with the intro, TL;DR, and numbered body sections
 - **Choose appropriate section name**: Use "What's next?" for next steps, "Further resources" for reference links, or other appropriate names based on context
 - **Don't duplicate prerequisites**: If prerequisites are listed in "What you'll need", don't repeat them in Tip components
+- **No consecutive blank lines**: More than one blank line in a row is not allowed anywhere in the doc.
 
 ## Text Formatting
 
 - **Sentence breaks**: Every sentence must start on a new line in markdown files
 - **Long sentences**: Break up sentences that are too long into multiple sentences
-- **Line breaks**: Use extra line breaks (two blank lines) between:
-  - Frontmatter (`---`) and components (e.g., `<Tip>`)
-  - Code blocks (```) and components
-  - Paragraphs and headings
+- **Line breaks**: Use a single blank line between: frontmatter (`---`) and components (e.g., `<Tip>`), code blocks (```) and components, and paragraphs and headings. More than one blank line in a row is not allowed.
 - **Convert "Tip:" to component**: If you see "Tip:" in plain text, convert it to a `<Tip>` component
 - **File names**: Always in backticks in body content (e.g., `compose.yaml`), never in headers
 - **Addresses/URLs**: Always in backticks in body content (e.g., `localhost:8123`), never in headers
@@ -43,6 +44,9 @@
 - **Exception for explicit numbering**: If the text explicitly calls out numbering (e.g., "You have two options:"), use numbered lists instead of bullet points
 - **Convert nested lists to plain text**: Instructions within numbered sections should be written as paragraphs or bullet points
 - **Options vs sequential steps**: Use "Option 1", "Option 2" for alternative approaches, and numbered steps (## 1., ## 2.) only for sequential instructions
+- **List item periods**: List items that are incomplete sentences or fragments should NOT have periods. Only complete sentences in list items should have periods
+- **List item formatting**: Don't use bold formatting in list items unless it's UI text or something that actually needs emphasis. Regular bullet points don't need bold
+- **Single-item lists**: If a list has only one item, convert it to plain text instead of using a list format
 
 ## Language and Style
 
@@ -50,6 +54,7 @@
 - **Use direct language**: Prefer "First," over "Your first task is to"
 - **Remove redundant text**: Remove unnecessary descriptive phrases (e.g., "link in the top table" is redundant if you've already specified where to click)
 - **Avoid casual phrases**: Don't use casual language like "you are good to go" - use professional language like "your domain is configured"
+- **Contractions preferred**: Use contractions in body text (e.g., "there's", "don't", "you're", "it's") rather than expanding them
 - **Avoid repetition**: Don't repeat the same phrase in consecutive sentences
 - **Company names**: Don't include .com in company names (e.g., "GoDaddy" not "GoDaddy.com")
 - **Avoid "whenever"**: Use more direct language instead of "whenever you want to"
@@ -75,6 +80,7 @@
 - **Keep architectural diagrams**: Architectural diagrams and reference diagrams should be kept
 - **Delete image files**: Delete the actual image files from the repository for removed screenshots
 - **Normalize text**: Fix surrounding text to flow naturally without image references
+- **No broken image refs**: When removing screenshots (or when auditing a doc), remove the image markup entirely—do not leave `![...](path)` refs whose files do not exist. Fix or remove any orphaned image references so the doc never points at missing assets.
 
 ## SEO and Metadata
 
