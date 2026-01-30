@@ -19,9 +19,10 @@
 - **Combine related technologies**: When listing multiple related technologies, combine them in one list item (e.g., "[Python](url) and [Flask](url) installed" not separate items)
 - **Personal pronouns in prerequisites**: Use "Your" not "The" when referring to user's personal items (e.g., "Your [ngrok authtoken]" not "The [ngrok authtoken]")
 - **Resource sections**: Sections linking to additional resources (e.g., "What's next?", "Further resources") should use unordered lists for linking out to content, but can also include paragraphs
-- **No "Configuration steps" section**: Remove the "Configuration steps" section where present; it is redundant with the intro, TL;DR, and numbered body sections
+- **No "Configuration steps" section**: Remove the "Configuration steps" section where present; it is redundant with the intro and numbered body sections
 - **Choose appropriate section name**: Use "What's next?" for next steps, "Further resources" for reference links, or other appropriate names based on context
 - **Don't duplicate prerequisites**: If prerequisites are listed in "What you'll need", don't repeat them in Tip components
+- **No TL;DR callouts**: Remove TL;DR callouts entirely. Delete the entire Tip block that contains **TL;DR** and its numbered list of steps.
 - **No consecutive blank lines**: More than one blank line in a row is not allowed anywhere in the doc.
 
 ## Text Formatting
@@ -73,6 +74,7 @@
 
 - **Use relative paths**: Internal documentation links should use relative paths (e.g., `../traffic-policy/`) not full URLs (e.g., `https://ngrok.com/docs/traffic-policy`)
 - **Descriptive anchor text**: Link anchor text should be descriptive (e.g., "ngrok Python SDK docs" not "Reference Documentation")
+- **No external links**: Do not link to third-party or vendor sites (e.g., Microsoft, Auth0, vendor admin consoles, learn.microsoft.com, GitHub repos). Link only to ngrok properties (e.g., dashboard.ngrok.com, ngrok.com) and ngrok docs. Use plain text for vendor product names and console names (e.g., "Auth0 Dashboard" not a link to manage.auth0.com).
 
 ## Images
 
