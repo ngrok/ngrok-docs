@@ -4,61 +4,48 @@ sidebarTitle: Datadog
 description: Send network traffic logs from ngrok to Datadog.
 ---
 
-This guide covers how to send ngrok events including network traffic logs into Datadog.
-You may want to keep an audit log of configuration changes within your ngrok
-account, record all traffic to your endpoints for active monitoring/troubleshooting, or
-you may use Datadog as a SIEM and want to use it for security inspections.
+This guide walks you through sending ngrok events, including network traffic logs, to Datadog.
+You may want to keep an audit log of configuration changes in your ngrok account, record all traffic to your endpoints for active monitoring and troubleshooting, or use Datadog as a SIEM for security inspections.
 
 By integrating ngrok with Datadog, you can:
 
-- **Quickly identify application issues** in real-time using ngrok Traffic Events in conjunction with Datadog ML based monitoring.
-- **Historically audit changes occurring within an account**. Be able to historically audit changes within an account.
-- **Visualize usage of your service** by using Datadog queries and analytic charts.
-- **Identify security issues** by using ngrok events and Datadog SIEM.
+- Quickly identify application issues in real time using ngrok Traffic Events with Datadog ML-based monitoring.
+- Historically audit changes occurring in an account.
+- Visualize usage of your service using Datadog queries and analytic charts.
+- Identify security issues using ngrok events and Datadog SIEM.
 
-ngrok will send logs to the [Datadog Logs
-API](https://docs.datadoghq.com/api/latest/logs/#send-logs) and automatically compress
-them with gzip. ngrok does not support the events or metrics APIs at this time.
+ngrok sends logs to the Datadog Logs API and automatically compresses them with gzip.
+ngrok does not support the events or metrics APIs at this time.
 
-## 1. Get prequisite information: 
+## What you'll need
 
-- Familiarize yourself with the ngrok [events](/obs/events/reference) and select the ones you want to send to Datadog
-- Verify which [Datadog site](https://docs.datadoghq.com/getting_started/site/#access-the-datadog-site) you are using
-- Accquire a Datadog API key. To either create or retrieve the API key, reference the following link [Datadog API documentation](https://docs.datadoghq.com/account_management/api-app-keys/#add-an-api-key-or-client-token).
+- Familiarity with the ngrok [events](/obs/events/reference) and which ones you want to send to Datadog.
+- Your Datadog site confirmed (see Datadog documentation for accessing your site).
+- A Datadog API key (see Datadog API documentation for creating or retrieving API keys).
 
-## 2. Create a log export 
+## 1. Create a log export
 
-1. Using a browser, go to the [ngrok dashboard](https://dashboard.ngrok.com) and navigate
-   to **Events Streams** under the **Traffic Observability** section on the left hand navigation and select **Create Subscription**.
+- In a browser, go to the ngrok dashboard and navigate to **Events Stream** under **Traffic Observability** in the left navigation.
+- Select **Create Subscription**.
+- In the Log Exporting configuration, provide a description for the export.
+- In the **Sources** tab, select **Add Source** to choose which events to send to Datadog.
+- Select **Add Event Sources** to confirm your selections.
 
-   ![ngrok log export](../img/datadog/event_sub.png)
+## 2. Create event destination
 
-2. Within the Log Exporting configuration, provide a description for the export and within the sources tab select **Add Source** to choose which events you would like to send to Datadog.
+To send events to Datadog, assign an Event Destination to the Log Export.
 
-Once complete, select **Add Event Sources** to confirm your selections.
+- In the Log Exporting configuration **Destination** tab, select **Add Destination**.
+- Choose Datadog as the target and fill in the required information, including which Datadog site your data uses.
+**Target**, **Region**, and **API Key** are required; other values are optional:
+  - **Service Name** is added as a key-value pair to the event payload as `service:value`.
+  - **DD Tags** values are added as tags to the event data sent to Datadog.
+- When all required inputs have values, select **Send Test Event**.
+- You should see a Success message.
+- Select **Done** to complete the Datadog Event Destination setup.
 
-![ngrok event sources](../img/datadog/event_sources.png)
-
-## 3. Create event destination 
-
-To send the events to Datadog, assign an Event Destination to the Log Export.
-
-1. Within the Log Exporting configuration Destination Tab, select **Add Destination.**
-
-1. Choose Datadog as the target and fill in the correct information being mindful of **which Datadog site your data resides in**. Target, Region and API Key values are required, all other values are optional.
-   - **Service Name** will be added as a key-value pair to the event payload as **service:value**.<br></br>
-   - **DD Tags** values will be added as tags to the event data being sent to be utilized within Datadog.
-
-![ngrok event destination](../img/datadog/event_destination.png)
-
-3. Once all required inputs have values, select **Send Test Event** and you should be presented with a Success message. Select **Done** and the Datadog Event Destination setup is complete.
-
-![ngrok event destination success](../img/datadog/success.png)
 <Note>
 **TROUBLESHOOTING**
 
-
-
-If instead of a Success message you receive a 403 error, double-check your API key and
-validate that you have selected the correct Datadog site.
+If you receive a 403 error instead of a Success message, double-check your API key and confirm that you selected the correct Datadog site.
 </Note>
