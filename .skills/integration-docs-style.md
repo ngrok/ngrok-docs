@@ -19,10 +19,10 @@
 - **Combine related technologies**: When listing multiple related technologies, combine them in one list item (e.g., "[Python](url) and [Flask](url) installed" not separate items)
 - **Personal pronouns in prerequisites**: Use "Your" not "The" when referring to user's personal items (e.g., "Your [ngrok authtoken]" not "The [ngrok authtoken]")
 - **Resource sections**: Sections linking to additional resources (e.g., "What's next?", "Further resources") should use unordered lists for linking out to content, but can also include paragraphs
-- **No "Configuration steps" section**: Remove the "Configuration steps" section where present; it is redundant with the intro, TL;DR, and numbered body sections
+- **No "Configuration steps" section**: Remove the "Configuration steps" section where present; it is redundant with the intro and numbered body sections
 - **Choose appropriate section name**: Use "What's next?" for next steps, "Further resources" for reference links, or other appropriate names based on context
 - **Don't duplicate prerequisites**: If prerequisites are listed in "What you'll need", don't repeat them in Tip components
-- **TL;DR matches section headers**: When a doc has a TL;DR section, its numbered list must have one item per numbered ## section in the doc. The TL;DR list must not skip or collapse steps—if the doc has four ## steps (e.g., ## 1., ## 2., ## 3., ## 4.), the TL;DR must list all four with links to the correct anchors.
+- **No TL;DR callouts**: Remove TL;DR callouts entirely. Delete the entire Tip block that contains **TL;DR** and its numbered list of steps.
 - **No consecutive blank lines**: More than one blank line in a row is not allowed anywhere in the doc.
 
 ## Text Formatting
