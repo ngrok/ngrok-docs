@@ -22,7 +22,7 @@
 - **No "Configuration steps" section**: Remove the "Configuration steps" section where present; it is redundant with the intro, TL;DR, and numbered body sections
 - **Choose appropriate section name**: Use "What's next?" for next steps, "Further resources" for reference links, or other appropriate names based on context
 - **Don't duplicate prerequisites**: If prerequisites are listed in "What you'll need", don't repeat them in Tip components
-
+- **TL;DR matches section headers**: When a doc has a TL;DR section, its numbered list must have one item per numbered ## section in the doc. The TL;DR list must not skip or collapse steps—if the doc has four ## steps (e.g., ## 1., ## 2., ## 3., ## 4.), the TL;DR must list all four with links to the correct anchors.
 - **No consecutive blank lines**: More than one blank line in a row is not allowed anywhere in the doc.
 
 ## Text Formatting
@@ -55,6 +55,7 @@
 - **Use direct language**: Prefer "First," over "Your first task is to"
 - **Remove redundant text**: Remove unnecessary descriptive phrases (e.g., "link in the top table" is redundant if you've already specified where to click)
 - **Avoid casual phrases**: Don't use casual language like "you are good to go" - use professional language like "your domain is configured"
+- **Contractions preferred**: Use contractions in body text (e.g., "there's", "don't", "you're", "it's") rather than expanding them
 - **Avoid repetition**: Don't repeat the same phrase in consecutive sentences
 - **Company names**: Don't include .com in company names (e.g., "GoDaddy" not "GoDaddy.com")
 - **Avoid "whenever"**: Use more direct language instead of "whenever you want to"
@@ -64,6 +65,10 @@
 - **No ampersands**: Don't use `&` unless it's specifically part of bold UI text - use "and" instead
 - **Remove unnecessary "also"**: Remove "also" when it doesn't add value (e.g., "You may need" not "You may also need")
 - **GitHub capitalization**: Always use "GitHub" not "Github" or "Github"
+- **Acronym usage**: When a term with an acronym (e.g., "single sign-on (SSO)") is used multiple times, provide the acronym in parentheses on first mention in the body text (intro paragraph), then use the acronym throughout the rest of the document
+- **Description field doesn't count**: The frontmatter `description` field does not count as the first mention for acronym purposes - the first mention must be in the body text
+- **Acronym exception for UI text**: When describing UI text that includes the full term, use the full term as it appears in the UI (e.g., "**Single sign on URL**" not "**SSO URL**" if that's what the UI displays)
+- **Term capitalization**: Use lowercase for terms like "single sign-on" in body text and descriptions unless it's part of a proper noun or title case is required (e.g., "single sign-on" not "Single Sign-On" in descriptions)
 
 ## Links
 
