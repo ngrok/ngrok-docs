@@ -31,6 +31,7 @@
 - **Long sentences**: Break up sentences that are too long into multiple sentences
 - **Line breaks**: Use a single blank line between: frontmatter (`---`) and components (e.g., `<Tip>`), code blocks (```) and components, and paragraphs and headings. More than one blank line in a row is not allowed.
 - **Convert "Tip:" to component**: If you see "Tip:" in plain text, convert it to a `<Tip>` component
+- **Note and Tip headings**: Use sentence case with a colon for the first line inside `<Note>` or `<Tip>` (e.g., **Security best practice:** or **Troubleshooting:**, not **SECURITY BEST PRACTICE** or **TROUBLESHOOTING**). Do not add a blank line between that heading and the body text that follows.
 - **File names**: Always in backticks in body content (e.g., `compose.yaml`), never in headers
 - **Addresses/URLs**: Always in backticks in body content (e.g., `localhost:8123`), never in headers
 - **No HTML entities**: Don't use `&mdash;` - use periods and split into separate sentences instead
@@ -81,6 +82,7 @@
 - **No UI screenshots**: Remove all UI screenshots from integration docs (e.g., dashboard screenshots)
 - **Keep architectural diagrams**: Architectural diagrams and reference diagrams should be kept
 - **Delete image files**: Delete the actual image files from the repository for removed screenshots
+- **Delete empty image directories**: After removing screenshot image files, delete the subdirectory that housed them if that directory is now empty (e.g., delete `integrations/img/datadog` if it is empty)
 - **Normalize text**: Fix surrounding text to flow naturally without image references
 - **No broken image refs**: When removing screenshots (or when auditing a doc), remove the image markup entirely—do not leave `![...](path)` refs whose files do not exist. Fix or remove any orphaned image references so the doc never points at missing assets.
 
