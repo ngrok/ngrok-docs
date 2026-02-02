@@ -31,6 +31,7 @@
 - **Long sentences**: Break up sentences that are too long into multiple sentences
 - **Line breaks**: Use a single blank line between: frontmatter (`---`) and components (e.g., `<Tip>`), code blocks (```) and components, and paragraphs and headings. More than one blank line in a row is not allowed.
 - **Convert "Tip:" to component**: If you see "Tip:" in plain text, convert it to a `<Tip>` component
+- **Note and Tip headings**: Use sentence case with a colon for the first line inside `<Note>` or `<Tip>` (e.g., **Security best practice:** or **Troubleshooting:**, not **SECURITY BEST PRACTICE** or **TROUBLESHOOTING**). Do not add a blank line between that heading and the body text that follows.
 - **File names**: Always in backticks in body content (e.g., `compose.yaml`), never in headers
 - **Addresses/URLs**: Always in backticks in body content (e.g., `localhost:8123`), never in headers
 - **No HTML entities**: Don't use `&mdash;` - use periods and split into separate sentences instead
@@ -74,13 +75,15 @@
 
 - **Use relative paths**: Internal documentation links should use relative paths (e.g., `../traffic-policy/`) not full URLs (e.g., `https://ngrok.com/docs/traffic-policy`)
 - **Descriptive anchor text**: Link anchor text should be descriptive (e.g., "ngrok Python SDK docs" not "Reference Documentation")
-- **No external links**: Do not link to third-party or vendor sites (e.g., Microsoft, Auth0, vendor admin consoles, learn.microsoft.com, GitHub repos). Link only to ngrok properties (e.g., dashboard.ngrok.com, ngrok.com) and ngrok docs. Use plain text for vendor product names and console names (e.g., "Auth0 Dashboard" not a link to manage.auth0.com).
+- **No external links**: Do not link to third-party or vendor sites (e.g., Microsoft, Auth0, vendor admin consoles, learn.microsoft.com). Link only to ngrok properties and ngrok docs. Use plain text for vendor product names and console names (e.g., "Auth0 Dashboard" not a link to manage.auth0.com).
+- **Never remove ngrok-related links**: If the URL has `ngrok` in it anywhere (e.g. ngrok.com, dashboard.ngrok.com, api.ngrok.com, charts.ngrok.com, github.com/ngrok/*, docs paths like /k8s/ or /traffic-policy/), do not delete or convert that link to plain text. When applying the "no external links" rule, only remove or convert links to third-party or vendor sites—never any link whose URL contains "ngrok". Keep all links to: dashboard.ngrok.com, ngrok.com, ngrok docs (relative paths), github.com/ngrok/* (ngrok-owned repos), ngrok.github.io, and the ngrok package on PyPI.
 
 ## Images
 
 - **No UI screenshots**: Remove all UI screenshots from integration docs (e.g., dashboard screenshots)
 - **Keep architectural diagrams**: Architectural diagrams and reference diagrams should be kept
 - **Delete image files**: Delete the actual image files from the repository for removed screenshots
+- **Delete empty image directories**: After removing screenshot image files, delete the subdirectory that housed them if that directory is now empty (e.g., delete `integrations/img/datadog` if it is empty)
 - **Normalize text**: Fix surrounding text to flow naturally without image references
 - **No broken image refs**: When removing screenshots (or when auditing a doc), remove the image markup entirely—do not leave `![...](path)` refs whose files do not exist. Fix or remove any orphaned image references so the doc never points at missing assets.
 

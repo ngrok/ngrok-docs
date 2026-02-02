@@ -4,37 +4,23 @@ sidebarTitle: MicroK8s
 description: Add ingress to any app running in a Kubernetes cluster managed by Canonical Microk8s using the ngrok Kubernetes Operator.
 ---
 
-Using this guide, you'll launch a new Kubernetes cluster with Canonical's open-source [MicroK8s](https://microk8s.io/) and use the [ngrok Kubernetes Operator](https://marketplace.digitalocean.com/apps/ngrok-ingress-controller) to securely ingress public traffic to an example app using the **new [Kubernetes Gateway API](https://kubernetes.io/docs/concepts/services-networking/gateway/)**.
+This guide walks you through launching a new Kubernetes cluster with Canonical's open-source MicroK8s and using the [ngrok Kubernetes Operator](https://github.com/ngrok/ngrok-operator) to securely ingress public traffic to an example app with the Kubernetes Gateway API.
 
-Along the way, you'll learn enough to leverage MicroK8s in your next Kubernetes deployment—local development, embedded in a CI environment, and production workloads—with simple and secure traffic ingress.
-
-Here is what you'll be building with:
-
-- The **[ngrok Kubernetes Operator](https://ngrok.com/blog-post/ngrok-k8s)**: ngrok's official controller for adding secure public ingress and middleware execution to your Kubernetes apps with ngrok's cloud service. With ngrok, you can manage and secure app traffic at every stage of the development lifecycle while benefiting from simpler configurations, security, and edge acceleration.
-- The **Kubernetes Gateway API**: This new API, which made generally available in [October 2023](https://kubernetes.io/blog/2023/10/31/gateway-api-ga/), is a role-oriented mechanism for provisioning load-balancing infrastructure and routing traffic. The Gateway API does not replace "traditional" [Operators](https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/)—both are available for production usage, but the Gateway API may be better suited for large organizations with defined roles for managing Kubernetes services and cluster operators, rather than application developers.
-- **Canonical MicroK8s**: An open-source system for low-ops, minimal, production-ready Kubernetes. MicroK8s' single-node configuration, small size, and customizeable footprint lets you use it for local development, in minimal environments like GitHub's CI/CD, or using Kubernetes on IoT hardware.
+It covers the ngrok Kubernetes Operator, the Kubernetes Gateway API (a role-oriented mechanism for load-balancing and routing, well suited to organizations with defined roles for cluster vs application management), and Canonical MicroK8s (a low-ops, minimal, production-ready Kubernetes you can use for local development, CI, or IoT).
 
 ## What you'll need
 
-- [MicroK8s](https://microk8s.io/) installed locally.
-- An [ngrok account](https://ngrok.com/signup).
-- [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) and [Helm
-  3.0.0+](https://helm.sh/docs/intro/install/) installed on your local
-  workstation.
-- The [ngrok Kubernetes Operator](/k8s/installation/helm/) installed on
-  your cluster.
-- A reserved domain, which you can get in the ngrok
-  [dashboard](https://dashboard.ngrok.com/domains) or with the [ngrok
-  API](/api-reference/reserveddomains/list).
-  - You can choose from an ngrok subdomain or bring your own custom branded
-    domain, like `https://api.example.com`.
-  - This guide refers to this domain as `<NGROK_DOMAIN>`.
+- MicroK8s installed locally.
+- An ngrok account.
+- kubectl and Helm 3.0.0+ installed on your local workstation.
+- The [ngrok Kubernetes Operator](/k8s/installation/helm/) installed on your cluster.
+- A reserved domain from the ngrok [dashboard](https://dashboard.ngrok.com/domains) or [API](/api-reference/reserveddomains/list); this guide refers to it as `<NGROK_DOMAIN>`.
 
 ## Deploy a Kubernetes cluster with MicroK8s 
 
 Start by deploying a new single-node MicroK8s Kubernetes cluster in your chosen environment. That could be your local workstation, an IoT device, a virtual machine in the cloud, or any system running one of the [42 supported flavors of Linux](https://snapcraft.io/microk8s).
 
-1. Follow the [get started](https://microk8s.io/docs/getting-started) tutorial for MicroK8s to install the binary for your target system.
+1. Follow the MicroK8s get-started tutorial to install the binary for your target system.
 
    Once Microk8s is installed, it automatically deploys a single-node Kubernetes cluster.
 
@@ -56,11 +42,14 @@ Start by deploying a new single-node MicroK8s Kubernetes cluster in your chosen 
 
 Now you need a domain and Kubernetes service to ingress traffic to.
 
-1. If you don't have an ngrok static domain, create one. Navigate to the [**Domains** section](https://dashboard.ngrok.com/domains) of the ngrok dashboard and click **Create Domain** or **New Domain**. This static domain, which will look like `example.ngrok.app`, will be your `NGROK_DOMAIN` for the remainder of this guide.
+1. If you don't have an ngrok static domain, create one.
+   Navigate to the [**Domains** section](https://dashboard.ngrok.com/domains) of the ngrok dashboard and click **Create Domain** or **New Domain**.
+   This static domain, which will look like `example.ngrok.app`, will be your `NGROK_DOMAIN` for the remainder of this guide.
 
    Creating a subdomain on the ngrok network provides a public route to accept HTTP, HTTPS, and TLS traffic.
 
-1. Create a new Kubernetes manifest (`tinyllama.yaml`) with the YAML below. This manifest defines the tinyllama demo LLM application from [ngrok-samples/tinyllama](https://github.com/ngrok-samples/tinyllama) service and deployment, then configures the ngrok Kubernetes Operator to connect the `tinyllama` service to the ngrok edge via your `NGROK_DOMAIN`.
+1. Create a new Kubernetes manifest (`tinyllama.yaml`) with the YAML below.
+   This manifest defines the tinyllama demo LLM application from [ngrok-samples/tinyllama](https://github.com/ngrok-samples/tinyllama) service and deployment, then configures the ngrok Kubernetes Operator to connect the `tinyllama` service to the ngrok edge via your `NGROK_DOMAIN`.
 
    ```yaml showLineNumbers
    apiVersion: v1

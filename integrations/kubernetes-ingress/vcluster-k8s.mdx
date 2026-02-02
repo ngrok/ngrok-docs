@@ -1,7 +1,7 @@
 ---
-title: Ingress to Kubernetes apps and srevices with vcluster
+title: Ingress to Kubernetes apps and services with vcluster
 sidebarTitle: vcluster
-description: Setup a local virtual cluster to demonstrate how to use the ngrok Kubernetes Operator with vcluster.
+description: Set up a local virtual cluster to use the ngrok Kubernetes Operator with vcluster.
 ---
 
 The ngrok [Operator for Kubernetes](https://ngrok.com/blog-post/ngrok-k8s) is the official controller for
@@ -9,7 +9,7 @@ adding public and secure ingress traffic to your k8s services. This open source 
 locally hosted, or on-premises Kubernetes cluster to provide ingress to your applications, APIs, or other services while
 also offloading network ingress and middleware execution to ngrok's platform.
 
-[vcluster](https://www.vcluster.com/) is an open source project for creating virtual clusters that run inside regular
+vcluster is an open source project for creating virtual clusters that run inside regular
 namespaces, which provides strong isolation and easy access for multiple tenants with low cost and overhead. The pods
 you deploy on a vcluster are scheduled inside of the underlying cluster, while other resources, like deployments and
 CRDs, exist only inside the virtual cluster.
@@ -19,27 +19,16 @@ running on a virtual cluster, which lets you isolate development environments, c
 (IDP) in cloud native environments, and run experiments or simulations virtually while properly routing external
 traffic.
 
-With this guide, you'll use an existing Kubernetes cluster, or set up a local development cluster with minikube, to
-launch a virtual cluster, and deploy a demo application. You'll then deploy the ngrok Kubernetes Operator to connect your
-demo application to the ngrok platform to route traffic to your vcluster.
+This guide shows you how to use an existing Kubernetes cluster (or set up a local one with minikube), launch a virtual cluster, deploy a demo application, and deploy the ngrok Kubernetes Operator to route traffic to your vcluster.
 
 ## What you'll need
 
-- The [vcluster CLI](https://www.vcluster.com/docs/get-started/#deploy-vcluster) installed locally.
-- An existing remote or local Kubernetes cluster _OR_ [minikube](https://minikube.sigs.k8s.io/docs/start/) to create a
-  new demo cluster locally.
-- An [ngrok account](https://ngrok.com/signup).
-- [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) and [Helm
-  3.0.0+](https://helm.sh/docs/intro/install/) installed on your local
-  workstation.
-- The [ngrok Kubernetes Operator](/k8s/) installed on
-  your cluster.
-- A reserved domain, which you can get in the ngrok
-  [dashboard](https://dashboard.ngrok.com/domains) or with the [ngrok
-  API](/api-reference/reserveddomains/list).
-  - You can choose from an ngrok subdomain or bring your own custom branded
-    domain, like `https://api.example.com`.
-  - This guide refers to this domain as `<NGROK_DOMAIN>`.
+- The vcluster CLI installed locally.
+- An existing remote or local Kubernetes cluster or minikube to create a new demo cluster locally.
+- An ngrok account.
+- kubectl and Helm 3.0.0+ installed on your local workstation.
+- The [ngrok Kubernetes Operator](/k8s/) installed on your cluster.
+- A reserved domain from the ngrok [dashboard](https://dashboard.ngrok.com/domains) or [API](/api-reference/reserveddomains/list); this guide refers to it as `<NGROK_DOMAIN>`.
 
 ## Set up a local virtual cluster with vcluster 
 
@@ -73,7 +62,8 @@ If you don't have a cluster already, create one locally with minikube and instal
    vcluster create my-vcluster --expose-local
    ```
 
-1. To ensure your new local cluster is running properly get the namespaces for your instance. Your list of namespaces in the `my-vcluster` context should look something like this.
+1. To ensure your new local cluster is running properly get the namespaces for your instance.
+   Your list of namespaces in the `my-vcluster` context should look something like this.
 
    ```bash
    kubectl get namespaces
@@ -88,10 +78,11 @@ If you don't have a cluster already, create one locally with minikube and instal
    If you are not connected to your new vcluster and its kube context, you can run `vcluster connect my-vcluster` to try
    again.
 
-   You know have a vcluster installed on your local minikube cluster.
-<Note>
-**These steps are partially based the guide [Using the ngrok Kubernetes Operator to create Preview Environments with vcluster](https://loft.sh/blog/using-the-ngrok-ingress-controller-to-create-preview-environments-with-vcluster/) from [Loft](https://loft.sh/), the maintainers of vcluster.**
-</Note>
+   You now have a vcluster installed on your local minikube cluster.
+
+   <Note>
+   **Reference:** These steps are partially based on Loft's guide for using the ngrok Kubernetes Operator with vcluster for preview environments.
+   </Note>
 
 ## Install a sample application 
 
@@ -99,15 +90,19 @@ At this point, you have a functional vcluster with the ngrok Kubernetes Operator
 ngrok credentials. To demonstrate how the Operator simplifies routing external traffic to your primary
 cluster, virtual cluster, and ultimately an exposed service or endpoint, you can install a sample application.
 
-1. Reserve a domain for ingress if you don't have one already. Navigate to the [**Domains**
+1. Reserve a domain for ingress if you don't have one already.
+   Navigate to the [**Domains**
    section](https://dashboard.ngrok.com/domains) of the ngrok dashboard and click **Create Domain** or **New
-   Domain**. This guide refers to this as `<NGROK_DOMAIN>` for the remainder of this guide.
+   Domain**.
+   This guide refers to this as `<NGROK_DOMAIN>` for the remainder of this guide.
 
    By creating a subdomain on the ngrok network, you provide a public route to accept HTTP, HTTPS, and TLS traffic.
 
-1. Create a new Kubernetes manifest (`tinyllama.yaml`) with the below contents. This manifest defines the tinyllama demo LLM application from [ngrok-samples/tinyllama](https://github.com/ngrok-samples/tinyllama)
+1. Create a new Kubernetes manifest (`tinyllama.yaml`) with the below contents.
+   This manifest defines the tinyllama demo LLM application from [ngrok-samples/tinyllama](https://github.com/ngrok-samples/tinyllama)
    service and deployment, then configures the ngrok Kubernetes Operator to connect the `tinyllama` service to the ngrok
-   network. Be sure to replace `<NGROK_DOMAIN>` with the domain you reserved a
+   network.
+   Be sure to replace `<NGROK_DOMAIN>` with the domain you reserved a
    moment ago.
 
    ```yaml
@@ -172,19 +167,12 @@ cluster, virtual cluster, and ultimately an exposed service or endpoint, you can
    ```bash
    kubectl apply -f tinyllama.yaml
    ```
-<Tip>
-****Note:** If you get an error when applying the manifest, double check that you've updated the `NGROK_DOMAIN` value in `tinyllama.yaml`**
+   <Tip>
+   **Troubleshooting:** If you get an error when applying the manifest, double-check that you've updated the `NGROK_DOMAIN` value in `tinyllama.yaml` and try again.
+   </Tip>
 
-
-   and try again.
-
-</Tip>
-
-1. Access your tinyllama demo app by navigating to the your domain, for example, `https://one-two-three.ngrok.app`. ngrok's edge
-   and your Operator will route traffic to your app from any device or external network as long as your
-   vcluster remains operational.
-
-   !["Navigating directly to the https://one-two-three.ngrok.app domain to see the tinyllama application (note: screenshot shows earlier 2048 app)"](../img/vcluster/ngrok-k8s-vcluster_2048.png)
+4. Access your tinyllama demo app by navigating to your domain (for example, `https://one-two-three.ngrok.app`).
+   ngrok's edge and your Operator route traffic to your app from any device or external network as long as your vcluster is running.
 
 ## Add OAuth protection to your demo app 
 

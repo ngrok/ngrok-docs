@@ -4,35 +4,33 @@ sidebarTitle: GKE
 description: Learn how to use the ngrok Kubernetes Operator on Google Kubernetes Engine (GKE) to quickly add secure Kubernetes ingress to your apps or APIs.
 ---
 
-The [ngrok Kubernetes Operator](https://github.com/ngrok/ngrok-operator) is the official open-source controller for adding public and secure ingress traffic to your k8s services. It works out of the box with Google Kubernetes Engine cluster to provide ingress to your services no matter the network configuration, as long as it has outbound access to the ngrok service. This allows ngrok to be portable and work seamlessly across any type of infrastructure.
+This guide explains how to use the ngrok Kubernetes Operator on Google Kubernetes Engine (GKE) to add secure Kubernetes ingress to your apps or APIs.
+
+The [ngrok Kubernetes Operator](https://github.com/ngrok/ngrok-operator) is the official open-source controller for adding public and secure ingress traffic to your k8s services.
+It works with a Google Kubernetes Engine cluster to provide ingress to your services as long as the cluster has outbound access to the ngrok service.
 
 ## What you'll need
 
-- A [GKE cluster](https://cloud.google.com/kubernetes-engine/docs/deploy-app-cluster)
-- An [ngrok account](https://ngrok.com/signup).
-- [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) and [Helm
-  3.0.0+](https://helm.sh/docs/intro/install/) installed on your local
-  workstation.
-- The [ngrok Kubernetes Operator](/k8s/) installed on
-  your cluster.
-- A reserved domain, which you can get in the ngrok
-  [dashboard](https://dashboard.ngrok.com/domains) or with the [ngrok
-  API](/api-reference/reserveddomains/list).
-  - You can choose from an ngrok subdomain or bring your own custom branded
-    domain, like `https://api.example.com`.
-  - This guide refers to this domain as `<NGROK_DOMAIN>`.
+- A GKE cluster.
+- An ngrok account.
+- kubectl and Helm 3.0.0+ installed on your local workstation.
+- The [ngrok Kubernetes Operator](/k8s/) installed on your cluster.
+- A reserved domain from the ngrok [dashboard](https://dashboard.ngrok.com/domains) or [API](/api-reference/reserveddomains/list); this guide refers to it as `<NGROK_DOMAIN>`.
 
 ## Ensure `kubectl` can speak with your cluster 
 
-With a Google Kubernetes Engine (GKE) cluster, authentication for `kubectl` happens with a credential helper. So in-order to deploy the ngrok Kubernetes Operator to your cluster, you'll need to ensure that you can use the `gcloud` CLI and that the credential helper is available.
+With a GKE cluster, authentication for `kubectl` uses a credential helper.
+To deploy the ngrok Kubernetes Operator, ensure you can use the `gcloud` CLI and that the credential helper is available.
 
-Ensure that you have the `gcloud` CLI installed and configured with your Google Cloud credentials. You can confirm this works and you're authenticated correctly by running the following command:
+Ensure that you have the `gcloud` CLI installed and configured with your Google Cloud credentials.
+You can confirm this works and you're authenticated correctly by running the following command:
 
 ```bash
 gcloud auth list
 ```
 
-If you see your correct Google account listed, you should be all set. If not, you can run `gcloud auth login` to authenticate with your Google account.
+If you see your correct Google account listed, you should be all set.
+If not, you can run `gcloud auth login` to authenticate with your Google account.
 
 Next, ensure that the credential helper is available. Run the following command to confirm that the credential helper is available:
 
@@ -50,19 +48,17 @@ gcloud container clusters get-credentials --region <cluster-region> --project <c
 
 Now install the ngrok Kubernetes Operator to provide ingress to your services.
 
-Check out the [Operator installation doc](/getting-started/kubernetes/ingress/) for
-details on how to use Helm to install with your ngrok credentials.
+See the [Operator installation doc](/getting-started/kubernetes/ingress/) for details on using Helm with your ngrok credentials.
 
 ## Install a sample application 
 
-Create a manifest file (for example `ngrok-manifest.yaml`) with the following contents. You will need to replace the `NGROK_DOMAIN` on line 45 with your own custom value. This is the URL you will use to access your service from anywhere. If you're on a free account, it must be on a static subdomain which you can claim by logging into your account and following the instructions on the claim static subdomain banner. For paid accounts, you can use a custom domain or a subdomain of `ngrok.app` or `ngrok.dev` (for example, `username-loves-ingress.ngrok.app` or `k8s.example.com`).
-<Tip>
-**Notes:**
-
+Create a manifest file (for example `ngrok-manifest.yaml`) with the following contents.
 This deploys the [tinyllama](https://github.com/ngrok-samples/tinyllama) demo LLM application.
+Replace the `NGROK_DOMAIN` on line 45 with your reserved domain (the URL you'll use to access your service).
+On a free account, use a static subdomain; on a paid account, you can use a custom domain or a subdomain of `ngrok.app` or `ngrok.dev`.
 
-- First section: Creates the tinyllama demo app Service and Deployment
-- Highlighted section: Configures the ngrok Kubernetes Operator Ingress.
+<Tip>
+The first section creates the tinyllama demo app Service and Deployment; the highlighted section configures the ngrok Kubernetes Operator Ingress.
 </Tip>
 
 ```yaml showLineNumbers
@@ -122,38 +118,28 @@ spec:
 # highlight-end
 ```
 
-1. Apply the manifest file to your k8s cluster.
+Apply the manifest file to your k8s cluster.
 
-   ```bash
-   kubectl apply -f ngrok-manifest.yaml
-   ```
+```bash
+kubectl apply -f ngrok-manifest.yaml
+```
 
-   **Note:** If you get an error when applying the manifest, double check that you've updated the `NGROK_DOMAIN` value and try again.
+<Note>
+**Troubleshooting:** If you get an error when applying the manifest, double-check that you've updated the `NGROK_DOMAIN` value and try again.
+</Note>
 
-1. Access your ingress URL using the subdomain you chose in the manifest file above (that is, `https://my-awesome-k8s-cluster.ngrok.app`) to confirm the tinyllama app is accessible from the internet.
-
-   ![application public](/img/howto/kubernetes-operator/k8s-ingress-app-2.png)
-
-   > **Note:** The screenshot shows the earlier 2048 sample app. In this guide, you'll see the tinyllama demo app, but the ingress behavior is the same.
+Access your ingress URL using the subdomain you chose in the manifest (for example, `https://my-awesome-k8s-cluster.ngrok.app`) to confirm the tinyllama app is accessible from the internet.
 
 ## Add authentication to your app 
 
-With the [Traffic Policy system](/traffic-policy/) and the [`oauth`
-action](/traffic-policy/actions/oauth), ngrok manages OAuth protection
-entirely at the ngrok cloud service, which means you don't need to add any
-additional services to your cluster, or alter routes, to ensure ngrok's edge
-authenticates and authorizes all requests before allowing ingress and access to
-your endpoint.
+With the [Traffic Policy system](/traffic-policy/) and the [`oauth` action](/traffic-policy/actions/oauth), ngrok manages OAuth protection entirely at the ngrok cloud service.
+This means you don't need to add any additional services to your cluster, nor alter any routes, to ensure ngrok's edge authenticates and authorizes all requests before allowing ingress and access to your endpoint.
 
-To enable the `oauth` action, you'll create a new `NgrokTrafficPolicy` custom
-resource and apply it to your entire `Ingress` with an annotation. You can also
-apply the policy to just a specific backend or as the default backend for an
-`Ingress`—see the documentation on using the [Operator with
-Ingresses](/k8s/guides/using-ingresses/#using-ngroktrafficpolicy-with-ingress).
+To enable the `oauth` action, you'll create a new `NgrokTrafficPolicy` custom resource and apply it to your entire `Ingress` with an annotation.
+You can also apply the policy to just a specific backend or as the default backend for an `Ingress`—see the documentation on using the [Operator with Ingresses](/k8s/guides/using-ingresses/#using-ngroktrafficpolicy-with-ingress).
 
-1. Edit your existing `ngrok-manifest.yaml` manifest with the following, leaving the
-   `Service` and `Deployment` as they were. Note the new `annotations` field and
-   the `NgrokTrafficPolicy` CR.
+Edit your existing `ngrok-manifest.yaml` manifest with the following, leaving the `Service` and `Deployment` as they were.
+Note the new `annotations` field and the `NgrokTrafficPolicy` CR.
 
    ```yaml
     ...
