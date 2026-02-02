@@ -21,190 +21,188 @@ When integrated, the ngrok Kubernetes Operator and Linkerd simplify your network
 
 ## Set up a local development cluster 
 
-1. Create a local Kubernetes cluster with minikube.
-   You will assign it a profile named `ngrok-linkerd` with `-p`, and for the best compatibility with Linkerd, you will use the `containerd` [container runtime](https://minikube.sigs.k8s.io/docs/runtimes/).
+- Create a local Kubernetes cluster with minikube.
+  You will assign it a profile named `ngrok-linkerd` with `-p`, and for the best compatibility with Linkerd, you will use the `containerd` [container runtime](https://minikube.sigs.k8s.io/docs/runtimes/).
 
-   ```bash
-   minikube start -p ngrok-linkerd --container-runtime=containerd
-   ```
+  ```bash
+  minikube start -p ngrok-linkerd --container-runtime=containerd
+  ```
 
-   <Tip>
+  <Tip>
+  If your OS does not support containerd, you can run minikube without specifying the container runtime.
 
-   If your OS does not support containerd, you can run minikube without specifying the container runtime.
+  ```bash
+  minikube start -p ngrok-linkerd
+  ```
 
-   ```bash
-   minikube start -p ngrok-linkerd
-   ```
+  If minikube defaults to using the `docker` runtime, you will likely see an error related to root privileges when installing Linkerd to your cluster.
+  The error includes a workaround to let you install Linkerd despite using the `docker` runtime.
+  </Tip>
 
-   If minikube defaults to using the `docker` runtime, you will likely see an error related to root privileges when installing Linkerd to your cluster.
-   The error includes a workaround to let you install Linkerd despite using the `docker` runtime.
+- Use `kubectl` to verify your local cluster is running properly.
 
-   </Tip>
+  ```bash
+  kubectl get namespaces
 
-1. Use `kubectl` to verify your local cluster is running properly.
-
-   ```bash
-   kubectl get namespaces
-
-   NAME              STATUS   AGE
-   default           Active   72s
-   kube-node-lease   Active   72s
-   kube-public       Active   72s
-   kube-system       Active   72s
-   ```
+  NAME              STATUS   AGE
+  default           Active   72s
+  kube-node-lease   Active   72s
+  kube-public       Active   72s
+  kube-system       Active   72s
+  ```
 
 ## Deploy Linkerd's service mesh to your cluster 
 
-1. Verify your Linkerd CLI is working correctly with `linkerd version`, which should display the same output as below.
-   The `Server version: unavailable` is expected at this point.
+- Verify your Linkerd CLI is working correctly with `linkerd version`, which should display the same output as below.
+  The `Server version: unavailable` is expected at this point.
 
-   ```bash
-   linkerd version
-   Client version: stable-2.14.2
-   Server version: unavailable
-   ```
+  ```bash
+  linkerd version
+  Client version: stable-2.14.2
+  Server version: unavailable
+  ```
 
-2. Validate that your Kubernetes cluster is ready to deploy Linkerd with `linkerd check --pre`.
-   You should see the following output at the end:
+- Validate that your Kubernetes cluster is ready to deploy Linkerd with `linkerd check --pre`.
+  You should see the following output at the end:
 
-   ```bash
-   linkerd check --pre
-   ...
-   Status check results are √
-   ```
+  ```bash
+  linkerd check --pre
+  ...
+  Status check results are √
+  ```
 
-3. Generate and deploy the Kubernetes manifests required to run Linkerd on your cluster, starting with the CRDs.
+- Generate and deploy the Kubernetes manifests required to run Linkerd on your cluster, starting with the CRDs.
 
-   ```bash
-   linkerd install --crds | kubectl apply -f -
-   ```
+  ```bash
+  linkerd install --crds | kubectl apply -f -
+  ```
 
-   Followed by the core resources.
+  Followed by the core resources.
 
-   ```bash
-   linkerd install | kubectl apply -f -
-   ```
+  ```bash
+  linkerd install | kubectl apply -f -
+  ```
 
-4. Check that Linkerd installed correctly with `linkerd check`.
-   You should see a number of successful checks in your terminal output, with a final verification at the end.
+- Check that Linkerd installed correctly with `linkerd check`.
+  You should see a number of successful checks in your terminal output, with a final verification at the end.
 
-   ```bash
-   linkerd check
-   ...
-   Status check results are √
-   ```
+  ```bash
+  linkerd check
+  ...
+  Status check results are √
+  ```
 
-   <Note>
-   **Reference:** These steps follow the Linkerd getting-started documentation for installing the service mesh.
-   </Note>
+  <Note>
+  **Reference:** These steps follow the Linkerd getting-started documentation for installing the service mesh.
+  </Note>
 
 ## Deploy an example microservices-based application 
 
 To demonstrate how Linkerd and the ngrok Kubernetes Operator integrate to add additional observability, security, and reliability into your cluster, you'll deploy the [Emojivoto](https://github.com/BuoyantIO/emojivoto) demo application, which was developed by Buoyant, the company that originally developed Linkerd.
 
-1. Create an ngrok static subdomain for ingress if you don't have one already.
-   Go to the [**Domains** section](https://dashboard.ngrok.com/domains) of the ngrok dashboard and click **Create Domain** or **New Domain**.
-   This static subdomain will be your `NGROK_DOMAIN` for the remainder of this guide.
-   Creating a subdomain on the ngrok Edge provides a public route for HTTP, HTTPS, and TLS traffic.
+- Create an ngrok static subdomain for ingress if you don't have one already.
+  Go to the [**Domains** section](https://dashboard.ngrok.com/domains) of the ngrok dashboard and click **Create Domain** or **New Domain**.
+  This static subdomain will be your `NGROK_DOMAIN` for the remainder of this guide.
+  Creating a subdomain on the ngrok Edge provides a public route for HTTP, HTTPS, and TLS traffic.
 
-2. Deploy Emojivoto to the `emojivoto` namespace.
+- Deploy Emojivoto to the `emojivoto` namespace.
 
-   ```bash
-   curl --proto '=https' --tlsv1.2 -sSfL https://run.linkerd.io/emojivoto.yml \
-     | kubectl apply -f -
-   ```
+  ```bash
+  curl --proto '=https' --tlsv1.2 -sSfL https://run.linkerd.io/emojivoto.yml \
+    | kubectl apply -f -
+  ```
 
-3. Add meshing by injecting Linkerd's data plane proxies into each pod with a rolling deploy.
-   The following command retrieves all deployments from the previous step, injects the Linkerd proxy, and redeploys each pod.
+- Add meshing by injecting Linkerd's data plane proxies into each pod with a rolling deploy.
+  The following command retrieves all deployments from the previous step, injects the Linkerd proxy, and redeploys each pod.
 
-   ```bash
-   kubectl get -n emojivoto deploy -o yaml \
-     | linkerd inject - \
-     | kubectl apply -f -
-   ```
+  ```bash
+  kubectl get -n emojivoto deploy -o yaml \
+    | linkerd inject - \
+    | kubectl apply -f -
+  ```
 
-4. Verify your data plane with `linkerd -n emojivoto check --proxy`; it should end with a healthy status check.
+- Verify your data plane with `linkerd -n emojivoto check --proxy`; it should end with a healthy status check.
 
-   ```bash
-   linkerd -n emojivoto check --proxy
-   ...
-   Status check results are √
-   ```
+  ```bash
+  linkerd -n emojivoto check --proxy
+  ...
+  Status check results are √
+  ```
 
-1. Create a new `emojivoto-ingress.yml` file and add the [following YAML content](https://linkerd.io/2.14/tasks/using-ingress/#ngrok).
-   It defines the ngrok Kubernetes Operator for routing traffic on your `NGROK_DOMAIN` to the `web-svc` deployment you created when deploying Emojivoto.
+- Create a new `emojivoto-ingress.yaml` file and add the [following YAML content](https://linkerd.io/2.14/tasks/using-ingress/#ngrok).
+  It defines the ngrok Kubernetes Operator for routing traffic on your `NGROK_DOMAIN` to the `web-svc` deployment you created when deploying Emojivoto.
 
-   <Tip>
-   Edit line `9` of the manifest below (the `NGROK_DOMAIN` variable) with your ngrok subdomain (for example, `one-two-three.ngrok.app`).
-   </Tip>
+  <Tip>
+  Edit line `9` of the manifest below (the `NGROK_DOMAIN` variable) with your ngrok subdomain (for example, `one-two-three.ngrok.app`).
+  </Tip>
 
-   ```yaml showLineNumbers
-   apiVersion: networking.k8s.io/v1
-   kind: Ingress
-   metadata:
-     name: emojivoto-ingress
-     namespace: emojivoto
-   spec:
-     ingressClassName: ngrok
-     rules:
-       - host: <NGROK_DOMAIN>
-         http:
-           paths:
-             - path: /
-               pathType: Prefix
-               backend:
-                 service:
-                   name: web-svc
-                   port:
-                     number: 80
-   ```
+  ```yaml showLineNumbers
+  apiVersion: networking.k8s.io/v1
+  kind: Ingress
+  metadata:
+    name: emojivoto-ingress
+    namespace: emojivoto
+  spec:
+    ingressClassName: ngrok
+    rules:
+      - host: <NGROK_DOMAIN>
+        http:
+          paths:
+            - path: /
+              pathType: Prefix
+              backend:
+                service:
+                  name: web-svc
+                  port:
+                    number: 80
+  ```
 
-2. Apply the `emojivoto-ingress.yaml` manifest you just created.
+- Apply the `emojivoto-ingress.yaml` manifest you just created.
 
-   ```bash
-   kubectl apply -f emojivoto-ingress.yaml
-   ```
+  ```bash
+  kubectl apply -f emojivoto-ingress.yaml
+  ```
 
-   Give your cluster a few moments to launch the necessary resources and for ngrok's cloud service to pick up the new tunnel.
+  Give your cluster a few moments to launch the necessary resources and for ngrok's cloud service to pick up the new tunnel.
 
-   <Tip>
-   **Troubleshooting:** If you see an error when applying the manifest, double-check that you've updated the `NGROK_DOMAIN` value and try again.
-   </Tip>
+  <Tip>
+  **Troubleshooting:** If you see an error when applying the manifest, double-check that you've updated the `NGROK_DOMAIN` value and try again.
+  </Tip>
 
-3. Access your Emojivoto application by navigating to your ngrok domain (for example, `https://one-two-three.ngrok.app`) in your browser.
+- Access your Emojivoto application by navigating to your ngrok domain (for example, `https://one-two-three.ngrok.app`) in your browser.
 
 ## Add Linkerd's dashboard to verify meshing and mTLS 
 
 Given that one of the key benefits of a service mesh is increased observability, and the inherent security enhancements that come from mTLS connections between your microservices, you'll want to double-check that your deployments and pods are properly meshed.
 
-1. Install the Linkerd dashboard.
+- Install the Linkerd dashboard.
 
-   ```bash
-   linkerd viz install | kubectl apply -f -
-   ```
+  ```bash
+  linkerd viz install | kubectl apply -f -
+  ```
 
-2. To verify mTLS, restart all pods in the `emojivoto` namespace to enable tapping.
+- To verify mTLS, restart all pods in the `emojivoto` namespace to enable tapping.
 
-   ```bash
-   kubectl -n emojivoto rollout restart deploy
-   ```
+  ```bash
+  kubectl -n emojivoto rollout restart deploy
+  ```
 
-3. Use Linkerd's tap feature: run `linkerd viz -n emojivoto tap deploy` to stream traffic from all pods in the `emojivoto` namespace to your terminal.
-   The Emojivoto app generates traffic automatically, so you'll see a consistent stream of requests.
+- Use Linkerd's tap feature: run `linkerd viz -n emojivoto tap deploy` to stream traffic from all pods in the `emojivoto` namespace to your terminal.
+  The Emojivoto app generates traffic automatically, so you'll see a consistent stream of requests.
 
-   ```bash
-   linkerd viz -n emojivoto tap deploy
-   ...
-   req id=0:11 proxy=out src=10.244.0.15:43706 dst=10.244.0.2:8080 tls=true :method=POST :authority=emoji-svc.emojivoto:8080 :path=/emojivoto.v1.EmojiService/ListAll
-   ```
+  ```bash
+  linkerd viz -n emojivoto tap deploy
+  ...
+  req id=0:11 proxy=out src=10.244.0.15:43706 dst=10.244.0.2:8080 tls=true :method=POST :authority=emoji-svc.emojivoto:8080 :path=/emojivoto.v1.EmojiService/ListAll
+  ```
 
-   You should see `tls=true` in all of these requests between these pods.
-   You can also use `kubectl get pods -o wide` to see the IP address of each pod, which lets you verify the source and destination of each request.
-   For example, the request shown above is the `web-svc` service sending a POST request, with mTLS enabled, to the `emoji-svc` service, which maintains and stores the votes database.
+  You should see `tls=true` in all of these requests between these pods.
+  You can also use `kubectl get pods -o wide` to see the IP address of each pod, which lets you verify the source and destination of each request.
+  For example, the request shown above is the `web-svc` service sending a POST request, with mTLS enabled, to the `emoji-svc` service, which maintains and stores the votes database.
 
-4. Run `linkerd viz dashboard &` to open the Linkerd dashboard in your browser.
-   The default dashboard shows golden metrics (success rates, traffic, latencies per namespace) and the number of meshed pods per namespace.
-   Some of the auto-generated traffic is designed to fail, which shows how to use the dashboard to debug pod-to-pod issues.
+- Run `linkerd viz dashboard &` to open the Linkerd dashboard in your browser.
+  The default dashboard shows golden metrics (success rates, traffic, latencies per namespace) and the number of meshed pods per namespace.
+  Some of the auto-generated traffic is designed to fail, which shows how to use the dashboard to debug pod-to-pod issues.
 
 ## What's next?
 

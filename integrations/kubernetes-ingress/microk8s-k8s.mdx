@@ -20,11 +20,11 @@ It covers the ngrok Kubernetes Operator, the Kubernetes Gateway API (a role-orie
 
 Start by deploying a new single-node MicroK8s Kubernetes cluster in your chosen environment. That could be your local workstation, an IoT device, a virtual machine in the cloud, or any system running one of the [42 supported flavors of Linux](https://snapcraft.io/microk8s).
 
-1. Follow the MicroK8s get-started tutorial to install the binary for your target system.
+- Follow the MicroK8s get-started tutorial to install the binary for your target system.
 
-   Once Microk8s is installed, it automatically deploys a single-node Kubernetes cluster.
+  Once MicroK8s is installed, it automatically deploys a single-node Kubernetes cluster.
 
-1. Run `microk8s status --wait-ready` to check on the state of your MicroK8s cluster.
+- Run `microk8s status --wait-ready` to check on the state of your MicroK8s cluster.
 
    ```bash
    microk8s status --wait-ready
@@ -42,14 +42,14 @@ Start by deploying a new single-node MicroK8s Kubernetes cluster in your chosen 
 
 Now you need a domain and Kubernetes service to ingress traffic to.
 
-1. If you don't have an ngrok static domain, create one.
-   Navigate to the [**Domains** section](https://dashboard.ngrok.com/domains) of the ngrok dashboard and click **Create Domain** or **New Domain**.
-   This static domain, which will look like `example.ngrok.app`, will be your `NGROK_DOMAIN` for the remainder of this guide.
+- If you don't have an ngrok static domain, create one.
+  Navigate to the [**Domains** section](https://dashboard.ngrok.com/domains) of the ngrok dashboard and click **Create Domain** or **New Domain**.
+  This static domain, which will look like `example.ngrok.app`, will be your `NGROK_DOMAIN` for the remainder of this guide.
 
-   Creating a subdomain on the ngrok network provides a public route to accept HTTP, HTTPS, and TLS traffic.
+  Creating a subdomain on the ngrok network provides a public route to accept HTTP, HTTPS, and TLS traffic.
 
-1. Create a new Kubernetes manifest (`tinyllama.yaml`) with the YAML below.
-   This manifest defines the tinyllama demo LLM application from [ngrok-samples/tinyllama](https://github.com/ngrok-samples/tinyllama) service and deployment, then configures the ngrok Kubernetes Operator to connect the `tinyllama` service to the ngrok edge via your `NGROK_DOMAIN`.
+- Create a new Kubernetes manifest (`tinyllama.yaml`) with the YAML below.
+  This manifest defines the tinyllama demo LLM application from [ngrok-samples/tinyllama](https://github.com/ngrok-samples/tinyllama) (service and deployment), then configures the ngrok Kubernetes Operator to connect the `tinyllama` service to the ngrok edge via your `NGROK_DOMAIN`.
 
    ```yaml showLineNumbers
    apiVersion: v1
@@ -88,7 +88,7 @@ Now you need a domain and Kubernetes service to ingress traffic to.
                  containerPort: 8080
    ```
 
-1. Apply the `tinyllama.yaml` manifest to your MicroK8s cluster.
+- Apply the `tinyllama.yaml` manifest to your MicroK8s cluster.
 
    ```bash
    kubectl apply -f tinyllama.yaml
@@ -100,7 +100,7 @@ With your example app running alongside the ngrok Kubernetes Operator, you now n
 
 You'll first create a [GatewayClass](https://gateway-api.sigs.k8s.io/api-types/gatewayclass/), which represents a class of cluster-level [Gateways](https://gateway-api.sigs.k8s.io/api-types/gateway/). You'll then configure the Gateway with a listener, and an [HTTPRoute](https://gateway-api.sigs.k8s.io/api-types/httproute/) to specify how the Gateway should route requests.
 
-1. Create a new file called `gatewayclass.yaml` on your workstation with the below YAML:
+- Create a new file called `gatewayclass.yaml` on your workstation with the below YAML:
 
    ```yaml
    apiVersion: gateway.networking.k8s.io/v1
@@ -111,13 +111,13 @@ You'll first create a [GatewayClass](https://gateway-api.sigs.k8s.io/api-types/g
      controllerName: ngrok.com/gateway-controller
    ```
 
-1. Install the GatewayClass:
+- Install the GatewayClass:
 
    ```bash
    kubectl apply -f gatewayclass.yaml
    ```
 
-1. Create a new file named `tinyllama-gateway.yaml` on your workstation with the below YAML, replacing `<YOUR_NGROK_DOMAIN>`:
+- Create a new file named `tinyllama-gateway.yaml` on your workstation with the below YAML, replacing `<YOUR_NGROK_DOMAIN>`:
 
    ```yaml showLineNumbers
    apiVersion: gateway.networking.k8s.io/v1
@@ -162,10 +162,9 @@ You'll first create a [GatewayClass](https://gateway-api.sigs.k8s.io/api-types/g
 
    This YAML uses the [Gateway API](https://gateway-api.sigs.k8s.io/#introduction) to first define a [Gateway](https://gateway-api.sigs.k8s.io/api-types/gateway) that allows north/south traffic to enter the cluster from external requests, then uses an [HTTPRoute](https://gateway-api.sigs.k8s.io/concepts/api-overview/#httproute) to terminate the connection at the pod running the `tinyllama` service.
 
-1. Access your tinyllama demo app by navigating to your ngrok domain, for example, `https://<YOUR_NGROK_DOMAIN>`. ngrok's network
-   and the ngrok Kubernetes Operator routes traffic to your app from any device or external network.
+- Access your tinyllama demo app by navigating to your ngrok domain, for example, `https://<YOUR_NGROK_DOMAIN>`.
+  ngrok's network and the ngrok Kubernetes Operator route traffic to your app from any device or external network.
 
 ## What's next?
 
-To track the development of the ngrok Kubernetes Operator and its use of the new Kubernetes Gateway API, check out the [GitHub
-repository](https://github.com/ngrok/ngrok-operator) and give it a ⭐.
+To track the development of the ngrok Kubernetes Operator and its use of the new Kubernetes Gateway API, check out the [GitHub repository](https://github.com/ngrok/ngrok-operator) and give it a ⭐.

@@ -4,66 +4,44 @@ sidebarTitle: Rancher
 description: Set up a local installation of Rancher to deploy a new RKE2 cluster and add ingress to applications with ngrok's Kubernetes Operator.
 ---
 
-The ngrok [Operator for Kubernetes](https://ngrok.com/blog-post/ngrok-k8s) is the official controller for
-adding secure public ingress and middleware execution to your Kubernetes applications with ngrok's cloud service. With
-ngrok, you can manage and secure traffic to your applications at every stage of the development lifecycle while also
-benefitting from simpler configurations, security, and edge acceleration.
+The ngrok [Operator for Kubernetes](https://ngrok.com/blog-post/ngrok-k8s) is the official controller for adding secure public ingress and middleware execution to your Kubernetes applications with ngrok's cloud service.
+With ngrok, you can manage and secure traffic to your applications at every stage of the development lifecycle while also benefitting from simpler configurations, security, and edge acceleration.
 
-[Rancher](https://github.com/rancher/rancher) is an open source multi-cluster orchestration management platform
-developed by [SUSE](https://www.suse.com). DevOps teams use Rancher to make their multi-cluster and -cloud environments
-more efficient, secure, and resilient, which in turn provides a better developer experience for developers building and
-deploying cloud native applications.
+Rancher is an open source multi-cluster orchestration management platform developed by SUSE.
+DevOps teams use Rancher to make their multi-cluster and -cloud environments more efficient, secure, and resilient, which in turn provides a better developer experience for developers building and deploying cloud native applications.
 
-The ngrok Kubernetes Operator and Rancher integrate to [overcome Kubernetes complexity and improve
-collaboration](https://www.suse.com/c/overcoming-kubernetes-complexity-and-improving-collaboration/) through the
-creation of an internal developer platform (IDP) or enabling developers to focus on building, not configuring, their
-applications.
+The ngrok Kubernetes Operator and Rancher integrate to overcome Kubernetes complexity and improve collaboration through the creation of an internal developer platform (IDP) or enabling developers to focus on building, not configuring, their applications.
 
-With this guide, you'll launch Rancher's management platform, create a new RKE2 cluster, connect your cluster's ingress
-to ngrok using Rancher's Chart repository, and deploy a demo application, which will then be reachable to public traffic.
+This guide walks you through launching Rancher's management platform, creating a new RKE2 cluster, connecting your cluster's ingress to ngrok using Rancher's Chart repository, and deploying a demo application that will then be reachable to public traffic.
 
 ## What you'll need
 
-- One or more Linux hosts that meet Rancher's
-  [requirements](https://ranchermanager.docs.rancher.com/v2.5/pages-for-subheaders/installation-requirements) for
-  operating as Kubernetes nodes. Your hosts can be local/on-prem virtual machines, cloud-based virtual machines, or bare
-  metal servers.
-- [Docker](https://docs.docker.com/engine/install/) installed locally.
+- One or more Linux hosts that meet Rancher's requirements for operating as Kubernetes nodes.
+  Your hosts can be local/on-prem virtual machines, cloud-based virtual machines, or bare metal servers.
+- Docker installed locally.
 - An ngrok account.
-- [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) and [Helm
-  3.0.0+](https://helm.sh/docs/intro/install/) installed on your local
-  workstation.
-- The [ngrok Kubernetes Operator](/k8s/) installed on
-  your cluster. While you _can_ install the Operator via Rancher directly, this guide
-  recommends using the official Helm chart.
-- A reserved domain, which you can get in the ngrok
-  [dashboard](https://dashboard.ngrok.com/domains) or with the [ngrok
-  API](/api-reference/reserveddomains/list).
-  - You can choose from an ngrok subdomain or bring your own custom branded
-    domain, like `https://api.example.com`.
+- kubectl and Helm 3.0.0+ installed on your local workstation.
+- The [ngrok Kubernetes Operator](/k8s/) installed on your cluster.
+  While you _can_ install the Operator via Rancher directly, this guide recommends using the official Helm chart.
+- A reserved domain, which you can get in the ngrok [dashboard](https://dashboard.ngrok.com/domains) or with the [ngrok API](/api-reference/reserveddomains/list).
+  - You can choose from an ngrok subdomain or bring your own custom branded domain, like `https://api.example.com`.
   - This guide refers to this domain as `<NGROK_DOMAIN>`.
 
 ## Install Rancher via Docker 
 
-To follow along with this guide, you need Rancher installed on a local or remote Kubernetes cluster. If you already have
-an existing cluster running Rancher, you can skip this step and proceed to [Install a sample application](#install-a-sample-application).
+To follow along with this guide, you need Rancher installed on a local or remote Kubernetes cluster. If you already have an existing cluster running Rancher, you can skip this step and proceed to [Install a sample application](#install-a-sample-application).
 
 In the following steps, you'll run Rancher, and create the Kubernetes cluster it runs on, within a Docker container.
-This simple, local-only installation option should be used only for [test and demonstration
-purposes](https://ranchermanager.docs.rancher.com/pages-for-subheaders/installation-and-upgrade#docker-install). You
-can, however, use the Rancher backup Operator to
-[migrate](https://ranchermanager.docs.rancher.com/how-to-guides/new-user-guides/backup-restore-and-disaster-recovery/migrate-rancher-to-new-cluster)
-this Docker container-based installation to a production-ready, high-availability Kubernetes cluster.
+This simple, local-only installation option should be used only for test and demonstration purposes. You can, however, use the Rancher backup Operator to migrate this Docker container-based installation to a production-ready, high-availability Kubernetes cluster.
 
-The following steps also assume you have already provisioned one or more Linux hosts that will operate as nodes for the
-new Kubernetes cluster managed by Rancher.
+The following steps also assume you have already provisioned one or more Linux hosts that will operate as nodes for the new Kubernetes cluster managed by Rancher.
 
 <Note>
-Another viable option is to launch a single Linux virtual machine on your local workstation or with a cloud provider to host a K3s cluster for [installing Rancher with Helm](https://ranchermanager.docs.rancher.com/getting-started/quick-start-guides/deploy-rancher-manager/helm-cli). If you choose that option, you can skip ahead to [2. Install the ngrok Ingress
-Controller](#install-a-sample-application) once you’ve finalized your K3s cluster.
+Another viable option is to launch a single Linux virtual machine on your local workstation or with a cloud provider to host a K3s cluster for installing Rancher with Helm. If you choose that option, you can skip ahead to [2. Install the ngrok Ingress Controller](#install-a-sample-application) once you’ve finalized your K3s cluster.
 </Note>
 
-1. Launch the Rancher server in a detached, privileged Docker container. With this configuration, you'll access Rancher on `localhost` using a specific port.
+1. Launch the Rancher server in a detached, privileged Docker container.
+   With this configuration, you'll access Rancher on `localhost` using a specific port.
 
 ```bash
 docker run --privileged --restart=unless-stopped -d -p 81:80 -p 444:443 rancher/rancher:latest
@@ -234,21 +212,16 @@ Backups prevent data loss and are the best way to convert your Docker-based Ranc
 
 ### Clean up
 
-Because you installed Rancher and deployed your application cluster via Docker, you can clean up by stopping the Rancher
-container and removing its contents from your local workstation, replacing `[DOCKER_NAME]` with the name of your Rancher
-container.
+Because you installed Rancher and deployed your application cluster via Docker, you can clean up by stopping the Rancher container and removing its contents from your local workstation, replacing `[DOCKER_NAME]` with the name of your Rancher container.
 
 ```bash
 docker stop [DOCKER_NAME] && docker rm [DOCKER_NAME]
 ```
 
-You can also now clean up your Linux host, either by following the [Rancher node cleanup
-doc](https://ranchermanager.docs.rancher.com/how-to-guides/new-user-guides/manage-clusters/clean-cluster-nodes#cleaning-up-nodes)
-or, in the case of a disposable VM, deleting it entirely.
+You can also now clean up your Linux host, either by following the Rancher node cleanup documentation or, in the case of a disposable VM, deleting it entirely.
 
 ### Extend your Rancher and ngrok Kubernetes Operator integration
 
 This combination of cluster management and secure, cloud-based public ingress can become a robust development environment for those onboarding to the cloud native ecosystem or scaling to a multi-cluster production system, all with simpler and more secure ingress from ngrok.
 
-Learn more about the ngrok Kubernetes Operator, or contribute, by checking out the [GitHub
-repository](https://github.com/ngrok/ngrok-operator) and the [Kubernetes docs](/k8s/).
+Learn more about the ngrok Kubernetes Operator, or contribute, by checking out the [GitHub repository](https://github.com/ngrok/ngrok-operator) and the [Kubernetes docs](/k8s/).

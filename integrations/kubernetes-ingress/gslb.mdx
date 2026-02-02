@@ -133,7 +133,7 @@ curl \
   -d '{"match":"/","match_type":"path_prefix","backend":{"enabled":true,"backend_id":"'${WEIGHTED_BACKEND_ID}'"}}'
 ```
 
-If you'd like to do optional step #7, you will need to export a variable for the route you just created:.
+If you'd like to do optional step 7, export a variable for the route you just created.
 
 ```bash
 export ROUTE_ID=edghtsrt_...
@@ -151,42 +151,43 @@ You can go to the [Edges dashboard](https://dashboard.ngrok.com/edges) to see yo
 
 ## 5. Install the ngrok Agent and an example workload on each VM 
 
-To get some tunnels online and quickly see how ngrok's GSLB works, you'll use an [example API deployment](https://github.com/joelhans/ngrok-vps-gslb-demo). This demo deployment has four parts:
+To get some tunnels online and quickly see how ngrok's GSLB works, you'll use an [example API deployment](https://github.com/joelhans/ngrok-vps-gslb-demo).
+This demo deployment has four parts:
 
-1. A straightforward Go-based API with a single endpoint at `/api`, which returns a randomly generated UUID and the machine's `hostname`, which should reflect the regions of your VMs.
-2. A `Dockerfile` for containerizing said Go-based API.
-3. A `docker-compose.yml` file for starting the API container and a containerized edition of the ngrok agent on the same network.
-4. A `ngrok.yml` [agent configuration file](/agent/config/v3/) to connect the agent to your ngrok account and one of the Tunnel Group backends you previously created.
+- A straightforward Go-based API with a single endpoint at `/api`, which returns a randomly generated UUID and the machine's `hostname`, which should reflect the regions of your VMs.
+- A `Dockerfile` for containerizing said Go-based API.
+- A `docker-compose.yml` file for starting the API container and a containerized edition of the ngrok agent on the same network.
+- A `ngrok.yml` [agent configuration file](/agent/config/v3/) to connect the agent to your ngrok account and one of the Tunnel Group backends you previously created.
 
 Repeat the following steps on **each** VM:
 
-1. Clone the demo repository.
+- Clone the demo repository.
 
-   ```bash
-   git clone https://github.com/joelhans/ngrok-vps-gslb-demo
-   cd ngrok-vps-gslb-demo
-   ```
+  ```bash
+  git clone https://github.com/joelhans/ngrok-vps-gslb-demo
+  cd ngrok-vps-gslb-demo
+  ```
 
-2. Edit the `ngrok.yml` [ngrok agent configuration file](/agent/config/) with your `<YOUR_NGROK_AUTHTOKEN>` (find it in the [ngrok dashboard](https://dashboard.ngrok.com/get-started/your-authtoken)); it's different from the API key you created in the first step.
-   Next, edit the `<LOCATION_NAME>` for that VM to match the labels you created in [step 3](#3-create-tunnel-group-backends-for-your-vms) (for example, `nyc`, `sydney`, and `frankfurt`).
+- Edit the `ngrok.yml` [ngrok agent configuration file](/agent/config/) with your `<YOUR_NGROK_AUTHTOKEN>` (find it in the [ngrok dashboard](https://dashboard.ngrok.com/get-started/your-authtoken)); it's different from the API key you created in the first step.
+  Next, edit the `<LOCATION_NAME>` for that VM to match the labels you created in [step 3](#3-create-tunnel-group-backends-for-your-vms) (for example, `nyc`, `sydney`, and `frankfurt`).
 
-   ```yaml
-   version: 2
-   authtoken: <YOUR_NGROK_AUTHTOKEN>
-   log_level: debug
-   log: stdout
-   tunnels:
-     vps-demo:
-       addr: 5000
-       labels:
-         - dc=<LOCATION_NAME>
-   ```
+  ```yaml
+  version: 2
+  authtoken: <YOUR_NGROK_AUTHTOKEN>
+  log_level: debug
+  log: stdout
+  tunnels:
+    vps-demo:
+      addr: 5000
+      labels:
+        - dc=<LOCATION_NAME>
+  ```
 
-3. Build and start the containerized API deployment, passing the hostname of the VM to the hostname of the Docker container.
+- Build and start the containerized API deployment, passing the hostname of the VM to the hostname of the Docker container.
 
-   ```bash
-   HOSTNAME=$(hostname -f) docker compose up -d
-   ```
+  ```bash
+  HOSTNAME=$(hostname -f) docker compose up -d
+  ```
 
 ## 6. Test out ngrok's Global Server Load Balancing 
 
@@ -235,7 +236,7 @@ You should see each VM respond with similar frequency:
 
 To confirm global load balancing, go to the [Edges dashboard](https://dashboard.ngrok.com/edges) and confirm your tunnels are online and weighted equally (33.33% each).
 
-## **Step 7** (optional): Enable the Traffic Policy module for API gateway features 
+## Step 7 (optional): Enable the Traffic Policy module for API gateway features 
 
 Your demo API is already globally load-balanced, but if you want to extend your ngrok usage even further, you can enable one or more [Traffic Policy modules](/traffic-policy/) on your Edge to control traffic or establish standards for how your upstream services are accessed.
 
@@ -267,7 +268,7 @@ You have two options:
               is-ngrok: "1"
   ```
 
-When you request your API again, the response includes the `country` (with the appropriate code for where you're generating said request) and `is-ngrok` headers.
+When you request your API again, the response includes the `country` (with the appropriate code for your request origin) and `is-ngrok` headers.
 
 ```bash
 curl -s -I -X GET https://<YOUR_NGROK_DOMAIN>/api
