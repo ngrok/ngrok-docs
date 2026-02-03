@@ -23,10 +23,10 @@ This guide shows you how to use an existing Kubernetes cluster (or set up a loca
 - The [ngrok Kubernetes Operator](/k8s/) installed on your cluster.
 - A reserved domain from the ngrok [dashboard](https://dashboard.ngrok.com/domains) or [API](/api-reference/reserveddomains/list); this guide refers to it as `<NGROK_DOMAIN>`.
 
-## Set up a local virtual cluster with vcluster 
+## Set up a local virtual cluster with vcluster
 
 To follow along with this guide, you need a remote or local Kubernetes cluster with vcluster installed.
-If you have an existing cluster with vcluster set up, you can skip this step and proceed to [2. Install a sample application](#install-a-sample-application).
+If you have an existing cluster with vcluster set up, you can skip this step and proceed to [Install a sample application](#install-a-sample-application).
 
 If you don't have a cluster already, create one locally with minikube and install vcluster.
 
@@ -75,7 +75,7 @@ If you don't have a cluster already, create one locally with minikube and instal
   **Reference:** These steps are partially based on Loft's guide for using the ngrok Kubernetes Operator with vcluster for preview environments.
   </Note>
 
-## Install a sample application 
+## Install a sample application
 
 At this point, you have a functional vcluster with the ngrok Kubernetes Operator running and authenticated with your ngrok credentials.
 To demonstrate how the Operator simplifies routing external traffic to your primary cluster, virtual cluster, and ultimately an exposed service or endpoint, you can install a sample application.
@@ -172,44 +172,44 @@ You can also apply the policy to just a specific backend or as the default backe
 - Edit your existing `tinyllama.yaml` manifest with the following, leaving the `Service` and `Deployment` as they were.
   Note the new `annotations` field and the `NgrokTrafficPolicy` CR.
 
-   ```yaml
-    ...
-   ---
-   # Configuration for ngrok's Kubernetes Operator
-   apiVersion: networking.k8s.io/v1
-   kind: Ingress
-   metadata:
-     name: tinyllama-ingress
-     namespace: default
-     annotations:
-       k8s.ngrok.com/traffic-policy: oauth
-   spec:
-     ingressClassName: ngrok
-     rules:
-       - host: <NGROK_DOMAIN>
-         http:
-           paths:
-             - path: /
-               pathType: Prefix
-               backend:
-                 service:
-                   name: tinyllama
-                   port:
-                     number: 80
-   ---
-   # Traffic Policy configuration for OAuth
-   apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-   kind: NgrokTrafficPolicy
-   metadata:
-     name: oauth
-     namespace: default
-   spec:
-     policy:
-       on_http_request:
-         - type: oauth
-           config:
-             provider: google
-   ```
+  ```yaml
+  ...
+  ---
+  # Configuration for ngrok's Kubernetes Operator
+  apiVersion: networking.k8s.io/v1
+  kind: Ingress
+  metadata:
+    name: tinyllama-ingress
+    namespace: default
+    annotations:
+      k8s.ngrok.com/traffic-policy: oauth
+  spec:
+    ingressClassName: ngrok
+    rules:
+      - host: <NGROK_DOMAIN>
+        http:
+          paths:
+            - path: /
+              pathType: Prefix
+              backend:
+                service:
+                  name: tinyllama
+                  port:
+                    number: 80
+  ---
+  # Traffic Policy configuration for OAuth
+  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+  kind: NgrokTrafficPolicy
+  metadata:
+    name: oauth
+    namespace: default
+  spec:
+    policy:
+      on_http_request:
+        - type: oauth
+          config:
+            provider: google
+  ```
 
 - Re-apply your `tinyllama.yaml` configuration.
 
@@ -220,7 +220,7 @@ You can also apply the policy to just a specific backend or as the default backe
 - When you open your demo app again, you'll be asked to log in via Google.
   That's a start, but what if you want to authenticate only yourself or colleagues?
 
-- You can use [expressions](/traffic-policy/concepts/expressions) and [CEL interpolation](/traffic-policy/concepts/cel-interpolation) to filter out and reject OAuth logins that don't contain `example.com`.
+- Use [expressions](/traffic-policy/concepts/expressions) and [CEL interpolation](/traffic-policy/concepts/cel-interpolation) to filter out and reject OAuth logins that don't contain `example.com`.
   Update the `NgrokTrafficPolicy` portion of your manifest after changing `example.com` to your domain.
 
    ```yaml

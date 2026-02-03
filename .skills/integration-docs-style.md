@@ -31,7 +31,7 @@
 - **Long sentences**: Break up sentences that are too long into multiple sentences
 - **Line breaks**: Use a single blank line between: frontmatter (`---`) and components (e.g., `<Tip>`), code blocks (```) and components, and paragraphs and headings. More than one blank line in a row is not allowed.
 - **Convert "Tip:" to component**: If you see "Tip:" in plain text, convert it to a `<Tip>` component
-- **Note and Tip headings**: Use sentence case with a colon for the first line inside `<Note>` or `<Tip>` (e.g., **Security best practice:** or **Troubleshooting:**, not **SECURITY BEST PRACTICE** or **TROUBLESHOOTING**). Do not add a blank line between that heading and the body text that follows.
+- **Note and Tip headings**: When a `<Note>` or `<Tip>` already has a heading (bold first line), use sentence case with a colon (e.g., **Security best practice:** or **Troubleshooting:**, not **SECURITY BEST PRACTICE** or **TROUBLESHOOTING**). Do not add a blank line between that heading and the body text that follows. Do not add a heading (e.g., **Alternative:**, **Note:**) to a Note or Tip that does not already have one.
 - **File names**: Always in backticks in body content (e.g., `compose.yaml`), never in headers
 - **Addresses/URLs**: Always in backticks in body content (e.g., `localhost:8123`), never in headers
 - **No HTML entities**: Don't use `&mdash;` - use periods and split into separate sentences instead

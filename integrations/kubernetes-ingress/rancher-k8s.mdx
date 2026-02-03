@@ -4,6 +4,8 @@ sidebarTitle: Rancher
 description: Set up a local installation of Rancher to deploy a new RKE2 cluster and add ingress to applications with ngrok's Kubernetes Operator.
 ---
 
+This guide walks you through launching Rancher's management platform, creating a new RKE2 cluster, connecting your cluster's ingress to ngrok using Rancher's Chart repository, and deploying a demo application that will then be reachable by public traffic.
+
 The ngrok [Operator for Kubernetes](https://ngrok.com/blog-post/ngrok-k8s) is the official controller for adding secure public ingress and middleware execution to your Kubernetes applications with ngrok's cloud service.
 With ngrok, you can manage and secure traffic to your applications at every stage of the development lifecycle while also benefitting from simpler configurations, security, and edge acceleration.
 
@@ -11,8 +13,6 @@ Rancher is an open source multi-cluster orchestration management platform develo
 DevOps teams use Rancher to make their multi-cluster and -cloud environments more efficient, secure, and resilient, which in turn provides a better developer experience for developers building and deploying cloud native applications.
 
 The ngrok Kubernetes Operator and Rancher integrate to overcome Kubernetes complexity and improve collaboration through the creation of an internal developer platform (IDP) or enabling developers to focus on building, not configuring, their applications.
-
-This guide walks you through launching Rancher's management platform, creating a new RKE2 cluster, connecting your cluster's ingress to ngrok using Rancher's Chart repository, and deploying a demo application that will then be reachable to public traffic.
 
 ## What you'll need
 
@@ -27,17 +27,20 @@ This guide walks you through launching Rancher's management platform, creating a
   - You can choose from an ngrok subdomain or bring your own custom branded domain, like `https://api.example.com`.
   - This guide refers to this domain as `<NGROK_DOMAIN>`.
 
-## Install Rancher via Docker 
+## Install Rancher via Docker
 
-To follow along with this guide, you need Rancher installed on a local or remote Kubernetes cluster. If you already have an existing cluster running Rancher, you can skip this step and proceed to [Install a sample application](#install-a-sample-application).
+To follow along with this guide, you need Rancher installed on a local or remote Kubernetes cluster.
+If you already have an existing cluster running Rancher, you can skip this step and proceed to [Install a sample application](#install-a-sample-application).
 
 In the following steps, you'll run Rancher, and create the Kubernetes cluster it runs on, within a Docker container.
-This simple, local-only installation option should be used only for test and demonstration purposes. You can, however, use the Rancher backup Operator to migrate this Docker container-based installation to a production-ready, high-availability Kubernetes cluster.
+This simple, local-only installation option should be used only for test and demonstration purposes.
+You can, however, use the Rancher backup Operator to migrate this Docker container-based installation to a production-ready, high-availability Kubernetes cluster.
 
 The following steps also assume you have already provisioned one or more Linux hosts that will operate as nodes for the new Kubernetes cluster managed by Rancher.
 
 <Note>
-Another viable option is to launch a single Linux virtual machine on your local workstation or with a cloud provider to host a K3s cluster for installing Rancher with Helm. If you choose that option, you can skip ahead to [2. Install the ngrok Ingress Controller](#install-a-sample-application) once you’ve finalized your K3s cluster.
+Another viable option is to launch a single Linux virtual machine on your local workstation or with a cloud provider to host a K3s cluster for installing Rancher with Helm.
+If you choose that option, you can skip ahead to [Install a sample application](#install-a-sample-application) once you've finalized your K3s cluster.
 </Note>
 
 1. Launch the Rancher server in a detached, privileged Docker container.
@@ -57,7 +60,7 @@ d43eceb2e5b2   rancher/rancher:latest   "entrypoint.sh"   About a minute ago   U
 
 3. Navigate to `https://localhost:444` in your browser, accept the self-signed certificate warning, and use the **bootstrap password** prompt to initialize Rancher.
 
-   Copy the command from your terminal, replacing `[DOCKER_NAME]` with the name from `docker ps`.
+  Copy the command from your terminal, replacing `[DOCKER_NAME]` with the name from `docker ps`.
 
 ```bash
 docker logs [DOCKER_NAME] 2>&1 | grep "Bootstrap Password:"
@@ -69,28 +72,26 @@ docker logs [DOCKER_NAME] 2>&1 | grep "Bootstrap Password:"
    Rancher in this configuration.
    Find your local IP address (for example, `hostname -I` on Linux or `ipconfig getifaddr en0` on macOS, e.g. `192.168.1.123`) and replace `localhost` with it (for example, `https://192.168.1.107:444`).
 
-   When the Rancher dashboard loads, Rancher should have already deployed a single K3s-based cluster named `local`; click the cluster's name to explore.
-   Rancher recommends running server management and workloads on separate clusters, which is what you'll do next.
+  When the Rancher dashboard loads, Rancher should have already deployed a single K3s-based cluster named `local`; click the cluster's name to explore.
+  Rancher recommends running server management and workloads on separate clusters, which is what you'll do next.
 
 6. Create a new RKE2 cluster by clicking **Create** in your Rancher dashboard home, then **Custom** to deploy a custom cluster.
    Give your cluster a name and, under **System Services**, uncheck **NGINX Ingress** (you'll add ngrok-based ingress in the next step).
 
-   Click **Create** to initialize the cluster.
+  Click **Create** to initialize the cluster.
 
-2. Register your Linux nodes with your RKE2 cluster.
+7. Register your Linux nodes with your RKE2 cluster.
    Leave **Node Role** at its defaults and, under **Registration Command**, click the **Insecure** checkbox.
 
-   Once you copy-paste the command into your Linux node and execute it, your new cluster will begin bootstrapping the
-   node.
-   When Rancher finishes bootstrapping your nodes, you can navigate to the **Cluster Dashboard** for your RKE2
-   cluster, explore deployed resources, and see basic usage metrics.
+  Once you copy-paste the command into your Linux node and execute it, your new cluster will begin bootstrapping the node.
+  When Rancher finishes bootstrapping your nodes, you can navigate to the **Cluster Dashboard** for your RKE2 cluster, explore deployed resources, and see basic usage metrics.
 
-3. Set up `kubectl` to manage your RKE2 cluster.
-   At the top of the Cluster Dashboard, click **Copy KubeConfig to Clipboard**.
-   Paste the content into your `~/.kube/config` file.
+8. Set up `kubectl` to manage your RKE2 cluster.
+  At the top of the Cluster Dashboard, click **Copy KubeConfig to Clipboard**.
+  Paste the content into your `~/.kube/config` file.
 
-7. Ensure your new RKE2 cluster is active by getting the namespaces for your instance.
-   Your list of namespaces should look like the following:
+9. Ensure your new RKE2 cluster is active by getting the namespaces for your instance.
+  Your list of namespaces should look like the following:
 
    ```bash
    kubectl get namespaces
@@ -110,7 +111,7 @@ docker logs [DOCKER_NAME] 2>&1 | grep "Bootstrap Password:"
 You have now installed Rancher in a Docker container, created a new Kubernetes cluster for your applications, and
 connected one or more Linux nodes to Rancher for handling future workloads.
 
-## Install a sample application 
+## Install a sample application
 
 Now that you have the ngrok Kubernetes Operator running and authenticated with your credentials, you're ready to add a
 sample application to your cluster.
@@ -118,76 +119,74 @@ The ngrok Kubernetes Operator will connect this application to the ngrok cloud s
 simplifying how you route external traffic through your Rancher-managed cluster.
 
 1. Create a ngrok static subdomain for ingress if you don't have one already.
-   Go to the [**Domains** section](https://dashboard.ngrok.com/domains) of the ngrok dashboard and click **Create Domain** or **New Domain**.
+  Go to the [**Domains** section](https://dashboard.ngrok.com/domains) of the ngrok dashboard and click **Create Domain** or **New Domain**.
 
-   This static subdomain will be your `<NGROK_DOMAIN>` for the remainder of this guide.
+  This static subdomain will be your `<NGROK_DOMAIN>` for the remainder of this guide.
 
-   Creating a subdomain on the ngrok network provides a public route to accept HTTP, HTTPS, and TLS traffic.
+  Creating a subdomain on the ngrok network provides a public route to accept HTTP, HTTPS, and TLS traffic.
 
 2. Create a new Kubernetes manifest (`tinyllama.yaml`) with the below contents.
-   This manifest defines the [tinyllama](https://github.com/ngrok-samples/tinyllama) demo LLM application
-   service and deployment, then configures the ngrok Kubernetes Operator to connect the `tinyllama` service to the ngrok
-   edge via your `<NGROK_DOMAIN>`.
+  This manifest defines the [tinyllama](https://github.com/ngrok-samples/tinyllama) demo LLM application service and deployment, then configures the ngrok Kubernetes Operator to connect the `tinyllama` service to the ngrok edge via your `<NGROK_DOMAIN>`.
 
-   ```yaml showLineNumbers
-   apiVersion: v1
-   kind: Service
-   metadata:
-     name: tinyllama
-   spec:
-     ports:
-       - name: http
-         port: 80
-         targetPort: 8080
-     selector:
-       app: tinyllama
-   ---
-   apiVersion: apps/v1
-   kind: Deployment
-   metadata:
-     name: tinyllama
-   spec:
-     replicas: 1
-     selector:
-       matchLabels:
-         app: tinyllama
-     template:
-       metadata:
-         labels:
-           app: tinyllama
-       spec:
-         containers:
-           - name: tinyllama
-             image: ghcr.io/ngrok-samples/tinyllama:main
-             ports:
-               - name: http
-                 containerPort: 8080
-   ---
-   # ngrok Kubernetes Operator configuration
-   apiVersion: networking.k8s.io/v1
-   kind: Ingress
-   metadata:
-     name: tinyllama-ingress
-   spec:
-     ingressClassName: ngrok
-     rules:
-       - host: <NGROK_DOMAIN>
-         http:
-           paths:
-             - path: /
-               pathType: Prefix
-               backend:
-                 service:
-                   name: tinyllama
-                   port:
-                     number: 80
-   ```
+  ```yaml showLineNumbers
+  apiVersion: v1
+  kind: Service
+  metadata:
+    name: tinyllama
+  spec:
+    ports:
+      - name: http
+        port: 80
+        targetPort: 8080
+    selector:
+      app: tinyllama
+  ---
+  apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: tinyllama
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app: tinyllama
+    template:
+      metadata:
+        labels:
+          app: tinyllama
+      spec:
+        containers:
+          - name: tinyllama
+            image: ghcr.io/ngrok-samples/tinyllama:main
+            ports:
+              - name: http
+                containerPort: 8080
+  ---
+  # ngrok Kubernetes Operator configuration
+  apiVersion: networking.k8s.io/v1
+  kind: Ingress
+  metadata:
+    name: tinyllama-ingress
+  spec:
+    ingressClassName: ngrok
+    rules:
+      - host: <NGROK_DOMAIN>
+        http:
+          paths:
+            - path: /
+              pathType: Prefix
+              backend:
+                service:
+                  name: tinyllama
+                  port:
+                    number: 80
+  ```
 
 3. Apply the `tinyllama.yaml` manifest to your RKE2 cluster.
 
-   ```bash
-   kubectl apply -f tinyllama.yaml
-   ```
+  ```bash
+  kubectl apply -f tinyllama.yaml
+  ```
 
 4. Access your tinyllama demo app by navigating to your ngrok subdomain (for example, `https://one-two-three.ngrok.app`).
    ngrok's edge and your Operator will route traffic to your app from any device or external network as long
@@ -195,10 +194,8 @@ simplifying how you route external traffic through your Rancher-managed cluster.
 
 ## What's next?
 
-You've now used the open source ngrok Kubernetes Operator to add public ingress to your Rancher-managed
-cluster and sample application without worrying about IPs, network interfaces, or VPC routing. Because ngrok offloads
-ingress and middleware execution to its global edge, you can follow a similar procedure for Rancher-managed clusters in
-any on-prem or cloud Kubernetes environment, like EKS, GKE, and more.
+You've now used the open source ngrok Kubernetes Operator to add public ingress to your Rancher-managed cluster and sample application without worrying about IPs, network interfaces, or VPC routing.
+Because ngrok offloads ingress and middleware execution to its global edge, you can follow a similar procedure for Rancher-managed clusters in any on-prem or cloud Kubernetes environment, like EKS, GKE, and more.
 
 After deploying this proof-of-concept environment, you can take your integration between Rancher and the ngrok Ingress
 Controller in several directions.
@@ -218,7 +215,7 @@ Because you installed Rancher and deployed your application cluster via Docker, 
 docker stop [DOCKER_NAME] && docker rm [DOCKER_NAME]
 ```
 
-You can also now clean up your Linux host, either by following the Rancher node cleanup documentation or, in the case of a disposable VM, deleting it entirely.
+You can now clean up your Linux host, either by following the Rancher node cleanup documentation or, in the case of a disposable VM, deleting it entirely.
 
 ### Extend your Rancher and ngrok Kubernetes Operator integration
 
