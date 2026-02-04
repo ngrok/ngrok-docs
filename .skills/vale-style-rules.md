@@ -47,6 +47,11 @@ Run `pnpm run vale` to check your changes before submitting a PR.
 - ❌ `The feature is available — check the settings.`
 - ❌ `Use ngrok — it's fast and secure.`
 
+**Label or heading introducing an explanation:** When an em dash is used to introduce an explanation right after a label or bold phrase (e.g., **Create IAM Role**—An IAM role is required…), replace the em dash with a colon instead. Use a colon and a space, then continue the sentence.
+
+- ✅ `**Create IAM Role:** An IAM role is required so ngrok can stream logs.`
+- ❌ `**Create IAM Role**—An IAM role is required so ngrok can stream logs.`
+
 ### Oxford Comma
 
 **Error**: "Use the Oxford comma in 'X'."

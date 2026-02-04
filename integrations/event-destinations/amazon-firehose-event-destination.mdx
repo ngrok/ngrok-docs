@@ -4,82 +4,53 @@ sidebarTitle: AWS Firehose
 description: Send network traffic logs from ngrok to AWS Firehose.
 ---
 
-<Tip>
-**TL;DR**
-
-
-
-To send ngrok events to Firehose:
-
-1. [Obtain Firehose Delivery Stream ARN](#obtain-firehose-arn)
-1. [Create Log Export](#create-log-export)
-1. [Create Event Destination](#create-destination)
-</Tip>
-
-This guide covers how to send ngrok events including network traffic logs into AWS Firehose.
-You may want to keep an audit log of configuration changes within your ngrok
-account, record all traffic to your endpoints for active monitoring/troubleshooting, or
-you may use AWS Firehose as a SIEM and want to use it for security inspections.
+This guide explains how to send ngrok events, including network traffic logs, to AWS Firehose.
+You may want to keep an audit log of configuration changes in your ngrok account, record all traffic to your endpoints for active monitoring and troubleshooting, or use AWS Firehose as a SIEM for security inspections.
 
 By integrating ngrok with AWS Firehose, you can:
 
-- **Quickly identify application issues** in real-time using ngrok request events using Firehose data processing.
-- **Historically audit changes occurring within an account**. Be able to historically audit changes within an account.
-- **Profile usage of your service** by using Firehose queries and real-time data analytics.
-- **Identify security issues** by using ngrok events.
+- Quickly identify application issues in real time using ngrok request events and Firehose data processing.
+- Historically audit changes occurring in an account.
+- Profile usage of your service using Firehose queries and real-time data analytics.
+- Identify security issues using ngrok events.
 
-## 1. Obtain Firehose Delivery Stream ARN 
+## 1. Obtain Firehose delivery stream ARN
 
-For ngrok to successfully send events into AWS Firehose, a delivery stream is required
-ARN. To create the ARN, you can follow [this AWS
-guide](https://docs.aws.amazon.com/firehose/latest/dev/basic-create.html).
+For ngrok to send events to AWS Firehose, a delivery stream ARN is required.
+To create the stream, see the AWS Firehose documentation for creating a delivery stream.
 
-ngrok is a **Direct PUT** Source type, and you can choose any Firehose destination you
-wish. For testing, it may be easiest to create a S3 bucket as the destination.
+ngrok is a **Direct PUT** source type, and you can choose any Firehose destination you want.
+For testing, creating an S3 bucket as the destination may be easiest.
 
-Once you've created your AWS Firehose, keep the Delivery Stream ARN handy for **[Step 3](#create-destination)**.
+After you create your AWS Firehose delivery stream, keep the Delivery Stream ARN for [Step 3](#3-create-event-destination).
 
-## 2. Create a log export 
+## 2. Create a log export
 
-1. Using a browser, go to the [ngrok dashboard](https://dashboard.ngrok.com) and under **Traffic Observability** navigate to **Events Stream** on the left hand navigation and select **Create Subscription**.
+- In a browser, go to the ngrok dashboard and under **Traffic Observability** navigate to **Events Stream** in the left navigation.
+- Select **Create Subscription**.
+- In the Log Exporting configuration, provide a description for the export.
+- In the **Sources** tab, select **Add Source** to choose which events to send to Firehose.
+For information about events, see the [ngrok event documentation](/obs/events/reference/).
+- Select **Add Event Sources** to confirm your selections.
 
-   ![ngrok log export](../img/datadog/event_sub.png)
+## 3. Create event destination
 
-2. Within the Log Exporting configuration, provide a description for the export and within the sources tab select **Add Source** to choose which events you would like to send to Firehose.
+To send events to Firehose, assign an Event Destination to the Log Export.
 
-For information about the events, see the [ngrok event documentation](/obs/events/reference/).
+- In the Log Exporting configuration **Destination** tab, select **Add Destination**.
+- Choose AWS Firehose as the target and fill in the required information:
+  - **Delivery Stream ARN**
+  - **Description** (optional)
+- **Create IAM Role:** An IAM role is required so ngrok can stream logs to Firehose.
+Using the information from your preferred method (**API** or **CLI Script**), create the IAM role and provide the role ARN.
+For the fastest integration or proof of concept, use the **CLI Script**.
 
-Once complete, select **Add Event Sources** to confirm your selections.
-
-![ngrok event sources](../img/datadog/event_sources.png)
-
-## 3. Create event destination 
-
-To send the events to Firehose, assign an Event Destination to the Log Export.
-
-1. Within the Log Exporting configuration Destination Tab, select **Add Destination.**
-
-1. Choose AWS Firehose Logs as the target and fill in the correct information.
-   - **Delivery Stream ARN**
-   - **Description** - Optional
-
-1. **Create IAM Role** - An IAM role is required to allow ngrok to stream logs into
-   Firehose. Using the information provided by your preferred method of creation, either
-   **API** or **CLI Script**, create the IAM role and provide the role ARN. For the
-   fastest integration or proof of concept, use the **CLI Script**.
 <Note>
-**SECURITY BEST PRACTICE**
-
-
-
-If configuring your IAM role manually, ensure that you configure the Trust Policy with a
-condition that includes the ExternalId. This will ensure that the only data allowed to
-ingested by AWS will be from your ngrok account. If you configure the IAM role with the
-CLI script, this will be done automatically.
+**Security best practice:** If configuring your IAM role manually, ensure that you configure the Trust Policy with a condition that includes the ExternalId.
+This ensures that the only data AWS can ingest is from your ngrok account.
+If you configure the IAM role with the CLI script, this is done automatically.
 </Note>
 
-![ngrok event destination](../img/datadog/event_destination.png)
-
-4. Once all required inputs have values, select **Send Test Event** and you should be presented with a Success message. Select **Done** and the Firehose Event Destination setup is complete.
-
-![ngrok event destination success](../img/datadog/success.png)
+- When all required inputs have values, select **Send Test Event**.
+- You should see a Success message.
+- Select **Done** to complete the Firehose Event Destination setup.
