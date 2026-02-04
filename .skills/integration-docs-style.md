@@ -76,7 +76,7 @@
 - **Use relative paths**: Internal documentation links should use relative paths (e.g., `../traffic-policy/`) not full URLs (e.g., `https://ngrok.com/docs/traffic-policy`)
 - **Descriptive anchor text**: Link anchor text should be descriptive (e.g., "ngrok Python SDK docs" not "Reference Documentation")
 - **No external links**: Do not link to third-party or vendor sites (e.g., Microsoft, Auth0, vendor admin consoles, learn.microsoft.com). Link only to ngrok properties and ngrok docs. Use plain text for vendor product names and console names (e.g., "Auth0 Dashboard" not a link to manage.auth0.com).
-- **Never remove ngrok-related links**: If the URL has `ngrok` in it anywhere (e.g. ngrok.com, dashboard.ngrok.com, api.ngrok.com, charts.ngrok.com, github.com/ngrok/*, docs paths like /k8s/ or /traffic-policy/), do not delete or convert that link to plain text. When applying the "no external links" rule, only remove or convert links to third-party or vendor sites—never any link whose URL contains "ngrok". Keep all links to: dashboard.ngrok.com, ngrok.com, ngrok docs (relative paths), github.com/ngrok/* (ngrok-owned repos), ngrok.github.io, and the ngrok package on PyPI.
+- **Never remove ngrok-related links**: If the URL has `ngrok` in it anywhere (e.g. ngrok.com, dashboard.ngrok.com, api.ngrok.com, charts.ngrok.com, github.com/ngrok/_, docs paths like /k8s/ or /traffic-policy/), do not delete or convert that link to plain text. When applying the "no external links" rule, only remove or convert links to third-party or vendor sites—never any link whose URL contains "ngrok". Keep all links to: dashboard.ngrok.com, ngrok.com, ngrok docs (relative paths), github.com/ngrok/_ (ngrok-owned repos), ngrok.github.io, and the ngrok package on PyPI.
 
 ## Images
 
