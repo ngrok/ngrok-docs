@@ -1,48 +1,37 @@
 ---
 title: Ingress to Kubernetes apps deployed on Azure Kubernetes Service (AKS)
 description: Learn how to deploy a new Kubernetes cluster and demo app via AKS, then add ingress to applications with ngrok's Kubernetes Operator.
-sidebarTitle: Azure Kubenetes Service
+sidebarTitle: Azure Kubernetes Service
 ---
 
-In this guide, you'll launch a new cluster with [Azure Kubernetes Service (AKS)](https://azure.microsoft.com/en-us/products/kubernetes-service) and a demo app. You'll then add the ngrok Kubernetes Operator to route public traffic directly to your demo app through an encrypted, feature-rich tunnel for a complete proof of concept.
+This guide walks you through launching a new cluster with Azure Kubernetes Service (AKS) and a demo app, then adding the ngrok Kubernetes Operator to route public traffic to your demo app through an encrypted tunnel.
 
-In the end, you'll have learned enough to deploy your next production-ready Kubernetes app with AKS, with the ngrok Kubernetes Operator giving you access to additional features, like observability and resiliency, with no extra configuration complexity.
-
-Here is what you'll be building with:
-
-- The [ngrok Kubernetes Operator](https://ngrok.com/blog-post/ngrok-k8s): ngrok's official controller for adding secure public ingress and middleware execution to your Kubernetes apps with ngrok's cloud service. With ngrok, you can manage and secure traffic to your apps at every stage of the development lifecycle while also benefitting from simpler configurations, security, and edge acceleration.
-- Azure Kubernetes Service (AKS): A managed Kubernetes environment from Microsoft. AKS simplifies the deployment, health monitoring, and maintenance of cloud native applications, whether you deploy them in Azure, in on-premises data centers, or at the edge. With [40 regions](https://azure.microsoft.com/en-us/explore/global-infrastructure/products-by-region/?products=kubernetes-service), you should be able to deploy a cluster close to your customers.
+It covers the [ngrok Kubernetes Operator](https://github.com/ngrok/ngrok-operator) and AKS (a managed Kubernetes environment from Microsoft that simplifies deployment, health monitoring, and maintenance of cloud native applications in Azure, on-premises, or at the edge).
 
 ## What you'll need
 
-- An [Azure account](https://azure.microsoft.com/en-us/pricing/purchase-options/pay-as-you-go) with permissions to create new Kubernetes clusters.
-- An [ngrok account](https://ngrok.com/signup).
-- [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) and [Helm
-  3.0.0+](https://helm.sh/docs/intro/install/) installed on your local
-  workstation.
-- The [ngrok Kubernetes Operator](/k8s/) installed on
-  your cluster.
-- A reserved domain, which you can get in the ngrok
-  [dashboard](https://dashboard.ngrok.com/domains) or with the [ngrok
-  API](/api-reference/reserveddomains/list).
-  - You can choose from an ngrok subdomain or bring your own custom branded
-    domain, like `https://api.example.com`.
-  - This guide refers to this domain as `<NGROK_DOMAIN>`.
+- An Azure account with permissions to create new Kubernetes clusters.
+- An ngrok account.
+- kubectl and Helm 3.0.0+ installed on your local workstation.
+- The [ngrok Kubernetes Operator](/k8s/) installed on your cluster.
+- A reserved domain from the ngrok [dashboard](https://dashboard.ngrok.com/domains) or [API](/api-reference/reserveddomains/list); this guide refers to it as `<NGROK_DOMAIN>`.
 
 ## Create your cluster in AKS 
 
-Start by creating a new managed Kubernetes cluster in AKS. If you already have one, you can skip to [Add ngrok's Kubernetes ingress to your demo app](#add-ngrok-based-ingress-to-your-demo-app).
+Start by creating a new managed Kubernetes cluster in AKS.
+If you already have one, you can skip to [Add ngrok's Kubernetes ingress to your demo app](#add-ngroks-kubernetes-ingress-to-your-demo-app).
 
-1. Go to the [Kubernetes services](https://portal.azure.com/#view/HubsExtension/BrowseResource/resourceType/Microsoft.ContainerService%2FmanagedClusters) section in your Azure console and click **Create**&rarr;**Create a Kubernetes cluster**.
+1. In your Azure console, go to Kubernetes services and click **Create**, then **Create a Kubernetes cluster**.
 
-1. Configure your new cluster with the wizard. The default options are generally safe bets, but there are a few you might want to look at depending on your requirements and budget:
-   - Cluster present configuration: You can choose a production-ready deployment, a dev/test deployment, and others.
-   - Region: The data center where AKS will deploy your cluster—pick a region geographically close to your primary customers and/or your organization.
-   - AKS pricing tier: The **Free** tier works great with less than 10 nodes, and you can always upgrade to the production tier after deployment.
+2. Configure your new cluster with the wizard.
+   Default options are generally fine; you can adjust cluster configuration (production vs dev/test), region, and AKS pricing tier (the **Free** tier works well with fewer than 10 nodes).
 
-1. Click **Review + create** and wait for Azure to validate your configuration. If you see a **Validation failed.** warning, check out the errors—they're likely related to [quota limits](https://learn.microsoft.com/en-us/azure/quotas/regional-quota-requests). When it's ready, click **Create**. Grab a cup of coffee—deployment will take a while.
+3. Click **Review + create** and wait for Azure to validate your configuration.
+   If you see a **Validation failed** warning, check the errors (often related to quota limits).
+   When ready, click **Create**; deployment can take a while.
 
-1. When AKS completes the deployment, click **Go to deployment**, then **Connect**, which will show you options for connecting to your new cluster with kubectl. Follow the instructions to use the Cloud shell or Azure CLI, then double-check AKS has successfully deployed your cluster's underlying services:
+4. When AKS completes the deployment, click **Go to deployment**, then **Connect** for kubectl connection options.
+   Use the Cloud shell or Azure CLI as instructed, then verify your cluster's services:
 
    ```bash
    kubectl get deployments --all-namespaces=true
@@ -60,14 +49,15 @@ Start by creating a new managed Kubernetes cluster in AKS. If you already have o
 
 ## Deploy a demo microservices app 
 
-To showcase how this integration works, you'll deploy the [AKS Store](https://github.com/Azure-Samples/azure-voting-app-redis) app, which uses a microservices architecture to connect frontend UI to API-like services, passing data to RabbitMQ and MongoDB in the backend. To showcase the features of AKS, you'll deploy this demo app directly in the Azure Portal.
+To showcase this integration, deploy the AKS Store demo app (a microservices architecture connecting frontend UI to API-like services with RabbitMQ and MongoDB) directly in the Azure Portal.
+
 <Tip>
-**If you prefer the CLI, save the YAML below to a `.yaml` file on your local workstation and deploy with `kubectl apply -f ...`.**
+If you prefer the CLI, save the YAML below to a `.yaml` file on your local workstation and deploy with `kubectl apply -f ...`.
 </Tip>
 
-1. Click **Create**&rarr;**Apply a YAML**.
+- Click **Create**, then **Apply a YAML**.
 
-1. Copy and paste the YAML below into the editor.
+- Copy and paste the YAML below into the editor.
 
    ```yaml showLineNumbers collapsible
    apiVersion: apps/v1
@@ -303,18 +293,22 @@ To showcase how this integration works, you'll deploy the [AKS Store](https://gi
      type: LoadBalancer
    ```
 
-1. Click **Add** to deploy the demo app. To double-check services deployed successfully, click **Workloads** in the Azure Portal and look for `store-front`, `rabbitmq`, `product-service`, and `order-service` in the `default` namespace. If you prefer the CLI, you can run `kubectl get pods` for the same information.
+- Click **Add** to deploy the demo app.
+  To double-check services deployed successfully, click **Workloads** in the Azure Portal and look for `store-front`, `rabbitmq`, `product-service`, and `order-service` in the `default` namespace.
+  If you prefer the CLI, you can run `kubectl get pods` for the same information.
 
-## Add ngrok's Kubernetes ingress to your demo app 
+## Add ngrok's Kubernetes ingress to your demo app
 
 Next, you'll configure and deploy the [ngrok Kubernetes Operator](https://github.com/ngrok/ngrok-operator) to expose your demo app to the public internet through the ngrok cloud service.
 
-1. In the Azure Portal, click **Create&rarr;Apply a YAML**.
+- In the Azure Portal, click **Create**, then **Apply a YAML**.
 
-1. Copy and paste the YAML below into the editor. This manifest defines how the ngrok Kubernetes Operator should route traffic arriving on `NGROK_DOMAIN` to the `store-front` service on port `80`, which you deployed in the previous step.
-<Tip>
-**Make sure you edit line `9` of the YAML below, which contains the `NGROK_DOMAIN` variable, with the ngrok subdomain you created in the second step.**
-</Tip>
+- Copy and paste the YAML below into the editor.
+  This manifest defines how the ngrok Kubernetes Operator should route traffic arriving on `NGROK_DOMAIN` to the `store-front` service on port `80`, which you deployed in the previous step.
+
+  <Tip>
+  Edit line `9` of the YAML below (the `NGROK_DOMAIN` variable) with the ngrok subdomain you created earlier.
+  </Tip>
 
    ```yaml showLineNumbers
    apiVersion: networking.k8s.io/v1
@@ -336,33 +330,26 @@ Next, you'll configure and deploy the [ngrok Kubernetes Operator](https://github
                      number: 80
    ```
 
-1. Click **Add** to deploy the ingress configuration.
+- Click **Add** to deploy the ingress configuration.
+  Check ingress status in the Azure Portal under **Services and ingresses**, then **Ingresses**; you should see `store-ingress` and your ngrok subdomain.
+  To edit the ingress later, click the ingress and open the **YAML** tab.
 
-   You can check on the status of the ingress deployment in the Azure Portal at **Services and ingresses**&rarr;**Ingresses**. You should see the `store-ingress` name and your ngrok subdomain. If you need to edit your ingress configuration in the future, click the ingress item and then the **YAML** tab.
-
-1. Navigate to your ngrok subdomain, for example, `https://NGROK_DOMAIN.ngrok.app`, in your browser to see the demo app in action. Behind the scenes, ngrok's cloud service routed your request into the ngrok Kubernetes Operator, which then passed it to the `store-front` service.
-
-   ![The AKS Store demo app accessible from the public internet](../img/azure-aks/store-front.png)
+- Navigate to your ngrok subdomain (for example, `https://NGROK_DOMAIN.ngrok.app`) in your browser to see the demo app.
+  ngrok's cloud service routes requests to the ngrok Kubernetes Operator, which forwards them to the `store-front` service.
 
 ## Add OAuth authentication to your demo app 
 
-Now that your demo app is publicly accessible through the ngrok cloud service, you can quickly layer on [additional capabilities](/universal-gateway/http/), like authentication, without configuring and deploying complex infrastructure. The process for restricting access to individual Google accounts or any Google account under a specific domain name is outlined below.
+Now that your demo app is publicly accessible through the ngrok cloud service, you can quickly layer on [additional capabilities](/universal-gateway/http/), like authentication, without configuring and deploying complex infrastructure.
+The process for restricting access to individual Google accounts or any Google account under a specific domain name is outlined below.
 
-With the [Traffic Policy system](/traffic-policy/) and the [`oauth`
-action](/traffic-policy/actions/oauth), ngrok manages OAuth protection
-entirely at the ngrok cloud service, which means you don't need to add any
-additional services to your cluster, or alter routes, to ensure ngrok's edge
-authenticates and authorizes all requests before allowing ingress and access to
-your endpoint.
+With the [Traffic Policy system](/traffic-policy/) and the [`oauth` action](/traffic-policy/actions/oauth), ngrok manages OAuth protection entirely at the ngrok cloud service.
+This means you don't need to add any additional services to your cluster, nor alter any routes, to ensure ngrok's edge authenticates and authorizes all requests before allowing ingress and access to your endpoint.
 
-To enable the `oauth` action, you'll create a new `NgrokTrafficPolicy` custom
-resource and apply it to your entire `Ingress` with an annotation. You can also
-apply the policy to just a specific backend or as the default backend for an
-`Ingress`—see the doc on using the [Operator with
-Ingresses](/k8s/guides/using-ingresses/#using-ngroktrafficpolicy-with-ingress).
+To enable the `oauth` action, you'll create a new `NgrokTrafficPolicy` custom resource and apply it to your entire `Ingress` with an annotation.
+You can also apply the policy to just a specific backend or as the default backend for an `Ingress`—see the doc on using the [Operator with Ingresses](/k8s/guides/using-ingresses/#using-ngroktrafficpolicy-with-ingress).
 
-1. Edit your existing ingress YAML with the following. Note the new `annotations` field and
-   the `NgrokTrafficPolicy` CR.
+- Edit your existing ingress YAML with the following.
+  Note the new `annotations` field and the `NgrokTrafficPolicy` CR.
 
    ```yaml
     ...
@@ -403,14 +390,11 @@ Ingresses](/k8s/guides/using-ingresses/#using-ngroktrafficpolicy-with-ingress).
               provider: google
    ```
 
-1. When you open your demo app again, you'll be asked to log in via Google.
-   That's a start, but what if you want to authenticate only yourself or colleagues?
+- When you open your demo app again, you'll be asked to log in via Google.
+  That's a start, but what if you want to authenticate only yourself or colleagues?
 
-1. You can use [expressions](/traffic-policy/concepts/expressions) and [CEL
-   interpolation](/traffic-policy/concepts/cel-interpolation) to filter out
-   and reject OAuth logins that don't contain `example.com`. Update the
-   `NgrokTrafficPolicy` portion of your manifest after changing `example.com` to
-   your domain.
+- You can use [expressions](/traffic-policy/concepts/expressions) and [CEL interpolation](/traffic-policy/concepts/cel-interpolation) to filter out and reject OAuth logins that don't contain `example.com`.
+  Update the `NgrokTrafficPolicy` portion of your manifest after changing `example.com` to your domain.
 
    ```yaml
     # Traffic Policy configuration for OAuth
@@ -434,15 +418,13 @@ Ingresses](/k8s/guides/using-ingresses/#using-ngroktrafficpolicy-with-ingress).
                   status_code: 400
    ```
 
-1. Check out your deployed app once again. If you log in with an email that
-   doesn't match your domain, ngrok rejects your request. 
+- Check out your deployed app once again.
+  If you log in with an email that doesn't match your domain, ngrok rejects your request.
 
 ## What's next?
 
-You've now used the open source ngrok Kubernetes Operator to add public ingress to a demo app on a cluster managed in AKS without having to worry about complex Kubernetes networking configurations. Because ngrok abstracts ingress and middleware execution to its cloud service, you can follow a similar process to route public traffic to your next production-ready app.
+You've now used the open source ngrok Kubernetes Operator to add public ingress to a demo app on a cluster managed in AKS without having to worry about complex Kubernetes networking configurations.
+Because ngrok abstracts ingress and middleware execution to its cloud service, you can follow a similar process to route public traffic to your next production-ready app.
 
-For next steps, explore the [Kubernetes docs](/k8s/) for more details on
-how the Operator works, different ways you can integrate ngrok with an existing
-production cluster, or use more advanced features like
-[bindings](/k8s/guides/bindings/) or [endpoint
-pooling](/k8s/guides/pooling/).
+For next steps, explore the [Kubernetes docs](/k8s/) for more details on how the Operator works, different ways you can integrate ngrok with an existing production cluster, or use more advanced features like [bindings](/k8s/guides/bindings/) or [endpoint pooling](/k8s/guides/pooling/).
+
