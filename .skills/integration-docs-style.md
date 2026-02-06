@@ -32,6 +32,7 @@
 - **Long sentences**: Break up sentences that are too long into multiple sentences
 - **Line breaks**: Use a single blank line between: frontmatter (`---`) and components (e.g., `<Tip>`), code blocks (```) and components, and paragraphs and headings. More than one blank line in a row is not allowed.
 - **Convert "Tip:" to component**: If you see "Tip:" in plain text, convert it to a `<Tip>` component
+- **Note and Tip headings**: When a `<Note>` or `<Tip>` already has a heading (bold first line), use sentence case with a colon (e.g., **Security best practice:** or **Troubleshooting:**, not **SECURITY BEST PRACTICE** or **TROUBLESHOOTING**). Do not add a blank line between that heading and the body text that follows. Do not add a heading (e.g., **Alternative:**, **Note:**) to a Note or Tip that does not already have one.
 - **File names**: Always in backticks in body content (e.g., `compose.yaml`), never in headers
 - **Addresses/URLs**: Always in backticks in body content (e.g., `localhost:8123`), never in headers
 - **No HTML entities**: Don't use `&mdash;` - use periods and split into separate sentences instead
@@ -42,9 +43,9 @@
 ## Lists and Numbering
 
 - **Ordered lists must be sequential**: Use 1., 2., 3., not all 1.
-- **No nested numbered lists**: If section headers are numbered (## 1., ## 2., etc.), use plain text or bullet points in body content, not numbered lists
+- **No nested numbered lists**: Do not use numbered lists (1., 2., 3.) inside a section when that section is already part of a sequence (e.g., under a numbered ## step or a procedural guide). Replace nested numbered lists with **unordered lists** (bullet points)
 - **Exception for explicit numbering**: If the text explicitly calls out numbering (e.g., "You have two options:"), use numbered lists instead of bullet points
-- **Convert nested lists to plain text**: Instructions within numbered sections should be written as paragraphs or bullet points
+- **Convert nested lists to unordered**: Instructions within numbered or sequential sections should be written as paragraphs or unordered (bullet) lists, not numbered lists
 - **Options vs sequential steps**: Use "Option 1", "Option 2" for alternative approaches, and numbered steps (## 1., ## 2.) only for sequential instructions
 - **List item periods**: List items that are incomplete sentences or fragments should NOT have periods. Only complete sentences in list items should have periods
 - **List item formatting**: Don't use bold formatting in list items unless it's UI text or something that actually needs emphasis. Regular bullet points don't need bold
@@ -81,6 +82,7 @@
 - **No UI screenshots**: Remove all UI screenshots from integration docs (e.g., dashboard screenshots)
 - **Keep architectural diagrams**: Architectural diagrams and reference diagrams should be kept
 - **Delete image files**: Delete the actual image files from the repository for removed screenshots
+- **Delete empty image directories**: After removing screenshot image files, delete the subdirectory that housed them if that directory is now empty (e.g., delete `integrations/img/datadog` if it is empty)
 - **Normalize text**: Fix surrounding text to flow naturally without image references
 - **No broken image refs**: When removing screenshots (or when auditing a doc), remove the image markup entirely—do not leave `![...](path)` refs whose files do not exist. Fix or remove any orphaned image references so the doc never points at missing assets.
 

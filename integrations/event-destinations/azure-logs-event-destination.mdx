@@ -4,83 +4,58 @@ sidebarTitle: Azure Logs Ingestion
 description: Send network traffic logs from ngrok to Azure Logs Ingestion.
 ---
 
-This guide covers how to send ngrok events including network traffic logs into Azure via the Logs Ingestion API.
+This guide explains how to send ngrok events, including network traffic logs, to Azure via the Logs Ingestion API.
 
-This is useful if you want to keep an audit log of configuration changes within your ngrok
-account, record all traffic to your endpoints for active monitoring/troubleshooting, or leveraging it as a SIEM for security inspections.
+This is useful if you want to keep an audit log of configuration changes in your ngrok account, record all traffic to your endpoints for active monitoring and troubleshooting, or use it as a SIEM for security inspections.
 
 By integrating ngrok with Azure, you can:
 
-- **Quickly identify application issues** in real-time using ngrok request events using Azure logs processing.
-- **Historically audit changes occurring within an account**. Be able to historically audit changes within an account.
-- **Profile usage of your service** by using logs queries and real-time data analytics.
-- **Identify security issues** by using ngrok events.
+- Quickly identify application issues in real time using ngrok request events and Azure logs processing.
+- Historically audit changes occurring in an account.
+- Profile usage of your service using logs queries and real-time data analytics.
+- Identify security issues using ngrok events.
 
-## 1. Create a Log Analytics workspace 
+## 1. Create a Log Analytics workspace
 
-These steps were adapted from the [Create a Logs Analytics Workspace docs from Microsoft](https://learn.microsoft.com/en-us/azure/azure-monitor/logs/quick-create-workspace).
+These steps were adapted from the Microsoft documentation for creating a Log Analytics workspace.
 
-1. Using a browser, log into your [Azure portal](https://portal.azure.com).
-
-2. Navigate to the search bar and type in **Log Analytics Workspaces**
-
-3. Click on the **Services** entry (not the Marketplace entry).
-
-![search log analytics workspaces](../img/azure-logs-ingestion/search-workspaces.png)
-
-4. Click **Create** on the top bar Log Analytics Workspace page.
-
-5. Follow the wizard to create your Log Analytics Workspace, filling in the necessary region information, name, and resource group, before clicking **Review + Create**. These values can be anything you like and do not impact ngrok's ability to send logs to your Azure account.
-
-6. Click **Create** at the bottom of the review step to finally provision the Log Analytics Workspace.
-
-![create log analytics workspaces](../img/azure-logs-ingestion/create-workspace-review.png)
+- In a browser, sign in to the Azure portal.
+- In the search bar, type **Log Analytics Workspaces**.
+- Click the **Services** entry (not the Marketplace entry).
+- Click **Create** on the top bar of the Log Analytics Workspace page.
+- Follow the wizard to create your Log Analytics Workspace, filling in the region, name, and resource group, then click **Review + Create**.
+These values can be anything you like and do not affect ngrok's ability to send logs to your Azure account.
+- Click **Create** at the bottom of the review step to provision the Log Analytics Workspace.
 
 You now have a **Log Analytics Workspace**, which will be the home for your data collection endpoint, tables, and rules.
 
-## 2. Create a data collection endpoint 
+## 2. Create a data collection endpoint
 
-These steps were adapted from the [Create a data collection endpoint](https://learn.microsoft.com/en-us/azure/azure-monitor/essentials/data-collection-endpoint-overview#create-a-data-collection-endpoint) docs from Microsoft.
+These steps were adapted from the Microsoft documentation for creating a data collection endpoint.
 
-1. Navigate to the search bar and type in **Data Collection Endpoints**
+- In the search bar, type **Data Collection Endpoints**.
+- Click the **Services** entry.
+- Click **Create** on the top bar of the Data Collection Endpoints page.
+- Follow the wizard to create your Data Collection Endpoint, filling in the region, name, and resource group, then click **Review + Create**.
+These fields can be anything you like and do not affect ngrok's ability to send logs to your Azure account.
+- Click **Create** at the bottom of the review step to provision the Data Collection Endpoint.
 
-2. Click on the **Services** entry.
+You now have a **Data Collection Endpoint**, which is the network-accessible service that ngrok uses to send events to Azure.
 
-![search data collection endpoints](../img/azure-logs-ingestion/search-dce.png)
+## 3. Create a DCR-based custom table in the workspace
 
-3. Click **Create** on the top bar Data Collection Endpoints page.
+These steps were adapted from the Microsoft documentation for creating a new table in a Log Analytics workspace.
 
-4. Follow the wizard to create your Data Collection Endpoint, filling in the necessary region information, name, and resource group, before clicking **Review + Create**. These fields can be anything you like and to not impact ngrok's ability to send logs to your Azure account.
-
-5. Click **Create** at the bottom of the review step to provision the Data Collection Endpoint.
-
-![create dce](../img/azure-logs-ingestion/create-dce.png)
-
-You now have a **Data Collection Endpoint**, which is the network accessible service that ngrok connects via to send events into Azure.
-
-## 3. Create a DCR-based custom table in the workspace 
-
-These steps were adapted from the [Create a new table in Log Analytics workspace](https://learn.microsoft.com/en-us/azure/azure-monitor/logs/tutorial-logs-ingestion-portal?source=recommendations#create-new-table-in-log-analytics-workspace) docs from Microsoft.
-
-1. Navigate to the **Log Analytics Workspaces** list once again.
-
-2. Click the workspace you created previously in [**Step 1**](#log-analytics-workspace).
-
-3. Navigate to **Settings -> Tables** in the sidebar menu of the selected workspace.
-
-4. Click **Create** on the top bar, and select **New custom log (DCR-based)**.
-
-![create dcr-based table](../img/azure-logs-ingestion/create-dcr-table.png)
-
-5. Populate the table name with a name of your choice and the DCE field with the existing DCE you created in [**Step 2**](#data-collection-endpoint).
-
-6. Click **Create a new data collection rule** underneath the Data collection rule field, which opens a drawer. Fill out the resource group and name, before clicking **Done** on the drawer.
-
-![create dcr drawer](../img/azure-logs-ingestion/dcr-create-drawer.png)
-
-7. Click **Next** in the table creation wizard.
-
-8. Upload the following json file using the wizard. After uploading, you will notice a warning header "TimeGenerated field is not found in the sample provided" which is expected.
+- Navigate to the **Log Analytics Workspaces** list again.
+- Click the workspace you created in [Step 1](#1-create-a-log-analytics-workspace).
+- In the sidebar of the selected workspace, go to **Settings** > **Tables**.
+- Click **Create** on the top bar and select **New custom log (DCR-based)**.
+- Populate the table name with a name of your choice and the DCE field with the existing DCE you created in [Step 2](#2-create-a-data-collection-endpoint).
+- Under the Data collection rule field, click **Create a new data collection rule**, which opens a drawer.
+Fill out the resource group and name, then click **Done** in the drawer.
+- Click **Next** in the table creation wizard.
+- Upload the following JSON file using the wizard.
+After uploading, you will see a warning header "TimeGenerated field is not found in the sample provided"; this is expected.
 
 ```json
 {
@@ -90,176 +65,112 @@ These steps were adapted from the [Create a new table in Log Analytics workspace
 	"object": {}
 }
 ```
+
 <Tip>
 **Not to worry!**
 
-
-You will notice a warning header "TimeGenerated field is not found in the sample provided"; this is expected.
-
-You can remedy this by using the **Transformation Editor**.
+You will see a warning header "TimeGenerated field is not found in the sample provided"; this is expected.
+You can fix this using the **Transformation Editor**.
 </Tip>
 
-9. Click the **Transformation editor** button on the top bar of the wizard, which will open a drawer.
-
-10. Paste in the following transformation and click **Run**.
+- Click the **Transformation editor** button on the top bar of the wizard to open a drawer.
+- Paste in the following transformation and click **Run**.
 
 ```
 source
 | extend TimeGenerated = event_timestamp
 ```
 
-![transformation editor](../img/azure-logs-ingestion/transformation.png)
+- Click **Apply**, then **Next**, then **Create**.
 
-11. Click **Apply**.
+You now have a **Data Collection Rule** configured for ngrok events, along with a table where the data will be stored.
 
-12. Click **Next**.
+## 4. Create a Microsoft Entra Application
 
-13. Click **Create**.
+These steps were adapted from the Microsoft documentation for creating a Microsoft Entra Application.
 
-![create table success](../img/azure-logs-ingestion/create-table-success.png)
+- In the search bar, type **Microsoft Entra ID**.
+- Under **Services**, select **Microsoft Entra ID** (not the Marketplace item).
+- In the sidebar, go to **Manage** > **App registrations**.
+- Click **New registration**.
+- Name the application **ngrok-events** or something similar to clarify its use; this entity is what ngrok uses to authenticate with your data collection endpoint.
+- For account type, select the first option: **Accounts in this organizational directory only**.
+- Click **Register**.
 
-You now have a **Data Collection Rule** properly configured for ngrok events, alongside a table where the data will be stored.
+You have now created a **Microsoft Entra ID App Registration**, which is a service principal that grants roles and access to services like ngrok.
 
-## 4. Create a Microsoft Entra Application 
+## 5. Assign IAM permissions to the Application for the DCR
 
-These steps were adapted from the [Create a Microsoft Entra Application](https://learn.microsoft.com/en-us/azure/azure-monitor/logs/tutorial-logs-ingestion-portal?source=recommendations#create-microsoft-entra-application) docs from Microsoft.
+These steps were adapted from the Microsoft documentation for assigning permissions to the DCR.
 
-1. Navigate to the search bar and type in **Microsoft Entra ID**.
+- In the search bar, type **Data collection rules**.
+- Under **Services**, select **Data collection rules**.
+- Click the Data collection rule you created in [Step 3](#3-create-a-dcr-based-custom-table-in-the-workspace).
+- In the sidebar, click **Access control (IAM)**.
+- Click **Add** on the top bar.
+- Click **Add role assignment**.
+- Under **Job function roles**, search for **Monitoring**.
+- Click **Monitoring Metrics Publisher**.
+- Click **Next** to go to Members.
+- Click **Select members**.
+- Search for the app registration you created in [Step 4](#4-create-a-microsoft-entra-application).
+- Click the service principal and click **Select**.
+- Click **Review + assign**, then **Review + assign** again to confirm the role assignment.
 
-2. Select the **Microsoft Entra ID** under **Services**, not the Marketplace item.
+You have now granted the ngrok application access to ingest logs into the DCR, which is the final step before creating an Event Destination.
 
-![search Microsoft Entra ID](../img/azure-logs-ingestion/search-entra.png)
+## 6. Gather necessary data for event destination
 
-3. Navigate to **Manage -> App registrations** on the sidebar.
+To create an event destination in the ngrok dashboard, gather the following from what you created in Azure:
 
-4. Click **New registration**
+- Tenant ID
+- Application's Client ID
+- Application's Client Secret
+- DCR immutable ID
+- DCR stream name
+- DCE log ingestion URI
 
-5. Name the application **ngrok-events** or something similar to clarify its use; this entity will be what ngrok uses to authenticate with your data collection endpoint.
-
-6. Select the first radio option, **Accounts in this organizational directory only** for the account type
-
-7. Click **Register**
-
-![register app](../img/azure-logs-ingestion/register.png)
-
-You have now created an **Microsoft Entra ID App Registration**, which is a Service User construct that grants roles/access to services like ngrok.
-
-## 5. Assign IAM permissions to the Application for the DCR 
-
-These steps were adapted from the [Assign permissions to the DCR](https://learn.microsoft.com/en-us/azure/azure-monitor/logs/tutorial-logs-ingestion-portal?source=recommendations#assign-permissions-to-the-dcr) docs from Microsoft.
-
-1. Navigate to the search bar and type in **Data collection rules**.
-
-2. Select the **Data collection rules** option under **Services**.
-
-3. Click on the Data collection rule created in [**Step 3**](#data-collection-rule).
-
-4. Click **Access control (IAM)** on the sidebar.
-
-5. Click **Add** on the top bar.
-
-6. Click **Add role assignment**.
-
-7. Search for **Monitoring** in the search bar underneath **Job function roles**.
-
-8. Click on **Monitoring Metrics Publisher**.
-
-![register app](../img/azure-logs-ingestion/role-assignment.png)
-
-9. Click **Next**, advancing to Members.
-
-10. Click **Select members**.
-
-11. Search for the app registration you created in [**Step 4**](#entra-application).
-
-12. Click on the service principal and click **Select**.
-
-13. Click **Review + assign**.
-
-14. Click **Review + assign** again, confirming the role assignment.
-
-![review app role](../img/azure-logs-ingestion/review-role.png)
-
-You have now granted access for the ngrok application to ingest logs into the DCR, which is the final step before creating an Event Destination.
-
-## 6. Gather necessary data for event destination 
-
-In order to create an event destination in your ngrok Dashboard, gather the following information from what was just created in Azure:
-
-- the Tenant ID
-- the Application's Client ID
-- the Application's Client Secret
-- the DCR immutable ID
-- the DCR stream name
-- the DCE log ingestion URI
-
-1. To gather the first three fields, navigate back to **Microsoft Entra ID**. Search for **Entra** in the top search bar and select the **Microsoft Entra ID** service.
-
-2. Navigate to **Manage -> App registrations** in the sidebar, and select the application you created in [**Step 4**](#entra-application).
-
-3. Copy the **Application (client) ID** and **Directory (tenant) ID** from the Overview Page.
-
-![app ids](../img/azure-logs-ingestion/app-ids.png)
-
-4. Navigate to **Manage -> Certificates & secrets** in the sidebar.
-
-5. Click **New client secret**.
-
-6. Fill in the description and expiry date with the desired values, before clicking **Add**.
-
-7. Copy the secret value provided by Azure - **this value will no longer be available once you navigate away**.
-
-![app secret](../img/azure-logs-ingestion/app-secret.png)
-
-8. To gather the DCR persistent ID and stream name, navigate to **Data collection rules** using the top search bar.
-
-9. Select the Data collection rule you created in [**Step 3**](#data-collection-rule).
-
-10. In the **Overview** tab, copy the **Immutable Id** value.
-
-![immutable id](../img/azure-logs-ingestion/immutable-id.png)
-
-11. Navigate to **Configuration -> Data sources** in the sidebar.
-
-12. Copy the **Data source** name, which should start with **Custom\_** and end with **\_CL**. This is the **DCR stream name**.
-
-![stream name](../img/azure-logs-ingestion/stream-name.png)
-
-13. Finally, navigate to **Data collection endpoints** in the top search bar.
-
-14. Select the Data collection endpoint you created in [**Step 2**](#data-collection-endpoint).
-
-15. In the **Overview** tab, copy the **Logs Ingestion URI**.
+- To get the first three fields, go back to **Microsoft Entra ID**.
+In the top search bar, search for **Entra** and select the **Microsoft Entra ID** service.
+- In the sidebar, go to **Manage** > **App registrations** and select the application you created in [Step 4](#4-create-a-microsoft-entra-application).
+- On the Overview page, copy **Application (client) ID** and **Directory (tenant) ID**.
+- In the sidebar, go to **Manage** > **Certificates & secrets**.
+- Click **New client secret**.
+- Fill in the description and expiry date, then click **Add**.
+- Copy the secret value provided by Azure.
+This value is only shown once; it will not be available after you navigate away.
+- To get the DCR immutable ID and stream name, navigate to **Data collection rules** using the top search bar.
+- Select the Data collection rule you created in [Step 3](#3-create-a-dcr-based-custom-table-in-the-workspace).
+- In the **Overview** tab, copy the **Immutable Id** value.
+- In the sidebar, go to **Configuration** > **Data sources**.
+- Copy the **Data source** name, which should start with **Custom_** and end with **_CL**.
+This is the **DCR stream name**.
+- In the top search bar, navigate to **Data collection endpoints**.
+- Select the Data collection endpoint you created in [Step 2](#2-create-a-data-collection-endpoint).
+- In the **Overview** tab, copy the **Logs Ingestion URI**.
 
 You now have all the required data to create an event destination with ngrok.
 
-## 7. Create the new event destination in ngrok 
+## 7. Create the new event destination in ngrok
 
-At this point, you can choose to create the event destination [through the ngrok Dashboard](#create-via-dashboard) or via [the ngrok API](#create-via-ngrok-api).
+At this point, you can create the event destination [through the ngrok dashboard](#creating-through-the-ngrok-dashboard) or [via the ngrok API](#creating-via-the-ngrok-api).
 
-### Creating through the ngrok Dashboard 
+### Creating through the ngrok dashboard
 
-1. Log into the ngrok Dashboard and navigate to [**Traffic Observability > Events Stream**](https://dashboard.ngrok.com/observability/event-subscriptions).
+- Sign in to the ngrok dashboard and go to [**Traffic Observability** > **Events Stream**](https://dashboard.ngrok.com/observability/event-subscriptions).
+- Create a **new Log Export** using the plus sign in the top left, or open an existing one.
+- After adding one or more sources, select the **Destinations** tab and click **Add Destination**.
+- Select **Azure Logs Ingestion API**.
+- Fill in the fields using the values you collected in Step 6.
+- Click **Send Test Event** and look for an example event in your Azure account.
+It may take a minute to appear due to propagation delays.
+- Click **Done** and save the new Log Export.
 
-1. Create a **new Log Export** through the plus sign in the top left or open an existing one.
+### Creating via the ngrok API
 
-1. After adding one or more sources, select the **Destinations** tab and **Add Destination**
-
-1. Select the **Azure Logs Ingestion API** option
-
-1. Fill in the fields based on the values you collected in **Step 6**.
-
-1. Click **Send Test Event** and look for an example event in your Azure Account. It may take a minute to show up due to propagation delays.
-
-1. Click **Done** and save the new Log Export.
-
-### Creating via the ngrok API 
-
-1. Create an API key with ngrok. You can do this via the [ngrok dashboard](https://dashboard.ngrok.com/api).
-
-2. Using your Rest API tool of choice (cURL, Postman, etc.), you will run the following API calls.
-
-3. To create the Azure logs ingestion event destination, run the following call:
+- Create an API key with ngrok (for example via the ngrok dashboard).
+- Using your REST API tool of choice (cURL, Postman, etc.), run the following API calls.
+- To create the Azure Logs Ingestion event destination, run:
 
 ```bash
 curl --location 'https://api.ngrok.com/event_destinations' \
@@ -283,32 +194,9 @@ curl --location 'https://api.ngrok.com/event_destinations' \
 }'
 ```
 
-Copy the returned event destination ID (highlighted below).
+Copy the returned event destination ID from the response.
 
-```json {2}
-{
-	"id": "ed_12345",
-	"created_at": "...",
-	"format": "json",
-	"target": {
-		"firehose": null,
-		"kinesis": null,
-		"cloudwatch_logs": null,
-		"datadog": null,
-		"azure_logs_ingestion": {
-			"tenant_id": "...",
-			"client_id": "...",
-			"client_secret": "",
-			"logs_ingestion_uri": "...",
-			"data_collection_rule_id": "...",
-			"data_collection_stream_name": "..."
-		}
-	},
-	"uri": "https://api.ngrok.com.lan/event_destinations/ed_2iQktWaNCyWVNjFYWGkdzhrbvF5"
-}
-```
-
-4. To create a log export (event subscription) using the previously created event destination, run the following call
+- To create a log export (event subscription) using the event destination you created, run:
 
 ```bash
 curl \
@@ -327,4 +215,4 @@ curl \
 https://api.ngrok.com/event_subscriptions
 ```
 
-After getting a 200 response, your event destination is successfully configured and subscribed to the set of events types you desire.
+After you get a 200 response, your event destination is configured and subscribed to the set of event types you specified.
