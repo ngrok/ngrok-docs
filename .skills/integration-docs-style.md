@@ -75,7 +75,6 @@
 
 - **Use relative paths**: Internal documentation links should use relative paths (e.g., `../traffic-policy/`) not full URLs (e.g., `https://ngrok.com/docs/traffic-policy`)
 - **Descriptive anchor text**: Link anchor text should be descriptive (e.g., "ngrok Python SDK docs" not "Reference Documentation")
-- **No external links**: Do not link to third-party or vendor sites (e.g., Microsoft, Auth0, vendor admin consoles, learn.microsoft.com, GitHub repos). Link only to ngrok properties (e.g., dashboard.ngrok.com, ngrok.com) and ngrok docs. Use plain text for vendor product names and console names (e.g., "Auth0 Dashboard" not a link to manage.auth0.com).
 
 ## Images
 
