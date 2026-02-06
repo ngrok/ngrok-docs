@@ -75,6 +75,7 @@ jobs:
       - name: Clean up outdated Vale comments
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VALE_FILES: ${{ steps.changed-files.outputs.vale_files }}
         run: |
           PAGE=1
           PER_PAGE=100
@@ -99,6 +100,39 @@ jobs:
             done
             PAGE=$((PAGE + 1))
           done
+
+          # When no markdown files changed, update the Style summary comment so it's not stale
+          if [ -z "$VALE_FILES" ] || [ "$VALE_FILES" = "" ]; then
+            SUMMARY_COMMENT_ID=""
+            PAGE=1
+            while true; do
+              ISSUE_COMMENTS_PAGE=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+                -H "Accept: application/vnd.github.v3+json" \
+                "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments?page=$PAGE&per_page=100")
+              if ! echo "$ISSUE_COMMENTS_PAGE" | jq -e 'type == "array"' > /dev/null 2>&1; then
+                break
+              fi
+              PAGE_COUNT=$(echo "$ISSUE_COMMENTS_PAGE" | jq 'length')
+              if [ "$PAGE_COUNT" -eq 0 ]; then
+                break
+              fi
+              FOUND_ID=$(echo "$ISSUE_COMMENTS_PAGE" | jq -r '.[] | select(.body | contains("# Style linting summary")) | .id' 2>/dev/null | head -n1)
+              if [ -n "$FOUND_ID" ] && [ "$FOUND_ID" != "null" ] && [ "$FOUND_ID" != "" ]; then
+                SUMMARY_COMMENT_ID="$FOUND_ID"
+                break
+              fi
+              PAGE=$((PAGE + 1))
+            done
+            if [ -n "$SUMMARY_COMMENT_ID" ] && [ "$SUMMARY_COMMENT_ID" != "" ]; then
+              SUMMARY_BODY=$(printf '# Style linting summary\n\nVale found no style issues in this PR. Great job!')
+              curl -s -X PATCH \
+                -H "Authorization: token $GITHUB_TOKEN" \
+                -H "Accept: application/vnd.github.v3+json" \
+                -H "Content-Type: application/json" \
+                "https://api.github.com/repos/${{ github.repository }}/issues/comments/$SUMMARY_COMMENT_ID" \
+                -d "$(jq -n --arg body "$SUMMARY_BODY" '{body: $body}')" > /dev/null
+            fi
+          fi
 
       - name: Post individual Vale comments on PR lines
         if: steps.changed-files.outputs.vale_files != ''
