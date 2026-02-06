@@ -72,6 +72,34 @@ jobs:
         run: |
           sudo apt-get update && sudo apt-get install -y jq curl
 
+      - name: Clean up outdated Vale comments
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PAGE=1
+          PER_PAGE=100
+          while true; do
+            COMMENTS_PAGE=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+              -H "Accept: application/vnd.github.v3+json" \
+              "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/comments?page=$PAGE&per_page=$PER_PAGE")
+            if ! echo "$COMMENTS_PAGE" | jq -e 'type == "array"' > /dev/null 2>&1; then
+              break
+            fi
+            PAGE_COUNT=$(echo "$COMMENTS_PAGE" | jq 'length')
+            if [ "$PAGE_COUNT" -eq 0 ]; then
+              break
+            fi
+            echo "$COMMENTS_PAGE" | jq -r '.[] | select((.body | contains("❌") or contains("⚠️")) and (.body | contains("**") and contains("(") and contains("):")) and (.user.login | test("github-actions"))) | .id' 2>/dev/null | while read -r comment_id; do
+              if [ -n "$comment_id" ] && [ "$comment_id" != "null" ] && [ "$comment_id" != "" ]; then
+                curl -s -w "%{http_code}" -o /dev/null -X DELETE \
+                  -H "Authorization: token $GITHUB_TOKEN" \
+                  -H "Accept: application/vnd.github.v3+json" \
+                  "https://api.github.com/repos/${{ github.repository }}/pulls/comments/$comment_id"
+              fi
+            done
+            PAGE=$((PAGE + 1))
+          done
+
       - name: Post individual Vale comments on PR lines
         if: steps.changed-files.outputs.vale_files != ''
         env:
@@ -143,41 +171,6 @@ jobs:
               SUMMARY_COMMENT_ID="$FOUND_ID"
               break
             fi
-            
-            PAGE=$((PAGE + 1))
-          done
-          
-          # Get all PR review comments (line comments) and delete only our own comments page by page
-          PAGE=1
-          PER_PAGE=100
-          
-          while true; do
-            COMMENTS_PAGE=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
-              -H "Accept: application/vnd.github.v3+json" \
-              "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/comments?page=$PAGE&per_page=$PER_PAGE")
-            
-            if ! echo "$COMMENTS_PAGE" | jq -e 'type == "array"' > /dev/null 2>&1; then
-              break
-            fi
-            
-            PAGE_COUNT=$(echo "$COMMENTS_PAGE" | jq 'length')
-            if [ "$PAGE_COUNT" -eq 0 ]; then
-              break
-            fi
-            
-            # Only delete comments posted by GitHub Actions bot (our workflow)
-            # Identify our comments by checking if they contain our signature pattern (emoji + rule name format)
-            # AND are from the GitHub Actions bot (username contains "github-actions")
-            # This ensures we never delete human comments, even if they somehow match our pattern
-            echo "$COMMENTS_PAGE" | jq -r '.[] | select((.body | contains("❌") or contains("⚠️")) and (.body | contains("**") and contains("(") and contains("):")) and (.user.login | test("github-actions"))) | .id' 2>/dev/null | while read -r comment_id; do
-              if [ -n "$comment_id" ] && [ "$comment_id" != "null" ] && [ "$comment_id" != "" ]; then
-                HTTP_CODE=$(curl -s -w "%{http_code}" -o /dev/null -X DELETE \
-                  -H "Authorization: token $GITHUB_TOKEN" \
-                  -H "Accept: application/vnd.github.v3+json" \
-                  "https://api.github.com/repos/${{ github.repository }}/pulls/comments/$comment_id")
-                # 204 = success, 404 = already deleted or doesn't exist, anything else = permission issue (ignore)
-              fi
-            done
             
             PAGE=$((PAGE + 1))
           done
