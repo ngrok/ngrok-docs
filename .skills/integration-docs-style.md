@@ -3,6 +3,7 @@
 ## Document Structure
 
 - **Intro paragraph**: Add an intro paragraph below the Tip (or after frontmatter if no Tip) but above the first h2 that briefly explains the guide's purpose
+- **Tip placement**: Keep Tips in the body when they relate to a specific step or prerequisite (e.g. a tip right before step 1). Do not move body-context Tips to the top.
 - **No future tense in intros**: Use present tense in intro paragraphs (e.g., "It covers setting up..." not "You'll set up...")
 - **Vary intro phrasing**: Vary the phrasing in intro paragraphs across different docs - avoid using the exact same phrasing like "This guide covers configuring" repeatedly. Use alternatives like "This guide shows you how to configure...", "This guide explains how to configure...", "This guide walks you through configuring...", or other variations
 - **Descriptive headers**: Section headers should be descriptive, not generic (e.g., "Configure ngrok to expose Home Assistant" not "Add ngrok")
@@ -75,8 +76,6 @@
 
 - **Use relative paths**: Internal documentation links should use relative paths (e.g., `../traffic-policy/`) not full URLs (e.g., `https://ngrok.com/docs/traffic-policy`)
 - **Descriptive anchor text**: Link anchor text should be descriptive (e.g., "ngrok Python SDK docs" not "Reference Documentation")
-- **No external links**: Do not link to third-party or vendor sites (e.g., Microsoft, Auth0, vendor admin consoles, learn.microsoft.com). Link only to ngrok properties and ngrok docs. Use plain text for vendor product names and console names (e.g., "Auth0 Dashboard" not a link to manage.auth0.com).
-- **Never remove ngrok-related links**: If the URL has `ngrok` in it anywhere (e.g. ngrok.com, dashboard.ngrok.com, api.ngrok.com, charts.ngrok.com, github.com/ngrok/_, docs paths like /k8s/ or /traffic-policy/), do not delete or convert that link to plain text. When applying the "no external links" rule, only remove or convert links to third-party or vendor sites—never any link whose URL contains "ngrok". Keep all links to: dashboard.ngrok.com, ngrok.com, ngrok docs (relative paths), github.com/ngrok/_ (ngrok-owned repos), ngrok.github.io, and the ngrok package on PyPI.
 
 ## Images
 
