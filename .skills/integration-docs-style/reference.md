@@ -1,4 +1,4 @@
-# Integration Docs Style Guide
+# Integration Docs Style Guide (Full Reference)
 
 ## Document Structure
 
