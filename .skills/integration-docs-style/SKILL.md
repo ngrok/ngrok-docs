@@ -26,7 +26,7 @@ Before submitting edits, verify:
 
 **Formatting**
 - One sentence per line; single blank line between frontmatter/components/code/paragraphs/headings
-- Note/Tip headings in sentence case with colon (e.g. **Security best practice:**); file names and URLs in backticks in body only; UI text in **bold**; `[**UI Element**](url)` for UI in links
+- Note/Tip: do not indent (no leading spaces) to nest under list items; use the same margin as body content. Note/Tip headings in sentence case with colon (e.g. **Security best practice:**); file names and URLs in backticks in body only; UI text in **bold**; `[**UI Element**](url)` for UI in links
 
 **Lists**
 - Ordered lists sequential (1., 2., 3.); no nested numbered lists inside procedural steps—use bullets or paragraphs; "Option 1"/"Option 2" for alternatives; periods only on complete-sentence list items
@@ -36,7 +36,7 @@ Before submitting edits, verify:
 
 **Links & media**
 - Internal links: relative paths (e.g. `../traffic-policy/`); descriptive anchor text
-- No UI screenshots; keep architectural diagrams; remove image markup for deleted assets; no broken image refs
+- No UI screenshots; keep architectural diagrams. When removing screenshots: remove image markup from the doc, delete the image files from the repo, and delete the image directory if it is now empty. No broken image refs.
 
 **Metadata**
 - Frontmatter description descriptive for SEO, 150 characters or less
