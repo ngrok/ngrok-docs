@@ -6,25 +6,25 @@ description: Reference documentation for uninstalling the ngrok-operator and cle
 
 The `ngrok-operator` helm chart includes multiple `CRDs` that get installed in your kubernetes cluster. These CRDs are resources users can create directly (Such as directly creating a `CloudEndpoint`) and the `ngrok-operator` will also use these by creating resources that are derived from user created `Ingress` objects.
 
-The `Ingress` objects and our `CRDs` use [finalizers](https://kubernetes.io/docs/concepts/overview/working-with-objects/finalizers/). These prevent kubernetes from removing the objects when a delete is initiated until the operator can do some task (such as removing them from the ngrok api) before letting them be cleaned up.
+The `Ingress` objects and ngrok `CRDs` use [finalizers](https://kubernetes.io/docs/concepts/overview/working-with-objects/finalizers/). These prevent Kubernetes from removing the objects when a delete is initiated until the Operator can do some task (such as removing them from the ngrok API) before letting them be cleaned up.
 
 If the operator is not running, it can block deleting these resources, the CRDs, or namespaces resources live in.
 
-## Recommended Setup and Steps
+## Recommended setup and steps
 
 The following are recommendations that will make uninstalling the operator much simpler and error proof to avoid stuck situations.
 
-### Install the Operator in its Own Namespace
+### Install the Operator in its own namespace
 
 Its recommended to install the operator in its own namespace such as `ngrok-operator`. This should be separate from the namespace you create `Ingress` objects or `CRs` in. This would let you delete a namespace filled with `Ingress` objects and the operator won't get torn down during the process allowing them to be cleaned up.
 
-### Delete Resources Before Uninstalling
+### Delete resources before uninstalling
 
 By default, the operator will NOT delete API resources from your ngrok account such as CloudEndpoints when its simply helm uninstalled. This prevents an uninstall from taking down Cloud Infrastructure that may be supporting a production site.
 
 If you would like to delete everything as well, its highly recommended to delete all the kubernetes resources like `Ingress` and crds like `CloudEndpoints` BEFORE uninstalling the operator. This allows it to handle those delete events and clean them up from your account
 
-## Uninstalling: Default Behavior (Preserve Account Resources)
+## Uninstalling: default behavior (preserve account resources)
 
 By default, the `ngrok-operator` helm chart installs the CRDs as a part of the same helm release. So uninstalling the operator will uninstall the CRDs forcing all CRs into deletion.
 
@@ -40,7 +40,7 @@ Once done, it allows the helm uninstall to progress, uninstalling the `CRDs` and
 
 NOTE: By default, the `ngrok-operator` is built with production usecases and safety in mind. Uninstalling the chart leaves ngrok api cloud resources in your account.
 
-## Uninstalling: Clean up Account Resources
+## Uninstalling: clean up account resources
 
 By default, uninstalling the chart keeps resources like `CloudEndpoints` and `Domains` created in your ngrok account.
 
@@ -78,16 +78,16 @@ helm install ngrok-operator ngrok/ngrok-operator \
 
 This means that when uninstalling the operator, it will NOT force an uninstall of the CRDs forcing a deletion of the CRs
 
-### Default Behavior
+### Default behavior
 
-Similar to before, by default the `pre-delete helm hook` job will run and remove finalizers from all the resources and tear down the operator.
+Similar to before, by default the `pre-delete helm hook` job will run and remove finalizers from all the resources and tear down the Operator.
 
 HOWEVER, now instead of all the CRs being deleted because their `CRDs` were deleted, instead they are preserved and don't have finalizers. This would allow you to:
 - delete those resources without having them hung by finalizers
 - delete namespaces those resources are in without having them hung by finalizers
 - uninstall the CRDs separately without having the CRs hung by finalizers
 
-### Clean up Account Resources
+### Clean up account resources
 
 Again, similar to above, you can use `helm upgrade` to set the `drainPolicy` flag. This will cause the CRs to actually be deleted and have the corresponding resources deleted from your ngrok account.
 
@@ -105,7 +105,7 @@ If you are in this situation:
 
 This results in preserving all the ngrok api resources in your account, but fully cleans up the operators, `CRDs`, and `CRs`
 
-### Clean up Account Resources
+### Clean up account resources
 
 Similar to a single installation, you can also `helm upgrade` an existing install and set its `drainPolicy` to `Delete`. This again causes the `helm uninstall` to run a `pre-delete helm hook` job that deletes resources before proceeding.
 
@@ -121,7 +121,7 @@ If you have multiple operators watching the same resources, you may have a bad t
 - Not do this
 - If you did this, disable the cleanup job and uninstall it without cleanup
 
-## Disabling the Cleanup Job
+## Disabling the cleanup job
 
 If you prefer manual cleanup or have a custom uninstall process:
 
@@ -130,7 +130,7 @@ cleanupHook:
   enabled: false
 ```
 
-## Triggering Cleanup without Helm
+## Triggering cleanup without Helm
 
 If you are not using a system that lets you use helm hooks, you can trigger the process yourself manually. Simply issue a delete on the `KubernetesOperator` resource in the namespace you installed the operator
 
@@ -158,7 +158,7 @@ If however, uninstalling removes the CRDs forcing a delete of the CRs, then you 
 
 For Ingress objects though, the new operator will see them and create the corresponding resources for you automatically.
 
-:Warning: If you uninstall with the default setting of `drainPolicy=Keep` and have an Ingress Object, re-installing may create duplicate resources. TODO: If we undo our change so the store doesn't reap CRs, we could avoid the duplicate API resources in the scenario where CRDs are installed separately so uninstalling doesn't force deleting them all.
+:Warning: If you uninstall with the default setting of `drainPolicy=Keep` and have an Ingress Object, re-installing may create duplicate resources. TODO: If the change is undone so the store doesn't reap CRs, this could avoid the duplicate API resources in the scenario where CRDs are installed separately so uninstalling doesn't force deleting them all.
 
 
 ## Troubleshooting
