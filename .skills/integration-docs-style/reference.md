@@ -1,5 +1,7 @@
 # Integration Docs Style Guide (Full Reference)
 
+**All rules in this document are mandatory.** Apply every applicable rule fully. Do not partially apply rules (e.g. for images: you must both remove markup and delete the files).
+
 ## Document Structure
 
 - **Intro paragraph**: Add an intro paragraph below the Tip (or after frontmatter if no Tip) but above the first h2 that briefly explains the guide's purpose
@@ -32,6 +34,7 @@
 - **Long sentences**: Break up sentences that are too long into multiple sentences
 - **Line breaks**: Use a single blank line between: frontmatter (`---`) and imports, frontmatter and components (e.g., `<Tip>`), code blocks (```) and components, and paragraphs and headings. More than one blank line in a row is not allowed.
 - **Convert "Tip:" to component**: If you see "Tip:" in plain text, convert it to a `<Tip>` component
+- **Note and Tip indentation**: Indent the body text inside `<Note>` and `<Tip>` by 2 spaces. Do not indent the opening or closing tags; only the lines of content between the tags.
 - **Note and Tip headings**: When a `<Note>` or `<Tip>` already has a heading (bold first line), use sentence case with a colon (e.g., **Security best practice:** or **Troubleshooting:**, not **SECURITY BEST PRACTICE** or **TROUBLESHOOTING**). Do not add a blank line between that heading and the body text that follows. Do not add a heading (e.g., **Alternative:**, **Note:**) to a Note or Tip that does not already have one.
 - **File names**: Always in backticks in body content (e.g., `compose.yaml`), never in headers
 - **Addresses/URLs**: Always in backticks in body content (e.g., `localhost:8123`), never in headers
@@ -79,13 +82,25 @@
 
 ## Images
 
-- **No UI screenshots**: Remove all UI screenshots from integration docs (e.g., dashboard screenshots)
-- **Keep architectural diagrams**: Architectural diagrams and reference diagrams should be kept
-- **Delete image files**: Delete the actual image files from the repository for removed screenshots
-- **Delete empty image directories**: After removing screenshot image files, delete the subdirectory that housed them if that directory is now empty (e.g., delete `integrations/img/datadog` if it is empty)
-- **Normalize text**: Fix surrounding text to flow naturally without image references
-- **No broken image refs**: When removing screenshots (or when auditing a doc), remove the image markup entirely—do not leave `![...](path)` refs whose files do not exist. Fix or remove any orphaned image references so the doc never points at missing assets.
+**When you remove a UI screenshot, you must do all of the following. Skipping any step is a failure.**
+
+- **No UI screenshots**: Remove all UI screenshots from integration docs (e.g., dashboard screenshots).
+- **Remove image markup**: Remove the image markup entirely from the doc—do not leave `![...](path)` refs whose files you then delete. Fix or remove any orphaned image references.
+- **Delete image files (mandatory)**: You MUST delete the actual image files from the repository for every screenshot you remove. Removing only the markup from the doc is not enough. Delete the file(s) from the repo (e.g. `integrations/img/github/example.png`). If the image is still referenced by other docs, do not delete it; only delete files that are now orphaned.
+- **Delete empty image directories**: After removing screenshot image files, delete the subdirectory that housed them if that directory is now empty (e.g., delete `integrations/img/datadog` if it is empty).
+- **Normalize text**: Fix surrounding text to flow naturally without image references.
+- **Keep architectural diagrams**: Architectural diagrams and reference diagrams should be kept (do not remove these).
 
 ## SEO and Metadata
 
 - **SEO-friendly descriptions**: Frontmatter descriptions should be descriptive for SEO purposes and 150 characters or less
+
+---
+
+## Before you're done (verification)
+
+Before you consider the edit complete:
+
+1. Re-read this reference. For each section (Structure, Formatting, Lists, Language, Links, Images, Metadata), confirm the doc satisfies every applicable rule.
+2. For any screenshot you removed: confirm you deleted the image file(s) from the repo, not only the markup in the doc.
+3. Confirm no half-measures: every rule you touched was applied fully.

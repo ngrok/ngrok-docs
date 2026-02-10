@@ -5,17 +5,24 @@ description: Applies ngrok integration docs style rules when writing or editing 
 
 # Integration Docs Style
 
-Apply this skill when writing or editing ngrok integration documentation (e.g. guides under `using-ngrok-with/`).
+## MANDATORY: Apply every rule all the way
+
+**These rules are required, not optional.** When you apply this skill:
+
+1. **Read the full reference** ([reference.md](reference.md)) before editing. Do not rely on memory.
+2. **Apply every applicable rule completely.** Half-measures are failures. Example: removing UI screenshots means (a) remove the image markup from the doc and (b) delete the actual image files from the repo. Doing only (a) is wrong.
+3. **Verify when done.** Before you consider the task complete, go through the reference section by section and confirm the doc complies. If you skip or partially apply any rule, you have not finished the job.
+
 
 ## When to use
 
-- Creating or revising integration docs (e.g. `using-ngrok-with/*.mdx`)
+- Creating or revising integration docs (e.g. `using-ngrok-with/*.mdx`, `integrations/webhooks/*.mdx`)
 - User asks for style compliance or to follow the integration docs style guide
 - Auditing or cleaning up existing integration pages
 
 ## Quick checklist
 
-Before submitting edits, verify:
+Before submitting edits, verify (every item is mandatory):
 
 **Structure**
 
@@ -27,7 +34,7 @@ Before submitting edits, verify:
 **Formatting**
 
 - One sentence per line; single blank line between frontmatter and imports, and between frontmatter/components/code/paragraphs/headings
-- Note/Tip headings in sentence case with colon (e.g. **Security best practice:**); file names and URLs in backticks in body only; UI text in **bold**; `[**UI Element**](url)` for UI in links
+- Note/Tip: indent content inside `<Note>` and `<Tip>` by 2 spaces; headings in sentence case with colon (e.g. **Security best practice:**); file names and URLs in backticks in body only; UI text in **bold**; `[**UI Element**](url)` for UI in links
 
 **Lists**
 
@@ -40,7 +47,7 @@ Before submitting edits, verify:
 **Links & media**
 
 - Internal links: relative paths (e.g. `../traffic-policy/`); descriptive anchor text
-- No UI screenshots; keep architectural diagrams; remove image markup for deleted assets; no broken image refs
+- No UI screenshots: remove image markup from the doc **and** delete the image files from the repo (both steps required); keep architectural diagrams; no broken image refs
 
 **Metadata**
 
