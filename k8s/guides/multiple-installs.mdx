@@ -1,80 +1,140 @@
 ---
-title: Multiple ngrok-operator installations
+title: Running Multiple ngrok Operator Installations
 sidebarTitle: Multiple Installations
-description: Documentation explaining how to easily run multiple separate installations of the ngrok-operator
+description: How to run multiple instances of the ngrok Kubernetes Operator in a single cluster using namespace-scoped installations.
 ---
 
-By default, when you install the `ngrok-operator` it will watch for resources such as `Ingress` or ngrok `CRDs` across all namespaces. For `Ingress` objects, it by default will reconcile resources with the `ngrok` `ingressClassName`.
+By default, the `ngrok-operator` watches for resources such as `Ingress` objects and ngrok custom resources across all namespaces. For more advanced setups, you can install the operator multiple times within a single cluster, with each installation scoped to its own namespace.
 
-For more advanced setups, the `ngrok-operator` can be installed multiple times within a single Kubernetes Cluster. Each installation can have unique parameters affecting things like the ngrok credentials its using, what namespaces its watching resources in, and what Ingress Class its reconciling.
+Common reasons to run multiple installations include:
+- **Separate ngrok accounts** for different environments (dev, staging, prod) within one cluster
+- **Team isolation** where each team manages their own operator and resources in their own namespace
 
-# Multiple Installations
+## Prerequisites: Install CRDs separately
 
-The `ngrok-operator` helm chart ships with multiple ngrok `CRDs` that get installed by default in the same helm release. If you simply `helm install ngrok-operator ngrok/ngrok-operator` twice in different namespaces, you would get an error like this
+CRDs are cluster-scoped resources. If multiple operator installations each try to manage the same CRDs, you'll get Helm ownership conflicts. You **must** install the CRDs separately first using the `ngrok-crds` chart and set `installCRDs=false` on every operator installation.
 
-```sh
-Error: INSTALLATION FAILED: Unable to continue with install: CustomResourceDefinition "boundendpoints.bindings.k8s.ngrok.com" in namespace "" exists and cannot be imported into the current release: invalid ownership metadata; annotation validation error: key "meta.helm.sh/release-namespace" must equal "ngrok-operator-2": current value is "ngrok-operator"
-```
-
-## Install CRDs separately (recommended)
-
-The `ngrok-operator` CRDs are broken out into their own [helm chart](https://artifacthub.io/packages/helm/ngrok/ngrok-crds) that can be installed separately first. Since each `ngrok-operator` installation relies on these CRDs being installed, it's HIGHLY recommended to install the CRDs separately first. This prevents their lifecycle from being coupled to a particular operators instance.
-
-First install the CRDs
-
-```sh
+```bash
 helm repo add ngrok https://charts.ngrok.com
 helm repo update
 
 helm install ngrok-crds ngrok/ngrok-crds
 ```
 
-Now, you can easily install multiple instances of the operator disabling the CRD installation in each by setting `installCRDs` to `false`
+<Warning title="Never bundle CRDs with one of multiple operators">
+If one operator release includes the CRDs, all operators depend on them. Uninstalling that specific release would remove the CRDs and break every other operator. Always install CRDs separately when using multiple operators.
+</Warning>
 
-```sh
+If you already have an existing operator installation with bundled CRDs, see [Migrating CRDs to a separate chart](#migrating-crds-to-a-separate-chart) below.
+
+## Namespace-scoped installations
+
+Each operator installation must be scoped to watch a specific namespace using `ingress.watchNamespace`. This ensures each operator only reconciles `Ingress` objects and custom resources within its own namespace, including any derived resources like `CloudEndpoint` and `AgentEndpoint` that the operator creates from `Ingress` objects.
+
+```bash
 helm install ngrok-operator ngrok/ngrok-operator \
---namespace=ngrok-operator \
---create-namespace \
---set credentials.apiKey=$NGROK_API_KEY \
---set credentials.authtoken=$NGROK_AUTHTOKEN \
---set installCRDs=false
+  --namespace=team-a \
+  --create-namespace \
+  --set credentials.apiKey=$NGROK_API_KEY \
+  --set credentials.authtoken=$NGROK_AUTHTOKEN \
+  --set installCRDs=false \
+  --set ingress.watchNamespace=team-a
 
 helm install ngrok-operator ngrok/ngrok-operator \
---namespace=ngrok-operator-2 \
---create-namespace \
---set credentials.apiKey=$NGROK_API_KEY \
---set credentials.authtoken=$NGROK_AUTHTOKEN \
---set installCRDs=false
+  --namespace=team-b \
+  --create-namespace \
+  --set credentials.apiKey=$NGROK_API_KEY \
+  --set credentials.authtoken=$NGROK_AUTHTOKEN \
+  --set installCRDs=false \
+  --set ingress.watchNamespace=team-b
 ```
 
-## Adding a Second Install
+Now you can create `Ingress` objects or custom resources like `CloudEndpoint` in either namespace, and only the operator watching that namespace will reconcile them. Resources created in a namespace without a corresponding operator will not be reconciled.
 
-Since the `ngrok-operator` installs the CRDs by default, if this is not your first time setting it up, you may already have the `CRDs` bundled in with the existing helm chart. This section explains how to add additional operator installations without downtime.
+<Warning title="Namespace separation is required for multi-install">
+You **must** use `ingress.watchNamespace` to scope each operator to its own namespace. Using only `ingress.ingressClass.name` to separate operators is **not sufficient**.
 
-### Pull CRDs out into separate helm install (recommended)
+The operator creates derived custom resources (such as `CloudEndpoint` and `AgentEndpoint`) from `Ingress` objects. While `ingress.watchNamespace` limits the operator's watch scope for both `Ingress` objects and these derived resources, there is no mechanism to filter derived resource events by the `ingressClass` of the parent `Ingress` that caused them to be created. Without namespace separation, multiple operators would attempt to reconcile each other's derived resources.
+</Warning>
 
-When `Helm` installs resources in a Kubernetes Cluster, it applies annotations to each object so it can track that it owns a resource preventing another helm install from clobbering it
+### Combining namespace and ingress class scoping
+
+You can optionally set `ingress.ingressClass.name` in addition to `ingress.watchNamespace` for organizational clarity. The ingress class determines which `Ingress` objects the operator considers within its watched namespace. This can be useful if you have non-ngrok Ingress objects in the same namespace that should be ignored.
+
+```bash
+helm install ngrok-operator-dev ngrok/ngrok-operator \
+  --namespace=dev \
+  --create-namespace \
+  --set credentials.apiKey=$NGROK_API_KEY \
+  --set credentials.authtoken=$NGROK_AUTHTOKEN \
+  --set installCRDs=false \
+  --set ingress.watchNamespace=dev \
+  --set ingress.ingressClass.name=ngrok-dev
+
+helm install ngrok-operator-prod ngrok/ngrok-operator \
+  --namespace=prod \
+  --create-namespace \
+  --set credentials.apiKey=$NGROK_API_KEY \
+  --set credentials.authtoken=$NGROK_AUTHTOKEN \
+  --set installCRDs=false \
+  --set ingress.watchNamespace=prod \
+  --set ingress.ingressClass.name=ngrok-prod
+```
+
+## Different ngrok accounts per namespace
+
+A common setup is running separate operator installations with different ngrok account credentials per environment:
+
+```bash
+# Install CRDs once
+helm install ngrok-crds ngrok/ngrok-crds
+
+# Dev environment
+helm install ngrok-operator-dev ngrok/ngrok-operator \
+  --namespace=dev \
+  --create-namespace \
+  --set credentials.apiKey=$NGROK_API_KEY_DEV \
+  --set credentials.authtoken=$NGROK_AUTHTOKEN_DEV \
+  --set installCRDs=false \
+  --set ingress.watchNamespace=dev
+
+# Staging environment
+helm install ngrok-operator-staging ngrok/ngrok-operator \
+  --namespace=staging \
+  --create-namespace \
+  --set credentials.apiKey=$NGROK_API_KEY_STAGING \
+  --set credentials.authtoken=$NGROK_AUTHTOKEN_STAGING \
+  --set installCRDs=false \
+  --set ingress.watchNamespace=staging
+
+# Production environment
+helm install ngrok-operator-prod ngrok/ngrok-operator \
+  --namespace=prod \
+  --create-namespace \
+  --set credentials.apiKey=$NGROK_API_KEY_PROD \
+  --set credentials.authtoken=$NGROK_AUTHTOKEN_PROD \
+  --set installCRDs=false \
+  --set ingress.watchNamespace=prod
+```
+
+Each operator uses its own ngrok account credentials and only manages resources in its designated namespace.
+
+## Migrating CRDs to a separate chart
+
+If you already have an operator installation with bundled CRDs, you can migrate them to the `ngrok-crds` chart without downtime.
+
+When Helm installs resources, it applies ownership annotations to track which release manages them:
 
 ```yaml
-# example from agentendpoints.ngrok.k8s.ngrok.com
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.19.0
     meta.helm.sh/release-name: ngrok-operator
     meta.helm.sh/release-namespace: ngrok-operator
 ```
 
-Trying to install the `CRD` chart will result in errors like this
+Trying to install the `ngrok-crds` chart while these annotations point to a different release will fail. First, re-annotate the CRDs to be owned by the `ngrok-crds` release:
 
-```sh
-helm install ngrok-crds ngrok/ngrok-crds
-
-Error: INSTALLATION FAILED: Unable to continue with install: CustomResourceDefinition "boundendpoints.bindings.k8s.ngrok.com" in namespace "" exists and cannot be imported into the current release: invalid ownership metadata; annotation validation error: key "meta.helm.sh/release-name" must equal "ngrok-crds": current value is "ngrok-operator"; annotation validation error: key "meta.helm.sh/release-namespace" must equal "default": current value is "ngrok-operator"
-```
-
-Instead, first make the CRDs be owned by the `ngrok-crds` chart installation name
-
-```sh
+```bash
 for crd in $(kubectl get crds -o name | grep ngrok); do
   kubectl annotate $crd \
     meta.helm.sh/release-name=ngrok-crds \
@@ -83,118 +143,35 @@ for crd in $(kubectl get crds -o name | grep ngrok); do
 done
 ```
 
-Now installing the `CRDs` should be a `no-op`
+Now install the `ngrok-crds` chart (this will be a no-op since the CRDs already exist):
 
-```sh
-helm install ngrok-crds ngrok/ngrok-crds
-NAME: ngrok-crds
-LAST DEPLOYED: Tue Jan 20 16:45:35 2026
-NAMESPACE: default
-STATUS: deployed
-REVISION: 1
-TEST SUITE: None
-```
-
-Then, update your existing `ngrok-operator` helm install to set `installCRDs=false` via `--set` or your `values.yaml`
-
-Now you can install multiple operators with different configurations and no ownership issues.
-
-### Install a second operator without separating out CRDs
-
-:warning: DANGEROUS :warning:
-
-You COULD skip the step of breaking your `CRDs` out into their own helm installation. HOWEVER, this is dangerous as now the lifecycle of those `CRDs` is tied to 1 of multiple operators.
-
-IF you helm uninstall the installation that includes the `CRDs`, it will uninstall them breaking all the operators.
-
-## Common setups and configurations
-
-This section documents a couple of common setups where you would want to run multiple separate instances of the `ngrok-operator`
-
-### Multiple ngrok accounts
-
-What if you want to have separate operator installations, each using different ngrok-account credentials, and each handles a specific set of ingress objects by specifying different ingress classes. This might be for a case where you have dev, staging, and prod all in 1 cluster.
-
-First, install the `CRDs`
-
-```sh
-helm repo add ngrok https://charts.ngrok.com
-helm repo update
-
+```bash
 helm install ngrok-crds ngrok/ngrok-crds
 ```
 
-Next, install the Operator 3 times, specifying different credentials and a different `ingressClass` for each to watch
+Then update your existing operator to stop managing CRDs:
 
-```sh
-helm install ngrok-operator-dev ngrok/ngrok-operator \
---namespace=ngrok-operator-dev \
---create-namespace \
---set credentials.apiKey=$NGROK_API_KEY_DEV \
---set credentials.authtoken=$NGROK_AUTHTOKEN_DEV \
---set installCRDs=false \
---ingress.ingressClass.name=ngrok-dev
-
-
-helm install ngrok-operator-stage ngrok/ngrok-operator \
---namespace=ngrok-operator-stage \
---create-namespace \
---set credentials.apiKey=$NGROK_API_KEY_STAGE \
---set credentials.authtoken=$NGROK_AUTHTOKEN_STAGE \
---set installCRDs=false \
---ingress.ingressClass.name=ngrok-stage
-
-helm install ngrok-operator-prod ngrok/ngrok-operator \
---namespace=ngrok-operator-prod \
---create-namespace \
---set credentials.apiKey=$NGROK_API_KEY_PROD \
---set credentials.authtoken=$NGROK_AUTHTOKEN_PROD \
---set installCRDs=false \
---ingress.ingressClass.name=ngrok-prod
-```
-TODO: Do you also need to set the controllername? Guessing no and it uses the release name as a part of it hopefully, but need to confirm.
-
-Now you can create ingress objects that specify the dev/stage/prod `ingressClassName` and they will be handled separately by each operator.
-
-### Namespace separation
-
-In the previous example, `ingressClass` was used as a means of separating which resources an Operator watches cluster wide. Another common setup would be to install the Operator in a particular namespace and have it watch for resources (including `CRDs`) within just that namespace.
-
-First, install the `CRDs`
-
-```sh
-helm repo add ngrok https://charts.ngrok.com
-helm repo update
-
-helm install ngrok-crds ngrok/ngrok-crds
+```bash
+helm upgrade ngrok-operator ngrok/ngrok-operator \
+  --namespace=ngrok-operator \
+  --reuse-values \
+  --set installCRDs=false
 ```
 
-Next, install the Operator in 2 different namespaces setting `ingress.watchNamespace` on each to scope it to just handle resources in its own namespace.
+You can now install additional operators with `installCRDs=false`.
 
-```sh
-helm install ngrok-operator ngrok/ngrok-operator \
---namespace=team-a \
---create-namespace \
---set credentials.apiKey=$NGROK_API_KEY \
---set credentials.authtoken=$NGROK_AUTHTOKEN \
---set installCRDs=false \
---set ingress.watchNamespace=team-a
+### Installing without separating CRDs
 
-helm install ngrok-operator ngrok/ngrok-operator \
---namespace=team-b \
---create-namespace \
---set credentials.apiKey=$NGROK_API_KEY \
---set credentials.authtoken=$NGROK_AUTHTOKEN \
---set installCRDs=false \
---set ingress.watchNamespace=team-b
-```
+<Warning title="Not recommended">
+You can install a second operator with `installCRDs=false` without first migrating CRDs to a separate chart. However, this means one operator release owns the CRDs that all operators depend on. If that specific release is uninstalled, it will remove the CRDs and break every other operator.
+</Warning>
 
-Now you can create an `Ingress` object or a `CRD` like a `CloudEndpoint` in a namespace and it will be handled by the specific operator watching that namespace. If there isn't one watching the namespace the resource is created in, it won't be reconciled.
+## Uninstalling one of multiple operators
 
-## Uninstalling an Operator
+For detailed uninstall procedures, see [Uninstalling the Operator](/k8s/installation/uninstall#multiple-installations).
 
-:warning: DANGEROUS :warning:
+Key points:
 
-If you have a helm install that includes both the `CRDs` and an `ngrok-operator` installation, you MUST not uninstall this. Doing so will uninstall the CRDs that all operators rely on and will break them all.
-
-TODO: Document the default behavior when uninstalling one that doesn't have the CRDs installed. What does default settings do, do they need to set specific flags to avoid the cleanup job?
+- Uninstall operators that have `installCRDs=false` first
+- Uninstall the CRDs last (via `helm uninstall ngrok-crds`) only after all operators are removed
+- When using `drainPolicy=Delete`, the cleanup job respects the operator's `ingress.watchNamespace` and only deletes resources within that scope
