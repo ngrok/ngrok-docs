@@ -20,26 +20,6 @@ pip install openai
 ```bash TypeScript
 npm install openai
 ```
-
-```bash Go
-go get github.com/openai/openai-go/v3
-```
-
-```xml Java (Maven)
-<dependency>
-  <groupId>com.openai</groupId>
-  <artifactId>openai-java</artifactId>
-  <version>4.9.0</version>
-</dependency>
-```
-
-```bash Java (Gradle)
-implementation("com.openai:openai-java:4.9.0")
-```
-
-```bash .NET
-dotnet add package OpenAI
-```
 </CodeGroup>
 
 ## Basic usage
@@ -79,79 +59,6 @@ const response = await client.chat.completions.create({
 console.log(response.choices[0].message.content);
 ```
 
-```go Go highlight={12}
-package main
-
-import (
-    "context"
-    "github.com/openai/openai-go/v3"
-    "github.com/openai/openai-go/v3/option"
-    "github.com/openai/openai-go/v3/shared"
-)
-
-func main() {
-    client := openai.NewClient(
-        option.WithBaseURL("https://your-ai-subdomain.ngrok.app/v1"),
-        option.WithAPIKey("your-api-key"),
-    )
-
-    chatCompletion, err := client.Chat.Completions.New(
-        context.TODO(),
-        openai.ChatCompletionNewParams{
-            Messages: []openai.ChatCompletionMessageParamUnion{
-                openai.UserMessage("Hello!"),
-            },
-            Model: shared.ChatModelGPT4o,
-        },
-    )
-    if err != nil {
-        panic(err.Error())
-    }
-
-    println(chatCompletion.Choices[0].Message.Content)
-}
-```
-
-```java Java highlight={10}
-import com.openai.client.OpenAIClient;
-import com.openai.client.okhttp.OpenAIOkHttpClient;
-import com.openai.models.ChatModel;
-import com.openai.models.chat.completions.ChatCompletion;
-import com.openai.models.chat.completions.ChatCompletionCreateParams;
-
-public class Main {
-    public static void main(String[] args) {
-        OpenAIClient client = OpenAIOkHttpClient.builder()
-            .baseUrl("https://your-ai-subdomain.ngrok.app/v1")
-            .apiKey("your-api-key")
-            .build();
-
-        ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
-            .addUserMessage("Hello!")
-            .model(ChatModel.GPT_4O)
-            .build();
-
-        ChatCompletion chatCompletion = client.chat().completions().create(params);
-        System.out.println(chatCompletion.choices().get(0).message().content());
-    }
-}
-```
-
-```csharp .NET highlight={6}
-using OpenAI;
-using OpenAI.Chat;
-
-// Set the endpoint via environment variable or options
-var options = new OpenAIClientOptions {
-    Endpoint = new Uri("https://your-ai-subdomain.ngrok.app/v1")
-};
-
-var client = new ChatClient("gpt-4o", "your-api-key", options);
-
-var response = await client.CompleteChatAsync("Hello!");
-
-Console.WriteLine(response.Value.Content[0].Text);
-```
 </CodeGroup>
 
 ## Streaming
@@ -195,19 +102,6 @@ const stream = await client.chat.completions.create({
 for await (const chunk of stream) {
   process.stdout.write(chunk.choices[0]?.delta?.content || "");
 }
-```
-
-```java Java highlight={6}
-ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
-    .addUserMessage("Write a haiku about APIs")
-    .model(ChatModel.GPT_4O)
-    .build();
-
-client.chat().completions().createStreaming(params)
-    .stream()
-    .flatMap(completion -> completion.choices().stream())
-    .flatMap(choice -> choice.delta().content().stream())
-    .forEach(System.out::print);
 ```
 </CodeGroup>
 
@@ -257,7 +151,8 @@ const ollamaRes = await client.chat.completions.create({ model: "ollama:llama3.2
 
 Let the gateway choose the best model:
 
-```python highlight={8}
+<CodeGroup>
+```python Python highlight={9}
 from openai import OpenAI
 
 client = OpenAI(
@@ -271,6 +166,21 @@ response = client.chat.completions.create(
 )
 ```
 
+```typescript TypeScript highlight={9}
+import OpenAI from "openai";
+
+const client = new OpenAI({
+  baseURL: "https://your-ai-subdomain.ngrok.app/v1",
+  apiKey: "your-api-key",
+});
+
+const response = await client.chat.completions.create({
+  model: "ngrok/auto", // Gateway selects based on your strategy
+  messages: [{ role: "user", content: "Hello!" }],
+});
+```
+</CodeGroup>
+
 ## Embeddings
 
 Generate embeddings through the gateway:
@@ -278,7 +188,7 @@ Generate embeddings through the gateway:
 <CodeGroup>
 ```python Python
 response = client.embeddings.create(
-    model="text-embedding-3-small",
+    model="openai:text-embedding-3-small",
     input="The quick brown fox jumps over the lazy dog"
 )
 
@@ -287,7 +197,7 @@ embedding = response.data[0].embedding
 
 ```typescript TypeScript
 const response = await client.embeddings.create({
-  model: "text-embedding-3-small",
+  model: "openai:text-embedding-3-small",
   input: "The quick brown fox jumps over the lazy dog",
 });
 
@@ -299,7 +209,7 @@ const embedding = response.data[0].embedding;
 
 Tool/function calling works exactly as documented by OpenAI:
 
-```python highlight={8-19}
+```python highlight={11-23}
 from openai import OpenAI
 
 client = OpenAI(
@@ -364,26 +274,14 @@ const response = await client.chat.completions.create({
   messages: [{ role: "user", content: "Hello!" }],
 });
 ```
-
-```java Java
-import java.util.concurrent.CompletableFuture;
-
-CompletableFuture<ChatCompletion> future = client.async()
-    .chat()
-    .completions()
-    .create(params);
-
-future.thenAccept(completion -> {
-    System.out.println(completion.choices().get(0).message().content());
-});
-```
 </CodeGroup>
 
 ## Error handling
 
 The gateway handles many errors automatically through failover. For errors that reach your app:
 
-```python
+<CodeGroup>
+```python Python
 from openai import OpenAI, APIError, RateLimitError
 
 client = OpenAI(
@@ -403,16 +301,40 @@ except APIError as e:
     print(f"API error: {e}")
 ```
 
+```typescript TypeScript
+import OpenAI, { APIError, RateLimitError } from "openai";
+
+const client = new OpenAI({
+  baseURL: "https://your-ai-subdomain.ngrok.app/v1",
+  apiKey: "your-api-key",
+});
+
+try {
+  const response = await client.chat.completions.create({
+    model: "gpt-4o",
+    messages: [{ role: "user", content: "Hello!" }],
+  });
+} catch (e) {
+  if (e instanceof RateLimitError) {
+    // All configured keys exhausted
+    console.log("Rate limited across all providers");
+  } else if (e instanceof APIError) {
+    console.log(`API error: ${e.message}`);
+  }
+}
+```
+</CodeGroup>
+
 ## Supported endpoints
 
 The AI Gateway supports these OpenAI API endpoints:
 
 | Endpoint | Description |
 |----------|-------------|
-| `/v1/chat/completions` | Chat completions (GPT-4, Claude, etc.) |
+| `/v1/chat/completions` | Chat completions |
 | `/v1/completions` | Legacy completions |
 | `/v1/embeddings` | Text embeddings |
-| `/v1/models` | List available models |
+| `/v1/responses` | Responses |
 
 ## Next steps
 

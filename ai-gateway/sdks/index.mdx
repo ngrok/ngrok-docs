@@ -8,13 +8,16 @@ description: Connect any OpenAI-compatible SDK to the ngrok AI Gateway.
 **Prerequisite**: You need an AI Gateway endpoint before using these SDK guides. Create one using the [dashboard quickstart](/ai-gateway/quickstart) or follow the [manual setup guide](/ai-gateway/guides/creating-endpoints).
 </Note>
 
-The AI Gateway works with any SDK that supports the OpenAI API format. Just change the `baseURL` to your gateway endpoint and you're connected.
+The AI Gateway works with official and third-party SDKs. Just change the `baseURL` to your gateway endpoint and you're connected.
 
 ## Supported SDKs
 
 <CardGroup cols={2}>
   <Card title="OpenAI SDK" icon="circle-nodes" href="/ai-gateway/sdks/openai">
     Official SDKs for Python, TypeScript, Go, Java, and .NET
+  </Card>
+  <Card title="Anthropic SDK" icon="message-bot" href="/ai-gateway/sdks/anthropic">
+    Official SDKs for Python, TypeScript, Java, Go, Ruby, C#, and PHP
   </Card>
   <Card title="Vercel AI SDK" icon="triangle" href="/ai-gateway/sdks/vercel-ai-sdk">
     Build AI apps with React, Next.js, and streaming
@@ -32,7 +35,7 @@ The AI Gateway works with any SDK that supports the OpenAI API format. Just chan
 
 ## Quick start
 
-The pattern is the same for any SDK—just change the base URL:
+Point your SDK at your ngrok endpoint—just change the base URL:
 
 <CodeGroup>
 ```python Python (OpenAI)
@@ -44,11 +47,29 @@ client = OpenAI(
 )
 ```
 
+```python Python (Anthropic)
+import anthropic
+
+client = anthropic.Anthropic(
+    base_url="https://your-ai-subdomain.ngrok.app",
+    api_key="your-api-key"
+)
+```
+
 ```typescript TypeScript (OpenAI)
 import OpenAI from "openai";
 
 const client = new OpenAI({
   baseURL: "https://your-ai-subdomain.ngrok.app/v1",
+  apiKey: "your-api-key",
+});
+```
+
+```typescript TypeScript (Anthropic)
+import Anthropic from "@anthropic-ai/sdk";
+
+const client = new Anthropic({
+  baseURL: "https://your-ai-subdomain.ngrok.app",
   apiKey: "your-api-key",
 });
 ```
@@ -87,7 +108,9 @@ Everything your SDK supports works through the gateway:
 
 | Feature | Supported |
 |---------|-----------|
-| Chat completions | ✅ |
+| Chat Completions API | ✅ |
+| Messages API | ✅ (for Anthropic SDKs)|
+| Responses API | ✅ |
 | Streaming | ✅ |
 | Function/tool calling | ✅ |
 | Embeddings | ✅ |
@@ -107,16 +130,26 @@ When you route SDK requests through the AI Gateway:
 
 Use model prefixes to route to specific providers:
 
-```python
+<CodeGroup>
+```python OpenAI SDK
 # OpenAI
 client.chat.completions.create(model="openai:gpt-4o", ...)
 
-# Anthropic (through the gateway)
+# Anthropic
 client.chat.completions.create(model="anthropic:claude-3-5-sonnet-latest", ...)
 
 # Your self-hosted Ollama
 client.chat.completions.create(model="ollama:llama3.2", ...)
 ```
+
+```python Anthropic SDK
+message = client.messages.create(
+    model="anthropic:claude-3-5-sonnet-latest",
+    max_tokens=1024,
+    messages=[{"role": "user", "content": "Hello!"}]
+)
+```
+</CodeGroup>
 
 Or let the gateway choose with `ngrok/auto`:
 

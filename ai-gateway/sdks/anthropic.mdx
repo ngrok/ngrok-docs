@@ -1,0 +1,280 @@
+---
+title: Anthropic SDK
+sidebarTitle: Anthropic SDK
+description: Use the ngrok AI Gateway with Anthropic's official SDKs.
+---
+
+<Note>
+**Prerequisite**: You need an AI Gateway endpoint before continuing. Create one using the [dashboard quickstart](/ai-gateway/quickstart) or follow the [manual setup guide](/ai-gateway/guides/creating-endpoints).
+</Note>
+
+The AI Gateway is compatible with Anthropic's official SDKs. Simply change the `baseURL` to your gateway endpoint to get automatic failover, key rotation, and observability.
+
+The gateway will forward requests for Anthropic SDKs unchanged in passthrough mode, making this a good option when interested accessing new Anthropic features immediately.
+
+<Warning>
+Failover is limited to providers that support the Anthropic Claude API.  Currently in the ngrok model catalog Anthropic is the only provider.
+</Warning>
+
+
+
+## Installation
+
+<CodeGroup>
+```bash Python
+pip install anthropic
+```
+
+```bash TypeScript
+npm install @anthropic-ai/sdk
+```
+</CodeGroup>
+
+## Basic usage
+
+Point the SDK at your AI Gateway endpoint:
+
+<CodeGroup>
+```python Python highlight={4}
+import anthropic
+
+client = anthropic.Anthropic(
+    base_url="https://your-ai-gateway.ngrok.app",
+    api_key="your-api-key"
+)
+
+message = client.messages.create(
+    model="claude-opus-4-5",
+    max_tokens=1024,
+    messages=[{"role": "user", "content": "Hello!"}]
+)
+
+print(message.content)
+```
+
+```typescript TypeScript highlight={4}
+import Anthropic from "@anthropic-ai/sdk";
+
+const client = new Anthropic({
+  baseURL: "https://your-ai-gateway.ngrok.app",
+  apiKey: "your-api-key",
+});
+
+const message = await client.messages.create({
+  model: "claude-opus-4-5",
+  max_tokens: 1024,
+  messages: [{ role: "user", content: "Hello!" }],
+});
+
+console.log(message.content);
+```
+</CodeGroup>
+
+## Streaming
+
+The AI Gateway fully supports streaming responses with the Anthropic SDK:
+
+<CodeGroup>
+```python Python highlight={8}
+import anthropic
+
+client = anthropic.Anthropic(
+    base_url="https://your-ai-gateway.ngrok.app",
+    api_key="your-api-key"
+)
+
+with client.messages.stream(
+    model="claude-opus-4-5",
+    max_tokens=1024,
+    messages=[{"role": "user", "content": "Write a haiku about APIs"}]
+) as stream:
+    for text in stream.text_stream:
+        print(text, end="", flush=True)
+```
+
+```typescript TypeScript highlight={12}
+import Anthropic from "@anthropic-ai/sdk";
+
+const client = new Anthropic({
+  baseURL: "https://your-ai-gateway.ngrok.app",
+  apiKey: "your-api-key",
+});
+
+const stream = await client.messages.create({
+  max_tokens: 1024,
+  messages: [{ role: 'user', content: 'Hello, Claude' }],
+  model: 'claude-opus-4-6',
+  stream: true,
+});
+for await (const messageStreamEvent of stream) {
+  console.log(messageStreamEvent.type);
+}
+```
+</CodeGroup>
+
+## Automatic model selection
+
+Let the gateway choose the best model:
+
+<CodeGroup>
+```python Python highlight={9}
+import anthropic
+
+client = anthropic.Anthropic(
+    base_url="https://your-ai-gateway.ngrok.app",
+    api_key="your-api-key"
+)
+
+message = client.messages.create(
+    model="ngrok/auto",  # Gateway selects based on your strategy
+    max_tokens=1024,
+    messages=[{"role": "user", "content": "Hello!"}]
+)
+
+print(message.content)
+```
+
+```typescript TypeScript highlight={8}
+import Anthropic from "@anthropic-ai/sdk";
+
+const client = new Anthropic({
+  baseURL: "https://your-ai-gateway.ngrok.app",
+  apiKey: "your-api-key",
+});
+
+const message = await client.messages.create({
+  model: "ngrok/auto", // Gateway selects based on your strategy
+  max_tokens: 1024,
+  messages: [{ role: "user", content: "Hello!" }],
+});
+
+console.log(message.content);
+```
+</CodeGroup>
+
+## Tool use
+
+Tool calling works as documented by Anthropic:
+
+<CodeGroup>
+```python Python highlight={12-22}
+import anthropic
+
+client = anthropic.Anthropic(
+    base_url="https://your-ai-gateway.ngrok.app",
+    api_key="your-api-key"
+)
+
+message = client.messages.create(
+    model="claude-opus-4-5",
+    max_tokens=1024,
+    messages=[{"role": "user", "content": "What's the weather in Paris?"}],
+    tools=[{
+        "name": "get_weather",
+        "description": "Get weather for a location",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "location": {"type": "string"}
+            },
+            "required": ["location"]
+        }
+    }]
+)
+
+print(message)
+```
+
+```typescript TypeScript highlight={12-22}
+import Anthropic from "@anthropic-ai/sdk";
+
+const client = new Anthropic({
+  baseURL: "https://your-ai-gateway.ngrok.app",
+  apiKey: "your-api-key",
+});
+
+const message = await client.messages.create({
+  model: "claude-opus-4-5",
+  max_tokens: 1024,
+  messages: [{ role: "user", content: "What's the weather in Paris?" }],
+  tools: [
+    {
+      name: "get_weather",
+      description: "Get weather for a location",
+      input_schema: {
+        type: "object",
+        properties: {
+          location: { type: "string" },
+        },
+        required: ["location"],
+      },
+    },
+  ],
+});
+
+console.log(message);
+```
+</CodeGroup>
+
+## Error handling
+
+The gateway handles many errors automatically through failover. For errors that reach your app:
+
+<CodeGroup>
+```python Python
+import anthropic
+
+client = anthropic.Anthropic(
+    base_url="https://your-ai-gateway.ngrok.app",
+    api_key="your-api-key"
+)
+
+try:
+    message = client.messages.create(
+        model="claude-opus-4-5",
+        max_tokens=1024,
+        messages=[{"role": "user", "content": "Hello!"}]
+    )
+except anthropic.RateLimitError as e:
+    print("Rate limited across all providers")
+except anthropic.APIError as e:
+    print(f"API error: {e}")
+```
+
+```typescript TypeScript
+import Anthropic from "@anthropic-ai/sdk";
+
+const client = new Anthropic({
+  baseURL: "https://your-ai-gateway.ngrok.app",
+  apiKey: "your-api-key",
+});
+
+try {
+  const message = await client.messages.create({
+    model: "claude-opus-4-5",
+    max_tokens: 1024,
+    messages: [{ role: "user", content: "Hello!" }],
+  });
+} catch (error) {
+  if (error instanceof Anthropic.RateLimitError) {
+    console.log("Rate limited across all providers");
+  } else if (error instanceof Anthropic.APIError) {
+    console.log(`API error: ${error.message}`);
+  }
+}
+```
+</CodeGroup>
+
+## Supported endpoints
+
+The AI Gateway supports these Anthropic Claude API endpoints:
+
+| Endpoint | Description |
+|----------|-------------|
+| `/v1/messages` | Messages |
+
+## Next steps
+
+- [Model Selection Strategies](/ai-gateway/guides/model-selection-strategies) - Configure routing logic
+- [Configuring Providers](/ai-gateway/guides/configuring-providers) - Set up providers and keys
+- [Multi-Provider Failover](/ai-gateway/examples/multi-provider-failover) - Failover examples
