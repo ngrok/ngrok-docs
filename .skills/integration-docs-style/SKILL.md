@@ -19,6 +19,7 @@ Before submitting edits, verify:
 
 **Structure**
 - Intro paragraph below Tip/frontmatter; present tense; varied phrasing (not always "This guide covers...")
+- No redundant title heading: do not add an h2 that restates the page title (e.g. "Configure X for ngrok" when the title is "X OAuth"). Start with intro content, then "What you'll need" or the first real section.
 - Descriptive section headers (e.g. "Configure ngrok to expose X" not "Add ngrok"); sequential steps use same heading level (all ## or all ### under a parent)
 - "What you'll need" for prerequisites (not "Prerequisites:"); list items end with periods when complete sentences; link to install pages; use "Your" for user items
 - No "Configuration steps" section; no TL;DR Tips; no consecutive blank lines

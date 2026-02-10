@@ -3,6 +3,7 @@
 ## Document Structure
 
 - **Intro paragraph**: Add an intro paragraph below the Tip (or after frontmatter if no Tip) but above the first h2 that briefly explains the guide's purpose
+- **No redundant title heading**: Do not add an h2 that merely restates the page title (e.g. "Configure Facebook OAuth for ngrok" when the title is already "Facebook OAuth"). The page title (frontmatter) is the doc's h1; the first heading in the body should be a real section like "What you'll need" or "Create an application", not a repeat of the topic. Start with intro paragraph(s), then the first substantive section.
 - **Tip placement**: Keep Tips in the body when they relate to a specific step or prerequisite (e.g. a tip right before step 1). Do not move body-context Tips to the top.
 - **No future tense in intros**: Use present tense in intro paragraphs (e.g., "It covers setting up..." not "You'll set up...")
 - **Vary intro phrasing**: Vary the phrasing in intro paragraphs across different docs - avoid using the exact same phrasing like "This guide covers configuring" repeatedly. Use alternatives like "This guide shows you how to configure...", "This guide explains how to configure...", "This guide walks you through configuring...", or other variations

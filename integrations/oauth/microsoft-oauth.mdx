@@ -1,45 +1,49 @@
 ---
 title: Microsoft OAuth
 sidebarTitle: Microsoft
-description: Authenticate users with Microsoft Entra ID OAuth.
+description: Configure ngrok to authenticate users with Microsoft Entra ID (Azure AD) OAuth. Register an app in the Azure portal.
 ---
 import Microsoft from "/snippets/traffic-policy/actions/oauth/examples/custom-microsoft-example.mdx";
 import UpdatePolicyInstructions from "/snippets/traffic-policy/actions/oauth/update-policy/update-policy-instructions.mdx";
 import ConfigAccessControl from "/snippets/traffic-policy/actions/oauth/update-policy/config-access-control.mdx";
 
+This guide walks you through registering a Microsoft Entra ID application and configuring ngrok to use it for user authentication.
+The steps below follow [Microsoft's app registration documentation](https://learn.microsoft.com/en-us/entra/identity-platform/quickstart-register-app) in the Azure portal.
 
+## What you'll need
 
-## Creating a custom Microsoft OAuth application
+- An [Azure](https://portal.azure.com/) account and a tenant (or [create a tenant](https://learn.microsoft.com/en-us/entra/identity-platform/quickstart-create-new-tenant)).
+- Your ngrok authtoken and an endpoint with the OAuth action in its traffic policy.
 
-Step-by-step instructions below closely follow [Microsoft documentation](https://learn.microsoft.com/en-us/entra/identity-platform/quickstart-register-app) to create a new application for ngrok within the Azure portal.
+## Register an application
 
-### Register an application
-
-1. Sign-in to the [Azure portal](https://portal.azure.com/) then select or [create a tenant](https://learn.microsoft.com/en-us/entra/identity-platform/quickstart-create-new-tenant) for your application.
-2. Search for "Microsoft Entra ID" and select it.
-3. Select "App registrations" on the left hand navigation.
-4. Select "New registration" at the top.
+1. Sign in to the [Azure portal](https://portal.azure.com/) and select or create a tenant for your application.
+2. Search for **Microsoft Entra ID** and select it.
+3. In the left-hand navigation, select **App registrations**.
+4. Select **New registration** at the top.
 5. Enter a name for your application.
-6. ngrok does not support [**single tenant** applications](https://learn.microsoft.com/en-us/entra/identity-platform/single-and-multi-tenant-apps). Choose supported account types from:
-    - Accounts in any organizational directory (Any Microsoft Entra directory - Multitenant)
-    - Accounts in any organizational directory (Any Microsoft Entra directory - Multitenant) and personal Microsoft accounts (for example, Skype, Xbox)
-7. Choose a "Web" redirect URI and enter `https://idp.ngrok.com/oauth2/callback`.
-8. Register your application. The final form should resemble: ![](/img/howto/oauth/1-microsoft-create_app.png)
+6. ngrok does not support [single-tenant applications](https://learn.microsoft.com/en-us/entra/identity-platform/single-and-multi-tenant-apps).
+   Choose one of these supported account types:
+   - Accounts in any organizational directory (Any Microsoft Entra directory - Multitenant)
+   - Accounts in any organizational directory and personal Microsoft accounts (e.g. Skype, Xbox)
+7. Under redirect URI, choose **Web** and enter `https://idp.ngrok.com/oauth2/callback`.
+8. Click **Register**.
 
-### Configure your application
+## Configure your application
 
-1. When viewing your application, choose "Overview" on the left hand navigation.
-2. Store the "Application (client) ID" in the top information section for later. ![](/img/howto/oauth/2-microsoft-app_overview.png)
-3. Select "API permissions" on the left hand navigation.
-4. Add additional scopes that your application requires and store them for later.
-    - Scopes which require an application review by Microsoft are unsupported.
-    - Scopes that [require admin consent](https://learn.microsoft.com/en-us/entra/identity-platform/permissions-consent-overview#admin-restricted-permissions) prevent tenants' users from authorizing until consent is granted.
-5. Ensure `User.Read` or a more permissive scope (for example, `User.Read.All`) is configured for ngrok. Example minimal configuration: ![](/img/howto/oauth/3-microsoft-api_permissions.png)
-6. Choose "Certificates and Secrets" on the left hand navigation.
-7. Select "New Client Secret" at the bottom, name the secret, set an expiration, and hit create.
-8. Creation is asynchronous. When complete, save the secret from the "Value" column (blurred below) for later: ![](/img/howto/oauth/4-microsoft-client_secret.png)
+1. With your application open, select **Overview** in the left-hand navigation.
+2. In the top information section, note the **Application (client) ID** for later.
+3. Select **API permissions** in the left-hand navigation.
+4. Add any additional scopes your application requires and note them for later.
+   - Scopes that require application review by Microsoft are unsupported.
+   - Scopes that [require admin consent](https://learn.microsoft.com/en-us/entra/identity-platform/permissions-consent-overview#admin-restricted-permissions) prevent tenants' users from authorizing until consent is granted.
+5. Ensure `User.Read` or a more permissive scope (e.g. `User.Read.All`) is configured for ngrok.
+6. Select **Certificates & secrets** in the left-hand navigation.
+7. Select **New client secret** at the bottom, name the secret, set an expiration, and click **Add**.
+8. Creation is asynchronous.
+   When the secret appears, copy the **Value** and store it securely (the value is shown only once).
 
-### Update your ngrok endpoint Traffic Policy
+## Update your ngrok endpoint Traffic Policy
 
 <UpdatePolicyInstructions />
 
@@ -47,8 +51,8 @@ Step-by-step instructions below closely follow [Microsoft documentation](https:/
 
 <ConfigAccessControl />
 
-### Additional application setup information
+## Further resources
 
 - [Creating a Microsoft Entra ID tenant](https://learn.microsoft.com/en-us/entra/identity-platform/quickstart-create-new-tenant)
 - [Permissions and consent](https://learn.microsoft.com/en-us/entra/identity-platform/permissions-consent-overview#admin-restricted-permissions) (restricted permissions)
-- [Graph API User object properties](https://developers.facebook.com/docs/facebook-login/handling-declined-permissions#reprompt) (id, displayName, and mail/userPrincipalName)
+- [Microsoft Graph User resource type](https://learn.microsoft.com/en-us/graph/api/resources/user) (id, displayName, mail, userPrincipalName)
