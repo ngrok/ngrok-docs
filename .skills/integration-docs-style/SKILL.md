@@ -26,7 +26,7 @@ Before submitting edits, verify:
 
 **Formatting**
 
-- One sentence per line; single blank line between frontmatter/components/code/paragraphs/headings
+- One sentence per line; single blank line between frontmatter and imports, and between frontmatter/components/code/paragraphs/headings
 - Note/Tip headings in sentence case with colon (e.g. **Security best practice:**); file names and URLs in backticks in body only; UI text in **bold**; `[**UI Element**](url)` for UI in links
 
 **Lists**
