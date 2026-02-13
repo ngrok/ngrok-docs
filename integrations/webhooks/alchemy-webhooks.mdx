@@ -3,24 +3,32 @@ title: Alchemy Webhooks
 sidebarTitle: Alchemy
 description: Develop and test Alchemy webhooks from localhost.
 ---
+
 import InspectingRequests from "/snippets/integrations/_inspecting-requests.mdx";
 import ReplayingRequests from "/snippets/integrations/_replaying-requests.mdx";
 
-This guide covers how to use ngrok to integrate your localhost app with Alchemy by using Webhooks.
-Alchemy webhooks can be used to notify an external application whenever specific events occur in your Alchemy account.
+This guide walks you through using ngrok to receive Alchemy webhooks on your localhost app.
 
 By integrating ngrok with Alchemy, you can:
 
-- **Develop and test Alchemy webhooks locally**, eliminating the time in deploying your development code to a public environment and setting it up in HTTPS.
-- **Inspect and troubleshoot requests from Alchemy** in real time via the inspection UI and API.
-- **Modify and Replay Alchemy Webhook requests** with a single click and without spending time reproducing events manually in your Alchemy account.
-- **Secure your app with Alchemy validation provided by ngrok**. Invalid requests are blocked by ngrok before reaching your app.
+- Develop and test Alchemy webhooks locally without deploying to a public environment or setting up HTTPS.
+- Inspect and troubleshoot requests from Alchemy in real time via the inspection UI and API.
+- Modify and replay Alchemy webhook requests with a single click instead of reproducing events manually in your Alchemy account.
+- Secure your app with Alchemy webhook validation provided by ngrok.
+  Invalid requests are blocked by ngrok before reaching your app.
 
-## 1. Start your app 
+## What you'll need
 
-For this tutorial, you can use the [sample Node.js app available on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
+- An [ngrok account](https://ngrok.com/signup) and your [authtoken](https://dashboard.ngrok.com/get-started/your-authtoken).
+- The [ngrok agent](https://ngrok.com/download) installed.
+- [Node.js](https://nodejs.org/) installed (for the sample app, or use your own app).
+- An Alchemy account.
 
-To install this sample, run the following commands in a terminal:
+## 1. Start your app
+
+For this tutorial, you can use the [sample Node.js app on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
+
+To install the sample, run the following in a terminal:
 
 ```bash
 git clone https://github.com/ngrok/ngrok-webhook-nodejs-sample.git
@@ -28,111 +36,102 @@ cd ngrok-webhook-nodejs-sample
 npm install
 ```
 
-This will get the project installed locally.
-
-Now you can launch the app by running the following command:
+Then start the app:
 
 ```bash
 npm start
 ```
 
-The app runs by default on port 3000.
+The app runs on port 3000 by default.
 
-You can validate that the app is up and running by visiting http://localhost:3000. The application logs request headers and body in the terminal and responds with a message in the browser.
+You can confirm it's running by visiting `http://localhost:3000`.
+The app logs request headers and body in the terminal and shows a message in the browser.
 
-## 2. Launch ngrok 
+## 2. Expose your app with ngrok
 
-Once your app is running locally, you're ready to put it online securely using ngrok.
+With your app running locally, expose it with ngrok.
 
-1. If you're not an ngrok user yet, just [sign up for ngrok for free](https://ngrok.com/signup).
+- Copy [your ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) from the dashboard.
 
-1. [Download the ngrok agent](https://download.ngrok.com).
+<Tip>
+  The ngrok agent uses your authtoken to authenticate when you start a tunnel.
+</Tip>
 
-1. Go to the [ngrok dashboard](https://dashboard.ngrok.com) and copy your Authtoken. <br />
-   **Tip:** The ngrok agent uses the auth token to log into your account when you start a tunnel.
-1. Start ngrok by running the following command:
+- Start ngrok:
 
-   ```bash
-   ngrok http 3000
-   ```
+  ```bash
+  ngrok http 3000
+  ```
 
-1. ngrok will display a URL where your localhost application is exposed to the internet (copy this URL for use with Alchemy).
-   ![ngrok agent running](../img/twilio/launch_ngrok_tunnel.png)
+- Copy the URL ngrok displays.
+  Your app is now exposed at that URL for use with Alchemy.
 
-## 3. Integrate Alchemy 
+## 3. Configure Alchemy to send webhooks
 
-To register a webhook on your Alchemy account follow the instructions below:
+Alchemy can send webhook requests to your app when events occur in your account.
+To register for those events:
 
-1. Access the [Alchemy dashboard](https://dashboard.alchemy.com/) and sign in using your Alchemy account.
-
-1. On the left menu, click the **Data** icon and then click **Webhooks**.
-
-1. On the **Webhooks** page, click **Create Webhook** for one of the types presented on the screen.
-   In this tutorial, click **Create Webhook** for the **Address Activity** type.
-
-1. Select the **Chain** and the **Network** you want to monitor activities and then enter the URL provided by the ngrok agent to expose your application to the internet in the **WEBHOOK URL** field (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`).
-   ![Alchemy ENDPOINT URL](../img/alchemy/ngrok_url_configuration_alchemy.png)
-
-1. Click **Test Webhook** and verify your localhost application receives a notification event.
-
-1. Enter your wallet address in the **Ethereum Address** field and then click **Create Webhook**.
+- Sign in to the [Alchemy dashboard](https://dashboard.alchemy.com/).
+- In the left menu, click the **Data** icon and then **Webhooks**.
+- On the **Webhooks** page, click **Create Webhook** for one of the types (for this tutorial, use **Address Activity**).
+- Select the **Chain** and **Network** you want to monitor, then paste the ngrok URL in the **WEBHOOK URL** field (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`).
+- Click **Test Webhook** and verify your localhost app receives a notification event.
+- Enter your wallet address in **Ethereum Address** and click **Create Webhook**.
 
 ### Run webhooks with Alchemy and ngrok
 
 Alchemy sends different request body contents depending on the type of webhook.
+Because this example uses **Address Activity**, you need to receive or send tokens to your address to trigger events.
 
-In this example, because you chose the **Address Activity** webhook, you need to receive or send tokens to your address.
+To test your webhook:
 
-To test your webhook, follow the steps below:
+- In the [Alchemy dashboard](https://dashboard.alchemy.com/), go to **Data** and **Webhooks**.
+- In the **Address Activity** section, click the 3 dots for the webhook you registered and click **Send Test Notification**.
 
-1. Access the [Alchemy dashboard](https://dashboard.alchemy.com/) and sign in using your Alchemy account.
-
-1. On the left menu, click the **Data** icon and then click **Webhooks**.
-
-1. On the **Webhooks** page, scroll down to the **Address Activity** section, click the 3 dots for the webhook you registered, and then click **Send Test Notification**.
-
-   Confirm your localhost app receives the test event notification and logs both headers and body in the terminal.
+Confirm your localhost app receives the test event and logs both headers and body in the terminal.
 
 <InspectingRequests />
 
 <ReplayingRequests />
-## Secure webhook requests 
 
-The ngrok signature webhook verification feature allows ngrok to assert that requests from your Alchemy webhook are the only traffic allowed to make calls to your localhost app.
+## Secure webhook requests
 
-**Note:** This ngrok feature is limited to 500 validations per month on free ngrok accounts. For unlimited, upgrade to Pro or Enterprise.
+ngrok can verify that incoming requests are from your Alchemy webhook so only that traffic reaches your app.
 
-This is a quick step to add extra protection to your application.
+<Note>
+  Webhook verification is limited to 500 validations per month on free accounts.
+  If you need more, you can upgrade to Hobbyist or Pay-as-you-go.
+  See [TPU Pricing](/pricing-limits/traffic-policy-unit-pricing/) for details.
+</Note>
 
-1. Access the [Alchemy dashboard](https://dashboard.alchemy.com/) and sign in using your Alchemy account.
+To add verification:
 
-1. On the left menu, click the **Data** icon and then click **Webhooks**.
+- In the [Alchemy dashboard](https://dashboard.alchemy.com/), go to **Data** and **Webhooks**.
+- In the **Address Activity** section, click the 3 dots for your webhook and click **Signing Key**.
+- In the popup, copy the **Signing key** value and click **Close**.
+- Create a Traffic Policy file named `alchemy_policy.yml`.
+  Replace `{your signing key}` with the value you copied:
 
-1. On the **Webhooks** page, scroll down to the **Address Activity** section, click the 3 dots for the webhook you registered, and then click **Signing Key**.
+  ```yaml
+  on_http_request:
+    - actions:
+        - type: verify-webhook
+          config:
+            provider: alchemy
+            secret: "{your signing key}"
+  ```
 
-1. On the pop-up, copy the value of the **Signing key** field and click **Close**.
+- Restart ngrok with the policy file:
 
-1. Create a Traffic Policy file named `alchemy_policy.yml`, replacing `{your signing key}` with the value you have copied before:
+  ```bash
+  ngrok http 3000 --traffic-policy-file alchemy_policy.yml
+  ```
 
-   ```yaml
-   on_http_request:
-     - actions:
-         - type: verify-webhook
-           config:
-             provider: alchemy
-             secret: "{your signing key}"
-   ```
+<Note>
+  After restarting ngrok, the tunnel URL changes.
+  Alchemy does not allow editing webhook URLs, so it's recommended to create a [reserved domain](/docs/guides/how-to-set-up-a-static-domain/) on your ngrok account and run the agent with `--domain your-domain.ngrok.app`.
+</Note>
 
-1. Restart your ngrok agent by running the command:
+- Test the webhook from the Alchemy dashboard or trigger an event with the Alchemy SDK.
 
-   ```bash
-   ngrok http 3000 --traffic-policy-file alchemy_policy.yml
-   ```
-
-**Note**: After restarting the ngrok agent, the address of the agent will be modified.
-Because Alchemy doesn't allow you to edit your webhook registration,
-it's recommended that you create a domain on your ngrok account, and run the agent using the following parameter `--url https://myexample.ngrok.app`
-
-1. Access the [Alchemy dashboard](https://dashboard.alchemy.com/) and test the webhook endpoint or create an event by using the Alchemy SDK.
-
-Verify that your local application receives the request and logs information to the terminal.
+Your app should receive the request and log it in the terminal.

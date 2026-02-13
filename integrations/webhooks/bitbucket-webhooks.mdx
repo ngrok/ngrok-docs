@@ -3,22 +3,30 @@ title: Bitbucket Repository Webhooks
 sidebarTitle: Bitbucket Repository
 description: Develop and test Bitbucket webhooks from localhost.
 ---
+
 import InspectingRequests from "/snippets/integrations/_inspecting-requests.mdx";
 import ReplayingRequests from "/snippets/integrations/_replaying-requests.mdx";
 
-This guide covers how to use ngrok to integrate your localhost app with Bitbucket to allow Bitbucket to send notifications to your app anytime an event takes place in a Bitbucket repository.
+This guide walks you through using ngrok to receive Bitbucket repository webhooks on your localhost app.
 
 By integrating ngrok with Bitbucket, you can:
 
-- **Develop and test Bitbucket webhooks locally**, eliminating the time in deploying your development code to a public environment and setting it up in HTTPS.
-- **Inspect and troubleshoot requests from Bitbucket** in real-time via the inspection UI and API.
-- **Modify and Replay Bitbucket Webhook requests** with a single click and without spending time reproducing events manually in your Bitbucket account.
+- Develop and test Bitbucket webhooks locally without deploying to a public environment or setting up HTTPS.
+- Inspect and troubleshoot requests from Bitbucket in real time via the inspection UI and API.
+- Modify and replay Bitbucket webhook requests with a single click instead of reproducing events manually in your Bitbucket account.
 
-## 1. Start your app 
+## What you'll need
 
-For this tutorial, you can use the [sample Node.js app available on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
+- An [ngrok account](https://ngrok.com/signup) and your [authtoken](https://dashboard.ngrok.com/get-started/your-authtoken).
+- The [ngrok agent](https://ngrok.com/download) installed.
+- [Node.js](https://nodejs.org/) installed (for the sample app, or use your own app).
+- A Bitbucket account and a repository.
 
-To install this sample, run the following commands in a terminal:
+## 1. Start your app
+
+For this tutorial, you can use the [sample Node.js app on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
+
+To install the sample, run the following in a terminal:
 
 ```bash
 git clone https://github.com/ngrok/ngrok-webhook-nodejs-sample.git
@@ -26,122 +34,126 @@ cd ngrok-webhook-nodejs-sample
 npm install
 ```
 
-This will get the project installed locally.
-
-Now you can launch the app by running the following command:
+Then start the app:
 
 ```bash
 npm start
 ```
 
-The app runs by default on port 3000.
+The app runs on port 3000 by default.
 
-You can validate that the app is up and running by visiting http://localhost:3000. The application logs request headers and body in the terminal and responds with a message in the browser.
+You can confirm it's running by visiting `http://localhost:3000`.
+The app logs request headers and body in the terminal and shows a message in the browser.
 
-## 2. Launch ngrok 
+## 2. Expose your app with ngrok
 
-Once your app is running locally, you're ready to put it online securely using ngrok.
+With your app running locally, expose it with ngrok.
 
-1. If you're not an ngrok user yet, just [sign up for ngrok for free](https://ngrok.com/signup).
-1. [Download the ngrok agent](https://download.ngrok.com).
-1. Go to the [ngrok dashboard](https://dashboard.ngrok.com) and copy your Authtoken. <br />
-   **Tip:** The ngrok agent uses the auth token to log into your account when you start a tunnel.
-1. Start ngrok by running the following command:
+- Copy [your ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) from the dashboard.
 
-   ```bash
-   ngrok http 3000
-   ```
+<Tip>
+  The ngrok agent uses your authtoken to authenticate when you start a tunnel.
+</Tip>
 
-1. ngrok will display a URL where your localhost application is exposed to the internet (copy this URL for use with Bitbucket).
-   ![ngrok agent running](../img/twilio/launch_ngrok_tunnel.png)
+- Start ngrok:
 
-## 3. Integrate Bitbucket 
+  ```bash
+  ngrok http 3000
+  ```
 
-Bitbucket can trigger webhook calls to external applications whenever events happen in a repository. To register for such events, follow the instructions below:
+- Copy the URL ngrok displays.
+  Your app is now exposed at that URL for use with Bitbucket.
 
-1. Access [Bitbucket](https://bitbucket.com/) and sign in using your Bitbucket account.
+## 3. Configure Bitbucket to send webhooks
 
-1. Click **Repositories** on the top menu and click the name of a repository from the repository list.
-   **Tip:** If you don't have a repository, create a new empty one.
+Bitbucket can send webhook requests to your app when repository events occur.
+To register for those events:
 
-1. In the repository page, click **Repository settings** from the left menu and then click **Webhooks**.
+- Sign in to [Bitbucket](https://bitbucket.com/).
+- Click **Repositories** in the top menu and open a repository from the list.
 
-1. On the **Webhooks** page, click **Add webhook**.
+<Tip>
+  If you don't have a repository, create an empty one first.
+</Tip>
 
-1. On the **Add new webhook** page, enter a **Title** for your webhook and in the **URL** field enter the URL provided by the ngrok agent to expose your application to the internet (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`).
-   ![URL](../img/bitbucket/ngrok_url_configuration_bitbucket.png)
-
-1. Mark the **Push** checkbox under the **Triggers** section and then click **Save** at the bottom of the page.
+- In the repository, go to **Repository settings** in the left menu and click **Webhooks**.
+- On the **Webhooks** page, click **Add webhook**.
+- On **Add new webhook**, enter a **Title** and paste the ngrok URL in **URL** (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`).
+- Under **Triggers**, check **Push** and click **Save**.
 
 ### Run webhooks with Bitbucket and ngrok
 
-Because you've selected the **Push** event as the trigger for your webhook, Bitbucket will submit a post request to your application through ngrok whenever you push content to your repository.
-**Note:** Different messages are sent to your application depending on the trigger event you choose.
+With **Push** as the trigger, Bitbucket sends a POST request to your app through ngrok when you push to the repository.
 
-Follow the instructions below to add some content to your repository:
+<Note>
+  The payload your app receives depends on the trigger event you chose.
+</Note>
 
-1. Click the name of your repository at the top of the left menu.
+To trigger a push event:
 
-1. On the project's page, click **…** and then click **Add file**.
+- In the repository, click **…** and then **Add file**.
+- On the **Source** page, enter a filename in **Filename** and add content in the text box (for example, `This is my new file content`).
+- Click **Commit**, then **Commit** in the popup.
 
-1. In the **Source** page, enter a name for the file in the **Filename** field, and enter the following content to the file in the textbox:
-   `This is my new file content`.
+Confirm your localhost app receives the push event and logs both headers and body in the terminal.
 
-1. Click **Commit**, and then click **Commit** in the Commit changes popup.
+Alternatively, clone the repository locally, make changes, commit, and push:
 
-   Confirm your localhost app receives the push event notification and logs both headers and body to the terminal.
-
-Alternatively, clone your repository locally, add some content, commit, and then push the content to your repostiory on Bitbucket:
-`bash
-    git add .; git commit -m "my first commit"; git push
-    `
+```bash
+git add .
+git commit -m "my first commit"
+git push
+```
 
 <InspectingRequests />
 
 <ReplayingRequests />
-## Secure webhook requests 
 
-THe following are quick steps to add extra protection to your application.
+## Secure webhook requests
 
-- If you are running Bitbucket Cloud, use ngrok IP Restrictions to allow ingress access for a list of IP addresses.
+You can restrict or verify traffic in two ways depending on your Bitbucket setup.
 
-  **Note:** This feature requires ngrok Pro or Enterprise plan.
-  1. You can find a list of CloudFront IP Addresses used by Bitbucket Cloud in the [Bitbucket Support documents](https://support.atlassian.com/bitbucket-cloud/docs/what-are-the-bitbucket-cloud-ip-addresses-i-should-use-to-configure-my-corporate-firewall/).
+**Bitbucket Cloud:** Use ngrok IP restrictions to allow ingress only from Bitbucket Cloud IP addresses.
 
-  1. Go to the [ngrok dashboard](https://dashboard.ngrok.com), sign in, click **Security** in the left menu, and then click **IP Restrictions**.
+<Note>
+  IP restrictions require an ngrok Pro or Enterprise plan.
+  You can find Bitbucket Cloud IP addresses in [Bitbucket Support](https://support.atlassian.com/bitbucket-cloud/docs/what-are-the-bitbucket-cloud-ip-addresses-i-should-use-to-configure-my-corporate-firewall/).
+</Note>
 
-  1. In the **Agent** section, click **Attach IP Policies**, click **New IP Policy**, and then click **Add Rule**.
+- In the [ngrok dashboard](https://dashboard.ngrok.com), go to **Security** and **IP Restrictions**.
+- In **Agent**, click **Attach IP Policies**, **New IP Policy**, and **Add Rule**.
+- In **Add Rule**, click **Allow** and enter a CIDR that covers the Bitbucket IP (for example, `123.456.789.1/32`) in **CIDR**.
+- Enter a **Description** for the rule and policy, click **Save**, then **Attach IP Policy**.
+- On **IP Restrictions**, click **Save**.
 
-  1. In the **Add Rule** section, click **Allow** and then enter the CIDR that covers the IP Address from Bitbucket (i.e `123.456.789.1/32`) in the **CIDR** field.
+**Bitbucket Server:** Use ngrok webhook verification so only requests from your Bitbucket webhook reach your app.
 
-  1. Enter a **Description** for both the rule and the policy, click **Save**, and then click **Attach IP Policy**.
+<Note>
+  Webhook verification is limited to 500 validations per month on free accounts.
+  If you need more, you can upgrade to Hobbyist or Pay-as-you-go.
+  See [TPU Pricing](/pricing-limits/traffic-policy-unit-pricing/) for details.
+</Note>
 
-  1. On the **IP Restrictions** page, click **Save**.
-
-- If you are running Bitbucket Server, ngrok signature webhook verification feature to allow ngrok to assert that requests from your Bitbucket webhook are the only traffic allowed to make calls to your localhost app.
-
-  **Note:** This ngrok feature is limited to 500 validations per month on free ngrok accounts. For unlimited, upgrade to Pro or Enterprise.
-  1. Access your Bitbucket repository, navigate through the interface to the webhook page, and then edit the webhook.
-
-  1. In the **Authentication** section, select **Secret token** as the method, and then enter a value for the secret token.
-
-  1. Create a Traffic Policy file named `bitbucket_policy.yml` replacing `{your secret token}` with the value you entered before:
+- In your Bitbucket repository, open the webhook page and edit the webhook.
+- In **Authentication**, select **Secret token** and enter a secret value.
+- Create a Traffic Policy file named `bitbucket_policy.yml`.
+  Replace `{your secret token}` with that value:
 
   ```yaml
-  - on_http_request:
+  on_http_request:
     - actions:
-      - type: verify-webhook
-        config:
-          provider: bitbucket
-          secret: "{your secret token}"
+        - type: verify-webhook
+          config:
+            provider: bitbucket
+            secret: "{your secret token}"
   ```
 
-  1. Restart your ngrok agent by running the command:
+- Restart ngrok with the policy file:
 
   ```bash
   ngrok http 3000 --traffic-policy-file bitbucket_policy.yml
   ```
 
-  1. Access your repository, add a new file and then commit the file.
+- Add and commit a new file in the repository to trigger the webhook.
 
-  Verify that your local application receives the request and logs information to the terminal.
+Your app should receive the request and log it in the terminal.

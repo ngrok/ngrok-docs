@@ -3,24 +3,32 @@ title: Buildkite Webhooks
 sidebarTitle: Buildkite
 description: Develop and test Buildkite webhooks from localhost.
 ---
+
 import InspectingRequests from "/snippets/integrations/_inspecting-requests.mdx";
 import ReplayingRequests from "/snippets/integrations/_replaying-requests.mdx";
 
-This guide covers how to use ngrok to integrate your localhost app with Buildkite by using Webhooks.
-Buildkite webhooks can be used to notify an external application whenever specific events occur in your Buildkite account.
+This guide shows you how to use ngrok to receive Buildkite webhooks on your localhost app.
 
 By integrating ngrok with Buildkite, you can:
 
-- **Develop and test Buildkite webhooks locally**, eliminating the time in deploying your development code to a public environment and setting it up in HTTPS.
-- **Inspect and troubleshoot requests from Buildkite** in real-time via the inspection UI and API.
-- **Modify and Replay Buildkite Webhook requests** with a single click and without spending time reproducing events manually in your Buildkite account.
-- **Secure your app with Buildkite validation provided by ngrok**. Invalid requests are blocked by ngrok before reaching your app.
+- Develop and test Buildkite webhooks locally without deploying to a public environment or setting up HTTPS.
+- Inspect and troubleshoot requests from Buildkite in real time via the inspection UI and API.
+- Modify and replay Buildkite webhook requests with a single click instead of reproducing events manually in your Buildkite account.
+- Secure your app with Buildkite webhook validation provided by ngrok.
+  Invalid requests are blocked by ngrok before reaching your app.
 
-## 1. Start your app 
+## What you'll need
 
-For this tutorial, you can use the [sample Node.js app available on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
+- An [ngrok account](https://ngrok.com/signup) and your [authtoken](https://dashboard.ngrok.com/get-started/your-authtoken).
+- The [ngrok agent](https://ngrok.com/download) installed.
+- [Node.js](https://nodejs.org/) installed (for the sample app, or use your own app).
+- A Buildkite account.
 
-To install this sample, run the following commands in a terminal:
+## 1. Start your app
+
+For this tutorial, you can use the [sample Node.js app on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
+
+To install the sample, run the following in a terminal:
 
 ```bash
 git clone https://github.com/ngrok/ngrok-webhook-nodejs-sample.git
@@ -28,105 +36,101 @@ cd ngrok-webhook-nodejs-sample
 npm install
 ```
 
-This will get the project installed locally.
-
-Now you can launch the app by running the following command:
+Then start the app:
 
 ```bash
 npm start
 ```
 
-The app runs by default on port 3000.
+The app runs on port 3000 by default.
 
-You can validate that the app is up and running by visiting http://localhost:3000. The application logs request headers and body in the terminal and responds with a message in the browser.
+You can confirm it's running by visiting `http://localhost:3000`.
+The app logs request headers and body in the terminal and shows a message in the browser.
 
-## 2. Launch ngrok 
+## 2. Expose your app with ngrok
 
-Once your app is running locally, you're ready to put it online securely using ngrok.
+With your app running locally, expose it with ngrok.
 
-1. If you're not an ngrok user yet, just [sign up for ngrok for free](https://ngrok.com/signup).
+- Copy [your ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) from the dashboard.
 
-1. [Download the ngrok agent](https://download.ngrok.com).
+<Tip>
+  The ngrok agent uses your authtoken to authenticate when you start a tunnel.
+</Tip>
 
-1. Go to the [ngrok dashboard](https://dashboard.ngrok.com) and copy your Authtoken. <br />
-   **Tip:** The ngrok agent uses the auth token to log into your account when you start a tunnel.
-1. Start ngrok by running the following command:
+- Start ngrok:
 
-   ```bash
-   ngrok http 3000
-   ```
+  ```bash
+  ngrok http 3000
+  ```
 
-1. ngrok will display a URL where your localhost application is exposed to the internet (copy this URL for use with Buildkite).
-   ![ngrok agent running](../img/twilio/launch_ngrok_tunnel.png)
+- Copy the URL ngrok displays.
+  Your app is now exposed at that URL for use with Buildkite.
 
-## 3. Integrate Buildkite 
+## 3. Configure Buildkite to send webhooks
 
-To register a webhook on your Buildkite account follow the instructions below:
+Buildkite can send webhook requests to your app when events occur in your account.
+To register for those events:
 
-1. Access [Buildkite](https://buildkite.com/) and sign in using your Buildkite account.
-
-1. On the welcome page, click **Settings** on the top menu and click **Notification Services** on the left menu.
-
-1. On the **Notification Services** page, click **Add** for the **Webhook** line.
-
-1. On the **Add Webhook Notification** page, enter `My LocalHost App` in the **Description** field and enter the URL provided by the ngrok agent to expose your application to the internet in the **Webhook URL** field (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`).
-   ![Webhook URL](../img/buildkite/ngrok_url_configuration_buildkite.png)
-
-1. In the **Events** section, select all events.
-
-1. In the **Pipelines** section, select **All Pipelines**, and then click **Add Webhook Notification**.
+- Sign in to [Buildkite](https://buildkite.com/).
+- On the welcome page, click **Settings** in the top menu and **Notification Services** in the left menu.
+- On **Notification Services**, click **Add** for the **Webhook** row.
+- On **Add Webhook Notification**, enter a description in **Description** (for example, `My LocalHost App`) and paste the ngrok URL in **Webhook URL** (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`).
+- In **Events**, select all events.
+- In **Pipelines**, select **All Pipelines** and click **Add Webhook Notification**.
 
 ### Run webhooks with Buildkite and ngrok
 
-Buildkite sends different request body contents depending on the event that is being triggered.
-You can trigger new calls from Buildkite to your application by following the instructions below.
+Buildkite sends different request body contents depending on the event.
+To trigger new calls from Buildkite to your app:
 
-1. On the welcome page, click **Pipelines** on the top menu and then click one of your pipelines.
-   **Note**: Create a pipeline if you don't have one by clicking **Create your first pipeline** and following the instructions on the screen.
+- Click **Pipelines** in the top menu and open one of your pipelines.
 
-1. On your pipeline page, click **New Build**, enter a message in the **Message** field, and then click **Create Build**.
+<Note>
+  If you don't have a pipeline, click **Create your first pipeline** and follow the instructions.
+</Note>
 
-   Confirm your localhost app receives event notifications and logs both headers and body in the terminal.
+- On the pipeline page, click **New Build**, enter a message in **Message**, and click **Create Build**.
 
-Alternatively, you can verify the log of the webhook call in Buildkite:
+Confirm your localhost app receives the event and logs both headers and body in the terminal.
 
-1. Click **Settings** on the top menu, click **Notification Services** on the left menu, click the **My LocalHost App** webhook tile, scroll down to the **Request Log** section, and then click one of the logs:
-   ![Webhook Logs](../img/buildkite/ngrok_logs_buildkite.png)
+You can also check the webhook request in Buildkite: go to **Settings**, **Notification Services**, open your webhook, and look at the **Request Log** section.
 
 <InspectingRequests />
 
 <ReplayingRequests />
-## Secure webhook requests 
 
-The ngrok signature webhook verification feature allows ngrok to assert that requests from your Buildkite webhook are the only traffic allowed to make calls to your localhost app.
+## Secure webhook requests
 
-**Note:** This ngrok feature is limited to 500 validations per month on free ngrok accounts. For unlimited, upgrade to Pro or Enterprise.
+ngrok can verify that incoming requests are from your Buildkite webhook so only that traffic reaches your app.
 
-This is a quick step to add extra protection to your application.
+<Note>
+  Webhook verification is limited to 500 validations per month on free accounts.
+  If you need more, you can upgrade to Hobbyist or Pay-as-you-go.
+  See [TPU Pricing](/pricing-limits/traffic-policy-unit-pricing/) for details.
+</Note>
 
-1. Access [Buildkite](https://buildkite.com/) and sign in using your Buildkite account.
+To add verification:
 
-1. On the organization page, click **Settings** on the top menu and click **Notification Services** on the left menu.
+- In [Buildkite](https://buildkite.com/), go to **Settings** and **Notification Services**.
+- On **Notification Services**, click your webhook tile, copy the value of **Token**, select **Send an HMAC signature**, and click **Save Webhook Settings**.
+- Create a Traffic Policy file named `buildkite_policy.yml`.
+  Replace `{your token}` with the value you copied:
 
-1. On the **Notification Services** page, click the **My LocalHost App** webhook tile, copy the value of the **Token** field, select **Send an HMAC signature**, and then click **Save Webhook Settings**.
+  ```yaml
+  on_http_request:
+    - actions:
+        - type: verify-webhook
+          config:
+            provider: buildkite
+            secret: "{your token}"
+  ```
 
-1. Create a Traffic Policy file named `buildkite_policy.yml`, replacing `{your token}` with the value you have copied before:
+- Restart ngrok with the policy file:
 
-   ```yaml
-   on_http_request:
-     - actions:
-         - type: verify-webhook
-           config:
-             provider: buildkite
-             secret: "{your token}"
-   ```
+  ```bash
+  ngrok http 3000 --traffic-policy-file buildkite_policy.yml
+  ```
 
-1. Restart your ngrok agent by running the command:
+- Create a new build on one of your pipelines to trigger the webhook.
 
-   ```bash
-   ngrok http 3000 --traffic-policy-file buildkite_policy.yml
-   ```
-
-1. Click **Pipelines** on the top menu, select one of your pipelines and create a new build.
-
-Verify that your local application receives the request and logs information to the terminal.
+Your app should receive the request and log it in the terminal.

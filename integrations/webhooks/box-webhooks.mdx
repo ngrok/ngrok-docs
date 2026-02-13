@@ -3,24 +3,32 @@ title: Box Webhooks
 sidebarTitle: Box
 description: Develop and test Box webhooks from localhost.
 ---
+
 import InspectingRequests from "/snippets/integrations/_inspecting-requests.mdx";
 import ReplayingRequests from "/snippets/integrations/_replaying-requests.mdx";
 
-This guide covers how to use ngrok to integrate your localhost app with Box by using Webhooks.
-Box webhooks can be used to notify an external application whenever specific events occur in your Box account.
+This guide explains how to use ngrok to receive Box webhooks on your localhost app.
 
 By integrating ngrok with Box, you can:
 
-- **Develop and test Box webhooks locally**, eliminating the time in deploying your development code to a public environment and setting it up in HTTPS.
-- **Inspect and troubleshoot requests from Box** in real-time via the inspection UI and API.
-- **Modify and Replay Box Webhook requests** with a single click and without spending time reproducing events manually in your Box account.
-- **Secure your app with Box validation provided by ngrok**. Invalid requests are blocked by ngrok before reaching your app.
+- Develop and test Box webhooks locally without deploying to a public environment or setting up HTTPS.
+- Inspect and troubleshoot requests from Box in real time via the inspection UI and API.
+- Modify and replay Box webhook requests with a single click instead of reproducing events manually in your Box account.
+- Secure your app with Box webhook validation provided by ngrok.
+  Invalid requests are blocked by ngrok before reaching your app.
 
-## 1. Start your app 
+## What you'll need
 
-For this tutorial, you can use the [sample Node.js app available on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
+- An [ngrok account](https://ngrok.com/signup) and your [authtoken](https://dashboard.ngrok.com/get-started/your-authtoken).
+- The [ngrok agent](https://ngrok.com/download) installed.
+- [Node.js](https://nodejs.org/) installed (for the sample app, or use your own app).
+- A Box account.
 
-To install this sample, run the following commands in a terminal:
+## 1. Start your app
+
+For this tutorial, you can use the [sample Node.js app on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
+
+To install the sample, run the following in a terminal:
 
 ```bash
 git clone https://github.com/ngrok/ngrok-webhook-nodejs-sample.git
@@ -28,104 +36,96 @@ cd ngrok-webhook-nodejs-sample
 npm install
 ```
 
-This will get the project installed locally.
-
-Now you can launch the app by running the following command:
+Then start the app:
 
 ```bash
 npm start
 ```
 
-The app runs by default on port 3000.
+The app runs on port 3000 by default.
 
-You can validate that the app is up and running by visiting http://localhost:3000. The application logs request headers and body in the terminal and responds with a message in the browser.
+You can confirm it's running by visiting `http://localhost:3000`.
+The app logs request headers and body in the terminal and shows a message in the browser.
 
-## 2. Launch ngrok 
+## 2. Expose your app with ngrok
 
-Once your app is running locally, you're ready to put it online securely using ngrok.
+With your app running locally, expose it with ngrok.
 
-1. If you're not an ngrok user yet, just [sign up for ngrok for free](https://ngrok.com/signup).
+- Copy [your ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) from the dashboard.
 
-1. [Download the ngrok agent](https://download.ngrok.com).
+<Tip>
+  The ngrok agent uses your authtoken to authenticate when you start a tunnel.
+</Tip>
 
-1. Go to the [ngrok dashboard](https://dashboard.ngrok.com) and copy your Authtoken. <br />
-   **Tip:** The ngrok agent uses the auth token to log into your account when you start a tunnel.
-1. Start ngrok by running the following command:
+- Start ngrok:
 
-   ```bash
-   ngrok http 3000
-   ```
+  ```bash
+  ngrok http 3000
+  ```
 
-1. ngrok will display a URL where your localhost application is exposed to the internet (copy this URL for use with Box).
-   ![ngrok agent running](../img/twilio/launch_ngrok_tunnel.png)
+- Copy the URL ngrok displays.
+  Your app is now exposed at that URL for use with Box.
 
-## 3. Integrate Box 
+## 3. Configure Box to send webhooks
 
-To register a webhook on your Box account follow the instructions below:
+Box can send webhook requests to your app when events occur in your account.
+To register for those events:
 
-1. Access [Box](https://box.com/), sign in using your Box account, and then click **Dev Console** on the left menu.
-
-1. On the **Box Developer** console, click **Create New App**, and then click **Custom App**.
-
-1. On the **Custom App** popup, click **Server Authentication (with JWT)**, enter a name for the app in the **App name** field, and then click **Create App**.
-
-1. On the app's page, click the **Configuration** tab, mark the **Manage Webhooks** checkbox under **Developer Actions**, and then click **Save Changes**.
-
-1. Click the **Authorization** tab, click **Review and Submit**, enter `Requesting Access` in the **App Description** field, and then click **Submit**.
-
-1. Access [Box Admin Console](https://app.box.com/master), click **Apps** on the left menu, click the **Custom App Manager** tab, click **View** on your app, click **Authorize**, and then click **Authorize**.
-
-1. Back to the [Box Developer Console](https://app.box.com/developers/console), click your app name, click the **Webhook** tab, click **Create Webhook**, and then click **V2**.
-
-1. On the **Create a Webhook** page, enter the URL provided by the ngrok agent to expose your application to the internet in the **URL Address** field (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`).
-   ![URL to Publish](../img/box/ngrok_url_configuration_box.png)
-
-1. Click **Choose an item** for the **Content Type** section, select a folder from your box account, and then click **Choose**.
-
-1. Click **File Triggers**, mark the **File Uploaded** checkbox, and then click **Create Webhook**.
+- Sign in to [Box](https://box.com/) and click **Dev Console** in the left menu.
+- On the Box Developer console, click **Create New App**, then **Custom App**.
+- In the **Custom App** popup, select **Server Authentication (with JWT)**, enter a name in **App name**, and click **Create**.
+- On the app page, open the **Configuration** tab, check **Manage Webhooks** under **Developer Actions**, and click **Save Changes**.
+- Open the **Authorization** tab, click **Review and Submit**, enter a description in **App Description** (for example, `Requesting Access`), and click **Submit**.
+- In [Box Admin Console](https://app.box.com/master), go to **Apps**, **Custom App Manager**, click **View** on your app, then **Authorize** and **Authorize** again.
+- Back in the [Box Developer Console](https://app.box.com/developers/console), open your app, click the **Webhook** tab, click **Create Webhook**, then **V2**.
+- On **Create a Webhook**, paste the ngrok URL in **URL Address** (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`).
+- For **Content Type**, click **Choose an item** and select a folder from your Box account.
+- Under **File Triggers**, check **File Uploaded** and click **Create Webhook**.
 
 ### Run webhooks with Box and ngrok
 
-Because you registered your webhook with the **File Uploaded** trigger, Box sends a notification to your application whenever you upload files to a folder.
+With the **File Uploaded** trigger, Box sends a notification to your app when you upload files to the chosen folder.
 
-1. Access [Box](https://box.com/), sign in using your Box account, and then upload a file from your desktop to the folder you selected during the webhook registration. See [Integrate Box](#setup-webhook).
+- In [Box](https://box.com/), upload a file from your desktop to the folder you selected when creating the webhook.
 
-After the file upload process is completed, Box sends a post request to your application.
-
-Confirm your localhost app receives the **FILE.UPLOADED** event notification and logs both headers and body in the terminal.
+Confirm your localhost app receives the **FILE.UPLOADED** event and logs both headers and body in the terminal.
 
 <InspectingRequests />
 
 <ReplayingRequests />
-## Secure webhook requests 
 
-The ngrok signature webhook verification feature allows ngrok to assert that requests from your Box webhook are the only traffic allowed to make calls to your localhost app.
+## Secure webhook requests
 
-**Note:** This ngrok feature is limited to 500 validations per month on free ngrok accounts. For unlimited, upgrade to Pro or Enterprise.
+ngrok can verify that incoming requests are from your Box webhook so only that traffic reaches your app.
 
-This is a quick step to add extra protection to your application.
+<Note>
+  Webhook verification is limited to 500 validations per month on free accounts.
+  If you need more, you can upgrade to Hobbyist or Pay-as-you-go.
+  See [TPU Pricing](/pricing-limits/traffic-policy-unit-pricing/) for details.
+</Note>
 
-1. Access [Box Developer Console](https://app.box.com/developers/console), click your app name, click the **Webhook** tab, and then click **Manage Signature Keys**.
+To add verification:
 
-1. On the **Manage Signature Keys** page, click **Generate Key** in the **Primary Key** section and then click **COPY** to copy the value of the generated primary key.
+- In the [Box Developer Console](https://app.box.com/developers/console), open your app, go to the **Webhook** tab, and click **Manage Signature Keys**.
+- On **Manage Signature Keys**, click **Generate Key** in **Primary Key** and click **COPY** to copy the primary key value.
+- Create a Traffic Policy file named `box_policy.yml`.
+  Replace `{your primary key}` with the value you copied:
 
-1. Create a Traffic Policy file named `box_policy.yml`, replacing `{your primary key}` with the value you have copied before:
+  ```yaml
+  on_http_request:
+    - actions:
+        - type: verify-webhook
+          config:
+            provider: box
+            secret: "{your primary key}"
+  ```
 
-   ```yaml
-   on_http_request:
-     - actions:
-         - type: verify-webhook
-           config:
-             provider: box
-             secret: "{your primary key}"
-   ```
+- Restart ngrok with the policy file:
 
-1. Restart your ngrok agent by running the command:
+  ```bash
+  ngrok http 3000 --traffic-policy-file box_policy.yml
+  ```
 
-   ```bash
-   ngrok http 3000 --traffic-policy-file box_policy.yml
-   ```
+- Upload a file to the folder you selected for the webhook to trigger a request.
 
-1. Access [Box](https://box.com/), sign in using your Box account, and then upload a file from your desktop to the folder you selected during the webhook registration. See [Integrate Box](#setup-webhook).
-
-   Verify that your local application receives the request and logs information to the terminal.
+Your app should receive the request and log it in the terminal.
