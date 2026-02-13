@@ -93,6 +93,8 @@ description: Learn how to get started with ngrok and create your first tunnel.
 
 **Exceptions**: "Let's Encrypt" and "US" are allowed.
 
+**Bold = UI text**: First-person pronouns inside bold (e.g. **My Local Webhook**, **My Account**) are treated as UI labels. Vale ignores them via `IgnoredScopes = strong`. Do not edit these—they are correct as-is.
+
 ### Time Format (AM/PM)
 
 **Warning**: Incorrect AM/PM format.
