@@ -1,0 +1,28 @@
+---
+title: Set up a custom connect URL
+description: White-label the ngrok agent connect URL so customers see your brand in their network logs.
+---
+
+When the ngrok agent starts, it makes an outbound connection via TLS over port 443 to the ngrok cloud service. This connection is made to the "agent connect URL". By default, [this connect URL](/agent/connect-url/) is `connect.ngrok-agent.com`, but it can be white-labeled so that your ngrok agents will connect to `connect.acme.com` instead of the default connection hostname. This is highly recommended because your customers may need to whitelist egress traffic out of their networks and customers will see this traffic in their network logs. You can also request dedicated IPs for your connect URL that are unique to your account.
+
+```bash
+curl \
+-X POST \
+-H "Authorization: Bearer {API_KEY}" \
+-H "Content-Type: application/json" \
+-H "Ngrok-Version: 2" \
+-d '{"description":"Custom connect URL","domain":"connect.acme.com"}' \
+https://api.ngrok.com/agent_ingresses
+```
+
+Once the custom connect url has been created, specify this field within the agent configuration file. Add this section to your agent configuration file to specify the custom connect url:
+
+```yaml
+version: 3
+agent:
+  connect_url: connect.acme.com:443
+```
+
+## What's next
+
+- [Install ngrok as a background service](/guides/site-to-site-connectivity/background-service) to ensure the agent starts on boot and recovers from failures.

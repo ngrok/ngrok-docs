@@ -1,0 +1,38 @@
+---
+title: Eliminate single points of failure with redundant agents
+description: Run multiple ngrok agents in a customer's network for high availability and automatic failover.
+---
+
+Running a single agent in your customer's network is a single point of failure. If that agent or the hardware it runs on fails for any reason, you can no longer connect to the remote services in your customer's network. You can run multiple agents to achieve redundancy and high availability in the case of these failures.
+
+To do this, you will run a separate, second ngrok agent in the customer's network (ideally on a different machine) with an identical configuration file with one small tweak: on each endpoint definition you must specify `pooling_enabled: true`. This is ngrok's Endpoint Pooling feature. When two endpoints start with the same URL and have pooling enabled, they form an endpoint pool. Incoming traffic to the pooled URL is automatically distributed among all healthy endpoints in the pool. If one endpoint goes offline, traffic is seamlessly routed to the remaining endpoints, ensuring redundancy and failover.
+
+```yaml
+# Server 1 (agent1.yml)
+version: 3
+agent:
+  authtoken: <YOUR_NGROK_AUTHTOKEN>
+endpoints:
+  - name: my-service
+    url: 'https://service.internal'
+    pooling_enabled: true
+    upstream:
+      url: http://localhost:8080
+```
+
+```yaml
+# Server 2 (agent2.yml)
+version: 3
+agent:
+  authtoken: <YOUR_NGROK_AUTHTOKEN>
+endpoints:
+  - name: my-service
+    url: 'https://service.internal'  # Same URL as Server 1
+    pooling_enabled: true
+    upstream:
+      url: http://localhost:8080
+```
+
+## What's next
+
+- [Set up a custom connect URL](/guides/site-to-site-connectivity/custom-connect-url) to white-label the agent connection for your customers.
