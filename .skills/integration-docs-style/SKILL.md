@@ -13,7 +13,6 @@ description: Applies ngrok integration docs style rules when writing or editing 
 2. **Apply every applicable rule completely.** Half-measures are failures. Example: removing UI screenshots means (a) remove the image markup from the doc and (b) delete the actual image files from the repo. Doing only (a) is wrong.
 3. **Verify when done.** Before you consider the task complete, go through the reference section by section and confirm the doc complies. If you skip or partially apply any rule, you have not finished the job.
 
-
 ## When to use
 
 - Creating or revising integration docs (e.g. `using-ngrok-with/*.mdx`, `integrations/webhooks/*.mdx`)
