@@ -3,24 +3,32 @@ title: Mux Webhooks
 sidebarTitle: Mux
 description: Develop and test Mux webhooks from localhost.
 ---
+
 import InspectingRequests from "/snippets/integrations/_inspecting-requests.mdx";
 import ReplayingRequests from "/snippets/integrations/_replaying-requests.mdx";
 
-This guide covers how to use ngrok to integrate your localhost app with Mux by using Webhooks.
-Mux webhooks can be used to notify an external application whenever specific events occur in your Mux account.
+This guide walks you through using ngrok to receive Mux webhooks on your localhost app.
 
 By integrating ngrok with Mux, you can:
 
-- **Develop and test Mux webhooks locally**, eliminating the time in deploying your development code to a public environment and setting it up in HTTPS.
-- **Inspect and troubleshoot requests from Mux** in real-time via the inspection UI and API.
-- **Modify and Replay Mux Webhook requests** with a single click and without spending time reproducing events manually in your Mux account.
-- **Secure your app with Mux validation provided by ngrok**. Invalid requests are blocked by ngrok before reaching your app.
+- Develop and test Mux webhooks locally without deploying to a public environment or setting up HTTPS.
+- Inspect and troubleshoot requests from Mux in real time via the inspection UI and API.
+- Modify and replay Mux webhook requests with a single click instead of reproducing events manually in your Mux account.
+- Secure your app with Mux webhook validation provided by ngrok.
+  Invalid requests are blocked by ngrok before reaching your app.
 
-## 1. Start your app 
+## What you'll need
 
-For this tutorial, you can use the [sample Node.js app available on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
+- An [ngrok account](https://ngrok.com/signup) and your [authtoken](https://dashboard.ngrok.com/get-started/your-authtoken).
+- The [ngrok agent](https://ngrok.com/download) installed.
+- [Node.js](https://nodejs.org/) installed (for the sample app, or use your own app).
+- A Mux account.
 
-To install this sample, run the following commands in a terminal:
+## 1. Start your app
+
+For this tutorial, you can use the [sample Node.js app on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
+
+To install the sample, run the following in a terminal:
 
 ```bash
 git clone https://github.com/ngrok/ngrok-webhook-nodejs-sample.git
@@ -28,98 +36,93 @@ cd ngrok-webhook-nodejs-sample
 npm install
 ```
 
-This will get the project installed locally.
-
-Now you can launch the app by running the following command:
+Then start the app:
 
 ```bash
 npm start
 ```
 
-The app runs by default on port 3000.
+The app runs on port 3000 by default.
 
-You can validate that the app is up and running by visiting http://localhost:3000. The application logs request headers and body in the terminal and responds with a message in the browser.
+You can confirm it's running by visiting `http://localhost:3000`.
+The app logs request headers and body in the terminal and shows a message in the browser.
 
-## 2. Launch ngrok 
+## 2. Expose your app with ngrok
 
 Once your app is running locally, you're ready to put it online securely using ngrok.
 
-1. If you're not an ngrok user yet, just [sign up for ngrok for free](https://ngrok.com/signup).
+- Copy [your ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) from the dashboard.
 
-1. [Download the ngrok agent](https://download.ngrok.com).
+<Tip>
+  The ngrok agent uses your authtoken to authenticate when you start a tunnel.
+</Tip>
 
-1. Go to the [ngrok dashboard](https://dashboard.ngrok.com) and copy your Authtoken. <br />
-   **Tip:** The ngrok agent uses the auth token to log into your account when you start a tunnel.
-1. Start ngrok by running the following command:
+- Start ngrok:
 
-   ```bash
-   ngrok http 3000
-   ```
+  ```bash
+  ngrok http 3000
+  ```
 
-1. ngrok will display a URL where your localhost application is exposed to the internet (copy this URL for use with Mux).
-   ![ngrok agent running](../img/twilio/launch_ngrok_tunnel.png)
+- Copy the URL ngrok displays.
+  Your app is now exposed at that URL for use with Mux.
 
-## 3. Integrate Mux 
+## 3. Configure Mux to send webhooks
 
-To register a webhook on your Mux account follow the instructions below:
+Mux can send webhook requests to your app when events occur in your account.
+To register for those events:
 
-1. Access [Mux](https://www.mux.com/) and sign in using your Mux account.
-
-1. On the Mux dashboard, click **Settings on the left menu, and then click **Webhooks\*\*.
-
-1. On the **Webhooks** tab of the **Settings** page, click **Create new webhook**.
-
-1. Select your environment, and enter the URL provided by the ngrok agent to expose your application to the internet in the **URL to notify** field (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`).
-   ![mux URL to Publish](../img/mux/ngrok_url_configuration_mux.png)
-
-1. Click **Create Webhook**.
+- Sign in to [Mux](https://www.mux.com/).
+- Click **Settings** in the left menu and then **Webhooks**.
+- On the **Webhooks** tab, click **Create new webhook**.
+- Select your environment and enter your ngrok URL in **URL to notify** (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`).
+- Click **Create Webhook**.
 
 ### Run webhooks with Mux and ngrok
 
-Mux sends different request body contents depending on the event that is being triggered.
-You can trigger new calls from Mux to your application by following the instructions below.
+Mux sends different request body contents depending on the event.
+To trigger new calls from Mux to your app:
 
-1. On the Mux dashboard, click **Assets** on the left menu and then click **Create New Asset**.
+- On the Mux dashboard, click **Assets** and then **Create New Asset**.
+- On the **Create a new asset** popup, click **Run Request**.
 
-1. On the **Create a new asset** popup, click **Run Request**.
-
-   Confirm your localhost app receives event notifications and logs both headers and body in the terminal.
+Confirm your localhost app receives event notifications and logs both headers and body in the terminal.
 
 <InspectingRequests />
 
 <ReplayingRequests />
-## Secure webhook requests 
 
-The ngrok signature webhook verification feature allows ngrok to assert that requests from your Mux webhook are the only traffic allowed to make calls to your localhost app.
+## Secure webhook requests
 
-**Note:** This ngrok feature is limited to 500 validations per month on free ngrok accounts. For unlimited, upgrade to Pro or Enterprise.
+ngrok can verify that incoming requests are from your Mux webhook so only that traffic reaches your app.
 
-This is a quick step to add extra protection to your application.
+<Note>
+  Webhook verification is limited to 500 validations per month on free accounts.
+  If you need more, you can upgrade to Hobbyist or Pay-as-you-go.
+  See [TPU Pricing](/pricing-limits/traffic-policy-unit-pricing/) for details.
+</Note>
 
-1. Access [Mux](https://www.mux.com/) and sign in using your Mux account.
+To add verification:
 
-1. On the Mux dashboard, click **Settings** on the left menu, and then click **Webhooks**.
+- In [Mux](https://www.mux.com/), go to **Settings** and **Webhooks**.
+- On the **Webhooks** tab, click **Show Signing Secret** for your webhook and copy the value.
+- Create a Traffic Policy file named `mux_policy.yml`.
+  Replace `{your signing secret}` with the value you copied:
 
-1. On the **Webhooks** tab of the **Settings** page, click **Show Signing Secret** for your webhook and copy the value of the signing secret.
+  ```yaml
+  on_http_request:
+    - actions:
+        - type: verify-webhook
+          config:
+            provider: mux
+            secret: "{your signing secret}"
+  ```
 
-1. Create a Traffic Policy file named `mux_policy.yml`, replacing `{your signing secret}` with the value you have copied before (See [Integrate ngrok and Mux.](#setup-webhook)):
+- Restart ngrok with the policy file:
 
-   ```yaml
-   on_http_request:
-     - name: "Verify Mux requests"
-       actions:
-         - type: verify-webhook
-           config:
-             provider: "mux"
-             secret: "{your signing secret}"
-   ```
+  ```bash
+  ngrok http 3000 --traffic-policy-file mux_policy.yml
+  ```
 
-1. Restart the ngrok agent by running the command:
+- Create a new asset in Mux to trigger the webhook.
 
-   ```bash
-   ngrok http 3000 --traffic-policy-file mux_policy.yml
-   ```
-
-1. Access [Mux](https://www.mux.com/), sign in, and create a new asset.
-
-Verify that your local application receives the request and logs information to the terminal.
+Your app should receive the request and log it in the terminal.

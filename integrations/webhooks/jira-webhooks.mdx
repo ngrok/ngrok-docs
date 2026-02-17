@@ -3,30 +3,32 @@ title: Jira Webhooks
 sidebarTitle: Jira
 description: Develop and test Jira webhooks from localhost.
 ---
+
 import InspectingRequests from "/snippets/integrations/_inspecting-requests.mdx";
 import ReplayingRequests from "/snippets/integrations/_replaying-requests.mdx";
 
-This guide covers how to use ngrok to integrate your localhost app with Jira by using Webhooks.
-Jira webhooks can be used to notify an external application whenever specific events occur in your Jira instance.
+This guide shows you how to use ngrok to receive Jira webhooks on your localhost app.
 
 By integrating ngrok with Jira, you can:
 
-- **Develop and test Jira webhooks locally** - No need to deploy your code and set up HTTPS.
-- **Inspect and troubleshoot requests from Jira in real-time using ngrok's inspection UI and API**.
-- **Modify and Replay Jira Webhook requests with a single click** - No need to reproduce events manually in your Jira instance.
-- **Secure your app with Jira validation provided by ngrok** - Invalid requests are blocked by ngrok before reaching your app.
+- Develop and test Jira webhooks locally without deploying to a public environment or setting up HTTPS.
+- Inspect and troubleshoot requests from Jira in real time via the inspection UI and API.
+- Modify and replay Jira webhook requests with a single click instead of reproducing events manually in your Jira instance.
+- Secure your app with Jira webhook validation provided by ngrok.
+  Invalid requests are blocked by ngrok before reaching your app.
 
 ## What you'll need
 
-- An [ngrok account](https://dashboard.ngrok.com/signup).
-- Your [ngrok auth token](https://dashboard.ngrok.com/get-started/your-authtoken).
-- Configure [the ngrok agent CLI](/getting-started#1-install-the-ngrok-agent-cli) locally.
+- An [ngrok account](https://ngrok.com/signup) and your [authtoken](https://dashboard.ngrok.com/get-started/your-authtoken).
+- The [ngrok agent](https://ngrok.com/download) installed.
+- [Node.js](https://nodejs.org/) installed (for the sample app, or use your own app).
+- A Jira instance and an account with **Jira Administrators** permission.
 
-## 1. Start your app 
+## 1. Start your app
 
-For this tutorial, you can use the [sample Node.js app available on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
+For this tutorial, you can use the [sample Node.js app on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
 
-To install it, run the following commands in your terminal:
+To install the sample, run the following in a terminal:
 
 ```bash
 git clone https://github.com/ngrok/ngrok-webhook-nodejs-sample.git
@@ -34,99 +36,94 @@ cd ngrok-webhook-nodejs-sample
 npm install
 ```
 
-Launch the app with the following command:
+Then start the app:
 
 ```bash
 npm start
 ```
 
-The app runs by default on port `3000`.
+The app runs on port 3000 by default.
 
-You can validate that the app is up and running by visiting http://localhost:3000. The application logs request headers and body in the terminal and responds with a message in the browser.
+You can confirm it's running by visiting `http://localhost:3000`.
+The app logs request headers and body in the terminal and shows a message in the browser.
 
-## 2. Launch ngrok 
-
-<Tip>
-If you haven't done all the preliminary steps for this tutorial, [you should do them now](#what-you'll-need).
-</Tip>
+## 2. Expose your app with ngrok
 
 Once your app is running locally, you're ready to put it online securely using ngrok.
 
-1. Start ngrok by running the following command:
-   ```bash
-   ngrok http 3000
-   ```
-1. ngrok will display a URL where your localhost application is exposed to the internet (copy this URL for use with Jira).
-   ![ngrok agent running](../img/twilio/launch_ngrok_tunnel.png)
+- Copy [your ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) from the dashboard.
 
-## 3. Integrate Jira 
+<Tip>
+  The ngrok agent uses your authtoken to authenticate when you start a tunnel.
+</Tip>
 
-Jira can trigger webhook calls to external applications whenever events happen in your instance. To register for such events:
+- Start ngrok:
 
-1. Sign in to [Jira](https://www.atlassian.com/software/jira) with an account that has the **Jira Administrators** global permission.
+  ```bash
+  ngrok http 3000
+  ```
 
-1. Navigate to the **Settings** icon (⚙️) and select **System**.
+- Copy the URL ngrok displays.
+  Your app is now exposed at that URL for use with Jira.
 
-1. Under the **Advanced** section, select **WebHooks**, then select **Create a WebHook**.
+## 3. Configure Jira to send webhooks
 
-1. In the **Name** field, provide something descriptive like "ngrok Integration Webhook".
+Jira can send webhook requests to your app when events occur in your instance.
+To register for those events:
 
-1. In the **URL** field, enter the URL provided by the ngrok agent to put your app online at that address. For example, your URL might be something like `https://1234-abcd-5e6f-7g8h-9i0j.ngrok.app`.
-1. Under the **Events** section, select the specific events that should trigger the webhook. 
-1. (Optional) To limit the scope of the webhook, you can specify a JQL (Jira Query Language) query in the **JQL** field. For example, to trigger the webhook only for issues in specific projects:
-   ```
-   project in (ABC, XYZ)
-   ```
-1. Finally, select **Create**.
-
-## Get more out of Jira with ngrok
-
-ngrok can do more than just put your Jira application online. Check out these other quick wins ngrok offers you.
+- Sign in to [Jira](https://www.atlassian.com/software/jira) with an account that has **Jira Administrators** permission.
+- Open the **Settings** icon and select **System**.
+- Under **Advanced**, select **WebHooks** and then **Create a WebHook**.
+- In **Name**, enter a description (for example, `ngrok Integration Webhook`).
+- In **URL**, enter your ngrok URL (for example, `https://1234-abcd-5e6f-7g8h-9i0j.ngrok.app`).
+- Under **Events**, select the events that should trigger the webhook.
+- Optionally, enter a JQL query in **JQL** to limit scope (for example, `project in (ABC, XYZ)`).
+- Click **Create**.
 
 ### Run webhooks with Jira and ngrok
 
-After you create a webhook in Jira, Jira will submit a POST request to your application through ngrok whenever the selected events occur.
+After you create the webhook, Jira sends a POST request to your app through ngrok when the selected events occur.
+To trigger an event:
 
-To trigger a webhook event:
+- In your Jira instance, create a new issue or update an existing issue in a project that matches your webhook scope.
 
-1. In your Jira instance, navigate to a project and create a new issue, or update an existing issue.
-
-1. Confirm your localhost app receives the webhook notification and logs both headers and body in the terminal.
+Confirm your localhost app receives the webhook and logs both headers and body in the terminal.
 
 <InspectingRequests />
 
 <ReplayingRequests />
 
-### Secure webhook requests 
+## Secure webhook requests
 
-The ngrok signature webhook verification feature allows ngrok to assert that requests from your Jira webhook are the only traffic allowed to make calls to your localhost app.
+ngrok can verify that incoming requests are from your Jira webhook so only that traffic reaches your app.
 
 <Note>
-This ngrok feature is limited to 500 validations per month on free ngrok accounts. For unlimited, upgrade to Pro or Enterprise.
+  Webhook verification is limited to 500 validations per month on free accounts.
+  If you need more, you can upgrade to Hobbyist or Pay-as-you-go.
+  See [TPU Pricing](/pricing-limits/traffic-policy-unit-pricing/) for details.
 </Note>
 
-This is a quick step to add extra protection to your application.
+To add verification:
 
-1. In your Jira webhook settings, locate the **Secret** field. If a secret is not already set, you can generate one or use a custom secret value. Copy this secret value.
+- In your Jira webhook settings, find the **Secret** field, generate or set a secret, and copy the value.
+- Create a Traffic Policy file named `jira_policy.yml`.
+  Replace `{your secret}` with the secret from Jira:
 
-1. Create a Traffic Policy file named `jira_policy.yml`, replacing `{your secret}` with your **Secret** from Jira:
+  ```yaml
+  on_http_request:
+    - actions:
+        - type: verify-webhook
+          config:
+            provider: jira
+            secret: "{your secret}"
+  ```
 
-   ```yaml
-   on_http_request:
-     - actions:
-         - type: verify-webhook
-           config:
-             provider: jira
-             secret: "{your secret}"
-   ```
+- Restart ngrok with the policy file:
 
-1. Restart your ngrok agent by running the command:
+  ```bash
+  ngrok http 3000 --traffic-policy-file jira_policy.yml
+  ```
 
-   ```bash
-   ngrok http 3000 --traffic-policy-file jira_policy.yml
-   ```
+- Create or update an issue in Jira to trigger the webhook.
 
-1. In your Jira instance, create or update an issue to trigger the webhook.
-
-1. Verify that your local application receives the request and logs information to the terminal.
-
+Your app should receive the request and log it in the terminal.

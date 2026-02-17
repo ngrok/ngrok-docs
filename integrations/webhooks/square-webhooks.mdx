@@ -3,24 +3,32 @@ title: Square Webhooks
 sidebarTitle: Square
 description: Develop and test Square webhooks from localhost.
 ---
+
 import InspectingRequests from "/snippets/integrations/_inspecting-requests.mdx";
 import ReplayingRequests from "/snippets/integrations/_replaying-requests.mdx";
 
-This guide covers how to use ngrok to integrate your localhost app with Square by using Webhooks.
-Square webhooks can be used to notify an external application whenever specific events occur in your Square account.
+This guide explains how to use ngrok to receive Square webhooks on your localhost app.
 
 By integrating ngrok with Square, you can:
 
-- **Develop and test Square webhooks locally**, eliminating the time in deploying your development code to a public environment and setting it up in HTTPS.
-- **Inspect and troubleshoot requests from Square** in real-time via the inspection UI and API.
-- **Modify and Replay Square Webhook requests** with a single click and without spending time reproducing events manually in your Square account.
-- **Secure your app with Square validation provided by ngrok**. Invalid requests are blocked by ngrok before reaching your app.
+- Develop and test Square webhooks locally without deploying to a public environment or setting up HTTPS.
+- Inspect and troubleshoot requests from Square in real time via the inspection UI and API.
+- Modify and replay Square webhook requests with a single click instead of reproducing events manually in your Square account.
+- Secure your app with Square webhook validation provided by ngrok.
+  Invalid requests are blocked by ngrok before reaching your app.
 
-## 1. Start your app 
+## What you'll need
 
-For this tutorial, you can use the [sample Node.js app available on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
+- An [ngrok account](https://ngrok.com/signup) and your [authtoken](https://dashboard.ngrok.com/get-started/your-authtoken).
+- The [ngrok agent](https://ngrok.com/download) installed.
+- [Node.js](https://nodejs.org/) installed (for the sample app, or use your own app).
+- A Square account.
 
-To install this sample, run the following commands in a terminal:
+## 1. Start your app
+
+For this tutorial, you can use the [sample Node.js app on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
+
+To install the sample, run the following in a terminal:
 
 ```bash
 git clone https://github.com/ngrok/ngrok-webhook-nodejs-sample.git
@@ -28,107 +36,100 @@ cd ngrok-webhook-nodejs-sample
 npm install
 ```
 
-This will get the project installed locally.
-
-Now you can launch the app by running the following command:
+Then start the app:
 
 ```bash
 npm start
 ```
 
-The app runs by default on port 3000.
+The app runs on port 3000 by default.
 
-You can validate that the app is up and running by visiting http://localhost:3000. The application logs request headers and body in the terminal and responds with a message in the browser.
+You can confirm it's running by visiting `http://localhost:3000`.
+The app logs request headers and body in the terminal and shows a message in the browser.
 
-## 2. Launch ngrok 
+## 2. Expose your app with ngrok
 
 Once your app is running locally, you're ready to put it online securely using ngrok.
 
-1. If you're not an ngrok user yet, just [sign up for ngrok for free](https://ngrok.com/signup).
+- Copy [your ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) from the dashboard.
 
-1. [Download the ngrok agent](https://download.ngrok.com).
+<Tip>
+  The ngrok agent uses your authtoken to authenticate when you start a tunnel.
+</Tip>
 
-1. Go to the [ngrok dashboard](https://dashboard.ngrok.com) and copy your Authtoken. <br />
-   **Tip:** The ngrok agent uses the auth token to log into your account when you start a tunnel.
-1. Start ngrok by running the following command:
+- Start ngrok:
 
-   ```bash
-   ngrok http 3000
-   ```
+  ```bash
+  ngrok http 3000
+  ```
 
-1. ngrok will display a URL where your localhost application is exposed to the internet (copy this URL for use with Square).
-   ![ngrok agent running](../img/twilio/launch_ngrok_tunnel.png)
+- Copy the URL ngrok displays.
+  Your app is now exposed at that URL for use with Square.
 
-## 3. Integrate Square 
+## 3. Configure Square to send webhooks
 
-To register a webhook on your Square account follow the instructions below:
+Square can send webhook requests to your app when events occur in your account.
+To register for those events:
 
-1. Access the [Square Developer](https://developer.squareup.com/apps) page, and sign in using your Square account.
-
-1. Click the plus sign to add a new application, provide **Application name** as `myLocalhostApp`, click **I agree to the Square Developer Terms of Service**, and then click **Save**.
-
-1. On the **Applications** page, click **Open** in the application tile.
-
-1. On your app page, click **Subscriptions** under the **Webhooks** section of the left menu.
-
-1. In the **Webhook subscriptions** page, click **Production** and then click **Add subscription**.
-
-1. In the **Webhook subscription** popup, provide `Create Items Webhook` as the **Webhook name** and in the **URL** field enter the URL provided by the ngrok agent to expose your application to the internet (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`).
-   ![Your request endpoint URL](../img/square/ngrok_url_configuration_square.png)
-
-1. In the **Events** section, select **catalog.version.updated** and then click **Save**.
+- Sign in to [Square Developer](https://developer.squareup.com/apps).
+- Click the plus sign to add an application, enter **Application name** (for example, `myLocalhostApp`), accept the terms, and click **Save**.
+- On **Applications**, click **Open** for the app.
+- In the left menu under **Webhooks**, click **Subscriptions**.
+- On **Webhook subscriptions**, select **Production** and click **Add subscription**.
+- In the popup, enter a **Webhook name** (for example, `Create Items Webhook`), enter your ngrok URL in **URL** (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`).
+- Under **Events**, select **catalog.version.updated** and click **Save**.
 
 ### Run webhooks with Square and ngrok
 
-Because you've selected the **catalog.version.updated** event, you can trigger new calls from Square to your application by following the instructions below:
-Square sends different request body contents depending on the event you select during the webhook registration.
+Because you selected **catalog.version.updated**, creating or updating catalog items triggers webhooks:
 
-1. In the same browser, access the [Square Dashboard](https://squareup.com/dashboard) page, click **Items & orders**, and then click the **Items** on the left menu.
-   **Tip**: Optionally, you can click **Items** under the **Quick access** menu.
+- In the [Square Dashboard](https://squareup.com/dashboard), go to **Items & orders** and **Items** (or **Items** under **Quick access**).
+- Click **Create an item**, fill in **Name**, **Category**, **SKU**, **Price**, and click **Save**.
 
-1. In the **Your item library** page, click **Create an item**, and then provide **Details** such as **Name**, **Category**, **SKU**, **Price**, and then click **Save**.
-   Confirm your localhost app receives the create user event notification and logs both headers and body in the terminal.
+Confirm your localhost app receives the notification and logs both headers and body in the terminal.
 
-1. Optionally, you can access the [Square Dashboard](https://squareup.com/dashboard) page for your application, click **Logs** under **Webhooks** on the left menu, click the last log that appears on the page, and confirm the post request sent by Square is the same as the request logged by the localhost application.
-   ![Square Webhook logs](../img/square/square_webhook_logs.png)
+<Tip>
+  Square sends different request body contents depending on the event you selected.
+</Tip>
+
+You can also check **Logs** under **Webhooks** in the Square Developer app page to see the request Square sent.
 
 <InspectingRequests />
 
 <ReplayingRequests />
-## Secure webhook requests 
 
-The ngrok signature webhook verification feature allows ngrok to assert that requests from your Square webhook are the only traffic allowed to make calls to your localhost app.
+## Secure webhook requests
 
-**Note:** This ngrok feature is limited to 500 validations per month on free ngrok accounts. For unlimited, upgrade to Pro or Enterprise.
+ngrok can verify that incoming requests are from your Square webhook so only that traffic reaches your app.
 
-This is a quick step to add extra protection to your application.
+<Note>
+  Webhook verification is limited to 500 validations per month on free accounts.
+  If you need more, you can upgrade to Hobbyist or Pay-as-you-go.
+  See [TPU Pricing](/pricing-limits/traffic-policy-unit-pricing/) for details.
+</Note>
 
-1. Access the [Square Developer](https://developer.squareup.com/apps) page, and sign in using your Square account.
+To add verification:
 
-1. On the **Applications** page, click **Open** in the application tile.
+- In [Square Developer](https://developer.squareup.com/apps), open your application.
+- Scroll to **Access token**, click **Show**, and copy the value (**Sandbox Access token** or **Production Access token** depending on your environment).
+- Create a Traffic Policy file named `square_policy.yml`.
+  Replace `{your access token}` with the value you copied:
 
-1. On your application page, scroll down until you find **Access token**, click **Show** for this field, and then copy the **Access token** value.
-   **Tip**: Depending on the environment you choose the name of the field is either **Sandbox Access token** or **Production Access token**.
+  ```yaml
+  on_http_request:
+    - actions:
+        - type: verify-webhook
+          config:
+            provider: square
+            secret: "{your access token}"
+  ```
 
-1. Create a Traffic Policy file named `square_policy.yml`:
+- Restart ngrok with the policy file:
 
-   ```yaml
-   on_http_request:
-     - actions:
-         - type: verify-webhook
-           config:
-             provider: square
-             secret: {your access token}
-   ```
+  ```bash
+  ngrok http 3000 --traffic-policy-file square_policy.yml
+  ```
 
-   **Note**: Replace `{your access token}` with the value you copied before.
+- Create a new item in the [Square Dashboard](https://squareup.com/dashboard/) to trigger the webhook.
 
-1. Restart your ngrok agent by running the command:
-
-   ```bash
-   ngrok http 3000 --traffic-policy-file square_policy.yml
-   ```
-
-1. Access the [Square Dashboard](https://squareup.com/dashboard/) page and create a new item.
-
-Verify that your local application receives the request and logs information to the terminal.
+Your app should receive the request and log it in the terminal.
