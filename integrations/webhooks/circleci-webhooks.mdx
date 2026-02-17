@@ -3,24 +3,32 @@ title: CircleCI Webhooks
 sidebarTitle: CircleCI
 description: Develop and test CircleCI webhooks from localhost.
 ---
+
 import InspectingRequests from "/snippets/integrations/_inspecting-requests.mdx";
 import ReplayingRequests from "/snippets/integrations/_replaying-requests.mdx";
 
-This guide covers how to use ngrok to integrate your localhost app with CircleCI by using Webhooks.
-CircleCI webhooks can be used to notify an external application whenever specific events occur in your CircleCI account.
+This guide explains how to use ngrok to receive CircleCI webhooks on your localhost app.
 
 By integrating ngrok with CircleCI, you can:
 
-- **Develop and test CircleCI webhooks locally**, eliminating the time in deploying your development code to a public environment and setting it up in HTTPS.
-- **Inspect and troubleshoot requests from CircleCI** in real-time via the inspection UI and API.
-- **Modify and Replay CircleCI Webhook requests** with a single click and without spending time reproducing events manually in your CircleCI account.
-- **Secure your app with CircleCI validation provided by ngrok**. Invalid requests are blocked by ngrok before reaching your app.
+- Develop and test CircleCI webhooks locally without deploying to a public environment or setting up HTTPS.
+- Inspect and troubleshoot requests from CircleCI in real time via the inspection UI and API.
+- Modify and replay CircleCI webhook requests with a single click instead of reproducing events manually in your CircleCI account.
+- Secure your app with CircleCI webhook validation provided by ngrok.
+  Invalid requests are blocked by ngrok before reaching your app.
 
-## 1. Start your app 
+## What you'll need
 
-For this tutorial, you can use the [sample Node.js app available on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
+- An [ngrok account](https://ngrok.com/signup) and your [authtoken](https://dashboard.ngrok.com/get-started/your-authtoken).
+- The [ngrok agent](https://ngrok.com/download) installed.
+- [Node.js](https://nodejs.org/) installed (for the sample app, or use your own app).
+- A CircleCI account.
 
-To install this sample, run the following commands in a terminal:
+## 1. Start your app
+
+For this tutorial, you can use the [sample Node.js app on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
+
+To install the sample, run the following in a terminal:
 
 ```bash
 git clone https://github.com/ngrok/ngrok-webhook-nodejs-sample.git
@@ -28,98 +36,102 @@ cd ngrok-webhook-nodejs-sample
 npm install
 ```
 
-This will get the project installed locally.
-
-Now you can launch the app by running the following command:
+Then start the app:
 
 ```bash
 npm start
 ```
 
-The app runs by default on port 3000.
+The app runs on port 3000 by default.
 
-You can validate that the app is up and running by visiting http://localhost:3000. The application logs request headers and body in the terminal and responds with a message in the browser.
+You can confirm it's running by visiting `http://localhost:3000`.
+The app logs request headers and body in the terminal and shows a message in the browser.
 
-## 2. Launch ngrok 
+## 2. Expose your app with ngrok
 
 Once your app is running locally, you're ready to put it online securely using ngrok.
 
-1. If you're not an ngrok user yet, just [sign up for ngrok for free](https://ngrok.com/signup).
+- Copy [your ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) from the dashboard.
 
-1. [Download the ngrok agent](https://download.ngrok.com).
+<Tip>
+  The ngrok agent uses your authtoken to authenticate when you start a tunnel.
+</Tip>
 
-1. Go to the [ngrok dashboard](https://dashboard.ngrok.com) and copy your Authtoken. <br />
-   **Tip:** The ngrok agent uses the auth token to log into your account when you start a tunnel.
-1. Start ngrok by running the following command:
+- Start ngrok:
 
-   ```bash
-   ngrok http 3000
-   ```
+  ```bash
+  ngrok http 3000
+  ```
 
-1. ngrok will display a URL where your localhost application is exposed to the internet (copy this URL for use with CircleCI).
-   ![ngrok agent running](../img/twilio/launch_ngrok_tunnel.png)
+- Copy the URL ngrok displays.
+  Your app is now exposed at that URL for use with CircleCI.
 
-## 3. Integrate CircleCI 
+## 3. Configure CircleCI to send webhooks
 
-To register a webhook on your CircleCI account follow the instructions below:
+CircleCI can send webhook requests to your app when events occur in your account.
+To register for those events:
 
-1. Access [CircleCI](https://www.circleci.com/) and sign in using your CircleCI account.
+- Sign in to [CircleCI](https://www.circleci.com/).
+- On the **All Pipelines** page, click the name of your pipeline.
 
-1. On the **All Pipelines** page, click the name of your pipeline.
-   **Tip**: If you don't have one, create a new pipeline.
+<Note>
+  If you don't have a pipeline, create a new one.
+</Note>
 
-1. On your pipeline page, click **Project Settings** and then click **Webhooks** on the left menu.
+- On your pipeline page, click **Project Settings** and then **Webhooks** in the left menu.
+- On the **Webhooks** page, click **Add Webhook**.
+- On the **Add Webhook** page, enter a name in **Webhook name**, enter your ngrok URL in **Receiver URL** (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`), enter a value in **Secret token** (for example, `MySecretToken`), check **Workflow Completed** and **Job Completed** under **Events**, and click **Add Webhook**.
+- On the **Webhooks** page, click your webhook and then click **Test Ping Event**.
 
-1. On the **Webhooks** page, click **Add Webhook**.
-
-1. On the **Add Webhook** page, enter a name in the **Webhook name** field, and in the **Receiver URL** field enter the URL provided by the ngrok agent to expose your application to the internet (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`).
-   ![URL to Publish](../img/circleci/ngrok_url_configuration_circleci.png)
-
-1. Enter `MySecretToken` in the **Secret token** field, click the **Workflow Completed** and **Job Completed** checkboxes under **Events**, and then click **Add Webhook**.
-
-1. On the **Webhooks** page, click the name of your webhook, and then click **Test Ping Event**.
-
-   Confirm your localhost app receives the test-ping event notification and logs both headers and body to the terminal.
+Confirm your localhost app receives the test-ping event and logs both headers and body in the terminal.
 
 ### Run webhooks with CircleCI and ngrok
 
-You can trigger new calls from CircleCI to your application by following the instructions below.
+CircleCI sends different request body contents depending on the event.
+To trigger new calls from CircleCI to your app:
 
-1. Access [CircleCI](https://www.circleci.com/) and sign in using your CircleCI account.
-   **Tip**: If you are at the **Project Settings** page, click **&lt;** at the top left corner to return to your pipeline page.
+- On the **Pipeline** page, click **Rerun workflow from start** under the **Action** column for your pipeline.
 
-1. On the **Pipeline** page, click **Rerun workflow from start** under the **Action** column for your pipeline.
+<Note>
+  If you're on **Project Settings**, click **&lt;** at the top left to return to your pipeline page.
+</Note>
 
-   Confirm your localhost app receives event notifications related to the workflow you started and logs both headers and body in the terminal.
+Confirm your localhost app receives event notifications for the workflow and logs both headers and body in the terminal.
 
 <InspectingRequests />
 
 <ReplayingRequests />
-## Secure webhook requests 
 
-The ngrok signature webhook verification feature allows ngrok to assert that requests from your CircleCI webhook are the only traffic allowed to make calls to your localhost app.
+## Secure webhook requests
 
-**Note:** This ngrok feature is limited to 500 validations per month on free ngrok accounts. For unlimited, upgrade to Pro or Enterprise.
+ngrok can verify that incoming requests are from your CircleCI webhook so only that traffic reaches your app.
 
-This is a quick step to add extra protection to your application.
+<Note>
+  Webhook verification is limited to 500 validations per month on free accounts.
+  If you need more, you can upgrade to Hobbyist or Pay-as-you-go.
+  See [TPU Pricing](/pricing-limits/traffic-policy-unit-pricing/) for details.
+</Note>
 
-1. Create a Traffic Policy file named `circleci_policy.yml`, replacing `{your secret token}` with the value you have provided to the **Secret token** field during your webhook registration (See [Integrate ngrok and CircleCI](#setup-webhook)):
+To add verification:
 
-   ```yaml
-   on_http_request:
-     - actions:
-         - type: verify-webhook
-           config:
-             provider: circleci
-             secret: "{your secret token}"
-   ```
+- Create a Traffic Policy file named `circleci_policy.yml`.
+  Replace `{your secret token}` with the value you entered in **Secret token** when you registered the webhook:
 
-1. Restart your ngrok agent by running the command:
+  ```yaml
+  on_http_request:
+    - actions:
+        - type: verify-webhook
+          config:
+            provider: circleci
+            secret: "{your secret token}"
+  ```
 
-   ```bash
-   ngrok http 3000 --traffic-policy-file circleci_policy.yml
-   ```
+- Restart ngrok with the policy file:
 
-1. Access [CircleCI](https://www.circleci.com/) and Rerun your workflow from start.
+  ```bash
+  ngrok http 3000 --traffic-policy-file circleci_policy.yml
+  ```
 
-   Verify that your local application receives the request and logs information to the terminal.
+- Rerun your workflow from start in CircleCI to trigger the webhook.
+
+Your app should receive the request and log it in the terminal.
