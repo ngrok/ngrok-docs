@@ -4,15 +4,15 @@ sidebarTitle: Overview
 description: Connect custom endpoints and self-hosted models to the AI Gateway.
 ---
 
-The AI Gateway can route requests to any OpenAI-compatible endpoint beyond the [built-in providers](/ai-gateway/reference/model-catalog). This enables you to use self-hosted models, private deployments, or alternative AI services.
+The AI Gateway can route requests to any OpenAI or Anthropic Claude API endpoint beyond the [built-in providers](/ai-gateway/reference/model-catalog). This enables you to use self-hosted models, private deployments, or alternative AI services.
 
 ## Requirements
 
 Custom providers must:
 
-1. **Expose an OpenAI-compatible API** - Same request/response format as OpenAI
+1. **Expose an supported API** - Same request/response format as OpenAI or Anthropic Claude
 2. **Be reachable from ngrok** - Either via HTTPS URL or ngrok internal endpoint
-3. **Support the endpoints you need** - `/v1/chat/completions`, `/v1/embeddings`, etc.
+3. **Support the endpoints you need** - `/v1/chat/completions`, `/v1/embeddings`, `/v1/messages` etc.
 
 ## URL requirements
 
@@ -64,6 +64,9 @@ on_http_request:
       providers:
         - id: "my-custom-provider"
           base_url: "https://my-ai-service.example.com/v1"
+          supported_api_surfaces:
+            - format: openai
+            - format: anthropic
           api_keys:
             - value: ${secrets.get('custom', 'api-key')}
           models:
@@ -76,6 +79,7 @@ on_http_request:
 |-------|----------|-------------|
 | `id` | Yes | Unique identifier for the provider |
 | `base_url` | Yes | Base URL for the provider's API |
+| `supported_api_surfaces` | No | API formats this provider supports, default is `openai` |
 | `api_keys` | No | API keys for authentication |
 | `models` | No | List of available models |
 | `id_aliases` | No | Alternative names for the provider |

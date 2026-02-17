@@ -58,12 +58,12 @@ jobs:
           fi
 
       - name: Install Vale
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          VALE_URL=$(python3 -c "
-          import urllib.request, json
-          r = json.load(urllib.request.urlopen('https://api.github.com/repos/errata-ai/vale/releases/latest'))
-          print(next(a['browser_download_url'] for a in r['assets'] if 'Linux_64-bit' in a.get('name', '')))
-          ")
+          VALE_URL=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+            "https://api.github.com/repos/errata-ai/vale/releases/latest" \
+            | jq -r '.assets[] | select(.name | contains("Linux_64-bit")) | .browser_download_url')
           wget -q "$VALE_URL" -O vale.tar.gz
           tar -xzf vale.tar.gz -C /usr/local/bin
           vale --version

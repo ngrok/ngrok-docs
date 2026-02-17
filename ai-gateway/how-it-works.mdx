@@ -22,7 +22,7 @@ sequenceDiagram
 ```
 
 1. **Your app sends a request** to your ngrok endpoint
-2. **The gateway selects which models to try** based on your configuration
+2. **The gateway selects which models to try** based on your configuration and the request path
 3. **The request is forwarded** to the provider with the appropriate provider API key
 4. **If it fails, the gateway retries** with the next model or key in the list
 5. **The response is returned** to your app
@@ -37,28 +37,32 @@ The model name in your request determines the starting point:
 
 | Model in Request | What Happens |
 |------------------|--------------|
-| `gpt-4o` | Recognized as OpenAI from the [model catalog](/ai-gateway/reference/model-catalog) |
-| `claude-3-5-sonnet-latest` | Recognized as Anthropic |
-| `openai:gpt-4o` | Explicit provider prefix - no lookup needed |
-| `openai:gpt-5-preview` | Unknown model - passed through to OpenAI as-is |
+| `gpt-4o` | Known OpenAI model in the [model catalog](/ai-gateway/reference/model-catalog) |
+| `claude-3-5-sonnet-latest` | Known Anthropic model in the model catalog |
+| `openai:gpt-4o` | Provider and model match known OpenAI model |
+| `openai:gpt-5-preview` | Known provider but unknown model, so passed through to OpenAI as-is |
 | `my-provider:my-model` | Uses your configured custom provider |
 | `ngrok/auto` | Let the gateway choose based on your selection strategy |
 
 <Note>
-Unknown models (not in the catalog) are automatically passed through if you include a provider prefix. This lets you use new models immediately without waiting for catalog updates.
+Unknown models (not in the catalog) are automatically passed through if you include a known provider prefix. This lets you use new models immediately without waiting for catalog updates.
 </Note>
 
-### Default selection
+### Building the set of available options
 
-By default, the gateway uses the model and provider you requested. If that fails, it tries:
-1. Other provider API keys for the same provider
-2. Other providers that offer the same model
+The gateway builds a set of available options based on your configuration and the request path.
+
+Starting from the model catalog, the gateway adds any custom models from your configuration to the set of available options.  
+
+Then the gateway uses the request path of the request to determine the API format of the request to filter out providers that do not support the format. For example, if the request path is `/v1/chat/completions`, the gateway ensures that the set only includes models from providers that support the OpenAI API format, and likewise for `/v1/messages` and providers that support the Anthropic Claude API format.
+
+Finally the gateway filters the available options against this model supplied in the client request to arrive at the set of available options.
 
 ### Custom selection strategies
 
 You can completely customize how models are selected using CEL expressions. Define a `model_selection` strategy to control the order models are tried:
 
-```yaml title="traffic-policy.yaml" highlight={5-10}
+```yaml title="traffic-policy.yaml" highlight={10-13}
 on_http_request:
   - type: ai-gateway
     config:
