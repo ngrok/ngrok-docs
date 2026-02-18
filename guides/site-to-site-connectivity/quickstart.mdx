@@ -1,0 +1,99 @@
+---
+title: Site-to-Site Connectivity Quickstart
+sidebarTitle: Quickstart
+icon: rocket
+description: Get a basic site-to-site connection working in minutes by forwarding traffic from a Cloud Endpoint to a service in a remote network.
+---
+
+<Tip>
+Running in K8s? Check out [this guide](/guides/site-to-site-connectivity/customer-networks) on securely connecting your local cluster to customer networks.
+</Tip>
+
+This quickstart walks you through the fastest path to a working site-to-site connection using ngrok.
+You'll learn how to:
+- Configure an agent in a remote network
+- Create a Cloud Endpoint
+- Verify that traffic flows end-to-end
+
+## What you'll need
+
+- An [ngrok account](https://dashboard.ngrok.com/signup).
+- The [ngrok agent](/getting-started/) installed on a machine inside the remote network you want to connect to.
+- A service running in the remote network that you want to reach (this quickstart uses port `8080` as an example).
+
+## 1. Configure an Internal Endpoint
+
+Open the ngrok configuration file on the remote machine and add an Internal Endpoint that points to the service you want to access.
+
+You can do so by editing your config file with the `ngrok config edit` terminal command. Update yours to resemble the following snippet.
+
+```yaml title="ngrok.yml" highlight={6-10}
+version: 3
+
+agent:
+  authtoken: YOUR_AUTHTOKEN
+
+endpoints:
+  - name: my-service
+    url: https://my-service.internal
+    upstream:
+      url: 8080
+```
+
+Replace `YOUR_AUTHTOKEN` with the authtoken from your [ngrok dashboard](https://dashboard.ngrok.com/get-started/your-authtoken).
+
+Internal Endpoints are private endpoints that only receive traffic when a Cloud Endpoint forwards to them using the [forward-internal](/traffic-policy/actions/forward-internal/) Traffic Policy action.
+
+Next, start the agent:
+
+<Tabs>
+  <Tab title="Using ngrok.yml">
+  ```bash
+  ngrok start --all
+  ```
+  </Tab>
+  <Tab title="Using a different config file">
+  ```bash
+  ngrok start --config /path/to/ngrok.yml --all
+  ```
+  </Tab>
+</Tabs>
+
+Your service still can't be reached until you create a Cloud Endpoint to route traffic to it.
+
+## 2. Create a Cloud Endpoint
+
+Cloud Endpoints are persistent, always-on endpoints managed from the dashboard or API.
+They use an attached Traffic Policy to handle incoming connections.
+
+[Create a new Cloud Endpoint](https://dashboard.ngrok.com/endpoints/new/cloud) in the dashboard.
+After it's created, you're taken to the Traffic Policy editor view.
+Replace the default Traffic Policy with the following:
+
+```yaml
+on_http_request:
+  - actions:
+      - type: forward-internal
+        config:
+          url: https://my-service.internal
+```
+
+This routes all incoming traffic on the Cloud Endpoint to the Internal Endpoint you configured in step 1.
+
+## 3. Test the connection
+
+Copy the URL of the Cloud Endpoint you just created from the dashboard, then send a request to verify traffic reaches your service:
+
+```bash
+curl https://<your-cloud-endpoint-url>
+```
+
+You should see the response from the service running on port `8080` in the remote network.
+
+## What's next
+
+- [Configure site-to-site connectivity](/guides/site-to-site-connectivity/) for a full walkthrough with multiple endpoints, mTLS, and IP restrictions.
+- [Set up a custom connect URL](/guides/site-to-site-connectivity/custom-connect-url) to white-label the agent connection for your customers.
+- [Install ngrok as a background service](/guides/site-to-site-connectivity/background-service) so the agent starts on boot and recovers from failures.
+- [Eliminate single points of failure](/guides/site-to-site-connectivity/redundant-agents) by running redundant agents for high availability.
+- Create [Service Users](/iam/service-users/) to isolate and scope access per customer.
