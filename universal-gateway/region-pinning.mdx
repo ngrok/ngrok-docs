@@ -1,33 +1,23 @@
 ---
-title: Region Pinning and Dedicated IPs (Preview)
-sidebarTitle: Region Pinning
-description: Customize where your traffic connects to meet data residency needs, such as keeping data within the EU.
-tag: Preview
+title: Region & IP Resolution
+sidebarTitle: Region & IP Resolution
+description: Customize where your traffic physically connects to ngrok's network, to meet data residency needs (such as keeping data within the EU).
 ---
 
-<Warning>
-This feature is under active development. 
-Behavior, supported fields, and limits may change before General Availability (GA). 
-This guide is provided as forward-looking context for evaluation and feedback.
+Region & IP resolution lets you restrict (or "pin") which ngrok regions will handle traffic for a domain. 
 
-[Visit your dashboard](https://dashboard.ngrok.com/developer-preview) to sign up for Early Access, or to send feedback through the link at the bottom.
-</Warning>
+Configure your [domain](/universal-gateway/domains) to resolve to the IP addresses of one (or several) of ngrok's globally distributed physical points of presence (PoPs). 
 
-Region pinning restricts which ngrok regions may handle traffic for a domain. 
-
-Control traffic into your [domains](/universal-gateway/domains) by choosing a subset of ngrok's globally distributed physical [points of presence](/universal-gateway/points-of-presence) (PoPs). 
-ngrok will only route to the set of regions you choose—not outside it.
+This feature is designed for customers with data residency and compliance requirements who need to ensure traffic is processed only within specific geographic boundaries.
 
 <Info>
-The same configuration will soon support [dedicated IP addresses](#dedicated-ips-preview).
+The same configuration will soon support [dedicated IP addresses](#dedicated-ips-preview) [preview feature], in addition to Points of Presence.
 </Info>
-
-This feature is designed for customers with data residency and compliance requirements who need to ensure traffic is only processed in specific geographical boundaries.
 
 ## How it works
 
-1. Define which ngrok PoPs your domain is allowed to use. 
-2. All requests to [endpoints](/universal-gateway/endpoints) on that domain will only be routed through your chosen points of presence. 
+1. Choose which ngrok points of presence your domain can use. 
+2. All requests to [endpoints](/universal-gateway/endpoints) on that domain will *only* be routed through your chosen PoPs. 
 
 <img 
   src="../img/docs/region_pinning_diagram_how_it_works.png" 
@@ -35,23 +25,22 @@ This feature is designed for customers with data residency and compliance requir
   style={{height: "auto", width: "50%"}}
 />
 
-## How to configure region pinning
+## Configuring region resolution
 
-To start using region pinning, update your domain resource with your preferred set of target regions.
-You can do this through the API or the dashboard, both described below. 
+To configure (or "pin") which regions will resolve your traffic: update your domain resource with your preferred set of target regions.
+You can do this through the API or the dashboard, both of which are described below. 
 
 ### Using the API
 
-When using the API, set up region pinning by defining which PoPs or region aliases should serve your requests. 
-Add the `resolves_to` property when creating or modifying a domain.
+The `resolves_to` property tells your domain how to resolve requests. You can specify a list of ngrok physical PoPs (like "Frankfurt" or "California"), [dedicated IPs](#dedicated-ips-preview), or both. 
 
-The sections that follow describe how to create, update, and un-pin a domain in detail.
+The following sections describe how to create, update, and un-pin a domain.
 
 #### Create a pinned domain
 
-Use the [`POST /reserved_domains` endpoint](/api-reference/reserveddomains/create).
+You can create a new domain and customize region "pinning" (Region Resolution) in a single step.
 
-Add a list of `resolves_to` that are allowed to resolve your requests, which can be a set of ngrok physical PoPs (like "Frankfurt" or "California"), [dedicated IPs](#dedicated-ips-preview), or both. 
+Use the [`POST /reserved_domains` endpoint](/api-reference/reserveddomains/create) and include the optional `resolves_to` property.
 
 ```json
 curl --request POST \
@@ -67,7 +56,7 @@ curl --request POST \
       "private_key_type": "ecdsa"
     },
     "resolves_to": [
-      { "value": "us"},  
+      { "value": "us-cal-1"},  
       { "value": "eu"}
     ]
   }'
@@ -75,8 +64,7 @@ curl --request POST \
 
 #### Update an existing domain
 
-You can update existing domains to add or remove region pinning, or modify your set of pinned regions, using the `resolves_to` property.
-No DNS changes are required.
+You can add Region Resolution settings to an existing domain. You can also modify the existing list, for example, by adding a third point of presence (example below). No DNS changes are required.
 
 Use `PATCH` to [update the list of pinned regions](/api-reference/reserveddomains/update).
 
@@ -94,19 +82,18 @@ curl --request PATCH \
       "private_key_type": "ecdsa"
     },
     "resolves_to": [
-      { "value": "us"},  
-      { "value": "eu"}
+      { "value": "us-cal-1"},  
+      { "value": "eu"},
+      { "value": "jp"}
     ]
   }'
 ```
 
 #### Un-pin a domain
 
-You can un-pin a domain, which changes it back to the default global routing behavior using the best available PoP. 
+You can "un-pin" a domain. Removing Regional Resolution settings restores the domain to its *default* IP resolution behavior: [global load balancing](https://ngrok.com/docs/universal-gateway/global-load-balancer) across *all* ngrok points of presence.
 
-To do this, set the `resolves_to` property to an empty list `[]`, or to the region alias `global`.
-
-1. Remove pinned regions by setting an empty list:
+Use `PATCH` to [remove the list of pinned regions](/api-reference/reserveddomains/update), by setting the `resolves_to` property to an empty list.
 
 ```json
 # Revert to Global Routing
@@ -120,21 +107,9 @@ curl --request PATCH \
  }'  
 ```
 
-2. Remove pinned regions by setting the `global` alias.
-
-```json
-# Only change the last property. The rest is the same as in the previous example.
-
- --data '{
-   "resolves_to": [
-     { "value": "global" }
-   ]
- }'  
-```
-
 #### API error handling
 
-If a request has invalid syntax or a non-existent region code, the API request fails.
+If a request contains invalid syntax or an invalid region code, the API request fails.
 The request returns **HTTP 400 Bad Request** with a structured error body, as shown in the example below:
 
 ```json
@@ -144,7 +119,7 @@ Content-Type: application/json; charset=utf-8
 {
  "status_code": 400,
  "error_code": "invalid_region_target",
-	 "msg": "Invalid region target 'banana': must be a valid Point of Presence or Regional Alias.",
+ "msg": "The region you specified, 'banana' is invalid. use one of the following acceptable values: us,us-cal-1,eu,au,ap,jp,sa,in",
  "details": {}
 }
 ```
@@ -153,29 +128,30 @@ Content-Type: application/json; charset=utf-8
 
 You can also make these changes through the [ngrok dashboard](https://dashboard.ngrok.com/domains). 
 
-To configure your pinned regions: 
+To configure your Region Resolution targets: 
 
-1. View [your existing domains in the dashboard](https://dashboard.ngrok.com/domains).
-2. Click the domain you wish to modify. Dev domains do not support this functionality.
-3. Enter a comma-separated list of PoPs, region aliases that covers multiple PoPs, or both.
+1. View [your existing domains in the dashboard](https://dashboard.ngrok.com/domains), or create a new one.
+2. Click the domain you wish to modify. 
+3. Enter a comma-separated list of PoPs, region aliases that cover multiple PoPs, or both.
 
 ## Dedicated IPs (preview)
-
 <Warning>
-As a preview feature, details are subject to change. 
-This is related to region pinning, but will be released separately. 
-[Visit your dashboard](https://dashboard.ngrok.com/developer-preview) to sign up for Early Access.
+This feature is under active development. 
+Behavior, supported fields, and limits may change before General Availability (GA). 
+This guide provides forward-looking context for evaluation and feedback.
+
+[Visit your dashboard](https://dashboard.ngrok.com/developer-preview) to sign up for Early Access, or to send your feedback via the "Let us know" link.
 </Warning>
 
-Dedicated IPs let you configure a domain's matching endpoints to receive traffic on IP addresses that are dedicated only to your account, rather than using ngrok's default range of multi-tenant IP addresses shared across customers.
+Dedicated IPs let you configure a domain to receive traffic on static IP addresses that are exclusively dedicated to your account. Today, customers share ngrok's default range of multi-tenant IP addresses.
 
-When a domain uses dedicated IPs, you can create matching endpoints on any inbound port (not just 80/443).
+When a domain uses dedicated IPs, you can create matching [endpoints](https://dashboard.ngrok.com/endpoints) on any inbound port. Today, you are [restricted](https://ngrok.com/docs/faq/faq#can-i-choose-a-different-port-to-receive-traffic-on-my-ngrok-domains) to ports 80 and 443.
 
 ### How to use dedicated IPs
 
-Dedicated IPs and region pinning share the same `resolves_to` field on the domain:
+Dedicated IPs and Regional Resolution ("region pinning") share the same `resolves_to` field on the domain:
 
-- Region pinning: `resolves_to: [{ "value": "<region-code>" }]`
+- Region pinning: `resolves_to: [{ "value": "<region-shortcode>" }]`
 - Dedicated IPs: `resolves_to: [{ "value": "<ip-address>" }]`
 
 You can include both, as shown in the example below.
@@ -183,30 +159,30 @@ You can include both, as shown in the example below.
 ```json
 {
   "resolves_to": [
-    { "value": "us" },
-    { "value": "203.0.113.10" }
+    { "value": "us-cal-1" },
+    { "value": "8.8.8.8:1234" }
   ]
 }
 
 ```
 
-## Frequently asked questions
+## Frequently asked questions 
 
 ### Does this affect TCP endpoints?
-
-- Region pinning: no. In this preview, region pinning applies to HTTP/HTTPS matching endpoints. TCP uses [reserved addresses](/api-reference/reservedaddrs), which already include a region.
+Slightly different answer for each sub-feature:
+- Region pinning: no, since this feature applies only to matching HTTP/HTTPS endpoints. TCP uses [reserved addresses](/api-reference/reservedaddrs), which already include a region.
 - Dedicated IPs: yes, dedicated IPs are available for any [ngrok-supported protocol](/universal-gateway/protocols), including HTTP/S, TCP, and TLS.
 
 ### What happens if the `resolves_to` field isn't added when creating a domain?
 
-If the `resolves_to` field is not added when creating a domain, it defaults back to standard global routing, where traffic is automatically routed through the best option from ngrok's physical PoPs. 
+Nothing. That is, it uses the standard domain behavior: global load balancing, which automatically routes traffic to the best point of presence for that end-user. 
 This is the baseline behavior for domains, and is used by the vast majority of customers. 
 
 ### Is it necessary to specify every region manually?
 
-No, ngrok provides regional aliases as a shortcut to select multiple PoPs within a geographical area. 
-Currently the only supported alias is `global`. 
-ngrok may add other aliases such as `european_union` or `united_states`, depending on customer needs.
+No, ngrok provides regional aliases as a shortcut to select all PoPs in a given geographic area. 
+
+Aliases are in Preview (see list below). Initial regions will include `european-union` and `united-states`, depending on [customer feedback (click "Let us know")](https://dashboard.ngrok.com/developer-preview).
 
 ## Points of presence reference
 
@@ -223,6 +199,6 @@ The `resolves_to` parameter uses the following PoP names:
 |  | Tokyo | `jp` |
 | **South America** | São Paulo | `sa` |
 | **Regional Aliases** | Global | `global` |
-| | Europe _[proposed]_ | `european_union` |
-| | United States _[proposed]_ | `united_states` |
+| | Europe _[coming soon]_ | `european-union` |
+| | United States _[coming soon]_ | `united-states` |
 

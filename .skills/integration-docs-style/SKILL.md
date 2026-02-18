@@ -20,6 +20,7 @@ Before submitting edits, verify:
 **Structure**
 
 - Intro paragraph below Tip/frontmatter; present tense; varied phrasing (not always "This guide covers...")
+- No redundant title heading: do not add an h2 that restates the page title (e.g. "Configure X for ngrok" when the title is "X OAuth"). Start with intro content, then "What you'll need" or the first real section.
 - Descriptive section headers (e.g. "Configure ngrok to expose X" not "Add ngrok"); sequential steps use same heading level (all ## or all ### under a parent)
 - "What you'll need" for prerequisites (not "Prerequisites:"); list items end with periods when complete sentences; link to install pages; use "Your" for user items
 - No "Configuration steps" section; no TL;DR Tips; no consecutive blank lines
@@ -27,7 +28,7 @@ Before submitting edits, verify:
 **Formatting**
 
 - One sentence per line; single blank line between frontmatter/components/code/paragraphs/headings
-- Note/Tip headings in sentence case with colon (e.g. **Security best practice:**); file names and URLs in backticks in body only; UI text in **bold**; `[**UI Element**](url)` for UI in links
+- Note/Tip: do not indent (no leading spaces) to nest under list items; use the same margin as body content. Note/Tip headings in sentence case with colon (e.g. **Security best practice:**); file names and URLs in backticks in body only; UI text in **bold**; `[**UI Element**](url)` for UI in links
 
 **Lists**
 
@@ -40,7 +41,7 @@ Before submitting edits, verify:
 **Links & media**
 
 - Internal links: relative paths (e.g. `../traffic-policy/`); descriptive anchor text
-- No UI screenshots; keep architectural diagrams; remove image markup for deleted assets; no broken image refs
+- No UI screenshots; keep architectural diagrams. When removing screenshots: remove image markup from the doc, delete the image files from the repo, and delete the image directory if it is now empty. No broken image refs.
 
 **Metadata**
 

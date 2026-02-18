@@ -7,7 +7,9 @@ description: Route requests to AI providers with automatic failover, load balanc
 
 import { YouTubeEmbed } from "/snippets/YouTubeEmbed.jsx";
 
-The ngrok AI Gateway lets you route requests to AI providers like OpenAI, Anthropic, and Google through a single endpoint. If one provider fails, it automatically tries another. If one provider API key hits rate limits, it switches to another.
+The ngrok AI Gateway sits between your application and AI providers like OpenAI, Anthropic, and Google. It routes requests using your provider API keys, adding automatic failover, load balancing, and observability—without changing your code.
+
+If one provider fails, it automatically tries another. If one API key hits rate limits, it switches to the next. You keep full control of your provider relationships and billing.
 
 <YouTubeEmbed videoId="X6KspO4S-v8" title="Route and control all your AI traffic on ngrok.ai" />
 
@@ -20,8 +22,8 @@ The ngrok AI Gateway lets you route requests to AI providers like OpenAI, Anthro
   <Card title="One Endpoint, Many Providers" icon="arrows-split-up-and-left">
     Use the same endpoint for OpenAI, Anthropic, Google, and others. Switch providers without changing your code.
   </Card>
-  <Card title="OpenAI SDK Compatible" icon="plug">
-    Works with any OpenAI SDK. Just change the `baseURL` and you're connected.
+  <Card title="Compatible With Popular SDKs" icon="plug">
+    Works with official and third-party SDKs. Simply change the base URL configuration option and you're connected.
   </Card>
   <Card title="Self-Hosted Models" icon="server">
     Route to local models like Ollama or vLLM alongside cloud providers.
@@ -30,14 +32,14 @@ The ngrok AI Gateway lets you route requests to AI providers like OpenAI, Anthro
 
 ## Quick example
 
-Point your OpenAI SDK at your [ngrok endpoint](/ai-gateway/guides/creating-endpoints):
+Point your SDK at your [ngrok endpoint](/ai-gateway/guides/creating-endpoints):
 
 <CodeGroup>
-```python Python highlight={4}
+```python Python (OpenAI) highlight={4}
 from openai import OpenAI
 
 client = OpenAI(
-    base_url="https://your-endpoint.ngrok.app/v1",
+    base_url="https://your-ai-gateway.ngrok.app/v1",
     api_key="your-api-key"
 )
 
@@ -47,11 +49,26 @@ response = client.chat.completions.create(
 )
 ```
 
-```typescript TypeScript highlight={4}
+```python Python (Anthropic) highlight={4}
+import anthropic
+
+client = anthropic.Anthropic(
+    base_url="https://your-ai-gateway.ngrok.app",
+    api_key="your-api-key"
+)
+
+message = client.messages.create(
+    model="claude-opus-4-5",
+    max_tokens=1024,
+    messages=[{"role": "user", "content": "Hello!"}]
+)
+```
+
+```typescript TypeScript (OpenAI) highlight={4}
 import OpenAI from "openai";
 
 const client = new OpenAI({
-  baseURL: "https://your-endpoint.ngrok.app/v1",
+  baseURL: "https://your-ai-gateway.ngrok.app/v1",
   apiKey: "your-api-key"
 });
 
@@ -61,8 +78,23 @@ const response = await client.chat.completions.create({
 });
 ```
 
-```bash cURL highlight={1}
-curl https://your-endpoint.ngrok.app/v1/chat/completions \
+```typescript TypeScript (Anthropic) highlight={4}
+import Anthropic from "@anthropic-ai/sdk";
+
+const client = new Anthropic({
+  baseURL: "https://your-ai-gateway.ngrok.app",
+  apiKey: "your-api-key",
+});
+
+const message = await client.messages.create({
+  model: "claude-opus-4-5",
+  max_tokens: 1024,
+  messages: [{ role: "user", content: "Hello!" }],
+});
+```
+
+```bash cURL (OpenAI) highlight={1}
+curl https://your-ai-gateway.ngrok.app/v1/chat/completions \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer your-api-key" \
   -d '{
@@ -70,11 +102,23 @@ curl https://your-endpoint.ngrok.app/v1/chat/completions \
     "messages": [{"role": "user", "content": "Hello!"}]
   }'
 ```
+
+```bash cURL (Anthropic) highlight={1}
+curl https://your-ai-gateway.ngrok.app/v1/messages \
+  -H "Content-Type: application/json" \
+  -H "x-api-key: your-api-key" \
+  -H "anthropic-version: 2023-06-01" \
+  -d '{
+    "model": "claude-opus-4-5",
+    "max_tokens": 1024,
+    "messages": [{"role": "user", "content": "Hello!"}]
+  }'
+```
 </CodeGroup>
 
 Behind the scenes, the AI Gateway:
 1. Receives your request
-2. Selects which model and provider to use (based on your configuration)
+2. Selects which model and provider to use (based on request path and your configuration)
 3. Forwards the request with the appropriate provider API key
 4. If it fails, retries with the next option in your failover chain
 5. Returns the response
