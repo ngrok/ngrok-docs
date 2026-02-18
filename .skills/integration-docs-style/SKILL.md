@@ -16,8 +16,7 @@ description: Applies ngrok integration docs style rules when writing or editing 
 ## When to use
 
 - Creating or revising integration docs (e.g. `using-ngrok-with/*.mdx`, `integrations/webhooks/*.mdx`)
-- User asks for style compliance or to follow the integration docs style guide
-- Auditing or cleaning up existing integration pages
+Apply this skill when writing or editing ngrok integration documentation (e.g. guides under `using-ngrok-with/`).
 
 ## Quick checklist
 
@@ -26,6 +25,7 @@ Before submitting edits, verify (every item is mandatory):
 **Structure**
 
 - Intro paragraph below Tip/frontmatter; present tense; varied phrasing (not always "This guide covers...")
+- No redundant title heading: do not add an h2 that restates the page title (e.g. "Configure X for ngrok" when the title is "X OAuth"). Start with intro content, then "What you'll need" or the first real section.
 - Descriptive section headers (e.g. "Configure ngrok to expose X" not "Add ngrok"); sequential steps use same heading level (all ## or all ### under a parent)
 - "What you'll need" for prerequisites (not "Prerequisites:"); list items end with periods when complete sentences; link to install pages; use "Your" for user items
 - No "Configuration steps" section; no TL;DR Tips; no consecutive blank lines
@@ -46,7 +46,7 @@ Before submitting edits, verify (every item is mandatory):
 **Links & media**
 
 - Internal links: relative paths (e.g. `../traffic-policy/`); descriptive anchor text
-- No UI screenshots: remove image markup from the doc **and** delete the image files from the repo (both steps required); keep architectural diagrams; no broken image refs
+- No UI screenshots; keep architectural diagrams. When removing screenshots: remove image markup from the doc, delete the image files from the repo, and delete the image directory if it is now empty. No broken image refs.
 
 **Metadata**
 
