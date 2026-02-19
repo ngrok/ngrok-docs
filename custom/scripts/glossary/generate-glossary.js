@@ -4,7 +4,7 @@ const fs = require('fs');
 const path = require('path');
 
 // Read the definition-wrapper.js file
-const definitionWrapperPath = path.join(__dirname, '../../../definition-wrapper.js');
+const definitionWrapperPath = path.join(__dirname, '../definition-wrapper.js');
 const fileContent = fs.readFileSync(definitionWrapperPath, 'utf8');
 
 // Extract the terms array using regex
