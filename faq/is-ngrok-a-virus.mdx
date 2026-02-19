@@ -1,0 +1,103 @@
+---
+title: Is ngrok a virus?
+description: ngrok is legitimate developer tooling, not malware. Learn why antivirus software sometimes flags it and how to verify you have the real ngrok.
+---
+
+**No—ngrok is not a virus.** It is a legitimate, widely used tool for secure tunneling and exposing local services. This page explains why the question comes up, how ngrok keeps its software safe, and how you can confirm you're using the real ngrok.
+
+## Why do people ask if ngrok is a virus?
+
+ngrok is popular because it's easy to use and very capable: with a single command you can expose a local server to the internet through a secure tunnel. Those same qualities make it attractive to attackers who use tunneling tools for phishing, credential theft, or creating back doors. When security researchers or antivirus vendors see ngrok (or similar tools) in malicious contexts, some classify it as a risk—so you may see warnings even when you've installed ngrok yourself for development or debugging.
+
+## What ngrok does to prevent abuse
+
+ngrok treats abuse seriously:
+
+- **Account monitoring and enforcement** — ngrok monitors for abuse and bans accounts involved in attacks.
+- **Abuse reporting** — Third parties can report malware and abuse to [abuse@ngrok.com](mailto:abuse@ngrok.com) or via the [abuse APIs](/api-reference/abusereports/create).
+- **Antivirus and allow lists** — Because ngrok is sometimes misused, some antivirus products flag it as malware or a "potentially unwanted application" (PUA). ngrok works with those vendors to correct classifications and get ngrok added to allow lists where appropriate.
+
+So the software itself is not malicious; the concern is how *some* people use tunneling tools. ngrok is committed to keeping its platform safe and helping security vendors classify ngrok correctly.
+
+## If your antivirus flags ngrok
+
+A warning from your antivirus when installing ngrok is often a false positive. Before trusting the install, confirm the following:
+
+### 1. You downloaded ngrok from official sources
+
+- Use the [ngrok Downloads](https://download.ngrok.com) page.
+- Binaries are served from `bin.equinox.io`. If you got ngrok from another site or link, treat it with caution.
+
+### 2. You did not build ngrok from "source"
+
+- There is **no** open source version of the ngrok agent, and the agent source code is not public.
+- Any claim of "ngrok agent source code" or instructions to "build ngrok from source" is almost certainly not legitimate and may be malicious.
+
+### 3. The binary is signed by ngrok
+
+- Official builds are signed with ngrok’s certificates. Check that the binary is signed by **ngrok LLC** or **ngrok, Inc.**  
+- On Windows, you can follow [Microsoft’s instructions for viewing digital signatures](https://support.microsoft.com/en-us/office/view-digital-signature-and-certificate-details-76ba00cb-1e58-42aa-8717-0caee76bb3cf).
+
+If all of the above are true, the ngrok binary you have is the official one and the antivirus alert is likely a false positive. You can add an exception or report the false positive to the vendor (see below).
+
+## Does ngrok own `bin.equinox.io`?
+
+Yes. Equinox is fully owned by ngrok; visiting [equinox.io](https://equinox.io) redirects to [ngrok.com/downloads](https://ngrok.com/downloads). ngrok has exclusive control over Equinox’s code and infrastructure, and no other software is distributed through it.
+
+## How to verify the ngrok binary
+
+You can obtain a hash for every ngrok executable (current and historical) from:
+
+**https://dl.equinox.io/ngrok/ngrok-v3/stable/archive**
+
+Use these hashes to confirm that the file you downloaded matches the official release.
+
+## How ngrok secures its releases
+
+Releases are built and distributed with several safety measures:
+
+- **Code signing** — macOS and Windows builds are signed with code-signing certificates. The OS can verify them, and you can confirm that ngrok is the publisher.
+- **Self-update verification** — The optional self-update (e.g. `ngrok update`) checks that new versions are signed by a trusted CA bundled in the executable; only properly signed updates are accepted.
+- **CI/CD and keys** — New releases are built and uploaded to Equinox in a single pipeline, with restricted access to the keys used for signing and upload.
+
+Together, this reduces the risk of tampering with official ngrok binaries.
+
+## Example: Verifying the signature on macOS
+
+You can inspect the code signature on macOS with `codesign`. Example output for an ngrok binary (version 3.8.0):
+
+```bash
+codesign -d -vvv ~/Downloads/ngrok
+```
+
+Example output:
+
+```bash
+Executable=/Users/username/Downloads/binaries/ngrok
+Identifier=darwin_amd64
+Format=Mach-O thin (x86_64)
+CodeDirectory v=20500 size=209752 flags=0x10000(runtime) hashes=6549+2 location=embedded
+Hash type=sha256 size=32
+CandidateCDHash sha256=9babe84803ac6c05874966cf0934c116b00b6b97
+CandidateCDHashFull sha256=9babe84803ac6c05874966cf0934c116b00b6b97b1daa6ceb6362b8f2e9c63a2
+Hash choices=sha256
+CMSDigest=9babe84803ac6c05874966cf0934c116b00b6b97b1daa6ceb6362b8f2e9c63a2
+CMSDigestType=2
+CDHash=9babe84803ac6c05874966cf0934c116b00b6b97
+Signature size=8963
+Authority=Developer ID Application: ngrok LLC (TEX8MHRDQ9)
+Authority=Developer ID Certification Authority
+Authority=Apple Root CA
+Timestamp=Mar 14, 2024 at 3:18:31 PM
+Info.plist=not bound
+TeamIdentifier=TEX8MHRDQ9
+Runtime Version=11.0.0
+Sealed Resources=none
+Internal requirements count=1 size=172
+```
+
+The important part is **Authority=Developer ID Application: ngrok LLC (TEX8MHRDQ9)**—that indicates the binary is signed by ngrok.
+
+## Reporting false positives
+
+Many antivirus products let you report false positives (often in the app or on their support site). Submitting ngrok as a false positive helps vendors correct their classification. [VirusTotal’s documentation](https://docs.virustotal.com/docs/false-positive-contacts) lists contacts for reporting false positives to many vendors; using that to report ngrok is appreciated and supports accurate detection.
