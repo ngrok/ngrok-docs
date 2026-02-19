@@ -23,7 +23,7 @@ Cloud Endpoints are persistent, always-on endpoints managed via the dashboard or
 ### Using the dashboard
 
 1. Go to [dashboard.ngrok.com/endpoints/new/cloud](https://dashboard.ngrok.com/endpoints/new/cloud) to create a new Cloud Endpoint
-2. Choose a URL for your endpoint (for example, `https://your-ai-subdomain.ngrok.app`)
+2. Choose a URL for your endpoint (for example, `https://your-ai-gateway.ngrok.app`)
 3. Add the following Traffic Policy:
 
 ```yaml
@@ -55,7 +55,7 @@ Create the Cloud Endpoint using the ngrok CLI:
 ```bash
 ngrok api endpoints create \
   --api-key $NGROK_API_KEY \
-  --url https://your-ai-subdomain.ngrok.app \
+  --url https://your-ai-gateway.ngrok.app \
   --type cloud \
   --bindings public \
   --traffic-policy-file traffic-policy.yaml
@@ -69,7 +69,7 @@ curl -X POST https://api.ngrok.com/endpoints \
   -H "Content-Type: application/json" \
   -H "Ngrok-Version: 2" \
   -d '{
-    "url": "https://your-ai-subdomain.ngrok.app",
+    "url": "https://your-ai-gateway.ngrok.app",
     "type": "cloud",
     "bindings": ["public"],
     "traffic_policy": "on_http_request:\n  - type: ai-gateway\n    config: {}"
@@ -93,7 +93,7 @@ on_http_request:
 Start the agent with the Traffic Policy:
 
 ```bash
-ngrok http 8080 --url https://your-ai-subdomain.ngrok.app --traffic-policy-file traffic-policy.yaml
+ngrok http 8080 --url https://your-ai-gateway.ngrok.app --traffic-policy-file traffic-policy.yaml
 ```
 
 <Tip>
@@ -110,7 +110,7 @@ agent:
   authtoken: $NGROK_AUTHTOKEN
 endpoints:
   - name: ai-gateway
-    url: https://your-ai-subdomain.ngrok.app
+    url: https://your-ai-gateway.ngrok.app
     upstream:
       url: http://localhost:8080  # Not used when ai-gateway handles requests
     traffic_policy:
@@ -135,7 +135,7 @@ kind: CloudEndpoint
 metadata:
   name: ai-gateway
 spec:
-  url: https://your-ai-subdomain.ngrok.app
+  url: https://your-ai-gateway.ngrok.app
   trafficPolicy:
     on_http_request:
       - type: ai-gateway
@@ -153,7 +153,7 @@ kubectl apply -f ai-gateway.yaml
 Once your endpoint is created, test it with a simple request. In passthrough mode, provide your provider API key:
 
 ```bash
-curl https://your-ai-subdomain.ngrok.app/v1/chat/completions \
+curl https://your-ai-gateway.ngrok.app/v1/chat/completions \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $OPENAI_API_KEY" \
   -d '{
@@ -168,7 +168,7 @@ Or with the OpenAI SDK:
 from openai import OpenAI
 
 client = OpenAI(
-    base_url="https://your-ai-subdomain.ngrok.app/v1",
+    base_url="https://your-ai-gateway.ngrok.app/v1",
     api_key="sk-..."  # Your OpenAI API key
 )
 
