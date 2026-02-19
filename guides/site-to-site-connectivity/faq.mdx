@@ -1,0 +1,160 @@
+---
+title: Site-to-Site Connectivity FAQ
+sidebarTitle: FAQ
+icon: circle-question
+description: Answers to common questions about setting up and managing site-to-site connectivity with ngrok.
+---
+
+## General
+
+### How does site-to-site connectivity work with ngrok?
+
+Your customer runs a lightweight ngrok agent inside their network that creates a secure, outbound TLS connection to the ngrok cloud service on port 443.
+You create Cloud Endpoints that route traffic through that connection to the customer's internal services.
+No inbound ports need to be opened in the customer's network.
+
+### Do I need one agent per service in the customer's network?
+
+No.
+A single ngrok agent acts as a central gateway that can reach any service on the local network.
+You configure multiple Internal Endpoints in the agent's configuration file, each pointing to a different upstream service.
+
+### Does the customer need to make firewall changes?
+
+No.
+The ngrok agent connects outbound over TLS on port 443, which is typically already allowed.
+No inbound firewall rules or open ports are required.
+
+### Why use ngrok instead of a VPN or VPC peering?
+
+
+Running an agent container is often more straightforward than configuring VPC peering.
+The ngrok agent works the same way in any cloud, and any on-prem environment.
+You don't need to reverse-engineer your customer's network or firewall configuration.
+
+## Security
+
+### How do I authenticate connections to customer services?
+
+You can authorize connections from your cloud to ngrok using Traffic Policy.
+With Traffic Policy, you can authenticate connections using [IP restrictions](/traffic-policy/actions/restrict-ips/), [JWT validation](/traffic-policy/actions/jwt-validation/), [OAuth](/traffic-policy/actions/oauth/), [OpenID Connect](/traffic-policy/actions/oidc/), [SAML](/traffic-policy/actions/saml/), and more.
+Apply these as Traffic Policy actions on your Cloud Endpoints.
+
+### Can I scope access to specific services?
+
+Yes.
+By default, you access only the specific APIs and databases at the ports associated with your Internal Endpoints.
+
+### Is traffic end-to-end encrypted?
+
+Yes, if you configure TLS termination at the ngrok agent or at the upstream service.
+In these models, the ngrok cloud service only sees ciphertext.
+See [TLS termination options](/universal-gateway/tls-termination/#end-to-end-encryption) for details.
+
+### Can ngrok see the traffic it forwards?
+
+No. TLS terminates at the agent or upstream service.
+In all encryption models, the ngrok agent itself cannot see the traffic it forwards.
+See the [end customer guide](/guides/site-to-site-connectivity/end-customers#ngrok-traffic-encryption) for a full breakdown of the encryption models.
+
+### How do I prevent unauthorized use of ngrok in the customer's network?
+
+Set up a [custom connect URL](/guides/site-to-site-connectivity/custom-connect-url) so the agent connects to your branded domain (for example, `connect.acme.com:443`) instead of the default `connect.ngrok-agent.com`.
+The customer can then block the default connect URL, preventing any other ngrok usage on their network.
+
+### How do I lock down what agents can do?
+
+Apply [Access Control Lists](/iam/rbac/#additional-restrictions-with-acls) (ACLs) to authtokens to restrict which endpoints an agent can create.
+Since you can't fully trust agents running in a customer's network, ACLs lock them down to only create the endpoints you authorize.
+
+### What compliance certifications does ngrok maintain?
+
+ngrok complies with SOC 2 Type II, HIPAA (with BAA), GDPR, CCPA, and EU-US DPF.
+ngrok also supports RBAC, SSO with SCIM, audit logs, data residency controls, and white-labeling.
+Visit the [Trust Center](https://trust.ngrok.com/) for reports and documentation.
+
+## Reliability
+
+### What happens if the agent loses its connection?
+
+The ngrok agent sends a [heartbeat](/agent/#heartbeats) every 10 seconds.
+If it doesn't receive a response within the tolerance window (15 seconds by default), it terminates the existing connection and automatically reconnects.
+This allows site-to-site connectivity to recover after packet loss, dynamic IP changes, or complete network outages.
+
+### How do I achieve high availability?
+
+Run multiple agents in the customer's network with [Endpoint Pooling](/guides/site-to-site-connectivity/redundant-agents) enabled.
+Connections are balanced across all healthy agents.
+If one agent or its host machine fails, traffic is seamlessly routed to the remaining agents.
+
+### Does ngrok stay online during region outages?
+
+Yes.
+Agents create secure connections to multiple [Points of Presence](/universal-gateway/points-of-presence/) in the ngrok cloud service.
+If an entire data center fails, traffic automatically fails over to a healthy region.
+
+### Can I monitor agent connectivity?
+
+Yes.
+You can publish tunnel status and connection events to your telemetry platform using ngrok's [event subscriptions](/obs/).
+When a connection drops, you'll know before your customer does.
+
+## Data residency
+
+### Can I restrict traffic to specific regions?
+
+Yes.
+Configure the agent to connect to a PoP in one of the [supported regions](/universal-gateway/points-of-presence/), then set up DNS to route all connections through the same data plane.
+Regional data planes are located in Australia (Sydney), Europe (Frankfurt), India (Mumbai), Japan (Tokyo), South America (São Paulo), and the United States (California and Ohio).
+
+### Is ngrok multi-tenant?
+
+Yes.
+ngrok is a multi-tenant application with services shared across the customer base.
+If you need a dedicated instance, [inquire about ngrok's private edition](https://ngrok.com/contact).
+
+## Deploying the Agent
+
+### Where can the agent run?
+
+The ngrok agent runs on Linux, Windows, and macOS across most CPU architectures.
+It's also available as a [Docker image](https://hub.docker.com/r/ngrok/ngrok), [Kubernetes Operator](/k8s/), and [agent SDKs](/agent-sdks/) for Go, Python, JavaScript, and Rust.
+
+### Can I embed the agent in my own application?
+
+Yes.
+Use the [agent SDKs](/agent-sdks/) to embed ngrok directly in your code.
+This is useful when your software is already running in the customer's environment, like a bring-your-own-cloud deployment.
+
+### How do I keep the agent running?
+
+[Install ngrok as a system service](/guides/site-to-site-connectivity/background-service) so it starts on boot, automatically restarts after crashes, and sends logs to the system's native logging service.
+
+### How do I update agents?
+
+ngrok releases updates through all installation channels, but updates are not automatic.
+Coordinate with your customer on when and how to update based on the deployment method.
+See the [agent version support policy](/agent/version-support-policy/) for details.
+
+### Can the Agent run in a DMZ?
+
+Yes, as long as the systems in the DMZ meet the agent's [system requirements](/agent/#system-requirements) and the upstream service is also reachable from the DMZ.
+
+## Branding and automation
+
+### Can I white-label the connection?
+
+Yes.
+Use a [custom connect URL](/guides/site-to-site-connectivity/custom-connect-url) to brand the address the agent connects to with your own domain.
+You can also use [custom domains](/universal-gateway/custom-domains/) for your Cloud Endpoint URLs and request dedicated IPs.
+
+### Can I automate setup across customers?
+
+Yes.
+Every ngrok feature has a corresponding [API](/api-reference/) so you can automate provisioning across all your customers.
+ngrok also integrates with declarative IaC tools like [Terraform](https://registry.terraform.io/providers/ngrok/ngrok/latest/docs).
+
+### How do I explain ngrok to my customers?
+
+Share the [end customer guide](/guides/site-to-site-connectivity/end-customers) with your customers.
+It covers what ngrok is, why it's being installed, how it works, security details, and operational considerations.

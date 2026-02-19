@@ -1,6 +1,8 @@
 ---
-title: Configure Site-to-Site Connectivity
-description: Learn how to use ngrok to remotely access APIs and DBs in your customer's network. Connect remotely without a VPN.
+title: "Connect to Your Customer's Network"
+sidebarTitle: "Tutorial"
+icon: book
+description: Follow an in-depth tutorial to learn how to use ngrok to remotely access APIs and DBs in your customer's network, connecting remotely without a VPN.
 ---
 
 ngrok is a universal gateway, which means it allows you to connect to any app, IoT device, or service without networking expertise.
@@ -126,71 +128,8 @@ on_http_request:
 
 Now that you have this Traffic Policy action in place, you have IP restrictions layered in front of your API endpoint, and your connection to the patient DB is end-to-end encrypted, with the ngrok agent validating mTLS.
 
-## Additional ngrok features
+## What's next
 
-### Set up a custom connect URL
-
-When the ngrok agent starts, it makes an outbound connection via TLS over port 443 to the ngrok cloud service. This connection is made to the "agent connect URL". By default, [this connect URL](/agent/connect-url/) is `connect.ngrok-agent.com`, but it can be white-labeled so that your ngrok agents will connect to `connect.acme.com` instead of the default connection hostname. This is highly recommended because your customers may need to whitelist egress traffic out of their networks and customers will see this traffic in their network logs. You can also request dedicated IPs for your connect URL that are unique to your account.
-
-```bash
-curl \
--X POST \
--H "Authorization: Bearer {API_KEY}" \
--H "Content-Type: application/json" \
--H "Ngrok-Version: 2" \
--d '{"description":"Custom connect URL","domain":"connect.acme.com"}' \
-https://api.ngrok.com/agent_ingresses
-```
-
-Once the custom connect url has been created, specify this field within the agent configuration file. Add this section to your agent configuration file to specify the custom connect url:
-
-```yaml
-version: 3
-agent:
-  connect_url: connect.acme.com:443
-```
-
-### Install ngrok as a background service
-
-You can install ngrok in your customer's network as a native background system service. This ensures the ngrok agent starts on boot and that it will be restarted if it crashes for any reason. This helps ensure that you recover connectivity in the case of unexpected software or hardware failures. When you do so, ngrok will start all endpoints defined in the configuration file.
-
-```bash
-ngrok service install --config /etc/ngrok.yml
-ngrok service start
-```
-
-<Note>
-In most cases, installing ngrok as a service requires administrator privileges.
-</Note>
-
-### Eliminate single points of failure with redundant agents
-
-Running a single agent in your customer's network is a single point of failure. If that agent or the hardware it runs on fails for any reason, you can no longer connect to the remote services in your customer's network. You can run multiple agents to achieve redundancy and high availability in the case of these failures.
-
-To do this, you will run a separate, second ngrok agent in the customer's network (ideally on a different machine) with an identical configuration file with one small tweak: on each endpoint definition you must specify `pooling_enabled: true`. This is ngrok's Endpoint Pooling feature. When two endpoints start with the same URL and have pooling enabled, they form an endpoint pool. Incoming traffic to the pooled URL is automatically distributed among all healthy endpoints in the pool. If one endpoint goes offline, traffic is seamlessly routed to the remaining endpoints, ensuring redundancy and failover.
-
-```yaml
-# Server 1 (agent1.yml)
-version: 3
-agent:
-  authtoken: <YOUR_NGROK_AUTHTOKEN>
-endpoints:
-  - name: my-service
-    url: 'https://service.internal'
-    pooling_enabled: true
-    upstream:
-      url: http://localhost:8080
-```
-
-```yaml
-# Server 2 (agent2.yml)
-version: 3
-agent:
-  authtoken: <YOUR_NGROK_AUTHTOKEN>
-endpoints:
-  - name: my-service
-    url: 'https://service.internal'  # Same URL as Server 1
-    pooling_enabled: true
-    upstream:
-      url: http://localhost:8080
-```
+- [Set up a custom connect URL](/guides/site-to-site-connectivity/custom-connect-url) to white-label the agent connection for your customers.
+- [Install ngrok as a background service](/guides/site-to-site-connectivity/background-service) to ensure the agent starts on boot and recovers from failures.
+- [Eliminate single points of failure with redundant agents](/guides/site-to-site-connectivity/redundant-agents) to achieve high availability.
