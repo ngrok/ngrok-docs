@@ -3,24 +3,32 @@ title: Autodesk Platform Services Webhooks
 sidebarTitle: Autodesk Platform Services
 description: Develop and test Autodesk webhooks from localhost.
 ---
+
 import InspectingRequests from "/snippets/integrations/_inspecting-requests.mdx";
 import ReplayingRequests from "/snippets/integrations/_replaying-requests.mdx";
 
-This guide covers how to use ngrok to integrate your localhost app with Autodesk Platform Services by using Webhooks.
-Autodesk Platform Services webhooks can be used to notify an external application whenever specific events occur in your Autodesk account.
+This guide shows you how to use ngrok to receive Autodesk Platform Services webhooks on your localhost app.
 
 By integrating ngrok with Autodesk, you can:
 
-- **Develop and test Autodesk webhooks locally**, eliminating the time in deploying your development code to a public environment and setting it up in HTTPS.
-- **Inspect and troubleshoot requests from Autodesk** in real-time via the inspection UI and API.
-- **Modify and Replay Autodesk Webhook requests** with a single click and without spending time reproducing events manually in your Autodesk account.
-- **Secure your app with Autodesk validation provided by ngrok**. Invalid requests are blocked by ngrok before reaching your app.
+- Develop and test Autodesk webhooks locally without deploying to a public environment or setting up HTTPS.
+- Inspect and troubleshoot requests from Autodesk in real time via the inspection UI and API.
+- Modify and replay Autodesk webhook requests with a single click instead of reproducing events manually in your Autodesk account.
+- Secure your app with Autodesk webhook validation provided by ngrok.
+  Invalid requests are blocked by ngrok before reaching your app.
 
-## 1. Start your app 
+## What you'll need
 
-For this tutorial, you can use the [sample Node.js app available on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
+- An [ngrok account](https://ngrok.com/signup) and your [authtoken](https://dashboard.ngrok.com/get-started/your-authtoken).
+- The [ngrok agent](https://ngrok.com/download) installed.
+- [Node.js](https://nodejs.org/) installed (for the sample app, or use your own app).
+- An Autodesk Platform Services account.
 
-To install this sample, run the following commands in a terminal:
+## 1. Start your app
+
+For this tutorial, you can use the [sample Node.js app on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
+
+To install the sample, run the following in a terminal:
 
 ```bash
 git clone https://github.com/ngrok/ngrok-webhook-nodejs-sample.git
@@ -28,148 +36,140 @@ cd ngrok-webhook-nodejs-sample
 npm install
 ```
 
-This will get the project installed locally.
-
-Now you can launch the app by running the following command:
+Then start the app:
 
 ```bash
 npm start
 ```
 
-The app runs by default on port 3000.
+The app runs on port 3000 by default.
 
-You can validate that the app is up and running by visiting http://localhost:3000. The application logs request headers and body in the terminal and responds with a message in the browser.
+You can confirm it's running by visiting `http://localhost:3000`.
+The app logs request headers and body in the terminal and shows a message in the browser.
 
-## 2. Launch ngrok 
+## 2. Expose your app with ngrok
 
 Once your app is running locally, you're ready to put it online securely using ngrok.
 
-1. If you're not an ngrok user yet, just [sign up for ngrok for free](https://ngrok.com/signup).
+- Copy [your ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) from the dashboard.
 
-1. [Download the ngrok agent](https://download.ngrok.com).
+<Tip>
+  The ngrok agent uses your authtoken to authenticate when you start a tunnel.
+</Tip>
 
-1. Go to the [ngrok dashboard](https://dashboard.ngrok.com) and copy your Authtoken. <br />
-   **Tip:** The ngrok agent uses the auth token to log into your account when you start a tunnel.
-1. Start ngrok by running the following command:
+- Start ngrok:
 
-   ```bash
-   ngrok http 3000
-   ```
+  ```bash
+  ngrok http 3000
+  ```
 
-1. ngrok will display a URL where your localhost application is exposed to the internet (copy this URL for use with Autodesk).
-   ![ngrok agent running](../img/twilio/launch_ngrok_tunnel.png)
+- Copy the URL ngrok displays.
+  Your app is now exposed at that URL for use with Autodesk.
 
-## 3. Integrate Autodesk 
+## 3. Configure Autodesk to send webhooks
 
-To register a webhook on your Autodesk account follow the instructions below:
+Autodesk Platform Services can send webhook requests to your app when events occur.
+To register for those events:
 
-1. Access [Autodesk Platform Services](https://aps.autodesk.com/) and sign in using your Autodesk account.
+- Sign in to [Autodesk Platform Services](https://aps.autodesk.com/).
+- On the **Platform Services** page, click your avatar in the top-right, click **Applications**, then **Create Application**, enter a name in **Name**, and click **Create**.
+- In **Client Credentials**, copy **Client ID** and **Client Secret** for later use.
 
-1. On the **Platform Services** page, click your avatar icon on the top-right corner of the page, click **Applications**, click **Create Application**, enter a name in the **Name** field, and then click **Create**.
+<Tip>
+  Click the eye icon to reveal **Client Secret** or use the copy icon.
+</Tip>
 
-1. In the **Client Credentials** section of your application page, copy the values of the **Client ID** and the **Client Secret** fields for later use.<br/>
-   **Tip**: Click the eye icon to reveal the **Client Secret** value to copy or click the copy icon.
+- In **General Settings**, paste the ngrok URL in **Callback URL** (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`).
+- In **API Access**, select **Data Management API** and **Webhooks API**, then click **Save changes**.
 
-1. In the **General Settings** section, enter the URL provided by the ngrok agent to expose your application to the internet in the **Callback URL** field (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`).
-   ![Callback URL](../img/autodesk/ngrok_url_configuration_autodesk.png)
+<Tip>
+  This tutorial uses **Data Management** as an example; you can select other APIs for different Autodesk services.
+</Tip>
 
-1. In the **API Access** section, select the **Data Management API** and the **Webhooks API** from the list, and then click **Save changes**.<br/>
-   **Tip**: This tutorial uses the **Data Management** service as an example. Select other APIs for use with other Autodesk Platform Services.
+- In a terminal, obtain an access token:
 
-1. In a terminal window, run the following command to obtain an access token:
-   ```bash
-   curl -v 'https://developer.api.autodesk.com/authentication/v1/authenticate'
-   -X 'POST'
-   -H 'Content-Type: application/x-www-form-urlencoded'
-   -d '
-       client_id=CLIENT_ID&
-       client_secret=CLIENT_SECRET&
-       grant_type=client_credentials&
-       scope=data:read
-   '
-   ```
-1. Copy the value of the **access_token** attribute from the response json.
+  ```bash
+  curl -v 'https://developer.api.autodesk.com/authentication/v1/authenticate' \
+    -X 'POST' \
+    -H 'Content-Type: application/x-www-form-urlencoded' \
+    -d 'client_id=CLIENT_ID&client_secret=CLIENT_SECRET&grant_type=client_credentials&scope=data:read'
+  ```
 
-1. Run the following command to register a webhook to Autodesk Data Management:
+  Replace `CLIENT_ID` and `CLIENT_SECRET` with the values you copied.
+  Copy the **access_token** from the response.
 
-   ```bash
-   curl -X 'POST'\
-    -v 'https://developer.api.autodesk.com/webhooks/v1/systems/data/events/dm.*/hooks'\
-    -H 'Content-Type: application/json'\
-    -H 'authorization: Bearer ACCESS_TOKEN'\
+- Register a webhook with the Data Management API:
+
+  ```bash
+  curl -X 'POST' \
+    -v 'https://developer.api.autodesk.com/webhooks/v1/systems/data/events/dm.*/hooks' \
+    -H 'Content-Type: application/json' \
+    -H 'authorization: Bearer ACCESS_TOKEN' \
     -d '{
-           "callbackUrl": "CALLBACK_URL",
-           "scope": {
-                "folder": "FOLDER_URN"
-           },
-           "hookAttribute": {
-                "projectId": "PROJECT_ID",
-           },
-           "filter": "$[?(@.ext=='txt')]"
-     }'
-   ```
+      "callbackUrl": "CALLBACK_URL",
+      "scope": { "folder": "FOLDER_URN" },
+      "hookAttribute": { "projectId": "PROJECT_ID" },
+      "filter": "$[?(@.ext=='\''txt'\'')]"
+    }'
+  ```
 
-   **Note**: Replace the following with the corresponding values:
-   - ACCESS_TOKEN: the access token copied on previous steps.
-   - CALLBACK_URL: the URL provided by the ngrok agent to expose your application to the internet (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`).
-   - FOLDER_URN: Your Autodesk Data Management folder URN
-   - PROJECT_ID: Your Autodesk Data Management project ID.
-
-1. Make sure the response from the above command is `HTTP/1.1 201`.
+  Replace `ACCESS_TOKEN` with your access token, `CALLBACK_URL` with your ngrok URL, `FOLDER_URN` with your Data Management folder URN, and `PROJECT_ID` with your project ID.
+  The response should be `HTTP/1.1 201`.
 
 ### Run webhooks with Autodesk and ngrok
 
-Autodesk Platform Services sends a different request to your webhook endpoint depending on the event being triggered.
-For example, you can trigger new calls from Autodesk to your application whenever you add a file to a folder in Data Management.
+Autodesk sends different requests depending on the event.
+For example, adding a file to a folder in Data Management triggers a webhook.
 
-1. On your desktop start menu, select **Autodesk Data Management**, click **Autodesk Data Management Server Console** and sign in using your username and password.
-
-1. Access the folder you assigned to your webhook, upload a text file, and confirm your localhost app receives a notification and logs both headers and body in the terminal.
+- Open the folder you assigned to your webhook in Data Management, upload a text file, and confirm your localhost app receives a notification and logs both headers and body in the terminal.
 
 <InspectingRequests />
 
 <ReplayingRequests />
-## Secure webhook requests 
 
-The ngrok signature webhook verification feature allows ngrok to assert that requests from your Autodesk webhook are the only traffic allowed to make calls to your localhost app.
+## Secure webhook requests
 
-**Note:** This ngrok feature is limited to 500 validations per month on free ngrok accounts. For unlimited, upgrade to Pro or Enterprise.
+ngrok can verify that incoming requests are from your Autodesk webhook so only that traffic reaches your app.
 
-This is a quick step to add extra protection to your application.
+<Note>
+  Webhook verification is limited to 500 validations per month on free accounts.
+  If you need more, you can upgrade to Hobbyist or Pay-as-you-go.
+  See [TPU Pricing](/pricing-limits/traffic-policy-unit-pricing/) for details.
+</Note>
 
-1. Run the following command to register a webhook secret to your webhook:
+To add verification:
 
-   ```bash
-   curl -X 'POST'\
-    -v 'https://developer.api.autodesk.com/webhooks/v1/tokens'\
-    -H 'Content-Type: application/json'\
-    -H 'authorization: Bearer ACCESS_TOKEN'\
-    -d '{
-           "token": "YOUR_WEBHOOK_SECRET"
-     }'
-   ```
+- Register a webhook secret with the Autodesk API:
 
-   **Note**: Replace the following with the corresponding values:
-   - ACCESS_TOKEN: the access token copied on previous steps.
-   - YOUR_WEBHOOK_SECRET: a value to sign each webhook request.
+  ```bash
+  curl -X 'POST' \
+    -v 'https://developer.api.autodesk.com/webhooks/v1/tokens' \
+    -H 'Content-Type: application/json' \
+    -H 'authorization: Bearer ACCESS_TOKEN' \
+    -d '{ "token": "YOUR_WEBHOOK_SECRET" }'
+  ```
 
-1. Make sure the response from the above command is `HTTP/1.1 200`.
+  Replace `ACCESS_TOKEN` with your access token and `YOUR_WEBHOOK_SECRET` with a value you choose to sign each webhook request.
+  The response should be `HTTP/1.1 200`.
 
-1. Create a Traffic Policy file named `autodesk_policy.yml`, replacing `{your client secret}` with the value you copied before:
+- Create a Traffic Policy file named `autodesk_policy.yml`.
+  Replace `{your client secret}` with your Autodesk **Client Secret**:
 
-   ```yaml
-   on_http_request:
-     - actions:
-         - type: verify-webhook
-           config:
-             provider: autodesk
-             secret: "{your client secret}"
-   ```
+  ```yaml
+  on_http_request:
+    - actions:
+        - type: verify-webhook
+          config:
+            provider: autodesk
+            secret: "{your client secret}"
+  ```
 
-1. Restart your ngrok agent by running the command:
+- Restart ngrok with the policy file:
 
-   ```bash
-   ngrok http 3000 --traffic-policy-file autodesk_policy.yml
-   ```
+  ```bash
+  ngrok http 3000 --traffic-policy-file autodesk_policy.yml
+  ```
 
-1. Access the folder you assigned to your webhook, upload a text file, and confirm your localhost app receives a notification and logs both headers and body in the terminal.
+- Upload a text file to the folder assigned to your webhook to trigger a request.
+
+Your app should receive the request and log it in the terminal.

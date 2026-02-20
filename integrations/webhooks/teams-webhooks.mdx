@@ -3,24 +3,36 @@ title: Microsoft Teams Webhooks
 sidebarTitle: Microsoft Teams
 description: Develop and test Microsoft Teams webhooks from localhost.
 ---
+
 import InspectingRequests from "/snippets/integrations/_inspecting-requests.mdx";
 import ReplayingRequests from "/snippets/integrations/_replaying-requests.mdx";
 
-This guide covers how to use ngrok to integrate your localhost app with Microsoft Teams by using Webhooks.
-Microsoft Teams webhooks can be used to notify an external application whenever page or account events occur in your Microsoft Teams account.
+This guide explains how to use ngrok to receive Microsoft Teams webhooks on your localhost app.
 
 By integrating ngrok with Microsoft Teams, you can:
 
-- **Develop and test Microsoft Teams webhooks locally**, eliminating the time in deploying your development code to a public environment and setting it up in HTTPS.
-- **Inspect and troubleshoot requests from Microsoft Teams** in real-time via the inspection UI and API.
-- **Modify and Replay Microsoft Teams Webhook requests** with a single click and without spending time reproducing events manually in your Microsoft Teams account.
-- **Secure your app with Microsoft Teams validation provided by ngrok**. Invalid requests are blocked by ngrok before reaching your app.
+- Develop and test Microsoft Teams webhooks locally without deploying to a public environment or setting up HTTPS.
+- Inspect and troubleshoot requests from Microsoft Teams in real time via the inspection UI and API.
+- Modify and replay Microsoft Teams webhook requests with a single click instead of reproducing events manually in your Microsoft Teams account.
+- Secure your app with Microsoft Teams webhook validation provided by ngrok.
+  Invalid requests are blocked by ngrok before reaching your app.
 
-## 1. Start your app 
+## What you'll need
 
-For this tutorial, you can use the [sample Node.js app available on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
+- An [ngrok account](https://ngrok.com/signup) and your [authtoken](https://dashboard.ngrok.com/get-started/your-authtoken).
+- The [ngrok agent](https://ngrok.com/download) installed.
+- [Node.js](https://nodejs.org/) installed (for the sample app, or use your own app).
+- A Microsoft account and a Microsoft Teams page with an app.
 
-To install this sample, run the following commands in a terminal:
+<Note>
+  This integration requires an ngrok Pro or Enterprise license because Microsoft Teams validates your ngrok domain and certificate.
+</Note>
+
+## 1. Start your app
+
+For this tutorial, you can use the [sample Node.js app on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
+
+To install the sample, run the following in a terminal:
 
 ```bash
 git clone https://github.com/ngrok/ngrok-webhook-nodejs-sample.git
@@ -28,9 +40,7 @@ cd ngrok-webhook-nodejs-sample
 npm install
 ```
 
-This installs the project locally.
-
-Now you can launch the app by running the following command:
+Then start the app:
 
 ```bash
 npm start
@@ -38,102 +48,84 @@ npm start
 
 The app runs on port 3000 by default.
 
-You can validate that the app is up and running by visiting http://localhost:3000. The application logs request headers and body in the terminal and responds with a message in the browser.
+You can confirm it's running by visiting `http://localhost:3000`.
+The app logs request headers and body in the terminal and shows a message in the browser.
 
-## 2. Launch ngrok 
+## 2. Expose your app with ngrok
 
-Now that your app is running locally, you can put it on the internet securely with ngrok.
-<Info>
-**This integration requires an ngrok Pro or Enterprise license because Microsoft Teams validates your ngrok domain and certificate.**
-</Info>
+Once your app is running locally, you're ready to put it online securely using ngrok.
 
-1. If you're not an ngrok user yet, [sign up for ngrok for free](https://ngrok.com/signup).
+- Copy [your ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) from the dashboard.
 
-1. [Download the ngrok agent](https://download.ngrok.com).
+<Tip>
+  The ngrok agent uses your authtoken to authenticate when you start a tunnel.
+  You need a reserved domain: in the dashboard, expand **Universal Gateway**, click **Domains**, then **+ Create Domain** or **+ New Domain**, and reserve a domain (for example, `myexample.ngrok.app`).
+</Tip>
 
-1. Go to the [ngrok dashboard](https://dashboard.ngrok.com), click **Your Authtoken**, and copy your Authtoken. <br />
-   **Tip:** The ngrok agent uses the auth token to log into your account when you start a tunnel.
+- Start ngrok with your reserved domain:
 
-1. On the left menu, expand **Universal Gateway** and then click **Domains**.
-   **Tip:** If you don't have an ngrok Pro or Enterprise license, sign up for one by clicking **Update Subscription** and following the subscribe procedure.
+  ```bash
+  ngrok http 3000 --url myexample.ngrok.app
+  ```
 
-1. On the **Domains** page, click **+ Create Domain** or **+ New Domain**.
+- Copy the URL ngrok displays (for example, `https://myexample.ngrok.app`).
+  Your app is now exposed at that URL for use with Microsoft Teams.
 
-1. In the **Domain** pane, provide a value for the **Domain** field (that is, `myexample.ngrok.app`), and then click **Continue**.
-   ![ngrok New Domain](../img/facebook-messenger/ngrok_new_domain.png)
-   **Tip**: Make sure your domain is available.
+## 3. Configure Microsoft Teams to send webhooks
 
-1. Close the **Start a Tunnel** pane and then close the **Domain** pane.
+Microsoft Teams can send webhook requests to your app when you use an outgoing webhook in a channel.
+To set it up:
 
-1. Start ngrok by running the following command in a terminal on your local desktop:
+- Sign in to the [Microsoft Teams web interface](https://teams.microsoft.com/) (or use the Teams app).
+- Click **Teams**, select a channel, and click the **+** at the top of the team page.
+- In **Add a tab**, click **Manage apps** and then **Create an outgoing webhook** at the bottom.
+- In **Create an outgoing webhook**, enter **Name** and **Description** (for example, `My local app`) and your ngrok URL in **Callback URL** (for example, `https://myexample.ngrok.app`).
+- Click **Create** and note the **Security token** on the confirmation popup, then click **Close**.
 
-   ```bash
-   ngrok http 3000 --url myexample.ngrok.app
-   ```
+### Run webhooks with Microsoft Teams and ngrok
 
-1. ngrok will display a URL where your localhost application is exposed to the internet (copy this URL for use with Microsoft Teams).
-   ![ngrok agent running](../img/facebook-messenger/launch_ngrok_tunnel_domain.png)
+The outgoing webhook acts as a bot: when you @mention it, it sends the message to your app.
 
-## 3. Integrate Microsoft Teams 
+- In a channel, type `@My local app` (or your webhook name) and press Enter.
 
-To register a webhook on your Microsoft Teams account follow the instructions below:
-
-**Requirements**: You'll need a Microsoft Teams page and a Microsoft Teams app associated with your Microsoft Teams page. Create one before following the rest of these steps.
-
-1. Access the [Microsoft Teams web interface](https://teams.microsoft.com/) and sign in using your Microsoft account.
-   **Tip**: You can use the Microsoft Teams app instead.
-
-1. On the **Microsoft Teams** page, click **Teams** on the left menu, select one of your channels and then click the plus sign (**+**) on the top of your team page.
-1. On the **Add a tab** popup, click **Manage apps** and then click **Create an outgoing webhook** at the bottom of the page.
-
-1. On the **Create an outgoing webhook** popup, enter `My local app` in the **Name** field, enter `My local app` in the **Description** field, and enter the URL provided by the ngrok agent to expose your application to the internet in the **Callback URL** field (that is, `https://myexample.ngrok.app`).
-   ![Callback URL](../img/teams/ngrok_url_configuration_teams.png)
-
-1. Click **Create**.
-
-1. On the **Congratulations** popup, make note of the **Security token** value and then click **Close**.
-
-## Run webhooks with Microsoft Teams and ngrok
-
-Microsoft teams Outgoing Webhook acts as a bot sending any text you type using `@mention`. It sends notifications to your local application through ngrok.
-
-To send notifications to your application follow the instructions below:
-
-1. Access your Microsoft Teams account, select a channel, and then enter `@My local app` and hit enter.
-
-1. The JSON message `{ message: "Thank you for the message" }` appears as a response to your message.
-
-Confirm your localhost app receives a notification call and logs both headers and body in the terminal.
+Your localhost app receives the notification and logs both headers and body in the terminal.
+The bot may reply with a message such as `{ message: "Thank you for the message" }`.
 
 <InspectingRequests />
 
 <ReplayingRequests />
 
-## Secure webhook requests 
+## Secure webhook requests
 
-The ngrok signature webhook verification feature allows ngrok to assert that requests from your Microsoft Teams webhook are the only traffic allowed to make calls to your localhost app.
+ngrok can verify that incoming requests are from your Microsoft Teams webhook so only that traffic reaches your app.
 
-**Note:** This ngrok feature is limited to 500 per month on free ngrok accounts. For unlimited, upgrade to Pro or Enterprise.
+<Note>
+  Webhook verification is limited to 500 validations per month on free accounts.
+  If you need more, you can upgrade to Hobbyist or Pay-as-you-go.
+  See [TPU Pricing](/pricing-limits/traffic-policy-unit-pricing/) for details.
+</Note>
 
-This is a quick step to add extra protection to your application.
+To add verification:
 
-1. Create a Traffic Policy file named `teams_policy.yml` with the Microsoft Teams webhook verification configuration, replacing `{your app secret}` with the **Security token** value you copied before (See [Integrate Microsoft Teams](#setup-webhook)):
+- Use the **Security token** you copied when creating the outgoing webhook (see [Configure Microsoft Teams to send webhooks](#3-configure-microsoft-teams-to-send-webhooks)).
+- Create a Traffic Policy file named `teams_policy.yml`.
+  Replace `{your app secret}` with that Security token:
 
-   ```yaml
-   on_http_request:
-     - actions:
-         - type: verify-webhook
-           config:
-             provider: microsoft_teams
-             secret: "{your app secret}"
-   ```
+  ```yaml
+  on_http_request:
+    - actions:
+        - type: verify-webhook
+          config:
+            provider: microsoft_teams
+            secret: "{your app secret}"
+  ```
 
-1. Restart your ngrok agent by running the command with the Traffic Policy:
+- Restart ngrok with the policy file:
 
-   ```bash
-   ngrok http 3000 --traffic-policy-file teams_policy.yml
-   ```
+  ```bash
+  ngrok http 3000 --traffic-policy-file teams_policy.yml
+  ```
 
-1. Access the Microsoft Teams page you have assigned to your webhook and send a message to another Microsoft Teams user.
+- In Teams, send another message using the @mention for your webhook.
 
-   Verify that your local application receives the request and logs information to the terminal.
+Your app should receive the request and log it in the terminal.

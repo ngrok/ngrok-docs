@@ -3,24 +3,36 @@ title: Instagram Webhooks
 sidebarTitle: Instagram
 description: Develop and test Instagram webhooks from localhost.
 ---
+
 import InspectingRequests from "/snippets/integrations/_inspecting-requests.mdx";
 import ReplayingRequests from "/snippets/integrations/_replaying-requests.mdx";
 
-This guide covers how to use ngrok to integrate your localhost app with Instagram by using Webhooks.
-Instagram webhooks can be used to notify an external application whenever specific events occur in your Instagram account.
+This guide walks you through using ngrok to receive Instagram webhooks on your localhost app.
 
 By integrating ngrok with Instagram, you can:
 
-- **Develop and test Instagram webhooks locally**, eliminating the time in deploying your development code to a public environment and setting it up in HTTPS.
-- **Inspect and troubleshoot requests from Instagram** in real-time via the inspection UI and API.
-- **Modify and Replay Instagram Webhook requests** with a single click and without spending time reproducing events manually in your Instagram account.
-- **Secure your app with Instagram validation provided by ngrok**. Invalid requests are blocked by ngrok before reaching your app.
+- Develop and test Instagram webhooks locally without deploying to a public environment or setting up HTTPS.
+- Inspect and troubleshoot requests from Instagram in real time via the inspection UI and API.
+- Modify and replay Instagram webhook requests with a single click instead of reproducing events manually in your Instagram account.
+- Secure your app with Instagram webhook validation provided by ngrok.
+  Invalid requests are blocked by ngrok before reaching your app.
 
-## 1. Start your app 
+## What you'll need
 
-For this tutorial, you can use the [sample Node.js app available on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
+- An [ngrok account](https://ngrok.com/signup) and your [authtoken](https://dashboard.ngrok.com/get-started/your-authtoken).
+- The [ngrok agent](https://ngrok.com/download) installed.
+- [Node.js](https://nodejs.org/) installed (for the sample app, or use your own app).
+- A Facebook page and a Facebook app linked to that page; connect your Instagram account to the page.
 
-To install this sample, run the following commands in a terminal:
+<Note>
+  This integration requires an ngrok Pro or Enterprise license because Facebook validates your ngrok domain.
+</Note>
+
+## 1. Start your app
+
+For this tutorial, you can use the [sample Node.js app on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
+
+To install the sample, run the following in a terminal:
 
 ```bash
 git clone https://github.com/ngrok/ngrok-webhook-nodejs-sample.git
@@ -28,133 +40,117 @@ cd ngrok-webhook-nodejs-sample
 npm install
 ```
 
-This will get the project installed locally.
-
-Now you can launch the app by running the following command:
+Then start the app:
 
 ```bash
 npm run startFacebook
 ```
 
-The app runs by default on port 3000.
+The app runs on port 3000 by default.
 
-You can validate that the app is up and running by visiting http://localhost:3000. The application logs request headers and body in the terminal and responds with a message in the browser.
+You can confirm it's running by visiting `http://localhost:3000`.
+The app logs request headers and body in the terminal and shows a message in the browser.
 
-## 2. Launch ngrok 
+## 2. Expose your app with ngrok
 
 Once your app is running locally, you're ready to put it online securely using ngrok.
 
-**Note:** This integration requires an ngrok Pro or Enterprise license because Facebook validates your ngrok domain and certificate.
+- Copy [your ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) from the dashboard.
 
-1. If you're not an ngrok user yet, just [sign up for ngrok for free](https://ngrok.com/signup).
+<Tip>
+  The ngrok agent uses your authtoken to authenticate when you start a tunnel.
+</Tip>
 
-1. [Download the ngrok agent](https://download.ngrok.com).
+- In the dashboard, expand **Universal Gateway** and click **Domains**.
 
-1. Go to the [ngrok dashboard](https://dashboard.ngrok.com), click **Your Authtoken**, and copy your Authtoken. <br />
-   **Tip:** The ngrok agent uses the auth token to log into your account when you start a tunnel.
+<Tip>
+  If you don't have an ngrok Pro or Enterprise license, sign up by clicking **Update Subscription** and following the procedure.
+</Tip>
 
-1. On the left menu, expand **Universal Gateway** and then click **Domains**.
-   **Tip:** If you don't have an ngrok Pro or Enterprise license, sign up for one by clicking **Update Subscription** and follow the subscribe procedure.
+- On the **Domains** page, click **+ Create Domain** or **+ New Domain**.
+- In the **Domain** pane, enter a domain (for example, `myexample.ngrok.app`) and click **Continue**.
 
-1. On the **Domains** page, click **+ Create Domain** or **+ New Domain**.
+<Tip>
+  Make sure your domain is available.
+</Tip>
 
-1. In the **Domain** pane, provide a value for the **Domain** field (that is, `myexample.ngrok.app`), and then click **Continue**.
-   ![ngrok New Domain](../img/facebook-messenger/ngrok_new_domain.png)
-   **Tip**: Make sure your domain is available.
+- Close the **Start a Tunnel** and **Domain** panes.
+- Start ngrok with your domain:
 
-1. Close the **Start a Tunnel** pane and then close the **Domain** pane.
+  ```bash
+  ngrok http 3000 --url myexample.ngrok.app
+  ```
 
-1. Start ngrok by running the following command in a terminal on your local desktop:
+- Copy the URL ngrok displays.
+  Your app is now exposed at that URL for use with Instagram.
 
-   ```bash
-   ngrok http 3000 --url myexample.ngrok.app
-   ```
+## 3. Configure Instagram to send webhooks
 
-1. ngrok will display a URL where your localhost application is exposed to the internet (copy this URL for use with Facebook).
-   ![ngrok agent running](../img/facebook-messenger/launch_ngrok_tunnel_domain.png)
+Instagram can send webhook requests to your app when events occur in your account.
+Connect your Facebook page to Instagram (in Facebook, go to your page, **Meta Business Suite**, **Inbox**, **Instagram Comments**, **Connect account**), then register the webhook:
 
-## 3. Integrate Instagram 
+- Sign in to [Meta for Developers](https://developers.facebook.com/).
+- Click **My Apps** and your app.
+- Click **Add Product** and **Set up** for **Webhooks**.
+- On the **Webhooks** page, select **Instagram** and click **Subscribe to this object**.
+- In the **Edit User subscription** popup, enter your ngrok URL with `/webhooks` at the end in **Callback URL** (for example, `https://myexample.ngrok.app/webhooks`).
+- Enter `12345` in **Verify token**, set **Include values** to **Yes**, and click **Verify and save**.
+- Confirm your localhost app receives the validation request and logs `WEBHOOK_VERIFIED` in the terminal.
+- With **Instagram** selected, click **Subscribe** for the **comments** field.
 
-To register a webhook on your Instagram account follow the instructions below:
+<Tip>
+  You can subscribe to more fields under **Instagram** and other objects; use the same URL.
+</Tip>
 
-**Requirements**: You'll need a Facebook page and a Facebook app associated with your Facebook page. Create one before following the rest of these steps.
-
-Connect your Facebook page with your Instagram account by following the instructions below:
-
-1. Access your Facebook account, click your avatar icon on the top right corner of the page, click **See all profiles**, click **See all Pages**, and then click the name of your page.
-
-1. On the **Manage Page** of your page, expand **Meta Business Suite** on the left menu and then click **Inbox**.
-
-1. On the **Inbox** page, click **Instagram Comments** and then click **Connect account**. Follow the instructions to connect your Instagram account to your Facebook page.
-
-After you connect your Instagram account to your Facebook page, follow the instructions below to configure your Instagram webhook:
-
-1. Access the [Meta for Developers](https://developers.facebook.com/) page, and Log in using your Facebook account.
-
-1. On the Developers page, click **My Apps** and then click your app.
-1. On the app dashboard, click **Add Product** on the left menu, and then click **Set up** inside the **Webhooks** tile.
-
-1. On the **Webhooks** page, select **Instagram** from the combo box and then click **Subscribe to this object**.
-
-1. In the **Edit User subscription** popup, for the **Callback URL** field enter the URL provided by the ngrok agent to expose your application to the internet, with `/webhooks` at the end (that is, `https://myexample.ngrok.app/webhooks`).
-   ![Callback URL](../img/instagram/ngrok_url_configuration_instagram.png)
-
-1. Enter `12345` for the **Verify token** field, click **No** on the **Include values** slider to turn it to **Yes**, and then click **Verify and save**.
-
-1. After you add a webhook to Instagram, Instagram will submit a validation post request to your application through ngrok. Confirm your localhost app receives the validation get request and logs `WEBHOOK_VERIFIED` in the terminal.
-
-1. Back to the **Webhooks** page, make sure the **Instagram** object is selected and then click **Subscribe** to the **comments** field.
-   **Tip**: You can subscribe to multiple fields within the **Instagram** object, as well as select other objects to subscribe to. For each of them, you provide the same URL.
-
-1. Click **Test** for the **comments** field, click **Send to My Server** and confirm your localhost app receives the test post request.
-
-1. On the top of your app's page, make sure **App Mode** is **Live**.
+- Click **Test** for **comments**, click **Send to My Server**, and confirm your localhost app receives the test request.
+- Set **App Mode** to **Live** at the top of your app page.
 
 ### Run webhooks with Instagram and ngrok
 
-Depending on the object and the field you subscribe to, Instagram sends different request body contents.
+Instagram sends different request body contents depending on the object and field.
+With **comments** you can test by commenting on a post:
 
-Because you selected the **comments** field, you can test the integration by commenting on a post on your Instagram account:
+- Open your Instagram account, open a story, enter a comment, and post it.
 
-1. Access your Instagram account, open a story, enter a comment and then post the comment.
-
-Confirm your localhost app receives a message and logs both headers and body in the terminal.
+Confirm your localhost app receives the message and logs both headers and body in the terminal.
 
 <InspectingRequests />
 
 <ReplayingRequests />
-## Secure webhook requests 
 
-The ngrok signature webhook verification feature allows ngrok to assert that requests from your Instagram webhook are the only traffic allowed to make calls to your localhost app.
+## Secure webhook requests
 
-**Note:** This ngrok feature is limited to 500 validations per month on free ngrok accounts. For unlimited, upgrade to Pro or Enterprise.
+ngrok can verify that incoming requests are from your Instagram webhook so only that traffic reaches your app.
 
-This is a quick step to add extra protection to your application.
+<Note>
+  Webhook verification is limited to 500 validations per month on free accounts.
+  If you need more, you can upgrade to Hobbyist or Pay-as-you-go.
+  See [TPU Pricing](/pricing-limits/traffic-policy-unit-pricing/) for details.
+</Note>
 
-1. Access the [Meta for Developers](https://developers.facebook.com/) page, log in using your Instagram account, and then click **My Apps** in the top right corner.
+To add verification:
 
-1. On the Developers page, expand **Settings** on the left menu and then click **Basic**.
+- In [Meta for Developers](https://developers.facebook.com/), go to **My Apps**, **Settings**, **Basic**.
+- Click **Show** next to **App secret** and copy the value.
+- Create a Traffic Policy file named `instagram_policy.yml`.
+  Replace `{your app secret}` with the value you copied:
 
-1. In the **Basic Settings** page, click **Show** to reveal the **App secret** value and copy this value.
+  ```yaml
+  on_http_request:
+    - name: "Instagram Webhooks"
+      actions:
+        - type: "webhook-validation"
+          config:
+            provider: facebook_graph_api
+            secret: "{your app secret}"
+  ```
 
-1. Create a Traffic Policy file named `instagram_policy.yml`, replacing `{your app secret}` with the value you have copied before:
+- Restart ngrok with the policy file:
 
-   ```yaml
-   on_http_request:
-     - name: "Instagram Webhooks"
-       actions:
-         - type: "webhook-validation"
-           config:
-             provider: facebook_graph_api
-             secret: "{your app secret}"
-   ```
+  ```bash
+  ngrok http 3000 --traffic-policy-file instagram_policy.yml
+  ```
 
-1. Restart your ngrok agent by running the command:
+- Trigger an Instagram event (for example, comment on a post) to send a request.
 
-   ```bash
-   ngrok http 3000 --traffic-policy-file instagram_policy.yml
-   ```
-
-1. Access the Instagram page you have assigned to your webhook and send a message to another Instagram user.
-
-Verify that your local application receives the request and logs information to the terminal.
+Your app should receive the request and log it in the terminal.

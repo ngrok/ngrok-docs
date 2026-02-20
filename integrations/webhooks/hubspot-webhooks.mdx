@@ -3,24 +3,32 @@ title: HubSpot Webhooks
 sidebarTitle: HubSpot
 description: Develop and test HubSpot webhooks from localhost.
 ---
+
 import InspectingRequests from "/snippets/integrations/_inspecting-requests.mdx";
 import ReplayingRequests from "/snippets/integrations/_replaying-requests.mdx";
 
-This guide covers how to use ngrok to integrate your localhost app with HubSpot by using Webhooks.
-HubSpot webhooks can be used to notify an external application whenever specific events occur in your HubSpot account.
+This guide explains how to use ngrok to receive HubSpot webhooks on your localhost app.
 
 By integrating ngrok with HubSpot, you can:
 
-- **Develop and test HubSpot webhooks locally**, eliminating the time in deploying your development code to a public environment and setting it up in HTTPS.
-- **Inspect and troubleshoot requests from HubSpot** in real-time via the inspection UI and API.
-- **Modify and Replay HubSpot Webhook requests** with a single click and without spending time reproducing events manually in your HubSpot account.
-- **Secure your app with HubSpot validation provided by ngrok**. Invalid requests are blocked by ngrok before reaching your app.
+- Develop and test HubSpot webhooks locally without deploying to a public environment or setting up HTTPS.
+- Inspect and troubleshoot requests from HubSpot in real time via the inspection UI and API.
+- Modify and replay HubSpot webhook requests with a single click instead of reproducing events manually in your HubSpot account.
+- Secure your app with HubSpot webhook validation provided by ngrok.
+  Invalid requests are blocked by ngrok before reaching your app.
 
-## 1. Start your app 
+## What you'll need
 
-For this tutorial, you can use the [sample Node.js app available on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
+- An [ngrok account](https://ngrok.com/signup) and your [authtoken](https://dashboard.ngrok.com/get-started/your-authtoken).
+- The [ngrok agent](https://ngrok.com/download) installed.
+- [Node.js](https://nodejs.org/) installed (for the sample app, or use your own app).
+- A HubSpot account (Pro or developer for automation workflows).
 
-To install this sample, run the following commands in a terminal:
+## 1. Start your app
+
+For this tutorial, you can use the [sample Node.js app on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
+
+To install the sample, run the following in a terminal:
 
 ```bash
 git clone https://github.com/ngrok/ngrok-webhook-nodejs-sample.git
@@ -28,130 +36,104 @@ cd ngrok-webhook-nodejs-sample
 npm install
 ```
 
-This will get the project installed locally.
-
-Now you can launch the app by running the following command:
+Then start the app:
 
 ```bash
 npm start
 ```
 
-The app runs by default on port 3000.
+The app runs on port 3000 by default.
 
-You can validate that the app is up and running by visiting http://localhost:3000. The application logs request headers and body in the terminal and responds with a message in the browser.
+You can confirm it's running by visiting `http://localhost:3000`.
+The app logs request headers and body in the terminal and shows a message in the browser.
 
-## 2. Launch ngrok 
+## 2. Expose your app with ngrok
 
 Once your app is running locally, you're ready to put it online securely using ngrok.
 
-1. If you're not an ngrok user yet, just [sign up for ngrok for free](https://ngrok.com/signup).
+- Copy [your ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) from the dashboard.
 
-1. [Download the ngrok agent](https://download.ngrok.com).
+<Tip>
+  The ngrok agent uses your authtoken to authenticate when you start a tunnel.
+</Tip>
 
-1. Go to the [ngrok dashboard](https://dashboard.ngrok.com) and copy your Authtoken. <br />
-   **Tip:** The ngrok agent uses the auth token to log into your account when you start a tunnel.
-1. Start ngrok by running the following command:
+- Start ngrok:
 
-   ```bash
-   ngrok http 3000
-   ```
+  ```bash
+  ngrok http 3000
+  ```
 
-1. ngrok will display a URL where your localhost application is exposed to the internet (copy this URL for use with HubSpot).
-   ![ngrok agent running](../img/twilio/launch_ngrok_tunnel.png)
+- Copy the URL ngrok displays.
+  Your app is now exposed at that URL for use with HubSpot.
 
-## 3. Integrate HubSpot 
+## 3. Configure HubSpot to send webhooks
 
-To trigger a webhook on a HubSpot account you can create an app in the [HubSpot Developers](https://developers.hubspot.com/) site and associate this app to your account or make use of automation workflows.
+HubSpot can send webhook requests to your app when events occur in your account.
+You can use an automation workflow (HubSpot Pro or developer account) or an app in [HubSpot Developers](https://developers.hubspot.com/).
+The following uses an automation workflow:
 
-The following instructions explain how to configure an automation workflow on your HubSpot account.
-**Note:** This automation workflow feature requires a HubSpot Pro or developer account.
-
-1. Sign in to [HubSpot](https://app.hubspot.com/). If you have multiple HubSpot accounts click **open** for a pro account or an App test account.
-
-1. On the dashboard page, click **Automation** on the top menu and then click **Workflows**.
-
-1. On the **Workflows** page, click **Create workflow** and then click **From scratch**.
-
-1. On the workflow page, enter `New Contacts` as the name of the workflow, select **Blank workflow**, and then click **Next**.
-
-1. On the **New Contacts** workflow page, click **Set up triggers** to open the **Enrollment triggers** popup.
-
-1. On the **Enrollment triggers** popup, select **Contact properties** as the **Filter type**, select **Contact owner** from the search list, select **is any of**, select your user from the list below, click **Apply filter**, and then click **Save**.
-
-1. On the **New Contacts** workflow page, click **+** just after the **Contact enrollment** box to open the **Choose an action** popup.
-
-1. On the **Choose an action** popup, click **Send a webhook**.
-
-1. On the **Send a webhook** popup, select **POST** as the **Method**, and in the **Webhook URL** field enter the URL provided by the ngrok agent to expose your application to the internet (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`).
-   ![URL](../img/hubspot/ngrok_url_configuration_hubspot.png)
-
-1. Select **None** as **Authentication type** and make sure **Include all contact properties** is selected.
-
-1. Click **Test action**, search for a **Contact**, and then click **Test**.
-
-   Confirm your localhost app receives the test event notification and logs both headers and body to the terminal.
-
-1. Click **Review and publish** on the top right of the page.
-
-1. On the **Review before you turn on** page, select **No** for the **Do you want to enroll them when this workflow turns on?** question, and then click **Turn on** on the top right of the page.
+- Sign in to [HubSpot](https://app.hubspot.com/) and, if you have multiple accounts, open a Pro or App test account.
+- Click **Automation** and then **Workflows**.
+- Click **Create workflow** and then **From scratch**.
+- Enter a workflow name (for example, `New Contacts`), select **Blank workflow**, and click **Next**.
+- Click **Set up triggers**, select **Contact properties** as **Filter type**, select **Contact owner**, **is any of**, and your user, then click **Apply filter** and **Save**.
+- Click **+** after the **Contact enrollment** box, then **Send a webhook**.
+- In **Send a webhook**, select **POST**, enter your ngrok URL in **Webhook URL** (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`).
+- Set **Authentication type** to **None** and ensure **Include all contact properties** is selected.
+- Click **Test action**, search for a contact, and click **Test**.
+- Confirm your localhost app receives the test event and logs both headers and body in the terminal.
+- Click **Review and publish**, then on the review page select **No** for enrolling when the workflow turns on and click **Turn on**.
 
 ### Run webhooks with HubSpot and ngrok
 
-You can trigger new calls from HubSpot to your application by creating a contact on your HubSpot account.
+To trigger calls from HubSpot to your app, create a contact that matches your workflow trigger:
 
-1. Access your HubSpot account or, if you are on the workflow page, click **Back to Workflows** on the top left of the page.
+- Go to **Contacts** and **Create contact**.
+- Enter **Email**, **First name**, and **Last name**, select the same user as **Contact owner** (as in your workflow trigger), and click **Create**.
 
-1. On the top menu, click **Contacts** and then click **Contacts**.
+<Note>
+  **Contact owner** must match the user you selected in the workflow trigger.
+</Note>
 
-1. On the **Contacts** page, click **Create contact** to open the **Create contact** popup.
-
-1. On the **Create contact** popup, enter an **Email**, **First Name**, and **Last name** for your new contact.
-
-1. Select your user as the **Contact owner**, and then click **Create**.
-   **Tip**: This needs to be the same user you selected during your workflow trigger configuration.
-
-After a few seconds, confirm your localhost app receives the contact-created event notification and logs both headers and body to the terminal.
+Confirm your localhost app receives the contact-created event and logs both headers and body in the terminal.
 
 <InspectingRequests />
 
 <ReplayingRequests />
-## Secure webhook requests 
 
-The ngrok signature webhook verification feature allows ngrok to assert that requests from your HubSpot webhook are the only traffic allowed to make calls to your localhost app.
+## Secure webhook requests
 
-**Note:** This ngrok feature is limited to 500 validations per month on free ngrok accounts. For unlimited, upgrade to Pro or Enterprise.
+ngrok can verify that incoming requests are from your HubSpot webhook so only that traffic reaches your app.
 
-This is a quick step to add extra protection to your application.
+<Note>
+  Webhook verification is limited to 500 validations per month on free accounts.
+  If you need more, you can upgrade to Hobbyist or Pay-as-you-go.
+  See [TPU Pricing](/pricing-limits/traffic-policy-unit-pricing/) for details.
+</Note>
 
-1. On the HubSpot dashboard page, click **Automation** on the top menu and then click **Workflows**.
+To add verification:
 
-1. In the **Workflows** list page, click the **New Contacts** workflow.
+- Create a custom app in your HubSpot developer account and note its ID.
+- In the workflow, click **Actions** for the **Send a webhook** step and **Edit**, then enter the app ID and save.
+- In the developer account, go to **Manage apps**, open your app, **Auth** tab, and copy the **Client secret**.
+- Create a Traffic Policy file named `hubspot_policy.yml`.
+  Replace `{your client secret}` with the value you copied:
 
-1. In the **New Contacts** workflow page, click **Actions** for the **Send a webhook** step and then click **Edit**.
+  ```yaml
+  on_http_request:
+    - actions:
+        - type: verify-webhook
+          config:
+            provider: hubspot
+            secret: "{your client secret}"
+  ```
 
-1. In the **Send a webhook** popup, enter the ID of a custom app you created using your developer account, and then click **Save**.
+- Restart ngrok with the policy file:
 
-1. On your developer account home page, click **Manage apps** and then click your app.
+  ```bash
+  ngrok http 3000 --traffic-policy-file hubspot_policy.yml
+  ```
 
-1. On your app page, click the **Auth** tab, click **Show** in the **Client secret** section, and then click **Copy**.
+- Create a new contact in HubSpot (with the same **Contact owner**) to trigger the webhook.
 
-1. Create a Traffic Policy file named `hubspot_policy.yml`, replacing `{your client secret}` with the value you copied before:
-
-   ```yaml
-   on_http_request:
-     - actions:
-         - type: verify-webhook
-           config:
-             provider: hubspot
-             secret: "{your client secret}"
-   ```
-
-1. Restart your ngrok agent by running the command:
-
-   ```bash
-   ngrok http 3000 --traffic-policy-file hubspot_policy.yml
-   ```
-
-1. Access your [HubSpot](https://hubspot.com) account and create a new contact (don't forget to Select your user as the **Contact owner**).
-
-Verify that your local application receives the request and logs information to the terminal.
+Your app should receive the request and log it in the terminal.

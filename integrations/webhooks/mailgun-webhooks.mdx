@@ -3,24 +3,32 @@ title: Mailgun Webhooks
 sidebarTitle: Mailgun
 description: Develop and test Mailgun webhooks from localhost.
 ---
+
 import InspectingRequests from "/snippets/integrations/_inspecting-requests.mdx";
 import ReplayingRequests from "/snippets/integrations/_replaying-requests.mdx";
 
-This guide covers how to use ngrok to integrate your localhost app with Mailgun by using Webhooks.
-Mailgun webhooks can be used to notify an external application whenever specific events occur in your Mailgun account.
+This guide walks you through using ngrok to receive Mailgun webhooks on your localhost app.
 
 By integrating ngrok with Mailgun, you can:
 
-- **Develop and test Mailgun webhooks locally**, eliminating the time in deploying your development code to a public environment and setting it up in HTTPS.
-- **Inspect and troubleshoot requests from Mailgun** in real-time via the inspection UI and API.
-- **Modify and Replay Mailgun Webhook requests** with a single click and without spending time reproducing events manually in your Mailgun account.
-- **Secure your app with Mailgun validation provided by ngrok**. Invalid requests are blocked by ngrok before reaching your app.
+- Develop and test Mailgun webhooks locally without deploying to a public environment or setting up HTTPS.
+- Inspect and troubleshoot requests from Mailgun in real time via the inspection UI and API.
+- Modify and replay Mailgun webhook requests with a single click instead of reproducing events manually in your Mailgun account.
+- Secure your app with Mailgun webhook validation provided by ngrok.
+  Invalid requests are blocked by ngrok before reaching your app.
 
-## 1. Start your app 
+## What you'll need
 
-For this tutorial, you can use the [sample Node.js app available on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
+- An [ngrok account](https://ngrok.com/signup) and your [authtoken](https://dashboard.ngrok.com/get-started/your-authtoken).
+- The [ngrok agent](https://ngrok.com/download) installed.
+- [Node.js](https://nodejs.org/) installed (for the sample app, or use your own app).
+- A Mailgun account.
 
-To install this sample, run the following commands in a terminal:
+## 1. Start your app
+
+For this tutorial, you can use the [sample Node.js app on GitHub](https://github.com/ngrok/ngrok-webhook-nodejs-sample).
+
+To install the sample, run the following in a terminal:
 
 ```bash
 git clone https://github.com/ngrok/ngrok-webhook-nodejs-sample.git
@@ -28,120 +36,106 @@ cd ngrok-webhook-nodejs-sample
 npm install
 ```
 
-This will get the project installed locally.
-
-Now you can launch the app by running the following command:
+Then start the app:
 
 ```bash
 npm start
 ```
 
-The app runs by default on port 3000.
+The app runs on port 3000 by default.
 
-You can validate that the app is up and running by visiting http://localhost:3000. The application logs request headers and body in the terminal and responds with a message in the browser.
+You can confirm it's running by visiting `http://localhost:3000`.
+The app logs request headers and body in the terminal and shows a message in the browser.
 
-## 2. Launch ngrok 
+## 2. Expose your app with ngrok
 
 Once your app is running locally, you're ready to put it online securely using ngrok.
 
-1. If you're not an ngrok user yet, just [sign up for ngrok for free](https://ngrok.com/signup).
+- Copy [your ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) from the dashboard.
 
-1. [Download the ngrok agent](https://download.ngrok.com).
+<Tip>
+  The ngrok agent uses your authtoken to authenticate when you start a tunnel.
+</Tip>
 
-1. Go to the [ngrok dashboard](https://dashboard.ngrok.com) and copy your Authtoken. <br />
-   **Tip:** The ngrok agent uses the auth token to log into your account when you start a tunnel.
-1. Start ngrok by running the following command:
+- Start ngrok:
 
-   ```bash
-   ngrok http 3000
-   ```
+  ```bash
+  ngrok http 3000
+  ```
 
-1. ngrok will display a URL where your localhost application is exposed to the internet (copy this URL for use with Mailgun).
-   ![ngrok agent running](../img/twilio/launch_ngrok_tunnel.png)
+- Copy the URL ngrok displays.
+  Your app is now exposed at that URL for use with Mailgun.
 
-## 3. Integrate Mailgun 
+## 3. Configure Mailgun to send webhooks
 
-To register a webhook on your Mailgun account follow the instructions below:
+Mailgun can send webhook requests to your app when events occur in your account.
+To register for those events:
 
-1. Access [Mailgun](https://app.mailgun.com/) and sign in using your Mailgun account.
+- Sign in to [Mailgun](https://app.mailgun.com/).
+- Click **Sending**, **Webhooks**, and then **Add webhook**.
+- On the **New webhook** popup, select **Delivered Messages** in **Event type**, enter your ngrok URL in **URL** (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`).
+- Click **Create webhook**.
 
-1. On the **Dashboard** page, click **Sending** in the left menu, click **Webhooks** and then click **Add webhook**.
-
-1. On the **New webhook** popup, select **Delivered Messages** in the **Event type** field, and enter the URL provided by the ngrok agent to expose your application to the internet in the **URL** field (for example, `https://1a2b-3c4d-5e6f-7g8h-9i0j.ngrok.app`).
-   ![Webhook URL](../img/mailgun/ngrok_url_configuration_mailgun.png)
-
-1. Click **Create webhook**.
-
-To test the webhook follow the instructions below:
-
-1. On the **Webhooks** page, select **Delivered Messages** in the **Event type** combobox, enter the ngrok URL in the **URL to test** field, and then click **Test webhook**.
-
-   Confirm your localhost app receives the event notification and logs both headers and body in the terminal. Also, confirm a **Response** message appears on the **Webhooks** page.
+To test: on the **Webhooks** page, select **Delivered Messages**, enter your ngrok URL in **URL to test**, and click **Test webhook**.
+Confirm your localhost app receives the event and logs both headers and body in the terminal, and that a **Response** appears on the **Webhooks** page.
 
 ### Run webhooks with Mailgun and ngrok
 
-Mailgun sends different request body contents depending on the event that is being triggered.
-You can trigger new calls from Mailgun to your application by following the instructions below.
+Mailgun sends different request body contents depending on the event.
+To trigger new calls from Mailgun to your app:
 
-1. Access the [Mailgun Dashboard](https://app.mailgun.com/), click **Sending** in the left menu, and then click **Overview**.
+- In the [Mailgun Dashboard](https://app.mailgun.com/), go to **Sending** and **Overview**.
+- In **Authorized Recipients**, enter a valid email and click **Save Recipient**.
+- Have the recipient confirm by clicking the link in the email from Mailgun.
+- Send an email (for example, via the Mailgun API). Replace placeholders with values from your account (**API base URL** and **API Key** from **Overview**, your domain from **Domains**, and the authorized recipient email):
 
-1. Enter a valid email address in the **Email address** field in the **Authorized Recipients** section, and then click **Save Recipient**.
+  ```bash
+  curl --location --request POST 'API_BASE_URL/messages' \
+  --header 'Authorization: Basic api:API_KEY' \
+  --form 'from="mailgun@YOUR_DOMAIN"' \
+  --form 'to="AUTHORIZED_RECIPIENT"' \
+  --form 'subject="Hello from Mailgun"' \
+  --form 'text="Testing some Mailgun email!"'
+  ```
 
-Verify the recipient receives an email from Mailgun asking to agree to receive emails from your Mailgun account, click the **I Agree** link in the body of the email and then click **Yes**.
-
-1. In the [Mailgun Dashboard](https://app.mailgun.com/), click **Select** in the **API** tile and choose one of the options that appears on the screen to send emails. For example, open a terminal window and run the following command using curl:
-
-   ```bash
-   curl --location --request POST 'API_BASE_URL/messages' \
-   --header 'Authorization: Basic api:API_KEY' \
-   --form 'from="mailgun@YOUR_DOMAIN"' \
-   --form 'to="AUTHORIZED_RECIPIENT"' \
-   --form 'subject="Hello from Mailgun"' \
-   --form 'text="Testing some Mailgun email!"'
-   ```
-
-   **Note**: Replace the following with values from your Mailgun account:
-   - API_BASE_URL: **API base URL** value that appears on the **Overview** page.
-   - API_KEY: **API Key** value that appears on the **Overview** page.
-   - YOUR_DOMAIN: Find your domain by clicking **Domains** in the left menu.
-   - AUTHORIZED_RECIPIENT: the **Email address** you registered as an authorized recipient.
-
-   Confirm your localhost app receives an event notification and logs both headers and body in the terminal.
+Confirm your localhost app receives the event and logs both headers and body in the terminal.
 
 <InspectingRequests />
 
 <ReplayingRequests />
-## Secure webhook requests 
 
-The ngrok signature webhook verification feature allows ngrok to assert that requests from your Mailgun webhook are the only traffic allowed to make calls to your localhost app.
+## Secure webhook requests
 
-**Note:** This ngrok feature is limited to 500 validations per month on free ngrok accounts. For unlimited, upgrade to Pro or Enterprise.
+ngrok can verify that incoming requests are from your Mailgun webhook so only that traffic reaches your app.
 
-This is a quick step to add extra protection to your application.
+<Note>
+  Webhook verification is limited to 500 validations per month on free accounts.
+  If you need more, you can upgrade to Hobbyist or Pay-as-you-go.
+  See [TPU Pricing](/pricing-limits/traffic-policy-unit-pricing/) for details.
+</Note>
 
-1. Access [Mailgun](https://app.mailgun.com/) and sign in using your Mailgun account.
+To add verification:
 
-1. On the **Dashboard** page, click **Sending** in the left menu and then click **Webhooks**.
+- In [Mailgun](https://app.mailgun.com/), go to **Sending** and **Webhooks**.
+- Click the eye icon next to **HTTP webhook signing key** and copy the value.
+- Create a Traffic Policy file named `mailgun_policy.yml`.
+  Replace `{webhook signing key}` with the value you copied:
 
-1. On the **Webhooks** page, click the eye icon near the **HTTP webhook signing key** text and copy the value that appears.
+  ```yaml
+  on_http_request:
+    - actions:
+        - type: verify-webhook
+          config:
+            provider: mailgun
+            secret: "{webhook signing key}"
+  ```
 
-1. Create a Traffic Policy file named `mailgun_policy.yml`, replacing `{webhook signing key}` with the value you have copied before:
+- Restart ngrok with the policy file:
 
-   ```yaml
-   on_http_request:
-     - actions:
-         - type: verify-webhook
-           config:
-             provider: mailgun
-             secret: "{webhook signing key}"
-   ```
+  ```bash
+  ngrok http 3000 --traffic-policy-file mailgun_policy.yml
+  ```
 
-1. Restart your ngrok agent by running the command:
+- Send a new email to an authorized recipient to trigger the webhook.
 
-   ```bash
-   ngrok http 3000 --traffic-policy-file mailgun_policy.yml
-   ```
-
-1. Access [Mailgun](https://app.mailgun.com/) and send a new email to an authorized recipient.
-
-Verify that your local application receives the request and logs information to the terminal.
+Your app should receive the request and log it in the terminal.
