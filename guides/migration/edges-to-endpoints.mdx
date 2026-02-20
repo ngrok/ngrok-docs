@@ -16,10 +16,7 @@ This guide walks you through manually migrating ngrok **Edge configurations** (H
 
 ## What you'll be migrating
 
-| Edge Type | Replaced By                     | Policy Phases Used                    |
-| --------- | ------------------------------- | ------------------------------------- |
-| HTTPS     | Cloud Endpoint + Agent Endpoint | `on_http_request`, `on_http_response` |
-| TLS/TCP   | Cloud Endpoint + Agent Endpoint | `on_tcp_connect`                      |
+| Edge Type | Replaced By | Policy Phases Used | | --------- | ------------------------------- | ------------------------------------- | | HTTPS | Cloud Endpoint + Agent Endpoint | `on_http_request`, `on_http_response` | | TLS/TCP | Cloud Endpoint + Agent Endpoint | `on_tcp_connect` |
 
 ## 1. Set up environment
 
@@ -62,11 +59,7 @@ Repeat this process for:
 
 Each edge has one or more `hostports`. Use those to define a **Cloud Endpoint `url`**:
 
-| Edge Type | URL Format                   |
-| --------- | ---------------------------- |
-| HTTPS     | `https://yourdomain.com`     |
-| TLS       | `tls://yourdomain.com:443`   |
-| TCP       | `tcp://yourdomain.com:12345` |
+| Edge Type | URL Format | | --------- | ---------------------------- | | HTTPS | `https://yourdomain.com` | | TLS | `tls://yourdomain.com:443` | | TCP | `tcp://yourdomain.com:12345` |
 
 Note, you’ll have to create a Cloud Endpoint for each `hostport` attached to an edge if you want multiple `hostports` to service the same traffic flow.
 
@@ -90,10 +83,7 @@ HTTPS edges have routes, and each route needs to be converted to a CEL expressio
 
 Here are some example CEL expressions for routes based on the `match_type`:
 
-| Match Type    | CEL Expression                    |
-| ------------- | --------------------------------- |
-| `exact_path`  | `req.url.path == "/foo"`          |
-| `path_prefix` | `req.url.path.startsWith("/api")` |
+| Match Type | CEL Expression | | ------------- | --------------------------------- | | `exact_path` | `req.url.path == "/foo"` | | `path_prefix` | `req.url.path.startsWith("/api")` |
 
 Create these for later use in each `expressions:` block in your policy rules.
 
@@ -101,18 +91,7 @@ Create these for later use in each `expressions:` block in your policy rules.
 
 Each module on the edge or its routes maps to one or more policy actions:
 
-| Module                    | Actions                                                  |
-| ------------------------- | -------------------------------------------------------- |
-| `oauth`                   | `oauth` + `set-vars` + `custom-response` for restriction |
-| `oidc`                    | `oidc` with optional auth_id + session durations         |
-| `ip_restrictions`         | `restrict-ips`                                           |
-| `request_headers`         | `add-headers`, `remove-headers`                          |
-| `response_headers`        | `add-headers`, `remove-headers`                          |
-| `circuit_breaker`         | `circuit-breaker`                                        |
-| `webhook_verification`    | `verify-webhook`                                         |
-| `compression`             | `compress-response`                                      |
-| `user_agent_filter`       | `set-vars` + `deny` (based on user-agent match)          |
-| `websocket_tcp_converter` | ⚠️ Not supported                                         |
+| Module | Actions | | ------------------------- | -------------------------------------------------------- | | `oauth` | `oauth` + `set-vars` + `custom-response` for restriction | | `oidc` | `oidc` with optional auth_id + session durations | | `ip_restrictions` | `restrict-ips` | | `request_headers` | `add-headers`, `remove-headers` | | `response_headers` | `add-headers`, `remove-headers` | | `circuit_breaker` | `circuit-breaker` | | `webhook_verification` | `verify-webhook` | | `compression` | `compress-response` | | `user_agent_filter` | `set-vars` + `deny` (based on user-agent match) | | `websocket_tcp_converter` | ⚠️ Not supported |
 
 You’ll want to translate each Module configuration to Action Configuration:
 
@@ -332,11 +311,4 @@ Repeat for all HTTPS, TLS, and TCP edges.
 
 ## ✅ Final checklist
 
-| Step                                                          | Done? |
-| ------------------------------------------------------------- | ----- |
-| Listed all edges and their `hostports`                        |       |
-| Converted modules to policy actions                           |       |
-| Converted backends to `forward-internal` or `custom-response` |       |
-| Created necessary internal endpoints                          |       |
-| Created Cloud Endpoints                                       |       |
-| Deleted the old edge                                          |       |
+| Step | Done? | | ------------------------------------------------------------- | ----- | | Listed all edges and their `hostports` | | | Converted modules to policy actions | | | Converted backends to `forward-internal` or `custom-response` | | | Created necessary internal endpoints | | | Created Cloud Endpoints | | | Deleted the old edge | |

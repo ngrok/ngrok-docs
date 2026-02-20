@@ -7,8 +7,8 @@ noindex: true
 
 import CloudEndpointQS from "/snippets/universal-gateway/shared/cloud-endpoints-qs.mdx";
 
-TCP endpoints enable you to deliver any network service with a TCP-based
-protocol. They are commonly used to create connectivity for:
+TCP endpoints enable you to deliver any network service with a TCP-based protocol.
+They are commonly used to create connectivity for:
 
 - Remote access protocols like SSH, VNC and RDP
 - Databases like MySQL, Postgres, MSSQL and SQLite
@@ -18,8 +18,7 @@ protocol. They are commonly used to create connectivity for:
 If you are accepting TLS traffic, you may prefer to create a [TLS Endpoint](/universal-gateway/tls/).
 
 <Info title="Free Plan Usage">
-  TCP endpoints are only available on a free plan after [adding a valid payment
-  method](https://dashboard.ngrok.com/settings#id-verification) to your account.
+  TCP endpoints are only available on a free plan after [adding a valid payment method](https://dashboard.ngrok.com/settings#id-verification) to your account.
 </Info>
 
 ## Quickstart
@@ -39,8 +38,7 @@ ngrok api endpoints create \
 ```
 
 <Note>
-  You can reserve a TCP Address [in the ngrok
-  dashboard](https://dashboard.ngrok.com/tcp-addresses).
+  You can reserve a TCP Address [in the ngrok dashboard](https://dashboard.ngrok.com/tcp-addresses).
 </Note>
 
 ```yaml title="traffic-policy.yml" mode=traffic-policy
@@ -56,9 +54,8 @@ on_http_request:
 
 ## URLs
 
-URLs are validated differently depending on their
-[binding](/universal-gateway/bindings). Consult the
-following documentation for details on valid URLs for TCP endpoints:
+URLs are validated differently depending on their [binding](/universal-gateway/bindings).
+Consult the following documentation for details on valid URLs for TCP endpoints:
 
 - [Public Endpoint URLs](/universal-gateway/public-endpoints/#tcp)
 - [Internal Endpoint URLs](/universal-gateway/internal-endpoints/#urls)
@@ -68,31 +65,24 @@ There is no standard scheme for TCP URLs so ngrok renders them as `tcp://`.
 
 ### Static URLs
 
-If you would like a public TCP endpoint to have a static URL, you must first
-create a [TCP Address](/universal-gateway/tcp-addresses). When you create a TCP
-address, a random hostname and port will be assigned to you, for example,
-`1.tcp.ngrok.io:12345`.
+If you would like a public TCP endpoint to have a static URL, you must first create a [TCP Address](/universal-gateway/tcp-addresses).
+When you create a TCP address, a random hostname and port will be assigned to you, for example, `1.tcp.ngrok.io:12345`.
 
 A TCP address is only needed to make a public TCP endpoint have a static URL.
-They are not needed for TCP endpoints on other bindings, like `internal` or
-`kubernetes`.
+They are not needed for TCP endpoints on other bindings, like `internal` or `kubernetes`.
 
-After you have created a TCP Address, specify the address (for example,
-`1.tcp.eu.ngrok.io:12345`) in the URL when you create the endpoint. See [the quickstart to learn how](#quickstart).
+After you have created a TCP Address, specify the address (for example, `1.tcp.eu.ngrok.io:12345`) in the URL when you create the endpoint.
+See [the quickstart to learn how](#quickstart).
 
 ### Custom domains
 
-Public TCP endpoints are assigned randomly on an ngrok-controlled hostname with
-a randomly assigned port. You may not choose the hostname and you may not
-select the port.
+Public TCP endpoints are assigned randomly on an ngrok-controlled hostname with a randomly assigned port.
+You may not choose the hostname and you may not select the port.
 
-You may, however, simulate a customized hostname by creating a CNAME record to
-the hostname of your assigned TCP address. If you do so, be aware that all
-ports on that hostname, even those provisioned to other accounts will then be
-available on your domain.
+You may, however, simulate a customized hostname by creating a CNAME record to the hostname of your assigned TCP address.
+If you do so, be aware that all ports on that hostname, even those provisioned to other accounts will then be available on your domain.
 
-For example if your TCP address is `5.tcp.ngrok.io:12345`, you could create the
-following CNAME record:
+For example if your TCP address is `5.tcp.ngrok.io:12345`, you could create the following CNAME record:
 
 ```
 CNAME tcp.mydomain.com -> 5.tcp.ngrok.io
@@ -106,15 +96,13 @@ telnet tcp.mydomain.com 12345
 
 ## Traffic Policy
 
-Attach [Traffic Policy](/traffic-policy/) to endpoints to route, authenticate
-and transform the traffic through the endpoint.
+Attach [Traffic Policy](/traffic-policy/) to endpoints to route, authenticate and transform the traffic through the endpoint.
 
 ### Authentication
 
-When you create public TCP endpoints, you often want to secure them with
-authentication. You can secure your TCP endpoints with the following [Traffic
-Policy](/traffic-policy/) actions. There is a limited set of actions available
-to authenticate TCP traffic because the TCP protocol is low-level.
+When you create public TCP endpoints, you often want to secure them with authentication.
+You can secure your TCP endpoints with the following [Traffic Policy](/traffic-policy/) actions.
+There is a limited set of actions available to authenticate TCP traffic because the TCP protocol is low-level.
 
 - [IP Restriction](/traffic-policy/actions/restrict-ips/)
 - [Mutual TLS](/traffic-policy/actions/terminate-tls/
@@ -127,48 +115,34 @@ to authenticate TCP traffic because the TCP protocol is low-level.
 
 ### Log exports
 
-You can export logs of traffic to TCP endpoints with [ngrok's events
-system](/obs/events/). The following events are published for log exporting:
+You can export logs of traffic to TCP endpoints with [ngrok's events system](/obs/events/).
+The following events are published for log exporting:
 
-| Log                                                                      | When                                                         |
-| ------------------------------------------------------------------------ | ------------------------------------------------------------ |
-| [tcp_connection_closed.v0](/obs/events/reference/#tcp-connection-closed) | Published when a TCP connection to a TCP endpoint completes. |
+| Log | When | | ------------------------------------------------------------------------ | ------------------------------------------------------------ | | [tcp_connection_closed.v0](/obs/events/reference/#tcp-connection-closed) | Published when a TCP connection to a TCP endpoint completes. |
 
 ## Limits & timeouts
 
-[Contact Support](mailto:support@ngrok.com) if you need to configure limits and timeouts on
-connections to TCP endpoints.
+[Contact Support](mailto:support@ngrok.com) if you need to configure limits and timeouts on connections to TCP endpoints.
 
-| Limit     | Name                | Notes                                                        |
-| --------- | ------------------- | ------------------------------------------------------------ |
-| 5 minutes | Client Idle Timeout | Time since data was last transmitted by the upstream service |
-| 5 minutes | Server Idle Timeout | Time since data was last transmitted by the upstream service |
-| No limit  | Data transmitted    | Data transmitted by the client or upstream service           |
+| Limit | Name | Notes | | --------- | ------------------- | ------------------------------------------------------------ | | 5 minutes | Client Idle Timeout | Time since data was last transmitted by the upstream service | | 5 minutes | Server Idle Timeout | Time since data was last transmitted by the upstream service | | No limit | Data transmitted | Data transmitted by the client or upstream service |
 
 ## Errors
 
-If an error is encountered while handling connections to a TCP endpoint for any
-reason (for example, Traffic Policy action error, internal server error), the
-connection will be closed. Because of the low-level nature of the TCP protocol,
-there is no mechanism used to transmit information about what error code was
-encountered.
+If an error is encountered while handling connections to a TCP endpoint for any reason (for example, Traffic Policy action error, internal server error), the connection will be closed.
+Because of the low-level nature of the TCP protocol, there is no mechanism used to transmit information about what error code was encountered.
 
-Use the [observability](#observability) features to understand connection
-handling errors.
+Use the [observability](#observability) features to understand connection handling errors.
 
 ## API
 
-TCP Endpoints can be created programmatically. Consult the documentation on
-[Endpoint APIs](/api-reference/endpoints/list.
+TCP Endpoints can be created programmatically.
+Consult the documentation on [Endpoint APIs](/api-reference/endpoints/list.
 
 ## Pricing
 
-TCP endpoints are available on all plans. Consult the [Endpoints
-Pricing](/universal-gateway/endpoints/#pricing) documentation for
-billing details.
+TCP endpoints are available on all plans.
+Consult the [Endpoints Pricing](/universal-gateway/endpoints/#pricing) documentation for billing details.
 
-TCP endpoints are only available on a free plan after [adding a valid payment
-method](https://dashboard.ngrok.com/settings#id-verification) to your account.
+TCP endpoints are only available on a free plan after [adding a valid payment method](https://dashboard.ngrok.com/settings#id-verification) to your account.
 
-See [TCP Addresses pricing](/universal-gateway/tcp-addresses/#pricing) for
-details on pricing for fixed TCP Addresses.
+See [TCP Addresses pricing](/universal-gateway/tcp-addresses/#pricing) for details on pricing for fixed TCP Addresses.

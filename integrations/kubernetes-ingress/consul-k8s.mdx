@@ -74,9 +74,8 @@ connectInject:
   ```
 
 <Tip>
-    Depending on your computer, this can take some time for the pods to become
-    healthy. You can watch the status of the pods with `kubectl get pods
-    --namespace consul -w`.
+    Depending on your computer, this can take some time for the pods to become healthy.
+    You can watch the status of the pods with `kubectl get pods --namespace consul -w`.
 
 </Tip>
 
@@ -93,8 +92,7 @@ connectInject:
 You now have a Kubernetes cluster with a Consul service mesh installed.
 
 <Note>
-  These steps are based on [Consul Service Discovery and Service Mesh on
-  Minikube](https://developer.hashicorp.com/consul/tutorials/kubernetes/kubernetes-minikube).
+  These steps are based on [Consul Service Discovery and Service Mesh on Minikube](https://developer.hashicorp.com/consul/tutorials/kubernetes/kubernetes-minikube).
 </Note>
 
 ## Configure the ngrok Kubernetes Operator
@@ -217,19 +215,11 @@ For now, keep everything in the same namespace.
 ````
 
 ```yaml
-apiVersion: consul.hashicorp.com/v1alpha1
-kind: ServiceIntentions
-metadata:
-  name: ngrok-consul-api
-  namespace: consul
-spec:
-  sources:
+apiVersion: consul.hashicorp.com/v1alpha1 kind: ServiceIntentions metadata: name: ngrok-consul-api namespace: consul spec: sources:
     - name: frontend
       action: allow
     - name: ngrok-operator
-      action: allow
-  destination:
-    name: public-api
+      action: allow destination: name: public-api
 ````
 
 ## Configure Public Ingress for the sample application
@@ -238,31 +228,13 @@ Now that the ngrok Kubernetes Operator can communicate with the `frontend` servi
 Create ingress objects to route traffic to the `frontend` service and the `public-api` service.
 
 ```yaml
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: ingress-consul
-  namespace: consul
-spec:
-  ingressClassName: ngrok
-  rules:
+apiVersion: networking.k8s.io/v1 kind: Ingress metadata: name: ingress-consul namespace: consul spec: ingressClassName: ngrok rules:
     - host: <NGROK_DOMAIN>
-      http:
-        paths:
+      http: paths:
           - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: frontend
-                port:
-                  number: 3000
+            pathType: Prefix backend: service: name: frontend port: number: 3000
           - path: /api
-            pathType: Prefix
-            backend:
-              service:
-                name: public-api
-                port:
-                  number: 8080
+            pathType: Prefix backend: service: name: public-api port: number: 8080
 ```
 
 <Tip>
@@ -290,46 +262,17 @@ You can also apply the policy to just a specific backend or as the default backe
 - Edit your existing ingress configuration with the following—note the new `annotations` field and the `NgrokTrafficPolicy` CR.
 
   ```yaml
-   apiVersion: networking.k8s.io/v1
-   kind: Ingress
-   metadata:
-     name: ingress-consul
-     namespace: consul
-     annotations:
-      k8s.ngrok.com/traffic-policy: oauth
-   spec:
-     ingressClassName: ngrok
-     rules:
+   apiVersion: networking.k8s.io/v1 kind: Ingress metadata: name: ingress-consul namespace: consul annotations: k8s.ngrok.com/traffic-policy: oauth spec: ingressClassName: ngrok rules:
        - host: <NGROK_DOMAIN>
-         http:
-           paths:
+         http: paths:
              - path: /
-               pathType: Prefix
-               backend:
-                 service:
-                   name: frontend
-                   port:
-                     number: 3000
+               pathType: Prefix backend: service: name: frontend port: number: 3000
              - path: /api
-               pathType: Prefix
-               backend:
-                 service:
-                  name: public-api
-                   port:
-                     number: 8080
-  ---
+               pathType: Prefix backend: service: name: public-api port: number: 8080 ---
   # Traffic Policy configuration for OAuth
-  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-  kind: NgrokTrafficPolicy
-  metadata:
-    name: oauth
-    namespace: default
-  spec:
-    policy:
-       on_http_request:
+  apiVersion: ngrok.k8s.ngrok.com/v1alpha1 kind: NgrokTrafficPolicy metadata: name: oauth namespace: default spec: policy: on_http_request:
          - type: oauth
-           config:
-             provider: google
+           config: provider: google
   ```
 
 - Re-apply your configuration.
@@ -342,24 +285,14 @@ You can also apply the policy to just a specific backend or as the default backe
 
   ```yaml
   # Traffic Policy configuration for OAuth
-  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-  kind: NgrokTrafficPolicy
-  metadata:
-    name: oauth
-    namespace: default
-  spec:
-    policy:
-      on_http_request:
+  apiVersion: ngrok.k8s.ngrok.com/v1alpha1 kind: NgrokTrafficPolicy metadata: name: oauth namespace: default spec: policy: on_http_request:
         - type: oauth
-          config:
-            provider: google
+          config: provider: google
         - expressions:
             - "!actions.ngrok.oauth.identity.email.endsWith('@example.com')"
           actions:
             - type: custom-response
-              config:
-                body: Hey, no auth for you ${actions.ngrok.oauth.identity.name}!
-                status_code: 400
+              config: body: Hey, no auth for you ${actions.ngrok.oauth.identity.name}! status_code: 400
   ```
 
 - Check out your deployed HashiCups app once again.
