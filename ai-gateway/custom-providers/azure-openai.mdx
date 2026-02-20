@@ -4,6 +4,7 @@ sidebarTitle: Azure OpenAI
 description: Route AI requests to Azure OpenAI Service through the ngrok AI Gateway.
 ---
 
+
 [Azure OpenAI Service](https://azure.microsoft.com/en-us/products/ai-services/openai-service) provides access to OpenAI models through Microsoft's Azure cloud. This guide shows you how to connect Azure OpenAI to the ngrok AI Gateway.
 
 ## Prerequisites
@@ -14,7 +15,8 @@ description: Route AI requests to Azure OpenAI Service through the ngrok AI Gate
 
 ## Overview
 
-Azure OpenAI uses a different URL structure than standard OpenAI. You configure the full deployment URL as the `base_url` and the gateway routes requests to it.
+Azure OpenAI uses a different URL structure than standard OpenAI.
+You configure the full deployment URL as the `base_url` and the gateway routes requests to it.
 
 ```mermaid
 graph LR
@@ -173,11 +175,7 @@ on_http_request:
             region: "westus"
 ```
 
-<Note>
-  Without a model selection strategy, requesting `model: "gpt-4o"` returns both regions as candidates (in config order), enabling failover.
-  Requesting `model: "azure-eastus:gpt-4o"` pins to that region only.
-  For explicit control over failover order, clients can use `models: ["azure-eastus:gpt-4o", "azure-westus:gpt-4o"]`.
-</Note>
+<Note>Without a model selection strategy, requesting `model: "gpt-4o"` returns both regions as candidates (in config order), enabling failover. Requesting `model: "azure-eastus:gpt-4o"` pins to that region only. For explicit control over failover order, clients can use `models: ["azure-eastus:gpt-4o", "azure-westus:gpt-4o"]`.</Note>
 
 ### Failover to OpenAI
 
@@ -207,12 +205,7 @@ on_http_request:
           - "ai.models.filter(m, m.provider_id == 'openai')"
 ```
 
-<Note>
-  The first strategy that returns models wins.
-  If Azure has matching models, only those are tried.
-  OpenAI is only used if no Azure models match.
-  For cross-provider failover when requests fail, have clients specify multiple models: `models: ["azure-openai:gpt-4o", "openai:gpt-4o"]`.
-</Note>
+<Note>The first strategy that returns models wins. If Azure has matching models, only those are tried. OpenAI is only used if no Azure models match. For cross-provider failover when requests fail, have clients specify multiple models: `models: ["azure-openai:gpt-4o", "openai:gpt-4o"]`.</Note>
 
 ### Embeddings
 

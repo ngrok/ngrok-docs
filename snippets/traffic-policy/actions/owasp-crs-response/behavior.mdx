@@ -1,6 +1,7 @@
 ## Behavior
 
-This action evaluates rules for response headers and body (when `process_body` is enabled), and each matching rule adds to the overall score of a response. If the score exceeds the set score threshold, the action will block the response.
+This action evaluates rules for response headers and body (when `process_body` is enabled), and each matching rule adds to the overall score of a response.
+If the score exceeds the set score threshold, the action will block the response.
 
 The tallying process is called Anomaly Scoring, and is detailed on [the CRS website.](https://coreruleset.org/docs/2-how-crs-works/2-1-anomaly_scoring/)
 
@@ -16,22 +17,27 @@ Included in these rules is an outbound anomaly score threshold of 4 and a [paran
 
 ### Managing Fallback Behavior (`on_error`)
 
-If `on_error` is set to `halt` (default) and the action encounters an error when forwarding traffic, the Traffic Policy chain will halt and no further actions will be executed. For example, if you have a `log` action after the `owasp-crs-response` action, the `log` action will not be run and the error will be returned.
+If `on_error` is set to `halt` (default) and the action encounters an error when forwarding traffic, the Traffic Policy chain will halt and no further actions will be executed.
+For example, if you have a `log` action after the `owasp-crs-response` action, the `log` action will not be run and the error will be returned.
 
 However, if `on_error` is set to `continue`, actions that appear after the `owasp-crs-response` action will still be executed even if the `owasp-crs-response` action encounters an error.
 
 ### Body Processing
 
-When `process_body` is enabled, ngrok evaluates rules against the first 4kb of the body. If the body is larger than 4kb, we ignore the portion after the first 4kb.
+When `process_body` is enabled, ngrok evaluates rules against the first 4kb of the body.
+If the body is larger than 4kb, we ignore the portion after the first 4kb.
 
 ### Rule Exclusion
 
-When `exclude_rule_ids` is configured, ngrok skips evaluation of the specified rule IDs. This allows you to disable specific OWASP CRS rules that may be causing false positives in your environment.
+When `exclude_rule_ids` is configured, ngrok skips evaluation of the specified rule IDs.
+This allows you to disable specific OWASP CRS rules that may be causing false positives in your environment.
 
 ### Outbound Anomaly Score Threshold Exceeded
 
-If the anomaly score accumulated from matching rules exceeds the threshold, ngrok blocks the request with a `HTTP 403` response. The response from your upstream does not make it to the client.
+If the anomaly score accumulated from matching rules exceeds the threshold, ngrok blocks the request with a `HTTP 403` response.
+The response from your upstream does not make it to the client.
 
 ### Failure to process the body successfully
 
-If ngrok is unable to read the response body successfully, ngrok blocks the response with a `HTTP 500` response. The response from your upstream does not make it to the client.
+If ngrok is unable to read the response body successfully, ngrok blocks the response with a `HTTP 500` response.
+The response from your upstream does not make it to the client.

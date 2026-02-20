@@ -4,18 +4,20 @@ sidebarTitle: HTTP Request
 description: The HTTP Request action performs an outbound HTTP request to a target URL.
 ---
 
-import ActionVariablesDescription from "/snippets/traffic-policy/common/action-variables-description.mdx"; import NonTerminatingExplanation from "/snippets/traffic-policy/common/non-terminating-explanation.mdx";
 
-import { YouTubeEmbed } from "/snippets/YouTubeEmbed.jsx"; import { ConfigField } from "/snippets/ConfigTable.jsx"; import { ConfigChildren } from "/snippets/ConfigChildren.jsx";
+import ActionVariablesDescription from "/snippets/traffic-policy/common/action-variables-description.mdx";
+import NonTerminatingExplanation from "/snippets/traffic-policy/common/non-terminating-explanation.mdx";
 
-The HTTP Request Traffic Policy action performs an outbound HTTP request to a target URL. You can use it to integrate with external services through internal endpoints or—if enabled—with external APIs.
+import { YouTubeEmbed } from "/snippets/YouTubeEmbed.jsx";
+import { ConfigField } from "/snippets/ConfigTable.jsx";
+import { ConfigChildren } from "/snippets/ConfigChildren.jsx";
 
-<Note>
-  External requests are supported but disabled by default. [Contact ngrok support](https://ngrok.com/support) to enable external access.
-</Note>
+The HTTP Request Traffic Policy action performs an outbound HTTP request to a target URL.
+You can use it to integrate with external services through internal endpoints or—if enabled—with external APIs.
 
-<YouTubeEmbed
-  videoId="1VYtIOJsgic" title="Learn about ngrok's http-request action" />
+<Note>External requests are supported but disabled by default. [Contact ngrok support](https://ngrok.com/support) to enable external access.</Note>
+
+<YouTubeEmbed videoId="1VYtIOJsgic" title="Learn about ngrok's http-request action" />
 
 ## Configuration reference
 
@@ -54,7 +56,9 @@ The [Traffic Policy](/traffic-policy/) configuration reference for this action.
   value: "parameter_value"
 ```
 
-Maximum: `32` entries. Key max length: `128` chars. Value max length: `8192` chars.
+Maximum: `32` entries.
+Key max length: `128` chars.
+Value max length: `8192` chars.
 
 </ConfigField>
 <ConfigField title="headers" type="object" cel={true}>
@@ -69,31 +73,25 @@ Maximum: `10` entries.
 <ConfigField title="max_redirects" type="int" defaultValue="10">
   The maximum number of HTTP redirects to follow.
 
-The minimum allowed is `0`. The maximum allowed is `100`.
+The minimum allowed is `0`.
+The maximum allowed is `100`.
 
 </ConfigField>
 <ConfigField title="timeout" type="duration" defaultValue="3s">
   The maximum duration as a duration string to wait for the entire request (including retries and redirects).
 
-The minimum allowed is `1s`. The maximum allowed is `30s`.
+The minimum allowed is `1s`.
+The maximum allowed is `30s`.
 
 </ConfigField>
 <ConfigField title="retry_condition" type="string" cel={true} defaultValue="false">
   A CEL expression evaluated after each failed attempt. If `true`, the request is retried (up to `3` times).
 
 <ConfigEnum>
-  <ConfigEnumOption>
-    `attempts` (`int`): Total number of attempts so far
-  </ConfigEnumOption>
-  <ConfigEnumOption>
-    `last_attempt.req`: The last request object
-  </ConfigEnumOption>
-  <ConfigEnumOption>
-    `last_attempt.res`: The last response object (if any)
-  </ConfigEnumOption>
-  <ConfigEnumOption>
-    `last_attempt.error`: The error string (if any)
-  </ConfigEnumOption>
+  <ConfigEnumOption>`attempts` (`int`): Total number of attempts so far</ConfigEnumOption>
+  <ConfigEnumOption>`last_attempt.req`: The last request object</ConfigEnumOption>
+  <ConfigEnumOption>`last_attempt.res`: The last response object (if any)</ConfigEnumOption>
+  <ConfigEnumOption>`last_attempt.error`: The error string (if any)</ConfigEnumOption>
 </ConfigEnum>
 
 </ConfigField>
@@ -108,19 +106,25 @@ The minimum allowed is `1s`. The maximum allowed is `30s`.
 
 ## Behavior
 
-The `http-request` action issues an outbound HTTP request during either the `on_http_request` or `on_http_response` phase of policy execution. It can include dynamic headers, query parameters, and a request body.
+The `http-request` action issues an outbound HTTP request during either the `on_http_request` or `on_http_response` phase of policy execution.
+It can include dynamic headers, query parameters, and a request body.
 
-Only specific HTTP methods are supported: `GET`, `POST`, `PUT`, `PATCH`, `DELETE`, and `OPTIONS`. If no method is specified, `GET` is used by default.
+Only specific HTTP methods are supported: `GET`, `POST`, `PUT`, `PATCH`, `DELETE`, and `OPTIONS`.
+If no method is specified, `GET` is used by default.
 
 ### Internal endpoint behavior
 
-By default, the `http-request` action only supports requests to internal ngrok endpoints. Requests to internal endpoints (those with `.internal` domains) are treated differently from public (or external) requests, these requests must resolve to an internal ngrok endpoint running on your account.
+By default, the `http-request` action only supports requests to internal ngrok endpoints.
+Requests to internal endpoints (those with `.internal` domains) are treated differently from public (or external) requests, these requests must resolve to an internal ngrok endpoint running on your account.
 
-These requests also use a direct connection over ngrok's control plane and do not rely on the public internet. If the request targets an internal Agent Endpoint (for example, your self-hosted ngrok agent), it will exit the control plane and traverse the public internet to reach your agent running locally.
+These requests also use a direct connection over ngrok's control plane and do not rely on the public internet.
+If the request targets an internal Agent Endpoint (for example, your self-hosted ngrok agent), it will exit the control plane and traverse the public internet to reach your agent running locally.
 
 ### Retry logic
 
-You can use a condition to automatically retry failed requests. This is useful for handling transient errors, like a `500` response. The condition is written using an expression language and has access to:
+You can use a condition to automatically retry failed requests.
+This is useful for handling transient errors, like a `500` response.
+The condition is written using an expression language and has access to:
 
 - `attempts`: number of attempts so far
 - `last_attempt.req`: the most recent request
@@ -135,9 +139,11 @@ The request will retry up to **3 times**.
 
 ### Timeout behavior
 
-The `timeout` setting defines the **maximum total time** allowed for the entire `http-request` action, including **all** retry attempts. This prevents long-running or stalled requests from delaying policy evaluation.
+The `timeout` setting defines the **maximum total time** allowed for the entire `http-request` action, including **all** retry attempts.
+This prevents long-running or stalled requests from delaying policy evaluation.
 
-The default timeout is `3s`. You can configure any duration between **1 second** and **30 seconds** using standard duration formats like `5s` or `10s`.
+The default timeout is `3s`.
+You can configure any duration between **1 second** and **30 seconds** using standard duration formats like `5s` or `10s`.
 
 #### Timeout error handling
 
@@ -148,21 +154,28 @@ Whether a timeout causes the policy to fail or continue depends on the `on_error
 
 ### Loop protection
 
-To prevent endless loops between services, ngrok tracks internal hops. If the same request loops more than 3 times internally, it will be stopped automatically.
+To prevent endless loops between services, ngrok tracks internal hops.
+If the same request loops more than 3 times internally, it will be stopped automatically.
 
 ### Redirect behavior
 
-By default, the `http-request` action does not follow HTTP redirects. You can enable redirect handling by setting the `max_redirects` field. The allowed range is `0` to `5`. By default it is set to `0`.
+By default, the `http-request` action does not follow HTTP redirects.
+You can enable redirect handling by setting the `max_redirects` field.
+The allowed range is `0` to `5`.
+By default it is set to `0`.
 
-If the number of redirects exceeds `max_redirects`, the action fails. Redirect handling only applies to `3xx` responses from the target server.
+If the number of redirects exceeds `max_redirects`, the action fails.
+Redirect handling only applies to `3xx` responses from the target server.
 
 ### Response body size limits
 
-The response body returned by the `http-request` action is limited to **256 KB**. If the body size exceeds this limit, the action fails and returns a `response size exceeded` error.
+The response body returned by the `http-request` action is limited to **256 KB**.
+If the body size exceeds this limit, the action fails and returns a `response size exceeded` error.
 
 This limit applies to the decoded body after any decompression and before retries are evaluated.
 
-Each retry is also subject to the **256 KB** response size limit. If the response body exceeds this limit, the attempt fails and the error is included in the `retry_condition` evaluation.
+Each retry is also subject to the **256 KB** response size limit.
+If the response body exceeds this limit, the attempt fails and the error is included in the `retry_condition` evaluation.
 
 ### Error handling
 

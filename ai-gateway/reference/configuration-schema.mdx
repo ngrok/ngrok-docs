@@ -3,7 +3,9 @@ title: Configuration Schema
 description: Complete reference for AI Gateway configuration options.
 ---
 
-import { ConfigField } from "/snippets/ConfigTable.jsx"; import { ConfigEnum, ConfigEnumOption } from "/snippets/ConfigTable.jsx";
+
+import { ConfigField } from "/snippets/ConfigTable.jsx";
+import { ConfigEnum, ConfigEnumOption } from "/snippets/ConfigTable.jsx";
 
 The [Traffic Policy](/traffic-policy/) configuration reference for the AI Gateway action.
 
@@ -41,10 +43,7 @@ on_http_request:
 ## Configuration fields
 
 <ConfigField title="max_input_tokens" type="integer">
-  <p>
-    Maximum number of tokens allowed in the prompt and context.
-    Requests exceeding this limit will be rejected.
-  </p>
+  <p>Maximum number of tokens allowed in the prompt and context. Requests exceeding this limit will be rejected.</p>
   <p>No limit is applied if not specified. Maximum allowed value is 500,000.</p>
   ```yaml max_input_tokens: 4096 ```
 </ConfigField>
@@ -73,84 +72,55 @@ on_http_request:
 <ConfigField title="on_error" type="enum" defaultValue="halt">
   <p>Behavior when all failover attempts are exhausted.</p>
   <ConfigEnum label="Supported values">
-    <ConfigEnumOption>
-      `halt` (default) - Stop processing and return error to client
-    </ConfigEnumOption>
-    <ConfigEnumOption>
-      `continue` - Continue to next action in Traffic Policy
-    </ConfigEnumOption>
+    <ConfigEnumOption>`halt` (default) - Stop processing and return error to client</ConfigEnumOption>
+    <ConfigEnumOption>`continue` - Continue to next action in Traffic Policy</ConfigEnumOption>
   </ConfigEnum>
   ```yaml on_error: "continue" ```
 </ConfigField>
 
 <ConfigField title="total_timeout" type="string" defaultValue="5m">
   <p>
-    Maximum total time for all failover attempts across all models and keys.
-    Must be specified as a duration string (for example, <code>"2m"</code>,{" "}
-    <code>"90s"</code>).
+    Maximum total time for all failover attempts across all models and keys. Must be specified as a duration string (for example, <code>"2m"</code>, <code>"90s"</code>).
   </p>
   ```yaml total_timeout: "2m" ```
 </ConfigField>
 
 <ConfigField title="per_request_timeout" type="string" defaultValue="30s">
   <p>
-    Timeout for a single request to a provider. Must be specified as a duration
-    string (for example, <code>"45s"</code>, <code>"1m"</code>).
+    Timeout for a single request to a provider. Must be specified as a duration string (for example, <code>"45s"</code>, <code>"1m"</code>).
   </p>
   ```yaml per_request_timeout: "45s" ```
 </ConfigField>
 
 <ConfigField title="providers" type="array">
-  <p>
-    List of AI provider configurations.
-    When empty, all built-in providers are allowed in passthrough mode.
-  </p>
+  <p>List of AI provider configurations. When empty, all built-in providers are allowed in passthrough mode.</p>
   <p>
     See <a href="#provider-configuration">Provider Configuration</a> below for detailed field definitions.
   </p>
-  ```yaml providers: - id: "openai" api_keys: - value: $
-  {secrets.get("openai", "key-one")}
+  ```yaml providers: - id: "openai" api_keys: - value: ${secrets.get("openai", "key-one")}
   ```
 </ConfigField>
 
-<ConfigField
-  title="only_allow_configured_providers" type="boolean" defaultValue="false" >
+<ConfigField title="only_allow_configured_providers" type="boolean" defaultValue="false">
   <p>
-    When <code>true</code>, only providers explicitly listed in{" "}
-    <code>providers</code> are allowed. Requests to other providers are rejected
-    with an error.
+    When <code>true</code>, only providers explicitly listed in <code>providers</code> are allowed. Requests to other providers are rejected with an error.
   </p>
   ```yaml only_allow_configured_providers: true ```
 </ConfigField>
 
-<ConfigField
-  title="only_allow_configured_models"
-  type="boolean"
-  defaultValue="false"
->
+<ConfigField title="only_allow_configured_models" type="boolean" defaultValue="false">
   <p>
-    When <code>true</code>, only models explicitly listed in provider
-    configurations are allowed. Requests for other models are rejected.
+    When <code>true</code>, only models explicitly listed in provider configurations are allowed. Requests for other models are rejected.
   </p>
   ```yaml only_allow_configured_models: true ```
 </ConfigField>
 
 <ConfigField title="model_selection" type="object">
+  <p>Strategy for selecting model candidates using CEL expressions. The first strategy that returns models wins—subsequent strategies are only used if previous ones return no models.</p>
   <p>
-    Strategy for selecting model candidates using CEL expressions.
-    The first strategy that returns models wins—subsequent strategies are only used if previous ones return no models.
+    See <a href="/ai-gateway/guides/model-selection-strategies">Model Selection Strategies</a> for details and <a href="/ai-gateway/reference/cel-functions">CEL Functions Reference</a> for available functions.
   </p>
-  <p>
-    See{" "}
-    <a href="/ai-gateway/guides/model-selection-strategies">
-      Model Selection Strategies
-    </a>{" "}
-    for details and{" "}
-    <a href="/ai-gateway/reference/cel-functions">CEL Functions Reference</a>{" "}
-    for available functions.
-  </p>
-  ```yaml model_selection: strategy: - "ai.models.filter(m, m.provider_id ==
-  'openai')" - "ai.models" ```
+  ```yaml model_selection: strategy: - "ai.models.filter(m, m.provider_id == 'openai')" - "ai.models" ```
 </ConfigField>
 
 <ConfigField title="api_key_selection" type="object">
@@ -171,26 +141,18 @@ Each provider in the `providers` array supports these fields:
 
 <ConfigField title="providers[].id" type="string" required>
   <p>
-    Provider identifier. Use built-in names (<code>openai</code>,{" "}
-    <code>anthropic</code>, <code>google</code>, <code>deepseek</code>) or
-    custom names for self-hosted providers.
+    Provider identifier. Use built-in names (<code>openai</code>, <code>anthropic</code>, <code>google</code>, <code>deepseek</code>) or custom names for self-hosted providers.
   </p>
   ```yaml - id: "openai" ```
 </ConfigField>
 
 <ConfigField title="providers[].id_aliases" type="array of strings">
-  <p>
-    Alternative identifiers for this provider.
-    Allows clients to reference the same provider by different names.
-  </p>
+  <p>Alternative identifiers for this provider. Allows clients to reference the same provider by different names.</p>
   ```yaml - id: "custom-openai" id_aliases: ["openai", "gpt"] ```
 </ConfigField>
 
 <ConfigField title="providers[].base_url" type="string">
-  <p>
-    Custom endpoint URL for self-hosted or alternative provider endpoints.
-    Required for custom providers.
-  </p>
+  <p>Custom endpoint URL for self-hosted or alternative provider endpoints. Required for custom providers.</p>
   ```yaml - id: "ollama" base_url: "https://ollama.internal.company.com" ```
 </ConfigField>
 
@@ -213,35 +175,25 @@ Each provider in the `providers` array supports these fields:
 
 <ConfigField title="providers[].metadata" type="object">
   <p>
-    Custom metadata for tracking and organization. Not sent to providers.
-    Available in selection strategies via <code>m.getMetadata()</code>.
+    Custom metadata for tracking and organization. Not sent to providers. Available in selection strategies via <code>m.getMetadata()</code>.
   </p>
-  ```yaml - id: "openai" metadata: team: "ml-platform" environment: "production"
-  ```
+  ```yaml - id: "openai" metadata: team: "ml-platform" environment: "production" ```
 </ConfigField>
 
 <ConfigField title="providers[].api_keys" type="array">
-  <p>
-    List of API keys for this provider. Keys are tried in order for automatic
-    failover.
-  </p>
-  ```yaml api_keys: - value: ${secrets.get("openai", "primary")}- value: $
-  {secrets.get("openai", "backup")}
+  <p>List of API keys for this provider. Keys are tried in order for automatic failover.</p>
+  ```yaml api_keys: - value: ${secrets.get("openai", "primary")}- value: ${secrets.get("openai", "backup")}
   ```
 </ConfigField>
 
 <ConfigField title="providers[].models" type="array">
   <p>
-    List of model configurations for this provider. See{" "}
-    <a href="#model-configuration">Model Configuration</a> below.
+    List of model configurations for this provider. See <a href="#model-configuration">Model Configuration</a> below.
   </p>
 </ConfigField>
 
 <ConfigField title="providers[].supported_api_surfaces" type="array">
-  <p>
-    List of API formats this provider supports. Possible values are `openai`,
-    `anthropic`. Default is `openai`.
-  </p>
+  <p>List of API formats this provider supports. Possible values are `openai`, `anthropic`. Default is `openai`.</p>
   ```yaml supported_api_surfaces: - format: openai - format: anthropic ```
 </ConfigField>
 
@@ -316,15 +268,11 @@ models:
 
 </ConfigField>
 
-<ConfigField
-  title="providers[].models[].input_modalities" type="array of strings" >
-  <p>
-    Input types supported by the model (for example, "text", "image", "audio").
-  </p>
+<ConfigField title="providers[].models[].input_modalities" type="array of strings">
+  <p>Input types supported by the model (for example, "text", "image", "audio").</p>
 </ConfigField>
 
-<ConfigField
-  title="providers[].models[].output_modalities" type="array of strings" >
+<ConfigField title="providers[].models[].output_modalities" type="array of strings">
   <p>Output types supported by the model.</p>
 </ConfigField>
 
@@ -336,11 +284,8 @@ models:
   <p>Maximum output tokens the model can generate.</p>
 </ConfigField>
 
-<ConfigField
-  title="providers[].models[].supported_features" type="array of strings" >
-  <p>
-    Features supported by the model (for example, "tool-calling", "coding").
-  </p>
+<ConfigField title="providers[].models[].supported_features" type="array of strings">
+  <p>Features supported by the model (for example, "tool-calling", "coding").</p>
 </ConfigField>
 
 ## Complete example

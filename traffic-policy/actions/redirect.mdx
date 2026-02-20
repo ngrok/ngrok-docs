@@ -4,9 +4,12 @@ sidebarTitle: "Redirect"
 description: "Redirect incoming requests to new URLs by modifying the original URLs with regular expressions."
 ---
 
-import ActionVariablesDescription from "/snippets/traffic-policy/common/action-variables-description.mdx"; import NonTerminatingExplanation from "/snippets/traffic-policy/common/non-terminating-explanation.mdx";
 
-import { ConfigField } from "/snippets/ConfigTable.jsx"; import { ConfigChildren } from "/snippets/ConfigChildren.jsx";
+import ActionVariablesDescription from "/snippets/traffic-policy/common/action-variables-description.mdx";
+import NonTerminatingExplanation from "/snippets/traffic-policy/common/non-terminating-explanation.mdx";
+
+import { ConfigField } from "/snippets/ConfigTable.jsx";
+import { ConfigChildren } from "/snippets/ConfigChildren.jsx";
 
 The Redirect Traffic Policy Action enables users to send HTTP `3xx` responses by transforming the incoming URL using a regular expression and optional CEL interpolation.
 It can modify any part of the URL such as scheme, host, port, path, or query, and returns a redirect via the `Location` header.
@@ -36,13 +39,13 @@ The [Traffic Policy](/traffic-policy/) configuration reference for this action.
   A regular expression pattern used to replace the matched part of the URL.
 </ConfigField>
 
-<ConfigField
-  title="status_code" type="integer" required={false} defaultValue="302" > {" "} A <code>3xx</code> status code used for redirecting.
+<ConfigField title="status_code" type="integer" required={false} defaultValue="302">
+  {" "}
+  A <code>3xx</code> status code used for redirecting.
 </ConfigField>
 
 <ConfigField title="headers" type="object" required={false} cel={true}>
-  Map of key-value headers to be added to the response.
-  Maximum <code>10</code>{" "} headers can be specified.
+  Map of key-value headers to be added to the response. Maximum <code>10</code> headers can be specified.
 </ConfigField>
 
 ## Behavior
@@ -59,7 +62,8 @@ If the rewritten URL is identical to the original, ngrok skips the redirect.
 
 ### CEL interpolation
 
-CEL expressions in `${...}` are evaluated before the redirect rule is applied. Interpolations can reference request or connection data.
+CEL expressions in `${...}` are evaluated before the redirect rule is applied.
+Interpolations can reference request or connection data.
 
 For example:
 
@@ -75,11 +79,13 @@ https://example.com?city=San%20Francisco
 
 ### Matching
 
-The `from` field is a **regular expression** evaluated against the entire URL (scheme, host, port, path, query, and fragment). Matching is not anchored by default; a substring match anywhere in the URL triggers the redirect.
+The `from` field is a **regular expression** evaluated against the entire URL (scheme, host, port, path, query, and fragment).
+Matching is not anchored by default; a substring match anywhere in the URL triggers the redirect.
 
 #### Example
 
-The following example redirects any request that contains `/api/v1/` to `/api/v2/`. The redirect is applied to the entire URL, not just the path.
+The following example redirects any request that contains `/api/v1/` to `/api/v2/`.
+The redirect is applied to the entire URL, not just the path.
 
 ```yaml
 from: /api/v1/
@@ -90,7 +96,8 @@ Given the above, `https://example.com/foobar/api/v1/users` would be redirected t
 
 #### Anchoring / path prefix
 
-Anchoring with `^/api/v1/` will not match paths that include the full scheme. To match only the path, use one of the following methods:
+Anchoring with `^/api/v1/` will not match paths that include the full scheme.
+To match only the path, use one of the following methods:
 
 <CodeGroup>
 
@@ -138,7 +145,9 @@ Given the above, `https://example.com/api/v1/users` would be redirected to `http
 
 #### Relative versus absolute replacements
 
-The `to` value is applied relative to the `from` match. When `from` matches part of the URL, only that segment is replaced. When `from` is omitted, ngrok treats the entire URL as matched and replaces it absolutely.
+The `to` value is applied relative to the `from` match.
+When `from` matches part of the URL, only that segment is replaced.
+When `from` is omitted, ngrok treats the entire URL as matched and replaces it absolutely.
 
 **Relative example**
 
@@ -174,7 +183,8 @@ Given the above, `https://example.com/old/foo` would be redirected to `https://n
 
 ### Redirect response
 
-After replacement, the redirect action sends an HTTP redirect with the computed `Location` header. The default status code is `302 Found`.
+After replacement, the redirect action sends an HTTP redirect with the computed `Location` header.
+The default status code is `302 Found`.
 
 | Code | Description | Behavior | | ------- | ------------------ | -------------------------------------------------------------------- | | **301** | Moved Permanently | Clients may cache the redirect. | | **302** | Found (default) | Temporary redirect; some clients change the request method to `GET`. | | **303** | See Other | Forces the next request to use `GET`. | | **307** | Temporary Redirect | Preserves the original request method and body. | | **308** | Permanent Redirect | Preserves the original request method and body. |
 
@@ -305,7 +315,8 @@ on_http_request:
 
 </CodeGroup>
 
-In this configuration, requests from `/api/v1/users?id=([0-9]+)` are matched and redirected to `/api/v2/users/$1/` with a `301` status code. Additionally, a custom header `x-redirected: true` is added to the response.
+In this configuration, requests from `/api/v1/users?id=([0-9]+)` are matched and redirected to `/api/v2/users/$1/` with a `301` status code.
+Additionally, a custom header `x-redirected: true` is added to the response.
 
 #### Example request
 
@@ -379,13 +390,11 @@ In this example, a request to `https://example.ngrok.app/api/v2/geo` will be red
 <ActionVariablesDescription />
 
 <ConfigField title="actions.ngrok.redirect.matches" type="array of strings">
-  A list of elements that were matched during redirection.
-  These represent the request components (for example, path or query parameters) that triggered the action and resulted in the redirect.
+  A list of elements that were matched during redirection. These represent the request components (for example, path or query parameters) that triggered the action and resulted in the redirect.
 </ConfigField>
 
 <ConfigField title="actions.ngrok.redirect.url" type="string">
-  The URL to which the traffic was redirected.
-  This is the destination URL returned as part of the redirect response after the action was executed.
+  The URL to which the traffic was redirected. This is the destination URL returned as part of the redirect response after the action was executed.
 </ConfigField>
 
 <ConfigField title="actions.ngrok.redirect.error.code" type="string">

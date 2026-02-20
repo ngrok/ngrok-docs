@@ -3,11 +3,14 @@ title: FAQ
 description: Frequently asked questions about AI Gateway.
 ---
 
+
 ## General
 
 ### Does ngrok provide AI provider API keys?
 
-No. The AI Gateway is a routing and observability layer—you use your own API keys from providers like OpenAI, Anthropic, and Google. ngrok doesn't resell or provide AI provider access. You maintain your own provider accounts and billing relationships.
+No.
+The AI Gateway is a routing and observability layer—you use your own API keys from providers like OpenAI, Anthropic, and Google. ngrok doesn't resell or provide AI provider access.
+You maintain your own provider accounts and billing relationships.
 
 ---
 
@@ -99,7 +102,8 @@ See [SDK Integration](/ai-gateway/sdks) for details.
 
 ### How does failover work?
 
-When a request fails, the gateway tries the next candidate in its list. This includes failures from:
+When a request fails, the gateway tries the next candidate in its list.
+This includes failures from:
 
 - Timeouts
 - HTTP errors (4xx, 5xx)
@@ -148,7 +152,8 @@ Yes, if the client specifies multiple models that span different providers:
 1. Using the `models` array: `"models": ["openai:gpt-4o", "anthropic:claude-3-5-sonnet-20241022"]`
 2. Or using just the model name (like `"model": "gpt-4o"`) when selection strategies return candidates from multiple providers
 
-The gateway automatically tries alternative providers when the primary fails. You can also specify fallback models in the request body:
+The gateway automatically tries alternative providers when the primary fails.
+You can also specify fallback models in the request body:
 
 ```json
 {
@@ -164,7 +169,8 @@ The gateway automatically tries alternative providers when the primary fails. Yo
 
 ### Do I need to configure API keys in the gateway?
 
-No, it's optional. By default (passthrough mode), the gateway forwards whatever key your SDK sends.
+No, it's optional.
+By default (passthrough mode), the gateway forwards whatever key your SDK sends.
 
 Configure keys in the gateway for:
 
@@ -176,7 +182,8 @@ Configure keys in the gateway for:
 
 ### How do I secure my gateway when using server-side API keys?
 
-When you configure API keys in the gateway, your endpoint becomes publicly accessible. Add authorization to protect it:
+When you configure API keys in the gateway, your endpoint becomes publicly accessible.
+Add authorization to protect it:
 
 ```yaml
 on_http_request:
@@ -210,7 +217,8 @@ providers:
       - value: ${secrets.get('openai', 'team-b')}
 ```
 
-Note: Per-key metadata is not currently supported. Use separate endpoints or providers for team-based tracking.
+Note: Per-key metadata is not currently supported.
+Use separate endpoints or providers for team-based tracking.
 
 ---
 
@@ -253,7 +261,8 @@ Token counts are available in metrics and event destinations.
 
 ### Does the gateway charge for token usage?
 
-No, you only pay providers for actual token usage. The gateway itself doesn't charge per token.
+No, you only pay providers for actual token usage.
+The gateway itself doesn't charge per token.
 
 Check ngrok's pricing for gateway usage costs.
 
@@ -261,7 +270,8 @@ Check ngrok's pricing for gateway usage costs.
 
 ### Can I cache responses to reduce costs?
 
-Currently no. Caching may be added in future versions.
+Currently no.
+Caching may be added in future versions.
 
 ---
 
@@ -269,7 +279,8 @@ Currently no. Caching may be added in future versions.
 
 ### Is my data stored by ngrok?
 
-No, unless Traffic Inspector is enabled. By default:
+No, unless Traffic Inspector is enabled.
+By default:
 
 - Request/response bodies processed in-memory only
 - Data immediately discarded after processing
@@ -306,7 +317,8 @@ on_http_request:
           # ...
 ```
 
-For streaming responses, use `sse-find-replace` in `on_event_stream_message`. See [Modifying Requests](/ai-gateway/guides/modifying-requests) and [Modifying Responses](/ai-gateway/guides/modifying-responses) for details.
+For streaming responses, use `sse-find-replace` in `on_event_stream_message`.
+See [Modifying Requests](/ai-gateway/guides/modifying-requests) and [Modifying Responses](/ai-gateway/guides/modifying-responses) for details.
 
 ---
 
@@ -325,7 +337,8 @@ Built-in support for:
 - Inception Labs
 - Inference Net
 
-Plus any self-hosted OpenAI or Anthropic Claude API compatible endpoint. See the [Model Catalog](/ai-gateway/reference/model-catalog) for the full list.
+Plus any self-hosted OpenAI or Anthropic Claude API compatible endpoint.
+See the [Model Catalog](/ai-gateway/reference/model-catalog) for the full list.
 
 ---
 
@@ -347,7 +360,8 @@ See [Custom Providers](/ai-gateway/custom-providers) for details.
 
 ### How do I know which models are available?
 
-Built-in providers have pre-configured model catalogs. For custom providers, you must specify models manually.
+Built-in providers have pre-configured model catalogs.
+For custom providers, you must specify models manually.
 
 ---
 
@@ -362,13 +376,15 @@ Built-in providers have pre-configured model catalogs. For custom providers, you
 }
 ```
 
-This is equivalent to omitting the model field. Use it when you want the gateway to select the best model based on latency, cost, or other criteria you've configured.
+This is equivalent to omitting the model field.
+Use it when you want the gateway to select the best model based on latency, cost, or other criteria you've configured.
 
 ---
 
 ### Can clients use models not in the catalog?
 
-Yes, if a client includes a provider prefix (like `openai:new-model`), the gateway passes the request through to that provider even if the model isn't in the catalog. This lets clients use new models immediately.
+Yes, if a client includes a provider prefix (like `openai:new-model`), the gateway passes the request through to that provider even if the model isn't in the catalog.
+This lets clients use new models immediately.
 
 To restrict this behavior, use a model selection strategy:
 
@@ -418,7 +434,8 @@ Check:
 
 ### How do I debug which provider was used?
 
-Enable event destinations at the endpoint level to stream detailed request logs. Configure event destinations in your ngrok endpoint configuration (not in the ai-gateway action config).
+Enable event destinations at the endpoint level to stream detailed request logs.
+Configure event destinations in your ngrok endpoint configuration (not in the ai-gateway action config).
 
 ---
 
@@ -457,12 +474,11 @@ model_selection:
     - "ai.models"
 ```
 
-The first strategy that returns models wins. If OpenAI models exist, only those are tried. Anthropic is only considered if no OpenAI models match.
+The first strategy that returns models wins.
+If OpenAI models exist, only those are tried.
+Anthropic is only considered if no OpenAI models match.
 
-<Note>
-  Strategies control which models are considered, not failover order.
-  For cross-provider failover when requests fail, have clients specify multiple models: `models: ["openai:gpt-4o", "anthropic:claude-3-5-sonnet-20241022"]`.
-</Note>
+<Note>Strategies control which models are considered, not failover order. For cross-provider failover when requests fail, have clients specify multiple models: `models: ["openai:gpt-4o", "anthropic:claude-3-5-sonnet-20241022"]`.</Note>
 
 See [Model Selection Strategies](/ai-gateway/guides/model-selection-strategies).
 
@@ -494,7 +510,8 @@ You cannot currently route based on the message content itself.
 
 ### Does the gateway support streaming?
 
-Yes, streaming is fully supported. The gateway forwards SSE streams transparently.
+Yes, streaming is fully supported.
+The gateway forwards SSE streams transparently.
 
 ---
 

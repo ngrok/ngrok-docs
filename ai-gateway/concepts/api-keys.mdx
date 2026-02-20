@@ -3,7 +3,9 @@ title: Provider API Keys
 description: Understanding provider API key management in the AI Gateway.
 ---
 
-Provider API keys authenticate requests to AI providers like OpenAI, Anthropic, and Google. The AI Gateway action offers flexible key management—from simple passthrough to centralized management with automatic failover.
+
+Provider API keys authenticate requests to AI providers like OpenAI, Anthropic, and Google.
+The AI Gateway action offers flexible key management—from simple passthrough to centralized management with automatic failover.
 
 ## Key precedence
 
@@ -11,7 +13,8 @@ The gateway determines which provider API key to use based on these rules:
 
 ### 1. Gateway-managed keys
 
-Store provider API keys in [ngrok Vaults & Secrets](/traffic-policy/secrets) and reference them in your gateway configuration. These keys are used instead of any key sent by your SDK:
+Store provider API keys in [ngrok Vaults & Secrets](/traffic-policy/secrets) and reference them in your gateway configuration.
+These keys are used instead of any key sent by your SDK:
 
 ```yaml
 providers:
@@ -20,13 +23,11 @@ providers:
       - value: ${secrets.get('openai', 'gateway-key')}
 ```
 
-Even if your SDK sends `apiKey: "sk-different-key"`, the gateway uses `gateway-key`. This keeps provider keys out of your application code—rotate them by updating the secret, no redeployment needed. You can also configure [multiple keys for failover](#multiple-keys-for-failover) and use [intelligent selection](#intelligent-key-selection) based on quota and error rates.
+Even if your SDK sends `apiKey: "sk-different-key"`, the gateway uses `gateway-key`.
+This keeps provider keys out of your application code—rotate them by updating the secret, no redeployment needed.
+You can also configure [multiple keys for failover](#multiple-keys-for-failover) and use [intelligent selection](#intelligent-key-selection) based on quota and error rates.
 
-<Warning>
-  When using gateway-managed keys, anyone with your endpoint URL can make requests using your provider keys.
-  Add authorization to prevent unauthorized access.
-  See [Securing Your Gateway](/ai-gateway/guides/securing-endpoints).
-</Warning>
+<Warning>When using gateway-managed keys, anyone with your endpoint URL can make requests using your provider keys. Add authorization to prevent unauthorized access. See [Securing Your Gateway](/ai-gateway/guides/securing-endpoints).</Warning>
 
 ### 2. Passthrough mode
 
@@ -42,7 +43,8 @@ This is useful for quick setup or when applications manage their own provider ke
 
 ### 3. Restricted provider mode
 
-When `only_allow_configured_providers: true`, only providers explicitly listed in the `providers` array are allowed. Requests to unlisted providers are rejected:
+When `only_allow_configured_providers: true`, only providers explicitly listed in the `providers` array are allowed.
+Requests to unlisted providers are rejected:
 
 ```yaml
 only_allow_configured_providers: true
@@ -50,7 +52,8 @@ providers:
   - id: "openai"
 ```
 
-With this configuration, requests to `anthropic` or other unlisted providers will fail. For providers on the list, normal key precedence applies—gateway keys are used if configured, otherwise client keys are passed through.
+With this configuration, requests to `anthropic` or other unlisted providers will fail.
+For providers on the list, normal key precedence applies—gateway keys are used if configured, otherwise client keys are passed through.
 
 ## When to use each mode
 
@@ -92,7 +95,8 @@ api_key_selection:
     - "ai.keys"
 ```
 
-Strategies are evaluated in order—the first expression that returns keys wins. Subsequent strategies are only used if the previous ones return no keys.
+Strategies are evaluated in order—the first expression that returns keys wins.
+Subsequent strategies are only used if the previous ones return no keys.
 
 This enables:
 
@@ -111,11 +115,7 @@ api_keys:
   - value: "sk-proj-abc123..."
 ```
 
-<Warning>
-  Inline keys are visible in Traffic Policy configurations.
-  Use only for local testing.
-  See [ngrok Secrets](#ngrok-secrets-recommended) for the recommended approach.
-</Warning>
+<Warning>Inline keys are visible in Traffic Policy configurations. Use only for local testing. See [ngrok Secrets](#ngrok-secrets-recommended) for the recommended approach.</Warning>
 
 ### ngrok secrets (recommended)
 
