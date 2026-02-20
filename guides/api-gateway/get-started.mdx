@@ -86,39 +86,42 @@ That's much easier than managing these policies for each service separately and 
 
     		```yaml title="policy.yaml" mode=traffic-policy
         on_http_request:
-  - actions:
-  - type: forward-internal
-                config:
-                  url: https://abc.internal
-    		```
 
-    		Select **Save** to apply your changes.
+- actions:
+- type: forward-internal
+  config:
+  url: https://abc.internal
+
+````
+
+    	Select **Save** to apply your changes.
 
 </Tab>
-    <Tab>
+  <Tab>
 
-    	The `ngrok` CLI provides a helpful wrapper around the [ngrok API](/api/index), which you can use to create a Cloud Endpoint and apply a file containing Traffic Policy rules.
+  	The `ngrok` CLI provides a helpful wrapper around the [ngrok API](/api/index), which you can use to create a Cloud Endpoint and apply a file containing Traffic Policy rules.
 
-    		Create a new file named `policy.yaml` on your local workstation with the following YAML.
+  		Create a new file named `policy.yaml` on your local workstation with the following YAML.
 
-    		```yaml title="policy.yaml" mode=traffic-policy
-        on_http_request:
-  - actions:
-  - type: forward-internal
-                config:
-                  url: https://abc.internal
-    		```
+  		```yaml title="policy.yaml" mode=traffic-policy
+      on_http_request:
 
-    	Create a Cloud Endpoint on `$YOUR_DOMAIN`, passing your `policy.yaml` file as an option.
+- actions:
+- type: forward-internal
+config:
+url: https://abc.internal
+````
 
-    	```bash
-    	ngrok api endpoints create \
-    	--bindings public \
-    	--url https://$YOUR_DOMAIN
-    		--traffic-policy "$(cat policy.yaml)"
-    	```
+      Create a Cloud Endpoint on `$YOUR_DOMAIN`, passing your `policy.yaml` file as an option.
 
-    	You'll get a `201` response—save the value of `id`, as you'll need it again later to continue configuring the Traffic Policy applied to your Cloud Endpoint.
+      ```bash
+      ngrok api endpoints create \
+      --bindings public \
+      --url https://$YOUR_DOMAIN
+      	--traffic-policy "$(cat policy.yaml)"
+      ```
+
+      You'll get a `201` response—save the value of `id`, as you'll need it again later to continue configuring the Traffic Policy applied to your Cloud Endpoint.
 
 </Tab>
 </Tabs>
@@ -155,9 +158,9 @@ Your API gateway is ready, but chances are you need to handle ingress into more 
 <Tip>
   If you're using the demo API service, fire up another internal Agent Endpoint to route traffic to the second container on port `5000`.
 
-  ```bash
-  ngrok http 5000 --url https://xyz.internal
-  ```
+```bash
+ngrok http 5000 --url https://xyz.internal
+```
 </Tip>
 
 Use the [Traffic Policy system](/traffic-policy), which lets you filter traffic based on its properties and take action as it passes through ngrok's global network.
@@ -187,50 +190,53 @@ You can also [route by other properties](/traffic-policy/examples/route-requests
 
     	```yaml mode=traffic-policy title="policy.yaml"
       on_http_request:
-  - expressions:
-  - "req.url.path.startsWith('/abc')"
-          actions:
-  - type: forward-internal
-              config:
-                url: https://abc.internal
-  - expressions:
-  - "req.url.path.startsWith('/xyz')"
-          actions:
-  - type: forward-internal
-              config:
-                url: https://xyz.internal
-    	```
 
-    	Hit **Save** to lock in the new policy.
+- expressions:
+- "req.url.path.startsWith('/abc')"
+  actions:
+- type: forward-internal
+  config:
+  url: https://abc.internal
+- expressions:
+- "req.url.path.startsWith('/xyz')"
+  actions:
+- type: forward-internal
+  config:
+  url: https://xyz.internal
+
+````
+
+    Hit **Save** to lock in the new policy.
 
 </Tab>
-    <Tab>
+  <Tab>
 
-    	Update your existing `policy.yaml` file with the YAML below.
-    	If you're bringing your own API services instead of using the demo API, you'll need to change `/abc` and `/xyz` to match your services' paths and the `url` for your internal Agent Endpoints.
+  	Update your existing `policy.yaml` file with the YAML below.
+  	If you're bringing your own API services instead of using the demo API, you'll need to change `/abc` and `/xyz` to match your services' paths and the `url` for your internal Agent Endpoints.
 
-    	```yaml mode=traffic-policy title="policy.yaml"
-      on_http_request:
-  - expressions:
-  - "req.url.path.startsWith('/abc')"
-          actions:
-  - type: forward-internal
-              config:
-                url: https://abc.internal
-  - expressions:
-  - "req.url.path.startsWith('/xyz')"
-          actions:
-  - type: forward-internal
-              config:
-                url: https://xyz.internal
-    	```
+  	```yaml mode=traffic-policy title="policy.yaml"
+    on_http_request:
 
-    	Update your Cloud Endpoint.
+- expressions:
+- "req.url.path.startsWith('/abc')"
+actions:
+- type: forward-internal
+config:
+url: https://abc.internal
+- expressions:
+- "req.url.path.startsWith('/xyz')"
+actions:
+- type: forward-internal
+config:
+url: https://xyz.internal
+````
 
-    	```bash
-    	ngrok api endpoints update <CLOUD_ENDPOINT_ID> \
-    		--traffic-policy "$(cat policy.yaml)"
-    	```
+      Update your Cloud Endpoint.
+
+      ```bash
+      ngrok api endpoints update <CLOUD_ENDPOINT_ID> \
+      	--traffic-policy "$(cat policy.yaml)"
+      ```
 
 </Tab>
 </Tabs>

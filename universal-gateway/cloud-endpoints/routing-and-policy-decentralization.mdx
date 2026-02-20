@@ -46,26 +46,26 @@ Use a Traffic Policy to simulate accessing an API endpoint.
 
 <CodeGroup>
 
-  ```yaml policy.yml
-  on_http_request:
-  - expressions:
-  - "!(hasReqHeader('Api-Key'))"
-    actions:
-  - type: deny
-        config:
-          status_code: 404
-  - actions:
-  - type: custom-response
-        config:
-          status_code: 200
-          body: "<html><body><h1>Hello world</h1><p>The quick brown fox jumps over the
-            lazy dog.</p></body></html>"
-          headers:
-            content-type: text/html
-  ```
+```yaml policy.yml
+on_http_request:
+- expressions:
+- "!(hasReqHeader('Api-Key'))"
+actions:
+- type: deny
+    config:
+      status_code: 404
+- actions:
+- type: custom-response
+    config:
+      status_code: 200
+      body: "<html><body><h1>Hello world</h1><p>The quick brown fox jumps over the
+        lazy dog.</p></body></html>"
+      headers:
+        content-type: text/html
+```
 
-  ```json policy.json
-  {
+```json policy.json
+{
   "on_http_request": [
     {
       "expressions": ["!(hasReqHeader('Api-Key'))"],
@@ -93,8 +93,8 @@ Use a Traffic Policy to simulate accessing an API endpoint.
       ]
     }
   ]
-  }
-  ```
+}
+```
 </CodeGroup>
 
 The above Traffic Policy will deny all requests that do not have an `API-Key` header, and return a 200 status code with a custom response for all other requests.
@@ -118,51 +118,51 @@ For the purpose of this guide, create an ngrok HTTP domain.
 <Tabs>
   <Tab title="ngrok CLI">
 
-  ```bash
-  ngrok api reserved-domains create \
-    --url ${NGROK_SUBDOMAIN}.ngrok.app
-  ```
+```bash
+ngrok api reserved-domains create \
+--url ${NGROK_SUBDOMAIN}.ngrok.app
+```
 
   - Replace `NGROK_SUBDOMAIN` with the subdomain you'd like to use for this guide.
 
   After running, you should see the following:
 
-  ```json skip-validation
-  200 OK
-  {
-   "id":"rd_2MT5Bqt0UzU0mFQ0zr8m1UQWCfm",
-   ...
-  }
-  ```
+```json skip-validation
+200 OK
+{
+"id":"rd_2MT5Bqt0UzU0mFQ0zr8m1UQWCfm",
+...
+}
+```
 
 </Tab>
   <Tab title="CURL">
 
-  ```bash
-  curl \
-    -X POST https://api.ngrok.com/reserved_domains \
-    -H "Authorization: Bearer ${NGROK_API_KEY}" \
-    -H "Content-Type: application/json" \
-    -H "Ngrok-Version: 2" \
-    -d @- <<BODY
-    {
-        "name":"${NGROK_SUBDOMAIN}.ngrok.app",
-    }
-  BODY
-  ```
+```bash
+curl \
+-X POST https://api.ngrok.com/reserved_domains \
+-H "Authorization: Bearer ${NGROK_API_KEY}" \
+-H "Content-Type: application/json" \
+-H "Ngrok-Version: 2" \
+-d @- <<BODY
+{
+    "name":"${NGROK_SUBDOMAIN}.ngrok.app",
+}
+BODY
+```
 
   - Replace `NGROK_API_KEY` with your ngrok API key.
   - Replace `NGROK_SUBDOMAIN` with the subdomain you'd like to use for this guide.
 
   After running, you should see the following:
 
-  ```json skip-validation
-  200 OK
-  {
-   "id":"rd_2MT5Bqt0UzU0mFQ0zr8m1UQWCfm",
-   ...
-  }
-  ```
+```json skip-validation
+200 OK
+{
+"id":"rd_2MT5Bqt0UzU0mFQ0zr8m1UQWCfm",
+...
+}
+```
 
 </Tab>
   <Tab title="ngrok Dashboard">
@@ -181,24 +181,24 @@ This separation allows for granularity and full control over how traffic is hand
 
 <CodeGroup>
 
-  ```yaml policy.yml
-  on_http_request:
-  - expressions:
-  - req.url.path.startsWith('/api/')
-    actions:
-  - type: forward-internal
-        config:
-          url: https://api.internal
-          binding: internal
-  - actions:
-  - type: forward-internal
-        config:
-          url: https://homepage.internal
-          binding: internal
-  ```
+```yaml policy.yml
+on_http_request:
+- expressions:
+- req.url.path.startsWith('/api/')
+actions:
+- type: forward-internal
+    config:
+      url: https://api.internal
+      binding: internal
+- actions:
+- type: forward-internal
+    config:
+      url: https://homepage.internal
+      binding: internal
+```
 
-  ```json policy.json
-  {
+```json policy.json
+{
   "on_http_request": [
     {
       "expressions": ["req.url.path.startsWith('/api/')"],
@@ -224,8 +224,8 @@ This separation allows for granularity and full control over how traffic is hand
       ]
     }
   ]
-  }
-  ```
+}
+```
 </CodeGroup>
 
 The Traffic Policy simply forwards traffic to one of the two internal endpoints based on the path.
@@ -245,24 +245,28 @@ Cloud Endpoints can be created via the API or ngrok dashboard.
 
   1. Open Postman and create a POST request to `https://api.ngrok.com/endpoints`.
   2. In the Authorization tab, select "API Key".
+
   - Set Key as `Authorization`
   - Set Value as `Bearer NGROK_API_KEY`
   - Set Add to as `Header`
+
   3. In the Headers tab, add a new header:
+
   - Create a header with the key `Content-Type` and value `application/json`
   - Create a header with the key `Ngrok-Version` and value `2`
+
   4. In the Body tab, create a raw JSON:
 
-  ```json
-  {
+```json
+{
   "bindings": ["public"],
   "description": "sample Cloud Endpoint",
   "metadata": "{\"environment\": \"prod\"}",
   "type": "cloud",
   "traffic_policy": "{\"on_http_request\": [{\"expressions\": [\"req.url.path.startsWith('/api/')\"],\"actions\": [{\"type\": \"forward-internal\",\"config\": {\"url\": \"https://api.internal\",\"binding\": \"internal\"}}]},{\"actions\": [{\"type\": \"forward-internal\",\"config\": {\"url\": \"https://homepage.internal\",\"binding\": \"internal\"}}]}]}",
   "url": "https://{NGROK_SUBDOMAIN}.ngrok.app"
-  }
-  ```
+}
+```
 
   - Replace `YOUR_NGROK_API_KEY` with your ngrok API key.
   - Replace `NGROK_SUBDOMAIN` with the value used in Step 3.

@@ -35,21 +35,21 @@ If this is your first time using ngrok, run the command that corresponds to your
 <Tabs>
   <Tab title="Mac OS">
 
-  ```bash
-  brew install ngrok
-  ```
+```bash
+brew install ngrok
+```
 
 </Tab>
   <Tab title="Debian Linux">
 
-  ```bash
-  curl -sSL https://ngrok-agent.s3.amazonaws.com/ngrok.asc \
-  | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null \
-  && echo "deb https://ngrok-agent.s3.amazonaws.com buster main" \
-  | sudo tee /etc/apt/sources.list.d/ngrok.list \
-  && sudo apt update \
-  && sudo apt install ngrok
-  ```
+```bash
+curl -sSL https://ngrok-agent.s3.amazonaws.com/ngrok.asc \
+| sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null \
+&& echo "deb https://ngrok-agent.s3.amazonaws.com buster main" \
+| sudo tee /etc/apt/sources.list.d/ngrok.list \
+&& sudo apt update \
+&& sudo apt install ngrok
+```
 
 </Tab>
   <Tab title="Windows">
@@ -106,166 +106,172 @@ If you don't have an app to work with, you can create a minimal app in your lang
   ```javascript
   const http = require('http');
 
-  const server = http.createServer((req, res) => {
-  res.writeHead(200, { 'Content-Type': 'text/html' });
-  const html = `     <html>
-    <head><title>Test Page</title></head>
-    <body><h1>Hello from Node.js HTTP Server!</h1></body>
+const server = http.createServer((req, res) => {
+res.writeHead(200, { 'Content-Type': 'text/html' });
+const html = ` <html>
+
+<head>
+  <title>Test Page</title>
+</head>
+<body>
+  <h1>Hello from Node.js HTTP Server!</h1>
+</body>
+
 </html>
     `;
   res.end(html);
   });
 
-  const port = 8080;
-  server.listen(port, () => {
-  console.log(`Serving custom HTML at http://localhost:${port}`);
-  });
+const port = 8080;
+server.listen(port, () => {
+console.log(`Serving custom HTML at http://localhost:${port}`);
+});
 
-  ````
+````
 
   Navigate to the directory where this file is located and run the following command to start the server:
 
-  ```bash
-  node service.js
-  ````
+```bash
+node service.js
+````
 
 </Tab>
   <Tab title="Go">
 
-  ```go title="service.go"
-  package main
+```go title="service.go"
+package main
 
-  import (
-  "fmt"
-  "net/http"
-  )
+import (
+"fmt"
+"net/http"
+)
 
-  func handler(w http.ResponseWriter, r *http.Request) {
-  fmt.Fprintf(w, "Hello from Go HTTP Server!")
-  }
+func handler(w http.ResponseWriter, r *http.Request) {
+fmt.Fprintf(w, "Hello from Go HTTP Server!")
+}
 
-  func main() {
-  http.HandleFunc("/", handler)
+func main() {
+http.HandleFunc("/", handler)
 
-  fmt.Println("Starting server at http://localhost:8080")
-  err := http.ListenAndServe(":8080", nil)
-  if err != nil {
-  fmt.Println("Server failed:", err)
-  }
-  }
+fmt.Println("Starting server at http://localhost:8080")
+err := http.ListenAndServe(":8080", nil)
+if err != nil {
+fmt.Println("Server failed:", err)
+}
+}
 
-  ```
+```
 
   Navigate to the directory where this file is located and run the following command to start the server:
 
-  ```bash
-  go run service.go
-  ```
+```bash
+go run service.go
+```
 
 </Tab>
   <Tab title="Python">
 
-  ```python title="service.py"
-  from http.server import BaseHTTPRequestHandler, HTTPServer
+```python title="service.py"
+from http.server import BaseHTTPRequestHandler, HTTPServer
 
-  class MyHandler(BaseHTTPRequestHandler):
-    def do_GET(self):
-        self.send_response(200)
-        self.send_header("Content-type", "text/html")
-        self.end_headers()
-        html = b"""
-        <html>
-        <head><title>Test Page</title></head>
-        <body><h1>Hello from Python HTTP Server!</h1></body>
+class MyHandler(BaseHTTPRequestHandler):
+def do_GET(self):
+    self.send_response(200)
+    self.send_header("Content-type", "text/html")
+    self.end_headers()
+    html = b"""
+    <html>
+    <head><title>Test Page</title></head>
+    <body><h1>Hello from Python HTTP Server!</h1></body>
 </html>
-        """
-        self.wfile.write(html)
+    """
+    self.wfile.write(html)
 
-  def run(server_class=HTTPServer, handler_class=MyHandler, port=8080):
-    server_address = ('', port)
-    httpd = server_class(server_address, handler_class)
-    print(f"Serving custom HTML at http://localhost:{port}")
-    httpd.serve_forever()
+def run(server_class=HTTPServer, handler_class=MyHandler, port=8080):
+server_address = ('', port)
+httpd = server_class(server_address, handler_class)
+print(f"Serving custom HTML at http://localhost:{port}")
+httpd.serve_forever()
 
-  if __name__ == "__main__":
-    run()
-  ```
+if __name__ == "__main__":
+run()
+```
 
   Navigate to the directory where this file is located and run the following command to start the server:
 
-  ```bash
-  python service.py
-  ```
+```bash
+python service.py
+```
 
 </Tab>
   <Tab title="Rust">
 
   First, create a directory for your Rust project and navigate into it:
 
-  ```bash
-  mkdir ngrok-rust-server
-  cd ngrok-rust-server
-  ```
+```bash
+mkdir ngrok-rust-server
+cd ngrok-rust-server
+```
 
   Next, create a new Rust project:
 
-  ```bash
-  cargo init
-  ```
+```bash
+cargo init
+```
 
   Then, replace the contents of `src/main.rs` with the following code to set up a basic HTTP server:
 
-  ```rust title="ngrok-rust-server/src/main.rs"
-  use std::io::{Read, Write};
-  use std::net::{TcpListener, TcpStream};
+```rust title="ngrok-rust-server/src/main.rs"
+use std::io::{Read, Write};
+use std::net::{TcpListener, TcpStream};
 
-  fn handle_connection(mut stream: TcpStream) {
-    let mut buffer = [0; 512];
+fn handle_connection(mut stream: TcpStream) {
+let mut buffer = [0; 512];
 
-    // Read from the stream
-    if let Ok(_) = stream.read(&mut buffer) {
-        let body = "Hello from Rust HTTP Server!";
-        let response = format!(
-            "HTTP/1.1 200 OK\r\n\
-             Content-Length: {}\r\n\
-             Content-Type: text/plain\r\n\
-             Connection: close\r\n\r\n\
-             {}",
-            body.len(),
-            body
-        );
+// Read from the stream
+if let Ok(_) = stream.read(&mut buffer) {
+    let body = "Hello from Rust HTTP Server!";
+    let response = format!(
+        "HTTP/1.1 200 OK\r\n\
+         Content-Length: {}\r\n\
+         Content-Type: text/plain\r\n\
+         Connection: close\r\n\r\n\
+         {}",
+        body.len(),
+        body
+    );
 
-        if let Err(e) = stream.write_all(response.as_bytes()) {
-            eprintln!("Write error: {}", e);
-        }
-
-        // Flush to make sure the response is sent
-        if let Err(e) = stream.flush() {
-            eprintln!("Flush error: {}", e);
-        }
-    }
-  }
-
-  fn main() -> std::io::Result<()> {
-    let listener = TcpListener::bind("127.0.0.1:8080")?;
-    println!("Server running at http://127.0.0.1:8080");
-
-    for stream in listener.incoming() {
-        match stream {
-            Ok(stream) => handle_connection(stream),
-            Err(e) => eprintln!("Connection failed: {}", e),
-        }
+    if let Err(e) = stream.write_all(response.as_bytes()) {
+        eprintln!("Write error: {}", e);
     }
 
-    Ok(())
-  }
-  ```
+    // Flush to make sure the response is sent
+    if let Err(e) = stream.flush() {
+        eprintln!("Flush error: {}", e);
+    }
+}
+}
+
+fn main() -> std::io::Result<()> {
+let listener = TcpListener::bind("127.0.0.1:8080")?;
+println!("Server running at http://127.0.0.1:8080");
+
+for stream in listener.incoming() {
+    match stream {
+        Ok(stream) => handle_connection(stream),
+        Err(e) => eprintln!("Connection failed: {}", e),
+    }
+}
+
+Ok(())
+}
+```
 
   To run the server, navigate to the root directory of the project (where the `Cargo.toml` file is located) and run the following command:
 
-  ```bash
-  cargo run
-  ```
+```bash
+cargo run
+```
 
 </Tab>
 </Tabs>

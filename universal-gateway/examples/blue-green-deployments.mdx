@@ -56,27 +56,29 @@ While viewing your new Cloud Endpoint in the dashboard, copy the policy below an
                 live: blue
                 test: green
 
-  - expressions:
-  - "req.headers.exists_one(x, x == 'x-deployment-version')"
-  - "req.headers['x-deployment-version'].join(',') == ${vars.test}"
-          actions:
-  - type: forward-internal
-              config:
-                url: https://service-${vars.test}.internal
+- expressions:
+- "req.headers.exists_one(x, x == 'x-deployment-version')"
+- "req.headers['x-deployment-version'].join(',') == ${vars.test}"
+  actions:
+- type: forward-internal
+  config:
+  url: https://service-${vars.test}.internal
 
-  - actions:
-  - type: forward-internal
-              config:
-                url: https://service-${vars.live}.internal
-      ```
+- actions:
+- type: forward-internal
+  config:
+  url: https://service-${vars.live}.internal
 
-      **What's happening here?** This policy first assigns `blue`/`green` values to the appropriate environment.
-      It then plumbs those values into the rest of the policy so that you don't have to manually change your headers or internal URLs each time you do a blue-green deployment.
+```
 
-      The policy then checks whether the `x-deployment-version` header exists and its value equals the current `test` variable.
-      If both are `true`, it routes the request to your test environment.
+  **What's happening here?** This policy first assigns `blue`/`green` values to the appropriate environment.
+  It then plumbs those values into the rest of the policy so that you don't have to manually change your headers or internal URLs each time you do a blue-green deployment.
 
-      The policy then sends all other requests to your current live environment.
+  The policy then checks whether the `x-deployment-version` header exists and its value equals the current `test` variable.
+  If both are `true`, it routes the request to your test environment.
+
+  The policy then sends all other requests to your current live environment.
+```
 
 </Tab>
     <Tab title="Microservices/scoped deployment">
@@ -85,46 +87,49 @@ While viewing your new Cloud Endpoint in the dashboard, copy the policy below an
 
       ```yaml
       on_http_request:
+
   - actions:
   - type: set-vars
-              config:
-                vars:
-                  live: blue
-                  test: green
+  config:
+  vars:
+  live: blue
+  test: green
 
   - expressions:
   - "req.path.startsWith('/api/auth')"
   - "req.headers.exists_one(x, x == 'x-deployment-version')"
   - "req.headers['x-deployment-version'].join(',') == ${vars.test}"
-          actions:
+  actions:
   - type: forward-internal
-              config:
-                url: https://auth-${vars.test}.internal
+  config:
+  url: https://auth-${vars.test}.internal
 
   - expressions:
   - "req.path.startsWith('/api/auth')"
-          actions:
+  actions:
   - type: forward-internal
-              config:
-                url: https://auth-${vars.live}.internal
+  config:
+  url: https://auth-${vars.live}.internal
 
   - expressions:
   - "req.path.startsWith('/api/accounts')"
-          actions:
+  actions:
   - type: forward-internal
-              config:
-                url: https://accounts.internal
-      ```
+  config:
+  url: https://accounts.internal
 
-      **What's happening here?** This policy first assigns `blue`/`green` values to the appropriate environment.
-      It then plumbs those values into the rest of the policy so that you don't have to manually change your headers or internal URLs each time you do a blue-green deployment.
+```
 
-      The policy then checks whether the request is to the `/api/auth` path, contains the `x-deployment-version` header, and the header's value equals the current `test` variable.
-      If all are `true`, it routes the request to the test deployment of *just* your auth service.
+**What's happening here?** This policy first assigns `blue`/`green` values to the appropriate environment.
+It then plumbs those values into the rest of the policy so that you don't have to manually change your headers or internal URLs each time you do a blue-green deployment.
 
-      Next, the policy checks whether the request is to the `/api/auth` path, but without the header, and routes it to the live version.
+The policy then checks whether the request is to the `/api/auth` path, contains the `x-deployment-version` header, and the header's value equals the current `test` variable.
+If all are `true`, it routes the request to the test deployment of *just* your auth service.
 
-      Finally, it routes requests to the `/api/accounts` path to that service independent of your ongoing blue-green rollout.
+Next, the policy checks whether the request is to the `/api/auth` path, but without the header, and routes it to the live version.
+
+Finally, it routes requests to the `/api/accounts` path to that service independent of your ongoing blue-green rollout.
+```
 
 </Tab>
 </Tabs>

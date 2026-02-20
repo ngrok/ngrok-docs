@@ -23,21 +23,21 @@ Run the command that corresponds to your operating system to install the Agent C
 <Tabs>
   <Tab title="Mac OS">
 
-  ```bash
-  brew install ngrok
-  ```
+```bash
+brew install ngrok
+```
 
 </Tab>
   <Tab title="Debian Linux">
 
-  ```bash
-  curl -sSL https://ngrok-agent.s3.amazonaws.com/ngrok.asc \
-  | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null \
-  && echo "deb https://ngrok-agent.s3.amazonaws.com buster main" \
-  | sudo tee /etc/apt/sources.list.d/ngrok.list \
-  && sudo apt update \
-  && sudo apt install ngrok
-  ```
+```bash
+curl -sSL https://ngrok-agent.s3.amazonaws.com/ngrok.asc \
+| sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null \
+&& echo "deb https://ngrok-agent.s3.amazonaws.com buster main" \
+| sudo tee /etc/apt/sources.list.d/ngrok.list \
+&& sudo apt update \
+&& sudo apt install ngrok
+```
 
 </Tab>
   <Tab title="Windows">
@@ -72,74 +72,74 @@ If you don't have an app to work with, you can create a minimal app in your lang
 
 <CodeGroup>
 
-  ```javascript title="service.js"
-  const http = require("http");
+```javascript title="service.js"
+const http = require("http");
 
-  const server = http.createServer((req, res) => {
+const server = http.createServer((req, res) => {
   res.writeHead(200, { "Content-Type": "text/html" });
   const html = `
+<html>
+<head><title>Test Page</title></head>
+<body><h1>Hello from Node.js HTTP Server!</h1></body>
+</html>
+`;
+  res.end(html);
+});
+
+const port = 8080;
+server.listen(port, () => {
+  console.log(`Serving custom HTML at http://localhost:${port}`);
+});
+```
+
+```go title="service.go"
+package main
+
+import (
+"fmt"
+"net/http"
+)
+
+func handler(w http.ResponseWriter, r *http.Request) {
+fmt.Fprintf(w, "Hello from Go HTTP Server!")
+}
+
+func main() {
+http.HandleFunc("/", handler)
+
+fmt.Println("Starting server at http://localhost:8080")
+err := http.ListenAndServe(":8080", nil)
+if err != nil {
+fmt.Println("Server failed:", err)
+}
+}
+```
+
+```python title="service.py"
+from http.server import BaseHTTPRequestHandler, HTTPServer
+
+class MyHandler(BaseHTTPRequestHandler):
+def do_GET(self):
+    self.send_response(200)
+    self.send_header("Content-type", "text/html")
+    self.end_headers()
+    html = b"""
     <html>
     <head><title>Test Page</title></head>
-    <body><h1>Hello from Node.js HTTP Server!</h1></body>
+    <body><h1>Hello from Python HTTP Server!</h1></body>
 </html>
-    `;
-  res.end(html);
-  });
+    """
+    self.wfile.write(html)
 
-  const port = 8080;
-  server.listen(port, () => {
-  console.log(`Serving custom HTML at http://localhost:${port}`);
-  });
-  ```
+def run(server_class=HTTPServer, handler_class=MyHandler, port=8080):
+server_address = ('', port)
+httpd = server_class(server_address, handler_class)
+print(f"Serving custom HTML at http://localhost:{port}")
+httpd.serve_forever()
 
-  ```go title="service.go"
-  package main
-
-  import (
-  "fmt"
-  "net/http"
-  )
-
-  func handler(w http.ResponseWriter, r *http.Request) {
-  fmt.Fprintf(w, "Hello from Go HTTP Server!")
-  }
-
-  func main() {
-  http.HandleFunc("/", handler)
-
-  fmt.Println("Starting server at http://localhost:8080")
-  err := http.ListenAndServe(":8080", nil)
-  if err != nil {
-  fmt.Println("Server failed:", err)
-  }
-  }
-  ```
-
-  ```python title="service.py"
-  from http.server import BaseHTTPRequestHandler, HTTPServer
-
-  class MyHandler(BaseHTTPRequestHandler):
-    def do_GET(self):
-        self.send_response(200)
-        self.send_header("Content-type", "text/html")
-        self.end_headers()
-        html = b"""
-        <html>
-        <head><title>Test Page</title></head>
-        <body><h1>Hello from Python HTTP Server!</h1></body>
-</html>
-        """
-        self.wfile.write(html)
-
-  def run(server_class=HTTPServer, handler_class=MyHandler, port=8080):
-    server_address = ('', port)
-    httpd = server_class(server_address, handler_class)
-    print(f"Serving custom HTML at http://localhost:{port}")
-    httpd.serve_forever()
-
-  if __name__ == "__main__":
-    run()
-  ```
+if __name__ == "__main__":
+run()
+```
 </CodeGroup>
 
 Navigate to the directory where this file is located and start the server.

@@ -91,44 +91,44 @@ While viewing your new Cloud Endpoint in the dashboard, copy one of the policies
 <Tabs>
   <Tab title="Using Secrets (Recommended)">
 
-  ```yaml
-  on_http_request:
-  - expressions:
-      # Route Stripe webhooks to payment service
-  - "req.url.path.startsWith('/stripe')"
-    actions:
-  - type: verify-webhook
-        config:
-          provider: stripe
-          secret: "${secrets.get('webhook-secrets', 'stripe-secret')}"
-  - type: forward-internal
-        config:
-          url: https://payment-service.internal
+```yaml
+on_http_request:
+- expressions:
+  # Route Stripe webhooks to payment service
+- "req.url.path.startsWith('/stripe')"
+actions:
+- type: verify-webhook
+    config:
+      provider: stripe
+      secret: "${secrets.get('webhook-secrets', 'stripe-secret')}"
+- type: forward-internal
+    config:
+      url: https://payment-service.internal
 
-  - expressions:
-      # Route Slack webhooks to notification service
-  - "req.url.path.startsWith('/slack')"
-    actions:
-  - type: verify-webhook
-        config:
-          provider: slack
-          secret: "${secrets.get('webhook-secrets', 'slack-secret')}"
-  - type: forward-internal
-        config:
-          url: https://notification-service.internal
+- expressions:
+  # Route Slack webhooks to notification service
+- "req.url.path.startsWith('/slack')"
+actions:
+- type: verify-webhook
+    config:
+      provider: slack
+      secret: "${secrets.get('webhook-secrets', 'slack-secret')}"
+- type: forward-internal
+    config:
+      url: https://notification-service.internal
 
-  - expressions:
-      # Route GitHub webhooks to deployment service
-  - "req.url.path.startsWith('/github')"
-    actions:
-  - type: verify-webhook
-        config:
-          provider: github
-          secret: "${secrets.get('webhook-secrets', 'github-secret')}"
-  - type: forward-internal
-        config:
-          url: https://deployment-service.internal
-  ```
+- expressions:
+  # Route GitHub webhooks to deployment service
+- "req.url.path.startsWith('/github')"
+actions:
+- type: verify-webhook
+    config:
+      provider: github
+      secret: "${secrets.get('webhook-secrets', 'github-secret')}"
+- type: forward-internal
+    config:
+      url: https://deployment-service.internal
+```
 
   **What's happening here?** This policy routes incoming webhook requests based on their URL path.
   Each route first validates the webhook signature using secrets stored in your encrypted vault, then forwards authenticated requests to the appropriate internal service.
@@ -137,44 +137,44 @@ While viewing your new Cloud Endpoint in the dashboard, copy one of the policies
 </Tab>
   <Tab title="Using plaintext secrets">
 
-  ```yaml
-  on_http_request:
-  - expressions:
-      # Route Stripe webhooks to payment service
-  - "req.url.path.startsWith('/stripe')"
-    actions:
-  - type: verify-webhook
-        config:
-          provider: stripe
-          secret: "whsec_your_stripe_secret_here"
-  - type: forward-internal
-        config:
-          url: https://payment-service.internal
+```yaml
+on_http_request:
+- expressions:
+  # Route Stripe webhooks to payment service
+- "req.url.path.startsWith('/stripe')"
+actions:
+- type: verify-webhook
+    config:
+      provider: stripe
+      secret: "whsec_your_stripe_secret_here"
+- type: forward-internal
+    config:
+      url: https://payment-service.internal
 
-  - expressions:
-      # Route Slack webhooks to notification service
-  - "req.url.path.startsWith('/slack')"
-    actions:
-  - type: verify-webhook
-        config:
-          provider: slack
-          secret: "your_slack_verification_token_here"
-  - type: forward-internal
-        config:
-          url: https://notification-service.internal
+- expressions:
+  # Route Slack webhooks to notification service
+- "req.url.path.startsWith('/slack')"
+actions:
+- type: verify-webhook
+    config:
+      provider: slack
+      secret: "your_slack_verification_token_here"
+- type: forward-internal
+    config:
+      url: https://notification-service.internal
 
-  - expressions:
-      # Route GitHub webhooks to deployment service
-  - "req.url.path.startsWith('/github')"
-    actions:
-  - type: verify-webhook
-        config:
-          provider: github
-          secret: "your_github_webhook_secret_here"
-  - type: forward-internal
-        config:
-          url: https://deployment-service.internal
-  ```
+- expressions:
+  # Route GitHub webhooks to deployment service
+- "req.url.path.startsWith('/github')"
+actions:
+- type: verify-webhook
+    config:
+      provider: github
+      secret: "your_github_webhook_secret_here"
+- type: forward-internal
+    config:
+      url: https://deployment-service.internal
+```
 
   **What's happening here?** This policy routes incoming webhook requests based on their URL path.
   Each route first validates the webhook signature using plaintext secrets, then forwards authenticated requests to the appropriate internal service.

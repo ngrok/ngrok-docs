@@ -59,44 +59,44 @@ If you already have a different deployment on your cluster, you'll need to chang
 <Tabs>
   <Tab title="AgentEndpoint">
 
-  ```yaml title="ngrok-crds.yaml"
-  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-  kind: AgentEndpoint
-  metadata:
-  name: tinyllama-endpoint
-  spec:
-  url: https://$YOUR_DOMAIN
-  upstream:
-    url: http://tinyllama.default:80
-  ```
+```yaml title="ngrok-crds.yaml"
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: AgentEndpoint
+metadata:
+name: tinyllama-endpoint
+spec:
+url: https://$YOUR_DOMAIN
+upstream:
+url: http://tinyllama.default:80
+```
 
 </Tab>
   <Tab title="CloudEndpoint + AgentEndpoint">
 
-  ```yaml title="ngrok-crds.yaml"
-  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-  kind: CloudEndpoint
-  metadata:
-  name: tinyllama-cloud-endpoint
-  spec:
-  url: $YOUR_DOMAIN
-  trafficPolicy:
-  policy:
-    on_http_request:
-  - actions:
-  - type: forward-internal
-            config:
-              url: http://tinyllama.internal
-  ---
-  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-  kind: AgentEndpoint
-  metadata:
-  name: tinyllama-endpoint
-  spec:
-  url: http://tinyllama.internal
-  upstream:
-    url: http://tinyllama.default:80
-  ```
+```yaml title="ngrok-crds.yaml"
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: CloudEndpoint
+metadata:
+name: tinyllama-cloud-endpoint
+spec:
+url: $YOUR_DOMAIN
+trafficPolicy:
+policy:
+on_http_request:
+- actions:
+- type: forward-internal
+        config:
+          url: http://tinyllama.internal
+---
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: AgentEndpoint
+metadata:
+name: tinyllama-endpoint
+spec:
+url: http://tinyllama.internal
+upstream:
+url: http://tinyllama.default:80
+```
 
 </Tab>
 </Tabs>
@@ -119,61 +119,61 @@ First, copy your public IP address via the [`ip4v.ngrok.com` mini-app](https://i
 
   Add a `trafficPolicy.inline` field followed by the Traffic Policy rule itself.
 
-  ```yaml title="ngrok-crds.yaml"
-  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-  kind: AgentEndpoint
-  metadata:
-  name: tinyllama-endpoint
-  spec:
-  url: https://$YOUR_DOMAIN
-  upstream:
-    url: http://tinyllama.default:80
-  trafficPolicy:
-    inline:
-      on_http_request:
-  - actions:
-  - type: restrict-ips
-              config:
-                enforce: true
-                allow:
-  - $YOUR_PUBLIC_IP
-  ```
+```yaml title="ngrok-crds.yaml"
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: AgentEndpoint
+metadata:
+name: tinyllama-endpoint
+spec:
+url: https://$YOUR_DOMAIN
+upstream:
+url: http://tinyllama.default:80
+trafficPolicy:
+inline:
+  on_http_request:
+- actions:
+- type: restrict-ips
+          config:
+            enforce: true
+            allow:
+- $YOUR_PUBLIC_IP
+```
 
 </Tab>
   <Tab title="CloudEndpoint + AgentEndpoint">
 
   Insert the new rule above your existing `forward-internal` action to require authentication before forwarding traffic to your internal Agent Endpoint.
 
-  ```yaml title="ngrok-crds.yaml"
-  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-  kind: CloudEndpoint
-  metadata:
-  name: tinyllama-cloud-endpoint
-  spec:
-  url: $YOUR_DOMAIN
-  trafficPolicy:
-    policy:
-      on_http_request:
-  - actions:
-  - type: restrict-ips
-              config:
-                enforce: true
-                allow:
-  - $YOUR_PUBLIC_IP
-  - actions:
-  - type: forward-internal
-              config:
-                url: http://tinyllama.internal
-  ---
-  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-  kind: AgentEndpoint
-  metadata:
-  name: tinyllama-endpoint
-  spec:
-  url: http://tinyllama.internal
-  upstream:
-    url: http://tinyllama.default:80
-  ```
+```yaml title="ngrok-crds.yaml"
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: CloudEndpoint
+metadata:
+name: tinyllama-cloud-endpoint
+spec:
+url: $YOUR_DOMAIN
+trafficPolicy:
+policy:
+  on_http_request:
+- actions:
+- type: restrict-ips
+          config:
+            enforce: true
+            allow:
+- $YOUR_PUBLIC_IP
+- actions:
+- type: forward-internal
+          config:
+            url: http://tinyllama.internal
+---
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: AgentEndpoint
+metadata:
+name: tinyllama-endpoint
+spec:
+url: http://tinyllama.internal
+upstream:
+url: http://tinyllama.default:80
+```
 
 </Tab>
 </Tabs>

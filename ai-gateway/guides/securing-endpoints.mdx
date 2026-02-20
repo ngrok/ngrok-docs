@@ -57,28 +57,33 @@ Generate your own tokens, store them in ngrok Vaults & Secrets, and validate the
     ```yaml
     on_http_request:
       # Reject unauthorized requests
-  - expressions:
-  - req.headers['authorization'][0] != 'Bearer ' + secrets.get('gateway-auth', 'access-token')
-        actions:
-  - type: custom-response
-            config:
-              status_code: 401
-              headers:
-                content-type: application/json
-              body: '{"error": {"message": "Invalid or missing authorization token", "type": "authentication_error"}}'
 
-      # Process authorized requests through the gateway
-  - actions:
-  - type: ai-gateway
-            config:
-              providers:
-  - id: openai
-                  api_keys:
-  - value: ${secrets.get('openai', 'api-key')}
-  - id: anthropic
-                  api_keys:
-  - value: ${secrets.get('anthropic', 'api-key')}
-    ```
+- expressions:
+- req.headers['authorization'][0] != 'Bearer ' + secrets.get('gateway-auth', 'access-token')
+  actions:
+- type: custom-response
+  config:
+  status_code: 401
+  headers:
+  content-type: application/json
+  body: '{"error": {"message": "Invalid or missing authorization token", "type": "authentication_error"}}'
+
+# Process authorized requests through the gateway
+
+- actions:
+- type: ai-gateway
+  config:
+  providers:
+- id: openai
+  api_keys:
+- value: ${secrets.get('openai', 'api-key')}
+- id: anthropic
+  api_keys:
+- value: ${secrets.get('anthropic', 'api-key')}
+
+```
+
+```
 
 </Step>
 

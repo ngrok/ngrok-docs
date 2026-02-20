@@ -48,48 +48,48 @@ Once that file is saved, you can either create a `docker-compose.yaml` file to r
 
 <CodeGroup>
 
-  ```yaml docker-compose.yaml
-  services:
-  n8n:
-    image: docker.n8n.io/n8nio/n8n
-    restart: always
-    ports:
-  - "127.0.0.1:5678:5678"
-    env_file: .env
-    volumes:
-  - n8n_data:/home/node/.n8n
+```yaml docker-compose.yaml
+services:
+n8n:
+image: docker.n8n.io/n8nio/n8n
+restart: always
+ports:
+- "127.0.0.1:5678:5678"
+env_file: .env
+volumes:
+- n8n_data:/home/node/.n8n
 
-  ngrok:
-    image: ngrok/ngrok:latest
-    restart: always
-    depends_on:
-  - n8n
-    env_file: .env
-    command: http --url=${NGROK_DOMAIN} n8n:5678
-    ports:
-  - "4040:4040" # ngrok web UI
+ngrok:
+image: ngrok/ngrok:latest
+restart: always
+depends_on:
+- n8n
+env_file: .env
+command: http --url=${NGROK_DOMAIN} n8n:5678
+ports:
+- "4040:4040" # ngrok web UI
 
-  volumes:
-  n8n_data:
-  ```
+volumes:
+n8n_data:
+```
 
-  ```bash docker
-  docker network create n8n
+```bash docker
+docker network create n8n
 
-  docker run -d --name n8n \
-  --network n8n \
-  -p 5678:5678 \
-  -v n8n_data:/home/node/.n8n \
-  --env-file .env \
-  docker.n8n.io/n8nio/n8n
+docker run -d --name n8n \
+--network n8n \
+-p 5678:5678 \
+-v n8n_data:/home/node/.n8n \
+--env-file .env \
+docker.n8n.io/n8nio/n8n
 
-  docker run -d \
-  --name ngrok \
-  --network n8n \
-  -p 4040:4040 \
-  --env-file .env \
-  ngrok/ngrok:latest http --url=your-n8n-instance.ngrok.app n8n:5678
-  ```
+docker run -d \
+--name ngrok \
+--network n8n \
+-p 4040:4040 \
+--env-file .env \
+ngrok/ngrok:latest http --url=your-n8n-instance.ngrok.app n8n:5678
+```
 </CodeGroup>
 
 If you're using Docker Compose, you'll need to run the following command from the same directory where your `docker-compose.yaml` file is located.
@@ -132,43 +132,43 @@ Then make the following modifications to your `docker-compose.yaml` file to moun
 
 <CodeGroup>
 
-  ```yaml docker-compose.yaml highlight={17-19}
-  services:
-  n8n:
-    image: docker.n8n.io/n8nio/n8n
-    restart: always
-    ports:
-  - "127.0.0.1:5678:5678"
-    env_file: .env
-    volumes:
-  - n8n_data:/home/node/.n8n
+```yaml docker-compose.yaml highlight={17-19}
+services:
+n8n:
+image: docker.n8n.io/n8nio/n8n
+restart: always
+ports:
+- "127.0.0.1:5678:5678"
+env_file: .env
+volumes:
+- n8n_data:/home/node/.n8n
 
-  ngrok:
-    image: ngrok/ngrok:latest
-    restart: always
-    depends_on:
-  - n8n
-    env_file: .env
-    command: http --url=${NGROK_DOMAIN} --traffic-policy-file /etc/n8n.yaml n8n:5678
-    volumes:
-  - ./n8n.yaml:/etc/n8n.yaml
-    ports:
-  - "4040:4040" # ngrok web UI
+ngrok:
+image: ngrok/ngrok:latest
+restart: always
+depends_on:
+- n8n
+env_file: .env
+command: http --url=${NGROK_DOMAIN} --traffic-policy-file /etc/n8n.yaml n8n:5678
+volumes:
+- ./n8n.yaml:/etc/n8n.yaml
+ports:
+- "4040:4040" # ngrok web UI
 
-  volumes:
-  n8n_data:
-  ```
+volumes:
+n8n_data:
+```
 
-  ```bash docker highlight={7-8}
-  docker kill ngrok
-  docker run -d \
-  --name ngrok \
-  --network n8n \
-  -p 4040:4040 \
-  --env-file .env \
-  -v $(pwd)/n8n.yaml:/etc/n8n.yaml \
-  ngrok/ngrok:latest http --url=your-n8n-instance.ngrok.app --traffic-policy-file /etc/n8n.yaml n8n:5678
-  ```
+```bash docker highlight={7-8}
+docker kill ngrok
+docker run -d \
+--name ngrok \
+--network n8n \
+-p 4040:4040 \
+--env-file .env \
+-v $(pwd)/n8n.yaml:/etc/n8n.yaml \
+ngrok/ngrok:latest http --url=your-n8n-instance.ngrok.app --traffic-policy-file /etc/n8n.yaml n8n:5678
+```
 </CodeGroup>
 
 If you're using Docker Compose, restart your setup to apply the new policy.

@@ -20,18 +20,18 @@ This rule uses the [connection variables](/traffic-policy/variables/connection/)
 
 <CodeGroup>
 
-  ```yaml policy.yml
-  on_http_request:
-  - expressions:
-  - ('proxy.anonymous.tor' in conn.client_ip.categories)
-    actions:
-  - type: deny
-        config:
-          status_code: 403
-  ```
+```yaml policy.yml
+on_http_request:
+- expressions:
+- ('proxy.anonymous.tor' in conn.client_ip.categories)
+actions:
+- type: deny
+    config:
+      status_code: 403
+```
 
-  ```json policy.json
-  {
+```json policy.json
+{
   "on_http_request": [
     {
       "expressions": ["('proxy.anonymous.tor' in conn.client_ip.categories)"],
@@ -45,8 +45,8 @@ This rule uses the [connection variables](/traffic-policy/variables/connection/)
       ]
     }
   ]
-  }
-  ```
+}
+```
 </CodeGroup>
 
 ## How to deny traffic from bots and crawlers with a `robots.txt`
@@ -55,27 +55,27 @@ This rule returns a custom response with a [`robots.txt` file](https://developer
 
 <CodeGroup>
 
-  ```yaml policy.yml
-  on_http_request:
-  - expressions:
-  - "!req.url.path.contains('/robots.txt')"
-    actions:
-  - type: forward-internal
-        config:
-          url: <Internal endpoint URL Here>
-  - expressions:
-  - "req.url.path.contains('/robots.txt')"
-    actions:
-  - type: custom-response
-        config:
-          body: "User-agent: *\r\nDisallow: /"
-          headers:
-            content-type: text/plain
-          status_code: 200
-  ```
+```yaml policy.yml
+on_http_request:
+- expressions:
+- "!req.url.path.contains('/robots.txt')"
+actions:
+- type: forward-internal
+    config:
+      url: <Internal endpoint URL Here>
+- expressions:
+- "req.url.path.contains('/robots.txt')"
+actions:
+- type: custom-response
+    config:
+      body: "User-agent: *\r\nDisallow: /"
+      headers:
+        content-type: text/plain
+      status_code: 200
+```
 
-  ```json policy.json
-  {
+```json policy.json
+{
   "on_http_request": [
     {
       "expressions": ["!req.url.path.contains('/robots.txt')"],
@@ -104,30 +104,30 @@ This rule returns a custom response with a [`robots.txt` file](https://developer
       ]
     }
   ]
-  }
-  ```
+}
+```
 </CodeGroup>
 
 You can extend this example to create specific rules for crawlers based on their user agent strings, like [`ChatGPT-User` and `GPTBot`](https://platform.openai.com/docs/bots).
 
 <CodeGroup>
 
-  ```yaml policy.yml
-  on_http_request:
-  - name: Add `robots.txt` to deny specific bots and crawlers
-    expressions:
-  - req.url.contains('/robots.txt')
-    actions:
-  - type: custom-response
-        config:
-          status_code: 200
-          body: User-agent: ChatGPT-User\r\nDisallow: /
-          headers:
-            content-type: text/plain
-  ```
+```yaml policy.yml
+on_http_request:
+- name: Add `robots.txt` to deny specific bots and crawlers
+expressions:
+- req.url.contains('/robots.txt')
+actions:
+- type: custom-response
+    config:
+      status_code: 200
+      body: User-agent: ChatGPT-User\r\nDisallow: /
+      headers:
+        content-type: text/plain
+```
 
-  ```json policy.json
-  {
+```json policy.json
+{
   "on_http_request": [
     {
       "name": "Add `robots.txt` to deny specific bots and crawlers",
@@ -146,8 +146,8 @@ You can extend this example to create specific rules for crawlers based on their
       ]
     }
   ]
-  }
-  ```
+}
+```
 </CodeGroup>
 
 ## How to block traffic from bots and crawlers by user agent
@@ -156,19 +156,19 @@ You can also take action on incoming requests that contain specific strings in [
 
 <CodeGroup>
 
-  ```yaml policy.yml
-  on_http_request:
-  - name: Block specific bots by user agent
-    expressions:
-  - req.user_agent.name in ['ChatGPT-User', 'GPTBot', 'OAI-SearchBot']
-    actions:
-  - type: deny
-        config:
-          status_code: 404
-  ```
+```yaml policy.yml
+on_http_request:
+- name: Block specific bots by user agent
+expressions:
+- req.user_agent.name in ['ChatGPT-User', 'GPTBot', 'OAI-SearchBot']
+actions:
+- type: deny
+    config:
+      status_code: 404
+```
 
-  ```json policy.json
-  {
+```json policy.json
+{
   "on_http_request": [
     {
       "name": "Block specific bots by user agent",
@@ -183,17 +183,17 @@ You can also take action on incoming requests that contain specific strings in [
       ]
     }
   ]
-  }
-  ```
+}
+```
 </CodeGroup>
 
 <Tip>
 
   You can expand the expression to include additional user agents by adding them to the list:
 
-  ```bash
-  ['ChatGPT-User', 'GPTBot', 'anthropic', 'claude']
-  ```
+```bash
+['ChatGPT-User', 'GPTBot', 'anthropic', 'claude']
+```
 </Tip>
 
 ## How to block traffic from bots and crawlers by IP Address
@@ -208,16 +208,16 @@ This rule denies all inbound traffic that is not a GET request.
 
 <CodeGroup>
 
-  ```yaml policy.yml
-  on_http_request:
+```yaml policy.yml
+on_http_request:
   - expressions:
   - req.method != 'GET'
-    actions:
+actions:
   - type: deny
-  ```
+```
 
-  ```json policy.json
-  {
+```json policy.json
+{
   "on_http_request": [
     {
       "expressions": ["req.method != 'GET'"],
@@ -228,8 +228,8 @@ This rule denies all inbound traffic that is not a GET request.
       ]
     }
   ]
-  }
-  ```
+}
+```
 </CodeGroup>
 
 ## Custom response for unauthorized requests
@@ -238,19 +238,19 @@ This rule sends a custom response with status code `401` and body `Unauthorized`
 
 <CodeGroup>
 
-  ```yaml policy.yml
-  on_http_request:
-  - expressions:
-  - !('authorization' in req.headers)
-    actions:
-  - type: custom-response
-        config:
-          status_code: 401
-          body: Unauthorized
-  ```
+```yaml policy.yml
+on_http_request:
+- expressions:
+- !('authorization' in req.headers)
+actions:
+- type: custom-response
+    config:
+      status_code: 401
+      body: Unauthorized
+```
 
-  ```json policy.json
-  {
+```json policy.json
+{
   "on_http_request": [
     {
       "expressions": ["!('authorization' in req.headers)"],
@@ -265,8 +265,8 @@ This rule sends a custom response with status code `401` and body `Unauthorized`
       ]
     }
   ]
-  }
-  ```
+}
+```
 </CodeGroup>
 
 ## How to block traffic from specific countries
@@ -279,20 +279,20 @@ This rule blocks requests based on the origin country using [ISO country codes](
 
 <CodeGroup>
 
-  ```yaml policy.yml
-  on_http_request:
-  - expressions:
-  - conn.geo.country_code in ['<COUNTRY-01>', '<COUNTRY-02>']
-    name: Block traffic from unwanted countries
-    actions:
-  - type: custom-response
-        config:
-          status_code: 401
-          body: Unauthorized request due to country of origin.
-  ```
+```yaml policy.yml
+on_http_request:
+- expressions:
+- conn.geo.country_code in ['<COUNTRY-01>', '<COUNTRY-02>']
+name: Block traffic from unwanted countries
+actions:
+- type: custom-response
+    config:
+      status_code: 401
+      body: Unauthorized request due to country of origin.
+```
 
-  ```json policy.json
-  {
+```json policy.json
+{
   "on_http_request": [
     {
       "expressions": ["conn.geo.country_code in ['<COUNTRY-01>', '<COUNTRY-02>']"],
@@ -308,8 +308,8 @@ This rule blocks requests based on the origin country using [ISO country codes](
       ]
     }
   ]
-  }
-  ```
+}
+```
 </CodeGroup>
 
 ## Limit request sizes
@@ -322,21 +322,21 @@ This rule demonstrates how to prevent excessively large user uploads, like text 
 
 <CodeGroup>
 
-  ```yaml policy.yml
-  on_http_request:
-  - name: Block large POST/PUT requests.
-    expressions:
-  - req.method == 'POST' || req.method == 'PUT'
-  - req.content_length >= 1000
-    actions:
-  - type: custom-response
-        config:
-          status_code: 400
-          body: Error: You can't upload content larger than 1MB.
-  ```
+```yaml policy.yml
+on_http_request:
+- name: Block large POST/PUT requests.
+expressions:
+- req.method == 'POST' || req.method == 'PUT'
+- req.content_length >= 1000
+actions:
+- type: custom-response
+    config:
+      status_code: 400
+      body: Error: You can't upload content larger than 1MB.
+```
 
-  ```json policy.json
-  {
+```json policy.json
+{
   "on_http_request": [
     {
       "name": "Block large POST/PUT requests.",
@@ -352,8 +352,8 @@ This rule demonstrates how to prevent excessively large user uploads, like text 
       ]
     }
   ]
-  }
-  ```
+}
+```
 </CodeGroup>
 
 ## Exempt specific traffic from rate limits
@@ -363,23 +363,23 @@ See [the IP Intelligence docs](/traffic-policy/variables/ip-intel/#ip-categories
 
 <CodeGroup>
 
-  ```yaml policy.yml
-  on_http_request:
-  - expressions:
-  - !('com.algolia.crawler' in conn.client_ip.categories)
-    actions:
-  - type: rate-limit
-        config:
-          name: Only allow 30 requests per minute
-          algorithm: sliding_window
-          capacity: 30
-          rate: 60s
-          bucket_key:
-  - conn.client_ip
-  ```
+```yaml policy.yml
+on_http_request:
+- expressions:
+- !('com.algolia.crawler' in conn.client_ip.categories)
+actions:
+- type: rate-limit
+    config:
+      name: Only allow 30 requests per minute
+      algorithm: sliding_window
+      capacity: 30
+      rate: 60s
+      bucket_key:
+- conn.client_ip
+```
 
-  ```json policy.json
-  {
+```json policy.json
+{
   "on_http_request": [
     {
       "expressions": ["!('com.algolia.crawler' in conn.client_ip.categories)"],
@@ -397,6 +397,6 @@ See [the IP Intelligence docs](/traffic-policy/variables/ip-intel/#ip-categories
       ]
     }
   ]
-  }
-  ```
+}
+```
 </CodeGroup>

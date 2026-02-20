@@ -23,21 +23,21 @@ Use it for one-off demos or sharing local development work.
 
 <CodeGroup>
 
-  ```yaml policy.yml
-  on_http_request:
-  # Prompt for username and password with up to 10 credential pairs
-  - actions:
-  - type: basic-auth
-        config:
-          credentials:
-  - username: user1
-              password: password123
-  - username: user2
-              password: securepass456
-  ```
+```yaml policy.yml
+on_http_request:
+# Prompt for username and password with up to 10 credential pairs
+- actions:
+- type: basic-auth
+    config:
+      credentials:
+- username: user1
+          password: password123
+- username: user2
+          password: securepass456
+```
 
-  ```json policy.json
-  {
+```json policy.json
+{
   "on_http_request": [
     {
       "actions": [
@@ -59,8 +59,8 @@ Use it for one-off demos or sharing local development work.
       ]
     }
   ]
-  }
-  ```
+}
+```
 </CodeGroup>
 
 See [the `basic-auth` action docs](/traffic-policy/actions/basic-auth/) for more information.
@@ -85,17 +85,17 @@ ngrok supports these OAuth providers out of the box with managed applications:
 
 <CodeGroup>
 
-  ```yaml policy.yml
-  on_http_request:
-  # Redirect unauthenticated users to Google sign-in
-  - actions:
-  - type: oauth
-        config:
-          provider: google
-  ```
+```yaml policy.yml
+on_http_request:
+# Redirect unauthenticated users to Google sign-in
+- actions:
+- type: oauth
+    config:
+      provider: google
+```
 
-  ```json policy.json
-  {
+```json policy.json
+{
   "on_http_request": [
     {
       "actions": [
@@ -108,8 +108,8 @@ ngrok supports these OAuth providers out of the box with managed applications:
       ]
     }
   ]
-  }
-  ```
+}
+```
 </CodeGroup>
 
 ### Restrict access by email domain
@@ -118,24 +118,24 @@ Use [expressions](/traffic-policy/concepts/expressions/) to restrict access base
 
 <CodeGroup>
 
-  ```yaml policy.yml
-  on_http_request:
-  # Authenticate with Google OAuth
-  - actions:
-  - type: oauth
-        config:
-          provider: google
-  # Only allow users with company email addresses
-  - expressions:
-  - "!actions.ngrok.oauth.identity.email.endsWith('@your-company.com')"
-    actions:
-  - type: deny
-        config:
-          status_code: 403
-  ```
+```yaml policy.yml
+on_http_request:
+# Authenticate with Google OAuth
+- actions:
+- type: oauth
+    config:
+      provider: google
+# Only allow users with company email addresses
+- expressions:
+- "!actions.ngrok.oauth.identity.email.endsWith('@your-company.com')"
+actions:
+- type: deny
+    config:
+      status_code: 403
+```
 
-  ```json policy.json
-  {
+```json policy.json
+{
   "on_http_request": [
     {
       "actions": [
@@ -159,8 +159,8 @@ Use [expressions](/traffic-policy/concepts/expressions/) to restrict access base
       ]
     }
   ]
-  }
-  ```
+}
+```
 </CodeGroup>
 
 For more OAuth examples—including session controls, multiple email domains, custom OAuth apps, and login/logout flows—see the [`oauth` action docs](/traffic-policy/actions/oauth/) and the [OAuth protection guide](/traffic-policy/examples/oauth-protection/).
@@ -176,23 +176,23 @@ This gives you fine-grained control over authentication while leveraging your ex
 
 <CodeGroup>
 
-  ```yaml policy.yml
-  on_http_request:
-  # Authenticate with your OIDC provider
-  - actions:
-  - type: openid-connect
-        config:
-          issuer_url: https://accounts.google.com
-          client_id: "<your-oidc-client-id>"
-          client_secret: "<your-oidc-client-secret>"
-          scopes:
-  - openid
-  - profile
-  - email
-  ```
+```yaml policy.yml
+on_http_request:
+# Authenticate with your OIDC provider
+- actions:
+- type: openid-connect
+    config:
+      issuer_url: https://accounts.google.com
+      client_id: "<your-oidc-client-id>"
+      client_secret: "<your-oidc-client-secret>"
+      scopes:
+- openid
+- profile
+- email
+```
 
-  ```json policy.json
-  {
+```json policy.json
+{
   "on_http_request": [
     {
       "actions": [
@@ -208,8 +208,8 @@ This gives you fine-grained control over authentication while leveraging your ex
       ]
     }
   ]
-  }
-  ```
+}
+```
 </CodeGroup>
 
 ### Pass identity tokens to your service
@@ -218,30 +218,30 @@ Forward the OIDC identity token to your upstream service via headers for further
 
 <CodeGroup>
 
-  ```yaml policy.yml
-  on_http_request:
-  # Authenticate with OIDC
-  - actions:
-  - type: openid-connect
-        config:
-          issuer_url: https://accounts.google.com
-          client_id: "<your-oidc-client-id>"
-          client_secret: "<your-oidc-client-secret>"
-          scopes:
-  - openid
-  - profile
-  - email
-  # Forward identity token and email to upstream service
-  - actions:
-  - type: add-headers
-        config:
-          headers:
-            x-identity-token: "${actions.ngrok.oidc.identity_token}"
-            x-user-email: "${actions.ngrok.oidc.identity.email}"
-  ```
+```yaml policy.yml
+on_http_request:
+# Authenticate with OIDC
+- actions:
+- type: openid-connect
+    config:
+      issuer_url: https://accounts.google.com
+      client_id: "<your-oidc-client-id>"
+      client_secret: "<your-oidc-client-secret>"
+      scopes:
+- openid
+- profile
+- email
+# Forward identity token and email to upstream service
+- actions:
+- type: add-headers
+    config:
+      headers:
+        x-identity-token: "${actions.ngrok.oidc.identity_token}"
+        x-user-email: "${actions.ngrok.oidc.identity.email}"
+```
 
-  ```json policy.json
-  {
+```json policy.json
+{
   "on_http_request": [
     {
       "actions": [
@@ -270,8 +270,8 @@ Forward the OIDC identity token to your upstream service via headers for further
       ]
     }
   ]
-  }
-  ```
+}
+```
 </CodeGroup>
 
 See [the `openid-connect` action docs](/traffic-policy/actions/oidc/) for more information.
@@ -287,35 +287,35 @@ Combine it with rate limiting for robust API protection.
 
 <CodeGroup>
 
-  ```yaml policy.yml
-  on_http_request:
-  # Validate JWT from Authorization header using JWKS endpoint
-  - actions:
-  - type: jwt-validation
-        config:
-          issuer:
-            allow_list:
-  - value: https://your-auth-provider.com
-          audience:
-            allow_list:
-  - value: "your-api-audience"
-          http:
-            tokens:
-  - type: jwt
-                method: header
-                name: Authorization
-                prefix: "Bearer "
-          jws:
-            allowed_algorithms:
-  - RS256
-            keys:
-              sources:
-                additional_jkus:
-  - https://your-auth-provider.com/.well-known/jwks.json
-  ```
+```yaml policy.yml
+on_http_request:
+# Validate JWT from Authorization header using JWKS endpoint
+- actions:
+- type: jwt-validation
+    config:
+      issuer:
+        allow_list:
+- value: https://your-auth-provider.com
+      audience:
+        allow_list:
+- value: "your-api-audience"
+      http:
+        tokens:
+- type: jwt
+            method: header
+            name: Authorization
+            prefix: "Bearer "
+      jws:
+        allowed_algorithms:
+- RS256
+        keys:
+          sources:
+            additional_jkus:
+- https://your-auth-provider.com/.well-known/jwks.json
+```
 
-  ```json policy.json
-  {
+```json policy.json
+{
   "on_http_request": [
     {
       "actions": [
@@ -359,8 +359,8 @@ Combine it with rate limiting for robust API protection.
       ]
     }
   ]
-  }
-  ```
+}
+```
 </CodeGroup>
 
 ### JWT validation with rate limiting
@@ -369,43 +369,43 @@ Combine authentication with key-based rate limiting for complete API protection.
 
 <CodeGroup>
 
-  ```yaml policy.yml
-  on_http_request:
-  # Rate limit by API key, then validate JWT
-  - actions:
-  - type: rate-limit
-        config:
-          name: 30 requests per minute per API key
-          algorithm: sliding_window
-          capacity: 30
-          rate: 60s
-          bucket_key:
-  - req.headers['x-api-key']
-  - type: jwt-validation
-        config:
-          issuer:
-            allow_list:
-  - value: https://<YOUR-AUTH-PROVIDER>
-          audience:
-            allow_list:
-  - value: "<YOUR-NGROK-DOMAIN>"
-          http:
-            tokens:
-  - type: jwt
-                method: header
-                name: Authorization
-                prefix: "Bearer "
-          jws:
-            allowed_algorithms:
-  - RS256
-            keys:
-              sources:
-                additional_jkus:
-  - https://<YOUR-AUTH-PROVIDER>/.well-known/jwks.json
-  ```
+```yaml policy.yml
+on_http_request:
+# Rate limit by API key, then validate JWT
+- actions:
+- type: rate-limit
+    config:
+      name: 30 requests per minute per API key
+      algorithm: sliding_window
+      capacity: 30
+      rate: 60s
+      bucket_key:
+- req.headers['x-api-key']
+- type: jwt-validation
+    config:
+      issuer:
+        allow_list:
+- value: https://<YOUR-AUTH-PROVIDER>
+      audience:
+        allow_list:
+- value: "<YOUR-NGROK-DOMAIN>"
+      http:
+        tokens:
+- type: jwt
+            method: header
+            name: Authorization
+            prefix: "Bearer "
+      jws:
+        allowed_algorithms:
+- RS256
+        keys:
+          sources:
+            additional_jkus:
+- https://<YOUR-AUTH-PROVIDER>/.well-known/jwks.json
+```
 
-  ```json policy.json
-  {
+```json policy.json
+{
   "on_http_request": [
     {
       "actions": [
@@ -459,8 +459,8 @@ Combine authentication with key-based rate limiting for complete API protection.
       ]
     }
   ]
-  }
-  ```
+}
+```
 </CodeGroup>
 
 See [the `jwt-validation` action docs](/traffic-policy/actions/jwt-validation/) and the [Auth0 integration guide](/integrations/jwt-validation/auth0) for more information.
@@ -474,19 +474,19 @@ Use this for network-level access control, such as allowing only office IPs or b
 
 <CodeGroup>
 
-  ```yaml policy.yml
-  on_http_request:
-  # Only allow requests from trusted IPs
-  - actions:
-  - type: restrict-ips
-        config:
-          allow:
-  - 203.0.113.0/24
-  - 198.51.100.42/32
-  ```
+```yaml policy.yml
+on_http_request:
+# Only allow requests from trusted IPs
+- actions:
+- type: restrict-ips
+    config:
+      allow:
+- 203.0.113.0/24
+- 198.51.100.42/32
+```
 
-  ```json policy.json
-  {
+```json policy.json
+{
   "on_http_request": [
     {
       "actions": [
@@ -499,8 +499,8 @@ Use this for network-level access control, such as allowing only office IPs or b
       ]
     }
   ]
-  }
-  ```
+}
+```
 </CodeGroup>
 
 You can also combine IP restrictions with other authentication methods.
@@ -533,22 +533,22 @@ For APIs that require authentication, immediately reject requests that don't inc
 
 <CodeGroup>
 
-  ```yaml policy.yml
-  on_http_request:
-  # Return 401 if no Authorization header is present
-  - expressions:
-  - "!('authorization' in req.headers)"
-    actions:
-  - type: custom-response
-        config:
-          status_code: 401
-          body: '{"error": "Authorization header required"}'
-          headers:
-            content-type: application/json
-  ```
+```yaml policy.yml
+on_http_request:
+# Return 401 if no Authorization header is present
+- expressions:
+- "!('authorization' in req.headers)"
+actions:
+- type: custom-response
+    config:
+      status_code: 401
+      body: '{"error": "Authorization header required"}'
+      headers:
+        content-type: application/json
+```
 
-  ```json policy.json
-  {
+```json policy.json
+{
   "on_http_request": [
     {
       "expressions": ["!('authorization' in req.headers)"],
@@ -566,8 +566,8 @@ For APIs that require authentication, immediately reject requests that don't inc
       ]
     }
   ]
-  }
-  ```
+}
+```
 </CodeGroup>
 
 ### Tiered rate limits
@@ -576,36 +576,36 @@ Create different rate limits based on authentication status—unauthenticated us
 
 <CodeGroup>
 
-  ```yaml policy.yml
-  on_http_request:
-  # Unauthenticated requests get 10 req/min by IP
-  - expressions:
-  - "!('Authorization' in req.headers)"
-    actions:
-  - type: rate-limit
-        config:
-          name: Free tier - 10 requests per minute
-          algorithm: sliding_window
-          capacity: 10
-          rate: 60s
-          bucket_key:
-  - conn.client_ip
-  # Authenticated requests get 100 req/min by token
-  - expressions:
-  - "'Authorization' in req.headers"
-    actions:
-  - type: rate-limit
-        config:
-          name: Authenticated - 100 requests per minute
-          algorithm: sliding_window
-          capacity: 100
-          rate: 60s
-          bucket_key:
-  - req.headers['authorization']
-  ```
+```yaml policy.yml
+on_http_request:
+# Unauthenticated requests get 10 req/min by IP
+- expressions:
+- "!('Authorization' in req.headers)"
+actions:
+- type: rate-limit
+    config:
+      name: Free tier - 10 requests per minute
+      algorithm: sliding_window
+      capacity: 10
+      rate: 60s
+      bucket_key:
+- conn.client_ip
+# Authenticated requests get 100 req/min by token
+- expressions:
+- "'Authorization' in req.headers"
+actions:
+- type: rate-limit
+    config:
+      name: Authenticated - 100 requests per minute
+      algorithm: sliding_window
+      capacity: 100
+      rate: 60s
+      bucket_key:
+- req.headers['authorization']
+```
 
-  ```json policy.json
-  {
+```json policy.json
+{
   "on_http_request": [
     {
       "expressions": ["!('Authorization' in req.headers)"],
@@ -638,8 +638,8 @@ Create different rate limits based on authentication status—unauthenticated us
       ]
     }
   ]
-  }
-  ```
+}
+```
 </CodeGroup>
 
 ---

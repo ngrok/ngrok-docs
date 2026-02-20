@@ -40,14 +40,15 @@ function isBlockProse(block) {
   const first = block.trimStart();
   if (!first) return false;
   const firstChar = first[0];
-  // Not prose: headers, lists, blockquote, code fence, HTML/JSX, link ref
+  // Not prose: headers, lists, blockquote, code fence, HTML/JSX, link ref, tables
   if (
     firstChar === "#" ||
     firstChar === "-" ||
     firstChar === ">" ||
     firstChar === "`" ||
     firstChar === "<" ||
-    firstChar === "["
+    firstChar === "[" ||
+    firstChar === "|"
   )
     return false;
   // List item: * or - at start of line (but not ** for bold)
@@ -77,24 +78,34 @@ function processBlock(block) {
 /**
  * Repair content inside any JSX component: re-indent list items (  - ), trim closing tag,
  * and ensure 2-space indent for other content. Prettier often strips these; run on full content.
+ * Leaves content inside fenced code blocks (```...```) unchanged so YAML/code isn't broken.
  * Matches PascalCase components only (e.g. Warning, Note, ConfigField) to avoid touching HTML.
  */
 function repairComponentContentInFile(content) {
-  // Match <ComponentName ...>...content...</ComponentName>; non-greedy so innermost matches first
   return content.replace(
     /(<([A-Z][A-Za-z0-9]*)(?:\s[^>]*)?>)([\s\S]*?)(<\/\2>)/g,
     (_, openTag, _tagName, inner, closeTag) => {
       const lines = inner.split("\n");
       const out = [];
+      let inFence = false;
       for (const line of lines) {
         const trimmed = line.trimStart();
+        if (trimmed.startsWith("```")) {
+          inFence = !inFence;
+          out.push(line);
+          continue;
+        }
+        if (inFence) {
+          out.push(line);
+          continue;
+        }
         if (trimmed.startsWith("- ")) out.push("  - " + trimmed.slice(2));
         else if (trimmed.startsWith("</")) out.push(trimmed);
         else if (trimmed.length > 0) out.push(line.startsWith("  ") ? line : "  " + trimmed);
         else out.push(line);
       }
       while (out.length && out[out.length - 1] === "") out.pop();
-      return openTag + out.join("\n") + "\n" + closeTag.trim();
+      return openTag + out.join("\n") + "\n  " + closeTag.trim();
     },
   );
 }
