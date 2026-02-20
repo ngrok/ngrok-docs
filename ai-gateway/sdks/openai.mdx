@@ -5,7 +5,9 @@ description: Use the ngrok AI Gateway with OpenAI's official SDKs.
 ---
 
 <Note>
-**Prerequisite**: You need an AI Gateway endpoint before continuing. Create one using the [dashboard quickstart](/ai-gateway/quickstart) or follow the [manual setup guide](/ai-gateway/guides/creating-endpoints).
+  **Prerequisite**: You need an AI Gateway endpoint before continuing. Create
+  one using the [dashboard quickstart](/ai-gateway/quickstart) or follow the
+  [manual setup guide](/ai-gateway/guides/creating-endpoints).
 </Note>
 
 The AI Gateway is fully compatible with OpenAI's official SDKs. Simply change the base URL configuration option for the OpenAI SDK to route all requests through your gateway, get automatic failover, key rotation, and observability.
@@ -20,6 +22,7 @@ pip install openai
 ```bash TypeScript
 npm install openai
 ```
+
 </CodeGroup>
 
 ## Basic usage
@@ -27,6 +30,7 @@ npm install openai
 Point the SDK at your AI Gateway endpoint.
 
 **Which API key do I use?**
+
 - **Passthrough mode** (default): Use your [OpenAI API key](https://platform.openai.com/api-keys) (for example, `sk-...`)
 - **Server-side keys configured**: Use your [gateway auth token](/ai-gateway/guides/securing-endpoints), or omit if no auth is configured
 
@@ -35,17 +39,18 @@ Point the SDK at your AI Gateway endpoint.
 from openai import OpenAI
 
 client = OpenAI(
-    base_url="https://your-ai-gateway.ngrok.app/v1",
-    api_key="your-api-key"
+base_url="https://your-ai-gateway.ngrok.app/v1",
+api_key="your-api-key"
 )
 
 response = client.chat.completions.create(
-    model="gpt-4o",
-    messages=[{"role": "user", "content": "Hello!"}]
+model="gpt-4o",
+messages=[{"role": "user", "content": "Hello!"}]
 )
 
 print(response.choices[0].message.content)
-```
+
+````
 
 ```typescript TypeScript highlight={4}
 import OpenAI from "openai";
@@ -61,7 +66,7 @@ const response = await client.chat.completions.create({
 });
 
 console.log(response.choices[0].message.content);
-```
+````
 
 </CodeGroup>
 
@@ -74,20 +79,21 @@ The AI Gateway fully supports streaming responses:
 from openai import OpenAI
 
 client = OpenAI(
-    base_url="https://your-ai-gateway.ngrok.app/v1",
-    api_key="your-api-key"
+base_url="https://your-ai-gateway.ngrok.app/v1",
+api_key="your-api-key"
 )
 
 stream = client.chat.completions.create(
-    model="gpt-4o",
-    messages=[{"role": "user", "content": "Write a haiku about APIs"}],
-    stream=True
+model="gpt-4o",
+messages=[{"role": "user", "content": "Write a haiku about APIs"}],
+stream=True
 )
 
 for chunk in stream:
-    if chunk.choices[0].delta.content:
-        print(chunk.choices[0].delta.content, end="")
-```
+if chunk.choices[0].delta.content:
+print(chunk.choices[0].delta.content, end="")
+
+````
 
 ```typescript TypeScript highlight={8}
 import OpenAI from "openai";
@@ -106,7 +112,8 @@ const stream = await client.chat.completions.create({
 for await (const chunk of stream) {
   process.stdout.write(chunk.choices[0]?.delta?.content || "");
 }
-```
+````
+
 </CodeGroup>
 
 ## Using different providers
@@ -118,19 +125,23 @@ Route to different providers using model prefixes:
 from openai import OpenAI
 
 client = OpenAI(
-    base_url="https://your-ai-gateway.ngrok.app/v1",
-    api_key="unused"  # Gateway handles auth
+base_url="https://your-ai-gateway.ngrok.app/v1",
+api_key="unused" # Gateway handles auth
 )
 
 # OpenAI
+
 response = client.chat.completions.create(model="openai:gpt-4o", messages=[...])
 
 # Anthropic (through the gateway)
+
 response = client.chat.completions.create(model="anthropic:claude-3-5-sonnet-latest", messages=[...])
 
 # Your self-hosted Ollama
+
 response = client.chat.completions.create(model="ollama:llama3.2", messages=[...])
-```
+
+````
 
 ```typescript TypeScript highlight={8-9}
 import OpenAI from "openai";
@@ -143,12 +154,13 @@ const client = new OpenAI({
 // OpenAI
 const openaiRes = await client.chat.completions.create({ model: "openai:gpt-4o", messages: [...] });
 
-// Anthropic (through the gateway)  
+// Anthropic (through the gateway)
 const anthropicRes = await client.chat.completions.create({ model: "anthropic:claude-3-5-sonnet-latest", messages: [...] });
 
 // Your self-hosted Ollama
 const ollamaRes = await client.chat.completions.create({ model: "ollama:llama3.2", messages: [...] });
-```
+````
+
 </CodeGroup>
 
 ## Automatic model selection
@@ -160,15 +172,16 @@ Let the gateway choose the best model:
 from openai import OpenAI
 
 client = OpenAI(
-    base_url="https://your-ai-gateway.ngrok.app/v1",
-    api_key="unused"
+base_url="https://your-ai-gateway.ngrok.app/v1",
+api_key="unused"
 )
 
 response = client.chat.completions.create(
-    model="ngrok/auto",  # Gateway selects based on your strategy
-    messages=[{"role": "user", "content": "Hello!"}]
+model="ngrok/auto", # Gateway selects based on your strategy
+messages=[{"role": "user", "content": "Hello!"}]
 )
-```
+
+````
 
 ```typescript TypeScript highlight={9}
 import OpenAI from "openai";
@@ -182,7 +195,8 @@ const response = await client.chat.completions.create({
   model: "ngrok/auto", // Gateway selects based on your strategy
   messages: [{ role: "user", content: "Hello!" }],
 });
-```
+````
+
 </CodeGroup>
 
 ## Embeddings
@@ -197,7 +211,8 @@ response = client.embeddings.create(
 )
 
 embedding = response.data[0].embedding
-```
+
+````
 
 ```typescript TypeScript
 const response = await client.embeddings.create({
@@ -206,7 +221,8 @@ const response = await client.embeddings.create({
 });
 
 const embedding = response.data[0].embedding;
-```
+````
+
 </CodeGroup>
 
 ## Function calling
@@ -250,19 +266,20 @@ import asyncio
 from openai import AsyncOpenAI
 
 client = AsyncOpenAI(
-    base_url="https://your-ai-gateway.ngrok.app/v1",
-    api_key="your-api-key"
+base_url="https://your-ai-gateway.ngrok.app/v1",
+api_key="your-api-key"
 )
 
 async def main():
-    response = await client.chat.completions.create(
-        model="gpt-4o",
-        messages=[{"role": "user", "content": "Hello!"}]
-    )
-    print(response.choices[0].message.content)
+response = await client.chat.completions.create(
+model="gpt-4o",
+messages=[{"role": "user", "content": "Hello!"}]
+)
+print(response.choices[0].message.content)
 
 asyncio.run(main())
-```
+
+````
 
 ```typescript TypeScript
 import OpenAI from "openai";
@@ -277,7 +294,8 @@ const response = await client.chat.completions.create({
   model: "gpt-4o",
   messages: [{ role: "user", content: "Hello!" }],
 });
-```
+````
+
 </CodeGroup>
 
 ## Error handling
@@ -289,21 +307,21 @@ The gateway handles many errors automatically through failover. For errors that 
 from openai import OpenAI, APIError, RateLimitError
 
 client = OpenAI(
-    base_url="https://your-ai-gateway.ngrok.app/v1",
-    api_key="your-api-key"
+base_url="https://your-ai-gateway.ngrok.app/v1",
+api_key="your-api-key"
 )
 
 try:
-    response = client.chat.completions.create(
-        model="gpt-4o",
-        messages=[{"role": "user", "content": "Hello!"}]
-    )
-except RateLimitError:
-    # All configured keys exhausted
-    print("Rate limited across all providers")
+response = client.chat.completions.create(
+model="gpt-4o",
+messages=[{"role": "user", "content": "Hello!"}]
+)
+except RateLimitError: # All configured keys exhausted
+print("Rate limited across all providers")
 except APIError as e:
-    print(f"API error: {e}")
-```
+print(f"API error: {e}")
+
+````
 
 ```typescript TypeScript
 import OpenAI, { APIError, RateLimitError } from "openai";
@@ -326,19 +344,20 @@ try {
     console.log(`API error: ${e.message}`);
   }
 }
-```
+````
+
 </CodeGroup>
 
 ## Supported endpoints
 
 The AI Gateway supports these OpenAI API endpoints:
 
-| Endpoint | Description |
-|----------|-------------|
-| `/v1/chat/completions` | Chat completions |
-| `/v1/completions` | Legacy completions |
-| `/v1/embeddings` | Text embeddings |
-| `/v1/responses` | Responses |
+| Endpoint               | Description        |
+| ---------------------- | ------------------ |
+| `/v1/chat/completions` | Chat completions   |
+| `/v1/completions`      | Legacy completions |
+| `/v1/embeddings`       | Text embeddings    |
+| `/v1/responses`        | Responses          |
 
 ## Next steps
 

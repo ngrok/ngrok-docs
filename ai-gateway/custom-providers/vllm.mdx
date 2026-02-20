@@ -39,6 +39,7 @@ graph LR
     ```bash
     curl http://localhost:8000/v1/models
     ```
+
   </Step>
 
   <Step title="Expose with ngrok">
@@ -47,6 +48,7 @@ graph LR
     ```bash
     ngrok http 8000 --url https://vllm.internal
     ```
+
   </Step>
 
   <Step title="Configure the AI Gateway">
@@ -62,6 +64,7 @@ graph LR
               models:
                 - id: "meta-llama/Llama-3.2-8B-Instruct"
     ```
+
   </Step>
 
   <Step title="Use with OpenAI SDK">
@@ -100,6 +103,7 @@ graph LR
     console.log(response.choices[0].message.content);
     ```
     </CodeGroup>
+
   </Step>
 </Steps>
 
@@ -137,7 +141,8 @@ on_http_request:
 ```
 
 <Tip>
-You can also create secrets in the [ngrok Dashboard](https://dashboard.ngrok.com/vaults).
+  You can also create secrets in the [ngrok
+  Dashboard](https://dashboard.ngrok.com/vaults).
 </Tip>
 
 ### Configure timeouts
@@ -187,7 +192,8 @@ vllm serve model --async-scheduling
 ```
 
 <Note>
-See the [vLLM serve CLI reference](https://docs.vllm.ai/en/latest/cli/serve/) for all available options.
+  See the [vLLM serve CLI reference](https://docs.vllm.ai/en/latest/cli/serve/)
+  for all available options.
 </Note>
 
 ### Multiple models
@@ -203,7 +209,7 @@ on_http_request:
           base_url: "https://vllm-llama.internal"
           models:
             - id: "meta-llama/Llama-3.2-8B-Instruct"
-        
+
         - id: "vllm-mistral"
           base_url: "https://vllm-mistral.internal"
           models:
@@ -223,11 +229,11 @@ on_http_request:
           base_url: "https://vllm.internal"
           models:
             - id: "meta-llama/Llama-3.2-8B-Instruct"
-        
+
         - id: "openai"
           api_keys:
             - value: ${secrets.get('openai', 'api-key')}
-      
+
       model_selection:
         strategy:
           - "ai.models.filter(m, m.provider_id == 'vllm')"
@@ -262,6 +268,7 @@ on_http_request:
 **Symptom**: vLLM fails to start or crashes.
 
 **Solutions**:
+
 1. Check GPU memory: `nvidia-smi`
 2. Use a smaller model or quantized version
 3. Reduce memory usage: `--gpu-memory-utilization 0.9`
@@ -271,6 +278,7 @@ on_http_request:
 **Symptom**: Requests take longer than expected.
 
 **Solutions**:
+
 1. Use tensor parallelism for multi-GPU: `--tensor-parallel-size 2`
 2. Enable async scheduling: `--async-scheduling`
 3. Adjust `--max-num-seqs` for your workload
@@ -280,6 +288,7 @@ on_http_request:
 **Symptom**: Gateway times out waiting for response.
 
 **Solutions**:
+
 1. Increase `per_request_timeout` in gateway config
 2. Check vLLM health: `curl http://localhost:8000/health`
 3. Verify ngrok tunnel is running

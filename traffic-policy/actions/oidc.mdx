@@ -7,7 +7,7 @@ description: The OpenID Connect (OIDC) action restricts access to only authorize
 import ActionVariables from "/snippets/traffic-policy/actions/oidc/variables.mdx";
 import ActionVariablesDescription from "/snippets/traffic-policy/common/action-variables-description.mdx";
 import NonTerminatingExplanation from "/snippets/traffic-policy/common/non-terminating-explanation.mdx";
-import TrafficIdentities from "/snippets/universal-gateway/shared/traffic-identities.mdx"
+import TrafficIdentities from "/snippets/universal-gateway/shared/traffic-identities.mdx";
 import { ConfigField } from "/snippets/ConfigTable.jsx";
 
 The **OpenID Connect** Traffic Policy action restricts access to only authorized users
@@ -28,53 +28,56 @@ The [Traffic Policy](/traffic-policy/) configuration reference for this action.
 ### Configuration fields
 
 <ConfigField title="issuer_url" type="string" required={true}>
-	The base URL of the Open ID provider that serves an OpenID Provider
-	Configuration Document at `/.well-known/openid-configuration`.
+  The base URL of the Open ID provider that serves an OpenID Provider
+  Configuration Document at `/.well-known/openid-configuration`.
 </ConfigField>
 
 <ConfigField title="auth_id" type="string" required={false}>
-	Unique authentication identifier for this provider.
+  Unique authentication identifier for this provider.
 </ConfigField>
 
 <ConfigField title="client_id" type="string" required={false} cel={true}>
-	Your OpenID Connect app's client ID.
+  Your OpenID Connect app's client ID.
 </ConfigField>
 
 <ConfigField title="client_secret" type="string" required={false} cel={true}>
-	Your OpenID Connect app's client secret.
+  Your OpenID Connect app's client secret.
 </ConfigField>
 
 <ConfigField title="scopes" type="array of strings" required={false}>
-	A list of additional scopes to request when users authenticate with the
-	identity provider.
+  A list of additional scopes to request when users authenticate with the
+  identity provider.
 </ConfigField>
 
-<ConfigField title="authz_url_params" type="map of string to string" required={false}>
-	A map of additional URL parameters to apply to the authorization endpoint
-	URL.
+<ConfigField
+  title="authz_url_params"
+  type="map of string to string"
+  required={false}
+>
+  A map of additional URL parameters to apply to the authorization endpoint URL.
 </ConfigField>
 
 <ConfigField title="max_session_duration" type="duration" required={false}>
-	Defines the maximum lifetime of a session regardless of activity.
+  Defines the maximum lifetime of a session regardless of activity.
 </ConfigField>
 
 <ConfigField title="idle_session_duration" type="duration" required={false}>
-	Defines the period of inactivity after which a user's session is
-	automatically ended, requiring re-authentication.
+  Defines the period of inactivity after which a user's session is automatically
+  ended, requiring re-authentication.
 </ConfigField>
 
 <ConfigField title="userinfo_refresh_interval" type="duration" required={false}>
-	How often should ngrok refresh data about the authenticated user from the
-	identity provider.
+  How often should ngrok refresh data about the authenticated user from the
+  identity provider.
 </ConfigField>
 
 <ConfigField title="allow_cors_preflight" type="boolean" required={false}>
-	Allow CORS preflight requests to bypass authentication checks. Enable if
-	the endpoint needs to be accessible via CORS.
+  Allow CORS preflight requests to bypass authentication checks. Enable if the
+  endpoint needs to be accessible via CORS.
 </ConfigField>
 
 <ConfigField title="auth_cookie_domain" type="string" required={false}>
-	Sets the allowed domain for the auth cookie.
+  Sets the allowed domain for the auth cookie.
 </ConfigField>
 
 ### Special paths
@@ -85,21 +88,21 @@ clients to the following paths to invoke different behaviors.
 
 #### `/ngrok/login`
 
-Redirect users to this path to explicitly begin an authentication flow. After 
-authentication, users will be redirected to `/`. If the IdP supports it, ngrok 
-will attempt to instruct the IdP to force re-authentication which will force 
-users to re-enter their credentials with the IdP even if they were already 
-logged in.                                                                                                                                                                                                                                                 |
+Redirect users to this path to explicitly begin an authentication flow. After
+authentication, users will be redirected to `/`. If the IdP supports it, ngrok
+will attempt to instruct the IdP to force re-authentication which will force
+users to re-enter their credentials with the IdP even if they were already
+logged in. |
 
-#### `/ngrok/logout` 
+#### `/ngrok/logout`
 
-Logs the user out by clearing their session cookie. Redirect users to this path 
-to log them out.<br /><br />**Note:** When using the Google OAuth 2.0/OIDC 
-provider in Chrome with a [managed profile](https://support.google.com/chrome/a/answer/188446), 
-`/ngrok/logout` only clears the ngrok session cookie; it does not end the 
-Google/IdP session maintained by the browser. Users may be silently 
-re-authenticated on the next request. To fully sign out, sign out of 
-Chrome/Google (or use a non-managed profile or Incognito) in addition to 
+Logs the user out by clearing their session cookie. Redirect users to this path
+to log them out.<br /><br />**Note:** When using the Google OAuth 2.0/OIDC
+provider in Chrome with a [managed profile](https://support.google.com/chrome/a/answer/188446),
+`/ngrok/logout` only clears the ngrok session cookie; it does not end the
+Google/IdP session maintained by the browser. Users may be silently
+re-authenticated on the next request. To fully sign out, sign out of
+Chrome/Google (or use a non-managed profile or Incognito) in addition to
 calling `/ngrok/logout`.
 
 ### Events
@@ -107,10 +110,10 @@ calling `/ngrok/logout`.
 When this module is enabled, it populates the following fields in the
 [http_request_complete.v0](/obs/events/reference/#http-request-complete) event:
 
-- `oauth.app_client_id` 
-- `oauth.decision`      
-- `oauth.user.id`       
-- `oauth.user.name`     
+- `oauth.app_client_id`
+- `oauth.decision`
+- `oauth.user.id`
+- `oauth.user.name`
 
 ### Supported providers
 
@@ -120,7 +123,7 @@ development, but when you move into production, use your own custom application 
 
 | Provider  | Provider Identifier | Managed App Available | Integration Guide                                    |
 | --------- | ------------------- | --------------------- | ---------------------------------------------------- |
-| Amazon    | `amazon`            | no                    | [Documentation](/integrations/oauth/oauth/)    |
+| Amazon    | `amazon`            | no                    | [Documentation](/integrations/oauth/oauth/)          |
 | Facebook  | `facebook`          | no                    | [Documentation](/integrations/oauth/facebook-oauth)  |
 | GitHub    | `github`            | yes                   | [Documentation](/integrations/oauth/github-oauth)    |
 | GitLab    | `gitlab`            | yes                   | [Documentation](/integrations/oauth/gitlab-oauth)    |
@@ -238,11 +241,7 @@ on_http_request:
             "issuer_url": "{your issuer url}",
             "client_id": "{your app's oauth client id}",
             "client_secret": "{your app's oauth client secret}",
-            "scopes": [
-              "openid",
-              "profile",
-              "email"
-            ]
+            "scopes": ["openid", "profile", "email"]
           }
         }
       ]
@@ -250,73 +249,82 @@ on_http_request:
   ]
 }
 ```
-</CodeGroup>
 
+</CodeGroup>
 
 ## Action result variables
 
 <ActionVariablesDescription />
 
 <ConfigField title="actions.ngrok.oidc.error.code" type="string">
-	Code for an error that occurred during the invocation of an action.
+  Code for an error that occurred during the invocation of an action.
 </ConfigField>
 
 <ConfigField title="actions.ngrok.oidc.error.message" type="string">
-	Message for an error that occurred during the invocation of an action.
+  Message for an error that occurred during the invocation of an action.
 </ConfigField>
 
 <ConfigField title="actions.ngrok.oidc.identity.id" type="string">
-	Unique identifier for the ngrok Identity entity
+  Unique identifier for the ngrok Identity entity
 </ConfigField>
 
 <ConfigField title="actions.ngrok.oidc.identity.email" type="string">
-	Email address of the authorized user from the provider.
+  Email address of the authorized user from the provider.
 </ConfigField>
 
 <ConfigField title="actions.ngrok.oidc.identity.name" type="string">
-	Name for the authorized user from the provider.
+  Name for the authorized user from the provider.
 </ConfigField>
 
 <ConfigField title="actions.ngrok.oidc.identity.provider_user_id" type="string">
-	Identifier for the authorized user from the provider.
+  Identifier for the authorized user from the provider.
 </ConfigField>
 
-<ConfigField title="actions.ngrok.oidc.identity.current_session_id" type="string">
-	The current Identity session identifier for this request.
-</ConfigField>
-
-<ConfigField title="actions.ngrok.oidc.identity_token" type="string">
-	Identifier for the authorized user from the provider.
-</ConfigField>
-
-<ConfigField title="actions.ngrok.oidc.identity.current_session_id" type="string">
-	The current Identity session identifier for this request.
+<ConfigField
+  title="actions.ngrok.oidc.identity.current_session_id"
+  type="string"
+>
+  The current Identity session identifier for this request.
 </ConfigField>
 
 <ConfigField title="actions.ngrok.oidc.identity_token" type="string">
-	The identity token from the provider for the current user.
+  Identifier for the authorized user from the provider.
+</ConfigField>
+
+<ConfigField
+  title="actions.ngrok.oidc.identity.current_session_id"
+  type="string"
+>
+  The current Identity session identifier for this request.
+</ConfigField>
+
+<ConfigField title="actions.ngrok.oidc.identity_token" type="string">
+  The identity token from the provider for the current user.
 </ConfigField>
 
 <ConfigField title="actions.ngrok.oidc.access_token" type="string">
-	The access token from the provider.
+  The access token from the provider.
 </ConfigField>
 
 <ConfigField title="actions.ngrok.oidc.refresh_token" type="string">
-	The refresh token from the provider.
+  The refresh token from the provider.
 </ConfigField>
 
 <ConfigField title="actions.ngrok.oidc.expires_at" type="string">
-	Timestamp when the current session will expire.
+  Timestamp when the current session will expire.
 </ConfigField>
 
 <ConfigField title="actions.ngrok.oidc.session_timed_out" type="boolean">
-	Returns true when the session timed out.
+  Returns true when the session timed out.
 </ConfigField>
 
-<ConfigField title="actions.ngrok.oidc.session_max_duration_reached" type="boolean">
-	Returns true when the current session reached the max duration.
+<ConfigField
+  title="actions.ngrok.oidc.session_max_duration_reached"
+  type="boolean"
+>
+  Returns true when the current session reached the max duration.
 </ConfigField>
 
 <ConfigField title="actions.ngrok.oidc.userinfo_refreshed" type="boolean">
-	Returns true when ngrok updates the user information on the identity.
+  Returns true when ngrok updates the user information on the identity.
 </ConfigField>

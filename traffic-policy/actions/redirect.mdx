@@ -10,10 +10,10 @@ import NonTerminatingExplanation from "/snippets/traffic-policy/common/non-termi
 import { ConfigField } from "/snippets/ConfigTable.jsx";
 import { ConfigChildren } from "/snippets/ConfigChildren.jsx";
 
-The Redirect Traffic Policy Action enables users to send HTTP `3xx` responses by transforming the incoming URL using a regular expression and optional CEL interpolation. 
+The Redirect Traffic Policy Action enables users to send HTTP `3xx` responses by transforming the incoming URL using a regular expression and optional CEL interpolation.
 It can modify any part of the URL such as scheme, host, port, path, or query, and returns a redirect via the `Location` header.
 
-This action is different from the [URL Rewrite Action](/traffic-policy/actions/url-rewrite/), which changes the request internally while keeping the client's URL unchanged. 
+This action is different from the [URL Rewrite Action](/traffic-policy/actions/url-rewrite/), which changes the request internally while keeping the client's URL unchanged.
 Redirects, by contrast, instruct the client to issue a new request to the new URL.
 
 ## Configuration reference
@@ -38,18 +38,23 @@ The [Traffic Policy](/traffic-policy/) configuration reference for this action.
   A regular expression pattern used to replace the matched part of the URL.
 </ConfigField>
 
-<ConfigField title="status_code" type="integer" required={false} defaultValue="302">
+<ConfigField
+  title="status_code"
+  type="integer"
+  required={false}
+  defaultValue="302"
+>
   A <code>3xx</code> status code used for redirecting.
 </ConfigField>
 
 <ConfigField title="headers" type="object" required={false} cel={true}>
-  Map of key-value headers to be added to the response.
-  Maximum <code>10</code> headers can be specified.
+  Map of key-value headers to be added to the response. Maximum <code>10</code>{" "}
+  headers can be specified.
 </ConfigField>
 
 ## Behavior
 
-The Redirect Action modifies the request URL and returns an HTTP redirect (`3xx`) response. 
+The Redirect Action modifies the request URL and returns an HTTP redirect (`3xx`) response.
 It performs the following transformation in sequence:
 
 1. Evaluate any CEL interpolation
@@ -61,7 +66,7 @@ If the rewritten URL is identical to the original, ngrok skips the redirect.
 
 ### CEL interpolation
 
-CEL expressions in `${...}` are evaluated before the redirect rule is applied. Interpolations can reference request or connection data. 
+CEL expressions in `${...}` are evaluated before the redirect rule is applied. Interpolations can reference request or connection data.
 
 For example:
 
@@ -102,13 +107,11 @@ from: ^((?:https?)://[^/]+)/api/v1/(.*)$
 to: $1/api/v2/$2
 ```
 
-
 ```yaml CEL Interpolation
 # Compose anchors with CEL to bind the scheme and authority before matching.
 from: ^${req.url.scheme}://${req.url.authority}/api/v1/
 to: ${req.url.scheme}://${req.url.authority}/api/v2/
 ```
-
 
 ```yaml Phase Expressions
 # Constrain by path in expressions, then use a relative replacement.
@@ -126,10 +129,10 @@ on_http_request:
 
 ### Replacement behavior
 
-The `to` value replaces what was matched by `from`. 
-The replacement is relative to the `from` match. 
-When `from` is omitted, the redirect action replaces the entire URL. 
-Capture groups (such as `$1`, `$2`) can be used to insert matched text into the replacement. 
+The `to` value replaces what was matched by `from`.
+The replacement is relative to the `from` match.
+When `from` is omitted, the redirect action replaces the entire URL.
+Capture groups (such as `$1`, `$2`) can be used to insert matched text into the replacement.
 
 When `from` matches a substring, only that segment changes:
 
@@ -174,9 +177,7 @@ to: https://new.example.com/new/$1
 
 Given the above, `https://example.com/old/foo` would be redirected to `https://new.example.com/new/foo`.
 
-<Note>
-If the rewritten URL equals the original, ngrok skips the redirect.
-</Note>
+<Note>If the rewritten URL equals the original, ngrok skips the redirect.</Note>
 
 ### Redirect response
 
@@ -235,7 +236,6 @@ on_http_request:
           to: $1/store/products$2
 ```
 
-
 ```json policy.json
 {
   "on_http_request": [
@@ -290,17 +290,14 @@ on_http_request:
           to: /api/v2/users/$1/
           status_code: 301
           headers:
-            x-redirected: 'true'
+            x-redirected: "true"
 ```
-
 
 ```json policy.json
 {
   "on_http_request": [
     {
-      "expressions": [
-        "req.url.path.startsWith('/api/')"
-      ],
+      "expressions": ["req.url.path.startsWith('/api/')"],
       "actions": [
         {
           "type": "redirect",
@@ -355,14 +352,11 @@ on_http_request:
           to: /api/v2/geo?city=${conn.geo.city}
 ```
 
-
 ```json policy.json {11}
 {
   "on_http_request": [
     {
-      "expressions": [
-        "req.url.path in ['/api/v2/geo', '/api/v2/geo/']"
-      ],
+      "expressions": ["req.url.path in ['/api/v2/geo', '/api/v2/geo/']"],
       "actions": [
         {
           "type": "redirect",
@@ -398,17 +392,22 @@ In this example, a request to `https://example.ngrok.app/api/v2/geo` will be red
 <ActionVariablesDescription />
 
 <ConfigField title="actions.ngrok.redirect.matches" type="array of strings">
-  A list of elements that were matched during redirection. These represent the request components (for example, path or query parameters) that triggered the action and resulted in the redirect.
+  A list of elements that were matched during redirection. These represent the
+  request components (for example, path or query parameters) that triggered the
+  action and resulted in the redirect.
 </ConfigField>
 
 <ConfigField title="actions.ngrok.redirect.url" type="string">
-  The URL to which the traffic was redirected. This is the destination URL returned as part of the redirect response after the action was executed.
+  The URL to which the traffic was redirected. This is the destination URL
+  returned as part of the redirect response after the action was executed.
 </ConfigField>
 
 <ConfigField title="actions.ngrok.redirect.error.code" type="string">
-  A machine-readable code describing an error that occurred during the action's execution.
+  A machine-readable code describing an error that occurred during the action's
+  execution.
 </ConfigField>
 
 <ConfigField title="actions.ngrok.redirect.error.message" type="string">
-  A human-readable message providing details about an error that occurred during the action's execution.
+  A human-readable message providing details about an error that occurred during
+  the action's execution.
 </ConfigField>

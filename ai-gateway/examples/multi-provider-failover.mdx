@@ -37,8 +37,8 @@ When the primary provider fails, the gateway automatically tries the next provid
 ```js
 const res = await openai.chat.completions.create({
   model: "gpt-4o",
-  models: ["claude-3-5-sonnet-20241022"],  // Fallback models
-  messages: [{ role: "user", content: "Hello!" }]
+  models: ["claude-3-5-sonnet-20241022"], // Fallback models
+  messages: [{ role: "user", content: "Hello!" }],
 });
 ```
 
@@ -56,11 +56,11 @@ on_http_request:
         - id: openai
           api_keys:
             - value: ${secrets.get('openai', 'key')}
-        
+
         - id: anthropic
           api_keys:
             - value: ${secrets.get('anthropic', 'key')}
-        
+
         - id: google
           api_keys:
             - value: ${secrets.get('google', 'key')}
@@ -80,7 +80,7 @@ on_http_request:
         - id: openai
         - id: anthropic
         - id: google
-      
+
       model_selection:
         strategy:
           - "ai.models.filter(m, m.provider_id == 'openai')"
@@ -103,7 +103,7 @@ on_http_request:
           api_keys:
             - value: ${secrets.get('openai', 'key-one')}
             - value: ${secrets.get('openai', 'key-two')}
-        
+
         - id: anthropic
           api_keys:
             - value: ${secrets.get('anthropic', 'key-one')}
@@ -143,7 +143,7 @@ on_http_request:
         - id: openai
         - id: anthropic
         - id: google
-      
+
       model_selection:
         strategy:
           # Prefer low-latency models
@@ -170,7 +170,7 @@ on_http_request:
             - value: ${secrets.get('openai', 'us-east')}
           metadata:
             region: "us-east"
-        
+
         - id: openai-eu
           base_url: "https://eu.api.openai.com"
           id_aliases: ["openai"]
@@ -178,7 +178,7 @@ on_http_request:
             - value: ${secrets.get('openai', 'eu-west')}
           metadata:
             region: "eu-west"
-      
+
       model_selection:
         strategy:
           - "ai.models.filter(m, m.metadata.region == 'us-east')"
@@ -196,9 +196,9 @@ on_http_request:
       only_allow_configured_providers: true
 
       providers:
-        - id: deepseek      # Cost-effective primary
-        - id: openai        # Premium fallback
-        - id: anthropic     # Alternative premium
+        - id: deepseek # Cost-effective primary
+        - id: openai # Premium fallback
+        - id: anthropic # Alternative premium
 
       model_selection:
         strategy:
@@ -220,7 +220,7 @@ on_http_request:
       per_request_timeout: "45s"
       total_timeout: "3m"
       on_error: "halt"
-      
+
       providers:
         # Primary: OpenAI with 3 keys
         - id: openai
@@ -230,7 +230,7 @@ on_http_request:
             - value: ${secrets.get('openai', 'prod-3')}
           metadata:
             tier: "primary"
-        
+
         # Secondary: Anthropic with 2 keys
         - id: anthropic
           api_keys:
@@ -238,14 +238,14 @@ on_http_request:
             - value: ${secrets.get('anthropic', 'prod-2')}
           metadata:
             tier: "secondary"
-        
+
         # Tertiary: Google with 1 key
         - id: google
           api_keys:
             - value: ${secrets.get('google', 'prod')}
           metadata:
             tier: "tertiary"
-      
+
       model_selection:
         strategy:
           - "ai.models.filter(m, m.metrics.global.error_rate.total < 0.05)"
@@ -254,6 +254,7 @@ on_http_request:
 ```
 
 This provides:
+
 - 6 total provider API keys across 3 providers
 - Automatic failover at both key and provider levels
 - Performance-based selection

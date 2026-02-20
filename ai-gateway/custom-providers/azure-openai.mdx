@@ -31,6 +31,7 @@ graph LR
     1. **Endpoint URL**: `https://your-resource.openai.azure.com`
     2. **API Key**: From "Keys and Endpoint" section
     3. **Deployment Name**: The name you gave your model deployment
+
   </Step>
 
   <Step title="Store your API key">
@@ -45,6 +46,7 @@ graph LR
     <Tip>
     You can also create secrets in the [ngrok Dashboard](https://dashboard.ngrok.com/vaults).
     </Tip>
+
   </Step>
 
   <Step title="Configure the AI Gateway">
@@ -68,6 +70,7 @@ graph LR
     <Note>
     Azure OpenAI requires the `api-version` header. The `headers` configuration above ensures this is added to all requests.
     </Note>
+
   </Step>
 
   <Step title="Use with OpenAI SDK">
@@ -106,6 +109,7 @@ graph LR
     console.log(response.choices[0].message.content);
     ```
     </CodeGroup>
+
   </Step>
 </Steps>
 
@@ -128,7 +132,7 @@ on_http_request:
             - value: ${secrets.get('azure-openai', 'api-key')}
           models:
             - id: "gpt-4o"
-        
+
         - id: "azure-gpt35"
           base_url: "https://your-resource.openai.azure.com/openai/deployments/gpt-35-deployment"
           api_keys:
@@ -156,7 +160,7 @@ on_http_request:
             - id: "gpt-4o"
           metadata:
             region: "eastus"
-        
+
         - id: "azure-westus"
           base_url: "https://myapp-westus.openai.azure.com/openai/deployments/gpt-4o"
           api_keys:
@@ -168,7 +172,11 @@ on_http_request:
 ```
 
 <Note>
-Without a model selection strategy, requesting `model: "gpt-4o"` returns both regions as candidates (in config order), enabling failover. Requesting `model: "azure-eastus:gpt-4o"` pins to that region only. For explicit control over failover order, clients can use `models: ["azure-eastus:gpt-4o", "azure-westus:gpt-4o"]`.
+  Without a model selection strategy, requesting `model: "gpt-4o"` returns both
+  regions as candidates (in config order), enabling failover. Requesting `model:
+  "azure-eastus:gpt-4o"` pins to that region only. For explicit control over
+  failover order, clients can use `models: ["azure-eastus:gpt-4o",
+  "azure-westus:gpt-4o"]`.
 </Note>
 
 ### Failover to OpenAI
@@ -188,11 +196,11 @@ on_http_request:
             - value: ${secrets.get('azure-openai', 'api-key')}
           models:
             - id: "gpt-4o"
-        
+
         - id: "openai"
           api_keys:
             - value: ${secrets.get('openai', 'api-key')}
-      
+
       model_selection:
         strategy:
           - "ai.models.filter(m, m.provider_id == 'azure-openai')"
@@ -200,7 +208,10 @@ on_http_request:
 ```
 
 <Note>
-The first strategy that returns models wins. If Azure has matching models, only those are tried. OpenAI is only used if no Azure models match. For cross-provider failover when requests fail, have clients specify multiple models: `models: ["azure-openai:gpt-4o", "openai:gpt-4o"]`.
+  The first strategy that returns models wins. If Azure has matching models,
+  only those are tried. OpenAI is only used if no Azure models match. For
+  cross-provider failover when requests fail, have clients specify multiple
+  models: `models: ["azure-openai:gpt-4o", "openai:gpt-4o"]`.
 </Note>
 
 ### Embeddings
@@ -229,6 +240,7 @@ on_http_request:
 **Symptom**: Requests fail with authentication errors.
 
 **Solutions**:
+
 1. Verify the API key is correct in secrets
 2. Check the key hasn't been regenerated in Azure Portal
 3. Ensure the secret name matches your config
@@ -238,6 +250,7 @@ on_http_request:
 **Symptom**: Requests fail with deployment not found.
 
 **Solutions**:
+
 1. Verify the deployment name in your `base_url`
 2. Check the deployment exists in Azure Portal
 3. Ensure the deployment is in the correct region
@@ -247,6 +260,7 @@ on_http_request:
 **Symptom**: Requests fail with API version errors.
 
 **Solutions**:
+
 1. Update the `api-version` header to a supported version
 2. Check [Azure OpenAI API versions](https://learn.microsoft.com/en-us/azure/ai-services/openai/reference) for current versions
 
@@ -255,6 +269,7 @@ on_http_request:
 **Symptom**: 429 errors from Azure.
 
 **Solutions**:
+
 1. Configure multiple deployments for failover
 2. Request quota increase in Azure Portal
 3. Add multiple API keys per deployment for automatic failover
@@ -264,4 +279,3 @@ on_http_request:
 - [Custom Providers](/ai-gateway/custom-providers) - URL requirements and configuration
 - [Model Selection Strategies](/ai-gateway/guides/model-selection-strategies) - Intelligent routing
 - [Multi-Provider Failover](/ai-gateway/examples/multi-provider-failover) - Failover patterns
-

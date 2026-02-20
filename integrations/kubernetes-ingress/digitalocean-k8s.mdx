@@ -16,7 +16,7 @@ It covers the ngrok Kubernetes Operator (ngrok's official controller for secure 
 - The [ngrok Kubernetes Operator](/k8s/) installed on your cluster.
 - A reserved domain from the ngrok [dashboard](https://dashboard.ngrok.com/domains) or [API](/api-reference/reserveddomains/list); this guide refers to it as `<NGROK_DOMAIN>`.
 
-## Provision a new cluster on DigitalOcean with `doctl` 
+## Provision a new cluster on DigitalOcean with `doctl`
 
 In this guide, the CLI is used as much as possible to showcase how tightly the ngrok Kubernetes Operator can integrate with DigitalOcean and how you might automate these steps in the future.
 
@@ -44,7 +44,7 @@ In this guide, the CLI is used as much as possible to showcase how tightly the n
 
 Your new Kubernetes cluster, managed by DigitalOcean, is all set up—and with the ngrok Kubernetes Operator installed with a single option on the CLI.
 
-## Deploy an example app on your DigitalOcean-managed cluster 
+## Deploy an example app on your DigitalOcean-managed cluster
 
 Explore how to add apps or services to your DigitalOcean-managed Kubernetes cluster.
 This guide uses the Bookinfo app from DigitalOcean's sample Kubernetes apps repository.
@@ -64,7 +64,7 @@ This guide uses the Bookinfo app from DigitalOcean's sample Kubernetes apps repo
 
   You should see your cluster create a handful of new services, then verify everything is running correctly with `kubectl get all -n bookinfo`.
 
-## Configure the ngrok Kubernetes Operator 
+## Configure the ngrok Kubernetes Operator
 
 Your Bookinfo app is running, but you have no means of accessing it.
 You could use `kubectl port-forward...`, but that's a fragile method of accessing your new app, and isn't appropriate for production use.
@@ -76,30 +76,31 @@ The Bookinfo example uses the `productpage` service on port `9080`; use that to 
   This configuration defines how the ngrok Kubernetes Operator routes traffic on `NGROK_DOMAIN` to the `productpage` service on port `9080`.
 
   <Tip>
-  Edit line `10` of the YAML below (the `NGROK_DOMAIN` variable) with the ngrok domain you created earlier.
+    Edit line `10` of the YAML below (the `NGROK_DOMAIN` variable) with the
+    ngrok domain you created earlier.
   </Tip>
 
-   ```yaml showLineNumbers
-   ---
-   apiVersion: networking.k8s.io/v1
-   kind: Ingress
-   metadata:
-     name: bookinfo-ingress
-     namespace: bookinfo
-   spec:
-     ingressClassName: ngrok
-     rules:
-       - host: <NGROK_DOMAIN>
-         http:
-           paths:
-             - path: /
-               pathType: Prefix
-               backend:
-                 service:
-                   name: productpage
-                   port:
-                     number: 9080
-   ```
+  ```yaml showLineNumbers
+  ---
+  apiVersion: networking.k8s.io/v1
+  kind: Ingress
+  metadata:
+    name: bookinfo-ingress
+    namespace: bookinfo
+  spec:
+    ingressClassName: ngrok
+    rules:
+      - host: <NGROK_DOMAIN>
+        http:
+          paths:
+            - path: /
+              pathType: Prefix
+              backend:
+                service:
+                  name: productpage
+                  port:
+                    number: 9080
+  ```
 
 - Apply the new configuration to your cluster:
 
@@ -108,13 +109,13 @@ The Bookinfo example uses the `productpage` service on port `9080`; use that to 
   ```
 
   <Tip>
-  **Troubleshooting:** If you get an error when applying the manifest, double-check that you've updated the `<NGROK_DOMAIN>` value and try again.
-  </Tip>
+**Troubleshooting:** If you get an error when applying the manifest, double-check that you've updated the `<NGROK_DOMAIN>` value and try again.
+</Tip>
 
 - Navigate to `https://<NGROK_DOMAIN>` in your browser to see your Bookinfo app.
   Click **Normal user** to explore; it's a working Kubernetes app with secure ingress via the ngrok Kubernetes Operator.
 
-## Enable extra features of ngrok's cloud service 
+## Enable extra features of ngrok's cloud service
 
 To demonstrate ingress configuration and [OAuth support](/traffic-policy/actions/oauth/), you can launch an observability stack (for example, Prometheus, Grafana, and Alertmanager) on your cluster.
 
@@ -128,70 +129,70 @@ To demonstrate ingress configuration and [OAuth support](/traffic-policy/actions
 
 - Edit your `bookinfo-ingress.yaml` file to add the configuration below, which routes traffic on `https://monitoring.NGROK_DOMAIN/` to the `kube-prometheus-stack-grafana` service on port `9090` in your cluster.
 
-   ```yaml showLineNumbers
-   ---
-   apiVersion: networking.k8s.io/v1
-   kind: Ingress
-   metadata:
-     name: monitoring-ingress
-     namespace: kube-prometheus-stack
-   spec:
-     ingressClassName: ngrok
-     rules:
-       - host: monitoring.<NGROK_DOMAIN>
-         http:
-           paths:
-             - path: /
-               pathType: Prefix
-               backend:
-                 service:
-                   name: kube-prometheus-stack-grafana
-                   port:
-                     number: 9090
-   ```
+  ```yaml showLineNumbers
+  ---
+  apiVersion: networking.k8s.io/v1
+  kind: Ingress
+  metadata:
+    name: monitoring-ingress
+    namespace: kube-prometheus-stack
+  spec:
+    ingressClassName: ngrok
+    rules:
+      - host: monitoring.<NGROK_DOMAIN>
+        http:
+          paths:
+            - path: /
+              pathType: Prefix
+              backend:
+                service:
+                  name: kube-prometheus-stack-grafana
+                  port:
+                    number: 9090
+  ```
 
 - Visit a URL like `https://monitoring.NGROK_DOMAIN/alerts` to see data from Alertmanager.
   For security, restrict who can access your metrics and alerts.
 
-- Edit your `bookinfo-ingress.yaml` file again to add OAuth, leaving the previous configurations untouched. 
-	Note the new `annotations` field and the `NgrokTrafficPolicy` CR.
+- Edit your `bookinfo-ingress.yaml` file again to add OAuth, leaving the previous configurations untouched.
+  Note the new `annotations` field and the `NgrokTrafficPolicy` CR.
 
-   ```yaml showLineNumbers
+  ```yaml showLineNumbers
+  ---
+  apiVersion: networking.k8s.io/v1
+  kind: Ingress
+  metadata:
+    name: monitoring-ingress
+    namespace: kube-prometheus-stack
+    annotations:
+      k8s.ngrok.com/traffic-policy: oauth
+  spec:
+    ingressClassName: ngrok
+    rules:
+      - host: monitoring.<NGROK_DOMAIN>
+        http:
+          paths:
+            - path: /
+              pathType: Prefix
+              backend:
+                service:
+                  name: kube-prometheus-stack-grafana
+                  port:
+                    number: 9090
    ---
-   apiVersion: networking.k8s.io/v1
-   kind: Ingress
-   metadata:
-     name: monitoring-ingress
-     namespace: kube-prometheus-stack
-     annotations:
-       k8s.ngrok.com/traffic-policy: oauth
-   spec:
-     ingressClassName: ngrok
-     rules:
-       - host: monitoring.<NGROK_DOMAIN>
-         http:
-           paths:
-             - path: /
-               pathType: Prefix
-               backend:
-                 service:
-                   name: kube-prometheus-stack-grafana
-                   port:
-                     number: 9090
-    ---
-   # Traffic Policy configuration for OAuth
-   apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-   kind: NgrokTrafficPolicy
-   metadata:
-     name: oauth
-     namespace: default
-   spec:
-     policy:
-        on_http_request:
-          - type: oauth
-            config:
-              provider: google
-   ```
+  # Traffic Policy configuration for OAuth
+  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+  kind: NgrokTrafficPolicy
+  metadata:
+    name: oauth
+    namespace: default
+  spec:
+    policy:
+       on_http_request:
+         - type: oauth
+           config:
+             provider: google
+  ```
 
 - Re-apply your configuration.
 
@@ -206,26 +207,26 @@ To demonstrate ingress configuration and [OAuth support](/traffic-policy/actions
   Update the `NgrokTrafficPolicy` portion of your manifest after changing `example.com` to your domain.
 
   ```yaml
-   # Traffic Policy configuration for OAuth
-   apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-   kind: NgrokTrafficPolicy
-   metadata:
-     name: oauth
-     namespace: default
-   spec:
-     policy:
-       on_http_request:
-         - type: oauth
-           config:
-             provider: google
-         - expressions:
-             - "!actions.ngrok.oauth.identity.email.endsWith('@example.com')"
-           actions:
-             - type: custom-response
-               config:
-                 body: Hey, no auth for you ${actions.ngrok.oauth.identity.name}!
-                 status_code: 400
-   ```
+  # Traffic Policy configuration for OAuth
+  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+  kind: NgrokTrafficPolicy
+  metadata:
+    name: oauth
+    namespace: default
+  spec:
+    policy:
+      on_http_request:
+        - type: oauth
+          config:
+            provider: google
+        - expressions:
+            - "!actions.ngrok.oauth.identity.email.endsWith('@example.com')"
+          actions:
+            - type: custom-response
+              config:
+                body: Hey, no auth for you ${actions.ngrok.oauth.identity.name}!
+                status_code: 400
+  ```
 
 - Check your deployed app again.
   If you log in with an email that doesn't match your domain, ngrok rejects your request.

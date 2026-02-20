@@ -36,7 +36,7 @@ Key Benefits:
 `CloudEndpoint` resources do not have configuration for an upstream, but you can use Traffic Policy configuration with the [forward-internal](/traffic-policy/actions/forward-internal/) action to forward to other endpoints.
 
 The most common pattern is to create an internal `AgentEndpoint` for your upstream services. An internal endpoint is used so that your upstream service is not directly accessible to the public internet, but other ngrok endpoints can route to it using the `forward-internal` action.
-Then, a `CloudEndpoint` resource is created for the hostname that you would like to use. The `CloudEndpoint` is then given Traffic Policy configuration to forward to your `AgentEndpoints`. 
+Then, a `CloudEndpoint` resource is created for the hostname that you would like to use. The `CloudEndpoint` is then given Traffic Policy configuration to forward to your `AgentEndpoints`.
 This makes it simple to have a central resource for a given hostname that defines Traffic Policy actions for things like rate-limiting and authentication that you may like to enforce for the entire hostname while having all of the routing rules for the hostname located in the same location.
 
 The following example showcases how you can create two different internal `AgentEndpoint` resources for two different upstream services, and then use a `CloudEndpoint` to accept traffic for an example hostname and route to the desired `AgentEndpoint`.
@@ -52,7 +52,7 @@ spec:
   upstream:
     url: http://foo-service.example-namespace:8080
   bindings:
-  - internal
+    - internal
 ```
 
 ```yaml
@@ -66,7 +66,7 @@ spec:
   upstream:
     url: http://bar-service.example-namespace:8080
   bindings:
-  - internal
+    - internal
 ```
 
 ```yaml
@@ -77,29 +77,31 @@ metadata:
 spec:
   url: https://example-hostname.ngrok.io
   bindings:
-  - public
+    - public
   trafficPolicy:
     policy:
       on_http_request:
-      - expressions:
-        - "req.url.path.startsWith('/foo-service')"
-        actions:
-        - type: forward-internal
-          config:
-            url: http://foo-service.internal:80
-      - expressions:
-        - "req.url.path.startsWith('/bar-service')"
-        actions:
-        - type: forward-internal
-          config:
-            url: http://bar-service.internal:80
+        - expressions:
+            - "req.url.path.startsWith('/foo-service')"
+          actions:
+            - type: forward-internal
+              config:
+                url: http://foo-service.internal:80
+        - expressions:
+            - "req.url.path.startsWith('/bar-service')"
+          actions:
+            - type: forward-internal
+              config:
+                url: http://bar-service.internal:80
 ```
 
 `CloudEndpoint` and `AgentEndpoint` resources offer a lot of flexibility in determining when to run Traffic Policy actions.
 Check out the [Traffic Policy expressions](/traffic-policy/concepts/expressions/) page for more information about the expressions you can write.
 
 <Tip>
-You can also include Traffic Policy configuration on your internal AgentEndpoint resources that will run after the CloudEndpoint forwards the request to them
+  You can also include Traffic Policy configuration on your internal
+  AgentEndpoint resources that will run after the CloudEndpoint forwards the
+  request to them
 </Tip>
 
 ## Exact path matching
@@ -110,7 +112,8 @@ The request will not be routed unless it has the exact path `/example`, so `/exa
 <Tabs>
   <Tab title="CloudEndpoint with AgentEndpoint">
 
-  ### 1. Create an `AgentEndpoint` for your upstream `Service`
+### 1. Create an `AgentEndpoint` for your upstream `Service`
+
 ```yaml
 apiVersion: ngrok.k8s.ngrok.com/v1alpha1
 kind: AgentEndpoint
@@ -122,10 +125,10 @@ spec:
   upstream:
     url: http://example-service.example-namespace:8080
   bindings:
-  - internal
+    - internal
 ```
 
-  ### 2. Create a `CloudEndpoint` that routes to the `AgentEndpoint`
+### 2. Create a `CloudEndpoint` that routes to the `AgentEndpoint`
 
 ```yaml
 apiVersion: ngrok.k8s.ngrok.com/v1alpha1
@@ -135,17 +138,18 @@ metadata:
 spec:
   url: https://example-hostname.ngrok.io
   bindings:
-  - public
+    - public
   trafficPolicy:
     policy:
       on_http_request:
-      - expressions:
-        - "req.url.path == '/example'"
-        actions:
-        - type: forward-internal
-          config:
-            url: http://example-service.internal:80
+        - expressions:
+            - "req.url.path == '/example'"
+          actions:
+            - type: forward-internal
+              config:
+                url: http://example-service.internal:80
 ```
+
   </Tab>
   <Tab title="Ingress">
 ```yaml
@@ -172,9 +176,9 @@ spec:
   <Tab title="Gateway API">
   Check out the [Gateway API HTTPRoute matching docs](https://gateway-api.sigs.k8s.io/api-types/httproute/#matches) for more information on matching requests.
 
-  ### 1. Create a `Gateway`
+### 1. Create a `Gateway`
 
-  If you already have a `Gateway` you can use that instead
+If you already have a `Gateway` you can use that instead
 
 ```yaml
 apiVersion: gateway.networking.k8s.io/v1
@@ -191,7 +195,7 @@ spec:
       protocol: HTTPS
 ```
 
-  ### 2. Create an `HTTPRoute` with Exact Path Matching
+### 2. Create an `HTTPRoute` with Exact Path Matching
 
 ```yaml
 apiVersion: gateway.networking.k8s.io/v1
@@ -201,27 +205,27 @@ metadata:
   namespace: default
 spec:
   hostnames:
-  - example-hostname.ngrok.io
+    - example-hostname.ngrok.io
   parentRefs:
-  - group: gateway.networking.k8s.io
-    kind: Gateway
-    name: example-gateway
-    namespace: default
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: example-gateway
+      namespace: default
   rules:
-  - matches:
-    - path:
-        type: Exact
-        value: /example
-    backendRefs:
-      - group: ""
-        kind: Service
-        name: example-service
-        port: 80
-        weight: 1
+    - matches:
+        - path:
+            type: Exact
+            value: /example
+      backendRefs:
+        - group: ""
+          kind: Service
+          name: example-service
+          port: 80
+          weight: 1
 ```
+
   </Tab>
 </Tabs>
-
 
 ## Path prefix matching
 
@@ -245,7 +249,7 @@ spec:
   - internal
 ```
 
-  ### 2. Create a `CloudEndpoint` that routes to the `AgentEndpoint`
+### 2. Create a `CloudEndpoint` that routes to the `AgentEndpoint`
 
 ```yaml
 apiVersion: ngrok.k8s.ngrok.com/v1alpha1
@@ -255,17 +259,18 @@ metadata:
 spec:
   url: https://example-hostname.ngrok.io
   bindings:
-  - public
+    - public
   trafficPolicy:
     policy:
       on_http_request:
-      - expressions:
-        - "req.url.path.startsWith('/example')"
-        actions:
-        - type: forward-internal
-          config:
-            url: http://example-service.internal:80
+        - expressions:
+            - "req.url.path.startsWith('/example')"
+          actions:
+            - type: forward-internal
+              config:
+                url: http://example-service.internal:80
 ```
+
   </Tab>
 <Tab title="Ingress">
 ```yaml
@@ -321,27 +326,27 @@ metadata:
   namespace: default
 spec:
   hostnames:
-  - example-hostname.ngrok.io
+    - example-hostname.ngrok.io
   parentRefs:
-  - group: gateway.networking.k8s.io
-    kind: Gateway
-    name: example-gateway
-    namespace: default
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: example-gateway
+      namespace: default
   rules:
-  - matches:
-    - path:
-        type: PathPrefix
-        value: /example
-    backendRefs:
-      - group: ""
-        kind: Service
-        name: example-service
-        port: 80
-        weight: 1
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /example
+      backendRefs:
+        - group: ""
+          kind: Service
+          name: example-service
+          port: 80
+          weight: 1
 ```
+
 </Tab>
 </Tabs>
-
 
 ## Request method matching
 
@@ -374,17 +379,18 @@ metadata:
 spec:
   url: https://example-hostname.ngrok.io
   bindings:
-  - public
+    - public
   trafficPolicy:
     policy:
       on_http_request:
-      - expressions:
-        - "req.method == 'POST'"
-        actions:
-        - type: forward-internal
-          config:
-            url: http://example-service.internal:80
+        - expressions:
+            - "req.method == 'POST'"
+          actions:
+            - type: forward-internal
+              config:
+                url: http://example-service.internal:80
 ```
+
 </Tab>
 <Tab title="Ingress">
 ❌ `Ingress` resources do not natively support request method matching, so this option requires using Gateway API or the `CloudEndpoint`/`AgentEndpoint` resources directly.
@@ -421,22 +427,23 @@ metadata:
   namespace: default
 spec:
   hostnames:
-  - example-hostname.ngrok.io
+    - example-hostname.ngrok.io
   parentRefs:
-  - group: gateway.networking.k8s.io
-    kind: Gateway
-    name: example-gateway
-    namespace: default
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: example-gateway
+      namespace: default
   rules:
-  - matches:
-    - method: "POST"
-    backendRefs:
-      - group: ""
-        kind: Service
-        name: example-service
-        port: 80
-        weight: 1
+    - matches:
+        - method: "POST"
+      backendRefs:
+        - group: ""
+          kind: Service
+          name: example-service
+          port: 80
+          weight: 1
 ```
+
 </Tab>
 </Tabs>
 
@@ -471,19 +478,20 @@ metadata:
 spec:
   url: https://example-hostname.ngrok.io
   bindings:
-  - public
+    - public
   trafficPolicy:
     policy:
       on_http_request:
-      - expressions:
-        - "req.url.path.startsWith('/')"
+        - expressions:
+            - "req.url.path.startsWith('/')"
 
-        - "req.headers.exists_one(x, x == 'x-request-header') && req.headers['x-request-header'].join(',') == 'foo'"
-        actions:
-        - type: forward-internal
-          config:
-            url: http://example-service.internal:80
+            - "req.headers.exists_one(x, x == 'x-request-header') && req.headers['x-request-header'].join(',') == 'foo'"
+          actions:
+            - type: forward-internal
+              config:
+                url: http://example-service.internal:80
 ```
+
 </Tab>
 <Tab title="Ingress">
 ❌ `Ingress` resources do not natively support header matching, so this option requires using Gateway API or the `CloudEndpoint`/`AgentEndpoint` resources directly.
@@ -520,25 +528,26 @@ metadata:
   namespace: default
 spec:
   hostnames:
-  - example-hostname.ngrok.io
+    - example-hostname.ngrok.io
   parentRefs:
-  - group: gateway.networking.k8s.io
-    kind: Gateway
-    name: example-gateway
-    namespace: default
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: example-gateway
+      namespace: default
   rules:
-  - matches:
-    - headers:
-      - type: Exact
-        name: x-request-header
-        value: foo
-    backendRefs:
-      - group: ""
-        kind: Service
-        name: example-service
-        port: 80
-        weight: 1
+    - matches:
+        - headers:
+            - type: Exact
+              name: x-request-header
+              value: foo
+      backendRefs:
+        - group: ""
+          kind: Service
+          name: example-service
+          port: 80
+          weight: 1
 ```
+
 </Tab>
 </Tabs>
 
@@ -573,17 +582,18 @@ metadata:
 spec:
   url: https://example-hostname.ngrok.io
   bindings:
-  - public
+    - public
   trafficPolicy:
     policy:
       on_http_request:
-      - expressions:
-        - "req.headers.exists_one(x, x == 'x-request-header') && req.headers['x-request-header'].join(',').matches('x-value-.*')"
-        actions:
-        - type: forward-internal
-          config:
-            url: http://example-service.internal:80
+        - expressions:
+            - "req.headers.exists_one(x, x == 'x-request-header') && req.headers['x-request-header'].join(',').matches('x-value-.*')"
+          actions:
+            - type: forward-internal
+              config:
+                url: http://example-service.internal:80
 ```
+
 </Tab>
 <Tab title="Ingress">
 ❌ `Ingress` resources do not natively support header matching, so this option requires using Gateway API or the `CloudEndpoint`/`AgentEndpoint` resources directly.
@@ -620,25 +630,26 @@ metadata:
   namespace: default
 spec:
   hostnames:
-  - example-hostname.ngrok.io
+    - example-hostname.ngrok.io
   parentRefs:
-  - group: gateway.networking.k8s.io
-    kind: Gateway
-    name: example-gateway
-    namespace: default
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: example-gateway
+      namespace: default
   rules:
-  - matches:
-    - headers:
-      - type: RegularExpression
-        name: x-request-header
-        value: x-value-.*
-    backendRefs:
-      - group: ""
-        kind: Service
-        name: example-service
-        port: 80
-        weight: 1
+    - matches:
+        - headers:
+            - type: RegularExpression
+              name: x-request-header
+              value: x-value-.*
+      backendRefs:
+        - group: ""
+          kind: Service
+          name: example-service
+          port: 80
+          weight: 1
 ```
+
 </Tab>
 </Tabs>
 
@@ -673,17 +684,18 @@ metadata:
 spec:
   url: https://example-hostname.ngrok.io
   bindings:
-  - public
+    - public
   trafficPolicy:
     policy:
       on_http_request:
-      - expressions:
-        - "req.url.query_params.exists_one(x, x == 'my-query-param') && req.url.query_params['my-query-param'].join(',') == 'foo'"
-        actions:
-        - type: forward-internal
-          config:
-            url: http://example-service.internal:80
+        - expressions:
+            - "req.url.query_params.exists_one(x, x == 'my-query-param') && req.url.query_params['my-query-param'].join(',') == 'foo'"
+          actions:
+            - type: forward-internal
+              config:
+                url: http://example-service.internal:80
 ```
+
 </Tab>
 <Tab title="Ingress">
 ❌ `Ingress` resources do not natively support header matching, so this option requires using Gateway API or the `CloudEndpoint`/`AgentEndpoint` resources directly.
@@ -720,25 +732,26 @@ metadata:
   namespace: default
 spec:
   hostnames:
-  - example-hostname.ngrok.io
+    - example-hostname.ngrok.io
   parentRefs:
-  - group: gateway.networking.k8s.io
-    kind: Gateway
-    name: example-gateway
-    namespace: default
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: example-gateway
+      namespace: default
   rules:
-  - matches:
-    - queryParams:
-      - type: Exact
-        name: my-query-param
-        value: foo
-    backendRefs:
-      - group: ""
-        kind: Service
-        name: example-service
-        port: 80
-        weight: 1
+    - matches:
+        - queryParams:
+            - type: Exact
+              name: my-query-param
+              value: foo
+      backendRefs:
+        - group: ""
+          kind: Service
+          name: example-service
+          port: 80
+          weight: 1
 ```
+
 </Tab>
 </Tabs>
 
@@ -773,17 +786,18 @@ metadata:
 spec:
   url: https://example-hostname.ngrok.io
   bindings:
-  - public
+    - public
   trafficPolicy:
     policy:
       on_http_request:
-      - expressions:
-        - "req.url.query_params.exists_one(x, x == 'my-query-param') && req.url.query_params['my-query-param'].join(',').matches('value-.*')"
-        actions:
-        - type: forward-internal
-          config:
-            url: http://example-service.internal:80
+        - expressions:
+            - "req.url.query_params.exists_one(x, x == 'my-query-param') && req.url.query_params['my-query-param'].join(',').matches('value-.*')"
+          actions:
+            - type: forward-internal
+              config:
+                url: http://example-service.internal:80
 ```
+
 </Tab>
 <Tab title="Ingress">
 ❌ `Ingress` resources do not natively support query parameter matching, so this option requires using Gateway API or the `CloudEndpoint`/`AgentEndpoint` resources directly.
@@ -820,24 +834,25 @@ metadata:
   namespace: default
 spec:
   hostnames:
-  - example-hostname.ngrok.io
+    - example-hostname.ngrok.io
   parentRefs:
-  - group: gateway.networking.k8s.io
-    kind: Gateway
-    name: example-gateway
-    namespace: default
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: example-gateway
+      namespace: default
   rules:
-  - matches:
-    - queryParams:
-      - type: RegularExpression
-        name: my-query-param
-        value: value-.*
-    backendRefs:
-      - group: ""
-        kind: Service
-        name: example-service
-        port: 80
-        weight: 1
+    - matches:
+        - queryParams:
+            - type: RegularExpression
+              name: my-query-param
+              value: value-.*
+      backendRefs:
+        - group: ""
+          kind: Service
+          name: example-service
+          port: 80
+          weight: 1
 ```
+
 </Tab>
 </Tabs>

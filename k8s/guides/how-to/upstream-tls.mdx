@@ -13,7 +13,6 @@ By configuring Upstream TLS and mTLS, you can:
 ⚡ Authenticate API Gateway requests using client certificates. <br />
 🚀 Enforce stricter security policies for upstream service communication. <br />
 
-
 ## 🔍 What are the benefits of upstream TLS & mTLS?
 
 Securing upstream connections is essential for protecting sensitive data in transit, ensuring that API requests remain confidential and tamper-proof as they move between services.
@@ -59,6 +58,7 @@ openssl x509 -req -in client.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out c
 ```
 
 These commands will generate the following files:
+
 - CA Files:
   - `ca.key`: CA private key
   - `ca.crt`: CA certificate
@@ -74,6 +74,7 @@ These commands will generate the following files:
 ### 2. Configure your upstream
 
 If you're testing this with an upstream service that you have. It will need to make use of the following files that were generated.
+
 - `server.crt`: Used to terminate TLS
 - `server.key`: Used to terminate TLS
 - `ca.crt`: Used to validate client certificates
@@ -102,9 +103,10 @@ spec:
   upstream:
     url: https://my-service.my-namespace:8443
   clientCertificateRefs:
-  - name: client-cert-secret
-    namespace: default
+    - name: client-cert-secret
+      namespace: default
 ```
+
 </Tab>
 <Tab title="Ingress">
 ❌ `Ingress` resources do not natively support advanced upstream TLS options, so this option requires using Gateway API or the `AgentEndpoint` resources directly.
@@ -134,6 +136,7 @@ spec:
   selector:
     app: example-app
 ```
+
 </Tab>
 <Tab title="Gateway API">
 ✅ Gateway API natively supports upstream TLS configuration, and this feature is fully supported by the ngrok Kubernetes Operator.
@@ -168,23 +171,23 @@ metadata:
   namespace: default
 spec:
   hostnames:
-  - example-hostname.ngrok.io
+    - example-hostname.ngrok.io
   parentRefs:
-  - group: gateway.networking.k8s.io
-    kind: Gateway
-    name: example-gateway
-    namespace: default
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: example-gateway
+      namespace: default
   rules:
-  - matches:
-    - path:
-        type: PathPrefix
-        value: /
-    backendRefs:
-      - group: ""
-        kind: Service
-        name: example-service
-        port: 443
-        weight: 1
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - group: ""
+          kind: Service
+          name: example-service
+          port: 443
+          weight: 1
 ```
 
 ### 6. Annotate the service
@@ -213,5 +216,6 @@ spec:
   selector:
     app: example-app
 ```
+
 </Tab>
 </Tabs>

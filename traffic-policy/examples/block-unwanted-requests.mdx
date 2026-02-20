@@ -5,8 +5,6 @@ description: Learn how to block unwanted or malicious requests using Traffic Pol
 
 import BlockAIBotsByIPIntel from "/snippets/traffic-policy/gallery/BlockAIBotsIPIntel.mdx";
 
-
-
 With Traffic Policy, you can block unwanted requests to your endpoints. This page demonstrates a few example rules that do so.
 
 See the following Traffic Policy action docs for more information:
@@ -34,9 +32,7 @@ on_http_request:
 {
   "on_http_request": [
     {
-      "expressions": [
-        "('proxy.anonymous.tor' in conn.client_ip.categories)"
-      ],
+      "expressions": ["('proxy.anonymous.tor' in conn.client_ip.categories)"],
       "actions": [
         {
           "type": "deny",
@@ -60,30 +56,28 @@ This rule returns a custom response with a [`robots.txt` file](https://developer
 
 ```yaml policy.yml
 on_http_request:
-  - expressions: 
-    - "!req.url.path.contains('/robots.txt')"
+  - expressions:
+      - "!req.url.path.contains('/robots.txt')"
     actions:
-    - type: forward-internal
-      config: 
-        url: <Internal endpoint URL Here>
-  - expressions: 
-    - "req.url.path.contains('/robots.txt')"
+      - type: forward-internal
+        config:
+          url: <Internal endpoint URL Here>
+  - expressions:
+      - "req.url.path.contains('/robots.txt')"
     actions:
-    - type: custom-response
-      config:
-        body: "User-agent: *\r\nDisallow: /"
-        headers:
-          content-type: text/plain
-        status_code: 200
+      - type: custom-response
+        config:
+          body: "User-agent: *\r\nDisallow: /"
+          headers:
+            content-type: text/plain
+          status_code: 200
 ```
-  
+
 ```json policy.json
 {
   "on_http_request": [
     {
-      "expressions": [
-        "!req.url.path.contains('/robots.txt')"
-      ],
+      "expressions": ["!req.url.path.contains('/robots.txt')"],
       "actions": [
         {
           "type": "forward-internal",
@@ -94,9 +88,7 @@ on_http_request:
       ]
     },
     {
-      "expressions": [
-        "req.url.path.contains('/robots.txt')"
-      ],
+      "expressions": ["req.url.path.contains('/robots.txt')"],
       "actions": [
         {
           "type": "custom-response",
@@ -139,9 +131,7 @@ on_http_request:
   "on_http_request": [
     {
       "name": "Add `robots.txt` to deny specific bots and crawlers",
-      "expressions": [
-        "req.url.contains('/robots.txt')"
-      ],
+      "expressions": ["req.url.contains('/robots.txt')"],
       "actions": [
         {
           "type": "custom-response",
@@ -235,9 +225,7 @@ on_http_request:
 {
   "on_http_request": [
     {
-      "expressions": [
-        "req.method != 'GET'"
-      ],
+      "expressions": ["req.method != 'GET'"],
       "actions": [
         {
           "type": "deny"
@@ -271,9 +259,7 @@ on_http_request:
 {
   "on_http_request": [
     {
-      "expressions": [
-        "!('authorization' in req.headers)"
-      ],
+      "expressions": ["!('authorization' in req.headers)"],
       "actions": [
         {
           "type": "custom-response",
@@ -408,9 +394,7 @@ on_http_request:
 {
   "on_http_request": [
     {
-      "expressions": [
-        "!('com.algolia.crawler' in conn.client_ip.categories)"
-      ],
+      "expressions": ["!('com.algolia.crawler' in conn.client_ip.categories)"],
       "actions": [
         {
           "type": "rate-limit",
@@ -419,9 +403,7 @@ on_http_request:
             "algorithm": "sliding_window",
             "capacity": 30,
             "rate": "60s",
-            "bucket_key": [
-              "conn.client_ip"
-            ]
+            "bucket_key": ["conn.client_ip"]
           }
         }
       ]

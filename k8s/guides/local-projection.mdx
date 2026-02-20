@@ -72,6 +72,7 @@ The ngrok CLI works best for if you're _not_ running the service in a [local K8s
     ```
 
     The URL format is `http://<service-name>.<namespace>`, which determines where the `Service` resource gets created in your cluster.
+
   </Tab>
   <Tab title="Kubernetes Operator">
     If you want to project a service using the Operator instead (useful for projecting services between clusters), create an `AgentEndpoint`:
@@ -89,6 +90,7 @@ The ngrok CLI works best for if you're _not_ running the service in a [local K8s
       upstream:
         url: http://localhost:8080
     ```
+
   </Tab>
 </Tabs>
 
@@ -96,7 +98,7 @@ Once started, the Operator creates a `Service` named `my-service` in the `stagin
 
 ## 3. Test the connection
 
-Verify the projected service is accessible from within your *remote* cluster:
+Verify the projected service is accessible from within your _remote_ cluster:
 
 ```bash
 kubectl run -i --tty --rm debug \
@@ -115,11 +117,13 @@ If other services in your cluster already communicate with a service you want to
 For example, if a `frontend` deployment sends requests to a `backend` service configured via an environment variable:
 
 1. Start your Kubernetes-bound endpoint with the same service name:
+
    ```bash
    ngrok http 8080 --url http://backend.staging --binding kubernetes
    ```
 
 2. Update the frontend deployment to point to your projected service:
+
    ```bash
    kubectl set env deployment/frontend BACKEND_URL=http://backend.staging
    ```
@@ -129,7 +133,7 @@ For example, if a `frontend` deployment sends requests to a `backend` service co
    kubectl rollout restart deployment/frontend -n staging
    ```
 
-Now all requests from `frontend` to `BACKEND_URL` route to your local machine. 
+Now all requests from `frontend` to `BACKEND_URL` route to your local machine.
 When you make changes locally using your IDE, they'll be instantly reflected in the remote cluster, and services in staging interact direct with your local version.
 Test and iterate until you're ready to create a pull request and push more formally to your CI/CD pipeline, then revert the environment variable, perform another rollout, and stop your ngrok agent to clean everything up.
 

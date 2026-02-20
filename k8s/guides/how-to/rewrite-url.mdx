@@ -13,7 +13,6 @@ By rewriting URLs at the network edge, you can:
 🚀 Ensure compatibility between clients and services. <br />
 ⚡ Optimize backend routing without requiring changes to application code. <br />
 
-
 ## 🔍 What are the benefits of URL rewriting?
 
 URL rewriting is an essential feature for API gateways, load balancers, and proxy servers, allowing for seamless request transformation before traffic reaches the backend.
@@ -28,10 +27,10 @@ Key Benefits:
 - **Hostname Rewriting:** Change hostnames (`old.example.com` → `new.example.com`).
 - **Backend Service Path Adjustments:** Route requests to different paths without requiring frontend changes.
 
-
 ## Rewrite full path
 
 The following examples showcase how to create an endpoint that rewrites requests. The hostname, scheme, and port are kept the same, but the entire path of the request is changed.
+
 - Requests to `https://example-hostname.ngrok.io/example` will be rewritten to `https://example-hostname.ngrok.io/rewrite`
 - Requests to `https://example-hostname.ngrok.io/example/foo` will be rewritten to `https://example-hostname.ngrok.io/rewrite`
 
@@ -57,6 +56,7 @@ spec:
                 from: /.*
                 to: /rewrite
 ```
+
 </Tab>
 <Tab title="CloudEndpoint">
 Check out the [URL rewrite Traffic Policy action](/traffic-policy/actions/url-rewrite/) page for more details about how it functions and the parameters it accepts.
@@ -77,6 +77,7 @@ spec:
                 from: /.*
                 to: /rewrite
 ```
+
 </Tab>
 <Tab title="Ingress">
 💡 Ingress resources do not have native URL rewriting capabilities, but they can be extended using a Traffic Policy.
@@ -124,6 +125,7 @@ spec:
                 port:
                   number: 80
 ```
+
 </Tab>
 <Tab title="Gateway API">
 ✅ Gateway API natively supports URL rewriting, and this feature is fully supported by the ngrok Kubernetes Operator.
@@ -157,37 +159,38 @@ metadata:
   namespace: default
 spec:
   hostnames:
-  - example-hostname.ngrok.io
+    - example-hostname.ngrok.io
   parentRefs:
-  - group: gateway.networking.k8s.io
-    kind: Gateway
-    name: example-gateway
-    namespace: default
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: example-gateway
+      namespace: default
   rules:
-  - matches:
-    - path:
-        type: PathPrefix
-        value: /example
-    backendRefs:
-      - group: ""
-        kind: Service
-        name: example-service
-        port: 443
-        weight: 1
-    filters:
-    - type: URLRewrite
-      urlRewrite:
-        path: 
-          type: ReplaceFullPath
-          replaceFullPath: "/rewrite"
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /example
+      backendRefs:
+        - group: ""
+          kind: Service
+          name: example-service
+          port: 443
+          weight: 1
+      filters:
+        - type: URLRewrite
+          urlRewrite:
+            path:
+              type: ReplaceFullPath
+              replaceFullPath: "/rewrite"
 ```
+
 </Tab>
 </Tabs>
-
 
 ## Rewrite path prefix
 
 The following examples showcase how to create an endpoint that rewrites requests. The hostname, scheme, and port are kept the same, but only the prefix is changed.
+
 - Requests to `https://example-hostname.ngrok.io/example` will be rewritten to `https://example-hostname.ngrok.io/rewrite`
 - Requests to `https://example-hostname.ngrok.io/example/foo` will be rewritten to `https://example-hostname.ngrok.io/rewrite/foo`
 
@@ -213,6 +216,7 @@ spec:
                 from: /example(.*)
                 to: /rewrite$1
 ```
+
 </Tab>
 <Tab title="CloudEndpoint">
 Check out the [URL rewrite Traffic Policy action](/traffic-policy/actions/url-rewrite/) page for more details about how it functions and the parameters it accepts.
@@ -233,6 +237,7 @@ spec:
                 from: /example(.*)
                 to: /rewrite$1
 ```
+
 </Tab>
 <Tab title="Ingress">
 💡 Ingress resources do not have native URL rewriting capabilities, but they can be extended using a Traffic Policy.
@@ -280,6 +285,7 @@ spec:
                 port:
                   number: 80
 ```
+
 </Tab>
 <Tab title="Gateway API">
 ✅ Gateway API natively supports URL rewriting, and this feature is fully supported by the ngrok Kubernetes Operator.
@@ -313,31 +319,32 @@ metadata:
   namespace: default
 spec:
   hostnames:
-  - example-hostname.ngrok.io
+    - example-hostname.ngrok.io
   parentRefs:
-  - group: gateway.networking.k8s.io
-    kind: Gateway
-    name: example-gateway
-    namespace: default
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: example-gateway
+      namespace: default
   rules:
-  - matches:
-    - path:
-        type: PathPrefix
-        value: /example
-    filters:
-    - type: URLRewrite
-      urlRewrite:
-        path: 
-          type: ReplacePrefixMatch
-          replacePrefixMatch: "/rewrite"
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /example
+      filters:
+        - type: URLRewrite
+          urlRewrite:
+            path:
+              type: ReplacePrefixMatch
+              replacePrefixMatch: "/rewrite"
 ```
+
 </Tab>
 </Tabs>
-
 
 ## Rewrite port
 
 The following examples showcase how to create an endpoint that rewrites requests. The hostname, scheme, and path are kept the same, but only the port is changed.
+
 - Requests to `https://example-hostname.ngrok.io:8080` will be rewritten to `https://example-hostname.ngrok.io:9000`
 
 <Tabs>
@@ -362,6 +369,7 @@ spec:
                 from: :8080
                 to: :9090
 ```
+
 </Tab>
 <Tab title="CloudEndpoint">
 Check out the [URL rewrite Traffic Policy action](/traffic-policy/actions/url-rewrite/) page for more details about how it functions and the parameters it accepts.
@@ -382,6 +390,7 @@ spec:
                 from: :8080
                 to: :9090
 ```
+
 </Tab>
 <Tab title="Ingress">
 💡 Ingress resources do not have native URL rewriting capabilities, but they can be extended using a Traffic Policy.
@@ -429,6 +438,7 @@ spec:
                 port:
                   number: 80
 ```
+
 </Tab>
 <Tab title="Gateway API">
 ✅ Gateway API natively supports URL rewriting, and this feature is fully supported by the ngrok Kubernetes Operator.
@@ -462,31 +472,31 @@ metadata:
   namespace: default
 spec:
   hostnames:
-  - example-hostname.ngrok.io
+    - example-hostname.ngrok.io
   parentRefs:
-  - group: gateway.networking.k8s.io
-    kind: Gateway
-    name: example-gateway
-    namespace: default
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: example-gateway
+      namespace: default
   rules:
-  - matches:
-    - path:
-        type: PathPrefix
-        value: /example
-    filters:
-    - type: URLRewrite
-      urlRewrite:
-        port: 9090
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /example
+      filters:
+        - type: URLRewrite
+          urlRewrite:
+            port: 9090
 ```
+
 </Tab>
 </Tabs>
-
 
 ## Rewrite hostname
 
 The following examples showcase how to create an endpoint that rewrites requests. The scheme, port, and path are kept the same, but only the hostname is changed.
-- Requests to `https://example-hostname.ngrok.io` will be rewritten to `https://other-example-hostname.ngrok.io`
 
+- Requests to `https://example-hostname.ngrok.io` will be rewritten to `https://other-example-hostname.ngrok.io`
 
 <Tabs>
 <Tab title="AgentEndpoint">
@@ -510,6 +520,7 @@ spec:
                 from: example-hostname.ngrok.io
                 to: other-example-hostname.ngrok.io
 ```
+
 </Tab>
 <Tab title="CloudEndpoint">
 Check out the [URL rewrite Traffic Policy action](/traffic-policy/actions/url-rewrite/) page for more details about how it functions and the parameters it accepts.
@@ -530,6 +541,7 @@ spec:
                 from: example-hostname.ngrok.io
                 to: other-example-hostname.ngrok.io
 ```
+
 </Tab>
 <Tab title="Ingress">
 💡 Ingress resources do not have native URL rewriting capabilities, but they can be extended using a Traffic Policy.
@@ -577,6 +589,7 @@ spec:
                 port:
                   number: 80
 ```
+
 </Tab>
 <Tab title="Gateway API">
 ✅ Gateway API natively supports URL rewriting, and this feature is fully supported by the ngrok Kubernetes Operator.
@@ -610,21 +623,22 @@ metadata:
   namespace: default
 spec:
   hostnames:
-  - example-hostname.ngrok.io
+    - example-hostname.ngrok.io
   parentRefs:
-  - group: gateway.networking.k8s.io
-    kind: Gateway
-    name: example-gateway
-    namespace: default
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: example-gateway
+      namespace: default
   rules:
-  - matches:
-    - path:
-        type: PathPrefix
-        value: /example
-    filters:
-    - type: URLRewrite
-      urlRewrite:
-        hostname: other-example-hostname.ngrok.io
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /example
+      filters:
+        - type: URLRewrite
+          urlRewrite:
+            hostname: other-example-hostname.ngrok.io
 ```
+
 </Tab>
 </Tabs>

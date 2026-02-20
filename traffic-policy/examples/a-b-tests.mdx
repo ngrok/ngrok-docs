@@ -4,8 +4,6 @@ sidebarTitle: A/B Tests
 description: Learn how to run A/B tests using Traffic Policy by routing traffic to different endpoints based on random distribution.
 ---
 
-
-
 With at least two endpoints and Traffic Policy, you can run simple A/B tests with using the [`rand.double()` macro](/traffic-policy/macros/#randdouble---double).
 
 ## Basic example
@@ -20,25 +18,23 @@ This rule:
 
 ```yaml policy.yml
 on_http_request:
-- expressions:
-  - rand.double() <= 0.5
-  actions:
-  - type: forward-internal
-    config:
-      url: https://a.internal
-- actions:
-  - type: forward-internal
-    config:
-      url: https://b.internal
+  - expressions:
+      - rand.double() <= 0.5
+    actions:
+      - type: forward-internal
+        config:
+          url: https://a.internal
+  - actions:
+      - type: forward-internal
+        config:
+          url: https://b.internal
 ```
 
 ```json policy.json
 {
   "on_http_request": [
     {
-      "expressions": [
-        "rand.double() <= 0.5"
-      ],
+      "expressions": ["rand.double() <= 0.5"],
       "actions": [
         {
           "type": "forward-internal",
@@ -65,7 +61,9 @@ on_http_request:
 </CodeGroup>
 
 <Tip>
-You can change the value the random number is checked against to split the traffic in different ratios. For example,`>=0.8` would send 80% of the traffic to one endpoint and 20% to the other.
+  You can change the value the random number is checked against to split the
+  traffic in different ratios. For example,`>=0.8` would send 80% of the traffic
+  to one endpoint and 20% to the other.
 </Tip>
 
 See [the `forward-internal` Traffic Policy action docs](/traffic-policy/actions/forward-internal/) for more information.
@@ -78,26 +76,24 @@ You can also send the traffic to a different route using URL rewrites.
 
 ```yaml policy.yml
 on_http_request:
-- expressions:
-  - rand.double() <= 0.5
-  actions:
-  - type: url-rewrite
-    config:
-      from: "/path/to/test"
-      to: "/path/to/test-b"
-- actions:
-  - type: forward-internal
-    config:
-      url: https://b.internal
+  - expressions:
+      - rand.double() <= 0.5
+    actions:
+      - type: url-rewrite
+        config:
+          from: "/path/to/test"
+          to: "/path/to/test-b"
+  - actions:
+      - type: forward-internal
+        config:
+          url: https://b.internal
 ```
 
 ```json policy.json
 {
   "on_http_request": [
     {
-      "expressions": [
-        "rand.double() <= 0.5"
-      ],
+      "expressions": ["rand.double() <= 0.5"],
       "actions": [
         {
           "type": "url-rewrite",

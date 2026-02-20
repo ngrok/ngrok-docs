@@ -4,8 +4,6 @@ sidebarTitle: OAuth Protection
 description: Learn how to add OAuth authentication to your ngrok endpoints using Traffic Policy.
 ---
 
-
-
 Sometimes you don't want everyone to be able to access the app at your [Endpoints](/universal-gateway/endpoints).
 
 This guide will walk you through protecting your apps with OAuth authentication via [Traffic Policy](/traffic-policy). All you need is [the ngrok agent CLI](/agent/cli).
@@ -24,7 +22,9 @@ Decide which OAuth identity provider you want to use. If you don't have an OAuth
 This guide will use Google OAuth.
 
 <Note>
-If you use any of the above providers without configuring your own OAuth application, your endpoint will use ngrok's managed OAuth application. This means you won't be able to customize the provider's authentication behavior.
+  If you use any of the above providers without configuring your own OAuth
+  application, your endpoint will use ngrok's managed OAuth application. This
+  means you won't be able to customize the provider's authentication behavior.
 </Note>
 
 ## 2. Create a Traffic Policy file
@@ -37,10 +37,10 @@ Create this Traffic Policy file in the same directory where you run your ngrok a
 
 ```yaml policy.yml
 on_http_request:
-- actions:
-  - type: oauth
-    config:
-      provider: google
+  - actions:
+      - type: oauth
+        config:
+          provider: google
 ```
 
 ```json policy.json
@@ -131,28 +131,26 @@ This section includes two examples of how to apply these additional auth lifecyc
 
 ```yaml policy.yml
 on_http_request:
-- expressions:
-  - req.url.path == '/ngrok/logout'
-  actions:
-  - type: redirect
-    config:
-      location: "/ngrok/login?auth_id=my-login"
-- actions:
-  - type: oauth
-    config:
-      provider: google
-      auth_id: my-login
-      idle_session_timeout: 15m
-      max_session_duration: 1h
+  - expressions:
+      - req.url.path == '/ngrok/logout'
+    actions:
+      - type: redirect
+        config:
+          location: "/ngrok/login?auth_id=my-login"
+  - actions:
+      - type: oauth
+        config:
+          provider: google
+          auth_id: my-login
+          idle_session_timeout: 15m
+          max_session_duration: 1h
 ```
 
 ```json policy.json
 {
   "on_http_request": [
     {
-      "expressions": [
-        "req.url.path == '/ngrok/logout'"
-      ],
+      "expressions": ["req.url.path == '/ngrok/logout'"],
       "actions": [
         {
           "type": "redirect",

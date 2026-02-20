@@ -22,7 +22,7 @@ This error occurs when `only_allow_configured_providers: true` is set and you're
 ```yaml
 only_allow_configured_providers: true
 providers:
-  - id: openai      # Add your provider here
+  - id: openai # Add your provider here
     api_keys:
       - value: ${secrets.get('openai', 'key')}
 ```
@@ -42,20 +42,22 @@ This error can occur for several reasons:
 **Solutions:**
 
 Add the model to your configuration:
+
 ```yaml
 only_allow_configured_models: true
 providers:
   - id: openai
     models:
-      - id: "gpt-4o"      # Add your model here
+      - id: "gpt-4o" # Add your model here
       - id: "gpt-4o-mini"
 ```
 
 Or use a provider prefix for unknown models:
+
 ```json
 {
   "model": "openai:gpt-5-preview",
-  "messages": [{"role": "user", "content": "Hello"}]
+  "messages": [{ "role": "user", "content": "Hello" }]
 }
 ```
 
@@ -72,7 +74,7 @@ only_allow_configured_models: true
 providers:
   - id: openai
     models:
-      - id: "gpt-4o-mini"  # Only allow specific models
+      - id: "gpt-4o-mini" # Only allow specific models
 ```
 
 ---
@@ -82,11 +84,11 @@ providers:
 Yes, the gateway is fully compatible:
 
 ```typescript
-import { createOpenAI } from "@ai-sdk/openai"
+import { createOpenAI } from "@ai-sdk/openai";
 
 const openai = createOpenAI({
   baseUrl: "https://your-ai-gateway.ngrok.app",
-})
+});
 ```
 
 See [SDK Integration](/ai-gateway/sdks) for details.
@@ -104,6 +106,7 @@ When a request fails, the gateway tries the next candidate in its list. This inc
 - Connection failures
 
 Failover order:
+
 1. Next API key for the same model/provider
 2. Next model candidate (from model selection or client `models` array)
 
@@ -118,7 +121,7 @@ See [Error Handling](/ai-gateway/guides/error-handling) for details.
 Controlled by `total_timeout` (default: 5 minutes):
 
 ```yaml
-total_timeout: "3m"  # Allow up to 3 minutes for all attempts
+total_timeout: "3m" # Allow up to 3 minutes for all attempts
 ```
 
 ---
@@ -126,6 +129,7 @@ total_timeout: "3m"  # Allow up to 3 minutes for all attempts
 ### Can I disable automatic failover?
 
 Not directly, but you can limit the attempts by:
+
 - Configuring only one API key per provider
 - Having clients specify a single model
 - Setting short timeouts:
@@ -150,7 +154,7 @@ The gateway automatically tries alternative providers when the primary fails. Yo
 {
   "model": "gpt-4o",
   "models": ["claude-3-5-sonnet-20241022"],
-  "messages": [{"role": "user", "content": "Hello"}]
+  "messages": [{ "role": "user", "content": "Hello" }]
 }
 ```
 
@@ -217,14 +221,14 @@ Add the new key, deploy, then remove the old key:
 ```yaml
 api_keys:
   - value: ${secrets.get('openai', 'old-key')}
-  - value: ${secrets.get('openai', 'new-key')}  # Add new
+  - value: ${secrets.get('openai', 'new-key')} # Add new
 ```
 
 After confirming the new key works:
 
 ```yaml
 api_keys:
-  - value: ${secrets.get('openai', 'new-key')}  # Remove old
+  - value: ${secrets.get('openai', 'new-key')} # Remove old
 ```
 
 ---
@@ -295,7 +299,7 @@ on_http_request:
       - type: request-body-find-replace
         config:
           replacements:
-            - from: "\\b\\d{3}-\\d{2}-\\d{4}\\b"  # SSN pattern
+            - from: "\\b\\d{3}-\\d{2}-\\d{4}\\b" # SSN pattern
               to: "[REDACTED]"
       - type: ai-gateway
         config:
@@ -354,7 +358,7 @@ Built-in providers have pre-configured model catalogs. For custom providers, you
 ```json
 {
   "model": "ngrok/auto",
-  "messages": [{"role": "user", "content": "Hello"}]
+  "messages": [{ "role": "user", "content": "Hello" }]
 }
 ```
 
@@ -371,7 +375,7 @@ To restrict this behavior, use a model selection strategy:
 ```yaml
 model_selection:
   strategy:
-    - "ai.models.filter(m, m.known)"  # Only allow catalog models
+    - "ai.models.filter(m, m.known)" # Only allow catalog models
 ```
 
 The `m.known` field is `false` for pass-through models not in the catalog.
@@ -456,7 +460,9 @@ model_selection:
 The first strategy that returns models wins. If OpenAI models exist, only those are tried. Anthropic is only considered if no OpenAI models match.
 
 <Note>
-Strategies control which models are considered, not failover order. For cross-provider failover when requests fail, have clients specify multiple models: `models: ["openai:gpt-4o", "anthropic:claude-3-5-sonnet-20241022"]`.
+  Strategies control which models are considered, not failover order. For
+  cross-provider failover when requests fail, have clients specify multiple
+  models: `models: ["openai:gpt-4o", "anthropic:claude-3-5-sonnet-20241022"]`.
 </Note>
 
 See [Model Selection Strategies](/ai-gateway/guides/model-selection-strategies).
@@ -527,10 +533,12 @@ Keys are tried in order when the previous key fails.
 ### Failover isn't working
 
 For **key failover** (same provider, different keys):
+
 - Configure multiple keys for the provider
 - Keys are tried in order when one fails
 
 For **provider failover** (different providers):
+
 - Client must specify fallback models using the `models` array
 - Or the same model must be available from multiple providers
 
@@ -538,11 +546,12 @@ For **provider failover** (different providers):
 {
   "model": "gpt-4o",
   "models": ["claude-3-5-sonnet-20241022"],
-  "messages": [{"role": "user", "content": "Hello"}]
+  "messages": [{ "role": "user", "content": "Hello" }]
 }
 ```
 
 For **model selection failover**:
+
 - Configure multiple strategies in `model_selection`
 - Strategies are tried in order until one returns models
 

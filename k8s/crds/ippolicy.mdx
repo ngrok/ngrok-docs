@@ -13,6 +13,7 @@ IP Policies define rules that allow or deny traffic based on the source IP of co
 These policies can be attached to endpoints via Traffic Policy configurations to control access based on IP addresses and CIDR ranges.
 
 IP Policies consist of one or more rules, where each rule specifies:
+
 - An action (`allow` or `deny`)
 - A CIDR range to match against
 - An optional description
@@ -53,11 +54,11 @@ The following sections outline each field of the `IPPolicy` custom resource, whe
 
 **Fields:**
 
-| Field Name                             | Type       | Required | Default                                         | Description                                                                    |
-| -------------------------------------- | ---------- | -------- | ----------------------------------------------- | ------------------------------------------------------------------------------ |
-| [`spec.description`](#specdescription) | `string`   | no       | `""`                                            | Human-readable description for this `IPPolicy` to help identify/describe it    |
+| Field Name                             | Type       | Required | Default                                          | Description                                                                    |
+| -------------------------------------- | ---------- | -------- | ------------------------------------------------ | ------------------------------------------------------------------------------ |
+| [`spec.description`](#specdescription) | `string`   | no       | `""`                                             | Human-readable description for this `IPPolicy` to help identify/describe it    |
 | [`spec.metadata`](#specmetadata)       | `string`   | no       | `"{"owned-by":"kubernetes-ingress-controller"}"` | String of arbitrary data associated with the object in the ngrok API/Dashboard |
-| [`spec.rules`](#specrules)             | `[]Object` | yes      | none                                            | List of rules that define which IPs/CIDR ranges to allow or deny              |
+| [`spec.rules`](#specrules)             | `[]Object` | yes      | none                                             | List of rules that define which IPs/CIDR ranges to allow or deny               |
 
 ### `spec.description`
 
@@ -92,12 +93,12 @@ Each rule is evaluated independently, and the most specific matching rule applie
 
 **Fields:**
 
-| Field Name                                      | Type            | Required | Default | Description                                                                    |
-| ----------------------------------------------- | --------------- | -------- | ------- | ------------------------------------------------------------------------------ |
-| [`spec.rules[].action`](#specrulesaction)       | `string` (enum) | yes      | none    | Whether to allow or deny traffic from the specified CIDR range                 |
-| [`spec.rules[].cidr`](#specrulescidr)           | `string`        | yes      | none    | IP address or CIDR range to match against                                      |
-| [`spec.rules[].description`](#specrulesdescription) | `string`    | no       | `""`    | Human-readable description for this rule                                       |
-| [`spec.rules[].metadata`](#specrulesmetadata)   | `string`        | no       | none    | String of arbitrary data associated with the rule in the ngrok API/Dashboard   |
+| Field Name                                          | Type            | Required | Default | Description                                                                  |
+| --------------------------------------------------- | --------------- | -------- | ------- | ---------------------------------------------------------------------------- |
+| [`spec.rules[].action`](#specrulesaction)           | `string` (enum) | yes      | none    | Whether to allow or deny traffic from the specified CIDR range               |
+| [`spec.rules[].cidr`](#specrulescidr)               | `string`        | yes      | none    | IP address or CIDR range to match against                                    |
+| [`spec.rules[].description`](#specrulesdescription) | `string`        | no       | `""`    | Human-readable description for this rule                                     |
+| [`spec.rules[].metadata`](#specrulesmetadata)       | `string`        | no       | none    | String of arbitrary data associated with the rule in the ngrok API/Dashboard |
 
 ### `spec.rules[].action`
 
@@ -123,6 +124,7 @@ This must be a valid IPv4 or IPv6 CIDR notation.
 **Default:** none
 
 **Examples:**
+
 - Single IP: `192.168.1.1/32`
 - Subnet: `10.0.0.0/24`
 - IPv6: `2001:db8::/32`
@@ -166,11 +168,12 @@ Array of rules with their ngrok API IDs. Each rule status includes the rule ID, 
 **Type:** `[]Object`
 
 **Example:**
+
 ```yaml
 rules:
-- id: ipr_34iZT1AbCdEfGhIjKlMnOpQrStU
-  cidr: 162.236.158.182/32
-  action: allow
+  - id: ipr_34iZT1AbCdEfGhIjKlMnOpQrStU
+    cidr: 162.236.158.182/32
+    action: allow
 ```
 
 ### `status.conditions`
@@ -180,6 +183,7 @@ Standard Kubernetes conditions that indicate the state of the IP Policy.
 **Type:** `[]Condition`
 
 Each condition includes:
+
 - `type` - The condition type
 - `status` - `True`, `False`, or `Unknown`
 - `reason` - A programmatic identifier for the condition state
@@ -194,27 +198,29 @@ Each condition includes:
 Indicates whether the IP Policy is fully operational and ready to use.
 
 **Status Values:**
+
 - `True` - IP Policy is active and ready
 - `False` - IP Policy is not ready (see reason for details)
 
 **Reasons:**
 
-| Reason | Status | Meaning |
-|--------|--------|---------|
-| `IPPolicyActive` | `True` | IP Policy is successfully created and active |
-| `IPPolicyRulesConfigurationError` | `False` | One or more rules failed to configure |
-| `IPPolicyCreationFailed` | `False` | Failed to create the IP Policy in ngrok |
-| `IPPolicyInvalidCIDR` | `False` | One or more rules have invalid CIDR notation |
+| Reason                            | Status  | Meaning                                      |
+| --------------------------------- | ------- | -------------------------------------------- |
+| `IPPolicyActive`                  | `True`  | IP Policy is successfully created and active |
+| `IPPolicyRulesConfigurationError` | `False` | One or more rules failed to configure        |
+| `IPPolicyCreationFailed`          | `False` | Failed to create the IP Policy in ngrok      |
+| `IPPolicyInvalidCIDR`             | `False` | One or more rules have invalid CIDR notation |
 
 **Example:**
+
 ```yaml
 conditions:
-- type: Ready
-  status: "True"
-  reason: IPPolicyActive
-  message: "IP Policy is active"
-  lastTransitionTime: "2025-10-29T00:39:16Z"
-  observedGeneration: 1
+  - type: Ready
+    status: "True"
+    reason: IPPolicyActive
+    message: "IP Policy is active"
+    lastTransitionTime: "2025-10-29T00:39:16Z"
+    observedGeneration: 1
 ```
 
 ##### `IPPolicyCreated`
@@ -222,25 +228,27 @@ conditions:
 Indicates whether the IP Policy was successfully created in the ngrok API.
 
 **Status Values:**
+
 - `True` - IP Policy was successfully created
 - `False` - Failed to create IP Policy
 
 **Reasons:**
 
-| Reason | Status | Meaning |
-|--------|--------|---------|
-| `IPPolicyCreated` | `True` | IP Policy successfully created |
+| Reason                   | Status  | Meaning                             |
+| ------------------------ | ------- | ----------------------------------- |
+| `IPPolicyCreated`        | `True`  | IP Policy successfully created      |
 | `IPPolicyCreationFailed` | `False` | API call to create IP Policy failed |
 
 **Example:**
+
 ```yaml
 conditions:
-- type: IPPolicyCreated
-  status: "True"
-  reason: IPPolicyCreated
-  message: "IP Policy successfully created"
-  lastTransitionTime: "2025-10-29T00:39:16Z"
-  observedGeneration: 1
+  - type: IPPolicyCreated
+    status: "True"
+    reason: IPPolicyCreated
+    message: "IP Policy successfully created"
+    lastTransitionTime: "2025-10-29T00:39:16Z"
+    observedGeneration: 1
 ```
 
 ##### `RulesConfigured`
@@ -248,26 +256,28 @@ conditions:
 Indicates whether all rules have been successfully configured for the IP Policy.
 
 **Status Values:**
+
 - `True` - All rules are configured
 - `False` - One or more rules failed to configure
 
 **Reasons:**
 
-| Reason | Status | Meaning |
-|--------|--------|---------|
-| `IPPolicyRulesConfigured` | `True` | All rules successfully configured |
+| Reason                            | Status  | Meaning                                         |
+| --------------------------------- | ------- | ----------------------------------------------- |
+| `IPPolicyRulesConfigured`         | `True`  | All rules successfully configured               |
 | `IPPolicyRulesConfigurationError` | `False` | One or more rules failed validation or creation |
-| `IPPolicyInvalidCIDR` | `False` | One or more rules have invalid CIDR notation |
+| `IPPolicyInvalidCIDR`             | `False` | One or more rules have invalid CIDR notation    |
 
 **Example:**
+
 ```yaml
 conditions:
-- type: RulesConfigured
-  status: "True"
-  reason: IPPolicyRulesConfigured
-  message: "All rules configured for IP Policy"
-  lastTransitionTime: "2025-10-29T00:39:16Z"
-  observedGeneration: 1
+  - type: RulesConfigured
+    status: "True"
+    reason: IPPolicyRulesConfigured
+    message: "All rules configured for IP Policy"
+    lastTransitionTime: "2025-10-29T00:39:16Z"
+    observedGeneration: 1
 ```
 
 ## Status examples
@@ -278,28 +288,28 @@ conditions:
 status:
   id: ipp_34iZT0muBP3kpcAXxGjM4uFlgDK
   rules:
-  - id: ipr_34iZT1AbCdEfGhIjKlMnOpQrStU
-    cidr: 162.236.158.182/32
-    action: allow
+    - id: ipr_34iZT1AbCdEfGhIjKlMnOpQrStU
+      cidr: 162.236.158.182/32
+      action: allow
   conditions:
-  - type: IPPolicyCreated
-    status: "True"
-    reason: IPPolicyCreated
-    message: "IP Policy successfully created"
-    lastTransitionTime: "2025-10-29T00:39:16Z"
-    observedGeneration: 1
-  - type: RulesConfigured
-    status: "True"
-    reason: IPPolicyRulesConfigured
-    message: "All rules configured for IP Policy"
-    lastTransitionTime: "2025-10-29T00:39:16Z"
-    observedGeneration: 1
-  - type: Ready
-    status: "True"
-    reason: IPPolicyActive
-    message: "IP Policy is active"
-    lastTransitionTime: "2025-10-29T00:39:16Z"
-    observedGeneration: 1
+    - type: IPPolicyCreated
+      status: "True"
+      reason: IPPolicyCreated
+      message: "IP Policy successfully created"
+      lastTransitionTime: "2025-10-29T00:39:16Z"
+      observedGeneration: 1
+    - type: RulesConfigured
+      status: "True"
+      reason: IPPolicyRulesConfigured
+      message: "All rules configured for IP Policy"
+      lastTransitionTime: "2025-10-29T00:39:16Z"
+      observedGeneration: 1
+    - type: Ready
+      status: "True"
+      reason: IPPolicyActive
+      message: "IP Policy is active"
+      lastTransitionTime: "2025-10-29T00:39:16Z"
+      observedGeneration: 1
 ```
 
 ### IP Policy with Invalid CIDR
@@ -307,24 +317,24 @@ status:
 ```yaml
 status:
   conditions:
-  - type: IPPolicyCreated
-    status: "False"
-    reason: IPPolicyCreationFailed
-    message: "Failed to create IP Policy: invalid CIDR notation in rule"
-    lastTransitionTime: "2025-10-29T00:39:15Z"
-    observedGeneration: 1
-  - type: RulesConfigured
-    status: "False"
-    reason: IPPolicyInvalidCIDR
-    message: "Invalid CIDR range: 192.168.1.0/42 (prefix length must be between 0 and 32 for IPv4)"
-    lastTransitionTime: "2025-10-29T00:39:15Z"
-    observedGeneration: 1
-  - type: Ready
-    status: "False"
-    reason: IPPolicyInvalidCIDR
-    message: "IP Policy cannot be activated due to invalid CIDR in rules"
-    lastTransitionTime: "2025-10-29T00:39:15Z"
-    observedGeneration: 1
+    - type: IPPolicyCreated
+      status: "False"
+      reason: IPPolicyCreationFailed
+      message: "Failed to create IP Policy: invalid CIDR notation in rule"
+      lastTransitionTime: "2025-10-29T00:39:15Z"
+      observedGeneration: 1
+    - type: RulesConfigured
+      status: "False"
+      reason: IPPolicyInvalidCIDR
+      message: "Invalid CIDR range: 192.168.1.0/42 (prefix length must be between 0 and 32 for IPv4)"
+      lastTransitionTime: "2025-10-29T00:39:15Z"
+      observedGeneration: 1
+    - type: Ready
+      status: "False"
+      reason: IPPolicyInvalidCIDR
+      message: "IP Policy cannot be activated due to invalid CIDR in rules"
+      lastTransitionTime: "2025-10-29T00:39:15Z"
+      observedGeneration: 1
 ```
 
 ## Checking IP Policy status
@@ -364,9 +374,9 @@ metadata:
 spec:
   description: IP Policy to whitelist specific IP address
   rules:
-  - action: allow
-    cidr: 162.236.158.182/32
-    description: Allow access from specific IP address
+    - action: allow
+      cidr: 162.236.158.182/32
+      description: Allow access from specific IP address
 ```
 
 ### Allow subnet with multiple rules
@@ -382,12 +392,12 @@ metadata:
 spec:
   description: Allow access from corporate network
   rules:
-  - action: allow
-    cidr: 10.0.0.0/16
-    description: Allow access from main corporate subnet
-  - action: allow
-    cidr: 172.16.0.0/12
-    description: Allow access from corporate VPN range
+    - action: allow
+      cidr: 10.0.0.0/16
+      description: Allow access from main corporate subnet
+    - action: allow
+      cidr: 172.16.0.0/12
+      description: Allow access from corporate VPN range
 ```
 
 ### Deny specific IP addresses
@@ -403,10 +413,10 @@ metadata:
 spec:
   description: Block traffic from malicious IPs
   rules:
-  - action: deny
-    cidr: 192.0.2.1/32
-    description: Blocked IP from abuse reports
-  - action: deny
-    cidr: 198.51.100.0/24
-    description: Blocked subnet from attack attempts
+    - action: deny
+      cidr: 192.0.2.1/32
+      description: Blocked IP from abuse reports
+    - action: deny
+      cidr: 198.51.100.0/24
+      description: Blocked subnet from attack attempts
 ```

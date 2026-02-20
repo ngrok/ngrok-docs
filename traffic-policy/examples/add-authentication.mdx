@@ -7,19 +7,21 @@ Traffic Policy gives you powerful options for adding authentication to your endp
 Whether you need a quick login prompt for a demo, OAuth for production apps, or JWT validation for APIs, ngrok has you covered.
 
 <Note>
-For a deeper dive into authentication concepts and when to use each method, see the [Authentication with ngrok](https://ngrok.com/blog/authentication-with-ngrok) blog post.
+  For a deeper dive into authentication concepts and when to use each method,
+  see the [Authentication with
+  ngrok](https://ngrok.com/blog/authentication-with-ngrok) blog post.
 </Note>
 
 ## Authentication and access control methods
 
-| Method | Best for |
-| --- | --- |
-| [Basic Auth](#basic-auth) | Quick demos, internal tools |
-| [OAuth](#oauth) | User-facing apps with social login |
+| Method                                        | Best for                            |
+| --------------------------------------------- | ----------------------------------- |
+| [Basic Auth](#basic-auth)                     | Quick demos, internal tools         |
+| [OAuth](#oauth)                               | User-facing apps with social login  |
 | [OpenID Connect (OIDC)](#openid-connect-oidc) | Enterprise apps with corporate IdPs |
-| [JWT validation](#jwt-validation) | APIs with token-based auth |
-| [IP restrictions](#ip-restrictions) | Network-level access control |
-| [Mutual TLS (mTLS)](#mutual-tls-mtls) | Machine-to-machine, zero trust |
+| [JWT validation](#jwt-validation)             | APIs with token-based auth          |
+| [IP restrictions](#ip-restrictions)           | Network-level access control        |
+| [Mutual TLS (mTLS)](#mutual-tls-mtls)         | Machine-to-machine, zero trust      |
 
 ---
 
@@ -214,11 +216,7 @@ on_http_request:
             "issuer_url": "https://accounts.google.com",
             "client_id": "<your-oidc-client-id>",
             "client_secret": "<your-oidc-client-secret>",
-            "scopes": [
-              "openid",
-              "profile",
-              "email"
-            ]
+            "scopes": ["openid", "profile", "email"]
           }
         }
       ]
@@ -268,11 +266,7 @@ on_http_request:
             "issuer_url": "https://accounts.google.com",
             "client_id": "<your-oidc-client-id>",
             "client_secret": "<your-oidc-client-secret>",
-            "scopes": [
-              "openid",
-              "profile",
-              "email"
-            ]
+            "scopes": ["openid", "profile", "email"]
           }
         }
       ]
@@ -326,7 +320,7 @@ on_http_request:
               - type: jwt
                 method: header
                 name: Authorization
-                prefix: 'Bearer '
+                prefix: "Bearer "
           jws:
             allowed_algorithms:
               - RS256
@@ -369,9 +363,7 @@ on_http_request:
               ]
             },
             "jws": {
-              "allowed_algorithms": [
-                "RS256"
-              ],
+              "allowed_algorithms": ["RS256"],
               "keys": {
                 "sources": {
                   "additional_jkus": [
@@ -421,7 +413,7 @@ on_http_request:
               - type: jwt
                 method: header
                 name: Authorization
-                prefix: 'Bearer '
+                prefix: "Bearer "
           jws:
             allowed_algorithms:
               - RS256
@@ -443,9 +435,7 @@ on_http_request:
             "algorithm": "sliding_window",
             "capacity": 30,
             "rate": "60s",
-            "bucket_key": [
-              "req.headers['x-api-key']"
-            ]
+            "bucket_key": ["req.headers['x-api-key']"]
           }
         },
         {
@@ -476,9 +466,7 @@ on_http_request:
               ]
             },
             "jws": {
-              "allowed_algorithms": [
-                "RS256"
-              ],
+              "allowed_algorithms": ["RS256"],
               "keys": {
                 "sources": {
                   "additional_jkus": [
@@ -527,10 +515,7 @@ on_http_request:
         {
           "type": "restrict-ips",
           "config": {
-            "allow": [
-              "203.0.113.0/24",
-              "198.51.100.42/32"
-            ]
+            "allow": ["203.0.113.0/24", "198.51.100.42/32"]
           }
         }
       ]
@@ -589,9 +574,7 @@ on_http_request:
 {
   "on_http_request": [
     {
-      "expressions": [
-        "!('authorization' in req.headers)"
-      ],
+      "expressions": ["!('authorization' in req.headers)"],
       "actions": [
         {
           "type": "custom-response",
@@ -649,9 +632,7 @@ on_http_request:
 {
   "on_http_request": [
     {
-      "expressions": [
-        "!('Authorization' in req.headers)"
-      ],
+      "expressions": ["!('Authorization' in req.headers)"],
       "actions": [
         {
           "type": "rate-limit",
@@ -660,17 +641,13 @@ on_http_request:
             "algorithm": "sliding_window",
             "capacity": 10,
             "rate": "60s",
-            "bucket_key": [
-              "conn.client_ip"
-            ]
+            "bucket_key": ["conn.client_ip"]
           }
         }
       ]
     },
     {
-      "expressions": [
-        "'Authorization' in req.headers"
-      ],
+      "expressions": ["'Authorization' in req.headers"],
       "actions": [
         {
           "type": "rate-limit",
@@ -679,9 +656,7 @@ on_http_request:
             "algorithm": "sliding_window",
             "capacity": 100,
             "rate": "60s",
-            "bucket_key": [
-              "req.headers['authorization']"
-            ]
+            "bucket_key": ["req.headers['authorization']"]
           }
         }
       ]

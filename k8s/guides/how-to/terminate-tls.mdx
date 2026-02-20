@@ -12,7 +12,6 @@ By customizing TLS termination settings, you can:
 ⚡ Enforce specific TLS versions for enhanced security. <br />
 🔄 Configure mutual TLS (mTLS) for bidirectional authentication between clients and your services. <br />
 
-
 ## 🔍 What are the benefits of customizing TLS termination?
 
 TLS termination is essential for securing data in transit. Customizing TLS settings allows you to:
@@ -30,10 +29,10 @@ Key Benefits:
 - **Meet Compliance Standards:** Enforce safety and security policies for HIPAA, PCI DSS, SOC 2, and other security frameworks.
 - **Multi-tenant Environments:** Serve different certificates per domain in multi-tenant environments.
 
-
 ## TLS termination examples
 
 The following examples showcase how you can create an endpoint that:
+
 - Terminates TLS using a custom certificate
 - Enforces mutual TLS with the clients
 - Allows a max TLS version of 1.3
@@ -68,6 +67,7 @@ openssl x509 -req -in client.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out c
 ```
 
 These commands will generate the following files:
+
 - CA Files:
   - `ca.key`: CA private key
   - `ca.crt`: CA certificate
@@ -117,6 +117,7 @@ spec:
                     ... certificate ...
                     -----END CERTIFICATE-----
 ```
+
 </Tab>
 <Tab title="CloudEndpoint">
 Check out the [terminate TLS Traffic Policy action](/traffic-policy/actions/terminate-tls/) page for more details about how it functions and the parameters it accepts.
@@ -150,6 +151,7 @@ spec:
                     ... certificate ...
                     -----END CERTIFICATE-----
 ```
+
 </Tab>
 <Tab title="Ingress">
 💡 `Ingress` resources do not natively support advanced TLS termination options, but they can be extended using a Traffic Policy.
@@ -211,6 +213,7 @@ spec:
                 port:
                   number: 80
 ```
+
 </Tab>
 <Tab title="Gateway API">
 ✅ Gateway API natively supports TLS termination, and this feature is fully supported by the ngrok Kubernetes Operator.
@@ -252,12 +255,12 @@ spec:
       tls:
         mode: Terminate
         certificateRefs:
-        - kind: Secret
-          name: server-cert-secret
+          - kind: Secret
+            name: server-cert-secret
         frontendValidation:
           caCertificateRefs:
-          - kind: ConfigMap
-            name: ca-cert-config
+            - kind: ConfigMap
+              name: ca-cert-config
         options:
           "k8s.ngrok.com/terminate-tls.min_version": "1.2"
           "k8s.ngrok.com/terminate-tls.max_version": "1.3"
@@ -274,27 +277,27 @@ metadata:
   namespace: default
 spec:
   hostnames:
-  - example-hostname.ngrok.io
+    - example-hostname.ngrok.io
   parentRefs:
-  - group: gateway.networking.k8s.io
-    kind: Gateway
-    name: example-gateway
-    namespace: default
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: example-gateway
+      namespace: default
   rules:
-  - matches:
-    - path:
-        type: PathPrefix
-        value: /
-    backendRefs:
-      - group: ""
-        kind: Service
-        name: example-service
-        port: 80
-        weight: 1
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - group: ""
+          kind: Service
+          name: example-service
+          port: 80
+          weight: 1
 ```
+
 </Tab>
 </Tabs>
-
 
 ### Use the client certificates while making requests
 

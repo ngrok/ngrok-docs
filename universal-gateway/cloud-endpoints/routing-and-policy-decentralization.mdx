@@ -45,29 +45,28 @@ Use a Traffic Policy to simulate accessing an API endpoint.
 
 ```yaml policy.yml
 on_http_request:
-- expressions:
-  - "!(hasReqHeader('Api-Key'))"
-  actions:
-  - type: deny
-    config:
-      status_code: 404
-- actions:
-  - type: custom-response
-    config:
-      status_code: 200
-      body: "<html><body><h1>Hello world</h1><p>The quick brown fox jumps over the
-        lazy dog.</p></body></html>"
-      headers:
-        content-type: text/html
+  - expressions:
+      - "!(hasReqHeader('Api-Key'))"
+    actions:
+      - type: deny
+        config:
+          status_code: 404
+  - actions:
+      - type: custom-response
+        config:
+          status_code: 200
+          body:
+            "<html><body><h1>Hello world</h1><p>The quick brown fox jumps over the
+            lazy dog.</p></body></html>"
+          headers:
+            content-type: text/html
 ```
 
 ```json policy.json
 {
   "on_http_request": [
     {
-      "expressions": [
-        "!(hasReqHeader('Api-Key'))"
-      ],
+      "expressions": ["!(hasReqHeader('Api-Key'))"],
       "actions": [
         {
           "type": "deny",
@@ -184,27 +183,25 @@ full control over how traffic is handled.
 
 ```yaml policy.yml
 on_http_request:
-- expressions:
-  - req.url.path.startsWith('/api/')
-  actions:
-  - type: forward-internal
-    config:
-      url: https://api.internal
-      binding: internal
-- actions:
-  - type: forward-internal
-    config:
-      url: https://homepage.internal
-      binding: internal
+  - expressions:
+      - req.url.path.startsWith('/api/')
+    actions:
+      - type: forward-internal
+        config:
+          url: https://api.internal
+          binding: internal
+  - actions:
+      - type: forward-internal
+        config:
+          url: https://homepage.internal
+          binding: internal
 ```
 
 ```json policy.json
 {
   "on_http_request": [
     {
-      "expressions": [
-        "req.url.path.startsWith('/api/')"
-      ],
+      "expressions": ["req.url.path.startsWith('/api/')"],
       "actions": [
         {
           "type": "forward-internal",
@@ -261,12 +258,12 @@ send a POST request to the ngrok API instead of using the `ngrok api` command.
 
 ```json
 {
-	"bindings": ["public"],
-	"description": "sample Cloud Endpoint",
-	"metadata": "{\"environment\": \"prod\"}",
-	"type": "cloud",
-	"traffic_policy": "{\"on_http_request\": [{\"expressions\": [\"req.url.path.startsWith('/api/')\"],\"actions\": [{\"type\": \"forward-internal\",\"config\": {\"url\": \"https://api.internal\",\"binding\": \"internal\"}}]},{\"actions\": [{\"type\": \"forward-internal\",\"config\": {\"url\": \"https://homepage.internal\",\"binding\": \"internal\"}}]}]}",
-	"url": "https://{NGROK_SUBDOMAIN}.ngrok.app"
+  "bindings": ["public"],
+  "description": "sample Cloud Endpoint",
+  "metadata": "{\"environment\": \"prod\"}",
+  "type": "cloud",
+  "traffic_policy": "{\"on_http_request\": [{\"expressions\": [\"req.url.path.startsWith('/api/')\"],\"actions\": [{\"type\": \"forward-internal\",\"config\": {\"url\": \"https://api.internal\",\"binding\": \"internal\"}}]},{\"actions\": [{\"type\": \"forward-internal\",\"config\": {\"url\": \"https://homepage.internal\",\"binding\": \"internal\"}}]}]}",
+  "url": "https://{NGROK_SUBDOMAIN}.ngrok.app"
 }
 ```
 

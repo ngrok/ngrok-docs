@@ -6,7 +6,9 @@ description: Securely manage provider API keys for AI providers.
 This guide covers how to store, rotate, and manage provider API keys for your AI Gateway. Managing keys in the gateway keeps them out of your application code and enables features like automatic failover and intelligent key selection.
 
 <Warning>
-When you configure provider keys in the gateway, anyone with your endpoint URL can make requests using your provider keys. See [Securing Your Gateway](/ai-gateway/guides/securing-endpoints) to add authorization.
+  When you configure provider keys in the gateway, anyone with your endpoint URL
+  can make requests using your provider keys. See [Securing Your
+  Gateway](/ai-gateway/guides/securing-endpoints) to add authorization.
 </Warning>
 
 ## Key storage options
@@ -23,7 +25,9 @@ providers:
 ```
 
 <Warning>
-Inline keys are visible in Traffic Policy configurations. Use only for local development and testing. See [ngrok Secrets](#ngrok-secrets-recommended) for the recommended approach.
+  Inline keys are visible in Traffic Policy configurations. Use only for local
+  development and testing. See [ngrok Secrets](#ngrok-secrets-recommended) for
+  the recommended approach.
 </Warning>
 
 ### ngrok Vaults & Secrets (recommended)
@@ -69,6 +73,7 @@ providers:
 ```
 
 **Failover behavior**:
+
 1. Gateway tries the first key
 2. If it fails (rate limit, quota exceeded, error), tries the next key
 3. Continues until a key succeeds or all keys are exhausted
@@ -88,9 +93,10 @@ To rotate provider API keys without downtime:
     ```
   </Step>
 
-  <Step title="Deploy and monitor">
-    Deploy the updated Traffic Policy. Monitor traffic to ensure the new key works correctly.
-  </Step>
+<Step title="Deploy and monitor">
+  Deploy the updated Traffic Policy. Monitor traffic to ensure the new key works
+  correctly.
+</Step>
 
   <Step title="Remove the old key">
     Once confirmed, remove the old key:
@@ -99,6 +105,7 @@ To rotate provider API keys without downtime:
     api_keys:
       - value: ${secrets.get('openai', 'new-key')}
     ```
+
   </Step>
 
   <Step title="Revoke the old key">
@@ -118,18 +125,19 @@ on_http_request:
             - value: ${secrets.get('openai', 'team-a-key')}
             - value: ${secrets.get('openai', 'team-b-key')}
             - value: ${secrets.get('openai', 'shared-backup')}
-        
+
         - id: "anthropic"
           api_keys:
             - value: ${secrets.get('anthropic', 'primary')}
             - value: ${secrets.get('anthropic', 'secondary')}
-        
+
         - id: "google"
           api_keys:
             - value: ${secrets.get('google', 'key')}
 ```
 
 This configuration provides:
+
 - 3 failover keys for OpenAI
 - 2 failover keys for Anthropic
 - 1 key for Google
@@ -151,7 +159,7 @@ on_http_request:
             - value: ${secrets.get('openai', 'key-one')}
             - value: ${secrets.get('openai', 'key-two')}
             - value: ${secrets.get('openai', 'key-three')}
-      
+
       api_key_selection:
         strategy:
           - "ai.keys.filter(k, k.quota.remaining_requests > 100)"
@@ -213,13 +221,13 @@ api_key_selection:
 
 ### Available key variables
 
-| Variable | Description |
-|----------|-------------|
+| Variable                     | Description                          |
+| ---------------------------- | ------------------------------------ |
 | `k.quota.remaining_requests` | Requests remaining before rate limit |
-| `k.quota.remaining_tokens` | Tokens remaining before rate limit |
-| `k.error_rate.total` | Fraction of all errors (0.0 to 1.0) |
-| `k.error_rate.rate_limit` | Fraction of rate limit (429) errors |
-| `k.error_rate.timeout` | Fraction of timeout errors |
+| `k.quota.remaining_tokens`   | Tokens remaining before rate limit   |
+| `k.error_rate.total`         | Fraction of all errors (0.0 to 1.0)  |
+| `k.error_rate.rate_limit`    | Fraction of rate limit (429) errors  |
+| `k.error_rate.timeout`       | Fraction of timeout errors           |
 
 See [CEL Functions Reference](/ai-gateway/reference/cel-functions#api-key-selection) for the complete list.
 
@@ -244,6 +252,7 @@ providers:
 ```
 
 This is useful for:
+
 - Development environments where each developer uses their own key
 - Applications that already manage their own keys
 - Quick testing without configuration changes
