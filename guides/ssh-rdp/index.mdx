@@ -4,9 +4,13 @@ sidebarTitle: SSH & RDP Remote Access
 description: Learn how to use ngrok to access remote devices via SSH or RDP.
 ---
 
-By creating secure TCP endpoints, ngrok enables easy, centralized, access for technicians, engineers, and IT admins to maintain and update remote devices and services. This guide will help you to streamline connectivity without compromising security when it comes to remote access using SSH or RDP.
 
-Examples where this is applicable include secure SSH into remote IoT devices or connecting to a Windows RDP server in a remote network. This guide demonstrates usability for a single remote network with an edge gateway per network (edge gateway 1). It can be scaled to many networks either with or without a central gateway.
+By creating secure TCP endpoints, ngrok enables easy, centralized, access for technicians, engineers, and IT admins to maintain and update remote devices and services.
+This guide will help you to streamline connectivity without compromising security when it comes to remote access using SSH or RDP.
+
+Examples where this is applicable include secure SSH into remote IoT devices or connecting to a Windows RDP server in a remote network.
+This guide demonstrates usability for a single remote network with an edge gateway per network (edge gateway 1).
+It can be scaled to many networks either with or without a central gateway.
 
 ## Architectural reference
 
@@ -14,7 +18,8 @@ Examples where this is applicable include secure SSH into remote IoT devices or 
 
 ### Why only one ngrok Agent per remote network?
 
-Traditionally, you might assume that every service/device inside the network needs its own ngrok agent, but this isn't necessary. A single ngrok agent is installed on a network-accessible server inside the remote network, and it:
+Traditionally, you might assume that every service/device inside the network needs its own ngrok agent, but this isn't necessary.
+A single ngrok agent is installed on a network-accessible server inside the remote network, and it:
 
 1. Acts as a central gateway that can reach any service on the local network, eliminating the need for multiple agents.
 2. Creates Internal Endpoints so that each server/device is securely exposed inside ngrok, never publicly visible.
@@ -31,7 +36,9 @@ This setup minimizes security risks, simplifies deployment, and ensures continuo
 
 ### 1. Create a Service User and authtoken to enable isolated Agent management
 
-Create a Service User so that you can create an agent authtoken independent of any user account. A Service User represents a service account, and allows each server to have its own authtoken. In the case one authtoken is compromised, only that agent may be affected rather than all of them.
+Create a Service User so that you can create an agent authtoken independent of any user account.
+A Service User represents a service account, and allows each server to have its own authtoken.
+In the case one authtoken is compromised, only that agent may be affected rather than all of them.
 
 ---
 
@@ -45,7 +52,8 @@ curl \
 https://api.ngrok.com/bot_users
 ```
 
-Create an authtoken assigned to this specific Service User. Apply an ACL rule to ensure this Service User can only create internal endpoints for edge gateway 1.
+Create an authtoken assigned to this specific Service User.
+Apply an ACL rule to ensure this Service User can only create internal endpoints for edge gateway 1.
 
 ```bash
 curl -X POST \
@@ -57,13 +65,15 @@ curl -X POST \
 
 ### 2. Define internal endpoints in ngrok.yml for privatized device access
 
-An [internal endpoint](/universal-gateway/internal-endpoints/) enables a service inside the network to be reachable within ngrok, without being publicly exposed. They can:
+An [internal endpoint](/universal-gateway/internal-endpoints/) enables a service inside the network to be reachable within ngrok, without being publicly exposed.
+They can:
 
 1. Only receive traffic from Cloud Endpoints or internal services that explicitly route traffic to them.
 2. Not be accessed directly from the internet.
 3. Be used for telemetry APIs, databases, and dashboards.
 
-After installing the ngrok agent, define all required internal endpoints inside the ngrok configuration file. You can install ngrok and its configuration file in `/path/to/ngrok/ngrok.yml` and the executable in `/path/to/ngrok/ngrok`.
+After installing the ngrok agent, define all required internal endpoints inside the ngrok configuration file.
+You can install ngrok and its configuration file in `/path/to/ngrok/ngrok.yml` and the executable in `/path/to/ngrok/ngrok`.
 
 ```yaml
 version: 3
@@ -71,19 +81,19 @@ agent:
   authtoken: AUTHTOKEN_CREATED_IN_STEP_1
 endpoints:
   - name: Internal Endpoint for Device 1
-    url: 'tcp://device1.gateway1.internal:443'
+    url: "tcp://device1.gateway1.internal:443"
     upstream:
       url: 22
   - name: Internal Endpoint for Device 2
-    url: 'tcp://device2.gateway1.internal:443'
+    url: "tcp://device2.gateway1.internal:443"
     upstream:
       url: 22
   - name: Internal Endpoint for Device N
-    url: 'tcp://deviceN.gateway1.internal:443'
+    url: "tcp://deviceN.gateway1.internal:443"
     upstream:
       url: 22
   - name: Internal Endpoint for RDP Server
-    url: 'tcp://rdp-server.gateway1.internal:443'
+    url: "tcp://rdp-server.gateway1.internal:443"
     upstream:
       url: 3389
 ```
@@ -92,7 +102,9 @@ If there is no edge gateway present in your network, you must configure each age
 
 ### 3. Reserve a tcp address for each device/server
 
-Reserving a TCP address is required for creating a Cloud Endpoint which will be done in a later step. By reserving a TCP address, this address is held specifically for your ngrok account. You will do this for each device connected to an edge gateway as well as for the rdp server.
+Reserving a TCP address is required for creating a Cloud Endpoint which will be done in a later step.
+By reserving a TCP address, this address is held specifically for your ngrok account.
+You will do this for each device connected to an edge gateway as well as for the rdp server.
 
 ---
 
@@ -117,7 +129,9 @@ A [Cloud Endpoint](/universal-gateway/cloud-endpoints/) is a permanent, external
 3. Does not forward traffic to the agent by default—it must be configured to route traffic to internal endpoints.
 4. Used for exposing services to external cloud apps securely.
 
-The curl command below leverages ngrok's platform API to create a Cloud Endpoint and attach a Traffic Policy to it. ngrok's [Traffic Policy](/traffic-policy/) is the perfect way to forward and manipulate traffic in a flexible and robust manner. In this case, this command creates the endpoint and attaches a [forward-internal](/traffic-policy/actions/forward-internal/) action which will forward traffic from the Cloud Endpoint to the internal endpoint. This will also need to be done for each device connected to the edge gateway where the agent sits.
+The curl command below leverages ngrok's platform API to create a Cloud Endpoint and attach a Traffic Policy to it. ngrok's [Traffic Policy](/traffic-policy/) is the perfect way to forward and manipulate traffic in a flexible and robust manner.
+In this case, this command creates the endpoint and attaches a [forward-internal](/traffic-policy/actions/forward-internal/) action which will forward traffic from the Cloud Endpoint to the internal endpoint.
+This will also need to be done for each device connected to the edge gateway where the agent sits.
 
 ---
 
@@ -133,7 +147,10 @@ curl \
 
 ### 5. Secure your Cloud Endpoint with IP restrictions
 
-Navigate to your newly created Cloud Endpoint in the [endpoints](https://dashboard.ngrok.com/authtokens) tab on your ngrok dashboard, and apply a restrict-ips Traffic Policy action to enable a source IP whitelist. By enabling IP restrictions, you can directly filter who/what can use the endpoint and prevent port scanners or other malicious actors. You can add this action directly to the Cloud Endpoint's YAML configuration. The properly formatted config for this action can be seen below:
+Navigate to your newly created Cloud Endpoint in the [endpoints](https://dashboard.ngrok.com/authtokens) tab on your ngrok dashboard, and apply a restrict-ips Traffic Policy action to enable a source IP whitelist.
+By enabling IP restrictions, you can directly filter who/what can use the endpoint and prevent port scanners or other malicious actors.
+You can add this action directly to the Cloud Endpoint's YAML configuration.
+The properly formatted config for this action can be seen below:
 
 ```yaml
 version: 3
@@ -141,19 +158,19 @@ agent:
   authtoken: AUTHTOKEN_CREATED_IN_STEP_1
 endpoints:
   - name: Internal Endpoint for Device 1
-    url: 'tcp://device1.gateway1.internal:443'
+    url: "tcp://device1.gateway1.internal:443"
     upstream:
       url: 22
   - name: Internal Endpoint for Device 2
-    url: 'tcp://device2.gateway1.internal:443'
+    url: "tcp://device2.gateway1.internal:443"
     upstream:
       url: 22
   - name: Internal Endpoint for Device N
-    url: 'tcp://deviceN.gateway1.internal:443'
+    url: "tcp://deviceN.gateway1.internal:443"
     upstream:
       url: 22
   - name: Internal Endpoint for RDP Server
-    url: 'tcp://rdp-server.gateway1.internal:443'
+    url: "tcp://rdp-server.gateway1.internal:443"
     upstream:
       url: 3389
 ```
@@ -180,9 +197,13 @@ Now that you have created and secured your tcp Cloud Endpoints and they forward 
 
 ### Enable Endpoint Pooling
 
-You can use Endpoint Pooling with multiple internal Agent Endpoints to achieve redundancy and high availability for services inside your network. If desired, you can install a second agent within the remote network as a failover in case agents in the wild go offline.
+You can use Endpoint Pooling with multiple internal Agent Endpoints to achieve redundancy and high availability for services inside your network.
+If desired, you can install a second agent within the remote network as a failover in case agents in the wild go offline.
 
-Configure each Agent Endpoint to use the same ngrok internal URL. This automatically forms an endpoint pool. Incoming traffic to the pooled URL is automatically distributed among all healthy endpoints in the pool. If one endpoint goes offline, traffic is seamlessly routed to the remaining endpoints, ensuring redundancy and failover
+Configure each Agent Endpoint to use the same ngrok internal URL.
+This automatically forms an endpoint pool.
+Incoming traffic to the pooled URL is automatically distributed among all healthy endpoints in the pool.
+If one endpoint goes offline, traffic is seamlessly routed to the remaining endpoints, ensuring redundancy and failover
 
 ```yaml
 version: 3
@@ -190,12 +211,12 @@ agent:
   authtoken: <YOUR_NGROK_AUTHTOKEN>
   endpoints:
     - name: service-a
-      url: 'https://service.internal'
+      url: "https://service.internal"
       pooling_enabled: true
       upstream:
         url: 8080
     - name: service-b
-      url: 'https://service.internal'
+      url: "https://service.internal"
       pooling_enabled: true
       upstream:
         url: 8081
@@ -203,7 +224,10 @@ agent:
 
 ### Create a custom connect URL
 
-This provides a white-labeling capability so that your ngrok agents will connect to _connect.example.com_ instead of the default connection hostname (connect.ngrok-agent.com). Dedicated IPs that are unique for your account which your agents will connect to are also available. This takes away any danger of rogue agents in your network trying to call home and adds an additional layer of security by specializing your ngrok connectivity. Custom connect URLs are available with ngrok's pay-as-you-go plan as an additional paid feature.
+This provides a white-labeling capability so that your ngrok agents will connect to _connect.example.com_ instead of the default connection hostname (connect.ngrok-agent.com).
+Dedicated IPs that are unique for your account which your agents will connect to are also available.
+This takes away any danger of rogue agents in your network trying to call home and adds an additional layer of security by specializing your ngrok connectivity.
+Custom connect URLs are available with ngrok's pay-as-you-go plan as an additional paid feature.
 
 ```bash
 curl \
@@ -215,7 +239,8 @@ curl \
  https://api.ngrok.com/agent_ingresses
 ```
 
-Once you have created the custom connect url, specify this field within the agent configuration file. Add this section to your agent configuration file to specify the custom connect url:
+Once you have created the custom connect url, specify this field within the agent configuration file.
+Add this section to your agent configuration file to specify the custom connect url:
 
 ```yaml
 version: 3
@@ -232,15 +257,15 @@ ngrok service install --config /etc/ngrok.yml
 ngrok service start
 ```
 
-<Note>
-In most cases, installing ngrok as a service requires administrator privileges.
+<Note>  In most cases, installing ngrok as a service requires administrator privileges.
 </Note>
 
 This will start all tunnels defined in the configuration file, ensure ngrok runs persistently in the background, and integrate with native OS service tooling.
 
 ## Recap
 
-You have now integrated a system that allows you to seamlessly and securely access any and all devices/servers within your remote network. To recap what you've built:
+You have now integrated a system that allows you to seamlessly and securely access any and all devices/servers within your remote network.
+To recap what you've built:
 
 1. One ngrok agent per remote network and no need for multiple installs.
 2. Always-online devices and servers, securely available via cloud and internal endpoints.

@@ -4,6 +4,7 @@ sidebarTitle: Azure AD B2C (SAML)
 description: Use Microsoft Azure AD B2C to secure access to ngrok endpoints with single sign-on.
 ---
 
+
 import Disclaimer from "/snippets/integrations/_endpoint-sso-disclaimer.mdx";
 
 <Disclaimer />
@@ -28,19 +29,26 @@ By integrating Azure AD B2C with ngrok, you can:
   - Click **New Edge**.
   - Click **HTTPS Edge**.
   - Click the **pencil icon** next to "no description".
-  Enter `Edge With Azure Active Directory B2C SSO` as the Edge name and click **Save**.
+    Enter `Edge With Azure Active Directory B2C SSO` as the Edge name and click **Save**.
 - Configure the SAML module for this Edge:
   - On the Routes section, click **SAML**.
   - Click **Begin setup**.
   - In the Identity Provider section, copy the following XML as a placeholder into the input box:
 
-    ```xml
-    <EntityDescriptor xmlns="urn:oasis:names:tc:SAML:2.0:metadata"></EntityDescriptor>
+            ```xml
+            <EntityDescriptor xmlns="urn:oasis:names:tc:SAML:2.0:metadata">
+
+            
+            </EntityDescriptor>
+
     ```
 
-  - Click **Save**.
+    ```
+
+- Click **Save**.
+
 - Note that ngrok has now generated values for the fields in the Service Provider section.
-These will be used to configure Azure AD B2C later.
+  These will be used to configure Azure AD B2C later.
 
 ## 2. Configure Azure AD B2C custom policies
 
@@ -49,37 +57,32 @@ These will be used to configure Azure AD B2C later.
   - For a SAML application, you need to configure custom policies; user flows alone are not sufficient.
   - You can use the Azure AD B2C custom policy starter pack or the IEF Setup App to automate these steps.
   - To keep things simple, use the `LocalAccounts` starter pack.
-  This means users will sign up and log in as users in your Azure AD B2C tenant instead of with another identity provider.
-  This means you can skip configuring Facebook as an identity provider.
-  If you are using the IEF Setup App, click the checkbox for `Remove Facebook references` before you deploy the starter pack.
+    This means users will sign up and log in as users in your Azure AD B2C tenant instead of with another identity provider.
+    This means you can skip configuring Facebook as an identity provider.
+    If you are using the IEF Setup App, click the checkbox for `Remove Facebook references` before you deploy the starter pack.
   - Skip the steps of `Register a web application` and `Enable ID token implicit grant` unless you'd like to test this now.
-  A SAML application will be registered and tested later.
+    A SAML application will be registered and tested later.
 
 ## 3. Create an Azure AD B2C SAML application
 
 - Follow the Azure AD B2C documentation to register your SAML application and configure custom policies for SAML.
 - Some hints:
   - Update your previously created custom policies to use SAML.
-  You can either update the files in the starter pack repo or download the XML files for your existing policies from the Identity Experience Framework in the Azure portal.
+    You can either update the files in the starter pack repo or download the XML files for your existing policies from the Identity Experience Framework in the Azure portal.
   - If you are using the `LocalAccounts` starter pack, remember to adjust the orchestration step order value to `4` as noted in these docs.
   - Use the following mapping of Azure AD B2C configuration properties to ngrok generated values (found in your Edge's SAML configuration in the Service Provider section) to configure your application:
 
-    | Azure AD B2C      | ngrok         |
-    | ----------------- | ------------- |
-    | `RedirectURI`     | `ACS URL`     |
-    | `identifierUri`   | `EntityID`    |
-    | `samlMetadataUrl` | `SP Metadata` |
+    | Azure AD B2C | ngrok | | ----------------- | ------------- | | `RedirectURI` | `ACS URL` | | `identifierUri` | `EntityID` | | `samlMetadataUrl` | `SP Metadata` |
 
 ## 4. Update the ngrok Edge with the IdP metadata
 
 - Back in the ngrok dashboard for your Edge's SAML configuration, copy and paste the XML found at the IdP Saml Metadata URL in the Identity Provider section, replacing the previously set placeholder value.
-Note the IdP Metadata URL follows this format: `https://<tenant-name>.b2clogin.com/<tenant-name>.onmicrosoft.com/<policy-name>/Samlp/metadata`.
+  Note the IdP Metadata URL follows this format: `https://<tenant-name>.b2clogin.com/<tenant-name>.onmicrosoft.com/<policy-name>/Samlp/metadata`.
 - Click **Save**.
 
 ## 5. Test the integration
 
-<Tip>
-This step assumes you have an app running locally (for example, at `localhost:3000`) with the ngrok client installed.
+<Tip>  This step assumes you have an app running locally (for example, at `localhost:3000`) with the ngrok client installed.
 </Tip>
 
 - Launch a tunnel connected to your configured Edge.

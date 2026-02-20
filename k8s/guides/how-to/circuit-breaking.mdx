@@ -4,14 +4,13 @@ sidebarTitle: Circuit Breaking
 description: Configure circuit breaking in Kubernetes to protect your services from overload and maintain system reliability with ngrok.
 ---
 
-Circuit breaking is a resilience pattern that helps maintain system reliability by temporarily rejecting requests when error rates and request volumes exceed predefined thresholds. This prevents overloaded services from spiraling into failure and allows them time to recover.
+
+Circuit breaking is a resilience pattern that helps maintain system reliability by temporarily rejecting requests when error rates and request volumes exceed predefined thresholds.
+This prevents overloaded services from spiraling into failure and allows them time to recover.
 
 When circuit breaking is enabled:
 
-🚨 Requests are automatically rejected if too many errors occur within a given time window. <br />
-⏳ Traffic pauses for a set period to allow the upstream service to recover. <br />
-✅ The system automatically re-evaluates health and resumes traffic once conditions improve. <br />
-
+🚨 Requests are automatically rejected if too many errors occur within a given time window. <br /> ⏳ Traffic pauses for a set period to allow the upstream service to recover. <br /> ✅ The system automatically re-evaluates health and resumes traffic once conditions improve. <br />
 
 ## 🔍 What are the benefits of circuit breaking?
 
@@ -34,143 +33,148 @@ The following examples show how to set up an endpoint that allows only 1 request
 Check out the [circuit breaking Traffic Policy action](/traffic-policy/actions/circuit-breaker/) page for more details about how it functions and the parameters it accepts.
 
 <Tabs>
-<Tab title="AgentEndpoint">
-```yaml
-apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-kind: AgentEndpoint
-metadata:
+  <Tab title="AgentEndpoint">
+  ```yaml
+  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+  kind: AgentEndpoint
+  metadata:
   name: example-agent-endpoint
-spec:
+  spec:
   url: https://example-hostname.ngrok.io
   upstream:
     url: http://my-service.my-namespace:8080
   trafficPolicy:
     inline:
       on_http_request:
-        - actions:
-            - type: circuit-breaker
+  - actions:
+  - type: circuit-breaker
               config:
                 error_threshold: 0
                 volume_threshold: 1
                 window_duration: 60s
                 tripped_duration: 2m
                 enforce: true
-```
-</Tab>
-<Tab title="CloudEndpoint">
-```yaml
-apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-kind: CloudEndpoint
-metadata:
+  ```
+  </Tab>
+  <Tab title="CloudEndpoint">
+  ```yaml
+  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+  kind: CloudEndpoint
+  metadata:
   name: example-cloud-endpoint
-spec:
+  spec:
   url: https://example-hostname.ngrok.io
   trafficPolicy:
     policy:
       on_http_request:
-        - actions:
-            - type: circuit-breaker
+  - actions:
+  - type: circuit-breaker
               config:
                 error_threshold: 0
                 volume_threshold: 1
                 window_duration: 60s
                 tripped_duration: 2m
                 enforce: true
-```
-</Tab>
-<Tab title="Ingress">
-💡 `Ingress` resources do not natively support circuit breaking, but they can be extended using a Traffic Policy.
+  ```
+  </Tab>
+  <Tab title="Ingress">
+  💡 `Ingress` resources do not natively support circuit breaking, but they can be extended using a Traffic Policy.
 
-### 1. Create an `NgrokTrafficPolicy`
+  ### 1. Create an `NgrokTrafficPolicy`
 
 ```yaml
 apiVersion: ngrok.k8s.ngrok.com/v1alpha1
 kind: NgrokTrafficPolicy
 metadata:
-  name: example-tp
-  namespace: default
+name: example-tp
+namespace: default
 spec:
-  policy:
-    on_http_request:
-      - actions:
-          - type: circuit-breaker
-            config:
-              error_threshold: 0
-              volume_threshold: 1
-              window_duration: 60s
-              tripped_duration: 2m
-              enforce: true
+policy:
+on_http_request:
+- actions:
+- type: circuit-breaker
+        config:
+          error_threshold: 0
+          volume_threshold: 1
+          window_duration: 60s
+          tripped_duration: 2m
+          enforce: true
 ```
 
-### 2. Use the `NgrokTrafficPolicy` on an `Ingress`
+  ### 2. Use the `NgrokTrafficPolicy` on an `Ingress`
 
 ```yaml
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  annotations:
-    k8s.ngrok.com/traffic-policy: example-tp
-  name: example-ingress
-  namespace: default
+annotations:
+k8s.ngrok.com/traffic-policy: example-tp
+name: example-ingress
+namespace: default
 spec:
-  ingressClassName: ngrok
-  rules:
-    - host: example-hostname.ngrok.io
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: example-service
-                port:
-                  number: 80
+ingressClassName: ngrok
+rules:
+- host: example-hostname.ngrok.io
+  http:
+    paths:
+- path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: example-service
+            port:
+              number: 80
 ```
-</Tab>
-<Tab title="Gateway API">
-💡 Gateway API resources do not natively support circuit breaking, but they can be extended using a Traffic Policy.
 
-### 1. Create an `NgrokTrafficPolicy`
+  </Tab>
+  <Tab title="Gateway API">
+  💡 Gateway API resources do not natively support circuit breaking, but they can be extended using a Traffic Policy.
+
+  ### 1. Create an `NgrokTrafficPolicy`
 
 ```yaml
 apiVersion: ngrok.k8s.ngrok.com/v1alpha1
 kind: NgrokTrafficPolicy
 metadata:
-  name: example-tp
-  namespace: default
+name: example-tp
+namespace: default
 spec:
-  policy:
-    on_http_request:
-      - actions:
-          - type: circuit-breaker
-            config:
-              error_threshold: 0
-              volume_threshold: 1
-              window_duration: 60s
-              tripped_duration: 2m
-              enforce: true
+policy:
+on_http_request:
+- actions:
+- type: circuit-breaker
+        config:
+          error_threshold: 0
+          volume_threshold: 1
+          window_duration: 60s
+          tripped_duration: 2m
+          enforce: true
 ```
 
-### 2. Use the `NgrokTrafficPolicy` on a `Gateway`
+  ### 2. Use the `NgrokTrafficPolicy` on a `Gateway`
 
-The following example showcases supplying the `NgrokTrafficPolicy` on a `Gateway` resource. All requests to the `Gateway` will run the Traffic Policy.
-If you prefer, `NgrokTrafficPolicy` can also be used on the route level by using an `externalRef` filter on an `HTTPRoute`. See the [using Gateway API guide](/k8s/guides/using-gwapi) for examples.
+  The following example showcases supplying the `NgrokTrafficPolicy` on a `Gateway` resource.
+  All requests to the `Gateway` will run the Traffic Policy.
+  If you prefer, `NgrokTrafficPolicy` can also be used on the route level by using an `externalRef` filter on an `HTTPRoute`.
+  See the [using Gateway API guide](/k8s/guides/using-gwapi) for examples.
 
 ```yaml
 apiVersion: gateway.networking.k8s.io/v1
 kind: Gateway
 metadata:
-  name: example-gateway
-  namespace: default
-  annotations:
-    k8s.ngrok.com/traffic-policy: example-tp
+name: example-gateway
+namespace: default
+annotations:
+k8s.ngrok.com/traffic-policy: example-tp
 spec:
-  gatewayClassName: ngrok
-  listeners:
-    - name: example-hostname
-      hostname: "example-hostname.ngrok.io"
-      port: 443
-      protocol: HTTPS
+gatewayClassName: ngrok
+listeners:
+  - name: example-hostname
+    hostname: "example-hostname.ngrok.io"
+    port: 443
+    protocol: HTTPS
 ```
-</Tab>
+
+  </Tab>
+  
 </Tabs>

@@ -6,15 +6,14 @@ description: Learn how to use ngrok's Traffic Inspector to view, debug, and repl
 
 ## Overview
 
-One of the main advantages of using ngrok is the ability to view the traffic going
-to your origin service. This can help in triaging tough bugs or testing new capabilities.
+One of the main advantages of using ngrok is the ability to view the traffic going to your origin service.
+This can help in triaging tough bugs or testing new capabilities.
 
 ngrok offers multiple ways to inspect the traffic going to your service.
 
-|                                                                         |                                                                                                                                                                                            |
-| ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| [ngrok Agent Local Traffic Inspector](/agent/web-inspection-interface/) | This is available when working with the standalone agent and is usually found at http://localhost:4040. Look for a link in your ngrok agent console.                                       |
-| [ngrok Traffic Inspector](#ngrok-traffic-inspector)                     | A cloud based version of the local Traffic Inspector that is available in your [ngrok Dashboard](https://dashboard.ngrok.com/observability/traffic-inspector). See below for more details. |
+| | | | ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | | [ngrok Agent Local Traffic Inspector](/agent/web-inspection-interface/) | This is available when working with the standalone agent and is usually found at http://localhost:4040.
+Look for a link in your ngrok agent console. | | [ngrok Traffic Inspector](#ngrok-traffic-inspector) | A cloud based version of the local Traffic Inspector that is available in your [ngrok Dashboard](https://dashboard.ngrok.com/observability/traffic-inspector).
+See below for more details. |
 
 ## ngrok Traffic Inspector
 
@@ -22,33 +21,40 @@ The ngrok Traffic Inspector replaces the local agent inspection interface and ad
 By enabling full capture mode in your ngrok settings, you are able to replay requests to your upstream directly from the browser, instead of the original source.
 This can dramatically speed up development of webhooks or callbacks that are difficult to trigger repeatedly.
 
-Everyone gets three days of traffic retention, after which the traffic events are purged from the system. If you would like a longer look back window, you can purchase up to [90 days of retention with production plans](https://ngrok.com/pricing).
+Everyone gets three days of traffic retention, after which the traffic events are purged from the system.
+If you would like a longer look back window, you can purchase up to [90 days of retention with production plans](https://ngrok.com/pricing).
 
 ## Full capture mode
 
-By default, the ngrok Traffic Inspector will only store the metadata about each request and response. Full Capture mode is an opt-in setting on your ngrok account that will store the full request and response parameters, headers, and bodies for each traffic event that flows through your endpoints.
+By default, the ngrok Traffic Inspector will only store the metadata about each request and response.
+Full Capture mode is an opt-in setting on your ngrok account that will store the full request and response parameters, headers, and bodies for each traffic event that flows through your endpoints.
 This can be enabled by account admins by visiting the Observability section in the [ngrok Settings Page](https://dashboard.ngrok.com/settings#observability) after logging in.
 
 <Warning>
 
-Storing the full request and response data may mean you and your team members have access to sensitive data flowing through your endpoints.
-
+  Storing the full request and response data may mean you and your team members have access to sensitive data flowing through your endpoints.
 </Warning>
 
-Once full capture mode is enabled, ngrok will begin capturing and storing the full requests and responses up to a maximum of 10KB, after which the data will be truncated. Header values will be truncated after 1KB for each value.
+Once full capture mode is enabled, ngrok will begin capturing and storing the full requests and responses up to a maximum of 10KB, after which the data will be truncated.
+Header values will be truncated after 1KB for each value.
 Data that is truncated will be indicated in the Traffic Inspector through the number of bytes that were captured as well as the number of headers.
 
 This data is stored for your retention period of your account, currently set at 3 days from the time a request is received.
 
 ## Replay
 
-Replaying requests allows users to re-send an HTTP request upstream without directly accessing the endpoint. To use replay, you must activate Full Capture mode in your account.
+Replaying requests allows users to re-send an HTTP request upstream without directly accessing the endpoint.
+To use replay, you must activate Full Capture mode in your account.
 
-Once Full Capture is enabled, a replay button will appear for fully captured requests in the traffic event details pane of the dashboard. If this button is unavailable, it likely indicates that the request occurred before Full Capture was fully activated, or the request was too large and has been truncated.
+Once Full Capture is enabled, a replay button will appear for fully captured requests in the traffic event details pane of the dashboard.
+If this button is unavailable, it likely indicates that the request occurred before Full Capture was fully activated, or the request was too large and has been truncated.
 
-Replay works by resending your original unmodified request to your endpoint. It will be subject to the policies of that endpoint at the time of replay (which could be different than the original request).
+Replay works by resending your original unmodified request to your endpoint.
+It will be subject to the policies of that endpoint at the time of replay (which could be different than the original request).
 
-When replaying a request to your service, minimal changes are made. However, some alterations are inevitable. Here's a list of changes made to replayed requests:
+When replaying a request to your service, minimal changes are made.
+However, some alterations are inevitable.
+Here's a list of changes made to replayed requests:
 
 - The replayed request will originate from a different IP address, so any IP restrictions may prevent the replay from reaching your upstream.
 - Any `Connection: Keep-Alive` headers are removed as replay does not support them.
@@ -60,7 +66,9 @@ When replaying a request to your service, minimal changes are made. However, som
 
 ## Replay with modifications
 
-ngrok Traffic Inspector allows you to edit the request before re-sending it to your backend. It can be accessed from the same drop down as Replay. The same changes are made to the replayed requests as before in addition to the following changes:
+ngrok Traffic Inspector allows you to edit the request before re-sending it to your backend.
+It can be accessed from the same drop down as Replay.
+The same changes are made to the replayed requests as before in addition to the following changes:
 
 - You are not allowed to modify any [forbidden headers](https://developer.mozilla.org/en-US/docs/Glossary/Forbidden_header_name) in the replayed request.
 - The request can be replayed to the same endpoint as long as it is in the same account. You cannot replay to endpoints that are active in other accounts.

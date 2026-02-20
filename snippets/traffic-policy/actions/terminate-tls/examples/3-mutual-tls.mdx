@@ -1,10 +1,12 @@
 ### Enabling Mutual TLS
 
-This example demonstrates how to use mutual TLS (mTLS) with this action. mTLS requires both the client and server to present certificates to each other to establish a secure connection. This example will show you how to generate a custom Certificate Authority (CA) and client certificate to use.
+This example demonstrates how to use mutual TLS (mTLS) with this action. mTLS requires both the client and server to present certificates to each other to establish a secure connection.
+This example will show you how to generate a custom Certificate Authority (CA) and client certificate to use.
 
 #### Generate Certificates
 
-We will create a new CA that will be used to sign the client certificate. This allows you to generate multiple client certificates that are trusted by the CA if needed.
+We will create a new CA that will be used to sign the client certificate.
+This allows you to generate multiple client certificates that are trusted by the CA if needed.
 
 ```bash
 # 1. Generate CA private key (ca.key)
@@ -23,24 +25,25 @@ openssl req -new -key client.key -out client.csr -subj "/CN=ExampleClient"
 openssl x509 -req -in client.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out client.crt -days 365 -sha256
 ```
 
-These commands will result in five new files: `ca.key`, `ca.crt`, `client.key`, `client.csr`, and `client.key`. You will use the contents of `ca.crt` in your traffic policy to validate requests via `curl` which will use `client.key` and `client.crt`.
+These commands will result in five new files: `ca.key`, `ca.crt`, `client.key`, `client.csr`, and `client.key`.
+You will use the contents of `ca.crt` in your traffic policy to validate requests via `curl` which will use `client.key` and `client.crt`.
 
 #### Example Traffic Policy Document
 
 Using the CA certificate generated above, you can specify the `mutual_tls_certificate_authorities` field in the traffic policy to trust the CA that issued the client certificate.
 
 <CodeGroup>
-```yaml policy.yml {4-10}
-on_tcp_connect:
+  ```yaml policy.yml {4-10}
+  on_tcp_connect:
   - actions:
-      - type: terminate-tls
+  - type: terminate-tls
         config:
           mutual_tls_certificate_authorities:
-            - |-
+  - |-
               -----BEGIN CERTIFICATE-----
               ... certificate ...
               -----END CERTIFICATE-----
-```
+  ```
 
 ```json policy.json {5-12}
 {
@@ -50,9 +53,7 @@ on_tcp_connect:
         {
           "type": "terminate-tls",
           "config": {
-            "mutual_tls_certificate_authorities": [
-              "-----BEGIN CERTIFICATE-----\n... certificate ...\n-----END CERTIFICATE-----"
-            ]
+            "mutual_tls_certificate_authorities": ["-----BEGIN CERTIFICATE-----\n... certificate ...\n-----END CERTIFICATE-----"]
           }
         }
       ]

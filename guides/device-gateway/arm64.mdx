@@ -5,10 +5,11 @@ description: Learn how to install ngrok on any Linux ARM64 device to tunnel traf
 ---
 
 
+In this guide, you'll learn how to install ngrok on any Linux ARM64 device to forward traffic from public endpoints to your upstream services or for remote management.
+You'll also create some a Traffic Policy to protect your device from unauthorized traffic.
 
-In this guide, you'll learn how to install ngrok on any Linux ARM64 device to forward traffic from public endpoints to your upstream services or for remote management. You'll also create some a Traffic Policy to protect your device from unauthorized traffic.
-
-This guide is specific to ARM64 devices on Linux—if you're using a different device or CPU architecture, first check whether your platform meets the ngrok agent's [system and resource requirements](/agent/#system-requirements). Other guides are also available that may fit your use case more precisely:
+This guide is specific to ARM64 devices on Linux—if you're using a different device or CPU architecture, first check whether your platform meets the ngrok agent's [system and resource requirements](/agent/#system-requirements).
+Other guides are also available that may fit your use case more precisely:
 
 - [Linux AMD64 devices](/guides/device-gateway/linux/)
 - [Raspberry Pi](/guides/device-gateway/raspberry-pi/)
@@ -49,9 +50,8 @@ If you want to perform remote administration on your ARM64 device using a reserv
 
 1. Start the TCP tunnel with `ngrok`.
 
-   ::::warning
-   TCP endpoints are only available on a free plan after [adding a valid payment method](https://dashboard.ngrok.com/settings#id-verification) to your account. If you get a different error, ensure your authtoken is configured correctly.
-   ::::
+   ::::warning TCP endpoints are only available on a free plan after [adding a valid payment method](https://dashboard.ngrok.com/settings#id-verification) to your account.
+   If you get a different error, ensure your authtoken is configured correctly. ::::
 
    ```bash
    ngrok tcp 22
@@ -65,11 +65,7 @@ If you want to perform remote administration on your ARM64 device using a reserv
 
 1. On your local workstation, SSH into your ARM64 device with the command below, replacing the variables with the following:
 
-   |                       |                                                                                                                                                |
-   | --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-   | `{NGROK_PORT}`        | The port number assigned to your ngrok agent (for example, if the agent shows `tcp://4.tcp.us-cal-1.ngrok.io:12345`, your port number is `12345`).     |
-   | `{USER}`              | An existing user on your remote device.                                                                                                        |
-   | `{NGROK_TCP_ADDRESS}` | The address of the ngrok agent (for example, if the agent shows `tcp://4.tcp.us-cal-1.ngrok.io:12345`, your TCP address is `4.tcp.us-cal-1.ngrok.io`). |
+   | | | | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ | | `{NGROK_PORT}` | The port number assigned to your ngrok agent (for example, if the agent shows `tcp://4.tcp.us-cal-1.ngrok.io:12345`, your port number is `12345`). | | `{USER}` | An existing user on your remote device. | | `{NGROK_TCP_ADDRESS}` | The address of the ngrok agent (for example, if the agent shows `tcp://4.tcp.us-cal-1.ngrok.io:12345`, your TCP address is `4.tcp.us-cal-1.ngrok.io`). |
 
    ```bash
    ssh -p {NGROK_PORT} {USER}@{NGROK_TCP_ADDRESS}
@@ -79,8 +75,7 @@ If you want to perform remote administration on your ARM64 device using a reserv
 
 Separately from SSH access, you can also use ngrok to create an [HTTP tunnel](/universal-gateway/http/) to route traffic to specific applications or services running on your ARM64 device's `localhost` network.
 
-<Note>
-If you already established a TCP tunnel for SSH access, you'll either need to create a second tunnel for the HTTP tunnel, or use the [agent configuration file](/agent/config/v3/) to define multiple tunnels.
+<Note>  If you already established a TCP tunnel for SSH access, you'll either need to create a second tunnel for the HTTP tunnel, or use the [agent configuration file](/agent/config/v3/) to define multiple tunnels.
 </Note>
 
 1. Use ngrok to create an HTTP tunnel at the port on which your service operates, for example, port `8080`.
@@ -105,47 +100,48 @@ If you already established a TCP tunnel for SSH access, you'll either need to cr
 
 ## 4. Add a Traffic Policy to restrict IPs
 
-Now that you have SSH tunneling and service ingress handled via ngrok, you may also want to protect those services from unknown and untrusted users. You'll use the [Restrict IPs](/traffic-policy/actions/restrict-ips) Traffic Policy action.
+Now that you have SSH tunneling and service ingress handled via ngrok, you may also want to protect those services from unknown and untrusted users.
+You'll use the [Restrict IPs](/traffic-policy/actions/restrict-ips) Traffic Policy action.
 
-1. Create a new file on your ARM64 device, where you create ngrok endpoints, named `policy.yml`.
+1.  Create a new file on your ARM64 device, where you create ngrok endpoints, named `policy.yml`.
 
-1. Open the file for editing and paste in the following contents, replacing `1.1.1.1` with the public IP of the workstation you use to access your ARM64 device:
+1.  Open the file for editing and paste in the following contents, replacing `1.1.1.1` with the public IP of the workstation you use to access your ARM64 device:
 
     ```yaml
     on_tcp_connect:
       - actions:
-        - name: "Restrict all IPs except trusted CIDRs"
-          type: "restrict-ips"
-          config:
-            enforce: true
-            allow:
-             - "1.1.1.1/32"
+          - name: "Restrict all IPs except trusted CIDRs"
+            type: "restrict-ips"
+            config:
+              enforce: true
+              allow:
+                - "1.1.1.1/32"
     ```
 
-    :::note
-    ngrok's IP Restriction action uses [CIDRs](https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing) to specific IPs or IP ranges. The `/32` notation refers to a single IPv4 address, like `
-    :::
+    :::note ngrok's IP Restriction action uses [CIDRs](https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing) to specific IPs or IP ranges.
+    The `/32` notation refers to a single IPv4 address, like ` :::
 
-1. Restart any existing tunnels, or create new ones, referencing the `policy.yml` file you just created, choosing between a TLS and HTTP tunnel below.
+1.  Restart any existing tunnels, or create new ones, referencing the `policy.yml` file you just created, choosing between a TLS and HTTP tunnel below.
 
-    <Tabs>
-      <Tab title="TLS tunnel">
-        
-        ```bash
-        ngrok tcp 22  --traffic-policy-file /path/to/policy.yml
-        ```
+<Tabs>
+  <Tab title="TLS tunnel">
 
-      </Tab>
-      <Tab title="HTTP tunnel">
+    ```bash
+    ngrok tcp 22  --traffic-policy-file /path/to/policy.yml
+    ```
 
-        ```bash
-        ngrok http 8080 --traffic-policy-file /path/to/policy.yml
-        ```
+  </Tab>
+  <Tab title="HTTP tunnel">
 
-      </Tab>
-    </Tabs>
+    ```bash
+    ngrok http 8080 --traffic-policy-file /path/to/policy.yml
+    ```
 
-1. When you re-establish your TLS or HTTP tunnels, ngrok will proxy requests from your allowed IP/CIDR through to your ARM64 device and reject all others _at its cloud service_, preventing your device from being constantly bombarded with automated and malicious attacks.
+  </Tab>
+  
+</Tabs>
+
+1.  When you re-establish your TLS or HTTP tunnels, ngrok will proxy requests from your allowed IP/CIDR through to your ARM64 device and reject all others _at its cloud service_, preventing your device from being constantly bombarded with automated and malicious attacks.
 
 ## What's next?
 

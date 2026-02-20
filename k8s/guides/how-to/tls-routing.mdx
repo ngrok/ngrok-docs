@@ -3,7 +3,10 @@ title: TLS Routing
 description: Configure TLS routing in Kubernetes to handle encrypted traffic using SNI-based routing with optional TLS termination.
 ---
 
-Transport Layer Security (TLS) routing enables your API Gateway to handle encrypted traffic based on the Server Name Indication (SNI) without needing to terminate the connection. By default, TLS traffic is routed without termination, preserving full end-to-end encryption. However, TLS termination can be enabled if your use case requires it.
+
+Transport Layer Security (TLS) routing enables your API Gateway to handle encrypted traffic based on the Server Name Indication (SNI) without needing to terminate the connection.
+By default, TLS traffic is routed without termination, preserving full end-to-end encryption.
+However, TLS termination can be enabled if your use case requires it.
 
 Proper TLS routing enables:
 
@@ -11,7 +14,7 @@ Proper TLS routing enables:
 
 ## 🔍 What are the benefits of TLS routing?
 
-TLS routing is ideal for environments where secure communication must be preserved from client to backend. 
+TLS routing is ideal for environments where secure communication must be preserved from client to backend.
 With SNI-based routing, the gateway can route requests without accessing the payload, maintaining user privacy and compliance.
 
 A well-configured API Gateway can route TLS traffic using:
@@ -20,7 +23,6 @@ A well-configured API Gateway can route TLS traffic using:
 - TLS passthrough (default): Maintain end-to-end encryption without terminating TLS at the gateway.
 - TLS termination (optional): Handle TLS termination at the gateway if you don't want your upstream services to terminate TLS.
 
-
 ## TLS routing examples
 
 The following examples showcase how you can route TLS traffic to your upstream services.
@@ -28,97 +30,100 @@ The following examples showcase how you can route TLS traffic to your upstream s
 See the [TLS Endpoints page](/universal-gateway/tls/) for more details on how ngrok handles TLS endpoints.
 
 <Tabs>
-<Tab title="AgentEndpoint">
-```yaml
-apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-kind: AgentEndpoint
-metadata:
+  <Tab title="AgentEndpoint">
+  ```yaml
+  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+  kind: AgentEndpoint
+  metadata:
   name: example-service
   namespace: default
-spec:
+  spec:
   url: tls://example-hostname.ngrok.io:8443
   upstream:
     url: tls://example-service.example-namespace:8443
-```
-</Tab>
-<Tab title="CloudEndpoint with AgentEndpoint">
+  ```
+  </Tab>
+  <Tab title="CloudEndpoint with AgentEndpoint">
 
-### 1. Create an `AgentEndpoint` for your upstream `Service`
+  ### 1. Create an `AgentEndpoint` for your upstream `Service`
+
 ```yaml
 apiVersion: ngrok.k8s.ngrok.com/v1alpha1
 kind: AgentEndpoint
 metadata:
-  name: example-service
-  namespace: default
+name: example-service
+namespace: default
 spec:
-  url: tls://example-service.internal:8443
-  upstream:
-    url: tls://example-service.example-namespace:8443
+url: tls://example-service.internal:8443
+upstream:
+url: tls://example-service.example-namespace:8443
 ```
 
-### 2. Create a `CloudEndpoint` that routes to the `AgentEndpoint`
+  ### 2. Create a `CloudEndpoint` that routes to the `AgentEndpoint`
 
 ```yaml
 apiVersion: ngrok.k8s.ngrok.com/v1alpha1
 kind: CloudEndpoint
 metadata:
-  name: example-cloud-endpoint
+name: example-cloud-endpoint
 spec:
-  url: tls://example-hostname.ngrok.io:8443
-  trafficPolicy:
-    policy:
-      on_http_request:
-      - actions:
-        - type: forward-internal
+url: tls://example-hostname.ngrok.io:8443
+trafficPolicy:
+policy:
+  on_http_request:
+- actions:
+- type: forward-internal
           config:
             url: tls://example-service.internal:8443
 ```
-</Tab>
-<Tab title="Gateway API">
 
-For TLS and TCP Routes, you must put the domain in the `Gateway.Spec.Addresses` field as the ngrok Operator needs to know what domains to use when creating endpoints for you and Gateway API forbids using the hostname field
-on Gateway listeners for TCP/TLS protocols.
+  </Tab>
+  <Tab title="Gateway API">
 
-Since the `Gateway.Spec.Addresses` are expected to bind to all listeners, you may want to create separate Gateways for TLS and TCP endpoints to prevent unwanted conflicts and overlap.
-For these reasons, TCP and TLS routing is often more easily configurable using the `AgentEndpoint` resources directly instead of Gateway API configuration.
+  For TLS and TCP Routes, you must put the domain in the `Gateway.Spec.Addresses` field as the ngrok Operator needs to know what domains to use when creating endpoints for you and Gateway API forbids using the hostname field on Gateway listeners for TCP/TLS protocols.
 
-### 1. Create a `Gateway`
+  Since the `Gateway.Spec.Addresses` are expected to bind to all listeners, you may want to create separate Gateways for TLS and TCP endpoints to prevent unwanted conflicts and overlap.
+  For these reasons, TCP and TLS routing is often more easily configurable using the `AgentEndpoint` resources directly instead of Gateway API configuration.
 
-If you already have a `Gateway` you can use that instead
+  ### 1. Create a `Gateway`
+
+  If you already have a `Gateway` you can use that instead
 
 ```yaml
 apiVersion: gateway.networking.k8s.io/v1
 kind: Gateway
 metadata:
-  name: example-gateway
-  namespace: default
+name: example-gateway
+namespace: default
 spec:
-  gatewayClassName: ngrok
-  addresses:
+gatewayClassName: ngrok
+addresses:
   - type: Hostname
     value: example-hostname.ngrok.io
-  listeners:
-    - name: p9000
-      port: 9000
-      protocol: TLS
+listeners:
+  - name: p9000
+    port: 9000
+    protocol: TLS
 ```
 
-### 2. Create a `TLSRoute`
+  ### 2. Create a `TLSRoute`
 
 ```yaml
 apiVersion: gateway.networking.k8s.io/v1alpha2
 kind: TLSRoute
 metadata:
-  name: example-tlsroute
-  namespace: default
+name: example-tlsroute
+namespace: default
 spec:
-  parentRefs:
-    - name: example-gateway
-      sectionName: p9000
-  rules:
-    - backendRefs:
-        - name: example-service
-          port: 9000
+parentRefs:
+- name: example-gateway
+  sectionName: p9000
+rules:
+- backendRefs:
+- name: example-service
+      port: 9000
 ```
-</Tab>
+
+  </Tab>
+  
 </Tabs>

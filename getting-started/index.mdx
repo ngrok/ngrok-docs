@@ -5,7 +5,6 @@ description: Learn how to get started with ngrok Agent CLI to create secure tunn
 ---
 
 
-
 ngrok's core functionality is built around [Agent Endpoints](/universal-gateway/agent-endpoints/): endpoints that connect your locally running apps to the internet through the ngrok cloud service and are only available as long as the agent is running somewhere.
 Common use cases include granting remote access to IoT devices, enabling your Kubernetes clusters to communicate with each other, and allowing external connections to a local gaming server.
 
@@ -22,30 +21,31 @@ This quickstart walks you through that process, as well as how to implement basi
 Run the command that corresponds to your operating system to install the Agent CLI:
 
 <Tabs>
-<Tab title="Mac OS">
+  <Tab title="Mac OS">
 
 ```bash
 brew install ngrok
 ```
 
-</Tab>
-<Tab title="Debian Linux">
+  </Tab>
+  <Tab title="Debian Linux">
 
 ```bash
 curl -sSL https://ngrok-agent.s3.amazonaws.com/ngrok.asc \
-  | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null \
-  && echo "deb https://ngrok-agent.s3.amazonaws.com buster main" \
-  | sudo tee /etc/apt/sources.list.d/ngrok.list \
-  && sudo apt update \
-  && sudo apt install ngrok
+| sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null \
+&& echo "deb https://ngrok-agent.s3.amazonaws.com buster main" \
+| sudo tee /etc/apt/sources.list.d/ngrok.list \
+&& sudo apt update \
+&& sudo apt install ngrok
 ```
 
-</Tab>
-<Tab title="Windows">
+  </Tab>
+  <Tab title="Windows">
 
-Install via the <a href="ms-windows-store://pdp/?ProductId=9mvs1j51gmk6">Windows App Store</a>
+  Install via the <a href="ms-windows-store://pdp/?ProductId=9mvs1j51gmk6">Windows App Store</a>
 
-</Tab>
+  </Tab>
+  
 </Tabs>
 
 Or [follow the direct installation guide](https://download.ngrok.com?tab=download) if you can't use one of the options above.
@@ -74,22 +74,22 @@ If you don't have an app to work with, you can create a minimal app in your lang
 <CodeGroup>
 
 ```javascript title="service.js"
-const http = require('http');
+const http = require("http");
 
 const server = http.createServer((req, res) => {
-    res.writeHead(200, { 'Content-Type': 'text/html' });
-    const html = `
-    <html>
-    <head><title>Test Page</title></head>
-    <body><h1>Hello from Node.js HTTP Server!</h1></body>
-    </html>
-    `;
-    res.end(html);
+  res.writeHead(200, { "Content-Type": "text/html" });
+  const html = `
+<html>
+<head><title>Test Page</title></head>
+<body><h1>Hello from Node.js HTTP Server!</h1></body>
+</html>
+`;
+  res.end(html);
 });
 
 const port = 8080;
 server.listen(port, () => {
-    console.log(`Serving custom HTML at http://localhost:${port}`);
+  console.log(`Serving custom HTML at http://localhost:${port}`);
 });
 ```
 
@@ -97,22 +97,22 @@ server.listen(port, () => {
 package main
 
 import (
-	"fmt"
-	"net/http"
+"fmt"
+"net/http"
 )
 
 func handler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hello from Go HTTP Server!")
+fmt.Fprintf(w, "Hello from Go HTTP Server!")
 }
 
 func main() {
-	http.HandleFunc("/", handler)
+http.HandleFunc("/", handler)
 
-	fmt.Println("Starting server at http://localhost:8080")
-	err := http.ListenAndServe(":8080", nil)
-	if err != nil {
-		fmt.Println("Server failed:", err)
-	}
+fmt.Println("Starting server at http://localhost:8080")
+err := http.ListenAndServe(":8080", nil)
+if err != nil {
+fmt.Println("Server failed:", err)
+}
 }
 ```
 
@@ -120,28 +120,27 @@ func main() {
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
 class MyHandler(BaseHTTPRequestHandler):
-    def do_GET(self):
-        self.send_response(200)
-        self.send_header("Content-type", "text/html")
-        self.end_headers()
-        html = b"""
-        <html>
-        <head><title>Test Page</title></head>
-        <body><h1>Hello from Python HTTP Server!</h1></body>
-        </html>
-        """
-        self.wfile.write(html)
+def do_GET(self):
+    self.send_response(200)
+    self.send_header("Content-type", "text/html")
+    self.end_headers()
+    html = b"""
+    <html>
+    <head><title>Test Page</title></head>
+    <body><h1>Hello from Python HTTP Server!</h1></body>
+</html>
+    """
+    self.wfile.write(html)
 
 def run(server_class=HTTPServer, handler_class=MyHandler, port=8080):
-    server_address = ('', port)
-    httpd = server_class(server_address, handler_class)
-    print(f"Serving custom HTML at http://localhost:{port}")
-    httpd.serve_forever()
+server_address = ('', port)
+httpd = server_class(server_address, handler_class)
+print(f"Serving custom HTML at http://localhost:{port}")
+httpd.serve_forever()
 
 if __name__ == "__main__":
-    run()
+run()
 ```
-
 </CodeGroup>
 
 Navigate to the directory where this file is located and start the server.
@@ -155,7 +154,8 @@ ngrok http 8080
 ```
 
 <Note>
-All accounts come with a free dev domain that is automatically chosen when you start an endpoint. You can add the optional `--url` flag to customize this domain on paid plans.
+  All accounts come with a free dev domain that is automatically chosen when you start an endpoint.
+  You can add the optional `--url` flag to customize this domain on paid plans.
 </Note>
 
 The agent should print a console UI to your terminal to confirm that it's online and forwarding as intended.
@@ -183,17 +183,17 @@ endpoints:
     traffic_policy:
       on_http_request:
         - actions:
-          - type: oauth
-            config:
-              provider: google
+            - type: oauth
+              config:
+                provider: google
     upstream:
       url: 8080
       protocol: http1
 ```
 
 <Note>
-This example uses ngrok's default Google OAuth application.
-To use your own, see [the OAuth Traffic Policy Action documentation](/traffic-policy/actions/oauth/#google-example).
+  This example uses ngrok's default Google OAuth application.
+  To use your own, see [the OAuth Traffic Policy Action documentation](/traffic-policy/actions/oauth/#google-example).
 </Note>
 
 Now you can start up your endpoint using its name:

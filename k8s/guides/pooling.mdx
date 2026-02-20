@@ -4,18 +4,20 @@ sidebarTitle: Pooling
 description: Learn how to load balance traffic between endpoints using the ngrok Kubernetes Operator.
 ---
 
+
 Endpoint pooling is the concept of creating two or more endpoints that share the same URL and have pooling enabled (if you don't enable pooling for an endpoint it cannot have the same URL as another endpoint).
 The [endpoint pooling page](/universal-gateway/endpoint-pooling/) goes over concepts and details of pooling in more depth.
 This guide focuses on how to use and configure endpoint pooling while using the ngrok Kubernetes Operator.
 
 Note that while endpoint pooling is supported by the ngrok Kubernetes Operator, endpoint pools are not specific to the environment in which they were created.
-This means that you can pool endpoints created with the Kubernetes Operator with endpoints started using the CLI, etc. This is a powerful and important concept to keep in mind to avoid unwanted pooling.
+This means that you can pool endpoints created with the Kubernetes Operator with endpoints started using the CLI, etc.
+This is a powerful and important concept to keep in mind to avoid unwanted pooling.
 
 <Note>
 
-Pooling must be enabled by all endpoints that share the same URL. Any attempt to create a pooled endpoint for a URL already in-use by a non-pooled endpoint will fail.
-Similarly, any endpoint attempting to create an endpoint that does not enable pooling and uses a URL that is already in-use by one or more endpoints with pooling enabled will fail.
-
+  Pooling must be enabled by all endpoints that share the same URL.
+  Any attempt to create a pooled endpoint for a URL already in-use by a non-pooled endpoint will fail.
+  Similarly, any endpoint attempting to create an endpoint that does not enable pooling and uses a URL that is already in-use by one or more endpoints with pooling enabled will fail.
 </Note>
 
 ## Endpoint Pooling with `AgentEndpoints`
@@ -37,14 +39,14 @@ metadata:
 spec:
   policy:
     on_http_request:
-    - name: example-rule
-      actions:
-      - type: custom-response
-        config:
-          body: Example response from Traffic Policy
-          headers:
-            content-type: text/plain
-          status_code: 200
+      - name: example-rule
+        actions:
+          - type: custom-response
+            config:
+              body: Example response from Traffic Policy
+              headers:
+                content-type: text/plain
+              status_code: 200
 ---
 apiVersion: ngrok.k8s.ngrok.com/v1alpha1
 kind: CloudEndpoint
@@ -59,7 +61,8 @@ spec:
 ## Endpoint Pooling with `Ingresses`
 
 If you are using `Ingress` resources with the Operator, you can enable endpoint pooling for an `Ingress` using the `k8s.ngrok.com/pooling-enabled: "true"` annotation.
-The following will create an `Ingress` that creates a `CloudEndpoint` with pooling enabled. Any other endpoint created with the same URL and pooling enabled will be pooled with the `CloudEndpoint` that this `Ingress` creates.
+The following will create an `Ingress` that creates a `CloudEndpoint` with pooling enabled.
+Any other endpoint created with the same URL and pooling enabled will be pooled with the `CloudEndpoint` that this `Ingress` creates.
 
 ```yaml
 apiVersion: networking.k8s.io/v1
@@ -90,7 +93,8 @@ See the [using Ingresses guide](/k8s/guides/using-ingresses) for more informatio
 ## Endpoint Pooling with Gateway API
 
 If you are using Gateway API for configuration, you can enable pooling using the using the `k8s.ngrok.com/pooling-enabled: "true"` annotation on `Gateway` resources.
-The following will create a `CloudEndpoint` with pooling enabled. Any other endpoint created with the same URL and pooling enabled will be pooled with the `CloudEndpoint`.
+The following will create a `CloudEndpoint` with pooling enabled.
+Any other endpoint created with the same URL and pooling enabled will be pooled with the `CloudEndpoint`.
 
 ```yaml
 apiVersion: gateway.networking.k8s.io/v1
@@ -115,21 +119,21 @@ metadata:
   namespace: default
 spec:
   hostnames:
-  - example-hostname.ngrok.io
+    - example-hostname.ngrok.io
   parentRefs:
-  - group: gateway.networking.k8s.io
-    kind: Gateway
-    name: example-gateway
-    namespace: default
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: example-gateway
+      namespace: default
   rules:
-  - matches:
-      - path:
-          type: PathPrefix
-          value: /
-    backendRefs:
-      - group: ""
-        kind: Service
-        name: example-service
-        port: 80
-        weight: 1
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - group: ""
+          kind: Service
+          name: example-service
+          port: 80
+          weight: 1
 ```

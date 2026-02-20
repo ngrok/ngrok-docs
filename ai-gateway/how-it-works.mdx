@@ -4,6 +4,7 @@ icon: gears
 description: Understand the AI Gateway request flow and failover behavior.
 ---
 
+
 ## Request flow
 
 When you send a request to your AI Gateway endpoint:
@@ -29,38 +30,35 @@ sequenceDiagram
 
 ## Model selection
 
-The gateway needs to determine which model and provider to use for each request. This happens in two stages: resolving what the client asked for, then selecting from available options.
+The gateway needs to determine which model and provider to use for each request.
+This happens in two stages: resolving what the client asked for, then selecting from available options.
 
 ### Resolving the client's request
 
 The model name in your request determines the starting point:
 
-| Model in Request | What Happens |
-|------------------|--------------|
-| `gpt-4o` | Known OpenAI model in the [model catalog](/ai-gateway/reference/model-catalog) |
-| `claude-3-5-sonnet-latest` | Known Anthropic model in the model catalog |
-| `openai:gpt-4o` | Provider and model match known OpenAI model |
-| `openai:gpt-5-preview` | Known provider but unknown model, so passed through to OpenAI as-is |
-| `my-provider:my-model` | Uses your configured custom provider |
-| `ngrok/auto` | Let the gateway choose based on your selection strategy |
+| Model in Request | What Happens | | -------------------------- | ------------------------------------------------------------------------------ | | `gpt-4o` | Known OpenAI model in the [model catalog](/ai-gateway/reference/model-catalog) | | `claude-3-5-sonnet-latest` | Known Anthropic model in the model catalog | | `openai:gpt-4o` | Provider and model match known OpenAI model | | `openai:gpt-5-preview` | Known provider but unknown model, so passed through to OpenAI as-is | | `my-provider:my-model` | Uses your configured custom provider | | `ngrok/auto` | Let the gateway choose based on your selection strategy |
 
 <Note>
-Unknown models (not in the catalog) are automatically passed through if you include a known provider prefix. This lets you use new models immediately without waiting for catalog updates.
+  Unknown models (not in the catalog) are automatically passed through if you include a known provider prefix.
+  This lets you use new models immediately without waiting for catalog updates.
 </Note>
 
 ### Building the set of available options
 
 The gateway builds a set of available options based on your configuration and the request path.
 
-Starting from the model catalog, the gateway adds any custom models from your configuration to the set of available options.  
+Starting from the model catalog, the gateway adds any custom models from your configuration to the set of available options.
 
-Then the gateway uses the request path of the request to determine the API format of the request to filter out providers that do not support the format. For example, if the request path is `/v1/chat/completions`, the gateway ensures that the set only includes models from providers that support the OpenAI API format, and likewise for `/v1/messages` and providers that support the Anthropic Claude API format.
+Then the gateway uses the request path of the request to determine the API format of the request to filter out providers that do not support the format.
+For example, if the request path is `/v1/chat/completions`, the gateway ensures that the set only includes models from providers that support the OpenAI API format, and likewise for `/v1/messages` and providers that support the Anthropic Claude API format.
 
 Finally the gateway filters the available options against this model supplied in the client request to arrive at the set of available options.
 
 ### Custom selection strategies
 
-You can completely customize how models are selected using CEL expressions. Define a `model_selection` strategy to control the order models are tried:
+You can completely customize how models are selected using CEL expressions.
+Define a `model_selection` strategy to control the order models are tried:
 
 ```yaml title="traffic-policy.yaml" highlight={10-13}
 on_http_request:
@@ -78,7 +76,9 @@ on_http_request:
           - "ai.models.sortBy(m, m.pricing.input)"
 ```
 
-Strategies are evaluated in order—the first one that returns models wins. If Ollama has matching models, only those are tried. The second strategy (sorted by price) is only used if no Ollama models match.
+Strategies are evaluated in order—the first one that returns models wins.
+If Ollama has matching models, only those are tried.
+The second strategy (sorted by price) is only used if no Ollama models match.
 
 This lets you define sophisticated routing logic:
 
@@ -88,12 +88,14 @@ This lets you define sophisticated routing logic:
 - **Capability filtering** - Select models with specific features
 
 <Tip>
-Use `ngrok/auto` as the model name to let your selection strategy choose entirely. See [Model Selection Strategies](/ai-gateway/guides/model-selection-strategies) for detailed examples.
+  Use `ngrok/auto` as the model name to let your selection strategy choose entirely.
+  See [Model Selection Strategies](/ai-gateway/guides/model-selection-strategies) for detailed examples.
 </Tip>
 
 ## Failover
 
-When a request fails, the gateway automatically tries the next candidate. This happens transparently—your app just sees a successful response (or a final error if all candidates are exhausted).
+When a request fails, the gateway automatically tries the next candidate.
+This happens transparently—your app just sees a successful response (or a final error if all candidates are exhausted).
 
 ### What triggers failover?
 
@@ -127,24 +129,22 @@ The gateway stops as soon as one succeeds.
 
 Two settings control how long the gateway waits:
 
-| Setting | Default | Description |
-|---------|---------|-------------|
-| `per_request_timeout` | 30s | Max time for a single attempt |
-| `total_timeout` | 5m | Max time including all failover attempts |
+| Setting | Default | Description | | --------------------- | ------- | ---------------------------------------- | | `per_request_timeout` | 30s | Max time for a single attempt | | `total_timeout` | 5m | Max time including all failover attempts |
 
 ```yaml title="traffic-policy.yaml" highlight={4-5}
 on_http_request:
   - type: ai-gateway
     config:
-      per_request_timeout: "60s"  # Wait longer for slow models
-      total_timeout: "3m"          # Limit total failover time
+      per_request_timeout: "60s" # Wait longer for slow models
+      total_timeout: "3m" # Limit total failover time
       providers:
         - id: openai
           api_keys:
             - value: ${secrets.get('openai', 'api-key')}
 ```
 
-If a single attempt exceeds `per_request_timeout`, the gateway moves to the next option. If total time exceeds `total_timeout`, the gateway returns an error to your app.
+If a single attempt exceeds `per_request_timeout`, the gateway moves to the next option.
+If total time exceeds `total_timeout`, the gateway returns an error to your app.
 
 ## Token counting
 
@@ -157,7 +157,7 @@ The gateway counts tokens for each request, enabling:
 on_http_request:
   - type: ai-gateway
     config:
-      max_input_tokens: 4000  # Reject requests over 4000 input tokens
+      max_input_tokens: 4000 # Reject requests over 4000 input tokens
       providers:
         - id: openai
           api_keys:
@@ -166,7 +166,8 @@ on_http_request:
 
 ## Content modification
 
-You can modify requests and responses using Traffic Policy's find and replace actions ([`request-body-find-replace`](/traffic-policy/actions/request-body-find-replace), [`response-body-find-replace`](/traffic-policy/actions/response-body-find-replace), [`sse-find-replace`](/traffic-policy/actions/sse-find-replace)). This enables use cases like:
+You can modify requests and responses using Traffic Policy's find and replace actions ([`request-body-find-replace`](/traffic-policy/actions/request-body-find-replace), [`response-body-find-replace`](/traffic-policy/actions/response-body-find-replace), [`sse-find-replace`](/traffic-policy/actions/sse-find-replace)).
+This enables use cases like:
 
 - **PII redaction** - Remove sensitive data before it reaches AI providers
 - **Response sanitization** - Filter inappropriate content from responses
@@ -200,9 +201,11 @@ on_event_stream_message:
 
 <CardGroup cols={2}>
   <Card title="Modifying Requests" icon="arrow-right-to-bracket" href="/ai-gateway/guides/modifying-requests">
+    {" "}
     Redact PII, inject prompts, add headers
   </Card>
   <Card title="Modifying Responses" icon="arrow-right-from-bracket" href="/ai-gateway/guides/modifying-responses">
+    {" "}
     Sanitize responses and streaming content
   </Card>
 </CardGroup>
@@ -211,9 +214,11 @@ on_event_stream_message:
 
 <CardGroup cols={2}>
   <Card title="Configuring Providers" icon="building" href="/ai-gateway/guides/configuring-providers">
+    {" "}
     Set up providers and provider API keys
   </Card>
   <Card title="Model Selection Strategies" icon="route" href="/ai-gateway/guides/model-selection-strategies">
+    {" "}
     Define custom routing logic
   </Card>
 </CardGroup>

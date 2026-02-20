@@ -4,11 +4,10 @@ sidebarTitle: Canary Deployments
 description: Use ngrok to validate how features or versions of your services behave by distributing production traffic randomly or via a specific header.
 ---
 
-import ReserveDomain from '/snippets/universal-gateway/_reserve-domain.mdx';
-import CloudEndpoint from '/snippets/universal-gateway/_cloud-endpoint.mdx';
-import TryOut from '/snippets/universal-gateway/_try-out.mdx';
 
-
+import ReserveDomain from "/snippets/universal-gateway/_reserve-domain.mdx";
+import CloudEndpoint from "/snippets/universal-gateway/_cloud-endpoint.mdx";
+import TryOut from "/snippets/universal-gateway/_try-out.mdx";
 
 Canary deployments are a trusted method for rolling out new features or major versions of your services.
 By controlling who accesses the new version, either through the random distribution of traffic or a specific header attached to requests from certain customers, you can see exactly if and where something breaks before releasing it to all your users.
@@ -46,51 +45,53 @@ The choice depends on whether you want to distribute traffic randomly or by a he
   <Tab title="Random distribution">
     ```yaml
     on_http_request:
-      - expressions:
-          - "rand.double() <= 0.2"
+  - expressions:
+  - "rand.double() <= 0.2"
         actions:
-          - type: forward-internal
+  - type: forward-internal
             config:
               url: https://service-canary.internal
 
-        - actions:
-            - type: forward-internal
-              config:
-                url: https://service.internal
-      ```
+- actions:
+- type: forward-internal
+  config:
+  url: https://service.internal
 
-      **What's happening here?**
-      This policy first returns a random `double` between `0` and `1`.
-      If that double is less than or equal to `0.2`, it routes the request to your canary deployment, effectively routing 20% of incoming traffic to the canary.
+```
 
-      The policy then routes the remaining 80% of traffic to your stable version.
+  **What's happening here?** This policy first returns a random `double` between `0` and `1`.
+  If that double is less than or equal to `0.2`, it routes the request to your canary deployment, effectively routing 20% of incoming traffic to the canary.
 
-    </Tab>
+  The policy then routes the remaining 80% of traffic to your stable version.
+```
+
+</Tab>
     <Tab title="By header">
       ```yaml
       on_http_request:
-        - expressions:
-            - "req.headers.exists_one(x, x == 'x-canary')"
-            - "req.headers['x-canary'].join(',') == 'true'"
+  - expressions:
+  - "req.headers.exists_one(x, x == 'x-canary')"
+  - "req.headers['x-canary'].join(',') == 'true'"
           actions:
-            - type: forward-internal
+  - type: forward-internal
               config:
                 url: https://service-canary.internal
 
-        - actions:
-            - type: forward-internal
-              config:
-                url: https://service.internal
-      ```
+  - actions:
+  - type: forward-internal
+  config:
+  url: https://service.internal
 
-      **What's happening here?**
-      This policy checks the incoming request for the presence of the `x-canary` and validates that its value is `true`.
-      If both are true, then the policy routes the request to your canary deployment.
+```
 
-      In the absence of an `x-canary: true` header, the policy route traffic to your stable version.
+**What's happening here?** This policy checks the incoming request for the presence of the `x-canary` and validates that its value is `true`.
+If both are true, then the policy routes the request to your canary deployment.
 
-    </Tab>
+In the absence of an `x-canary: true` header, the policy route traffic to your stable version.
+```
 
+  </Tab>
+  
 </Tabs>
 
 ## 5. Try out your endpoints

@@ -4,6 +4,7 @@ sidebarTitle: Spectro Cloud Palette
 description: Add ingress to any app running in a Kubernetes cluster managed by Spectro Cloud's Palette platform using the ngrok Kubernetes Operator.
 ---
 
+
 This guide explains how to add ingress to any app running in a Kubernetes cluster managed by Spectro Cloud's Palette platform using the ngrok Kubernetes Operator.
 It walks you through defining cluster and add-on profiles in Palette, creating a cluster with your cloud provider, and integrating the Operator with an example app or a custom app you want to expose via ngrok's cloud service.
 
@@ -53,29 +54,28 @@ Palette has a ready-to-apply pack for the ngrok Kubernetes Operator; you can add
 
 - Scroll down in the default YAML supplied by the pack to the following configuration.
 
-   ```yaml
-   ## @param credentials.secret.name The name of the secret the credentials are in. If not provided, one will be generated using the helm release name.
-   ## @param credentials.apiKey Your ngrok API key. If provided, it will be will be written to the secret and the authtoken must be provided as well.
-   ## @param credentials.authtoken Your ngrok authtoken. If provided, it will be will be written to the secret and the apiKey must be provided as well.
-   credentials:
-     secret:
-       name: ""
-     apiKey: ""
-     authtoken: ""
-   ```
+  ```yaml
+  ## @param credentials.secret.name The name of the secret the credentials are in. If not provided, one will be generated using the helm release name.
+  ## @param credentials.apiKey Your ngrok API key. If provided, it will be will be written to the secret and the authtoken must be provided as well.
+  ## @param credentials.authtoken Your ngrok authtoken. If provided, it will be will be written to the secret and the apiKey must be provided as well.
+  credentials:
+    secret:
+      name: ""
+    apiKey: ""
+    authtoken: ""
+  ```
 
-   You must specify the `apiKey` and `authtoken` parameters with those of your ngrok account.
+  You must specify the `apiKey` and `authtoken` parameters with those of your ngrok account.
 
-   To create a new API key, navigate to the [**API** section](https://dashboard.ngrok.com/api) of the ngrok dashboard, click the **New API Key** button, change the description or owner, and click the **Add API Key** button.
+  To create a new API key, navigate to the [**API** section](https://dashboard.ngrok.com/api) of the ngrok dashboard, click the **New API Key** button, change the description or owner, and click the **Add API Key** button.
 
-   Copy your new API key into the `apiKey` parameter.
+  Copy your new API key into the `apiKey` parameter.
 
-   Find your authtoken under [**Your Authtoken**](https://dashboard.ngrok.com/get-started/your-authtoken) in the [ngrok dashboard](https://dashboard.ngrok.com/) and copy it into the `authtoken` parameter.
-   Palette will hide the values you enter.
+  Find your authtoken under [**Your Authtoken**](https://dashboard.ngrok.com/get-started/your-authtoken) in the [ngrok dashboard](https://dashboard.ngrok.com/) and copy it into the `authtoken` parameter.
+  Palette will hide the values you enter.
 
-   <Tip>
-   If you have a free ngrok account, you can only have one ngrok agent active at a time; set the `replicaCount` parameter to `1` so the Operator works correctly.
-   </Tip>
+<Tip>  If you have a free ngrok account, you can only have one ngrok agent active at a time; set the `replicaCount` parameter to `1` so the Operator works correctly.
+</Tip>
 
 - Click **Confirm & Create** to add the layer to your profile and finish the configuration.
 
@@ -93,72 +93,72 @@ Palette has a ready-to-apply pack for the ngrok Kubernetes Operator; you can add
   Name the layer `tinyllama`, then click **New manifest** and name it `deployment`.
   Copy the following YAML content to create a Kubernetes deployment named `tinyllama`.
 
-   ```yaml showLineNumbers
-   apiVersion: apps/v1
-   kind: Deployment
-   metadata:
-     name: tinyllama
-   spec:
-     replicas: 1
-     selector:
-       matchLabels:
-         app: tinyllama
-     template:
-       metadata:
-         labels:
-           app: tinyllama
-       spec:
-         containers:
-           - name: tinyllama
-             image: ghcr.io/ngrok-samples/tinyllama:main
-             ports:
-               - name: http
-                 containerPort: 8080
-   ```
+  ```yaml showLineNumbers
+  apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: tinyllama
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app: tinyllama
+    template:
+      metadata:
+        labels:
+          app: tinyllama
+      spec:
+        containers:
+          - name: tinyllama
+            image: ghcr.io/ngrok-samples/tinyllama:main
+            ports:
+              - name: http
+                containerPort: 8080
+  ```
 
-   Create a second manifest named `service` and copy in the following YAML:
+  Create a second manifest named `service` and copy in the following YAML:
 
-   ```yaml showLineNumbers
-   apiVersion: v1
-   kind: Service
-   metadata:
-     name: tinyllama
-   spec:
-     ports:
-       - name: http
-         port: 80
-         targetPort: 8080
-     selector:
-       app: tinyllama
-   ```
+  ```yaml showLineNumbers
+  apiVersion: v1
+  kind: Service
+  metadata:
+    name: tinyllama
+  spec:
+    ports:
+      - name: http
+        port: 80
+        targetPort: 8080
+    selector:
+      app: tinyllama
+  ```
 
-   Click **Confirm & Create** to save the deployment.
+  Click **Confirm & Create** to save the deployment.
 
 - Add another manifest to create a Kubernetes ingress service, which will inform the ngrok Kubernetes Operator to create a new Edge for your app.
   Name it `tinyllama-ingress` and create an `ingress` manifest with the following YAML content, replacing the `<NGROK_DOMAIN>` variable with the subdomain you created, which should look like `one-two-three.ngrok.app`.
 
-   ```yaml showLineNumbers
-   apiVersion: networking.k8s.io/v1
-   kind: Ingress
-   metadata:
-     name: tinyllama-ingress
-     namespace: ngrok-operator
-   spec:
-     ingressClassName: ngrok
-     rules:
-       - host: <NGROK_DOMAIN>
-         http:
-           paths:
-             - path: /
-               pathType: Prefix
-               backend:
-                 service:
-                   name: tinyllama
-                   port:
-                     number: 80
-   ```
+  ```yaml showLineNumbers
+  apiVersion: networking.k8s.io/v1
+  kind: Ingress
+  metadata:
+    name: tinyllama-ingress
+    namespace: ngrok-operator
+  spec:
+    ingressClassName: ngrok
+    rules:
+      - host: <NGROK_DOMAIN>
+        http:
+          paths:
+            - path: /
+              pathType: Prefix
+              backend:
+                service:
+                  name: tinyllama
+                  port:
+                    number: 80
+  ```
 
-   Click **Confirm & Create** once again to add this layer before finishing the configuration.
+  Click **Confirm & Create** once again to add this layer before finishing the configuration.
 
 ## 4. Create your cluster with Palette
 
@@ -186,10 +186,10 @@ Once the cluster deploys, you'll add additional layers for an example app and th
 
 - Choose the **Project** for your new cluster and pick a region.
 
-  <Tip>
+<Tip>
   **Troubleshooting:** A common error is that certain APIs must be activated for your project (for example, GCP requires the Compute Engine API and an enabled billing account).
   After fixing errors, wait a few minutes for settings to propagate to Palette.
-  </Tip>
+</Tip>
 
 - Create your node pool: set the number of nodes and the instance type.
 

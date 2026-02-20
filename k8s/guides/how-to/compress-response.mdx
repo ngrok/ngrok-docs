@@ -4,14 +4,12 @@ sidebarTitle: Compress Responses
 description: Enable response compression in Kubernetes to improve performance and reduce bandwidth usage for your ngrok endpoints.
 ---
 
+
 Response compression reduces the size of HTTP response bodies sent from your upstream service, improving page load speeds, reducing bandwidth usage, and enhancing user experience.
 
 When response compression is enabled:
 
-📉 Data transfer sizes are reduced, lowering bandwidth consumption. <br />
-⚡ Pages and APIs load faster, especially on slower networks. <br />
-🚀 Performance is improved without requiring changes to the upstream service. <br />
-
+📉 Data transfer sizes are reduced, lowering bandwidth consumption. <br /> ⚡ Pages and APIs load faster, especially on slower networks. <br /> 🚀 Performance is improved without requiring changes to the upstream service. <br />
 
 ## 🔍 What are the benefits of response compression?
 
@@ -32,7 +30,7 @@ Response compression offers the following benefits:
 When an HTTP request includes an Accept-Encoding header, HTTP responses are automatically compressed, and a Content-Encoding header is added to the response.
 If the response is already compressed by your upstream service, no additional compression will be applied.
 
-The following examples configure the endpoint to have ngrok compress the response using one of the specified algorithms (for example, gzip). 
+The following examples configure the endpoint to have ngrok compress the response using one of the specified algorithms (for example, gzip).
 The response will include the `content-encoding: gzip` header, and the body will be compressed accordingly.
 
 The Traffic Policy includes an expression to only run the compression on paths that start with `/api/`
@@ -40,151 +38,156 @@ The Traffic Policy includes an expression to only run the compression on paths t
 Check out the [compress response Traffic Policy action](/traffic-policy/actions/compress-response/) page for more details about how it functions and the parameters it accepts.
 
 <Tabs>
-<Tab title="AgentEndpoint">
-```yaml
-apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-kind: AgentEndpoint
-metadata:
+  <Tab title="AgentEndpoint">
+  ```yaml
+  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+  kind: AgentEndpoint
+  metadata:
   name: example-agent-endpoint
-spec:
+  spec:
   url: https://example-hostname.ngrok.io
   upstream:
     url: http://my-service.my-namespace:8080
   trafficPolicy:
     inline:
       on_http_response:
-        - expressions:
-            - req.url.path.startsWith('/api/')
+  - expressions:
+  - req.url.path.startsWith('/api/')
           actions:
-            - type: compress-response
+  - type: compress-response
               config:
                 algorithms:
-                  - gzip
-                  - br
-                  - deflate
-                  - compress
-```
-</Tab>
-<Tab title="CloudEndpoint">
-```yaml
-apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-kind: CloudEndpoint
-metadata:
+  - gzip
+  - br
+  - deflate
+  - compress
+  ```
+  </Tab>
+  <Tab title="CloudEndpoint">
+  ```yaml
+  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+  kind: CloudEndpoint
+  metadata:
   name: example-cloud-endpoint
-spec:
+  spec:
   url: https://example-hostname.ngrok.io
   trafficPolicy:
     policy:
       on_http_response:
-        - expressions:
-            - req.url.path.startsWith('/api/')
+  - expressions:
+  - req.url.path.startsWith('/api/')
           actions:
-            - type: compress-response
+  - type: compress-response
               config:
                 algorithms:
-                  - gzip
-                  - br
-                  - deflate
-                  - compress
-```
-</Tab>
-<Tab title="Ingress">
-💡 `Ingress` resources do not natively support response compression, but they can be extended using a Traffic Policy.
+  - gzip
+  - br
+  - deflate
+  - compress
+  ```
+  </Tab>
+  <Tab title="Ingress">
+  💡 `Ingress` resources do not natively support response compression, but they can be extended using a Traffic Policy.
 
-### 1. Create an `NgrokTrafficPolicy`
+  ### 1. Create an `NgrokTrafficPolicy`
 
 ```yaml
 apiVersion: ngrok.k8s.ngrok.com/v1alpha1
 kind: NgrokTrafficPolicy
 metadata:
-  name: example-tp
-  namespace: default
+name: example-tp
+namespace: default
 spec:
-  policy:
-    on_http_response:
-      - expressions:
-          - req.url.path.startsWith('/api/')
-        actions:
-          - type: compress-response
-            config:
-              algorithms:
-                - gzip
-                - br
-                - deflate
-                - compress
+policy:
+on_http_response:
+- expressions:
+- req.url.path.startsWith('/api/')
+    actions:
+- type: compress-response
+        config:
+          algorithms:
+- gzip
+- br
+- deflate
+- compress
 ```
 
-### 2. Use the `NgrokTrafficPolicy` on an `Ingress`
+  ### 2. Use the `NgrokTrafficPolicy` on an `Ingress`
 
 ```yaml
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  annotations:
-    k8s.ngrok.com/traffic-policy: example-tp
-  name: example-ingress
-  namespace: default
+annotations:
+k8s.ngrok.com/traffic-policy: example-tp
+name: example-ingress
+namespace: default
 spec:
-  ingressClassName: ngrok
-  rules:
-    - host: example-hostname.ngrok.io
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: example-service
-                port:
-                  number: 80
+ingressClassName: ngrok
+rules:
+- host: example-hostname.ngrok.io
+  http:
+    paths:
+- path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: example-service
+            port:
+              number: 80
 ```
-</Tab>
-<Tab title="Gateway API">
-💡 Gateway API resources do not natively support response compression, but they can be extended using a Traffic Policy.
 
-### 1. Create an `NgrokTrafficPolicy`
+  </Tab>
+  <Tab title="Gateway API">
+  💡 Gateway API resources do not natively support response compression, but they can be extended using a Traffic Policy.
+
+  ### 1. Create an `NgrokTrafficPolicy`
 
 ```yaml
 apiVersion: ngrok.k8s.ngrok.com/v1alpha1
 kind: NgrokTrafficPolicy
 metadata:
-  name: example-tp
-  namespace: default
+name: example-tp
+namespace: default
 spec:
-  policy:
-    on_http_response:
-      - expressions:
-          - req.url.path.startsWith('/api/')
-        actions:
-          - type: compress-response
-            config:
-              algorithms:
-                - gzip
-                - br
-                - deflate
-                - compress
+policy:
+on_http_response:
+- expressions:
+- req.url.path.startsWith('/api/')
+    actions:
+- type: compress-response
+        config:
+          algorithms:
+- gzip
+- br
+- deflate
+- compress
 ```
 
-### 2. Use the `NgrokTrafficPolicy` on a `Gateway`
+  ### 2. Use the `NgrokTrafficPolicy` on a `Gateway`
 
-The following example showcases supplying the `NgrokTrafficPolicy` on a `Gateway` resource. All requests to the `Gateway` will run the Traffic Policy.
-If you prefer, `NgrokTrafficPolicy` can also be used on the route level by using an `externalRef` filter on an `HTTPRoute`. See the [using Gateway API guide](/k8s/guides/using-gwapi) for examples.
+  The following example showcases supplying the `NgrokTrafficPolicy` on a `Gateway` resource.
+  All requests to the `Gateway` will run the Traffic Policy.
+  If you prefer, `NgrokTrafficPolicy` can also be used on the route level by using an `externalRef` filter on an `HTTPRoute`.
+  See the [using Gateway API guide](/k8s/guides/using-gwapi) for examples.
 
 ```yaml
 apiVersion: gateway.networking.k8s.io/v1
 kind: Gateway
 metadata:
-  name: example-gateway
-  namespace: default
-  annotations:
-    k8s.ngrok.com/traffic-policy: example-tp
+name: example-gateway
+namespace: default
+annotations:
+k8s.ngrok.com/traffic-policy: example-tp
 spec:
-  gatewayClassName: ngrok
-  listeners:
-    - name: example-hostname
-      hostname: "example-hostname.ngrok.io"
-      port: 443
-      protocol: HTTPS
+gatewayClassName: ngrok
+listeners:
+  - name: example-hostname
+    hostname: "example-hostname.ngrok.io"
+    port: 443
+    protocol: HTTPS
 ```
-</Tab>
+
+  </Tab>
+  
 </Tabs>

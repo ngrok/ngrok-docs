@@ -4,14 +4,11 @@ sidebarTitle: For Kubernetes Services
 description: Learn how to use Endpoint Pooling to share incoming traffic between services in different clusters or clouds.
 ---
 
+
 import { YouTubeEmbed } from "/snippets/YouTubeEmbed.jsx";
 
-
-
-A core benefit of Kubernetes is that it simplifies creating multiple replica
-pods for your apps or APIs and automatically load-balancing
-between them. That's helpful if you have a single cluster and need to
-horizontally scale, but Kubernetes can't help if you want to:
+A core benefit of Kubernetes is that it simplifies creating multiple replica pods for your apps or APIs and automatically load-balancing between them.
+That's helpful if you have a single cluster and need to horizontally scale, but Kubernetes can't help if you want to:
 
 - Share traffic between multiple clusters
 - Balance traffic between more than one cloud providers
@@ -19,128 +16,74 @@ horizontally scale, but Kubernetes can't help if you want to:
 
 <YouTubeEmbed videoId="xD1hZ84uEJs" title="Multi-cluster (and multi-cloud!) ingress in 60 seconds with ngrok" />
 
-[Endpoint Pooling](/universal-gateway/endpoint-pooling/) makes load
-balancing between Kubernetes services simple—you only need to create two
-endpoints with the same URL. Here's how that works in your clusters, whether
-you're using the `AgentEndpoint` custom resource,
-[Ingress](/k8s/guides/using-ingresses) objects, or [Gateway
-API](/k8s/guides/using-gwapi) resources.
+[Endpoint Pooling](/universal-gateway/endpoint-pooling/) makes load balancing between Kubernetes services simple—you only need to create two endpoints with the same URL.
+Here's how that works in your clusters, whether you're using the `AgentEndpoint` custom resource, [Ingress](/k8s/guides/using-ingresses) objects, or [Gateway API](/k8s/guides/using-gwapi) resources.
 
 ## 1. Install the ngrok Kubernetes Operator
 
-Check out the [installation instructions](/k8s/installation/helm/) for
-details on how to use Helm to deploy the open-source Operator to each cluster
-you'd like to load-balance between.
+Check out the [installation instructions](/k8s/installation/helm/) for details on how to use Helm to deploy the open-source Operator to each cluster you'd like to load-balance between.
 
 ## 2. Create your first Agent Endpoint
 
-Pooling is always enabled on `AgentEndpoint` resources, but with Ingress or
-Gateway API, you have to enable it with an annotation.
+Pooling is always enabled on `AgentEndpoint` resources, but with Ingress or Gateway API, you have to enable it with an annotation.
 
-The YAML snippets below are just illustrations—you'll also need to change the
-details of your services, like their names, ports, and namespaces, to match what
-you've already implemented. Same goes for `$NGROK_DOMAIN.ngrok.app`—you can
-reserve a domain in the [dashboard](https://dashboard.ngrok.com/domains) if you
-don't have one already.
+The YAML snippets below are just illustrations—you'll also need to change the details of your services, like their names, ports, and namespaces, to match what you've already implemented.
+Same goes for `$NGROK_DOMAIN.ngrok.app`—you can reserve a domain in the [dashboard](https://dashboard.ngrok.com/domains) if you don't have one already.
 
 <Tabs>
   <Tab title="Agent Endpoint">
-  ```yaml
+
+    ```yaml
     apiVersion: ngrok.k8s.ngrok.com/v1alpha1
     kind: AgentEndpoint
-    metadata:
-      name: example
-      namespace: default
-    spec:
-      upstream:
-        url: http://example.default:80
-      url: https://$NGROK_DOMAIN.ngrok.app
-  ```
+    metadata: name: example namespace: default spec: upstream: url:
+    http://example.default:80 url: https://$NGROK_DOMAIN.ngrok.app
+    ```
+
   </Tab>
   <Tab title="Ingress">
-  ```yaml
-  apiVersion: networking.k8s.io/v1
-  kind: Ingress
-  metadata:
-    name: example-ingress
-    namespace: default
-    annotations:
-      k8s.ngrok.com/pooling-enabled: "true"
-  spec:
-    ingressClassName: ngrok
-    rules:
-      - host: $NGROK_DOMAIN.ngrok.app
-        http:
-          paths:
-            - path: /
-              pathType: Prefix
-              backend:
-                service:
-                  name: example
-                  port:
-                    number: 80
-  ```
+
+    ```yaml
+    apiVersion: networking.k8s.io/v1 kind: Ingress metadata: name:
+    example-ingress namespace: default annotations:
+    k8s.ngrok.com/pooling-enabled: "true" spec: ingressClassName: ngrok rules: -
+    host: $NGROK_DOMAIN.ngrok.app http: paths: - path: / pathType: Prefix
+    backend: service: name: example port: number: 80
+    ```
+
   </Tab>
   <Tab title="Gateway API">
-  ```yaml
-  apiVersion: gateway.networking.k8s.io/v1
-  kind: Gateway
-  metadata:
-    name: ngrok-gateway
-    namespace: default
-    annotations:
-      k8s.ngrok.com/pooling-enabled: "true"
-  spec:
-    gatewayClassName: ngrok
-    listeners:
-      - name: example-hostname
-        protocol: HTTP
-        port: 80
-        hostname: $NGROK_DOMAIN.ngrok.app
-  ---
-  apiVersion: gateway.networking.k8s.io/v1
-  kind: HTTPRoute
-  metadata:
-    name: example-route
-    namespace: default
-  spec:
-    parentRefs:
-      - group: gateway.networking.k8s.io
-        kind: Gateway
-        name: ngrok-gateway
-        namespace: default
-    hostnames:
-      - $NGROK_DOMAIN
-    rules:
-      - matches:
-        - path:
-            type: PathPrefix
-            value: /
-      backendRefs:
-        - name: example
-          port: 80
-  ```
-  </Tab>
+
+    ```yaml
+    apiVersion: gateway.networking.k8s.io/v1 kind: Gateway metadata:
+    name: ngrok-gateway namespace: default annotations:
+    k8s.ngrok.com/pooling-enabled: "true" spec: gatewayClassName: ngrok
+    listeners: - name: example-hostname protocol: HTTP port: 80 hostname:
+    $NGROK_DOMAIN.ngrok.app --- apiVersion: gateway.networking.k8s.io/v1 kind:
+    HTTPRoute metadata: name: example-route namespace: default spec: parentRefs:
+
+- group: gateway.networking.k8s.io kind: Gateway name: ngrok-gateway
+  namespace: default hostnames: - $NGROK_DOMAIN rules: - matches: - path:
+  type: PathPrefix value: / backendRefs: - name: example port: 80
+
+```
+
+```
+
+</Tab>
+  
 </Tabs>
 
 ## 3. Create a second Agent Endpoint to enable pooling
 
-On a second cluster, apply the same or similar ingress configuration—just
-make sure the `url`, `host`, or `hostname` value is the same for
-`AgentEndpoint`, Ingress, and Gateway API implementations, respectively.
+On a second cluster, apply the same or similar ingress configuration—just make sure the `url`, `host`, or `hostname` value is the same for `AgentEndpoint`, Ingress, and Gateway API implementations, respectively.
 
 Hit your endpoint a few times to get responses from multiple clusters.
 
 ## What's next?
 
-Now that you're load-balancing in Kubernetes, you can repeat the process in
-other clusters or clouds to add many other Agent Endpoints to the pool—there's
-no limit on how many services can share traffic on a single URL.
+Now that you're load-balancing in Kubernetes, you can repeat the process in other clusters or clouds to add many other Agent Endpoints to the pool—there's no limit on how many services can share traffic on a single URL.
 
-You might also consider creating a single [Cloud
-Endpoint](/universal-gateway/cloud-endpoints/) that serves as the "front
-door" to all your Kubernetes services, then create a pool of [internal Agent
-Endpoints](/universal-gateway/internal-endpoints/) on a pooled URL like
-`https://example.internal`. Curious? See the [step-by-step
-guide](/k8s/load-balancing/load-balancing-kubernetes-clusters) that
-details the entire process.
+You might also consider creating a single [Cloud Endpoint](/universal-gateway/cloud-endpoints/) that serves as the "front door" to all your Kubernetes services, then create a pool of [internal Agent Endpoints](/universal-gateway/internal-endpoints/) on a pooled URL like `https://example.internal`.
+Curious?
+See the [step-by-step guide](/k8s/load-balancing/load-balancing-kubernetes-clusters) that details the entire process.

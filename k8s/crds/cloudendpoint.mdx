@@ -3,14 +3,17 @@ title: CloudEndpoint
 description: Reference documentation for the CloudEndpoint Kubernetes custom resource for creating persistent, always-on Cloud Endpoints.
 ---
 
+
 ## CloudEndpoint custom resource
 
 ### **apiVersion:** `ngrok.k8s.ngrok.com/v1alpha1`
 
 ### **kind:** `CloudEndpoint`
 
-The `CloudEndpoint` custom resource is used to create centrally managed endpoints in the cloud. Cloud Endpoints are persistent, always-on endpoints that live within the ngrok cloud.
-They exist permanently until they are explicitly deleted. Cloud Endpoints do not forward their traffic to an agent by default and instead only use their attached Traffic Policy to handle connections.
+The `CloudEndpoint` custom resource is used to create centrally managed endpoints in the cloud.
+Cloud Endpoints are persistent, always-on endpoints that live within the ngrok cloud.
+They exist permanently until they are explicitly deleted.
+Cloud Endpoints do not forward their traffic to an agent by default and instead only use their attached Traffic Policy to handle connections.
 Using the Traffic Policy configuration, you may configure your Cloud Endpoints to route to one or more other internal ngrok endpoints.
 
 For more information about Cloud Endpoints in ngrok, refer to the [Cloud Endpoints page](/universal-gateway/cloud-endpoints/)
@@ -26,15 +29,15 @@ metadata:
   name: <string>
   namespace: <string>
 spec:
-  url: <string>               # required
+  url: <string> # required
   trafficPolicyName: <string> # optional
-  trafficPolicy:              # optional
-    policy:                   # required
+  trafficPolicy: # optional
+    policy: # required
       <Traffic Policy config>
-  description: <string>       # optional, default: "Created by the ngrok-operator"
-  metadata: <string>          # optional, default: "{"owned-by":"ngrok-operator"}"
-  bindings: <[]string>        # optional
-  poolingEnabled: <bool>      # optional, default: false
+  description: <string> # optional, default: "Created by the ngrok-operator"
+  metadata: <string> # optional, default: "{"owned-by":"ngrok-operator"}"
+  bindings: <[]string> # optional
+  poolingEnabled: <bool> # optional, default: false
 ```
 
 ## CloudEndpoint fields
@@ -53,19 +56,12 @@ The following sections outline each field of the `CloudEndpoint` custom resource
 
 **Fields:**
 
-| Field Name                                         | Type              | Required | Default                           | Description                                                                                                                              |
-| -------------------------------------------------- | ----------------- | -------- | --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| [`spec.url`](#specurl)                             | `string`          | yes      | none                              | The unique URL for this `CloudEndpoint` that defines how the endpoint is accessed                                                        |
-| [`spec.trafficPolicyName`](#spectrafficpolicyname) | `string`          | no       | none                              | The name of an `NgrokTrafficPolicy` custom resource in the same namespace as the `CloudEndpoint` to use for Traffic Policy configuration |
-| [`spec.trafficPolicy`](#spectrafficpolicy)         | `Object`          | no       | none                              | Allows for a Traffic Policy to be provided to the `CloudEndpoint` using inline configuration                                             |
-| [`spec.description`](#specdescription)             | `string`          | no       | `"Created by the ngrok-operator"` | Human-readable description for this `CloudEndpoint` to help identify/describe it                                                         |
-| [`spec.metadata`](#specmetadata)                   | `string`          | no       | `"{"owned-by":"ngrok-operator"}"` | String of arbitrary data associated with the object in the ngrok API/Dashboard                                                           |
-| [`spec.bindings`](#specbindings)                   | `[]string` (enum) | no       | none                              | List of Binding IDs to associate with the endpoint                                                                                       |
-| [`spec.poolingEnabled`](#specpoolingenabled)       | `bool`            | no       | `false`                           | Whether or not the `CloudEndpoint` should enable pooling with other endpoints sharing the same URL                                       |
+| Field Name | Type | Required | Default | Description | | -------------------------------------------------- | ----------------- | -------- | --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | | [`spec.url`](#specurl) | `string` | yes | none | The unique URL for this `CloudEndpoint` that defines how the endpoint is accessed | | [`spec.trafficPolicyName`](#spectrafficpolicyname) | `string` | no | none | The name of an `NgrokTrafficPolicy` custom resource in the same namespace as the `CloudEndpoint` to use for Traffic Policy configuration | | [`spec.trafficPolicy`](#spectrafficpolicy) | `Object` | no | none | Allows for a Traffic Policy to be provided to the `CloudEndpoint` using inline configuration | | [`spec.description`](#specdescription) | `string` | no | `"Created by the ngrok-operator"` | Human-readable description for this `CloudEndpoint` to help identify/describe it | | [`spec.metadata`](#specmetadata) | `string` | no | `"{"owned-by":"ngrok-operator"}"` | String of arbitrary data associated with the object in the ngrok API/Dashboard | | [`spec.bindings`](#specbindings) | `[]string` (enum) | no | none | List of Binding IDs to associate with the endpoint | | [`spec.poolingEnabled`](#specpoolingenabled) | `bool` | no | `false` | Whether or not the `CloudEndpoint` should enable pooling with other endpoints sharing the same URL |
 
 ### `spec.url`
 
-The unique URL for this Cloud Endpoint. This URL defines how the endpoint is accessed.
+The unique URL for this Cloud Endpoint.
+This URL defines how the endpoint is accessed.
 
 **Type:** `string`
 
@@ -126,13 +122,12 @@ For more information about writing ngrok Traffic Policies, refer to the [Traffic
 
 **Fields:**
 
-| Field Name                                              | Type              | Required | Default | Description                                                                 |
-| ------------------------------------------------------- | ----------------- | -------- | ------- | --------------------------------------------------------------------------- |
-| [`spec.trafficPolicy.policy`](#spectrafficpolicypolicy) | `json.RawMessage` | yes      | none    | The inline Traffic Policy configuration to be used for this `CloudEndpoint` |
+| Field Name | Type | Required | Default | Description | | ------------------------------------------------------- | ----------------- | -------- | ------- | --------------------------------------------------------------------------- | | [`spec.trafficPolicy.policy`](#spectrafficpolicypolicy) | `json.RawMessage` | yes | none | The inline Traffic Policy configuration to be used for this `CloudEndpoint` |
 
 ### `spec.trafficPolicy.policy`
 
-Allows you to supply a Traffic Policy for this `AgentEndpoint` with inline configuration. An example has been included below.
+Allows you to supply a Traffic Policy for this `AgentEndpoint` with inline configuration.
+An example has been included below.
 For more information about writing ngrok Traffic Policies, refer to the [Traffic Policy section](/traffic-policy/).
 
 **Type:** `json.RawMessage`
@@ -182,18 +177,20 @@ List of Binding IDs to associate with the endpoint
   and will be projected into one or more of your Kubernetes clusters that are running the ngrok Operator (depending on their endpoint selector configuration) as `Services`.
   - With a `"kubernetes"` binding, the `spec.url` becomes the `name.namespace` of the projected Service.
   - For example, with a `spec.url` of `http://my-service.my-namespace` then a Service with name `my-service` in the `my-namespace` namespace will be created by the ngrok Operator.
-    Other services within the Kubernetes cluster can make requests to this endpoint. This enables many different use-cases such as being able to project a service in one Kubernetes cluster
-    to another Kubernetes cluster so that services running in the other cluster can make requests to it. This has the benefit of not needing to expose the endpoint to the public internet behind a publicly accessible URL.
+    Other services within the Kubernetes cluster can make requests to this endpoint.
+    This enables many different use-cases such as being able to project a service in one Kubernetes cluster to another Kubernetes cluster so that services running in the other cluster can make requests to it.
+    This has the benefit of not needing to expose the endpoint to the public internet behind a publicly accessible URL.
 
 ### `spec.poolingEnabled`
 
 Configures whether [pooling](/universal-gateway/endpoint-pooling) is always enabled for this `CloudEndpoint`.
 
 When pooling is enabled, if two different endpoints share the same `spec.url` then requests will be balanced between them.
-This is not limited to endpoints within the same cluster, or endpoints of the same type. For example, a `CloudEndpoint` can be pooled with an Agent Endpoint created using the ngrok CLI if they both enable pooling and share the same URL.
+This is not limited to endpoints within the same cluster, or endpoints of the same type.
+For example, a `CloudEndpoint` can be pooled with an Agent Endpoint created using the ngrok CLI if they both enable pooling and share the same URL.
 
-It is recommended to include a prefix/suffix in the URL to prevent unintended pooling. For example, if you are running a service `foo` in the namespace `bar` in two different
-Kubernetes clusters, you may want to give each one a slightly different `spec.url` that includes something such as a cluster identifier to prevent requests from being balanced between them.
+It is recommended to include a prefix/suffix in the URL to prevent unintended pooling.
+For example, if you are running a service `foo` in the namespace `bar` in two different Kubernetes clusters, you may want to give each one a slightly different `spec.url` that includes something such as a cluster identifier to prevent requests from being balanced between them.
 
 You will receive an error back from the ngrok server if you attempt to create two different endpoints using the same URL if they do not both enable pooling.
 In this scenario, the older endpoint wins and the newer one will fail to be created.
@@ -218,7 +215,8 @@ The ngrok API ID for this Cloud Endpoint.
 
 ### `status.domain`
 
-**(Deprecated)** Domain information for the endpoint. This field is deprecated; use `status.domainRef` instead.
+**(Deprecated)** Domain information for the endpoint.
+This field is deprecated; use `status.domainRef` instead.
 
 **Type:** `Object`
 
@@ -229,10 +227,12 @@ Reference to the Domain resource associated with this Cloud Endpoint.
 **Type:** `Object`
 
 **Fields:**
+
 - `name` - Name of the Domain resource
 - `namespace` - Namespace of the Domain resource
 
 **Example:**
+
 ```yaml
 domainRef:
   name: example-domain-ngrok-app
@@ -246,6 +246,7 @@ Standard Kubernetes conditions that indicate the state of the Cloud Endpoint.
 **Type:** `[]Condition`
 
 Each condition includes:
+
 - `type` - The condition type
 - `status` - `True`, `False`, or `Unknown`
 - `reason` - A programmatic identifier for the condition state
@@ -260,44 +261,41 @@ Each condition includes:
 Indicates whether the Cloud Endpoint is fully operational and ready to use.
 
 **Status Values:**
+
 - `True` - Cloud endpoint is active and ready
 - `False` - Cloud endpoint is not ready (see reason for details)
 
 **Reasons:**
 
-| Reason | Status | Meaning |
-|--------|--------|---------|
-| `CloudEndpointActive` | `True` | Cloud endpoint is successfully created and active |
-| `CloudEndpointCreationFailed` | `False` | Failed to create the Cloud Endpoint in ngrok |
-| `Pending` | `False` | Cloud endpoint creation is pending (for example, waiting for domain) |
-| `Unknown` | `False` | Cloud endpoint state is unknown |
-| `DomainNotReady` | `False` | Associated domain is not ready |
+| Reason | Status | Meaning | | ----------------------------- | ------- | -------------------------------------------------------------------- | | `CloudEndpointActive` | `True` | Cloud endpoint is successfully created and active | | `CloudEndpointCreationFailed` | `False` | Failed to create the Cloud Endpoint in ngrok | | `Pending` | `False` | Cloud endpoint creation is pending (for example, waiting for domain) | | `Unknown` | `False` | Cloud endpoint state is unknown | | `DomainNotReady` | `False` | Associated domain is not ready |
 
 Additionally, the `Ready` condition may reflect reasons from the associated Domain resource when domain issues prevent endpoint creation.
 
 **Example:**
+
 ```yaml
 conditions:
-- type: Ready
-  status: "True"
-  reason: CloudEndpointActive
-  message: "Cloud endpoint is active"
-  lastTransitionTime: "2025-10-29T00:39:16Z"
-  observedGeneration: 1
+  - type: Ready
+    status: "True"
+    reason: CloudEndpointActive
+    message: "Cloud endpoint is active"
+    lastTransitionTime: "2025-10-29T00:39:16Z"
+    observedGeneration: 1
 ```
 
 **Example (Pooling Error):**
+
 ```yaml
 conditions:
-- type: Ready
-  status: "False"
-  reason: CloudEndpointCreationFailed
-  message: |
-    Failed to create Cloud Endpoint: HTTP 400: The provided Cloud Endpoint was invalid because pooling was set to disabled when another endpoint exists for this url. [ERR_NGROK_18017]
-    
-    Operation ID: op_34ic9T376GyGAXQ4sIRn7F0xUYP
-  lastTransitionTime: "2025-10-29T00:39:15Z"
-  observedGeneration: 2
+  - type: Ready
+    status: "False"
+    reason: CloudEndpointCreationFailed
+    message: |
+      Failed to create Cloud Endpoint: HTTP 400: The provided Cloud Endpoint was invalid because pooling was set to disabled when another endpoint exists for this url. [ERR_NGROK_18017]
+
+      Operation ID: op_34ic9T376GyGAXQ4sIRn7F0xUYP
+    lastTransitionTime: "2025-10-29T00:39:15Z"
+    observedGeneration: 2
 ```
 
 ##### `CloudEndpointCreated`
@@ -305,63 +303,67 @@ conditions:
 Indicates whether the Cloud Endpoint was successfully created in the ngrok API.
 
 **Status Values:**
+
 - `True` - Cloud endpoint was successfully created
 - `False` - Failed to create Cloud Endpoint
 
 **Reasons:**
 
-| Reason | Status | Meaning |
-|--------|--------|---------|
-| `CloudEndpointCreated` | `True` | Cloud endpoint successfully created |
-| `CloudEndpointCreationFailed` | `False` | API call to create Cloud Endpoint failed |
+| Reason | Status | Meaning | | ----------------------------- | ------- | ---------------------------------------- | | `CloudEndpointCreated` | `True` | Cloud endpoint successfully created | | `CloudEndpointCreationFailed` | `False` | API call to create Cloud Endpoint failed |
 
 **Example:**
+
 ```yaml
 conditions:
-- type: CloudEndpointCreated
-  status: "True"
-  reason: CloudEndpointCreated
-  message: "Cloud endpoint successfully created"
-  lastTransitionTime: "2025-10-29T00:39:16Z"
-  observedGeneration: 1
+  - type: CloudEndpointCreated
+    status: "True"
+    reason: CloudEndpointCreated
+    message: "Cloud endpoint successfully created"
+    lastTransitionTime: "2025-10-29T00:39:16Z"
+    observedGeneration: 1
 ```
 
 ##### `DomainReady`
 
-Indicates whether the associated domain is ready for use. This condition propagates the state from the referenced Domain resource.
+Indicates whether the associated domain is ready for use.
+This condition propagates the state from the referenced Domain resource.
 
 **Status Values:**
+
 - `True` - Domain is ready
 - `False` - Domain is not ready
 
 **Reasons:**
 
 This condition propagates reasons from the Domain resource's `Ready` condition, including:
+
 - `DomainActive` - Domain is successfully reserved and ready
 - `ProvisioningError` - Domain has DNS or certificate provisioning errors
 - `DomainCreationFailed` - Domain failed to be created
 - `DomainInvalid` - Domain format or configuration is invalid
 
 **Example:**
+
 ```yaml
 conditions:
-- type: DomainReady
-  status: "True"
-  reason: DomainActive
-  message: "Domain ready for use"
-  lastTransitionTime: "2025-10-29T00:39:25Z"
-  observedGeneration: 1
+  - type: DomainReady
+    status: "True"
+    reason: DomainActive
+    message: "Domain ready for use"
+    lastTransitionTime: "2025-10-29T00:39:25Z"
+    observedGeneration: 1
 ```
 
 **Example (Domain DNS Error):**
+
 ```yaml
 conditions:
-- type: DomainReady
-  status: "False"
-  reason: ProvisioningError
-  message: 'DNS_ERROR Reserved domain "example.com" NS DNS records are not pointing at the ngrok infrastructure'
-  lastTransitionTime: "2025-10-29T00:39:24Z"
-  observedGeneration: 1
+  - type: DomainReady
+    status: "False"
+    reason: ProvisioningError
+    message: 'DNS_ERROR Reserved domain "example.com" NS DNS records are not pointing at the ngrok infrastructure'
+    lastTransitionTime: "2025-10-29T00:39:24Z"
+    observedGeneration: 1
 ```
 
 ## Status examples
@@ -375,24 +377,24 @@ status:
     name: example-domain-ngrok-app
     namespace: default
   conditions:
-  - type: DomainReady
-    status: "True"
-    reason: DomainActive
-    message: "Domain ready for use"
-    lastTransitionTime: "2025-10-29T00:39:25Z"
-    observedGeneration: 1
-  - type: CloudEndpointCreated
-    status: "True"
-    reason: CloudEndpointCreated
-    message: "Cloud endpoint successfully created"
-    lastTransitionTime: "2025-10-29T00:39:16Z"
-    observedGeneration: 1
-  - type: Ready
-    status: "True"
-    reason: CloudEndpointActive
-    message: "Cloud endpoint is active"
-    lastTransitionTime: "2025-10-29T00:39:16Z"
-    observedGeneration: 1
+    - type: DomainReady
+      status: "True"
+      reason: DomainActive
+      message: "Domain ready for use"
+      lastTransitionTime: "2025-10-29T00:39:25Z"
+      observedGeneration: 1
+    - type: CloudEndpointCreated
+      status: "True"
+      reason: CloudEndpointCreated
+      message: "Cloud endpoint successfully created"
+      lastTransitionTime: "2025-10-29T00:39:16Z"
+      observedGeneration: 1
+    - type: Ready
+      status: "True"
+      reason: CloudEndpointActive
+      message: "Cloud endpoint is active"
+      lastTransitionTime: "2025-10-29T00:39:16Z"
+      observedGeneration: 1
 ```
 
 ### Cloud Endpoint with pooling error
@@ -403,30 +405,30 @@ status:
     name: example-domain-ngrok-app
     namespace: default
   conditions:
-  - type: DomainReady
-    status: "True"
-    reason: DomainActive
-    message: "Domain ready for use"
-    lastTransitionTime: "2025-10-29T00:39:25Z"
-    observedGeneration: 2
-  - type: CloudEndpointCreated
-    status: "False"
-    reason: CloudEndpointCreationFailed
-    message: |
-      Failed to create Cloud Endpoint: HTTP 400: The provided Cloud Endpoint was invalid because pooling was set to disabled when another endpoint exists for this url. [ERR_NGROK_18017]
-      
-      Operation ID: op_34ic9T376GyGAXQ4sIRn7F0xUYP
-    lastTransitionTime: "2025-10-29T00:39:25Z"
-    observedGeneration: 2
-  - type: Ready
-    status: "False"
-    reason: CloudEndpointCreationFailed
-    message: |
-      Failed to create Cloud Endpoint: HTTP 400: The provided Cloud Endpoint was invalid because pooling was set to disabled when another endpoint exists for this url. [ERR_NGROK_18017]
-      
-      Operation ID: op_34ic9T376GyGAXQ4sIRn7F0xUYP
-    lastTransitionTime: "2025-10-29T00:39:15Z"
-    observedGeneration: 2
+    - type: DomainReady
+      status: "True"
+      reason: DomainActive
+      message: "Domain ready for use"
+      lastTransitionTime: "2025-10-29T00:39:25Z"
+      observedGeneration: 2
+    - type: CloudEndpointCreated
+      status: "False"
+      reason: CloudEndpointCreationFailed
+      message: |
+        Failed to create Cloud Endpoint: HTTP 400: The provided Cloud Endpoint was invalid because pooling was set to disabled when another endpoint exists for this url. [ERR_NGROK_18017]
+
+        Operation ID: op_34ic9T376GyGAXQ4sIRn7F0xUYP
+      lastTransitionTime: "2025-10-29T00:39:25Z"
+      observedGeneration: 2
+    - type: Ready
+      status: "False"
+      reason: CloudEndpointCreationFailed
+      message: |
+        Failed to create Cloud Endpoint: HTTP 400: The provided Cloud Endpoint was invalid because pooling was set to disabled when another endpoint exists for this url. [ERR_NGROK_18017]
+
+        Operation ID: op_34ic9T376GyGAXQ4sIRn7F0xUYP
+      lastTransitionTime: "2025-10-29T00:39:15Z"
+      observedGeneration: 2
 ```
 
 ### Cloud Endpoint with domain not ready
@@ -437,24 +439,24 @@ status:
     name: custom-domain-com
     namespace: default
   conditions:
-  - type: DomainReady
-    status: "False"
-    reason: ProvisioningError
-    message: 'DNS_ERROR Reserved domain "example.com" NS DNS records are not pointing at the ngrok infrastructure'
-    lastTransitionTime: "2025-10-29T00:39:24Z"
-    observedGeneration: 1
-  - type: CloudEndpointCreated
-    status: "False"
-    reason: Pending
-    message: "Waiting for domain to be ready"
-    lastTransitionTime: "2025-10-29T00:39:24Z"
-    observedGeneration: 1
-  - type: Ready
-    status: "False"
-    reason: DomainNotReady
-    message: "Cloud endpoint cannot be created because domain is not ready"
-    lastTransitionTime: "2025-10-29T00:39:24Z"
-    observedGeneration: 1
+    - type: DomainReady
+      status: "False"
+      reason: ProvisioningError
+      message: 'DNS_ERROR Reserved domain "example.com" NS DNS records are not pointing at the ngrok infrastructure'
+      lastTransitionTime: "2025-10-29T00:39:24Z"
+      observedGeneration: 1
+    - type: CloudEndpointCreated
+      status: "False"
+      reason: Pending
+      message: "Waiting for domain to be ready"
+      lastTransitionTime: "2025-10-29T00:39:24Z"
+      observedGeneration: 1
+    - type: Ready
+      status: "False"
+      reason: DomainNotReady
+      message: "Cloud endpoint cannot be created because domain is not ready"
+      lastTransitionTime: "2025-10-29T00:39:24Z"
+      observedGeneration: 1
 ```
 
 ## Checking Cloud Endpoint status
@@ -499,14 +501,14 @@ spec:
   trafficPolicy:
     policy:
       on_http_request:
-      - name: example-rule
-        actions:
-        - type: custom-response
-          config:
-            body: Example response from Traffic Policy
-            headers:
-              content-type: text/plain
-            status_code: 200
+        - name: example-rule
+          actions:
+            - type: custom-response
+              config:
+                body: Example response from Traffic Policy
+                headers:
+                  content-type: text/plain
+                status_code: 200
 ```
 
 ### CloudEndpoint with referenced Traffic Policy
@@ -525,14 +527,14 @@ metadata:
 spec:
   policy:
     on_http_request:
-    - name: example-rule
-      actions:
-      - type: custom-response
-        config:
-          body: Example response from Traffic Policy
-          headers:
-            content-type: text/plain
-          status_code: 200
+      - name: example-rule
+        actions:
+          - type: custom-response
+            config:
+              body: Example response from Traffic Policy
+              headers:
+                content-type: text/plain
+              status_code: 200
 ---
 apiVersion: ngrok.k8s.ngrok.com/v1alpha1
 kind: CloudEndpoint

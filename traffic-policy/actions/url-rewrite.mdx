@@ -4,6 +4,7 @@ sidebarTitle: URL Rewrite
 description: Modify the incoming request URL using regular expressions before it reaches the upstream server, while keeping the URL seen by the client unchanged.
 ---
 
+
 import ActionVariablesDescription from "/snippets/traffic-policy/common/action-variables-description.mdx";
 import NonTerminatingExplanation from "/snippets/traffic-policy/common/non-terminating-explanation.mdx";
 
@@ -16,8 +17,7 @@ This action is particularly useful for routing users without exposing internal s
 
 ## Configuration reference
 
-This is the [Traffic Policy](/traffic-policy/) configuration
-reference for this action.
+This is the [Traffic Policy](/traffic-policy/) configuration reference for this action.
 
 ### Supported phases
 
@@ -29,15 +29,18 @@ reference for this action.
 
 ### Configuration fields
 
-
     <ConfigField title="from" type="string" required={false} cel={true}>
         <p>A regular expression pattern used to match a part of the URL.</p>
         <p>Supports [CEL Interpolation](/traffic-policy/concepts/cel-interpolation).</p>
+
+    
     </ConfigField>
 
     <ConfigField title="to" type="string" required={true} cel={true}>
         <p>A regular expression pattern used to replace the matched part of the URL.</p>
         <p>Supports [CEL Interpolation](/traffic-policy/concepts/cel-interpolation).</p>
+
+    
     </ConfigField>
 
 ## Behavior
@@ -52,8 +55,7 @@ To match requests that begin with `/products`, use [CEL Interpolation](/traffic-
 
 ### Note about CEL interpolation
 
-All CEL Interpolation will occur **before** regular expressions
-are evaluated.
+All CEL Interpolation will occur **before** regular expressions are evaluated.
 
 ### Non-terminating action
 
@@ -63,31 +65,27 @@ are evaluated.
 
 ### Rewrite using paths
 
-The following [Traffic Policy](/traffic-policy/)
-configuration demonstrates how to use the `url-rewrite` action to transparently
-rewrite the request URL from `/products` to `/products.php`.
+The following [Traffic Policy](/traffic-policy/) configuration demonstrates how to use the `url-rewrite` action to transparently rewrite the request URL from `/products` to `/products.php`.
 
 #### Example Traffic Policy document
 
 <CodeGroup>
-```yaml policy.yml
-on_http_request:
+  ```yaml policy.yml
+  on_http_request:
   - expressions:
-      - req.url.path == '/products'
+  - req.url.path == '/products'
     actions:
-      - type: url-rewrite
+  - type: url-rewrite
         config:
           from: /products
           to: /products.php
-```
+  ```
 
 ```json policy.json
 {
   "on_http_request": [
     {
-      "expressions": [
-        "req.url.path == '/products'"
-      ],
+      "expressions": ["req.url.path == '/products'"],
       "actions": [
         {
           "type": "url-rewrite",
@@ -103,9 +101,8 @@ on_http_request:
 ```
 </CodeGroup>
 
-This configuration will rewrite any request to `/products` to `/products.php`
-without changing the URL seen by the client. This is useful for hiding away
-the underlying implementation details of your service.
+This configuration will rewrite any request to `/products` to `/products.php` without changing the URL seen by the client.
+This is useful for hiding away the underlying implementation details of your service.
 
 #### Example request
 
@@ -125,38 +122,31 @@ GET /product.php               200 OK
 
 #### Conclusion
 
-In this example, a request to `/products` is internally
-routed to `/products.php`, and the response is served
-from `products.php` while the client remains unaware
-of the URL rewrite.
+In this example, a request to `/products` is internally routed to `/products.php`, and the response is served from `products.php` while the client remains unaware of the URL rewrite.
 
 ### Rewrite using regular expressions
 
-The following [Traffic Policy](/traffic-policy/)
-configuration demonstrates how to use the `url-rewrite` action to transparently
-rewrite the request URL from `/products/*` to `/products.php`.
+The following [Traffic Policy](/traffic-policy/) configuration demonstrates how to use the `url-rewrite` action to transparently rewrite the request URL from `/products/*` to `/products.php`.
 
 #### Example Traffic Policy document
 
 <CodeGroup>
-```yaml policy.yml
-on_http_request:
+  ```yaml policy.yml
+  on_http_request:
   - expressions:
-      - req.url.path.startsWith('/products')
+  - req.url.path.startsWith('/products')
     actions:
-      - type: url-rewrite
+  - type: url-rewrite
         config:
           from: /products/?([.*]+)?
           to: /products.php?query=$1
-```
+  ```
 
 ```json policy.json
 {
   "on_http_request": [
     {
-      "expressions": [
-        "req.url.path.startsWith('/products')"
-      ],
+      "expressions": ["req.url.path.startsWith('/products')"],
       "actions": [
         {
           "type": "url-rewrite",
@@ -172,9 +162,8 @@ on_http_request:
 ```
 </CodeGroup>
 
-This configuration will rewrite any request to `/products/*` to
-`/products.php?query=$1` without changing the URL seen by the client. This is
-useful for hiding away the underlying implementation details of your service.
+This configuration will rewrite any request to `/products/*` to `/products.php?query=$1` without changing the URL seen by the client.
+This is useful for hiding away the underlying implementation details of your service.
 
 #### Example request
 
@@ -194,28 +183,23 @@ GET /product.php?query=123          200 OK
 
 #### Conclusion
 
-In this example, a request to `/products` is internally routed to
-`/products.php?query=123`, and the response is served from `products.php` while
-the client remains unaware of the URL rewrite.
+In this example, a request to `/products` is internally routed to `/products.php?query=123`, and the response is served from `products.php` while the client remains unaware of the URL rewrite.
 
 ### Rewrite using CEL interpolation
 
-The following [Traffic Policy](/traffic-policy/)
-configuration demonstrates how to use the `url-rewrite` action to transparently
-rewrite the request URL from `/products/*` to `/products.php` using a global
-policy rule (no expression) by leveraging [CEL Interpolation](/traffic-policy/concepts/cel-interpolation).
+The following [Traffic Policy](/traffic-policy/) configuration demonstrates how to use the `url-rewrite` action to transparently rewrite the request URL from `/products/*` to `/products.php` using a global policy rule (no expression) by leveraging [CEL Interpolation](/traffic-policy/concepts/cel-interpolation).
 
 #### Example Traffic Policy document
 
 <CodeGroup>
-```yaml policy.yml
-on_http_request:
+  ```yaml policy.yml
+  on_http_request:
   - actions:
-      - type: url-rewrite
+  - type: url-rewrite
         config:
           from: ${req.url.authority}/products/?([.*]+)?
           to: /products.php?query=$1
-```
+  ```
 
 ```json policy.json
 {
@@ -236,11 +220,9 @@ on_http_request:
 ```
 </CodeGroup>
 
-This configuration will rewrite any request urls that start with `/products/*`
-to `/products.php?query=$1` without changing the URL seen by the client. It does
-this by leveraging [CEL Interpolation](/traffic-policy/concepts/cel-interpolation) to replace the
-`from` value with the request URL authority. This is useful for hiding away the
-underlying implementation details of your service.
+This configuration will rewrite any request urls that start with `/products/*` to `/products.php?query=$1` without changing the URL seen by the client.
+It does this by leveraging [CEL Interpolation](/traffic-policy/concepts/cel-interpolation) to replace the `from` value with the request URL authority.
+This is useful for hiding away the underlying implementation details of your service.
 
 #### Example request
 
@@ -260,26 +242,34 @@ GET /product.php?query=123          200 OK
 
 #### Conclusion
 
-In this example, a request to `/products` is internally routed to
-`/products.php?query=123`, and the response is served from `products.php` while
-the client remains unaware of the URL rewrite.
+In this example, a request to `/products` is internally routed to `/products.php?query=123`, and the response is served from `products.php` while the client remains unaware of the URL rewrite.
 
 ## Action result variables
 
 <ActionVariablesDescription />
 
     <ConfigField title="actions.ngrok.url_rewrite.matches" type="array of strings">
-        <p>List of elements that matched the URL before the rewrite action was applied. These can be specific parts of the URL, such as the domain, path, or query parameters, that were matched based on the action configuration.</p>
-    </ConfigField>
+
+  <p>List of elements that matched the URL before the rewrite action was applied. These can be specific parts of the URL, such as the domain, path, or query parameters, that were matched based on the action configuration.</p>
+
     
+    </ConfigField>
+
     <ConfigField title="actions.ngrok.url_rewrite.url" type="string">
-        <p>The final URL after the rewrite action has been applied. This is the new URL to which the original request is redirected after the specified modifications have been made.</p>
+
+  <p>The final URL after the rewrite action has been applied. This is the new URL to which the original request is redirected after the specified modifications have been made.</p>
+
+    
     </ConfigField>
 
     <ConfigField title="actions.ngrok.url_rewrite.error.code" type="string">
         <p>A machine-readable code describing an error that occurred during the action's execution.</p>
+
+    
     </ConfigField>
 
     <ConfigField title="actions.ngrok.url_rewrite.error.message" type="string">
         <p>A human-readable message providing details about an error that occurred during the action's execution.</p>
+
+    
     </ConfigField>

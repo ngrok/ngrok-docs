@@ -4,16 +4,17 @@ sidebarTitle: "Redirect"
 description: "Redirect incoming requests to new URLs by modifying the original URLs with regular expressions."
 ---
 
+
 import ActionVariablesDescription from "/snippets/traffic-policy/common/action-variables-description.mdx";
 import NonTerminatingExplanation from "/snippets/traffic-policy/common/non-terminating-explanation.mdx";
 
 import { ConfigField } from "/snippets/ConfigTable.jsx";
 import { ConfigChildren } from "/snippets/ConfigChildren.jsx";
 
-The Redirect Traffic Policy Action enables users to send HTTP `3xx` responses by transforming the incoming URL using a regular expression and optional CEL interpolation. 
+The Redirect Traffic Policy Action enables users to send HTTP `3xx` responses by transforming the incoming URL using a regular expression and optional CEL interpolation.
 It can modify any part of the URL such as scheme, host, port, path, or query, and returns a redirect via the `Location` header.
 
-This action is different from the [URL Rewrite Action](/traffic-policy/actions/url-rewrite/), which changes the request internally while keeping the client's URL unchanged. 
+This action is different from the [URL Rewrite Action](/traffic-policy/actions/url-rewrite/), which changes the request internally while keeping the client's URL unchanged.
 Redirects, by contrast, instruct the client to issue a new request to the new URL.
 
 ## Configuration reference
@@ -39,6 +40,7 @@ The [Traffic Policy](/traffic-policy/) configuration reference for this action.
 </ConfigField>
 
 <ConfigField title="status_code" type="integer" required={false} defaultValue="302">
+  {" "}
   A <code>3xx</code> status code used for redirecting.
 </ConfigField>
 
@@ -49,7 +51,7 @@ The [Traffic Policy](/traffic-policy/) configuration reference for this action.
 
 ## Behavior
 
-The Redirect Action modifies the request URL and returns an HTTP redirect (`3xx`) response. 
+The Redirect Action modifies the request URL and returns an HTTP redirect (`3xx`) response.
 It performs the following transformation in sequence:
 
 1. Evaluate any CEL interpolation
@@ -61,7 +63,8 @@ If the rewritten URL is identical to the original, ngrok skips the redirect.
 
 ### CEL interpolation
 
-CEL expressions in `${...}` are evaluated before the redirect rule is applied. Interpolations can reference request or connection data. 
+CEL expressions in `${...}` are evaluated before the redirect rule is applied.
+Interpolations can reference request or connection data.
 
 For example:
 
@@ -77,11 +80,13 @@ https://example.com?city=San%20Francisco
 
 ### Matching
 
-The `from` field is a **regular expression** evaluated against the entire URL (scheme, host, port, path, query, and fragment). Matching is not anchored by default; a substring match anywhere in the URL triggers the redirect.
+The `from` field is a **regular expression** evaluated against the entire URL (scheme, host, port, path, query, and fragment).
+Matching is not anchored by default; a substring match anywhere in the URL triggers the redirect.
 
 #### Example
 
-The following example redirects any request that contains `/api/v1/` to `/api/v2/`. The redirect is applied to the entire URL, not just the path.
+The following example redirects any request that contains `/api/v1/` to `/api/v2/`.
+The redirect is applied to the entire URL, not just the path.
 
 ```yaml
 from: /api/v1/
@@ -92,7 +97,8 @@ Given the above, `https://example.com/foobar/api/v1/users` would be redirected t
 
 #### Anchoring / path prefix
 
-Anchoring with `^/api/v1/` will not match paths that include the full scheme. To match only the path, use one of the following methods:
+Anchoring with `^/api/v1/` will not match paths that include the full scheme.
+To match only the path, use one of the following methods:
 
 <CodeGroup>
 
@@ -102,34 +108,31 @@ from: ^((?:https?)://[^/]+)/api/v1/(.*)$
 to: $1/api/v2/$2
 ```
 
-
 ```yaml CEL Interpolation
 # Compose anchors with CEL to bind the scheme and authority before matching.
 from: ^${req.url.scheme}://${req.url.authority}/api/v1/
 to: ${req.url.scheme}://${req.url.authority}/api/v2/
 ```
 
-
 ```yaml Phase Expressions
 # Constrain by path in expressions, then use a relative replacement.
 on_http_request:
-  - expressions:
-      - req.url.path.startsWith('/api/v1/')
-    actions:
-      - type: redirect
-        config:
-      from: /api/v1/
-          to: /api/v2/
+- expressions:
+- req.url.path.startsWith('/api/v1/')
+actions:
+- type: redirect
+    config:
+  from: /api/v1/
+      to: /api/v2/
 ```
-
 </CodeGroup>
 
 ### Replacement behavior
 
-The `to` value replaces what was matched by `from`. 
-The replacement is relative to the `from` match. 
-When `from` is omitted, the redirect action replaces the entire URL. 
-Capture groups (such as `$1`, `$2`) can be used to insert matched text into the replacement. 
+The `to` value replaces what was matched by `from`.
+The replacement is relative to the `from` match.
+When `from` is omitted, the redirect action replaces the entire URL.
+Capture groups (such as `$1`, `$2`) can be used to insert matched text into the replacement.
 
 When `from` matches a substring, only that segment changes:
 
@@ -142,7 +145,9 @@ Given the above, `https://example.com/api/v1/users` would be redirected to `http
 
 #### Relative versus absolute replacements
 
-The `to` value is applied relative to the `from` match. When `from` matches part of the URL, only that segment is replaced. When `from` is omitted, ngrok treats the entire URL as matched and replaces it absolutely.
+The `to` value is applied relative to the `from` match.
+When `from` matches part of the URL, only that segment is replaced.
+When `from` is omitted, ngrok treats the entire URL as matched and replaces it absolutely.
 
 **Relative example**
 
@@ -174,21 +179,15 @@ to: https://new.example.com/new/$1
 
 Given the above, `https://example.com/old/foo` would be redirected to `https://new.example.com/new/foo`.
 
-<Note>
-If the rewritten URL equals the original, ngrok skips the redirect.
+<Note>  If the rewritten URL equals the original, ngrok skips the redirect.
 </Note>
 
 ### Redirect response
 
-After replacement, the redirect action sends an HTTP redirect with the computed `Location` header. The default status code is `302 Found`.
+After replacement, the redirect action sends an HTTP redirect with the computed `Location` header.
+The default status code is `302 Found`.
 
-| Code    | Description        | Behavior                                                             |
-| ------- | ------------------ | -------------------------------------------------------------------- |
-| **301** | Moved Permanently  | Clients may cache the redirect.                                      |
-| **302** | Found (default)    | Temporary redirect; some clients change the request method to `GET`. |
-| **303** | See Other          | Forces the next request to use `GET`.                                |
-| **307** | Temporary Redirect | Preserves the original request method and body.                      |
-| **308** | Permanent Redirect | Preserves the original request method and body.                      |
+| Code | Description | Behavior | | ------- | ------------------ | -------------------------------------------------------------------- | | **301** | Moved Permanently | Clients may cache the redirect. | | **302** | Found (default) | Temporary redirect; some clients change the request method to `GET`. | | **303** | See Other | Forces the next request to use `GET`. | | **307** | Temporary Redirect | Preserves the original request method and body. | | **308** | Permanent Redirect | Preserves the original request method and body. |
 
 You can also include up to 10 custom headers in the redirect response.
 
@@ -228,13 +227,12 @@ The following [Traffic Policy](/traffic-policy/) configuration demonstrates how 
 
 ```yaml policy.yml
 on_http_request:
-  - actions:
-      - type: redirect
-        config:
-          from: ^(https?://[^/]+)/products(.*)$
-          to: $1/store/products$2
+- actions:
+- type: redirect
+    config:
+      from: ^(https?://[^/]+)/products(.*)$
+      to: $1/store/products$2
 ```
-
 
 ```json policy.json
 {
@@ -253,7 +251,6 @@ on_http_request:
   ]
 }
 ```
-
 </CodeGroup>
 
 This configuration will redirect any request from `/products` to `/store/products` with the default `302 Found` status code.
@@ -281,26 +278,23 @@ The following [Traffic Policy](/traffic-policy/) configuration demonstrates how 
 
 ```yaml policy.yml
 on_http_request:
-  - expressions:
-      - req.url.path.startsWith('/api/')
-    actions:
-      - type: redirect
-        config:
-          from: /api/v1/users?id=([0-9]+)
-          to: /api/v2/users/$1/
-          status_code: 301
-          headers:
-            x-redirected: 'true'
+- expressions:
+- req.url.path.startsWith('/api/')
+actions:
+- type: redirect
+    config:
+      from: /api/v1/users?id=([0-9]+)
+      to: /api/v2/users/$1/
+      status_code: 301
+      headers:
+        x-redirected: "true"
 ```
-
 
 ```json policy.json
 {
   "on_http_request": [
     {
-      "expressions": [
-        "req.url.path.startsWith('/api/')"
-      ],
+      "expressions": ["req.url.path.startsWith('/api/')"],
       "actions": [
         {
           "type": "redirect",
@@ -318,10 +312,10 @@ on_http_request:
   ]
 }
 ```
-
 </CodeGroup>
 
-In this configuration, requests from `/api/v1/users?id=([0-9]+)` are matched and redirected to `/api/v2/users/$1/` with a `301` status code. Additionally, a custom header `x-redirected: true` is added to the response.
+In this configuration, requests from `/api/v1/users?id=([0-9]+)` are matched and redirected to `/api/v2/users/$1/` with a `301` status code.
+Additionally, a custom header `x-redirected: true` is added to the response.
 
 #### Example request
 
@@ -347,22 +341,19 @@ The following [Traffic Policy](/traffic-policy/) configuration demonstrates how 
 
 ```yaml policy.yml {7}
 on_http_request:
-  - expressions:
-      - req.url.path in ['/api/v2/geo', '/api/v2/geo/']
-    actions:
-      - type: redirect
-        config:
-          to: /api/v2/geo?city=${conn.geo.city}
+- expressions:
+- req.url.path in ['/api/v2/geo', '/api/v2/geo/']
+actions:
+- type: redirect
+    config:
+      to: /api/v2/geo?city=${conn.geo.city}
 ```
-
 
 ```json policy.json {11}
 {
   "on_http_request": [
     {
-      "expressions": [
-        "req.url.path in ['/api/v2/geo', '/api/v2/geo/']"
-      ],
+      "expressions": ["req.url.path in ['/api/v2/geo', '/api/v2/geo/']"],
       "actions": [
         {
           "type": "redirect",
@@ -375,7 +366,6 @@ on_http_request:
   ]
 }
 ```
-
 </CodeGroup>
 
 This configuration will redirect any request from `/api/v2/geo` or `/api/v2/geo/` to `/api/v2/geo?city=${conn.geo.city}` using CEL Interpolation to insert the city from the connection's geolocation data.
@@ -398,11 +388,13 @@ In this example, a request to `https://example.ngrok.app/api/v2/geo` will be red
 <ActionVariablesDescription />
 
 <ConfigField title="actions.ngrok.redirect.matches" type="array of strings">
-  A list of elements that were matched during redirection. These represent the request components (for example, path or query parameters) that triggered the action and resulted in the redirect.
+  A list of elements that were matched during redirection.
+  These represent the request components (for example, path or query parameters) that triggered the action and resulted in the redirect.
 </ConfigField>
 
 <ConfigField title="actions.ngrok.redirect.url" type="string">
-  The URL to which the traffic was redirected. This is the destination URL returned as part of the redirect response after the action was executed.
+  The URL to which the traffic was redirected.
+  This is the destination URL returned as part of the redirect response after the action was executed.
 </ConfigField>
 
 <ConfigField title="actions.ngrok.redirect.error.code" type="string">

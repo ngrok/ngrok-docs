@@ -4,11 +4,14 @@ sidebarTitle: Vercel AI SDK
 description: Use the ngrok AI Gateway with Vercel's AI SDK.
 ---
 
+
 <Note>
-**Prerequisite**: You need an AI Gateway endpoint before continuing. Create one using the [dashboard quickstart](/ai-gateway/quickstart) or follow the [manual setup guide](/ai-gateway/guides/creating-endpoints).
+  **Prerequisite**: You need an AI Gateway endpoint before continuing.
+  Create one using the [dashboard quickstart](/ai-gateway/quickstart) or follow the [manual setup guide](/ai-gateway/guides/creating-endpoints).
 </Note>
 
-The [Vercel AI SDK](https://sdk.vercel.ai/) provides a unified interface for building AI applications. It works seamlessly with the ngrok AI Gateway, giving you provider failover, key rotation, and observability while using Vercel's powerful streaming and UI components.
+The [Vercel AI SDK](https://sdk.vercel.ai/) provides a unified interface for building AI applications.
+It works seamlessly with the ngrok AI Gateway, giving you provider failover, key rotation, and observability while using Vercel's powerful streaming and UI components.
 
 ## Installation
 
@@ -21,48 +24,50 @@ npm install ai @ai-sdk/openai
 Point the OpenAI provider at your AI Gateway endpoint:
 
 <CodeGroup>
-```typescript Next.js App Router highlight={5}
-import { generateText } from "ai";
-import { createOpenAI } from "@ai-sdk/openai";
+  ```typescript Next.js App Router highlight={5}
+  import { generateText } from "ai";
+  import { createOpenAI } from "@ai-sdk/openai";
 
 const openai = createOpenAI({
-  baseURL: "https://your-ai-gateway.ngrok.app/v1",
-  apiKey: process.env.OPENAI_API_KEY,
+baseURL: "https://your-ai-gateway.ngrok.app/v1",
+apiKey: process.env.OPENAI_API_KEY,
 });
 
 const { text } = await generateText({
-  model: openai("gpt-4o"),
-  prompt: "What is the meaning of life?",
+model: openai("gpt-4o"),
+prompt: "What is the meaning of life?",
 });
-```
+
+````
 
 ```typescript Edge Runtime highlight={5}
 import { generateText } from "ai";
 import { createOpenAI } from "@ai-sdk/openai";
 
 const openai = createOpenAI({
-  baseURL: "https://your-ai-gateway.ngrok.app/v1",
-  apiKey: process.env.OPENAI_API_KEY,
+baseURL: "https://your-ai-gateway.ngrok.app/v1",
+apiKey: process.env.OPENAI_API_KEY,
 });
 
 export const runtime = "edge";
 
 export async function POST(req: Request) {
-  const { prompt } = await req.json();
-  
-  const { text } = await generateText({
-    model: openai("gpt-4o"),
-    prompt,
-  });
-  
-  return Response.json({ text });
+const { prompt } = await req.json();
+
+const { text } = await generateText({
+model: openai("gpt-4o"),
+prompt,
+});
+
+return Response.json({ text });
 }
-```
+````
 </CodeGroup>
 
 ## Streaming responses
 
-The AI Gateway fully supports streaming. Use `streamText` for real-time responses:
+The AI Gateway fully supports streaming.
+Use `streamText` for real-time responses:
 
 ```typescript highlight={9-12}
 import { streamText } from "ai";
@@ -136,7 +141,8 @@ export async function POST(req: Request) {
 
 ## Using different providers
 
-The AI Gateway routes based on the model name. Use provider prefixes to be explicit:
+The AI Gateway routes based on the model name.
+Use provider prefixes to be explicit:
 
 ```typescript highlight={10-11}
 import { generateText } from "ai";
@@ -148,8 +154,14 @@ const gateway = createOpenAI({
 });
 
 // Use different providers through the same gateway
-const openaiResult = await generateText({ model: gateway("openai:gpt-4o"), prompt: "Hello" });
-const anthropicResult = await generateText({ model: gateway("anthropic:claude-3-5-sonnet-latest"), prompt: "Hello" });
+const openaiResult = await generateText({
+  model: gateway("openai:gpt-4o"),
+  prompt: "Hello",
+});
+const anthropicResult = await generateText({
+  model: gateway("anthropic:claude-3-5-sonnet-latest"),
+  prompt: "Hello",
+});
 ```
 
 ## Automatic model selection
@@ -166,7 +178,7 @@ const gateway = createOpenAI({
 });
 
 const { text } = await generateText({
-  model: gateway("ngrok/auto"),  // Gateway selects based on your strategy
+  model: gateway("ngrok/auto"), // Gateway selects based on your strategy
   prompt: "Explain quantum computing",
 });
 ```
@@ -186,7 +198,7 @@ on_http_request:
             - value: ${secrets.get('anthropic', 'api-key')}
       model_selection:
         strategy:
-          - "ai.models.sortBy(m, m.pricing.input)"  # Cheapest first
+          - "ai.models.sortBy(m, m.pricing.input)" # Cheapest first
 ```
 
 ## Environment variables
@@ -266,4 +278,3 @@ With the AI Gateway's failover, many errors are handled automatically by retryin
 - [Vercel AI SDK Documentation](https://sdk.vercel.ai/docs) - Full SDK reference
 - [Model Selection Strategies](/ai-gateway/guides/model-selection-strategies) - Configure routing logic
 - [Configuring Providers](/ai-gateway/guides/configuring-providers) - Set up providers and keys
-

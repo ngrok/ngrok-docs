@@ -3,7 +3,9 @@ title: Model Selection Strategies
 description: Configure custom strategies for selecting models using CEL expressions.
 ---
 
-Model selection strategies let you customize how the AI Gateway chooses which model to use for requests. Using CEL (Common Expression Language) expressions, you can filter, sort, and prioritize models based on performance metrics, cost, features, and custom metadata.
+
+Model selection strategies let you customize how the AI Gateway chooses which model to use for requests.
+Using CEL (Common Expression Language) expressions, you can filter, sort, and prioritize models based on performance metrics, cost, features, and custom metadata.
 
 ## When to use selection strategies
 
@@ -36,12 +38,13 @@ Strategies execute **in order** until one returns at least one model:
 ```yaml
 model_selection:
   strategy:
-    - "ai.models.filter(m, m.provider_id == 'openai')"   # Try first
+    - "ai.models.filter(m, m.provider_id == 'openai')" # Try first
     - "ai.models.filter(m, m.provider_id == 'anthropic')" # Try if first returns empty
-    - "ai.models"                                          # Fallback to all models
+    - "ai.models" # Fallback to all models
 ```
 
-If a strategy returns no models, the gateway tries the next strategy. Always include a fallback strategy (like `ai.models`) to ensure requests don't fail.
+If a strategy returns no models, the gateway tries the next strategy.
+Always include a fallback strategy (like `ai.models`) to ensure requests don't fail.
 
 ### Client model priority
 
@@ -151,63 +154,29 @@ This prevents clients from requesting arbitrary model names that get passed thro
 
 ### Filtering
 
-| Function | Description | Example |
-|----------|-------------|---------|
-| `filter(predicate)` | Filter by condition | `ai.models.filter(m, m.provider_id == 'openai')` |
-| `only(ids)` | Include only specific models | `ai.models.only(['gpt-4o', 'claude-3-5-sonnet'])` |
-| `ignore(ids)` | Exclude specific models | `ai.models.ignore(['gpt-3.5-turbo'])` |
-| `onlyProviders(ids)` | Include only specific providers | `ai.models.onlyProviders(['openai', 'anthropic'])` |
-| `ignoreProviders(ids)` | Exclude specific providers | `ai.models.ignoreProviders(['google'])` |
-| `onlyAuthors(ids)` | Include only specific authors | `ai.models.onlyAuthors(['openai'])` |
-| `ignoreAuthors(ids)` | Exclude specific authors | `ai.models.ignoreAuthors(['meta'])` |
+| Function | Description | Example | | ---------------------- | ------------------------------- | -------------------------------------------------- | | `filter(predicate)` | Filter by condition | `ai.models.filter(m, m.provider_id == 'openai')` | | `only(ids)` | Include only specific models | `ai.models.only(['gpt-4o', 'claude-3-5-sonnet'])` | | `ignore(ids)` | Exclude specific models | `ai.models.ignore(['gpt-3.5-turbo'])` | | `onlyProviders(ids)` | Include only specific providers | `ai.models.onlyProviders(['openai', 'anthropic'])` | | `ignoreProviders(ids)` | Exclude specific providers | `ai.models.ignoreProviders(['google'])` | | `onlyAuthors(ids)` | Include only specific authors | `ai.models.onlyAuthors(['openai'])` | | `ignoreAuthors(ids)` | Exclude specific authors | `ai.models.ignoreAuthors(['meta'])` |
 
 ### Geographic
 
-| Function | Description | Example |
-|----------|-------------|---------|
-| `inRegion(code)` | Models available in region | `ai.models.inRegion('us-east-1')` |
-| `inCountryCode(code)` | Models available in country | `ai.models.inCountryCode('US')` |
+| Function | Description | Example | | --------------------- | --------------------------- | --------------------------------- | | `inRegion(code)` | Models available in region | `ai.models.inRegion('us-east-1')` | | `inCountryCode(code)` | Models available in country | `ai.models.inCountryCode('US')` |
 
 ### Cost
 
-| Function | Description | Example |
-|----------|-------------|---------|
-| `underCost(type, max)` | Models under price threshold | `ai.models.underCost('text.input', 1.0)` |
-| `sortBy('price')` | Sort by price (cheapest first) | `ai.models.sortBy('price')` |
+| Function | Description | Example | | ---------------------- | ------------------------------ | ---------------------------------------- | | `underCost(type, max)` | Models under price threshold | `ai.models.underCost('text.input', 1.0)` | | `sortBy('price')` | Sort by price (cheapest first) | `ai.models.sortBy('price')` |
 
 ### Selection
 
-| Function | Description | Example |
-|----------|-------------|---------|
-| `random()` | Select one random model | `ai.models.random()` |
-| `randomize()` | Shuffle model order | `ai.models.randomize()` |
-| `[index]` | Select by index | `ai.models.filter(...)[0]` |
+| Function | Description | Example | | ------------- | ----------------------- | -------------------------- | | `random()` | Select one random model | `ai.models.random()` | | `randomize()` | Shuffle model order | `ai.models.randomize()` | | `[index]` | Select by index | `ai.models.filter(...)[0]` |
 
 ### Lookup
 
-| Function | Description | Example |
-|----------|-------------|---------|
-| `get(providerId, modelId)` | Get specific model | `ai.models.get('openai', 'gpt-4o')` |
-| `getMetadata(key)` | Get metadata value | `m.getMetadata('tier')` |
+| Function | Description | Example | | -------------------------- | ------------------ | ----------------------------------- | | `get(providerId, modelId)` | Get specific model | `ai.models.get('openai', 'gpt-4o')` | | `getMetadata(key)` | Get metadata value | `m.getMetadata('tier')` |
 
 ## Available model variables
 
 When using `filter()`, these variables are available on each model `m`:
 
-| Variable | Type | Description |
-|----------|------|-------------|
-| `m.id` | string | Model identifier |
-| `m.provider_id` | string | Provider identifier |
-| `m.author_id` | string | Model author identifier |
-| `m.display_name` | string | Human-readable name |
-| `m.known` | boolean | Whether this model is in the catalog (false for unknown pass-through models) |
-| `m.custom` | boolean | Whether this is a custom-configured model |
-| `m.metadata` | object | Custom metadata from config |
-| `m.input_modalities` | list | Input types ("text", "image", etc.) |
-| `m.output_modalities` | list | Output types |
-| `m.supported_features` | list | Features ("tool-calling", "coding", etc.) |
-| `m.max_context_window` | number | Maximum context window size |
-| `m.max_output_tokens` | number | Maximum output tokens |
+| Variable | Type | Description | | ---------------------- | ------- | ---------------------------------------------------------------------------- | | `m.id` | string | Model identifier | | `m.provider_id` | string | Provider identifier | | `m.author_id` | string | Model author identifier | | `m.display_name` | string | Human-readable name | | `m.known` | boolean | Whether this model is in the catalog (false for unknown pass-through models) | | `m.custom` | boolean | Whether this is a custom-configured model | | `m.metadata` | object | Custom metadata from config | | `m.input_modalities` | list | Input types ("text", "image", etc.) | | `m.output_modalities` | list | Output types | | `m.supported_features` | list | Features ("tool-calling", "coding", etc.) | | `m.max_context_window` | number | Maximum context window size | | `m.max_output_tokens` | number | Maximum output tokens |
 
 ### Metrics variables
 
@@ -235,28 +204,15 @@ m.metrics.endpoint.latency.upstream_ms_avg
 'my-key-id' in m.metrics.api_keys && m.metrics.api_keys['my-key-id'].latency.upstream_ms_avg
 ```
 
-
-<Note>
-When accessing API key metrics, always check if the key exists first using `'key_id' in m.metrics.api_keys`. See [Metrics Reference](/ai-gateway/observability/metrics#quota-metrics-api-key-scope-only) for details.
+<Note>  When accessing API key metrics, always check if the key exists first using `'key_id' in m.metrics.api_keys`. See [Metrics Reference](/ai-gateway/observability/metrics#quota-metrics-api-key-scope-only) for details.
 </Note>
 ## CEL operators
 
-| Operator | Description | Example |
-|----------|-------------|---------|
-| `==`, `!=` | Equality | `m.provider_id == 'openai'` |
-| `<`, `>`, `<=`, `>=` | Comparison | `m.metrics.global.latency.upstream_ms_avg < 1000` |
-| `&&` | Logical AND | `m.provider_id == 'openai' && m.id.contains('gpt-4')` |
-| `\|\|` | Logical OR | `m.id.contains('mini') \|\| m.id.contains('turbo')` |
-| `!` | Logical NOT | `!m.custom` |
-| `in` | List membership | `'image' in m.input_modalities` |
+| Operator | Description | Example | | -------------------- | --------------- | ----------------------------------------------------- | | `==`, `!=` | Equality | `m.provider_id == 'openai'` | | `<`, `>`, `<=`, `>=` | Comparison | `m.metrics.global.latency.upstream_ms_avg < 1000` | | `&&` | Logical AND | `m.provider_id == 'openai' && m.id.contains('gpt-4')` | | `\|\|` | Logical OR | `m.id.contains('mini') \|\| m.id.contains('turbo')` | | `!` | Logical NOT | `!m.custom` | | `in` | List membership | `'image' in m.input_modalities` |
 
 ## String functions
 
-| Function | Description | Example |
-|----------|-------------|---------|
-| `contains()` | Check substring | `m.id.contains('gpt')` |
-| `startsWith()` | Check prefix | `m.id.startsWith('gpt-4')` |
-| `endsWith()` | Check suffix | `m.id.endsWith('-turbo')` |
+| Function | Description | Example | | -------------- | --------------- | -------------------------- | | `contains()` | Check substring | `m.id.contains('gpt')` | | `startsWith()` | Check prefix | `m.id.startsWith('gpt-4')` | | `endsWith()` | Check suffix | `m.id.endsWith('-turbo')` |
 
 ## Complete example
 
@@ -270,7 +226,7 @@ on_http_request:
             cost_per_1k_input: 0.03
         - id: "anthropic"
         - id: "google"
-      
+
       model_selection:
         strategy:
           # Prefer fast, reliable OpenAI models
@@ -286,4 +242,3 @@ on_http_request:
 - [CEL Functions Reference](/ai-gateway/reference/cel-functions) - Complete function reference
 - [Model Filtering Example](/ai-gateway/examples/model-filtering) - More examples
 - [Metrics Reference](/ai-gateway/observability/metrics) - Understanding metrics
-

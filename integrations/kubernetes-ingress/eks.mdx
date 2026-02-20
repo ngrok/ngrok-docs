@@ -4,6 +4,7 @@ sidebarTitle: EKS
 description: Learn how to get started running the ngrok Kubernetes Operator on AWS EKS.
 ---
 
+
 This guide explains how to run the ngrok Kubernetes Operator on AWS EKS to add secure ingress to your services.
 
 The [ngrok Kubernetes Operator](https://github.com/ngrok/ngrok-operator) is the official open-source controller for adding public and secure ingress traffic to your k8s services.
@@ -17,7 +18,7 @@ It works with an AWS EKS Kubernetes cluster to provide ingress to your services 
 - The [ngrok Kubernetes Operator](/k8s/) installed on your cluster.
 - A reserved domain from the ngrok [dashboard](https://dashboard.ngrok.com/domains) or [API](/api-reference/reserveddomains/list); this guide refers to it as `<NGROK_DOMAIN>`.
 
-## Ensure `kubectl` can speak with your cluster 
+## Ensure `kubectl` can speak with your cluster
 
 With an AWS EKS cluster, authentication for `kubectl` uses a credential helper.
 To deploy the ngrok Kubernetes Operator, ensure you can use the `aws` CLI and that the credential helper is available.
@@ -43,7 +44,7 @@ aws eks update-kubeconfig --kubeconfig kubeconfig --region <region-code> --name 
 export KUBECONFIG=$(pwd)/kubeconfig
 ```
 
-## Install a sample application and Kubernetes ingress 
+## Install a sample application and Kubernetes ingress
 
 Create a manifest file (for example `ngrok-manifest.yaml`) with the following contents.
 This deploys the tinyllama demo LLM application from [ngrok-samples/tinyllama](https://github.com/ngrok-samples/tinyllama).
@@ -113,16 +114,14 @@ Apply the manifest file to your cluster.
 kubectl apply -f ngrok-manifest.yaml
 ```
 
-<Note>
-**Troubleshooting:** If you get an error when applying the manifest, double-check that you've updated the `NGROK_DOMAIN` value and try again.
+<Note>  **Troubleshooting:** If you get an error when applying the manifest, double-check that you've updated the `NGROK_DOMAIN` value and try again.
 </Note>
 
 Access your ingress URL using the subdomain you chose in the manifest (for example, `https://my-awesome-k8s-cluster.ngrok.app`) to confirm the tinyllama app is accessible from the internet.
 
-## Add edge security to your app 
+## Add edge security to your app
 
-With the [Traffic Policy system](/traffic-policy/) and the [`oauth` action](/traffic-policy/actions/oauth), ngrok manages OAuth protection entirely at its cloud service.
-ngrok's edge authenticates and authorizes all requests before allowing ingress and access to your endpoint, meaning you don't need to add any additional services to your cluster, or alter any routes.
+With the [Traffic Policy system](/traffic-policy/) and the [`oauth` action](/traffic-policy/actions/oauth), ngrok manages OAuth protection entirely at its cloud service. ngrok's edge authenticates and authorizes all requests before allowing ingress and access to your endpoint, meaning you don't need to add any additional services to your cluster, or alter any routes.
 
 To enable the `oauth` action, you'll create a new `NgrokTrafficPolicy` custom resource and apply it to your entire `Ingress` with an annotation.
 You can apply the policy to just a specific backend or as the default backend for an `Ingress`.
@@ -131,44 +130,43 @@ See the documentation on using the [Operator with Ingresses](/k8s/guides/using-i
 Edit your existing `ngrok-manifest.yaml` manifest with the following, leaving the `Service` and `Deployment` as they were.
 Note the new `annotations` field and the `NgrokTrafficPolicy` CR.
 
-   ```yaml
-    ...
-   ---
-   # Configuration for ngrok's Kubernetes Operator
-   apiVersion: networking.k8s.io/v1
-   kind: Ingress
-   metadata:
-     name: tinyllama-ingress
-     namespace: default
-     annotations:
-       k8s.ngrok.com/traffic-policy: oauth
-   spec:
-     ingressClassName: ngrok
-     rules:
-       - host: <NGROK_DOMAIN>
-         http:
-           paths:
-             - path: /
-               pathType: Prefix
-               backend:
-                 service:
-                   name: tinyllama
-                   port:
-                     number: 80
-   ---
-   # Traffic Policy configuration for OAuth
-   apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-   kind: NgrokTrafficPolicy
-   metadata:
-     name: oauth
-     namespace: default
-   spec:
-      policy:
-        on_http_request:
-          - type: oauth
-            config:
-              provider: google
-   ```
+```yaml
+---
+# Configuration for ngrok's Kubernetes Operator
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: tinyllama-ingress
+  namespace: default
+  annotations:
+    k8s.ngrok.com/traffic-policy: oauth
+spec:
+  ingressClassName: ngrok
+  rules:
+    - host: <NGROK_DOMAIN>
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: tinyllama
+                port:
+                  number: 80
+---
+# Traffic Policy configuration for OAuth
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: NgrokTrafficPolicy
+metadata:
+  name: oauth
+  namespace: default
+spec:
+  policy:
+    on_http_request:
+      - type: oauth
+        config:
+          provider: google
+```
 
 Re-apply your `ngrok-manifest.yaml` configuration.
 
@@ -182,27 +180,27 @@ That's a start, but what if you want to authenticate only yourself or colleagues
 You can use [expressions](/traffic-policy/concepts/expressions) and [CEL interpolation](/traffic-policy/concepts/cel-interpolation) to filter out and reject OAuth logins that don't contain `example.com`.
 Update the `NgrokTrafficPolicy` portion of your manifest after changing `example.com` to your domain.
 
-   ```yaml
-   # Traffic Policy configuration for OAuth
-   apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-   kind: NgrokTrafficPolicy
-   metadata:
-     name: oauth
-     namespace: default
-   spec:
-     policy:
-       on_http_request:
-         - type: oauth
-           config:
-             provider: google
-         - expressions:
-             - "!actions.ngrok.oauth.identity.email.endsWith('@example.com')"
-           actions:
-             - type: custom-response
-               config:
-                 body: Hey, no auth for you ${actions.ngrok.oauth.identity.name}!
-                 status_code: 400
-   ```
+```yaml
+# Traffic Policy configuration for OAuth
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: NgrokTrafficPolicy
+metadata:
+  name: oauth
+  namespace: default
+spec:
+  policy:
+    on_http_request:
+      - type: oauth
+        config:
+          provider: google
+      - expressions:
+          - "!actions.ngrok.oauth.identity.email.endsWith('@example.com')"
+        actions:
+          - type: custom-response
+            config:
+              body: Hey, no auth for you ${actions.ngrok.oauth.identity.name}!
+              status_code: 400
+```
 
 Check out your deployed tinyllama app once again.
 If you log in with an email that doesn't match your domain, ngrok rejects your request.

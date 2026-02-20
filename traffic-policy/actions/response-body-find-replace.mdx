@@ -4,14 +4,13 @@ sidebarTitle: Response Body Find & Replace
 description: Find and replace text patterns in HTTP response bodies using regular expressions.
 ---
 
+
 import { ConfigField } from "/snippets/ConfigTable.jsx";
 import ActionVariablesDescription from "/snippets/traffic-policy/common/action-variables-description.mdx";
 import NonTerminatingExplanation from "/snippets/traffic-policy/common/non-terminating-explanation.mdx";
 
-The Response Body Find & Replace action enables you to modify HTTP response body content
-by finding and replacing text patterns using regular expressions. This is useful for
-redacting sensitive information in responses, transforming data formats, or modifying
-AI model outputs before they reach clients.
+The Response Body Find & Replace action enables you to modify HTTP response body content by finding and replacing text patterns using regular expressions.
+This is useful for redacting sensitive information in responses, transforming data formats, or modifying AI model outputs before they reach clients.
 
 ## Configuration reference
 
@@ -33,21 +32,24 @@ The [Traffic Policy](/traffic-policy/) configuration reference for this action.
   Minimum `1` replacement required.
 
   <ConfigField title="from" type="string" required={true} cel={true}>
-    Regular expression pattern to match. Supports [RE2 syntax](https://github.com/google/re2/wiki/Syntax).
-    CEL interpolation is supported for dynamic patterns.
-  </ConfigField>
+  Regular expression pattern to match.
+  Supports [RE2 syntax](https://github.com/google/re2/wiki/Syntax).
+  CEL interpolation is supported for dynamic patterns.
+</ConfigField>
 
   <ConfigField title="to" type="string" cel={true}>
-    Replacement string. Use `$1`, `$2`, etc. to reference capture groups from the pattern.
-    CEL interpolation is supported for dynamic replacements.
-    If omitted or empty, matched text is deleted.
+  Replacement string.
+  Use `$1`, `$2`, etc. to reference capture groups from the pattern.
+  CEL interpolation is supported for dynamic replacements.
+  If omitted or empty, matched text is deleted.
+
+  
   </ConfigField>
 </ConfigField>
 
 ## Behavior
 
-When this action executes, it buffers the entire response body, applies all replacement
-rules in order, and updates the `Content-Length` header if present.
+When this action executes, it buffers the entire response body, applies all replacement rules in order, and updates the `Content-Length` header if present.
 
 ### Pattern matching
 
@@ -78,13 +80,12 @@ When using CEL in the `from` field, the resulting string must be a valid regular
 
 ### Content-Length handling
 
-After replacements are applied, the action automatically updates the `Content-Length`
-header to reflect the new body size.
+After replacements are applied, the action automatically updates the `Content-Length` header to reflect the new body size.
 
 ### Ordering
 
-Replacement rules are applied in the order they are specified. Later rules operate
-on the result of earlier rules.
+Replacement rules are applied in the order they are specified.
+Later rules operate on the result of earlier rules.
 
 ### Non-terminating action
 
@@ -99,24 +100,24 @@ The following configuration redacts personal information from AI model responses
 #### Example Traffic Policy document
 
 <CodeGroup>
-```yaml policy.yml
-on_http_response:
+  ```yaml policy.yml
+  on_http_response:
   - actions:
-      - type: response-body-find-replace
+  - type: response-body-find-replace
         config:
           replacements:
             # Redact SSN patterns
-            - from: "\\b\\d{3}-\\d{2}-\\d{4}\\b"
+  - from: "\\b\\d{3}-\\d{2}-\\d{4}\\b"
               to: "[SSN REDACTED]"
             # Redact credit card numbers
-            - from: "\\b\\d{4}[- ]?\\d{4}[- ]?\\d{4}[- ]?\\d{4}\\b"
+  - from: "\\b\\d{4}[- ]?\\d{4}[- ]?\\d{4}[- ]?\\d{4}\\b"
               to: "[CARD REDACTED]"
             # Redact phone numbers
-            - from: "\\b\\d{3}[-.\\s]?\\d{3}[-.\\s]?\\d{4}\\b"
+  - from: "\\b\\d{3}[-.\\s]?\\d{3}[-.\\s]?\\d{4}\\b"
               to: "[PHONE REDACTED]"
-```
-```json policy.json
-{
+  ```
+  ```json policy.json
+  {
   "on_http_response": [
     {
       "actions": [
@@ -142,8 +143,9 @@ on_http_response:
       ]
     }
   ]
-}
-```
+  }
+  ```
+  
 </CodeGroup>
 
 #### Example response
@@ -171,19 +173,19 @@ Here's the customer information:
 Append legal disclaimers or warnings to AI-generated content:
 
 <CodeGroup>
-```yaml policy.yml
-on_http_response:
+  ```yaml policy.yml
+  on_http_response:
   - expressions:
-      - "res.headers['content-type'].contains('application/json')"
+  - "res.headers['content-type'].contains('application/json')"
     actions:
-      - type: response-body-find-replace
+  - type: response-body-find-replace
         config:
           replacements:
-            - from: '"content":\s*"([^"]*)"(\s*})'
+  - from: '"content":\s*"([^"]*)"(\s*})'
               to: '"content": "$1\n\n---\nDisclaimer: This response was generated by AI and may contain errors."$2'
-```
-```json policy.json
-{
+  ```
+  ```json policy.json
+  {
   "on_http_response": [
     {
       "expressions": [
@@ -204,8 +206,9 @@ on_http_response:
       ]
     }
   ]
-}
-```
+  }
+  ```
+  
 </CodeGroup>
 
 ### Sanitizing error messages
@@ -213,21 +216,21 @@ on_http_response:
 Remove internal error details from responses before sending to clients:
 
 <CodeGroup>
-```yaml policy.yml
-on_http_response:
+  ```yaml policy.yml
+  on_http_response:
   - expressions:
-      - "res.status_code >= 500"
+  - "res.status_code >= 500"
     actions:
-      - type: response-body-find-replace
+  - type: response-body-find-replace
         config:
           replacements:
-            - from: '"stack_trace":\s*"[^"]*"'
+  - from: '"stack_trace":\s*"[^"]*"'
               to: '"stack_trace": "[HIDDEN]"'
-            - from: '"internal_error":\s*"[^"]*"'
+  - from: '"internal_error":\s*"[^"]*"'
               to: '"internal_error": "[HIDDEN]"'
-```
-```json policy.json
-{
+  ```
+  ```json policy.json
+  {
   "on_http_response": [
     {
       "expressions": [
@@ -252,8 +255,9 @@ on_http_response:
       ]
     }
   ]
-}
-```
+  }
+  ```
+  
 </CodeGroup>
 
 ## Action result variables
@@ -264,11 +268,13 @@ on_http_response:
   Array of objects describing which replacement rules matched.
 
   <ConfigField title="replacement_index" type="integer">
-    The zero-based index of the replacement rule that matched.
-  </ConfigField>
+  The zero-based index of the replacement rule that matched.
+</ConfigField>
 
   <ConfigField title="matched_content" type="string">
     The first matched content from this replacement rule.
+
+  
   </ConfigField>
 </ConfigField>
 
@@ -276,4 +282,3 @@ on_http_response:
 
 - [Request Body Find & Replace](/traffic-policy/actions/request-body-find-replace) - Modify request bodies
 - [SSE Find & Replace](/traffic-policy/actions/sse-find-replace) - Modify Server-Sent Events streams
-

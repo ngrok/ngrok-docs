@@ -4,6 +4,7 @@ sidebarTitle: Bindings
 description: Learn about ngrok's endpoint bindings and how to use them in the ngrok Kubernetes Operator.
 ---
 
+
 ngrok supports the concept of endpoint bindings which allow you to control how your endpoints are accessed.
 This page gives a brief overview of each type of binding as well as how they are used with the ngrok Kubernetes Operator.
 
@@ -11,8 +12,7 @@ With the Kubernetes Operator, bindings can be used on the `CloudEndpoint` and `A
 
 ## Public binding
 
-Endpoints with a public binding have a publicly addressable URL that receives traffic from the internet via the ngrok cloud service's global points of presence. for example,
-These endpoints might use an ngrok subdomain or a custom domain.
+Endpoints with a public binding have a publicly addressable URL that receives traffic from the internet via the ngrok cloud service's global points of presence. for example, These endpoints might use an ngrok subdomain or a custom domain.
 
 Public endpoint URLs must:
 
@@ -34,15 +34,15 @@ metadata:
 spec:
   url: https://example-cloud-endpoint.ngrok.io
   bindings:
-  - public
+    - public
   description: Public Endpoint Created by the ngrok-operator
   trafficPolicy:
     policy:
       on_http_request:
-      - actions:
-        - type: forward-internal
-          config:
-            url: https://my-k8s-service.internal
+        - actions:
+            - type: forward-internal
+              config:
+                url: https://my-k8s-service.internal
 ```
 
 The public binding and URL for the above `CloudEndpoint` make it accessible on the public internet at `https://example-cloud-endpoint.ngrok.io`
@@ -67,7 +67,7 @@ metadata:
   name: example-agent-endpoint
 spec:
   bindings:
-  - internal
+    - internal
   description: Internal Endpoint Created by the ngrok-operator
   url: https://my-k8s-service.internal
   upstream:
@@ -102,7 +102,7 @@ metadata:
   namespace: my-namespace
 spec:
   bindings:
-  - kubernetes
+    - kubernetes
   description: Kubernetes Bound Endpoint Created by the ngrok-operator
   url: http://my-bound-service.my-namespace
   upstream:
@@ -111,8 +111,7 @@ spec:
 
 The kubernetes binding and URL for the above `AgentEndpoint` make it a Kubernetes bound endpoint.
 Endpoints with a binding of `kubernetes` can be made available as projected services in any cluster running the ngrok Operator.
-These endpoints are not accessible on the public internet, but can be used to enable services in your Kubernetes cluster to access the endpoint by making
-requests to a projected `Service` that is created for the endpoint.
+These endpoints are not accessible on the public internet, but can be used to enable services in your Kubernetes cluster to access the endpoint by making requests to a projected `Service` that is created for the endpoint.
 
 ### How Kubernetes bound endpoints work
 
@@ -131,7 +130,7 @@ metadata:
   namespace: my-namespace
 spec:
   bindings:
-  - kubernetes
+    - kubernetes
   description: Kubernetes Bound Endpoint Created by the ngrok-operator
   url: http://my-bound-service.my-namespace
   upstream:
@@ -190,7 +189,8 @@ When anything in the cluster makes a request to the `my-bound-service.my-namespa
 This can be used within a single cluster to use ngrok Traffic Policies on your endpoints for `Service` to `Service` networking to perform operations such as rate-limiting, header manipulation, etc.
 Furthermore, the true power in Kubernetes bindings is allowing you to project a `Service` in one cluster to one or more other clusters running the ngrok Kubernetes Operator.
 When doing this, you can configure networking between different Kubernetes clusters without needing to expose any publicly accessible URLs that would need to require authentication to prevent unwanted access.
-This is not simply limited to Kubernetes clusters. You could for example, create a Kubernetes bound endpoint using the ngrok CLI/SDK to project workloads running on another system such as a Virtual Machine into your Kubernetes clusters.
+This is not simply limited to Kubernetes clusters.
+You could for example, create a Kubernetes bound endpoint using the ngrok CLI/SDK to project workloads running on another system such as a Virtual Machine into your Kubernetes clusters.
 
 ### Enable bindings for the Operator
 
@@ -212,8 +212,9 @@ By default, the Operator will create a `BoundEndpoint` in response to all endpoi
 You can modify your Operator to only process a subset of them with the `bindings.endpointSelectors` Helm value.
 
 `bindings.endpointSelectors` is a list of cel expressions used to filter which kubernetes-bound endpoints should be projected into this cluster.
-It defaults to `["true"]` which causes it to process all endpoints with a Kubernetes type binding. This can be modified to anything you like to control which
-endpoints the Operator should process. This strategy can enable you to easily only project endpoints into certain clusters running the ngrok Kubernetes Operator.
+It defaults to `["true"]` which causes it to process all endpoints with a Kubernetes type binding.
+This can be modified to anything you like to control which endpoints the Operator should process.
+This strategy can enable you to easily only project endpoints into certain clusters running the ngrok Kubernetes Operator.
 
 ## Bindings with `Ingresses`
 
@@ -222,8 +223,7 @@ You can control the binding on the `CloudEndpoint` that will be created by this 
 
 For more information about bindings, see [the bindings page](/k8s/guides/bindings)
 
-The following `Ingress` will create a `CloudEndpoint` with an `internal` binding.
-**Note that with the internal binding, the URL must end in .internal**
+The following `Ingress` will create a `CloudEndpoint` with an `internal` binding. **Note that with the internal binding, the URL must end in .internal**
 
 ```yaml
 apiVersion: networking.k8s.io/v1
@@ -255,8 +255,7 @@ You can control the binding on the `CloudEndpoint` that will be created by using
 
 For more information about bindings, see [the bindings page](/k8s/guides/bindings)
 
-The following configuration will create a `CloudEndpoint` with an `internal` binding. the annotation can be used on the `Gateway` but not `HTTPRoute`.
-**Note that with the internal binding, the URL must end in .internal**
+The following configuration will create a `CloudEndpoint` with an `internal` binding. the annotation can be used on the `Gateway` but not `HTTPRoute`. **Note that with the internal binding, the URL must end in .internal**
 
 ```yaml
 apiVersion: gateway.networking.k8s.io/v1
@@ -281,21 +280,21 @@ metadata:
   namespace: default
 spec:
   hostnames:
-  - example-hostname.internal
+    - example-hostname.internal
   parentRefs:
-  - group: gateway.networking.k8s.io
-    kind: Gateway
-    name: example-gateway
-    namespace: default
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: example-gateway
+      namespace: default
   rules:
-  - matches:
-      - path:
-          type: PathPrefix
-          value: /
-    backendRefs:
-      - group: ""
-        kind: Service
-        name: example-service
-        port: 80
-        weight: 1
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - group: ""
+          kind: Service
+          name: example-service
+          port: 80
+          weight: 1
 ```

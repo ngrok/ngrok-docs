@@ -3,11 +3,14 @@ title: FAQ
 description: Frequently asked questions about AI Gateway.
 ---
 
+
 ## General
 
 ### Does ngrok provide AI provider API keys?
 
-No. The AI Gateway is a routing and observability layer—you use your own API keys from providers like OpenAI, Anthropic, and Google. ngrok doesn't resell or provide AI provider access. You maintain your own provider accounts and billing relationships.
+No.
+The AI Gateway is a routing and observability layer—you use your own API keys from providers like OpenAI, Anthropic, and Google. ngrok doesn't resell or provide AI provider access.
+You maintain your own provider accounts and billing relationships.
 
 ---
 
@@ -22,7 +25,7 @@ This error occurs when `only_allow_configured_providers: true` is set and you're
 ```yaml
 only_allow_configured_providers: true
 providers:
-  - id: openai      # Add your provider here
+  - id: openai # Add your provider here
     api_keys:
       - value: ${secrets.get('openai', 'key')}
 ```
@@ -42,20 +45,22 @@ This error can occur for several reasons:
 **Solutions:**
 
 Add the model to your configuration:
+
 ```yaml
 only_allow_configured_models: true
 providers:
   - id: openai
     models:
-      - id: "gpt-4o"      # Add your model here
+      - id: "gpt-4o" # Add your model here
       - id: "gpt-4o-mini"
 ```
 
 Or use a provider prefix for unknown models:
+
 ```json
 {
   "model": "openai:gpt-5-preview",
-  "messages": [{"role": "user", "content": "Hello"}]
+  "messages": [{ "role": "user", "content": "Hello" }]
 }
 ```
 
@@ -72,7 +77,7 @@ only_allow_configured_models: true
 providers:
   - id: openai
     models:
-      - id: "gpt-4o-mini"  # Only allow specific models
+      - id: "gpt-4o-mini" # Only allow specific models
 ```
 
 ---
@@ -82,11 +87,11 @@ providers:
 Yes, the gateway is fully compatible:
 
 ```typescript
-import { createOpenAI } from "@ai-sdk/openai"
+import { createOpenAI } from "@ai-sdk/openai";
 
 const openai = createOpenAI({
   baseUrl: "https://your-ai-gateway.ngrok.app",
-})
+});
 ```
 
 See [SDK Integration](/ai-gateway/sdks) for details.
@@ -97,13 +102,15 @@ See [SDK Integration](/ai-gateway/sdks) for details.
 
 ### How does failover work?
 
-When a request fails, the gateway tries the next candidate in its list. This includes failures from:
+When a request fails, the gateway tries the next candidate in its list.
+This includes failures from:
 
 - Timeouts
 - HTTP errors (4xx, 5xx)
 - Connection failures
 
 Failover order:
+
 1. Next API key for the same model/provider
 2. Next model candidate (from model selection or client `models` array)
 
@@ -118,7 +125,7 @@ See [Error Handling](/ai-gateway/guides/error-handling) for details.
 Controlled by `total_timeout` (default: 5 minutes):
 
 ```yaml
-total_timeout: "3m"  # Allow up to 3 minutes for all attempts
+total_timeout: "3m" # Allow up to 3 minutes for all attempts
 ```
 
 ---
@@ -126,6 +133,7 @@ total_timeout: "3m"  # Allow up to 3 minutes for all attempts
 ### Can I disable automatic failover?
 
 Not directly, but you can limit the attempts by:
+
 - Configuring only one API key per provider
 - Having clients specify a single model
 - Setting short timeouts:
@@ -144,13 +152,14 @@ Yes, if the client specifies multiple models that span different providers:
 1. Using the `models` array: `"models": ["openai:gpt-4o", "anthropic:claude-3-5-sonnet-20241022"]`
 2. Or using just the model name (like `"model": "gpt-4o"`) when selection strategies return candidates from multiple providers
 
-The gateway automatically tries alternative providers when the primary fails. You can also specify fallback models in the request body:
+The gateway automatically tries alternative providers when the primary fails.
+You can also specify fallback models in the request body:
 
 ```json
 {
   "model": "gpt-4o",
   "models": ["claude-3-5-sonnet-20241022"],
-  "messages": [{"role": "user", "content": "Hello"}]
+  "messages": [{ "role": "user", "content": "Hello" }]
 }
 ```
 
@@ -160,7 +169,8 @@ The gateway automatically tries alternative providers when the primary fails. Yo
 
 ### Do I need to configure API keys in the gateway?
 
-No, it's optional. By default (passthrough mode), the gateway forwards whatever key your SDK sends.
+No, it's optional.
+By default (passthrough mode), the gateway forwards whatever key your SDK sends.
 
 Configure keys in the gateway for:
 
@@ -172,7 +182,8 @@ Configure keys in the gateway for:
 
 ### How do I secure my gateway when using server-side API keys?
 
-When you configure API keys in the gateway, your endpoint becomes publicly accessible. Add authorization to protect it:
+When you configure API keys in the gateway, your endpoint becomes publicly accessible.
+Add authorization to protect it:
 
 ```yaml
 on_http_request:
@@ -206,7 +217,8 @@ providers:
       - value: ${secrets.get('openai', 'team-b')}
 ```
 
-Note: Per-key metadata is not currently supported. Use separate endpoints or providers for team-based tracking.
+Note: Per-key metadata is not currently supported.
+Use separate endpoints or providers for team-based tracking.
 
 ---
 
@@ -217,14 +229,14 @@ Add the new key, deploy, then remove the old key:
 ```yaml
 api_keys:
   - value: ${secrets.get('openai', 'old-key')}
-  - value: ${secrets.get('openai', 'new-key')}  # Add new
+  - value: ${secrets.get('openai', 'new-key')} # Add new
 ```
 
 After confirming the new key works:
 
 ```yaml
 api_keys:
-  - value: ${secrets.get('openai', 'new-key')}  # Remove old
+  - value: ${secrets.get('openai', 'new-key')} # Remove old
 ```
 
 ---
@@ -249,7 +261,8 @@ Token counts are available in metrics and event destinations.
 
 ### Does the gateway charge for token usage?
 
-No, you only pay providers for actual token usage. The gateway itself doesn't charge per token.
+No, you only pay providers for actual token usage.
+The gateway itself doesn't charge per token.
 
 Check ngrok's pricing for gateway usage costs.
 
@@ -257,7 +270,8 @@ Check ngrok's pricing for gateway usage costs.
 
 ### Can I cache responses to reduce costs?
 
-Currently no. Caching may be added in future versions.
+Currently no.
+Caching may be added in future versions.
 
 ---
 
@@ -265,7 +279,8 @@ Currently no. Caching may be added in future versions.
 
 ### Is my data stored by ngrok?
 
-No, unless Traffic Inspector is enabled. By default:
+No, unless Traffic Inspector is enabled.
+By default:
 
 - Request/response bodies processed in-memory only
 - Data immediately discarded after processing
@@ -295,14 +310,15 @@ on_http_request:
       - type: request-body-find-replace
         config:
           replacements:
-            - from: "\\b\\d{3}-\\d{2}-\\d{4}\\b"  # SSN pattern
+            - from: "\\b\\d{3}-\\d{2}-\\d{4}\\b" # SSN pattern
               to: "[REDACTED]"
       - type: ai-gateway
         config:
           # ...
 ```
 
-For streaming responses, use `sse-find-replace` in `on_event_stream_message`. See [Modifying Requests](/ai-gateway/guides/modifying-requests) and [Modifying Responses](/ai-gateway/guides/modifying-responses) for details.
+For streaming responses, use `sse-find-replace` in `on_event_stream_message`.
+See [Modifying Requests](/ai-gateway/guides/modifying-requests) and [Modifying Responses](/ai-gateway/guides/modifying-responses) for details.
 
 ---
 
@@ -321,7 +337,8 @@ Built-in support for:
 - Inception Labs
 - Inference Net
 
-Plus any self-hosted OpenAI or Anthropic Claude API compatible endpoint. See the [Model Catalog](/ai-gateway/reference/model-catalog) for the full list.
+Plus any self-hosted OpenAI or Anthropic Claude API compatible endpoint.
+See the [Model Catalog](/ai-gateway/reference/model-catalog) for the full list.
 
 ---
 
@@ -343,7 +360,8 @@ See [Custom Providers](/ai-gateway/custom-providers) for details.
 
 ### How do I know which models are available?
 
-Built-in providers have pre-configured model catalogs. For custom providers, you must specify models manually.
+Built-in providers have pre-configured model catalogs.
+For custom providers, you must specify models manually.
 
 ---
 
@@ -354,24 +372,26 @@ Built-in providers have pre-configured model catalogs. For custom providers, you
 ```json
 {
   "model": "ngrok/auto",
-  "messages": [{"role": "user", "content": "Hello"}]
+  "messages": [{ "role": "user", "content": "Hello" }]
 }
 ```
 
-This is equivalent to omitting the model field. Use it when you want the gateway to select the best model based on latency, cost, or other criteria you've configured.
+This is equivalent to omitting the model field.
+Use it when you want the gateway to select the best model based on latency, cost, or other criteria you've configured.
 
 ---
 
 ### Can clients use models not in the catalog?
 
-Yes, if a client includes a provider prefix (like `openai:new-model`), the gateway passes the request through to that provider even if the model isn't in the catalog. This lets clients use new models immediately.
+Yes, if a client includes a provider prefix (like `openai:new-model`), the gateway passes the request through to that provider even if the model isn't in the catalog.
+This lets clients use new models immediately.
 
 To restrict this behavior, use a model selection strategy:
 
 ```yaml
 model_selection:
   strategy:
-    - "ai.models.filter(m, m.known)"  # Only allow catalog models
+    - "ai.models.filter(m, m.known)" # Only allow catalog models
 ```
 
 The `m.known` field is `false` for pass-through models not in the catalog.
@@ -414,7 +434,8 @@ Check:
 
 ### How do I debug which provider was used?
 
-Enable event destinations at the endpoint level to stream detailed request logs. Configure event destinations in your ngrok endpoint configuration (not in the ai-gateway action config).
+Enable event destinations at the endpoint level to stream detailed request logs.
+Configure event destinations in your ngrok endpoint configuration (not in the ai-gateway action config).
 
 ---
 
@@ -453,10 +474,13 @@ model_selection:
     - "ai.models"
 ```
 
-The first strategy that returns models wins. If OpenAI models exist, only those are tried. Anthropic is only considered if no OpenAI models match.
+The first strategy that returns models wins.
+If OpenAI models exist, only those are tried.
+Anthropic is only considered if no OpenAI models match.
 
 <Note>
-Strategies control which models are considered, not failover order. For cross-provider failover when requests fail, have clients specify multiple models: `models: ["openai:gpt-4o", "anthropic:claude-3-5-sonnet-20241022"]`.
+  Strategies control which models are considered, not failover order.
+  For cross-provider failover when requests fail, have clients specify multiple models: `models: ["openai:gpt-4o", "anthropic:claude-3-5-sonnet-20241022"]`.
 </Note>
 
 See [Model Selection Strategies](/ai-gateway/guides/model-selection-strategies).
@@ -489,7 +513,8 @@ You cannot currently route based on the message content itself.
 
 ### Does the gateway support streaming?
 
-Yes, streaming is fully supported. The gateway forwards SSE streams transparently.
+Yes, streaming is fully supported.
+The gateway forwards SSE streams transparently.
 
 ---
 
@@ -527,10 +552,12 @@ Keys are tried in order when the previous key fails.
 ### Failover isn't working
 
 For **key failover** (same provider, different keys):
+
 - Configure multiple keys for the provider
 - Keys are tried in order when one fails
 
 For **provider failover** (different providers):
+
 - Client must specify fallback models using the `models` array
 - Or the same model must be available from multiple providers
 
@@ -538,11 +565,12 @@ For **provider failover** (different providers):
 {
   "model": "gpt-4o",
   "models": ["claude-3-5-sonnet-20241022"],
-  "messages": [{"role": "user", "content": "Hello"}]
+  "messages": [{ "role": "user", "content": "Hello" }]
 }
 ```
 
 For **model selection failover**:
+
 - Configure multiple strategies in `model_selection`
 - Strategies are tried in order until one returns models
 

@@ -10,7 +10,7 @@ The simple method only takes one command, but with the secure method, you:
 - Integrate more cleanly with infrastructure as code (IaC) tools and processes.
 
 <Tabs>
-	<Tab title="Simple">
+  <Tab title="Simple">
 
 ```bash
 helm install ngrok-operator ngrok/ngrok-operator \
@@ -20,32 +20,32 @@ helm install ngrok-operator ngrok/ngrok-operator \
 --set credentials.authtoken=$NGROK_AUTHTOKEN
 ```
 
-    </Tab>
+  </Tab>
     <Tab title="More secure">
 
-First, prepare new environment variables.
+  First, prepare new environment variables.
 
 ```bash
 export ENCODED_NGROK_AUTHTOKEN=$(echo -n "$NGROK_AUTHTOKEN" | base64)
 export ENCODED_NGROK_API_KEY=$(echo -n "$NGROK_API_KEY" | base64)
 ```
 
-Apply a `Secret` resource with your encoded credentials.
+  Apply a `Secret` resource with your encoded credentials.
 
 ```bash
 kubectl apply -f -<<EOF
 apiVersion: v1
 kind: Secret
 metadata:
-  name: ngrok-operator-credentials
-  namespace: ngrok-operator
+name: ngrok-operator-credentials
+namespace: ngrok-operator
 data:
-  API_KEY: "$ENCODED_NGROK_API_KEY"
-  AUTHTOKEN: "$ENCODED_NGROK_AUTHTOKEN"
+API_KEY: "$ENCODED_NGROK_API_KEY"
+AUTHTOKEN: "$ENCODED_NGROK_AUTHTOKEN"
 EOF
 ```
 
-Next, install the Operator and reference the `Secret` resource.
+  Next, install the Operator and reference the `Secret` resource.
 
 ```bash
 helm install ngrok-operator ngrok/ngrok-operator \
@@ -54,6 +54,6 @@ helm install ngrok-operator ngrok/ngrok-operator \
 --set credentials.secret.name=ngrok-operator-credentials \
 ```
 
-    	</Tab>
-
+  </Tab>
+  
 </Tabs>

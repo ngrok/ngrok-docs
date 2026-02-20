@@ -17,10 +17,7 @@ This guide walks you through manually migrating ngrok **Edge configurations** (H
 
 ## What you'll be migrating
 
-| Edge Type | Replaced By                     | Policy Phases Used                    |
-| --------- | ------------------------------- | ------------------------------------- |
-| HTTPS     | Cloud Endpoint + Agent Endpoint | `on_http_request`, `on_http_response` |
-| TLS/TCP   | Cloud Endpoint + Agent Endpoint | `on_tcp_connect`                      |
+| Edge Type | Replaced By | Policy Phases Used | | --------- | ------------------------------- | ------------------------------------- | | HTTPS | Cloud Endpoint + Agent Endpoint | `on_http_request`, `on_http_response` | | TLS/TCP | Cloud Endpoint + Agent Endpoint | `on_tcp_connect` |
 
 ## 1. Set up environment
 
@@ -50,13 +47,10 @@ GET /edges/tcp
 If a response includes a non-empty [`next_page_uri`](/api/#pagination) you’ll want to follow it until it is `null`:
 
 ```yaml
-{
-  "https_edges": [...],
-  "next_page_uri": "/edges/https?page=2"
-}
+{ "https_edges": [...], "next_page_uri": "/edges/https?page=2" }
 ```
 
-Be sure to keep your [API rate limits](/api/#rate-limits) in mind. 
+Be sure to keep your [API rate limits](/api/#rate-limits) in mind.
 Repeat this process for:
 
 - `/edges/tls`
@@ -64,13 +58,10 @@ Repeat this process for:
 
 ## 3. Determine the target URL
 
-Each edge has one or more `hostports`. Use those to define a **Cloud Endpoint `url`**:
+Each edge has one or more `hostports`.
+Use those to define a **Cloud Endpoint `url`**:
 
-| Edge Type | URL Format                   |
-| --------- | ---------------------------- |
-| HTTPS     | `https://yourdomain.com`     |
-| TLS       | `tls://yourdomain.com:443`   |
-| TCP       | `tcp://yourdomain.com:12345` |
+| Edge Type | URL Format | | --------- | ---------------------------- | | HTTPS | `https://yourdomain.com` | | TLS | `tls://yourdomain.com:443` | | TCP | `tcp://yourdomain.com:12345` |
 
 Note, you’ll have to create a Cloud Endpoint for each `hostport` attached to an edge if you want multiple `hostports` to service the same traffic flow.
 
@@ -94,10 +85,7 @@ HTTPS edges have routes, and each route needs to be converted to a CEL expressio
 
 Here are some example CEL expressions for routes based on the `match_type`:
 
-| Match Type    | CEL Expression                    |
-| ------------- | --------------------------------- |
-| `exact_path`  | `req.url.path == "/foo"`          |
-| `path_prefix` | `req.url.path.startsWith("/api")` |
+| Match Type | CEL Expression | | ------------- | --------------------------------- | | `exact_path` | `req.url.path == "/foo"` | | `path_prefix` | `req.url.path.startsWith("/api")` |
 
 Create these for later use in each `expressions:` block in your policy rules.
 
@@ -105,18 +93,7 @@ Create these for later use in each `expressions:` block in your policy rules.
 
 Each module on the edge or its routes maps to one or more policy actions:
 
-| Module                    | Actions                                                  |
-| ------------------------- | -------------------------------------------------------- |
-| `oauth`                   | `oauth` + `set-vars` + `custom-response` for restriction |
-| `oidc`                    | `oidc` with optional auth_id + session durations         |
-| `ip_restrictions`         | `restrict-ips`                                           |
-| `request_headers`         | `add-headers`, `remove-headers`                          |
-| `response_headers`        | `add-headers`, `remove-headers`                          |
-| `circuit_breaker`         | `circuit-breaker`                                        |
-| `webhook_verification`    | `verify-webhook`                                         |
-| `compression`             | `compress-response`                                      |
-| `user_agent_filter`       | `set-vars` + `deny` (based on user-agent match)          |
-| `websocket_tcp_converter` | ⚠️ Not supported                                         |
+| Module | Actions | | ------------------------- | -------------------------------------------------------- | | `oauth` | `oauth` + `set-vars` + `custom-response` for restriction | | `oidc` | `oidc` with optional auth_id + session durations | | `ip_restrictions` | `restrict-ips` | | `request_headers` | `add-headers`, `remove-headers` | | `response_headers` | `add-headers`, `remove-headers` | | `circuit_breaker` | `circuit-breaker` | | `webhook_verification` | `verify-webhook` | | `compression` | `compress-response` | | `user_agent_filter` | `set-vars` + `deny` (based on user-agent match) | | `websocket_tcp_converter` | ⚠️ Not supported |
 
 You’ll want to translate each Module configuration to Action Configuration:
 
@@ -126,7 +103,9 @@ Add these actions under the correct phase (with matching route expressions when 
 
 ## 7. Convert backends
 
-Your edge’s backend defines where traffic goes. These should be placed **after all other actions you defined above. These should be added to the end of the phase.**
+Your edge’s backend defines where traffic goes.
+These should be placed **after all other actions you defined above.
+These should be added to the end of the phase.**
 
 ### Tunnel group backends
 
@@ -166,7 +145,8 @@ Here, an Agent Endpoint has been started with the URL [`https://service-app.inte
 
 ### TCP/TLS backends
 
-These are generally Tunnel Groups and should follow the same rules as above. However, wanted to call out that you should use the `on_tcp_connect` phase here instead:
+These are generally Tunnel Groups and should follow the same rules as above.
+However, wanted to call out that you should use the `on_tcp_connect` phase here instead:
 
 ```yaml
 on_tcp_connect:
@@ -174,7 +154,6 @@ on_tcp_connect:
       - type: forward-internal
         config:
           url: tcp://app-service.internal:443
-
 ```
 
 Additionally, you cannot use the `custom-response` action for an HTTP fallback.
@@ -337,11 +316,4 @@ Repeat for all HTTPS, TLS, and TCP edges.
 
 ## ✅ Final checklist
 
-| Step                                                          | Done? |
-| ------------------------------------------------------------- | ----- |
-| Listed all edges and their `hostports`                        |       |
-| Converted modules to policy actions                           |       |
-| Converted backends to `forward-internal` or `custom-response` |       |
-| Created necessary internal endpoints                          |       |
-| Created Cloud Endpoints                                       |       |
-| Deleted the old edge                                          |       |
+| Step | Done? | | ------------------------------------------------------------- | ----- | | Listed all edges and their `hostports` | | | Converted modules to policy actions | | | Converted backends to `forward-internal` or `custom-response` | | | Created necessary internal endpoints | | | Created Cloud Endpoints | | | Deleted the old edge | |

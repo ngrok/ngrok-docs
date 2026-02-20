@@ -4,14 +4,13 @@ sidebarTitle: Request Body Find & Replace
 description: Find and replace text patterns in HTTP request bodies using regular expressions.
 ---
 
+
 import { ConfigField } from "/snippets/ConfigTable.jsx";
 import ActionVariablesDescription from "/snippets/traffic-policy/common/action-variables-description.mdx";
 import NonTerminatingExplanation from "/snippets/traffic-policy/common/non-terminating-explanation.mdx";
 
-The Request Body Find & Replace action enables you to modify HTTP request body content
-by finding and replacing text patterns using regular expressions. This is useful for
-redacting sensitive information, transforming data formats, or modifying AI prompts
-before they reach upstream services.
+The Request Body Find & Replace action enables you to modify HTTP request body content by finding and replacing text patterns using regular expressions.
+This is useful for redacting sensitive information, transforming data formats, or modifying AI prompts before they reach upstream services.
 
 ## Configuration reference
 
@@ -33,21 +32,24 @@ The [Traffic Policy](/traffic-policy/) configuration reference for this action.
   Minimum `1` replacement required.
 
   <ConfigField title="from" type="string" required={true} cel={true}>
-    Regular expression pattern to match. Supports [RE2 syntax](https://github.com/google/re2/wiki/Syntax).
-    CEL interpolation is supported for dynamic patterns.
-  </ConfigField>
+  Regular expression pattern to match.
+  Supports [RE2 syntax](https://github.com/google/re2/wiki/Syntax).
+  CEL interpolation is supported for dynamic patterns.
+</ConfigField>
 
   <ConfigField title="to" type="string" cel={true}>
-    Replacement string. Use `$1`, `$2`, etc. to reference capture groups from the pattern.
-    CEL interpolation is supported for dynamic replacements.
-    If omitted or empty, matched text is deleted.
+  Replacement string.
+  Use `$1`, `$2`, etc. to reference capture groups from the pattern.
+  CEL interpolation is supported for dynamic replacements.
+  If omitted or empty, matched text is deleted.
+
+  
   </ConfigField>
 </ConfigField>
 
 ## Behavior
 
-When this action executes, it buffers the entire request body, applies all replacement
-rules in order, and updates the `Content-Length` header if present.
+When this action executes, it buffers the entire request body, applies all replacement rules in order, and updates the `Content-Length` header if present.
 
 ### Pattern matching
 
@@ -78,13 +80,12 @@ When using CEL in the `from` field, the resulting string must be a valid regular
 
 ### Content-Length handling
 
-After replacements are applied, the action automatically updates the `Content-Length`
-header to reflect the new body size.
+After replacements are applied, the action automatically updates the `Content-Length` header to reflect the new body size.
 
 ### Ordering
 
-Replacement rules are applied in the order they are specified. Later rules operate
-on the result of earlier rules.
+Replacement rules are applied in the order they are specified.
+Later rules operate on the result of earlier rules.
 
 ### Non-terminating action
 
@@ -99,19 +100,19 @@ The following configuration redacts API keys and email addresses from request bo
 #### Example Traffic Policy document
 
 <CodeGroup>
-```yaml policy.yml
-on_http_request:
+  ```yaml policy.yml
+  on_http_request:
   - actions:
-      - type: request-body-find-replace
+  - type: request-body-find-replace
         config:
           replacements:
-            - from: '"api_key":\s*"[^"]*"'
+  - from: '"api_key":\s*"[^"]*"'
               to: '"api_key": "[REDACTED]"'
-            - from: "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}"
+  - from: "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}"
               to: "[EMAIL REDACTED]"
-```
-```json policy.json
-{
+  ```
+  ```json policy.json
+  {
   "on_http_request": [
     {
       "actions": [
@@ -133,8 +134,9 @@ on_http_request:
       ]
     }
   ]
-}
-```
+  }
+  ```
+  
 </CodeGroup>
 
 #### Example request
@@ -164,17 +166,17 @@ After (modified request body):
 Add system instructions to AI model requests:
 
 <CodeGroup>
-```yaml policy.yml
-on_http_request:
+  ```yaml policy.yml
+  on_http_request:
   - actions:
-      - type: request-body-find-replace
+  - type: request-body-find-replace
         config:
           replacements:
-            - from: '"role":\s*"system",\s*"content":\s*"([^"]*)"'
+  - from: '"role":\s*"system",\s*"content":\s*"([^"]*)"'
               to: '"role": "system", "content": "$1 Always respond in a professional tone."'
-```
-```json policy.json
-{
+  ```
+  ```json policy.json
+  {
   "on_http_request": [
     {
       "actions": [
@@ -192,8 +194,9 @@ on_http_request:
       ]
     }
   ]
-}
-```
+  }
+  ```
+  
 </CodeGroup>
 
 ### Removing unwanted content
@@ -201,17 +204,17 @@ on_http_request:
 Delete specific patterns by using an empty `to` value:
 
 <CodeGroup>
-```yaml policy.yml
-on_http_request:
+  ```yaml policy.yml
+  on_http_request:
   - actions:
-      - type: request-body-find-replace
+  - type: request-body-find-replace
         config:
           replacements:
-            - from: "<!--.*?-->"
+  - from: "<!--.*?-->"
               to: ""
-```
-```json policy.json
-{
+  ```
+  ```json policy.json
+  {
   "on_http_request": [
     {
       "actions": [
@@ -229,8 +232,9 @@ on_http_request:
       ]
     }
   ]
-}
-```
+  }
+  ```
+  
 </CodeGroup>
 
 ## Action result variables
@@ -241,11 +245,13 @@ on_http_request:
   Array of objects describing which replacement rules matched.
 
   <ConfigField title="replacement_index" type="integer">
-    The zero-based index of the replacement rule that matched.
-  </ConfigField>
+  The zero-based index of the replacement rule that matched.
+</ConfigField>
 
   <ConfigField title="matched_content" type="string">
     The first matched content from this replacement rule.
+
+  
   </ConfigField>
 </ConfigField>
 
@@ -253,4 +259,3 @@ on_http_request:
 
 - [Response Body Find & Replace](/traffic-policy/actions/response-body-find-replace) - Modify response bodies
 - [SSE Find & Replace](/traffic-policy/actions/sse-find-replace) - Modify Server-Sent Events streams
-

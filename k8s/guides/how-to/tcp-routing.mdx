@@ -3,17 +3,16 @@ title: TCP Routing
 description: Configure TCP routing in Kubernetes to handle raw network traffic for non-HTTP protocols like databases and game servers.
 ---
 
+
 TCP routing allows an API Gateway to handle raw network traffic at the transport layer, enabling it to serve as an entry point for non-HTTP protocols such as databases, game servers, messaging brokers, or custom protocols.
 
 Proper TCP routing makes it possible to:
 
-🔁 Consolidate entry points for multiple TCP-based services. <br /> 
-📡 Expose internal services to the internet with controlled access. <br /> 
-🔌 Handle any binary or custom protocol without deep inspection. <br />
+🔁 Consolidate entry points for multiple TCP-based services. <br /> 📡 Expose internal services to the internet with controlled access. <br /> 🔌 Handle any binary or custom protocol without deep inspection. <br />
 
 ## 🔍 What are the benefits of TCP routing?
 
-Unlike HTTP and TLS routing, TCP routing operates at Layer 4 of the OSI model. 
+Unlike HTTP and TLS routing, TCP routing operates at Layer 4 of the OSI model.
 The API Gateway uses the destination port or IP to determine the target backend—ideal for workloads that don't use HTTP.
 
 With TCP routing, the gateway can route connections using:
@@ -32,102 +31,105 @@ Key Benefits:
 
 The following examples showcase how you can route TCP traffic to your upstream services.
 
-You must first create a [TCP Address](/universal-gateway/tcp-addresses/). 
+You must first create a [TCP Address](/universal-gateway/tcp-addresses/).
 When you create a TCP address, a random hostname and port will be assigned to you, for example, `1.tcp.ngrok.io:12345`.
 See the [TCP Endpoints page](/universal-gateway/tcp/) for more details on how ngrok handles TCP endpoints.
 
 <Tabs>
-<Tab title="AgentEndpoint">
-```yaml
-apiVersion: ngrok.k8s.ngrok.com/v1alpha1
-kind: AgentEndpoint
-metadata:
+  <Tab title="AgentEndpoint">
+  ```yaml
+  apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+  kind: AgentEndpoint
+  metadata:
   name: example-service
   namespace: default
-spec:
+  spec:
   url: tcp://1.tcp.ngrok.io:12345
   upstream:
     url: tcp://example-service.example-namespace:8443
-```
-</Tab>
-<Tab title="CloudEndpoint with AgentEndpoint">
+  ```
+  </Tab>
+  <Tab title="CloudEndpoint with AgentEndpoint">
 
-### 1. Create an `AgentEndpoint` for your upstream `Service`
+  ### 1. Create an `AgentEndpoint` for your upstream `Service`
+
 ```yaml
 apiVersion: ngrok.k8s.ngrok.com/v1alpha1
 kind: AgentEndpoint
 metadata:
-  name: example-service
-  namespace: default
+name: example-service
+namespace: default
 spec:
-  url: tcp://example-service.internal:8443
-  upstream:
-    url: tcp://example-service.example-namespace:8443
+url: tcp://example-service.internal:8443
+upstream:
+url: tcp://example-service.example-namespace:8443
 ```
 
-### 2. Create a `CloudEndpoint` that routes to the `AgentEndpoint`
+  ### 2. Create a `CloudEndpoint` that routes to the `AgentEndpoint`
 
 ```yaml
 apiVersion: ngrok.k8s.ngrok.com/v1alpha1
 kind: CloudEndpoint
 metadata:
-  name: example-cloud-endpoint
+name: example-cloud-endpoint
 spec:
-  url: tcp://1.tcp.ngrok.io:12345
-  trafficPolicy:
-    policy:
-      on_http_request:
-      - actions:
-        - type: forward-internal
+url: tcp://1.tcp.ngrok.io:12345
+trafficPolicy:
+policy:
+  on_http_request:
+- actions:
+- type: forward-internal
           config:
             url: tcp://example-service.internal:8443
 ```
-</Tab>
-<Tab title="Gateway API">
 
-For TLS and TCP Routes, you must put the domain in the `Gateway.Spec.Addresses` field as the ngrok Operator needs to know what domains to use when creating endpoints for you and Gateway API forbids using the hostname field
-on Gateway listeners for TCP/TLS protocols.
+  </Tab>
+  <Tab title="Gateway API">
 
-Since the `Gateway.Spec.Addresses` are expected to bind to all listeners, you may want to create separate Gateways for TLS and TCP endpoints to prevent unwanted conflicts and overlap.
-For these reasons, TCP and TLS routing is often more easily configurable using the `AgentEndpoint` resources directly instead of Gateway API configuration.
+  For TLS and TCP Routes, you must put the domain in the `Gateway.Spec.Addresses` field as the ngrok Operator needs to know what domains to use when creating endpoints for you and Gateway API forbids using the hostname field on Gateway listeners for TCP/TLS protocols.
 
-### 1. Create a `Gateway`
+  Since the `Gateway.Spec.Addresses` are expected to bind to all listeners, you may want to create separate Gateways for TLS and TCP endpoints to prevent unwanted conflicts and overlap.
+  For these reasons, TCP and TLS routing is often more easily configurable using the `AgentEndpoint` resources directly instead of Gateway API configuration.
 
-If you already have a `Gateway` you can use that instead
+  ### 1. Create a `Gateway`
+
+  If you already have a `Gateway` you can use that instead
 
 ```yaml
 apiVersion: gateway.networking.k8s.io/v1
 kind: Gateway
 metadata:
-  name: example-gateway
-  namespace: default
+name: example-gateway
+namespace: default
 spec:
-  gatewayClassName: ngrok
-  addresses:
+gatewayClassName: ngrok
+addresses:
   - type: Hostname
     value: 1.tcp.ngrok.io
-  listeners:
-    - name: p12345
-      port: 12345
-      protocol: TCP
+listeners:
+  - name: p12345
+    port: 12345
+    protocol: TCP
 ```
 
-### 2. Create a `TCPRoute`
+  ### 2. Create a `TCPRoute`
 
 ```yaml
 apiVersion: gateway.networking.k8s.io/v1alpha2
 kind: TCPRoute
 metadata:
-  name: example-tlsroute
-  namespace: default
+name: example-tlsroute
+namespace: default
 spec:
-  parentRefs:
-    - name: example-gateway
-      sectionName: p12345
-  rules:
-    - backendRefs:
-        - name: example-service
-          port: 9000
+parentRefs:
+- name: example-gateway
+  sectionName: p12345
+rules:
+- backendRefs:
+- name: example-service
+      port: 9000
 ```
-</Tab>
+
+  </Tab>
+  
 </Tabs>

@@ -4,18 +4,19 @@ sidebarTitle: Metrics
 description: Real-time metrics for intelligent model selection.
 ---
 
+
 The AI Gateway collects real-time performance metrics that you can use in [model selection strategies](/ai-gateway/guides/model-selection-strategies) to make intelligent routing decisions.
 
 ## Availability
 
 <Warning>
-**Important**: Metrics are **only available within `model_selection.strategy` CEL expressions**. They are not available in:
+  **Important**: Metrics are **only available within `model_selection.strategy` CEL expressions**. They are not available in:
 
-- General `expression` fields in Traffic Policies
-- Other action configurations
-- `api_key_selection.strategy` expressions (not yet implemented)
+  - General `expression` fields in Traffic Policies
+  - Other action configurations
+  - `api_key_selection.strategy` expressions (not yet implemented)
 
-This is because metrics are populated at runtime during AI Gateway request processing, specifically when evaluating model selection strategies.
+  This is because metrics are populated at runtime during AI Gateway request processing, specifically when evaluating model selection strategies.
 </Warning>
 
 ## Accessing metrics
@@ -37,13 +38,7 @@ model_selection:
 
 Metrics are collected at multiple scopes, allowing you to make decisions based on global trends or your specific usage:
 
-| Scope | CEL Path | Description |
-|-------|----------|-------------|
-| Global | `m.metrics.global` | Aggregated across all ngrok accounts |
-| Region | `m.metrics.region` | Aggregated for the region handling the request |
-| Account | `m.metrics.account` | Your ngrok account's usage |
-| Endpoint | `m.metrics.endpoint` | This specific endpoint's usage |
-| API Key | `m.metrics.api_keys["key_id"]` | Per-provider API key metrics |
+| Scope | CEL Path | Description | | -------- | ------------------------------ | ---------------------------------------------- | | Global | `m.metrics.global` | Aggregated across all ngrok accounts | | Region | `m.metrics.region` | Aggregated for the region handling the request | | Account | `m.metrics.account` | Your ngrok account's usage | | Endpoint | `m.metrics.endpoint` | This specific endpoint's usage | | API Key | `m.metrics.api_keys["key_id"]` | Per-provider API key metrics |
 
 ### Scope selection guidelines
 
@@ -57,30 +52,15 @@ Metrics are collected at multiple scopes, allowing you to make decisions based o
 
 ### Base metrics (all scopes)
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `provider` | string | Provider ID (for example, `"openai"`) |
-| `model` | string | Model ID (for example, `"gpt-4o"`) |
-| `request_count` | uint64 | Total requests in the aggregation window |
-| `start_time` | uint32 | Window start (Unix timestamp in seconds) |
-| `end_time` | uint32 | Window end (Unix timestamp in seconds) |
+| Field | Type | Description | | --------------- | ------ | ---------------------------------------- | | `provider` | string | Provider ID (for example, `"openai"`) | | `model` | string | Model ID (for example, `"gpt-4o"`) | | `request_count` | uint64 | Total requests in the aggregation window | | `start_time` | uint32 | Window start (Unix timestamp in seconds) | | `end_time` | uint32 | Window end (Unix timestamp in seconds) |
 
 ### Latency metrics
 
 Access via `m.metrics.<scope>.latency`:
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `gateway_ms_avg` | uint32 | Average gateway processing time (request received → upstream sent) |
-| `gateway_ms_p95` | uint32 | P95 gateway processing time |
-| `upstream_ms_avg` | uint32 | Average time to receive full response from provider |
-| `upstream_ms_p95` | uint32 | P95 upstream response time |
-| `time_to_first_token_ms_avg` | uint32* | Average TTFT (streaming responses only) |
-| `time_to_first_token_ms_p95` | uint32* | P95 TTFT (streaming responses only) |
-| `time_per_output_token_ms_avg` | uint32* | Average inter-token time (streaming only) |
-| `time_per_output_token_ms_p95` | uint32* | P95 inter-token time (streaming only) |
+| Field | Type | Description | | ------------------------------ | -------- | ------------------------------------------------------------------ | | `gateway_ms_avg` | uint32 | Average gateway processing time (request received → upstream sent) | | `gateway_ms_p95` | uint32 | P95 gateway processing time | | `upstream_ms_avg` | uint32 | Average time to receive full response from provider | | `upstream_ms_p95` | uint32 | P95 upstream response time | | `time_to_first_token_ms_avg` | uint32\* | Average TTFT (streaming responses only) | | `time_to_first_token_ms_p95` | uint32\* | P95 TTFT (streaming responses only) | | `time_per_output_token_ms_avg` | uint32\* | Average inter-token time (streaming only) | | `time_per_output_token_ms_p95` | uint32\* | P95 inter-token time (streaming only) |
 
-*Fields marked with `*` may be null if no streaming requests have been recorded.
+_Fields marked with `_` may be null if no streaming requests have been recorded.
 
 ### Error rate metrics
 
@@ -88,41 +68,31 @@ Access via `m.metrics.<scope>.error_rate`:
 
 All values are fractions from 0.0 to 1.0 (for example, 0.05 = 5% error rate):
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `total` | float32 | Overall error rate (any non-2xx/3xx response) |
-| `timeout` | float32 | Timeout errors (no response received within timeout) |
-| `rate_limit` | float32 | Rate limit errors (HTTP 429) |
-| `client` | float32 | Client errors (4xx excluding 429) |
-| `server` | float32 | Server errors (5xx) |
+| Field | Type | Description | | ------------ | ------- | ---------------------------------------------------- | | `total` | float32 | Overall error rate (any non-2xx/3xx response) | | `timeout` | float32 | Timeout errors (no response received within timeout) | | `rate_limit` | float32 | Rate limit errors (HTTP 429) | | `client` | float32 | Client errors (4xx excluding 429) | | `server` | float32 | Server errors (5xx) |
 
 ### Token metrics (account/endpoint/API key scopes)
 
 Access via `m.metrics.<scope>.token`:
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `provider_input` | uint64 | Input tokens as reported by the provider |
-| `provider_output` | uint64 | Output tokens as reported by the provider |
-| `estimated_input` | uint64 | Input tokens estimated by ngrok's tokenizer |
-| `estimated_output` | uint64 | Output tokens estimated by ngrok's tokenizer |
+| Field | Type | Description | | ------------------ | ------ | -------------------------------------------- | | `provider_input` | uint64 | Input tokens as reported by the provider | | `provider_output` | uint64 | Output tokens as reported by the provider | | `estimated_input` | uint64 | Input tokens estimated by ngrok's tokenizer | | `estimated_output` | uint64 | Output tokens estimated by ngrok's tokenizer |
 
 <Note>
-Token metrics are only available at Account, Endpoint, and API Key scopes. Global and Region scopes do not include token counts.
+  Token metrics are only available at Account, Endpoint, and API Key scopes.
+  Global and Region scopes do not include token counts.
 </Note>
 
 ### Quota metrics (API key scope only)
 
 <Warning>
-**Safe API key access**: Not all models have metrics for every API key. Always check if the key exists before accessing it.
+  **Safe API key access**: Not all models have metrics for every API key. Always check if the key exists before accessing it.
 
-❌ This will error if metrics don't exist for this API key:
+  ❌ This will error if metrics don't exist for this API key:
 
 ```yaml
 - "ai.models.filter(m, m.metrics.api_keys['sk-abc123'].latency.upstream_ms_avg < 1000)"
 ```
 
-✅ Check the key exists first:
+  ✅ Check the key exists first:
 
 ```yaml
 - "ai.models.filter(m, 'sk-abc123' in m.metrics.api_keys && m.metrics.api_keys['sk-abc123'].latency.upstream_ms_avg < 1000)"
@@ -131,14 +101,9 @@ Token metrics are only available at Account, Endpoint, and API Key scopes. Globa
 
 Access via `m.metrics.api_keys["key_id"].quota`:
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `remaining_requests` | uint64* | Requests remaining before hitting rate limit |
-| `remaining_tokens` | uint64* | Tokens remaining before hitting rate limit |
-| `limit_requests` | uint64* | Max requests allowed in rate limit period |
-| `limit_tokens` | uint64* | Max tokens allowed in rate limit period |
+| Field | Type | Description | | -------------------- | -------- | -------------------------------------------- | | `remaining_requests` | uint64\* | Requests remaining before hitting rate limit | | `remaining_tokens` | uint64\* | Tokens remaining before hitting rate limit | | `limit_requests` | uint64\* | Max requests allowed in rate limit period | | `limit_tokens` | uint64\* | Max tokens allowed in rate limit period |
 
-*Fields may be null if quota information is not available from the provider.
+\*Fields may be null if quota information is not available from the provider.
 
 ## Examples
 
@@ -229,4 +194,3 @@ model_selection:
 - [Model Selection Strategies](/ai-gateway/guides/model-selection-strategies) - Full guide on selection strategies
 - [CEL Functions Reference](/ai-gateway/reference/cel-functions) - All available CEL functions
 - [Configuration Reference](/ai-gateway/reference/configuration-schema) - Full configuration options
-

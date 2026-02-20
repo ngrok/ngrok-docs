@@ -4,14 +4,13 @@ sidebarTitle: JWT Validation
 description: Validate JSON Web Tokens (JWT) on your endpoints before routing traffic to your upstream service.
 ---
 
+
 import ActionVariablesDescription from "/snippets/traffic-policy/common/action-variables-description.mdx";
 import NonTerminatingExplanation from "/snippets/traffic-policy/common/non-terminating-explanation.mdx";
 import { ConfigField } from "/snippets/ConfigTable.jsx";
 import { ConfigChildren } from "/snippets/ConfigChildren.jsx";
 
-
-The **JWT Validation** Traffic Policy action enables you to validate JSON Web
-Tokens (JWT) on your endpoints before routing traffic to your upstream service.
+The **JWT Validation** Traffic Policy action enables you to validate JSON Web Tokens (JWT) on your endpoints before routing traffic to your upstream service.
 
 Guides for configuring this action with the following providers are available:
 
@@ -19,11 +18,9 @@ Guides for configuring this action with the following providers are available:
 
 A useful tool for working with JWTs is provided at [jwt.io](https://jwt.io).
 
-
 ## Configuration reference
 
-The [Traffic Policy](/traffic-policy/) configuration
-reference for this action.
+The [Traffic Policy](/traffic-policy/) configuration reference for this action.
 
 ### Supported phases
 
@@ -45,9 +42,10 @@ reference for this action.
       <Expandable label="child properties">
         <ConfigField title="allow_list[*].value" type="string" required={true} cel={true}>
           Issuer URL. This can be found in the <code>iss</code> claim after decoding the JWT or from the <code>/.well-known/openid-configuration</code> endpoint in your Identity Provider.
-        </ConfigField>
+</ConfigField>
       </Expandable>
-    </ConfigField>
+</ConfigField>
+
   </Expandable>
 </ConfigField>
   
@@ -61,9 +59,10 @@ reference for this action.
       <Expandable label="child properties">
         <ConfigField title="allow_list[*].value" type="string" required={false}>
           Audience claim value. This can be found in the <code>aud</code> claim after decoding the JWT or from the request used to create the token in the first place.
-        </ConfigField>
+</ConfigField>
       </Expandable>
-    </ConfigField>
+</ConfigField>
+
   </Expandable>
 </ConfigField>
 
@@ -85,8 +84,10 @@ reference for this action.
             <ConfigEnumOption>`it+jwt`</ConfigEnumOption>
             <ConfigEnumOption>`plain`</ConfigEnumOption>
             <ConfigEnumOption>`jwt`</ConfigEnumOption>
-          </ConfigEnum>
-        </ConfigField>
+
+  </ConfigEnum>
+  
+</ConfigField>
 
         <ConfigField title="tokens[*].method" type="enum" required={true}>
           Location in the request to expect the JWT.
@@ -94,24 +95,35 @@ reference for this action.
           <ConfigEnum>
             <ConfigEnumOption>`header`</ConfigEnumOption>
             <ConfigEnumOption>`body`</ConfigEnumOption>
-          </ConfigEnum>
+
+  </ConfigEnum>
 
           When choosing `header`, the <code>content-type</code> header must be set to either <code>application/json</code> or <code>application/x-www-form-urlencoded</code>.
-          
+
           When choosing <code>body</code>, the method must be <code>POST</code>, <code>PUT</code>, or <code>PATCH</code>
-          
+
           Including a token as a URL query parameter is not supported.
+
+        
         </ConfigField>
 
         <ConfigField title="tokens[*].name" type="string" required={true} cel={true}>
-          Name of the header or body field where the JWT is expected (Example: <code>"Authorization"</code>). This is not case sensitive.
+
+  Name of the header or body field where the JWT is expected (Example: <code>"Authorization"</code>).
+  This is not case sensitive.
+
+        
         </ConfigField>
 
         <ConfigField title="tokens[*].prefix" type="string" cel={true}>
           Any prefix to strip from the header or body field before parsing the JWT (Example: <code>"Bearer "</code>).
+
+        
         </ConfigField>
       </Expandable>
-    </ConfigField>
+
+</ConfigField>
+
   </Expandable>
 </ConfigField>
 
@@ -121,7 +133,8 @@ reference for this action.
   <Expandable label="child properties">
     <ConfigField title="allowed_algorithms" type="array of strings" required={true}>
       List of allowed signing algorithms. The value <code>none</code> is not supported here because it is insecure. Minimum `1`.
-    </ConfigField>
+  
+</ConfigField>
 
     <ConfigField title="keys" type="array of objects" required={true}>
       Configuration for the JWT signing keys.
@@ -133,9 +146,12 @@ reference for this action.
           <Expandable label="child properties">
             <ConfigField title="keys[*].identification[*].token_claims" type="array of strings" required={false}>
               List of claims present in this token. Supported values: ['kid']
-            </ConfigField>
+
+    
+    </ConfigField>
           </Expandable>
-        </ConfigField>
+
+</ConfigField>
 
         <ConfigField title="keys[*].sources" type="array of objects" required={true}>
           Configuration for the key material used to verify the signed JWTs.
@@ -143,11 +159,15 @@ reference for this action.
           <Expandable label="child properties">
             <ConfigField title="keys[*].sources[*].additional_jkus" type="array of strings" required={true} cel={true}>
               List of URLs which serve the possible signing keys in JWKS format. These URLs are cached and refreshed roughly every 15 minutes.
-            </ConfigField>
-          </Expandable>
+
+        
         </ConfigField>
-      </Expandable> 
-    </ConfigField>
+          </Expandable>
+
+</ConfigField>
+      </Expandable>
+</ConfigField>
+
   </Expandable>
 </ConfigField>
 
@@ -155,45 +175,37 @@ reference for this action.
 
 ### Request validation
 
-The request is allowed only if it has been correctly signed by the issuer and
-the defined claims match.
+The request is allowed only if it has been correctly signed by the issuer and the defined claims match.
 
-For efficient validation of tokens, it is recommended to include the optional
-`kid` claim in your JWTs and JWK payload.
+For efficient validation of tokens, it is recommended to include the optional `kid` claim in your JWTs and JWK payload.
 
-Custom validation can be implemented in Traffic Policies via the
-[`actions.ngrok.jwt_validation.tokens`](#action-result-variables) Action Result Variable and its
-corresponding properties.
+Custom validation can be implemented in Traffic Policies via the [`actions.ngrok.jwt_validation.tokens`](#action-result-variables) Action Result Variable and its corresponding properties.
 
 ### Multiple issuers
 
-You can specify multiple issuers for JWT validation. A request is
-considered validated if it presents a JWT signed by any of the specified
-issuers.
+You can specify multiple issuers for JWT validation.
+A request is considered validated if it presents a JWT signed by any of the specified issuers.
 
-The issuer **must** exactly match the one provided in the JWT, including
-any trailing slashes (`/`) present in the `iss` claim.
+The issuer **must** exactly match the one provided in the JWT, including any trailing slashes (`/`) present in the `iss` claim.
 
 ### Multiple audience claims
 
 You can optionally specify one or more audience (`aud`) claims for JWT validation.
 
-If present, the `aud` claim **must** contain at least one of the specified audience claims and
-exactly match for validation to succeed.
+If present, the `aud` claim **must** contain at least one of the specified audience claims and exactly match for validation to succeed.
 
 ### Multiple signing keys
 
 You can provide multiple JSON Web Key Set (JWKS) URLs and signing algorithms.
 
-During JWT validation the list of JWKS and algorithms provided will be used in
-an attempt to validate the JWT. The list will be tried in order and is cached
-for performance. The cache is refreshed roughly every 15 minutes.
+During JWT validation the list of JWKS and algorithms provided will be used in an attempt to validate the JWT.
+The list will be tried in order and is cached for performance.
+The cache is refreshed roughly every 15 minutes.
 
 ### Multiple tokens
 
-If multiple tokens are defined within the HTTP configuration parameter, all
-tokens **must** be present in the request. If all tokens are not present, a
-`401 Unauthorized` status code will be returned.
+If multiple tokens are defined within the HTTP configuration parameter, all tokens **must** be present in the request.
+If all tokens are not present, a `401 Unauthorized` status code will be returned.
 
 ### Non-terminating action
 
@@ -203,42 +215,41 @@ tokens **must** be present in the request. If all tokens are not present, a
 
 ### Basic example
 
-The following [Traffic Policy](/traffic-policy/)
-configuration is an example configuration of the `jwt-validation` action. For a
-more real-world example, check out the [Auth0 guide](/integrations/jwt-validation/auth0/).
+The following [Traffic Policy](/traffic-policy/) configuration is an example configuration of the `jwt-validation` action.
+For a more real-world example, check out the [Auth0 guide](/integrations/jwt-validation/auth0/).
 
 #### Example Traffic Policy document
 
 <CodeGroup>
-```yaml policy.yml
-on_http_request:
+  ```yaml policy.yml
+  on_http_request:
   - actions:
-      - type: jwt-validation
+  - type: jwt-validation
         config:
           issuer:
             allow_list:
-              - value: https://example.com/issuer
+  - value: https://example.com/issuer
           audience:
             allow_list:
-              - value: urn:example:api
+  - value: urn:example:api
           http:
             tokens:
-              - type: access_token
+  - type: access_token
                 method: header
                 name: Authorization
                 prefix: 'Bearer '
-              - type: it+jwt
+  - type: it+jwt
                 method: body
                 name: _id_token
           jws:
             allowed_algorithms:
-              - RS256
-              - ES256
+  - RS256
+  - ES256
             keys:
               sources:
                 additional_jkus:
-                  - https://example.com/issuer/jku
-```
+  - https://example.com/issuer/jku
+  ```
 
 ```json policy.json
 {
@@ -278,15 +289,10 @@ on_http_request:
               ]
             },
             "jws": {
-              "allowed_algorithms": [
-                "RS256",
-                "ES256"
-              ],
+              "allowed_algorithms": ["RS256", "ES256"],
               "keys": {
                 "sources": {
-                  "additional_jkus": [
-                    "https://example.com/issuer/jku"
-                  ]
+                  "additional_jkus": ["https://example.com/issuer/jku"]
                 }
               }
             }
@@ -314,10 +320,7 @@ content-type: text/html
 ...
 ```
 
-In this example, a request is sent to the API with a valid JWT token in
-the `Authorization` header with the `Bearer` prefix and getting back a `200 OK`
-response.
-
+In this example, a request is sent to the API with a valid JWT token in the `Authorization` header with the `Bearer` prefix and getting back a `200 OK` response.
 
 ## Action result variables
 
@@ -329,41 +332,50 @@ response.
   <Expandable label="child properties">
     <ConfigField title="tokens[i].header" type="object">
       The header portion of the JWT, parsed into a key-value map containing metadata about the token.
-    </ConfigField>
+  
+</ConfigField>
 
     <ConfigField title="tokens[i].location" type="string">
       The part of the HTTP request where the JWT was located (for example,{" "}
       <code>header</code>, <code>body</code>).
+
+    
     </ConfigField>
 
     <ConfigField title="tokens[i].location_property" type="string">
       The specific header or body field that contained the JWT (for example,{" "}
       <code>"Authorization"</code>).
+
+    
     </ConfigField>
 
     <ConfigField title="tokens[i].payload" type="object">
-      The payload portion of the JWT, parsed into a key-value map
-      representing the claims.
+      The payload portion of the JWT, parsed into a key-value map representing the claims.
+
+    
     </ConfigField>
 
     <ConfigField title="tokens[i].signature" type="string">
-      The signature portion of the JWT, encoded in base64, used for
-      verifying token integrity.
+      The signature portion of the JWT, encoded in base64, used for verifying token integrity.
+
+    
     </ConfigField>
 
     <ConfigField title="tokens[i].verified" type="boolean">
-      Indicates whether the token passed verification. Returns{" "}
-      <code>true</code> if verified successfully.
+
+  Indicates whether the token passed verification.
+  Returns{" "} <code>true</code> if verified successfully.
+
+    
     </ConfigField>
+
   </Expandable>
 </ConfigField>
 
 <ConfigField title="actions.ngrok.jwt_validation.error.code" type="string">
-  A machine-readable code describing an error that occurred during the
-  action's execution.
+  A machine-readable code describing an error that occurred during the action's execution.
 </ConfigField>
 
 <ConfigField title="actions.ngrok.jwt_validation.error.message" type="string">
-  A human-readable message providing details about an error that occurred
-  during the action's execution.
+  A human-readable message providing details about an error that occurred during the action's execution.
 </ConfigField>

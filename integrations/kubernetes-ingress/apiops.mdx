@@ -4,6 +4,7 @@ sidebarTitle: APIOps with Argo CD
 description: Deploy an API with APIOps and Argo CD using ngrok.
 ---
 
+
 This guide walks you through deploying a demo API to a Kubernetes cluster using an APIOps workflow.
 It consolidates the backend API service, Kubernetes configurations, and API policy definitions into a single repository that defines the _desired state_ of your deployment.
 
@@ -26,7 +27,7 @@ It covers:
   - You can choose from an ngrok subdomain or bring your own custom branded domain, like `https://api.example.com`.
   - This guide refers to this domain as `<NGROK_DOMAIN>`.
 
-## Deploy Argo CD 
+## Deploy Argo CD
 
 Set up Argo CD on your cluster to enable GitOps.
 
@@ -79,7 +80,7 @@ Set up Argo CD on your cluster to enable GitOps.
    argocd login <YOUR-CLUSTER>:8080
    ```
 
-## Set up the demo API 
+## Set up the demo API
 
 Next, you need to set up the Git repository for the API you'll deploy behind your ngrok API gateway.
 GitOps (and thus APIOps) requires declarative and version-controlled configuration, and that includes the hostname for your deployment.
@@ -97,7 +98,7 @@ If you have an existing API and GitOps configuration, you can [skip to step 4](#
 
 4. Add, commit, and push these changes to your fork.
 
-## Deploy your demo API with Argo CD 
+## Deploy your demo API with Argo CD
 
 Now that your demo API is forked and properly configured on GitHub, you can connect it to Argo CD to sync, reconcile, and deploy.
 
@@ -133,7 +134,7 @@ Now that your demo API is forked and properly configured on GitHub, you can conn
      https://<NGROK-DOMAIN>/legend
    ```
 
-## Enable APIOps in Argo CD 
+## Enable APIOps in Argo CD
 
 A fundamental component of GitOps, and thus APIOps, is that because your Git repository contains the latest version of your desired state, your deployment toolkit should automatically update the production deployment without any manual processes.
 
@@ -145,10 +146,10 @@ A fundamental component of GitOps, and thus APIOps, is that because your Git rep
 
    You can confirm this change in the Argo CD UI.
 
-   <Note>
-   The default interval at which Argo CD looks for changes to the desired state in your Git repo is 3 minutes.
-   You can alter this in Argo CD's configuration.
-   </Note>
+<Note>
+  The default interval at which Argo CD looks for changes to the desired state in your Git repo is 3 minutes.
+  You can alter this in Argo CD's configuration.
+</Note>
 
 2. Optionally, test auto sync by editing the number of replicas of the demo API in your cluster.
    In your Git repository, open the `deployment.yaml` file and edit the `replicas` value:
@@ -173,12 +174,11 @@ A fundamental component of GitOps, and thus APIOps, is that because your Git rep
 The [Traffic Policy module](/traffic-policy/) can be used alongside the Kubernetes Gateway API.
 This lets you place all your Traffic Policy actions into a single `NgrokTrafficPolicy` CRD and control your ngrok-powered API gateway with an APIOps workflow using version-controlled, declarative manifests.
 
-The project includes a basic example in `traffic-policy.yaml`. 
-[See `traffic-policy.yaml` for details](https://github.com/ngrok-samples/apiops-demo/blob/main/traffic-policy.yaml).
+The project includes a basic example in `traffic-policy.yaml`. [See `traffic-policy.yaml` for details](https://github.com/ngrok-samples/apiops-demo/blob/main/traffic-policy.yaml).
 Because rate limiting is typically the first step in protecting any API from abuse, that process is outlined below.
 
-1. In your fork of the demo API project, create a new file called `rate-limiting.yaml`. 
-	Open the file and add the following YAML:
+1. In your fork of the demo API project, create a new file called `rate-limiting.yaml`.
+   Open the file and add the following YAML:
 
    ```yaml
    kind: NgrokTrafficPolicy
@@ -206,33 +206,33 @@ Because rate limiting is typically the first step in protecting any API from abu
    This defines a filter that runs during the request or response lifecycle, letting you inject policy into all traffic arriving at your API through your ngrok API gateway.
 
    ```yaml
-    apiVersion: gateway.networking.k8s.io/v1
-    kind: HTTPRoute
-    metadata:
-      name: apiops-demo-route
-      namespace: apiops-demo
-    spec:
-      parentRefs:
-        - kind: Gateway
-          name: apiops-demo-gateway
-          namespace: apiops-demo
-      hostnames:
-        - "apiops-demo.ngrok.app"
-      rules:
-        - matches:
-            - path:
-                type: PathPrefix
-                value: /
-          filters:
-            - type: ExtensionRef
-              extensionRef:
-                group: ngrok.k8s.ngrok.com
-                kind: NgrokTrafficPolicy
-                name: traffic-policy-rate-limiting
-          backendRefs:
-            - name: apiops-demo-service
-              port: 80
-              kind: Service
+   apiVersion: gateway.networking.k8s.io/v1
+   kind: HTTPRoute
+   metadata:
+     name: apiops-demo-route
+     namespace: apiops-demo
+   spec:
+     parentRefs:
+       - kind: Gateway
+         name: apiops-demo-gateway
+         namespace: apiops-demo
+     hostnames:
+       - "apiops-demo.ngrok.app"
+     rules:
+       - matches:
+           - path:
+               type: PathPrefix
+               value: /
+         filters:
+           - type: ExtensionRef
+             extensionRef:
+               group: ngrok.k8s.ngrok.com
+               kind: NgrokTrafficPolicy
+               name: traffic-policy-rate-limiting
+         backendRefs:
+           - name: apiops-demo-service
+             port: 80
+             kind: Service
    ```
 
 3. Add, commit, and push this change to your Git repository.

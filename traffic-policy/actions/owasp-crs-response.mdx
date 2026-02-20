@@ -4,6 +4,7 @@ sidebarTitle: OWASP CRS Response
 description: Block common web attacks with the `owasp-crs-response` action in Traffic Policy.
 ---
 
+
 import ActionVariablesDescription from "/snippets/traffic-policy/common/action-variables-description.mdx";
 import NonTerminatingExplanation from "/snippets/traffic-policy/common/non-terminating-explanation.mdx";
 import { YouTubeEmbed } from "/snippets/YouTubeEmbed.jsx";
@@ -11,28 +12,21 @@ import { YouTubeEmbed } from "/snippets/YouTubeEmbed.jsx";
 import { ConfigField } from "/snippets/ConfigTable.jsx";
 import { ConfigChildren } from "/snippets/ConfigChildren.jsx";
 
-The `owasp-crs-response` action enables rule processing on incoming HTTP
-requests to your endpoint. To use rule processing to block malicious HTTP
-_requests_, enable the [OWASP CRS Request
-action](/traffic-policy/actions/owasp-crs-request/) action.
-<Tip>
-Use both actions.
+The `owasp-crs-response` action enables rule processing on incoming HTTP requests to your endpoint.
+To use rule processing to block malicious HTTP _requests_, enable the [OWASP CRS Request action](/traffic-policy/actions/owasp-crs-request/) action.
+
+<Tip>  Use both actions.
 </Tip>
 
-[OWASP](https://owasp.org/) stands for the Open Web Application Security
-Project, an online community that, among other things, maintains annual lists of
-the most critical web application security risks. The [OWASP Core Rule
-Set](https://owasp.org/www-project-modsecurity-core-rule-set/) (CRS) is a set of
-attack detection rules exposed for use in your Traffic Policies.
-It includes protections against attacks like SQL Injection, Cross Site
-Scripting, Local File Inclusion, and many others.
+[OWASP](https://owasp.org/) stands for the Open Web Application Security Project, an online community that, among other things, maintains annual lists of the most critical web application security risks.
+The [OWASP Core Rule Set](https://owasp.org/www-project-modsecurity-core-rule-set/) (CRS) is a set of attack detection rules exposed for use in your Traffic Policies.
+It includes protections against attacks like SQL Injection, Cross Site Scripting, Local File Inclusion, and many others.
 
 <YouTubeEmbed videoId="HHxj5VGFTEA" title="Block web attacks with ngrok's OWASP CRS Request" />
 
 ### Configuration reference
 
-This is the [Traffic Policy](/traffic-policy/) configuration
-reference for this action.
+This is the [Traffic Policy](/traffic-policy/) configuration reference for this action.
 
 #### Supported phases
 
@@ -45,23 +39,31 @@ reference for this action.
 #### Configuration fields
 
     <ConfigField title="on_error" type="string" required={true}>
-        <p>Behavior if there is an error. Must be one of either "continue" or "halt" (default "halt")</p>
-        <p>More information can be found in the [Managing Fallback Behavior](#on-error) section.</p>
+
+  <p>Behavior if there is an error. Must be one of either "continue" or "halt" (default "halt")</p>
+  <p>More information can be found in the [Managing Fallback Behavior](#on-error) section.</p>
+
+    
     </ConfigField>
 
     <ConfigField title="process_body" type="bool" required={false}>
-        <p>If false, rules for the response body are not processed. Default is false.</p>
+
+  <p>If false, rules for the response body are not processed. Default is false.</p>
+
+    
     </ConfigField>
 
     <ConfigField title="exclude_rule_ids" type="array of integers" required={false}>
         <p>List of OWASP CRS rule IDs to exclude from evaluation.</p>
         <p>The minimum value is <code>900000</code> and the maximum value is <code>999999</code>.</p>
-    </ConfigField>
 
+    
+    </ConfigField>
 
 ## Behavior
 
-This action evaluates rules for response headers and body (when `process_body` is enabled), and each matching rule adds to the overall score of a response. If the score exceeds the set score threshold, the action will block the response.
+This action evaluates rules for response headers and body (when `process_body` is enabled), and each matching rule adds to the overall score of a response.
+If the score exceeds the set score threshold, the action will block the response.
 
 The tallying process is called Anomaly Scoring, and is detailed on [the CRS website.](https://coreruleset.org/docs/2-how-crs-works/2-1-anomaly_scoring/)
 
@@ -75,27 +77,32 @@ The default behavior for this action is based on the following [Coraza](https://
 
 Included in these rules is an outbound anomaly score threshold of 4 and a [paranoia level](https://coreruleset.org/docs/2-how-crs-works/2-2-paranoia_levels/) of 1.
 
-### Managing fallback behavior (`on_error`) 
+### Managing fallback behavior (`on_error`)
 
-If `on_error` is set to `halt` (default) and the action encounters an error when forwarding traffic, the Traffic Policy chain will halt and no further actions will be executed. For example, if you have a `log` action after the `owasp-crs-response` action, the `log` action will not be run and the error will be returned.
+If `on_error` is set to `halt` (default) and the action encounters an error when forwarding traffic, the Traffic Policy chain will halt and no further actions will be executed.
+For example, if you have a `log` action after the `owasp-crs-response` action, the `log` action will not be run and the error will be returned.
 
 However, if `on_error` is set to `continue`, actions that appear after the `owasp-crs-response` action will still be executed even if the `owasp-crs-response` action encounters an error.
 
 ### Body processing
 
-When `process_body` is enabled, ngrok evaluates rules against the first 4kb of the body. If the body is larger than 4kb, the portion after the first 4kb is ignored.
+When `process_body` is enabled, ngrok evaluates rules against the first 4kb of the body.
+If the body is larger than 4kb, the portion after the first 4kb is ignored.
 
 ### Rule exclusion
 
-When `exclude_rule_ids` is configured, ngrok skips evaluation of the specified rule IDs. This allows you to disable specific OWASP CRS rules that may be causing false positives in your environment.
+When `exclude_rule_ids` is configured, ngrok skips evaluation of the specified rule IDs.
+This allows you to disable specific OWASP CRS rules that may be causing false positives in your environment.
 
 ### Outbound anomaly score threshold exceeded
 
-If the anomaly score accumulated from matching rules exceeds the threshold, ngrok blocks the request with a `HTTP 403` response. The response from your upstream does not make it to the client.
+If the anomaly score accumulated from matching rules exceeds the threshold, ngrok blocks the request with a `HTTP 403` response.
+The response from your upstream does not make it to the client.
 
 ### Failure to process the body successfully
 
-If ngrok is unable to read the response body successfully, ngrok blocks the response with a `HTTP 500` response. The response from your upstream does not make it to the client.
+If ngrok is unable to read the response body successfully, ngrok blocks the response with a `HTTP 500` response.
+The response from your upstream does not make it to the client.
 
 ### Non-terminating action
 
@@ -110,13 +117,13 @@ The following configuration demonstrates how to run the `owasp-crs-response` act
 #### Example Traffic Policy document
 
 <CodeGroup>
-```yaml policy.yml {5}
-on_http_response:
+  ```yaml policy.yml {5}
+  on_http_response:
   - actions:
-      - type: owasp-crs-response
+  - type: owasp-crs-response
         config:
           on_error: halt
-```
+  ```
 
 ```json policy.json {8}
 {
@@ -143,13 +150,13 @@ The following configuration demonstrates how to run the `owasp-crs-response` act
 #### Example Traffic Policy document
 
 <CodeGroup>
-```yaml policy.yml {5}
-on_http_response:
+  ```yaml policy.yml {5}
+  on_http_response:
   - actions:
-      - type: owasp-crs-response
+  - type: owasp-crs-response
         config:
           on_error: continue
-      - type: log
+  - type: log
         config:
           metadata:
             message: OWASP CRS response action would be ${actions.ngrok.owasp_crs_response.decision} for ${req.url}
@@ -158,7 +165,7 @@ on_http_response:
             matched_rules_first_id: ${actions.ngrok.owasp_crs_response.matched_rules[0].id}
             matched_rules_first_message: ${actions.ngrok.owasp_crs_response.matched_rules[0].message}
             matched_rules_first_data: ${actions.ngrok.owasp_crs_response.matched_rules[0].data}
-```
+  ```
 
 ```json policy.json {8}
 {
@@ -203,61 +210,87 @@ You have an error in your SQL syntax; check the manual that corresponds to your 
 
 <ActionVariablesDescription />
 
-	<ConfigField title="actions.ngrok.owasp_crs_response.decision" type="string">
-		<p>The action taken for this response.</p>
-        <ConfigEnum label="Possible values">
-            <ConfigEnumOption>`allow` - If the response was permitted.</ConfigEnumOption>
-            <ConfigEnumOption>`deny` - If the response was denied.</ConfigEnumOption>
-        </ConfigEnum>
-	</ConfigField>
-	<ConfigField title="actions.ngrok.owasp_crs_response.anomaly_score" type="int">
-		<p>
-			The total anomaly score for the response. If it equals to or exceeds the set threshold, it will
-            block the response.
-		</p>
-	</ConfigField>
+    <ConfigField title="actions.ngrok.owasp_crs_response.decision" type="string">
+
+  <p>The action taken for this response.</p>
+  <ConfigEnum label="Possible values">
+  <ConfigEnumOption>`allow` - If the response was permitted.</ConfigEnumOption>
+  <ConfigEnumOption>`deny` - If the response was denied.</ConfigEnumOption>
+  </ConfigEnum>
+
+    
+    </ConfigField>
+    <ConfigField title="actions.ngrok.owasp_crs_response.anomaly_score" type="int">
+    	<p>
+    		The total anomaly score for the response.
+
+  If it equals to or exceeds the set threshold, it will block the response.
+
+  </p>
+
+    
+    </ConfigField>
     	<ConfigField title="actions.ngrok.owasp_crs_response.anomaly_score_threshold" type="int">
-		<p>
-			The total anomaly score threshold for the response. By default, it is set to 4.
-		</p>
-	</ConfigField>
-	<ConfigField
-		title="actions.ngrok.owasp_crs_response.matched_rules"
-		type="array of objects"
-	>
-		<p>The list of all rules matched by this response that have a non-zero score.</p>
-		<ConfigChildren>
-			<ConfigField title="matched_rules[i].id" type="int">
-				<p>
-					The ID of the rule.
-				</p>
-			</ConfigField>
-			<ConfigField title="matched_rules[i].message" type="string">
-				<p>
-					The text message describing the rule.
-				</p>
-			</ConfigField>
-			<ConfigField title="matched_rules[i].severity" type="string">
-				<p>
-					The [severity](https://coraza.io/docs/seclang/actions/#severity) of the matched rule. 
-				</p>
-			</ConfigField>
-			<ConfigField title="matched_rules[i].data" type="string">
-				<p>
-					Any extra data about the rule and how it matched the response.
-				</p>
-			</ConfigField>
-		</ConfigChildren>
-	</ConfigField>
-	<ConfigField title="actions.ngrok.owasp_crs_response.error.code" type="string">
-		<p>
-			A machine-readable code describing an error that occurred during the
-			action's execution.
-		</p>
-	</ConfigField>
-	<ConfigField title="actions.ngrok.owasp_crs_response.error.message" type="string">
-		<p>
-			A human-readable message providing details about an error that occurred
-			during the action's execution.
-		</p>
-	</ConfigField>
+    	<p>
+    		The total anomaly score threshold for the response.
+
+  By default, it is set to 4.
+
+  </p>
+
+    	
+    	</ConfigField>
+    <ConfigField
+    	title="actions.ngrok.owasp_crs_response.matched_rules" type="array of objects" >
+    	<p>The list of all rules matched by this response that have a non-zero score.</p>
+    	<ConfigChildren>
+    		<ConfigField title="matched_rules[i].id" type="int">
+    			<p>
+    				The ID of the rule.
+
+  </p>
+
+    
+    </ConfigField>
+    		<ConfigField title="matched_rules[i].message" type="string">
+    			<p>
+    				The text message describing the rule.
+
+  </p>
+
+    		
+    		</ConfigField>
+    		<ConfigField title="matched_rules[i].severity" type="string">
+    			<p>
+    				The [severity](https://coraza.io/docs/seclang/actions/#severity) of the matched rule.
+
+  </p>
+
+    		
+    		</ConfigField>
+    		<ConfigField title="matched_rules[i].data" type="string">
+    			<p>
+    				Any extra data about the rule and how it matched the response.
+
+  </p>
+
+    		
+    		</ConfigField>
+    	</ConfigChildren>
+
+</ConfigField>
+    <ConfigField title="actions.ngrok.owasp_crs_response.error.code" type="string">
+    	<p>
+    		A machine-readable code describing an error that occurred during the action's execution.
+  </p>
+
+    
+    </ConfigField>
+    <ConfigField title="actions.ngrok.owasp_crs_response.error.message" type="string">
+    	<p>
+    		A human-readable message providing details about an error that occurred during the action's execution.
+
+  </p>
+
+    
+    </ConfigField>

@@ -6,18 +6,7 @@ description: Reference guide for migrating from deprecated Edge modules to Traff
 
 ## Modules to Traffic Policy Actions reference
 
-| Endpoint Module                    | Traffic Policy Action                                                                                                                                                  | Phase                                                                        | Notes                                   |
-| ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | --------------------------------------- |
-| `oauth`                            | [`set-vars`](/traffic-policy/actions/set-vars/), [`oauth`](/traffic-policy/actions/oauth), [`custom-response`](/traffic-policy/actions/custom-response) | [`on_http_request`](/traffic-policy/concepts/phases/#on-http-request)   | Maps OAuth provider and settings.       |
-| `oidc`                             | [`oidc`](/traffic-policy/actions/oidc)                                                                                                                            | [`on_http_request`](/traffic-policy/concepts/phases/#on-http-request)   | Maps OpenID Connect settings.           |
-| `ip_policy`                        | [`restrict-ips`](/traffic-policy/actions/restrict-ips)                                                                                                            | [`on_tcp_connect`](/traffic-policy/concepts/phases/#on-tcp-connect)     | Maps allowed IPs or policies.           |
-| `mutual_tls` and `tls_termination` | [`terminate-tls`](/traffic-policy/actions/terminate-tls)                                                                                                          | [`on_tcp_connect`](/traffic-policy/concepts/phases/#on-tcp-connect)     | Maps mTLS and TLS termination settings. |
-| `request_headers`                  | [`add-headers`](/traffic-policy/actions/add-headers), [`remove-headers`](/traffic-policy/actions/remove-headers)                                             | [`on_http_request`](/traffic-policy/concepts/phases/#on-http-request)   | Modify request headers.                 |
-| `response_headers`                 | [`add-headers`](/traffic-policy/actions/add-headers), [`remove-headers`](/traffic-policy/actions/remove-headers)                                             | [`on_http_response`](/traffic-policy/concepts/phases/#on-http-response) | Modify response headers.                |
-| `compression`                      | [`compress-response`](/traffic-policy/actions/compress-response)                                                                                                  | [`on_http_response`](/traffic-policy/concepts/phases/#on-http-response) | Enable response compression.            |
-| `webhook_validation`               | [`verify-webhook`](/traffic-policy/actions/verify-webhook)                                                                                                        | [`on_http_request`](/traffic-policy/concepts/phases/#on-http-request)   | Validate webhook secrets.               |
-| `circuit_breaker`                  | [`circuit-breaker`](/traffic-policy/actions/circuit-breaker)                                                                                                      | [`on_http_request`](/traffic-policy/concepts/phases/#on-http-request)   | Define circuit breaking thresholds.     |
-| `saml`                             | (⚠️ Not supported)                                                                                                                                                     | N/A                                                                          | Try OIDC or contact support for help.   |
+| Endpoint Module | Traffic Policy Action | Phase | Notes | | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- | --------------------------------------- | | `oauth` | [`set-vars`](/traffic-policy/actions/set-vars/), [`oauth`](/traffic-policy/actions/oauth), [`custom-response`](/traffic-policy/actions/custom-response) | [`on_http_request`](/traffic-policy/concepts/phases/#on-http-request) | Maps OAuth provider and settings. | | `oidc` | [`oidc`](/traffic-policy/actions/oidc) | [`on_http_request`](/traffic-policy/concepts/phases/#on-http-request) | Maps OpenID Connect settings. | | `ip_policy` | [`restrict-ips`](/traffic-policy/actions/restrict-ips) | [`on_tcp_connect`](/traffic-policy/concepts/phases/#on-tcp-connect) | Maps allowed IPs or policies. | | `mutual_tls` and `tls_termination` | [`terminate-tls`](/traffic-policy/actions/terminate-tls) | [`on_tcp_connect`](/traffic-policy/concepts/phases/#on-tcp-connect) | Maps mTLS and TLS termination settings. | | `request_headers` | [`add-headers`](/traffic-policy/actions/add-headers), [`remove-headers`](/traffic-policy/actions/remove-headers) | [`on_http_request`](/traffic-policy/concepts/phases/#on-http-request) | Modify request headers. | | `response_headers` | [`add-headers`](/traffic-policy/actions/add-headers), [`remove-headers`](/traffic-policy/actions/remove-headers) | [`on_http_response`](/traffic-policy/concepts/phases/#on-http-response) | Modify response headers. | | `compression` | [`compress-response`](/traffic-policy/actions/compress-response) | [`on_http_response`](/traffic-policy/concepts/phases/#on-http-response) | Enable response compression. | | `webhook_validation` | [`verify-webhook`](/traffic-policy/actions/verify-webhook) | [`on_http_request`](/traffic-policy/concepts/phases/#on-http-request) | Validate webhook secrets. | | `circuit_breaker` | [`circuit-breaker`](/traffic-policy/actions/circuit-breaker) | [`on_http_request`](/traffic-policy/concepts/phases/#on-http-request) | Define circuit breaking thresholds. | | `saml` | (⚠️ Not supported) | N/A | Try OIDC or contact support for help. |
 
 ## Migration instructions per module
 
@@ -51,36 +40,36 @@ Leverages the following actions:
 on_http_request:
   # Setup list of allowed emails and domains
   - actions:
-    - type: set-vars
-      config:
-        vars:
-          - allowed_emails:
-              - user@example.com
-          - allowed_email_domains:
-              - "example.com"
+      - type: set-vars
+        config:
+          vars:
+            - allowed_emails:
+                - user@example.com
+            - allowed_email_domains:
+                - "example.com"
 
   # Run OAuth action for authentication
   - actions:
-    - type: oauth
-      config:
-        provider: google
-        client_id: abc
-        client_secret: def
-        scopes:
-          - email
-        allow_cors_preflight: true
+      - type: oauth
+        config:
+          provider: google
+          client_id: abc
+          client_secret: def
+          scopes:
+            - email
+          allow_cors_preflight: true
 
   # Get the result variables and do identity checks
   - actions:
-    - type: set-vars
-      config:
-        vars:
-          # Set the authenticated user to vars.identity
-          - identity: "${actions.ngrok.oauth.identity}"
-          # Check whether the email is in the list of allowed emails
-          - is_email_allowed: "${vars.allowed_emails && !(vars.identity.email in vars.allowed_emails)}"
-          # Check whether the email domain is in the list of allowed email domains
-          - is_email_domain_allowed: "${vars.allowed_email_domains && !vars.allowed_email_domains.exists_one(i, (vars.identity.email.endsWith('@' + i))}"
+      - type: set-vars
+        config:
+          vars:
+            # Set the authenticated user to vars.identity
+            - identity: "${actions.ngrok.oauth.identity}"
+            # Check whether the email is in the list of allowed emails
+            - is_email_allowed: "${vars.allowed_emails && !(vars.identity.email in vars.allowed_emails)}"
+            # Check whether the email domain is in the list of allowed email domains
+            - is_email_domain_allowed: "${vars.allowed_email_domains && !vars.allowed_email_domains.exists_one(i, (vars.identity.email.endsWith('@' + i))}"
 
   # Check whether the email was allowed or the domain was allowed
   # Feel free to customize this to your liking!
@@ -121,19 +110,19 @@ Leverages the following actions:
 ```yaml
 on_http_request:
   - actions:
-    - type: oidc
-      config:
-        issuer_url: https://example.com
-        client_id: abc
-        client_secret: def
-        scopes:
-          - openid
-          - email
-        allow_cors_preflight: false
-        auth_cookie_domain: auth.example.com
-        max_session_duration: "3600s"
-        idle_session_duration: "600s"
-        userinfo_refresh_interval: "300s"
+      - type: oidc
+        config:
+          issuer_url: https://example.com
+          client_id: abc
+          client_secret: def
+          scopes:
+            - openid
+            - email
+          allow_cors_preflight: false
+          auth_cookie_domain: auth.example.com
+          max_session_duration: "3600s"
+          idle_session_duration: "600s"
+          userinfo_refresh_interval: "300s"
 ```
 
 ### IP policy (`ip_policy`)
@@ -143,9 +132,7 @@ on_http_request:
 ```json
 {
   "ip_policy": {
-    "ip_policies": [
-      { "id": "ipp_123", "uri": "..." }
-    ]
+    "ip_policies": [{ "id": "ipp_123", "uri": "..." }]
   }
 }
 ```
@@ -159,10 +146,10 @@ Leverages the following actions:
 ```yaml
 on_tcp_connect:
   - actions:
-    - type: restrict-ips
-      config:
-        ip_policies:
-          - ipp_123
+      - type: restrict-ips
+        config:
+          ip_policies:
+            - ipp_123
 ```
 
 ### Mutual TLS and TLS termination (`mutual_tls`, `tls_termination`)
@@ -192,11 +179,11 @@ Leverages the following actions:
 ```yaml
 on_tcp_connect:
   - actions:
-    - type: terminate-tls
-      config:
-        mutual_tls_certificate_authorities:
-          - ca_abc
-        min_version: "1.3"
+      - type: terminate-tls
+        config:
+          mutual_tls_certificate_authorities:
+            - ca_abc
+          min_version: "1.3"
 ```
 
 ### Request headers (`request_headers`)
@@ -224,15 +211,15 @@ Leverages the following actions:
 ```yaml
 on_http_request:
   - actions:
-    - type: add-headers
-      config:
-        headers:
-          X-Test: "123"
+      - type: add-headers
+        config:
+          headers:
+            X-Test: "123"
   - actions:
-    - type: remove-headers
-      config:
-        headers:
-          - X-Remove-Me
+      - type: remove-headers
+        config:
+          headers:
+            - X-Remove-Me
 ```
 
 ### Response headers (`response_headers`)
@@ -260,15 +247,15 @@ Leverages the following actions:
 ```yaml
 on_http_response:
   - actions:
-    - type: add-headers
-      config:
-        headers:
-          X-Test: "123"
+      - type: add-headers
+        config:
+          headers:
+            X-Test: "123"
   - actions:
-    - type: remove-headers
-      config:
-        headers:
-          - X-Remove-Me
+      - type: remove-headers
+        config:
+          headers:
+            - X-Remove-Me
 ```
 
 ### Compression (`compression`)
@@ -281,7 +268,6 @@ on_http_response:
     "enabled": true
   }
 }
-
 ```
 
 **New Traffic Policy YAML:**
@@ -293,7 +279,7 @@ Leverages the following actions:
 ```yaml
 on_http_response:
   - actions:
-    - type: compress-response
+      - type: compress-response
 ```
 
 ### Webhook validation (`webhook_validation`)
@@ -318,10 +304,10 @@ Leverages the following actions:
 ```yaml
 on_http_request:
   - actions:
-    - type: verify-webhook
-      config:
-        provider: slack
-        secret: abcdef
+      - type: verify-webhook
+        config:
+          provider: slack
+          secret: abcdef
 ```
 
 ### Circuit breaker (`circuit_breaker`)
@@ -349,13 +335,13 @@ Leverages the following actions:
 ```yaml
 on_http_request:
   - actions:
-    - type: circuit-breaker
-      config:
-        tripped_duration: "30s"
-        rolling_window: "60s"
-        num_buckets: 10
-        volume_threshold: 100
-        error_threshold_percentage: 0.5
+      - type: circuit-breaker
+        config:
+          tripped_duration: "30s"
+          rolling_window: "60s"
+          num_buckets: 10
+          volume_threshold: 100
+          error_threshold_percentage: 0.5
 ```
 
 ### SAML authentication (`saml`)
@@ -365,18 +351,7 @@ on_http_request:
 
 ## ✅ Quick checklist
 
-| Module                | Traffic Policy Action                  |
-| --------------------- | -------------------------------------- |
-| OAuth                 | `set-vars`, `oauth`, `custom-response` |
-| OIDC                  | `oidc`                                 |
-| IP Policy             | `ip-restriction`                       |
-| Mutual TLS / TLS Term | `terminate-tls`                        |
-| Request Headers       | `add-headers`, `remove-headers`        |
-| Response Headers      | `add-headers`, `remove-headers`        |
-| Compression           | `compress-response`                    |
-| Webhook Verification  | `verify-webhook`                       |
-| Circuit Breaker       | `circuit-breaker`                      |
-| SAML                  | ⚠️ (Not yet supported)                 |
+| Module | Traffic Policy Action | | --------------------- | -------------------------------------- | | OAuth | `set-vars`, `oauth`, `custom-response` | | OIDC | `oidc` | | IP Policy | `ip-restriction` | | Mutual TLS / TLS Term | `terminate-tls` | | Request Headers | `add-headers`, `remove-headers` | | Response Headers | `add-headers`, `remove-headers` | | Compression | `compress-response` | | Webhook Verification | `verify-webhook` | | Circuit Breaker | `circuit-breaker` | | SAML | ⚠️ (Not yet supported) |
 
 ## 🛡️ Final Tips
 

@@ -4,21 +4,20 @@ sidebarTitle: Rate Limit
 description: Limit the rate of traffic that successfully reaches your endpoint.
 ---
 
+
 import ActionVariablesDescription from "/snippets/traffic-policy/common/action-variables-description.mdx";
 import NonTerminatingExplanation from "/snippets/traffic-policy/common/non-terminating-explanation.mdx";
 
 import { ConfigField } from "/snippets/ConfigTable.jsx";
 import { ConfigChildren } from "/snippets/ConfigChildren.jsx";
 
-The **Rate Limit** Traffic Policy action enables you to configure thresholds
-that restrict the throughput of traffic that successfully reaches your endpoint.
+The **Rate Limit** Traffic Policy action enables you to configure thresholds that restrict the throughput of traffic that successfully reaches your endpoint.
 
 Traffic may be limited overall or by attributes of the incoming requests.
 
 ## Configuration reference
 
-The [Traffic Policy](/traffic-policy/) configuration
-reference for this action.
+The [Traffic Policy](/traffic-policy/) configuration reference for this action.
 
 ### Supported phases
 
@@ -31,67 +30,85 @@ reference for this action.
 ### Configuration fields
 
     <ConfigField title="name" type="string" required={true}>
-        <p>A name for this rate limit configuration. Must be less than <code>1024</code> characters.</p>
+
+  <p>
+  A name for this rate limit configuration. Must be less than <code>1024</code> characters.
+  </p>
+
+    
     </ConfigField>
 
     <ConfigField title="enforce" type="boolean" required={false}>
-        <p>Controls whether the rate limit is actively applied at runtime. When enabled, requests exceeding the limit are blocked or throttled as configured. When disabled, the system evaluates the rate limit but does not enforce it, allowing you to test configurations, gather metrics, or return a custom response.</p>
-        <p>The default value is <code>true</code>.</p>
+
+  <p>Controls whether the rate limit is actively applied at runtime. When enabled, requests exceeding the limit are blocked or throttled as configured. When disabled, the system evaluates the rate limit but does not enforce it, allowing you to test configurations, gather metrics, or return a custom response.</p>
+  <p>
+  The default value is <code>true</code>.
+  </p>
+
+    
     </ConfigField>
 
     <ConfigField title="algorithm" type="enum" required={true}>
         <p>The rate limit algorithm to be used.</p>
         <ConfigEnum label="Supported values">
             <ConfigEnumOption>`sliding_window`</ConfigEnumOption>
-        </ConfigEnum>
+
+  </ConfigEnum>
+
+    
     </ConfigField>
 
     <ConfigField title="capacity" type="integer" required={true}>
         <p>The maximum number of requests allowed to reach your upstream server.</p>
         <p>The minimum capacity is <code>1</code> and the maximum capacity is <code>2,000,000,000</code>.</p>
+
+    
     </ConfigField>
 
     <ConfigField title="rate" type="string" required={true}>
-        <p>The duration in which events may be limited based on the current capacity. Must be specified as a time duration that is a multiple of ten seconds (for example, <code>"90s"</code>, <code>"10m"</code>).</p>
-        <p>The minimum value is <code>"60s"</code> and the maximum value is <code>"24h"</code>.</p>
+
+  <p>
+  The duration in which events may be limited based on the current capacity. Must be specified as a time duration that is a multiple of ten seconds (for example, <code>"90s"</code>, <code>"10m"</code>).
+  </p>
+  <p>
+  The minimum value is <code>"60s"</code> and the maximum value is <code>"24h"</code>.
+  </p>
+
+    
     </ConfigField>
 
     <ConfigField title="bucket_key" type="array of strings" required={true}>
-        <p>The elements of this collection define the unique key of a request to track the rate at which the capacity is being met.</p>
-        <p>Each bucket key is a CEL expression which includes all valid Traffic Policy [variables](/traffic-policy/variables/) and [macros](/traffic-policy/macros/).</p>
-        <ConfigEnum label="Sample buckets">
-            <ConfigEnumOption>`req.host` - The Host of the request.</ConfigEnumOption>
-            <ConfigEnumOption>`conn.client_ip` - The client IP address.</ConfigEnumOption>
-            <ConfigEnumOption>`getReqHeader('X-Example-Header-Name')` - The value for the specified header key, if it exists.</ConfigEnumOption>
-        </ConfigEnum>
-        <p>Up to ten bucket keys can be specified. For multiple buckets, the action will rate limit by each unique combination of buckets.</p>
+
+  <p>The elements of this collection define the unique key of a request to track the rate at which the capacity is being met.</p>
+  <p>Each bucket key is a CEL expression which includes all valid Traffic Policy [variables](/traffic-policy/variables/) and [macros](/traffic-policy/macros/).</p>
+  <ConfigEnum label="Sample buckets">
+  <ConfigEnumOption>`req.host` - The Host of the request.</ConfigEnumOption>
+  <ConfigEnumOption>`conn.client_ip` - The client IP address.</ConfigEnumOption>
+  <ConfigEnumOption>`getReqHeader('X-Example-Header-Name')` - The value for the specified header key, if it exists.</ConfigEnumOption>
+  </ConfigEnum>
+  <p>Up to ten bucket keys can be specified. For multiple buckets, the action will rate limit by each unique combination of buckets.</p>
+
+    
     </ConfigField>
 
 ## Behavior
 
 ### Determining the rate limit bucket
 
-When this action is executed, information from the incoming HTTP request is
-used to determine which rate limit bucket the request falls into. Each bucket
-is defined by specific criteria through the `bucket_key` configuration field
-such as client IP, request host, or a header value.
+When this action is executed, information from the incoming HTTP request is used to determine which rate limit bucket the request falls into.
+Each bucket is defined by specific criteria through the `bucket_key` configuration field such as client IP, request host, or a header value.
 
-If the bucket has not exceeded its capacity, the request proceeds to the next
-action in your policy configuration.
+If the bucket has not exceeded its capacity, the request proceeds to the next action in your policy configuration.
 
 ## Multiple buckets
 
-If multiple `bucket_key` values are specified, the action will create a
-unique rate limit bucket for each combination of the specified keys. For
-example, if you have two `bucket_key` values, such as `req.host` and `conn.client_ip`,
-all incoming requests that have the exact same combination of `Host` header and client IP
-will be grouped into the same rate limit bucket. To rate limit separately with two different
-buckets, you can create multiple `rate-limit` actions instead.
+If multiple `bucket_key` values are specified, the action will create a unique rate limit bucket for each combination of the specified keys.
+For example, if you have two `bucket_key` values, such as `req.host` and `conn.client_ip`, all incoming requests that have the exact same combination of `Host` header and client IP will be grouped into the same rate limit bucket.
+To rate limit separately with two different buckets, you can create multiple `rate-limit` actions instead.
 
 ### Rate limit exceeded
 
-If the identified bucket has received more events than its capacity over the
-specified duration:
+If the identified bucket has received more events than its capacity over the specified duration:
 
 1. The request is rejected with an `HTTP 429—Too Many Requests` status code.
 2. The `retry-after` header is included in the response, indicating the number
@@ -99,36 +116,34 @@ specified duration:
 
 ### Capacity per ingress server
 
-Currently, the `capacity` for each rate limit bucket is applied per ingress
-server. This means that each server independently tracks the number of requests
-and enforces the rate limits accordingly.
+Currently, the `capacity` for each rate limit bucket is applied per ingress server.
+This means that each server independently tracks the number of requests and enforces the rate limits accordingly.
 
 ### Non-terminating action
 
 <NonTerminatingExplanation />
 
 ## Examples
+
 ### Rate limit by host header
 
-The following [Traffic Policy](/traffic-policy/)
-configuration demonstrates how to use the `rate-limit` action to rate limit
-all incoming requests by the `Host` header.
+The following [Traffic Policy](/traffic-policy/) configuration demonstrates how to use the `rate-limit` action to rate limit all incoming requests by the `Host` header.
 
 #### Example Traffic Policy document
 
 <CodeGroup>
-```yaml policy.yml {10}
-on_http_request:
+  ```yaml policy.yml {10}
+  on_http_request:
   - actions:
-      - type: rate-limit
+  - type: rate-limit
         config:
           name: Only allow 30 requests per minute
           algorithm: sliding_window
           capacity: 30
           rate: 60s
           bucket_key:
-            - 'hasReqHeader(''host'') ? getReqHeader(''host'')[0] : ''unknown'''
-```
+  - 'hasReqHeader(''host'') ? getReqHeader(''host'')[0] : ''unknown'''
+  ```
 
 ```json policy.json {13}
 {
@@ -142,9 +157,7 @@ on_http_request:
             "algorithm": "sliding_window",
             "capacity": 30,
             "rate": "60s",
-            "bucket_key": [
-              "hasReqHeader('host') ? getReqHeader('host')[0] : 'unknown'"
-            ]
+            "bucket_key": ["hasReqHeader('host') ? getReqHeader('host')[0] : 'unknown'"]
           }
         }
       ]
@@ -154,8 +167,7 @@ on_http_request:
 ```
 </CodeGroup>
 
-For this example, assume that ngrok is pointing at the upstream service
-https://httpbin.org.
+For this example, assume that ngrok is pointing at the upstream service https://httpbin.org.
 
 #### Example request
 
@@ -168,26 +180,26 @@ HTTP/2 429
 retry-after: 24
 ```
 
-In this example, a connection attempt to `httpbin.ngrok.app` using the `curl`
-command returns a `429` status code with a `retry-after` header indicating
-the number of seconds to wait before retrying the request.
+In this example, a connection attempt to `httpbin.ngrok.app` using the `curl` command returns a `429` status code with a `retry-after` header indicating the number of seconds to wait before retrying the request.
 
 ## Action result variables
 
 <ActionVariablesDescription />
 
 <ConfigField title="actions.ngrok.rate_limit.bucket_key" type="string">
-    <p>The key used for bucketing requests. This is the key used to group and track requests in the rate-limiting process, ensuring that the same bucket is subject to the rate limit across multiple requests.</p>
+  <p>The key used for bucketing requests.
+  This is the key used to group and track requests in the rate-limiting process, ensuring that the same bucket is subject to the rate limit across multiple requests.</p>
 </ConfigField>
 
 <ConfigField title="actions.ngrok.rate_limit.limited" type="boolean">
-    <p>Indicates whether the request was limited by the rate limit. If  `true`, the request was rate-limited based on the configured limits for the specified bucket.</p>
+  <p>Indicates whether the request was limited by the rate limit.
+  If `true`, the request was rate-limited based on the configured limits for the specified bucket.</p>
 </ConfigField>
 
 <ConfigField title="actions.ngrok.rate_limit.error.code" type="string">
-    <p>A machine-readable code describing an error that occurred during the action's execution.</p>
+  <p>A machine-readable code describing an error that occurred during the action's execution.</p>
 </ConfigField>
 
 <ConfigField title="actions.ngrok.rate_limit.error.message" type="string">
-    <p>A human-readable message providing details about an error that occurred during the action's execution.</p>
+  <p>A human-readable message providing details about an error that occurred during the action's execution.</p>
 </ConfigField>

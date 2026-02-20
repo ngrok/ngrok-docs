@@ -3,6 +3,7 @@ title: BoundEndpoint
 description: Reference documentation for the BoundEndpoint Kubernetes custom resource for managing cross-cluster networking with ngrok.
 ---
 
+
 ## BoundEndpoint custom resource
 
 ### **apiVersion:** `bindings.k8s.ngrok.com/v1alpha1`
@@ -10,23 +11,20 @@ description: Reference documentation for the BoundEndpoint Kubernetes custom res
 ### **kind:** `BoundEndpoint`
 
 `BoundEndpoint` is a type used to identify which bound endpoints you have in each Kubernetes cluster running the ngrok Operator.
-They are managed automatically by the ngrok Operator and should not generally need to be created/deleted manually. When you create an ngrok endpoint
-with a binding of `"kubernetes"` this will result in a Kubernetes bound endpoint.
+They are managed automatically by the ngrok Operator and should not generally need to be created/deleted manually.
+When you create an ngrok endpoint with a binding of `"kubernetes"` this will result in a Kubernetes bound endpoint.
 
-Kubernetes bound endpoints will be projected into your Kubernetes clusters that are running the ngrok Operator as `BoundEndpoint` resources that cause the
-ngrok Operator to project the endpoint into the cluster as a `Service` so that other services within the Kubernetes cluster can make requests to the endpoint by
-sending requests to the projected `Service` that was created for the endpoint.
+Kubernetes bound endpoints will be projected into your Kubernetes clusters that are running the ngrok Operator as `BoundEndpoint` resources that cause the ngrok Operator to project the endpoint into the cluster as a `Service` so that other services within the Kubernetes cluster can make requests to the endpoint by sending requests to the projected `Service` that was created for the endpoint.
 
-In-practice, this enables you to do things such as create a Kubernetes bound endpoint for a service in one cluster, and project it as a `Service` into one or more other clusters
-running the ngrok Operator. Doing so allows for cross-cluster networking without needing to expose your services to the public internet.
+In-practice, this enables you to do things such as create a Kubernetes bound endpoint for a service in one cluster, and project it as a `Service` into one or more other clusters running the ngrok Operator.
+Doing so allows for cross-cluster networking without needing to expose your services to the public internet.
 
 The ngrok Operator does not do this by default, and you will need to enable the feature with the `bindings.enabled` helm value to create the Pods/Deployment from the Operator that enable this feature.
 
-The `BoundEndpoint` resources are automatically created/updated/deleted in response to `CloudEndpoint` and `AgentEndpoint` resources with `spec.bindings: \["kubernetes"\]` and
-any endpoints created from the ngrok CLI, API, and dashboard with a binding type of "kubernetes".
+The `BoundEndpoint` resources are automatically created/updated/deleted in response to `CloudEndpoint` and `AgentEndpoint` resources with `spec.bindings: \["kubernetes"\]` and any endpoints created from the ngrok CLI, API, and dashboard with a binding type of "kubernetes".
 
-The ngrok Operator includes a container argument `--bindings-endpoint-selectors` (helm value `bindings.endpointSelectors`) that will limit the endpoints that can be bound to
-the cluster that this Operator is running in. Unless this is configured, by default all Kubernetes bound endpoints will be projected into the cluster when the bindings feature is enabled.
+The ngrok Operator includes a container argument `--bindings-endpoint-selectors` (helm value `bindings.endpointSelectors`) that will limit the endpoints that can be bound to the cluster that this Operator is running in.
+Unless this is configured, by default all Kubernetes bound endpoints will be projected into the cluster when the bindings feature is enabled.
 
 For more information about Kubernetes bound endpoints, you can reference the [Kubernetes endpoints](/universal-gateway/kubernetes-endpoints) page.
 For a guide on using Kubernetes bound endpoints with the ngrok Operator, please see the [bound endpoints guide](/k8s/guides/bindings).
@@ -42,16 +40,16 @@ metadata:
   name: <string>
   namespace: <string>
 spec:
-  endpointURI: <string>                # required
-  scheme: <string>                     # required
-  port: <uint16>                       # required
-  target:                              # required
-    service: <string>                  # required
-    namespace: <string>                # required
-    protocol: <string>                 # required
-    port: <int32>                      # required
-    metadata:                          # optional
-      labels: <map[string]string>      # optional
+  endpointURI: <string> # required
+  scheme: <string> # required
+  port: <uint16> # required
+  target: # required
+    service: <string> # required
+    namespace: <string> # required
+    protocol: <string> # required
+    port: <int32> # required
+    metadata: # optional
+      labels: <map[string]string> # optional
       annotations: <map[string]string> # optional
 ```
 
@@ -71,12 +69,7 @@ The following sections outline each field of the `BoundEndpoint` custom resource
 
 **Fields:**
 
-| Field Name                             | Type            | Required | Default | Description                                                                                             |
-| -------------------------------------- | --------------- | -------- | ------- | ------------------------------------------------------------------------------------------------------- |
-| [`spec.endpointURI`](#specendpointuri) | `string`        | yes      | none    | The unique identifier representing the BoundEndpoint, format: `<scheme>://<service>.<namespace>:<port>` |
-| [`spec.scheme`](#specscheme)           | `string` (enum) | yes      | none    | Describes how the data packets are framed by the pod forwarders mTLS connection                         |
-| [`spec.port`](#specport)               | `uint16`        | yes      | none    | The Service port this Endpoint uses internally to communicate with its Upstream Service                 |
-| [`spec.target`](#spectarget)           | `Object`        | yes      | none    | The target Service that this Endpoint projects                                                          |
+| Field Name | Type | Required | Default | Description | | -------------------------------------- | --------------- | -------- | ------- | ------------------------------------------------------------------------------------------------------- | | [`spec.endpointURI`](#specendpointuri) | `string` | yes | none | The unique identifier representing the BoundEndpoint, format: `<scheme>://<service>.<namespace>:<port>` | | [`spec.scheme`](#specscheme) | `string` (enum) | yes | none | Describes how the data packets are framed by the pod forwarders mTLS connection | | [`spec.port`](#specport) | `uint16` | yes | none | The Service port this Endpoint uses internally to communicate with its Upstream Service | | [`spec.target`](#spectarget) | `Object` | yes | none | The target Service that this Endpoint projects |
 
 ### `spec.endpointURI`
 
@@ -124,13 +117,7 @@ The target Service that this Endpoint projects
 
 **Fields:**
 
-| Field Name                                      | Type            | Required | Default | Description                                                              |
-| ----------------------------------------------- | --------------- | -------- | ------- | ------------------------------------------------------------------------ |
-| [`spec.target.service`](#spectargetservice)     | `string`        | yes      | none    | The name of the Service that this Endpoint projects                      |
-| [`spec.target.namespace`](#spectargetnamespace) | `string`        | yes      | none    | The destination Namespace for the Service this Endpoint projects         |
-| [`spec.target.protocol`](#spectargetprotocol)   | `string` (enum) | yes      | none    | The Service protocol this Endpoint uses                                  |
-| [`spec.target.port`](#spectargetport)           | `int32`         | yes      | none    | The Service targetPort this Endpoint's Target Service uses for requests  |
-| [`spec.target.metadata`](#spectargetmetadata)   | `Object`        | no       | none    | Annotations and labels to be added to the Service this Endpoint projects |
+| Field Name | Type | Required | Default | Description | | ----------------------------------------------- | --------------- | -------- | ------- | ------------------------------------------------------------------------ | | [`spec.target.service`](#spectargetservice) | `string` | yes | none | The name of the Service that this Endpoint projects | | [`spec.target.namespace`](#spectargetnamespace) | `string` | yes | none | The destination Namespace for the Service this Endpoint projects | | [`spec.target.protocol`](#spectargetprotocol) | `string` (enum) | yes | none | The Service protocol this Endpoint uses | | [`spec.target.port`](#spectargetport) | `int32` | yes | none | The Service targetPort this Endpoint's Target Service uses for requests | | [`spec.target.metadata`](#spectargetmetadata) | `Object` | no | none | Annotations and labels to be added to the Service this Endpoint projects |
 
 ### `spec.target.service`
 
@@ -154,7 +141,8 @@ The destination Namespace for the Service this Endpoint projects
 
 ### `spec.target.protocol`
 
-The Service protocol this Endpoint uses. Currently, only `TCP` is supported.
+The Service protocol this Endpoint uses.
+Currently, only `TCP` is supported.
 
 **Type:** `string (enum)`
 
@@ -176,8 +164,8 @@ The Service targetPort this Endpoint's Target Service uses for requests
 
 ### `spec.target.metadata`
 
-Metadata is a subset of metav1.ObjectMeta that is added to the Service. Currently, it supports setting
-labels and annotations on the projected Service.
+Metadata is a subset of metav1.ObjectMeta that is added to the Service.
+Currently, it supports setting labels and annotations on the projected Service.
 
 **Type:** `Object`
 
@@ -187,10 +175,7 @@ labels and annotations on the projected Service.
 
 **Fields:**
 
-| Field Name                                                           | Type                | Required | Default | Description                                    |
-| -------------------------------------------------------------------- | ------------------- | -------- | ------- | ---------------------------------------------- |
-| [`spec.target.metadata.labels`](#spectargetmetadatalabels)           | `map[string]string` | no       | none    | Labels to be set on the projected Service      |
-| [`spec.target.metadata.annotations`](#spectargetmetadataannotations) | `map[string]string` | no       | none    | Annotations to be set on the projected Service |
+| Field Name | Type | Required | Default | Description | | -------------------------------------------------------------------- | ------------------- | -------- | ------- | ---------------------------------------------- | | [`spec.target.metadata.labels`](#spectargetmetadatalabels) | `map[string]string` | no | none | Labels to be set on the projected Service | | [`spec.target.metadata.annotations`](#spectargetmetadataannotations) | `map[string]string` | no | none | Annotations to be set on the projected Service |
 
 ### `spec.target.metadata.labels`
 
@@ -231,15 +216,17 @@ Array of endpoint information for the bound endpoints.
 **Type:** `[]Object`
 
 **Fields:**
+
 - `id` - The ngrok API endpoint ID
 - `uri` - (Optional) The ngrok API URI for the endpoint
 
 **Example:**
+
 ```yaml
 endpoints:
-- id: ep_34ieQ8TaQcuWrEWPahJJ5p7sHDR
-  uri: https://api.ngrok.com/endpoints/ep_34ieQ8TaQcuWrEWPahJJ5p7sHDR
-- id: ep_34iePjXiqBy9J7zS71qsEk1PxbJ
+  - id: ep_34ieQ8TaQcuWrEWPahJJ5p7sHDR
+    uri: https://api.ngrok.com/endpoints/ep_34ieQ8TaQcuWrEWPahJJ5p7sHDR
+  - id: ep_34iePjXiqBy9J7zS71qsEk1PxbJ
 ```
 
 ### `status.endpointsSummary`
@@ -257,10 +244,12 @@ Reference to the target Service that was created in the specified namespace.
 **Type:** `Object`
 
 **Fields:**
+
 - `name` - Name of the target Service
 - `namespace` - Namespace of the target Service
 
 **Example:**
+
 ```yaml
 targetServiceRef:
   name: alex-bindings-cli-test
@@ -274,9 +263,11 @@ Reference to the upstream Service created by the Operator for routing traffic.
 **Type:** `Object`
 
 **Fields:**
+
 - `name` - Name of the upstream Service
 
 **Example:**
+
 ```yaml
 upstreamServiceRef:
   name: ngrok-fdc71d00-ab87-5f84-b837-b315c947a52c
@@ -289,6 +280,7 @@ Standard Kubernetes conditions that indicate the state of the bound endpoint.
 **Type:** `[]Condition`
 
 Each condition includes:
+
 - `type` - The condition type
 - `status` - `True`, `False`, or `Unknown`
 - `reason` - A programmatic identifier for the condition state
@@ -303,25 +295,24 @@ Each condition includes:
 Indicates whether the bound endpoint is fully operational and ready for use.
 
 **Status Values:**
+
 - `True` - Bound endpoint is ready
 - `False` - Bound endpoint is not ready (see reason for details)
 
 **Reasons:**
 
-| Reason | Status | Meaning |
-|--------|--------|---------|
-| `BoundEndpointReady` | `True` | Bound endpoint is successfully configured and ready |
-| `ServiceCreationFailed` | `False` | Failed to create the target or upstream service |
+| Reason | Status | Meaning | | ----------------------- | ------- | --------------------------------------------------- | | `BoundEndpointReady` | `True` | Bound endpoint is successfully configured and ready | | `ServiceCreationFailed` | `False` | Failed to create the target or upstream service |
 
 **Example:**
+
 ```yaml
 conditions:
-- type: Ready
-  status: "True"
-  reason: BoundEndpointReady
-  message: "BoundEndpoint is ready"
-  lastTransitionTime: "2025-10-29T01:20:43Z"
-  observedGeneration: 1
+  - type: Ready
+    status: "True"
+    reason: BoundEndpointReady
+    message: "BoundEndpoint is ready"
+    lastTransitionTime: "2025-10-29T01:20:43Z"
+    observedGeneration: 1
 ```
 
 ##### `ServicesCreated`
@@ -329,25 +320,24 @@ conditions:
 Indicates whether the target and upstream Services were successfully created.
 
 **Status Values:**
+
 - `True` - Services were successfully created
 - `False` - Failed to create services
 
 **Reasons:**
 
-| Reason | Status | Meaning |
-|--------|--------|---------|
-| `ServicesCreated` | `True` | Target and upstream services created successfully |
-| `ServiceCreationFailed` | `False` | Failed to create services (for example, namespace doesn't exist) |
+| Reason | Status | Meaning | | ----------------------- | ------- | ---------------------------------------------------------------- | | `ServicesCreated` | `True` | Target and upstream services created successfully | | `ServiceCreationFailed` | `False` | Failed to create services (for example, namespace doesn't exist) |
 
 **Example:**
+
 ```yaml
 conditions:
-- type: ServicesCreated
-  status: "True"
-  reason: ServicesCreated
-  message: "Target and Upstream services created"
-  lastTransitionTime: "2025-10-29T01:20:40Z"
-  observedGeneration: 1
+  - type: ServicesCreated
+    status: "True"
+    reason: ServicesCreated
+    message: "Target and Upstream services created"
+    lastTransitionTime: "2025-10-29T01:20:40Z"
+    observedGeneration: 1
 ```
 
 ##### `ConnectivityVerified`
@@ -355,24 +345,24 @@ conditions:
 Indicates whether connectivity to the upstream service was successfully verified.
 
 **Status Values:**
+
 - `True` - Connectivity verified
 - `False` - Connectivity verification failed
 
 **Reasons:**
 
-| Reason | Status | Meaning |
-|--------|--------|---------|
-| `ConnectivityVerified` | `True` | Successfully connected to upstream service |
+| Reason | Status | Meaning | | ---------------------- | ------ | ------------------------------------------ | | `ConnectivityVerified` | `True` | Successfully connected to upstream service |
 
 **Example:**
+
 ```yaml
 conditions:
-- type: ConnectivityVerified
-  status: "True"
-  reason: ConnectivityVerified
-  message: "Successfully connected to upstream service"
-  lastTransitionTime: "2025-10-29T01:20:43Z"
-  observedGeneration: 1
+  - type: ConnectivityVerified
+    status: "True"
+    reason: ConnectivityVerified
+    message: "Successfully connected to upstream service"
+    lastTransitionTime: "2025-10-29T01:20:43Z"
+    observedGeneration: 1
 ```
 
 ## Status examples
@@ -383,8 +373,8 @@ conditions:
 status:
   hashedName: ngrok-fdc71d00-ab87-5f84-b837-b315c947a52c
   endpoints:
-  - id: ep_34ieQ8TaQcuWrEWPahJJ5p7sHDR
-  - id: ep_34iePjXiqBy9J7zS71qsEk1PxbJ
+    - id: ep_34ieQ8TaQcuWrEWPahJJ5p7sHDR
+    - id: ep_34iePjXiqBy9J7zS71qsEk1PxbJ
   endpointsSummary: 2 endpoints
   targetServiceRef:
     name: alex-bindings-cli-test
@@ -392,24 +382,24 @@ status:
   upstreamServiceRef:
     name: ngrok-fdc71d00-ab87-5f84-b837-b315c947a52c
   conditions:
-  - type: ServicesCreated
-    status: "True"
-    reason: ServicesCreated
-    message: "Target and Upstream services created"
-    lastTransitionTime: "2025-10-29T01:20:40Z"
-    observedGeneration: 1
-  - type: ConnectivityVerified
-    status: "True"
-    reason: ConnectivityVerified
-    message: "Successfully connected to upstream service"
-    lastTransitionTime: "2025-10-29T01:20:43Z"
-    observedGeneration: 1
-  - type: Ready
-    status: "True"
-    reason: BoundEndpointReady
-    message: "BoundEndpoint is ready"
-    lastTransitionTime: "2025-10-29T01:20:43Z"
-    observedGeneration: 1
+    - type: ServicesCreated
+      status: "True"
+      reason: ServicesCreated
+      message: "Target and Upstream services created"
+      lastTransitionTime: "2025-10-29T01:20:40Z"
+      observedGeneration: 1
+    - type: ConnectivityVerified
+      status: "True"
+      reason: ConnectivityVerified
+      message: "Successfully connected to upstream service"
+      lastTransitionTime: "2025-10-29T01:20:43Z"
+      observedGeneration: 1
+    - type: Ready
+      status: "True"
+      reason: BoundEndpointReady
+      message: "BoundEndpoint is ready"
+      lastTransitionTime: "2025-10-29T01:20:43Z"
+      observedGeneration: 1
 ```
 
 ### Bound endpoint with service creation error
@@ -418,21 +408,21 @@ status:
 status:
   hashedName: ngrok-96c65d4f-1422-5503-b353-0c9e1fbc4c68
   endpoints:
-  - id: ep_34ieQajOqQJ9DcgzCroGWvlMak2
+    - id: ep_34ieQajOqQJ9DcgzCroGWvlMak2
   endpointsSummary: 1 endpoint
   conditions:
-  - type: ServicesCreated
-    status: "False"
-    reason: ServiceCreationFailed
-    message: 'HTTP 503: Failed to create Target Service: namespaces "does-not-exist" not found [ERR_NGROK_20003]'
-    lastTransitionTime: "2025-10-29T01:20:40Z"
-    observedGeneration: 1
-  - type: Ready
-    status: "False"
-    reason: ServiceCreationFailed
-    message: 'HTTP 503: Failed to create Target Service: namespaces "does-not-exist" not found [ERR_NGROK_20003]'
-    lastTransitionTime: "2025-10-29T01:20:40Z"
-    observedGeneration: 1
+    - type: ServicesCreated
+      status: "False"
+      reason: ServiceCreationFailed
+      message: 'HTTP 503: Failed to create Target Service: namespaces "does-not-exist" not found [ERR_NGROK_20003]'
+      lastTransitionTime: "2025-10-29T01:20:40Z"
+      observedGeneration: 1
+    - type: Ready
+      status: "False"
+      reason: ServiceCreationFailed
+      message: 'HTTP 503: Failed to create Target Service: namespaces "does-not-exist" not found [ERR_NGROK_20003]'
+      lastTransitionTime: "2025-10-29T01:20:40Z"
+      observedGeneration: 1
 ```
 
 ## Checking BoundEndpoint status
@@ -464,8 +454,7 @@ kubectl get boundendpoint <name> -n ngrok-operator -o jsonpath='{.status.conditi
 
 ## Example BoundEndpoint
 
-The following `BoundEndpoint` will bind the endpoint with URL `http://my-service.my-namespace:80`
-and project it as a `Service` `my-service` in the `my-namespace` namespace on port 80.
+The following `BoundEndpoint` will bind the endpoint with URL `http://my-service.my-namespace:80` and project it as a `Service` `my-service` in the `my-namespace` namespace on port 80.
 
 ```yaml
 apiVersion: bindings.k8s.ngrok.com/v1alpha1

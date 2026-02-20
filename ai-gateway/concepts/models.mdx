@@ -3,11 +3,14 @@ title: Models
 description: Understanding model naming and request formats in the AI Gateway.
 ---
 
-Models are the AI systems that process your requests. The AI Gateway supports flexible model naming and can route to the same model across different providers.
+
+Models are the AI systems that process your requests.
+The AI Gateway supports flexible model naming and can route to the same model across different providers.
 
 ## Specifying models
 
-You can specify which model to use in your requests. The gateway supports several formats depending on how specific you need to be.
+You can specify which model to use in your requests.
+The gateway supports several formats depending on how specific you need to be.
 
 ### Just the model name
 
@@ -16,7 +19,7 @@ The simplest approach—use the model name directly:
 ```json
 {
   "model": "gpt-4o",
-  "messages": [{"role": "user", "content": "Hello"}]
+  "messages": [{ "role": "user", "content": "Hello" }]
 }
 ```
 
@@ -29,11 +32,12 @@ Use `provider:model` when you want to explicitly choose a provider:
 ```json
 {
   "model": "anthropic:claude-3-5-sonnet-latest",
-  "messages": [{"role": "user", "content": "Hello"}]
+  "messages": [{ "role": "user", "content": "Hello" }]
 }
 ```
 
 This is useful when:
+
 - A model name exists on multiple providers
 - You want to force a specific provider
 - You're using a custom provider you've configured
@@ -46,11 +50,12 @@ Specify multiple models for automatic fallback using the `models` array:
 {
   "model": "gpt-4o",
   "models": ["gpt-4o-mini", "claude-3-5-sonnet-20241022"],
-  "messages": [{"role": "user", "content": "Hello"}]
+  "messages": [{ "role": "user", "content": "Hello" }]
 }
 ```
 
 The gateway tries models in order:
+
 1. `model` field first (primary choice)
 2. `models` array entries as fallbacks
 
@@ -65,11 +70,12 @@ Use the special `ngrok/auto` model to let the gateway choose based on your confi
 ```json
 {
   "model": "ngrok/auto",
-  "messages": [{"role": "user", "content": "Hello"}]
+  "messages": [{ "role": "user", "content": "Hello" }]
 }
 ```
 
-This is equivalent to omitting the model field entirely. The gateway selects from available models based on your strategy (for example, lowest latency, lowest cost).
+This is equivalent to omitting the model field entirely.
+The gateway selects from available models based on your strategy (for example, lowest latency, lowest cost).
 
 ## Unknown models (pass-through)
 
@@ -81,24 +87,29 @@ If a client requests a model that isn't in the [Model Catalog](/ai-gateway/refer
 ```json
 {
   "model": "openai:some-new-model",
-  "messages": [{"role": "user", "content": "Hello"}]
+  "messages": [{ "role": "user", "content": "Hello" }]
 }
 ```
 
-The gateway extracts `openai` as the provider and forwards the request with `some-new-model` as the model name. This enables immediate access to new models before they're added to the catalog.
+The gateway extracts `openai` as the provider and forwards the request with `some-new-model` as the model name.
+This enables immediate access to new models before they're added to the catalog.
 
 <Note>
-Unknown models bypass catalog validation—the provider will return an error if the model doesn't exist. Unknown models also lack metadata (pricing, capabilities) for model selection strategies.
+  Unknown models bypass catalog validation—the provider will return an error if the model doesn't exist.
+  Unknown models also lack metadata (pricing, capabilities) for model selection strategies.
 </Note>
 
 ## Model aliases
 
-The gateway automatically normalizes common model aliases. For example:
+The gateway automatically normalizes common model aliases.
+For example:
 
 - Shortened names may map to full version identifiers
 - Legacy names may map to current versions
 
-All model, provider, and author names are not case-sensitive. For example, `gpt-4o`, `GPT-4o`, and `Gpt-4O` all resolve to the same model. See the [Aliases reference](/ai-gateway/reference/model-catalog#aliases-reference) for a complete list of built-in aliases.
+All model, provider, and author names are not case-sensitive.
+For example, `gpt-4o`, `GPT-4o`, and `Gpt-4O` all resolve to the same model.
+See the [Aliases reference](/ai-gateway/reference/model-catalog#aliases-reference) for a complete list of built-in aliases.
 
 You can also define custom aliases in your provider configuration:
 
@@ -113,7 +124,8 @@ providers:
 Clients can then use any of these names to reach the same model.
 
 <Note>
-Aliases must be unique across all models. You cannot use an alias that is already in use as an ID or alias by another model.
+  Aliases must be unique across all models.
+  You cannot use an alias that is already in use as an ID or alias by another model.
 </Note>
 
 ## Model capabilities
@@ -133,4 +145,3 @@ See the [Model Catalog](/ai-gateway/reference/model-catalog) for capabilities of
 - [Model Catalog](/ai-gateway/reference/model-catalog) - Full list of supported models
 - [Model Selection Strategies](/ai-gateway/guides/model-selection-strategies) - Custom routing logic
 - [Configuring Providers](/ai-gateway/guides/configuring-providers) - Configure specific models
-

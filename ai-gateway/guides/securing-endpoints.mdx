@@ -3,7 +3,9 @@ title: Securing Your Gateway
 description: Add authorization to your AI Gateway when using server-side API keys.
 ---
 
-When you configure server-side API keys on your AI Gateway, your endpoint becomes publicly accessible—anyone with the URL can make requests. This guide shows how to add an authorization layer using secrets and Traffic Policy to protect your gateway.
+
+When you configure server-side API keys on your AI Gateway, your endpoint becomes publicly accessible—anyone with the URL can make requests.
+This guide shows how to add an authorization layer using secrets and Traffic Policy to protect your gateway.
 
 ## The problem
 
@@ -19,11 +21,13 @@ on_http_request:
             - value: ${secrets.get('openai', 'api-key')}
 ```
 
-Anyone who discovers your gateway URL can make unlimited requests using your API keys. You need to add your own authorization layer.
+Anyone who discovers your gateway URL can make unlimited requests using your API keys.
+You need to add your own authorization layer.
 
 ## Solution: API key authorization
 
-Require clients to provide an access token that you control. Generate your own tokens, store them in ngrok Vaults & Secrets, and validate them in your Traffic Policy before processing requests.
+Require clients to provide an access token that you control.
+Generate your own tokens, store them in ngrok Vaults & Secrets, and validate them in your Traffic Policy before processing requests.
 
 <Steps>
   <Step title="Create a secret for your access token">
@@ -40,9 +44,11 @@ Require clients to provide an access token that you control. Generate your own t
       --vault-id "vault_xxxxxxxxxxxxx"
     ```
 
-    <Tip>
+  <Tip>
     Generate a secure access token using: `openssl rand -base64 32`
-    </Tip>
+
+  </Tip>
+
   </Step>
 
   <Step title="Add authorization to your Traffic Policy">
@@ -51,29 +57,35 @@ Require clients to provide an access token that you control. Generate your own t
     ```yaml
     on_http_request:
       # Reject unauthorized requests
-      - expressions:
-          - req.headers['authorization'][0] != 'Bearer ' + secrets.get('gateway-auth', 'access-token')
-        actions:
-          - type: custom-response
-            config:
-              status_code: 401
-              headers:
-                content-type: application/json
-              body: '{"error": {"message": "Invalid or missing authorization token", "type": "authentication_error"}}'
 
-      # Process authorized requests through the gateway
-      - actions:
-          - type: ai-gateway
-            config:
-              providers:
-                - id: openai
-                  api_keys:
-                    - value: ${secrets.get('openai', 'api-key')}
-                - id: anthropic
-                  api_keys:
-                    - value: ${secrets.get('anthropic', 'api-key')}
-    ```
-  </Step>
+- expressions:
+- req.headers['authorization'][0] != 'Bearer ' + secrets.get('gateway-auth', 'access-token')
+  actions:
+- type: custom-response
+  config:
+  status_code: 401
+  headers:
+  content-type: application/json
+  body: '{"error": {"message": "Invalid or missing authorization token", "type": "authentication_error"}}'
+
+# Process authorized requests through the gateway
+
+- actions:
+- type: ai-gateway
+  config:
+  providers:
+- id: openai
+  api_keys:
+- value: ${secrets.get('openai', 'api-key')}
+- id: anthropic
+  api_keys:
+- value: ${secrets.get('anthropic', 'api-key')}
+
+```
+
+```
+
+</Step>
 
   <Step title="Update your client configuration">
     Clients must now include the access token in their requests:
@@ -103,12 +115,15 @@ Require clients to provide an access token that you control. Generate your own t
         "messages": [{"role": "user", "content": "Hello!"}]
       }'
     ```
-  </Step>
+
+</Step>
+  
 </Steps>
 
 ## Multiple access tokens
 
-Support multiple clients with different access tokens. Use `set-vars` to define the list of valid tokens, then check membership with `in`:
+Support multiple clients with different access tokens.
+Use `set-vars` to define the list of valid tokens, then check membership with `in`:
 
 ```yaml highlight={7-10,14}
 on_http_request:
@@ -172,14 +187,14 @@ on_http_request:
 Configure the OpenAI SDK to use a custom header:
 
 ```javascript
-import OpenAI from 'openai';
+import OpenAI from "openai";
 
 const client = new OpenAI({
   baseURL: "https://your-gateway.ngrok.app/v1",
-  apiKey: "not-used",  // Required but not used
+  apiKey: "not-used", // Required but not used
   defaultHeaders: {
-    "X-API-Key": "your-secret-access-token-here"
-  }
+    "X-API-Key": "your-secret-access-token-here",
+  },
 });
 ```
 
@@ -233,8 +248,8 @@ on_http_request:
         config:
           enforce: true
           allow:
-            - 203.0.113.0/24    # Allow entire subnet
-            - 198.51.100.50/32  # Allow single IP
+            - 203.0.113.0/24 # Allow entire subnet
+            - 198.51.100.50/32 # Allow single IP
 
   # Reject unauthorized requests
   - expressions:
@@ -341,4 +356,3 @@ To rotate your access token without downtime:
 - [Restricting Model Access](/ai-gateway/guides/restricting-access) - Control providers and models
 - [Traffic Policy Secrets](/traffic-policy/secrets) - Learn more about secrets
 - [Rate Limit Action](/traffic-policy/actions/rate-limit) - Add rate limiting
-

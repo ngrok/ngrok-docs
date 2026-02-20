@@ -4,15 +4,13 @@ sidebarTitle: Custom Resources
 description: Leverage ngrok’s custom Kubernetes CRDs for the simplest path, with the least amount of YAML, to exposing your Kubernetes services to the public internet.
 ---
 
+
 import K8sPrereq from "/snippets/k8s/_prereq.mdx";
 import K8sSetup from "/snippets/k8s/_setup.mdx";
 import K8sInstall from "/snippets/k8s/_install.mdx";
 import Domain from "/snippets/k8s/_domain.mdx";
 import K8sSample from "/snippets/k8s/_sample.mdx";
 import Request from "/snippets/k8s/_request.mdx";
-
-
-
 
 This quickstart uses the [ngrok Kubernetes Operator](/k8s) and [ngrok's custom resources](/k8s/crds) (CRs) to make the services you've deployed to Kubernetes available on the public internet.
 
@@ -22,9 +20,8 @@ Use this method if you:
 - Are okay with using Kubernetes-native resources, but not necessarily following Kubernetes standards.
 
 <Note>
-The ngrok Kubernetes Operator is available to all ngrok users at no additional charge.
-You only incur costs if the resources provisioned by the controller incur a cost
-Find more details on the [pricing page](https://ngrok.com/pricing), or, if you're a free user, the [free plan limits](/pricing-limits/free-plan-limits/).
+  The ngrok Kubernetes Operator is available to all ngrok users at no additional charge.
+  You only incur costs if the resources provisioned by the controller incur a cost Find more details on the [pricing page](https://ngrok.com/pricing), or, if you're a free user, the [free plan limits](/pricing-limits/free-plan-limits/).
 </Note>
 
 ## What you'll need
@@ -46,13 +43,14 @@ Find more details on the [pricing page](https://ngrok.com/pricing), or, if you'r
 
 ## 4. Create your endpoint manifest
 
-You have two options to expose your Kubernetes service with ngrok's CRDs. The primary two types are `CloudEndpoint` and `AgentEndpoint`.
+You have two options to expose your Kubernetes service with ngrok's CRDs.
+The primary two types are `CloudEndpoint` and `AgentEndpoint`.
 
 1. A single `AgentEndpoint` resource: This option is simplest, but is typically limited to exposing one service on a hostname.
 2. A pair of `CloudEndpoint` and `AgentEndpoint` resources: This option allows you to route traffic to any number of Kubernetes services from a single hostname depending on their path, headers, and more using [expressions](/traffic-policy/concepts/expressions/) and the [`forward-internal` Traffic Policy action](/traffic-policy/actions/forward-internal).
 
-When using other types of configuration with the Operator such as `Ingress` and Gateway API resources, the Operator translates all of them into
-`CloudEndpoint` and `AgentEndpoint` resources. Using the `CloudEndpoint`/`AgentEndpoint` resources directly gives you maximum control over your ngrok Operator configuration.
+When using other types of configuration with the Operator such as `Ingress` and Gateway API resources, the Operator translates all of them into `CloudEndpoint` and `AgentEndpoint` resources.
+Using the `CloudEndpoint`/`AgentEndpoint` resources directly gives you maximum control over your ngrok Operator configuration.
 For more information about cloud and Agent Endpoints, see [the endpoint types page](/universal-gateway/types/).
 
 This manifest exposes a Kubernetes service named `tinyllama` listening on port `80` on `$YOUR_DOMAIN`.
@@ -65,11 +63,11 @@ If you already have a different deployment on your cluster, you'll need to chang
 apiVersion: ngrok.k8s.ngrok.com/v1alpha1
 kind: AgentEndpoint
 metadata:
-  name: tinyllama-endpoint
+name: tinyllama-endpoint
 spec:
-  url: https://$YOUR_DOMAIN
-  upstream:
-    url: http://tinyllama.default:80
+url: https://$YOUR_DOMAIN
+upstream:
+url: http://tinyllama.default:80
 ```
 
   </Tab>
@@ -79,28 +77,29 @@ spec:
 apiVersion: ngrok.k8s.ngrok.com/v1alpha1
 kind: CloudEndpoint
 metadata:
-  name: tinyllama-cloud-endpoint
+name: tinyllama-cloud-endpoint
 spec:
-  url: $YOUR_DOMAIN
+url: $YOUR_DOMAIN
 trafficPolicy:
-  policy:
-    on_http_request:
-      - actions:
-        - type: forward-internal
-          config:
-            url: http://tinyllama.internal
+policy:
+on_http_request:
+- actions:
+- type: forward-internal
+        config:
+          url: http://tinyllama.internal
 ---
 apiVersion: ngrok.k8s.ngrok.com/v1alpha1
 kind: AgentEndpoint
 metadata:
-  name: tinyllama-endpoint
+name: tinyllama-endpoint
 spec:
-  url: http://tinyllama.internal
-  upstream:
-    url: http://tinyllama.default:80
+url: http://tinyllama.internal
+upstream:
+url: http://tinyllama.default:80
 ```
 
   </Tab>
+  
 </Tabs>
 
 Apply the manifest with `kubectl -n ngrok-operator apply -f ngrok-crds.yaml`.
@@ -119,65 +118,66 @@ First, copy your public IP address via the [`ip4v.ngrok.com` mini-app](https://i
 <Tabs>
   <Tab title="AgentEndpoint">
 
-Add a `trafficPolicy.inline` field followed by the Traffic Policy rule itself.
+  Add a `trafficPolicy.inline` field followed by the Traffic Policy rule itself.
 
 ```yaml title="ngrok-crds.yaml"
 apiVersion: ngrok.k8s.ngrok.com/v1alpha1
 kind: AgentEndpoint
 metadata:
-  name: tinyllama-endpoint
+name: tinyllama-endpoint
 spec:
-  url: https://$YOUR_DOMAIN
-  upstream:
-    url: http://tinyllama.default:80
-  trafficPolicy:
-    inline:
-      on_http_request:
-        - actions:
-            - type: restrict-ips
-              config:
-                enforce: true
-                allow:
-                  - $YOUR_PUBLIC_IP
+url: https://$YOUR_DOMAIN
+upstream:
+url: http://tinyllama.default:80
+trafficPolicy:
+inline:
+  on_http_request:
+- actions:
+- type: restrict-ips
+          config:
+            enforce: true
+            allow:
+- $YOUR_PUBLIC_IP
 ```
 
   </Tab>
   <Tab title="CloudEndpoint + AgentEndpoint">
 
-Insert the new rule above your existing `forward-internal` action to require authentication before forwarding traffic to your internal Agent Endpoint.
+  Insert the new rule above your existing `forward-internal` action to require authentication before forwarding traffic to your internal Agent Endpoint.
 
 ```yaml title="ngrok-crds.yaml"
 apiVersion: ngrok.k8s.ngrok.com/v1alpha1
 kind: CloudEndpoint
 metadata:
-  name: tinyllama-cloud-endpoint
+name: tinyllama-cloud-endpoint
 spec:
-  url: $YOUR_DOMAIN
-  trafficPolicy:
-    policy:
-      on_http_request:
-        - actions:
-            - type: restrict-ips
-              config:
-                enforce: true
-                allow:
-                  - $YOUR_PUBLIC_IP
-        - actions:
-          - type: forward-internal
-            config:
-              url: http://tinyllama.internal
+url: $YOUR_DOMAIN
+trafficPolicy:
+policy:
+  on_http_request:
+- actions:
+- type: restrict-ips
+          config:
+            enforce: true
+            allow:
+- $YOUR_PUBLIC_IP
+- actions:
+- type: forward-internal
+          config:
+            url: http://tinyllama.internal
 ---
 apiVersion: ngrok.k8s.ngrok.com/v1alpha1
 kind: AgentEndpoint
 metadata:
-  name: tinyllama-endpoint
+name: tinyllama-endpoint
 spec:
-  url: http://tinyllama.internal
-  upstream:
-    url: http://tinyllama.default:80
+url: http://tinyllama.internal
+upstream:
+url: http://tinyllama.default:80
 ```
 
   </Tab>
+  
 </Tabs>
 
 Re-apply the manifest with `kubectl apply -f ngrok-crds.yaml`.

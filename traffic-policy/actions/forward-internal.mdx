@@ -4,16 +4,17 @@ sidebarTitle: Forward Internal
 description: The Forward Internal action enables you to forward traffic from an endpoint to a internal endpoint within the same ngrok account.
 ---
 
+
 import ActionVariablesDescription from "/snippets/traffic-policy/common/action-variables-description.mdx";
 import { ConfigField, ConfigEnum, ConfigEnumOption } from "/snippets/ConfigTable.jsx";
 import TerminatingExplanation from "/snippets/traffic-policy/common/terminating-explanation.mdx";
 
-The **Forward Internal** Traffic Policy action enables you to forward traffic from an endpoint to a internal endpoint within the same ngrok account. This is useful for safely and securely routing traffic from your public endpoints to other services, giving you the ability to choose when and how your endpoints are made publicly available.
+The **Forward Internal** Traffic Policy action enables you to forward traffic from an endpoint to a internal endpoint within the same ngrok account.
+This is useful for safely and securely routing traffic from your public endpoints to other services, giving you the ability to choose when and how your endpoints are made publicly available.
 
 ## Configuration reference
 
-The [Traffic Policy](/traffic-policy/) configuration
-reference for this action.
+The [Traffic Policy](/traffic-policy/) configuration reference for this action.
 
 ### Supported phases
 
@@ -31,10 +32,7 @@ reference for this action.
   </p>
 </ConfigField>
 <ConfigField title="on_error" type="enum">
-  <p>
-    Whether or not further actions in the Traffic Policy should run if there
-    is an error.
-  </p>
+  <p>Whether or not further actions in the Traffic Policy should run if there is an error.</p>
   <ConfigEnum>
     <ConfigEnumOption>`halt` (default)</ConfigEnumOption>
     <ConfigEnumOption>`continue`</ConfigEnumOption>
@@ -47,25 +45,31 @@ This action forwards a request to an internal endpoint.
 
 Any Traffic Policy associated with the internal endpoint will also be applied to the request when it's forwarded.
 
-If the forwarding is successful, the response from the upstream for the internal endpoint will be sent back to the client making the original request. No further actions in the `inbound` phase will be executed and no traffic will be sent to the upstream for the public endpoint.
+If the forwarding is successful, the response from the upstream for the internal endpoint will be sent back to the client making the original request.
+No further actions in the `inbound` phase will be executed and no traffic will be sent to the upstream for the public endpoint.
 
 If the forwarding is unsuccessful because the specified endpoint doesn't exist, is offline, or encounters another error, the action will return an error and follow the behavior that is specified by `on_error` (see [Managing Fallback Behavior](#on-error)).
 
 <Note>
-Even if you do not plan to send traffic to a local service when creating a forwarding endpoint, you will still need to specify a local port. This port will receive traffic if an expression causes only a subset of traffic to be forwarded or if there is an error forwarding traffic and `on_error` is set to `continue` without a subsequent terminating action.
+  Even if you do not plan to send traffic to a local service when creating a forwarding endpoint, you will still need to specify a local port.
+  This port will receive traffic if an expression causes only a subset of traffic to be forwarded or if there is an error forwarding traffic and `on_error` is set to `continue` without a subsequent terminating action.
 </Note>
 
 ### HTTP headers
 
-When forwarding HTTP requests to another endpoint, the `Host` header will be set to the hostname of the forwarding endpoint. For example, if `https://example.ngrok.app` is forwarding HTTP requests to `https://example.internal`, the `Host` header received by the upstream will be `example.ngrok.app`.
+When forwarding HTTP requests to another endpoint, the `Host` header will be set to the hostname of the forwarding endpoint.
+For example, if `https://example.ngrok.app` is forwarding HTTP requests to `https://example.internal`, the `Host` header received by the upstream will be `example.ngrok.app`.
 
-The action will also set the `X-Forwarded-For`, `X-Forwarded-Host`, and `X-Forwarded-Proto` headers when making the upstream request. See [Upstream Headers](/universal-gateway/http#upstream-headers) for more information.
+The action will also set the `X-Forwarded-For`, `X-Forwarded-Host`, and `X-Forwarded-Proto` headers when making the upstream request.
+See [Upstream Headers](/universal-gateway/http#upstream-headers) for more information.
 
-### Managing fallback behavior (`on_error`) 
+### Managing fallback behavior (`on_error`)
 
-If `on_error` is set to `halt` (default) and the action encounters an error when forwarding traffic, the Traffic Policy chain will halt and no further actions will be executed. For example, if you have a `log` action after the `forward-internal` action and the `url` specified isn't an online endpoint, the `log` action will not be run and the error will be returned.
+If `on_error` is set to `halt` (default) and the action encounters an error when forwarding traffic, the Traffic Policy chain will halt and no further actions will be executed.
+For example, if you have a `log` action after the `forward-internal` action and the `url` specified isn't an online endpoint, the `log` action will not be run and the error will be returned.
 
-However, if `on_error` is set to `continue`, actions that appear after the `forward-internal` action will still be executed even if the `forward-internal` action encounters an error. This can be used as a fallback to forward traffic to one of many endpoints depending which are online.
+However, if `on_error` is set to `continue`, actions that appear after the `forward-internal` action will still be executed even if the `forward-internal` action encounters an error.
+This can be used as a fallback to forward traffic to one of many endpoints depending which are online.
 
 ### Valid forward targets
 
@@ -79,26 +83,26 @@ In addition, the target's Traffic Policy may only specify policy for the current
 
 <TerminatingExplanation />
 
-<Info>
-  This action is _not_ terminating if `on_error` is set to `continue`.[Learn more](#managing-fallback-behavior-on-error).
+<Info>  This action is _not_ terminating if `on_error` is set to `continue`.[Learn more](#managing-fallback-behavior-on-error).
 </Info>
 
 ## Examples
 
 ### Basic example
 
-This example configuration will set up a public endpoint (`forward-internal-example.ngrok.app`) forwarding all traffic it receives to a internal endpoint (`example.internal`) that forwards the request to port `80` on your local machine. Since it is forwarding all traffic to the internal endpoint, no traffic will be sent to `8080` which is the upstream port for the public endpoint.
+This example configuration will set up a public endpoint (`forward-internal-example.ngrok.app`) forwarding all traffic it receives to a internal endpoint (`example.internal`) that forwards the request to port `80` on your local machine.
+Since it is forwarding all traffic to the internal endpoint, no traffic will be sent to `8080` which is the upstream port for the public endpoint.
 
 #### Example Traffic Policy document
 
 <CodeGroup>
-```yaml policy.yml
-on_http_request:
+  ```yaml policy.yml
+  on_http_request:
   - actions:
-      - type: forward-internal
+  - type: forward-internal
         config:
           url: https://example.internal
-```
+  ```
 
 ```json policy.json
 {
@@ -159,5 +163,5 @@ Accept-Encoding: gzip
 
 <ActionVariablesDescription />
 
-<Note>This action does not set any variables after it has been executed.</Note>
-
+<Note>  This action does not set any variables after it has been executed.
+</Note>

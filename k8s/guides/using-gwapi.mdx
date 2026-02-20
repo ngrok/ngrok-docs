@@ -4,6 +4,7 @@ sidebarTitle: Using Gateway API
 description: Learn how to use Gateway API resources with the ngrok Kubernetes Operator to configure ingress and routing for your services.
 ---
 
+
 The following guide will help give an overview of using Gateway API resources to configure the ngrok Kubernetes Operator.
 This guide aims to offer a few high-level examples and explanations about how the Operator uses Gateway API resources, but more specific examples of using the Gateway API resources can be found in the various other guides for the specific actions you are looking to perform.
 
@@ -12,8 +13,7 @@ If you've already installed the Operator without Gateway API support and would l
 
 <Note>
 
-Request mirror filters are not yet supported with the ngrok Kubernetes Operator.
-
+  Request mirror filters are not yet supported with the ngrok Kubernetes Operator.
 </Note>
 
 ## How does the ngrok Operator use Gateway API?
@@ -27,8 +27,8 @@ When you create/update/delete Gateway API resources, the Operator will automatic
 ## Using `NgrokTrafficPolicy` with Gateway API resources
 
 The Operator will consume `Gateway` and `HTTPRoute` resources as necessary and build endpoints to provide the desired routing behavior.
-The Gateway API filters on the `HTTPRoute` resources can be used to configure commonly used features such as redirecting requests and manipulating headers, but there may still be other use-cases and features
-that are not natively supported by the Gateway API that you would like to use. This is where you can take advantage of ngrok's Traffic Policy system to extend the functionality of your Gateway API resources.
+The Gateway API filters on the `HTTPRoute` resources can be used to configure commonly used features such as redirecting requests and manipulating headers, but there may still be other use-cases and features that are not natively supported by the Gateway API that you would like to use.
+This is where you can take advantage of ngrok's Traffic Policy system to extend the functionality of your Gateway API resources.
 
 ### Using `NgrokTrafficPolicy` on `Gateways`
 
@@ -112,35 +112,35 @@ metadata:
   namespace: default
 spec:
   hostnames:
-  - example-hostname.ngrok.io
+    - example-hostname.ngrok.io
   parentRefs:
-  - group: gateway.networking.k8s.io
-    kind: Gateway
-    name: example-gateway
-    namespace: default
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: example-gateway
+      namespace: default
   rules:
-  - matches:
-      - path:
-          type: PathPrefix
-          value: /
-    backendRefs:
-      - group: ""
-        kind: Service
-        name: example-service
-        port: 80
-        weight: 1
-        filters:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - group: ""
+          kind: Service
+          name: example-service
+          port: 80
+          weight: 1
+          filters:
+            - type: ExtensionRef
+              extensionRef:
+                group: "ngrok.k8s.ngrok.com"
+                kind: "NgrokTrafficPolicy"
+                name: basic-auth
+      filters:
         - type: ExtensionRef
           extensionRef:
             group: "ngrok.k8s.ngrok.com"
             kind: "NgrokTrafficPolicy"
             name: basic-auth
-    filters:
-    - type: ExtensionRef
-      extensionRef:
-        group: "ngrok.k8s.ngrok.com"
-        kind: "NgrokTrafficPolicy"
-        name: basic-auth
 ```
 
 ## Gateway API HTTPS upstreams
@@ -173,9 +173,8 @@ spec:
 
 ## Gateway API status conditions
 
-The Gateway API has guidance on status and condition handling in [GEP-1364](https://gateway-api.sigs.k8s.io/geps/gep-1364/) and the
-Gateway API [Implementer's guide](https://gateway-api.sigs.k8s.io/guides/implementers/#standard-status-fields-and-conditions). The
-ngrok-operator sets status and conditions on Gateway API resources.
+The Gateway API has guidance on status and condition handling in [GEP-1364](https://gateway-api.sigs.k8s.io/geps/gep-1364/) and the Gateway API [Implementer's guide](https://gateway-api.sigs.k8s.io/guides/implementers/#standard-status-fields-and-conditions).
+The ngrok-operator sets status and conditions on Gateway API resources.
 
 ### Viewing gateway statuses
 
@@ -191,12 +190,12 @@ infra       invalid-no-hostname-https-gw   ngrok                                
 infra       shared-gateway                 ngrok   gateway.my-sub-domain.ngrok.io                       True         140d
 ```
 
-In this example, you can see that 2 gateways have been successfully programmed in ngrok. The first one, `custom-gateway`, is using
-a [Custom Domain](./custom-domain) and shows the ngrok CNAME assigned to it. The last one, `shared-gateway`, is using an ngrok
-managed domain and has also been programmed. The other Gateways you see here are invalid and not able to be programmed.
+In this example, you can see that 2 gateways have been successfully programmed in ngrok.
+The first one, `custom-gateway`, is using a [Custom Domain](./custom-domain) and shows the ngrok CNAME assigned to it.
+The last one, `shared-gateway`, is using an ngrok managed domain and has also been programmed.
+The other Gateways you see here are invalid and not able to be programmed.
 
-Check the reason why a gateway is invalid by checking the status condition on the gateway and the listener status conditions
-with `kubectl -n infra get gateway -o yaml invalid-http-port-gw`:
+Check the reason why a gateway is invalid by checking the status condition on the gateway and the listener status conditions with `kubectl -n infra get gateway -o yaml invalid-http-port-gw`:
 
 ```yaml
 apiVersion: gateway.networking.k8s.io/v1
@@ -207,50 +206,49 @@ metadata:
 spec:
   gatewayClassName: ngrok
   listeners:
-  - allowedRoutes:
-      kinds:
-      - group: gateway.networking.k8s.io
-        kind: HTTPRoute
-      namespaces:
-        from: All
-    hostname: invalid-gw-2.tests.ngrok.io
-    name: http
-    port: 443
-    protocol: HTTP
+    - allowedRoutes:
+        kinds:
+          - group: gateway.networking.k8s.io
+            kind: HTTPRoute
+        namespaces:
+          from: All
+      hostname: invalid-gw-2.tests.ngrok.io
+      name: http
+      port: 443
+      protocol: HTTP
 status:
   addresses:
-  - type: Hostname
-    value: invalid-gw-2.tests.ngrok.io
+    - type: Hostname
+      value: invalid-gw-2.tests.ngrok.io
   conditions:
-  - lastTransitionTime: "2025-06-11T15:00:27Z"
-    message: gateway listeners are not valid
-    observedGeneration: 1
-    reason: ListenersNotValid
-    status: "False"
-    type: Accepted
-  - lastTransitionTime: "1970-01-01T00:00:00Z"
-    message: Waiting for controller
-    reason: Pending
-    status: Unknown
-    type: Programmed
-  listeners:
-  - attachedRoutes: 0
-    conditions:
     - lastTransitionTime: "2025-06-11T15:00:27Z"
-      message: ngrok only supports HTTP on port 80
+      message: gateway listeners are not valid
       observedGeneration: 1
-      reason: PortUnavailable
+      reason: ListenersNotValid
       status: "False"
       type: Accepted
-    - lastTransitionTime: "2025-06-11T20:28:15Z"
-      message: listener is not valid
-      observedGeneration: 1
-      reason: Invalid
-      status: "False"
+    - lastTransitionTime: "1970-01-01T00:00:00Z"
+      message: Waiting for controller
+      reason: Pending
+      status: Unknown
       type: Programmed
-    name: http
-    supportedKinds: []
+  listeners:
+    - attachedRoutes: 0
+      conditions:
+        - lastTransitionTime: "2025-06-11T15:00:27Z"
+          message: ngrok only supports HTTP on port 80
+          observedGeneration: 1
+          reason: PortUnavailable
+          status: "False"
+          type: Accepted
+        - lastTransitionTime: "2025-06-11T20:28:15Z"
+          message: listener is not valid
+          observedGeneration: 1
+          reason: Invalid
+          status: "False"
+          type: Programmed
+      name: http
+      supportedKinds: []
 ```
 
-The listener for this Gateway is invalid because the listener specified listening for HTTP on port 443 and
-ngrok only supports HTTPS listeners on port 443.
+The listener for this Gateway is invalid because the listener specified listening for HTTP on port 443 and ngrok only supports HTTPS listeners on port 443.

@@ -1,7 +1,8 @@
 ---
 title: Troubleshooting
-description:  When the AI Gateway encounters an error, it returns an ngrok error code and message to help identify the issue. The full list of AI Gateway error codes and their meanings are listed on this page.
+description: When the AI Gateway encounters an error, it returns an ngrok error code and message to help identify the issue. The full list of AI Gateway error codes and their meanings are listed on this page.
 ---
+
 
 ## Error codes reference
 
@@ -9,19 +10,21 @@ description:  When the AI Gateway encounters an error, it returns an ngrok error
 
 **Message**
 
-Could not reach the AI provider. The upstream request failed.
+Could not reach the AI provider.
+The upstream request failed.
 
 **HTTP Status**
 
 502 Bad Gateway
 
-
 **Causes**
+
 - Network connectivity issues between ngrok and the provider
 - Provider endpoint is down or unreachable
 - DNS resolution failure for provider URL
 
 **Solutions**
+
 - Check provider status pages (for example, [OpenAI Status](https://status.openai.com))
 - Verify custom provider `base_url` is correct and accessible
 - Configure failover to alternative providers
@@ -39,12 +42,14 @@ Invalid request body: `ERR`
 400 Bad Request
 
 **Causes**
+
 - Request body is not valid JSON
 - `model` field is not a string
 - `models` field is not an array
 - `models` array contains non-string values
 
 **Solutions**
+
 - Validate your request JSON before sending
 - Ensure the `model` field is a string
 - If using `models` array, ensure all entries are strings
@@ -55,19 +60,21 @@ Invalid request body: `ERR`
 
 **Message**
 
-No API key found. Check your SDK / AI Gateway configuration, or add API keys to your AI Gateway.
+No API key found.
+Check your SDK / AI Gateway configuration, or add API keys to your AI Gateway.
 
 **HTTP Status**
 
 400 Bad Request
 
-
 **Causes**
+
 - No `Authorization` header in the client request
 - No API keys configured for the provider in the gateway
 - API key selection strategy filtered out all keys
 
 **Solutions**
+
 - Include an API key in your request: `Authorization: Bearer sk-xxx`
 - Configure API keys in your gateway's provider configuration
 - Review your `api_key_selection` strategy if configured
@@ -84,13 +91,14 @@ Model selection failed: `ERR`
 
 422 Unprocessable Entity
 
-
 **Causes**
+
 - CEL expression syntax error in `model_selection.strategy`
 - Runtime error evaluating the strategy expression
 - Reference to undefined variable in strategy
 
 **Solutions**
+
 - Check variable names and ensure they are [available](/ai-gateway/guides/model-selection-strategies#available-model-variables) and correctly referenced.
 - Check for typos in variable names (for example, `ai.models` not `ai.model`)
 - Review [CEL Functions Reference](/ai-gateway/reference/cel-functions) for available functions.
@@ -109,12 +117,14 @@ No matching models found: `ERR`
 422 Unprocessable Entity
 
 **Causes**
+
 - Typo in the model name (for example, `gpt-4a` instead of `gpt-4o`)
 - Model not in the [Model Catalog](/ai-gateway/reference/model-catalog) and no provider prefix
 - `only_allow_configured_models: true` and model not in provider config
 - `only_allow_configured_providers: true` and provider not configured
 
 **Solutions**
+
 - Check your spelling. Common models include `gpt-4o`, `gpt-4`, `claude-3-5-sonnet-20241022`
 - For unknown models, prefix with `provider:` (for example, `openai:custom-model`)
 - Review your gateway's `providers` configuration
@@ -133,9 +143,11 @@ Model selection returned no results: `ERR`
 422 Unprocessable Entity
 
 **Causes**
+
 - A strategy either returned empty, had an error, or returned models not in the catalog or matched the client's requested models. The gateway tries each in order and fails immediately if it encounters an error or an empty set, and after exhausting all of them.
 
 **Solutions**
+
 - Double check your model selection strategies and ensure they are correctly configured to return models that exist in the catalog or in your gateway configuration
 - Double check whether you have enabled `only_allow_configured_models` or `only_allow_configured_providers`
 - If clients specify models in requests, ensure your model selection strategies will return those models
@@ -146,16 +158,19 @@ Model selection returned no results: `ERR`
 
 **Message**
 
-Expression '`EXPRESSION`' must return an AIModel or []AIModel, got `ACTUAL_TYPE`. See https://ngrok.com/docs/ai-gateway/guides/troubleshooting#err-ngrok-3806 for more information.
+Expression '`EXPRESSION`' must return an AIModel or []AIModel, got `ACTUAL_TYPE`.
+See https://ngrok.com/docs/ai-gateway/guides/troubleshooting#err-ngrok-3806 for more information.
 
 **HTTP Status**
 
 422 Unprocessable Entity
 
 **Causes**
+
 - Strategy expression returned a string, number, or other value instead of a model object or list of model objects
 
 **Solutions**
+
 - Use `ai.models`, `ai.models.randomize()`, `ai.models.random()`, or `ai.models.filter()` which return model objects
 - Don't return raw strings like `"gpt-4o"` or numbers like `123` from your strategy expressions
 
@@ -172,12 +187,14 @@ All providers failed: `ERR`
 503 Service Unavailable
 
 **Causes**
+
 - All configured providers returned errors
 - All API keys exhausted (rate limits, invalid keys)
 - Network issues to all providers
 - Provider-specific errors (invalid model, authentication failures)
 
 **Solutions**
+
 - Check the error details for specific provider failures (errors are listed in the response)
 - Verify API keys are valid and have available quota
 - Add more providers or API keys for better failover
@@ -196,11 +213,13 @@ API key selection strategy failed: `ERR`
 422 Unprocessable Entity
 
 **Causes**
+
 - No API key sent in request and no API keys configured for the provider (only for official providers like OpenAI)
 - All `api_key_selection` strategies returned no keys or had errors
 - Strategy expression returned an invalid type instead of a key or list of keys
 
 **Solutions**
+
 - Include an API key in your request: `Authorization: Bearer sk-xxx`
 - Configure API keys in your gateway's provider configuration
 - Check the error message for details about which strategy failed
@@ -211,17 +230,21 @@ API key selection strategy failed: `ERR`
 
 **Message**
 
-AI Gateway action can only be used on HTTP endpoints. This endpoint is using `PROTOCOL`. See https://ngrok.com/docs/ai-gateway/guides/creating-endpoints for help creating an endpoint.
+AI Gateway action can only be used on HTTP endpoints.
+This endpoint is using `PROTOCOL`.
+See https://ngrok.com/docs/ai-gateway/guides/creating-endpoints for help creating an endpoint.
 
 **HTTP Status**
 
 422 Unprocessable Entity
 
 **Causes**
+
 - AI Gateway action used on a non-HTTP endpoint
 - Endpoint configured for TCP or TLS protocol
 
 **Solutions**
+
 - AI Gateway only supports HTTP/HTTPS endpoints
 - Check your endpoint configuration and ensure it uses HTTP protocol
 
@@ -231,18 +254,22 @@ AI Gateway action can only be used on HTTP endpoints. This endpoint is using `PR
 
 **Message**
 
-Request timed out after `TIMEOUT`. Try a shorter prompt or increase your timeout. See https://ngrok.com/docs/ai-gateway/guides/troubleshooting#err-ngrok-3810 for more information.
+Request timed out after `TIMEOUT`.
+Try a shorter prompt or increase your timeout.
+See https://ngrok.com/docs/ai-gateway/guides/troubleshooting#err-ngrok-3810 for more information.
 
 **HTTP Status**
 
 504 Gateway Timeout
 
 **Causes**
+
 - All failover attempts took longer than `total_timeout`
 - Providers responding slowly
 - Too many failover candidates with slow responses
 
 **Solutions**
+
 - Increase `total_timeout` if appropriate for your use case
 - Reduce `per_request_timeout` to fail faster on slow providers
 - Use model selection strategies to prioritize faster providers
@@ -254,18 +281,22 @@ Request timed out after `TIMEOUT`. Try a shorter prompt or increase your timeout
 
 **Message**
 
-Input too large: `INPUT_TOKENS` tokens (max `MAX_ALLOWED`). Shorten your prompt. See https://ngrok.com/docs/ai-gateway/guides/troubleshooting#err-ngrok-3811 for more information.
+Input too large: `INPUT_TOKENS` tokens (max `MAX_ALLOWED`).
+Shorten your prompt.
+See https://ngrok.com/docs/ai-gateway/guides/troubleshooting#err-ngrok-3811 for more information.
 
 **HTTP Status**
 
 413 Payload Too Large
 
 **Causes**
+
 - Prompt and context exceed `max_input_tokens` setting
 - Very long conversation history
 - Large embedded content in messages
 
 **Solutions**
+
 - Reduce prompt length or conversation history
 - Increase `max_input_tokens` in gateway configuration
 - Implement client-side token counting or compression before sending
@@ -275,49 +306,50 @@ Input too large: `INPUT_TOKENS` tokens (max `MAX_ALLOWED`). Shorten your prompt.
 Here are some ways you can handle ngrok errors in your SDK:
 
 <CodeGroup>
-```python OpenAI Python SDK
-from openai import OpenAI, APIError
+  ```python OpenAI Python SDK
+  from openai import OpenAI, APIError
 
 client = OpenAI(
-    base_url="https://your-ai-gateway.ngrok.app/v1",
-    api_key="your-key"
+base_url="https://your-ai-gateway.ngrok.app/v1",
+api_key="your-key"
 )
 
 try:
-    response = client.chat.completions.create(
-        model="gpt-4o",
-        messages=[{"role": "user", "content": "Hello"}]
-    )
+response = client.chat.completions.create(
+model="gpt-4o",
+messages=[{"role": "user", "content": "Hello"}]
+)
 except APIError as e:
-    print(f"Error code: {e.code}")
-    print(f"Message: {e.message}")
-    if "ERR_NGROK_3804" in str(e):
-        print("Model not found - check model name spelling")
-```
+print(f"Error code: {e.code}")
+print(f"Message: {e.message}")
+if "ERR_NGROK_3804" in str(e):
+print("Model not found - check model name spelling")
+
+````
 
 ```javascript OpenAI Node.js SDK
 import OpenAI from 'openai';
 
 const client = new OpenAI({
-  baseURL: 'https://your-ai-gateway.ngrok.app/v1',
-  apiKey: 'your-key',
+baseURL: 'https://your-ai-gateway.ngrok.app/v1',
+apiKey: 'your-key',
 });
 
 try {
-  const response = await client.chat.completions.create({
-    model: 'gpt-4o',
-    messages: [{ role: 'user', content: 'Hello' }],
-  });
+const response = await client.chat.completions.create({
+model: 'gpt-4o',
+messages: [{ role: 'user', content: 'Hello' }],
+});
 } catch (error) {
-  if (error instanceof OpenAI.APIError) {
-    console.log('Status:', error.status);
-    console.log('Message:', error.message);
-    if (error.message.includes('ERR_NGROK_3804')) {
-      console.log('Model not found - check model name spelling');
-    }
-  }
+if (error instanceof OpenAI.APIError) {
+console.log('Status:', error.status);
+console.log('Message:', error.message);
+if (error.message.includes('ERR_NGROK_3804')) {
+  console.log('Model not found - check model name spelling');
 }
-```
+}
+}
+````
 </CodeGroup>
 
 ## Next steps
@@ -327,6 +359,7 @@ try {
     Inspect action results and diagnose issues
   </Card>
   <Card title="Error Handling" icon="shield" href="/ai-gateway/guides/error-handling">
+    {" "}
     Configure failover and error recovery
   </Card>
 </CardGroup>

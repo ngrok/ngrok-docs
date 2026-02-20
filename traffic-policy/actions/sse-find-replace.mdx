@@ -4,14 +4,13 @@ sidebarTitle: SSE Find & Replace
 description: Find and replace text patterns in Server-Sent Events (SSE) streams.
 ---
 
+
 import { ConfigField } from "/snippets/ConfigTable.jsx";
 import ActionVariablesDescription from "/snippets/traffic-policy/common/action-variables-description.mdx";
 import NonTerminatingExplanation from "/snippets/traffic-policy/common/non-terminating-explanation.mdx";
 
-The SSE Find & Replace action enables you to modify Server-Sent Events stream content
-by finding and replacing text patterns using regular expressions. This is particularly
-useful for modifying streaming AI model responses in real-time, such as redacting
-sensitive information or transforming content as it streams to clients.
+The SSE Find & Replace action enables you to modify Server-Sent Events stream content by finding and replacing text patterns using regular expressions.
+This is particularly useful for modifying streaming AI model responses in real-time, such as redacting sensitive information or transforming content as it streams to clients.
 
 ## Configuration reference
 
@@ -33,27 +32,31 @@ The [Traffic Policy](/traffic-policy/) configuration reference for this action.
   Minimum `1` replacement required.
 
   <ConfigField title="field" type="string">
-    The SSE field to apply the replacement to. Valid values are `data` and `retry`.
-    Defaults to `data` if not specified.
-    CEL interpolation is supported.
-  </ConfigField>
+  The SSE field to apply the replacement to.
+  Valid values are `data` and `retry`.
+  Defaults to `data` if not specified.
+  CEL interpolation is supported.
+</ConfigField>
 
-  <ConfigField title="from" type="string" required={true} cel={true}>
-    Regular expression pattern to match. Supports [RE2 syntax](https://github.com/google/re2/wiki/Syntax).
-    CEL interpolation is supported for dynamic patterns.
-  </ConfigField>
+<ConfigField title="from" type="string" required={true} cel={true}>
+  Regular expression pattern to match.
+  Supports [RE2 syntax](https://github.com/google/re2/wiki/Syntax).
+  CEL interpolation is supported for dynamic patterns.
+</ConfigField>
 
   <ConfigField title="to" type="string" cel={true}>
-    Replacement string. Use `$1`, `$2`, etc. to reference capture groups from the pattern.
-    CEL interpolation is supported for dynamic replacements.
-    If omitted or empty, matched text is deleted.
+  Replacement string.
+  Use `$1`, `$2`, etc. to reference capture groups from the pattern.
+  CEL interpolation is supported for dynamic replacements.
+  If omitted or empty, matched text is deleted.
+
+  
   </ConfigField>
 </ConfigField>
 
 ## Behavior
 
-When this action executes, it processes each SSE message as it streams through ngrok,
-applying replacement rules to the specified fields.
+When this action executes, it processes each SSE message as it streams through ngrok, applying replacement rules to the specified fields.
 
 ### SSE message structure
 
@@ -67,8 +70,8 @@ All matches within the specified field are replaced, not just the first occurren
 
 ### Streaming behavior
 
-Unlike the request/response body find & replace actions, this action processes messages
-in real-time as they stream through. Each SSE message is processed independently.
+Unlike the request/response body find & replace actions, this action processes messages in real-time as they stream through.
+Each SSE message is processed independently.
 
 ### Capture groups
 
@@ -102,29 +105,28 @@ When using CEL in the `from` field, the resulting string must be a valid regular
 
 ### Redacting sensitive data from streaming AI responses
 
-When using streaming AI responses (like OpenAI's chat completions with `stream: true`),
-you can redact sensitive information in real-time.
+When using streaming AI responses (like OpenAI's chat completions with `stream: true`), you can redact sensitive information in real-time.
 
 #### Example Traffic Policy document
 
 <CodeGroup>
-```yaml policy.yml
-on_event_stream_message:
+  ```yaml policy.yml
+  on_event_stream_message:
   - actions:
-      - type: sse-find-replace
+  - type: sse-find-replace
         config:
           replacements:
             # Redact SSN patterns in streaming content
-            - field: data
+  - field: data
               from: "\\d{3}-\\d{2}-\\d{4}"
               to: "[SSN REDACTED]"
             # Redact email addresses
-            - field: data
+  - field: data
               from: "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}"
               to: "[EMAIL REDACTED]"
-```
-```json policy.json
-{
+  ```
+  ```json policy.json
+  {
   "on_event_stream_message": [
     {
       "actions": [
@@ -148,8 +150,9 @@ on_event_stream_message:
       ]
     }
   ]
-}
-```
+  }
+  ```
+  
 </CodeGroup>
 
 ### Modifying streaming AI output format
@@ -157,19 +160,19 @@ on_event_stream_message:
 Transform streaming content as it's delivered to clients:
 
 <CodeGroup>
-```yaml policy.yml
-on_event_stream_message:
+  ```yaml policy.yml
+  on_event_stream_message:
   - actions:
-      - type: sse-find-replace
+  - type: sse-find-replace
         config:
           replacements:
             # Add emphasis to certain keywords
-            - field: data
+  - field: data
               from: "\\b(IMPORTANT|WARNING|NOTE)\\b"
               to: "**$1**"
-```
-```json policy.json
-{
+  ```
+  ```json policy.json
+  {
   "on_event_stream_message": [
     {
       "actions": [
@@ -188,8 +191,9 @@ on_event_stream_message:
       ]
     }
   ]
-}
-```
+  }
+  ```
+  
 </CodeGroup>
 
 ### Filtering profanity from streaming responses
@@ -197,18 +201,18 @@ on_event_stream_message:
 Remove or replace inappropriate content from AI responses in real-time:
 
 <CodeGroup>
-```yaml policy.yml
-on_event_stream_message:
+  ```yaml policy.yml
+  on_event_stream_message:
   - actions:
-      - type: sse-find-replace
+  - type: sse-find-replace
         config:
           replacements:
-            - field: data
+  - field: data
               from: "\\b(badword1|badword2|badword3)\\b"
               to: "[filtered]"
-```
-```json policy.json
-{
+  ```
+  ```json policy.json
+  {
   "on_event_stream_message": [
     {
       "actions": [
@@ -227,8 +231,9 @@ on_event_stream_message:
       ]
     }
   ]
-}
-```
+  }
+  ```
+  
 </CodeGroup>
 
 ### Modifying retry behavior
@@ -236,18 +241,18 @@ on_event_stream_message:
 Change the retry interval in SSE streams:
 
 <CodeGroup>
-```yaml policy.yml
-on_event_stream_message:
+  ```yaml policy.yml
+  on_event_stream_message:
   - actions:
-      - type: sse-find-replace
+  - type: sse-find-replace
         config:
           replacements:
-            - field: retry
+  - field: retry
               from: "\\d+"
               to: "5000"
-```
-```json policy.json
-{
+  ```
+  ```json policy.json
+  {
   "on_event_stream_message": [
     {
       "actions": [
@@ -266,8 +271,9 @@ on_event_stream_message:
       ]
     }
   ]
-}
-```
+  }
+  ```
+  
 </CodeGroup>
 
 ## Action result variables
@@ -278,11 +284,13 @@ on_event_stream_message:
   Array of objects describing which replacement rules matched.
 
   <ConfigField title="replacement_index" type="integer">
-    The zero-based index of the replacement rule that matched.
-  </ConfigField>
+  The zero-based index of the replacement rule that matched.
+</ConfigField>
 
   <ConfigField title="matched_content" type="string">
     The first matched content from this replacement rule.
+
+  
   </ConfigField>
 </ConfigField>
 
@@ -290,4 +298,3 @@ on_event_stream_message:
 
 - [Request Body Find & Replace](/traffic-policy/actions/request-body-find-replace) - Modify request bodies
 - [Response Body Find & Replace](/traffic-policy/actions/response-body-find-replace) - Modify response bodies
-
