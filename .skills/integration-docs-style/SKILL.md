@@ -16,7 +16,7 @@ description: Applies ngrok integration docs style rules when writing or editing 
 ## When to use
 
 - Creating or revising integration docs (e.g. `using-ngrok-with/*.mdx`, `integrations/webhooks/*.mdx`)
-Apply this skill when writing or editing ngrok integration documentation (e.g. guides under `using-ngrok-with/`).
+  Apply this skill when writing or editing ngrok integration documentation (e.g. guides under `using-ngrok-with/`).
 
 ## Quick checklist
 
