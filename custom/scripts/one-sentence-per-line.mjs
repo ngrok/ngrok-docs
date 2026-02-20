@@ -14,6 +14,28 @@ import { join } from "path";
 // Match . ! ? followed by space and then uppercase (sentence end). Capture the punctuation.
 const SENTENCE_BOUNDARY = /([.!?])\s+(?=[A-Z])/;
 
+// Single-line JSX component with multiple sentences: expand to one sentence per line so Prettier doesn't break it.
+const SINGLE_LINE_COMPONENT = /^(<(Warning|Note|Tip|Info|ConfigField)(?:\s[^>]*)?>)([\s\S]*?)(<\/\2>)\s*$/;
+
+function expandComponentContent(block) {
+  const trimmed = block.trim();
+  const match = trimmed.match(SINGLE_LINE_COMPONENT);
+  if (!match) return block;
+  const [, openTag, , inner, closeTag] = match;
+  const innerTrimmed = inner.trim();
+  const parts = innerTrimmed.split(SENTENCE_BOUNDARY);
+  if (parts.length <= 1) return block;
+  const sentences = [];
+  for (let i = 0; i < parts.length; i += 2) {
+    const text = parts[i].trim();
+    const punct = parts[i + 1] ?? "";
+    if (text || punct) sentences.push(text + punct);
+  }
+  if (sentences.length <= 1) return block;
+  const indent = block.match(/^(\s*)/)?.[1] ?? "";
+  return indent + openTag + "\n  " + sentences.join("\n  ") + "\n" + closeTag;
+}
+
 function isBlockProse(block) {
   const first = block.trimStart();
   if (!first) return false;
@@ -22,13 +44,14 @@ function isBlockProse(block) {
   if (
     firstChar === "#" ||
     firstChar === "-" ||
-    firstChar === "*" ||
     firstChar === ">" ||
     firstChar === "`" ||
     firstChar === "<" ||
     firstChar === "["
   )
     return false;
+  // List item: * or - at start of line (but not ** for bold)
+  if (firstChar === "*" && /^\*\s/.test(first)) return false;
   if (/^\d+[.)]\s/.test(first)) return false; // ordered list
   if (first.startsWith("```") || first.startsWith("---")) return false;
   return true;
@@ -51,6 +74,22 @@ function processBlock(block) {
   return sentences.map((s) => indent + s).join("\n");
 }
 
+/** Repair ConfigField blocks that Prettier stripped: re-indent list items and closing tag. Run on full content. */
+function repairConfigFieldInContent(content) {
+  return content.replace(/(<ConfigField[^>]*>)([\s\S]*?)(<\/ConfigField>)/g, (_, openTag, inner, closeTag) => {
+    const lines = inner.split("\n");
+    const out = [];
+    for (const line of lines) {
+      const trimmed = line.trimStart();
+      if (trimmed.startsWith("- ")) out.push("  - " + trimmed.slice(2));
+      else if (trimmed.length > 0) out.push(line.startsWith("  ") ? line : "  " + trimmed);
+      else out.push(line);
+    }
+    while (out.length && out[out.length - 1] === "") out.pop();
+    return openTag + out.join("\n") + "\n" + closeTag.trim();
+  });
+}
+
 function processFile(filePath) {
   const raw = readFileSync(filePath, "utf8");
 
@@ -66,12 +105,15 @@ function processFile(filePath) {
   }
 
   const blocks = content.split(/\n\n+/);
-  const out = blocks
+  let out = blocks
     .map((block) => {
-      if (isBlockProse(block)) return processBlock(block);
-      return block;
+      let b = expandComponentContent(block);
+      if (b === block && isBlockProse(block)) b = processBlock(block);
+      return b;
     })
     .join("\n\n");
+
+  out = repairConfigFieldInContent(out);
 
   writeFileSync(filePath, frontmatter + (frontmatter ? "\n" : "") + out, "utf8");
 }
